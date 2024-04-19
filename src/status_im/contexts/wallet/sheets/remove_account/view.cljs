@@ -1,7 +1,6 @@
 (ns status-im.contexts.wallet.sheets.remove-account.view
   (:require
     [quo.core :as quo]
-    [quo.theme]
     [react-native.clipboard :as clipboard]
     [react-native.core :as rn]
     [reagent.core :as reagent]
@@ -90,12 +89,10 @@
      :address          address
      :toast-message    (i18n/label :t/watched-account-removed)}]])
 
-(defn- view-internal
+(defn view
   []
   (let [{:keys [type] :as account} (rf/sub [:wallet/current-viewing-account])]
     (case type
       :generated [recovery-phase-flow account]
       :watch     [watched-address-flow account]
       nil)))
-
-(def view (quo.theme/with-theme view-internal))

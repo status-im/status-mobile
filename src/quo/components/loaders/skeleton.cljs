@@ -78,9 +78,10 @@
         :end    {:x 1 :y 0}
         :style  animated-gradient-style}]]]))
 
-(defn- view-internal
-  [{:keys [parent-height theme]}]
-  (let [number-of-skeletons (int (Math/floor (/ parent-height message-skeleton-height)))]
+(defn view
+  [{:keys [parent-height]}]
+  (let [theme               (quo.theme/use-theme)
+        number-of-skeletons (int (Math/floor (/ parent-height message-skeleton-height)))]
     [rn/view
      {:style {:background-color (colors/theme-colors
                                  colors/white
@@ -90,5 +91,3 @@
      (doall
       (for [n (range number-of-skeletons)]
         [:f> f-message-skeleton {:key n :theme theme}]))]))
-
-(def view (quo.theme/with-theme view-internal))

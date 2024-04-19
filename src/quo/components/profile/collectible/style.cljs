@@ -56,8 +56,8 @@
    :right    0})
 
 (defn remaining-tiles
-  []
-  (let [bg-color  (colors/theme-colors colors/neutral-20 colors/neutral-80)
+  [theme]
+  (let [bg-color  (colors/theme-colors colors/neutral-20 colors/neutral-80 theme)
         tile-size (tile-style-by-size :xs)]
     (assoc tile-size
            :justify-content  :center
@@ -65,5 +65,5 @@
            :background-color bg-color)))
 
 (defn remaining-tiles-text
-  []
-  {:color (colors/theme-colors colors/neutral-60 colors/neutral-40)})
+  [theme]
+  {:color (colors/theme-colors colors/neutral-60 colors/neutral-40 theme)})

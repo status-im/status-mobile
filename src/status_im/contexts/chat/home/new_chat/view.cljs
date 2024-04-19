@@ -87,7 +87,7 @@
 
 (defn view
   [{:keys [scroll-enabled? on-scroll close]}]
-  (let [theme                             (quo.theme/use-theme-value)
+  (let [theme                             (quo.theme/use-theme)
         contacts                          (rf/sub [:contacts/sorted-and-grouped-by-first-letter])
         selected-contacts-count           (rf/sub [:selected-contacts-count])
         selected-contacts                 (rf/sub [:group/selected-contacts])

@@ -2,6 +2,7 @@
   (:require
     [quo.core :as quo]
     [quo.foundations.colors :as colors]
+    [quo.theme]
     [react-native.core :as rn]
     [react-native.safe-area :as safe-area]
     [reagent.core :as reagent]
@@ -46,13 +47,14 @@
         deselected-members         (rf/sub [:group-chat/deselected-members])
         chat-id                    (rf/sub [:get-screen-params :group-details])
         {:keys [admins] :as group} (rf/sub [:chats/chat-by-id chat-id])
+        theme                      (quo.theme/use-theme)
         admin?                     (get admins (rf/sub [:multiaccount/public-key]))]
     [rn/view {:flex 1 :margin-top 20}
      [rn/touchable-opacity
       {:on-press            #(rf/dispatch [:navigate-back])
        :accessibility-label :close-manage-members
-       :style               (style/close-icon)}
-      [quo/icon :i/close {:color (colors/theme-colors colors/neutral-100 colors/white)}]]
+       :style               (style/close-icon theme)}
+      [quo/icon :i/close {:color (colors/theme-colors colors/neutral-100 colors/white theme)}]]
      [quo/text
       {:size   :heading-1
        :weight :semi-bold
@@ -67,7 +69,7 @@
        :content-container-style        {:padding-bottom 20}
        :render-data                    {:group group}
        :render-fn                      add-member-contact-item-render}]
-     [rn/view {:style (style/bottom-container 30)}
+     [rn/view {:style (style/bottom-container 30 theme)}
       [quo/button
        {:container-style     {:flex 1}
         :type                :primary

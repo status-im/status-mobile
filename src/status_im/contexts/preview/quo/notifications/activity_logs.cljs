@@ -119,7 +119,8 @@
                              :unread?        true
                              :items          []})]
     (fn []
-      (let [{:keys [button-1-type
+      (let [theme (quo.theme/use-theme)
+            {:keys [button-1-type
                     button-1-label
                     button-2-type
                     button-2-label
@@ -172,8 +173,8 @@
          [rn/view
           {:flex    1
            :padding 16}
-          [preview/customizer state descriptor]]
-         [quo.theme/provider {:theme :dark}
+          [preview/customizer state descriptor theme]]
+         [quo.theme/provider :dark
           [rn/view
            {:background-color colors/neutral-90
             :flex-direction   :row

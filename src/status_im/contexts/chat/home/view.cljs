@@ -128,7 +128,7 @@
 
 (defn view
   []
-  (let [theme                           (quo.theme/use-theme-value)
+  (let [theme                           (quo.theme/use-theme)
         scroll-ref                      (rn/use-ref-atom nil)
         set-scroll-ref                  (rn/use-callback #(reset! scroll-ref %))
         {:keys [universal-profile-url]} (rf/sub [:profile/profile])

@@ -5,9 +5,9 @@
 (def horizontal-padding 12)
 
 (defn container
-  []
+  [theme]
   {:height             56
-   :background-color   (colors/theme-colors colors/neutral-5 colors/neutral-90)
+   :background-color   (colors/theme-colors colors/neutral-5 colors/neutral-90 theme)
    :padding-vertical   10
    :padding-horizontal horizontal-padding
    :border-radius      12
@@ -15,7 +15,7 @@
    :flex-direction     :row})
 
 (defn loading-container
-  []
+  [theme]
   {:height          56
    :border-width    1
    :border-radius   12
@@ -25,11 +25,11 @@
    :justify-content :center
    :align-self      :stretch
    :padding         horizontal-padding
-   :border-color    (colors/theme-colors colors/neutral-30 colors/neutral-80)})
+   :border-color    (colors/theme-colors colors/neutral-30 colors/neutral-80 theme)})
 
 (defn loading-message
-  []
-  {:color (colors/theme-colors colors/neutral-50 colors/neutral-40)})
+  [theme]
+  {:color (colors/theme-colors colors/neutral-50 colors/neutral-40 theme)})
 
 (def logo
   {:width         16
@@ -42,13 +42,13 @@
    :flex        1})
 
 (defn title
-  []
-  {:color (colors/theme-colors colors/neutral-100 colors/white)})
+  [theme]
+  {:color (colors/theme-colors colors/neutral-100 colors/white theme)})
 
 (defn body
-  []
+  [theme]
   {:text-transform :lowercase
-   :color          (colors/theme-colors colors/neutral-50 colors/neutral-40)})
+   :color          (colors/theme-colors colors/neutral-50 colors/neutral-40 theme)})
 
 (def clear-button-container
   {:width       20

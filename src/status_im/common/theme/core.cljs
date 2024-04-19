@@ -2,7 +2,6 @@
   (:require
     [legacy.status-im.ui.components.colors :as legacy-colors]
     [oops.core :refer [oget]]
-    [quo.theme :as quo]
     [react-native.core :as rn]
     [react-native.platform :as platform]
     [utils.re-frame :as rf]))
@@ -30,9 +29,8 @@
   []
   (= @device-theme "dark"))
 
-(defn set-theme
+(defn set-legacy-theme
   [value]
-  (quo/set-theme value)
   (reset! legacy-colors/theme (case value
                                 :dark legacy-colors/dark-theme
                                 legacy-colors/light-theme))

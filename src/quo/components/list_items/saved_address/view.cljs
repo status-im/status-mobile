@@ -11,7 +11,7 @@
 
 (defn- left-container
   [{:keys [blur? name ens address customization-color]}]
-  (let [theme (quo.theme/use-theme-value)]
+  (let [theme (quo.theme/use-theme)]
     [rn/view {:style style/left-container}
      [wallet-user-avatar/wallet-user-avatar
       {:size                :size-32
@@ -34,7 +34,7 @@
   [{:keys [blur? user-props active-state? customization-color on-press on-options-press]
     :or   {customization-color :blue
            blur?               false}}]
-  (let [theme             (quo.theme/use-theme-value)
+  (let [theme             (quo.theme/use-theme)
         [state set-state] (rn/use-state :default)
         active?           (rn/use-ref-atom false)
         timer             (rn/use-ref-atom nil)

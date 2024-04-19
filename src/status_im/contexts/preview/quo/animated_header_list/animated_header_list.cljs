@@ -2,6 +2,7 @@
   (:require
     [quo.core :as quo]
     [quo.foundations.colors :as colors]
+    [quo.theme]
     [re-frame.core :as rf]
     [react-native.core :as rn]
     [react-native.fast-image :as fast-image]
@@ -68,10 +69,9 @@
     :style  {:margin-top  56
              :margin-left 20}} "Alicia Keys"])
 
-(def theme-color (colors/theme-alpha "#5BCC95" 0.2 0.2))
-
-(def parameters
-  {:theme-color theme-color
+(defn parameters
+  [theme]
+  {:theme-color (colors/theme-alpha "#5BCC95" 0.2 0.2 theme)
    :cover-uri
    "https://hips.hearstapps.com/hmg-prod.s3.amazonaws.com/images/kitten-playing-with-toy-mouse-royalty-free-image-590055188-1542816918.jpg?crop=1.00xw:0.758xh;0,0.132xh&resize=480:*"
    :f-display-picture-comp f-display-picture-comp
@@ -82,4 +82,5 @@
 
 (defn mock-screen
   []
-  [quo/animated-header-list parameters])
+  (let [theme (quo.theme/use-theme)]
+    [quo/animated-header-list (parameters theme)]))

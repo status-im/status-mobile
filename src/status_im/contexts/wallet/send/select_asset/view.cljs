@@ -2,7 +2,6 @@
   (:require
     [clojure.string :as string]
     [quo.core :as quo]
-    [quo.theme :as quo.theme]
     [react-native.core :as rn]
     [reagent.core :as reagent]
     [status-im.contexts.wallet.collectible.utils :as utils]
@@ -64,7 +63,7 @@
                            :on-token-press on-token-press}]
        :tab/collectibles [collectibles-grid search-text])]))
 
-(defn- f-view-internal
+(defn view
   []
   (let [selected-tab   (reagent/atom (:id (first tabs-data)))
         search-text    (reagent/atom "")
@@ -93,9 +92,3 @@
          :data            tabs-data
          :on-change       on-change-tab}]
        [tab-view @search-text @selected-tab on-change-text]])))
-
-(defn- view-internal
-  []
-  [:f> f-view-internal])
-
-(def view (quo.theme/with-theme view-internal))

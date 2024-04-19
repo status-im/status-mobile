@@ -1,7 +1,7 @@
 (ns quo.foundations.colors
   (:require
     [clojure.string :as string]
-    [quo.theme :as theme]
+    [quo.theme]
     [react-native.platform :as platform]))
 
 (def account-colors
@@ -37,10 +37,10 @@
 (def theme-alpha
   (memoize
    (fn
-     ([color light-opacity dark-opacity]
-      (theme-alpha color light-opacity color dark-opacity))
-     ([light-color light-opacity dark-color dark-opacity]
-      (if (theme/dark?)
+     ([color light-opacity dark-opacity theme]
+      (theme-alpha color light-opacity color dark-opacity theme))
+     ([light-color light-opacity dark-color dark-opacity theme]
+      (if (= :dark theme)
         (alpha light-color light-opacity)
         (alpha dark-color dark-opacity))))))
 
@@ -364,16 +364,7 @@
 
 (def shadow "rgba(9,16,28,0.08)")
 
-;;General
-
-;; divider
-(def divider-light "#EDF2f4")
-(def divider-dark "#0E1620")
-
 (defn theme-colors
   "(theme-colors light dark override-theme)"
-  ([light dark]
-   (theme-colors light dark nil))
-  ([light dark override-theme]
-   (let [theme (or override-theme (theme/get-theme))]
-     (if (= theme :light) light dark))))
+  [light dark theme]
+  (if (= theme :light) light dark))

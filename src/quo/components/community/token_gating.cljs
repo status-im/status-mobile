@@ -24,22 +24,21 @@
                                       purchasable? :add)}]])
                 tokens)])
 
-(defn- internal-view
-  [{:keys [tokens padding? theme]}]
-  [:<>
-   (if (> (count tokens) 1)
-     (map-indexed
-      (fn [token-requirement-index tokens]
-        ^{:key token-requirement-index}
-        [rn/view {:margin-bottom 12}
-         (when-not (= token-requirement-index 0)
-           [rn/view {:style (style/token-row-or-border theme)}])
-         (when-not (= token-requirement-index 0)
-           [text/text
-            {:style (style/token-row-or-text padding? theme)
-             :size  :label} (string/lower-case (i18n/label :t/or))])
-         [token-requirement-list-row tokens padding?]])
-      tokens)
-     [token-requirement-list-row (first tokens) padding?])])
-
-(def token-requirement-list (quo.theme/with-theme internal-view))
+(defn token-requirement-list
+  [{:keys [tokens padding?]}]
+  (let [theme (quo.theme/use-theme)]
+    [:<>
+     (if (> (count tokens) 1)
+       (map-indexed
+        (fn [token-requirement-index tokens]
+          ^{:key token-requirement-index}
+          [rn/view {:margin-bottom 12}
+           (when-not (= token-requirement-index 0)
+             [rn/view {:style (style/token-row-or-border theme)}])
+           (when-not (= token-requirement-index 0)
+             [text/text
+              {:style (style/token-row-or-text padding? theme)
+               :size  :label} (string/lower-case (i18n/label :t/or))])
+           [token-requirement-list-row tokens padding?]])
+        tokens)
+       [token-requirement-list-row (first tokens) padding?])]))

@@ -10,15 +10,16 @@
     [schema.core :as schema]))
 
 (defn- view-internal
-  [{:keys [amount token theme]}]
-  [rn/view {:style style/container}
-   [token/view {:token token :size :size-12}]
-   [text/text
-    {:weight :medium
-     :size   :paragraph-2
-     :style  style/text}
-    (str amount " " (string/upper-case (clj->js token)))]
-   [rn/view
-    {:style (style/divider theme)}]])
+  [{:keys [amount token]}]
+  (let [theme (quo.theme/use-theme)]
+    [rn/view {:style style/container}
+     [token/view {:token token :size :size-12}]
+     [text/text
+      {:weight :medium
+       :size   :paragraph-2
+       :style  style/text}
+      (str amount " " (string/upper-case (clj->js token)))]
+     [rn/view
+      {:style (style/divider theme)}]]))
 
-(def view (quo.theme/with-theme (schema/instrument #'view-internal network-amount-schema/?schema)))
+(def view (schema/instrument #'view-internal network-amount-schema/?schema))

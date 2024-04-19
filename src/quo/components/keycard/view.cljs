@@ -8,14 +8,15 @@
     [react-native.core :as rn]
     [utils.i18n :as i18n]))
 
-(defn- view-internal
+(defn keycard
   "This component based on the following properties:
   - :holder-name - Can be owner's name. Default is Empty
   - :locked? - Boolean to specify whether the keycard is locked or not
   - :theme :light/:dark
   "
-  [{:keys [holder-name locked? theme]}]
-  (let [label (if (boolean holder-name)
+  [{:keys [holder-name locked?]}]
+  (let [theme (quo.theme/use-theme)
+        label (if (boolean holder-name)
                 (i18n/label :t/user-keycard {:name holder-name})
                 (i18n/label :t/empty-keycard))]
     [rn/view {:style (style/card-container locked? theme)}
@@ -39,5 +40,3 @@
        :accessibility-label :holder-name
        :icon-color          colors/white-70-blur
        :override-theme      (when locked? :dark)}]]))
-
-(def keycard (quo.theme/with-theme view-internal))

@@ -38,7 +38,7 @@
 
 (defn title-view
   [{:keys [details action selected? type blur? customization-color on-options-press]}]
-  (let [theme               (quo.theme/use-theme-value)
+  (let [theme               (quo.theme/use-theme)
         {:keys [full-name]} details]
     [rn/view
      {:style               style/title-container

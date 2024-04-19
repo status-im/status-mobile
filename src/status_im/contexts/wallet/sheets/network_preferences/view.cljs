@@ -10,7 +10,7 @@
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]))
 
-(defn- view-internal
+(defn view
   [{:keys [selected-networks account watch-only?]}]
   (let [state                               (reagent/atom :default)
         {:keys [color address
@@ -34,8 +34,9 @@
                                               (if (= @state :default)
                                                 initial-network-preferences-names
                                                 @network-preferences-names-state))]
-    (fn [{:keys [on-save blur? theme button-label]}]
-      (let [network-details  (rf/sub [:wallet/network-details])
+    (fn [{:keys [on-save blur? button-label]}]
+      (let [theme            (quo.theme/use-theme)
+            network-details  (rf/sub [:wallet/network-details])
             mainnet          (first network-details)
             layer-2-networks (rest network-details)
             current-networks (filter (fn [network]
@@ -105,5 +106,3 @@
                                                      (let [chain-ids (map :chain-id current-networks)]
                                                        (on-save chain-ids)))
                               :customization-color color}}]]))))
-
-(def view (quo.theme/with-theme view-internal))

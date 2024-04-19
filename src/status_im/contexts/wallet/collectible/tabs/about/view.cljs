@@ -1,6 +1,5 @@
 (ns status-im.contexts.wallet.collectible.tabs.about.view
   (:require [quo.core :as quo]
-            [quo.theme]
             [react-native.core :as rn]
             [status-im.contexts.wallet.collectible.tabs.about.style :as style]
             [utils.i18n :as i18n]
@@ -8,7 +7,7 @@
 
 (def ^:private link-card-space 28)
 
-(defn- view-internal
+(defn view
   []
   (let [window-width               (rf/sub [:dimensions/window-width])
         item-width                 (- (/ window-width 2) link-card-space)
@@ -33,5 +32,3 @@
         (for [item (:cards collectible-about)]
           ^{:key (:title item)}
           [quo/link-card (assoc item :container-style link-card-container-style)])])]))
-
-(def view (quo.theme/with-theme view-internal))

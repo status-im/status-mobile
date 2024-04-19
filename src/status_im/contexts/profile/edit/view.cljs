@@ -23,9 +23,10 @@
   [_ index]
   #js {:length 100 :offset (* 100 index) :index index})
 
-(defn internal-view
-  [theme]
-  (let [insets (safe-area/get-insets)]
+(defn view
+  []
+  (let [theme  (quo.theme/use-theme)
+        insets (safe-area/get-insets)]
     [quo/overlay
      {:type            :shell
       :container-style (style/page-wrapper (:top insets))}
@@ -46,5 +47,3 @@
        :max-to-render-per-batch         3
        :shows-vertical-scroll-indicator false
        :render-fn                       item-view}]]))
-
-(def view (quo.theme/with-theme internal-view))

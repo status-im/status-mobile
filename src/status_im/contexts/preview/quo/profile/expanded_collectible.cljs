@@ -14,12 +14,6 @@
     :type :boolean}
    {:key  :counter
     :type :text}
-   {:key     :status
-    :type    :select
-    :options [{:key :loading}
-              {:key :default}
-              {:key :unsupported}
-              {:key :cant-fetch}]}
    {:type    :select
     :key     :image-type
     :options [{:key :vertical}
@@ -29,7 +23,6 @@
   []
   (let [state (reagent/atom {:square?    false
                              :counter    ""
-                             :status     :default
                              :image-type :horizontal})]
     (fn []
       [preview/preview-container
@@ -39,8 +32,9 @@
                                     :margin-horizontal 35}}
        [quo/expanded-collectible
         (assoc (dissoc @state :image-type)
-               :image-src (if (= :vertical (:image-type @state))
-                            vertical-image
-                            horizontal-image)
-               :counter   (when (seq (:counter @state)) (:counter @state))
-               :on-press  #(js/alert "Pressed"))]])))
+               :image-src       (if (= :vertical (:image-type @state))
+                                  vertical-image
+                                  horizontal-image)
+               :counter         (when (seq (:counter @state)) (:counter @state))
+               :supported-file? true
+               :on-press        #(js/alert "Pressed"))]])))

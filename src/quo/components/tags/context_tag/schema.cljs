@@ -9,7 +9,6 @@
       :collectible :address :icon :audio]]]
    [:customization-color {:optional true} [:maybe :schema.common/customization-color]]
    [:container-style {:optional true} [:maybe :map]]
-   [:theme :schema.common/theme]
    [:blur? {:optional true} [:maybe :boolean]]
    [:state {:optional true} [:maybe [:enum :selected :default]]]])
 

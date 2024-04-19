@@ -20,14 +20,15 @@
     description?
     (assoc :margin-bottom 2)))
 
-(defn- view-internal
+(defn view
   "Props:
    - section - the label of the section
    - description (optional) - description of the section
    - blur? (optional) - use blurred styling
    - theme - light or dark"
-  [{:keys [section description blur? theme container-style]}]
-  (let [color        (get-text-color theme (or blur? false))
+  [{:keys [section description blur? container-style]}]
+  (let [theme        (quo.theme/use-theme)
+        color        (get-text-color theme (or blur? false))
         description? (not (nil? description))
         root-view    (if (seq container-style) rn/view :<>)]
     [root-view {:style container-style}
@@ -43,5 +44,3 @@
          :weight :regular
          :style  {:color color}}
         description])]))
-
-(def view (quo.theme/with-theme view-internal))

@@ -3,7 +3,7 @@
     [quo.foundations.colors :as colors]))
 
 (defn main
-  [{:keys [type theme customization-color]}]
+  [{:keys [type customization-color]} theme]
   {:justify-content  :center
    :align-items      :center
    :height           32

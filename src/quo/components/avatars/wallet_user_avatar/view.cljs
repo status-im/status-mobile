@@ -34,7 +34,7 @@
       (= size second-smallest-possible)))
 (def biggest-possible (last (keys properties)))
 
-(defn- view-internal
+(defn wallet-user-avatar
   "Options:
 
   :full-name - string (default: nil) - used to generate initials
@@ -44,9 +44,10 @@
   :monospace? - boolean (default: false) - use monospace font
   :lowercase? - boolean (default: false) - lowercase text
   :neutral? - boolean (default: false) - use neutral colors variant"
-  [{:keys [full-name customization-color size theme monospace? lowercase? neutral?]
+  [{:keys [full-name customization-color size monospace? lowercase? neutral?]
     :or   {size biggest-possible}}]
-  (let [circle-size (:size (size properties))
+  (let [theme       (quo.theme/use-theme)
+        circle-size (:size (size properties))
         small?      (check-if-size-small size)
         initials    (utils.string/get-initials full-name (if small? 1 2))]
     [rn/view
@@ -57,5 +58,3 @@
        :weight              (if monospace? :monospace (:font-weight (size properties)))
        :style               (style/text customization-color neutral? theme)}
       (if (and initials lowercase?) (string/lower-case initials) initials)]]))
-
-(def wallet-user-avatar (quo.theme/with-theme view-internal))

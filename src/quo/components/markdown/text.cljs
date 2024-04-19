@@ -7,7 +7,7 @@
     [react-native.utils :as rn.utils]))
 
 (defn text-style
-  [{:keys [size align weight style theme]}]
+  [{:keys [size align weight style]} theme]
   (merge (case (or weight :regular)
            :regular   typography/font-regular
            :medium    typography/font-medium
@@ -28,17 +28,16 @@
            style
            (assoc style
                   :color
-                  (if (= (or theme (quo.theme/get-theme)) :dark) colors/white colors/neutral-100)))))
+                  (if (= theme :dark) colors/white colors/neutral-100)))))
 
-(defn- text-view-internal
+(defn- text-view
   [props & children]
-  (let [style (text-style props)]
+  (let [theme (quo.theme/use-theme)
+        style (text-style props theme)]
     (into [rn/text
            (merge {:style style}
-                  (dissoc props :style :size :align :weight :color :theme))]
+                  (dissoc props :style :size :align :weight :color))]
           children)))
-
-(def ^:private text-view (quo.theme/with-theme text-view-internal))
 
 (defn text
   [& argv]

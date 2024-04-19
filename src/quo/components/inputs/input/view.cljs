@@ -67,7 +67,7 @@
            label char-limit multiline? clearable? on-focus on-blur container-style input-container-style
            on-change-text on-char-limit-reach weight default-value on-clear placeholder]
     :as   props}]
-  (let [theme                  (quo.theme/use-theme-value)
+  (let [theme                  (quo.theme/use-theme)
         ref                    (rn/use-ref-atom nil)
         on-ref                 (rn/use-callback (fn [value]
                                                   (when (:ref props)
@@ -134,7 +134,7 @@
                 :style                  (style/input colors-by-status small? multiple-lines? weight)
                 :accessibility-label    :input
                 :placeholder-text-color (:placeholder colors-by-status)
-                :keyboard-appearance    (quo.theme/theme-value :light :dark theme)
+                :keyboard-appearance    theme
                 :cursor-color           (:cursor variant-colors)
                 :editable               (not disabled?)
                 :placeholder            modified-placeholder

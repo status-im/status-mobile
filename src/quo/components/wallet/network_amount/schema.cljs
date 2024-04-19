@@ -6,6 +6,5 @@
     [:props
      [:map {:closed true}
       [:amount {:optional true} [:maybe :string]]
-      [:token {:optional true} [:or :keyword :string]]
-      [:theme :schema.common/theme]]]]
+      [:token {:optional true} [:or :keyword :string]]]]]
    :any])

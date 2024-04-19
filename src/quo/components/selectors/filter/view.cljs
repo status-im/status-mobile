@@ -7,7 +7,7 @@
 
 (defn view
   [{:keys [blur? customization-color on-press-out pressed?]}]
-  (let [theme                  (quo.theme/use-theme-value)
+  (let [theme                  (quo.theme/use-theme)
         [pressed? set-pressed] (rn/use-state pressed?)
         on-press-out           (fn []
                                  (set-pressed (not pressed?))

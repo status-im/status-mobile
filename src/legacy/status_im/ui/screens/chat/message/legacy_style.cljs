@@ -46,22 +46,22 @@
    :color      colors/gray})
 
 (defn message-default-style
-  []
+  [theme]
   {:font-family    "Inter-Regular"
-   :color          (quo.colors/theme-colors quo.colors/neutral-100 quo.colors/white)
+   :color          (quo.colors/theme-colors quo.colors/neutral-100 quo.colors/white theme)
    :font-size      15
    :line-height    21.75
    :letter-spacing -0.135})
 
 ;; Markdown styles
 (defn default-text-style
-  []
+  [theme]
   {:max-font-size-multiplier react/max-font-size-multiplier
-   :style                    (message-default-style)})
+   :style                    (message-default-style theme)})
 
 (defn system-text-style
-  []
-  (update (default-text-style)
+  [theme]
+  (update (default-text-style theme)
           :style       assoc
           :color       colors/gray
           :line-height 20
@@ -70,65 +70,65 @@
           :font-weight "400"))
 
 (defn text-style
-  [content-type in-popover?]
+  [content-type in-popover? theme]
   (merge
    (when in-popover? {:number-of-lines 2})
    (cond
-     (= content-type constants/content-type-system-text)           (system-text-style)
-     (= content-type constants/content-type-system-pinned-message) (system-text-style)
-     :else                                                         (default-text-style))))
+     (= content-type constants/content-type-system-text)           (system-text-style theme)
+     (= content-type constants/content-type-system-pinned-message) (system-text-style theme)
+     :else                                                         (default-text-style theme))))
 
 (defn emph-text-style
-  []
-  (update (default-text-style)
+  [theme]
+  (update (default-text-style theme)
           :style
           assoc
           :font-style :italic))
 
 (defn emph-style
-  []
-  (emph-text-style))
+  [theme]
+  (emph-text-style theme))
 
 (defn strong-text-style
-  []
-  (update (default-text-style)
+  [theme]
+  (update (default-text-style theme)
           :style
           assoc
           :font-weight "700"))
 
 (defn outgoing-strong-text-style
-  []
-  (update (strong-text-style)
+  [theme]
+  (update (strong-text-style theme)
           :style
           assoc
           :color colors/white-persist))
 
 (defn strong-style
-  []
-  (outgoing-strong-text-style)
-  (strong-text-style))
+  [theme]
+  (outgoing-strong-text-style theme)
+  (strong-text-style theme))
 
 (defn strong-emph-style
-  []
-  (update (strong-style)
+  [theme]
+  (update (strong-style theme)
           :style
           assoc
           :font-style :italic))
 
 (defn strikethrough-style
-  []
-  (cond-> (update (default-text-style)
+  [theme]
+  (cond-> (update (default-text-style theme)
                   :style
                   assoc
                   :text-decoration-line :line-through)))
 
 (defn edited-style
-  []
+  [theme]
   (cond->
-    (update (default-text-style)
+    (update (default-text-style theme)
             :style
             assoc
-            :color (quo.colors/theme-colors quo.colors/neutral-40 quo.colors/neutral-50)
+            :color (quo.colors/theme-colors quo.colors/neutral-40 quo.colors/neutral-50 theme)
             :font-size 13
             :line-height 18.2
             :letter-spacing (typography/tracking 13))))
@@ -149,8 +149,8 @@
   (default-blockquote-style))
 
 (defn default-blockquote-text-style
-  []
-  (update (default-text-style)
+  [theme]
+  (update (default-text-style theme)
           :style
           assoc
           :line-height 19
@@ -158,16 +158,16 @@
           :color colors/black-transparent-50))
 
 (defn outgoing-blockquote-text-style
-  []
-  (update (default-blockquote-text-style)
+  [theme]
+  (update (default-blockquote-text-style theme)
           :style
           assoc
           :color colors/white-transparent-70-persist))
 
 (defn blockquote-text-style
-  []
-  (outgoing-blockquote-text-style)
-  (default-blockquote-text-style))
+  [theme]
+  (outgoing-blockquote-text-style theme)
+  (default-blockquote-text-style theme))
 
 (defn community-verified
   []

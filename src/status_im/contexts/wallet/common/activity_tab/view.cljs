@@ -15,9 +15,10 @@
     (merge {:on-press #(js/alert "Item pressed")}
            item)]])
 
-(defn- view-internal
-  [{:keys [theme]}]
-  (let [activity-list []]
+(defn view
+  []
+  (let [theme         (quo.theme/use-theme)
+        activity-list []]
     (if (empty? activity-list)
       [empty-tab/view
        {:title       (i18n/label :t/no-activity)
@@ -27,5 +28,3 @@
        {:data      activity-list
         :style     {:flex 1}
         :render-fn activity-item}])))
-
-(def view (quo.theme/with-theme view-internal))

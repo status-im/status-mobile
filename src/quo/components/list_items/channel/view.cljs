@@ -27,7 +27,7 @@
    - on-long-press - (function, default: nil) - Function called when the component is long pressed.
    - theme - Theme value from with-theme HOC"
   [{:keys [notification locked? mentions-count customization-color emoji name on-press on-long-press]}]
-  (let [theme                  (quo.theme/use-theme-value)
+  (let [theme                  (quo.theme/use-theme)
         [pressed? set-pressed] (rn/use-state false)
         on-press-in            (rn/use-callback #(set-pressed true))
         on-press-out           (rn/use-callback #(set-pressed false))]

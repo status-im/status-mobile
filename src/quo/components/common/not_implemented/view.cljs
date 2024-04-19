@@ -4,9 +4,8 @@
     [quo.theme :as quo.theme]
     [react-native.core :as rn]))
 
-(defn- view-internal
-  [{:keys [blur? theme]}]
-  [rn/text {:style (style/text blur? theme)}
-   "not implemented"])
-
-(def view (quo.theme/with-theme view-internal))
+(defn view
+  [{:keys [blur?]}]
+  (let [theme (quo.theme/use-theme)]
+    [rn/text {:style (style/text blur? theme)}
+     "not implemented"]))

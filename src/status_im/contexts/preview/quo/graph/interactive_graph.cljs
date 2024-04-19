@@ -4,6 +4,7 @@
     [quo.components.graph.utils :as utils]
     [quo.core :as quo]
     [quo.foundations.colors :as colors]
+    [quo.theme]
     [react-native.core :as rn]
     [reagent.core :as reagent]
     [status-im.contexts.preview.quo.preview :as preview]))
@@ -112,28 +113,30 @@
 (defn f-view
   [state]
   (fn []
-    (rn/use-effect (fn []
-                     (let [time-frame    (:time-frame @state)
-                           data          (generate-data time-frame)
-                           highest-value (utils/find-highest-value data)
-                           lowest-value  (utils/find-lowest-value data)
-                           average-value (gstring/format "%.2f" (/ (+ highest-value lowest-value) 2))]
-                       (swap! state assoc :data data :reference-value average-value)))
-                   [(:time-frame @state)])
-    [rn/touchable-without-feedback {:on-press rn/dismiss-keyboard!}
-     [rn/view {:padding-bottom 150}
-      [preview/customizer state descriptor]
-      [quo/interactive-graph
-       {:data                (:data @state)
-        :state               (:state @state)
-        :reference-value     (:reference-value @state)
-        :reference-prefix    (:reference-prefix @state)
-        :customization-color (:customization-color @state)
-        :decimal-separator   (:decimal-separator @state)}]]]))
+    (let [theme (quo.theme/use-theme)]
+      (rn/use-effect (fn []
+                       (let [time-frame    (:time-frame @state)
+                             data          (generate-data time-frame)
+                             highest-value (utils/find-highest-value data)
+                             lowest-value  (utils/find-lowest-value data)
+                             average-value (gstring/format "%.2f" (/ (+ highest-value lowest-value) 2))]
+                         (swap! state assoc :data data :reference-value average-value)))
+                     [(:time-frame @state)])
+      [rn/touchable-without-feedback {:on-press rn/dismiss-keyboard!}
+       [rn/view {:padding-bottom 150}
+        [preview/customizer state descriptor theme]
+        [quo/interactive-graph
+         {:data                (:data @state)
+          :state               (:state @state)
+          :reference-value     (:reference-value @state)
+          :reference-prefix    (:reference-prefix @state)
+          :customization-color (:customization-color @state)
+          :decimal-separator   (:decimal-separator @state)}]]])))
 
 (defn view
   []
-  (let [data          (generate-data :1-week)
+  (let [theme         (quo.theme/use-theme)
+        data          (generate-data :1-week)
         highest-value (utils/find-highest-value data)
         lowest-value  (utils/find-lowest-value data)
         average-value (gstring/format "%.2f" (/ (+ highest-value lowest-value) 2))
@@ -148,6 +151,7 @@
      {:style
       {:background-color (colors/theme-colors
                           colors/white
-                          colors/neutral-95)
+                          colors/neutral-95
+                          theme)
        :flex             1}}
      [:f> f-view state]]))

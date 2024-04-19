@@ -45,4 +45,5 @@
                                                        :confirmation []
                                                        :current      []
                                                        :puk          []
-                                                       :enter-step   :original}}})
+                                                       :enter-step   :original}}
+   :theme                              :light})

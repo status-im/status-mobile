@@ -2,6 +2,7 @@
   (:require
     [legacy.status-im.ui.components.core :as quo]
     [quo.foundations.colors :as quo.colors]
+    [quo.theme]
     [re-frame.core :as re-frame]
     [react-native.safe-area :as safe-area]))
 
@@ -32,7 +33,8 @@
     :or   {border-bottom? true
            new-ui?        false}
     :as   props}]
-  (let [navigation (if (= navigation :none)
+  (let [theme      (quo.theme/use-theme)
+        navigation (if (= navigation :none)
                      nil
                      [(default-navigation modal? navigation)])]
     [quo/header
@@ -47,4 +49,5 @@
               {:right-accessories right-accessories})
             (when new-ui?
               {:background (quo.colors/theme-colors quo.colors/neutral-5
-                                                    quo.colors/neutral-95)}))]))
+                                                    quo.colors/neutral-95
+                                                    theme)}))]))

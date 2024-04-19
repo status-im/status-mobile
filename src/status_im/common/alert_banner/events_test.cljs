@@ -9,7 +9,7 @@
     (is (match? {:db                {:alert-banners
                                      {:alert {:text "Alert"
                                               :type :alert}}}
-                 :show-alert-banner nil}
+                 :show-alert-banner [nil nil]}
                 (events/add-alert-banner {:db {}}
                                          [{:text "Alert"
                                            :type :alert}])))))
@@ -17,7 +17,7 @@
 (deftest remove-alert-banner
   (testing "Alert banner is removed"
     (is (match? {:db                {}
-                 :hide-alert-banner nil}
+                 :hide-alert-banner [nil nil]}
                 (events/remove-alert-banner {:db {:alert-banners
                                                   {:alert {:text "Alert"
                                                            :type :alert}}}}
@@ -34,7 +34,7 @@
 (deftest remove-all-alert-banners
   (testing "All Alert banners are removed"
     (is (match? {:db                {}
-                 :hide-alert-banner nil}
+                 :hide-alert-banner [nil nil]}
                 (events/remove-all-alert-banners {:db {:alert-banners
                                                        {:alert {:text "Alert"
                                                                 :type :alert}

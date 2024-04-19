@@ -16,15 +16,16 @@
       parsed-number)))
 
 (defn- right-counter
-  [{:keys [blur? theme counter-left counter-right]}]
-  [rn/view {:style style/right-counter}
-   [text/text
-    {:size   :paragraph-2
-     :weight :regular
-     :style  (style/right-counter-text blur? theme)}
-    (str (get-counter-number counter-left)
-         "/"
-         (get-counter-number counter-right))]])
+  [{:keys [blur? counter-left counter-right]}]
+  (let [theme (quo.theme/use-theme)]
+    [rn/view {:style style/right-counter}
+     [text/text
+      {:size   :paragraph-2
+       :weight :regular
+       :style  (style/right-counter-text blur? theme)}
+      (str (get-counter-number counter-left)
+           "/"
+           (get-counter-number counter-right))]]))
 
 (defn- right-action
   [{:keys [customization-color on-press icon]
@@ -38,9 +39,10 @@
    icon])
 
 (defn- right-tag
-  [{:keys [theme blur? on-press icon label]
+  [{:keys [blur? on-press icon label]
     :or   {icon :i/placeholder}}]
-  (let [labelled? (not (string/blank? label))]
+  (let [theme     (quo.theme/use-theme)
+        labelled? (not (string/blank? label))]
     [tag/tag
      {:accessibility-label :standard-title-tag
       :size                32
@@ -52,7 +54,7 @@
       :blurred?            blur?
       :icon-color          (style/right-tag-icon-color blur? theme)}]))
 
-(defn- view-internal
+(defn view
   [{:keys [title right accessibility-label] :as props}]
   [rn/view {:style style/container}
    [text/text
@@ -67,5 +69,3 @@
         :action  [right-action props]
         :tag     [right-tag props]
         nil)])])
-
-(def view (quo.theme/with-theme view-internal))

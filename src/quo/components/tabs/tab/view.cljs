@@ -48,24 +48,13 @@
      (vector? children)
      children)])
 
-(defn- view-internal
-  [{:keys [accessibility-label
-           active
-           before
-           item-container-style
-           active-item-container-style
-           blur?
-           disabled
-           id
-           on-press
-           theme
-           segmented?
-           size
-           notification-dot?
-           customization-color]
+(defn view
+  [{:keys [accessibility-label active before item-container-style active-item-container-style blur?
+           disabled id on-press segmented? size notification-dot? customization-color]
     :or   {size 32}}
    children]
-  (let [show-notification-dot? (and notification-dot? (= size 32))
+  (let [theme                  (quo.theme/use-theme)
+        show-notification-dot? (and notification-dot? (= size 32))
         {:keys [icon-color
                 background-color
                 label]}        (style/by-theme {:theme    theme
@@ -104,5 +93,3 @@
           :height           size
           :disabled         disabled
           :background-color background-color}])]]))
-
-(def view (quo.theme/with-theme view-internal))

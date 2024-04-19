@@ -2,6 +2,7 @@
   (:require
     [quo.core :as quo]
     [quo.foundations.colors :as colors]
+    [quo.theme]
     [react-native.core :as rn]
     [react-native.reanimated :as reanimated]
     [status-im.contexts.chat.messenger.composer.constants :as constants]
@@ -12,27 +13,28 @@
 
 (defn edit-message
   [{:keys [text-value input-ref]}]
-  [rn/view
-   {:style               style/container
-    :accessibility-label :edit-message}
-   [rn/view {:style style/content-container}
-    [quo/icon
-     :i/connector-dotted
-     {:size            16
-      :color           (colors/theme-colors colors/neutral-40 colors/neutral-60)
-      :container-style style/icon-container}]
-    [rn/view {:style style/text-container}
-     [quo/text
-      {:weight :medium
-       :size   :paragraph-2}
-      (i18n/label :t/editing-message)]]]
-   [quo/button
-    {:size                24
-     :icon-only?          true
-     :accessibility-label :edit-cancel-button
-     :on-press            #(utils/cancel-edit-message text-value input-ref)
-     :type                :outline}
-    :i/close]])
+  (let [theme (quo.theme/use-theme)]
+    [rn/view
+     {:style               style/container
+      :accessibility-label :edit-message}
+     [rn/view {:style style/content-container}
+      [quo/icon
+       :i/connector-dotted
+       {:size            16
+        :color           (colors/theme-colors colors/neutral-40 colors/neutral-60 theme)
+        :container-style style/icon-container}]
+      [rn/view {:style style/text-container}
+       [quo/text
+        {:weight :medium
+         :size   :paragraph-2}
+        (i18n/label :t/editing-message)]]]
+     [quo/button
+      {:size                24
+       :icon-only?          true
+       :accessibility-label :edit-cancel-button
+       :on-press            #(utils/cancel-edit-message text-value input-ref)
+       :type                :outline}
+      :i/close]]))
 
 (defn- f-view
   [props]

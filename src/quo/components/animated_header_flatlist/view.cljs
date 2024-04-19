@@ -54,7 +54,7 @@
 
 (defn- f-animated-header-list
   [{:keys [header-comp main-comp back-button-on-press] :as params}]
-  (let [theme                   (quo.theme/use-theme-value)
+  (let [theme                   (quo.theme/use-theme)
         window-height           (:height (rn/get-window))
         {:keys [top bottom]}    (safe-area/get-insets)
         ;; view height calculation is different because window height is different on iOS and

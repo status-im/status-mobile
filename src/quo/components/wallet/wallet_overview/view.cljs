@@ -25,20 +25,21 @@
                bars))
 
 (defn- view-info-top
-  [{:keys [state balance theme networks dropdown-on-press dropdown-state]}]
-  [rn/view {:style style/container-info-top}
-   (if (= state :loading)
-     (loading-bars [{:width 201 :height 20 :margin 0}] theme)
-     [text/text
-      {:weight :semi-bold
-       :size   :heading-1
-       :style  (style/style-text-heading theme)}
-      balance])
-   [network-dropdown/view
-    {:state    (or dropdown-state :default)
-     :blur?    true
-     :on-press dropdown-on-press}
-    networks]])
+  [{:keys [state balance networks dropdown-on-press dropdown-state]}]
+  (let [theme (quo.theme/use-theme)]
+    [rn/view {:style style/container-info-top}
+     (if (= state :loading)
+       (loading-bars [{:width 201 :height 20 :margin 0}] theme)
+       [text/text
+        {:weight :semi-bold
+         :size   :heading-1
+         :style  (style/style-text-heading theme)}
+        balance])
+     [network-dropdown/view
+      {:state    (or dropdown-state :default)
+       :blur?    true
+       :on-press dropdown-on-press}
+      networks]]))
 
 (defn- view-metrics
   [{:keys [metrics currency-change percentage-change theme]}]
@@ -118,6 +119,4 @@
    [view-info-top props]
    [view-info-bottom props]])
 
-(def view
-  (quo.theme/with-theme
-   (schema/instrument #'view-internal component-schema/?schema)))
+(def view (schema/instrument #'view-internal component-schema/?schema))

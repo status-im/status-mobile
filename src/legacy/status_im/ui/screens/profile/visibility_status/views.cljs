@@ -37,7 +37,7 @@
      (dispatch-popover page-y))))
 
 (defn profile-visibility-status-dot
-  [status-type color]
+  [status-type color theme]
   (let [automatic?                      (= status-type
                                            constants/visibility-status-automatic)
         [border-width margin-left size] (if automatic? [1 -10 12] [0 6 10])
@@ -50,14 +50,16 @@
                   :size         size
                   :border-width border-width
                   :margin-left  6
-                  :new-ui?      new-ui?})}])
+                  :new-ui?      new-ui?}
+                 theme)}])
      [rn/view
       {:style (styles/visibility-status-profile-dot
                {:color        color
                 :size         size
                 :border-width border-width
                 :margin-left  margin-left
-                :new-ui?      new-ui?})}]]))
+                :new-ui?      new-ui?}
+               theme)}]]))
 
 (defn visibility-status-button
   [on-press props]

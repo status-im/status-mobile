@@ -5,7 +5,6 @@
    [:catn
     [:props
      [:map
-      [:theme :schema.common/theme]
       [:type [:enum :status-account :saved-account :account :user]]
       [:account-props {:optional true} [:maybe :map]]
       [:networks? {:optional true} [:maybe :boolean]]

@@ -17,9 +17,10 @@
    (str network ":")])
 
 (defn- view-internal
-  [{:keys [networks address blur? theme format full-address? size weight]
+  [{:keys [networks address blur? format full-address? size weight]
     :or   {size :paragraph-2}}]
-  (let [network-colored-text                 (map #(colored-network-text {:theme   theme
+  (let [theme                                (quo.theme/use-theme)
+        network-colored-text                 (map #(colored-network-text {:theme   theme
                                                                           :network %
                                                                           :weight  weight
                                                                           :size    size}))
@@ -44,6 +45,4 @@
       (into [text/text] network-colored-text $)
       (conj $ address-text))))
 
-(def view
-  (quo.theme/with-theme
-   (schema/instrument #'view-internal component-schema/?schema)))
+(def view (schema/instrument #'view-internal component-schema/?schema))

@@ -5,7 +5,7 @@
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
-(defn- view-internal
+(defn view
   []
   [input-amount/view
    {:current-screen-id :screen/wallet.send-input-amount
@@ -13,5 +13,3 @@
     :on-navigate-back  (fn []
                          (rf/dispatch [:wallet/clean-disabled-from-networks])
                          (rf/dispatch [:navigate-back]))}])
-
-(def view (quo.theme/with-theme view-internal))

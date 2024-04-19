@@ -88,8 +88,7 @@
             avatar-props)]]])
 
 (defn- right-section
-  [{:keys [theme
-           jump-to?
+  [{:keys [jump-to?
            blur?
            notification
            notification-count
@@ -97,7 +96,8 @@
            scan-on-press
            qr-code-on-press]
     :as   props}]
-  (let [button-common-props (get-button-common-props {:theme    theme
+  (let [theme               (quo.theme/use-theme)
+        button-common-props (get-button-common-props {:theme    theme
                                                       :jump-to? jump-to?
                                                       :blur?    blur?})]
     [rn/view {:style style/right-section}
@@ -123,17 +123,7 @@
         :i/activity-center]]
       [notification-highlight props]]]))
 
-(defn view-internal
-  [{:keys [avatar-on-press avatar-props customization-color container-style] :as props}]
-  [rn/view {:style (merge style/top-nav-container container-style)}
-   [rn/view {:style style/top-nav-inner-container}
-    [left-section
-     {:avatar-props        avatar-props
-      :on-press            avatar-on-press
-      :customization-color customization-color}]
-    [right-section (dissoc props :avatar-props :avatar-on-press)]]])
-
-(def view
+(defn view
   ":container-style style map merged with outer view for margins/paddings
    :customization-color custom colors
    :blur? true/false
@@ -148,4 +138,11 @@
    :notification-count number
    :max-unread-notifications used to specify max number for counter
    "
-  (quo.theme/with-theme view-internal))
+  [{:keys [avatar-on-press avatar-props customization-color container-style] :as props}]
+  [rn/view {:style (merge style/top-nav-container container-style)}
+   [rn/view {:style style/top-nav-inner-container}
+    [left-section
+     {:avatar-props        avatar-props
+      :on-press            avatar-on-press
+      :customization-color customization-color}]
+    [right-section (dissoc props :avatar-props :avatar-on-press)]]])
