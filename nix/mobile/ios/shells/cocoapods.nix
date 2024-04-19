@@ -7,6 +7,8 @@ let
   manifestLock = "ios/Pods/Manifest.lock";
 in mkShell {
   buildInputs = [ cocoapods ];
+  # https://github.com/reactwg/react-native-new-architecture/blob/main/docs/enable-apps.md#enable-new-architecture-for-ios
+  RCT_NEW_ARCH_ENABLED = 1;
   shellHook = ''
     pushd "$STATUS_MOBILE_HOME" > /dev/null
     {
