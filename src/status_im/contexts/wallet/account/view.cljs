@@ -25,7 +25,11 @@
   (let [selected-tab (reagent/atom first-tab-id)]
     (fn []
       (let [{:keys [name color formatted-balance
-                    watch-only?]} (rf/sub [:wallet/current-viewing-account])]
+                    watch-only?]} (rf/sub [:wallet/current-viewing-account])
+            navigate-back-handler #(rf/dispatch [:navigate-back])]
+        ;(rn/use-mount (fn []
+        ;                (rn/hw-back-add-listener navigate-back-handler)
+        ;                #(rn/hw-back-remove-listener navigate-back-handler)))
         [rn/view {:style {:flex 1}}
          [account-switcher/view
           {:type     :wallet-networks
