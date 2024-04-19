@@ -4,8 +4,7 @@
     [react-native.platform :as platform]
     [status-im.constants :as constants]
     status-im.contexts.profile.push-notifications.local.effects
-    [utils.i18n :as i18n]
-    [utils.re-frame :as rf]))
+    [utils.i18n :as i18n]))
 
 (def ^:private push-notification-types
   #{"transaction" "message"})

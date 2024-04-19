@@ -13,15 +13,13 @@
     [utils.security.core :as security]
     [utils.transforms :as transforms]))
 
-(rf/defn local-pairing-update-role
-  {:events [:syncing/update-role]}
-  [{:keys [db]} role]
-  {:db (assoc-in db [:syncing :role] role)})
+(rf/reg-event-fx :syncing/update-role
+ (fn [{:keys [db]} [role]]
+   {:db (assoc-in db [:syncing :role] role)}))
 
-(rf/defn local-pairing-clear-states
-  {:events [:syncing/clear-states]}
-  [{:keys [db]} role]
-  {:db (dissoc db :syncing)})
+(rf/reg-event-fx :syncing/clear-states
+ (fn [{:keys [db]}]
+   {:db (dissoc db :syncing)}))
 
 (defn- get-default-node-config
   [installation-id]
@@ -52,62 +50,59 @@
                     {:type :negative
                      :text error}]))))
 
-(rf/defn preflight-outbound-check-for-local-pairing
-  {:events [:syncing/preflight-outbound-check]}
-  [_ set-checks-passed]
-  (let [callback
-        (fn [raw-response]
-          (log/info "Local pairing preflight check"
-                    {:response raw-response
-                     :event    :syncing/preflight-outbound-check})
-          (let [^js response-js (transforms/json->js raw-response)
-                error           (transforms/js->clj (.-error response-js))]
-            (set-checks-passed (empty? error))))]
-    (native-module/local-pairing-preflight-outbound-check callback)))
+(rf/reg-event-fx :syncing/preflight-outbound-check
+ (fn [_ [set-checks-passed]]
+   (let [callback
+         (fn [raw-response]
+           (log/info "Local pairing preflight check"
+                     {:response raw-response
+                      :event    :syncing/preflight-outbound-check})
+           (let [^js response-js (transforms/json->js raw-response)
+                 error           (transforms/js->clj (.-error response-js))]
+             (set-checks-passed (empty? error))))]
+     (native-module/local-pairing-preflight-outbound-check callback))))
 
-(rf/defn initiate-local-pairing-with-connection-string
-  {:events       [:syncing/input-connection-string-for-bootstrapping]
-   :interceptors [(re-frame/inject-cofx :random-guid-generator)]}
-  [{:keys [random-guid-generator db]} connection-string]
-  (let [installation-id (random-guid-generator)
-        default-node-config (get-default-node-config installation-id)
-        default-node-config-string (.stringify js/JSON (clj->js default-node-config))
-        callback
-        (fn [final-node-config]
-          (let [config-map (.stringify js/JSON
-                                       (clj->js
-                                        {:receiverConfig
-                                         {:kdfIterations config/default-kdf-iterations
-                                          :nodeConfig final-node-config
-                                          :settingCurrentNetwork config/default-network
-                                          :deviceType platform/os
-                                          :deviceName
-                                          (native-module/get-installation-name)}}))]
-            (rf/dispatch [:syncing/update-role constants/local-pairing-role-receiver])
-            (native-module/input-connection-string-for-bootstrapping
-             connection-string
-             config-map
-             input-connection-string-callback)))]
-    (native-module/prepare-dir-and-update-config "" default-node-config-string callback)))
+(rf/reg-event-fx :syncing/input-connection-string-for-bootstrapping
+ [(re-frame/inject-cofx :random-guid-generator)]
+ (fn [{:keys [random-guid-generator]} [connection-string]]
+   (let [installation-id (random-guid-generator)
+         default-node-config (get-default-node-config installation-id)
+         default-node-config-string (.stringify js/JSON (clj->js default-node-config))
+         callback
+         (fn [final-node-config]
+           (let [config-map (.stringify js/JSON
+                                        (clj->js
+                                         {:receiverConfig
+                                          {:kdfIterations config/default-kdf-iterations
+                                           :nodeConfig final-node-config
+                                           :settingCurrentNetwork config/default-network
+                                           :deviceType platform/os
+                                           :deviceName
+                                           (native-module/get-installation-name)}}))]
+             (rf/dispatch [:syncing/update-role constants/local-pairing-role-receiver])
+             (native-module/input-connection-string-for-bootstrapping
+              connection-string
+              config-map
+              input-connection-string-callback)))]
+     (native-module/prepare-dir-and-update-config "" default-node-config-string callback))))
 
-(rf/defn preparations-for-connection-string
-  {:events [:syncing/get-connection-string]}
-  [{:keys [db] :as cofx} sha3-pwd on-valid-connection-string]
-  (let [error             (get-in db [:profile/login :error])
-        handle-connection (fn [response]
-                            (when (sync-utils/valid-connection-string? response)
-                              (on-valid-connection-string response)
-                              (rf/dispatch [:syncing/update-role constants/local-pairing-role-sender])
-                              (rf/dispatch [:hide-bottom-sheet])))]
-    (when-not (and error (string/blank? error))
-      (let [key-uid    (get-in db [:profile/profile :key-uid])
-            config-map (.stringify js/JSON
-                                   (clj->js {:senderConfig {:keyUID       key-uid
-                                                            :keystorePath ""
-                                                            :password     (security/safe-unmask-data
-                                                                           sha3-pwd)
-                                                            :deviceType   platform/os}
-                                             :serverConfig {:timeout 0}}))]
-        (native-module/get-connection-string-for-bootstrapping-another-device
-         config-map
-         handle-connection)))))
+(rf/reg-event-fx :syncing/get-connection-string
+ (fn [{:keys [db]} [sha3-pwd on-valid-connection-string]]
+   (let [error             (get-in db [:profile/login :error])
+         handle-connection (fn [response]
+                             (when (sync-utils/valid-connection-string? response)
+                               (on-valid-connection-string response)
+                               (rf/dispatch [:syncing/update-role constants/local-pairing-role-sender])
+                               (rf/dispatch [:hide-bottom-sheet])))]
+     (when-not (and error (string/blank? error))
+       (let [key-uid    (get-in db [:profile/profile :key-uid])
+             config-map (.stringify js/JSON
+                                    (clj->js {:senderConfig {:keyUID       key-uid
+                                                             :keystorePath ""
+                                                             :password     (security/safe-unmask-data
+                                                                            sha3-pwd)
+                                                             :deviceType   platform/os}
+                                              :serverConfig {:timeout 0}}))]
+         (native-module/get-connection-string-for-bootstrapping-another-device
+          config-map
+          handle-connection))))))
