@@ -1,0 +1,10 @@
+--- /tmp/tmp-status-mobile-61974dae4/tmp.NHLSFZG6LG/BlurViewNativeComponent.ts	2024-04-16 17:08:42.755929000 +0200
++++ ./node_modules/@react-native-community/blur/src/fabric/BlurViewNativeComponent.ts	2024-04-16 17:08:57.634037113 +0200
+@@ -10,6 +10,7 @@
+     | 'dark'
+     | 'light'
+     | 'xlight'
++    | 'transparent'
+     | 'prominent'
+     | 'regular'
+     | 'extraDark'
