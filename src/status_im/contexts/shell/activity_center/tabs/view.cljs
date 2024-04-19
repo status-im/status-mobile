@@ -2,6 +2,7 @@
   (:require
     [clojure.set :as set]
     [quo.core :as quo]
+    [status-im.config :as config]
     [status-im.contexts.shell.activity-center.notification-types :as types]
     [status-im.contexts.shell.activity-center.style :as style]
     [utils.i18n :as i18n]
@@ -48,12 +49,13 @@
                              :accessibility-label :tab-contact-request
                              :notification-dot?   (when-not is-mark-all-as-read-undoable?
                                                     (contains? types-with-unread types/contact-request))}
-                            {:id                  types/contact-verification
-                             :label               (i18n/label :t/identity-verification)
-                             :accessibility-label :tab-contact-verification
-                             :notification-dot?   (when-not is-mark-all-as-read-undoable?
-                                                    (contains? types-with-unread
-                                                               types/contact-verification))}
+                            (when config/show-not-implemented-features?
+                              {:id                  types/contact-verification
+                               :label               (i18n/label :t/identity-verification)
+                               :accessibility-label :tab-contact-verification
+                               :notification-dot?   (when-not is-mark-all-as-read-undoable?
+                                                      (contains? types-with-unread
+                                                                 types/contact-verification))})
                             {:id                  types/tx
                              :label               (i18n/label :t/transactions)
                              :accessibility-label :tab-tx
