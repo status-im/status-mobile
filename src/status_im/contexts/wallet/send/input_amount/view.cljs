@@ -9,11 +9,12 @@
     [status-im.contexts.wallet.common.account-switcher.view :as account-switcher]
     [status-im.contexts.wallet.common.asset-list.view :as asset-list]
     [status-im.contexts.wallet.common.utils :as utils]
-    [status-im.contexts.wallet.common.utils.send :as send-utils]
     [status-im.contexts.wallet.send.input-amount.style :as style]
     [status-im.contexts.wallet.send.routes.view :as routes]
+    [status-im.contexts.wallet.send.utils :as send-utils]
     [utils.address :as address]
     [utils.i18n :as i18n]
+    [utils.money :as money]
     [utils.re-frame :as rf]))
 
 (defn- make-limit-label
@@ -51,6 +52,15 @@
      :size            :small
      :title           (i18n/label :t/user-gets {:name receiver})
      :subtitle        amount}]])
+
+(defn- every-network-value-is-zero?
+  [sender-network-values]
+  (every? (fn [{:keys [total-amount]}]
+            (and
+             total-amount
+             (money/equal-to total-amount
+                             (money/bignumber "0"))))
+          sender-network-values))
 
 (defn select-asset-bottom-sheet
   [clear-input!]
@@ -157,7 +167,18 @@
                                             [:show-bottom-sheet
                                              {:content (fn []
                                                          [select-asset-bottom-sheet
-                                                          clear-input!])}])]
+                                                          clear-input!])}])
+            loading-suggested-routes?     (rf/sub
+                                           [:wallet/wallet-send-loading-suggested-routes?])
+            sender-network-values         (rf/sub
+                                           [:wallet/wallet-send-sender-network-values])
+            suggested-routes              (rf/sub [:wallet/wallet-send-suggested-routes])
+            routes                        (when suggested-routes
+                                            (or (:best suggested-routes) []))
+            no-routes-found?              (and
+                                           (every-network-value-is-zero? sender-network-values)
+                                           (not (nil? routes))
+                                           (not loading-suggested-routes?))]
         (rn/use-mount
          (fn []
            (let [dismiss-keyboard-fn   #(when (= % "active") (rn/dismiss-keyboard!))
@@ -200,12 +221,28 @@
              :fees                      fee-formatted
              :amount                    amount-text
              :receiver                  (address/get-shortened-key to-address)}])
+         (when no-routes-found?
+           [rn/view {:style style/no-routes-found-container}
+            [quo/info-message
+             {:type  :error
+              :icon  :i/alert
+              :size  :default
+              :style {:margin-top 15}}
+             (i18n/label :t/no-routes-found)]])
          [quo/bottom-actions
           {:actions          :one-action
-           :button-one-label button-one-label
+           :button-one-label (if no-routes-found?
+                               (i18n/label :t/try-again)
+                               button-one-label)
            :button-one-props (merge button-one-props
-                                    {:disabled? confirm-disabled?
-                                     :on-press  on-confirm})}]
+                                    {:disabled? (and (not no-routes-found?) confirm-disabled?)
+                                     :on-press  (if no-routes-found?
+                                                  #(rf/dispatch [:wallet/get-suggested-routes
+                                                                 {:amount (controlled-input/input-value
+                                                                           input-state)}])
+                                                  on-confirm)}
+                                    (when no-routes-found?
+                                      {:type :grey}))}]
          [quo/numbered-keyboard
           {:container-style      (style/keyboard-container bottom)
            :left-action          :dot

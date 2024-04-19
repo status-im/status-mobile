@@ -209,9 +209,7 @@
 
 (defn view
   [_]
-  (let [on-close (fn []
-                   (rf/dispatch [:wallet/clean-suggested-routes])
-                   (rf/dispatch [:navigate-back]))]
+  (let [on-close #(rf/dispatch [:navigate-back])]
     (fn []
       (let [theme                        (quo.theme/use-theme)
             send-transaction-data        (rf/sub [:wallet/wallet-send])

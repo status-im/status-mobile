@@ -263,3 +263,11 @@
             {}
             tokens)
     (update-vals #(prettify-balance currency-symbol %))))
+
+(defn format-token-id
+  [token collectible]
+  (if token
+    (:symbol token)
+    (str (get-in collectible [:id :contract-id :address])
+         ":"
+         (get-in collectible [:id :token-id]))))
