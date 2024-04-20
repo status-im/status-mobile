@@ -90,3 +90,18 @@
                        (cske/transform-keys transforms/->kebab-case-keyword derived-address)))}))
 
 (rf/reg-event-fx :wallet/get-derived-addresses-success get-derived-addresses-success)
+
+(rf/reg-event-fx
+ :wallet/set-private-key
+ (fn [{:keys [db]} [value]]
+   {:db (assoc-in db [:wallet :ui :create-account :private-key] (security/mask-data value))}))
+
+(rf/reg-event-fx
+ :wallet/set-public-address
+ (fn [{:keys [db]} [value]]
+   {:db (assoc-in db [:wallet :ui :create-account :public-address] value)}))
+
+(rf/reg-event-fx
+ :wallet/clear-private-key-data
+ (fn [{:keys [db]} _]
+   {:db (update-in db [:wallet :ui :create-account] dissoc :private-key :public-address)}))

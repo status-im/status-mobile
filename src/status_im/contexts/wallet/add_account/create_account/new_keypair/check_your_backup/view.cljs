@@ -81,7 +81,8 @@
                                                 (reset! show-error? false)
                                                 (when (= @quiz-index questions-count)
                                                   (rf/dispatch [:navigate-to
-                                                                :screen/wallet.keypair-name])))
+                                                                :screen/wallet.keypair-name
+                                                                {:workflow :new-key-pair}])))
                                               (do
                                                 (when (> @incorrect-count 0)
                                                   (rf/dispatch [:show-bottom-sheet
