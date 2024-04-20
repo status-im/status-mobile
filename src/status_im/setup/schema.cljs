@@ -22,52 +22,52 @@
   "Same as `malli.dev.pretty/-block`, but adds only one line break between `text`
   and `body`."
   [text body printer]
-  [:group (malli.virhe/-text text printer) :break [:align 2 body]])
+  [:group (malli.virhe/-text text printer) :break
+   (into [:align 2]
+         (map (fn [x] (if (string? x) (malli.virhe/-text x printer) x))
+              (if (sequential? body) body (vector body))))])
 
 (defmethod malli.virhe/-format ::malli/explain
-  [_ _ {:keys [schema] :as explanation} printer]
+  [_ {:keys [schema] :as explanation} printer]
   {:body
    [:group
-    (block "Value:" (malli.virhe/-visit (malli.error/error-value explanation printer) printer) printer)
+    (block "Value" (malli.virhe/-visit (malli.error/error-value explanation printer) printer) printer)
     :break :break
-    (block "Errors:" (malli.virhe/-visit (malli.error/humanize explanation) printer) printer)
+    (block "Errors"
+           (malli.virhe/-visit (malli.error/humanize
+                                (malli.error/with-spell-checking explanation))
+                               printer)
+           printer)
     :break :break
-    (block "Schema:" (malli.virhe/-visit schema printer) printer)]})
+    (block "Schema" (malli.virhe/-visit schema printer) printer)]})
 
 (defmethod malli.virhe/-format ::malli/invalid-input
-  [_ _ {:keys [args input fn-name]} printer]
-  {:body
-   (cond-> [:group
-            (block "Invalid function arguments:" (malli.virhe/-visit args printer) printer)
-            :break :break]
-     fn-name
-     (conj (block "Function Var:" (malli.virhe/-visit fn-name printer) printer)
-           :break
-           :break)
-     :else
-     (conj (block "Input Schema:" (malli.virhe/-visit input printer) printer)
-           :break
-           :break
-           (block "Errors:" (malli.pretty/-explain input args printer) printer)))})
+  [_ {:keys [args input fn-name]} printer]
+  {:title "Invalid Function Input"
+   :body  [:group
+           (block "Invalid function arguments" (malli.virhe/-visit args printer) printer)
+           :break :break
+           (when fn-name
+             [:span (block "Function Var" (malli.virhe/-visit fn-name printer) printer)
+              :break :break])
+           (block "Input Schema" (malli.virhe/-visit input printer) printer)
+           :break :break
+           (block "Errors" (malli.pretty/-explain input args printer) printer)]})
 
 (defmethod malli.virhe/-format ::malli/invalid-output
-  [_ _ {:keys [value args output fn-name]} printer]
-  {:body
-   (cond-> [:group
-            (block "Invalid function return value:" (malli.virhe/-visit value printer) printer)
-            :break :break]
-     fn-name
-     (conj (block "Function Var:" (malli.virhe/-visit fn-name printer) printer)
-           :break
-           :break)
-     :else
-     (conj (block "Function arguments:" (malli.virhe/-visit args printer) printer)
-           :break
-           :break
-           (block "Output Schema:" (malli.virhe/-visit output printer) printer)
-           :break
-           :break
-           (block "Errors:" (malli.pretty/-explain output value printer) printer)))})
+  [_ {:keys [value args output fn-name]} printer]
+  {:title "Invalid Function Output"
+   :body  [:group
+           (block "Invalid function return value" (malli.virhe/-visit value printer) printer)
+           :break :break
+           (when fn-name
+             [:span (block "Function Var" (malli.virhe/-visit fn-name printer) printer)
+              :break :break])
+           (block "Function arguments" (malli.virhe/-visit args printer) printer)
+           :break :break
+           (block "Output Schema" (malli.virhe/-visit output printer) printer)
+           :break :break
+           (block "Errors" (malli.pretty/-explain output value printer) printer)]})
 
 (defn register-schemas
   "Register all global schemas in `schema.registry/registry`.
