@@ -15,6 +15,8 @@
                 :case-symbol-test              {:level :error}
                 :clj-kondo-config              {:level :error}
                 :cond-else                     {:level :error}
+                :condition-always-true         {:level :error}
+                :conflicting-alias             {:level :error}
                 :consistent-alias              {:level   :error
                                                 :aliases {clojure.set             set
                                                           clojure.string          string
@@ -42,11 +44,13 @@
                 :missing-body-in-when          {:level :error}
                 :missing-clause-in-try         {:level :error}
                 :missing-else-branch           {:level :error}
+                :multiple-async-in-deftest     {:level :error}
                 :not-empty?                    {:level :error}
                 :plus-one                      {:level :error}
                 :redundant-do                  {:level :error}
                 :redundant-let                 {:level :error}
                 :refer-all                     {:level :error}
+                :shadowed-fn-param             {:level :error}
                 :shadowed-var                  {:level   :error
                                                 ;; We temporarily use :include to define an
                                                 ;; allowlist of core Clojure vars. In the
@@ -54,9 +58,11 @@
                                                 ;; vars, we should be able to delete this
                                                 ;; option and lint all vars.
                                                 :exclude [type name]}
+                :self-requiring-namespace      {:level :error}
                 :single-operand-comparison     {:level :error}
                 :syntax                        {:level :error}
                 :unbound-destructuring-default {:level :error}
+                :underscore-in-namespace       {:level :error}
                 :uninitialized-var             {:level :error}
                 :unknown-require-option        {:level :error}
                 :unreachable-code              {:level :error}
