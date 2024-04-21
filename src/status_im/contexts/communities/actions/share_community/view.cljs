@@ -16,25 +16,25 @@
   []
   (let [{:keys [url community-id]}  (rf/sub [:get-screen-params])
         window-width                (rf/sub [:dimensions/window-width])
-        {{:keys [thumbnail]} :images
-         color               :color
-         community-name      :name} (rf/sub [:communities/community community-id])
+        {thumbnail-uri  :logo
+         color          :color
+         community-name :name} (rf/sub [:communities/for-context-tag community-id])
         navigate-back               (rn/use-callback #(rf/dispatch [:navigate-back]))
-        on-press-share              (rn/use-callback
-                                     #(rf/dispatch
-                                       [:open-share
-                                        {:options (if platform/ios?
-                                                    {:activityItemSources
-                                                     [{:placeholderItem {:type    :text
-                                                                         :content url}
-                                                       :item            {:default {:type    :text
-                                                                                   :content url}}
-                                                       :linkMetadata    {:title (i18n/label
-                                                                                 :t/share-community)}}]}
-                                                    {:title     (i18n/label :t/share-community)
-                                                     :subject   (i18n/label :t/share-community)
-                                                     :message   url
-                                                     :isNewTask true})}]))]
+        on-press-share              (rn/use-callback (fn []
+                                                       (rf/dispatch
+                                                        [:open-share
+                                                         {:options (if platform/ios?
+                                                                     {:activityItemSources [{:placeholderItem {:type    :text
+                                                                                                               :content url}
+                                                                                             :item            {:default {:type    :text
+                                                                                                                         :content url}}
+                                                                                             :linkMetadata    {:title (i18n/label
+                                                                                                                       :t/share-community)}}]}
+                                                                     {:title     (i18n/label :t/share-community)
+                                                                      :subject   (i18n/label :t/share-community)
+                                                                      :message   url
+                                                                      :isNewTask true})}]))
+                                                     [url])]
     [quo/overlay {:type :shell}
      [rn/view
       {:style {:padding-top (safe-area/get-top)}
@@ -54,15 +54,15 @@
          :bottom-color-override colors/white-opa-5}]
        [rn/view
         {:style style/qr-top-wrapper}
-        [rn/view style/flex-direction-row
-         (when thumbnail
+        [rn/view {:style {:flex-direction :row}}
+         (when thumbnail-uri
            [fast-image/fast-image
-            {:source thumbnail
+            {:source {:uri thumbnail-uri}
              :style  style/community-avatar}])
          [quo/text
           {:size   :heading-2
            :weight :semi-bold
-           :style  (style/community-name thumbnail)}
+           :style  (style/community-name thumbnail-uri)}
           community-name]]
         [rn/view {:style style/share-button-container}
          [quo/button
@@ -80,7 +80,7 @@
           :url                 url
           :avatar              :community
           :customization-color color
-          :picture             (or thumbnail (resources/get-mock-image :status-logo))
+          :picture             (or thumbnail-uri (resources/get-mock-image :status-logo))
           :full-name           community-name}]]]
       [quo/text
        {:size   :paragraph-2

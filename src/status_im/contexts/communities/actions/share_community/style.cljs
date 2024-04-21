@@ -1,7 +1,6 @@
 (ns status-im.contexts.communities.actions.share-community.style
   (:require [quo.foundations.colors :as colors]))
 
-(def flex-direction-row {:flex-direction :row})
 (def horizontal-padding 20)
 (def vertical-padding 12)
 (def gradient-cover-padding 20)
@@ -45,7 +44,7 @@
 (def qr-top-wrapper
   {:margin          12
    :margin-bottom   0
-   :flex-direction  (:flex-direction flex-direction-row)
+   :flex-direction  (:flex-direction :row)
    :align-items     :center
    :justify-content :space-between})
 
