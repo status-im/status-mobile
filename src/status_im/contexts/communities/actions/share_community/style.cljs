@@ -44,7 +44,7 @@
 (def qr-top-wrapper
   {:margin          12
    :margin-bottom   0
-   :flex-direction  (:flex-direction :row)
+   :flex-direction  :row
    :align-items     :center
    :justify-content :space-between})
 
