@@ -4,7 +4,6 @@
     [quo.core :as quo]
     [quo.foundations.colors :as colors]
     [quo.foundations.resources :as resources]
-    [quo.theme :as quo.theme]
     [react-native.core :as rn]
     [reagent.core :as reagent]
     [status-im.constants :as constants]

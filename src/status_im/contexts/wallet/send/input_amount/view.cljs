@@ -1,20 +1,20 @@
 (ns status-im.contexts.wallet.send.input-amount.view
   (:require
-   [clojure.string :as string]
-   [quo.core :as quo]
-   [react-native.core :as rn]
-   [react-native.safe-area :as safe-area]
-   [reagent.core :as reagent]
-   [status-im.common.controlled-input.utils :as controlled-input]
-   [status-im.contexts.wallet.common.account-switcher.view :as account-switcher]
-   [status-im.contexts.wallet.common.asset-list.view :as asset-list]
-   [status-im.contexts.wallet.common.utils :as utils]
-   [status-im.contexts.wallet.common.utils.send :as send-utils]
-   [status-im.contexts.wallet.send.input-amount.style :as style]
-   [status-im.contexts.wallet.send.routes.view :as routes]
-   [utils.address :as address] 
-   [utils.i18n :as i18n]
-   [utils.re-frame :as rf]))
+    [clojure.string :as string]
+    [quo.core :as quo]
+    [react-native.core :as rn]
+    [react-native.safe-area :as safe-area]
+    [reagent.core :as reagent]
+    [status-im.common.controlled-input.utils :as controlled-input]
+    [status-im.contexts.wallet.common.account-switcher.view :as account-switcher]
+    [status-im.contexts.wallet.common.asset-list.view :as asset-list]
+    [status-im.contexts.wallet.common.utils :as utils]
+    [status-im.contexts.wallet.common.utils.send :as send-utils]
+    [status-im.contexts.wallet.send.input-amount.style :as style]
+    [status-im.contexts.wallet.send.routes.view :as routes]
+    [utils.address :as address]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]))
 
 (defn- make-limit-label
   [amount currency]
