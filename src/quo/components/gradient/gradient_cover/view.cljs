@@ -4,7 +4,7 @@
     [quo.foundations.colors :as colors]
     [react-native.linear-gradient :as linear-gradient]))
 
-(defn- view-internal
+(defn view
   [{:keys [customization-color opacity container-style height bottom-color-override]
     :or   {customization-color :blue}}]
   ;; `when` added for safety, `linear-gradient` will break if `nil` is passed, the `:or`
