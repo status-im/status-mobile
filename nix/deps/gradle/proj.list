@@ -16,6 +16,7 @@ react-native-dialogs
 react-native-fast-image
 react-native-fs
 react-native-gesture-handler
+react-native-get-random-values
 react-native-hole-view
 react-native-image-crop-picker
 react-native-image-resizer
@@ -35,3 +36,4 @@ react-native-status-keycard
 react-native-svg
 react-native-transparent-video
 react-native-webview
+walletconnect_react-native-compat

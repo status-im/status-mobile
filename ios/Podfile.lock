@@ -917,9 +917,15 @@ PODS:
     - glog
     - RCT-Folly (= 2022.05.16.00)
     - React-Core
+  - react-native-compat (2.12.2):
+    - glog
+    - RCT-Folly (= 2022.05.16.00)
+    - React-Core
   - react-native-config (1.5.0):
     - react-native-config/App (= 1.5.0)
   - react-native-config/App (1.5.0):
+    - React-Core
+  - react-native-get-random-values (1.11.0):
     - React-Core
   - react-native-hole-view (3.0.0-alpha4):
     - React-Core
@@ -1220,7 +1226,9 @@ DEPENDENCIES:
   - react-native-blob-util (from `../node_modules/react-native-blob-util`)
   - "react-native-blur (from `../node_modules/@react-native-community/blur`)"
   - "react-native-cameraroll (from `../node_modules/@react-native-camera-roll/camera-roll`)"
+  - "react-native-compat (from `../node_modules/@walletconnect/react-native-compat`)"
   - react-native-config (from `../node_modules/react-native-config`)
+  - react-native-get-random-values (from `../node_modules/react-native-get-random-values`)
   - react-native-hole-view (from `../node_modules/react-native-hole-view`)
   - react-native-image-resizer (from `../node_modules/react-native-image-resizer`)
   - react-native-lottie-splash-screen (from `../node_modules/react-native-lottie-splash-screen`)
@@ -1356,8 +1364,12 @@ EXTERNAL SOURCES:
     :path: "../node_modules/@react-native-community/blur"
   react-native-cameraroll:
     :path: "../node_modules/@react-native-camera-roll/camera-roll"
+  react-native-compat:
+    :path: "../node_modules/@walletconnect/react-native-compat"
   react-native-config:
     :path: "../node_modules/react-native-config"
+  react-native-get-random-values:
+    :path: "../node_modules/react-native-get-random-values"
   react-native-hole-view:
     :path: "../node_modules/react-native-hole-view"
   react-native-image-resizer:
@@ -1509,7 +1521,9 @@ SPEC CHECKSUMS:
   react-native-blob-util: 600972b1782380a5a7d5db61a3817ea32349dae9
   react-native-blur: 799045500f56146afc46245148080e7b7623cb75
   react-native-cameraroll: af8eec1e585d053ff485d98ec837f9a8a11b5745
+  react-native-compat: 84e00e8dcff9251278c0d48f2bce81f4502e3925
   react-native-config: 5330c8258265c1e5fdb8c009d2cabd6badd96727
+  react-native-get-random-values: 21325b2244dfa6b58878f51f9aa42821e7ba3d06
   react-native-hole-view: 6935448993bac79f2b5a4ad7e9741094cf810679
   react-native-image-resizer: 2f1577efa3bc762597681f530c8e8d05ce0ceeb3
   react-native-lottie-splash-screen: 4e1b1fd9d6633f9cd2106d6877eb5ba0147f3e2b
