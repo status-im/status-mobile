@@ -48,8 +48,8 @@ class TestDeepLinksOneDevice(MultipleSharedDeviceTestCase):
             self.profile_view.close_button.click()
 
         closed_community_urls = {
-            "https://status.app/c/G8EAAMR_fz8tsCQ-aR2QrCS5sVAvvzc_N3mAA-En_Zxy4JA3j7Dl1A50Pd4DbooQOMbWf7E1_4wipgDyGe8XZEappDn-Qomf9l_xyXhSYBuSQic8InCEUBSRGR0oixSTh3iw5ZCxzkGSI95Iyu1EBpcIlFOEMPHpKUBIdkkoKBJglMDKko8O8dBvBtIYncOA8mwztwLpx3C0rK_u59PldFuXe4cx#zQ3shwQnEfMtcXpHXF4qJPyCGgw2F18N3nbGzYbzsVHnMq4yK":
-                "Status mobile QA community max",
+            "https://status.app/c/G0IAAGRy3S0pLm1NeQ91pwKgFaFGoIlkxXmDxITXXi3KdZ7vpb9-ERczhqwoFwMK6sCPnKwA#zQ3shtJ8A3rxUZWcfWDL3vKYQBt3jMPTuf44dJUGfjZjsek66":
+                "e2e community token-gated",
             "https://status.app/c/G1AAAGR0G-IRb2YJD4lRXwLusAFnGrDHGNl6Wt55MIARwVYvarnO873011-fdVSz1kHSan-qq0G96vOaMqyTRhJnQV74KCUr#zQ3shb9irJR66rhG1E8sQZX8pDU3dpGm4daYSmPVDd2e73ewE":
                 "Open community for e2e",
             "https://status.app/c/GzAAAORtwyW4xNWM4td0F7hOnYZ1apSqCCRUUR0qxD19n3Ec97fX_aIVIGFWbdUM#zQ3shk6dgK8dYWWSC4m8Jj5c91zyfhfj1fFkgypS8D9gsXkrK":
@@ -93,8 +93,8 @@ class TestDeepLinksOneDevice(MultipleSharedDeviceTestCase):
             self.browser_view.click_system_back_button()
 
         community_links = {
-            "status.app://c/G8EAAMR_fz8tsCQ-aR2QrCS5sVAvvzc_N3mAA-En_Zxy4JA3j7Dl1A50Pd4DbooQOMbWf7E1_4wipgDyGe8XZEappDn-Qomf9l_xyXhSYBuSQic8InCEUBSRGR0oixSTh3iw5ZCxzkGSI95Iyu1EBpcIlFOEMPHpKUBIdkkoKBJglMDKko8O8dBvBtIYncOA8mwztwLpx3C0rK_u59PldFuXe4cx#zQ3shwQnEfMtcXpHXF4qJPyCGgw2F18N3nbGzYbzsVHnMq4yK":
-                "Status mobile QA community max",
+            "status.app://c/G0IAAGRy3S0pLm1NeQ91pwKgFaFGoIlkxXmDxITXXi3KdZ7vpb9-ERczhqwoFwMK6sCPnKwA#zQ3shtJ8A3rxUZWcfWDL3vKYQBt3jMPTuf44dJUGfjZjsek66":
+                "e2e community token-gated",
             "status.app://c/G1AAAGR0G-IRb2YJD4lRXwLusAFnGrDHGNl6Wt55MIARwVYvarnO873011-fdVSz1kHSan-qq0G96vOaMqyTRhJnQV74KCUr#zQ3shb9irJR66rhG1E8sQZX8pDU3dpGm4daYSmPVDd2e73ewE":
                 "Open community for e2e",
             "status.app://c/GzAAAORtwyW4xNWM4td0F7hOnYZ1apSqCCRUUR0qxD19n3Ec97fX_aIVIGFWbdUM#zQ3shk6dgK8dYWWSC4m8Jj5c91zyfhfj1fFkgypS8D9gsXkrK":
