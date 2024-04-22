@@ -196,7 +196,8 @@
                                  :outgoing-status outgoing-status
                                  :small-screen?   rn/small-screen?
                                  :window-scale    window-scale
-                                 :six-reactions?  six-reactions?})
+                                 :six-reactions?  six-reactions?
+                                 :preview?        preview?})
           :on-press            (fn []
                                  (if (and platform/ios? keyboard-shown?)
                                    (do
@@ -268,7 +269,8 @@
                 :message-data    message-data
                 :context         context
                 :keyboard-shown? keyboard-shown?
-                :show-reactions? false}]]])]]))))
+                :preview?        true
+                :show-reactions? true}]]])]]))))
 
 (defn on-long-press
   [{:keys [deleted? deleted-for-me?] :as message-data} context keyboard-shown?]
