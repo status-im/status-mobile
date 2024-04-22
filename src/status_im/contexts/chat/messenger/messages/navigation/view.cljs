@@ -120,7 +120,7 @@
 
 (defn view
   [{:keys [distance-from-list-top chat-screen-layout-calculations-complete?]}]
-  (let [{:keys [chat-id chat-type last-message]
+  (let [{:keys [chat-id chat-type]
          :as   chat}               (rf/sub [:chats/current-chat-chat-view])
         all-loaded?                (reanimated/use-shared-value false)
         all-loaded-sub             (rf/sub [:chats/all-loaded? chat-id])
@@ -137,12 +137,11 @@
                    [all-loaded-sub])
     [rn/view
      {:style (style/navigation-view navigation-view-height messages.constants/pinned-banner-height)}
-     (when (seq last-message)
-       [animated-background-and-pinned-banner
-        {:chat-id                chat-id
-         :navigation-view-height navigation-view-height
-         :distance-from-list-top distance-from-list-top
-         :all-loaded?            all-loaded?}])
+     [animated-background-and-pinned-banner
+      {:chat-id                chat-id
+       :navigation-view-height navigation-view-height
+       :distance-from-list-top distance-from-list-top
+       :all-loaded?            all-loaded?}]
      [rn/view {:style (style/header-container top-insets top-bar-height)}
       [reanimated/view {:style (style/button-animation-container navigation-buttons-opacity)}
        [quo/button
