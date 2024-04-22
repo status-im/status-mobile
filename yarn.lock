@@ -2594,9 +2594,10 @@
     eventemitter3 "^1.2.0"
     lodash "^4.17.15"
 
-"@react-native-community/blur@git+https://github.com/status-im/react-native-blur.git#refs/tags/v4.3.3-status":
-  version "4.3.3"
-  resolved "git+https://github.com/status-im/react-native-blur.git#c140cc8e7d54e3318af0a7c149b5d64b54de3419"
+"@react-native-community/blur@4.4.0":
+  version "4.4.0"
+  resolved "https://registry.yarnpkg.com/@react-native-community/blur/-/blur-4.4.0.tgz#b2440dab17d94e480fbc4470e03155573b5b7375"
+  integrity sha512-P+xdT2LIq1ewOsF3zx7C0nu4dj7nxl2NVTsMXEzRDjM3bWMdrrEbTRA7uwPV5ngn7/BXIommBPlT/JW4SAedrw==
 
 "@react-native-community/cli-clean@12.3.6":
   version "12.3.6"

@@ -2,7 +2,6 @@
   (:require
     ["eth-phishing-detect" :as eth-phishing-detect]
     [clojure.string :as string]
-    [legacy.status-im.bottom-sheet.events :as bottom-sheet]
     [legacy.status-im.browser.permissions :as browser.permissions]
     [legacy.status-im.browser.webview-ref :as webview-ref]
     [legacy.status-im.ethereum.ens :as ens]
@@ -519,7 +518,7 @@
   [{:keys [db] :as cofx} address]
   (rf/merge cofx
             {:browser/clear-web-data nil}
-            (bottom-sheet/hide-bottom-sheet-old)
+            (navigation/hide-bottom-sheet)
             (browser.permissions/clear-dapps-permissions)
             (multiaccounts.update/multiaccount-update :dapps-address address {})
             #(when (= (:view-id db) :browser)

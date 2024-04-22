@@ -91,7 +91,7 @@
       [icons/icon :main-icons/arrow-right {:color colors/black}]]
      [react/touchable-highlight
       {:accessibility-label :select-account
-       :on-press            #(re-frame/dispatch [:bottom-sheet/show-sheet-old
+       :on-press            #(re-frame/dispatch [:show-bottom-sheet
                                                  {:content (accounts/accounts-list accounts
                                                                                    dapps-account)}])}
       [chat-icon/custom-icon-view-list (:name dapps-account) (:color dapps-account) 32]]
@@ -108,7 +108,7 @@
         [icons/icon :main-icons/qr {:color colors/black}]]
        [react/touchable-highlight
         {:on-press            #(re-frame/dispatch
-                                [:bottom-sheet/show-sheet-old
+                                [:show-bottom-sheet
                                  {:content (options/browser-options
                                             url
                                             dapps-account
@@ -162,7 +162,7 @@
 (defn request-resources-access-for-page
   [resources url webview-ref]
   (re-frame/dispatch
-   [:bottom-sheet/show-sheet-old
+   [:show-bottom-sheet
     {:content            (fn [] [request-resources-panel resources url webview-ref])
      :show-handle?       false
      :backdrop-dismiss?  false
@@ -172,7 +172,7 @@
 (defn block-resources-access-and-notify-user
   [url]
   (.answerPermissionRequest ^js @webview-ref/webview-ref false)
-  (re-frame/dispatch [:bottom-sheet/show-sheet-old
+  (re-frame/dispatch [:show-bottom-sheet
                       {:content (fn [] [block-resources-panel url])}]))
 
 ;; should-component-update is called only when component's props are changed,
