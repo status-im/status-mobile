@@ -164,7 +164,7 @@ def build_ios_e2e
     # 3. directory where to up StatusIm.app
     derived_data_path: 'status-ios',
     output_name: 'StatusIm.app',
-    buildlog_path: 'ios/logs',
+    buildlog_path: 'logs',
     # -------------------------------------
     # Normal stuff
     scheme: 'StatusIm',
@@ -231,7 +231,7 @@ platform :ios do
       clean: true,
       export_method: 'app-store',
       output_directory: 'status-ios',
-      buildlog_path: 'ios/logs',
+      buildlog_path: 'logs',
       include_symbols: false,
       export_options: {
         "combileBitcode": true,
