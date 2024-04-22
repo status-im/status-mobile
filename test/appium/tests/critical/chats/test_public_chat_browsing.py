@@ -315,7 +315,7 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
         self.channel_1.send_message(self.text_message)
 
         self.community_1, self.community_2 = self.home_1.get_community_view(), self.home_2.get_community_view()
-        self.community_1.share_community(self.community_name, self.username_2)
+        self.community_1.invite_to_community(self.community_name, self.username_2)
         self.home_1.get_to_community_channel_from_home(self.community_name)
 
         self.home_2.just_fyi("Send message to contact (need for blocking contact) test")
@@ -831,7 +831,7 @@ class TestCommunityMultipleDeviceMergedTwo(MultipleSharedDeviceTestCase):
         self.home_1.create_community(community_type="open")
 
         self.community_1, self.community_2 = self.home_1.get_community_view(), self.home_2.get_community_view()
-        self.community_1.share_community(self.community_name, self.username_2)
+        self.community_1.invite_to_community(self.community_name, self.username_2)
         self.channel_1 = self.home_1.get_to_community_channel_from_home(self.community_name)
 
         self.home_2.just_fyi("Send message to contact (need for blocking contact) test")
@@ -1003,7 +1003,7 @@ class TestCommunityMultipleDeviceMergedTwo(MultipleSharedDeviceTestCase):
         self.home_1.just_fyi("Device 1 creates a closed community")
         self.home_1.create_community(community_type="closed")
         community_name = "closed community"
-        self.community_1.share_community(community_name, self.username_2)
+        self.community_1.invite_to_community(community_name, self.username_2)
         self.community_1.get_to_community_channel_from_home(community_name, "general")
         control_message_general_chat = "this message should be visible to the user before joining"
         self.channel_1.send_message(control_message_general_chat)
@@ -1103,7 +1103,7 @@ class TestCommunityMultipleDeviceMergedTwo(MultipleSharedDeviceTestCase):
         self.home_1.just_fyi("Device 1 creates open community")
         self.home_1.create_community(community_type="open")
         community_name = "open community"
-        self.community_1.share_community(community_name, self.username_2)
+        self.community_1.invite_to_community(community_name, self.username_2)
         self.community_1.get_to_community_channel_from_home(community_name, "general")
         control_message_general_chat = "this message should be visible to the user before joining"
         self.channel_1.send_message(control_message_general_chat)
