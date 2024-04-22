@@ -1,12 +1,27 @@
-# Resolve react_native_pods.rb with node to allow for hoisting
-require Pod::Executable.execute_command('node', ['-p',
-  'require.resolve(
-    "react-native/scripts/react_native_pods.rb",
-    {paths: [process.argv[1]]},
-  )', __dir__]).strip
+def node_require(script)
+   # Resolve script with node to allow for hoisting
+   require Pod::Executable.execute_command('node', ['-p',
+     "require.resolve(
+       '#{script}',
+       {paths: [process.argv[1]]},
+     )", __dir__]).strip
+end
+
+node_require('react-native/scripts/react_native_pods.rb')
+node_require('react-native-permissions/scripts/setup.rb')
 
 platform :ios, min_ios_version_supported
 prepare_react_native_project!
+
+setup_permissions([
+  'Camera',
+  'FaceID',
+  'MediaLibrary',
+  'Microphone',
+  'Notifications',
+  'PhotoLibrary',
+  'PhotoLibraryAddOnly',
+])
 
 linkage = ENV['USE_FRAMEWORKS']
 if linkage != nil
@@ -43,9 +58,6 @@ abstract_target 'Status' do
 
   pod 'SSZipArchive', '2.4.3'
 
-  permissions_path = '../node_modules/react-native-permissions/ios'
-  pod 'Permission-Microphone', :path => "#{permissions_path}/Microphone/Permission-Microphone.podspec"
-  pod 'Permission-Camera', :path => "#{permissions_path}/Camera/Permission-Camera.podspec"
   pod "react-native-status-keycard", path: "../node_modules/react-native-status-keycard"
   pod "react-native-status", path: "../modules/react-native-status"
   pod "Keycard", git: "https://github.com/status-im/Keycard.swift.git"
