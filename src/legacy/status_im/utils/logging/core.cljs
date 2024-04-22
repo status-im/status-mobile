@@ -7,7 +7,6 @@
     [legacy.status-im.utils.deprecated-types :as types]
     [native-module.core :as native-module]
     [re-frame.core :as re-frame]
-    [react-native.mail :as react-native-mail]
     [react-native.platform :as platform]
     [status-im.common.json-rpc.events :as json-rpc]
     [status-im.common.log :as log]
@@ -182,7 +181,7 @@
 (re-frame/reg-fx
  :email/send
  (fn [[opts callback]]
-   (react-native-mail/mail (clj->js opts) callback)))
+   (native-module/mail (clj->js opts) callback)))
 
 (re-frame/reg-fx
  ::share-archive

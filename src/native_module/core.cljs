@@ -46,6 +46,15 @@
   (when (exists? (.-NativeModules react-native))
     (.-NetworkManager ^js (.-NativeModules react-native))))
 
+(defn mail-manager
+  []
+  (when (exists? (.-NativeModules react-native))
+    (.-MailManager ^js (.-NativeModules react-native))))
+
+(defn mail
+  [opts callback]
+  (.mail ^js (mail-manager) (clj->js opts) callback))
+
 (defn init
   [handler]
   (.addListener ^js (.-DeviceEventEmitter ^js react-native) "gethEvent" #(handler (.-jsonEvent ^js %))))
