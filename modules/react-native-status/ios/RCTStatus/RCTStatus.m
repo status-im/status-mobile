@@ -38,9 +38,6 @@ static RCTBridge *bridge;
         return;
     }
 
-#if DEBUG
-    NSLog(@"[handleSignal] Received an event from Status-Go: %@", signal);
-#endif
     [bridge.eventDispatcher sendAppEventWithName:@"gethEvent"
                                             body:@{@"jsonEvent": signal}];
 
