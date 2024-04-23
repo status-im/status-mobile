@@ -3,10 +3,10 @@
     [quo.foundations.colors :as colors]))
 
 (defn container
-  [preview-enabled?]
+  [preview-enabled? theme]
   (merge {:border-width       1
-          :border-color       (colors/theme-colors colors/neutral-20 colors/neutral-80)
-          :background-color   (colors/theme-colors colors/white colors/neutral-80-opa-40)
+          :border-color       (colors/theme-colors colors/neutral-20 colors/neutral-80 theme)
+          :background-color   (colors/theme-colors colors/white colors/neutral-80-opa-40 theme)
           :border-radius      16
           :padding-horizontal 12
           :padding-top        10
@@ -25,9 +25,9 @@
    :margin-bottom 2})
 
 (defn link
-  []
+  [theme]
   {:margin-top 8
-   :color      (colors/theme-colors colors/neutral-50 colors/neutral-40)})
+   :color      (colors/theme-colors colors/neutral-50 colors/neutral-40 theme)})
 
 (defn thumbnail
   [size]

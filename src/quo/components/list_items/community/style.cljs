@@ -63,4 +63,4 @@
                                 (and pressed? (= type :discover))
                                 (colors/theme-colors colors/white :transparent theme))}
          (when (and (= type :discover) (not pressed?))
-           (shadows/get 3))))
+           (shadows/get 3 theme))))

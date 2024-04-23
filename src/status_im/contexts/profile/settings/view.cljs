@@ -37,9 +37,10 @@
   [_ index]
   #js {:length 100 :offset (* 100 index) :index index})
 
-(defn- settings-view
-  [theme]
-  (let [insets              (safe-area/get-insets)
+(defn view
+  []
+  (let [theme               (quo.theme/use-theme)
+        insets              (safe-area/get-insets)
         customization-color (rf/sub [:profile/customization-color])
         scroll-y            (reanimated/use-shared-value 0)
         logout-press        #(rf/dispatch [:multiaccounts.logout.ui/logout-pressed])
@@ -60,7 +61,8 @@
         :icon-name  :i/close
         :on-press   #(rf/dispatch [:navigate-back])
         :right-side [{:icon-name :i/qr-code
-                      :on-press  #(debounce/throttle-and-dispatch [:open-modal :share-shell] 1000)}
+                      :on-press  #(debounce/throttle-and-dispatch [:open-modal :screen/share-shell]
+                                                                  1000)}
                      {:icon-name :i/share
                       :on-press  #(rf/dispatch [:open-share
                                                 {:options {:message (:universal-profile-url
@@ -84,9 +86,3 @@
         :customization-color customization-color
         :label               (i18n/label :t/jump-to)}}
       (style/floating-shell-button-style insets)]]))
-
-(defn- internal-view
-  [props]
-  [:f> settings-view props])
-
-(def view (quo.theme/with-theme internal-view))

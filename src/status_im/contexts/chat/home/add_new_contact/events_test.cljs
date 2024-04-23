@@ -85,10 +85,7 @@
 
 (def db
   {:profile/profile          {:public-key user-ukey}
-   :networks/current-network "mainnet_rpc"
-   :networks/networks        {"mainnet_rpc"
-                              {:id     "mainnet_rpc"
-                               :config {:NetworkId 1}}}})
+   :networks/current-network "mainnet_rpc"})
 
 (deftest set-new-identity-test
   (with-redefs [re-frame/dispatch (fn [& args] args)]
@@ -120,8 +117,7 @@
                              :scanned         ens
                              :state           :resolve-ens}))
                 :effects.contacts/resolve-public-key-from-ens
-                {:chain-id   1
-                 :ens        ens-stateofus-eth
+                {:ens        ens-stateofus-eth
                  :on-success [:contacts/set-new-identity-success ens]
                  :on-error   [:contacts/set-new-identity-error ens]}}
 

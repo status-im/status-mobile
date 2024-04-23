@@ -30,7 +30,8 @@
   {:normal {:checked   (colors/resolve-color customization-color theme)
             :unchecked (colors/theme-colors colors/white-opa-40 colors/neutral-80-opa-40 theme)}
    :blur   {:checked   (colors/theme-colors (colors/resolve-color customization-color theme)
-                                            colors/white)
+                                            colors/white
+                                            theme)
             :unchecked colors/white-opa-5}})
 
 (defn- checkbox-border-unchecked-color

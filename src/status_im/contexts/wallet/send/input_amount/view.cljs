@@ -2,7 +2,6 @@
   (:require
     [clojure.string :as string]
     [quo.core :as quo]
-    [quo.theme :as quo.theme]
     [react-native.core :as rn]
     [react-native.safe-area :as safe-area]
     [reagent.core :as reagent]
@@ -136,7 +135,7 @@
                                    (rf/dispatch [:wallet/edit-token-to-send token])
                                    (clear-input!))}]]))
 
-(defn- f-view-internal
+(defn view
   ;; crypto-decimals, limit-crypto and initial-crypto-currency? args are needed
   ;; for component tests only
   [{default-on-confirm       :on-confirm
@@ -256,8 +255,9 @@
                                            (<= input-num-value 0)
                                            (> input-num-value (current-limit)))
             amount-text                (str @input-value " " token-symbol)
+            first-route                (first route)
             native-currency-symbol     (when-not confirm-disabled?
-                                         (get-in route [:from :native-currency-symbol]))
+                                         (get-in first-route [:from :native-currency-symbol]))
             native-token               (when native-currency-symbol
                                          (rf/sub [:wallet/token-by-symbol
                                                   native-currency-symbol]))
@@ -372,9 +372,3 @@
            :on-press             #(handle-keyboard-press % loading-routes? (current-limit))
            :on-delete            #(handle-delete loading-routes? (current-limit))
            :on-long-press-delete #(on-long-press-delete loading-routes?)}]]))))
-
-(defn- view-internal
-  [props]
-  [:f> f-view-internal props])
-
-(def view (quo.theme/with-theme view-internal))

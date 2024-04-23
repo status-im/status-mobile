@@ -8,7 +8,7 @@
 
 (defn view
   [{:keys [checked? blur? accessibility-label container-style on-change]} label]
-  (let [theme (quo.theme/use-theme-value)]
+  (let [theme (quo.theme/use-theme)]
     [rn/touchable-without-feedback
      {:on-press            on-change
       :accessibility-label :disclaimer-touchable-opacity}

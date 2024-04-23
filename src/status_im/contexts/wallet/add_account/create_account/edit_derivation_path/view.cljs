@@ -15,7 +15,7 @@
     [utils.re-frame :as rf]
     [utils.security.core :as security]))
 
-(defn- view-internal
+(defn view
   "States:
     default(filled)
     | -> (reveal-action) -> show
@@ -30,8 +30,9 @@
                            (reset! path-value "")
                            (when on-reset
                              (on-reset)))]
-    (fn [{:keys [theme]}]
-      (let [{:keys [public-key address]}               (rf/sub [:profile/profile])
+    (fn []
+      (let [theme                                      (quo.theme/use-theme)
+            {:keys [public-key address]}               (rf/sub [:profile/profile])
             {:keys [password current-derivation-path]} (rf/sub [:get-screen-params])
             primary-name                               (first (rf/sub
                                                                [:contacts/contact-two-names-by-identity
@@ -144,6 +145,3 @@
              :on-delete       (fn []
                                 (reset! path-value (subs @path-value 0 (dec (count @path-value))))
                                 (on-change-text))}])]))))
-
-(def view (quo.theme/with-theme view-internal))
-

@@ -34,7 +34,7 @@
        :container-style style/lock-icon
        :size            12}]]))
 
-(defn- view-internal
+(defn view
   "Options:
 
   :size - keyword (default nil) - Container size, for the moment,
@@ -52,22 +52,21 @@
   :full-name - string (default nil) - When :emoji is blank, this value will be
   used to extract the initials.
   "
-  [{:keys [size emoji customization-color locked? full-name theme]}]
-  [rn/view
-   {:accessibility-label :channel-avatar
-    :style               (style/outer-container {:theme               theme
-                                                 :size                size
-                                                 :customization-color customization-color})}
-   (if (string/blank? emoji)
-     [initials
-      {:full-name           full-name
-       :size                size
-       :customization-color customization-color
-       :theme               theme}]
-     [rn/text
-      {:style               (style/emoji-size size)
-       :accessibility-label :emoji}
-      (when emoji (string/trim emoji))])
-   [lock locked? size theme]])
-
-(def view (quo.theme/with-theme view-internal))
+  [{:keys [size emoji customization-color locked? full-name]}]
+  (let [theme (quo.theme/use-theme)]
+    [rn/view
+     {:accessibility-label :channel-avatar
+      :style               (style/outer-container {:theme               theme
+                                                   :size                size
+                                                   :customization-color customization-color})}
+     (if (string/blank? emoji)
+       [initials
+        {:full-name           full-name
+         :size                size
+         :customization-color customization-color
+         :theme               theme}]
+       [rn/text
+        {:style               (style/emoji-size size)
+         :accessibility-label :emoji}
+        (when emoji (string/trim emoji))])
+     [lock locked? size theme]]))

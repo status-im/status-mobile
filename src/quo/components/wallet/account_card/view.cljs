@@ -97,7 +97,7 @@
 (defn- user-account
   [{:keys [name balance percentage-value loading? amount customization-color type emoji metrics?
            on-press]}]
-  (let [theme                  (quo.theme/use-theme-value)
+  (let [theme                  (quo.theme/use-theme)
         [pressed? set-pressed] (rn/use-state false)
         on-press-in            (rn/use-callback #(set-pressed true))
         on-press-out           (rn/use-callback #(set-pressed false))
@@ -155,7 +155,7 @@
 
 (defn- add-account-view
   [{:keys [on-press customization-color metrics?]}]
-  (let [theme                  (quo.theme/use-theme-value)
+  (let [theme                  (quo.theme/use-theme)
         [pressed? set-pressed] (rn/use-state false)
         on-press-in            (rn/use-callback #(set-pressed true))
         on-press-out           (rn/use-callback #(set-pressed false))]

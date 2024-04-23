@@ -20,9 +20,6 @@
       :accessibility-label :import-using-phrase
       :label               (i18n/label :t/import-using-phrase)
       :add-divider?        true}
-     {:icon                :i/keycard-card
-      :accessibility-label :import-from-keycard
-      :label               (i18n/label :t/import-from-keycard)}
      {:icon                :i/key
       :accessibility-label :import-private-key
       :label               (i18n/label :t/import-private-key)}]]])
@@ -74,7 +71,6 @@
         selected-keypair                        (rf/sub [:wallet/selected-keypair-uid])
         profile-picture                         (rf/sub [:profile/image])
         [selected-key-uid set-selected-key-uid] (rn/use-state selected-keypair)]
-    (rn/use-mount #(rf/dispatch [:wallet/get-keypairs]))
     [rn/view {:style {:flex 1}}
      [quo/page-nav
       {:icon-name           :i/close

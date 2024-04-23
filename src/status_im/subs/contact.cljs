@@ -3,7 +3,7 @@
     [clojure.string :as string]
     [legacy.status-im.contact.db :as contact.db]
     [legacy.status-im.ui.screens.profile.visibility-status.utils :as visibility-status-utils]
-    [quo.theme :as theme]
+    [quo.theme]
     [re-frame.core :as re-frame]
     [status-im.common.pixel-ratio :as pixel-ratio]
     [status-im.constants :as constants]
@@ -33,9 +33,8 @@
    (get multiaccount :profile-pictures-visibility)))
 
 (defn- replace-contact-image-uri
-  [contact port public-key font-file]
-  (let [theme (theme/get-theme)
-        {:keys [images ens-name customization-color]} contact
+  [contact port public-key font-file theme]
+  (let [{:keys [images ens-name customization-color]} contact
         images
         (reduce (fn [acc image]
                   (let [image-name (:type image)
@@ -75,9 +74,9 @@
     (assoc contact :images images)))
 
 (defn- reduce-contacts-image-uri
-  [contacts port font-file]
+  [contacts port font-file theme]
   (reduce-kv (fn [acc public-key contact]
-               (let [contact (replace-contact-image-uri contact port public-key font-file)]
+               (let [contact (replace-contact-image-uri contact port public-key font-file theme)]
                  (assoc acc public-key contact)))
              {}
              contacts))
@@ -89,9 +88,10 @@
  :<- [:multiaccount/public-key]
  :<- [:mediaserver/port]
  :<- [:initials-avatar-font-file]
- (fn [[contacts profile-pictures-visibility public-key port font-file]]
+ :<- [:theme]
+ (fn [[contacts profile-pictures-visibility public-key port font-file theme]]
    (let [contacts (contact.db/enrich-contacts contacts profile-pictures-visibility public-key)]
-     (reduce-contacts-image-uri contacts port font-file))))
+     (reduce-contacts-image-uri contacts port font-file theme))))
 
 (re-frame/reg-sub
  :contacts/active
@@ -180,10 +180,10 @@
    (count blocked-contacts)))
 
 (defn- enrich-contact
-  [_ contact-identity ens-name port font-file]
+  [_ contact-identity ens-name port font-file theme]
   (let [contact (contact.db/enrich-contact
                  (contact.db/public-key-and-ens-name->new-contact contact-identity ens-name))]
-    (replace-contact-image-uri contact port contact-identity font-file)))
+    (replace-contact-image-uri contact port contact-identity font-file theme)))
 
 (re-frame/reg-sub
  :contacts/current-contact
@@ -192,11 +192,12 @@
  :<- [:contacts/current-contact-ens-name]
  :<- [:mediaserver/port]
  :<- [:initials-avatar-font-file]
- (fn [[contacts contact-identity ens-name port font-file]]
+ :<- [:theme]
+ (fn [[contacts contact-identity ens-name port font-file theme]]
    (let [contact (get contacts contact-identity)]
      (cond-> contact
        (nil? contact)
-       (enrich-contact contact-identity ens-name port font-file)))))
+       (enrich-contact contact-identity ens-name port font-file theme)))))
 
 (re-frame/reg-sub
  :contacts/contact-by-identity

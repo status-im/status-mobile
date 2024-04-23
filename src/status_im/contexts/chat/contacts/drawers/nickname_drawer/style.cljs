@@ -4,9 +4,9 @@
     [react-native.platform :as platform]))
 
 (defn context-container
-  []
+  [theme]
   {:flex-direction   :row
-   :background-color (colors/theme-colors colors/neutral-10 colors/neutral-80)
+   :background-color (colors/theme-colors colors/neutral-10 colors/neutral-80 theme)
    :border-radius    20
    :align-items      :center
    :align-self       :flex-start
@@ -25,9 +25,9 @@
    :margin-bottom     (when platform/ios? (max (:bottom insets) 20))})
 
 (defn nickname-description
-  []
+  [theme]
   {:margin-left 4
-   :color       (colors/theme-colors colors/neutral-50 colors/neutral-40)})
+   :color       (colors/theme-colors colors/neutral-50 colors/neutral-40 theme)})
 
 (def nickname-description-container
   {:flex-direction :row

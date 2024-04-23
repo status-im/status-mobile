@@ -23,7 +23,7 @@
 
 (defn- error-info
   [error-message processing shell?]
-  (let [theme    (quo.theme/use-theme-value)
+  (let [theme    (quo.theme/use-theme)
         on-press (rn/use-callback
                   (fn []
                     (rn/dismiss-keyboard!)
@@ -56,7 +56,7 @@
         error?                     (boolean (seq error-message))
         default-value              (rn/use-ref-atom "") ;;bug on Android
                                                         ;;https://github.com/status-im/status-mobile/issues/19004
-        theme                      (quo.theme/use-theme-value)
+        theme                      (quo.theme/use-theme)
         on-change-password         (rn/use-callback
                                     (fn [entered-password]
                                       (reset! default-value entered-password)

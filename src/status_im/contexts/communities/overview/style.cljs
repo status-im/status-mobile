@@ -60,9 +60,9 @@
    :flex          1})
 
 (defn token-gated-container
-  []
+  [theme]
   {:border-radius 16
-   :border-color  (colors/theme-colors colors/neutral-20 colors/neutral-80)
+   :border-color  (colors/theme-colors colors/neutral-20 colors/neutral-80 theme)
    :border-width  1
    :padding-top   10
    :margin-bottom 106})

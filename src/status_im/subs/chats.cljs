@@ -367,3 +367,10 @@
  :camera-roll/total-photos-count-ios
  (fn [{:keys [camera-roll/ios-images-count]}]
    ios-images-count))
+
+(re-frame/reg-sub
+ :chats/group-chat-image
+ (fn [[_ chat-id]]
+   (re-frame/subscribe [:chats/chat chat-id]))
+ :->
+ :image)

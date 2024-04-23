@@ -4,6 +4,7 @@
     [quo.components.markdown.text :as text]
     [quo.components.tags.base-tag :as base-tag]
     [quo.foundations.colors :as colors]
+    [quo.theme]
     [react-native.core :as rn]))
 
 (defn outer-resource-container
@@ -19,10 +20,11 @@
    :justify-content  :center})
 
 (defn extra-count-styles
-  [size]
+  [size theme]
   {:background-color (colors/theme-colors
                       colors/neutral-20
-                      colors/neutral-70)
+                      colors/neutral-70
+                      theme)
    :height           (case size
                        32 28
                        24 20)
@@ -35,24 +37,27 @@
 
 (defn extra-count
   [total-group-count selected-count size background-color]
-  (let [extra-group-count (- total-group-count selected-count)]
+  (let [theme             (quo.theme/use-theme)
+        extra-group-count (- total-group-count selected-count)]
     (when (> extra-group-count 0)
       [rn/view (outer-resource-container size background-color)
-       [rn/view (extra-count-styles size)
+       [rn/view (extra-count-styles size theme)
         (if (< extra-group-count 4)
           [text/text
            {:size  :label
             :style {:align-items :center
                     :color       (colors/theme-colors
                                   colors/neutral-50
-                                  colors/neutral-40)}}
+                                  colors/neutral-40
+                                  theme)}}
            (str "+" extra-group-count)]
           [icons/icon :i/pending-default
            {:container-style {:align-items     :center
                               :justify-content :center}
             :color           (colors/theme-colors
                               colors/neutral-50
-                              colors/neutral-40)
+                              colors/neutral-40
+                              theme)
             :size            12}])]])))
 
 (defn selected-token-count
@@ -69,7 +74,8 @@
   []
   (fn [{:keys [group size last-group background-color]
         :or   {size 24}}]
-    (let [tokens-count    (count group)
+    (let [theme           (quo.theme/use-theme)
+          tokens-count    (count group)
           selected-tokens (take (selected-token-count group) group)]
       [rn/view
        {:flex-direction :row
@@ -98,7 +104,8 @@
                       24 :label)
             :style  {:color          (colors/theme-colors
                                       colors/neutral-50
-                                      colors/neutral-40)
+                                      colors/neutral-40
+                                      theme)
                      :padding-left   4
                      :text-transform :lowercase
                      :padding-right  (case size
@@ -132,9 +139,9 @@
            :background-color background-color}])])))
 
 (defn tag
-  [_ _]
-  (fn [{:keys [locked? tokens size background-color on-press accessibility-label]
-        :or   {size 24}}]
+  [{:keys [locked? tokens size background-color on-press accessibility-label]
+    :or   {size 24}}]
+  (let [theme (quo.theme/use-theme)]
     [base-tag/base-tag
      {:accessibility-label accessibility-label
       :background-color    background-color
@@ -162,7 +169,8 @@
                         24 16)
          :color       (colors/theme-colors
                        colors/neutral-50
-                       colors/neutral-40)}]]
+                       colors/neutral-40
+                       theme)}]]
       [tag-tokens
        {:tokens           tokens
         :size             size

@@ -69,12 +69,12 @@
 
 (defn- view-internal
   [{:keys [on-press blur? container-style] :as props}]
-  (let [theme        (quo.theme/use-theme-value)
+  (let [theme        (quo.theme/use-theme)
         context-type (:type props)]
     [shadow/view
      {:offset       [0 4]
       :paint-inside false
-      :start-color  (colors/theme-colors colors/neutral-100-opa-8 colors/neutral-100-opa-60)
+      :start-color  (colors/theme-colors colors/neutral-100-opa-8 colors/neutral-100-opa-60 theme)
       :distance     25
       :style        {:align-self :stretch}}
      [rn/view {:style (merge (style/container blur? theme) container-style)}
@@ -83,7 +83,7 @@
          {:style         style/blur-container
           :blur-amount   20
           :blur-radius   (if platform/ios? 20 10)
-          :overlay-color (colors/theme-colors colors/white-70-blur colors/neutral-95-opa-70-blur)
+          :overlay-color (colors/theme-colors colors/white-70-blur colors/neutral-95-opa-70-blur theme)
           :blur-type     :transparent}])
       [button/button
        {:type      :ghost

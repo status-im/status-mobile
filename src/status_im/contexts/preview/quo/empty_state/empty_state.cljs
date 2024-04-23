@@ -22,9 +22,10 @@
    {:key  :blur?
     :type :boolean}])
 
-(defn view-internal
-  [{:keys [theme]}]
-  (let [state (reagent/atom {:image             :no-contacts
+(defn view
+  []
+  (let [theme (quo.theme/use-theme)
+        state (reagent/atom {:image             :no-contacts
                              :title             "A big friendly title"
                              :description       "Some cool description will be here"
                              :blur?             false
@@ -46,5 +47,3 @@
                    {:text     (:lower-button-text @state)
                     :on-press #(js/alert "Lower button")})
             (assoc :image (resources/get-themed-image (:image @state) theme)))]])))
-
-(def view (quo.theme/with-theme view-internal))

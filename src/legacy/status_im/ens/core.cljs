@@ -3,7 +3,6 @@
   (:require
     [clojure.set :as set]
     [clojure.string :as string]
-    [legacy.status-im.bottom-sheet.events :as bottom-sheet]
     [legacy.status-im.ethereum.ens :as ens]
     [legacy.status-im.multiaccounts.update.core :as multiaccounts.update]
     [legacy.status-im.utils.random :as random]
@@ -288,7 +287,7 @@
   [{:keys [db] :as cofx} _ {:keys [address]}]
   (rf/merge cofx
             {:db (assoc-in db [:ens/registration :address] address)}
-            (bottom-sheet/hide-bottom-sheet-old)))
+            (navigation/hide-bottom-sheet)))
 
 (rf/defn save-preferred-name
   {:events [::save-preferred-name]}

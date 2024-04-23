@@ -15,14 +15,14 @@
       [:accessibility-label {:optional true} [:maybe :keyword]]
       [:customization-color {:optional true} [:maybe :schema.common/customization-color]]
       [:in-blur-view? {:optional true} [:maybe :boolean]]
-      [:theme :schema.common/theme]
       [:type {:optional true} [:enum :active :complete :neutral]]]]
     [:value [:maybe [:or :string :int]]]]
    :any])
 
 (defn- view-internal
-  [{:keys [type accessibility-label theme in-blur-view? customization-color]} value]
-  (let [type  (or type :neutral)
+  [{:keys [type accessibility-label in-blur-view? customization-color]} value]
+  (let [theme (quo.theme/use-theme)
+        type  (or type :neutral)
         value (utils.number/parse-int value)
         label (str value)
         size  (count label)]
@@ -40,6 +40,4 @@
        :style  {:color (style/text-color type theme)}}
       label]]))
 
-(def view
-  (quo.theme/with-theme
-   (schema/instrument #'view-internal ?schema)))
+(def view (schema/instrument #'view-internal ?schema))

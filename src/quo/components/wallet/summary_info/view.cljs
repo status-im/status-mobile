@@ -58,45 +58,44 @@
          :theme   theme}])]))
 
 (defn- view-internal
-  [{:keys [theme type account-props networks? values]}]
-  [rn/view
-   {:style (style/container networks? theme)}
-   [rn/view
-    {:style style/info-container}
-    (case type
-      :status-account [account-avatar/view account-props]
-      :saved-account  [wallet-user-avatar/wallet-user-avatar (assoc account-props :size :size-32)]
-      :account        [wallet-user-avatar/wallet-user-avatar
-                       (assoc account-props
-                              :size     :size-32
-                              :neutral? true)]
-      [user-avatar/user-avatar account-props])
-    [rn/view {:style {:margin-left 8}}
-     (when (not= type :account) [text/text {:weight :semi-bold} (:name account-props)])
+  [{:keys [type account-props networks? values]}]
+  (let [theme (quo.theme/use-theme)]
+    [rn/view
+     {:style (style/container networks? theme)}
      [rn/view
-      {:style {:flex-direction :row
-               :align-items    :center}}
-      (when (= type :user)
-        [:<>
-         [rn/view {:style {:margin-right 4}} [account-avatar/view (:status-account account-props)]]
-         [text/text
-          {:size  :paragraph-2
-           :style {:color (colors/theme-colors colors/neutral-50 colors/neutral-40 theme)}}
-          (get-in account-props [:status-account :name])]
-         [rn/view
-          {:style (style/dot-divider theme)}]])
-      [text/text
-       {:size   (when (not= type :account) :paragraph-2)
-        :weight (when (= type :account) :semi-bold)
-        :style  {:color (when (not= type :account)
-                          (colors/theme-colors colors/neutral-50 colors/neutral-40 theme))}}
-       (:address account-props)]]]]
-   (when networks?
-     [:<>
-      [rn/view
-       {:style (style/line-divider theme)}]
-      [networks values theme]])])
+      {:style style/info-container}
+      (case type
+        :status-account [account-avatar/view account-props]
+        :saved-account  [wallet-user-avatar/wallet-user-avatar (assoc account-props :size :size-32)]
+        :account        [wallet-user-avatar/wallet-user-avatar
+                         (assoc account-props
+                                :size     :size-32
+                                :neutral? true)]
+        [user-avatar/user-avatar account-props])
+      [rn/view {:style {:margin-left 8}}
+       (when (not= type :account) [text/text {:weight :semi-bold} (:name account-props)])
+       [rn/view
+        {:style {:flex-direction :row
+                 :align-items    :center}}
+        (when (= type :user)
+          [:<>
+           [rn/view {:style {:margin-right 4}} [account-avatar/view (:status-account account-props)]]
+           [text/text
+            {:size  :paragraph-2
+             :style {:color (colors/theme-colors colors/neutral-50 colors/neutral-40 theme)}}
+            (get-in account-props [:status-account :name])]
+           [rn/view
+            {:style (style/dot-divider theme)}]])
+        [text/text
+         {:size   (when (not= type :account) :paragraph-2)
+          :weight (when (= type :account) :semi-bold)
+          :style  {:color (when (not= type :account)
+                            (colors/theme-colors colors/neutral-50 colors/neutral-40 theme))}}
+         (:address account-props)]]]]
+     (when networks?
+       [:<>
+        [rn/view
+         {:style (style/line-divider theme)}]
+        [networks values theme]])]))
 
-(def view
-  (quo.theme/with-theme
-   (schema/instrument #'view-internal summary-info-schema/?schema)))
+(def view (schema/instrument #'view-internal summary-info-schema/?schema))

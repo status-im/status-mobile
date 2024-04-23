@@ -12,14 +12,14 @@
     [utils.i18n :as i18n]))
 
 (defn- row-title
-  [type user-name]
+  [type keypair-name]
   [text/text
    {:weight :medium
     :size   :paragraph-1}
    (case type
-     :default-keypair (i18n/label :t/user-keypair {:name user-name})
+     :default-keypair (i18n/label :t/user-keypair {:name keypair-name})
      :derivation-path (i18n/label :t/derivation-path)
-     (i18n/label :t/trip-accounts))])
+     keypair-name)])
 
 (defn- row-icon
   [customization-color profile-picture type secondary-color]
@@ -72,7 +72,7 @@
        {:color secondary-color}]])])
 
 (defn- list-view
-  [{:keys [type stored customization-color profile-picture user-name theme secondary-color]}]
+  [{:keys [type stored customization-color profile-picture keypair-name theme secondary-color]}]
   (let [stored-name (if (= :on-device stored)
                       (i18n/label :t/on-device)
                       (i18n/label :t/on-keycard))]
@@ -81,7 +81,7 @@
       :stored              stored
       :customization-color customization-color
       :profile-picture     profile-picture
-      :title               user-name
+      :title               keypair-name
       :subtitle            stored-name
       :theme               theme
       :secondary-color     secondary-color}]))
@@ -96,8 +96,9 @@
     :secondary-color secondary-color}])
 
 (defn view-internal
-  [{:keys [type theme derivation-path on-press] :as props}]
-  (let [secondary-color (colors/theme-colors colors/neutral-50 colors/neutral-40 theme)]
+  [{:keys [type derivation-path on-press] :as props}]
+  (let [theme           (quo.theme/use-theme)
+        secondary-color (colors/theme-colors colors/neutral-50 colors/neutral-40 theme)]
     [rn/view {:style (style/container theme)}
      [text/text
       {:weight :regular
@@ -108,6 +109,4 @@
      (when (not= :private-key type)
        [card-view theme derivation-path secondary-color on-press])]))
 
-(def view
-  (quo.theme/with-theme
-   (schema/instrument #'view-internal component-schema/?schema)))
+(def view (schema/instrument #'view-internal component-schema/?schema))

@@ -9,7 +9,7 @@
 
 (defn view
   [{:keys [big? customization-color label counter-value icon on-press accessibility-label disabled?]}]
-  (let [theme                  (quo.theme/use-theme-value)
+  (let [theme                  (quo.theme/use-theme)
         [pressed? set-pressed] (rn/use-state false)
         on-press-in            (rn/use-callback #(set-pressed true))
         on-press-out           (rn/use-callback #(set-pressed false))]

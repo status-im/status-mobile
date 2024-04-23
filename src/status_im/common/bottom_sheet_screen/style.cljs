@@ -1,7 +1,7 @@
 (ns status-im.common.bottom-sheet-screen.style
   (:require
     [quo.foundations.colors :as colors]
-    [quo.theme :as theme]
+    [quo.theme]
     [react-native.reanimated :as reanimated]))
 
 (defn container
@@ -47,4 +47,4 @@
    :height           4
    :border-radius    100
    :background-color (colors/theme-colors colors/neutral-100 colors/white theme)
-   :opacity          (theme/theme-value 0.05 0.1)})
+   :opacity          (if (= theme :light) 0.05 0.1)})

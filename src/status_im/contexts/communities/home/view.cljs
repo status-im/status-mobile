@@ -75,12 +75,13 @@
     :banner              (resources/get-image :discover)
     :accessibility-label :communities-home-discover-card}})
 
-(defn- f-view-internal
-  [{:keys [theme]}]
+(defn view
+  []
   (let [flat-list-ref     (atom nil)
         set-flat-list-ref #(reset! flat-list-ref %)]
     (fn []
-      (let [customization-color             (rf/sub [:profile/customization-color])
+      (let [theme                           (quo.theme/use-theme)
+            customization-color             (rf/sub [:profile/customization-color])
             selected-tab                    (or (rf/sub [:communities/selected-tab]) :joined)
             {:keys [joined pending opened]} (rf/sub [:communities/grouped-by-status])
             selected-items                  (case selected-tab
@@ -117,9 +118,3 @@
            :selected-tab        selected-tab
            :on-tab-change       (fn [tab] (rf/dispatch [:communities/select-tab tab]))
            :scroll-shared-value scroll-shared-value}]]))))
-
-(defn- internal-communities-home-view
-  [params]
-  [:f> f-view-internal params])
-
-(def view (quo.theme/with-theme internal-communities-home-view))

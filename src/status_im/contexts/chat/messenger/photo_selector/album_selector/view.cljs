@@ -2,6 +2,7 @@
   (:require
     [quo.core :as quo]
     [quo.foundations.colors :as colors]
+    [quo.theme]
     [react-native.core :as rn]
     [react-native.gesture :as gesture]
     [react-native.platform :as platform]
@@ -12,7 +13,8 @@
 
 (defn render-album
   [{title :title size :count uri :uri} index _ {:keys [album? selected-album top]}]
-  (let [selected? (= selected-album title)]
+  (let [selected? (= selected-album title)
+        theme     (quo.theme/use-theme)]
     [rn/touchable-opacity
      {:on-press            (fn []
                              (rf/dispatch [:chat.ui/camera-roll-select-album title])
@@ -33,7 +35,7 @@
        title]
       [quo/text
        {:size  :paragraph-2
-        :style {:color (colors/theme-colors colors/neutral-50 colors/neutral-40)}}
+        :style {:color (colors/theme-colors colors/neutral-50 colors/neutral-40 theme)}}
        (when size
          (str size
               " "
@@ -45,7 +47,7 @@
         {:style {:position :absolute
                  :right    16}}
         [quo/icon :i/check
-         {:size 20 :color (colors/theme-colors colors/primary-50 colors/primary-60)}]])]))
+         {:size 20 :color (colors/theme-colors colors/primary-50 colors/primary-60 theme)}]])]))
 
 (def no-title "no-title")
 
@@ -63,7 +65,8 @@
 
 (defn- f-album-selector
   [{:keys [scroll-enabled? on-scroll]} album? selected-album top]
-  (let [albums                     (rf/sub [:camera-roll/albums])
+  (let [theme                      (quo.theme/use-theme)
+        albums                     (rf/sub [:camera-roll/albums])
         total-photos-count-android (rf/sub [:camera-roll/total-photos-count-android])
         total-photos-count-ios     (rf/sub [:camera-roll/total-photos-count-ios])
         albums-sections            [{:title no-title
@@ -75,7 +78,7 @@
                                     {:title (i18n/label :t/my-albums)
                                      :data  (:my-albums albums)}]
         window-height              (:height (rn/get-window))]
-    [reanimated/view {:style (style/selector-container top)}
+    [reanimated/view {:style (style/selector-container top theme)}
      [gesture/section-list
       {:data                           albums-sections
        :sections                       albums-sections

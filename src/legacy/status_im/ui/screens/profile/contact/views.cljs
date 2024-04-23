@@ -11,7 +11,7 @@
     [legacy.status-im.ui.components.topbar :as topbar]
     [legacy.status-im.ui.screens.profile.components.sheets :as sheets]
     [quo.components.avatars.user-avatar.style :as user-avatar.style]
-    [quo.theme :as theme]
+    [quo.theme]
     [re-frame.core :as re-frame]
     [reagent.core :as reagent]
     [status-im.constants :as constants]
@@ -184,6 +184,7 @@
          :as   profile}     @(re-frame/subscribe [:contacts/current-contact])
         muted?              @(re-frame/subscribe [:chats/muted public-key])
         customization-color (or customization-color :primary)
+        theme               @(re-frame/subscribe [:theme])
         on-share            #(re-frame/dispatch [:show-popover
                                                  (merge
                                                   {:view    :share-chat-key
@@ -205,8 +206,7 @@
           {:on-press         on-share
            :bottom-separator false
            :title            (profile.utils/displayed-name profile)
-           :color            (user-avatar.style/customization-color customization-color
-                                                                    (theme/get-theme))
+           :color            (user-avatar.style/customization-color customization-color theme)
            :photo            (profile.utils/photo profile)
            :monospace        (not ens-verified)
            :subtitle         secondary-name

@@ -20,7 +20,7 @@
    :height          16})
 
 (defn inner
-  [{:keys [blur? theme]}]
+  [{:keys [blur?]} theme]
   {:border-width    1
    :border-radius   6
    :border-color    (get-border-color blur? theme)
@@ -30,5 +30,5 @@
    :padding-right   3})
 
 (defn label
-  [{:keys [blur? theme]}]
+  [{:keys [blur?]} theme]
   {:color (get-label-color blur? theme)})

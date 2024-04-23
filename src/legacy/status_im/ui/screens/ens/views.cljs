@@ -757,7 +757,7 @@
         [profile.components/settings-item
          {:label-kw  :ens-primary-username
           :value     preferred-name
-          :action-fn #(re-frame/dispatch [:bottom-sheet/show-sheet-old
+          :action-fn #(re-frame/dispatch [:show-bottom-sheet
                                           {:content
                                            (fn [] (name-list names preferred-name))}])}]])]]])
 

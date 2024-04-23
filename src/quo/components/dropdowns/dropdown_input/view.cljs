@@ -4,13 +4,19 @@
     [quo.components.dropdowns.dropdown-input.style :as style]
     [quo.components.icon :as icon]
     [quo.components.markdown.text :as text]
-    [quo.theme :as theme]
+    [quo.theme]
     [react-native.core :as rn]))
 
-(defn- view-internal
-  [{:keys [state theme on-press icon?
-           label? blur?
-           accessibility-label header-label]
+(defn view
+  "Props:
+    - state: :default (default) | :active | :disabled
+    - label: string
+    - header-label: string
+    - icon?: boolean
+    - label?: boolean
+    - blur?: boolean
+    - on-press: function"
+  [{:keys [state on-press icon? label? blur? accessibility-label header-label]
     :or   {state        :default
            icon?        true
            label?       true
@@ -18,7 +24,8 @@
            header-label "Label"}
     :as   props}
    label]
-  (let [{:keys [left-icon-color right-icon-color right-icon-color-2]
+  (let [theme          (quo.theme/use-theme)
+        {:keys [left-icon-color right-icon-color right-icon-color-2]
          :as   colors} (properties/get-colors props)
         right-icon     (if (= state :active) :i/pullup :i/dropdown)]
     [rn/view
@@ -55,14 +62,3 @@
         :accessibility-label :right-icon
         :color               right-icon-color
         :color-2             right-icon-color-2}]]]))
-
-(def view
-  "Props:
-    - state: :default (default) | :active | :disabled
-    - label: string
-    - header-label: string
-    - icon?: boolean
-    - label?: boolean
-    - blur?: boolean
-    - on-press: function"
-  (theme/with-theme view-internal))

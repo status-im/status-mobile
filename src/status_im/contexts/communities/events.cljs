@@ -374,9 +374,8 @@
 (defn get-revealed-accounts
   [{:keys [db]} [community-id on-success]]
   (let [{:keys [joined fetching-revealed-accounts]
-         :as   community} (get-in db [:communities community-id])
-        pending?          (get-in db [:communities/my-pending-requests-to-join community-id])]
-    (when (and community (or pending? joined) (not fetching-revealed-accounts))
+         :as   community} (get-in db [:communities community-id])]
+    (when (and community joined (not fetching-revealed-accounts))
       {:db (assoc-in db [:communities community-id :fetching-revealed-accounts] true)
        :json-rpc/call
        [{:method      "wakuext_getRevealedAccounts"

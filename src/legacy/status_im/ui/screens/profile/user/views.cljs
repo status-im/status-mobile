@@ -14,7 +14,7 @@
     [legacy.status-im.ui.screens.profile.visibility-status.views :as visibility-status]
     [legacy.status-im.utils.utils :as utils]
     [quo.components.avatars.user-avatar.style :as user-avatar.style]
-    [quo.theme :as theme]
+    [quo.theme]
     [re-frame.core :as re-frame]
     [reagent.core :as reagent]
     [status-im.common.qr-codes.view :as qr-codes]
@@ -200,6 +200,7 @@
           @(re-frame/subscribe [:profile/profile-with-image])
           customization-color (or (:color @(re-frame/subscribe [:onboarding/profile]))
                                   @(re-frame/subscribe [:profile/customization-color key-uid]))
+          theme @(re-frame/subscribe [:theme])
           on-share #(re-frame/dispatch [:show-popover
                                         {:view     :share-chat-key
                                          :address  (or compressed-key
@@ -217,11 +218,11 @@
          :use-insets        true
          :extended-header   (profile-header/extended-header
                              {:on-press  on-share
-                              :on-edit   #(re-frame/dispatch [:bottom-sheet/show-sheet-old
+                              :on-edit   #(re-frame/dispatch [:show-bottom-sheet
                                                               {:content (edit/bottom-sheet
                                                                          has-picture)}])
                               :color     (user-avatar.style/customization-color customization-color
-                                                                                (theme/get-theme))
+                                                                                theme)
                               :title     (profile.utils/displayed-name profile)
                               :photo     (profile.utils/photo profile)
                               :monospace (not ens-verified)

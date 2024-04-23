@@ -2,6 +2,7 @@ import hmac
 import json
 import os
 import re
+import urllib
 from hashlib import md5
 
 from support.test_data import SingleTestData
@@ -51,7 +52,8 @@ class BaseTestReport:
             'name': test.name,
             'geth_paths': geth_paths,
             'testruns': list(),
-            'group_name': test.group_name
+            'group_name': test.group_name,
+            'secured': test.secured
         }
         for testrun in test.testruns:
             test_dict['testruns'].append(testrun.__dict__)
@@ -75,7 +77,8 @@ class BaseTestReport:
                                         geth_paths=test_data['geth_paths'],
                                         testruns=testruns,
                                         testrail_case_id=test_data['testrail_case_id'],
-                                        grop_name=test_data['group_name']))
+                                        grop_name=test_data['group_name'],
+                                        secured=test_data['secured']))
         return tests
 
     def get_tests_by_status(self):
@@ -105,8 +108,9 @@ class BaseTestReport:
 
     @staticmethod
     def get_jenkins_link_to_rerun_e2e(branch_name="develop", pr_id="", tr_case_ids=""):
+        branch_name = urllib.parse.quote(branch_name)
         return 'https://ci.status.im/job/status-mobile/job/e2e/job/status-app-prs-rerun/parambuild/' \
-               '?BRANCH_NAME=%s&PR_ID=%s&TR_CASE_IDS=%s' % (branch_name, pr_id, tr_case_ids)
+               '?BRANCH_NAME=%s&PR_ID=%s&APK_NAME=%s.apk&TR_CASE_IDS=%s' % (branch_name, pr_id, pr_id, tr_case_ids)
 
     def get_sauce_final_screenshot_url(self, job_id):
         return 'https://media.giphy.com/media/9M5jK4GXmD5o1irGrF/giphy.gif'

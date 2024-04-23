@@ -31,7 +31,7 @@
         :on-press            #(re-frame/dispatch [:browser.ui/open-url url])
         :on-long-press       (fn []
                                (re-frame/dispatch
-                                [:bottom-sheet/show-sheet-old
+                                [:show-bottom-sheet
                                  {:content (fn []
                                              [react/view {:flex 1}
                                               [list.item/list-item
@@ -110,7 +110,7 @@
      [quo/button
       {:accessibility-label :select-account
        :type                :scale
-       :on-press            #(re-frame/dispatch [:bottom-sheet/show-sheet-old
+       :on-press            #(re-frame/dispatch [:show-bottom-sheet
                                                  {:content (accounts/accounts-list accounts
                                                                                    dapps-account)}])}
       [react/view (styles/dapps-account color)

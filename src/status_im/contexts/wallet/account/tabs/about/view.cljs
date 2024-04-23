@@ -67,6 +67,8 @@
   []
   (let [{:keys [customization-color] :as profile} (rf/sub [:profile/profile-with-image])
         {:keys [address path watch-only?]}        (rf/sub [:wallet/current-viewing-account])
+        {keypair-name :name
+         keypair-type :type}                      (rf/sub [:wallet/current-viewing-account-keypair])
         networks                                  (rf/sub [:wallet/network-preference-details])]
     [rn/scroll-view
      {:style                   style/about-tab
@@ -88,10 +90,10 @@
        :on-press        #(rf/dispatch [:show-bottom-sheet {:content about-options}])}]
      (when (not watch-only?)
        [quo/account-origin
-        {:type                :default-keypair
+        {:type                (if (= keypair-type "seed") :recovery-phrase :default-keypair)
          :stored              :on-device
          :profile-picture     (profile.utils/photo profile)
          :customization-color customization-color
          :derivation-path     path
-         :user-name           (profile.utils/displayed-name profile)
+         :keypair-name        keypair-name
          :on-press            #(js/alert "To be implemented")}])]))

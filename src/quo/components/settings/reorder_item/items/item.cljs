@@ -8,49 +8,42 @@
     [react-native.core :as rn]
     [react-native.fast-image :as fast-image]))
 
-(defn- view-internal
+(defn view
   [{:keys
-    [title
-     subtitle
-     image
-     image-size
-     right-text
-     right-icon
-     on-press
-     theme]}
+    [title subtitle image image-size right-text right-icon on-press]}
    blur?
    drag]
-  [rn/touchable-opacity
-   {:on-press      on-press
-    :on-long-press drag
-    :style         (merge (style/item-container blur?) (when subtitle style/item-container-extended))}
-   [icon/icon :main-icons/drag
-    {:color (colors/theme-colors
-             colors/neutral-50
-             colors/neutral-40)}]
-   [rn/view
-    {:style style/body-container}
-    [rn/view
-     {:style style/image-container}
-     [fast-image/fast-image
-      {:source image
-       :style  (style/image image-size)}]]
-    [rn/view
-     {:style style/text-container}
+  (let [theme (quo.theme/use-theme)]
+    [rn/touchable-opacity
+     {:on-press      on-press
+      :on-long-press drag
+      :style         (merge (style/item-container blur? theme)
+                            (when subtitle style/item-container-extended))}
+     [icon/icon :main-icons/drag
+      {:color (colors/theme-colors
+               colors/neutral-50
+               colors/neutral-40
+               theme)}]
      [rn/view
-      [text/text
-       {:weight :medium}
-       title]
-      (when subtitle
+      {:style style/body-container}
+      [rn/view
+       {:style style/image-container}
+       [fast-image/fast-image
+        {:source image
+         :style  (style/image image-size)}]]
+      [rn/view
+       {:style style/text-container}
+       [rn/view
         [text/text
-         {:style style/item-subtitle
-          :size  :paragraph-2}
-         subtitle])]
-     (when right-text
-       [text/text {:style style/right-text} right-text])
-     (when right-icon
-       [rn/view {:style style/right-icon-container} [icon/icon right-icon (style/right-icon)]])]]
-   [icon/icon :tiny-icons/chevron-right (style/chevron theme)]])
-
-
-(def view (quo.theme/with-theme view-internal))
+         {:weight :medium}
+         title]
+        (when subtitle
+          [text/text
+           {:style style/item-subtitle
+            :size  :paragraph-2}
+           subtitle])]
+       (when right-text
+         [text/text {:style style/right-text} right-text])
+       (when right-icon
+         [rn/view {:style style/right-icon-container} [icon/icon right-icon (style/right-icon theme)]])]]
+     [icon/icon :tiny-icons/chevron-right (style/chevron theme)]]))

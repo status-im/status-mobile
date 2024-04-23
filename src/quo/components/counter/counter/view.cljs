@@ -7,11 +7,12 @@
     [react-native.core :as rn]
     [utils.number]))
 
-(defn- view-internal
-  [{:keys [type customization-color theme container-style accessibility-label max-value]
-    :or   {max-value 99 customization-color :blue theme :dark}}
+(defn view
+  [{:keys [type customization-color container-style accessibility-label max-value]
+    :or   {max-value 99 customization-color :blue}}
    value]
-  (let [type  (or type :default)
+  (let [theme (quo.theme/use-theme)
+        type  (or type :default)
         value (utils.number/parse-int value)
         label (if (> value max-value)
                 (str max-value "+")
@@ -33,5 +34,3 @@
        :size   :label
        :style  (when (= type :default) {:color colors/white})}
       label]]))
-
-(def view (quo.theme/with-theme view-internal))

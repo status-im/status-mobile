@@ -1,7 +1,6 @@
 (ns status-im.contexts.wallet.add-account.create-account.new-keypair.check-your-backup.view
   (:require
     [quo.core :as quo]
-    [quo.theme :as quo.theme]
     [react-native.core :as rn]
     [reagent.core :as reagent]
     [status-im.contexts.wallet.add-account.create-account.new-keypair.check-your-backup.style :as style]
@@ -59,7 +58,7 @@
            :margin-right 12)]
    [button (assoc params :word (second options))]])
 
-(defn- view-internal
+(defn view
   []
   (let [random-indices                        (random-selection)
         quiz-index                            (reagent/atom 0)
@@ -128,5 +127,3 @@
           [buttons-row
            {:on-press on-button-press
             :options  options-row-1}]]]))))
-
-(def view (quo.theme/with-theme view-internal))

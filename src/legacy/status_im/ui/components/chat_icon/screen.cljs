@@ -8,7 +8,7 @@
     [legacy.status-im.ui.screens.profile.visibility-status.utils :as visibility-status-utils]
     [quo.components.avatars.user-avatar.style :as user-avatar.style]
     [quo.core :as quo]
-    [quo.theme :as theme]
+    [quo.theme]
     [re-frame.core :as re-frame.core]
     [react-native.core :as rn]
     [status-im.contexts.profile.utils :as profile.utils]
@@ -52,7 +52,8 @@
 
 (defn profile-photo-plus-dot-view
   [{:keys [public-key full-name customization-color photo-container photo-path community?]}]
-  (let [photo-container         (if (nil? photo-container)
+  (let [theme                   @(re-frame.core/subscribe [:theme])
+        photo-container         (if (nil? photo-container)
                                   styles/container-chat-list
                                   photo-container)
         size                    (:width photo-container)
@@ -71,8 +72,7 @@
                {:size             size
                 :full-name        full-name
                 :font-size        (get text-style :font-size)
-                :background-color (user-avatar.style/customization-color customization-color
-                                                                         (theme/get-theme))
+                :background-color (user-avatar.style/customization-color customization-color theme)
                 :indicator-size   0
                 :indicator-border 0
                 :indicator-color  "#000000"

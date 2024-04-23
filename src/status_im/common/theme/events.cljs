@@ -7,3 +7,8 @@
  :theme/init-theme
  (fn []
    (theme/add-device-theme-change-listener)))
+
+(re-frame/reg-event-fx
+ :theme/switch
+ (fn [{db :db} [theme]]
+   {:db (assoc db :theme theme)}))

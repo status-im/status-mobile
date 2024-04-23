@@ -1128,8 +1128,6 @@ Persistent<Function> r_call;
 std::queue<std::string> q;
 
 void run(char *json) {
-  printf("signal received %s\n", json);
-
   std::string str(json);
   q.push(str);
 }

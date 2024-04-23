@@ -4,7 +4,7 @@
     [quo.components.icon :as icon]
     [quo.components.markdown.text :as text]
     [quo.foundations.colors :as colors]
-    [quo.theme :as theme]
+    [quo.theme]
     [react-native.core :as rn]))
 
 ;;; helpers
@@ -17,8 +17,8 @@
            :background colors/neutral-95}})
 
 (defn get-color
-  [k]
-  (get-in themes [(theme/get-theme) k]))
+  [k theme]
+  (get-in themes [theme k]))
 
 (def ui-images
   {:light {:horizontal (js/require "../resources/images/ui/message-gap-hborder-light.png")
@@ -28,33 +28,35 @@
            :circles    (js/require "../resources/images/ui/message-gap-circle-bg-dark.png")}})
 
 (defn get-image
-  [k]
-  (get-in ui-images [(theme/get-theme) k]))
+  [k theme]
+  (get-in ui-images [theme k]))
 
 ;;; components
 ;;;; borders
 (defn hborder
   [{:keys [type style]}]
-  [rn/image
-   {:source      (get-image :horizontal)
-    :resize-mode :repeat
-    :style       (merge {:position           :absolute
-                         :left               0
-                         :padding-horizontal 4
-                         :overflow           :hidden
-                         :width              "110%"
-                         :height             8
-                         :margin-left        -4}
-                        (if (= type :top)
-                          {:top 0}
-                          {:transform [{:rotateZ "180deg"}]
-                           :bottom    0})
-                        style)}])
+  (let [theme (quo.theme/use-theme)]
+    [rn/image
+     {:source      (get-image :horizontal theme)
+      :resize-mode :repeat
+      :style       (merge {:position           :absolute
+                           :left               0
+                           :padding-horizontal 4
+                           :overflow           :hidden
+                           :width              "110%"
+                           :height             8
+                           :margin-left        -4}
+                          (if (= type :top)
+                            {:top 0}
+                            {:transform [{:rotateZ "180deg"}]
+                             :bottom    0})
+                          style)}]))
 
 (defn vborder
   [type body-height]
-  (let [height @body-height
-        img    (get-image :vertical)]
+  (let [theme  (quo.theme/use-theme)
+        height @body-height
+        img    (get-image :vertical theme)]
     (when (and img height)
       [rn/image
        {:source      img
@@ -72,22 +74,24 @@
 ;;;; others
 (defn circle
   []
-  [rn/view
-   {:width         9
-    :height        9
-    :border-width  1
-    :margin        4
-    :flex          0
-    :border-color  (get-color :icon)
-    :border-radius 50}])
+  (let [theme (quo.theme/use-theme)]
+    [rn/view
+     {:width         9
+      :height        9
+      :border-width  1
+      :margin        4
+      :flex          0
+      :border-color  (get-color :icon theme)
+      :border-radius 50}]))
 
 (defn timestamp
   [s]
-  [text/text
-   {:size  :label
-    :style {:text-transform :none
-            :color          (get-color :time)}}
-   s])
+  (let [theme (quo.theme/use-theme)]
+    [text/text
+     {:size  :label
+      :style {:text-transform :none
+              :color          (get-color :time theme)}}
+     s]))
 
 (defn info-button
   [on-press]
@@ -98,15 +102,16 @@
 ;;;; timeline/body
 (defn timeline
   []
-  [rn/view
-   {:flex            0
-    :margin-right    20
-    :align-items     :center
-    :width           9
-    :justify-content :space-between}
-   [circle]
-   [rn/image {:style {:flex 1} :source (get-image :circles) :resize-mode :repeat}]
-   [circle]])
+  (let [theme (quo.theme/use-theme)]
+    [rn/view
+     {:flex            0
+      :margin-right    20
+      :align-items     :center
+      :width           9
+      :justify-content :space-between}
+     [circle]
+     [rn/image {:style {:flex 1} :source (get-image :circles theme) :resize-mode :repeat}]
+     [circle]]))
 
 (defn body
   [timestamp-far timestamp-near on-info-button-pressed on-press warning-label]
@@ -136,7 +141,8 @@
            style
            on-press
            warning-label]}]
-  (let [[body-height set-body-height] (rn/use-state nil)
+  (let [theme                         (quo.theme/use-theme)
+        [body-height set-body-height] (rn/use-state nil)
         on-layout                     (rn/use-callback #(set-body-height
                                                          (oget % "nativeEvent.layout.height")))]
     [rn/view
@@ -147,7 +153,7 @@
      [hborder {:type :bottom}]
      [rn/view
       (merge {:width            "100%"
-              :background-color (get-color :background)
+              :background-color (get-color :background theme)
               :flex-direction   :row
               :padding          20
               :padding-left     31

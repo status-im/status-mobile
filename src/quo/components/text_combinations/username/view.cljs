@@ -7,35 +7,37 @@
             [react-native.core :as rn]))
 
 (defn- username-text
-  [{:keys     [theme name-type username accessibility-label blur?]
+  [{:keys     [name-type username accessibility-label blur?]
     real-name :name}]
-  [rn/view {:style style/username-text-container}
-   [text/text
-    {:size                :heading-1
-     :accessibility-label accessibility-label
-     :weight              :semi-bold}
-    username]
-   (when (= name-type :nickname)
-     [:<>
-      [text/text
-       {:style  (style/real-name-dot theme blur?)
-        :size   :paragraph-1
-        :weight :medium}
-       "∙"]
-      [text/text
-       {:style               (style/real-name-text theme blur?)
-        :size                :paragraph-1
-        :accessibility-label :real-name
-        :weight              :medium
-        :number-of-lines     1}
-       real-name]])])
+  (let [theme (quo.theme/use-theme)]
+    [rn/view {:style style/username-text-container}
+     [text/text
+      {:size                :heading-1
+       :accessibility-label accessibility-label
+       :weight              :semi-bold}
+      username]
+     (when (= name-type :nickname)
+       [:<>
+        [text/text
+         {:style  (style/real-name-dot theme blur?)
+          :size   :paragraph-1
+          :weight :medium}
+         "∙"]
+        [text/text
+         {:style               (style/real-name-text theme blur?)
+          :size                :paragraph-1
+          :accessibility-label :real-name
+          :weight              :medium
+          :number-of-lines     1}
+         real-name]])]))
 
 (defn- icon-20
-  [icon-name theme color]
-  [icon/icon icon-name
-   {:accessibility-label :username-status-icon
-    :size                20
-    :color               (colors/resolve-color color theme)}])
+  [icon-name color]
+  (let [theme (quo.theme/use-theme)]
+    [icon/icon icon-name
+     {:accessibility-label :username-status-icon
+      :size                20
+      :color               (colors/resolve-color color theme)}]))
 
 (defn status-icon
   [{:keys [theme name-type status]
@@ -51,10 +53,8 @@
                              [icon-20 :i/contact theme :blue]]
      nil)])
 
-(defn view-internal
+(defn view
   [props]
   [rn/view {:style style/container}
    [username-text props]
    [status-icon props]])
-
-(def view (quo.theme/with-theme view-internal))

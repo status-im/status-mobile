@@ -1,7 +1,6 @@
 (ns status-im.contexts.preview.quo.gradient.gradient-cover
   (:require
     [quo.core :as quo]
-    [quo.theme :as quo.theme]
     [react-native.blur :as blur]
     [react-native.core :as rn]
     [reagent.core :as reagent]
@@ -52,7 +51,7 @@
      (fn []
        (rn/use-effect (fn []
                         (when @blur?
-                          (quo.theme/set-theme :dark)))
+                          (rf/dispatch [:theme/switch :dark])))
                       [@blur?])
        [preview/preview-container {:state state :descriptor descriptor}
         [rn/view

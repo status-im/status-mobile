@@ -19,7 +19,7 @@
     - :token-symbol - string"
   [{:keys [options size blur? token-value token-img-src token-symbol]
     :or   {size :size-24}}]
-  (let [theme                 (quo.theme/use-theme-value)
+  (let [theme                 (quo.theme/use-theme)
         [container-width
          set-container-width] (rn/use-state 0)
         on-layout             (rn/use-callback #(set-container-width

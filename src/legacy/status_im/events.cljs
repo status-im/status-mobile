@@ -189,8 +189,8 @@
                :db                        (assoc db :screens/was-focused-once? true)}
 
               (not (get db :screens/was-focused-once?))
-              {:db (assoc db :screens/was-focused-once? true)})
-  ))
+              {:db (assoc db :screens/was-focused-once? true)})))
+
 
 ;;TODO :replace by named events
 (rf/defn set-event

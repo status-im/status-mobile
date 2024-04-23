@@ -5,7 +5,7 @@
     [quo.theme :as quo.theme]
     [react-native.core :as rn]))
 
-(defn- view-internal
+(defn view
   "Opts:
    
     :type  - keyword -> :default/:watch-only
@@ -21,15 +21,14 @@
     :or   {size  style/default-size
            emoji "🍑"}
     :as   opts}]
-  (let [emoji-size (style/get-emoji-size size)]
+  (let [theme      (quo.theme/use-theme)
+        emoji-size (style/get-emoji-size size)]
     [rn/view
      {:accessible          true
       :accessibility-label :account-avatar
-      :style               (style/root-container opts)}
+      :style               (style/root-container opts theme)}
      [rn/text
       {:accessibility-label      :account-emoji
        :adjusts-font-size-to-fit true
        :style                    {:font-size emoji-size}}
       (when emoji (string/trim emoji))]]))
-
-(def view (quo.theme/with-theme view-internal))

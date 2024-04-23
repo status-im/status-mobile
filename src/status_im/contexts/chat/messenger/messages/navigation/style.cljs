@@ -55,9 +55,9 @@
   {:margin-left 8})
 
 (defn header-display-name
-  []
-  {:color (colors/theme-colors colors/black colors/white)})
+  [theme]
+  {:color (colors/theme-colors colors/black colors/white theme)})
 
 (defn header-status
-  []
-  {:color (colors/theme-colors colors/neutral-80-opa-50 colors/white-opa-40)})
+  [theme]
+  {:color (colors/theme-colors colors/neutral-80-opa-50 colors/white-opa-40 theme)})

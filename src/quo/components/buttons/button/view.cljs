@@ -5,7 +5,7 @@
     [quo.components.icon :as quo.icons]
     [quo.components.markdown.text :as text]
     [quo.foundations.customization-colors :as customization-colors]
-    [quo.theme :as theme]
+    [quo.theme]
     [react-native.blur :as blur]
     [react-native.core :as rn]))
 
@@ -28,15 +28,15 @@
     :theme :light/:dark
    only icon
    [button {:icon-only? true} :i/close-circle]"
-  [{:keys [on-press on-long-press disabled? type background size icon-left icon-right icon-top
-           customization-color accessibility-label icon-only? container-style inner-style
-           pressed? on-press-in on-press-out allow-multiple-presses?]
+  [{:keys [on-press on-long-press disabled? type background size icon-left icon-left-color icon-right
+           icon-right-color icon-top icon-top-color customization-color accessibility-label icon-only?
+           container-style inner-style pressed? on-press-in on-press-out allow-multiple-presses?]
     :or   {type                :primary
            size                40
            customization-color (if (= type :primary) :blue nil)}}
    children]
   (let [[pressed-state? set-pressed-state] (rn/use-state false)
-        theme (theme/use-theme-value)
+        theme (quo.theme/use-theme)
         {:keys [icon-color background-color label-color border-color blur-type
                 blur-overlay-color border-radius overlay-customization-color]}
         (button-properties/get-values {:customization-color customization-color
@@ -94,7 +94,7 @@
           [quo.icons/icon icon-top
            {:container-style {:margin-bottom 2
                               :opacity       (when disabled? 0.3)}
-            :color           icon-color
+            :color           (or icon-top-color icon-color)
             :size            icon-size}]])
        (when icon-left
          [rn/view
@@ -103,7 +103,7 @@
                     :icon-size icon-size
                     :disabled? disabled?})}
           [quo.icons/icon icon-left
-           {:color icon-color
+           {:color (or icon-left-color icon-color)
             :size  icon-size}]])
        [rn/view
         (cond
@@ -130,5 +130,5 @@
                     :icon-size icon-size
                     :disabled? disabled?})}
           [quo.icons/icon icon-right
-           {:color icon-color
+           {:color (or icon-right-color icon-color)
             :size  icon-size}]])]]]))

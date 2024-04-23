@@ -27,43 +27,42 @@
         :else                 (string/capitalize (name network))))
 
 (defn view-internal
-  [{:keys [theme network status amount container-style on-press] :as args}]
-  (if (= status :add)
-    [network-bridge-add args]
-    [rn/pressable
-     {:style               (merge (style/container network status theme) container-style)
-      :accessible          true
-      :accessibility-label :container
-      :on-press            on-press}
-     (if (= status :loading)
+  [{:keys [network status amount container-style on-press] :as args}]
+  (let [theme (quo.theme/use-theme)]
+    (if (= status :add)
+      [network-bridge-add args]
+      [rn/pressable
+       {:style               (merge (style/container network status theme) container-style)
+        :accessible          true
+        :accessibility-label :container
+        :on-press            on-press}
+       (if (= status :loading)
+         [rn/view
+          {:style               (style/loading-skeleton theme)
+           :accessible          true
+           :accessibility-label :loading}]
+         [rn/view
+          {:style {:flex-direction  :row
+                   :justify-content :space-between}}
+          [text/text
+           {:size   :paragraph-2
+            :weight :medium} amount]
+          (when (= status :locked)
+            [icon/icon :i/locked
+             {:size                12
+              :color               (colors/theme-colors colors/neutral-50 colors/neutral-40 theme)
+              :accessible          true
+              :accessibility-label :lock}])])
        [rn/view
-        {:style               (style/loading-skeleton theme)
-         :accessible          true
-         :accessibility-label :loading}]
-       [rn/view
-        {:style {:flex-direction  :row
-                 :justify-content :space-between}}
+        {:style {:flex-direction :row
+                 :align-items    :center}}
+        [rn/image
+         {:source (resources/get-network network)
+          :style  style/network-icon}]
         [text/text
-         {:size   :paragraph-2
-          :weight :medium} amount]
-        (when (= status :locked)
-          [icon/icon :i/locked
-           {:size                12
-            :color               (colors/theme-colors colors/neutral-50 colors/neutral-40 theme)
-            :accessible          true
-            :accessibility-label :lock}])])
-     [rn/view
-      {:style {:flex-direction :row
-               :align-items    :center}}
-      [rn/image
-       {:source (resources/get-network network)
-        :style  style/network-icon}]
-      [text/text
-       {:size   :label
-        :weight :medium
-        :style  {:color (colors/theme-colors colors/neutral-50 colors/neutral-40 theme)}}
-       (network->text network)]]]))
+         {:size   :label
+          :weight :medium
+          :style  {:color (colors/theme-colors colors/neutral-50 colors/neutral-40 theme)}}
+         (network->text network)]]])))
 
-(def view
-  (quo.theme/with-theme
-   (schema/instrument #'view-internal network-bridge-schema/?schema)))
+(def view (schema/instrument #'view-internal network-bridge-schema/?schema))

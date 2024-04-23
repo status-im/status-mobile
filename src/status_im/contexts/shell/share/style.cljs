@@ -84,7 +84,8 @@
 
 (def tabs-container
   {:padding-horizontal screen-padding
-   :margin-vertical    8})
+   :margin-top         8
+   :margin-bottom      16})
 
 (def wip-style
   {:color      colors/white

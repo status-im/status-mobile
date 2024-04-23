@@ -5,6 +5,7 @@
     [quo.components.buttons.button.view :as button]
     [quo.components.links.link-preview.style :as style]
     [quo.components.markdown.text :as text]
+    [quo.theme]
     [react-native.core :as rn]
     [react-native.platform :as platform]
     [react-native.svg :as svg]
@@ -29,11 +30,11 @@
    description])
 
 (defn- link-comp
-  [link]
+  [link theme]
   [text/text
    {:size                :paragraph-2
     :weight              :medium
-    :style               (style/link)
+    :style               (style/link theme)
     :accessibility-label :link}
    link])
 
@@ -86,18 +87,19 @@
            enabled? on-enable disabled-text
            container-style thumbnail-size]
     :or   {enabled? true}}]
-  [rn/view
-   {:style               (merge (style/container enabled?) container-style)
-    :accessibility-label :link-preview}
-   (if enabled?
-     [:<>
-      [rn/view {:style style/header-container}
-       (when logo
-         [logo-comp logo])
-       [title-comp title]]
-      (when description
-        [description-comp description])
-      [link-comp link]
-      (when thumbnail
-        [thumbnail-comp thumbnail thumbnail-size])]
-     [button-disabled disabled-text on-enable])])
+  (let [theme (quo.theme/use-theme)]
+    [rn/view
+     {:style               (merge (style/container enabled? theme) container-style)
+      :accessibility-label :link-preview}
+     (if enabled?
+       [:<>
+        [rn/view {:style style/header-container}
+         (when logo
+           [logo-comp logo])
+         [title-comp title]]
+        (when description
+          [description-comp description])
+        [link-comp link]
+        (when thumbnail
+          [thumbnail-comp thumbnail thumbnail-size])]
+       [button-disabled disabled-text on-enable])]))

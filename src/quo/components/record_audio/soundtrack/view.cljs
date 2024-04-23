@@ -17,7 +17,7 @@
   [{:keys [audio-current-time-ms set-audio-current-time-ms player-ref style
            seeking-audio? set-seeking-audio max-audio-duration-ms]}]
   (let [audio-duration-ms   (min max-audio-duration-ms (audio/get-player-duration player-ref))
-        theme               (quo.theme/use-theme-value)
+        theme               (quo.theme/use-theme)
         on-sliding-start    (rn/use-callback #(set-seeking-audio true))
         on-sliding-complete (rn/use-callback
                              (fn [seek-time]
@@ -39,7 +39,7 @@
       :on-sliding-start         on-sliding-start
       :on-sliding-complete      on-sliding-complete
       :on-value-change          on-value-change
-      :thumb-image              (quo.theme/theme-value thumb-light thumb-dark theme)
+      :thumb-image              (if (= theme :light) thumb-light thumb-dark)
       :minimum-track-tint-color (colors/theme-colors colors/primary-50 colors/primary-60 theme)
       :maximum-track-tint-color (colors/theme-colors
                                  (if platform/ios? colors/neutral-20 colors/neutral-40)

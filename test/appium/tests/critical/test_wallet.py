@@ -13,6 +13,7 @@ from views.sign_in_view import SignInView
 
 @pytest.mark.xdist_group(name="new_four_2")
 @marks.new_ui_critical
+@marks.secured
 class TestWalletMultipleDevice(MultipleSharedDeviceTestCase):
 
     def prepare_devices(self):
@@ -97,6 +98,8 @@ class TestWalletMultipleDevice(MultipleSharedDeviceTestCase):
         self.errors.verify_no_errors()
 
     @marks.testrail_id(727229)
+    @marks.xfail(reason="Assets are not shown on Sepolia, https://github.com/status-im/status-mobile/issues/19752",
+                 run=False)
     def test_wallet_send_eth(self):
         sender_balance, receiver_balance, eth_amount_sender, eth_amount_receiver = self._get_balances_before_tx()
 
@@ -112,6 +115,8 @@ class TestWalletMultipleDevice(MultipleSharedDeviceTestCase):
                                       eth_amount_receiver)
 
     @marks.testrail_id(727230)
+    @marks.xfail(reason="Assets are not shown on Sepolia, https://github.com/status-im/status-mobile/issues/19752",
+                 run=False)
     def test_wallet_send_asset_from_drawer(self):
         sender_balance, receiver_balance, eth_amount_sender, eth_amount_receiver = self._get_balances_before_tx()
         self.wallet_2.close_account_button.click()
@@ -153,7 +158,7 @@ class TestWalletOneDevice(MultipleSharedDeviceTestCase):
         self.wallet_view.click_system_back_button()
         self.wallet_view.close_account_button.click_until_presence_of_element(self.home_view.show_qr_code_button)
 
-        self.wallet_view.just_fyi("Checking that the new wallet is added to the Sare QR Code menu")
+        self.wallet_view.just_fyi("Checking that the new wallet is added to the Share QR Code menu")
         self.home_view.show_qr_code_button.click()
         self.home_view.share_wallet_tab_button.click()
         if self.home_view.account_name_text.text != 'Account 1':
@@ -161,10 +166,14 @@ class TestWalletOneDevice(MultipleSharedDeviceTestCase):
         self.home_view.qr_code_image_element.swipe_left_on_element()
         try:
             self.home_view.account_name_text.wait_for_element_text(text=new_account_name, wait_time=3)
-            if self.home_view.copy_wallet_address() != new_wallet_address.split(':')[-1]:
-                self.home_view.driver.fail("Incorrect address")
         except Failed:
             self.errors.append("Can't swipe between accounts, newly added account is not shown")
+        else:
+            shown_address = self.home_view.copy_wallet_address()
+            if set(shown_address.split(':')) != set(new_wallet_address.split(':')):
+                self.errors.append(
+                    "Incorrect address '%s' is shown when swiping between accounts, expected one is '%s'" % (
+                        shown_address, new_wallet_address))
         self.home_view.click_system_back_button()
 
         self.wallet_view.just_fyi("Removing newly added account")
@@ -178,6 +187,8 @@ class TestWalletOneDevice(MultipleSharedDeviceTestCase):
         self.errors.verify_no_errors()
 
     @marks.testrail_id(727232)
+    @marks.xfail(reason="Can't find activity on Sepolia, https://github.com/status-im/status-mobile/issues/19752",
+                 run=False)
     def test_wallet_add_remove_watch_only_account(self):
         self.wallet_view.just_fyi("Adding new watch only account")
         new_account_name = "Account to watch"
@@ -188,7 +199,7 @@ class TestWalletOneDevice(MultipleSharedDeviceTestCase):
             pytest.fail("Account to watch was not added")
         self.wallet_view.close_account_button.click_until_presence_of_element(self.home_view.show_qr_code_button)
 
-        self.wallet_view.just_fyi("Checking that the new wallet is added to the Sare QR Code menu")
+        self.wallet_view.just_fyi("Checking that the new wallet is added to the Share QR Code menu")
         self.home_view.show_qr_code_button.click()
         self.home_view.share_wallet_tab_button.click()
         if self.home_view.account_name_text.text != 'Account 1':
@@ -196,10 +207,14 @@ class TestWalletOneDevice(MultipleSharedDeviceTestCase):
         self.home_view.qr_code_image_element.swipe_left_on_element()
         try:
             self.home_view.account_name_text.wait_for_element_text(text=new_account_name, wait_time=3)
-            if self.home_view.copy_wallet_address() != address_to_watch:
-                self.home_view.driver.fail("Incorrect address")
         except Failed:
             self.errors.append("Can't swipe between accounts, account to watch is not shown")
+        else:
+            shown_address = self.home_view.copy_wallet_address()
+            if set(shown_address.split(':')) != {'eth', 'arb1', 'opt', address_to_watch}:
+                self.home_view.driver.fail(
+                    "Incorrect address '%s' is shown when swiping between accounts, expected one is '%s'" % (
+                        shown_address, ':'.join(address_to_watch)))
         self.home_view.click_system_back_button()
 
         self.wallet_view.just_fyi("Removing account to watch")

@@ -6,7 +6,6 @@
     [quo.core :as quo]
     [quo.foundations.colors :as colors]
     [quo.theme :as quo.theme]
-    [re-frame.core :as rf]
     [react-native.blur :as blur]
     [react-native.clipboard :as clipboard]
     [react-native.core :as rn]
@@ -15,13 +14,14 @@
     [status-im.common.resources :as resources]
     [status-im.contexts.preview.quo.common :as common]
     [status-im.contexts.preview.quo.style :as style]
-    utils.number)
+    utils.number
+    [utils.re-frame :as rf])
   (:require-macros status-im.contexts.preview.quo.preview))
 
 (defn- label-view
-  [_ label]
+  [_ label theme]
   [rn/view {:style style/label-container}
-   [rn/text {:style (style/label)}
+   [rn/text {:style (style/label theme)}
     label]])
 
 (defn- humanize
@@ -47,25 +47,26 @@
 
 (defn- customizer-boolean
   [{:keys [label state] :as args}]
-  (let [label       (or label (key->boolean-label (:key args)))
+  (let [theme       (quo.theme/use-theme)
+        label       (or label (key->boolean-label (:key args)))
         field-value (reagent/cursor state [(:key args)])
         active?     @field-value]
     [rn/view {:style style/field-row}
      [label-view state label]
      [rn/view {:style (style/boolean-container)}
       [rn/pressable
-       {:style    (style/boolean-button {:active? active? :left? true})
+       {:style    (style/boolean-button {:active? active? :left? true} theme)
         :on-press #(reset! field-value true)}
-       [rn/text {:style (style/field-text active?)}
+       [rn/text {:style (style/field-text active? theme)}
         "True"]]
       [rn/pressable
-       {:style    (style/boolean-button {:active? (not active?) :left? false})
+       {:style    (style/boolean-button {:active? (not active?) :left? false} theme)
         :on-press #(reset! field-value false)}
-       [rn/text {:style (style/field-text (not active?))}
+       [rn/text {:style (style/field-text (not active?) theme)}
         "False"]]]]))
 
 (defn- customizer-text
-  [{:keys [label state limit suffix] :as args}]
+  [{:keys [label state limit suffix] :as args} theme]
   (let [label       (or label (key->text-label (:key args)))
         field-value (reagent/cursor state [(:key args)])]
     [rn/view {:style style/field-row}
@@ -75,8 +76,8 @@
        (merge
         {:value               @field-value
          :show-cancel         false
-         :style               (style/field-container false)
-         :keyboard-appearance (quo.theme/theme-value :light :dark)
+         :style               (style/field-container false theme)
+         :keyboard-appearance theme
          :on-change-text      (fn [text]
                                 (reset! field-value (if (and suffix
                                                              (> (count text) (count @field-value)))
@@ -87,7 +88,7 @@
           {:max-length limit}))]]]))
 
 (defn- customizer-number
-  [{:keys [label state default] :as args}]
+  [{:keys [label state default] :as args} theme]
   (let [label       (or label (key->text-label (:key args)))
         field-value (reagent/cursor state [(:key args)])]
     [rn/view {:style style/field-row}
@@ -97,8 +98,8 @@
        (merge
         {:value               (str @field-value)
          :show-cancel         false
-         :style               (style/field-container false)
-         :keyboard-appearance (quo.theme/theme-value :light :dark)
+         :style               (style/field-container false theme)
+         :keyboard-appearance theme
          :on-change-text      (fn [text]
                                 (reset! field-value (utils.number/parse-int text default))
                                 (reagent/flush))})]]]))
@@ -109,48 +110,49 @@
 
 (defn- customizer-select-modal
   [{:keys [open options field-value]}]
-  [rn/modal
-   {:visible                @open
-    :on-request-close       #(reset! open false)
-    :status-bar-translucent true
-    :transparent            true
-    :animation              :slide}
-   [rn/view {:style (style/modal-overlay)}
-    [rn/view {:style (style/modal-container)}
-     [rn/scroll-view {:shows-vertical-scroll-indicator false}
-      (doall
-       (for [{k :key v :value} options
-             :let              [v (or v (humanize k))]]
-         ^{:key k}
-         [rn/pressable
-          {:style    (style/select-option (= @field-value k))
-           :on-press (fn []
-                       (reset! open false)
-                       (reset! field-value k))}
-          [rn/text {:style (style/field-text (= @field-value k))}
-           v]]))]
-     [rn/view {:style (style/footer)}
-      [rn/pressable
-       {:style    (style/select-button)
-        :on-press (fn []
-                    (reset! field-value nil)
-                    (reset! open false))}
-       [rn/text {:style (style/field-text false)}
-        "Clear"]]
-      [rn/view {:style {:width 16}}]
-      [rn/touchable-opacity
-       {:style    (style/select-button)
-        :on-press #(reset! open false)}
-       [rn/text {:style (style/field-text false)}
-        "Close"]]]]]])
+  (let [theme (quo.theme/use-theme)]
+    [rn/modal
+     {:visible                @open
+      :on-request-close       #(reset! open false)
+      :status-bar-translucent true
+      :transparent            true
+      :animation              :slide}
+     [rn/view {:style (style/modal-overlay theme)}
+      [rn/view {:style (style/modal-container theme)}
+       [rn/scroll-view {:shows-vertical-scroll-indicator false}
+        (doall
+         (for [{k :key v :value} options
+               :let              [v (or v (humanize k))]]
+           ^{:key k}
+           [rn/pressable
+            {:style    (style/select-option (= @field-value k) theme)
+             :on-press (fn []
+                         (reset! open false)
+                         (reset! field-value k))}
+            [rn/text {:style (style/field-text (= @field-value k) theme)}
+             v]]))]
+       [rn/view {:style (style/footer theme)}
+        [rn/pressable
+         {:style    (style/select-button theme)
+          :on-press (fn []
+                      (reset! field-value nil)
+                      (reset! open false))}
+         [rn/text {:style (style/field-text false theme)}
+          "Clear"]]
+        [rn/view {:style {:width 16}}]
+        [rn/touchable-opacity
+         {:style    (style/select-button theme)
+          :on-press #(reset! open false)}
+         [rn/text {:style (style/field-text false theme)}
+          "Close"]]]]]]))
 
 (defn- customizer-select-button
-  [{:keys [open selected-option]}]
+  [{:keys [open selected-option]} theme]
   [rn/pressable
-   {:style    (style/select-container)
+   {:style    (style/select-container theme)
     :on-press #(reset! open true)}
    [rn/text
-    {:style           (style/field-select)
+    {:style           (style/field-select theme)
      :number-of-lines 1}
     (if selected-option
       (or (:value selected-option) (humanize (:key selected-option)))
@@ -162,7 +164,8 @@
   []
   (let [open (reagent/atom nil)]
     (fn [{:keys [label state options] :as args}]
-      (let [label           (or label (key->text-label (:key args)))
+      (let [theme           (quo.theme/use-theme)
+            label           (or label (key->text-label (:key args)))
             field-value     (reagent/cursor state [(:key args)])
             selected-option (find-selected-option @field-value options)]
         [rn/view {:style style/field-row}
@@ -172,52 +175,53 @@
            {:open        open
             :options     options
             :field-value field-value}]
-          [customizer-select-button {:open open :selected-option selected-option}]]]))))
+          [customizer-select-button {:open open :selected-option selected-option} theme]]]))))
 
 (defn- customizer-multi-select-modal
   [{:keys [open-atom options selected-keys-atom]}]
-  [rn/modal
-   {:visible                @open-atom
-    :on-request-close       #(reset! open-atom false)
-    :status-bar-translucent true
-    :transparent            true
-    :animation              :slide}
-   [rn/view {:style (style/modal-overlay)}
-    [rn/view {:style (style/modal-container)}
-     [rn/scroll-view {:shows-vertical-scroll-indicator false}
-      (doall
-       (for [{k :key v :value} options
-             :let              [v (or v (humanize k))]]
-         ^{:key k}
+  (let [theme (quo.theme/use-theme)]
+    [rn/modal
+     {:visible                @open-atom
+      :on-request-close       #(reset! open-atom false)
+      :status-bar-translucent true
+      :transparent            true
+      :animation              :slide}
+     [rn/view {:style (style/modal-overlay theme)}
+      [rn/view {:style (style/modal-container theme)}
+       [rn/scroll-view {:shows-vertical-scroll-indicator false}
+        (doall
+         (for [{k :key v :value} options
+               :let              [v (or v (humanize k))]]
+           ^{:key k}
 
-         (let [checked?   (boolean (some #(= k %) @selected-keys-atom))
-               remove-key (fn [v] (filterv #(not= % k) v))
-               on-press   (fn []
-                            (swap! selected-keys-atom
-                              (if checked? remove-key conj)
-                              k))]
-           [rn/pressable
-            {:style    (style/multi-select-option)
-             :on-press on-press}
-            [rn/text {:style (style/field-text false)} v]
-            [quo/selectors
-             {:type      :checkbox
-              :checked?  checked?
-              :on-change on-press}]])))]
-     [rn/view {:style (style/footer)}
-      [rn/pressable
-       {:style    (style/select-button)
-        :on-press (fn []
-                    (reset! selected-keys-atom nil)
-                    (reset! open-atom false))}
-       [rn/text {:style (style/field-text false)}
-        "Clear"]]
-      [rn/view {:style {:width 16}}]
-      [rn/touchable-opacity
-       {:style    (style/select-button)
-        :on-press #(reset! open-atom false)}
-       [rn/text {:style (style/field-text false)}
-        "Close"]]]]]])
+           (let [checked?   (boolean (some #(= k %) @selected-keys-atom))
+                 remove-key (fn [v] (filterv #(not= % k) v))
+                 on-press   (fn []
+                              (swap! selected-keys-atom
+                                (if checked? remove-key conj)
+                                k))]
+             [rn/pressable
+              {:style    (style/multi-select-option theme)
+               :on-press on-press}
+              [rn/text {:style (style/field-text false theme)} v]
+              [quo/selectors
+               {:type      :checkbox
+                :checked?  checked?
+                :on-change on-press}]])))]
+       [rn/view {:style (style/footer theme)}
+        [rn/pressable
+         {:style    (style/select-button theme)
+          :on-press (fn []
+                      (reset! selected-keys-atom nil)
+                      (reset! open-atom false))}
+         [rn/text {:style (style/field-text false theme)}
+          "Clear"]]
+        [rn/view {:style {:width 16}}]
+        [rn/touchable-opacity
+         {:style    (style/select-button theme)
+          :on-press #(reset! open-atom false)}
+         [rn/text {:style (style/field-text false theme)}
+          "Close"]]]]]]))
 
 (defn filter-by-keys
   [items ks]
@@ -226,12 +230,12 @@
           items))
 
 (defn- customizer-multi-select-button
-  [{:keys [open selected-options]}]
+  [{:keys [open selected-options]} theme]
   [rn/pressable
-   {:style    (style/select-container)
+   {:style    (style/select-container theme)
     :on-press #(reset! open true)}
    [rn/text
-    {:style           (style/field-select)
+    {:style           (style/field-select theme)
      :number-of-lines 1}
     (if (seq selected-options)
       (string/join ", " (map :value selected-options))
@@ -243,7 +247,8 @@
   []
   (let [open (reagent/atom nil)]
     (fn [{:keys [label state options] :as args}]
-      (let [label            (or label (key->text-label (:key args)))
+      (let [theme            (quo.theme/use-theme)
+            label            (or label (key->text-label (:key args)))
             selected-keys    (reagent/cursor state [(:key args)])
             selected-options (filter-by-keys options @selected-keys)]
         [rn/view {:style style/field-row}
@@ -253,10 +258,10 @@
            {:open-atom          open
             :selected-keys-atom selected-keys
             :options            options}]
-          [customizer-multi-select-button {:open open :selected-options selected-options}]]]))))
+          [customizer-multi-select-button {:open open :selected-options selected-options} theme]]]))))
 
 (defn customizer
-  [state descriptors]
+  [state descriptors theme]
   [rn/view
    {:style {:flex-shrink        1
             :padding-horizontal 20}}
@@ -271,8 +276,8 @@
       [:<>
        (case (:type desc)
          :boolean      [customizer-boolean descriptor]
-         :text         [customizer-text descriptor]
-         :number       [customizer-number descriptor]
+         :text         [customizer-text descriptor theme]
+         :number       [customizer-number descriptor theme]
          :select       [customizer-select descriptor]
          :multi-select [customizer-multi-select descriptor]
          nil)]))])
@@ -325,20 +330,20 @@
            blur-container-style blur-view-props blur-height show-blur-background? full-screen?]
     :or   {blur-height 200}}
    & children]
-  (let [theme (quo.theme/use-theme-value)
-        title (or title @(rf/subscribe [:view-id]))]
+  (let [theme (quo.theme/use-theme)
+        title (or title (rf/sub [:view-id]))]
     (rn/use-effect (fn []
                      (when blur-dark-only?
                        (if blur?
-                         (quo.theme/set-theme :dark)
-                         (quo.theme/set-theme :light))))
+                         (rf/dispatch [:theme/switch :dark])
+                         (rf/dispatch [:theme/switch :light]))))
                    [blur? blur-dark-only?])
     [rn/view
      {:style {:top  (safe-area/get-top)
               :flex 1}}
      [common/navigation-bar {:title title}]
      [rn/scroll-view
-      {:style                           (style/panel-basic)
+      {:style                           (style/panel-basic theme)
        :shows-vertical-scroll-indicator false
        :content-container-style         (when full-screen? {:flex 1})}
       [:<>
@@ -347,7 +352,7 @@
          :on-press rn/dismiss-keyboard!}
         (when descriptor
           [rn/view {:style style/customizer-container}
-           [customizer state descriptor]])
+           [customizer state descriptor theme]])
         (if blur?
           [rn/view {:style (merge style/component-container component-container-style)}
            (into [blur-view

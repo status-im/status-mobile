@@ -5,12 +5,24 @@
     [quo.components.icon :as icon]
     [quo.components.markdown.text :as text]
     [quo.foundations.customization-colors :as customization-colors]
-    [quo.theme :as theme]
+    [quo.theme]
     [react-native.blur :as blur]
     [react-native.core :as rn]))
 
-(defn- view-internal
-  [{:keys [type size state background customization-color theme on-press icon-name icon? emoji?
+(defn view
+  "Props:
+    - type:           :outline |:grey (default) | :ghost | :customization
+    - size:           :size-40 (default) | :size-32 | :size-24
+    - state:          :default (default) | :active | :disabled
+    - emoji?:         boolean
+    - icon?:          boolean
+    - no-icon-color?: boolean
+    - background:     :blur | :photo (optional)
+    - icon-name:      keyword
+    - on-press:       function
+
+    Child: string - used as label or emoji (for emoji only)"
+  [{:keys [type size state background customization-color on-press icon-name icon? emoji?
            accessibility-label no-icon-color?]
     :or   {type      :grey
            size      :size-40
@@ -20,11 +32,12 @@
            icon-name :i/placeholder}
     :as   props}
    text]
-  (let [{:keys [icon-size text-size emoji-size border-radius]
+  (let [theme                   (quo.theme/use-theme)
+        {:keys [icon-size text-size emoji-size border-radius]
          :as   size-properties} (properties/sizes size)
         {:keys [left-icon-color right-icon-color right-icon-color-2 label-color blur-type
                 blur-overlay-color]
-         :as   colors}          (properties/get-colors props)
+         :as   colors}          (properties/get-colors props theme)
         right-icon              (if (= state :active) :i/pullup :i/dropdown)
         customization-type?     (= type :customization)
         show-blur-background?   (and (= background :photo)
@@ -73,18 +86,3 @@
           :accessibility-label :right-icon
           :color               right-icon-color
           :color-2             right-icon-color-2}]])]))
-
-(def view
-  "Props:
-    - type:           :outline |:grey (default) | :ghost | :customization
-    - size:           :size-40 (default) | :size-32 | :size-24
-    - state:          :default (default) | :active | :disabled
-    - emoji?:         boolean
-    - icon?:          boolean
-    - no-icon-color?: boolean
-    - background:     :blur | :photo (optional)
-    - icon-name:      keyword
-    - on-press:       function
-
-    Child: string - used as label or emoji (for emoji only)"
-  (theme/with-theme view-internal))

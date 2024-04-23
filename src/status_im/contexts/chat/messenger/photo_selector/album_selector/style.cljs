@@ -4,13 +4,14 @@
     [react-native.reanimated :as reanimated]))
 
 (defn selector-container
-  [top]
+  [top theme]
   (reanimated/apply-animations-to-style {:top top}
                                         {:position         :absolute
                                          :z-index          1
                                          :background-color (colors/theme-colors
                                                             colors/white
-                                                            colors/neutral-100)
+                                                            colors/neutral-100
+                                                            theme)
                                          :left             0
                                          :right            0}))
 

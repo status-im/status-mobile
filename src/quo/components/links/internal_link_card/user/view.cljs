@@ -56,28 +56,26 @@
   [(style/gradient-start-color customization-color theme) :transparent])
 
 (defn view-internal
-  [{:keys [title loading? icon
-           theme on-press subtitle emoji-hash customization-color size]}]
-  (if loading?
-    [rn/pressable
-     {:accessibility-label :internal-link-card
-      :on-press            on-press
-      :style               (style/container loading? theme size)}
-     [loading-view theme]]
-    [linear-gradient/linear-gradient
-     (assoc {:style (style/container loading? theme size)}
-            :colors
-            (linear-gradient-props theme customization-color))
-     [rn/pressable
-      {:accessibility-label :internal-link-card
-       :on-press            on-press}
-      [rn/view {:style style/header-container}
-       (when icon
-         [logo-comp icon])
-       [title-comp title]]
-      (when subtitle
-        [subtitle-comp subtitle emoji-hash])]]))
+  [{:keys [title loading? icon on-press subtitle emoji-hash customization-color size]}]
+  (let [theme (quo.theme/use-theme)]
+    (if loading?
+      [rn/pressable
+       {:accessibility-label :internal-link-card
+        :on-press            on-press
+        :style               (style/container loading? theme size)}
+       [loading-view theme]]
+      [linear-gradient/linear-gradient
+       (assoc {:style (style/container loading? theme size)}
+              :colors
+              (linear-gradient-props theme customization-color))
+       [rn/pressable
+        {:accessibility-label :internal-link-card
+         :on-press            on-press}
+        [rn/view {:style style/header-container}
+         (when icon
+           [logo-comp icon])
+         [title-comp title]]
+        (when subtitle
+          [subtitle-comp subtitle emoji-hash])]])))
 
-(def view
-  (quo.theme/with-theme
-   (schema/instrument #'view-internal component-schema/?schema)))
+(def view (schema/instrument #'view-internal component-schema/?schema))

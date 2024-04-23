@@ -13,12 +13,15 @@
 
 (defn view
   [{:keys [selected-tab]}]
-  (let [collectible-list (rf/sub [:wallet/current-viewing-account-collectibles-in-selected-networks])]
+  (let [collectible-list        (rf/sub
+                                 [:wallet/current-viewing-account-collectibles-in-selected-networks])
+        current-account-address (rf/sub [:wallet/current-viewing-account-address])]
     [rn/view {:style {:flex 1}}
      (case selected-tab
        :assets       [assets/view]
        :collectibles [collectibles/view
                       {:collectibles collectible-list
+                       :current-account-address current-account-address
                        :on-end-reached #(rf/dispatch
                                          [:wallet/request-collectibles-for-current-viewing-account])
                        :on-collectible-press (fn [{:keys [id]}]

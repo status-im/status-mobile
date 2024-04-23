@@ -89,7 +89,10 @@ class TestrailReport(BaseTestReport):
                         'case_ids': self.get_regression_cases(),
                         'include_all': False}
         run = self.post('add_run/%s' % self.project_id, request_body)
-        self.run_id = run['id']
+        try:
+            self.run_id = run['id']
+        except KeyError:
+            print("TestRail error when creating a run: %s" % run)
         print("Testrun: %sruns/view/%s" % (self.url, self.run_id))
 
     def get_cases(self, section_ids):
@@ -187,10 +190,14 @@ class TestrailReport(BaseTestReport):
                 test_steps += step + "\n"
             for i, device in enumerate(last_testrun.jobs):
                 if last_testrun.first_commands:
-                    devices += "# [Device %d](%s) \n" % (
-                        i + 1, self.get_sauce_job_url(job_id=device, first_command=last_testrun.first_commands[device]))
+                    first_command = last_testrun.first_commands[device]
                 else:
-                    devices += "# [Device %d](%s) \n" % (i + 1, self.get_sauce_job_url(job_id=device))
+                    first_command = 0
+                try:
+                    devices += "# [Device %d](%s) \n" % (i + 1, self.get_sauce_job_url(job_id=device,
+                                                                                       first_command=first_command))
+                except KeyError:
+                    devices += "# Device %s: SauceLabs session was not found \n" % (i + 1)
             comment = str()
             if test.group_name:
                 comment += "# Class: %s \n" % test.group_name

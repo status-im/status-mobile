@@ -28,10 +28,6 @@ PODS:
   - libwebp/mux (1.2.4):
     - libwebp/demux
   - libwebp/webp (1.2.4)
-  - Permission-Camera (3.8.0):
-    - RNPermissions
-  - Permission-Microphone (3.8.0):
-    - RNPermissions
   - RCT-Folly (2022.05.16.00):
     - boost
     - DoubleConversion
@@ -879,9 +875,13 @@ PODS:
     - React-Core
   - react-native-blob-util (0.13.18):
     - React-Core
-  - react-native-blur (4.3.3):
+  - react-native-blur (4.4.0):
+    - glog
+    - RCT-Folly (= 2022.05.16.00)
     - React-Core
-  - react-native-cameraroll (5.10.0):
+  - react-native-cameraroll (7.5.2):
+    - glog
+    - RCT-Folly (= 2022.05.16.00)
     - React-Core
   - react-native-config (1.5.0):
     - react-native-config/App (= 1.5.0)
@@ -1121,7 +1121,7 @@ PODS:
     - TOCropViewController
   - RNKeychain (8.1.2):
     - React-Core
-  - RNPermissions (3.8.0):
+  - RNPermissions (4.1.5):
     - React-Core
   - RNReanimated (3.6.1):
     - glog
@@ -1154,8 +1154,6 @@ DEPENDENCIES:
   - FBReactNativeSpec (from `../node_modules/react-native/React/FBReactNativeSpec`)
   - glog (from `../node_modules/react-native/third-party-podspecs/glog.podspec`)
   - Keycard (from `https://github.com/status-im/Keycard.swift.git`)
-  - Permission-Camera (from `../node_modules/react-native-permissions/ios/Camera/Permission-Camera.podspec`)
-  - Permission-Microphone (from `../node_modules/react-native-permissions/ios/Microphone/Permission-Microphone.podspec`)
   - RCT-Folly (from `../node_modules/react-native/third-party-podspecs/RCT-Folly.podspec`)
   - RCT-Folly/Fabric (from `../node_modules/react-native/third-party-podspecs/RCT-Folly.podspec`)
   - RCTRequired (from `../node_modules/react-native/Libraries/RCTRequired`)
@@ -1265,10 +1263,6 @@ EXTERNAL SOURCES:
     :podspec: "../node_modules/react-native/third-party-podspecs/glog.podspec"
   Keycard:
     :git: https://github.com/status-im/Keycard.swift.git
-  Permission-Camera:
-    :path: "../node_modules/react-native-permissions/ios/Camera/Permission-Camera.podspec"
-  Permission-Microphone:
-    :path: "../node_modules/react-native-permissions/ios/Microphone/Permission-Microphone.podspec"
   RCT-Folly:
     :podspec: "../node_modules/react-native/third-party-podspecs/RCT-Folly.podspec"
   RCTRequired:
@@ -1448,8 +1442,6 @@ SPEC CHECKSUMS:
   HMSegmentedControl: 34c1f54d822d8308e7b24f5d901ec674dfa31352
   Keycard: ac6df4d91525c3c82635ac24d4ddd9a80aca5fc8
   libwebp: f62cb61d0a484ba548448a4bd52aabf150ff6eef
-  Permission-Camera: e6d142d7d8b714afe0a83e5e6ae17eb949f1e3e9
-  Permission-Microphone: 644b1de8bcc2afcaf934e09a22bee507a95796a7
   RCT-Folly: 7169b2b1c44399c76a47b5deaaba715eeeb476c0
   RCTRequired: 2544c0f1081a5fa12e108bb8cb40e5f4581ccd87
   RCTTypeSafety: 50efabe2b115c11ed03fbf3fd79e2f163ddb5d7c
@@ -1474,8 +1466,8 @@ SPEC CHECKSUMS:
   react-native-background-timer: 1f7d560647b40e6a60b01c452ba29c54bf581fc4
   react-native-biometrics: 352e5a794bfffc46a0c86725ea7dc62deb085bdc
   react-native-blob-util: 600972b1782380a5a7d5db61a3817ea32349dae9
-  react-native-blur: c6d0a1dc2b4b519f7afe3b14d8151998632b6d18
-  react-native-cameraroll: 4701ae7c3dbcd3f5e9e150ca17f250a276154b35
+  react-native-blur: 799045500f56146afc46245148080e7b7623cb75
+  react-native-cameraroll: af8eec1e585d053ff485d98ec837f9a8a11b5745
   react-native-config: 5330c8258265c1e5fdb8c009d2cabd6badd96727
   react-native-hole-view: 6935448993bac79f2b5a4ad7e9741094cf810679
   react-native-image-resizer: 2f1577efa3bc762597681f530c8e8d05ce0ceeb3
@@ -1521,7 +1513,7 @@ SPEC CHECKSUMS:
   RNGestureHandler: 15c6ef51acba34c49ff03003806cf5dd6098f383
   RNImageCropPicker: 486e2f7e2b0461ce24321f751410dce1b3b49e6d
   RNKeychain: a65256b6ca6ba6976132cc4124b238a5b13b3d9c
-  RNPermissions: 215c54462104b3925b412b0fb3c9c497b21c358b
+  RNPermissions: 08e619529cced22695f4b6d0efcc0a233e278903
   RNReanimated: dee37576492f1a375017515f5c77e66e5eec696b
   RNShare: 859ff710211285676b0bcedd156c12437ea1d564
   RNStaticSafeAreaInsets: 055ddbf5e476321720457cdaeec0ff2ba40ec1b8
@@ -1534,6 +1526,6 @@ SPEC CHECKSUMS:
   TOCropViewController: edfd4f25713d56905ad1e0b9f5be3fbe0f59c863
   Yoga: a716eea57d0d3430219c0a5a233e1e93ee931eb7
 
-PODFILE CHECKSUM: c9c6dfac28e31314e1a2ee2dc47364ad151f13f2
+PODFILE CHECKSUM: bb02c595a4aa4430da978b55da5440811cbd9d91
 
 COCOAPODS: 1.13.0
