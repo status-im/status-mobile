@@ -234,7 +234,8 @@
    (when (get-in db [:profile/profile :test-networks-enabled?])
      {:fx [[:dispatch
             [:toasts/upsert
-             {:type  :negative
-              :theme :dark
-              :text  (i18n/label :t/testnet-mode-enabled)}]]]})))
+             {:type     :negative
+              :theme    :dark
+              :text     (i18n/label :t/testnet-mode-enabled)
+              :duration 100000}]]]})))
 

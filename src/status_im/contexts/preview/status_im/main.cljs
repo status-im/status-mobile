@@ -6,6 +6,7 @@
     [react-native.core :as rn]
     [reagent.core :as reagent]
     [status-im.contexts.preview.quo.common :as common]
+    [status-im.contexts.preview.status-im.banners.alert-banner :as alert-banner]
     [status-im.contexts.preview.status-im.common.floating-button-page.view :as
      floating-button-page]
     [status-im.contexts.preview.status-im.style :as style]
@@ -13,7 +14,10 @@
 
 (def screens-categories
   {:common [{:name      :floating-button-page
-             :component floating-button-page/view}]})
+             :component floating-button-page/view}]
+   :banner
+   [{:name      :alert-banner-preview
+     :component alert-banner/view}]})
 
 (defn- category-view
   []
