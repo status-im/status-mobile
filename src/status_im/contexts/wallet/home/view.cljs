@@ -2,6 +2,7 @@
   (:require
     [quo.core :as quo]
     [react-native.core :as rn]
+    [reagent.core :as reagent]
     [status-im.common.home.top-nav.view :as common.top-nav]
     [status-im.contexts.wallet.home.style :as style]
     [status-im.contexts.wallet.home.tabs.view :as tabs]
@@ -40,20 +41,30 @@
 (defn view
   []
   (let [[selected-tab set-selected-tab] (rn/use-state (:id (first tabs-data)))
-        account-list-ref                (rn/use-ref-atom nil)
-        tokens-loading?                 (rf/sub [:wallet/tokens-loading?])
-        networks                        (rf/sub [:wallet/selected-network-details])
-        account-cards-data              (rf/sub [:wallet/account-cards-data])
-        cards                           (conj account-cards-data (new-account-card-data))
-        {:keys [formatted-balance]}     (rf/sub [:wallet/aggregated-token-values-and-balance])]
+        account-list-ref   (rn/use-ref-atom nil)
+        tokens-loading?    (rf/sub [:wallet/tokens-loading?])
+        networks           (rf/sub [:wallet/selected-network-details])
+        account-cards-data (rf/sub [:wallet/account-cards-data])
+        cards              (conj account-cards-data (new-account-card-data))
+        {:keys [formatted-balance]} (rf/sub [:wallet/aggregated-token-values-and-balance])]
     (rn/use-effect (fn []
                      (when (and @account-list-ref (pos? (count cards)))
                        (.scrollToOffset ^js @account-list-ref
                                         #js
-                                         {:animated true
-                                          :offset   0})))
+                                                {:animated true
+                                                 :offset   0})))
                    [(count cards)])
-    [rn/view {:style (style/home-container)}
+    [rn/scroll-view {:style                   {:flex 1}
+                     :refresh-control         (reagent/as-element
+                                               [rn/refresh-control {:refreshing false
+                                                                    :style      {:background-color :red
+                                                                                 :color            :blue
+                                                                                 :border-width     2
+                                                                                 :border-color     :yellow}
+                                                                    :colors     [:green]
+                                                                    :on-refresh (fn []
+                                                                                  (js/alert "Hey!"))}])
+                     :content-container-style (style/home-container)}
      [common.top-nav/view]
      [rn/view
       [quo/wallet-overview
