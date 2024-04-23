@@ -216,6 +216,13 @@
                 :formatted-balance formatted-balance)))))
 
 (rf/reg-sub
+ :wallet/current-viewing-account-keypair
+ :<- [:wallet/current-viewing-account]
+ :<- [:wallet/keypairs]
+ (fn [[{:keys [key-uid]} keypairs]]
+   (first (filter #(= key-uid (:key-uid %)) keypairs))))
+
+(rf/reg-sub
  :wallet/current-viewing-account-tokens-in-selected-networks
  :<- [:wallet/current-viewing-account]
  :<- [:wallet/selected-networks->chain-ids]
