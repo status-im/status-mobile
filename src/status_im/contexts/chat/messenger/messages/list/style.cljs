@@ -20,16 +20,27 @@
     :right            0
     :height           (+ top-margin messages.constants/header-container-radius)}))
 
-(defn header-bottom-part
-  [bottom theme top-margin]
+(defn header-bottom-container
+  [bottom top-margin]
   (reanimated/apply-animations-to-style
    {:bottom bottom}
-   (merge
-    (shadows/get 2 theme :inverted)
-    {:background-color   (colors/theme-colors colors/white colors/neutral-95 theme)
-     :padding-horizontal 20
-     :border-radius      20
-     :margin-top         top-margin})))
+   {:margin-top top-margin}))
+
+(defn header-bottom-part
+  [theme]
+  {:background-color   (colors/theme-colors colors/white colors/neutral-95 theme)
+   :padding-horizontal 20
+   :border-radius      20})
+
+(defn header-bottom-shadow
+  [theme]
+  (assoc
+   (shadows/get 2 theme :inverted)
+   :left          0
+   :right         0
+   :height        40
+   :position      :absolute
+   :border-radius 20))
 
 (defn header-image
   [scale top left theme]

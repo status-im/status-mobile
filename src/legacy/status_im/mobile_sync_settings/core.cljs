@@ -1,6 +1,5 @@
 (ns legacy.status-im.mobile-sync-settings.core
   (:require
-    [legacy.status-im.bottom-sheet.events :as bottom-sheet]
     [legacy.status-im.mailserver.core :as mailserver]
     [legacy.status-im.multiaccounts.model :as multiaccounts.model]
     [legacy.status-im.multiaccounts.update.core :as multiaccounts.update]
@@ -31,7 +30,7 @@
               (assoc :mailserver/current-request true))
         :fx [(when fetch-historic-messages?
                [:mailserver/request-all-historic-messages])
-             [:dismiss-bottom-sheet-overlay-old]
+             [:dispatch [:hide-bottom-sheet]]
              (when previously-initialized?
                (let [new-identity-input (get-in db [:contacts/new-identity :input])]
                  [:dispatch [:contacts/set-new-identity {:input new-identity-input}]]))]}
@@ -101,10 +100,10 @@
   [cofx]
   (rf/merge
    cofx
-   (bottom-sheet/hide-bottom-sheet-old)
+   (navigation/hide-bottom-sheet)
    (navigation/navigate-to :mobile-network-settings nil)))
 
 (rf/defn mobile-network-show-offline-sheet
   {:events [:mobile-network/show-offline-sheet]}
   [cofx]
-  (bottom-sheet/hide-bottom-sheet-old cofx))
+  (navigation/hide-bottom-sheet cofx))

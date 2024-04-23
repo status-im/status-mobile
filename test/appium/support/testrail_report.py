@@ -89,7 +89,10 @@ class TestrailReport(BaseTestReport):
                         'case_ids': self.get_regression_cases(),
                         'include_all': False}
         run = self.post('add_run/%s' % self.project_id, request_body)
-        self.run_id = run['id']
+        try:
+            self.run_id = run['id']
+        except KeyError:
+            print("TestRail error when creating a run: %s" % run)
         print("Testrun: %sruns/view/%s" % (self.url, self.run_id))
 
     def get_cases(self, section_ids):

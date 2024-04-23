@@ -234,7 +234,9 @@
         online?                (rf/sub [:visibility-status-updates/online? chat-id])
         contact                (when-not group-chat
                                  (rf/sub [:contacts/contact-by-address chat-id]))
-        photo-path             (rf/sub [:chats/photo-path chat-id])
+        photo-path             (if group-chat
+                                 (rf/sub [:chats/group-chat-image chat-id])
+                                 (rf/sub [:chats/photo-path chat-id]))
         top-margin             (+ (safe-area/get-top)
                                   messages.constants/top-bar-height
                                   messages.constants/header-container-top-margin
@@ -258,33 +260,35 @@
     [:<>
      [reanimated/view
       {:style (style/background-container background-color background-opacity top-margin)}]
-     [reanimated/view {:style (style/header-bottom-part bottom theme top-margin)}
-      [list-footer-avatar
-       {:distance-from-list-top distance-from-list-top
-        :display-name           display-name
-        :online?                online?
-        :theme                  theme
-        :profile-picture        photo-path
-        :group-chat             group-chat
-        :color                  color
-        :emoji                  emoji
-        :chat-type              chat-type
-        :chat-name              chat-name
-        :last-message           last-message}]
-      [chat-display-name
-       {:distance-from-list-top distance-from-list-top
-        :display-name           display-name
-        :theme                  theme
-        :contact                contact
-        :group-chat             group-chat
-        :last-message           last-message}]
-      [bio-and-actions
-       {:distance-from-list-top distance-from-list-top
-        :bio                    bio
-        :chat-id                chat-id
-        :customization-color    customization-color
-        :description            description
-        :last-message           last-message}]]]))
+     [reanimated/view {:style (style/header-bottom-container bottom top-margin)}
+      [rn/view {:style (style/header-bottom-shadow theme)}]
+      [rn/view {:style (style/header-bottom-part theme)}
+       [list-footer-avatar
+        {:distance-from-list-top distance-from-list-top
+         :display-name           display-name
+         :online?                online?
+         :theme                  theme
+         :profile-picture        photo-path
+         :group-chat             group-chat
+         :color                  color
+         :emoji                  emoji
+         :chat-type              chat-type
+         :chat-name              chat-name
+         :last-message           last-message}]
+       [chat-display-name
+        {:distance-from-list-top distance-from-list-top
+         :display-name           display-name
+         :theme                  theme
+         :contact                contact
+         :group-chat             group-chat
+         :last-message           last-message}]
+       [bio-and-actions
+        {:distance-from-list-top distance-from-list-top
+         :bio                    bio
+         :chat-id                chat-id
+         :customization-color    customization-color
+         :description            description
+         :last-message           last-message}]]]]))
 
 (defn list-footer
   [props]

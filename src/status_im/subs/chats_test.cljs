@@ -177,3 +177,18 @@
         (is (= :army (:color result)))
         (is (= "test" (:chat-name result)))
         (is (= "🍑" (:emoji result)))))))
+
+(h/deftest-sub :chats/group-chat-image
+  [sub-name]
+  (testing "returns picture for group"
+    (let [image-data {:uri "data:image/png1234"}
+          chats      {chat-id (assoc community-chat
+                                     :color     :army
+                                     :emoji     "🍑"
+                                     :chat-name "test"
+                                     :image     image-data)}]
+      (swap! rf-db/app-db assoc
+        :chats
+        chats)
+      (let [result (rf/sub [sub-name chat-id])]
+        (= image-data result)))))

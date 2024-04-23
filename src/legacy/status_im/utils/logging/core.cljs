@@ -2,7 +2,6 @@
   (:require
     [clojure.string :as string]
     [goog.string :as gstring]
-    [legacy.status-im.bottom-sheet.events :as bottom-sheet]
     [legacy.status-im.ui.components.react :as react]
     [legacy.status-im.utils.build :as build]
     [legacy.status-im.utils.deprecated-types :as types]
@@ -13,6 +12,7 @@
     [status-im.common.json-rpc.events :as json-rpc]
     [status-im.common.log :as log]
     [status-im.config :as config]
+    [status-im.navigation.events :as navigation]
     [utils.datetime :as datetime]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
@@ -226,7 +226,7 @@
     {:db (assoc db :bug-report/description-error error)}
     (rf/merge
      cofx
-     (bottom-sheet/hide-bottom-sheet-old)
+     (navigation/hide-bottom-sheet)
      (send-logs :email))))
 
 (re-frame/reg-fx
@@ -254,5 +254,5 @@
   (rf/merge
    cofx
    {:db (dissoc db :bug-report/details)}
-   (bottom-sheet/hide-bottom-sheet-old)
+   (navigation/hide-bottom-sheet)
    (submit-issue)))

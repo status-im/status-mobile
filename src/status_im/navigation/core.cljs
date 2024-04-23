@@ -86,10 +86,6 @@
    (fn [] views/alert-banner))
 
   ;;;; LEGACY (should be removed in status 2.0)
-  (navigation/register-component
-   "bottom-sheet-old"
-   (fn [] (gesture/gesture-handler-root-hoc views/sheet-comp-old))
-   (fn [] views/sheet-comp-old))
 
   (navigation/register-component
    "popover"
