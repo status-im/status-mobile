@@ -85,10 +85,7 @@
 
 (def db
   {:profile/profile          {:public-key user-ukey}
-   :networks/current-network "mainnet_rpc"
-   :networks/networks        {"mainnet_rpc"
-                              {:id     "mainnet_rpc"
-                               :config {:NetworkId 1}}}})
+   :networks/current-network "mainnet_rpc"})
 
 (deftest set-new-identity-test
   (with-redefs [re-frame/dispatch (fn [& args] args)]
