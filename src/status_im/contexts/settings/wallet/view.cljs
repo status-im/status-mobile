@@ -5,7 +5,8 @@
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]))
 
-(defn basic-settings []
+(defn basic-settings
+  []
   [quo/category
    {:key       :basic-wallet-settings
     :label     (i18n/label :t/keypairs-accounts-and-addresses)
@@ -27,6 +28,7 @@
        :background :blur
        :icon-name  :i/arrow-left
        :on-press   #(rf/dispatch [:navigate-back])}]
-     [quo/page-top {:title                     (i18n/label :t/wallet)
-                    :title-accessibility-label :wallet-settings-header}]
+     [quo/page-top
+      {:title                     (i18n/label :t/wallet)
+       :title-accessibility-label :wallet-settings-header}]
      [basic-settings]]))

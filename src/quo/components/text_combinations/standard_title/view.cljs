@@ -63,7 +63,7 @@
      :accessibility-label accessibility-label}
     title]
    (when right
-     [rn/view {:style style/right-container}
+     [rn/view
       (case right
         :counter [right-counter props]
         :action  [right-action props]

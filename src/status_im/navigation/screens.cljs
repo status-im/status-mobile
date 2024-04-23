@@ -481,8 +481,7 @@
 
     {:name      :screen/settings.saved-addresses
      :options   options/transparent-modal-screen-options
-     :component saved-addresses-settings/view}
-    ]
+     :component saved-addresses-settings/view}]
 
    [{:name    :shell
      :options {:theme :dark}}]
