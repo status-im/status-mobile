@@ -41,7 +41,9 @@
                              {:content
                               (fn []
                                 [network-preferences/view
-                                 {:selected-networks (->> selected-networks
+                                 {:title             (i18n/label :t/add-network-preferences)
+                                  :description       (i18n/label :t/network-preferences-save-address-description)
+                                  :selected-networks (->> selected-networks
                                                           (map :network-name)
                                                           set)
                                   :account           {:address address}
@@ -96,7 +98,6 @@
                                        {:address address
                                         :name address-label
                                         :customization-color address-color
-                                        :on-success (fn [] (js/alert "Address Saved"))
                                         :chain-short-names
                                         (wallet-common-utils/short-names->network-preference-prefix
                                          (map :short-name selected-networks-or-fallback))}]))
@@ -135,3 +136,29 @@
       {:selected-networks     selected-networks-or-fallback
        :set-selected-networks set-selected-networks}]]))
 
+(comment
+  (rf/dispatch [:wallet/get-saved-addresses])
+
+  ;; login
+  (do
+    (rf/dispatch [:profile/on-password-input-changed {:password "      "}])
+    (rf/dispatch [:profile.login/login]))
+
+
+  (rf/ref-e)
+
+  ;; set send-to address
+
+  (rf/reg-event-fx
+   :wallet-temp/set-to-address
+   (fn [{:keys [db]} [to-address]]
+     {:db (assoc-in db [:wallet :ui :send :to-address] to-address)}))
+
+  (rf/dispatch [:wallet-temp/set-to-address
+                "0x26fe3219384a55e4e89fdb0e4420b15439221428"])
+
+
+  (rf/dispatch [:navigate-to :screen/wallet.transaction-progress])
+  (rf/dispatch [:open-modal :screen/wallet.save-address])
+
+  )

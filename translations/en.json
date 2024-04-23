@@ -2445,6 +2445,8 @@
     "network-preferences": "Network preferences",
     "network-preferences-desc-1": "Select which networks this address is happy to receive funds on",
     "network-preferences-desc-2": "Select which networks to receive funds on",
+    "add-network-preferences": "Add network preferences",
+    "network-preferences-save-address-description": "Only change if you know which networks the address owner is happy to to receive funds on.",
     "layer-2": "Layer 2",
     "manage-tokens": "Manage tokens",
     "edit-derivation-path": "Edit derivation path",
