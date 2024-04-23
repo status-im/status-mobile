@@ -53,7 +53,6 @@
    :wallet-root-address "0x704c9a261b918cb8e522f7fc2bc477c12d0c74ac"
    :last-backup 1701832050
    :link-previews-enabled-sites #{}
-   :networks/networks {}
    :wakuv2-config {:Port                   0
                    :DataDir                ""
                    :LightClient            true

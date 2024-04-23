@@ -127,7 +127,7 @@
                   :context             item
                   :accessibility-label :block-user
                   :button-text         (i18n/label :t/block-user)
-                  :on-press            #(hide-sheet-and-dispatch [:contact.ui/block-contact-confirmed
+                  :on-press            #(hide-sheet-and-dispatch [:contact/block-contact
                                                                   public-key])}])}]))
 
 (defn mute-chat-entry

@@ -167,26 +167,7 @@
                     (:db effects)))
         (is (match? {:method "wakuext_getRevealedAccounts"
                      :params [community-id "profile-public-key"]}
-                    (-> effects :json-rpc/call first (select-keys [:method :params]))))))
-
-    (testing "given there is a pending request"
-      (let [pub-key    "profile-public-key"
-            community  (assoc community :joined false)
-            db         {:communities                             {community-id community}
-                        :profile/profile                         {:public-key pub-key}
-                        :communities/my-pending-requests-to-join {community-id [:anything]}}
-            on-success [:some-event-id]
-            actual     (events/get-revealed-accounts {:db db} [community-id on-success])
-            expected   {:db            (assoc-in db
-                                        [:communities community-id :fetching-revealed-accounts]
-                                        true)
-                        :json-rpc/call [{:method      "wakuext_getRevealedAccounts"
-                                         :params      [community-id pub-key]
-                                         :js-response true
-                                         :on-success  [:communities/get-revealed-accounts-success
-                                                       community-id on-success]
-                                         :on-error    fn?}]}]
-        (is (match? expected actual))))))
+                    (-> effects :json-rpc/call first (select-keys [:method :params]))))))))
 
 (deftest handle-community
   (let [community {:id community-id :clock 2}]

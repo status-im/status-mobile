@@ -131,25 +131,22 @@
                                                          request-id])}])})
 
 (defn not-joined-options
-  [id token-gated? pending? intro-message]
+  [id token-gated? intro-message]
   [[(when-not token-gated? (view-members id))
     (when-not token-gated? (view-rules id intro-message))
     (invite-contacts id)
     (when token-gated? (view-token-gating id))
-    (when (and pending? (ff/enabled? ::ff/community.edit-account-selection))
-      (edit-shared-addresses id))
     (show-qr id)
     (share-community id)]])
 
 (defn join-request-sent-options
   [id token-gated? request-id intro-message]
-  [(conj (first (not-joined-options id token-gated? request-id intro-message))
+  [(conj (first (not-joined-options id token-gated? intro-message))
          (assoc (cancel-request-to-join id request-id) :add-divider? true))])
 
 (defn banned-options
   [id token-gated? intro-message]
-  (let [pending? false]
-    (not-joined-options id token-gated? pending? intro-message)))
+  (not-joined-options id token-gated? intro-message))
 
 (defn joined-options
   [id token-gated? muted? muted-till color intro-message]
@@ -189,7 +186,7 @@
       joined     (joined-options id role-permissions? muted muted-till color intro-message)
       request-id (join-request-sent-options id role-permissions? request-id intro-message)
       banList    (banned-options id role-permissions? intro-message)
-      :else      (not-joined-options id role-permissions? request-id intro-message))))
+      :else      (not-joined-options id role-permissions? intro-message))))
 
 (defn community-options-bottom-sheet
   [id]

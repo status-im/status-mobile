@@ -30,18 +30,16 @@
 
 (re-frame/reg-sub :communities/can-edit-shared-addresses?
  (fn [[_ community-id]]
-   [(re-frame/subscribe [:communities/community community-id])
-    (re-frame/subscribe [:communities/my-pending-request-to-join community-id])])
- (fn [[{:keys [joined]} pending-requests]]
-   (boolean (or joined (seq pending-requests)))))
+   (re-frame/subscribe [:communities/community community-id]))
+ (fn [{:keys [joined]}]
+   joined))
 
 (re-frame/reg-sub :communities/permissions-check-for-selection
  :<- [:communities/permissions-checks-for-selection]
  (fn [permissions [_ id]]
    (get permissions id)))
 
-(re-frame/reg-sub
- :communities/permissions-check-for-selection-checking?
+(re-frame/reg-sub :communities/permissions-check-for-selection-checking?
  (fn [[_ community-id]]
    (re-frame/subscribe [:communities/permissions-check-for-selection community-id]))
  (fn [check]

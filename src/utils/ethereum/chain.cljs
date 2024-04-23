@@ -49,24 +49,6 @@
   [network]
   (chain-id->chain-keyword (network->chain-id network)))
 
-(defn binance-chain-id?
-  [chain-id]
-  (or (= BSC-mainnet-chain-id chain-id)
-      (= BSC-testnet-chain-id chain-id)))
-
-(defn current-network
-  [db]
-  (let [networks   (get db :networks/networks)
-        network-id (get db :networks/current-network)]
-    (get networks network-id)))
-
-(defn binance-chain?
-  [db]
-  (-> db
-      current-network
-      network->chain-id
-      binance-chain-id?))
-
 (defn network->chain-name
   [network]
   (-> network
@@ -74,8 +56,8 @@
       name))
 
 (defn get-current-network
-  [m]
-  (get (:networks/networks m) (:networks/current-network m)))
+  [_]
+  nil)
 
 (defn chain-keyword
   [db]

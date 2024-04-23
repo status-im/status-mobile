@@ -131,20 +131,3 @@
                     :js-response true
                     :on-success  #(rf/dispatch [:sanitize-messages-and-process-response %])
                     :on-error    #(log/error "failed to set contact nickname " public-key nickname %)}]})
-
-(rf/defn block
-  [_ contact-id on-success]
-  {:json-rpc/call [{:method      "wakuext_blockContact"
-                    :params      [contact-id]
-                    :js-response true
-                    :on-success  on-success
-                    :on-error    #(log/error "failed to block contact" % contact-id)}]})
-
-(rf/defn unblock
-  [_ contact-id on-success]
-  {:json-rpc/call [{:method      "wakuext_unblockContact"
-                    :params      [contact-id]
-                    :on-success  on-success
-                    :js-response true
-                    :on-error    #(log/error "failed to unblock contact" % contact-id)}]})
-

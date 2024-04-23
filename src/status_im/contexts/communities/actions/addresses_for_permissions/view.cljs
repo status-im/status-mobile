@@ -40,34 +40,6 @@
              :token         (:symbol balance)
              :token-img-src (images-by-symbol sym)))))
 
-(defn- cancel-join-request-drawer
-  [community-id]
-  (let [{:keys [name logo color]} (rf/sub [:communities/for-context-tag community-id])
-        request-id                (rf/sub [:communities/my-pending-request-to-join community-id])]
-    [:<>
-     [quo/drawer-top
-      {:type                :context-tag
-       :context-tag-type    :community
-       :title               (i18n/label :t/cancel-request?)
-       :community-name      name
-       :community-logo      logo
-       :customization-color color}]
-     [rn/view {:style style/drawer-body}
-      [quo/text (i18n/label :t/pending-join-request-farewell)]]
-     [quo/bottom-actions
-      {:actions          :two-actions
-
-       :button-one-label (i18n/label :t/confirm-and-cancel)
-       :button-one-props {:customization-color color
-                          :on-press
-                          (fn []
-                            (rf/dispatch [:communities/addresses-for-permissions-cancel-request
-                                          request-id]))}
-
-       :button-two-label (i18n/label :t/cancel)
-       :button-two-props {:type     :grey
-                          :on-press #(rf/dispatch [:hide-bottom-sheet])}}]]))
-
 (defn- confirm-discard-drawer
   [community-id]
   (let [{:keys [name logo color]} (rf/sub [:communities/for-context-tag community-id])]
@@ -206,11 +178,6 @@
         joined (rf/sub [:communities/community-joined id])
         checking? (rf/sub [:communities/permissions-check-for-selection-checking? id])
 
-        cancel-join-request
-        (rn/use-callback
-         (fn []
-           (rf/dispatch [:show-bottom-sheet
-                         {:content (fn [] [cancel-join-request-drawer id])}])))
         leave-community
         (rn/use-callback
          (fn []
@@ -237,7 +204,6 @@
                                                          (rf/dispatch [:hide-bottom-sheet]))}]))}])
               (rf/dispatch [:communities/set-share-all-addresses id flag-share-all-addresses]))
             (rf/dispatch [:communities/set-addresses-to-reveal id addresses-to-reveal])))
-        pending? (rf/sub [:communities/has-pending-request-to-join? id])
         highest-role (rf/sub [:communities/highest-role-for-selection id])
         [unmodified-role _] (rn/use-state highest-role)]
 
@@ -255,38 +221,20 @@
        can-edit-addresses?
        (->
          (assoc :actions              :one-action
-                :button-one-label     (cond
-                                        (and pending? (not highest-role))
-                                        (i18n/label :t/cancel-request)
-
-                                        (and joined (not highest-role))
+                :button-one-label     (if (and joined (not highest-role))
                                         (i18n/label :t/leave-community)
-
-                                        :else
                                         (i18n/label :t/confirm-changes))
                 :description-top-text (cond
-                                        (and pending? highest-role)
-                                        (i18n/label :t/eligible-to-join-as)
-
                                         (and joined (= highest-role unmodified-role))
                                         (i18n/label :t/you-are-a)
 
                                         (and joined (not= highest-role unmodified-role))
                                         (i18n/label :t/you-will-be-a))
-                :error-message        (cond
-                                        (and pending? (not highest-role))
-                                        (i18n/label :t/community-join-requirements-not-met)
-
-                                        (and joined (not highest-role))
+                :error-message        (when (and joined (not highest-role))
                                         (i18n/label :t/membership-requirements-not-met)))
          (update :button-one-props
                  merge
-                 (cond (and pending? (not highest-role))
-                       {:type      :danger
-                        :disabled? false
-                        :on-press  cancel-join-request}
-
-                       (and joined (not highest-role))
+                 (cond (and joined (not highest-role))
                        {:type      :danger
                         :disabled? false
                         :on-press  leave-community})))
@@ -372,13 +320,8 @@
        :data                    wallet-accounts}]
 
      [selection-bottom-actions id
-      {:flag-share-all-addresses
-       flag-share-all-addresses
-       :addresses-to-reveal
-       addresses-to-reveal
-       :cancel-selection
-       cancel-selection
-       :can-edit-addresses?
-       can-edit-addresses?
-       :identical-choices?
-       identical-choices?}]]))
+      {:flag-share-all-addresses flag-share-all-addresses
+       :addresses-to-reveal      addresses-to-reveal
+       :cancel-selection         cancel-selection
+       :can-edit-addresses?      can-edit-addresses?
+       :identical-choices?       identical-choices?}]]))
