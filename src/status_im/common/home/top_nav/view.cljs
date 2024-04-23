@@ -35,7 +35,7 @@
      {:avatar-on-press          #(rf/dispatch [:open-modal :settings])
       :scan-on-press            #(rf/dispatch [:open-modal :shell-qr-reader])
       :activity-center-on-press #(rf/dispatch [:activity-center/open])
-      :qr-code-on-press         #(rf/dispatch [:open-modal :share-shell])
+      :qr-code-on-press         #(rf/dispatch [:open-modal :screen/share-shell])
       :container-style          (merge style/top-nav-container container-style)
       :blur?                    blur?
       :jump-to?                 jump-to?

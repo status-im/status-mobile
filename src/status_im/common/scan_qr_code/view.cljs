@@ -3,7 +3,6 @@
             [oops.core :as oops]
             [quo.core :as quo]
             [quo.foundations.colors :as colors]
-            [quo.theme :as quo.theme]
             [react-native.blur :as blur]
             [react-native.camera-kit :as camera-kit]
             [react-native.core :as rn]
@@ -31,7 +30,17 @@
       :size                32
       :accessibility-label :close-scan-qr-code
       :on-press            #(rf/dispatch [:navigate-back])}
-     :i/arrow-left]]
+     :i/close]
+    [quo/button
+     {:icon-only?          true
+      :type                :grey
+      :background          :blur
+      :size                32
+      :accessibility-label :show-qr-button
+      :on-press            (fn []
+                             (rf/dispatch [:navigate-back])
+                             (rf/dispatch [:open-modal :screen/share-shell]))}
+     :i/qr-code]]
    [quo/text
     {:size   :heading-1
      :weight :semi-bold
@@ -171,8 +180,8 @@
      {:style            style/absolute-fill
       :blur-amount      10
       :blur-type        :transparent
-      :overlay-color    colors/neutral-80-opa-80
-      :background-color colors/neutral-80-opa-80}]]])
+      :overlay-color    colors/neutral-80-opa-80-blur
+      :background-color colors/neutral-80-opa-80-blur}]]])
 
 (defn- set-listener-torch-off-on-app-inactive
   [torch-atm]
@@ -234,16 +243,15 @@
             [:<>
              [rn/view {:style style/scan-qr-code-container}]
              [qr-scan-hole-area qr-view-finder]])
-          [scan-qr-code-tab @qr-view-finder (when subtitle true)]
+          [scan-qr-code-tab @qr-view-finder true]
           [rn/view {:style style/flex-spacer}]
           (when show-camera?
-            [quo.theme/provider :light
-             [quo/button
-              {:icon-only?          true
-               :type                :grey
-               :background          :photo
-               :size                style/flash-button-size
-               :accessibility-label :camera-flash
-               :container-style     (style/camera-flash-button @qr-view-finder)
-               :on-press            #(swap! torch? not)}
-              flashlight-icon]])]]))))
+            [quo/button
+             {:icon-only?          true
+              :type                :grey
+              :background          :photo
+              :size                style/flash-button-size
+              :accessibility-label :camera-flash
+              :container-style     (style/camera-flash-button @qr-view-finder)
+              :on-press            #(swap! torch? not)}
+             flashlight-icon])]]))))

@@ -61,7 +61,8 @@
         :icon-name  :i/close
         :on-press   #(rf/dispatch [:navigate-back])
         :right-side [{:icon-name :i/qr-code
-                      :on-press  #(debounce/throttle-and-dispatch [:open-modal :share-shell] 1000)}
+                      :on-press  #(debounce/throttle-and-dispatch [:open-modal :screen/share-shell]
+                                                                  1000)}
                      {:icon-name :i/share
                       :on-press  #(rf/dispatch [:open-share
                                                 {:options {:message (:universal-profile-url
