@@ -92,11 +92,3 @@
   [state]
   (set-input-value state ""))
 
-(comment
-
-  (input-value init-state)
-  (-> init-state
-      (set-input-value "12")
-      (set-upper-limit 10)
-      (add-character "3")
-      (delete-last)))
