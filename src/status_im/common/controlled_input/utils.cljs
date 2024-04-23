@@ -1,17 +1,15 @@
 (ns status-im.common.controlled-input.utils
   (:require
-    [clojure.string :as string]
-    [reagent.core :as reagent]))
+    [clojure.string :as string]))
 
-(defn create-input-state
-  []
-  (reagent/atom {:value       ""
-                 :error?      false
-                 :upper-limit nil}))
+(def init-state
+  {:value       ""
+   :error?      false
+   :upper-limit nil})
 
 (defn input-value
   [state]
-  (:value @state))
+  (:value state))
 
 (defn numeric-value
   [state]
@@ -19,15 +17,15 @@
 
 (defn input-error
   [state]
-  (:error? @state))
+  (:error? state))
 
 (defn- set-input-error
   [state error?]
-  (swap! state assoc :error? error?))
+  (assoc state :error? error?))
 
 (defn- upper-limit
   [state]
-  (:upper-limit @state))
+  (:upper-limit state))
 
 (defn upper-limit-exceeded?
   [state]
@@ -41,13 +39,15 @@
 
 (defn- set-input-value
   [state value]
-  (swap! state assoc :value value)
-  (recheck-errorness state))
+  (-> state
+      (assoc :value value)
+      recheck-errorness))
 
 (defn set-upper-limit
   [state limit]
-  (swap! state assoc :upper-limit limit)
-  (recheck-errorness state))
+  (-> state
+      (assoc :upper-limit limit)
+      recheck-errorness))
 
 (def ^:private not-digits-or-dot-pattern
   #"[^0-9+\.]")
@@ -91,3 +91,12 @@
 (defn delete-all
   [state]
   (set-input-value state ""))
+
+(comment
+
+  (input-value init-state)
+  (-> init-state
+      (set-input-value "12")
+      (set-upper-limit 10)
+      (add-character "3")
+      (delete-last)))
