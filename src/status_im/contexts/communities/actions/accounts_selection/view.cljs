@@ -68,7 +68,8 @@
                                     [:communities/request-to-join-with-addresses
                                      {:community-id id
                                       :password     password}]))}])
-           (navigate-back)))
+           (navigate-back))
+         [can-edit-addresses?])
 
         open-permission-sheet
         (rn/use-callback (fn []

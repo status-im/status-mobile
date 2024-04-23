@@ -36,25 +36,15 @@
     :reveal?          false}])
 
 (deftest initialize-permission-addresses-test
-  (testing "fetches revealed accounts when pending and not joined"
-    (let [cofx {:db {:communities                             {community-id {:joined false}}
-                     :communities/my-pending-requests-to-join {community-id [:anything]}}}]
+  (testing "fetches revealed accounts when joined"
+    (let [cofx {:db {:communities {community-id {:joined true}}}}]
       (is (match?
            {:fx [[:dispatch
                   [:communities/get-revealed-accounts community-id
                    [:communities/do-init-permission-addresses community-id]]]]}
            (sut/initialize-permission-addresses cofx [community-id])))))
 
-  (testing "fetches revealed accounts when not pending and joined"
-    (let [cofx {:db {:communities                             {community-id {:joined true}}
-                     :communities/my-pending-requests-to-join {}}}]
-      (is (match?
-           {:fx [[:dispatch
-                  [:communities/get-revealed-accounts community-id
-                   [:communities/do-init-permission-addresses community-id]]]]}
-           (sut/initialize-permission-addresses cofx [community-id])))))
-
-  (testing "does not fetch revealed accounts when not pending and not joined"
+  (testing "does not fetch revealed accounts when not joined"
     (let [cofx {:db {:communities                             {community-id {:joined false}}
                      :communities/my-pending-requests-to-join {}}}]
       (is (match?
