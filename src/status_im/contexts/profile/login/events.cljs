@@ -81,7 +81,7 @@
                      :shell-stack
                      false]]
                    [:set-root :shell-stack]
-                   [:dispatch [:profile/show-testnet-mode-banner-if-enabled]]]))})))
+                   [:dispatch [:profile/show-testnet-mode-alert-if-enabled]]]))})))
 
 ;; login phase 2: we want to load and show chats faster, so we split login into 2 phases
 (rf/reg-event-fx :profile.login/get-chats-callback
@@ -229,10 +229,12 @@
    {:db (update db :profile/login assoc :password password :error error)}))
 
 (rf/reg-event-fx
- :profile/show-testnet-mode-banner-if-enabled
+ :profile/show-testnet-mode-alert-if-enabled
  (fn [{:keys [db]}]
    (when (get-in db [:profile/profile :test-networks-enabled?])
      {:fx [[:dispatch
-            [:alert-banners/add
-             {:type :alert
-              :text (i18n/label :t/testnet-mode-enabled)}]]]})))
+            [:toasts/upsert
+             {:type  :negative
+              :theme :dark
+              :text  (i18n/label :t/testnet-mode-enabled)}]]]})))
+

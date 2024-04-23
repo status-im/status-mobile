@@ -45,6 +45,9 @@
         error-banner  (:error banners)
         safe-area-top (safe-area/get-top)
         colors-map    (get-colors-map theme)]
+    ;; WARNING: alert banner is buggy and shouldn't be used, because it causes multiple issues with
+    ;; composer, chat top bar, performance monitor, sheets, etc etc. See more details here:
+    ;; https://github.com/status-im/status-mobile/issues/19506
     [hole-view/hole-view
      ;; required for fix flicker issue https://github.com/status-im/status-mobile/issues/19490
      {:style {:padding-bottom 1}
