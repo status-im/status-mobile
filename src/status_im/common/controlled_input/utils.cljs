@@ -39,52 +39,48 @@
   [state]
   (set-input-error state (upper-limit-exceeded? state)))
 
-
 (defn- set-input-value
   [state value]
   (swap! state assoc :value value)
   (recheck-errorness state))
-
 
 (defn set-upper-limit
   [state limit]
   (swap! state assoc :upper-limit limit)
   (recheck-errorness state))
 
-
-(def not-digits-or-dot-pattern
+(def ^:private not-digits-or-dot-pattern
   #"[^0-9+\.]")
 
-(def dot ".")
+(def ^:private dot ".")
 
 (defn- can-add-character?
-  [state c]
+  [state character]
   (let [max-length          12
         current             (input-value state)
         length-overflow?    (>= (count current) max-length)
-        extra-dot?          (and (= c dot) (string/includes? current dot))
-        extra-leading-zero? (and (= current "0") (= "0" (str c)))
-        non-numeric?        (re-find not-digits-or-dot-pattern (str c))]
+        extra-dot?          (and (= character dot) (string/includes? current dot))
+        extra-leading-zero? (and (= current "0") (= "0" (str character)))
+        non-numeric?        (re-find not-digits-or-dot-pattern (str character))]
     (not (or non-numeric? extra-dot? extra-leading-zero? length-overflow?))))
 
-
 (defn- normalize-value-as-numeric
-  [value c]
+  [value character]
   (cond
-    (and (string/blank? value) (= c dot))
-    (str "0" c)
+    (and (string/blank? value) (= character dot))
+    (str "0" character)
 
-    (and (= value "0") (not= c dot))
-    (str c)
+    (and (= value "0") (not= character dot))
+    (str character)
 
     :else
-    (str value c)))
+    (str value character)))
 
 (defn add-character
-  [state c]
-  (when (can-add-character? state c)
+  [state character]
+  (when (can-add-character? state character)
     (set-input-value state
-                     (normalize-value-as-numeric (input-value state) c))))
+                     (normalize-value-as-numeric (input-value state) character))))
 
 (defn delete-last
   [state]
@@ -95,4 +91,3 @@
 (defn delete-all
   [state]
   (set-input-value state ""))
-
