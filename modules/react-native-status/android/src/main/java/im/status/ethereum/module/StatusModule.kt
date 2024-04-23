@@ -43,7 +43,6 @@ class StatusModule(private val reactContext: ReactApplicationContext, private va
     }
 
     override fun handleSignal(jsonEventString: String) {
-        Log.d(TAG, "Signal event")
         val params = Arguments.createMap()
         params.putString("jsonEvent", jsonEventString)
         reactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter::class.java).emit("gethEvent", params)

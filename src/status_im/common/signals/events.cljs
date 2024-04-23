@@ -35,6 +35,7 @@
   (let [^js data     (.parse js/JSON event-str)
         ^js event-js (.-event data)
         type         (.-type data)]
+    (log/debug "Signal received" event-str)
     (case type
       "node.login"                 {:fx [[:dispatch
                                           [:profile.login/login-node-signal
