@@ -2076,6 +2076,7 @@
     "block-user": "Block user",
     "block-user-title-message": "You will not see {{username}}'s messages, but {{username}} still can see your messages in mutual group chats and communities. {{username}} will be unable to message you.",
     "blocking-a-user-message": "Blocking a user purges the database of all messages that you’ve previously received from {{username}} in all contexts.",
+    "unblocking-a-user-message": "After unblocking {{username}}, you will be able to connect with them as a contact and see their messages in group chats and communities.",
     "group-details": "Group details",
     "edit-name-and-image": "Edit name and image",
     "change-group-privacy": "Change group privacy",

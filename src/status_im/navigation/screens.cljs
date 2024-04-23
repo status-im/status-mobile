@@ -48,6 +48,9 @@
     [status-im.contexts.profile.edit.name.view :as edit-name]
     [status-im.contexts.profile.edit.view :as edit-profile]
     [status-im.contexts.profile.profiles.view :as profiles]
+    [status-im.contexts.profile.settings.screens.messages.blocked-users.view :as
+     settings.blocked-users]
+    [status-im.contexts.profile.settings.screens.messages.view :as settings.messages]
     [status-im.contexts.profile.settings.screens.password.view :as settings-password]
     [status-im.contexts.profile.settings.view :as settings]
     [status-im.contexts.shell.activity-center.view :as activity-center]
@@ -471,7 +474,15 @@
 
     {:name      :settings-password
      :options   options/transparent-modal-screen-options
-     :component settings-password/view}]
+     :component settings-password/view}
+
+    {:name      :screen/settings-messages
+     :options   options/transparent-modal-screen-options
+     :component settings.messages/view}
+
+    {:name      :screen/settings-blocked-users
+     :options   options/transparent-modal-screen-options
+     :component settings.blocked-users/view}]
 
    [{:name    :shell
      :options {:theme :dark}}]

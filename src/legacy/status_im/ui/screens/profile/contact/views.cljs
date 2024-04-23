@@ -56,7 +56,7 @@
             :selected            blocked?
             :icon                :main-icons/cancel
             :action              (if blocked?
-                                   #(re-frame/dispatch [:contact.ui/unblock-contact-pressed public-key])
+                                   #(re-frame/dispatch [:contact/unblock-contact public-key])
                                    #(re-frame/dispatch [:show-popover
                                                         {:view             sheets/block-contact
                                                          :prevent-closing? true
