@@ -17,26 +17,28 @@
    :flex-direction     :row
    :align-items        :center})
 
-(defn action-icon
-  [{:keys [type on-press on-check disabled? checked?]} customization-color theme]
-  [rn/touchable-opacity
-   {:on-press on-press}
-   (case type
-     :options
-     [icons/icon :i/options
-      {:size  20
-       :color (colors/theme-colors colors/neutral-50 colors/neutral-40 theme)}]
-     :checkbox
-     [selectors/view
-      {:type                :checkbox
-       :checked?            checked?
-       :customization-color customization-color
-       :accessibility-label :user-list-toggle-check
-       :disabled?           disabled?
-       :on-change           (when on-check on-check)}]
-     :close
-     [text/text "not implemented"]
-     [rn/view])])
+(defn accessory-item
+  [{:keys [type on-press on-check disabled? checked? child]} customization-color theme]
+  (if (= type :custom)
+    child
+    [rn/touchable-opacity
+     {:on-press on-press}
+     (case type
+       :options
+       [icons/icon :i/options
+        {:size  20
+         :color (colors/theme-colors colors/neutral-50 colors/neutral-40 theme)}]
+       :checkbox
+       [selectors/view
+        {:type                :checkbox
+         :checked?            checked?
+         :customization-color customization-color
+         :accessibility-label :user-list-toggle-check
+         :disabled?           disabled?
+         :on-change           (when on-check on-check)}]
+       :close
+       [text/text "not implemented"]
+       [rn/view])]))
 
 (defn user
   [{:keys [short-chat-key primary-name secondary-name photo-path online? contact? verified?
@@ -72,4 +74,4 @@
          :style {:color (colors/theme-colors colors/neutral-50 colors/neutral-40 theme)}}
         short-chat-key])]
     (when accessory
-      [action-icon accessory customization-color disabled? theme])]])
+      [accessory-item accessory customization-color disabled? theme])]])

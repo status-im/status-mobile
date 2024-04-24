@@ -48,6 +48,9 @@
     [status-im.contexts.profile.edit.name.view :as edit-name]
     [status-im.contexts.profile.edit.view :as edit-profile]
     [status-im.contexts.profile.profiles.view :as profiles]
+    [status-im.contexts.profile.settings.screens.messages.blocked-users.view :as
+     settings.blocked-users]
+    [status-im.contexts.profile.settings.screens.messages.view :as settings.messages]
     [status-im.contexts.profile.settings.screens.password.change-password.loading :as
      change-password-loading]
     [status-im.contexts.profile.settings.screens.password.change-password.view :as change-password]
@@ -70,6 +73,8 @@
     [status-im.contexts.wallet.add-account.add-address-to-watch.view :as wallet-add-address-to-watch]
     [status-im.contexts.wallet.add-account.create-account.edit-derivation-path.view :as
      wallet-edit-derivation-path]
+    [status-im.contexts.wallet.add-account.create-account.import-private-key.view :as
+     wallet-import-private-key]
     [status-im.contexts.wallet.add-account.create-account.new-keypair.backup-recovery-phrase.view :as
      wallet-backup-recovery-phrase]
     [status-im.contexts.wallet.add-account.create-account.new-keypair.check-your-backup.view :as
@@ -393,6 +398,10 @@
     {:name      :screen/wallet.edit-derivation-path
      :component wallet-edit-derivation-path/view}
 
+    {:name      :screen/wallet.import-private-key
+     :options   {:insets {:top? true}}
+     :component wallet-import-private-key/view}
+
     {:name      :screen/wallet.collectible
      :component wallet-collectible/view}
 
@@ -475,6 +484,14 @@
     {:name      :screen/settings-password
      :options   options/transparent-modal-screen-options
      :component settings-password/view}
+
+    {:name      :screen/settings-messages
+     :options   options/transparent-modal-screen-options
+     :component settings.messages/view}
+
+    {:name      :screen/settings-blocked-users
+     :options   options/transparent-modal-screen-options
+     :component settings.blocked-users/view}
 
     {:name      :screen/change-password
      :options   (assoc options/transparent-modal-screen-options :theme :dark)

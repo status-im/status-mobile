@@ -60,8 +60,9 @@ class TestDeepLinksOneDevice(MultipleSharedDeviceTestCase):
             self.channel.chat_message_input.clear()
             self.channel.send_message(url)
             self.channel.chat_element_by_text(url).click_on_link_inside_message_body()
-            if not self.community_view.join_button.is_element_displayed(
-                    10) or self.community_view.community_title.text != text:
+            if not (self.community_view.join_button.is_element_displayed(10)
+                    or self.community_view.join_community_button.is_element_displayed(5)) \
+                    or self.community_view.community_title.text != text:
                 self.errors.append("Community '%s' was not requested to join by the url %s" % (text, url))
             if text != "open community":  # the last one
                 self.home.jump_to_card_by_text(self.community_name)
@@ -103,8 +104,9 @@ class TestDeepLinksOneDevice(MultipleSharedDeviceTestCase):
         for link, text in community_links.items():
             self.channel.just_fyi("Opening community '%s' by the link %s" % (text, link))
             self.browser_view.open_url(link)
-            if not self.community_view.join_button.is_element_displayed(
-                    10) or self.community_view.community_title.text != text:
+            if not (self.community_view.join_button.is_element_displayed(10)
+                    or self.community_view.join_community_button.is_element_displayed(5)) \
+                    or self.community_view.community_title.text != text:
                 self.errors.append("Community '%s' was not requested to join by the deep link %s" % (text, link))
             self.home.navigate_back_to_home_view()
             self.home.browser_tab.click()

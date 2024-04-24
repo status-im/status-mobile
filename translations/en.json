@@ -2091,6 +2091,7 @@
     "block-user": "Block user",
     "block-user-title-message": "You will not see {{username}}'s messages, but {{username}} still can see your messages in mutual group chats and communities. {{username}} will be unable to message you.",
     "blocking-a-user-message": "Blocking a user purges the database of all messages that you’ve previously received from {{username}} in all contexts.",
+    "unblocking-a-user-message": "After unblocking {{username}}, you will be able to connect with them as a contact and see their messages in group chats and communities.",
     "group-details": "Group details",
     "edit-name-and-image": "Edit name and image",
     "change-group-privacy": "Change group privacy",
@@ -2593,5 +2594,13 @@
     "one-user-was-invited": "1 user was invited",
     "n-users-were-invited": "{{count}} users were invited",
     "invite-friend-to-status": "Invite friends to Status",
-    "send-community-link": "Send community link"
+    "send-community-link": "Send community link",
+    "enter-private-key": "Enter the private key of an address",
+    "enter-private-key-placeholder": "Enter your private key",
+    "import-private-key-info": "New addresses cannot be derived from an account imported from a private key. Import using a seed phrase if you wish to derive addresses.",
+    "invalid-private-key": "It’s not a valid private key",
+    "private-key-public-address": "Public address of private key",
+    "this-account-has-no-activity": "This account has no activity",
+    "this-address-has-activity": "This address has activity",
+    "scanning-for-activity": "Scanning for activity..."
 }

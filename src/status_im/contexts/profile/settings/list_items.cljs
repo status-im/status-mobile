@@ -17,13 +17,12 @@
      :image       :icon
      :blur?       true
      :action      :arrow}]
-   [(when config/show-not-implemented-features?
-      {:title       (i18n/label :t/messages)
-       :on-press    not-implemented/alert
-       :image-props :i/messages
-       :image       :icon
-       :blur?       true
-       :action      :arrow})
+   [{:title       (i18n/label :t/messages)
+     :on-press    #(rf/dispatch [:open-modal :screen/settings-messages])
+     :image-props :i/messages
+     :image       :icon
+     :blur?       true
+     :action      :arrow}
     (when config/show-not-implemented-features?
       {:title       (i18n/label :t/wallet)
        :on-press    not-implemented/alert
