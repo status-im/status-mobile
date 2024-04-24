@@ -46,7 +46,7 @@
                                                             ens-name])
                                              [ens-name public-key])
         on-unblock-press    (rn/use-callback (fn []
-                                               (rf/dispatch [:contact.ui/unblock-contact-pressed
+                                               (rf/dispatch [:contact/unblock-contact
                                                              public-key])
                                                (rf/dispatch [:toasts/upsert
                                                              {:id   :user-unblocked

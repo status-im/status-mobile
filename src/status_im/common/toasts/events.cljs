@@ -19,7 +19,7 @@
                      (update :toasts dissoc :hide-toasts-timer-set))}
 
       (and (not update?) (= (count ordered) 1))
-      (assoc :show-toasts [(:view-id db) (:theme db)])
+      (assoc :show-toasts [(:view-id db) (or (:theme opts) (:theme db))])
 
       (not (:id opts))
       (update-in [:db :toasts :next-toast-number] inc))))

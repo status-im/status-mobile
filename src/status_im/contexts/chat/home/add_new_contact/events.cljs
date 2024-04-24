@@ -6,7 +6,6 @@
     [status-im.contexts.chat.contacts.events :as data-store.contacts]
     status-im.contexts.chat.home.add-new-contact.effects
     [utils.ens.stateofus :as stateofus]
-    [utils.ethereum.chain :as chain]
     [utils.string :as utils.string]))
 
 (defn init-contact
@@ -115,8 +114,7 @@
                                                 :failure-fn failure-fn}])}}
       :resolve-ens      {:db (assoc db :contacts/new-identity contact)
                          :effects.contacts/resolve-public-key-from-ens
-                         {:chain-id (chain/chain-id db)
-                          :ens ens
+                         {:ens ens
                           :on-success
                           #(re-frame/dispatch [:contacts/set-new-identity-success
                                                {:input            input

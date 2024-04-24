@@ -139,6 +139,7 @@
       [input-section
        (assoc props
               :value-internal     value-internal
+              :theme              theme
               :set-value-internal set-value-internal
               :crypto?            crypto?)]
       [button/button

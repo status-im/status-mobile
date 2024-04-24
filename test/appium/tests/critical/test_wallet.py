@@ -98,8 +98,6 @@ class TestWalletMultipleDevice(MultipleSharedDeviceTestCase):
         self.errors.verify_no_errors()
 
     @marks.testrail_id(727229)
-    @marks.xfail(reason="Assets are not shown on Sepolia, https://github.com/status-im/status-mobile/issues/19752",
-                 run=False)
     def test_wallet_send_eth(self):
         sender_balance, receiver_balance, eth_amount_sender, eth_amount_receiver = self._get_balances_before_tx()
 
@@ -115,8 +113,6 @@ class TestWalletMultipleDevice(MultipleSharedDeviceTestCase):
                                       eth_amount_receiver)
 
     @marks.testrail_id(727230)
-    @marks.xfail(reason="Assets are not shown on Sepolia, https://github.com/status-im/status-mobile/issues/19752",
-                 run=False)
     def test_wallet_send_asset_from_drawer(self):
         sender_balance, receiver_balance, eth_amount_sender, eth_amount_receiver = self._get_balances_before_tx()
         self.wallet_2.close_account_button.click()
@@ -187,8 +183,6 @@ class TestWalletOneDevice(MultipleSharedDeviceTestCase):
         self.errors.verify_no_errors()
 
     @marks.testrail_id(727232)
-    @marks.xfail(reason="Can't find activity on Sepolia, https://github.com/status-im/status-mobile/issues/19752",
-                 run=False)
     def test_wallet_add_remove_watch_only_account(self):
         self.wallet_view.just_fyi("Adding new watch only account")
         new_account_name = "Account to watch"

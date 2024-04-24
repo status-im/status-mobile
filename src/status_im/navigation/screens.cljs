@@ -48,6 +48,9 @@
     [status-im.contexts.profile.edit.name.view :as edit-name]
     [status-im.contexts.profile.edit.view :as edit-profile]
     [status-im.contexts.profile.profiles.view :as profiles]
+    [status-im.contexts.profile.settings.screens.messages.blocked-users.view :as
+     settings.blocked-users]
+    [status-im.contexts.profile.settings.screens.messages.view :as settings.messages]
     [status-im.contexts.profile.settings.screens.password.view :as settings-password]
     [status-im.contexts.profile.settings.view :as settings]
     [status-im.contexts.settings.wallet.saved-addresses.view :as saved-addresses-settings]
@@ -69,6 +72,8 @@
     [status-im.contexts.wallet.add-account.add-address-to-watch.view :as wallet-add-address-to-watch]
     [status-im.contexts.wallet.add-account.create-account.edit-derivation-path.view :as
      wallet-edit-derivation-path]
+    [status-im.contexts.wallet.add-account.create-account.import-private-key.view :as
+     wallet-import-private-key]
     [status-im.contexts.wallet.add-account.create-account.new-keypair.backup-recovery-phrase.view :as
      wallet-backup-recovery-phrase]
     [status-im.contexts.wallet.add-account.create-account.new-keypair.check-your-backup.view :as
@@ -392,6 +397,10 @@
     {:name      :screen/wallet.edit-derivation-path
      :component wallet-edit-derivation-path/view}
 
+    {:name      :screen/wallet.import-private-key
+     :options   {:insets {:top? true}}
+     :component wallet-import-private-key/view}
+
     {:name      :screen/wallet.collectible
      :component wallet-collectible/view}
 
@@ -481,7 +490,15 @@
 
     {:name      :screen/settings.saved-addresses
      :options   options/transparent-modal-screen-options
-     :component saved-addresses-settings/view}]
+     :component saved-addresses-settings/view}
+
+    {:name      :screen/settings-messages
+     :options   options/transparent-modal-screen-options
+     :component settings.messages/view}
+
+    {:name      :screen/settings-blocked-users
+     :options   options/transparent-modal-screen-options
+     :component settings.blocked-users/view}]
 
    [{:name    :shell
      :options {:theme :dark}}]

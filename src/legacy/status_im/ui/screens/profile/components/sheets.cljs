@@ -22,7 +22,7 @@
         :loading             @in-progress?
         :accessibility-label :block-contact-confirm
         :on-press            #(do (reset! in-progress? true)
-                                  (re-frame/dispatch [:contact.ui/block-contact-confirmed public-key]))}
+                                  (re-frame/dispatch [:contact/block-contact public-key]))}
        (i18n/label :t/block)]
       [react/view {:height 8}]
       [quo/button
