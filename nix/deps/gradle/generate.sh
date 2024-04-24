@@ -54,7 +54,8 @@ org.jetbrains.kotlin.jvm:org.jetbrains.kotlin.jvm.gradle.plugin:1.8.0
 com.android.tools.build:gradle:8.1.1
 com.google.errorprone:error_prone_annotations:2.7.1
 com.android.tools.lint:lint-gradle:31.1.1
-org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.8.0' \
+org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.8.0
+com.android.tools.build:gradle:3.5.4' \
         >> "${DEPS_LIST}"
 }
 

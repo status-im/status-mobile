@@ -2,6 +2,13 @@
           xmlns:tools="http://schemas.android.com/tools"
           android:installLocation="auto">
 
+    <queries>
+        <intent>
+            <action android:name="android.intent.action.SEND_MULTIPLE" />
+            <data android:mimeType="*/*" />
+        </intent>
+    </queries>
+
     <!-- non-dangerous permissions -->
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE"/>

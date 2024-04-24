@@ -62,10 +62,8 @@
      :weight              :semi-bold
      :accessibility-label accessibility-label}
     title]
-   (when right
-     [rn/view {:style style/right-container}
-      (case right
-        :counter [right-counter props]
-        :action  [right-action props]
-        :tag     [right-tag props]
-        nil)])])
+   (case right
+     :counter [right-counter props]
+     :action  [right-action props]
+     :tag     [right-tag props]
+     nil)])

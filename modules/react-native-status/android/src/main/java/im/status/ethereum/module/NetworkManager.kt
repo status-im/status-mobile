@@ -74,4 +74,5 @@ class NetworkManager(private val reactContext: ReactApplicationContext) : ReactC
     fun recover(rpcParams: String, callback: Callback) {
         utils.executeRunnableStatusGoMethod({ Statusgo.recover(rpcParams) }, callback)
     }
+
 }
