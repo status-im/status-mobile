@@ -2582,8 +2582,6 @@
     "one-user-was-invited": "1 user was invited",
     "n-users-were-invited": "{{count}} users were invited",
     "invite-friend-to-status": "Invite friends to Status",
-<<<<<<< HEAD
-    "send-community-link": "Send community link",
     "enter-private-key": "Enter the private key of an address",
     "enter-private-key-placeholder": "Enter your private key",
     "import-private-key-info": "New addresses cannot be derived from an account imported from a private key. Import using a seed phrase if you wish to derive addresses.",
@@ -2591,13 +2589,6 @@
     "private-key-public-address": "Public address of private key",
     "this-account-has-no-activity": "This account has no activity",
     "this-address-has-activity": "This address has activity",
-    "scanning-for-activity": "Scanning for activity..."
-=======
+    "scanning-for-activity": "Scanning for activity...",
     "send-community-link": "Send community link"
-<<<<<<< HEAD
-=======
->>>>>>> eb996e861 (lint)
->>>>>>> 4c97cd202 (lint)
-=======
->>>>>>> aa6b144b4 (lint)
 }
