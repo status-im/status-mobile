@@ -14,27 +14,29 @@
 
 (defn view
   []
-  (let [{:keys [url community-id]}  (rf/sub [:get-screen-params])
-        window-width                (rf/sub [:dimensions/window-width])
+  (let [{:keys [url community-id]} (rf/sub [:get-screen-params])
+        window-width               (rf/sub [:dimensions/window-width])
         {thumbnail-uri  :logo
          color          :color
-         community-name :name} (rf/sub [:communities/for-context-tag community-id])
-        navigate-back               (rn/use-callback #(rf/dispatch [:navigate-back]))
-        on-press-share              (rn/use-callback (fn []
-                                                       (rf/dispatch
-                                                        [:open-share
-                                                         {:options (if platform/ios?
-                                                                     {:activityItemSources [{:placeholderItem {:type    :text
-                                                                                                               :content url}
-                                                                                             :item            {:default {:type    :text
-                                                                                                                         :content url}}
-                                                                                             :linkMetadata    {:title (i18n/label
-                                                                                                                       :t/share-community)}}]}
-                                                                     {:title     (i18n/label :t/share-community)
-                                                                      :subject   (i18n/label :t/share-community)
-                                                                      :message   url
-                                                                      :isNewTask true})}]))
-                                                     [url])]
+         community-name :name}     (rf/sub [:communities/for-context-tag community-id])
+        navigate-back              (rn/use-callback #(rf/dispatch [:navigate-back]))
+        on-press-share             (rn/use-callback
+                                    (fn []
+                                      (rf/dispatch
+                                       [:open-share
+                                        {:options (if platform/ios?
+                                                    {:activityItemSources
+                                                     [{:placeholderItem {:type    :text
+                                                                         :content url}
+                                                       :item            {:default {:type    :text
+                                                                                   :content url}}
+                                                       :linkMetadata    {:title (i18n/label
+                                                                                 :t/share-community)}}]}
+                                                    {:title     (i18n/label :t/share-community)
+                                                     :subject   (i18n/label :t/share-community)
+                                                     :message   url
+                                                     :isNewTask true})}]))
+                                    [url])]
     [quo/overlay {:type :shell}
      [rn/view
       {:style {:padding-top (safe-area/get-top)}
