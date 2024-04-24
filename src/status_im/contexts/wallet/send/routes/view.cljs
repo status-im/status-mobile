@@ -214,8 +214,8 @@
            on-press-to-network current-screen-id]}]
 
   (let [token-symbol                                   (:symbol token)
-        nav-current-screen-id         (rf/sub [:view-id])
-        active-screen?                    (= nav-current-screen-id current-screen-id)
+        nav-current-screen-id                          (rf/sub [:view-id])
+        active-screen?                                 (= nav-current-screen-id current-screen-id)
         loading-suggested-routes?                      (rf/sub
                                                         [:wallet/wallet-send-loading-suggested-routes?])
         from-values-by-chain                           (rf/sub

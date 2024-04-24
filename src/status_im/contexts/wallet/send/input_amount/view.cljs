@@ -115,10 +115,10 @@
                                                token-balance))
             fiat-limit                    (.toFixed (* token-balance conversion-rate) 2)
             current-limit                 (if @crypto-currency? crypto-limit fiat-limit)
-            valid-input?        (not (or (empty? (controlled-input/input-value input-state))
-                                         (<= (controlled-input/numeric-value input-state) 0)
-                                         (> (controlled-input/numeric-value input-state)
-                                            current-limit)))
+            valid-input?                  (not (or (empty? (controlled-input/input-value input-state))
+                                                   (<= (controlled-input/numeric-value input-state) 0)
+                                                   (> (controlled-input/numeric-value input-state)
+                                                      current-limit)))
             current-currency              (if @crypto-currency? token-symbol fiat-currency)
             input-num-value               (controlled-input/numeric-value input-state)
             confirm-disabled?             (or (nil? route)
@@ -189,9 +189,9 @@
            :on-swap         #(reset! crypto-currency? %)
            :on-token-press  show-select-asset-sheet}]
          [routes/view
-          {:token                  token
-           :input-value            (controlled-input/input-value input-state)
-           :valid-input? valid-input?
+          {:token             token
+           :input-value       (controlled-input/input-value input-state)
+           :valid-input?      valid-input?
            :current-screen-id current-screen-id}]
          (when (or loading-routes? (seq route))
            [estimated-fees
