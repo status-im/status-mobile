@@ -59,7 +59,7 @@
                                      :selected-storage-type :default
                                      :selected-id           (-> result first :id)
                                      :step                  :choose-key))))
-   :navigate-to :choose-name})
+   :navigate-to [:choose-name (:theme db)]})
 
 (rf/defn generate-and-derive-addresses
   {:events [:generate-and-derive-addresses]}

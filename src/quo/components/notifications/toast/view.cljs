@@ -72,7 +72,8 @@
    "
   [{:keys [type icon title text action undo-duration undo-on-press container-style theme user]
     :or   {type :neutral icon :i/placeholder}}]
-  (let [context-theme theme
+  (let [context-theme (quo.theme/use-theme)
+        context-theme (or theme context-theme)
         icon-name     (case type
                         :positive (if (= theme :light)
                                     :i/correct

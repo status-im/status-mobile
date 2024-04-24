@@ -61,7 +61,7 @@
     [rn/view {:style (style/container container-style)}
      [rn/text-input
       (merge {:accessibility-label    :recovery-phrase-input
-              :style                  (style/input)
+              :style                  (style/input theme)
               :placeholder-text-color (style/placeholder-color state theme blur?)
               :cursor-color           (style/cursor-color customization-color theme)
               :keyboard-appearance    theme

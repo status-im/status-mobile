@@ -101,50 +101,52 @@
 (defn scroll-page
   [_ _ _]
   (let [scroll-height (reagent/atom negative-scroll-position-0)]
-    (fn [{:keys [theme cover-image cover-color logo on-scroll
+    (fn [{:keys [cover-image cover-color logo on-scroll
                  collapsed? height top-nav title-colum background-color navigate-back? page-nav-props
                  overlay-shown? sticky-header children-style]}
          children]
-      [:<>
-       [:f> f-scroll-page-header
-        {:scroll-height  @scroll-height
-         :height         height
-         :sticky-header  sticky-header
-         :top-nav        top-nav
-         :title-colum    title-colum
-         :navigate-back? navigate-back?
-         :collapsed?     collapsed?
-         :page-nav-props page-nav-props
-         :overlay-shown? overlay-shown?}]
-       [rn/scroll-view
-        {:content-container-style           {:flex-grow 1}
-         :content-inset-adjustment-behavior :never
-         :shows-vertical-scroll-indicator   false
-         :scroll-event-throttle             16
-         :on-scroll                         (fn [^js event]
-                                              (reset! scroll-height (int
-                                                                     (oops/oget
-                                                                      event
-                                                                      "nativeEvent.contentOffset.y")))
-                                              (when on-scroll
-                                                (on-scroll @scroll-height)))}
-        (when cover-color
-          [rn/view {:style (style/cover-background cover-color)}])
-        (when cover-image
-          [rn/view {:style {:height (if collapsed? 110 151)}}
-           [rn/image
-            {:source cover-image
-             ;; Using negative margin-bottom as a workaround because on Android,
-             ;; ScrollView clips its children despite setting overflow: 'visible'.
-             ;; Related issue: https://github.com/facebook/react-native/issues/31218
-             :style  {:margin-bottom -16
-                      :flex          1}}]])
-        (when children
-          [rn/view
-           {:style (style/children-container (merge
-                                              children-style
-                                              {:border-radius    (diff-with-max-min @scroll-height 16 0)
-                                               :background-color background-color}))}
-           (when (and (not collapsed?) cover-image)
-             [:f> f-display-picture @scroll-height logo theme])
-           children])]])))
+      (let [theme (quo.theme/use-theme)]
+        [:<>
+         [:f> f-scroll-page-header
+          {:scroll-height  @scroll-height
+           :height         height
+           :sticky-header  sticky-header
+           :top-nav        top-nav
+           :title-colum    title-colum
+           :navigate-back? navigate-back?
+           :collapsed?     collapsed?
+           :page-nav-props page-nav-props
+           :overlay-shown? overlay-shown?}]
+         [rn/scroll-view
+          {:content-container-style           {:flex-grow 1}
+           :content-inset-adjustment-behavior :never
+           :shows-vertical-scroll-indicator   false
+           :scroll-event-throttle             16
+           :on-scroll                         (fn [^js event]
+                                                (reset! scroll-height (int
+                                                                       (oops/oget
+                                                                        event
+                                                                        "nativeEvent.contentOffset.y")))
+                                                (when on-scroll
+                                                  (on-scroll @scroll-height)))}
+          (when cover-color
+            [rn/view {:style (style/cover-background cover-color)}])
+          (when cover-image
+            [rn/view {:style {:height (if collapsed? 110 151)}}
+             [rn/image
+              {:source cover-image
+               ;; Using negative margin-bottom as a workaround because on Android,
+               ;; ScrollView clips its children despite setting overflow: 'visible'.
+               ;; Related issue: https://github.com/facebook/react-native/issues/31218
+               :style  {:margin-bottom -16
+                        :flex          1}}]])
+          (when children
+            [rn/view
+             {:style (style/children-container
+                      (merge
+                       children-style
+                       {:border-radius    (diff-with-max-min @scroll-height 16 0)
+                        :background-color background-color}))}
+             (when (and (not collapsed?) cover-image)
+               [:f> f-display-picture @scroll-height logo theme])
+             children])]]))))
