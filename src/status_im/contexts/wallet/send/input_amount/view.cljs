@@ -115,7 +115,8 @@
                                                token-balance))
             fiat-limit                    (.toFixed (* token-balance conversion-rate) 2)
             current-limit                 (if @crypto-currency? crypto-limit fiat-limit)
-            valid-input?                  (not (or (empty? (controlled-input/input-value input-state))
+            valid-input?                  (not (or (string/blank? (controlled-input/input-value
+                                                                   input-state))
                                                    (<= (controlled-input/numeric-value input-state) 0)
                                                    (> (controlled-input/numeric-value input-state)
                                                       current-limit)))
@@ -123,7 +124,7 @@
             input-num-value               (controlled-input/numeric-value input-state)
             confirm-disabled?             (or (nil? route)
                                               (empty? route)
-                                              (empty? (controlled-input/input-value input-state))
+                                              (string/blank? (controlled-input/input-value input-state))
                                               (<= input-num-value 0)
                                               (> input-num-value current-limit))
             amount-text                   (str (controlled-input/input-value input-state)
