@@ -35,6 +35,61 @@
    {:id :collectibles :label (i18n/label :t/collectibles) :accessibility-label :collectibles-tab}
    {:id :activity :label (i18n/label :t/activity) :accessibility-label :activity-tab}])
 
+(defn option
+  [{:keys [icon label on-press danger? sub-label chevron? add-divider? accessibility-label right-icon]}]
+  {:icon                icon
+   :label               label
+   :on-press            on-press
+   :danger?             danger?
+   :sub-label           sub-label
+   :right-icon          (or right-icon (when chevron? :i/chevron-right))
+   :add-divider?        add-divider?
+   :accessibility-label accessibility-label})
+
+(defn options
+  [account-name]
+  [{:icon                :i/arrow-up
+    :label               (i18n/label :t/send-to-user {:user account-name})
+    :on-press            #(js/alert "TODO: to be implemented, requires design input")
+    :accessibility-label :manage-notifications}
+   {:icon                :i/link
+    :right-icon          :i/external
+    :label               (i18n/label :t/view-address-on-website {:website "Etherscan"})
+    :on-press            #(js/alert "TODO: to be implemented, requires design input")
+    :accessibility-label :manage-notifications}
+   {:icon                :i/link
+    :right-icon          :i/external
+    :label               (i18n/label :t/view-address-on-website {:website "Optimistic"})
+    :on-press            #(js/alert "TODO: to be implemented, requires design input")
+    :accessibility-label :manage-notifications}
+   {:icon                :i/share
+    :label               (i18n/label :t/share-address)
+    :on-press            #(js/alert "TODO: to be implemented, requires design input")
+    :accessibility-label :manage-notifications}
+   {:icon                :i/qr-code
+    :label               (i18n/label :t/show-address-qr)
+    :on-press            #(js/alert "TODO: to be implemented, requires design input")
+    :accessibility-label :manage-notifications}
+   {:icon                :i/edit
+    :label               (i18n/label :t/edit-account)
+    :on-press            #(js/alert "TODO: to be implemented, requires design input")
+    :accessibility-label :manage-notifications}
+   {:icon                :i/delete
+    :label               (i18n/label :t/remove-account)
+    :on-press            #(js/alert "TODO: to be implemented, requires design input")
+    :danger?             true
+    :accessibility-label :manage-notifications
+    :add-divider?        true}])
+
+(defn sample-options
+  [account-name]
+  (map option (options account-name)))
+
+(defn account-sheet
+  [{:keys [key-uid address prod-preferred-chain-ids] account-name :name}]
+  [quo/action-drawer
+   [(sample-options account-name)]])
+
 (defn view
   []
   (let [[selected-tab set-selected-tab] (rn/use-state (:id (first tabs-data)))
@@ -69,7 +124,18 @@
        :data                              cards
        :horizontal                        true
        :separator                         [rn/view {:style style/separator}]
-       :render-fn                         (fn [item] [quo/account-card item])
+       :render-fn                         (fn [{:keys [public-key ens-name color] account-name :name :as item}]
+                                            (let [updated-item (assoc item :on-long-press (fn [] (rf/dispatch [:show-bottom-sheet
+                                                                                                               {:selected-item (fn []
+                                                                                                                                 [quo/saved-address {:active-state? false
+                                                                                                                                                     :user-props {:name                account-name
+                                                                                                                                                                  :address             public-key
+                                                                                                                                                                  :ens                 ens-name
+                                                                                                                                                                  :customization-color color}}])
+                                                                                                                :content (fn []
+                                                                                                                           [account-sheet
+                                                                                                                            item])}])))]
+                                            [quo/account-card updated-item]))
        :shows-horizontal-scroll-indicator false}]
      [quo/tabs
       {:style          style/tabs

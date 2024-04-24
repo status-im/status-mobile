@@ -2589,5 +2589,7 @@
     "private-key-public-address": "Public address of private key",
     "this-account-has-no-activity": "This account has no activity",
     "this-address-has-activity": "This address has activity",
-    "scanning-for-activity": "Scanning for activity..."
+    "scanning-for-activity": "Scanning for activity...",
+    "send-to-user": "Send to {{user}}",
+    "view-address-on-website": "View address on {{website}}"
 }

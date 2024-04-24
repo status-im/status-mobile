@@ -96,7 +96,7 @@
 
 (defn- user-account
   [{:keys [name balance percentage-value loading? amount customization-color type emoji metrics?
-           on-press]}]
+           on-press on-long-press]}]
   (let [theme                  (quo.theme/use-theme)
         [pressed? set-pressed] (rn/use-state false)
         on-press-in            (rn/use-callback #(set-pressed true))
@@ -110,7 +110,8 @@
         :theme               theme
         :metrics?            metrics?}]
       [rn/pressable
-       {:on-press-in  on-press-in
+       {:on-long-press on-long-press
+        :on-press-in  on-press-in
         :on-press-out on-press-out
         :style        (style/card {:customization-color customization-color
                                    :type                type
