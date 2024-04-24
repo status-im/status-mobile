@@ -81,9 +81,9 @@
  :-> :address-prefix)
 
 (rf/reg-sub
- :wallet/wallet-send-selected-networks
+ :wallet/wallet-send-receiver-networks
  :<- [:wallet/wallet-send]
- :-> :selected-networks)
+ :-> :receiver-networks)
 
 (rf/reg-sub
  :wallet/wallet-send-route

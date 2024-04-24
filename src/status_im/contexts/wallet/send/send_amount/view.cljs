@@ -12,4 +12,5 @@
     :button-one-label  (i18n/label :t/confirm)
     :on-navigate-back  (fn []
                          (rf/dispatch [:wallet/clean-disabled-from-networks])
+                         (rf/dispatch [:wallet/clean-send-amount])
                          (rf/dispatch [:navigate-back]))}])
