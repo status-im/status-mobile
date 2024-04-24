@@ -24,7 +24,7 @@
                                               :text (i18n/label :t/user-blocked
                                                                 {:username
                                                                  full-name})}])
-                               (rf/dispatch [:contact.ui/block-contact-confirmed
+                               (rf/dispatch [:contact/block-contact
                                              public-key])
                                (rf/dispatch [:contact.ui/remove-contact-pressed
                                              {:public-key public-key}])

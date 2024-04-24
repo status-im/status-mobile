@@ -3,7 +3,8 @@
     [clojure.string :as string]
     [legacy.status-im.utils.deprecated-types :as types]
     [react-native.platform :as platform]
-    [status-im.config :as config]))
+    [status-im.config :as config]
+    [utils.ethereum.chain :as chain]))
 
 (defn- add-log-level
   [config log-level]
@@ -105,7 +106,7 @@
     (some #(string/includes? (str %) "waku") ks)))
 
 (defn get-multiaccount-node-config
-  [{:keys [profile/profile :networks/networks :networks/current-network]
+  [{:keys [profile/profile :networks/current-network]
     :as   db}]
   (let [wakuv2-config (get profile :wakuv2-config {})
         fleet-key (current-fleet-key db)
@@ -116,7 +117,10 @@
         {:keys [installation-id log-level
                 waku-bloom-filter-mode]}
         profile]
-    (cond-> (get-in networks [current-network :config])
+    (cond-> {:NetworkId      (chain/chain-keyword->chain-id :mainnet)
+             :DataDir        "/ethereum/mainnet_rpc"
+             :UpstreamConfig {:Enabled true
+                              :URL     config/mainnet-rpc-url}}
       :always
       (get-base-node-config)
 
@@ -173,5 +177,3 @@
 
       :always
       (add-log-level log-level))))
-
-

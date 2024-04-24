@@ -113,7 +113,7 @@
     (h/is-truthy (h/get-by-text "Title"))
     (h/is-truthy (h/get-by-label-text :address-text-input)))
 
-  (h/test "Address input"
+  (h/test "Recovery phrase"
     (h/render [page-top/view
                {:title "Title"
                 :input :recovery-phrase}])

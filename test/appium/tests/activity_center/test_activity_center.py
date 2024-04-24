@@ -65,7 +65,7 @@ class TestActivityCenterContactRequestMultipleDevicePR(MultipleSharedDeviceTestC
         self.device_1.wait_for_application_to_be_running(app_package)
 
         self.device_1.just_fyi('Device1 verifies pending contact request')
-        self.home_1.contacts_tab.click()
+        self.home_1.contacts_tab.click_until_presence_of_element(self.home_1.pending_contact_request_text)
         for indicator in (self.home_1.notifications_unread_badge, self.home_1.contact_new_badge):
             if not indicator.is_element_displayed():
                 self.errors.append(
