@@ -26,10 +26,17 @@
               :type :positive
               :text (i18n/label :t/account-created {:name (:name account)})}]]]})))
 
+
+(defn set-current-viewing-account
+  [{:keys [db]} [address]]
+  {:db (assoc-in db [:wallet :current-viewing-account-address] address)})
+
+(rf/reg-event-fx :wallet/set-current-viewing-account set-current-viewing-account)
+
 (rf/reg-event-fx :wallet/navigate-to-account
- (fn [{:keys [db]} [address]]
-   {:db (assoc-in db [:wallet :current-viewing-account-address] address)
-    :fx [[:dispatch [:navigate-to :screen/wallet.accounts address]]]}))
+ (fn [_cofx [address]]
+   {:fx [[:dispatch [:wallet/set-current-viewing-account address]]
+         [:dispatch [:navigate-to :screen/wallet.accounts address]]]}))
 
 (rf/reg-event-fx :wallet/navigate-to-new-account
  (fn [{:keys [db]} [address]]

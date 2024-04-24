@@ -111,14 +111,14 @@
         :metrics?            metrics?}]
       [rn/pressable
        {:on-long-press on-long-press
-        :on-press-in  on-press-in
-        :on-press-out on-press-out
-        :style        (style/card {:customization-color customization-color
-                                   :type                type
-                                   :theme               theme
-                                   :pressed?            pressed?
-                                   :metrics?            metrics?})
-        :on-press     on-press}
+        :on-press-in   on-press-in
+        :on-press-out  on-press-out
+        :style         (style/card {:customization-color customization-color
+                                    :type                type
+                                    :theme               theme
+                                    :pressed?            pressed?
+                                    :metrics?            metrics?})
+        :on-press      on-press}
        (when (and customization-color (and (not watch-only?) (not missing-keypair?)))
          [customization-colors/overlay
           {:customization-color customization-color
