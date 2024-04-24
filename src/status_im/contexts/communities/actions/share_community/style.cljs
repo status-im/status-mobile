@@ -58,3 +58,7 @@
 (def qr-code-view
   {:padding-vertical vertical-padding
    :align-items      :center})
+
+(def text-wrapper
+  {:flex-direction :row
+   :align-items    :center})

@@ -54,7 +54,7 @@
          :bottom-color-override colors/white-opa-5}]
        [rn/view
         {:style style/qr-top-wrapper}
-        [rn/view {:style {:flex-direction :row}}
+        [rn/view {:style style/text-wrapper}
          (when thumbnail-uri
            [fast-image/fast-image
             {:source {:uri thumbnail-uri}
@@ -80,8 +80,7 @@
           :url                 url
           :avatar              :community
           :customization-color color
-          :picture             (or thumbnail-uri (resources/get-mock-image :status-logo))
-          :full-name           community-name}]]]
+          :picture             (or thumbnail-uri (resources/get-mock-image :status-logo))}]]]
       [quo/text
        {:size   :paragraph-2
         :weight :regular
