@@ -79,7 +79,7 @@
                              (reset! ref r)
                              (when get-ref (get-ref r)))
                            [get-ref])
-        theme             (quo.theme/use-theme-value)
+        theme             (quo.theme/use-theme)
         [state set-state] (rn/use-state :default)
         [value set-value] (rn/use-state default-value)
         on-clear          (rn/use-callback
