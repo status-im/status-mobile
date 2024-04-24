@@ -64,7 +64,7 @@
                                                                   :max-priority-fee-per-gas "0.011000001"
                                                                   :eip1559-enabled true}}]
    :wallet/wallet-send-suggested-routes            {:candidates []}
-   :wallet/wallet-send-selected-networks           [1]
+   :wallet/wallet-send-receiver-networks           [1]
    :view-id                                        :screen/wallet.send-input-amount
    :wallet/wallet-send-to-address                  "0x04371e2d9d66b82f056bc128064"
    :profile/currency-symbol                        "$"
