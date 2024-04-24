@@ -283,7 +283,7 @@
                                           {:content (fn []
                                                       [select-asset-bottom-sheet
                                                        clear-input!])}])
-            selected-networks          (rf/sub [:wallet/wallet-send-selected-networks])
+            selected-networks          (rf/sub [:wallet/wallet-send-receiver-networks])
             affordable-networks        (send-utils/find-affordable-networks
                                         {:balances-per-chain token-balances-per-chain
                                          :input-value        @input-value

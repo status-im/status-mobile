@@ -66,7 +66,7 @@
   [{:keys [fetch-routes theme]}]
   (let [network-details     (rf/sub [:wallet/network-details])
         {:keys [color]}     (rf/sub [:wallet/current-viewing-account])
-        selected-networks   (rf/sub [:wallet/wallet-send-selected-networks])
+        selected-networks   (rf/sub [:wallet/wallet-send-receiver-networks])
         prefix              (rf/sub [:wallet/wallet-send-address-prefix])
         prefix-seq          (string/split prefix #":")
         grouped-details     (group-by #(contains? (set prefix-seq) (:short-name %)) network-details)

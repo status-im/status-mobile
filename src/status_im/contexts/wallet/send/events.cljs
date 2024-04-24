@@ -76,6 +76,10 @@
  (fn [{:keys [db]}]
    {:db (update-in db [:wallet :ui :send] dissoc :recipient :to-address)}))
 
+(rf/reg-event-fx :wallet/clean-send-amount
+ (fn [{:keys [db]}]
+   {:db (update-in db [:wallet :ui :send] dissoc :amount)}))
+
 (rf/reg-event-fx :wallet/clean-disabled-from-networks
  (fn [{:keys [db]}]
    {:db (update-in db [:wallet :ui :send] dissoc :disabled-from-chain-ids)}))
@@ -86,7 +90,7 @@
    (let [[prefix to-address] (utils/split-prefix-and-address address)
          testnet-enabled?    (get-in db [:profile/profile :test-networks-enabled?])
          goerli-enabled?     (get-in db [:profile/profile :is-goerli-enabled?])
-         selected-networks   (network-utils/resolve-receiver-networks
+         receiver-networks   (network-utils/resolve-receiver-networks
                               {:prefix           prefix
                                :testnet-enabled? testnet-enabled?
                                :goerli-enabled?  goerli-enabled?})]
@@ -94,7 +98,7 @@
               (assoc-in [:wallet :ui :send :recipient] (or recipient address))
               (assoc-in [:wallet :ui :send :to-address] to-address)
               (assoc-in [:wallet :ui :send :address-prefix] prefix)
-              (assoc-in [:wallet :ui :send :selected-networks] selected-networks))
+              (assoc-in [:wallet :ui :send :receiver-networks] receiver-networks))
       :fx [[:dispatch
             [:wallet/wizard-navigate-forward
              {:current-screen stack-id
@@ -104,7 +108,16 @@
 (rf/reg-event-fx
  :wallet/update-receiver-networks
  (fn [{:keys [db]} [selected-networks]]
-   {:db (assoc-in db [:wallet :ui :send :selected-networks] selected-networks)}))
+   (let [amount                           (get-in db [:wallet :ui :send :amount])
+         disabled-from-chain-ids          (get-in db [:wallet :ui :send :disabled-from-chain-ids])
+         filtered-disabled-from-chain-ids (filter (fn [chain-id]
+                                                    (some #(= chain-id %)
+                                                          selected-networks))
+                                                  disabled-from-chain-ids)]
+     {:db (-> db
+              (assoc-in [:wallet :ui :send :receiver-networks] selected-networks)
+              (assoc-in [:wallet :ui :send :disabled-from-chain-ids] filtered-disabled-from-chain-ids))
+      :fx [[:dispatch [:wallet/get-suggested-routes {:amount amount}]]]})))
 
 (rf/reg-event-fx
  :wallet/send-select-token
@@ -195,6 +208,7 @@
          transaction-type        (get-in db [:wallet :ui :send :tx-type])
          collectible             (get-in db [:wallet :ui :send :collectible])
          to-address              (get-in db [:wallet :ui :send :to-address])
+         receiver-networks       (get-in db [:wallet :ui :send :receiver-networks])
          disabled-from-chain-ids (or (get-in db [:wallet :ui :send :disabled-from-chain-ids]) [])
          test-networks-enabled?  (get-in db [:profile/profile :test-networks-enabled?])
          networks                ((if test-networks-enabled? :test :prod)
@@ -215,7 +229,10 @@
          disabled-from-chain-ids disabled-from-chain-ids
          disabled-to-chain-ids   (if (= transaction-type :bridge)
                                    (filter #(not= % bridge-to-chain-id) network-chain-ids)
-                                   [])
+                                   (filter (fn [chain-id]
+                                             (not (some #(= chain-id %)
+                                                        receiver-networks)))
+                                           network-chain-ids))
          from-locked-amount      {}
          transaction-type-param  (case transaction-type
                                    :collectible constants/send-type-erc-721-transfer
@@ -233,6 +250,7 @@
                                   gas-rates
                                   from-locked-amount]]
      {:db            (-> db
+                         (assoc-in [:wallet :ui :send :amount] amount)
                          (assoc-in [:wallet :ui :send :loading-suggested-routes?] true)
                          (assoc-in [:wallet :ui :send :suggested-routes-call-timestamp] now))
       :json-rpc/call [{:method     "wallet_getSuggestedRoutes"
