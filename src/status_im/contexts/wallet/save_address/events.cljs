@@ -16,10 +16,10 @@
                chain-short-names (str constants/mainnet-short-name ":")}}]]
    (let [address-to-save {:address           address
                           :name              name
-                          :color-id          customization-color
+                          :colorId          customization-color
                           :ens               ens
-                          :is-test           test?
-                          :chain-short-names chain-short-names}]
+                          :IsTest           test?
+                          :chainShortNames chain-short-names}]
      {:json-rpc/call
       [{:method     "wakuext_upsertSavedAddress"
         :params     [address-to-save]
