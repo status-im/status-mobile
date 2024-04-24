@@ -5,8 +5,8 @@
    :margin-top         12})
 
 (defn page-wrapper
-  [inset]
-  {:padding-top inset
+  [inset-top]
+  {:padding-top inset-top
    :flex        1})
 
 (def empty-container-style

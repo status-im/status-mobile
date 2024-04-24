@@ -19,23 +19,23 @@
 
 (defn view
   []
-  (let [insets          (safe-area/get-insets)
-        saved-addresses []]
+  (let [inset-top           (safe-area/get-top)
+        customization-color (rf/sub [:profile/customization-color])
+        saved-addresses     []]
     [quo/overlay
      {:type            :shell
-      :container-style (style/page-wrapper (:top insets))}
+      :container-style (style/page-wrapper inset-top)}
      [quo/page-nav
       {:key        :header
        :background :blur
        :icon-name  :i/arrow-left
-       :on-press   #(rf/dispatch [:navigate-back])}]
+       :on-press   (rn/use-callback #(rf/dispatch [:navigate-back]))}]
      [rn/view {:style style/title-container}
       [quo/standard-title
        {:title               (i18n/label :t/saved-addresses)
         :accessibility-label :saved-addresses-header
         :right               :action
-        :customization-color :blue
+        :customization-color customization-color
         :icon                :i/add}]]
      (when-not (seq saved-addresses)
-       [empty-state])
-    ]))
+       [empty-state])]))

@@ -51,7 +51,7 @@
     [status-im.contexts.profile.settings.screens.password.view :as settings-password]
     [status-im.contexts.profile.settings.view :as settings]
     [status-im.contexts.settings.saved-addresses.view :as saved-addresses-settings]
-    [status-im.contexts.settings.wallet.view :as wallet-settings]
+    [status-im.contexts.settings.wallet-options.view :as wallet-options]
     [status-im.contexts.shell.activity-center.view :as activity-center]
     [status-im.contexts.shell.jump-to.view :as shell]
     [status-im.contexts.shell.qr-reader.view :as shell-qr-reader]
@@ -477,7 +477,7 @@
 
     {:name      :screen/settings.wallet
      :options   options/transparent-modal-screen-options
-     :component wallet-settings/view}
+     :component wallet-options/view}
 
     {:name      :screen/settings.saved-addresses
      :options   options/transparent-modal-screen-options
