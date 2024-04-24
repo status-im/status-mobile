@@ -1,4 +1,4 @@
-(ns status-im.contexts.settings.saved-addresses.style)
+(ns status-im.contexts.settings.wallet.saved-addresses.style)
 
 (def title-container
   {:padding-horizontal 20

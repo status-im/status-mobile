@@ -1,10 +1,10 @@
-(ns status-im.contexts.settings.saved-addresses.view
+(ns status-im.contexts.settings.wallet.saved-addresses.view
   (:require [quo.core :as quo]
             [quo.theme :as quo.theme]
             [react-native.core :as rn]
             [react-native.safe-area :as safe-area]
             [status-im.common.resources :as resources]
-            [status-im.contexts.settings.saved-addresses.style :as style]
+            [status-im.contexts.settings.wallet.saved-addresses.style :as style]
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]))
 
@@ -21,7 +21,8 @@
   []
   (let [inset-top           (safe-area/get-top)
         customization-color (rf/sub [:profile/customization-color])
-        saved-addresses     []]
+        saved-addresses     []
+        navigate-back       (rn/use-callback #(rf/dispatch [:navigate-back]))]
     [quo/overlay
      {:type            :shell
       :container-style (style/page-wrapper inset-top)}
@@ -29,7 +30,7 @@
       {:key        :header
        :background :blur
        :icon-name  :i/arrow-left
-       :on-press   (rn/use-callback #(rf/dispatch [:navigate-back]))}]
+       :on-press   navigate-back}]
      [rn/view {:style style/title-container}
       [quo/standard-title
        {:title               (i18n/label :t/saved-addresses)
