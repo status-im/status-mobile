@@ -42,7 +42,7 @@
    :on-press            on-press
    :danger?             danger?
    :sub-label           sub-label
-   :right-icon          (or right-icon (when chevron? :i/chevron-right))
+   :right-icon          right-icon
    :add-divider?        add-divider?
    :accessibility-label accessibility-label})
 
@@ -124,12 +124,12 @@
        :data                              cards
        :horizontal                        true
        :separator                         [rn/view {:style style/separator}]
-       :render-fn                         (fn [{:keys [public-key ens-name color] account-name :name :as item}]
+       :render-fn                         (fn [{:keys [address ens-name color] account-name :name :as item}]
                                             (let [updated-item (assoc item :on-long-press (fn [] (rf/dispatch [:show-bottom-sheet
                                                                                                                {:selected-item (fn []
                                                                                                                                  [quo/saved-address {:active-state? false
                                                                                                                                                      :user-props {:name                account-name
-                                                                                                                                                                  :address             public-key
+                                                                                                                                                                  :address             address
                                                                                                                                                                   :ens                 ens-name
                                                                                                                                                                   :customization-color color}}])
                                                                                                                 :content (fn []
