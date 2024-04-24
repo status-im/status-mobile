@@ -6,6 +6,7 @@ import com.facebook.react.bridge.Callback
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactContextBaseJavaModule
 import com.facebook.react.bridge.ReactMethod
+import com.facebook.react.bridge.ReadableArray;
 import android.util.Log
 import org.json.JSONException
 import org.json.JSONObject
@@ -140,5 +141,16 @@ class Utils(private val reactContext: ReactApplicationContext) : ReactContextBas
     @ReactMethod(isBlockingSynchronousMethod = true)
     fun toChecksumAddress(address: String): String {
         return Statusgo.toChecksumAddress(address)
+    }
+
+    fun readableArrayToStringArray(r: ReadableArray): Array<String> {
+        val length = r.size()
+        val strArray = Array(length) { "" }
+
+        for (keyIndex in 0 until length) {
+            strArray[keyIndex] = r.getString(keyIndex) ?: ""
+        }
+
+        return strArray
     }
 }

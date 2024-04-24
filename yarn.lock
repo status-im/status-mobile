@@ -7928,11 +7928,6 @@ react-native-lottie-splash-screen@^1.0.1:
     lottie-ios "3.2.3"
     lottie-react-native "^5.1.3"
 
-react-native-mail@6.1.1:
-  version "6.1.1"
-  resolved "https://registry.yarnpkg.com/react-native-mail/-/react-native-mail-6.1.1.tgz#f1b1f8034c84d2510a93e4a2a795f0db5a13595e"
-  integrity sha512-pTs180wwyh7hN/iyTC9SfOX579U4YhDlHOLxi47IGvhPJENqO/QFdBq+wWKxyhNqdQuVSy+LoeIxLreWnIeYmg==
-
 react-native-navigation@7.38.3:
   version "7.38.3"
   resolved "https://registry.yarnpkg.com/react-native-navigation/-/react-native-navigation-7.38.3.tgz#ce1715bcf51a37296792e8f39ae8d1a4da3593a7"

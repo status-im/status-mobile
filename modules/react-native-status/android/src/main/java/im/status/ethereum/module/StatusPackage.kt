@@ -24,6 +24,7 @@ class StatusPackage(private val rootedDevice: Boolean) : ReactPackage {
             add(LogManager(reactContext))
             add(Utils(reactContext))
             add(NetworkManager(reactContext))
+            add(MailManager(reactContext))
             add(RNSelectableTextInputModule(reactContext))
         }
 
