@@ -86,14 +86,14 @@
 ;;;; Navigate to
 
 (defn- navigate
-  [component]
+  [[component theme]]
   (let [{:keys [options]} (get views/screens component)]
     (dismiss-all-modals)
     (navigation/push
      (name @state/root-id)
      {:component {:id      component
                   :name    component
-                  :options (merge (options/root-options {:theme (:theme options)})
+                  :options (merge (options/root-options {:theme (or (:theme options) theme)})
                                   options)}})
     (state/navigation-state-push {:id     component
                                   :type   :stack
@@ -139,11 +139,6 @@
 
 (rf/reg-fx :navigate-back navigate-back)
 
-(rf/reg-fx :navigate-replace-fx
- (fn [view-id]
-   (navigate-back)
-   (navigate view-id)))
-
 (rf/reg-fx :navigate-back-to
  (fn [comp-id]
    (navigation/pop-to (name comp-id))
@@ -164,18 +159,19 @@
 ;;;; Modal
 
 (defn open-modal
-  [component]
+  [[component theme]]
   (let [{:keys [options]} (get views/screens component)
         sheet?            (:sheet? options)]
     (if @state/dissmissing
-      (reset! state/dissmissing component)
+      (reset! state/dissmissing [component theme])
       (do
         (swap! state/modals conj component)
         (navigation/show-modal
          {:stack {:children [{:component
                               {:name    component
                                :id      component
-                               :options (merge (options/root-options {:theme (:theme options)})
+                               :options (merge (options/root-options {:theme (or (:theme options)
+                                                                                 theme)})
                                                options
                                                (when sheet?
                                                  options/sheet-options))}}]}})))

@@ -754,6 +754,7 @@
     "invalid-range": "Invalid format, must be between {{min}} and {{max}}",
     "invalid-username-or-key": "Invalid username or chat key",
     "invalid-ens-or-key": "Invalid ENS or Chat key",
+    "invalid-characters-bio": "Invalid characters. Standard keyboard characters and emojis only.",
     "join-me": "Hey join me on Status: {{url}}",
     "join-a-community": "or join a community",
     "join-open-community": "Join Community",

@@ -12,12 +12,15 @@
 
 (rf/reg-event-fx :profile/edit-profile-picture-success
  (fn [_ [images]]
-   {:fx [[:dispatch [:profile/update-local-picture (reverse images)]]
-         [:dispatch
-          [:toasts/upsert
-           {:type  :positive
-            :theme :dark
-            :text  (i18n/label :t/profile-picture-added)}]]]}))
+   (let [has-picture? (rf/sub [:profile/has-picture])]
+     {:fx [[:dispatch [:profile/update-local-picture (reverse images)]]
+           [:dispatch
+            [:toasts/upsert
+             {:type  :positive
+              :theme :dark
+              :text  (i18n/label (if has-picture?
+                                   :t/profile-picture-updated
+                                   :t/profile-picture-added))}]]]})))
 
 (defn edit-profile-picture
   [{:keys [db]} [picture crop-width crop-height]]

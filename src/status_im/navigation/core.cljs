@@ -54,10 +54,10 @@
        (reset! state/modals (vec (butlast @state/modals)))
        (reset! state/modals []))
 
-     (let [component @state/dissmissing]
+     (let [dissmissing @state/dissmissing]
        (reset! state/dissmissing false)
-       (when (keyword? component)
-         (effects/open-modal component)))))
+       (when (vector? dissmissing)
+         (effects/open-modal dissmissing)))))
 
   ;;;; Toast
 

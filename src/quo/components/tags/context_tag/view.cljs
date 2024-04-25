@@ -16,19 +16,21 @@
     [schema.core :as schema]))
 
 (defn- tag-skeleton
-  [{:keys [theme size text] :or {size 24}} logo-component]
-  [rn/view {:style (style/tag-container size)}
-   logo-component
-   [rn/view {:style (style/tag-spacing size)}
-    [text/text
-     {:style  (style/text theme)
-      :weight :medium
-      :size   (if (= size 24) :paragraph-2 :paragraph-1)}
-     text]]])
+  [{:keys [size text] :or {size 24}} logo-component]
+  (let [theme (quo.theme/use-theme)]
+    [rn/view {:style (style/tag-container size)}
+     logo-component
+     [rn/view {:style (style/tag-spacing size)}
+      [text/text
+       {:style  (style/text theme)
+        :weight :medium
+        :size   (if (= size 24) :paragraph-2 :paragraph-1)}
+       text]]]))
 
 (defn- communities-tag
-  [{:keys [theme size community-logo community-name blur? channel? channel-name]}]
-  (let [text-size (if (= size 24) :paragraph-2 :paragraph-1)
+  [{:keys [size community-logo community-name blur? channel? channel-name]}]
+  (let [theme     (quo.theme/use-theme)
+        text-size (if (= size 24) :paragraph-2 :paragraph-1)
         icon-size (if (= size 24) 16 20)]
     [rn/view {:style (style/tag-container size)}
      [fast-image/fast-image {:style (style/circle-logo size) :source community-logo}]
@@ -54,26 +56,28 @@
   (str (subs pk 0 5) "..." (subs pk (- (count pk) 3))))
 
 (defn- address-tag
-  [{:keys [theme size address]}]
-  [rn/view {:style (style/address size)}
-   [text/text
-    {:style  (style/text theme)
-     :weight :monospace ;; TODO: fix this style (issue #17009)
-     :size   (if (= size 24) :paragraph-2 :paragraph-1)}
-    (trim-public-key address)]])
+  [{:keys [size address]}]
+  (let [theme (quo.theme/use-theme)]
+    [rn/view {:style (style/address size)}
+     [text/text
+      {:style  (style/text theme)
+       :weight :monospace ;; TODO: fix this style (issue #17009)
+       :size   (if (= size 24) :paragraph-2 :paragraph-1)}
+      (trim-public-key address)]]))
 
 (defn- icon-tag
-  [{:keys [theme size icon blur? context]}]
-  [rn/view {:style (style/icon size)}
-   [icons/icon icon
-    {:color (style/context-tag-icon-color theme blur?)
-     :size  (if (= size 24) 12 20)}]
-   [rn/view {:style (style/icon-spacing size)}
-    [text/text
-     {:style  (style/text theme)
-      :weight :medium
-      :size   (if (= size 24) :paragraph-2 :paragraph-1)}
-     context]]])
+  [{:keys [size icon blur? context]}]
+  (let [theme (quo.theme/use-theme)]
+    [rn/view {:style (style/icon size)}
+     [icons/icon icon
+      {:color (style/context-tag-icon-color theme blur?)
+       :size  (if (= size 24) 12 20)}]
+     [rn/view {:style (style/icon-spacing size)}
+      [text/text
+       {:style  (style/text theme)
+        :weight :medium
+        :size   (if (= size 24) :paragraph-2 :paragraph-1)}
+       context]]]))
 
 (defn- view-internal
   [{:keys [type size state blur? customization-color profile-picture full-name users

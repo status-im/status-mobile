@@ -66,6 +66,9 @@ RCT_EXPORT_METHOD(restoreAccountAndLogin:(NSString *)request) {
     NSData *configData = [config dataUsingEncoding:NSUTF8StringEncoding];
     NSDictionary *configJSON = [NSJSONSerialization JSONObjectWithData:configData options:NSJSONReadingMutableContainers error:nil];
     NSString *relativeDataDir = [configJSON objectForKey:@"DataDir"];
+    if (relativeDataDir == nil) {
+        relativeDataDir = @"";
+    }
     NSString *absDataDir = [rootUrl.path stringByAppendingString:relativeDataDir];
     NSURL *absDataDirUrl = [NSURL fileURLWithPath:absDataDir];
     NSString *keystoreDir = [@"/keystore/" stringByAppendingString:keyUID];
