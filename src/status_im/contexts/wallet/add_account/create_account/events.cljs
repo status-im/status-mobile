@@ -47,6 +47,17 @@
                                                     mnemonic key-uid]))
                                     on-error]})
 
+(defn seed-phrase-entered
+  [_ [seed-phrase on-error]]
+  {:fx [[:multiaccount/validate-mnemonic
+         [seed-phrase
+          (fn [mnemonic key-uid]
+            (rf/dispatch [:wallet/seed-phrase-validated
+                          mnemonic key-uid]))
+          on-error]]]})
+
+(rf/reg-event-fx :wallet/seed-phrase-entered seed-phrase-entered)
+
 (defn new-keypair-created
   [{:keys [db]} [{:keys [new-keypair]}]]
   {:db (assoc-in db [:wallet :ui :create-account :new-keypair] new-keypair)
