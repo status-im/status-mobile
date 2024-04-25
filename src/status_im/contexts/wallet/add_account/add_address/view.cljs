@@ -1,4 +1,4 @@
-(ns status-im.contexts.wallet.add-account.add-address-to-watch.view
+(ns status-im.contexts.wallet.add-account.add-address.view
   (:require
     [clojure.string :as string]
     [quo.core :as quo]
@@ -7,28 +7,38 @@
     [reagent.core :as reagent]
     [status-im.common.floating-button-page.view :as floating-button-page]
     [status-im.constants :as constants]
-    [status-im.contexts.wallet.add-account.add-address-to-watch.style :as style]
+    [status-im.contexts.wallet.add-account.add-address.style :as style]
     [status-im.contexts.wallet.common.validation :as validation]
     [status-im.subs.wallet.add-account.address-to-watch]
     [utils.debounce :as debounce]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
+(def ^:private adding-addresses-purposes
+  {:watch {:title       :t/add-address-to-watch
+           :description :t/enter-eth
+           :input-title :t/eth-or-ens}
+   :save  {:title       :t/add-address
+           :description :t/save-address-description
+           :input-title :t/address-or-end-name}})
+
 (defn- validate-address
-  [known-addresses user-input]
+  [known-addresses user-input purpose]
   (cond
-    (or (nil? user-input) (= user-input "")) nil
-    (contains? known-addresses user-input)   (i18n/label :t/address-already-in-use)
+    (or (nil? user-input) (= user-input ""))     nil
+    ;; Allow adding existing address if saving, As it'll upsert
+    (and (not= purpose :save)
+         (contains? known-addresses user-input)) (i18n/label :t/address-already-in-use)
     (not
      (or (validation/eth-address? user-input)
-         (validation/ens-name? user-input))) (i18n/label :t/invalid-address)))
+         (validation/ens-name? user-input)))     (i18n/label :t/invalid-address)))
 
 (defn- extract-address
   [scanned-text]
   (re-find constants/regx-address-contains scanned-text))
 
 (defn- address-input
-  [{:keys [input-value validation-msg validate clear-input]}]
+  [{:keys [input-value validation-msg validate clear-input purpose]}]
   (let [scanned-address (rf/sub [:wallet/scanned-address])
         empty-input?    (and (string/blank? @input-value)
                              (string/blank? scanned-address))
@@ -52,10 +62,14 @@
                    [scanned-address])
     [rn/view {:style style/input-container}
      [quo/input
-      {:accessibility-label :add-address-to-watch
+      {:accessibility-label (if (= :watch purpose)
+                              :add-address-to-watch
+                              :add-address-to-save)
        :placeholder         (i18n/label :t/address-placeholder)
        :container-style     style/input
-       :label               (i18n/label :t/eth-or-ens)
+       :label               (-> adding-addresses-purposes
+                                (get-in [purpose :input-title])
+                                i18n/label)
        :auto-capitalize     :none
        :multiline?          true
        :on-clear            clear-input
@@ -109,22 +123,27 @@
 
 (defn view
   []
-  (let [addresses           (rf/sub [:wallet/addresses])
-        input-value         (reagent/atom nil)
-        validate            #(validate-address (set addresses) %)
-        validation-msg      (reagent/atom nil)
-        clear-input         (fn []
-                              (reset! input-value nil)
-                              (reset! validation-msg nil)
-                              (rf/dispatch [:wallet/clear-address-activity])
-                              (rf/dispatch [:wallet/clean-scanned-address]))
-        customization-color (rf/sub [:profile/customization-color])]
+  (let [addresses            (rf/sub [:wallet/addresses])
+        lowercased-addresses (map string/lower-case addresses)
+        input-value          (reagent/atom nil)
+        {:keys [purpose]}    (rf/sub [:get-screen-params])
+        validate             #(validate-address (set lowercased-addresses) (string/lower-case %) purpose)
+        validation-msg       (reagent/atom nil)
+        clear-input          (fn []
+                               (reset! input-value nil)
+                               (reset! validation-msg nil)
+                               (rf/dispatch [:wallet/clear-address-activity])
+                               (rf/dispatch [:wallet/clean-scanned-address]))
+        customization-color  (rf/sub [:profile/customization-color])]
+
     (rf/dispatch [:wallet/clean-scanned-address])
     (rf/dispatch [:wallet/clear-address-activity])
     (fn []
       (let [activity-state    (rf/sub [:wallet/watch-address-activity-state])
             validated-address (rf/sub [:wallet/watch-address-validated-address])]
-        [rn/view {:style {:flex 1}}
+        [rn/view
+         {:style {:flex 1}}
+         [quo/drawer-bar]
          [floating-button-page/view
           {:header [quo/page-nav
                     {:type      :no-title
@@ -141,23 +160,42 @@
                                               (= activity-state :scanning)
                                               (not validated-address))
                      :on-press            (fn []
-                                            (rf/dispatch [:navigate-to
-                                                          :screen/wallet.confirm-address-to-watch
-                                                          {:address (extract-address
-                                                                     validated-address)}])
+                                            (condp = purpose
+                                              :watch (rf/dispatch
+                                                      [:navigate-to
+                                                       :screen/wallet.confirm-address
+                                                       {:purpose purpose
+                                                        :address (extract-address
+                                                                  validated-address)}])
+                                              :save  (rf/dispatch
+                                                      [:open-modal
+                                                       :screen/wallet.confirm-address-to-save
+                                                       {:purpose purpose
+                                                        :address (extract-address
+                                                                  validated-address)
+                                                        :ens?    (and
+                                                                  (not (validation/eth-address?
+                                                                        validated-address))
+                                                                  (validation/ens-name?
+                                                                   validated-address))}]))
                                             (clear-input))
                      :container-style     {:z-index 2}}
                     (i18n/label :t/continue)]}
           [quo/page-top
            {:container-style  style/header-container
-            :title            (i18n/label :t/add-address)
+            :title            (-> adding-addresses-purposes
+                                  (get-in [purpose :title])
+                                  i18n/label)
             :description      :text
-            :description-text (i18n/label :t/enter-eth)}]
-          [:f> address-input
+            :description-text (-> adding-addresses-purposes
+                                  (get-in [purpose :description])
+                                  i18n/label)}]
+          [address-input
            {:input-value    input-value
             :validate       validate
             :validation-msg validation-msg
-            :clear-input    clear-input}]
+            :clear-input    clear-input
+            :purpose        purpose}]
           (if @validation-msg
             [quo/info-message
              {:accessibility-label :error-message

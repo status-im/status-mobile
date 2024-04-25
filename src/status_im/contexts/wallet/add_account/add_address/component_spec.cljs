@@ -1,6 +1,6 @@
-(ns status-im.contexts.wallet.add-account.add-address-to-watch.component-spec
+(ns status-im.contexts.wallet.add-account.add-address.component-spec
   (:require
-    [status-im.contexts.wallet.add-account.add-address-to-watch.view :as add-address-to-watch]
+    [status-im.contexts.wallet.add-account.add-address.view :as add-address-to-watch]
     status-im.contexts.wallet.events
     [test-helpers.component :as h]))
 

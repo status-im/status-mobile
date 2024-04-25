@@ -2399,7 +2399,8 @@
     "days": "Days",
     "add-account": "Add account",
     "add-account-description": "Create new or import existing account",
-    "add-address": "Add address to watch",
+    "add-address-to-watch": "Add address to watch",
+    "add-address": "Add address",
     "add-address-description": "Watch a public address or ENS name",
     "colour": "Colour",
     "origin": "Origin",
@@ -2429,6 +2430,7 @@
     "no-recent-transactions": "No recent transactions",
     "make-one-it-is-easy-we-promise": "Make one, it’s easy, we promise!",
     "saved-addresses": "Saved addresses",
+    "saved-address": "Saved address",
     "no-saved-addresses": "No saved addresses",
     "you-like-to-type-43-characters": "You like to type 43 characters?",
     "no-other-accounts": "No other accounts",
@@ -2613,5 +2615,8 @@
     "scanning-for-activity": "Scanning for activity...",
     "send-community-link": "Send community link",
     "at-least-one-network-must-be-activated": "At least 1 network must be activated",
-    "status-is-a-secure-messaging-app": "Status is a secure messaging app, crypto wallet and web3 browser built with the state of the art technology"
+    "status-is-a-secure-messaging-app": "Status is a secure messaging app, crypto wallet and web3 browser built with the state of the art technology",
+    "save-address-description": "Paste, scan or type ETH address or ENS name",
+    "address-or-end-name": "Address or ENS name",
+    "address-saved": "Address saved"
 }

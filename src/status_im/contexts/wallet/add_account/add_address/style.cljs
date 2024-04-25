@@ -1,4 +1,4 @@
-(ns status-im.contexts.wallet.add-account.add-address-to-watch.style)
+(ns status-im.contexts.wallet.add-account.add-address.style)
 
 (def header-container {:padding-bottom 8})
 

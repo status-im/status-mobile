@@ -1,6 +1,6 @@
-(ns status-im.contexts.wallet.add-account.add-address-to-watch.confirm-address.component-spec
+(ns status-im.contexts.wallet.add-account.add-address.confirm-address.component-spec
   (:require
-    [status-im.contexts.wallet.add-account.add-address-to-watch.confirm-address.view :as confirm-address]
+    [status-im.contexts.wallet.add-account.add-address.confirm-address.view :as confirm-address]
     [test-helpers.component :as h]))
 
 (h/describe "Add Watch Only Account Page"

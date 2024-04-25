@@ -15,7 +15,7 @@
            on-change-color
            on-change-emoji section-label
            bottom-action-label bottom-action-props
-           custom-bottom-action watch-only?]} & children]
+           custom-bottom-action watch-only? top-left-icon]} & children]
   (let [{window-width :width} (rn/get-window)
         footer                (if custom-bottom-action
                                 custom-bottom-action
@@ -29,7 +29,7 @@
                                  {:type       :no-title
                                   :background :blur
                                   :right-side page-nav-right-side
-                                  :icon-name  :i/close
+                                  :icon-name  (or top-left-icon :i/close)
                                   :on-press   #(rf/dispatch [:navigate-back])}]
       :footer                   footer
       :gradient-cover?          true

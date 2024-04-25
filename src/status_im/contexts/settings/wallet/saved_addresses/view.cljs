@@ -21,8 +21,9 @@
   []
   (let [inset-top           (safe-area/get-top)
         customization-color (rf/sub [:profile/customization-color])
-        saved-addresses     []
+        saved-addresses     (rf/sub [:wallet/saved-addresses])
         navigate-back       (rn/use-callback #(rf/dispatch [:navigate-back]))]
+    (rn/use-mount #(rf/dispatch [:wallet/get-saved-addresses]))
     [quo/overlay
      {:type            :shell
       :container-style (style/page-wrapper inset-top)}
@@ -36,6 +37,9 @@
        {:title               (i18n/label :t/saved-addresses)
         :accessibility-label :saved-addresses-header
         :right               :action
+        :on-press            (fn []
+                               (rf/dispatch [:open-modal :screen/wallet.add-address-to-save
+                                             {:purpose :save}]))
         :customization-color customization-color
         :icon                :i/add}]]
      (when-not (seq saved-addresses)
