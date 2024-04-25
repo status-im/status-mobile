@@ -22,12 +22,10 @@ nix_purge_linux_multi_user_users() {
 }
 
 nix_purge_darwin_multi_user_service() {
-    cd /Library/LaunchDaemons
-    NIX_SERVICES=(org.nixos.darwin-store.plist org.nixos.nix-daemon.plist)
-    for NIX_SERVICE in "${NIX_SERVICES[@]}"; do
-        sudo launchctl unload "${NIX_SERVICE}"
-        sudo launchctl remove "${NIX_SERVICE}"
-    done
+    sudo launchctl unload /Library/LaunchDaemons/org.nixos.nix-daemon.plist
+    sudo rm /Library/LaunchDaemons/org.nixos.nix-daemon.plist
+    sudo launchctl unload /Library/LaunchDaemons/org.nixos.darwin-store.plist
+    sudo rm /Library/LaunchDaemons/org.nixos.darwin-store.plist
 }
 
 nix_purge_darwin_multi_user_users() {
@@ -41,7 +39,23 @@ nix_purge_darwin_multi_user_users() {
 nix_purge_darwin_multi_user_volumes() {
     sudo sed -i.bkp '/nix/d' /etc/synthetic.conf
     sudo sed -i.bkp '/nix/d' /etc/fstab
-    sudo diskutil apfs deleteVolume /nix
+
+    # Attempt to delete the volume
+    if ! sudo diskutil apfs deleteVolume /nix; then
+        echo "Failed to unmount /nix because it is in use."
+
+        # Identify the process using the volume
+        local pid=$(lsof +D /nix | awk 'NR==2{print $2}')
+        if [[ -n "$pid" ]]; then
+            echo "The volume /nix is in use by process ID $pid."
+            "${GIT_ROOT}/nix/scripts/kill_proc_prompt.sh" "${pid}" || return 1
+
+        else
+            echo "No process found using /nix. Manual intervention required."
+            return 1
+        fi
+    fi
+
     echo -e "${YLW}You will need to reboot your system!${RST}" >&2
 }
 
@@ -93,7 +107,7 @@ if (return 0 2>/dev/null); then
     return
 fi
 
-# Confirm user decission, unless --force is used.
+# Confirm user decision, unless --force is used.
 if [[ "${1}" != "--force" ]]; then
     echo -e "${YLW}Are you sure you want to purge Nix?${RST}" >&2
     read -p "[y/n]: " -n 1 -r
@@ -105,7 +119,7 @@ if [[ "${1}" != "--force" ]]; then
 fi
 
 NIX_INSTALL_TYPE=$(nix_install_type)
-# Purging /nix on NixOS would be disasterous.
+# Purging /nix on NixOS would be disastrous.
 if [[ "${NIX_INSTALL_TYPE}" == "nixos" ]]; then
     echo -e "${RED}You should not purge Nix files on NixOS!${RST}" >&2
     exit

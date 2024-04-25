@@ -3,15 +3,11 @@
 set -eo pipefail
 
 GIT_ROOT=$(cd "${BASH_SOURCE%/*}" && git rev-parse --show-toplevel)
-source "${GIT_ROOT}/nix/scripts/lib.sh"
 source "${GIT_ROOT}/scripts/colors.sh"
+source "${GIT_ROOT}/nix/scripts/lib.sh"
+source "${GIT_ROOT}/nix/scripts/version.sh"
 
-NIX_VERSION="2.8.0"
-NIX_INSTALL_URL="https://nixos.org/releases/nix/nix-${NIX_VERSION}/install"
-NIX_INSTALL_SHA256="f43bfedfca9151479462d8bc11f238615a2d52f19b14894d8e2b59980e75ef72"
-NIX_INSTALL_PATH="/tmp/nix-install-${NIX_VERSION}"
-
-install_nix() {
+nix_install() {
     # Download installer and verify SHA256>
     curl -sSf "${NIX_INSTALL_URL}" -o "${NIX_INSTALL_PATH}"
     echo "${NIX_INSTALL_SHA256}  ${NIX_INSTALL_PATH}" | sha256sum -c
@@ -42,6 +38,22 @@ install_nix() {
         echo "Please see: https://nixos.org/nix/manual/#chap-installation" >&2
         exit 1
     fi
+
+    # Additional fixes
+    nix_add_extra_cache
+    nix_daemon_restart
+}
+
+# Adding directly to global config to avoid warnings like this:
+# "ignoring untrusted substituter 'https://nix-cache.status.im/', you are not a trusted user."
+nix_add_extra_cache() {
+    # Single-user installations do not have this issue.
+    [[ ! -f /etc/nix/nix.conf ]] && return
+    echo -e 'Adding our cache to Nix daemon config...' >&2
+    local NIX_SETTINGS=('substituters' 'trusted-substituters' 'trusted-public-keys')
+    for NIX_SETTING in "${NIX_SETTINGS[@]}"; do
+        nix_set_global_setting "${NIX_SETTING}" "$(nix_get_local_setting "${NIX_SETTING}")"
+    done
 }
 
 if [[ ! -x "$(command -v sha256sum)" ]]; then
@@ -72,5 +84,5 @@ fi
 
 # If none of the checks before succeeded we need to install Nix
 echo -e "${GRN}Setting up Nix package manager...${RST}"
-install_nix
+nix_install
 echo -e "${YLW}See STARTING_GUIDE.md if you're new here.${RST}"
