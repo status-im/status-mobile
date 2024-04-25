@@ -7,7 +7,7 @@
     [utils.re-frame :as rf]))
 
 (def ^:private <-rpc-spec
-  {:isTest          :test
+  {:isTest          :test?
    :chainShortNames :chain-short-names
    :createdAt       :created-at
    :colorId         :customization-color})
