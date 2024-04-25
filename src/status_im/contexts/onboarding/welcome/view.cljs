@@ -45,7 +45,7 @@
        :on-press   #(rf/dispatch [:navigate-back])}]
      [page-title]
      [rn/image
-      {:style       (style/page-illustration window)
+      {:style       (style/page-illustration (:width window))
        :resize-mode :contain
        :source      (resources/get-image :welcome-illustration)}]
      [rn/view {:style (style/buttons insets)}
