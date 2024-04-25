@@ -202,18 +202,20 @@
       :on-press-to-network   on-press-to-network}]))
 
 (defn fetch-routes
-  [amount routes-can-be-fetched? bounce-duration-ms]
-  (if routes-can-be-fetched?
+  [amount valid-input? bounce-duration-ms]
+  (if valid-input?
     (debounce/debounce-and-dispatch
      [:wallet/get-suggested-routes {:amount amount}]
      bounce-duration-ms)
     (rf/dispatch [:wallet/clean-suggested-routes])))
 
 (defn view
-  [{:keys [token theme input-value routes-can-be-fetched?
-           on-press-to-network]}]
+  [{:keys [token theme input-value valid-input?
+           on-press-to-network current-screen-id]}]
 
   (let [token-symbol                                   (:symbol token)
+        nav-current-screen-id                          (rf/sub [:view-id])
+        active-screen?                                 (= nav-current-screen-id current-screen-id)
         loading-suggested-routes?                      (rf/sub
                                                         [:wallet/wallet-send-loading-suggested-routes?])
         from-values-by-chain                           (rf/sub
@@ -241,12 +243,12 @@
                                                            (not-empty routes))]
 
     (rn/use-effect
-     #(when (> (count affordable-networks) 0)
-        (fetch-routes input-value routes-can-be-fetched? 2000))
-     [input-value routes-can-be-fetched?])
+     #(when (and active-screen? (> (count affordable-networks) 0))
+        (fetch-routes input-value valid-input? 2000))
+     [input-value valid-input?])
     (rn/use-effect
-     #(when (> (count affordable-networks) 0)
-        (fetch-routes input-value routes-can-be-fetched? 0))
+     #(when (and active-screen? (> (count affordable-networks) 0))
+        (fetch-routes input-value valid-input? 0))
      [disabled-from-chain-ids])
     (if show-routes?
       (let [initial-network-links-count   (count network-links)
@@ -275,7 +277,7 @@
           {:from-values-by-chain      from-values-by-chain
            :to-values-by-chain        to-values-by-chain
            :theme                     theme
-           :fetch-routes              #(fetch-routes % routes-can-be-fetched? 2000)
+           :fetch-routes              #(fetch-routes % valid-input? 2000)
            :on-press-from-network     (fn [chain-id _]
                                         (let [disabled-chain-ids (if (contains? (set
                                                                                  disabled-from-chain-ids)
