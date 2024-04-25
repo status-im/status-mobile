@@ -48,9 +48,6 @@ pipeline {
         stage('Android') { steps { script {
           apk = jenkins.Build('status-mobile/platforms/android')
         } } }
-        stage('Android e2e') { steps { script {
-          apke2e = jenkins.Build('status-mobile/platforms/android-e2e')
-        } } }
         stage('Tests') { steps { script {
           jenkins.Build('status-mobile/platforms/tests')
         } } }
@@ -60,9 +57,7 @@ pipeline {
       steps { script {
         sh('rm -f pkg/*')
         jenkins.copyArts(ios)
-        //jenkins.copyArts(iose2e)
         jenkins.copyArts(apk)
-        jenkins.copyArts(apke2e)
         sha = "pkg/${utils.pkgFilename(ext: 'sha256')}"
         dir('pkg') {
           /* generate sha256 checksums for upload */
@@ -76,8 +71,8 @@ pipeline {
         /* object for easier URLs handling */
         urls = [
           /* mobile */
-          Apk: utils.pkgUrl(apk), Apke2e: utils.pkgUrl(apke2e),
-          iOS: utils.pkgUrl(ios), /*iOSe2e: utils.pkgUrl(iose2e),*/
+          Apk: utils.pkgUrl(apk),
+          iOS: utils.pkgUrl(ios),
           Diawi: utils.getEnv(ios, 'DIAWI_URL'),
           /* upload the sha256 checksums file too */
           SHA: s3.uploadArtifact(sha),
@@ -99,17 +94,6 @@ pipeline {
             github.publishReleaseFiles(repo: 'status-mobile');
             break;
         }
-      } }
-    }
-    stage('Run e2e') {
-      when { expression { btype == 'nightly' && params.PUBLISH } }
-      steps { script {
-        e2eApk = utils.getEnv(apke2e, 'SAUCE_URL')
-        build(
-          job: 'status-mobile/e2e/status-app-nightly',
-          parameters: [string(name: 'APK_URL', value: e2eApk)],
-          wait: false
-        )
       } }
     }
   }
