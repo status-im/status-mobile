@@ -14,6 +14,14 @@
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
+(def ^:private adding-addresses-purposes
+  {:watch {:title       :t/add-address-to-watch
+           :description :t/enter-eth
+           :input-title :t/eth-or-ens}
+   :save  {:title       :t/add-address
+           :description :t/save-address-description
+           :input-title :t/address-or-end-name}})
+
 (defn- validate-address
   [known-addresses user-input purpose]
   (cond
