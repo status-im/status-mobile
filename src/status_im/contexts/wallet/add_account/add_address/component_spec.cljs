@@ -14,7 +14,8 @@
                                                            "0x22E838Ae1f769147b12956485dc56e57138f3AC8"}
                     :alert-banners/top-margin            0
                     :wallet/watch-address-activity-state nil
-                    :profile/customization-color         :blue})))
+                    :profile/customization-color         :blue
+                    :get-screen-params                   {:purpose :watch}})))
 
   (h/test "validation messages show for already used addressed"
     (h/render [add-address-to-watch/view])
