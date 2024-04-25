@@ -84,12 +84,16 @@ class WalletView(BaseView):
         self.slide_and_confirm_with_password()
         self.done_button.click()
 
+    def set_amount(self, amount: float):
+        for i in '{:f}'.format(amount).rstrip('0'):
+            Button(self.driver, accessibility_id='keyboard-key-%s' % i).click()
+
     def send_asset(self, address: str, asset_name: str, amount: float):
         self.send_button.click()
         self.address_text_input.send_keys(address)
         self.continue_button.click_until_presence_of_element(self.collectibles_tab)
         self.select_asset(asset_name).click()
-        self.amount_input.send_keys('{:f}'.format(amount).rstrip('0'))
+        self.set_amount(amount)
         self.confirm_transaction()
 
     def send_asset_from_drawer(self, address: str, asset_name: str, amount: float):
@@ -99,7 +103,7 @@ class WalletView(BaseView):
         self.send_button.find_elements()[0].click()
         self.address_text_input.send_keys(address)
         self.continue_button.click_until_presence_of_element(self.confirm_button)
-        self.amount_input.send_keys('{:f}'.format(amount).rstrip('0'))
+        self.set_amount(amount)
         self.confirm_transaction()
 
     def add_regular_account(self, account_name: str):
