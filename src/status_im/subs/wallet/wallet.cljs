@@ -292,8 +292,10 @@
 (rf/reg-sub
  :wallet/aggregated-tokens
  :<- [:wallet/accounts]
- (fn [accounts]
-   (utils/aggregate-tokens-for-all-accounts accounts)))
+ :<- [:wallet/accounts-without-watched-accounts]
+ (fn [[all-accounts owned-accounts]]
+   (let [accounts (if config/include-watch-only-balance-in-total? all-accounts owned-accounts)]
+   (utils/aggregate-tokens-for-all-accounts accounts))))
 
 (rf/reg-sub
  :wallet/aggregated-tokens-in-selected-networks
@@ -319,19 +321,6 @@
                                                               :currency        currency
                                                               :currency-symbol currency-symbol})
                                aggregated-tokens)})))
-
-(rf/reg-sub
- :wallet/total-owned-accounts-balance
- :<- [:wallet/accounts]
- :<- [:wallet/accounts-without-watched-accounts]
- :<- [:wallet/balances-in-selected-networks]
- :<- [:profile/currency-symbol]
- (fn [[all-accounts owned-accounts balances currency-symbol]]
-   (let [accounts          (if config/include-watch-only-balance-in-total? all-accounts owned-accounts)
-         raw-balance       (utils/calculate-balance-from-accounts accounts balances)
-         formatted-balance (utils/prettify-balance currency-symbol raw-balance)]
-     {:balance           raw-balance
-      :formatted-balance formatted-balance})))
 
 (rf/reg-sub
  :wallet/network-preference-details
