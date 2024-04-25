@@ -209,8 +209,7 @@
         featured-communities-count (count featured-communities)]
     (fn []
       [scroll-page/scroll-page
-       {:theme            theme
-        :on-scroll        #(reset! scroll-height %)
+       {:on-scroll        #(reset! scroll-height %)
         :page-nav-props   {:background :blur}
         :navigate-back?   :true
         :height           (if (> @scroll-height 360)

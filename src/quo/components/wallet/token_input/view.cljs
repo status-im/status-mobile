@@ -92,36 +92,36 @@
                                         (oops/oget "nativeEvent.selection")
                                         (js->clj :keywordize-keys true)
                                         (on-selection-change))))]
-    (fn [{:keys [theme token customization-color show-keyboard? crypto? currency value error?
-                 selection]
+    (fn [{:keys [token customization-color show-keyboard? crypto? currency value error? selection]
           :or   {show-keyboard? true}}]
-      [rn/view {:style {:flex 1}}
-       [rn/pressable {:on-press on-token-press}
-        [token/view
-         {:token token
-          :size  :size-32}]]
-       [rn/pressable
-        {:style    style/text-input-container
-         :on-press focus-input}
-        [rn/text-input
-         (cond-> {:style                    (style/text-input theme error?)
-                  :placeholder-text-color   (style/placeholder-text theme)
-                  :auto-focus               true
-                  :ref                      set-ref
-                  :placeholder              "0"
-                  :keyboard-type            :numeric
-                  :max-length               12
-                  :on-change-text           handle-on-change-text
-                  :selection-color          customization-color
-                  :show-soft-input-on-focus show-keyboard?
-                  :on-selection-change      handle-selection-change
-                  :selection                (clj->js selection)}
-           controlled-input?       (assoc :value value)
-           (not controlled-input?) (assoc :default-value value-internal))]]
-       [token-label
-        {:theme theme
-         :text  (if crypto? token currency)
-         :value (if controlled-input? value value-internal)}]])))
+      (let [theme (quo.theme/use-theme)]
+        [rn/view {:style {:flex 1}}
+         [rn/pressable {:on-press on-token-press}
+          [token/view
+           {:token token
+            :size  :size-32}]]
+         [rn/pressable
+          {:style    style/text-input-container
+           :on-press focus-input}
+          [rn/text-input
+           (cond-> {:style                    (style/text-input theme error?)
+                    :placeholder-text-color   (style/placeholder-text theme)
+                    :auto-focus               true
+                    :ref                      set-ref
+                    :placeholder              "0"
+                    :keyboard-type            :numeric
+                    :max-length               12
+                    :on-change-text           handle-on-change-text
+                    :selection-color          customization-color
+                    :show-soft-input-on-focus show-keyboard?
+                    :on-selection-change      handle-selection-change
+                    :selection                (clj->js selection)}
+             controlled-input?       (assoc :value value)
+             (not controlled-input?) (assoc :default-value value-internal))]]
+         [token-label
+          {:theme theme
+           :text  (if crypto? token currency)
+           :value (if controlled-input? value value-internal)}]]))))
 
 (defn- view-internal
   [{:keys [container-style value on-swap] :as props}]

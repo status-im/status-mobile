@@ -66,52 +66,53 @@
 
 (defn- view-info-bottom
   [{:keys [state time-frame metrics date begin-date end-date
-           currency-change percentage-change theme]}]
-  [rn/view {:style style/container-info-bottom}
-   (when (= state :loading)
-     [rn/view
-      {:style {:flex-direction :row
-               :align-items    :center}}
-      (loading-bars [{:width 32 :height 10 :margin 8}
-                     {:width 32 :height 10 :margin 2}
-                     {:width 62 :height 10 :margin 4}
-                     {:width 10 :height 10 :margin 0}]
-                    theme)])
-   (when (and (= state :default) (= time-frame :selected))
-     [text/text
-      {:weight :medium
-       :size   :paragraph-2
-       :style  (style/style-text-paragraph theme)}
-      date])
-   (when (and (= state :default) (= time-frame :custom))
-     [rn/view {:style {:flex-direction :row}}
-      [text/text
-       {:weight :medium
-        :size   :paragraph-2
-        :style  (style/style-text-paragraph theme)}
-       begin-date]
-      [icon/icon :i/positive-right
-       {:color (style/color-text-paragraph theme)
-        :size  16}]
-      [text/text
-       {:weight :medium
-        :size   :paragraph-2
-        :style  (style/style-text-paragraph theme)}
-       end-date]])
-   (when (and (= state :default) (not (#{:none :selected} time-frame)))
-     [rn/view {:style {:flex-direction :row}}
-      [text/text
-       {:weight :medium
-        :size   :paragraph-2
-        :style  {:color        (style/color-text-paragraph theme)
-                 :margin-right 8}}
-       (time-frame time-frames)]
-      (when (and (= state :default) (not= metrics :none))
-        [view-metrics
-         {:metrics           metrics
-          :currency-change   currency-change
-          :percentage-change percentage-change
-          :theme             theme}])])])
+           currency-change percentage-change]}]
+  (let [theme (quo.theme/use-theme)]
+    [rn/view {:style style/container-info-bottom}
+     (when (= state :loading)
+       [rn/view
+        {:style {:flex-direction :row
+                 :align-items    :center}}
+        (loading-bars [{:width 32 :height 10 :margin 8}
+                       {:width 32 :height 10 :margin 2}
+                       {:width 62 :height 10 :margin 4}
+                       {:width 10 :height 10 :margin 0}]
+                      theme)])
+     (when (and (= state :default) (= time-frame :selected))
+       [text/text
+        {:weight :medium
+         :size   :paragraph-2
+         :style  (style/style-text-paragraph theme)}
+        date])
+     (when (and (= state :default) (= time-frame :custom))
+       [rn/view {:style {:flex-direction :row}}
+        [text/text
+         {:weight :medium
+          :size   :paragraph-2
+          :style  (style/style-text-paragraph theme)}
+         begin-date]
+        [icon/icon :i/positive-right
+         {:color (style/color-text-paragraph theme)
+          :size  16}]
+        [text/text
+         {:weight :medium
+          :size   :paragraph-2
+          :style  (style/style-text-paragraph theme)}
+         end-date]])
+     (when (and (= state :default) (not (#{:none :selected} time-frame)))
+       [rn/view {:style {:flex-direction :row}}
+        [text/text
+         {:weight :medium
+          :size   :paragraph-2
+          :style  {:color        (style/color-text-paragraph theme)
+                   :margin-right 8}}
+         (time-frame time-frames)]
+        (when (and (= state :default) (not= metrics :none))
+          [view-metrics
+           {:metrics           metrics
+            :currency-change   currency-change
+            :percentage-change percentage-change
+            :theme             theme}])])]))
 
 (defn- view-internal
   [props]

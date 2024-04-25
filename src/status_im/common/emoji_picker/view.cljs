@@ -94,30 +94,31 @@
     :container-style style/empty-results}])
 
 (defn- render-list
-  [{:keys [theme filtered-data on-viewable-items-changed scroll-enabled? on-scroll
+  [{:keys [filtered-data on-viewable-items-changed scroll-enabled? on-scroll
            on-select set-scroll-ref close sheet-animating?]}]
-  [gesture/flat-list
-   {:ref                             set-scroll-ref
-    :scroll-enabled                  @scroll-enabled?
-    :data                            (or filtered-data emoji-picker.data/flatten-data)
-    :initial-num-to-render           14
-    :max-to-render-per-batch         10
-    :render-fn                       render-item
-    :get-item-layout                 get-item-layout
-    :keyboard-dismiss-mode           :on-drag
-    :keyboard-should-persist-taps    :handled
-    :shows-vertical-scroll-indicator false
-    :on-scroll-to-index-failed       identity
-    :empty-component                 [empty-result]
-    :on-scroll                       on-scroll
-    :render-data                     {:close     close
-                                      :theme     theme
-                                      :on-select on-select}
-    :content-container-style         style/list-container
-    :viewability-config              {:item-visible-percent-threshold 100
-                                      :minimum-view-time              200}
-    :on-viewable-items-changed       on-viewable-items-changed
-    :window-size                     (if @sheet-animating? 1 10)}])
+  (let [theme (quo.theme/use-theme)]
+    [gesture/flat-list
+     {:ref                             set-scroll-ref
+      :scroll-enabled                  @scroll-enabled?
+      :data                            (or filtered-data emoji-picker.data/flatten-data)
+      :initial-num-to-render           14
+      :max-to-render-per-batch         10
+      :render-fn                       render-item
+      :get-item-layout                 get-item-layout
+      :keyboard-dismiss-mode           :on-drag
+      :keyboard-should-persist-taps    :handled
+      :shows-vertical-scroll-indicator false
+      :on-scroll-to-index-failed       identity
+      :empty-component                 [empty-result]
+      :on-scroll                       on-scroll
+      :render-data                     {:close     close
+                                        :theme     theme
+                                        :on-select on-select}
+      :content-container-style         style/list-container
+      :viewability-config              {:item-visible-percent-threshold 100
+                                        :minimum-view-time              200}
+      :on-viewable-items-changed       on-viewable-items-changed
+      :window-size                     (if @sheet-animating? 1 10)}]))
 
 (defn- footer
   [{:keys [active-category scroll-ref]}]
