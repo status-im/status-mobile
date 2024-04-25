@@ -295,7 +295,7 @@
  :<- [:wallet/accounts-without-watched-accounts]
  (fn [[all-accounts owned-accounts]]
    (let [accounts (if config/include-watch-only-balance-in-total? all-accounts owned-accounts)]
-   (utils/aggregate-tokens-for-all-accounts accounts))))
+     (utils/aggregate-tokens-for-all-accounts accounts))))
 
 (rf/reg-sub
  :wallet/aggregated-tokens-in-selected-networks
