@@ -8,6 +8,12 @@
  :-> :saved-addresses)
 
 (rf/reg-sub
+ :wallet/saved-addresses?
+ :<- [:wallet]
+ (fn [{:keys [saved-addresses]}]
+   (-> saved-addresses seq boolean)))
+
+(rf/reg-sub
  :wallet/address-saved?
  :<- [:wallet]
  (fn [wallet [address]]

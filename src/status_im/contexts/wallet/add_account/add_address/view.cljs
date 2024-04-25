@@ -38,13 +38,13 @@
   (re-find constants/regx-address-contains scanned-text))
 
 (defn- address-input
-  [{:keys [input-value validation-msg validate clear-input purpose]}]
+  [{:keys [input-value validate clear-input purpose set-validation-message set-input-value]}]
   (let [scanned-address (rf/sub [:wallet/scanned-address])
-        empty-input?    (and (string/blank? @input-value)
+        empty-input?    (and (string/blank? input-value)
                              (string/blank? scanned-address))
         on-change-text  (fn [new-text]
-                          (reset! validation-msg (validate new-text))
-                          (reset! input-value new-text)
+                          (set-validation-message (validate new-text))
+                          (set-input-value new-text)
                           (reagent/flush)
                           (if (and (not-empty new-text) (nil? (validate new-text)))
                             (debounce/debounce-and-dispatch [:wallet/get-address-details new-text]
@@ -79,7 +79,7 @@
        :button              (when empty-input?
                               {:on-press paste-on-input
                                :text     (i18n/label :t/paste)})
-       :value               (or scanned-address @input-value)}]
+       :value               (or scanned-address input-value)}]
      [quo/button
       {:type            :outline
        :on-press        (fn []
@@ -125,22 +125,22 @@
   []
   (let [addresses            (rf/sub [:wallet/addresses])
         lowercased-addresses (map string/lower-case addresses)
-        input-value          (reagent/atom nil)
         {:keys [purpose]}    (rf/sub [:get-screen-params])
         validate             #(validate-address (set lowercased-addresses) (string/lower-case %) purpose)
-        validation-msg       (reagent/atom nil)
-        clear-input          (fn []
-                               (reset! input-value nil)
-                               (reset! validation-msg nil)
-                               (rf/dispatch [:wallet/clear-address-activity])
-                               (rf/dispatch [:wallet/clean-scanned-address]))
         customization-color  (rf/sub [:profile/customization-color])]
 
     (rf/dispatch [:wallet/clean-scanned-address])
     (rf/dispatch [:wallet/clear-address-activity])
     (fn []
-      (let [activity-state    (rf/sub [:wallet/watch-address-activity-state])
-            validated-address (rf/sub [:wallet/watch-address-validated-address])]
+      (let [activity-state                          (rf/sub [:wallet/watch-address-activity-state])
+            validated-address                       (rf/sub [:wallet/watch-address-validated-address])
+            [input-value set-input-value]           (rn/use-state nil)
+            [validation-msg set-validation-message] (rn/use-state nil)
+            clear-input                             (fn []
+                                                      (set-input-value nil)
+                                                      (set-validation-message nil)
+                                                      (rf/dispatch [:wallet/clear-address-activity])
+                                                      (rf/dispatch [:wallet/clean-scanned-address]))]
         [rn/view
          {:style {:flex 1}}
          [quo/drawer-bar]
@@ -154,8 +154,8 @@
                                   (rf/dispatch [:navigate-back]))}]
            :footer [quo/button
                     {:customization-color customization-color
-                     :disabled?           (or (string/blank? @input-value)
-                                              (some? (validate @input-value))
+                     :disabled?           (or (string/blank? input-value)
+                                              (some? (validate input-value))
                                               (= activity-state :invalid-ens)
                                               (= activity-state :scanning)
                                               (not validated-address))
@@ -191,17 +191,19 @@
                                   (get-in [purpose :description])
                                   i18n/label)}]
           [address-input
-           {:input-value    input-value
-            :validate       validate
-            :validation-msg validation-msg
-            :clear-input    clear-input
-            :purpose        purpose}]
-          (if @validation-msg
+           {:input-value            input-value
+            :validate               validate
+            :validation-msg         validation-msg
+            :clear-input            clear-input
+            :purpose                purpose
+            :set-validation-message set-validation-message
+            :set-input-value        set-input-value}]
+          (if validation-msg
             [quo/info-message
              {:accessibility-label :error-message
               :size                :default
               :icon                :i/info
               :type                :error
               :style               style/info-message}
-             @validation-msg]
+             validation-msg]
             [activity-indicator activity-state])]]))))

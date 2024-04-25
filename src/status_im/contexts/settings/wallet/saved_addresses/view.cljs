@@ -18,11 +18,17 @@
       :image           (resources/get-themed-image :sweating-man theme)
       :container-style style/empty-container-style}]))
 
+(defn on-press
+  []
+  (when (ff/enabled? ::ff/wallet.enable-saving-addresses)
+    (rf/dispatch [:open-modal :screen/wallet.add-address-to-save
+                  {:purpose :save}])))
+
 (defn view
   []
   (let [inset-top           (safe-area/get-top)
         customization-color (rf/sub [:profile/customization-color])
-        saved-addresses     (rf/sub [:wallet/saved-addresses])
+        saved-addresses?    (rf/sub [:wallet/saved-addresses?])
         navigate-back       (rn/use-callback #(rf/dispatch [:navigate-back]))]
     (rn/use-mount #(rf/dispatch [:wallet/get-saved-addresses]))
     [quo/overlay
@@ -38,11 +44,8 @@
        {:title               (i18n/label :t/saved-addresses)
         :accessibility-label :saved-addresses-header
         :right               :action
-        :on-press            (fn []
-                               (when (ff/enabled? ::ff/wallet.enable-saving-addresses)
-                                 (rf/dispatch [:open-modal :screen/wallet.add-address-to-save
-                                               {:purpose :save}])))
+        :on-press            on-press
         :customization-color customization-color
         :icon                :i/add}]]
-     (when-not (seq saved-addresses)
+     (when-not saved-addresses?
        [empty-state])]))

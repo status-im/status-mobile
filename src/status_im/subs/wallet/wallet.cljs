@@ -210,12 +210,17 @@
  (fn [accounts]
    (filter :watch-only? accounts)))
 
+(defn to-lower-case
+  [coll]
+  (map string/lower-case coll))
+
 (rf/reg-sub
  :wallet/addresses
  :<- [:wallet]
  :-> #(->> %
            :accounts
            keys
+           to-lower-case
            set))
 
 (rf/reg-sub
