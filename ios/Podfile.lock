@@ -893,8 +893,6 @@ PODS:
     - React
   - react-native-lottie-splash-screen (1.1.2):
     - React
-  - react-native-mail (6.1.1):
-    - React-Core
   - react-native-netinfo (4.7.0):
     - React
   - react-native-orientation-locker (1.5.0):
@@ -1186,7 +1184,6 @@ DEPENDENCIES:
   - react-native-hole-view (from `../node_modules/react-native-hole-view`)
   - react-native-image-resizer (from `../node_modules/react-native-image-resizer`)
   - react-native-lottie-splash-screen (from `../node_modules/react-native-lottie-splash-screen`)
-  - react-native-mail (from `../node_modules/react-native-mail`)
   - "react-native-netinfo (from `../node_modules/@react-native-community/netinfo`)"
   - react-native-orientation-locker (from `../node_modules/react-native-orientation-locker`)
   - react-native-shake (from `../node_modules/react-native-shake`)
@@ -1323,8 +1320,6 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-image-resizer"
   react-native-lottie-splash-screen:
     :path: "../node_modules/react-native-lottie-splash-screen"
-  react-native-mail:
-    :path: "../node_modules/react-native-mail"
   react-native-netinfo:
     :path: "../node_modules/@react-native-community/netinfo"
   react-native-orientation-locker:
@@ -1472,7 +1467,6 @@ SPEC CHECKSUMS:
   react-native-hole-view: 6935448993bac79f2b5a4ad7e9741094cf810679
   react-native-image-resizer: 2f1577efa3bc762597681f530c8e8d05ce0ceeb3
   react-native-lottie-splash-screen: 4e1b1fd9d6633f9cd2106d6877eb5ba0147f3e2b
-  react-native-mail: 8fdcd3aef007c33a6877a18eb4cf7447a1d4ce4a
   react-native-netinfo: ddaca8bbb9e6e914b1a23787ccb879bc642931c9
   react-native-orientation-locker: 851f6510d8046ea2f14aa169b1e01fcd309a94ba
   react-native-shake: de052eaa3eadc4a326b8ddd7ac80c06e8d84528c

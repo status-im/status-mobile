@@ -12,6 +12,7 @@
 		CE4E31B11D86951A0033ED64 /* Statusgo.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE4E31B01D86951A0033ED64 /* Statusgo.xcframework */; };
 		E92244EB2B485F2400915F4C /* UIHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = E92244E92B485F2400915F4C /* UIHelper.m */; };
 		E967A3AC2B47BD5A00FB19B2 /* Utils.m in Sources */ = {isa = PBXBuildFile; fileRef = E967A3AB2B47BD5A00FB19B2 /* Utils.m */; };
+		E9AEB5FE2BD8EEB100FB2926 /* MailManager.m in Sources */ = {isa = PBXBuildFile; fileRef = E9AEB5FD2BD8EEB100FB2926 /* MailManager.m */; };
 		E9BEF3602B470BF1001F6755 /* NetworkManager.m in Sources */ = {isa = PBXBuildFile; fileRef = E9BEF35E2B470BF1001F6755 /* NetworkManager.m */; };
 		E9C33AA62B4828A60074B1C5 /* DatabaseManager.m in Sources */ = {isa = PBXBuildFile; fileRef = E9C33AA52B4828A60074B1C5 /* DatabaseManager.m */; };
 		E9DB08932B4858B400F51053 /* LogManager.m in Sources */ = {isa = PBXBuildFile; fileRef = E9DB08912B4858B400F51053 /* LogManager.m */; };
@@ -42,6 +43,8 @@
 		E92244EA2B485F2400915F4C /* UIHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIHelper.h; sourceTree = "<group>"; };
 		E967A3AA2B47BD5A00FB19B2 /* Utils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Utils.h; sourceTree = "<group>"; };
 		E967A3AB2B47BD5A00FB19B2 /* Utils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Utils.m; sourceTree = "<group>"; };
+		E9AEB5FC2BD8EEB100FB2926 /* MailManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MailManager.h; sourceTree = "<group>"; };
+		E9AEB5FD2BD8EEB100FB2926 /* MailManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MailManager.m; sourceTree = "<group>"; };
 		E9BEF35E2B470BF1001F6755 /* NetworkManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NetworkManager.m; sourceTree = "<group>"; };
 		E9BEF35F2B470BF1001F6755 /* NetworkManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NetworkManager.h; sourceTree = "<group>"; };
 		E9C33AA42B4828A60074B1C5 /* DatabaseManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DatabaseManager.h; sourceTree = "<group>"; };
@@ -86,6 +89,8 @@
 		206C9F3C1D474E910063E3E6 /* Status */ = {
 			isa = PBXGroup;
 			children = (
+				E9AEB5FC2BD8EEB100FB2926 /* MailManager.h */,
+				E9AEB5FD2BD8EEB100FB2926 /* MailManager.m */,
 				E92244EA2B485F2400915F4C /* UIHelper.h */,
 				E92244E92B485F2400915F4C /* UIHelper.m */,
 				E9DB08922B4858B400F51053 /* LogManager.h */,
@@ -163,6 +168,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				E9DB08932B4858B400F51053 /* LogManager.m in Sources */,
+				E9AEB5FE2BD8EEB100FB2926 /* MailManager.m in Sources */,
 				E9F5C3322B483B6C001A7F40 /* EncryptionUtils.m in Sources */,
 				E967A3AC2B47BD5A00FB19B2 /* Utils.m in Sources */,
 				E92244EB2B485F2400915F4C /* UIHelper.m in Sources */,

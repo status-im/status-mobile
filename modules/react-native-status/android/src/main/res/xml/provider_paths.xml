@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<paths xmlns:android="http://schemas.android.com/apk/res/android">
+    <external-path name="rnmail_dl" path="Download/" />
+    <cache-path name="rnmail_cache" path="/" />
+    <root-path name="rnmail_sdcard" path="." />
+</paths>
