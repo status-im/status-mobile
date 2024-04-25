@@ -8,10 +8,15 @@
    :padding-top (:top insets)})
 
 (defn page-illustration
-  [width]
-  {:width         width
-   :margin-top    12
-   :margin-bottom 4})
+  [{:keys [width height]}]
+  {:width  width
+   ;; Aspect ratio 2:3
+   :height (/ height 1.5)})
+
+(def page-title
+  {:margin-top        12
+   :margin-horizontal 20
+   :margin-bottom     8})
 
 (defn buttons
   [insets]
