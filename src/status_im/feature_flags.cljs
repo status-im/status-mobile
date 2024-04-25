@@ -24,7 +24,8 @@
    ::wallet.import-private-key          (enabled-in-env? :FLAG_IMPORT_PRIVATE_KEY_ENABLED)
    ::wallet.long-press-watch-only-asset (enabled-in-env? :FLAG_LONG_PRESS_WATCH_ONLY_ASSET_ENABLED)
    ::wallet.swap                        (enabled-in-env? :FLAG_SWAP_ENABLED)
-   ::wallet.wallet-connect              (enabled-in-env? :FLAG_WALLET_CONNECT_ENABLED)})
+   ::wallet.wallet-connect              (enabled-in-env? :FLAG_WALLET_CONNECT_ENABLED)
+   ::wallet.enable-saving-addresses     (enabled-in-env? :FLAG_SAVE_ADDRESSES)})
 
 (defonce ^:private feature-flags-config
   (reagent/atom initial-flags))

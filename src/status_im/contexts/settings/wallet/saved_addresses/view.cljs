@@ -5,6 +5,7 @@
             [react-native.safe-area :as safe-area]
             [status-im.common.resources :as resources]
             [status-im.contexts.settings.wallet.saved-addresses.style :as style]
+            [status-im.feature-flags :as ff]
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]))
 
@@ -38,8 +39,9 @@
         :accessibility-label :saved-addresses-header
         :right               :action
         :on-press            (fn []
-                               (rf/dispatch [:open-modal :screen/wallet.add-address-to-save
-                                             {:purpose :save}]))
+                               (when (ff/enabled? ::ff/wallet.enable-saving-addresses)
+                                 (rf/dispatch [:open-modal :screen/wallet.add-address-to-save
+                                               {:purpose :save}])))
         :customization-color customization-color
         :icon                :i/add}]]
      (when-not (seq saved-addresses)
