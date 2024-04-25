@@ -8,6 +8,8 @@
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
+(defn navigate-back [] (rf/dispatch [:navigate-back]))
+
 (defn view
   []
   (fn []
@@ -27,7 +29,7 @@
          :key   :share-community}
         [quo/page-nav
          {:icon-name           :i/close
-          :on-press            #(rf/dispatch [:navigate-back])
+          :on-press            navigate-back
           :background          :blur
           :accessibility-label :top-bar}]
         [quo/text-combinations
