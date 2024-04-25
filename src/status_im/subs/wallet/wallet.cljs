@@ -1,6 +1,7 @@
 (ns status-im.subs.wallet.wallet
   (:require [clojure.string :as string]
             [re-frame.core :as rf]
+            [status-im.config :as config]
             [status-im.contexts.wallet.common.utils :as utils]
             [status-im.subs.wallet.add-account.address-to-watch]
             [utils.number]))
@@ -321,11 +322,13 @@
 
 (rf/reg-sub
  :wallet/total-owned-accounts-balance
+ :<- [:wallet/accounts]
  :<- [:wallet/accounts-without-watched-accounts]
  :<- [:wallet/balances-in-selected-networks]
  :<- [:profile/currency-symbol]
- (fn [[accounts balances currency-symbol]]
-   (let [raw-balance       (utils/calculate-balance-from-accounts accounts balances)
+ (fn [[all-accounts owned-accounts balances currency-symbol]]
+   (let [accounts          (if config/include-watch-only-balance-in-total? all-accounts owned-accounts)
+         raw-balance       (utils/calculate-balance-from-accounts accounts balances)
          formatted-balance (utils/prettify-balance currency-symbol raw-balance)]
      {:balance           raw-balance
       :formatted-balance formatted-balance})))
