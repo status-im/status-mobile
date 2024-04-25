@@ -3,8 +3,7 @@
     [clojure.string :as string]
     [legacy.status-im.utils.deprecated-types :as types]
     [react-native.platform :as platform]
-    [status-im.config :as config]
-    [utils.ethereum.chain :as chain]))
+    [status-im.config :as config]))
 
 (defn- add-log-level
   [config log-level]
@@ -117,10 +116,7 @@
         {:keys [installation-id log-level
                 waku-bloom-filter-mode]}
         profile]
-    (cond-> {:NetworkId      (chain/chain-keyword->chain-id :mainnet)
-             :DataDir        "/ethereum/mainnet_rpc"
-             :UpstreamConfig {:Enabled true
-                              :URL     config/mainnet-rpc-url}}
+    (cond-> {}
       :always
       (get-base-node-config)
 

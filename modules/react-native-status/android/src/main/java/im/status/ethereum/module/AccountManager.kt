@@ -47,7 +47,8 @@ class AccountManager(private val reactContext: ReactApplicationContext) : ReactC
 
     private fun updateConfig(jsonConfigString: String, absRootDirPath: String, keystoreDirPath: String): String {
         val jsonConfig = JSONObject(jsonConfigString)
-        val dataDirPath = jsonConfig.getString("DataDir")
+        // when doing local pair syncing, backend will provide default data dir
+        val dataDirPath = jsonConfig.optString("DataDir","")
         val logEnabled = jsonConfig.getBoolean("LogEnabled")
         val gethLogFile = if (logEnabled) logManager.prepareLogsFile(reactContext) else null
         val gethLogDirPath = gethLogFile?.parent
@@ -140,7 +141,6 @@ class AccountManager(private val reactContext: ReactApplicationContext) : ReactC
             updatedJsonConfigString
         } catch (e: JSONException) {
             Log.e(TAG, "updateConfig failed: ${e.message}")
-            System.exit(1)
             ""
         }
     }
