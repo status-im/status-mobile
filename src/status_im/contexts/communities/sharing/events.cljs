@@ -51,7 +51,6 @@
                                                    :linkMetadata    {:title title}}]}
                                                 {:title     title
                                                  :subject   title
-                                                 :message   url
                                                  :url       url
                                                  :isNewTask true})}]))]
      {:fx [[:dispatch [:communities/get-community-channel-share-data chat-id on-success]]]})))
@@ -112,7 +111,6 @@
                                                  :linkMetadata    {:title title}}]}
                          {:title     title
                           :subject   title
-                          :message   url
                           :url       url
                           :isNewTask true})))]
      {:fx [[:dispatch [:communities/get-community-channel-share-data chat-id on-success]]]})))
