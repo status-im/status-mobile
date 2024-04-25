@@ -1,7 +1,6 @@
 (ns status-im.contexts.communities.sharing.events
   (:require [legacy.status-im.data-store.chats :as data-store.chats]
             [react-native.platform :as platform]
-            [react-native.share :as share]
             [taoensso.timbre :as log]
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]))
@@ -97,20 +96,3 @@
                                {:error        err
                                 :community-id community-id
                                 :event        :communities/get-community-share-data}))}]}))
-
-(rf/reg-event-fx :communities/share-community-channel-url-with-data
- (fn [_ [chat-id]]
-   (let [title      (i18n/label :t/channel-on-status)
-         on-success (fn [url]
-                      (share/open
-                       (if platform/ios?
-                         {:activityItemSources [{:placeholderItem {:type    "text"
-                                                                   :content title}
-                                                 :item            {:default {:type    "url"
-                                                                             :content url}}
-                                                 :linkMetadata    {:title title}}]}
-                         {:title     title
-                          :subject   title
-                          :url       url
-                          :isNewTask true})))]
-     {:fx [[:dispatch [:communities/get-community-channel-share-data chat-id on-success]]]})))
