@@ -2,6 +2,7 @@
   (:require
     [cljs.test :refer [is testing use-fixtures]]
     [re-frame.db :as rf-db]
+    [status-im.config :as config]
     [status-im.constants :as constants]
     [status-im.contexts.wallet.db :as db]
     [status-im.subs.root]
@@ -505,7 +506,8 @@
                              (assoc-in [:wallet :accounts] accounts)))
     (let [{:keys [formatted-balance tokens]} (rf/sub [sub-name])]
       (is (match? 2 (count tokens)))
-      (is (match? "$4506.00" formatted-balance)))))
+      (is (match? (if config/include-watch-only-balance-in-total? "$4506.00" "$2106.00")
+                  formatted-balance)))))
 
 (h/deftest-sub :wallet/accounts-with-customization-color
   [sub-name]
@@ -656,8 +658,10 @@
     (let [result (rf/sub [sub-name])
           chains (keys result)]
       (is (match? (count chains) 3))
-      (is (match? (get result constants/ethereum-mainnet-chain-id) "$3504.00"))
-      (is (match? (get result constants/optimism-mainnet-chain-id) "$1002.00")))))
+      (is (match? (get result constants/ethereum-mainnet-chain-id)
+                  (if config/include-watch-only-balance-in-total? "$3504.00" "$1504.00")))
+      (is (match? (get result constants/optimism-mainnet-chain-id)
+                  (if config/include-watch-only-balance-in-total? "$1002.00" "$602.00"))))))
 
 (h/deftest-sub :wallet/current-viewing-account-fiat-balance-per-chain
   [sub-name]
