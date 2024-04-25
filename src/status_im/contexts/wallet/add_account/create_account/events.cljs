@@ -31,12 +31,21 @@
 
 (rf/reg-event-fx :wallet/store-seed-phrase store-seed-phrase)
 
-(defn seed-phrase-entered
-  [{:keys [db]} [{:keys [seed-phrase]}]]
+(defn seed-phrase-validated
+  [{:keys [db]} [seed-phrase]]
   {:db (assoc-in db [:wallet :ui :create-account :seed-phrase] seed-phrase)
    :fx [[:dispatch [:navigate-to :screen/wallet.keypair-name]]]})
 
-(rf/reg-event-fx :wallet/seed-phrase-entered seed-phrase-entered)
+(rf/reg-event-fx :wallet/seed-phrase-validated seed-phrase-validated)
+
+(rf/defn seed-phrase-entered
+  {:events [:wallet/seed-phrase-entered]}
+  [_ seed-phrase on-error]
+  {:multiaccount/validate-mnemonic [seed-phrase
+                                    (fn [mnemonic key-uid]
+                                      (rf/dispatch [:wallet/seed-phrase-validated
+                                                    mnemonic key-uid]))
+                                    on-error]})
 
 (defn new-keypair-created
   [{:keys [db]} [{:keys [new-keypair]}]]

@@ -105,8 +105,9 @@
                                                (swap! seed-phrase clean-seed-phrase)
                                                (if recovering-keypair?
                                                  (rf/dispatch [:wallet/seed-phrase-entered
-                                                               {:seed-phrase (security/mask-data
-                                                                              @seed-phrase)}])
+                                                               (security/mask-data
+                                                                @seed-phrase)
+                                                               set-invalid-seed-phrase])
                                                  (rf/dispatch [:onboarding/seed-phrase-entered
                                                                (security/mask-data @seed-phrase)
                                                                set-invalid-seed-phrase])))]
