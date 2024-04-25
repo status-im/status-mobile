@@ -25,7 +25,7 @@
                                            [chat-id])]
       [quo/overlay {:type :shell}
        [rn/view
-        {:style {:padding-top (safe-area/get-top)}
+        {:style (style/container (safe-area/get-top))
          :key   :share-community}
         [quo/page-nav
          {:icon-name           :i/close
