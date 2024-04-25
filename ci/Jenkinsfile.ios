@@ -1,4 +1,4 @@
-library 'status-jenkins-lib@v1.7.6'
+library 'status-jenkins-lib@release/1.20.x'
 
 /* Options section can't access functions in objects. */
 def isPRBuild = utils.isPRBuild()
