@@ -83,7 +83,6 @@
 
 (defn activity-indicator
   [activity-state]
-  (prn activity-state "hey")
   (let [{:keys [message]
          :as   props} (case activity-state
                         :has-activity               {:accessibility-label :account-has-activity
