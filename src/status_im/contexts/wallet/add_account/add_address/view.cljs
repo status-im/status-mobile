@@ -118,10 +118,8 @@
         {:keys [title description input-title adding-address-purpose confirm-screen-props
                 confirm-screen]}
         (rf/sub [:get-screen-params])
-        validate
-        #(validate-address addresses % adding-address-purpose)
+        validate #(validate-address addresses % adding-address-purpose)
         customization-color (rf/sub [:profile/customization-color])]
-
     (rf/dispatch [:wallet/clean-scanned-address])
     (rf/dispatch [:wallet/clear-address-activity])
     (fn []

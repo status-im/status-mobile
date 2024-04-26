@@ -16,7 +16,7 @@
 (def ^:const sheet-closing-delay 750)
 
 (defn- on-press-confirm-address
-  [{:keys [adding-address-purpose account-name account-emoji account-color address ens? theme]}]
+  [{:keys [adding-address-purpose account-name account-emoji account-color address ens?]}]
   (condp = adding-address-purpose
     :watch (rf/dispatch [:wallet/add-account
                          {:sha3-pwd     nil
@@ -40,7 +40,7 @@
                                      (debounce/debounce-and-dispatch
                                       [:toasts/upsert
                                        {:type  :positive
-                                        :theme theme
+                                        :theme (quo.theme/use-theme)
                                         :text  (i18n/label
                                                 :t/address-saved)}]
                                       sheet-closing-delay))}])))
@@ -51,18 +51,14 @@
 
 (defn view
   []
-  (let [theme (quo.theme/use-theme)]
+  (let [{:keys                                           [adding-address-purpose ens? address]
+         {:keys [placeholder address-type button-label]} :confirm-screen-props}
+        (rf/sub [:get-screen-params])
+        [account-name on-change-name] (rn/use-state "")
+        [account-color on-change-color] (rn/use-state (rand-nth colors/account-colors))
+        [account-emoji on-change-emoji] (rn/use-state (emoji-picker.utils/random-emoji))]
     (fn []
-      (let [{:keys                                           [adding-address-purpose ens? address]
-             {:keys [placeholder address-type button-label]} :confirm-screen-props}
-            (rf/sub [:get-screen-params])
-            placeholder (i18n/label placeholder)
-            [account-name set-account-name] (rn/use-state "")
-            [account-color set-account-color] (rn/use-state (rand-nth colors/account-colors))
-            [account-emoji set-account-emoji] (rn/use-state (emoji-picker.utils/random-emoji))
-            on-change-name #(set-account-name %)
-            on-change-color #(set-account-color %)
-            on-change-emoji #(set-account-emoji %)]
+      (let [placeholder (i18n/label placeholder)]
         [:<>
          (when (= adding-address-purpose :save)
            [rn/view {:style style/save-address-drawer-bar-container}
@@ -78,13 +74,12 @@
             :on-change-emoji     on-change-emoji
             :watch-only?         true
             :top-left-icon       :i/arrow-left
-            :bottom-action-label address-type
+            :bottom-action-label button-label
             :bottom-action-props {:customization-color account-color
                                   :disabled?           (string/blank? account-name)
                                   :accessibility-label :confirm-button-label
                                   :on-press            #(on-press-confirm-address
-                                                         {:theme                  theme
-                                                          :ens?                   ens?
+                                                         {:ens?                   ens?
                                                           :adding-address-purpose adding-address-purpose
                                                           :account-name           account-name
                                                           :account-emoji          account-emoji
@@ -95,7 +90,7 @@
              :right-icon      :i/advanced
              :icon-right?     true
              :emoji           account-emoji
-             :title           (i18n/label button-label)
+             :title           (i18n/label address-type)
              :subtitle        address
              :status          :default
              :size            :default
