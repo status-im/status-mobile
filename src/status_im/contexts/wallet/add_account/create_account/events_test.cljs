@@ -12,12 +12,12 @@
         result-db   (:db effects)]
     (is (match? result-db expected-db))))
 
-(deftest store-secret-phrase
+(deftest store-seed-phrase
   (let [db          {}
-        props       [{:secret-phrase "test-secret" :random-phrase "random-test"}]
-        expected-db {:wallet {:ui {:create-account {:secret-phrase "test-secret"
+        props       [{:seed-phrase "test-secret" :random-phrase "random-test"}]
+        expected-db {:wallet {:ui {:create-account {:seed-phrase   "test-secret"
                                                     :random-phrase "random-test"}}}}
-        effects     (events/store-secret-phrase {:db db} props)
+        effects     (events/store-seed-phrase {:db db} props)
         result-db   (:db effects)]
     (is (match? result-db expected-db))))
 
@@ -30,10 +30,10 @@
     (is (match? result-db expected-db))))
 
 (deftest new-keypair-continue
-  (let [db               {:wallet {:ui {:create-account {:secret-phrase "test-secret"}}}}
+  (let [db               {:wallet {:ui {:create-account {:seed-phrase "test-secret"}}}}
         props            [{:keypair-name "test-keypair"}]
         expected-effects [[:effects.wallet/create-account-from-mnemonic
-                           {:secret-phrase "test-secret" :keypair-name "test-keypair"}]]
+                           {:seed-phrase "test-secret" :keypair-name "test-keypair"}]]
         effects          (events/new-keypair-continue {:db db} props)]
     (is (match? effects {:fx expected-effects}))))
 
