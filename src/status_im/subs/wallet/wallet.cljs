@@ -220,7 +220,7 @@
 
 (rf/reg-sub
  :wallet/lowercased-addresses
- :<- [:wallet/accounts]
+ :<- [:wallet/addresses]
  (fn [addresses]
    (map string/lower-case addresses)))
 
