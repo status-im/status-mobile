@@ -109,8 +109,10 @@
            {:size  :paragraph-2
             :style style/warning-text} (i18n/label :t/receiver-networks-warning)]])
        [quo/bottom-actions
-        {:button-one-label (i18n/label :t/apply-changes)
-         :button-one-props {:disabled?           (= selected-networks @network-preferences)
+        {:actions          :one-action
+         :button-one-label (i18n/label :t/apply-changes)
+         :button-one-props {:disabled?           (or (= selected-networks @network-preferences)
+                                                     (empty? @network-preferences))
                             :on-press            (fn []
                                                    (rf/dispatch [:wallet/update-receiver-networks
                                                                  @network-preferences])
