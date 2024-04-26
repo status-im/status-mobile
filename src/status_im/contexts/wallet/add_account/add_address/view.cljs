@@ -14,14 +14,6 @@
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
-(def ^:private adding-addresses-purposes
-  {:watch {:title       :t/add-address-to-watch
-           :description :t/enter-eth
-           :input-title :t/eth-or-ens}
-   :save  {:title       :t/add-address
-           :description :t/save-address-description
-           :input-title :t/address-or-end-name}})
-
 (defn- validate-address
   [known-addresses user-input purpose]
   (cond
@@ -38,7 +30,8 @@
   (re-find constants/regx-address-contains scanned-text))
 
 (defn- address-input
-  [{:keys [input-value validate clear-input purpose set-validation-message set-input-value]}]
+  [{:keys [input-value validate clear-input set-validation-message set-input-value input-title
+           adding-address-purpose]}]
   (let [scanned-address (rf/sub [:wallet/scanned-address])
         empty-input?    (and (string/blank? input-value)
                              (string/blank? scanned-address))
@@ -62,14 +55,12 @@
                    [scanned-address])
     [rn/view {:style style/input-container}
      [quo/input
-      {:accessibility-label (if (= :watch purpose)
+      {:accessibility-label (if (= :watch adding-address-purpose)
                               :add-address-to-watch
                               :add-address-to-save)
        :placeholder         (i18n/label :t/address-placeholder)
        :container-style     style/input
-       :label               (-> adding-addresses-purposes
-                                (get-in [purpose :input-title])
-                                i18n/label)
+       :label               input-title
        :auto-capitalize     :none
        :multiline?          true
        :on-clear            clear-input
@@ -92,6 +83,7 @@
 
 (defn activity-indicator
   [activity-state]
+  (prn activity-state "hey")
   (let [{:keys [message]
          :as   props} (case activity-state
                         :has-activity               {:accessibility-label :account-has-activity
@@ -123,11 +115,14 @@
 
 (defn view
   []
-  (let [addresses            (rf/sub [:wallet/addresses])
+  (let [addresses (rf/sub [:wallet/addresses])
         lowercased-addresses (map string/lower-case addresses)
-        {:keys [purpose]}    (rf/sub [:get-screen-params])
-        validate             #(validate-address (set lowercased-addresses) (string/lower-case %) purpose)
-        customization-color  (rf/sub [:profile/customization-color])]
+        {:keys [title description input-title adding-address-purpose confirm-screen-props
+                confirm-screen]}
+        (rf/sub [:get-screen-params])
+        validate
+        #(validate-address (set lowercased-addresses) (string/lower-case %) adding-address-purpose)
+        customization-color (rf/sub [:profile/customization-color])]
 
     (rf/dispatch [:wallet/clean-scanned-address])
     (rf/dispatch [:wallet/clear-address-activity])
@@ -160,44 +155,37 @@
                                               (= activity-state :scanning)
                                               (not validated-address))
                      :on-press            (fn []
-                                            (condp = purpose
-                                              :watch (rf/dispatch
-                                                      [:navigate-to
-                                                       :screen/wallet.confirm-address
-                                                       {:purpose purpose
-                                                        :address (extract-address
-                                                                  validated-address)}])
-                                              :save  (rf/dispatch
-                                                      [:open-modal
-                                                       :screen/wallet.confirm-address-to-save
-                                                       {:purpose purpose
-                                                        :address (extract-address
-                                                                  validated-address)
-                                                        :ens?    (and
-                                                                  (not (validation/eth-address?
-                                                                        validated-address))
-                                                                  (validation/ens-name?
-                                                                   validated-address))}]))
+                                            (rf/dispatch
+                                             [:open-modal
+                                              confirm-screen
+                                              {:address                (extract-address
+                                                                        validated-address)
+                                               :screen                 :screen/wallet.confirm-address
+                                               :confirm-screen-props   confirm-screen-props
+                                               :confirm-screen         :screen/wallet.confirm-address
+                                               :adding-address-purpose adding-address-purpose
+                                               :ens?                   (and
+                                                                        (not (validation/eth-address?
+                                                                              validated-address))
+                                                                        (validation/ens-name?
+                                                                         validated-address))}])
                                             (clear-input))
                      :container-style     {:z-index 2}}
                     (i18n/label :t/continue)]}
           [quo/page-top
            {:container-style  style/header-container
-            :title            (-> adding-addresses-purposes
-                                  (get-in [purpose :title])
-                                  i18n/label)
+            :title            (i18n/label title)
             :description      :text
-            :description-text (-> adding-addresses-purposes
-                                  (get-in [purpose :description])
-                                  i18n/label)}]
+            :description-text (i18n/label description)}]
           [address-input
            {:input-value            input-value
             :validate               validate
             :validation-msg         validation-msg
             :clear-input            clear-input
-            :purpose                purpose
             :set-validation-message set-validation-message
-            :set-input-value        set-input-value}]
+            :set-input-value        set-input-value
+            :input-title            (i18n/label input-title)
+            :adding-address-purpose adding-address-purpose}]
           (if validation-msg
             [quo/info-message
              {:accessibility-label :error-message

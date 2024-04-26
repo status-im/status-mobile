@@ -25,7 +25,15 @@
       :accessibility-label :add-a-contact
       :label               (i18n/label :t/add-address)
       :sub-label           (i18n/label :t/add-address-description)
-      :on-press            #(rf/dispatch [:navigate-to :screen/wallet.add-address {:purpose :watch}])
+      :on-press            #(rf/dispatch [:navigate-to :screen/wallet.add-address
+                                          {:title :t/add-address-to-watch
+                                           :description :t/enter-eth
+                                           :input-title :t/eth-or-ens
+                                           :confirm-screen-props {:button-label :t/add-watched-address
+                                                                  :address-type :t/watched-address
+                                                                  :placeholder
+                                                                  :t/default-watched-address-placeholder}
+                                           :adding-address-purpose :watch}])
       :add-divider?        true}]]])
 
 (defn- new-account-card-data

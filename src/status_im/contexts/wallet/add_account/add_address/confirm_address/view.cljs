@@ -15,14 +15,6 @@
 
 (def ^:const sheet-closing-delay 750)
 
-(def ^:private confirming-addresses-purposes
-  {:watch {:button-label :t/add-watched-address
-           :address-type :t/watched-address
-           :placeholder  :t/default-watched-address-placeholder}
-   :save  {:button-label :t/save-address
-           :address-type :t/address
-           :placeholder  :t/saved-address}})
-
 (defn- on-press
   [{:keys [purpose account-name account-emoji account-color address ens? theme]}]
   (condp = purpose
@@ -59,23 +51,23 @@
 
 (defn view
   []
-  (let [{:keys [address purpose ens?]} (rf/sub [:get-screen-params])
-        placeholder                    (-> confirming-addresses-purposes
-                                           (get-in [purpose :placeholder])
-                                           i18n/label)
-        theme                          (quo.theme/use-theme)]
+  (let [theme (quo.theme/use-theme)]
     (fn []
-      (let [[account-name set-account-name]   (rn/use-state "")
+      (let [{:keys                                           [adding-address-purpose ens? address]
+             {:keys [placeholder address-type button-label]} :confirm-screen-props}
+            (rf/sub [:get-screen-params])
+            placeholder (i18n/label placeholder)
+            [account-name set-account-name] (rn/use-state "")
             [account-color set-account-color] (rn/use-state (rand-nth colors/account-colors))
             [account-emoji set-account-emoji] (rn/use-state (emoji-picker.utils/random-emoji))
-            on-change-name                    #(set-account-name %)
-            on-change-color                   #(set-account-color %)
-            on-change-emoji                   #(set-account-emoji %)]
+            on-change-name #(set-account-name %)
+            on-change-color #(set-account-color %)
+            on-change-emoji #(set-account-emoji %)]
         [:<>
-         (when (= purpose :save)
+         (when (= adding-address-purpose :save)
            [rn/view {:style style/save-address-drawer-bar-container}
             [quo/drawer-bar]])
-         [rn/view {:style (style/container purpose)}
+         [rn/view {:style (style/container adding-address-purpose)}
           [create-or-edit-account/view
            {:placeholder         placeholder
             :account-name        account-name
@@ -86,26 +78,24 @@
             :on-change-emoji     on-change-emoji
             :watch-only?         true
             :top-left-icon       :i/arrow-left
-            :bottom-action-label (-> confirming-addresses-purposes
-                                     (get-in [purpose :button-label]))
+            :bottom-action-label address-type
             :bottom-action-props {:customization-color account-color
                                   :disabled?           (string/blank? account-name)
                                   :accessibility-label :confirm-button-label
                                   :on-press            #(on-press {:theme         theme
                                                                    :ens?          ens?
-                                                                   :purpose       purpose
+                                                                   :purpose       adding-address-purpose
                                                                    :account-name  account-name
                                                                    :account-emoji account-emoji
                                                                    :account-color account-color
                                                                    :address       address})}}
+           (prn "meg " button-label)
            [quo/data-item
             {:card?           true
              :right-icon      :i/advanced
              :icon-right?     true
              :emoji           account-emoji
-             :title           (-> confirming-addresses-purposes
-                                  (get-in [purpose :address-type])
-                                  i18n/label)
+             :title           (i18n/label button-label)
              :subtitle        address
              :status          :default
              :size            :default
