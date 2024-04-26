@@ -159,7 +159,6 @@
                                               confirm-screen
                                               {:address                (extract-address
                                                                         validated-address)
-                                               :screen                 :screen/wallet.confirm-address
                                                :confirm-screen-props   confirm-screen-props
                                                :confirm-screen         :screen/wallet.confirm-address
                                                :adding-address-purpose adding-address-purpose
