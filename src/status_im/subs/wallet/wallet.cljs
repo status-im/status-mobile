@@ -1,7 +1,6 @@
 (ns status-im.subs.wallet.wallet
   (:require [clojure.string :as string]
             [re-frame.core :as rf]
-            [status-im.config :as config]
             [status-im.contexts.wallet.common.utils :as utils]
             [status-im.subs.wallet.add-account.address-to-watch]
             [utils.number]))
@@ -291,11 +290,9 @@
 
 (rf/reg-sub
  :wallet/aggregated-tokens
- :<- [:wallet/accounts]
  :<- [:wallet/accounts-without-watched-accounts]
- (fn [[all-accounts owned-accounts]]
-   (let [accounts (if config/include-watch-only-balance-in-total? all-accounts owned-accounts)]
-     (utils/aggregate-tokens-for-all-accounts accounts))))
+ (fn [accounts]
+   (utils/aggregate-tokens-for-all-accounts accounts)))
 
 (rf/reg-sub
  :wallet/aggregated-tokens-in-selected-networks
