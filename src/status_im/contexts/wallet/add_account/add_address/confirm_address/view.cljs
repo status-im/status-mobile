@@ -52,54 +52,52 @@
 (defn view
   []
   (let [{:keys                                           [adding-address-purpose ens? address]
-         {:keys [placeholder address-type button-label]} :confirm-screen-props}
-        (rf/sub [:get-screen-params])
-        [account-name on-change-name] (rn/use-state "")
-        [account-color on-change-color] (rn/use-state (rand-nth colors/account-colors))
-        [account-emoji on-change-emoji] (rn/use-state (emoji-picker.utils/random-emoji))]
-    (fn []
-      (let [placeholder (i18n/label placeholder)]
-        [:<>
-         (when (= adding-address-purpose :save)
-           [rn/view {:style style/save-address-drawer-bar-container}
-            [quo/drawer-bar]])
-         [rn/view {:style (style/container adding-address-purpose)}
-          [create-or-edit-account/view
-           {:placeholder         placeholder
-            :account-name        account-name
-            :account-emoji       account-emoji
-            :account-color       account-color
-            :on-change-name      on-change-name
-            :on-change-color     on-change-color
-            :on-change-emoji     on-change-emoji
-            :watch-only?         true
-            :top-left-icon       :i/arrow-left
-            :bottom-action-label button-label
-            :bottom-action-props {:customization-color account-color
-                                  :disabled?           (string/blank? account-name)
-                                  :accessibility-label :confirm-button-label
-                                  :on-press            #(on-press-confirm-address
-                                                         {:ens?                   ens?
-                                                          :adding-address-purpose adding-address-purpose
-                                                          :account-name           account-name
-                                                          :account-emoji          account-emoji
-                                                          :account-color          account-color
-                                                          :address                address})}}
-           [quo/data-item
-            {:card?           true
-             :right-icon      :i/advanced
-             :icon-right?     true
-             :emoji           account-emoji
-             :title           (i18n/label address-type)
-             :subtitle        address
-             :status          :default
-             :size            :default
-             :subtitle-type   :default
-             :custom-subtitle (fn [] [quo/text
-                                      {:size   :paragraph-2
+         {:keys [placeholder address-type button-label]} :confirm-screen-props} (rf/sub [:get-screen-params])
+        placeholder                                                                                                          (i18n/label placeholder)
+        [account-name on-change-name]                                                                                        (rn/use-state "")
+        [account-color on-change-color]                                                                                      (rn/use-state (rand-nth colors/account-colors))
+        [account-emoji on-change-emoji]                                                                                      (rn/use-state (emoji-picker.utils/random-emoji))]
+    [:<>
+     (when (= adding-address-purpose :save)
+       [rn/view {:style style/save-address-drawer-bar-container}
+        [quo/drawer-bar]])
+     [rn/view {:style (style/container adding-address-purpose)}
+      [create-or-edit-account/view
+       {:placeholder         placeholder
+        :account-name        account-name
+        :account-emoji       account-emoji
+        :account-color       account-color
+        :on-change-name      on-change-name
+        :on-change-color     on-change-color
+        :on-change-emoji     on-change-emoji
+        :watch-only?         true
+        :top-left-icon       :i/arrow-left
+        :bottom-action-label button-label
+        :bottom-action-props {:customization-color account-color
+                              :disabled?           (string/blank? account-name)
+                              :accessibility-label :confirm-button-label
+                              :on-press            #(on-press-confirm-address
+                                                     {:ens?                   ens?
+                                                      :adding-address-purpose adding-address-purpose
+                                                      :account-name           account-name
+                                                      :account-emoji          account-emoji
+                                                      :account-color          account-color
+                                                      :address                address})}}
+       [quo/data-item
+        {:card?           true
+         :right-icon      :i/advanced
+         :icon-right?     true
+         :emoji           account-emoji
+         :title           (i18n/label address-type)
+         :subtitle        address
+         :status          :default
+         :size            :default
+         :subtitle-type   :default
+         :custom-subtitle (fn [] [quo/text
+                                  {:size   :paragraph-2
                                        ;; TODO: monospace font
                                        ;; https://github.com/status-im/status-mobile/issues/17009
-                                       :weight :monospace}
-                                      address])
-             :container-style style/data-item
-             :on-press        to-be-implemented}]]]]))))
+                                   :weight :monospace}
+                                  address])
+         :container-style style/data-item
+         :on-press        to-be-implemented}]]]]))
