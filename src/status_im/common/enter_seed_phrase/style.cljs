@@ -1,4 +1,4 @@
-(ns status-im.contexts.onboarding.enter-seed-phrase.style
+(ns status-im.common.enter-seed-phrase.style
   (:require
     [react-native.safe-area :as safe-area]))
 

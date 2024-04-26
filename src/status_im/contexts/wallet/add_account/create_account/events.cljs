@@ -2,6 +2,7 @@
   (:require [camel-snake-kebab.extras :as cske]
             [status-im.contexts.wallet.data-store :as data-store]
             [utils.re-frame :as rf]
+            [utils.security.core :as security]
             [utils.transforms :as transforms]))
 
 (defn get-keypairs-success
@@ -21,14 +22,32 @@
 
 (rf/reg-event-fx :wallet/confirm-account-origin confirm-account-origin)
 
-(defn store-secret-phrase
-  [{:keys [db]} [{:keys [secret-phrase random-phrase]}]]
+(defn store-seed-phrase
+  [{:keys [db]} [{:keys [seed-phrase random-phrase]}]]
   {:db (-> db
-           (assoc-in [:wallet :ui :create-account :secret-phrase] secret-phrase)
+           (assoc-in [:wallet :ui :create-account :seed-phrase] seed-phrase)
            (assoc-in [:wallet :ui :create-account :random-phrase] random-phrase))
    :fx [[:dispatch-later [{:ms 20 :dispatch [:navigate-to :screen/wallet.check-your-backup]}]]]})
 
-(rf/reg-event-fx :wallet/store-secret-phrase store-secret-phrase)
+(rf/reg-event-fx :wallet/store-seed-phrase store-seed-phrase)
+
+(defn seed-phrase-validated
+  [{:keys [db]} [seed-phrase]]
+  {:db (assoc-in db [:wallet :ui :create-account :seed-phrase] seed-phrase)
+   :fx [[:dispatch [:navigate-to :screen/wallet.keypair-name]]]})
+
+(rf/reg-event-fx :wallet/seed-phrase-validated seed-phrase-validated)
+
+(defn seed-phrase-entered
+  [_ [seed-phrase on-error]]
+  {:fx [[:multiaccount/validate-mnemonic
+         [seed-phrase
+          (fn [mnemonic key-uid]
+            (rf/dispatch [:wallet/seed-phrase-validated
+                          mnemonic key-uid]))
+          on-error]]]})
+
+(rf/reg-event-fx :wallet/seed-phrase-entered seed-phrase-entered)
 
 (defn new-keypair-created
   [{:keys [db]} [{:keys [new-keypair]}]]
@@ -39,10 +58,10 @@
 
 (defn new-keypair-continue
   [{:keys [db]} [{:keys [keypair-name]}]]
-  (let [secret-phrase (get-in db [:wallet :ui :create-account :secret-phrase])]
+  (let [seed-phrase (get-in db [:wallet :ui :create-account :seed-phrase])]
     {:fx [[:effects.wallet/create-account-from-mnemonic
-           {:secret-phrase secret-phrase
-            :keypair-name  keypair-name}]]}))
+           {:seed-phrase  (security/safe-unmask-data seed-phrase)
+            :keypair-name keypair-name}]]}))
 
 (rf/reg-event-fx :wallet/new-keypair-continue new-keypair-continue)
 

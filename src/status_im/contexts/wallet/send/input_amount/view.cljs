@@ -105,7 +105,6 @@
 
             route                         (rf/sub [:wallet/wallet-send-route])
             to-address                    (rf/sub [:wallet/wallet-send-to-address])
-            nav-current-screen-id         (rf/sub [:view-id])
 
             on-confirm                    (or default-on-confirm handle-on-confirm)
             crypto-decimals               (or default-crypto-decimals
@@ -115,20 +114,19 @@
                                                token
                                                token-balance))
             fiat-limit                    (.toFixed (* token-balance conversion-rate) 2)
-            current-limit                 #(if @crypto-currency? crypto-limit fiat-limit)
-            routes-can-be-fetched?        (and (= nav-current-screen-id current-screen-id)
-                                               (not
-                                                (or (empty? (controlled-input/input-value input-state))
-                                                    (<= (controlled-input/numeric-value input-state) 0)
-                                                    (> (controlled-input/numeric-value input-state)
-                                                       (current-limit)))))
+            current-limit                 (if @crypto-currency? crypto-limit fiat-limit)
+            valid-input?                  (not (or (string/blank? (controlled-input/input-value
+                                                                   input-state))
+                                                   (<= (controlled-input/numeric-value input-state) 0)
+                                                   (> (controlled-input/numeric-value input-state)
+                                                      current-limit)))
             current-currency              (if @crypto-currency? token-symbol fiat-currency)
             input-num-value               (controlled-input/numeric-value input-state)
             confirm-disabled?             (or (nil? route)
                                               (empty? route)
-                                              (empty? (controlled-input/input-value input-state))
+                                              (string/blank? (controlled-input/input-value input-state))
                                               (<= input-num-value 0)
-                                              (> input-num-value (current-limit)))
+                                              (> input-num-value current-limit))
             amount-text                   (str (controlled-input/input-value input-state)
                                                " "
                                                token-symbol)
@@ -167,8 +165,8 @@
              #(.remove app-keyboard-listener))))
         (rn/use-effect
          (fn []
-           (set-input-state #(controlled-input/set-upper-limit % (current-limit))))
-         [@crypto-currency?])
+           (set-input-state #(controlled-input/set-upper-limit % current-limit)))
+         [current-limit])
         [rn/view
          {:style               style/screen
           :accessibility-label (str "container"
@@ -185,16 +183,17 @@
            :error?          (controlled-input/input-error input-state)
            :networks        (seq token-networks)
            :title           (i18n/label :t/send-limit
-                                        {:limit (make-limit-label (current-limit) current-currency)})
+                                        {:limit (make-limit-label current-limit current-currency)})
            :conversion      conversion-rate
            :show-keyboard?  false
            :value           (controlled-input/input-value input-state)
            :on-swap         #(reset! crypto-currency? %)
            :on-token-press  show-select-asset-sheet}]
          [routes/view
-          {:token                  token
-           :input-value            (controlled-input/input-value input-state)
-           :routes-can-be-fetched? routes-can-be-fetched?}]
+          {:token             token
+           :input-value       (controlled-input/input-value input-state)
+           :valid-input?      valid-input?
+           :current-screen-id current-screen-id}]
          (when (or loading-routes? (seq route))
            [estimated-fees
             {:loading-suggested-routes? loading-routes?
