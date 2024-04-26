@@ -131,6 +131,7 @@
                            #(rf/dispatch [:open-modal :community-requests-to-join {:id id}]))
     :accessibility-label :show-request-to-join-screen-button
     :customization-color color
+    :container-style     {:margin-bottom 12}
     :icon-left           :i/communities}
    (i18n/label :t/request-to-join)])
 
@@ -329,7 +330,7 @@
     (fn [id joined name images]
       (let [theme                 (quo.theme/use-theme)
             cover                 {:uri (get-in images [:banner :uri])}
-            logo                  {:uri (get-in images [:thumbnail :uri])}
+            logo                  {:uri (get-in images [:large :uri])}
             collapsed?            (and initial-joined? joined)
             first-category-height (->> @categories-heights
                                        vals
