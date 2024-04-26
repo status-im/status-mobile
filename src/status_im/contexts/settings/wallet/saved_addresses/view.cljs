@@ -18,7 +18,7 @@
       :image           (resources/get-themed-image :sweating-man theme)
       :container-style style/empty-container-style}]))
 
-(defn on-press
+(defn on-press-add-saved-address
   []
   (when (ff/enabled? ::ff/wallet.enable-saving-addresses)
     (rf/dispatch [:open-modal :screen/wallet.add-address-to-save
@@ -51,7 +51,7 @@
        {:title               (i18n/label :t/saved-addresses)
         :accessibility-label :saved-addresses-header
         :right               :action
-        :on-press            on-press
+        :on-press            on-press-add-saved-address
         :customization-color customization-color
         :icon                :i/add}]]
      (when-not saved-addresses?

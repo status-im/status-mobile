@@ -114,13 +114,12 @@
 
 (defn view
   []
-  (let [addresses (rf/sub [:wallet/addresses])
-        lowercased-addresses (map string/lower-case addresses)
+  (let [addresses (rf/sub [:wallet/lowercased-addresses])
         {:keys [title description input-title adding-address-purpose confirm-screen-props
                 confirm-screen]}
         (rf/sub [:get-screen-params])
         validate
-        #(validate-address (set lowercased-addresses) (string/lower-case %) adding-address-purpose)
+        #(validate-address addresses % adding-address-purpose)
         customization-color (rf/sub [:profile/customization-color])]
 
     (rf/dispatch [:wallet/clean-scanned-address])

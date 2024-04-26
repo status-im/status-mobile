@@ -15,7 +15,7 @@
 
 (def ^:const sheet-closing-delay 750)
 
-(defn- on-press
+(defn- on-press-confirm-address
   [{:keys [adding-address-purpose account-name account-emoji account-color address ens? theme]}]
   (condp = adding-address-purpose
     :watch (rf/dispatch [:wallet/add-account
@@ -82,14 +82,14 @@
             :bottom-action-props {:customization-color account-color
                                   :disabled?           (string/blank? account-name)
                                   :accessibility-label :confirm-button-label
-                                  :on-press            #(on-press {:theme                  theme
-                                                                   :ens?                   ens?
-                                                                   :adding-address-purpose adding-address-purpose
-                                                                   :account-name           account-name
-                                                                   :account-emoji          account-emoji
-                                                                   :account-color          account-color
-                                                                   :address                address})}}
-           (prn "meg " button-label)
+                                  :on-press            #(on-press-confirm-address
+                                                         {:theme                  theme
+                                                          :ens?                   ens?
+                                                          :adding-address-purpose adding-address-purpose
+                                                          :account-name           account-name
+                                                          :account-emoji          account-emoji
+                                                          :account-color          account-color
+                                                          :address                address})}}
            [quo/data-item
             {:card?           true
              :right-icon      :i/advanced

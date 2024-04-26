@@ -13,10 +13,11 @@
                                                 :description :t/enter-eth
                                                 :input-title :t/eth-or-ens
                                                 :confirm-screen :screen/wallet.confirm-address-to-save
-                                                :confirm-screen-props {:button-label :t/add-watched-address
-                                                                       :address-type :t/watched-address
-                                                                       :placeholder
-                                                                       :t/default-watched-address-placeholder}
+                                                :confirm-screen-props
+                                                {:button-label :t/add-watched-address
+                                                 :address-type :t/watched-address
+                                                 :placeholder
+                                                 :t/default-watched-address-placeholder}
                                                 :adding-address-purpose :watch}})
     (h/render [confirm-address/view])
     (h/is-truthy (h/get-by-text "0xmock-address"))
