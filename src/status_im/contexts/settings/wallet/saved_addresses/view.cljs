@@ -25,10 +25,10 @@
                   {:title                  :t/add-address
                    :description            :t/save-address-description
                    :input-title            :t/address-or-ens-name
+                   :confirm-screen         :screen/wallet.confirm-address-to-save
                    :confirm-screen-props   {:button-label :t/save-address
                                             :address-type :t/address
                                             :placeholder  :t/saved-address}
-                   :confirm-screen         :screen/wallet.confirm-address-to-save
                    :adding-address-purpose :save}])))
 
 (defn view

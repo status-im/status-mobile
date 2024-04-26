@@ -16,8 +16,8 @@
 (def ^:const sheet-closing-delay 750)
 
 (defn- on-press
-  [{:keys [purpose account-name account-emoji account-color address ens? theme]}]
-  (condp = purpose
+  [{:keys [adding-address-purpose account-name account-emoji account-color address ens? theme]}]
+  (condp = adding-address-purpose
     :watch (rf/dispatch [:wallet/add-account
                          {:sha3-pwd     nil
                           :type         :watch
@@ -82,13 +82,13 @@
             :bottom-action-props {:customization-color account-color
                                   :disabled?           (string/blank? account-name)
                                   :accessibility-label :confirm-button-label
-                                  :on-press            #(on-press {:theme         theme
-                                                                   :ens?          ens?
-                                                                   :purpose       adding-address-purpose
-                                                                   :account-name  account-name
-                                                                   :account-emoji account-emoji
-                                                                   :account-color account-color
-                                                                   :address       address})}}
+                                  :on-press            #(on-press {:theme                  theme
+                                                                   :ens?                   ens?
+                                                                   :adding-address-purpose adding-address-purpose
+                                                                   :account-name           account-name
+                                                                   :account-emoji          account-emoji
+                                                                   :account-color          account-color
+                                                                   :address                address})}}
            (prn "meg " button-label)
            [quo/data-item
             {:card?           true
