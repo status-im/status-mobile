@@ -10,7 +10,7 @@
   (h/before-each
    (fn []
      (h/setup-subs {:wallet/scanned-address              nil
-                    :wallet/addresses                    #{"0x12E838Ae1f769147b12956485dc56e57138f3AC8"
+                    :wallet/lowercased-addresses         #{"0x12E838Ae1f769147b12956485dc56e57138f3AC8"
                                                            "0x22E838Ae1f769147b12956485dc56e57138f3AC8"}
                     :alert-banners/top-margin            0
                     :wallet/watch-address-activity-state nil
@@ -19,7 +19,7 @@
                                                           :description :t/enter-eth
                                                           :input-title :t/eth-or-ens
                                                           :confirm-screen
-                                                          :screen/wallet.confirm-address-to-save
+                                                          :screen/wallet.confirm-address
                                                           :confirm-screen-props
                                                           {:button-label :t/add-watched-address
                                                            :address-type :t/watched-address
