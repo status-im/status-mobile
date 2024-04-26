@@ -51,12 +51,15 @@
 
 (defn view
   []
-  (let [{:keys                                           [adding-address-purpose ens? address]
-         {:keys [placeholder address-type button-label]} :confirm-screen-props} (rf/sub [:get-screen-params])
-        placeholder                                                                                                          (i18n/label placeholder)
-        [account-name on-change-name]                                                                                        (rn/use-state "")
-        [account-color on-change-color]                                                                                      (rn/use-state (rand-nth colors/account-colors))
-        [account-emoji on-change-emoji]                                                                                      (rn/use-state (emoji-picker.utils/random-emoji))]
+  (let [{:keys                  [adding-address-purpose
+                                 ens? address]
+         {:keys [placeholder
+                 address-type
+                 button-label]} :confirm-screen-props} (rf/sub [:get-screen-params])
+        placeholder                                    (i18n/label placeholder)
+        [account-name on-change-name]                  (rn/use-state "")
+        [account-color on-change-color]                (rn/use-state (rand-nth colors/account-colors))
+        [account-emoji on-change-emoji]                (rn/use-state (emoji-picker.utils/random-emoji))]
     [:<>
      (when (= adding-address-purpose :save)
        [rn/view {:style style/save-address-drawer-bar-container}
@@ -95,8 +98,8 @@
          :subtitle-type   :default
          :custom-subtitle (fn [] [quo/text
                                   {:size   :paragraph-2
-                                       ;; TODO: monospace font
-                                       ;; https://github.com/status-im/status-mobile/issues/17009
+                                   ;; TODO: monospace font
+                                   ;; https://github.com/status-im/status-mobile/issues/17009
                                    :weight :monospace}
                                   address])
          :container-style style/data-item
