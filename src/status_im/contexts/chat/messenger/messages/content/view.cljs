@@ -227,6 +227,7 @@
               [gesture/scroll-view])
             [{:style {:margin-left 8
                       :flex        1
+                      :gap         1
                       :max-height  (when-not show-reactions?
                                      (* 0.4 height))}}
              [author message-data show-reactions? in-reaction-and-action-menu? show-user-info?]
@@ -265,12 +266,13 @@
             [reactions/message-reactions-row (assoc message-data :preview? preview?)
              [rn/view {:pointer-events :none}
               [user-message-content
-               {:theme           theme
-                :message-data    message-data
-                :context         context
-                :keyboard-shown? keyboard-shown?
-                :preview?        true
-                :show-reactions? true}]]])]]))))
+               {:theme                        theme
+                :message-data                 message-data
+                :context                      context
+                :in-reaction-and-action-menu? true
+                :keyboard-shown?              keyboard-shown?
+                :preview?                     true
+                :show-reactions?              true}]]])]]))))
 
 (defn on-long-press
   [{:keys [deleted? deleted-for-me?] :as message-data} context keyboard-shown?]
