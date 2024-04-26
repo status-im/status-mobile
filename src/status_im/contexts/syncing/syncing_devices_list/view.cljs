@@ -9,6 +9,14 @@
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
+(defn go-back
+  []
+  (rf/dispatch [:navigate-back]))
+
+(defn open-setup-syncing
+  []
+  (rf/dispatch [:open-modal :settings-setup-syncing]))
+
 (defn view
   []
   (let [devices                                   (rf/sub [:pairing/installations])
@@ -25,8 +33,11 @@
       {:type       :no-title
        :background :blur
        :icon-name  :i/arrow-left
-       :on-press   #(rf/dispatch [:navigate-back])}]
-     [rn/view {:style style/page-container}
+       :on-press   go-back}]
+     [rn/scroll-view
+      {:content-container-style         style/page-container
+       :style                           {:flex 1}
+       :shows-vertical-scroll-indicator false}
       [rn/view {:style style/title-container}
        [quo/text
         {:size   :heading-1
@@ -38,7 +49,7 @@
          :type                :primary
          :customization-color profile-color
          :icon-only?          true
-         :on-press            #(rf/dispatch [:open-modal :settings-setup-syncing])}
+         :on-press            open-setup-syncing}
         :i/add]]
       [device/view (merge user-device {:this-device? true})]
       (when (seq paired-devices)
@@ -48,10 +59,9 @@
            :weight :medium
            :style  style/subtitle}
           (i18n/label :t/paired-with-this-device)]
-         [rn/flat-list
-          {:key-fn    str
-           :render-fn device/view
-           :data      paired-devices}]])
+         (for [device-props paired-devices]
+           ^{:key (:installation-id device-props)}
+           [device/view device-props])])
       (when (seq unpaired-devices)
         [rn/view
          [quo/text
@@ -59,7 +69,6 @@
            :weight :medium
            :style  style/subtitle}
           (i18n/label :t/not-paired-with-this-device)]
-         [rn/flat-list
-          {:key-fn    str
-           :render-fn device/view
-           :data      unpaired-devices}]])]]))
+         (for [device-props unpaired-devices]
+           ^{:key (:installation-id device-props)}
+           [device/view device-props])])]]))

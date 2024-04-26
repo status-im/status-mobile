@@ -11,6 +11,12 @@ buildGoPackage {
 
   phases = ["unpackPhase" "configurePhase" "buildPhase"];
 
+  # https://pkg.go.dev/net#hdr-Name_Resolution
+  # https://github.com/status-im/status-mobile/issues/19736
+  # https://github.com/status-im/status-mobile/issues/19581
+  # TODO: try removing when go is upgraded to 1.22
+  GODEBUG = "netdns=cgo+2";
+
   preBuild = ''
     pushd go/src/$goPackagePath
     go run cmd/library/*.go > $NIX_BUILD_TOP/main.go

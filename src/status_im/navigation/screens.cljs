@@ -3,6 +3,7 @@
     [legacy.status-im.ui.screens.screens :as old-screens]
     [quo.foundations.colors :as colors]
     [status-im.common.emoji-picker.view :as emoji-picker]
+    [status-im.common.enter-seed-phrase.view :as enter-seed-phrase]
     [status-im.common.lightbox.view :as lightbox]
     [status-im.config :as config]
     [status-im.contexts.chat.group-create.view :as group-create]
@@ -29,7 +30,6 @@
     [status-im.contexts.onboarding.create-profile.view :as create-profile]
     [status-im.contexts.onboarding.enable-biometrics.view :as enable-biometrics]
     [status-im.contexts.onboarding.enable-notifications.view :as enable-notifications]
-    [status-im.contexts.onboarding.enter-seed-phrase.view :as enter-seed-phrase]
     [status-im.contexts.onboarding.generating-keys.view :as generating-keys]
     [status-im.contexts.onboarding.identifiers.view :as identifiers]
     [status-im.contexts.onboarding.intro.view :as intro]
@@ -304,7 +304,7 @@
                  :layout     options/onboarding-transparent-layout
                  :animations transitions/push-animations-for-transparent-background
                  :popGesture false}
-     :component enter-seed-phrase/enter-seed-phrase}
+     :component enter-seed-phrase/view}
 
     {:name      :screen/onboarding.enable-notifications
      :options   {:theme                  :dark
@@ -428,6 +428,9 @@
     {:name      :screen/wallet.keypair-name
      :options   {:insets {:top? true :bottom? true}}
      :component wallet-keypair-name/view}
+
+    {:name      :screen/wallet.enter-seed-phrase
+     :component enter-seed-phrase/view}
 
     {:name      :screen/wallet.share-address
      :options   options/transparent-screen-options
