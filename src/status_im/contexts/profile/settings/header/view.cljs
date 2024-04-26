@@ -42,22 +42,24 @@
                                                   border-theme)
         :customization-color customization-color
         :profile-picture     profile-picture}]
-      [rn/view {:style {:margin-bottom 4}}
-       [quo/dropdown
-        {:background     :blur
-         :size           :size-32
-         :type           :outline
-         :icon?          true
-         :no-icon-color? true
-         :icon-name      status-icon
-         :on-press       #(rf/dispatch [:show-bottom-sheet
-                                        {:shell?  true
-                                         :theme   :dark
-                                         :content (fn [] [visibility-sheet/view])}])}
-        status-title]]]
-     [quo/text-combinations
-      {:title-accessibility-label :username
-       :container-style           style/title-container
-       :emoji-hash                emoji-string
-       :description               bio
-       :title                     full-name}]]))
+      [quo.theme/provider :dark
+       [rn/view {:style {:margin-bottom 4}}
+        [quo/dropdown
+         {:background     :blur
+          :size           :size-32
+          :type           :outline
+          :icon?          true
+          :no-icon-color? true
+          :icon-name      status-icon
+          :on-press       #(rf/dispatch [:show-bottom-sheet
+                                         {:shell?  true
+                                          :theme   :dark
+                                          :content (fn [] [visibility-sheet/view])}])}
+         status-title]]]]
+     [quo.theme/provider :dark
+      [quo/text-combinations
+       {:title-accessibility-label :username
+        :container-style           style/title-container
+        :emoji-hash                emoji-string
+        :description               bio
+        :title                     full-name}]]]))
