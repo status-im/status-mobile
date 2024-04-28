@@ -56,9 +56,8 @@ in {
   ruby = super.ruby_3_1;
   yarn = super.yarn.override { nodejs = super.nodejs-18_x; };
   openjdk = super.openjdk11_headless;
-  xcodeWrapper = super.xcodeenv.composeXcodeWrapper {
-    version = "15.0";
-    allowHigher = true;
+  xcodeWrapper = callPackage ./pkgs/xcodeenv/compose-xcodewrapper.nix { } {
+    versions = ["15.1"];
   };
   go = super.go_1_20;
   clang = super.clang_15;
