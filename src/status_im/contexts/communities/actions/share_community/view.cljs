@@ -18,7 +18,10 @@
 
 (defn view
   []
-  (let [{:keys [url community-id]} (rf/sub [:get-screen-params])
+  (let [params                     (rf/sub [:get-screen-params])
+        ;; NOTE(seanstrom): We need to store these screen params for when the modal closes
+        ;; because the screen params will be cleared.
+        {:keys [url community-id]} @(rn/use-ref-atom params)
         window-width               (rf/sub [:dimensions/window-width])
         {thumbnail-uri  :logo
          color          :color
