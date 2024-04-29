@@ -140,6 +140,12 @@
                                  :full-name           full-name}]
     nil))
 
+(defn- has-header?
+  [share-qr-type]
+  (case share-qr-type
+    (:profile :channel) false
+    true))
+
 (defn- share-qr-code
   [{:keys [share-qr-type qr-image-uri component-width customization-color full-name
            profile-picture emoji on-share-press address]
@@ -160,7 +166,7 @@
          {:color           colors/white-opa-40
           :container-style style/watched-account-icon}])]
      [share-button {:on-press on-share-press}]]
-    (when (not (contains? #{:profile :channel} share-qr-type))
+    (when (has-header? share-qr-type)
       [header props])
     [quo.theme/provider :light
      [qr-code/view
