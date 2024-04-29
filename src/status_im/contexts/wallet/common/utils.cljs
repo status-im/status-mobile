@@ -159,15 +159,6 @@
         {})
        vals))
 
-(defn network-list
-  [{:keys [balances-per-chain]} networks]
-  (into #{}
-        (mapv (fn [chain-id]
-                (first (filter #(or (= (:chain-id %) chain-id)
-                                    (= (:related-chain-id %) chain-id))
-                               networks)))
-              (keys balances-per-chain))))
-
 (defn get-wallet-qr
   [{:keys [wallet-type selected-networks address]}]
   (if (= wallet-type :multichain)
@@ -176,61 +167,6 @@
       (apply str $)
       (str $ address))
     address))
-
-(def id->network
-  {constants/ethereum-mainnet-chain-id constants/mainnet-network-name
-   constants/ethereum-goerli-chain-id  constants/mainnet-network-name
-   constants/ethereum-sepolia-chain-id constants/mainnet-network-name
-   constants/optimism-mainnet-chain-id constants/optimism-network-name
-   constants/optimism-goerli-chain-id  constants/optimism-network-name
-   constants/optimism-sepolia-chain-id constants/optimism-network-name
-   constants/arbitrum-mainnet-chain-id constants/arbitrum-network-name
-   constants/arbitrum-goerli-chain-id  constants/arbitrum-network-name
-   constants/arbitrum-sepolia-chain-id constants/arbitrum-network-name})
-
-(defn- get-chain-id
-  [{:keys [mainnet-chain-id sepolia-chain-id goerli-chain-id testnet-enabled? goerli-enabled?]}]
-  (cond
-    (and testnet-enabled? goerli-enabled?)
-    goerli-chain-id
-
-    testnet-enabled?
-    sepolia-chain-id
-
-    :else
-    mainnet-chain-id))
-
-(defn network->chain-id
-  ([db network]
-   (let [{:keys [test-networks-enabled? is-goerli-enabled?]} (:profile/profile db)]
-     (network->chain-id {:network          network
-                         :testnet-enabled? test-networks-enabled?
-                         :goerli-enabled?  is-goerli-enabled?})))
-  ([{:keys [network testnet-enabled? goerli-enabled?]}]
-   (condp contains? (keyword network)
-     #{constants/mainnet-network-name (keyword constants/mainnet-short-name)}
-     (get-chain-id
-      {:mainnet-chain-id constants/ethereum-mainnet-chain-id
-       :sepolia-chain-id constants/ethereum-sepolia-chain-id
-       :goerli-chain-id  constants/ethereum-goerli-chain-id
-       :testnet-enabled? testnet-enabled?
-       :goerli-enabled?  goerli-enabled?})
-
-     #{constants/optimism-network-name (keyword constants/optimism-short-name)}
-     (get-chain-id
-      {:mainnet-chain-id constants/optimism-mainnet-chain-id
-       :sepolia-chain-id constants/optimism-sepolia-chain-id
-       :goerli-chain-id  constants/optimism-goerli-chain-id
-       :testnet-enabled? testnet-enabled?
-       :goerli-enabled?  goerli-enabled?})
-
-     #{constants/arbitrum-network-name (keyword constants/arbitrum-short-name)}
-     (get-chain-id
-      {:mainnet-chain-id constants/arbitrum-mainnet-chain-id
-       :sepolia-chain-id constants/arbitrum-sepolia-chain-id
-       :goerli-chain-id  constants/arbitrum-goerli-chain-id
-       :testnet-enabled? testnet-enabled?
-       :goerli-enabled?  goerli-enabled?}))))
 
 (defn get-standard-fiat-format
   [crypto-value currency-symbol fiat-value]
@@ -309,18 +245,6 @@
     label-props
     (assoc :label       :text
            :label-props label-props)))
-
-(defn get-default-chain-ids-by-mode
-  [{:keys [test-networks-enabled? is-goerli-enabled?]}]
-  (cond
-    (and test-networks-enabled? is-goerli-enabled?)
-    constants/goerli-chain-ids
-
-    test-networks-enabled?
-    constants/sepolia-chain-ids
-
-    :else
-    constants/mainnet-chain-ids))
 
 (defn filter-tokens-in-chains
   [tokens chain-ids]

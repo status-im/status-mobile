@@ -1,6 +1,6 @@
 (ns status-im.contexts.wallet.add-account.add-address-to-watch.events
   (:require [clojure.string :as string]
-            [status-im.contexts.wallet.common.utils :as utils]
+            [status-im.contexts.wallet.common.utils.networks :as network-utils]
             [taoensso.timbre :as log]
             [utils.re-frame :as rf]))
 
@@ -35,7 +35,7 @@
  :wallet/get-address-details
  (fn [{db :db} [address-or-ens]]
    (let [ens?           (string/includes? address-or-ens ".")
-         chain-id       (utils/network->chain-id db :mainnet)
+         chain-id       (network-utils/network->chain-id db :mainnet)
          request-params [chain-id address-or-ens]]
      {:db (-> db
               (assoc-in [:wallet :ui :add-address-to-watch :activity-state] :scanning)

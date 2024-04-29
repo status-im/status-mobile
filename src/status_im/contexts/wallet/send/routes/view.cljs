@@ -7,7 +7,7 @@
     [react-native.core :as rn]
     [reagent.core :as reagent]
     [status-im.constants :as constants]
-    [status-im.contexts.wallet.common.utils :as utils]
+    [status-im.contexts.wallet.common.utils.networks :as networks-utils]
     [status-im.contexts.wallet.common.utils.send :as send-utils]
     [status-im.contexts.wallet.send.routes.style :as style]
     [utils.debounce :as debounce]
@@ -35,14 +35,15 @@
 
 (defn- find-network-link-insertion-index
   [network-links chain-id loading-suggested-routes?]
-  (let [network                              (utils/id->network chain-id)
+  (let [network                              (networks-utils/id->network chain-id)
         inserted-network-link-priority-score (network-priority-score network)]
     (or (->> network-links
              (keep-indexed (fn [idx network-link]
-                             (let [network-link (utils/id->network (if loading-suggested-routes?
-                                                                     network-link
-                                                                     (get-in network-link
-                                                                             [:from :chain-id])))]
+                             (let [network-link (networks-utils/id->network (if loading-suggested-routes?
+                                                                              network-link
+                                                                              (get-in network-link
+                                                                                      [:from
+                                                                                       :chain-id])))]
                                (when (> (network-priority-score network-link)
                                         inserted-network-link-priority-score)
                                  idx))))
@@ -51,14 +52,15 @@
 
 (defn- add-disabled-networks
   [network-links disabled-from-networks loading-suggested-routes?]
-  (let [sorted-networks (sort-by (comp network-priority-score utils/id->network) disabled-from-networks)]
+  (let [sorted-networks (sort-by (comp network-priority-score networks-utils/id->network)
+                                 disabled-from-networks)]
     (reduce (fn [acc-network-links chain-id]
               (let [index                 (find-network-link-insertion-index acc-network-links
                                                                              chain-id
                                                                              loading-suggested-routes?)
                     disabled-network-link {:status   :disabled
                                            :chain-id chain-id
-                                           :network  (utils/id->network chain-id)}]
+                                           :network  (networks-utils/id->network chain-id)}]
                 (vector-utils/insert-element-at acc-network-links disabled-network-link index)))
             network-links
             sorted-networks)))
@@ -186,20 +188,20 @@
       :to-chain-id           (or to-chain-id (:chain-id item))
       :from-network          (cond (and loading-suggested-routes?
                                         (not disabled-network?))
-                                   (utils/id->network item)
+                                   (networks-utils/id->network item)
                                    disabled-network?
-                                   (utils/id->network (:chain-id
-                                                       item))
+                                   (networks-utils/id->network (:chain-id
+                                                                item))
                                    :else
-                                   (utils/id->network from-chain-id))
+                                   (networks-utils/id->network from-chain-id))
       :to-network            (cond (and loading-suggested-routes?
                                         (not disabled-network?))
-                                   (utils/id->network item)
+                                   (networks-utils/id->network item)
                                    disabled-network?
-                                   (utils/id->network (:chain-id
-                                                       item))
+                                   (networks-utils/id->network (:chain-id
+                                                                item))
                                    :else
-                                   (utils/id->network to-chain-id))
+                                   (networks-utils/id->network to-chain-id))
       :on-press-from-network on-press-from-network
       :on-press-to-network   on-press-to-network}]))
 

@@ -8,7 +8,7 @@
     [react-native.safe-area :as safe-area]
     [status-im.common.floating-button-page.view :as floating-button-page]
     [status-im.common.standard-authentication.core :as standard-auth]
-    [status-im.contexts.wallet.common.utils :as wallet-utils]
+    [status-im.contexts.wallet.common.utils.networks :as network-utils]
     [status-im.contexts.wallet.send.transaction-confirmation.style :as style]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]
@@ -129,7 +129,7 @@
   (let [network-values
         (reduce-kv
          (fn [acc chain-id amount]
-           (let [network-name (wallet-utils/id->network chain-id)]
+           (let [network-name (network-utils/id->network chain-id)]
              (assoc acc
                     (if (= network-name :mainnet) :ethereum network-name)
                     {:amount amount :token-symbol token-display-name})))

@@ -4,7 +4,7 @@
     [react-native.background-timer :as background-timer]
     [react-native.platform :as platform]
     [status-im.constants :as constants]
-    [status-im.contexts.wallet.common.utils :as utils]
+    [status-im.contexts.wallet.common.utils.networks :as network-utils]
     [status-im.contexts.wallet.data-store :as data-store]
     [status-im.contexts.wallet.db :as db]
     [status-im.contexts.wallet.item-types :as item-types]
@@ -301,7 +301,7 @@
    (let [ens      (if (string/includes? input ".")
                     input
                     (str input domain))
-         chain-id (utils/network->chain-id db :mainnet)]
+         chain-id (network-utils/network->chain-id db :mainnet)]
      {:fx [[:json-rpc/call
             [{:method     "ens_addressOf"
               :params     [chain-id ens]
@@ -425,13 +425,13 @@
                                      keys)
          test-networks-enabled?  (get-in db [:profile/profile :test-networks-enabled?])
          is-goerli-enabled?      (get-in db [:profile/profile :is-goerli-enabled?])
-         chain-ids-by-mode       (utils/get-default-chain-ids-by-mode
+         chain-ids-by-mode       (network-utils/get-default-chain-ids-by-mode
                                   {:test-networks-enabled? test-networks-enabled?
                                    :is-goerli-enabled?     is-goerli-enabled?})
          chains-filtered-by-mode (remove #(not (contains? chain-ids-by-mode %)) down-chain-ids)
          chains-down?            (seq chains-filtered-by-mode)
          chain-names             (when chains-down?
-                                   (->> (map #(-> (utils/id->network %)
+                                   (->> (map #(-> (network-utils/id->network %)
                                                   name
                                                   string/capitalize)
                                              chains-filtered-by-mode)

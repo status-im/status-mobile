@@ -1,5 +1,6 @@
 (ns status-im.contexts.wallet.collectible.events
   (:require [camel-snake-kebab.extras :as cske]
+            [status-im.contexts.wallet.collectible.utils :as collectible-utils]
             [taoensso.timbre :as log]
             [utils.ethereum.chain :as chain]
             [utils.re-frame :as rf]
@@ -204,3 +205,16 @@
             [:wallet/trigger-share-collectible
              {:title title
               :uri   uri}]]]})))
+
+(rf/reg-event-fx
+ :wallet/navigate-to-opensea
+ (fn [{:keys [db]} [chain-id token-id contract-address]]
+   {:fx [[:dispatch [:hide-bottom-sheet]]
+         [:dispatch
+          [:browser.ui/open-url
+           (collectible-utils/get-opensea-collectible-url
+            {:chain-id               chain-id
+             :token-id               token-id
+             :contract-address       contract-address
+             :test-networks-enabled? (get-in db [:profile/profile :test-networks-enabled?])
+             :is-goerli-enabled?     (get-in db [:profile/profile :is-goerli-enabled?])})]]]}))
