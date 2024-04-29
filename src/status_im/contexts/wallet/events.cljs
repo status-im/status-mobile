@@ -407,6 +407,7 @@
      {:fx [[:json-rpc/call
             [{:method   "wallet_checkRecentHistoryForChainIDs"
               :params   [chain-ids addresses]
+              :on-success #(println "qqqxxxx" %)
               :on-error #(log/info "failed to check recent history"
                                    {:error %
                                     :event :wallet/check-recent-history})}]]]})))
@@ -527,6 +528,7 @@
               ;; "wallet_startActivityFilterSession"
               :method   "wallet_filterActivityAsync"
               :params   request-params
+              :on-success #(println "qqqqaaa" %)
               :on-error #(log/info "failed to fetch activities"
                                    {:error %
                                     :event :wallet/fetch-activities})}]]]})))
