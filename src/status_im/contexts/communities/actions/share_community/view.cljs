@@ -12,6 +12,10 @@
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
+(defn navigate-back
+  []
+  (rf/dispatch [:navigate-back]))
+
 (defn view
   []
   (let [{:keys [url community-id]} (rf/sub [:get-screen-params])
@@ -19,7 +23,6 @@
         {thumbnail-uri  :logo
          color          :color
          community-name :name}     (rf/sub [:communities/for-context-tag community-id])
-        navigate-back              (rn/use-callback #(rf/dispatch [:navigate-back]))
         on-press-share             (rn/use-callback
                                     (fn []
                                       (rf/dispatch
