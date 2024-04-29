@@ -223,10 +223,6 @@
                      (get-in db [:communities community-id :previous-share-all-addresses?]))
       :fx [[:dispatch [:communities/check-permissions-to-join-community community-id]]]})))
 
-(rf/reg-event-fx :communities/set-airdrop-address
- (fn [{:keys [db]} [address community-id]]
-   {:db (assoc-in db [:communities community-id :airdrop-address] address)}))
-
 (defn community-fetched
   [{:keys [db]} [community-id community]]
   (when community
