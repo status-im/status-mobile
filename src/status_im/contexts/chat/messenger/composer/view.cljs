@@ -95,7 +95,7 @@
         (drag-gesture/drag-gesture props state animations dimensions keyboard-shown)}
        [reanimated/view
         {:style (style/sheet-container insets animations theme)}
-        [sub-view/bar]
+        [sub-view/bar theme]
         [:<>
          [reply/view state (:input-ref props)]
          [edit/view

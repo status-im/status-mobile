@@ -28,9 +28,10 @@
                                (on-long-press collectible))}]))
 
 (defn view
-  [{:keys [theme collectibles filtered? on-collectible-press on-end-reached current-account-address
+  [{:keys [collectibles filtered? on-collectible-press on-end-reached current-account-address
            on-collectible-long-press]}]
-  (let [no-results-match-query? (and filtered? (empty? collectibles))]
+  (let [no-results-match-query? (and filtered? (empty? collectibles))
+        theme                   (quo.theme/use-theme)]
     (cond
       no-results-match-query?
       [rn/view {:style {:flex 1 :justify-content :center}}
