@@ -90,7 +90,7 @@
 
 (defn initialize
   [props state animations {:keys [max-height] :as dimensions}
-   {:keys [chat-input audio] :as subscriptions}]
+   {:keys [chat-input audio input-text images link-previews? reply] :as subscriptions}]
   (rn/use-effect
    (fn []
      (maximized-effect state animations dimensions chat-input)
@@ -99,10 +99,13 @@
      (background-effect state animations dimensions chat-input)
      (link-preview-effect state)
      (audio-effect state audio)
-     (empty-effect animations subscriptions)
      (kb/add-kb-listeners props state animations dimensions)
      #(component-will-unmount props))
    [max-height])
+  (rn/use-effect
+   (fn []
+     (empty-effect animations subscriptions))
+   [input-text images link-previews? reply])
   (rn/use-effect
    (fn []
      (reenter-screen-effect state dimensions subscriptions animations))

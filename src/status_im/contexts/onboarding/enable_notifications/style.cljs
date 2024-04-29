@@ -13,6 +13,11 @@
   {:flex  1
    :width width})
 
+(def page-title
+  {:margin-top        12
+   :margin-horizontal 20
+   :margin-bottom     8})
+
 (def page-heading {:z-index 1})
 
 (defn buttons
