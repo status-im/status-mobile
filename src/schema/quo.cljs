@@ -3,7 +3,7 @@
     [quo.foundations.colors :as colors]
     [schema.registry :as registry]))
 
-(def ^:private ?customization-color (into [:enum] colors/account-colors))
+(def ^:private ?customization-color (into [:enum :primary] colors/account-colors))
 
 (def ^:private ?profile-picture-options
   [:map
