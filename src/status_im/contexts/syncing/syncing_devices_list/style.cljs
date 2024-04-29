@@ -9,9 +9,8 @@
    :flex             1})
 
 (def page-container
-  {:flex              1
-   :justify-content   :flex-start
-   :margin-horizontal 20})
+  {:flex               1
+   :padding-horizontal 20})
 
 (def title-container
   {:flex-direction  :row
@@ -19,9 +18,6 @@
    :justify-content :space-between
    :margin-top      12
    :margin-bottom   12})
-
-(def navigation-bar
-  {:height 56})
 
 (def subtitle
   {:margin-top 20

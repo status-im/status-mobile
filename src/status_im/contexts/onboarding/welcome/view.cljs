@@ -16,7 +16,7 @@
   []
   (let [new-account? (rf/sub [:onboarding/new-account?])]
     [quo/text-combinations
-     {:container-style                 {:margin-top 12 :margin-horizontal 20}
+     {:container-style                 style/page-title
       :title                           (i18n/label (if new-account?
                                                      :t/welcome-to-web3
                                                      :t/welcome-back))
@@ -45,10 +45,9 @@
        :on-press   #(rf/dispatch [:navigate-back])}]
      [page-title]
      [rn/image
-      {:style         (style/page-illustration (:width window))
-       :resize-mode   :stretch
-       :resize-method :scale
-       :source        (resources/get-image :welcome-illustration)}]
+      {:style       (style/page-illustration (:width window))
+       :resize-mode :contain
+       :source      (resources/get-image :welcome-illustration)}]
      [rn/view {:style (style/buttons insets)}
       (when rn/small-screen?
         [linear-gradient/linear-gradient
