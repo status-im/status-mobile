@@ -102,8 +102,9 @@
                                                                   shell.constants/switcher-card-size)}))
 
 (defn calculate-and-set-shared-values
-  []
-  (let [{:keys [width] :as dimensions} (utils/dimensions)
+  [alert-banners-top-margin]
+  (let [{:keys [width height] :as dimensions} (utils/dimensions)
+        dimensions (assoc dimensions :height (- height alert-banners-top-margin))
         switcher-card-left-position (/ (- width (* 2 shell.constants/switcher-card-size)) 3)
         switcher-card-top-position (+ (safe-area/get-top) 120)
         shared-values

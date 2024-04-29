@@ -22,6 +22,18 @@
   {:db                (dissoc db :alert-banners)
    :hide-alert-banner [(:view-id db) (:theme db)]})
 
+;; Hide/Unhide will only toggle the visibility of alert banners without removing them.
+;; Required for ios image picker, which doesn't allow top margin
+(defn hide-alert-banners
+  [{:keys [db]}]
+  {:db (assoc db :alert-banners/hide? true)})
+
+(defn unhide-alert-banners
+  [{:keys [db]}]
+  {:db (dissoc db :alert-banners/hide?)})
+
 (re-frame/reg-event-fx :alert-banners/add add-alert-banner)
 (re-frame/reg-event-fx :alert-banners/remove remove-alert-banner)
 (re-frame/reg-event-fx :alert-banners/remove-all remove-all-alert-banners)
+(re-frame/reg-event-fx :alert-banners/hide hide-alert-banners)
+(re-frame/reg-event-fx :alert-banners/unhide unhide-alert-banners)

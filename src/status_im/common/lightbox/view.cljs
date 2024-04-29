@@ -51,9 +51,11 @@
         insets                     (safe-area/get-insets)
         window                     (rn/get-window)
         window-width               (:width window)
-        window-height              (if platform/android?
-                                     (+ (:height window) (:top insets))
-                                     (:height window))
+        alert-banners-top-margin   (rf/sub [:alert-banners/top-margin])
+        window-height              (- (if platform/android?
+                                        (+ (:height window) (:top insets))
+                                        (:height window))
+                                      alert-banners-top-margin)
         curr-orientation           (or (rf/sub [:lightbox/orientation]) orientation/portrait)
         landscape?                 (string/includes? curr-orientation orientation/landscape)
         horizontal?                (or platform/android? (not landscape?))

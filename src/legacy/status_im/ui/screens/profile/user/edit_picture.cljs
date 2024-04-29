@@ -3,9 +3,11 @@
     [legacy.status-im.ui.components.list.item :as list.item]
     [legacy.status-im.ui.components.react :as react]
     [re-frame.core :as re-frame]
+    [react-native.platform :as platform]
     [status-im.config :as config]
     [status-im.contexts.profile.settings.events]
-    [utils.i18n :as i18n]))
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]))
 
 (def crop-size 1000)
 (def crop-opts
@@ -17,16 +19,22 @@
 (defn pick-pic
   []
   (re-frame/dispatch [:bottom-sheet/hide-old])
+  (when platform/ios?
+    (rf/dispatch [:alert-banners/hide]))
   (react/show-image-picker
    #(re-frame/dispatch [:profile.settings/save-profile-picture (.-path ^js %) 0 0 crop-size crop-size])
-   crop-opts))
+   crop-opts
+   #(rf/dispatch [:alert-banners/unhide])))
 
 (defn take-pic
   []
   (re-frame/dispatch [:bottom-sheet/hide-old])
+  (when platform/ios?
+    (rf/dispatch [:alert-banners/hide]))
   (react/show-image-picker-camera
    #(re-frame/dispatch [:profile.settings/save-profile-picture (.-path ^js %) 0 0 crop-size crop-size])
-   crop-opts))
+   crop-opts
+   #(rf/dispatch [:alert-banners/unhide])))
 
 (defn bottom-sheet
   [has-picture]

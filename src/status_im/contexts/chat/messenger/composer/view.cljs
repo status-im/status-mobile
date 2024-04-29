@@ -39,6 +39,12 @@
            theme
            window-height]} props state shared-values]
   (let [subscriptions            (utils/init-subs)
+        top-margin               (if (pos? (:alert-banners-top-margin subscriptions))
+                                   ;; top margin increased to avoid composer overlapping with the
+                                   ;; alert banner
+                                   (+ (:alert-banners-top-margin subscriptions) 12)
+                                   0)
+        window-height            (- window-height top-margin)
         content-height           (reagent/atom (or (:input-content-height ; Actual text height
                                                     subscriptions)
                                                    constants/input-height))

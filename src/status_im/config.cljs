@@ -136,3 +136,7 @@
 (def community-accounts-selection-enabled? true)
 (def fetch-messages-enabled? (enabled? (get-config :FETCH_MESSAGES_ENABLED "1")))
 (def test-networks-enabled? (enabled? (get-config :TEST_NETWORKS_ENABLED "0")))
+
+;; Alert banners are disabled for debug builds because alert banners overlay
+;; interfere with react-native debug tools, such as inspector and Perf monitor
+(def enable-alert-banner? (enabled? (get-config :ENABLE_ALERT_BANNER "0")))

@@ -2,6 +2,7 @@
   (:require [clojure.string :as string]
             [quo.core :as quo]
             [react-native.core :as rn]
+            [react-native.platform :as platform]
             [react-native.safe-area :as safe-area]
             [reagent.core :as reagent]
             [status-im.common.validation.profile :as profile-validator]
@@ -13,22 +14,23 @@
 
 (defn view
   []
-  (let [insets              (safe-area/get-insets)
-        profile             (rf/sub [:profile/profile-with-image])
-        customization-color (rf/sub [:profile/customization-color])
-        profile-bio         (:bio profile)
-        unsaved-bio         (reagent/atom profile-bio)
-        error-msg           (reagent/atom nil)
-        typing?             (reagent/atom false)
-        validate-bio        (debounce/debounce (fn [bio]
-                                                 (reset! error-msg
-                                                   (profile-validator/validation-bio bio))
-                                                 (reset! typing? false))
-                                               300)
-        on-change-text      (fn [s]
-                              (reset! typing? true)
-                              (reset! unsaved-bio s)
-                              (validate-bio s))]
+  (let [insets                   (safe-area/get-insets)
+        profile                  (rf/sub [:profile/profile-with-image])
+        customization-color      (rf/sub [:profile/customization-color])
+        alert-banners-top-margin (rf/sub [:alert-banners/top-margin])
+        profile-bio              (:bio profile)
+        unsaved-bio              (reagent/atom profile-bio)
+        error-msg                (reagent/atom nil)
+        typing?                  (reagent/atom false)
+        validate-bio             (debounce/debounce (fn [bio]
+                                                      (reset! error-msg
+                                                        (profile-validator/validation-bio bio))
+                                                      (reset! typing? false))
+                                                    300)
+        on-change-text           (fn [s]
+                                   (reset! typing? true)
+                                   (reset! unsaved-bio s)
+                                   (validate-bio s))]
     (fn []
       [quo/overlay
        {:type            :shell
@@ -39,8 +41,9 @@
          :icon-name  :i/arrow-left
          :on-press   #(rf/dispatch [:navigate-back])}]
        [rn/keyboard-avoiding-view
-        {:key   :content
-         :style style/screen-container}
+        {:key                      :content
+         :keyboard-vertical-offset (if platform/ios? alert-banners-top-margin 0)
+         :style                    style/screen-container}
         [rn/view {:style {:gap 22}}
          [quo/text-combinations {:title (i18n/label :t/bio)}]
          [quo/input

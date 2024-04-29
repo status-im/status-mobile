@@ -8,25 +8,25 @@
 
 (h/deftest-sub :alert-banners/top-margin
   [sub-name]
-  (testing "returns 48 when only alert banner"
+  (testing "returns 50 when only alert banner"
     (swap! rf-db/app-db assoc
       :alert-banners
       {:alert {:text "Alert"
                :type :alert}})
-    (is (= (rf/sub [sub-name]) 48)))
+    (is (= (rf/sub [sub-name]) 50)))
 
-  (testing "returns 48 when only error banner"
+  (testing "returns 50 when only error banner"
     (swap! rf-db/app-db assoc
       :alert-banners
       {:error {:text "Error"
                :type :error}})
-    (is (= (rf/sub [sub-name]) 48)))
+    (is (= (rf/sub [sub-name]) 50)))
 
-  (testing "returns 88 when both alert and error banner"
+  (testing "returns 90 when both alert and error banner"
     (swap! rf-db/app-db assoc
       :alert-banners
       {:alert {:text "Alert"
                :type :alert}
        :error {:text "Error"
                :type :error}})
-    (is (= (rf/sub [sub-name]) 88))))
+    (is (= (rf/sub [sub-name]) 90))))

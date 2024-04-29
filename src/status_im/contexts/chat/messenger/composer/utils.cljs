@@ -191,15 +191,16 @@
 (defn init-subs
   []
   (let [chat-input (rf/sub [:chats/current-chat-input])]
-    {:images               (seq (rf/sub [:chats/sending-image]))
-     :link-previews?       (or (rf/sub [:chats/link-previews?])
-                               (rf/sub [:chats/status-link-previews?]))
-     :audio                (rf/sub [:chats/sending-audio])
-     :reply                (rf/sub [:chats/reply-message])
-     :edit                 (rf/sub [:chats/edit-message])
-     :input-with-mentions  (rf/sub [:chat/input-with-mentions])
-     :input-text           (:input-text chat-input)
-     :input-content-height (:input-content-height chat-input)}))
+    {:images                   (seq (rf/sub [:chats/sending-image]))
+     :link-previews?           (or (rf/sub [:chats/link-previews?])
+                                   (rf/sub [:chats/status-link-previews?]))
+     :audio                    (rf/sub [:chats/sending-audio])
+     :reply                    (rf/sub [:chats/reply-message])
+     :edit                     (rf/sub [:chats/edit-message])
+     :input-with-mentions      (rf/sub [:chat/input-with-mentions])
+     :input-text               (:input-text chat-input)
+     :alert-banners-top-margin (rf/sub [:alert-banners/top-margin])
+     :input-content-height     (:input-content-height chat-input)}))
 
 (defn init-shared-values
   []
