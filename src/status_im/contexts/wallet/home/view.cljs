@@ -46,6 +46,7 @@
         networks           (rf/sub [:wallet/selected-network-details])
         account-cards-data (rf/sub [:wallet/account-cards-data])
         cards              (conj account-cards-data (new-account-card-data))
+        [refreshing set-refreshing] (rn/use-state false)
         {:keys [formatted-balance]} (rf/sub [:wallet/aggregated-token-values-and-balance])]
     (rn/use-effect (fn []
                      (when (and @account-list-ref (pos? (count cards)))
@@ -56,14 +57,16 @@
                    [(count cards)])
     [rn/scroll-view {:style                   {:flex 1}
                      :refresh-control         (reagent/as-element
-                                               [rn/refresh-control {:refreshing false
+                                               [rn/refresh-control {:refreshing refreshing
                                                                     :style      {:background-color :red
                                                                                  :color            :blue
                                                                                  :border-width     2
                                                                                  :border-color     :yellow}
                                                                     :colors     [:green]
                                                                     :on-refresh (fn []
-                                                                                  (js/alert "Hey!"))}])
+                                                                                  (set-refreshing true)
+                                                                                  (js/alert "Hey!")
+                                                                                  (js/setTimeout (fn [] (set-refreshing false)) 3000))}])
                      :content-container-style (style/home-container)}
      [common.top-nav/view]
      [rn/view
