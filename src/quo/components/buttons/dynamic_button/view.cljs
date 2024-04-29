@@ -77,7 +77,7 @@
                 :background-color button-color}
                style)}
       (when (#{:mention :search :search-with-label :scroll-to-bottom} type)
-        [icon-view type])
+        [icon-view type theme])
       (when (#{:jump-to :mention :notification-down :notification-up :search-with-label} type)
         [text/text
          {:weight :medium
