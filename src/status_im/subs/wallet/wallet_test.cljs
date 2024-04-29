@@ -495,7 +495,7 @@
           eth-token               (some #(when (= (:symbol %) "ETH") %) result)
           eth-mainnet-raw-balance (get-in eth-token [:balances-per-chain 1 :raw-balance])]
       (is (match? 2 (count result)))
-      (is (money/equal-to (money/bignumber 7520) eth-mainnet-raw-balance)))))
+      (is (money/equal-to (money/bignumber 2520) eth-mainnet-raw-balance)))))
 
 (h/deftest-sub :wallet/aggregated-token-values-and-balance
   [sub-name]
@@ -505,7 +505,7 @@
                              (assoc-in [:wallet :accounts] accounts)))
     (let [{:keys [formatted-balance tokens]} (rf/sub [sub-name])]
       (is (match? 2 (count tokens)))
-      (is (match? "$4506.00" formatted-balance)))))
+      (is (match? "$2106.00" formatted-balance)))))
 
 (h/deftest-sub :wallet/accounts-with-customization-color
   [sub-name]
@@ -656,8 +656,8 @@
     (let [result (rf/sub [sub-name])
           chains (keys result)]
       (is (match? (count chains) 3))
-      (is (match? (get result constants/ethereum-mainnet-chain-id) "$3504.00"))
-      (is (match? (get result constants/optimism-mainnet-chain-id) "$1002.00")))))
+      (is (match? (get result constants/ethereum-mainnet-chain-id) "$1504.00"))
+      (is (match? (get result constants/optimism-mainnet-chain-id) "$602.00")))))
 
 (h/deftest-sub :wallet/current-viewing-account-fiat-balance-per-chain
   [sub-name]

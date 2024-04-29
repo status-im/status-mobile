@@ -291,7 +291,7 @@
 
 (rf/reg-sub
  :wallet/aggregated-tokens
- :<- [:wallet/accounts]
+ :<- [:wallet/accounts-without-watched-accounts]
  (fn [accounts]
    (utils/aggregate-tokens-for-all-accounts accounts)))
 
