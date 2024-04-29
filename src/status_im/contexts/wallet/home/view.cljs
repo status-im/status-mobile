@@ -42,13 +42,13 @@
 (defn view
   []
   (let [[selected-tab set-selected-tab] (rn/use-state (:id (first tabs-data)))
-        account-list-ref   (rn/use-ref-atom nil)
-        tokens-loading?    (rf/sub [:wallet/tokens-loading?])
-        networks           (rf/sub [:wallet/selected-network-details])
-        account-cards-data (rf/sub [:wallet/account-cards-data])
-        cards              (conj account-cards-data (new-account-card-data))
-        [init-loaded? set-init-loaded] (rn/use-state false)
-        {:keys [formatted-balance]} (rf/sub [:wallet/aggregated-token-values-and-balance])]
+        account-list-ref                (rn/use-ref-atom nil)
+        tokens-loading?                 (rf/sub [:wallet/tokens-loading?])
+        networks                        (rf/sub [:wallet/selected-network-details])
+        account-cards-data              (rf/sub [:wallet/account-cards-data])
+        cards                           (conj account-cards-data (new-account-card-data))
+        [init-loaded? set-init-loaded]  (rn/use-state false)
+        {:keys [formatted-balance]}     (rf/sub [:wallet/aggregated-token-values-and-balance])]
     (rn/use-effect (fn []
                      (when (and @account-list-ref (pos? (count cards)))
                        (.scrollToOffset ^js @account-list-ref
@@ -62,12 +62,13 @@
      [tokens-loading?])
     [rn/view {:style (style/home-container)}
      [common.top-nav/view]
-     [rn/scroll-view {:refresh-control (reagent/as-element
-                                        [rn/refresh-control {:refreshing (and tokens-loading? init-loaded?)
-                                                             :colors     colors/neutral-40
-                                                             :tint-color colors/neutral-40
-                                                             :on-refresh #(rf/dispatch [:wallet/get-accounts])}])
-                      :style {:flex 1}}
+     [rn/scroll-view
+      {:refresh-control (reagent/as-element
+                         [rn/refresh-control {:refreshing (and tokens-loading? init-loaded?)
+                                              :colors     colors/neutral-40
+                                              :tint-color colors/neutral-40
+                                              :on-refresh #(rf/dispatch [:wallet/get-accounts])}])
+       :style {:flex 1}}
       [rn/view
        [quo/wallet-overview
         {:state             (if tokens-loading? :loading :default)
@@ -76,7 +77,7 @@
          :balance           formatted-balance
          :networks          networks
          :dropdown-on-press #(rf/dispatch [:show-bottom-sheet {:content network-filter/view}])}]]
-       (when (ff/enabled? ::ff/wallet.graph) [quo/wallet-graph {:time-frame :empty}])
+      (when (ff/enabled? ::ff/wallet.graph) [quo/wallet-graph {:time-frame :empty}])
       [rn/flat-list
        {:ref                               #(reset! account-list-ref %)
         :style                             style/accounts-list
