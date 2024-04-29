@@ -143,8 +143,10 @@
 (defn- has-header?
   [share-qr-type]
   (case share-qr-type
-    (:profile :channel) false
-    true))
+    (:wallet
+     :watched-address
+     :saved-address) true
+    false))
 
 (defn- share-qr-code
   [{:keys [share-qr-type qr-image-uri component-width customization-color full-name
