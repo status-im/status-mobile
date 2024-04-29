@@ -22,6 +22,7 @@
 (goog-define INFURA_TOKEN "800c641949d64d768a5070a1b0511938")
 (goog-define OPENSEA_API_KEY "")
 
+(def infura-key INFURA_TOKEN)
 (def mainnet-rpc-url (str "https://mainnet.infura.io/v3/" INFURA_TOKEN))
 (def testnet-rpc-url (str "https://ropsten.infura.io/v3/" INFURA_TOKEN))
 (def goerli-rpc-url  (str "https://goerli.infura.io/v3/" INFURA_TOKEN))

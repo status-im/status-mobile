@@ -62,6 +62,9 @@
 
 (def login-node-config
   {:WalletConfig (cond-> {:Enabled true}
+                   (not= config/infura-key "")
+                   (assoc :InfuraKey config/infura-key)
+
                    (not= config/opensea-api-key "")
                    (assoc :OpenseaAPIKey config/opensea-api-key))})
 
