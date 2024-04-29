@@ -30,8 +30,10 @@
 (defn- footer
   [{:keys [bottom]} logout-press]
   [rf/delay-render
-   [rn/view {:style (style/footer-container bottom)}
-    [quo/logout-button {:on-press logout-press}]]])
+   [quo.theme/provider :dark
+    [rn/view {:style (style/footer-container bottom)}
+     [quo/logout-button {:on-press logout-press}]]]
+  ])
 
 (defn- get-item-layout
   [_ index]

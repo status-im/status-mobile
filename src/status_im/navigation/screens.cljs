@@ -206,7 +206,7 @@
      :component communities.overview/view}
 
     {:name      :settings
-     :options   (dissoc options/transparent-screen-options :theme)
+     :options   options/transparent-screen-options
      :component settings/view}
 
     {:name      :settings-syncing
