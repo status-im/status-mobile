@@ -78,8 +78,7 @@
        :default-active selected-tab
        :data           tabs-data
        :on-change      (fn [tab]
-                         (when (and (ff/enabled? ::ff/wallet.activities)
-                                    (= :activity tab))
+                         (when (= :activity tab)
                            (rf/dispatch [:wallet/fetch-activities]))
                          (set-selected-tab tab))}]
      [tabs/view {:selected-tab selected-tab}]]))

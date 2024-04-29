@@ -500,6 +500,7 @@
 (rf/reg-event-fx
  :wallet/fetch-activities
  (fn [{:keys [db]}]
+   (println "fetching activitiesxxxx")
    (let [addresses      (->> (get-in db [:wallet :accounts])
                              vals
                              (map :address))
@@ -527,6 +528,7 @@
               ;; "wallet_startActivityFilterSession"
               :method   "wallet_filterActivityAsync"
               :params   request-params
+              :on-success #(println "aaaaa" %)
               :on-error #(log/info "failed to fetch activities"
                                    {:error %
                                     :event :wallet/fetch-activities})}]]]})))
