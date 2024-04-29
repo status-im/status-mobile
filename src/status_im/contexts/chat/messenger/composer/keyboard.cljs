@@ -14,8 +14,9 @@
     curr-height))
 
 (defn store-kb-height
-  [event {:keys [kb-default-height kb-height]} {:keys [window-height]}]
-  (let [height (- window-height (oops/oget event "endCoordinates.screenY"))]
+  [event {:keys [kb-default-height kb-height]}]
+  (let [height (- (:height (rn/get-window))
+                  (oops/oget event "endCoordinates.screenY"))]
     (reset! kb-height height)
     (when (zero? @kb-default-height)
       (async-storage/set-item! :kb-default-height (str height)))))
@@ -56,9 +57,10 @@
 (defn add-kb-listeners
   [{:keys [keyboard-show-listener keyboard-frame-listener keyboard-hide-listener input-ref] :as props}
    state animations dimensions]
-  (reset! keyboard-show-listener (.addListener rn/keyboard
-                                               "keyboardDidShow"
-                                               #(store-kb-height % state dimensions)))
+  (reset! keyboard-show-listener (.addListener
+                                  rn/keyboard
+                                  "keyboardDidShow"
+                                  #(store-kb-height % state)))
   (reset! keyboard-frame-listener (.addListener
                                    rn/keyboard
                                    "keyboardWillChangeFrame"

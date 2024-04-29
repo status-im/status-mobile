@@ -8,7 +8,8 @@
     [react-native.safe-area :as safe-area]
     [reagent.core :as reagent]
     [status-im.common.floating-button-page.floating-container.view :as floating-container]
-    [status-im.common.floating-button-page.style :as style]))
+    [status-im.common.floating-button-page.style :as style]
+    [utils.re-frame :as rf]))
 
 (defn- show-background
   [{:keys [window-height keyboard-height footer-container-height content-scroll-y
@@ -82,14 +83,15 @@
                      set-content-y-scroll         (fn [event]
                                                     (reset! content-scroll-y
                                                       (oops/oget event "nativeEvent.contentOffset.y")))]
-    (let [keyboard-shown?  (if platform/ios? @keyboard-will-show? @keyboard-did-show?)
-          show-background? (show-background {:window-height            window-height
-                                             :footer-container-height  @footer-container-height
-                                             :keyboard-height          @keyboard-height
-                                             :content-scroll-y         @content-scroll-y
-                                             :content-container-height @content-container-height
-                                             :header-height            @header-height
-                                             :keyboard-shown?          keyboard-shown?})]
+    (let [keyboard-shown?          (if platform/ios? @keyboard-will-show? @keyboard-did-show?)
+          footer-container-padding (+ footer-container-padding (rf/sub [:alert-banners/top-margin]))
+          show-background?         (show-background {:window-height            window-height
+                                                     :footer-container-height  @footer-container-height
+                                                     :keyboard-height          @keyboard-height
+                                                     :content-scroll-y         @content-scroll-y
+                                                     :content-container-height @content-container-height
+                                                     :header-height            @header-height
+                                                     :keyboard-shown?          keyboard-shown?})]
       [:<>
        (when gradient-cover?
          [quo/gradient-cover {:customization-color customization-color}])

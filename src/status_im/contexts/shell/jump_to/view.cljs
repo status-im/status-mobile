@@ -34,7 +34,9 @@
 
 (defn f-shell-stack
   []
-  (let [shared-values (shared-values/calculate-and-set-shared-values)]
+  (let [alert-banners-top-margin (rf/sub [:alert-banners/top-margin])
+        shared-values            (shared-values/calculate-and-set-shared-values
+                                  alert-banners-top-margin)]
     (rn/use-mount
      (fn []
        (rn/hw-back-add-listener navigate-back-handler)

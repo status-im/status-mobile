@@ -3,8 +3,12 @@
             [status-im.common.floating-button-page.view :as floating-button-page]
             [test-helpers.component :as h]))
 
+
+(def sub-mocks {:alert-banners/top-margin 0})
+
 (h/describe "floating button page"
   (h/test "renders with a header and standard button"
+    (h/setup-subs sub-mocks)
     (h/render [floating-button-page/view
                {:header [quo/page-nav
                          {:type        :title-description
@@ -18,6 +22,7 @@
     (h/is-truthy (h/get-by-text "floating button page")))
 
   (h/test "renders with a header and a slide button"
+    (h/setup-subs sub-mocks)
     (h/render [floating-button-page/view
                {:header [quo/page-nav
                          {:type        :title-description

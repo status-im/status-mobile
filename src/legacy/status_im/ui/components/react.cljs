@@ -223,25 +223,28 @@
 
 (defn show-image-picker
   ([images-fn]
-   (show-image-picker images-fn nil))
+   (show-image-picker images-fn nil nil))
   ([images-fn
     {:keys [media-type]
      :or   {media-type "any"}
-     :as   props}]
+     :as   props}
+    finally-callback]
    (-> ^js image-picker
        (.openPicker (clj->js (merge {:mediaType media-type}
                                     props)))
        (.then images-fn)
-       (.catch show-access-error))))
+       (.catch show-access-error)
+       (.finally finally-callback))))
 
 (defn show-image-picker-camera
   ([images-fn]
-   (show-image-picker-camera images-fn nil))
-  ([images-fn props]
+   (show-image-picker-camera images-fn nil nil))
+  ([images-fn props finally-callback]
    (-> ^js image-picker
        (.openCamera (clj->js props))
        (.then images-fn)
-       (.catch show-access-error))))
+       (.catch show-access-error)
+       (.finally finally-callback))))
 
 ;; Clipboard
 

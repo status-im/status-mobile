@@ -186,6 +186,8 @@
     :on-allowed  (fn []
                    (when (and platform/android? @input-ref)
                      (.blur ^js @input-ref))
+                   (when platform/ios?
+                     (rf/dispatch [:alert-banners/hide]))
                    (rf/dispatch [:chat.ui/set-input-content-height
                                  (reanimated/get-shared-value height)])
                    (rf/dispatch [:photo-selector/navigate-to-photo-selector]))
