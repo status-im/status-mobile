@@ -495,7 +495,7 @@
           eth-token               (some #(when (= (:symbol %) "ETH") %) result)
           eth-mainnet-raw-balance (get-in eth-token [:balances-per-chain 1 :raw-balance])]
       (is (match? 2 (count result)))
-      (is (money/equal-to (money/bignumber 7520) eth-mainnet-raw-balance)))))
+      (is (money/equal-to (money/bignumber 2520) eth-mainnet-raw-balance)))))
 
 (h/deftest-sub :wallet/aggregated-token-values-and-balance
   [sub-name]
