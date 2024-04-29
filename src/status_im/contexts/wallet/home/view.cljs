@@ -1,6 +1,7 @@
 (ns status-im.contexts.wallet.home.view
   (:require
     [quo.core :as quo]
+    [quo.foundations.colors :as colors]
     [react-native.core :as rn]
     [reagent.core :as reagent]
     [status-im.common.home.top-nav.view :as common.top-nav]
@@ -46,54 +47,49 @@
         networks           (rf/sub [:wallet/selected-network-details])
         account-cards-data (rf/sub [:wallet/account-cards-data])
         cards              (conj account-cards-data (new-account-card-data))
-        [refreshing set-refreshing] (rn/use-state false)
+        [init-loaded? set-init-loaded] (rn/use-state false)
         {:keys [formatted-balance]} (rf/sub [:wallet/aggregated-token-values-and-balance])]
     (rn/use-effect (fn []
                      (when (and @account-list-ref (pos? (count cards)))
                        (.scrollToOffset ^js @account-list-ref
                                         #js
-                                                {:animated true
-                                                 :offset   0})))
+                                         {:animated true
+                                          :offset   0})))
                    [(count cards)])
-    [rn/scroll-view {:style                   {:flex 1}
-                     :refresh-control         (reagent/as-element
-                                               [rn/refresh-control {:refreshing refreshing
-                                                                    :style      {:background-color :red
-                                                                                 :color            :blue
-                                                                                 :border-width     2
-                                                                                 :border-color     :yellow}
-                                                                    :colors     [:green]
-                                                                    :on-refresh (fn []
-                                                                                  (set-refreshing true)
-                                                                                  (js/alert "Hey!")
-                                                                                  (js/setTimeout (fn [] (set-refreshing false)) 3000))}])
-                     :content-container-style (style/home-container)}
+    (rn/use-effect
+     #(when (and (boolean? tokens-loading?) (not tokens-loading?) (not init-loaded?))
+        (set-init-loaded true))
+     [tokens-loading?])
+    [rn/view {:style (style/home-container)}
      [common.top-nav/view]
-     [rn/view
-      [quo/wallet-overview
-       {:state             (if tokens-loading? :loading :default)
-        :time-frame        :none
-        :metrics           :none
-        :balance           formatted-balance
-        :networks          networks
-        :dropdown-on-press #(rf/dispatch [:show-bottom-sheet {:content network-filter/view}])}]]
-     (when (ff/enabled? ::ff/wallet.graph) [quo/wallet-graph {:time-frame :empty}])
-     [rn/flat-list
-      {:ref                               #(reset! account-list-ref %)
-       :style                             style/accounts-list
-       :content-container-style           style/accounts-list-container
-       :data                              cards
-       :horizontal                        true
-       :separator                         [rn/view {:style style/separator}]
-       :render-fn                         (fn [item] [quo/account-card item])
-       :shows-horizontal-scroll-indicator false}]
-     [quo/tabs
-      {:style          style/tabs
-       :size           32
-       :default-active selected-tab
-       :data           tabs-data
-       :on-change      (fn [tab]
-                         (when (= :activity tab)
-                           (rf/dispatch [:wallet/fetch-activities]))
-                         (set-selected-tab tab))}]
-     [tabs/view {:selected-tab selected-tab}]]))
+     [rn/scroll-view {:refresh-control (reagent/as-element
+                                        [rn/refresh-control {:refreshing (and tokens-loading? init-loaded?)
+                                                             :colors     colors/neutral-40
+                                                             :tint-color colors/neutral-40
+                                                             :on-refresh #(rf/dispatch [:wallet/get-accounts])}])
+                      :style {:flex 1}}
+      [rn/view
+       [quo/wallet-overview
+        {:state             (if tokens-loading? :loading :default)
+         :time-frame        :none
+         :metrics           :none
+         :balance           formatted-balance
+         :networks          networks
+         :dropdown-on-press #(rf/dispatch [:show-bottom-sheet {:content network-filter/view}])}]]
+       (when (ff/enabled? ::ff/wallet.graph) [quo/wallet-graph {:time-frame :empty}])
+      [rn/flat-list
+       {:ref                               #(reset! account-list-ref %)
+        :style                             style/accounts-list
+        :content-container-style           style/accounts-list-container
+        :data                              cards
+        :horizontal                        true
+        :separator                         [rn/view {:style style/separator}]
+        :render-fn                         (fn [item] [quo/account-card item])
+        :shows-horizontal-scroll-indicator false}]
+      [quo/tabs
+       {:style          style/tabs
+        :size           32
+        :default-active selected-tab
+        :data           tabs-data
+        :on-change      #(set-selected-tab %)}]
+      [tabs/view {:selected-tab selected-tab}]]]))
