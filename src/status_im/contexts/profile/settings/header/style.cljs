@@ -1,12 +1,6 @@
 (ns status-im.contexts.profile.settings.header.style
   (:require [quo.foundations.colors :as colors]))
 
-(defn header-view
-  [customization-color theme]
-  {:background-color (colors/resolve-color customization-color theme 40)
-   :min-height       100
-   :flex             1})
-
 (def avatar-row-wrapper
   {:display         :flex
    :padding-left    16
@@ -16,10 +10,6 @@
    :align-items     :flex-end
    :justify-content :space-between
    :flex-direction  :row})
-
-(def title-container
-  {:padding-horizontal 20
-   :padding-vertical   12})
 
 (defn header-middle-shape
   [background-color]
