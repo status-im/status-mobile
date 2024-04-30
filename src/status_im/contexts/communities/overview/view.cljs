@@ -85,11 +85,12 @@
          name])
       (when-not collapsed?
         [rn/view {:style {:padding-horizontal 8}}
-         (let [chats-count (count chats)]
-           (for [index (range chats-count)]
-             (let [chat (get chats index)]
-               ^{:key (:id chat)}
-               [channel-chat-item community-id chat (= index (dec chats-count))])))])])])
+         (let [last-item-index (dec (count chats))]
+           (map-indexed
+            (fn [index chat]
+              ^{:key (:id chat)}
+              [channel-chat-item community-id chat (= index last-item-index)])
+            chats))])])])
 
 (defn- get-access-type
   [access]
