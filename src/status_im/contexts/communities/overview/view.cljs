@@ -35,7 +35,8 @@
 
 (defn- channel-chat-item
   [community-id
-   {:keys [name emoji muted? id mentions-count unread-messages? on-press locked? color] :as chat}]
+   {:keys [name emoji muted? id mentions-count unread-messages? on-press locked? color] :as chat}
+   last-item?]
   (let [sheet-content      [actions/chat-actions
                             (assoc chat
                                    :community-id community-id
@@ -56,7 +57,7 @@
                             :notification        notification}
         channel-sheet-data {:selected-item (fn [] [quo/channel channel-options])
                             :content       (fn [] sheet-content)}]
-    [rn/view {:key id}
+    [rn/view {:key id :style (when last-item? {:margin-bottom 8})}
      [quo/channel
       (assoc channel-options
              :on-press      on-press
@@ -78,16 +79,18 @@
        :on-layout #(on-category-layout name category-id (int (layout-y %)))}
       (when-not (= constants/empty-category-id category-id)
         [quo/divider-label
-         {:on-press        #(collapse-category community-id category-id collapsed?)
-          :chevron-icon    (if collapsed? :i/chevron-right :i/chevron-down)
-          :container-style {:margin-top 8}
-          :chevron         :left}
+         {:on-press     #(collapse-category community-id category-id collapsed?)
+          :chevron-icon (if collapsed? :i/chevron-right :i/chevron-down)
+          :chevron      :left}
          name])
       (when-not collapsed?
         [rn/view {:style {:padding-horizontal 8}}
-         (for [chat chats]
-           ^{:key (:id chat)}
-           [channel-chat-item community-id chat])])])])
+         (let [last-item-index (dec (count chats))]
+           (map-indexed
+            (fn [index chat]
+              ^{:key (:id chat)}
+              [channel-chat-item community-id chat (= index last-item-index)])
+            chats))])])])
 
 (defn- get-access-type
   [access]
