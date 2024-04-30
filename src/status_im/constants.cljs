@@ -255,10 +255,6 @@
 (def ^:const web3-send-async-callback "web3-send-async-callback")
 (def ^:const scan-qr-code "scan-qr-code")
 
-(def ^:const faq "https://status.im/faq/")
-(def ^:const faq-keycard (str faq "#keycard"))
-(def ^:const keycard-integration-link "https://status.im/keycard-integration")
-
 (def ^:const two-mins (* 2 60))
 (def ^:const one-day (* 60 60 24))
 (def ^:const three-days (* one-day 3))
@@ -267,8 +263,6 @@
 
 (def ^:const privacy-policy-link "https://status.im/privacy-policy/")
 (def ^:const terms-of-service-link "https://status.im/terms-of-use")
-(def ^:const docs-link "https://status.im/docs/")
-(def ^:const principles-link "https://our.status.im/our-principles/")
 (def ^:const create-account-link "https://status.app/help/wallet/create-wallet-accounts")
 
 (def ^:const visibility-status-unknown 0)
@@ -276,9 +270,6 @@
 (def ^:const visibility-status-dnd 2)
 (def ^:const visibility-status-always-online 3)
 (def ^:const visibility-status-inactive 4)
-
-(def ^:const wallet-connect-version-1 1)
-(def ^:const wallet-connect-version-2 2)
 
 (def ^:const sticker-pack-status-installed 1)
 (def ^:const sticker-pack-status-pending 2)

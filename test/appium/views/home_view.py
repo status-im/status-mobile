@@ -121,6 +121,10 @@ class ChatElement(SilentButton):
 
         return ChatImage(self.driver)
 
+    @property
+    def profile_unblock_button(self):
+        return Button(self.driver, xpath=self.locator + "/*[@content-desc='Unblock']")
+
 
 class ActivityCenterElement(SilentButton):
     def __init__(self, driver, username):

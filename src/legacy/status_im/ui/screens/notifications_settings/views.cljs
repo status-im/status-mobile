@@ -1,9 +1,10 @@
 (ns legacy.status-im.ui.screens.notifications-settings.views
   (:require
     [legacy.status-im.ui.components.colors :as colors]
-    [legacy.status-im.ui.components.core :as quo]
+    [legacy.status-im.ui.components.core :as components]
     [legacy.status-im.ui.components.list.item :as list.item]
     [legacy.status-im.ui.components.react :as react]
+    [quo.core :as quo]
     [react-native.platform :as platform]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
@@ -22,10 +23,10 @@
        :active              notifications-enabled?
        :on-press            #(rf/dispatch [:push-notifications/switch (not notifications-enabled?)])
        :accessory           :switch}]
-     [quo/separator
+     [components/separator
       {:color (:ui-02 @colors/theme)
        :style {:margin-vertical 8}}]
-     [quo/list-header (i18n/label :t/notifications-preferences)]
+     [components/list-header (i18n/label :t/notifications-preferences)]
      [list.item/list-item
       {:size                :small
        :title               (i18n/label :t/notifications-non-contacts)
@@ -61,9 +62,16 @@
 
 (defn notifications-settings
   []
-  [react/scroll-view
-   {:style                   {:flex 1}
-    :content-container-style {:padding-vertical 8}}
-   (if platform/ios?
-     [notifications-settings-ios]
-     [notifications-settings-android])])
+  [:<>
+   [quo/page-nav
+    {:type       :title
+     :title      (i18n/label :t/notification-settings)
+     :background :blur
+     :icon-name  :i/close
+     :on-press   #(rf/dispatch [:navigate-back])}]
+   [react/scroll-view
+    {:style                   {:flex 1}
+     :content-container-style {:padding-vertical 8}}
+    (if platform/ios?
+      [notifications-settings-ios]
+      [notifications-settings-android])]])
