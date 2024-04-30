@@ -71,7 +71,7 @@
            background-color            (or (get-in options [:layout :backgroundColor])
                                            (when sheet? :transparent))
            app-theme                   (rf/sub [:theme])
-           theme                       (or app-theme theme)]
+           theme                       (or theme app-theme)]
        ^{:key (str "root" screen-key @reloader/cnt)}
        [quo.theme/provider theme
         [rn/view

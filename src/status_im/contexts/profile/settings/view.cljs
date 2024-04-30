@@ -30,10 +30,8 @@
 (defn- footer
   [{:keys [bottom]} logout-press]
   [rf/delay-render
-   [quo.theme/provider :dark
-    [rn/view {:style (style/footer-container bottom)}
-     [quo/logout-button {:on-press logout-press}]]]
-  ])
+   [rn/view {:style (style/footer-container bottom)}
+    [quo/logout-button {:on-press logout-press}]]])
 
 (defn- get-item-layout
   [_ index]
@@ -54,22 +52,21 @@
        :style (style/navigation-wrapper {:customization-color customization-color
                                          :inset               (:top insets)
                                          :theme               theme})}
-      [quo.theme/provider :dark
-       [quo/page-nav
-        {:title      full-name
-         :background :blur
-         :type       :title
-         :text-align :left
-         :scroll-y   scroll-y
-         :icon-name  :i/close
-         :on-press   #(rf/dispatch [:navigate-back])
-         :right-side [{:icon-name :i/qr-code
-                       :on-press  #(debounce/throttle-and-dispatch [:open-modal :screen/share-shell]
-                                                                   1000)}
-                      {:icon-name :i/share
-                       :on-press  #(rf/dispatch [:open-share
-                                                 {:options {:message (:universal-profile-url
-                                                                      profile)}}])}]}]]]
+      [quo/page-nav
+       {:title      full-name
+        :background :blur
+        :type       :title
+        :text-align :left
+        :scroll-y   scroll-y
+        :icon-name  :i/close
+        :on-press   #(rf/dispatch [:navigate-back])
+        :right-side [{:icon-name :i/qr-code
+                      :on-press  #(debounce/throttle-and-dispatch [:open-modal :screen/share-shell]
+                                                                  1000)}
+                     {:icon-name :i/share
+                      :on-press  #(rf/dispatch [:open-share
+                                                {:options {:message (:universal-profile-url
+                                                                     profile)}}])}]}]]
      [rn/flat-list
       {:key                             :list
        :header                          [settings.header/view {:scroll-y scroll-y}]

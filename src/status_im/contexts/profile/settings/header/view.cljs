@@ -15,6 +15,7 @@
 (defn view
   [{:keys [scroll-y]}]
   (let [theme (quo.theme/use-theme)
+        app-theme (rf/sub [:theme])
         {:keys [public-key emoji-hash bio] :as profile} (rf/sub [:profile/profile-with-image])
         online? (rf/sub [:visibility-status-updates/online?
                          public-key])
@@ -26,7 +27,7 @@
         profile-picture (profile.utils/photo profile)
         emoji-string (string/join emoji-hash)
         {:keys [status-title status-icon]} (header.utils/visibility-status-type-data status)
-        border-theme theme]
+        border-theme app-theme]
     [:<>
      [header.shape/view
       {:scroll-y            scroll-y
@@ -42,24 +43,22 @@
                                                   border-theme)
         :customization-color customization-color
         :profile-picture     profile-picture}]
-      [quo.theme/provider :dark
-       [rn/view {:style {:margin-bottom 4}}
-        [quo/dropdown
-         {:background     :blur
-          :size           :size-32
-          :type           :outline
-          :icon?          true
-          :no-icon-color? true
-          :icon-name      status-icon
-          :on-press       #(rf/dispatch [:show-bottom-sheet
-                                         {:shell?  true
-                                          :theme   :dark
-                                          :content (fn [] [visibility-sheet/view])}])}
-         status-title]]]]
-     [quo.theme/provider :dark
-      [quo/text-combinations
-       {:title-accessibility-label :username
-        :container-style           style/title-container
-        :emoji-hash                emoji-string
-        :description               bio
-        :title                     full-name}]]]))
+      [rn/view {:style {:margin-bottom 4}}
+       [quo/dropdown
+        {:background     :blur
+         :size           :size-32
+         :type           :outline
+         :icon?          true
+         :no-icon-color? true
+         :icon-name      status-icon
+         :on-press       #(rf/dispatch [:show-bottom-sheet
+                                        {:shell?  true
+                                         :theme   :dark
+                                         :content (fn [] [visibility-sheet/view])}])}
+        status-title]]]
+     [quo/text-combinations
+      {:title-accessibility-label :username
+       :container-style           style/title-container
+       :emoji-hash                emoji-string
+       :description               bio
+       :title                     full-name}]]))
