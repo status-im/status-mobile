@@ -9,6 +9,7 @@
     [status-im.contexts.shell.share.style :as style]
     [status-im.contexts.shell.share.wallet.style :as wallet-style]
     [status-im.contexts.wallet.common.utils :as utils]
+    [status-im.contexts.wallet.common.utils.networks :as network-utils]
     [status-im.contexts.wallet.sheets.network-preferences.view :as network-preferences]
     [utils.i18n :as i18n]
     [utils.image-server :as image-server]
@@ -46,7 +47,7 @@
                   :button-label      (i18n/label :t/display)
                   :on-save           (fn [chain-ids]
                                        (rf/dispatch [:hide-bottom-sheet])
-                                       (reset! selected-networks (map #(get utils/id->network %)
+                                       (reset! selected-networks (map #(get network-utils/id->network %)
                                                                       chain-ids)))}])}]))
 
 (defn- wallet-qr-code-item

@@ -99,10 +99,13 @@
 
 (defn show-qr
   [id]
-  {:icon                :i/qr-code
-   :accessibility-label :show-qr
-   :on-press            #(js/alert (str "implement action" id))
-   :label               (i18n/label :t/show-qr)})
+  (let [on-success #(rf/dispatch [:open-modal :screen/share-community
+                                  {:community-id id
+                                   :url          %}])]
+    {:icon                :i/qr-code
+     :accessibility-label :show-qr
+     :on-press            #(rf/dispatch [:communities/get-community-share-data id on-success])
+     :label               (i18n/label :t/show-qr)}))
 
 (defn share-community
   [id]

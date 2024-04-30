@@ -12,6 +12,7 @@
      (h/setup-subs {:wallet/scanned-address              nil
                     :wallet/addresses                    #{"0x12E838Ae1f769147b12956485dc56e57138f3AC8"
                                                            "0x22E838Ae1f769147b12956485dc56e57138f3AC8"}
+                    :alert-banners/top-margin            0
                     :wallet/watch-address-activity-state nil
                     :profile/customization-color         :blue})))
 

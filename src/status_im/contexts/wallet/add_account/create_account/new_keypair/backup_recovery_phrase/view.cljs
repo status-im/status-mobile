@@ -10,7 +10,8 @@
     [status-im.contexts.wallet.add-account.create-account.new-keypair.backup-recovery-phrase.style :as
      style]
     [utils.i18n :as i18n]
-    [utils.re-frame :as rf]))
+    [utils.re-frame :as rf]
+    [utils.security.core :as security]))
 
 (defn- word-item
   [item index _ increment]
@@ -54,14 +55,14 @@
                               :3 false})
         revealed?           (reagent/atom false)
         customization-color (rf/sub [:profile/customization-color])
-        secret-phrase       (reagent/atom [])
+        seed-phrase         (reagent/atom [])
         random-phrase       (reagent/atom [])]
     (fn []
       (let [theme (quo.theme/use-theme)]
 
         (rn/use-mount
          (fn []
-           (native-module/get-random-mnemonic #(reset! secret-phrase (string/split % #"\s")))
+           (native-module/get-random-mnemonic #(reset! seed-phrase (string/split % #"\s")))
            (native-module/get-random-mnemonic #(reset! random-phrase (string/split % #"\s")))))
         [rn/view {:style {:flex 1}}
          [quo/page-nav
@@ -74,14 +75,14 @@
            :description-text (i18n/label :t/backup-recovery-phrase-description)
            :container-style  {:padding-bottom 8}}]
          [rn/view {:style (style/seed-phrase-container theme)}
-          (when (pos? (count @secret-phrase))
+          (when (pos? (count @seed-phrase))
             [:<>
              [words-column
-              {:words       @secret-phrase
+              {:words       @seed-phrase
                :first-half? true}]
              [rn/view {:style (style/separator theme)}]
              [words-column
-              {:words       @secret-phrase
+              {:words       @seed-phrase
                :first-half? false}]])
           (when-not @revealed?
             [rn/view {:style style/blur-container}
@@ -107,8 +108,9 @@
               :button-one-label (i18n/label :t/i-have-written)
               :button-one-props {:disabled?           (some false? (vals @checked?))
                                  :customization-color customization-color
-                                 :on-press            #(rf/dispatch [:wallet/store-secret-phrase
-                                                                     {:secret-phrase @secret-phrase
+                                 :on-press            #(rf/dispatch [:wallet/store-seed-phrase
+                                                                     {:seed-phrase   (security/mask-data
+                                                                                      @seed-phrase)
                                                                       :random-phrase @random-phrase}])}}]
             [quo/text
              {:size  :paragraph-2

@@ -1,6 +1,6 @@
 (ns quo.components.wallet.network-link.schema)
 
-(def ^:private ?networks [:enum :optimism :arbitrum :ethereum])
+(def ^:private ?networks [:enum :optimism :arbitrum :ethereum :mainnet])
 
 (def ?schema
   [:=>

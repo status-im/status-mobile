@@ -1,4 +1,4 @@
-(ns status-im.contexts.onboarding.enter-seed-phrase.view
+(ns status-im.common.enter-seed-phrase.view
   (:require
     [clojure.string :as string]
     [legacy.status-im.ethereum.mnemonic :as mnemonic]
@@ -7,8 +7,8 @@
     [react-native.core :as rn]
     [react-native.safe-area :as safe-area]
     [reagent.core :as reagent]
+    [status-im.common.enter-seed-phrase.style :as style]
     [status-im.constants :as constants]
-    [status-im.contexts.onboarding.enter-seed-phrase.style :as style]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]
     [utils.security.core :as security]))
@@ -86,7 +86,7 @@
        (take 7)))
 
 (defn screen
-  []
+  [recovering-keypair?]
   (reagent/with-let [keyboard-shown?         (reagent/atom false)
                      keyboard-show-listener  (.addListener rn/keyboard
                                                            "keyboardDidShow"
@@ -103,9 +103,14 @@
                                                (reset! seed-phrase new-phrase))
                      on-submit               (fn []
                                                (swap! seed-phrase clean-seed-phrase)
-                                               (rf/dispatch [:onboarding/seed-phrase-entered
-                                                             (security/mask-data @seed-phrase)
-                                                             set-invalid-seed-phrase]))]
+                                               (if recovering-keypair?
+                                                 (rf/dispatch [:wallet/seed-phrase-entered
+                                                               (security/mask-data
+                                                                @seed-phrase)
+                                                               set-invalid-seed-phrase])
+                                                 (rf/dispatch [:onboarding/seed-phrase-entered
+                                                               (security/mask-data @seed-phrase)
+                                                               set-invalid-seed-phrase])))]
     (let [words-coll               (mnemonic/passphrase->words @seed-phrase)
           last-word                (peek words-coll)
           pick-suggested-word      (fn [pressed-word]
@@ -147,7 +152,7 @@
          [rn/view {:style style/keyboard-container}
           [quo/predictive-keyboard
            {:type     suggestions-state
-            :blur?    true
+            :blur?    (not recovering-keypair?)
             :text     suggestions-text
             :words    (keyboard-suggestions last-word)
             :on-press pick-suggested-word}]])])
@@ -155,14 +160,16 @@
      (.remove keyboard-show-listener)
      (.remove keyboard-hide-listener))))
 
-(defn enter-seed-phrase
+(defn view
   []
   (let [{navigation-bar-top :top} (safe-area/get-insets)]
-    [rn/view {:style style/full-layout}
-     [rn/keyboard-avoiding-view {:style style/page-container}
-      [quo/page-nav
-       {:margin-top navigation-bar-top
-        :background :blur
-        :icon-name  :i/arrow-left
-        :on-press   #(rf/dispatch [:navigate-back])}]
-      [screen]]]))
+    (fn []
+      (let [{:keys [recovering-keypair?]} (rf/sub [:get-screen-params])]
+        [rn/view {:style style/full-layout}
+         [rn/keyboard-avoiding-view {:style style/page-container}
+          [quo/page-nav
+           {:margin-top navigation-bar-top
+            :background :blur
+            :icon-name  (if recovering-keypair? :i/close :i/arrow-left)
+            :on-press   #(rf/dispatch [:navigate-back])}]
+          [screen recovering-keypair?]]]))))

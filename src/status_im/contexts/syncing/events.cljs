@@ -9,6 +9,7 @@
     [status-im.constants :as constants]
     [status-im.contexts.syncing.utils :as sync-utils]
     [taoensso.timbre :as log]
+    [utils.i18n :as i18n]
     [utils.re-frame :as rf]
     [utils.security.core :as security]
     [utils.transforms :as transforms]))
@@ -111,3 +112,53 @@
         (native-module/get-connection-string-for-bootstrapping-another-device
          config-map
          handle-connection)))))
+
+(rf/reg-event-fx
+ :syncing/enable-installation
+ (fn [_ [installation-id]]
+   {:fx [[:json-rpc/call
+          [{:method     "wakuext_enableInstallation"
+            :params     [installation-id]
+            :on-success #(rf/dispatch [:syncing/on-enable-installation-success installation-id])
+            :on-error   #(rf/dispatch [:syncing/on-toggle-installation-failed % installation-id])}]]]}))
+
+(rf/reg-event-fx
+ :syncing/disable-installation
+ (fn [_ [installation-id]]
+   {:fx [[:json-rpc/call
+          [{:method     "wakuext_disableInstallation"
+            :params     [installation-id]
+            :on-success #(rf/dispatch [:syncing/on-disable-installation-success installation-id])
+            :on-error   #(rf/dispatch [:syncing/on-toggle-installation-failed % installation-id])}]]]}))
+
+(rf/reg-event-fx
+ :syncing/on-enable-installation-success
+ (fn [{:keys [db]} [installation-id]]
+   {:db (assoc-in db
+         [:pairing/installations installation-id :enabled?]
+         true)
+    :fx [[:dispatch
+          [:toasts/upsert
+           {:type  :positive
+            :theme :dark
+            :text  (i18n/label :t/pair-device-toast)}]]]}))
+
+(rf/reg-event-fx
+ :syncing/on-disable-installation-success
+ (fn [{:keys [db]} [installation-id]]
+   {:db (assoc-in db
+         [:pairing/installations installation-id :enabled?]
+         false)
+    :fx [[:dispatch [:hide-bottom-sheet]]
+         [:dispatch
+          [:toasts/upsert
+           {:type  :positive
+            :theme :dark
+            :text  (i18n/label :t/unpair-device-toast)}]]]}))
+
+(rf/reg-event-fx
+ :syncing/on-toggle-installation-failed
+ (fn [_ [error installation-id]]
+   (log/error "Failed to toggle installation"
+              {:error           error
+               :installation-id installation-id})))

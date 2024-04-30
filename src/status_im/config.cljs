@@ -35,6 +35,9 @@
 (def arbitrum-sepolia-chain-explorer-link "https://sepolia.arbiscan.io/address/")
 (def goerli-chain-explorer-link "https://goerli.etherscan.io/address/")
 (def optimism-goerli-chain-explorer-link "https://goerli-optimistic.etherscan.io/address/")
+(def opensea-link "https://opensea.io")
+(def opensea-tesnet-link "https://testnets.opensea.io")
+
 (def opensea-api-key OPENSEA_API_KEY)
 (def bootnodes-settings-enabled? (enabled? (get-config :BOOTNODES_SETTINGS_ENABLED "1")))
 (def mailserver-confirmations-enabled? (enabled? (get-config :MAILSERVER_CONFIRMATIONS_ENABLED)))
@@ -133,3 +136,7 @@
 (def community-accounts-selection-enabled? true)
 (def fetch-messages-enabled? (enabled? (get-config :FETCH_MESSAGES_ENABLED "1")))
 (def test-networks-enabled? (enabled? (get-config :TEST_NETWORKS_ENABLED "0")))
+
+;; Alert banners are disabled for debug builds because alert banners overlay
+;; interfere with react-native debug tools, such as inspector and Perf monitor
+(def enable-alert-banner? (enabled? (get-config :ENABLE_ALERT_BANNER "0")))

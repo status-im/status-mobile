@@ -9,9 +9,14 @@
 
 (defn page-illustration
   [width]
-  {:width         width
-   :margin-top    12
-   :margin-bottom 4})
+  {:width        width
+   :aspect-ratio 0.7
+   :height       :auto})
+
+(def page-title
+  {:margin-top        12
+   :margin-horizontal 20
+   :margin-bottom     8})
 
 (defn buttons
   [insets]

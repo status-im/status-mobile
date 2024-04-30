@@ -3,6 +3,7 @@
     [legacy.status-im.ui.screens.screens :as old-screens]
     [quo.foundations.colors :as colors]
     [status-im.common.emoji-picker.view :as emoji-picker]
+    [status-im.common.enter-seed-phrase.view :as enter-seed-phrase]
     [status-im.common.lightbox.view :as lightbox]
     [status-im.config :as config]
     [status-im.contexts.chat.group-create.view :as group-create]
@@ -22,13 +23,13 @@
     [status-im.contexts.communities.actions.invite-contacts.view :as communities.invite]
     [status-im.contexts.communities.actions.request-to-join.view :as join-menu]
     [status-im.contexts.communities.actions.share-community-channel.view :as share-community-channel]
+    [status-im.contexts.communities.actions.share-community.view :as share-community]
     [status-im.contexts.communities.discover.view :as communities.discover]
     [status-im.contexts.communities.overview.view :as communities.overview]
     [status-im.contexts.onboarding.create-password.view :as create-password]
     [status-im.contexts.onboarding.create-profile.view :as create-profile]
     [status-im.contexts.onboarding.enable-biometrics.view :as enable-biometrics]
     [status-im.contexts.onboarding.enable-notifications.view :as enable-notifications]
-    [status-im.contexts.onboarding.enter-seed-phrase.view :as enter-seed-phrase]
     [status-im.contexts.onboarding.generating-keys.view :as generating-keys]
     [status-im.contexts.onboarding.identifiers.view :as identifiers]
     [status-im.contexts.onboarding.intro.view :as intro]
@@ -149,6 +150,10 @@
     {:name      :share-community-channel
      :options   options/transparent-screen-options
      :component share-community-channel/view}
+
+    {:name      :screen/share-community
+     :options   options/transparent-screen-options
+     :component share-community/view}
 
     ;; Note: the sheet screen is used when selecting addresses to share when
     ;; joining a community. The non-sheet screen is used when editing shared
@@ -302,7 +307,7 @@
                  :layout     options/onboarding-transparent-layout
                  :animations transitions/push-animations-for-transparent-background
                  :popGesture false}
-     :component enter-seed-phrase/enter-seed-phrase}
+     :component enter-seed-phrase/view}
 
     {:name      :screen/onboarding.enable-notifications
      :options   {:theme                  :dark
@@ -426,6 +431,9 @@
     {:name      :screen/wallet.keypair-name
      :options   {:insets {:top? true :bottom? true}}
      :component wallet-keypair-name/view}
+
+    {:name      :screen/wallet.enter-seed-phrase
+     :component enter-seed-phrase/view}
 
     {:name      :screen/wallet.share-address
      :options   options/transparent-screen-options
