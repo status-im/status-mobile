@@ -405,12 +405,12 @@
                         (map :address))
          chain-ids (chain/chain-ids db)]
      {:fx [[:json-rpc/call
-            [{:method   "wallet_checkRecentHistoryForChainIDs"
-              :params   [chain-ids addresses]
+            [{:method     "wallet_checkRecentHistoryForChainIDs"
+              :params     [chain-ids addresses]
               :on-success #(println "qqqxxxx" %)
-              :on-error #(log/info "failed to check recent history"
-                                   {:error %
-                                    :event :wallet/check-recent-history})}]]]})))
+              :on-error   #(log/info "failed to check recent history"
+                                     {:error %
+                                      :event :wallet/check-recent-history})}]]]})))
 
 (rf/reg-event-fx :wallet/initialize
  (fn []
@@ -526,12 +526,12 @@
      {:fx [[:json-rpc/call
             [{;; This method is deprecated and will be replaced by
               ;; "wallet_startActivityFilterSession"
-              :method   "wallet_filterActivityAsync"
-              :params   request-params
+              :method     "wallet_filterActivityAsync"
+              :params     request-params
               :on-success #(println "qqqqaaa" %)
-              :on-error #(log/info "failed to fetch activities"
-                                   {:error %
-                                    :event :wallet/fetch-activities})}]]]})))
+              :on-error   #(log/info "failed to fetch activities"
+                                     {:error %
+                                      :event :wallet/fetch-activities})}]]]})))
 
 (rf/reg-event-fx
  :wallet/activity-filtering-done

@@ -224,16 +224,16 @@
   (str "((^https?://status.app/)|(^status-app://))"
        "("
        (string/join
-         "|"
-         [(str "u/" regx-string-universal-link-encoded-data-base64 "#" regx-string-compressed-key)
-          (str "u#" regx-string-compressed-key)
-          (str "c/" regx-string-universal-link-encoded-data-base64 "#" regx-string-compressed-key)
-          (str "c#" regx-string-compressed-key)
-          (str "cc/" regx-string-universal-link-encoded-data-base64 "#" regx-string-compressed-key)
-          (str "p/" regx-string-any-ascii "+")
-          (str "cr/" regx-string-any-ascii "+")
-          (str "g/" regx-string-any-ascii "+")
-          (str "wallet/" regx-string-any-ascii "+")])
+        "|"
+        [(str "u/" regx-string-universal-link-encoded-data-base64 "#" regx-string-compressed-key)
+         (str "u#" regx-string-compressed-key)
+         (str "c/" regx-string-universal-link-encoded-data-base64 "#" regx-string-compressed-key)
+         (str "c#" regx-string-compressed-key)
+         (str "cc/" regx-string-universal-link-encoded-data-base64 "#" regx-string-compressed-key)
+         (str "p/" regx-string-any-ascii "+")
+         (str "cr/" regx-string-any-ascii "+")
+         (str "g/" regx-string-any-ascii "+")
+         (str "wallet/" regx-string-any-ascii "+")])
        ")$"))
 (def regx-universal-link (re-pattern regx-string-universal-link))
 (def regx-community-universal-link #"((^https?://status.app/)|(^status-app://))c/([\x00-\x7F]+)$")
