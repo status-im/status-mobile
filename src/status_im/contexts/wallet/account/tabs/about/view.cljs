@@ -96,5 +96,4 @@
          :profile-picture     (profile.utils/photo profile)
          :customization-color customization-color
          :derivation-path     path
-         :keypair-name        keypair-name
-         :on-press            #(js/alert "To be implemented")}])]))
+         :keypair-name        keypair-name}])]))
