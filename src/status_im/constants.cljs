@@ -182,7 +182,7 @@
 
 (def ^:const community-id-length 68)
 
-  ; BIP44 Wallet Root Key, the extended key from which any wallet can be derived
+; BIP44 Wallet Root Key, the extended key from which any wallet can be derived
 (def ^:const path-wallet-root "m/44'/60'/0'/0")
 ; EIP1581 Root Key, the extended key from which any whisper key/encryption key can be derived
 (def ^:const path-eip1581 "m/43'/60'/1581'")
@@ -224,16 +224,16 @@
   (str "((^https?://status.app/)|(^status-app://))"
        "("
        (string/join
-        "|"
-        [(str "u/" regx-string-universal-link-encoded-data-base64 "#" regx-string-compressed-key)
-         (str "u#" regx-string-compressed-key)
-         (str "c/" regx-string-universal-link-encoded-data-base64 "#" regx-string-compressed-key)
-         (str "c#" regx-string-compressed-key)
-         (str "cc/" regx-string-universal-link-encoded-data-base64 "#" regx-string-compressed-key)
-         (str "p/" regx-string-any-ascii "+")
-         (str "cr/" regx-string-any-ascii "+")
-         (str "g/" regx-string-any-ascii "+")
-         (str "wallet/" regx-string-any-ascii "+")])
+         "|"
+         [(str "u/" regx-string-universal-link-encoded-data-base64 "#" regx-string-compressed-key)
+          (str "u#" regx-string-compressed-key)
+          (str "c/" regx-string-universal-link-encoded-data-base64 "#" regx-string-compressed-key)
+          (str "c#" regx-string-compressed-key)
+          (str "cc/" regx-string-universal-link-encoded-data-base64 "#" regx-string-compressed-key)
+          (str "p/" regx-string-any-ascii "+")
+          (str "cr/" regx-string-any-ascii "+")
+          (str "g/" regx-string-any-ascii "+")
+          (str "wallet/" regx-string-any-ascii "+")])
        ")$"))
 (def regx-universal-link (re-pattern regx-string-universal-link))
 (def regx-community-universal-link #"((^https?://status.app/)|(^status-app://))c/([\x00-\x7F]+)$")
@@ -493,6 +493,7 @@
 (def ^:const status-hostname "status.app")
 
 (def ^:const community-joined-notification-type "communityJoined")
+<<<<<<< HEAD
 
 <<<<<<< HEAD
 (def ^:const default-telemetry-server-url "https://telemetry.status.im")
@@ -519,3 +520,5 @@
 (def ^:const wallet-activity-token-type-erc-721 2)
 (def ^:const wallet-activity-token-type-erc-1155 3)
 >>>>>>> 49d1b2396 ([WIP] Wallet Activity)
+=======
+>>>>>>> 75370cb1b (activity items)

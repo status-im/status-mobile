@@ -83,7 +83,7 @@
         :timestamp           (datetime/timestamp->relative timestamp)
         :unread?             (not read)
         :context             [[common/user-avatar-tag author]
-                              [quo/text {:style style/lowercase-text} (i18n/label :t/on)]
+                              [quo/text {:style style/lowercase-text} (i18n/label :t/on-capitalized)]
                               (if community-chat?
                                 [quo/context-tag
                                  {:type           :channel
