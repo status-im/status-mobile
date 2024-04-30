@@ -5,7 +5,6 @@
     legacy.status-im.browser.core
     legacy.status-im.browser.permissions
     legacy.status-im.chat.models.loading
-    legacy.status-im.currency.core
     legacy.status-im.data-store.chats
     legacy.status-im.data-store.switcher-cards
     legacy.status-im.data-store.visibility-status-updates

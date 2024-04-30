@@ -57,13 +57,13 @@
      :blur?       true
      :action      :arrow}
     {:title       (i18n/label :t/notifications)
-     :on-press    #(rf/dispatch [:open-modal :notifications])
+     :on-press    #(rf/dispatch [:open-modal :legacy-notifications])
      :image-props :i/activity-center
      :image       :icon
      :blur?       true
      :action      :arrow}
     {:title       (i18n/label :t/appearance)
-     :on-press    #(rf/dispatch [:open-modal :appearance])
+     :on-press    #(rf/dispatch [:open-modal :legacy-appearance])
      :image-props :i/light
      :image       :icon
      :blur?       true
@@ -83,14 +83,14 @@
        :blur?       true
        :action      :arrow})
     {:title       (i18n/label :t/advanced)
-     :on-press    #(rf/dispatch [:open-modal :advanced-settings])
+     :on-press    #(rf/dispatch [:open-modal :legacy-advanced-settings])
      :image-props :i/settings
      :image       :icon
      :blur?       true
      :action      :arrow}]
    ;; temporary link to legacy settings
    [{:title       "Legacy settings"
-     :on-press    #(rf/dispatch [:open-modal :my-profile])
+     :on-press    #(rf/dispatch [:open-modal :legacy-settings])
      :action      :arrow
      :image       :icon
      :blur?       true

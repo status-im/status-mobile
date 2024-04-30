@@ -3,7 +3,9 @@
     [legacy.status-im.ui.components.colors :as colors]
     [legacy.status-im.ui.components.list.views :as list]
     [legacy.status-im.ui.components.react :as react]
-    [utils.i18n :as i18n]))
+    [quo.core :as quo]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]))
 
 (def messages
   [{:title   :t/account-title
@@ -56,10 +58,17 @@
                       (map (fn [[k v]]
                              {:title k
                               :data  v})))]
-    [list/section-list
-     {:contentContainerStyle       {:padding-horizontal 16
-                                    :padding-bottom     16}
-      :stickySectionHeadersEnabled true
-      :sections                    sections
-      :render-fn                   render-element
-      :render-section-header-fn    render-section-header}]))
+    [:<>
+     [quo/page-nav
+      {:type       :title
+       :title      (i18n/label :t/glossary)
+       :background :blur
+       :icon-name  :i/close
+       :on-press   #(rf/dispatch [:navigate-back])}]
+     [list/section-list
+      {:contentContainerStyle       {:padding-horizontal 16
+                                     :padding-bottom     16}
+       :stickySectionHeadersEnabled true
+       :sections                    sections
+       :render-fn                   render-element
+       :render-section-header-fn    render-section-header}]]))

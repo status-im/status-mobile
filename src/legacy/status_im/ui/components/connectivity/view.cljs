@@ -151,7 +151,7 @@
       {:title               (i18n/label :t/settings)
        :accessibility-label "settings"
        :theme               :accent
-       :on-press            #(hide-sheet-and-dispatch [:navigate-to :sync-settings])
+       :on-press            #(hide-sheet-and-dispatch [:navigate-to :legacy-sync-settings])
        :icon                :main-icons/settings}]
      (when mobile
        [:<>
