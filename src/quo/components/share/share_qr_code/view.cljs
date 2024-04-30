@@ -2,6 +2,7 @@
   (:require [clojure.set]
             [oops.core :as oops]
             [quo.components.avatars.account-avatar.view :as account-avatar]
+            [quo.components.avatars.channel-avatar.view :as channel-avatar]
             [quo.components.avatars.user-avatar.view :as user-avatar]
             [quo.components.avatars.wallet-user-avatar.view :as wallet-user-avatar]
             [quo.components.buttons.button.view :as button]
@@ -131,7 +132,21 @@
                                 {:size                :size-32
                                  :customization-color customization-color
                                  :full-name           full-name}]
+    :channel                   [channel-avatar/view
+                                {:size                :size-32
+                                 :emoji               emoji
+                                 :locked-state        :not-set
+                                 :customization-color customization-color
+                                 :full-name           full-name}]
     nil))
+
+(defn- has-header?
+  [share-qr-type]
+  (case share-qr-type
+    (:wallet
+     :watched-address
+     :saved-address) true
+    false))
 
 (defn- share-qr-code
   [{:keys [share-qr-type qr-image-uri component-width customization-color full-name
@@ -153,7 +168,7 @@
          {:color           colors/white-opa-40
           :container-style style/watched-account-icon}])]
      [share-button {:on-press on-share-press}]]
-    (when (not= share-qr-type :profile)
+    (when (has-header? share-qr-type)
       [header props])
     [quo.theme/provider :light
      [qr-code/view
@@ -163,6 +178,7 @@
                               :profile                   :profile
                               (:watched-address :wallet) :wallet-account
                               :saved-address             :saved-address
+                              :channel                   :channel
                               nil)
        :customization-color customization-color
        :full-name           full-name

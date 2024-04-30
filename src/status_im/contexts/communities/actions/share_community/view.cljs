@@ -12,14 +12,20 @@
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
+(defn navigate-back
+  []
+  (rf/dispatch [:navigate-back]))
+
 (defn view
   []
-  (let [{:keys [url community-id]} (rf/sub [:get-screen-params])
+  (let [params                     (rf/sub [:get-screen-params])
+        ;; NOTE(seanstrom): We need to store these screen params for when the modal closes
+        ;; because the screen params will be cleared.
+        {:keys [url community-id]} @(rn/use-ref-atom params)
         window-width               (rf/sub [:dimensions/window-width])
         {thumbnail-uri  :logo
          color          :color
          community-name :name}     (rf/sub [:communities/for-context-tag community-id])
-        navigate-back              (rn/use-callback #(rf/dispatch [:navigate-back]))
         on-press-share             (rn/use-callback
                                     (fn []
                                       (rf/dispatch

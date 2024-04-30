@@ -1,6 +1,10 @@
 (ns status-im.contexts.communities.actions.share-community-channel.style
   (:require [quo.foundations.colors :as colors]))
 
+(defn container
+  [safe-area-top]
+  {:padding-top safe-area-top})
+
 (def header-container
   {:padding-horizontal 20
    :padding-vertical   12})
