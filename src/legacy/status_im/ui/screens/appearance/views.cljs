@@ -3,10 +3,12 @@
   (:require
     [legacy.status-im.react-native.resources :as resources]
     [legacy.status-im.ui.components.colors :as colors]
-    [legacy.status-im.ui.components.core :as quo]
+    [legacy.status-im.ui.components.core :as components]
     [legacy.status-im.ui.components.react :as react]
+    [quo.core :as quo]
     [re-frame.core :as re-frame]
-    [utils.i18n :as i18n]))
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]))
 
 (defn button
   [label icon theme selected?]
@@ -24,7 +26,13 @@
   []
   (views/letsubs [{:keys [appearance]} [:profile/profile]]
     [:<>
-     [quo/list-header (i18n/label :t/preference)]
+     [quo/page-nav
+      {:type       :title
+       :title      (i18n/label :t/appearance)
+       :background :blur
+       :icon-name  :i/close
+       :on-press   #(rf/dispatch [:navigate-back])}]
+     [components/list-header (i18n/label :t/preference)]
      [react/view
       {:flex-direction     :row
        :padding-horizontal 8

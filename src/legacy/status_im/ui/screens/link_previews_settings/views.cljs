@@ -2,14 +2,16 @@
   (:require-macros [legacy.status-im.utils.views :as views])
   (:require
     [legacy.status-im.react-native.resources :as resources]
-    [legacy.status-im.ui.components.core :as quo]
+    [legacy.status-im.ui.components.core :as components]
     [legacy.status-im.ui.components.list.item :as list.item]
     [legacy.status-im.ui.components.list.views :as list]
     [legacy.status-im.ui.components.react :as react]
     [legacy.status-im.ui.screens.link-previews-settings.styles :as styles]
+    [quo.core :as quo]
     [re-frame.core :as re-frame]
     [status-im.contexts.chat.messenger.messages.link-preview.events]
-    [utils.i18n :as i18n]))
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]))
 
 (defn prepare-urls-items-data
   [link-previews-enabled-sites]
@@ -29,18 +31,24 @@
                   link-previews-enabled-sites [:link-preview/enabled-sites]]
     (let [all-enabled (= (count link-previews-whitelist) (count link-previews-enabled-sites))]
       [:<>
+       [quo/page-nav
+        {:type       :title
+         :title      (i18n/label :t/chat-link-previews)
+         :background :blur
+         :icon-name  :i/close
+         :on-press   #(rf/dispatch [:navigate-back])}]
        [react/image
         {:source (resources/get-theme-image :unfurl)
          :style  styles/link-preview-settings-image}]
-       [quo/text {:style {:margin 16}}
+       [components/text {:style {:margin 16}}
         (i18n/label :t/you-can-choose-preview-websites)]
-       [quo/separator {:style {:margin-vertical 8}}]
+       [components/separator {:style {:margin-vertical 8}}]
 
        [react/view styles/whitelist-container
-        [quo/list-header (i18n/label :t/websites)]
+        [components/list-header (i18n/label :t/websites)]
 
         (when (> (count link-previews-whitelist) 1)
-          [quo/button
+          [components/button
            {:on-press #(re-frame/dispatch [:chat.ui/enable-all-link-previews
                                            link-previews-whitelist
                                            (not all-enabled)])

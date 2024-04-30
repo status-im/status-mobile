@@ -1,10 +1,12 @@
 (ns legacy.status-im.ui.screens.advanced-settings.views
   (:require
-    [legacy.status-im.ui.components.core :as quo]
+    [legacy.status-im.ui.components.core :as components]
     [legacy.status-im.ui.components.list.item :as list.item]
     [legacy.status-im.ui.components.list.views :as list]
+    [quo.core :as quo]
     [re-frame.core :as re-frame]
-    [utils.i18n :as i18n])
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf])
   (:require-macros [legacy.status-im.utils.views :as views]))
 
 (defn hide-sheet-and-dispatch
@@ -27,7 +29,7 @@
      :title (i18n/label :t/log-level)
      :accessibility-label :log-level-settings-button
      :on-press
-     #(re-frame/dispatch [:open-modal :log-level-settings])
+     #(re-frame/dispatch [:open-modal :legacy-:og-level-settings])
      :accessory :text
      :accessory-text current-log-level
      :chevron true}
@@ -110,13 +112,7 @@
      :on-press
      #(re-frame/dispatch [:profile.settings/toggle-peer-syncing])
      :accessory :switch
-     :active peer-syncing-enabled?}
-    {:size                :small
-     :title               (i18n/label :t/set-currency)
-     :accessibility-label :wallet-change-currency
-     :on-press            #(hide-sheet-and-dispatch
-                            [:open-modal :currency-settings])
-     :chevron             true}]))
+     :active peer-syncing-enabled?}]))
 
 (defn- flat-list-data
   [options]
@@ -125,7 +121,7 @@
 (defn- render-item
   [props]
   (if (= (:type props) :section-header)
-    [quo/list-header (:title props)]
+    [components/list-header (:title props)]
     [list.item/list-item props]))
 
 (views/defview advanced-settings
@@ -138,16 +134,23 @@
                   current-log-level                [:log-level/current-log-level]
                   current-fleet                    [:fleets/current-fleet]
                   peer-syncing-enabled?            [:profile/peer-syncing-enabled?]]
-    [list/flat-list
-     {:data      (flat-list-data
-                  {:current-log-level                current-log-level
-                   :transactions-management-enabled? transactions-management-enabled?
-                   :light-client-enabled?            light-client-enabled?
-                   :current-fleet                    current-fleet
-                   :dev-mode?                        false
-                   :webview-debug                    webview-debug
-                   :test-networks-enabled?           test-networks-enabled?
-                   :is-goerli-enabled?               is-goerli-enabled?
-                   :peer-syncing-enabled?            peer-syncing-enabled?})
-      :key-fn    (fn [_ i] (str i))
-      :render-fn render-item}]))
+    [:<>
+     [quo/page-nav
+      {:type       :title
+       :title      (i18n/label :t/advanced)
+       :background :blur
+       :icon-name  :i/close
+       :on-press   #(rf/dispatch [:navigate-back])}]
+     [list/flat-list
+      {:data      (flat-list-data
+                   {:current-log-level                current-log-level
+                    :transactions-management-enabled? transactions-management-enabled?
+                    :light-client-enabled?            light-client-enabled?
+                    :current-fleet                    current-fleet
+                    :dev-mode?                        false
+                    :webview-debug                    webview-debug
+                    :test-networks-enabled?           test-networks-enabled?
+                    :is-goerli-enabled?               is-goerli-enabled?
+                    :peer-syncing-enabled?            peer-syncing-enabled?})
+       :key-fn    (fn [_ i] (str i))
+       :render-fn render-item}]]))

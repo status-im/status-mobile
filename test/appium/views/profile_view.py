@@ -359,6 +359,8 @@ class ProfileView(BaseView):
         self.take_photo_button = Button(self.driver, accessibility_id="take-photo-button")
         self.select_from_gallery_button = Button(self.driver, accessibility_id="select-from-gallery-button")
         self.profile_password_button = Button(self.driver, accessibility_id="icon, Password, label-component, icon")
+        self.profile_messages_button = Button(self.driver, accessibility_id="icon, Messages, label-component, icon")
+        self.profile_blocked_users_button = Button(self.driver, accessibility_id="Blocked users, label-component, icon")
         self.profile_legacy_button = Button(self.driver,
                                             accessibility_id="icon, Legacy settings, label-component, icon")
 
