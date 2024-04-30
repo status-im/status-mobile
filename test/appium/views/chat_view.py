@@ -386,6 +386,7 @@ class CommunityView(HomeView):
         self.leave_community_button = Button(self.driver, translation_id="leave-community")
         self.edit_community_button = Button(self.driver, translation_id="edit-community")
         self.share_community_button = Button(self.driver, accessibility_id="share-community")
+        self.invite_people_from_contacts_button = Button(self.driver, accessibility_id="invite-people-from-contacts")
 
         # Members
         self.invite_people_button = Button(self.driver, accessibility_id="community-invite-people")
@@ -471,37 +472,20 @@ class CommunityView(HomeView):
             Button(self.driver, xpath="//*[starts-with(@text,'%s')]%s" % (username, decline_suffix)).click()
         self.close_button.click()
 
-    # Should not be used anymore, outdated flow
-    def send_invite_to_community(self, community_name, user_names_to_invite):
+    def invite_to_community(self, community_name, user_names_to_invite):
         if isinstance(user_names_to_invite, str):
             user_names_to_invite = [user_names_to_invite]
-        self.driver.info("Send %s invite to community" % ', '.join(map(str, user_names_to_invite)))
-        self.jump_to_communities_home()
-        home = self.get_home_view()
-        community_element = home.get_chat(community_name, community=True)
-        community_element.long_press_until_element_is_shown(self.view_members_button)
-        self.view_members_button.click_until_presence_of_element(self.invite_button)
-        self.invite_button.click()
-        for user_name in user_names_to_invite:
-            user_contact = self.element_by_text_part(user_name)
-            user_contact.scroll_and_click()
-        self.share_invite_button.click_until_presence_of_element(self.invite_button)
-        self.back_button.click_until_presence_of_element(self.plus_button)
-
-    def share_community(self, community_name, user_names_to_share):
-        if isinstance(user_names_to_share, str):
-            user_names_to_share = [user_names_to_share]
-        self.driver.info("Share to  %s community" % ', '.join(map(str, user_names_to_share)))
+        self.driver.info("Share to  %s community" % ', '.join(map(str, user_names_to_invite)))
         self.jump_to_communities_home()
         home = self.get_home_view()
         home.communities_tab.click()
         community_element = home.get_chat(community_name, community=True)
         community_element.long_press_until_element_is_shown(self.share_community_button)
-        self.share_community_button.click()
-        for user_name in user_names_to_share:
+        self.invite_people_from_contacts_button.click()
+        for user_name in user_names_to_invite:
             xpath = "//*[@content-desc='user-avatar']/following-sibling::android.widget.TextView[@text='%s']" % user_name
             Button(self.driver, xpath=xpath).click()
-        self.share_invite_button.click()
+        self.next_button.click()
 
 
 class PreviewMessage(ChatElementByText):

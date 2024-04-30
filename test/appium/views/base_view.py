@@ -322,6 +322,7 @@ class BaseView(object):
         self.qr_code_image = Button(self.driver, accessibility_id="qr-code-image")
         self.sign_in_phrase = SignInPhraseText(self.driver)
         self.toast_content_element = BaseElement(self.driver, accessibility_id="toast-content")
+        self.next_button = Button(self.driver, accessibility_id="next-button")
 
         # share contact screen
         self.show_qr_button = Button(self.driver, accessibility_id="show-qr-button")
