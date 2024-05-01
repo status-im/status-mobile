@@ -106,10 +106,7 @@
    (fn []
      (empty-effect animations subscriptions))
    [input-text images link-previews? reply])
-  (rn/use-effect
-   (fn []
-     (reenter-screen-effect state dimensions subscriptions animations))
-   [max-height subscriptions]))
+  (rn/use-mount #(reenter-screen-effect state dimensions subscriptions animations)))
 
 (defn use-edit
   [{:keys [input-ref]}
