@@ -32,8 +32,10 @@
   (reanimated/set-shared-value saved-height max-height)
   (reanimated/set-shared-value background-y 0)
   (reanimated/animate opacity 1)
-  (reset! maximized? true)
-  (rf/dispatch [:chat.ui/set-input-maximized true]))
+  (js/setTimeout (fn []
+                   (reset! maximized? true)
+                   (rf/dispatch [:chat.ui/set-input-maximized true]))
+                 300))
 
 (defn minimize
   [{:keys [input-ref emoji-kb-extra-height saved-emoji-kb-extra-height]}
