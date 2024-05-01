@@ -3,7 +3,7 @@
 
 (def avatar-row-wrapper
   {:display         :flex
-   :padding-left    16
+   :padding-left    20
    :padding-right   12
    :margin-top      -60
    :margin-bottom   -4
