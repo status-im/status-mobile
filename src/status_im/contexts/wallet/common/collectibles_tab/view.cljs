@@ -5,6 +5,7 @@
     [react-native.core :as rn]
     [status-im.common.resources :as resources]
     [status-im.contexts.wallet.collectible.utils :as utils]
+    [status-im.contexts.wallet.common.collectibles-tab.style :as style]
     [status-im.contexts.wallet.common.empty-tab.view :as empty-tab]
     [utils.i18n :as i18n]))
 
@@ -50,7 +51,7 @@
       [rn/flat-list
        {:data                     collectibles
         :style                    {:flex 1}
-        :content-container-style  {:margin-horizontal 12}
+        :content-container-style  style/list-container-style
         :window-size              11
         :num-columns              2
         :render-fn                (fn [item index]
