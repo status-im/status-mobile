@@ -370,7 +370,7 @@
      :component emoji-picker/view}
 
     {:name      :screen/wallet.accounts
-     :options   {:insets             {:top? true}}
+     :options   {:insets {:top? true}}
      :component wallet-accounts/view}
 
     {:name      :screen/wallet.edit-account
