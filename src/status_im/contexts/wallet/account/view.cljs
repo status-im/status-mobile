@@ -3,7 +3,6 @@
     [quo.core :as quo]
     [react-native.core :as rn]
     [reagent.core :as reagent]
-    [status-im.contexts.shell.jump-to.constants :as jump-to.constants]
     [status-im.contexts.wallet.account.style :as style]
     [status-im.contexts.wallet.account.tabs.view :as tabs]
     [status-im.contexts.wallet.common.account-switcher.view :as account-switcher]
@@ -27,7 +26,7 @@
     (fn []
       (let [{:keys [name color formatted-balance
                     watch-only?]} (rf/sub [:wallet/current-viewing-account])
-            customization-color        (rf/sub [:profile/customization-color])]
+            customization-color   (rf/sub [:profile/customization-color])]
         [rn/view {:style {:flex 1}}
          [account-switcher/view
           {:type     :wallet-networks
