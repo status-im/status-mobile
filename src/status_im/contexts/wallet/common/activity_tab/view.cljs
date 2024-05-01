@@ -7,7 +7,6 @@
     [quo.theme]
     [react-native.core :as rn]
     [status-im.common.resources :as resources]
-    [status-im.contexts.shell.jump-to.constants :as jump-to.constants]
     [status-im.contexts.wallet.common.activity-tab.constants :as constants]
     [status-im.contexts.wallet.common.empty-tab.view :as empty-tab]
     [utils.datetime :as datetime]
@@ -54,49 +53,46 @@
         amount-out-value (money/with-precision
                           (money/wei->ether amount-out-units)
                           6)
-       ]
-    [:<>
-     ;[quo/divider-date (:date item)]
-     [quo/wallet-activity
-      {:transaction       (constants/wallet-activity-id->name activity-type)
-       :timestamp         (datetime/timestamp->relative (* timestamp 1000))
-       :status            (constants/wallet-activity-status->name activity-status)
-       :counter           1
-       :first-tag         {:size   24
-                           :type   :token
-                           :token  (or symbol-out symbol-in)
-                           :amount (if (= activity-type constants/wallet-activity-type-receive)
-                                     amount-in-value
-                                     amount-out-value)}
-       :second-tag-prefix (constants/second-tag-prefix activity-type)
-       :second-tag        {:type    :address
-                           :address (if (= activity-type constants/wallet-activity-type-receive)
-                                      recipient
-                                      sender)}
-       :third-tag-prefix  (constants/third-tag-prefix activity-type)
-       :third-tag         {:type    :address
-                           :address (if (= activity-type constants/wallet-activity-type-receive)
-                                      sender
-                                      recipient)}
-       :fourth-tag-prefix (constants/fourth-tag-prefix activity-type)
-       :fourth-tag        {:size         24
-                           :type         :network
-                           :network-logo (quo.resources/get-network (chain/chain-id->chain-keyword
-                                                                     chain-id))
-                           :network-name (chain/chain-id->chain-name chain-id)}
-       :blur?             false}]]))
+        relative-date    (datetime/timestamp->relative (* timestamp 1000))]
+    [quo/wallet-activity
+     {:transaction       (constants/wallet-activity-id->name activity-type)
+      :timestamp         relative-date
+      :status            (constants/wallet-activity-status->name activity-status)
+      :counter           1
+      :first-tag         {:size   24
+                          :type   :token
+                          :token  (or symbol-out symbol-in)
+                          :amount (if (= activity-type constants/wallet-activity-type-receive)
+                                    amount-in-value
+                                    amount-out-value)}
+      :second-tag-prefix (constants/second-tag-prefix activity-type)
+      :second-tag        {:type    :address
+                          :address (if (= activity-type constants/wallet-activity-type-receive)
+                                     recipient
+                                     sender)}
+      :third-tag-prefix  (constants/third-tag-prefix activity-type)
+      :third-tag         {:type    :address
+                          :address (if (= activity-type constants/wallet-activity-type-receive)
+                                     sender
+                                     recipient)}
+      :fourth-tag-prefix (constants/fourth-tag-prefix activity-type)
+      :fourth-tag        {:size         24
+                          :type         :network
+                          :network-logo (quo.resources/get-network (chain/chain-id->chain-keyword
+                                                                    chain-id))
+                          :network-name (chain/chain-id->chain-name chain-id)}
+      :blur?             false}]))
 
 (defn view
   []
   (let [theme         (quo.theme/use-theme)
-        activity-list (rf/sub [:wallet/all-activities])]
+        activity-list (rf/sub [:wallet/activities-for-current-viewing-account])]
     (if (empty? activity-list)
       [empty-tab/view
        {:title       (i18n/label :t/no-activity)
         :description (i18n/label :t/empty-tab-description)
         :image       (resources/get-themed-image :no-activity theme)}]
       [rn/flat-list
-       {:data                    activity-list
-        :style                   {:flex 1}
-        :render-fn               activity-item
-        :content-container-style {:padding-bottom jump-to.constants/floating-shell-button-height}}])))
+       {:data      activity-list
+        :style     {:flex 1}
+        :render-fn activity-item}])))
