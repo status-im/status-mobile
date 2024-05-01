@@ -64,6 +64,9 @@
         :on-change-text        (fn [text]
                                  (when (empty? text)
                                    (rf/dispatch [:wallet/clean-local-suggestions]))
+                                 (debounce/debounce-and-dispatch
+                                  [:wallet/validate-address text]
+                                  300)
                                  (reset! input-value text))
         :valid-ens-or-address? valid-ens-or-address?}])))
 
@@ -167,6 +170,13 @@
            :title-accessibility-label :title-label}]
          [address-input input-value input-focused?]
          [quo/divider-line]
+         (when (and (not valid-ens-or-address?) (> (count @input-value) 0))
+           [rn/view {:style {:padding 20}}
+            [quo/info-message
+             {:type :error
+              :icon :i/info
+              :size :default}
+             (i18n/label :t/invalid-address)]])
          (if (or @input-focused? (> (count @input-value) 0))
            [rn/keyboard-avoiding-view
             {:style                    {:flex 1}
