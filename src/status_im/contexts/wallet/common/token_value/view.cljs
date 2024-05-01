@@ -40,7 +40,6 @@
    :label               (i18n/label :t/bridge)
    :on-press            (fn []
                           (rf/dispatch [:hide-bottom-sheet])
-                          (rf/dispatch [:wallet/clean-send-data])
                           (rf/dispatch [:wallet/bridge-select-token
                                         {:token        token-data
                                          :from-drawer? true}]))})
