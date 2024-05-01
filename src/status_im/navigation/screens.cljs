@@ -370,10 +370,7 @@
      :component emoji-picker/view}
 
     {:name      :screen/wallet.accounts
-     :options   {:insets             {:top? true}
-                 :popGesture         false
-                 :hardwareBackButton {:dismissModalOnPress false
-                                      :popStackOnPress     false}}
+     :options   {:insets {:top? true}}
      :component wallet-accounts/view}
 
     {:name      :screen/wallet.edit-account
