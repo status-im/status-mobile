@@ -109,7 +109,7 @@
   (rn/use-effect
    (fn []
      (reenter-screen-effect state dimensions subscriptions animations))
-   [max-height subscriptions]))
+   []))
 
 (defn use-edit
   [{:keys [input-ref]}
