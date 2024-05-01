@@ -15,30 +15,6 @@
     [utils.money :as money]
     [utils.re-frame :as rf]))
 
-(def asset-snt
-  {:size   24
-   :type   :token
-   :token  "SNT"
-   :amount 1500})
-
-(def piggy-bank
-  {:size         24
-   :type         :account
-   :account-name "Piggy bank"
-   :emoji        "🐷"})
-
-(def aretha-gosling
-  {:size            24
-   :type            :default
-   :full-name       "Aretha Gosling"
-   :profile-picture (resources/mock-images :user-picture-female2)})
-
-(def mainnet
-  {:size         24
-   :type         :network
-   :network-logo (quo.resources/get-network :ethereum)
-   :network-name "Mainnet"})
-
 (defn activity-item
   [{:keys [activity-type activity-status timestamp symbol-out symbol-in token-in token-out amount-in
            amount-out sender recipient]}]
