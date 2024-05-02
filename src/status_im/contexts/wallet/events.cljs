@@ -4,7 +4,6 @@
     [react-native.platform :as platform]
     [status-im.constants :as constants]
     [status-im.contexts.wallet.common.utils.networks :as network-utils]
-    [status-im.contexts.wallet.common.validation :as validation]
     [status-im.contexts.wallet.data-store :as data-store]
     [status-im.contexts.wallet.db :as db]
     [status-im.contexts.wallet.item-types :as item-types]
@@ -333,13 +332,6 @@
 (rf/reg-event-fx :wallet/address-validation-failed
  (fn [{:keys [db]}]
    {:db (assoc-in db [:wallet :ui :search-address :valid-ens-or-address?] false)}))
-
-(rf/reg-event-fx :wallet/validate-address
- (fn [_ [address]]
-   (let [valid-ens-or-address? (or (validation/ens-name? address) (validation/eth-address? address))]
-     (if (and (> (count address) 0) (not valid-ens-or-address?))
-       (rf/dispatch [:wallet/address-validation-failed address])
-       (rf/dispatch [:wallet/address-validation-success address])))))
 
 (rf/reg-event-fx :wallet/clean-local-suggestions
  (fn [{:keys [db]}]

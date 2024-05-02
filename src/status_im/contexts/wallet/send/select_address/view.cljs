@@ -8,6 +8,7 @@
     [status-im.common.floating-button-page.view :as floating-button-page]
     [status-im.constants :as constants]
     [status-im.contexts.wallet.common.account-switcher.view :as account-switcher]
+    [status-im.contexts.wallet.common.validation :as validation]
     [status-im.contexts.wallet.item-types :as types]
     [status-im.contexts.wallet.send.select-address.style :as style]
     [status-im.contexts.wallet.send.select-address.tabs.view :as tabs]
@@ -32,7 +33,15 @@
           recipient                (rf/sub [:wallet/wallet-send-recipient])
           recipient-plain-address? (= send-address recipient)
           valid-ens-or-address?    (rf/sub [:wallet/valid-ens-or-address?])
-          contacts                 (rf/sub [:contacts/active])]
+          contacts                 (rf/sub [:contacts/active])
+          validate-address         (fn [address]
+                                     (debounce/debounce-and-dispatch
+                                      (if (and (> (count address) 0) 
+                                               (not (or (validation/ens-name? address) 
+                                                        (validation/eth-address? address))))
+                                        [:wallet/address-validation-failed address]
+                                        [:wallet/address-validation-success address])
+                                      300))]
       [quo/address-input
        {:on-focus              #(reset! input-focused? true)
         :on-blur               #(reset! input-focused? false)
@@ -49,9 +58,7 @@
                                   ; ^ this check is to prevent effect being triggered when screen is
                                   ; loaded but not being shown to the user (deep in the navigation
                                   ; stack) and avoid undesired behaviors
-                                  (debounce/debounce-and-dispatch
-                                   [:wallet/validate-address %]
-                                   300))
+                                  (validate-address %))
         :on-detect-ens         (fn [text cb]
                                  (when (or (= current-screen-id :screen/wallet.select-address)
                                            (= current-screen-id :screen/wallet.scan-address))
@@ -64,9 +71,7 @@
         :on-change-text        (fn [text]
                                  (when (empty? text)
                                    (rf/dispatch [:wallet/clean-local-suggestions]))
-                                 (debounce/debounce-and-dispatch
-                                  [:wallet/validate-address text]
-                                  300)
+                                 (validate-address text)
                                  (reset! input-value text))
         :valid-ens-or-address? valid-ens-or-address?}])))
 
