@@ -122,7 +122,7 @@
     quo.components.profile.showcase-nav.view
     quo.components.record-audio.record-audio.view
     quo.components.record-audio.soundtrack.view
-    quo.components.scroll-view.view
+    quo.components.refreshable-scroll-view.view
     quo.components.selectors.disclaimer.view
     quo.components.selectors.filter.view
     quo.components.selectors.react-selector.view
@@ -451,4 +451,4 @@
 (def transaction-summary quo.components.wallet.transaction-summary.view/view)
 
 ;;;; refresh control as element
-(def scroll-view quo.components.scroll-view.view/view)
+(def refreshable-scroll-view quo.components.refreshable-scroll-view.view/view)

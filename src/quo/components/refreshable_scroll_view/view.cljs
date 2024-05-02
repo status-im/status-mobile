@@ -1,4 +1,4 @@
-(ns quo.components.scroll-view.view
+(ns quo.components.refreshable-scroll-view.view
   (:require [react-native.core :as rn]
             [reagent.core :as reagent]))
 
