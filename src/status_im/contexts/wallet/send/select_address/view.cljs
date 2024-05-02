@@ -36,8 +36,8 @@
           contacts                 (rf/sub [:contacts/active])
           validate-address         (fn [address]
                                      (debounce/debounce-and-dispatch
-                                      (if (and (> (count address) 0) 
-                                               (not (or (validation/ens-name? address) 
+                                      (if (and (> (count address) 0)
+                                               (not (or (validation/ens-name? address)
                                                         (validation/eth-address? address))))
                                         [:wallet/address-validation-failed address]
                                         [:wallet/address-validation-success address])
