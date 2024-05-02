@@ -7,6 +7,7 @@
     [quo.theme]
     [react-native.core :as rn]
     [status-im.common.resources :as resources]
+    [status-im.contexts.shell.jump-to.constants :as jump-to.constants]
     [status-im.contexts.wallet.common.activity-tab.constants :as constants]
     [status-im.contexts.wallet.common.empty-tab.view :as empty-tab]
     [utils.datetime :as datetime]
@@ -66,6 +67,7 @@
         :description (i18n/label :t/empty-tab-description)
         :image       (resources/get-themed-image :no-activity theme)}]
       [rn/flat-list
-       {:data      activity-list
-        :style     {:flex 1}
-        :render-fn activity-item}])))
+       {:data                    activity-list
+        :style                   {:flex 1}
+        :content-container-style {:padding-bottom jump-to.constants/floating-shell-button-height}
+        :render-fn               activity-item}])))
