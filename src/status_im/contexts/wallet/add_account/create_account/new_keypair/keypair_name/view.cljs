@@ -48,7 +48,9 @@
                  :button-one-label (i18n/label :t/continue)
                  :button-one-props {:disabled?           (or (pos? error)
                                                              (< (count keypair-name)
-                                                                keypair-name-min-length))
+                                                                keypair-name-min-length)
+                                                             (> (count keypair-name)
+                                                                keypair-name-max-length))
                                     :customization-color customization-color
                                     :on-press            on-continue}
                  :container-style  style/bottom-action}]}

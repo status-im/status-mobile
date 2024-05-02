@@ -415,13 +415,16 @@
   [{:keys [chat-id public? chat-type muted-till]} inside-chat? needs-divider?]
   [(mark-as-read-entry chat-id needs-divider?)
    (mute-chat-entry chat-id chat-type muted-till)
-   (notifications-entry false)
+   (when config/show-not-implemented-features?
+     (notifications-entry false))
    (when (and config/fetch-messages-enabled? inside-chat?)
      (chat-actions/fetch-messages chat-id))
    (when public?
-     (show-qr-entry))
+     (when config/show-not-implemented-features?
+       (show-qr-entry)))
    (when public?
-     (share-group-entry))])
+     (when config/show-not-implemented-features?
+       (share-group-entry)))])
 
 (defn group-actions
   [{:keys [chat-id admins]} inside-chat?]
@@ -430,10 +433,16 @@
     [(group-details-entry chat-id)
      (when inside-chat?
        (if admin?
-         (manage-members-entry)
-         (add-members-entry)))
-     (when (and admin? inside-chat?) (edit-group-entry))
-     (when (and admin? inside-chat?) (group-privacy-entry))]))
+         (when config/show-not-implemented-features?
+           (manage-members-entry))
+         (when config/show-not-implemented-features?
+           (add-members-entry))))
+     (when (and admin? inside-chat?)
+       (when config/show-not-implemented-features?
+         (edit-group-entry)))
+     (when (and admin? inside-chat?)
+       (when config/show-not-implemented-features?
+         (group-privacy-entry)))]))
 
 (defn one-to-one-actions
   [{:keys [chat-id] :as item} inside-chat?]
@@ -456,11 +465,17 @@
   (let [current-pub-key (rf/sub [:multiaccount/public-key])]
     [quo/action-drawer
      [[(view-profile-entry public-key)
+       (when-not (= current-pub-key public-key)
+         (when config/show-not-implemented-features?
+           (rename-entry)))
+       (when config/show-not-implemented-features?
+         (show-qr-entry))
+       (when config/show-not-implemented-features?
+         (share-profile-entry))]
+      [(when-not (= current-pub-key public-key)
+         (when config/show-not-implemented-features?
+           (mark-untrustworthy-entry)))
        (when-not (= current-pub-key public-key) (remove-from-contacts-entry contact))
-       (when-not (= current-pub-key public-key) (rename-entry))
-       (show-qr-entry)
-       (share-profile-entry)]
-      [(when-not (= current-pub-key public-key) (mark-untrustworthy-entry))
        (when-not (= current-pub-key public-key) (block-user-entry contact))]
       (when (and admin? chat-id)
         [(if (= current-pub-key public-key)
@@ -485,6 +500,9 @@
   (let [current-pub-key (rf/sub [:multiaccount/public-key])
         admin?          (get admins current-pub-key)]
     [quo/action-drawer
-     [(when admin? [(edit-name-image-entry)])
-      [(notifications-entry admin?)]
+     [(when admin?
+        [(when config/show-not-implemented-features?
+           (edit-name-image-entry))])
+      [(when config/show-not-implemented-features?
+         (notifications-entry admin?))]
       (destructive-actions group false)]]))

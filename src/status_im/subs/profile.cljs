@@ -88,6 +88,12 @@
    (get-in profile [:wakuv2-config :LightClient])))
 
 (re-frame/reg-sub
+ :profile/telemetry-enabled?
+ :<- [:profile/profile]
+ (fn [profile]
+   (not (string/blank? (:telemetry-server-url profile)))))
+
+(re-frame/reg-sub
  :profile/test-networks-enabled?
  :<- [:profile/profile]
  (fn [profile]

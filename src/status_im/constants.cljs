@@ -493,3 +493,5 @@
 (def ^:const status-hostname "status.app")
 
 (def ^:const community-joined-notification-type "communityJoined")
+
+(def ^:const default-telemetry-server-url "https://telemetry.status.im")
