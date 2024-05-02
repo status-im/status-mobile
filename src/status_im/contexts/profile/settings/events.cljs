@@ -86,6 +86,12 @@
               :params   [{:enabled new-value}]
               :on-error #(log/error "failed to toggle peer syncing" new-value %)}]]]})))
 
+(rf/reg-event-fx :profile.settings/toggle-telemetry
+ (fn [{:keys [db]}]
+   (let [value     (get-in db [:profile/profile :telemetry-server-url])
+         new-value (if (string/blank? value) constants/default-telemetry-server-url "")]
+     {:dispatch [:profile.settings/profile-update :telemetry-server-url new-value]})))
+
 (rf/reg-event-fx :profile.settings/change-appearance
  (fn [_ [theme]]
    {:fx [[:dispatch [:profile.settings/profile-update :appearance theme]]
