@@ -243,7 +243,7 @@
 (rf/reg-event-fx :wallet/get-keypairs get-keypairs)
 
 (rf/reg-event-fx :wallet/bridge-select-token
- (fn [{:keys [db]} [{:keys [token stack-id from-drawer?]}]]
+ (fn [{:keys [db]} [{:keys [token stack-id]}]]
    (let [to-address (get-in db [:wallet :current-viewing-account-address])]
      {:db (-> db
               (assoc-in [:wallet :ui :send :token] token)
@@ -252,12 +252,8 @@
       :fx [[:dispatch
             [:wallet/wizard-navigate-forward
              {:current-screen stack-id
-              :start-flow?    from-drawer?
-              :flow-id        :wallet-bridge-flow}]
-            ;(if from-drawer?
-            ;  [:open-modal :screen/wallet.bridge-to]
-            ;  [:navigate-to-within-stack [:screen/wallet.bridge-to stack-id]])
-            ]]})))
+              :start-flow?    true
+              :flow-id        :wallet-bridge-flow}]]]})))
 
 (rf/reg-event-fx :wallet/start-bridge
  (fn [{:keys [db]}]
