@@ -250,9 +250,14 @@
               (assoc-in [:wallet :ui :send :to-address] to-address)
               (assoc-in [:wallet :ui :send :tx-type] :bridge))
       :fx [[:dispatch
-            (if from-drawer?
-              [:open-modal :screen/wallet.bridge-to]
-              [:navigate-to-within-stack [:screen/wallet.bridge-to stack-id]])]]})))
+            [:wallet/wizard-navigate-forward
+             {:current-screen stack-id
+              :start-flow?    from-drawer?
+              :flow-id        :wallet-bridge-flow}]
+            ;(if from-drawer?
+            ;  [:open-modal :screen/wallet.bridge-to]
+            ;  [:navigate-to-within-stack [:screen/wallet.bridge-to stack-id]])
+            ]]})))
 
 (rf/reg-event-fx :wallet/start-bridge
  (fn [{:keys [db]}]
