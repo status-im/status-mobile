@@ -525,6 +525,7 @@
      {:fx [[:json-rpc/call
             [{;; This method is deprecated and will be replaced by
               ;; "wallet_startActivityFilterSession"
+              ;; https://github.com/status-im/status-mobile/issues/19864
               :method   "wallet_filterActivityAsync"
               :params   request-params
               :on-error #(log/info "failed to fetch activities"

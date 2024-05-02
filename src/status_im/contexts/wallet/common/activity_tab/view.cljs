@@ -15,21 +15,24 @@
     [utils.money :as money]
     [utils.re-frame :as rf]))
 
+(def precision 6)
+
 (defn activity-item
   [{:keys [activity-type activity-status timestamp symbol-out symbol-in token-in token-out amount-in
            amount-out sender recipient]}]
-  (let [chain-id         (or (:chain-id token-in) (:chain-id token-out))
-        amount-in-units  (native-module/hex-to-number
-                          (utils.hex/normalize-hex amount-in))
-        amount-in-value  (money/with-precision
-                          (money/wei->ether amount-in-units)
-                          6)
-        amount-out-units (native-module/hex-to-number
-                          (utils.hex/normalize-hex amount-out))
-        amount-out-value (money/with-precision
-                          (money/wei->ether amount-out-units)
-                          6)
-        relative-date    (datetime/timestamp->relative (* timestamp 1000))]
+  (let [chain-id            (or (:chain-id token-in) (:chain-id token-out))
+        amount-in-units     (native-module/hex-to-number
+                             (utils.hex/normalize-hex amount-in))
+        amount-in-value     (money/with-precision
+                             (money/wei->ether amount-in-units)
+                             precision)
+        amount-out-units    (native-module/hex-to-number
+                             (utils.hex/normalize-hex amount-out))
+        amount-out-value    (money/with-precision
+                             (money/wei->ether amount-out-units)
+                             precision)
+        relative-date       (datetime/timestamp->relative (* timestamp 1000))
+        receiving-activity? (= activity-type constants/wallet-activity-type-receive)]
     [quo/wallet-activity
      {:transaction       (constants/wallet-activity-id->name activity-type)
       :timestamp         relative-date
@@ -38,19 +41,13 @@
       :first-tag         {:size   24
                           :type   :token
                           :token  (or symbol-out symbol-in)
-                          :amount (if (= activity-type constants/wallet-activity-type-receive)
-                                    amount-in-value
-                                    amount-out-value)}
+                          :amount (if receiving-activity? amount-in-value amount-out-value)}
       :second-tag-prefix (constants/second-tag-prefix activity-type)
       :second-tag        {:type    :address
-                          :address (if (= activity-type constants/wallet-activity-type-receive)
-                                     recipient
-                                     sender)}
+                          :address (if receiving-activity? recipient sender)}
       :third-tag-prefix  (constants/third-tag-prefix activity-type)
       :third-tag         {:type    :address
-                          :address (if (= activity-type constants/wallet-activity-type-receive)
-                                     sender
-                                     recipient)}
+                          :address (if receiving-activity? sender recipient)}
       :fourth-tag-prefix (constants/fourth-tag-prefix activity-type)
       :fourth-tag        {:size         24
                           :type         :network
