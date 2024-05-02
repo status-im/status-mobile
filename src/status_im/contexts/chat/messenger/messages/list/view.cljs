@@ -220,8 +220,9 @@
      [actions chat-id customization-color]]))
 
 (defn footer-component
-  [{:keys [chat distance-from-list-top theme customization-color]}]
-  (let [{:keys [chat-id chat-name emoji chat-type
+  [{:keys [chat distance-from-list-top customization-color]}]
+  (let [theme                  (quo.theme/use-theme)
+        {:keys [chat-id chat-name emoji chat-type
                 group-chat color description
                 last-message]} chat
         display-name           (cond

@@ -57,9 +57,9 @@
        [rn/view {:style (style/author color)}]]])])
 
 (defn- f-animated-skeleton-view
-  [{:keys [style color skeleton-height animated? translate-x window-width theme] :as data}]
-  (let [loading-color (colors/theme-colors colors/neutral-10 colors/neutral-60 theme)]
-
+  [{:keys [style color skeleton-height animated? translate-x window-width] :as data}]
+  (let [theme         (quo.theme/use-theme)
+        loading-color (colors/theme-colors colors/neutral-10 colors/neutral-60 theme)]
     (rn/use-effect
      (fn []
        (when-not animated?
