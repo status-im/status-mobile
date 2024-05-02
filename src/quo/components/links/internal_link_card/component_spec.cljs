@@ -34,7 +34,8 @@
    :members-count        "20"
    :loading?             false
    :active-members-count "15"
-   :type                 :community})
+   :type                 :community
+   :show-members-count?  true})
 
 (h/describe "Internal link card - Community"
   (h/test "renders with most common props"
