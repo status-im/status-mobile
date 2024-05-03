@@ -1,9 +1,9 @@
 app
+react-native-async-storage_async-storage
 react-native-background-timer
 react-native-blob-util
 react-native-blur
 react-native-camera-kit
-react-native-community_async-storage
 react-native-community_audio-toolkit
 react-native-community_cameraroll
 react-native-community_clipboard

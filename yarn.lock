@@ -1479,9 +1479,9 @@
   dependencies:
     prop-types "^15.5.10"
 
-"@react-native-community/cameraroll@git+https://github.com/status-im/react-native-cameraroll.git#refs/tags/v4.0.4-status.0":
+"@react-native-community/cameraroll@git+https://github.com/status-im/react-native-cameraroll.git#refs/tags/v4.0.4-status.1_1":
   version "4.0.4"
-  resolved "git+https://github.com/status-im/react-native-cameraroll.git#337c5a515e9b0f0728882f73568075553415f523"
+  resolved "git+https://github.com/status-im/react-native-cameraroll.git#64f99f8ede9463754e4c58f418e46a67217dd8c7"
 
 "@react-native-community/cli-debugger-ui@^4.13.1":
   version "4.13.1"
@@ -8081,10 +8081,10 @@ react-native-mail@^6.1.1:
   resolved "https://registry.yarnpkg.com/react-native-mail/-/react-native-mail-6.1.1.tgz#f1b1f8034c84d2510a93e4a2a795f0db5a13595e"
   integrity sha512-pTs180wwyh7hN/iyTC9SfOX579U4YhDlHOLxi47IGvhPJENqO/QFdBq+wWKxyhNqdQuVSy+LoeIxLreWnIeYmg==
 
-react-native-navigation@^7.27.1:
-  version "7.27.1"
-  resolved "https://registry.yarnpkg.com/react-native-navigation/-/react-native-navigation-7.27.1.tgz#90bfac2a400109cc036394b4ee807a997da6a7b4"
-  integrity sha512-rKgIiekZfAMZTF+OhLINJeB81tpqWH+wJDUbJmcF5A/aZj5cmetglWrDiYnX+2eUHOhGBpYk4elCX4zAC84drg==
+react-native-navigation@^7.36.0:
+  version "7.39.2"
+  resolved "https://registry.yarnpkg.com/react-native-navigation/-/react-native-navigation-7.39.2.tgz#bab931e330aa1e5edd9d6fb719397b4de063a733"
+  integrity sha512-hLMWXW3ieC6AJf/0atW6fVMl3w2faiSJQLkpDWEJoojkLPUDgFif3elSP+cSsTd9tUBBkd07ETfi0955VRbsIw==
   dependencies:
     hoist-non-react-statics "3.x.x"
     lodash "4.17.x"
@@ -8160,7 +8160,7 @@ react-native-share@^7.0.1:
   integrity sha512-hq7nOirgih/zIF9UU9FuYKZ3NGvasu2c/eJesvyPKYiykTtgQZM+mvDwFk/ogEsGwRtTPJBtj8/6IyIFcGa7lw==
 
 "react-native-status-keycard@git+https://github.com/status-im/react-native-status-keycard.git#refs/tags/v2.5.39":
-  version "2.5.38"
+  version "2.5.39"
   resolved "git+https://github.com/status-im/react-native-status-keycard.git#93dd64754e676172310e6ea7187cc49f2dc013c6"
 
 react-native-svg@^9.8.4:
@@ -8176,9 +8176,9 @@ react-native-touch-id@^4.4.1:
   resolved "https://registry.yarnpkg.com/react-native-touch-id/-/react-native-touch-id-4.4.1.tgz#8b1bb2d04c30bac36bb9696d2d723e719c4a8b08"
   integrity sha512-1jTl8fC+0fxvqegy/XXTyo6vMvPhjzkoDdaqoYZx0OH8AT250NuXnNPyKktvigIcys3+2acciqOeaCall7lrvg==
 
-"react-native-webview@git+https://github.com/status-im/react-native-webview.git#refs/tags/v11.16.0-status":
+"react-native-webview@git+https://github.com/status-im/react-native-webview.git#refs/tags/android-13-fix_4":
   version "11.16.0"
-  resolved "git+https://github.com/status-im/react-native-webview.git#9d554dd25b33d799c37eb356c0dfa42ca8bd4ff7"
+  resolved "git+https://github.com/status-im/react-native-webview.git#115b82b714d510529a091ad0a215adb27156b6b1"
   dependencies:
     escape-string-regexp "2.0.0"
     invariant "2.2.4"

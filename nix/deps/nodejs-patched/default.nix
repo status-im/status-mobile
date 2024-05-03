@@ -13,6 +13,7 @@ stdenv.mkDerivation {
     "patchHermesPhase"
     "patchJavaPhase"
     "patchYogaNodePackagePhase"
+    "patchReactNavigationPhase"
     "installPhase"
   ];
 
@@ -68,6 +69,14 @@ stdenv.mkDerivation {
         'node->getLayout().hadOverflow() |' \
         'node->getLayout().hadOverflow() ||'
   '';
+
+  # fix for symbol not found ReactFeatureFlags.enableFabricRenderer
+  patchReactNavigationPhase = ''
+    substituteInPlace ./node_modules/react-native-navigation/lib/android/app/src/main/java/com/reactnativenavigation/react/ReactView.java --replace \
+        'setIsFabric(ReactFeatureFlags.enableFabricRenderer);' \
+        'setIsFabric(false);'
+  '';
+
   installPhase = ''
     mkdir -p $out
     cp -R node_modules $out/

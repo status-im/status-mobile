@@ -64,6 +64,21 @@ function gen_deps_json() {
     echo "]" >> ${DEPS_JSON}
 }
 
+# FIXME: Temporary fix for missing packages.
+# https://github.com/status-im/status-mobile/issues/15447
+function add_deps_hack() {
+    echo -n \
+'com.facebook.fresco:imagepipeline-okhttp3:2.0.0
+com.squareup.okhttp3:okhttp-urlconnection:3.12.12
+com.facebook.fbjni:fbjni-java-only:0.0.3
+com.facebook.infer.annotation:infer-annotation:0.11.2
+com.facebook.yoga:proguard-annotations:1.14.1
+androidx.appcompat:appcompat:1.0.2
+com.facebook.fresco:fresco:2.0.0' \
+        >> "${DEPS_LIST}"
+}
+
+
 # ------------------------------------------------------------------------------
 echo "Regenerating Nix files..."
 
@@ -83,6 +98,7 @@ fi
 # Run each stage in order
 gen_proj_list
 gen_deps_list
+add_deps_hack
 gen_deps_urls
 gen_deps_json
 
