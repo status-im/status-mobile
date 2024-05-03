@@ -11,7 +11,7 @@
 
 (defn- extract-address
   [scanned-text]
-  (first (re-seq constants/regx-address-contains scanned-text)))
+  (first (re-seq constants/regx-multichain-address scanned-text)))
 
 (defn view
   []
