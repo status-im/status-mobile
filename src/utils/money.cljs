@@ -37,6 +37,11 @@
       (new BigNumber (normalize (str n)))
       (catch :default _ nil))))
 
+(defn bignumber?
+  "Check if the value is a bignumber."
+  [x]
+  (instance? BigNumber x))
+
 (defn greater-than-or-equals
   [^js bn1 ^js bn2]
   (.greaterThanOrEqualTo bn1 bn2))

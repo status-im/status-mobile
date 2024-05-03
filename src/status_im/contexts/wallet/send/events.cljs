@@ -31,8 +31,13 @@
            token                         (get-in db [:wallet :ui :send :token])
            collectible                   (get-in db [:wallet :ui :send :collectible])
            token-display-name            (get-in db [:wallet :ui :send :token-display-name])
+           receiver-networks             (get-in db [:wallet :ui :send :receiver-networks])
+           receiver-network-values       (get-in db [:wallet :ui :send :receiver-network-values])
+           sender-network-values         (get-in db [:wallet :ui :send :sender-network-values])
+           disabled-from-chain-ids       (or (get-in db [:wallet :ui :send :disabled-from-chain-ids]) [])
            token-decimals                (if collectible 0 (:decimals token))
            native-token?                 (and token (= token-display-name "ETH"))
+           routes-available?             (pos? (count chosen-route))
            from-network-amounts-by-chain (send-utils/network-amounts-by-chain {:route chosen-route
                                                                                :token-decimals
                                                                                token-decimals
@@ -46,19 +51,54 @@
                                                                                :native-token?
                                                                                native-token?
                                                                                :to? true})
-           to-network-values-for-ui      (send-utils/network-values-for-ui to-network-amounts-by-chain)]
+           to-network-values-for-ui      (send-utils/network-values-for-ui to-network-amounts-by-chain)
+           sender-network-values         (if routes-available?
+                                           (send-utils/network-amounts from-network-values-for-ui
+                                                                       disabled-from-chain-ids
+                                                                       receiver-networks
+                                                                       false)
+                                           (send-utils/reset-network-amounts-to-zero
+                                            sender-network-values))
+           receiver-network-values       (if routes-available?
+                                           (send-utils/network-amounts to-network-values-for-ui
+                                                                       disabled-from-chain-ids
+                                                                       receiver-networks
+                                                                       true)
+                                           (send-utils/reset-network-amounts-to-zero
+                                            receiver-network-values))
+           network-links                 (when routes-available?
+                                           (send-utils/network-links chosen-route
+                                                                     sender-network-values
+                                                                     receiver-network-values))]
        {:db (-> db
                 (assoc-in [:wallet :ui :send :suggested-routes] suggested-routes-data)
                 (assoc-in [:wallet :ui :send :route] chosen-route)
                 (assoc-in [:wallet :ui :send :from-values-by-chain] from-network-values-for-ui)
                 (assoc-in [:wallet :ui :send :to-values-by-chain] to-network-values-for-ui)
+                (assoc-in [:wallet :ui :send :sender-network-values] sender-network-values)
+                (assoc-in [:wallet :ui :send :receiver-network-values] receiver-network-values)
+                (assoc-in [:wallet :ui :send :network-links] network-links)
                 (assoc-in [:wallet :ui :send :loading-suggested-routes?] false))}))))
 
 (rf/reg-event-fx :wallet/suggested-routes-error
- (fn [{:keys [db]} [_error]]
-   {:db (-> db
-            (update-in [:wallet :ui :send] dissoc :suggested-routes :route)
-            (assoc-in [:wallet :ui :send :loading-suggested-routes?] false))}))
+ (fn [{:keys [db]} [error]]
+   (let [cleaned-sender-network-values   (-> (get-in db [:wallet :ui :send :sender-network-values])
+                                             (send-utils/reset-network-amounts-to-zero))
+         cleaned-receiver-network-values (-> (get-in db [:wallet :ui :send :receiver-network-values])
+                                             (send-utils/reset-network-amounts-to-zero))]
+     {:db (-> db
+              (update-in [:wallet :ui :send]
+                         dissoc
+                         :route)
+              (assoc-in [:wallet :ui :send :sender-network-values] cleaned-sender-network-values)
+              (assoc-in [:wallet :ui :send :receiver-network-values] cleaned-receiver-network-values)
+              (assoc-in [:wallet :ui :send :loading-suggested-routes?] false)
+              (assoc-in [:wallet :ui :send :suggested-routes] {:best []}))
+      :fx [[:dispatch
+            [:toasts/upsert
+             {:id   :send-transaction-error
+              :type :negative
+              :text (:message error)}]]]})))
 
 (rf/reg-event-fx :wallet/clean-suggested-routes
  (fn [{:keys [db]}]
@@ -69,6 +109,9 @@
                    :route
                    :from-values-by-chain
                    :to-values-by-chain
+                   :sender-network-values
+                   :receiver-network-values
+                   :network-links
                    :loading-suggested-routes?
                    :suggested-routes-call-timestamp)}))
 
@@ -203,56 +246,74 @@
 
 (rf/reg-event-fx :wallet/get-suggested-routes
  (fn [{:keys [db now]} [{:keys [amount]}]]
-   (let [wallet-address          (get-in db [:wallet :current-viewing-account-address])
-         token                   (get-in db [:wallet :ui :send :token])
-         transaction-type        (get-in db [:wallet :ui :send :tx-type])
-         collectible             (get-in db [:wallet :ui :send :collectible])
-         to-address              (get-in db [:wallet :ui :send :to-address])
-         receiver-networks       (get-in db [:wallet :ui :send :receiver-networks])
+   (let [wallet-address (get-in db [:wallet :current-viewing-account-address])
+         token (get-in db [:wallet :ui :send :token])
+         transaction-type (get-in db [:wallet :ui :send :tx-type])
+         collectible (get-in db [:wallet :ui :send :collectible])
+         to-address (get-in db [:wallet :ui :send :to-address])
+         receiver-networks (get-in db [:wallet :ui :send :receiver-networks])
          disabled-from-chain-ids (or (get-in db [:wallet :ui :send :disabled-from-chain-ids]) [])
-         test-networks-enabled?  (get-in db [:profile/profile :test-networks-enabled?])
-         networks                ((if test-networks-enabled? :test :prod)
-                                  (get-in db [:wallet :networks]))
-         network-chain-ids       (map :chain-id networks)
-         bridge-to-chain-id      (get-in db [:wallet :ui :send :bridge-to-chain-id])
-         token-decimal           (when token (:decimals token))
-         token-id                (if token
-                                   (:symbol token)
-                                   (str (get-in collectible [:id :contract-id :address])
-                                        ":"
-                                        (get-in collectible [:id :token-id])))
-         to-token-id             ""
-         network-preferences     (if token [] [(get-in collectible [:id :contract-id :chain-id])])
-         gas-rates               constants/gas-rate-medium
-         amount-in               (send-utils/amount-in-hex amount (if token token-decimal 0))
-         from-address            wallet-address
+         test-networks-enabled? (get-in db [:profile/profile :test-networks-enabled?])
+         networks ((if test-networks-enabled? :test :prod)
+                   (get-in db [:wallet :networks]))
+         network-chain-ids (map :chain-id networks)
+         bridge-to-chain-id (get-in db [:wallet :ui :send :bridge-to-chain-id])
+         token-decimal (when token (:decimals token))
+         token-id (utils/format-token-id token collectible)
+         to-token-id ""
+         network-preferences (if token [] [(get-in collectible [:id :contract-id :chain-id])])
+         gas-rates constants/gas-rate-medium
+         amount-in (send-utils/amount-in-hex amount (if token token-decimal 0))
+         from-address wallet-address
          disabled-from-chain-ids disabled-from-chain-ids
-         disabled-to-chain-ids   (if (= transaction-type :bridge)
-                                   (filter #(not= % bridge-to-chain-id) network-chain-ids)
-                                   (filter (fn [chain-id]
-                                             (not (some #(= chain-id %)
-                                                        receiver-networks)))
-                                           network-chain-ids))
-         from-locked-amount      {}
-         transaction-type-param  (case transaction-type
-                                   :collectible constants/send-type-erc-721-transfer
-                                   :bridge      constants/send-type-bridge
-                                   constants/send-type-transfer)
-         request-params          [transaction-type-param
-                                  from-address
-                                  to-address
-                                  amount-in
-                                  token-id
-                                  to-token-id
+         disabled-to-chain-ids (if (= transaction-type :bridge)
+                                 (filter #(not= % bridge-to-chain-id) network-chain-ids)
+                                 (filter (fn [chain-id]
+                                           (not (some #(= chain-id %)
+                                                      receiver-networks)))
+                                         network-chain-ids))
+         from-locked-amount {}
+         transaction-type-param (case transaction-type
+                                  :collectible constants/send-type-erc-721-transfer
+                                  :bridge      constants/send-type-bridge
+                                  constants/send-type-transfer)
+         balances-per-chain (when token (:balances-per-chain token))
+         token-available-networks-for-suggested-routes
+         (when token
+           (send-utils/token-available-networks-for-suggested-routes {:balances-per-chain
+                                                                      balances-per-chain
+                                                                      :disabled-chain-ids
+                                                                      disabled-from-chain-ids}))
+         sender-network-values (when token-available-networks-for-suggested-routes
+                                 (send-utils/loading-network-amounts
+                                  token-available-networks-for-suggested-routes
                                   disabled-from-chain-ids
-                                  disabled-to-chain-ids
-                                  network-preferences
-                                  gas-rates
-                                  from-locked-amount]]
+                                  receiver-networks
+                                  false))
+         receiver-network-values (when token-available-networks-for-suggested-routes
+                                   (send-utils/loading-network-amounts
+                                    token-available-networks-for-suggested-routes
+                                    disabled-from-chain-ids
+                                    receiver-networks
+                                    true))
+         request-params [transaction-type-param
+                         from-address
+                         to-address
+                         amount-in
+                         token-id
+                         to-token-id
+                         disabled-from-chain-ids
+                         disabled-to-chain-ids
+                         network-preferences
+                         gas-rates
+                         from-locked-amount]]
      {:db            (-> db
                          (assoc-in [:wallet :ui :send :amount] amount)
                          (assoc-in [:wallet :ui :send :loading-suggested-routes?] true)
-                         (assoc-in [:wallet :ui :send :suggested-routes-call-timestamp] now))
+                         (assoc-in [:wallet :ui :send :sender-network-values] sender-network-values)
+                         (assoc-in [:wallet :ui :send :receiver-network-values] receiver-network-values)
+                         (assoc-in [:wallet :ui :send :suggested-routes-call-timestamp] now)
+                         (update-in [:wallet :ui :send] dissoc :network-links))
       :json-rpc/call [{:method     "wallet_getSuggestedRoutes"
                        :params     request-params
                        :on-success (fn [suggested-routes]

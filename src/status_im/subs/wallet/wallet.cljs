@@ -122,6 +122,21 @@
  :-> :suggested-routes)
 
 (rf/reg-sub
+ :wallet/wallet-send-sender-network-values
+ :<- [:wallet/wallet-send]
+ :-> :sender-network-values)
+
+(rf/reg-sub
+ :wallet/wallet-send-receiver-network-values
+ :<- [:wallet/wallet-send]
+ :-> :receiver-network-values)
+
+(rf/reg-sub
+ :wallet/wallet-send-network-links
+ :<- [:wallet/wallet-send]
+ :-> :network-links)
+
+(rf/reg-sub
  :wallet/keypairs
  :<- [:wallet]
  :-> :keypairs)
