@@ -39,18 +39,20 @@
 
 (defn- action-token-requirements
   []
-  {:icon                :i/token
-   :right-icon          :i/chevron-right
-   :accessibility-label :chat-view-token-requirements
-   :on-press            not-implemented/alert
-   :label               (i18n/label :t/view-token-gating)})
+  (when config/show-not-implemented-features?
+    {:icon                :i/token
+     :right-icon          :i/chevron-right
+     :accessibility-label :chat-view-token-requirements
+     :on-press            not-implemented/alert
+     :label               (i18n/label :t/view-token-gating)}))
 
 (defn- action-mark-as-read
   []
-  {:icon                :i/mark-as-read
-   :accessibility-label :chat-mark-as-read
-   :on-press            not-implemented/alert
-   :label               (i18n/label :t/mark-as-read)})
+  (when config/show-not-implemented-features?
+    {:icon                :i/mark-as-read
+     :accessibility-label :chat-mark-as-read
+     :on-press            not-implemented/alert
+     :label               (i18n/label :t/mark-as-read)}))
 
 (defn- action-toggle-muted
   [id muted? muted-till chat-type]
@@ -71,12 +73,13 @@
 
 (defn- action-notification-settings
   []
-  {:icon                :i/notifications
-   :right-icon          :i/chevron-right
-   :accessibility-label :chat-notification-settings
-   :on-press            not-implemented/alert
-   :label               (i18n/label :t/notification-settings)
-   :sub-label           (i18n/label :t/only-mentions)})
+  (when config/show-not-implemented-features?
+    {:icon                :i/notifications
+     :right-icon          :i/chevron-right
+     :accessibility-label :chat-notification-settings
+     :on-press            not-implemented/alert
+     :label               (i18n/label :t/notification-settings)
+     :sub-label           (i18n/label :t/only-mentions)}))
 
 (defn- action-pinned-messages
   [chat-id]
@@ -91,10 +94,11 @@
 
 (defn- action-invite-people
   []
-  {:icon                :i/add-user
-   :accessibility-label :chat-invite-people
-   :on-press            not-implemented/alert
-   :label               (i18n/label :t/invite-people-from-contacts)})
+  (when config/show-not-implemented-features?
+    {:icon                :i/add-user
+     :accessibility-label :chat-invite-people
+     :on-press            not-implemented/alert
+     :label               (i18n/label :t/invite-people-from-contacts)}))
 
 (defn- action-qr-code
   [chat-id]
