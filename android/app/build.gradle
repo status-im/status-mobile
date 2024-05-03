@@ -145,6 +145,14 @@ android {
         jvmTarget = JavaVersion.VERSION_17
     }
 
+    // https://developer.android.com/studio/projects/install-ndk#vanilla_cmake
+    externalNativeBuild {
+        cmake {
+            // This version must match cmakeVersions inside nix/pkgs/android-sdk/compose.nix
+            version "3.22.1"
+        }
+    }
+
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_17
         targetCompatibility JavaVersion.VERSION_17
