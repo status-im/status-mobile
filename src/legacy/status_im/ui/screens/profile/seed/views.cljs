@@ -12,8 +12,10 @@
     [legacy.status-im.ui.screens.profile.seed.styles :as styles]
     [legacy.status-im.utils.utils :as utils]
     [re-frame.core :as re-frame]
+    [react-native.core :as rn]
     [reagent.core :as reagent]
-    [utils.i18n :as i18n]))
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]))
 
 (def steps-numbers
   {:intro       1
@@ -153,11 +155,11 @@
     [quo/button {:on-press #(re-frame/dispatch [:navigate-back])}
      (i18n/label :t/ok-got-it)]]])
 
-(defview backup-seed
+(defn backup-seed
   []
-  (letsubs [current-multiaccount                             [:profile/profile]
-            {:keys [step first-word second-word error word]} [:my-profile/recovery]]
-    [react/keyboard-avoiding-view
+  (let [current-multiaccount                             (rf/sub [:profile/profile])
+        {:keys [step first-word second-word error word]} (rf/sub [:my-profile/recovery])]
+    [rn/keyboard-avoiding-view
      {:style         {:flex 1}
       :ignore-offset true}
      [topbar/topbar
