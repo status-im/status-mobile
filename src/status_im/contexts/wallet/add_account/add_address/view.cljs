@@ -155,8 +155,7 @@
                     (i18n/label :t/continue)]}
           [quo/page-top
            {:container-style  style/header-container
-            :title            (when title
-                                (i18n/label title))
+            :title            (i18n/label title)
             :description      :text
             :description-text (when description
                                 (i18n/label description))}]

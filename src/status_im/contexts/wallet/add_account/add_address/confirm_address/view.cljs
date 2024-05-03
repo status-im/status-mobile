@@ -57,8 +57,7 @@
          {:keys [placeholder
                  address-type
                  button-label]} :confirm-screen-props} (rf/sub [:wallet/currently-added-address])
-        placeholder                                    (when placeholder
-                                                         (i18n/label placeholder))
+        placeholder                                    (i18n/label placeholder)
         [account-name on-change-name]                  (rn/use-state "")
         [account-color on-change-color]                (rn/use-state (rand-nth colors/account-colors))
         [account-emoji on-change-emoji]                (rn/use-state (emoji-picker.utils/random-emoji))]
@@ -77,7 +76,7 @@
         :on-change-emoji     on-change-emoji
         :watch-only?         true
         :top-left-icon       :i/arrow-left
-        :bottom-action-label (or button-label :t/account-created)
+        :bottom-action-label button-label
         :bottom-action-props {:customization-color account-color
                               :disabled?           (string/blank? account-name)
                               :accessibility-label :confirm-button-label
@@ -94,8 +93,7 @@
          :right-icon      :i/advanced
          :icon-right?     true
          :emoji           account-emoji
-         :title           (when address-type
-                            (i18n/label address-type))
+         :title           (i18n/label address-type)
          :subtitle        address
          :status          :default
          :size            :default
