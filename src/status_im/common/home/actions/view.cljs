@@ -466,8 +466,7 @@
     [quo/action-drawer
      [[(view-profile-entry public-key)
        (when-not (= current-pub-key public-key)
-         (when config/show-not-implemented-features?
-           (rename-entry)))
+         (edit-nickname-entry public-key))
        (when config/show-not-implemented-features?
          (show-qr-entry))
        (when config/show-not-implemented-features?
