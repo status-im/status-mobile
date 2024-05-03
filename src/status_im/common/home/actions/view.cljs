@@ -277,23 +277,29 @@
           :sub-label           nil
           :chevron?            false}))
 
-;; TODO(OmarBasem): Requires design input.
 (defn show-qr-entry
-  []
+  [public-key]
   (entry {:icon                :i/qr-code
           :label               (i18n/label :t/show-qr)
-          :on-press            #(js/alert "TODO: to be implemented, requires design input")
+          :on-press            (fn []
+                                 (rf/dispatch [:universal-links/generate-profile-url
+                                               {:public-key public-key
+                                                :on-success #(rf/dispatch [:open-modal
+                                                                           :share-contact])}]))
           :danger?             false
           :accessibility-label :show-qr-code
           :sub-label           nil
           :chevron?            false}))
 
-;; TODO(OmarBasem): to be implemented.
 (defn share-profile-entry
-  []
+  [public-key]
   (entry {:icon                :i/share
           :label               (i18n/label :t/share-profile)
-          :on-press            #(js/alert "TODO: to be implemented")
+          :on-press            (fn []
+                                 (rf/dispatch [:universal-links/generate-profile-url
+                                               {:public-key public-key
+                                                :on-success #(rf/dispatch [:open-share
+                                                                           {:options {:message %}}])}]))
           :danger?             false
           :accessibility-label :share-profile
           :sub-label           nil
@@ -421,9 +427,6 @@
      (chat-actions/fetch-messages chat-id))
    (when public?
      (when config/show-not-implemented-features?
-       (show-qr-entry)))
-   (when public?
-     (when config/show-not-implemented-features?
        (share-group-entry)))])
 
 (defn group-actions
@@ -467,10 +470,8 @@
      [[(view-profile-entry public-key)
        (when-not (= current-pub-key public-key)
          (edit-nickname-entry public-key))
-       (when config/show-not-implemented-features?
-         (show-qr-entry))
-       (when config/show-not-implemented-features?
-         (share-profile-entry))]
+       (show-qr-entry public-key)
+       (share-profile-entry public-key)]
       [(when-not (= current-pub-key public-key)
          (when config/show-not-implemented-features?
            (mark-untrustworthy-entry)))
