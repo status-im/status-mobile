@@ -60,7 +60,10 @@
     (conj
      acc
      [rn/view
-      {:style {:background-color colors/primary-50-opa-10 :border-radius 6 :padding-horizontal 3}}
+      {:style {:background-color   colors/primary-50-opa-10
+               :border-radius      6
+               :padding-horizontal 3
+               :margin-top         -3}}
       [rn/text
        {:style    (merge {:color (if (system-text? content-type) quo.colors/black colors/primary-50)}
                          (if (system-text? content-type) typography/font-regular typography/font-medium))
