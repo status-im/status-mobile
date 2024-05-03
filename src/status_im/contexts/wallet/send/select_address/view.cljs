@@ -24,6 +24,16 @@
      {:id :tab/contacts :label (i18n/label :t/contacts) :accessibility-label :contacts-tab})
    {:id :tab/my-accounts :label (i18n/label :t/my-accounts) :accessibility-label :my-accounts-tab}])
 
+(defn- validate-address
+  [address]
+  (debounce/debounce-and-dispatch
+   (if (and (> (count address) 0)
+            (not (or (validation/ens-name? address)
+                     (validation/eth-address? address))))
+     [:wallet/address-validation-failed address]
+     [:wallet/address-validation-success address])
+   300))
+
 (defn- address-input
   [input-value input-focused?]
   (fn []
@@ -33,15 +43,7 @@
           recipient                (rf/sub [:wallet/wallet-send-recipient])
           recipient-plain-address? (= send-address recipient)
           valid-ens-or-address?    (rf/sub [:wallet/valid-ens-or-address?])
-          contacts                 (rf/sub [:contacts/active])
-          validate-address         (fn [address]
-                                     (debounce/debounce-and-dispatch
-                                      (if (and (> (count address) 0)
-                                               (not (or (validation/ens-name? address)
-                                                        (validation/eth-address? address))))
-                                        [:wallet/address-validation-failed address]
-                                        [:wallet/address-validation-success address])
-                                      300))]
+          contacts                 (rf/sub [:contacts/active])]
       [quo/address-input
        {:on-focus              #(reset! input-focused? true)
         :on-blur               #(reset! input-focused? false)
