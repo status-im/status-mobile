@@ -50,7 +50,6 @@
         profile             (rf/sub [:profile/profile])
         full-name           (profile.utils/displayed-name profile)
         on-scroll           (rn/use-callback #(scroll-handler % scroll-y))]
-    (println "PROFILE" (:mnemonic profile))
     [quo/overlay {:type :shell}
      [rn/view
       {:key   :header
