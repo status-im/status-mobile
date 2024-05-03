@@ -54,10 +54,11 @@
            :size             32
            :default-active   @selected-tab
            :data             (tabs-data watch-only?)
-           :on-change        (fn [tab]
-                               (when (and (= :activity tab) (ff/enabled? :FLAG_WALLET_ACTIVITY_ENABLED))
-                                 (rf/dispatch [:wallet/fetch-activities]))
-                               (reset! selected-tab tab))
+           :on-change        (rn/use-callback (fn [tab]
+                                                (when (and (= :activity tab)
+                                                           (ff/enabled? :FLAG_WALLET_ACTIVITY_ENABLED))
+                                                  (rf/dispatch [:wallet/fetch-activities]))
+                                                (reset! selected-tab tab)))
            :scrollable?      true
            :scroll-on-press? true}]
          [tabs/view {:selected-tab @selected-tab}]
