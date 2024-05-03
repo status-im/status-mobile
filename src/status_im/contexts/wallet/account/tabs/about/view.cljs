@@ -5,6 +5,7 @@
     [react-native.core :as rn]
     [status-im.config :as config]
     [status-im.contexts.profile.utils :as profile.utils]
+    [status-im.contexts.shell.jump-to.constants :as constants]
     [status-im.contexts.wallet.account.tabs.about.style :as style]
     [status-im.contexts.wallet.common.utils :as utils]
     [utils.i18n :as i18n]
@@ -72,7 +73,7 @@
         networks                                  (rf/sub [:wallet/network-preference-details])]
     [rn/scroll-view
      {:style                   style/about-tab
-      :content-container-style {:padding-bottom 20}}
+      :content-container-style {:padding-bottom (+ constants/floating-shell-button-height 8)}}
      [quo/data-item
       {:description     :default
        :icon-right?     true

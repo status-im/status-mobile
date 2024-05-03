@@ -19,7 +19,8 @@
     ::wallet.assets-modal-hide           (enabled-in-env? :FLAG_ASSETS_MODAL_HIDE)
     ::community.edit-account-selection   (enabled-in-env? :FLAG_EDIT_ACCOUNT_SELECTION_ENABLED)
     ::wallet.contacts                    (enabled-in-env? :FLAG_CONTACTS_ENABLED)
-    ::wallet.wallet-connect              (enabled-in-env? :FLAG_WALLET_CONNECT_ENABLED)}))
+    ::wallet.wallet-connect              (enabled-in-env? :FLAG_WALLET_CONNECT_ENABLED)
+    ::wallet.activities                  (enabled-in-env? :FLAG_WALLET_ACTIVITY_ENABLED)}))
 
 (defn feature-flags [] @feature-flags-config)
 

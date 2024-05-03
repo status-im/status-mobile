@@ -32,18 +32,17 @@
 (def status-icon
   {:pending   :i/pending-state
    :confirmed :i/positive-state
-   :finalised :i/diamond-blue
+   :finalised :i/diamond
    :failed    :i/negative-state})
 
 (defn transaction-header
   [{:keys [transaction
            timestamp
            counter
-           theme
            blur?]
     :or   {transaction :receive
-           counter     1}}]
-
+           counter     1}}
+   theme]
   [rn/view
    {:style style/transaction-header-container}
    [text/text
@@ -66,9 +65,10 @@
      timestamp]]])
 
 (defn transaction-icon-view
-  [{:keys [theme blur? transaction status]
+  [{:keys [blur? transaction status]
     :or   {transaction :receive
-           status      :pending}}]
+           status      :pending}}
+   theme]
   [rn/view {:style style/icon-container}
    [hole-view/hole-view
     {:style (style/icon-hole-view theme blur?)
@@ -118,10 +118,10 @@
       :on-press-out        on-press-out}
      [rn/view
       {:style {:flex-direction :row}}
-      [transaction-icon-view props]
+      [transaction-icon-view props theme]
       [rn/view
        {:style style/content-container}
-       [transaction-header props]
+       [transaction-header props theme]
        [rn/view {:style style/content-line}
         (when first-tag [prop-tag first-tag blur?])
         (when second-tag-prefix [prop-text second-tag-prefix theme])

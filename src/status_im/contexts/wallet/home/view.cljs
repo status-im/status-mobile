@@ -32,8 +32,7 @@
 
 (def tabs-data
   [{:id :assets :label (i18n/label :t/assets) :accessibility-label :assets-tab}
-   {:id :collectibles :label (i18n/label :t/collectibles) :accessibility-label :collectibles-tab}
-   {:id :activity :label (i18n/label :t/activity) :accessibility-label :activity-tab}])
+   {:id :collectibles :label (i18n/label :t/collectibles) :accessibility-label :collectibles-tab}])
 
 (defn view
   []
@@ -76,5 +75,8 @@
        :size           32
        :default-active selected-tab
        :data           tabs-data
-       :on-change      #(set-selected-tab %)}]
+       :on-change      (fn [tab]
+                         (when (= :activity tab)
+                           (rf/dispatch [:wallet/fetch-activities]))
+                         (set-selected-tab tab))}]
      [tabs/view {:selected-tab selected-tab}]]))

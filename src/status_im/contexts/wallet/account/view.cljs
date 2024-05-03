@@ -7,6 +7,7 @@
     [status-im.contexts.wallet.account.tabs.view :as tabs]
     [status-im.contexts.wallet.common.account-switcher.view :as account-switcher]
     [status-im.contexts.wallet.sheets.buy-token.view :as buy-token]
+    [status-im.feature-flags :as ff]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
@@ -53,7 +54,11 @@
            :size             32
            :default-active   @selected-tab
            :data             (tabs-data watch-only?)
-           :on-change        #(reset! selected-tab %)
+           :on-change        (rn/use-callback (fn [tab]
+                                                (when (and (= :activity tab)
+                                                           (ff/enabled? :FLAG_WALLET_ACTIVITY_ENABLED))
+                                                  (rf/dispatch [:wallet/fetch-activities]))
+                                                (reset! selected-tab tab)))
            :scrollable?      true
            :scroll-on-press? true}]
          [tabs/view {:selected-tab @selected-tab}]
