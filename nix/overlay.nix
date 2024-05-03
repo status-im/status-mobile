@@ -37,6 +37,7 @@ in {
   nodejs = super.pkgs.nodejs-18_x;
   yarn = super.yarn.override { nodejs = super.nodejs-18_x; };
   openjdk = super.pkgs.openjdk8_headless;
+  ruby = super.ruby_3_1;
   xcodeWrapper = callPackage ./pkgs/xcodeenv/compose-xcodewrapper.nix { } {
     version = "13.3";
     allowHigher = true;
