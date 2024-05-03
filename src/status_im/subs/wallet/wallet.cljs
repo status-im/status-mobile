@@ -427,3 +427,9 @@
     {:tokens          tokens
      :currency        currency
      :currency-symbol currency-symbol})))
+
+(rf/reg-sub
+ :wallet/currently-added-address
+ :<- [:wallet]
+ (fn [{:keys [ui]}]
+   (get ui :currently-added-address)))

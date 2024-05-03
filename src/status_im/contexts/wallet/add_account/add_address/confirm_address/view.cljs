@@ -16,7 +16,7 @@
 (def ^:const sheet-closing-delay 750)
 
 (defn- on-press-confirm-address
-  [{:keys [adding-address-purpose account-name account-emoji account-color address ens?]}]
+  [{:keys [adding-address-purpose account-name account-emoji account-color address ens? theme]}]
   (condp = adding-address-purpose
     :watch (rf/dispatch [:wallet/add-account
                          {:sha3-pwd     nil
@@ -40,7 +40,7 @@
                                      (debounce/debounce-and-dispatch
                                       [:toasts/upsert
                                        {:type  :positive
-                                        :theme (quo.theme/use-theme)
+                                        :theme theme
                                         :text  (i18n/label
                                                 :t/address-saved)}]
                                       sheet-closing-delay))}])))
@@ -51,12 +51,14 @@
 
 (defn view
   []
-  (let [{:keys                  [adding-address-purpose
+  (let [theme                                          (quo.theme/use-theme)
+        {:keys                  [adding-address-purpose
                                  ens? address]
          {:keys [placeholder
                  address-type
-                 button-label]} :confirm-screen-props} (rf/sub [:get-screen-params])
-        placeholder                                    (i18n/label placeholder)
+                 button-label]} :confirm-screen-props} (rf/sub [:wallet/currently-added-address])
+        placeholder                                    (when placeholder
+                                                         (i18n/label placeholder))
         [account-name on-change-name]                  (rn/use-state "")
         [account-color on-change-color]                (rn/use-state (rand-nth colors/account-colors))
         [account-emoji on-change-emoji]                (rn/use-state (emoji-picker.utils/random-emoji))]
@@ -75,7 +77,7 @@
         :on-change-emoji     on-change-emoji
         :watch-only?         true
         :top-left-icon       :i/arrow-left
-        :bottom-action-label button-label
+        :bottom-action-label (or button-label :t/account-created)
         :bottom-action-props {:customization-color account-color
                               :disabled?           (string/blank? account-name)
                               :accessibility-label :confirm-button-label
@@ -85,13 +87,15 @@
                                                       :account-name           account-name
                                                       :account-emoji          account-emoji
                                                       :account-color          account-color
-                                                      :address                address})}}
+                                                      :address                address
+                                                      :theme                  theme})}}
        [quo/data-item
         {:card?           true
          :right-icon      :i/advanced
          :icon-right?     true
          :emoji           account-emoji
-         :title           (i18n/label address-type)
+         :title           (when address-type
+                            (i18n/label address-type))
          :subtitle        address
          :status          :default
          :size            :default

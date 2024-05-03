@@ -12,7 +12,7 @@
                                                 :title :t/add-address-to-watch
                                                 :description :t/enter-eth
                                                 :input-title :t/eth-or-ens
-                                                :confirm-screen :screen/wallet.confirm-address-to-save
+                                                :confirm-screen :screen/wallet.confirm-address
                                                 :confirm-screen-props
                                                 {:button-label :t/add-watched-address
                                                  :address-type :t/watched-address

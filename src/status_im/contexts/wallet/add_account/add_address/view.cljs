@@ -6,28 +6,24 @@
     [react-native.core :as rn]
     [reagent.core :as reagent]
     [status-im.common.floating-button-page.view :as floating-button-page]
-    [status-im.constants :as constants]
     [status-im.contexts.wallet.add-account.add-address.style :as style]
     [status-im.contexts.wallet.common.validation :as validation]
     [status-im.subs.wallet.add-account.address-to-watch]
     [utils.debounce :as debounce]
+    [utils.ens.core :as utils.ens]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
 (defn- validate-address
   [known-addresses user-input purpose]
   (cond
-    (or (nil? user-input) (= user-input ""))     nil
+    (or (nil? user-input) (= user-input ""))       nil
     ;; Allow adding existing address if saving, As it'll upsert
     (and (not= purpose :save)
-         (contains? known-addresses user-input)) (i18n/label :t/address-already-in-use)
+         (some #(= % user-input) known-addresses)) (i18n/label :t/address-already-in-use)
     (not
      (or (validation/eth-address? user-input)
-         (validation/ens-name? user-input)))     (i18n/label :t/invalid-address)))
-
-(defn- extract-address
-  [scanned-text]
-  (re-find constants/regx-address-contains scanned-text))
+         (validation/ens-name? user-input)))       (i18n/label :t/invalid-address)))
 
 (defn- address-input
   [{:keys [input-value validate clear-input set-validation-message set-input-value input-title
@@ -115,10 +111,9 @@
 (defn view
   []
   (let [addresses (rf/sub [:wallet/lowercased-addresses])
-        {:keys [title description input-title adding-address-purpose confirm-screen-props
-                confirm-screen]}
-        (rf/sub [:get-screen-params])
-        validate #(validate-address addresses % adding-address-purpose)
+        {:keys [title description input-title adding-address-purpose]}
+        (rf/sub [:wallet/currently-added-address])
+        validate #(validate-address addresses (string/lower-case %) adding-address-purpose)
         customization-color (rf/sub [:profile/customization-color])]
     (rf/dispatch [:wallet/clean-scanned-address])
     (rf/dispatch [:wallet/clear-address-activity])
@@ -152,26 +147,19 @@
                                               (not validated-address))
                      :on-press            (fn []
                                             (rf/dispatch
-                                             [:open-modal
-                                              confirm-screen
-                                              {:address                (extract-address
-                                                                        validated-address)
-                                               :confirm-screen-props   confirm-screen-props
-                                               :confirm-screen         :screen/wallet.confirm-address
-                                               :adding-address-purpose adding-address-purpose
-                                               :ens?                   (and
-                                                                        (not (validation/eth-address?
-                                                                              validated-address))
-                                                                        (validation/ens-name?
-                                                                         validated-address))}])
+                                             [:wallet/confirm-add-address
+                                              {:address input-value
+                                               :ens?    (utils.ens/is-valid-eth-name? input-value)}])
                                             (clear-input))
                      :container-style     {:z-index 2}}
                     (i18n/label :t/continue)]}
           [quo/page-top
            {:container-style  style/header-container
-            :title            (i18n/label title)
+            :title            (when title
+                                (i18n/label title))
             :description      :text
-            :description-text (i18n/label description)}]
+            :description-text (when description
+                                (i18n/label description))}]
           [address-input
            {:input-value            input-value
             :validate               validate
@@ -179,7 +167,8 @@
             :clear-input            clear-input
             :set-validation-message set-validation-message
             :set-input-value        set-input-value
-            :input-title            (i18n/label input-title)
+            :input-title            (when input-title
+                                      (i18n/label input-title))
             :adding-address-purpose adding-address-purpose}]
           (if validation-msg
             [quo/info-message

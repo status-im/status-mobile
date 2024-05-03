@@ -25,10 +25,11 @@
       :accessibility-label :add-a-contact
       :label               (i18n/label :t/add-address)
       :sub-label           (i18n/label :t/add-address-description)
-      :on-press            #(rf/dispatch [:navigate-to :screen/wallet.add-address
+      :on-press            #(rf/dispatch [:wallet/add-address
                                           {:title :t/add-address-to-watch
                                            :description :t/enter-eth
                                            :input-title :t/eth-or-ens
+                                           :screen :screen/wallet.add-address
                                            :confirm-screen :screen/wallet.confirm-address
                                            :confirm-screen-props {:button-label :t/add-watched-address
                                                                   :address-type :t/watched-address

@@ -392,10 +392,6 @@
      :options   options/dark-screen
      :component wallet-confirm-address-to-watch/view}
 
-    {:name      :screen/wallet.confirm-address-to-save
-     :options   options/dark-screen
-     :component wallet-confirm-address-to-watch/view}
-
     {:name      :screen/wallet.bridge-select-asset
      :options   {:insets                 {:top? true}
                  :modalPresentationStyle :overCurrentContext}

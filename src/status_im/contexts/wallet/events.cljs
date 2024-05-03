@@ -510,3 +510,18 @@
          activities           (cske/transform-keys transforms/->kebab-case-keyword activities)
          sorted-activities    (sort :timestamp activities)]
      {:db (assoc-in db [:wallet :activities] sorted-activities)})))
+(defn add-address
+  [{:keys [db]} [{:keys [screen adding-address-purpose] :as props}]]
+  (let [navigation-method (if (= adding-address-purpose :watch) :navigate-to :open-modal)]
+    {:fx [[:dispatch [navigation-method screen props]]]
+     :db (assoc-in db [:wallet :ui :currently-added-address] props)}))
+
+(rf/reg-event-fx :wallet/add-address add-address)
+
+(defn confirm-add-address
+  [{:keys [db]} [{:keys [ens? address]}]]
+  (let [confirm-screen (get-in db [:wallet :ui :currently-added-address :confirm-screen])]
+    {:fx [[:dispatch [:open-modal confirm-screen]]]
+     :db (update-in db [:wallet :ui :currently-added-address] assoc :ens ens? :address address)}))
+
+(rf/reg-event-fx :wallet/confirm-add-address confirm-add-address)

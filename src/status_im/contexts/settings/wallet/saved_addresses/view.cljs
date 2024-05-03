@@ -21,11 +21,12 @@
 (defn on-press-add-saved-address
   []
   (when (ff/enabled? ::ff/wallet.enable-saving-addresses)
-    (rf/dispatch [:open-modal :screen/wallet.add-address-to-save
+    (rf/dispatch [:wallet/add-address
                   {:title                  :t/add-address
                    :description            :t/save-address-description
                    :input-title            :t/address-or-ens-name
-                   :confirm-screen         :screen/wallet.confirm-address-to-save
+                   :screen                 :screen/wallet.add-address-to-save
+                   :confirm-screen         :screen/wallet.confirm-address
                    :confirm-screen-props   {:button-label :t/save-address
                                             :address-type :t/address
                                             :placeholder  :t/saved-address}
@@ -37,7 +38,6 @@
         customization-color (rf/sub [:profile/customization-color])
         saved-addresses?    (rf/sub [:wallet/saved-addresses?])
         navigate-back       (rn/use-callback #(rf/dispatch [:navigate-back]))]
-    (rn/use-mount #(rf/dispatch [:wallet/get-saved-addresses]))
     [quo/overlay
      {:type            :shell
       :container-style (style/page-wrapper inset-top)}
