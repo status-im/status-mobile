@@ -16,6 +16,20 @@
 
 (def ^:const sheet-closing-delay 750)
 
+(defn- on-success-confirm-address
+  [theme]
+  (rf/dispatch [:navigate-back])
+  (debounce/debounce-and-dispatch
+   [:navigate-back]
+   sheet-closing-delay)
+  (debounce/debounce-and-dispatch
+   [:toasts/upsert
+    {:type  :positive
+     :theme theme
+     :text  (i18n/label
+             :t/address-saved)}]
+   sheet-closing-delay))
+
 (defn- on-press-confirm-address
   [{:keys [adding-address-purpose account-name account-emoji account-color address ens? theme]}]
   (condp = adding-address-purpose
@@ -33,18 +47,7 @@
                                            :name                account-name
                                            :customization-color account-color
                                            :ens                 (when ens? address)
-                                           :on-success          (fn []
-                                                                  (rf/dispatch [:navigate-back])
-                                                                  (debounce/debounce-and-dispatch
-                                                                   [:navigate-back]
-                                                                   sheet-closing-delay)
-                                                                  (debounce/debounce-and-dispatch
-                                                                   [:toasts/upsert
-                                                                    {:type  :positive
-                                                                     :theme theme
-                                                                     :text  (i18n/label
-                                                                             :t/address-saved)}]
-                                                                   sheet-closing-delay))}])))
+                                           :on-success          #(on-success-confirm-address theme)}])))
 
 (defn to-be-implemented
   []
@@ -58,7 +61,6 @@
          {:keys [placeholder
                  address-type
                  button-label]} :confirm-screen-props} (rf/sub [:wallet/currently-added-address])
-        placeholder                                    (i18n/label placeholder)
         [account-name on-change-name]                  (rn/use-state "")
         [account-color on-change-color]                (rn/use-state (rand-nth colors/account-colors))
         [account-emoji on-change-emoji]                (rn/use-state (emoji-picker.utils/random-emoji))]
@@ -68,7 +70,7 @@
         [quo/drawer-bar]])
      [rn/view {:style (style/container adding-address-purpose)}
       [create-or-edit-account/view
-       {:placeholder         placeholder
+       {:placeholder         (i18n/label placeholder)
         :account-name        account-name
         :account-emoji       account-emoji
         :account-color       account-color
@@ -99,11 +101,12 @@
          :status          :default
          :size            :default
          :subtitle-type   :default
-         :custom-subtitle (fn [] [quo/text
-                                  {:size   :paragraph-2
-                                   ;; TODO: monospace font
-                                   ;; https://github.com/status-im/status-mobile/issues/17009
-                                   :weight :monospace}
-                                  address])
+         :custom-subtitle (fn []
+                            [quo/text
+                             {:size   :paragraph-2
+                              ;; TODO: monospace font
+                              ;; https://github.com/status-im/status-mobile/issues/17009
+                              :weight :monospace}
+                             address])
          :container-style style/data-item
          :on-press        to-be-implemented}]]]]))

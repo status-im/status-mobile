@@ -26,6 +26,17 @@
      (or (validation/eth-address? user-input)
          (validation/ens-name? user-input)))       (i18n/label :t/invalid-address)))
 
+(defn- paste-on-input-fn
+  [on-change-text]
+  (clipboard/get-string
+   (fn [clipboard-text]
+     (on-change-text clipboard-text))))
+
+(defn- on-press-scan-address
+  []
+  (rn/dismiss-keyboard!)
+  (rf/dispatch [:open-modal :screen/wallet.scan-address]))
+
 (defn- address-input
   [{:keys [input-value validate clear-input set-validation-message set-input-value input-title
            accessibility-label]}]
@@ -43,9 +54,7 @@
                           (when (and scanned-address (not= scanned-address new-text))
                             (rf/dispatch [:wallet/clear-address-activity])
                             (rf/dispatch [:wallet/clean-scanned-address])))
-        paste-on-input  #(clipboard/get-string
-                          (fn [clipboard-text]
-                            (on-change-text clipboard-text)))]
+        paste-on-input  #(paste-on-input-fn on-change-text)]
     (rn/use-effect (fn []
                      (when-not (string/blank? scanned-address)
                        (on-change-text scanned-address)))
@@ -68,9 +77,7 @@
        :value               (or scanned-address input-value)}]
      [quo/button
       {:type            :outline
-       :on-press        (fn []
-                          (rn/dismiss-keyboard!)
-                          (rf/dispatch [:open-modal :screen/wallet.scan-address]))
+       :on-press        on-press-scan-address
        :container-style style/scan
        :size            40
        :icon-only?      true}
@@ -107,6 +114,26 @@
               :size  :default)
        (i18n/label message)])))
 
+(defn- on-press-close
+  []
+  (rf/dispatch [:wallet/clean-scanned-address])
+  (rf/dispatch [:wallet/clear-address-activity])
+  (rf/dispatch [:navigate-back]))
+
+(defn- clear-activity-and-scanned-address
+  []
+  (rf/dispatch [:wallet/clear-address-activity])
+  (rf/dispatch [:wallet/clean-scanned-address]))
+
+(defn- on-press-confirm-add-address
+  [input-value adding-address-purpose]
+  (rf/dispatch
+   [:wallet/confirm-add-address
+    {:address                input-value
+     :ens?                   (utils.ens/is-valid-eth-name?
+                              input-value)
+     :adding-address-purpose adding-address-purpose}]))
+
 (defn view
   []
   (let [addresses (rf/sub [:wallet/lowercased-addresses])
@@ -124,8 +151,7 @@
             clear-input                             (fn []
                                                       (set-input-value nil)
                                                       (set-validation-message nil)
-                                                      (rf/dispatch [:wallet/clear-address-activity])
-                                                      (rf/dispatch [:wallet/clean-scanned-address]))]
+                                                      (clear-activity-and-scanned-address))]
         [rn/view
          {:style {:flex 1}}
          (when (= constants/add-address-to-save-type adding-address-purpose)
@@ -134,10 +160,7 @@
           {:header [quo/page-nav
                     {:type      :no-title
                      :icon-name :i/close
-                     :on-press  (fn []
-                                  (rf/dispatch [:wallet/clean-scanned-address])
-                                  (rf/dispatch [:wallet/clear-address-activity])
-                                  (rf/dispatch [:navigate-back]))}]
+                     :on-press  on-press-close}]
            :footer [quo/button
                     {:customization-color customization-color
                      :disabled?           (or (string/blank? input-value)
@@ -146,12 +169,8 @@
                                               (= activity-state :scanning)
                                               (not validated-address))
                      :on-press            (fn []
-                                            (rf/dispatch
-                                             [:wallet/confirm-add-address
-                                              {:address                input-value
-                                               :ens?                   (utils.ens/is-valid-eth-name?
-                                                                        input-value)
-                                               :adding-address-purpose adding-address-purpose}])
+                                            (on-press-confirm-add-address input-value
+                                                                          adding-address-purpose)
                                             (clear-input))
                      :container-style     {:z-index 2}}
                     (i18n/label :t/continue)]}
@@ -159,8 +178,7 @@
            {:container-style  style/header-container
             :title            (i18n/label title)
             :description      :text
-            :description-text (when description
-                                (i18n/label description))}]
+            :description-text (i18n/label description)}]
           [address-input
            {:input-value            input-value
             :validate               validate
@@ -168,8 +186,7 @@
             :clear-input            clear-input
             :set-validation-message set-validation-message
             :set-input-value        set-input-value
-            :input-title            (when input-title
-                                      (i18n/label input-title))
+            :input-title            (i18n/label input-title)
             :adding-address-purpose adding-address-purpose
             :accessibility-label    accessibility-label}]
           (if validation-msg

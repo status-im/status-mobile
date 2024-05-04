@@ -511,10 +511,13 @@
          sorted-activities    (sort :timestamp activities)]
      {:db (assoc-in db [:wallet :activities] sorted-activities)})))
 
+(defn- adding-purpose->navigation-method
+  [purpose]
+  (if (= constants/add-address-to-watch-type purpose) :navigate-to :open-modal))
+
 (defn add-address
   [{:keys [db]} [{:keys [screen adding-address-purpose] :as props}]]
-  (let [navigation-method
-        (if (= adding-address-purpose constants/add-address-to-watch-type) :navigate-to :open-modal)]
+  (let [navigation-method (adding-purpose->navigation-method adding-address-purpose)]
     {:fx [[:dispatch [navigation-method screen props]]]
      :db (assoc-in db [:wallet :ui :currently-added-address] props)}))
 
@@ -522,11 +525,10 @@
 
 (defn confirm-add-address
   [{:keys [db]} [{:keys [ens? address adding-address-purpose]}]]
-  (let [confirm-screen (get-in db [:wallet :ui :currently-added-address :confirm-screen])]
+  (let [confirm-screen    (get-in db [:wallet :ui :currently-added-address :confirm-screen])
+        navigation-method (adding-purpose->navigation-method adding-address-purpose)]
     {:fx [[:dispatch
-           [(if (= constants/add-address-to-watch-type adding-address-purpose)
-              :navigate-to
-              :open-modal) confirm-screen]]]
+           [navigation-method confirm-screen]]]
      :db (update-in db [:wallet :ui :currently-added-address] assoc :ens ens? :address address)}))
 
 (rf/reg-event-fx :wallet/confirm-add-address confirm-add-address)

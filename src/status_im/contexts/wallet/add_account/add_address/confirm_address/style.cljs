@@ -1,9 +1,10 @@
-(ns status-im.contexts.wallet.add-account.add-address.confirm-address.style)
+(ns status-im.contexts.wallet.add-account.add-address.confirm-address.style
+  (:require [status-im.constants :as constants]))
 
 (defn container
   [purpose]
   {:flex       1
-   :margin-top (when (= purpose :save) -39)})
+   :margin-top (when (= purpose constants/add-address-to-save-type) -39)})
 
 (def data-item
   {:margin-horizontal  20

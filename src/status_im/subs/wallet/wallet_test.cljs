@@ -780,17 +780,16 @@
       (is (match? (get result constants/arbitrum-mainnet-chain-id) "$0.00")))))
 
 (def sample-added-address
-  {:address "0xmock-address"
-   :title :t/add-address-to-watch
-   :description :t/enter-eth
-   :ens? false
-   :input-title :t/eth-or-ens
-   :screen :screen/wallet.add-address
-   :confirm-screen :screen/wallet.confirm-address
-   :confirm-screen-props
-   {:button-label :t/add-watched-address
-    :address-type :t/watched-address
-    :placeholder  :t/default-watched-address-placeholder}
+  {:address                "0xmock-address"
+   :title                  :t/add-address-to-watch
+   :description            :t/enter-eth
+   :ens?                   false
+   :input-title            :t/eth-or-ens
+   :screen                 :screen/wallet.add-address
+   :confirm-screen         :screen/wallet.confirm-address
+   :confirm-screen-props   {:button-label :t/add-watched-address
+                            :address-type :t/watched-address
+                            :placeholder  :t/default-watched-address-placeholder}
    :adding-address-purpose :watch})
 
 (h/deftest-sub :wallet/currently-added-address
