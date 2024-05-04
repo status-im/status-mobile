@@ -13,5 +13,5 @@
 
 (def save-address-drawer-bar-container
   {:position :absolute
-   :left     "50%"
-   :right    "50%"})
+   :left     0
+   :right    0})

@@ -26,12 +26,6 @@
      (or (validation/eth-address? user-input)
          (validation/ens-name? user-input)))       (i18n/label :t/invalid-address)))
 
-(defn- paste-on-input-fn
-  [on-change-text]
-  (clipboard/get-string
-   (fn [clipboard-text]
-     (on-change-text clipboard-text))))
-
 (defn- on-press-scan-address
   []
   (rn/dismiss-keyboard!)
@@ -54,7 +48,9 @@
                           (when (and scanned-address (not= scanned-address new-text))
                             (rf/dispatch [:wallet/clear-address-activity])
                             (rf/dispatch [:wallet/clean-scanned-address])))
-        paste-on-input  #(paste-on-input-fn on-change-text)]
+        paste-on-input  #(clipboard/get-string
+                          (fn [clipboard-text]
+                            (on-change-text clipboard-text)))]
     (rn/use-effect (fn []
                      (when-not (string/blank? scanned-address)
                        (on-change-text scanned-address)))
@@ -83,7 +79,7 @@
        :icon-only?      true}
       :i/scan]]))
 
-(defn activity-indicator
+(defn- activity-indicator
   [activity-state]
   (let [{:keys [message]
          :as   props} (case activity-state
@@ -134,12 +130,16 @@
                               input-value)
      :adding-address-purpose adding-address-purpose}]))
 
+(defn- validate-fn
+  [entered-address addresses adding-address-purpose]
+  (validate-address addresses (string/lower-case entered-address) adding-address-purpose))
+
 (defn view
   []
   (let [addresses (rf/sub [:wallet/lowercased-addresses])
         {:keys [title description input-title adding-address-purpose accessibility-label]}
         (rf/sub [:wallet/currently-added-address])
-        validate #(validate-address addresses (string/lower-case %) adding-address-purpose)
+        validate #(validate-fn % addresses adding-address-purpose)
         customization-color (rf/sub [:profile/customization-color])]
     (rf/dispatch [:wallet/clean-scanned-address])
     (rf/dispatch [:wallet/clear-address-activity])
