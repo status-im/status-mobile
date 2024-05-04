@@ -4,6 +4,7 @@
             [react-native.core :as rn]
             [react-native.safe-area :as safe-area]
             [status-im.common.resources :as resources]
+            [status-im.constants :as constants]
             [status-im.contexts.settings.wallet.saved-addresses.style :as style]
             [status-im.feature-flags :as ff]
             [utils.i18n :as i18n]
@@ -25,12 +26,13 @@
                   {:title                  :t/add-address
                    :description            :t/save-address-description
                    :input-title            :t/address-or-ens-name
+                   :accessibility-label    :add-address-to-save
                    :screen                 :screen/wallet.add-address-to-save
-                   :confirm-screen         :screen/wallet.confirm-address
+                   :confirm-screen         :screen/wallet.confirm-address-to-save
                    :confirm-screen-props   {:button-label :t/save-address
                                             :address-type :t/address
                                             :placeholder  :t/saved-address}
-                   :adding-address-purpose :save}])))
+                   :adding-address-purpose constants/add-address-to-save-type}])))
 
 (defn view
   []

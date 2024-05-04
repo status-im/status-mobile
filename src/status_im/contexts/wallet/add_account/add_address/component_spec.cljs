@@ -22,6 +22,7 @@
                                              :screen :screen/wallet.add-address
                                              :confirm-screen :screen/wallet.confirm-address
                                              :ens? false
+                                             :accessibility-label :add-address-to-watch
                                              :confirm-screen-props
                                              {:button-label :t/add-watched-address
                                               :address-type :t/watched-address

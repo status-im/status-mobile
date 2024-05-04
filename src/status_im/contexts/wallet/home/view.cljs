@@ -6,6 +6,7 @@
     [react-native.core :as rn]
     [status-im.common.home.top-nav.view :as common.top-nav]
     [status-im.common.refreshable-flat-list.view :as refreshable-flat-list]
+    [status-im.constants :as constants]
     [status-im.contexts.wallet.home.style :as style]
     [status-im.contexts.wallet.home.tabs.view :as tabs]
     [status-im.contexts.wallet.sheets.network-filter.view :as network-filter]
@@ -29,13 +30,14 @@
                                           {:title :t/add-address-to-watch
                                            :description :t/enter-eth
                                            :input-title :t/eth-or-ens
+                                           :accessibility-label :add-address-to-watch
                                            :screen :screen/wallet.add-address
                                            :confirm-screen :screen/wallet.confirm-address
                                            :confirm-screen-props {:button-label :t/add-watched-address
                                                                   :address-type :t/watched-address
                                                                   :placeholder
                                                                   :t/default-watched-address-placeholder}
-                                           :adding-address-purpose :watch}])
+                                           :adding-address-purpose constants/add-address-to-watch-type}])
       :add-divider?        true}]]])
 
 (defn- new-account-card-data

@@ -778,3 +778,27 @@
       (is (match? (get result constants/ethereum-mainnet-chain-id) "$1500.00"))
       (is (match? (get result constants/optimism-mainnet-chain-id) "$600.00"))
       (is (match? (get result constants/arbitrum-mainnet-chain-id) "$0.00")))))
+
+(def sample-added-address
+  {:address "0xmock-address"
+   :title :t/add-address-to-watch
+   :description :t/enter-eth
+   :ens? false
+   :input-title :t/eth-or-ens
+   :screen :screen/wallet.add-address
+   :confirm-screen :screen/wallet.confirm-address
+   :confirm-screen-props
+   {:button-label :t/add-watched-address
+    :address-type :t/watched-address
+    :placeholder  :t/default-watched-address-placeholder}
+   :adding-address-purpose :watch})
+
+(h/deftest-sub :wallet/currently-added-address
+  [sub-name]
+  (testing "Testing successful fetching of currently added address"
+    (swap! rf-db/app-db #(assoc-in % [:wallet :ui :currently-added-address] sample-added-address))
+    (let [result (rf/sub [sub-name])]
+      (is (match? (:address result) (:address sample-added-address)))
+      (is (match? (:title result) (:title sample-added-address)))
+      (is (match? (:description result) (:description sample-added-address)))
+      (is (match? (:adding-address-purpose result) (:adding-address-purpose sample-added-address))))))

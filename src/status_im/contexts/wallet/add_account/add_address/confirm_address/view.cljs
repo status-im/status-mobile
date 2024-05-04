@@ -6,6 +6,7 @@
     [quo.theme]
     [react-native.core :as rn]
     [status-im.common.emoji-picker.utils :as emoji-picker.utils]
+    [status-im.constants :as constants]
     [status-im.contexts.wallet.add-account.add-address.confirm-address.style :as style]
     [status-im.contexts.wallet.common.screen-base.create-or-edit-account.view :as
      create-or-edit-account]
@@ -18,32 +19,32 @@
 (defn- on-press-confirm-address
   [{:keys [adding-address-purpose account-name account-emoji account-color address ens? theme]}]
   (condp = adding-address-purpose
-    :watch (rf/dispatch [:wallet/add-account
-                         {:sha3-pwd     nil
-                          :type         :watch
-                          :account-name account-name
-                          :emoji        account-emoji
-                          :color        account-color}
-                         {:address    address
-                          :public-key ""}])
-    :save  (rf/dispatch
-            [:wallet/save-address
-             {:address             address
-              :name                account-name
-              :customization-color account-color
-              :ens                 (when ens? address)
-              :on-success          (fn []
-                                     (rf/dispatch [:navigate-back])
-                                     (debounce/debounce-and-dispatch
-                                      [:navigate-back]
-                                      sheet-closing-delay)
-                                     (debounce/debounce-and-dispatch
-                                      [:toasts/upsert
-                                       {:type  :positive
-                                        :theme theme
-                                        :text  (i18n/label
-                                                :t/address-saved)}]
-                                      sheet-closing-delay))}])))
+    constants/add-address-to-watch-type (rf/dispatch [:wallet/add-account
+                                                      {:sha3-pwd     nil
+                                                       :type         constants/add-address-to-watch-type
+                                                       :account-name account-name
+                                                       :emoji        account-emoji
+                                                       :color        account-color}
+                                                      {:address    address
+                                                       :public-key ""}])
+    constants/add-address-to-save-type  (rf/dispatch
+                                         [:wallet/save-address
+                                          {:address             address
+                                           :name                account-name
+                                           :customization-color account-color
+                                           :ens                 (when ens? address)
+                                           :on-success          (fn []
+                                                                  (rf/dispatch [:navigate-back])
+                                                                  (debounce/debounce-and-dispatch
+                                                                   [:navigate-back]
+                                                                   sheet-closing-delay)
+                                                                  (debounce/debounce-and-dispatch
+                                                                   [:toasts/upsert
+                                                                    {:type  :positive
+                                                                     :theme theme
+                                                                     :text  (i18n/label
+                                                                             :t/address-saved)}]
+                                                                   sheet-closing-delay))}])))
 
 (defn to-be-implemented
   []
@@ -62,7 +63,7 @@
         [account-color on-change-color]                (rn/use-state (rand-nth colors/account-colors))
         [account-emoji on-change-emoji]                (rn/use-state (emoji-picker.utils/random-emoji))]
     [:<>
-     (when (= adding-address-purpose :save)
+     (when (= adding-address-purpose constants/add-address-to-save-type)
        [rn/view {:style style/save-address-drawer-bar-container}
         [quo/drawer-bar]])
      [rn/view {:style (style/container adding-address-purpose)}

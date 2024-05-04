@@ -6,6 +6,7 @@
     [react-native.core :as rn]
     [reagent.core :as reagent]
     [status-im.common.floating-button-page.view :as floating-button-page]
+    [status-im.constants :as constants]
     [status-im.contexts.wallet.add-account.add-address.style :as style]
     [status-im.contexts.wallet.common.validation :as validation]
     [status-im.subs.wallet.add-account.address-to-watch]
@@ -19,7 +20,7 @@
   (cond
     (or (nil? user-input) (= user-input ""))       nil
     ;; Allow adding existing address if saving, As it'll upsert
-    (and (not= purpose :save)
+    (and (not= purpose constants/add-address-to-save-type)
          (some #(= % user-input) known-addresses)) (i18n/label :t/address-already-in-use)
     (not
      (or (validation/eth-address? user-input)
@@ -27,7 +28,7 @@
 
 (defn- address-input
   [{:keys [input-value validate clear-input set-validation-message set-input-value input-title
-           adding-address-purpose]}]
+           accessibility-label]}]
   (let [scanned-address (rf/sub [:wallet/scanned-address])
         empty-input?    (and (string/blank? input-value)
                              (string/blank? scanned-address))
@@ -51,9 +52,7 @@
                    [scanned-address])
     [rn/view {:style style/input-container}
      [quo/input
-      {:accessibility-label (if (= :watch adding-address-purpose)
-                              :add-address-to-watch
-                              :add-address-to-save)
+      {:accessibility-label accessibility-label
        :placeholder         (i18n/label :t/address-placeholder)
        :container-style     style/input
        :label               input-title
@@ -111,7 +110,7 @@
 (defn view
   []
   (let [addresses (rf/sub [:wallet/lowercased-addresses])
-        {:keys [title description input-title adding-address-purpose]}
+        {:keys [title description input-title adding-address-purpose accessibility-label]}
         (rf/sub [:wallet/currently-added-address])
         validate #(validate-address addresses (string/lower-case %) adding-address-purpose)
         customization-color (rf/sub [:profile/customization-color])]
@@ -129,7 +128,8 @@
                                                       (rf/dispatch [:wallet/clean-scanned-address]))]
         [rn/view
          {:style {:flex 1}}
-         [quo/drawer-bar]
+         (when (= constants/add-address-to-save-type adding-address-purpose)
+           [quo/drawer-bar])
          [floating-button-page/view
           {:header [quo/page-nav
                     {:type      :no-title
@@ -148,8 +148,10 @@
                      :on-press            (fn []
                                             (rf/dispatch
                                              [:wallet/confirm-add-address
-                                              {:address input-value
-                                               :ens?    (utils.ens/is-valid-eth-name? input-value)}])
+                                              {:address                input-value
+                                               :ens?                   (utils.ens/is-valid-eth-name?
+                                                                        input-value)
+                                               :adding-address-purpose adding-address-purpose}])
                                             (clear-input))
                      :container-style     {:z-index 2}}
                     (i18n/label :t/continue)]}
@@ -168,7 +170,8 @@
             :set-input-value        set-input-value
             :input-title            (when input-title
                                       (i18n/label input-title))
-            :adding-address-purpose adding-address-purpose}]
+            :adding-address-purpose adding-address-purpose
+            :accessibility-label    accessibility-label}]
           (if validation-msg
             [quo/info-message
              {:accessibility-label :error-message
