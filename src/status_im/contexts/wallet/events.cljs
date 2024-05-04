@@ -510,6 +510,7 @@
          activities           (cske/transform-keys transforms/->kebab-case-keyword activities)
          sorted-activities    (sort :timestamp activities)]
      {:db (assoc-in db [:wallet :activities] sorted-activities)})))
+
 (defn add-address
   [{:keys [db]} [{:keys [screen adding-address-purpose] :as props}]]
   (let [navigation-method (if (= adding-address-purpose :watch) :navigate-to :open-modal)]
