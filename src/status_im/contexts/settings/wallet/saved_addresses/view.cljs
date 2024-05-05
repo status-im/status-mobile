@@ -1,5 +1,6 @@
 (ns status-im.contexts.settings.wallet.saved-addresses.view
   (:require [quo.core :as quo]
+            [quo.foundations.colors :as colors]
             [quo.theme :as quo.theme]
             [react-native.core :as rn]
             [react-native.safe-area :as safe-area]
@@ -17,12 +18,35 @@
       :image           (resources/get-themed-image :sweating-man theme)
       :container-style style/empty-container-style}]))
 
+(defn- saved-address
+  [{:keys        [address colorId chainShortNames isTest]
+    address-name :name}]
+  [quo/saved-address
+   {:user-props {:name                address-name
+                 :address             address
+                 :customization-color (keyword colorId)}}])
+
+(defn header
+  [{:keys [title]}]
+  [quo/divider-label
+   {:container-style {:background-color :transparent
+                      :border-top-color colors/white-opa-5
+                      :margin-top       16}}
+   title])
+
+(defn footer
+  []
+  [rn/view {:height 8}])
+
 (defn view
   []
   (let [inset-top           (safe-area/get-top)
         customization-color (rf/sub [:profile/customization-color])
-        saved-addresses     []
+        saved-addresses     (rf/sub [:wallet/grouped-saved-addresses])
         navigate-back       (rn/use-callback #(rf/dispatch [:navigate-back]))]
+    (rn/use-effect
+     (fn []
+       (rf/dispatch [:wallet/get-saved-addresses])))
     [quo/overlay
      {:type            :shell
       :container-style (style/page-wrapper inset-top)}
@@ -38,5 +62,14 @@
         :right               :action
         :customization-color customization-color
         :icon                :i/add}]]
+
+     [rn/section-list
+      {:key-fn                         :title
+       :sticky-section-headers-enabled false
+       :render-section-header-fn       header
+       :render-section-footer-fn       footer
+       :sections                       saved-addresses
+       :render-fn                      saved-address
+       :separator                      [rn/view {:style {:height 4}}]}]
      (when-not (seq saved-addresses)
        [empty-state])]))

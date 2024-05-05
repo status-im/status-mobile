@@ -37,6 +37,7 @@
     status-im.contexts.wallet.common.wizard.events
     status-im.contexts.wallet.effects
     status-im.contexts.wallet.events
+    status-im.contexts.wallet.save-address.events
     status-im.contexts.wallet.send.events
     status-im.contexts.wallet.signals
     [status-im.db :as db]
