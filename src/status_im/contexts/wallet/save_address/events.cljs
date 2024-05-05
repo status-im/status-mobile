@@ -29,7 +29,7 @@
 (rf/reg-event-fx
  :wallet/get-saved-addresses-success
  (fn [{:keys [db]} [saved-addresses]]
-   {:db (assoc-in db [:wallet :saved-addresses] saved-addresses)}))
+   {:db (assoc-in db [:wallet :saved-addresses] (group-by :address saved-addresses))}))
 
 (rf/reg-event-fx
  :wallet/get-saved-addresses-error

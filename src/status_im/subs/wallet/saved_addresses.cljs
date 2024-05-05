@@ -9,18 +9,20 @@
  :-> :saved-addresses)
 
 (rf/reg-sub
- :wallet/grouped-saved-addresses
- :<- [:wallet/saved-addresses]
- (fn [saved-addresses]
-   (->> saved-addresses
-        (group-by #(string/upper-case (first (:name %))))
-        (map (fn [[k v]]
-               {:title k
-                :data  v})))))
-
-(rf/reg-sub
  :wallet/address-saved?
  :<- [:wallet]
  (fn [wallet [address]]
    (some #(= address (:address %))
          (:saved-addresses wallet))))
+
+(rf/reg-sub
+ :wallet/grouped-saved-addresses
+ :<- [:wallet/saved-addresses]
+ (fn [saved-addresses]
+   (->> saved-addresses
+        vals
+        flatten
+        (group-by #(string/upper-case (first (:name %))))
+        (map (fn [[k v]]
+               {:title k
+                :data  v})))))
