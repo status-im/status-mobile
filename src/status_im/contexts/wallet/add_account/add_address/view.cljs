@@ -18,7 +18,7 @@
 (defn- validate-address
   [known-addresses user-input purpose]
   (cond
-    (string/blank? user-input)       nil
+    (string/blank? user-input)                     nil
     ;; Allow adding existing address if saving, As it'll upsert
     (and (not= purpose constants/add-address-to-save-type)
          (some #(= % user-input) known-addresses)) (i18n/label :t/address-already-in-use)
