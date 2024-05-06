@@ -111,7 +111,9 @@
        :image-props :i/light})]
    [{:title    (i18n/label :t/about)
      :on-press #(rf/dispatch [:open-modal :about-app])
-     :action   :arrow}
+     :action   :arrow
+     :blur?    true}
     {:title    (i18n/label :t/status-help)
      :on-press #(rf/dispatch [:open-modal :help-center])
-     :action   :arrow}]])
+     :action   :arrow
+     :blur?    true}]])

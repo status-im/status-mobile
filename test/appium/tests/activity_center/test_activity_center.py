@@ -275,7 +275,7 @@ class TestActivityMultipleDevicePR(MultipleSharedDeviceTestCase):
         self.channel_1.send_message(self.text_message)
 
         self.community_1, self.community_2 = self.home_1.get_community_view(), self.home_2.get_community_view()
-        self.community_1.share_community(self.community_name, self.username_2)
+        self.community_1.invite_to_community(self.community_name, self.username_2)
         self.home_1.get_to_community_channel_from_home(self.community_name)
 
         self.chat_2 = self.home_2.get_chat(self.username_1).click()
@@ -414,7 +414,7 @@ class TestActivityMultipleDevicePRTwo(MultipleSharedDeviceTestCase):
         self.channel_1.send_message(self.text_message)
 
         self.community_1, self.community_2 = self.home_1.get_community_view(), self.home_2.get_community_view()
-        self.community_1.share_community(self.community_name, self.username_2)
+        self.community_1.invite_to_community(self.community_name, self.username_2)
         self.home_1.get_to_community_channel_from_home(self.community_name)
 
         self.chat_2 = self.home_2.get_chat(self.username_1).click()
@@ -472,7 +472,7 @@ class TestActivityMultipleDevicePRTwo(MultipleSharedDeviceTestCase):
         self.channel_name = "dogs"
         self.home_1.create_community(community_type="closed")
         self.home_1.reopen_app()
-        self.community_1.share_community(community_name, self.username_2)
+        self.community_1.invite_to_community(community_name, self.username_2)
 
         self.home_2.just_fyi("Request access to community")
         self.home_2.navigate_back_to_home_view()

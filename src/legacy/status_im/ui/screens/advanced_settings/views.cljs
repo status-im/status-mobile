@@ -16,10 +16,9 @@
 
 (defn- normal-mode-settings-data
   [{:keys [current-log-level
+           telemetry-enabled?
            light-client-enabled?
-           transactions-management-enabled?
            current-fleet
-           webview-debug
            test-networks-enabled?
            is-goerli-enabled?
            peer-syncing-enabled?]}]
@@ -62,6 +61,14 @@
      #(re-frame/dispatch [:open-modal :peers-stats])
      :chevron true}
     {:size :small
+     :title "Telemetry"
+     :accessibility-label :telemetry-enabled
+     :container-margin-bottom 8
+     :on-press
+     #(re-frame/dispatch [:profile.settings/toggle-telemetry])
+     :accessory :switch
+     :active telemetry-enabled?}
+    {:size :small
      :title (i18n/label :t/light-client-enabled)
      :accessibility-label :light-client-enabled
      :container-margin-bottom 8
@@ -70,25 +77,6 @@
        [:wakuv2.ui/toggle-light-client (not light-client-enabled?)])
      :accessory :switch
      :active light-client-enabled?}
-    {:size :small
-     :title (i18n/label :t/transactions-management-enabled)
-     :accessibility-label :transactions-management-enabled
-     :container-margin-bottom 8
-     :on-press
-     #(re-frame/dispatch
-       [:multiaccounts.ui/switch-transactions-management-enabled
-        (not transactions-management-enabled?)])
-     :accessory :switch
-     :active transactions-management-enabled?}
-    {:size :small
-     :title "Webview debug"
-     :accessibility-label :webview-debug-switch
-     :container-margin-bottom 8
-     :on-press
-     #(re-frame/dispatch
-       [:profile.settings/change-webview-debug (not webview-debug)])
-     :accessory :switch
-     :active webview-debug}
     {:size :small
      :title "Testnet mode"
      :accessibility-label :test-networks-enabled
@@ -126,14 +114,13 @@
 
 (views/defview advanced-settings
   []
-  (views/letsubs [test-networks-enabled?           [:profile/test-networks-enabled?]
-                  is-goerli-enabled?               [:profile/is-goerli-enabled?]
-                  light-client-enabled?            [:profile/light-client-enabled?]
-                  webview-debug                    [:profile/webview-debug]
-                  transactions-management-enabled? [:wallet-legacy/transactions-management-enabled?]
-                  current-log-level                [:log-level/current-log-level]
-                  current-fleet                    [:fleets/current-fleet]
-                  peer-syncing-enabled?            [:profile/peer-syncing-enabled?]]
+  (views/letsubs [test-networks-enabled? [:profile/test-networks-enabled?]
+                  is-goerli-enabled?     [:profile/is-goerli-enabled?]
+                  light-client-enabled?  [:profile/light-client-enabled?]
+                  telemetry-enabled?     [:profile/telemetry-enabled?]
+                  current-log-level      [:log-level/current-log-level]
+                  current-fleet          [:fleets/current-fleet]
+                  peer-syncing-enabled?  [:profile/peer-syncing-enabled?]]
     [:<>
      [quo/page-nav
       {:type       :title
@@ -143,14 +130,13 @@
        :on-press   #(rf/dispatch [:navigate-back])}]
      [list/flat-list
       {:data      (flat-list-data
-                   {:current-log-level                current-log-level
-                    :transactions-management-enabled? transactions-management-enabled?
-                    :light-client-enabled?            light-client-enabled?
-                    :current-fleet                    current-fleet
-                    :dev-mode?                        false
-                    :webview-debug                    webview-debug
-                    :test-networks-enabled?           test-networks-enabled?
-                    :is-goerli-enabled?               is-goerli-enabled?
-                    :peer-syncing-enabled?            peer-syncing-enabled?})
+                   {:current-log-level      current-log-level
+                    :telemetry-enabled?     telemetry-enabled?
+                    :light-client-enabled?  light-client-enabled?
+                    :current-fleet          current-fleet
+                    :dev-mode?              false
+                    :test-networks-enabled? test-networks-enabled?
+                    :is-goerli-enabled?     is-goerli-enabled?
+                    :peer-syncing-enabled?  peer-syncing-enabled?})
        :key-fn    (fn [_ i] (str i))
        :render-fn render-item}]]))

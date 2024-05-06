@@ -29,22 +29,23 @@
       :resize-mode         :cover}]))
 
 (defn- content
-  [{:keys [title body]} theme]
-  [rn/view {:style style/content-container}
-   [text/text
-    {:accessibility-label :title
-     :size                :paragraph-2
-     :weight              :semi-bold
-     :number-of-lines     1
-     :style               (style/title theme)}
-    title]
-   [text/text
-    {:accessibility-label :body
-     :size                :paragraph-2
-     :weight              :medium
-     :number-of-lines     1
-     :style               (style/body theme)}
-    body]])
+  [{:keys [title body]}]
+  (let [theme (quo.theme/use-theme)]
+    [rn/view {:style style/content-container}
+     [text/text
+      {:accessibility-label :title
+       :size                :paragraph-2
+       :weight              :semi-bold
+       :number-of-lines     1
+       :style               (style/title theme)}
+      title]
+     [text/text
+      {:accessibility-label :body
+       :size                :paragraph-2
+       :weight              :medium
+       :number-of-lines     1
+       :style               (style/body theme)}
+      body]]))
 
 (defn- clear-button
   [{:keys [on-press]}]

@@ -1,5 +1,6 @@
 (ns status-im.contexts.wallet.events
   (:require
+    [camel-snake-kebab.extras :as cske]
     [clojure.string :as string]
     [react-native.background-timer :as background-timer]
     [react-native.platform :as platform]
@@ -10,6 +11,7 @@
     [status-im.contexts.wallet.item-types :as item-types]
     [taoensso.timbre :as log]
     [utils.collection]
+    [utils.ethereum.chain :as chain]
     [utils.ethereum.eip.eip55 :as eip55]
     [utils.i18n :as i18n]
     [utils.number]
@@ -63,6 +65,7 @@
            (utils.collection/index-by :address (data-store/rpc->accounts wallet-accounts)))
       :fx [[:dispatch [:wallet/get-wallet-token]]
            [:dispatch [:wallet/request-collectibles-for-all-accounts {:new-request? true}]]
+           [:dispatch [:wallet/check-recent-history]]
            (when new-account?
              [:dispatch [:wallet/navigate-to-new-account navigate-to-account]])]})))
 
@@ -394,6 +397,20 @@
                                  {:error %
                                   :event :wallet/start-wallet})}]]]}))
 
+(rf/reg-event-fx
+ :wallet/check-recent-history
+ (fn [{:keys [db]}]
+   (let [addresses (->> (get-in db [:wallet :accounts])
+                        vals
+                        (map :address))
+         chain-ids (chain/chain-ids db)]
+     {:fx [[:json-rpc/call
+            [{:method   "wallet_checkRecentHistoryForChainIDs"
+              :params   [chain-ids addresses]
+              :on-error #(log/info "failed to check recent history"
+                                   {:error %
+                                    :event :wallet/check-recent-history})}]]]})))
+
 (rf/reg-event-fx :wallet/initialize
  (fn []
    {:fx [[:dispatch [:wallet/start-wallet]]
@@ -479,3 +496,46 @@
           {:db (update-in db [:wallet :ui :network-filter :selected-networks] update-fn network-name)})))
 
 (rf/reg-event-fx :wallet/update-selected-networks update-selected-networks)
+
+(rf/reg-event-fx
+ :wallet/fetch-activities
+ (fn [{:keys [db]}]
+   (let [addresses      (->> (get-in db [:wallet :accounts])
+                             vals
+                             (map :address))
+         chain-ids      (chain/chain-ids db)
+         request-id     0
+         filters        {:period                {:startTimestamp 0
+                                                 :endTimestamp   0}
+                         :types                 []
+                         :statuses              []
+                         :counterpartyAddresses []
+                         :assets                []
+                         :collectibles          []
+                         :filterOutAssets       false
+                         :filterOutCollectibles false}
+         offset         0
+         limit          20
+         request-params [request-id
+                         addresses
+                         chain-ids
+                         filters
+                         offset
+                         limit]]
+     {:fx [[:json-rpc/call
+            [{;; This method is deprecated and will be replaced by
+              ;; "wallet_startActivityFilterSession"
+              ;; https://github.com/status-im/status-mobile/issues/19864
+              :method   "wallet_filterActivityAsync"
+              :params   request-params
+              :on-error #(log/info "failed to fetch activities"
+                                   {:error %
+                                    :event :wallet/fetch-activities})}]]]})))
+
+(rf/reg-event-fx
+ :wallet/activity-filtering-done
+ (fn [{:keys [db]} [{:keys [message]}]]
+   (let [{:keys [activities]} (transforms/json->clj message)
+         activities           (cske/transform-keys transforms/->kebab-case-keyword activities)
+         sorted-activities    (sort :timestamp activities)]
+     {:db (assoc-in db [:wallet :activities] sorted-activities)})))

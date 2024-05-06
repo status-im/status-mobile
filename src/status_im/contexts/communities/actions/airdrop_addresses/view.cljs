@@ -4,6 +4,7 @@
     [react-native.core :as rn]
     [react-native.gesture :as gesture]
     [status-im.common.not-implemented :as not-implemented]
+    [status-im.config :as config]
     [status-im.contexts.communities.actions.airdrop-addresses.style :as style]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
@@ -64,16 +65,17 @@
          :context-tag               {:type           :community
                                      :community-logo logo
                                      :community-name name}}]
-       [quo/drawer-top
-        {:type                :context-tag
-         :context-tag-type    :community
-         :title               (i18n/label :t/airdrop-addresses)
-         :community-name      name
-         :button-icon         :i/info
-         :button-type         :grey
-         :on-button-press     not-implemented/alert
-         :community-logo      logo
-         :customization-color color}])
+       (when config/show-not-implemented-features?
+         [quo/drawer-top
+          {:type                :context-tag
+           :context-tag-type    :community
+           :title               (i18n/label :t/airdrop-addresses)
+           :community-name      name
+           :button-icon         :i/info
+           :button-type         :grey
+           :on-button-press     not-implemented/alert
+           :community-logo      logo
+           :customization-color color}]))
 
      [gesture/flat-list
       {:data                    accounts

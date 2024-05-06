@@ -50,6 +50,8 @@ class WalletView(BaseView):
             self.driver, xpath="//*[@content-desc='account-avatar']/../following-sibling::android.widget.TextView[1]")
         self.account_emoji_button = Button(self.driver, accessibility_id='account-emoji')
         self.send_button = Button(self.driver, accessibility_id='send')
+        self.send_from_drawer_button = Button(
+            self.driver, xpath="//*[@content-desc='send']/*[@content-desc='left-icon-for-action']")
         self.copy_address_button = Button(self.driver, accessibility_id='copy-address')
         self.share_address_button = Button(self.driver, accessibility_id='share-account')
         self.remove_account_button = Button(self.driver, accessibility_id='remove-account')
@@ -99,8 +101,7 @@ class WalletView(BaseView):
     def send_asset_from_drawer(self, address: str, asset_name: str, amount: float):
         asset_element = self.get_asset(asset_name)
         asset_element.long_press_element()
-        self.send_button.wait_for_elements()
-        self.send_button.find_elements()[0].click()
+        self.send_from_drawer_button.click()
         self.address_text_input.send_keys(address)
         self.continue_button.click_until_presence_of_element(self.confirm_button)
         self.set_amount(amount)

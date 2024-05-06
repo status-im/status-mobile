@@ -235,6 +235,9 @@
                constants/content-type-text
                [content.text/text-content message-data context]
 
+               constants/content-type-contact-request
+               [content.text/text-content message-data context]
+
                constants/content-type-emoji
                [emoji-message/view
                 {:content         content

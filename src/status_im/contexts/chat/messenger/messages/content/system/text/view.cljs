@@ -5,5 +5,5 @@
 
 (defn text-content
   [message-data]
-  [rn/view {:accessibility-label :chat-item}
+  [rn/view {:accessibility-label :chat-item :padding-horizontal 12 :padding-vertical 3}
    [old-message/render-parsed-text message-data]])

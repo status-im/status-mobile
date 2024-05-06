@@ -24,33 +24,50 @@
      :strokeWidth "1"}]])
 
 (defn- line
-  [stroke width]
+  [{:keys [stroke-color source-color destination-color width theme]}]
   [svg/svg
    {:height   "10"
     :width    "100%"
     :view-box (str "0 0 " width " 10")}
    [svg/path
     {:d            (str "M0,5 L" width ",5")
-     :stroke       stroke
-     :stroke-width "1"}]])
+     :stroke       stroke-color
+     :stroke-width "1"}]
+   [svg/defs
+    [svg/linear-gradient
+     {:id             "gradient"
+      :x1             "0%"
+      :x2             "100%"
+      :y1             "0%"
+      :y2             "0%"
+      :gradient-units "objectBoundingBox"}
+     [svg/stop {:offset "0%" :stop-color (colors/resolve-color source-color theme)}]
+     [svg/stop {:offset "100%" :stop-color (colors/resolve-color destination-color theme)}]]]])
 
 (defn link-linear
-  [{:keys [source]}]
+  [{:keys [source destination]}]
   (let [theme                 (quo.theme/use-theme)
         [container-width
          set-container-width] (rn/use-state 100)
-        stroke-color          (colors/resolve-color source theme)
+        stroke-color          "url(#gradient)"
+        source-color          (colors/resolve-color source theme)
+        destination-color     (colors/resolve-color destination theme)
         fill-color            (colors/theme-colors colors/white colors/neutral-90 theme)
         on-layout             (rn/use-callback #(set-container-width
                                                  (oget % :nativeEvent :layout :width)))]
     [rn/view
      {:style     style/link-linear-container
       :on-layout on-layout}
-     [line stroke-color container-width]
+     [line
+      {:stroke-color      stroke-color
+       :source-color      source-color
+       :destination-color destination-color
+       :width             container-width
+       :theme             theme}]
      [rn/view {:style style/left-circle-container}
-      [circle fill-color stroke-color]]
+      [circle fill-color source-color]]
      [rn/view {:style style/right-circle-container}
-      [circle fill-color stroke-color]]]))
+      [circle fill-color destination-color]]]))
 
 (defn link-1x
   [{:keys [source destination]}]

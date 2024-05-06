@@ -330,7 +330,6 @@ class HomeView(BaseView):
         # New UI bottom sheet
         self.start_a_new_chat_bottom_sheet_button = Button(self.driver, accessibility_id="start-a-new-chat")
         self.add_a_contact_chat_bottom_sheet_button = Button(self.driver, accessibility_id="add-a-contact")
-        self.setup_chat_button = Button(self.driver, accessibility_id="next-button")
 
         # Activity centre
         self.all_activity_tab_button = ActivityTabButton(self.driver, translation_id="all")
@@ -459,7 +458,7 @@ class HomeView(BaseView):
                 raise NoSuchElementException(
                     "User with the name '%s' is not in contacts list so can't create a group chat" % user_name)
             check_box.click_until_presence_of_element(chat.get_username_checkbox(user_name, state_on=True))
-        self.setup_chat_button.click()
+        self.next_button.click()
         self.get_sign_in_view().profile_title_input.send_keys(group_chat_name)
         chat.create_group_chat_button.click()
         self.driver.info("## Group chat %s is created successfully!" % group_chat_name, device=False)
