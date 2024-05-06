@@ -8,3 +8,7 @@
   [inset-top]
   {:padding-top inset-top
    :flex        1})
+
+(def keypair-container-style
+  {:margin-horizontal 20
+   :margin-vertical   8})

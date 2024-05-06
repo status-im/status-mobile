@@ -31,10 +31,6 @@
                :state         :default
                :action        :none}))))
 
-(def keypair-container-style
-  {:margin-horizontal 20
-   :margin-vertical   8})
-
 (defn on-options-press
   [{:keys [theme]
     :as   props}]
@@ -71,7 +67,7 @@
       :action              :options
       :accounts            accounts
       :customization-color customization-color
-      :container-style     keypair-container-style
+      :container-style     style/keypair-container-style
       :profile-picture     (when default-keypair? profile-picture)
       :type                (if default-keypair? :default-keypair :other)
       :on-options-press    on-press
