@@ -63,7 +63,14 @@
            :size             32
            :default-active   @selected-tab
            :data             (tabs-data watch-only?)
+<<<<<<< HEAD
            :on-change        (rn/use-callback (fn [tab] (reset! selected-tab tab)))
+=======
+           :on-change        (rn/use-callback (fn [tab]
+                                                (when (= :activity tab)
+                                                  (rf/dispatch [:wallet/fetch-activities]))
+                                                (reset! selected-tab tab)))
+>>>>>>> 17d2348c4 (lint)
            :scrollable?      true
            :scroll-on-press? true}]
          [tabs/view {:selected-tab @selected-tab}]
