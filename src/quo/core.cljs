@@ -122,7 +122,6 @@
     quo.components.profile.showcase-nav.view
     quo.components.record-audio.record-audio.view
     quo.components.record-audio.soundtrack.view
-    quo.components.refreshable-flat-list.view
     quo.components.selectors.disclaimer.view
     quo.components.selectors.filter.view
     quo.components.selectors.react-selector.view
@@ -449,6 +448,3 @@
 (def wallet-activity quo.components.wallet.wallet-activity.view/view)
 (def transaction-progress quo.components.wallet.transaction-progress.view/view)
 (def transaction-summary quo.components.wallet.transaction-summary.view/view)
-
-;;;; refresh control as element
-(def refreshable-flat-list quo.components.refreshable-flat-list.view/view)

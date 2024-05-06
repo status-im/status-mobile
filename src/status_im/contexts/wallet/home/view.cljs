@@ -5,6 +5,7 @@
     [quo.theme]
     [react-native.core :as rn]
     [status-im.common.home.top-nav.view :as common.top-nav]
+    [status-im.common.refreshable-flat-list.view :as refreshable-flat-list]
     [status-im.contexts.wallet.home.style :as style]
     [status-im.contexts.wallet.home.tabs.view :as tabs]
     [status-im.contexts.wallet.sheets.network-filter.view :as network-filter]
@@ -84,7 +85,7 @@
      [tokens-loading?])
     [rn/view {:style (style/home-container)}
      [common.top-nav/view]
-     [quo/refreshable-flat-list
+     [refreshable-flat-list/view
       {:refresh-control       [rn/refresh-control
                                {:refreshing (and tokens-loading? init-loaded?)
                                 :colors     colors/neutral-40

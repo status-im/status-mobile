@@ -1,4 +1,4 @@
-(ns quo.components.refreshable-flat-list.view
+(ns status-im.common.refreshable-flat-list.view
   (:require [react-native.core :as rn]
             [reagent.core :as reagent]))
 
