@@ -33,22 +33,25 @@
           {:type     :wallet-networks
            :on-press #(rf/dispatch [:wallet/close-account-page])}]
          [quo/account-overview
-          {:current-value       formatted-balance
+          {:container-style     style/account-overview
+           :current-value       formatted-balance
            :account-name        name
            :account             (if watch-only? :watched-address :default)
            :customization-color color}]
-         [quo/wallet-graph {:time-frame :empty}]
+         (when (ff/enabled? ::ff/wallet.graph) [quo/wallet-graph {:time-frame :empty}])
          (when (not watch-only?)
            [quo/wallet-ctas
-            {:send-action    (fn []
-                               (rf/dispatch [:wallet/clean-send-data])
-                               (rf/dispatch [:wallet/wizard-navigate-forward
-                                             {:start-flow? true
-                                              :flow-id     :wallet-flow}]))
-             :receive-action #(rf/dispatch [:open-modal :screen/wallet.share-address {:status :receive}])
-             :buy-action     #(rf/dispatch [:show-bottom-sheet
-                                            {:content buy-token/view}])
-             :bridge-action  #(rf/dispatch [:wallet/start-bridge])}])
+            {:container-style style/cta-buttons
+             :send-action     (fn []
+                                (rf/dispatch [:wallet/clean-send-data])
+                                (rf/dispatch [:wallet/wizard-navigate-forward
+                                              {:start-flow? true
+                                               :flow-id     :wallet-flow}]))
+             :receive-action  #(rf/dispatch [:open-modal :screen/wallet.share-address
+                                             {:status :receive}])
+             :buy-action      #(rf/dispatch [:show-bottom-sheet
+                                             {:content buy-token/view}])
+             :bridge-action   #(rf/dispatch [:wallet/start-bridge])}])
          [quo/tabs
           {:style            style/tabs
            :size             32
