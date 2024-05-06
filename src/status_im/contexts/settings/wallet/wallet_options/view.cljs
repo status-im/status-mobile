@@ -9,9 +9,17 @@
   []
   (rf/dispatch [:open-modal :screen/settings.saved-addresses]))
 
+(defn open-keypairs-and-accounts-settings-modal
+  []
+  (rf/dispatch [:open-modal :screen/settings.keypairs-and-accounts]))
+
 (defn gen-basic-settings-options
   []
-  [{:title    (i18n/label :t/saved-addresses)
+  [{:title    (i18n/label :t/keypairs-and-accounts)
+    :blur?    true
+    :on-press open-keypairs-and-accounts-settings-modal
+    :action   :arrow}
+   {:title    (i18n/label :t/saved-addresses)
     :blur?    true
     :on-press open-saved-addresses-settings-modal
     :action   :arrow}])
