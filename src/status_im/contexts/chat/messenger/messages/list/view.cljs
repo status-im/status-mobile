@@ -307,15 +307,14 @@
    [chat.group/group-chat-footer chat-id invitation-admin]])
 
 (defn render-fn
-  [{:keys [type value content-type] :as message-data} _ _
+  [{:keys [type value] :as message-data} _ _
    {:keys [context keyboard-shown?]}]
-  (when (not= content-type constants/content-type-contact-request)
-    (cond
-      (= type :datemark)
-      [quo/divider-date value]
+  (cond
+    (= type :datemark)
+    [quo/divider-date value]
 
-      :else
-      [message/message message-data context keyboard-shown?])))
+    :else
+    [message/message message-data context keyboard-shown?]))
 
 (defn on-content-size-change
   [{:keys [content-height distance-atom distance-from-list-top]}]

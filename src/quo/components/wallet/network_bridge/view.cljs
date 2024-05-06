@@ -30,7 +30,7 @@
   [{:keys [network status amount container-style on-press] :as args}]
   (let [theme (quo.theme/use-theme)]
     (if (= status :add)
-      [network-bridge-add args]
+      [network-bridge-add (assoc args :theme theme)]
       [rn/pressable
        {:style               (merge (style/container network status theme) container-style)
         :accessible          true

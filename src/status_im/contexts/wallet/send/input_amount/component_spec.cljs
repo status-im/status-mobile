@@ -63,7 +63,7 @@
                                                      :gas-fees   {:base-fee "32.325296406"
                                                                   :max-priority-fee-per-gas "0.011000001"
                                                                   :eip1559-enabled true}}]
-   :wallet/wallet-send-suggested-routes            {:candidates []}
+   :wallet/wallet-send-suggested-routes            nil
    :wallet/wallet-send-receiver-networks           [1]
    :view-id                                        :screen/wallet.send-input-amount
    :wallet/wallet-send-to-address                  "0x04371e2d9d66b82f056bc128064"
@@ -73,7 +73,10 @@
                                                     :market-values-per-currency {:usd {:price 10}}}
    :wallet/wallet-send-disabled-from-chain-ids     []
    :wallet/wallet-send-from-values-by-chain        {1 (money/bignumber "250")}
-   :wallet/wallet-send-to-values-by-chain          {1 (money/bignumber "250")}})
+   :wallet/wallet-send-to-values-by-chain          {1 (money/bignumber "250")}
+   :wallet/wallet-send-sender-network-values       nil
+   :wallet/wallet-send-receiver-network-values     nil
+   :wallet/wallet-send-network-links               nil})
 
 (h/describe "Send > input amount screen"
   (h/setup-restorable-re-frame)

@@ -7,6 +7,7 @@
     [status-im.contexts.wallet.account.tabs.view :as tabs]
     [status-im.contexts.wallet.common.account-switcher.view :as account-switcher]
     [status-im.contexts.wallet.sheets.buy-token.view :as buy-token]
+    [status-im.feature-flags :as ff]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
@@ -32,28 +33,35 @@
           {:type     :wallet-networks
            :on-press #(rf/dispatch [:wallet/close-account-page])}]
          [quo/account-overview
-          {:current-value       formatted-balance
+          {:container-style     style/account-overview
+           :current-value       formatted-balance
            :account-name        name
            :account             (if watch-only? :watched-address :default)
            :customization-color color}]
-         [quo/wallet-graph {:time-frame :empty}]
+         (when (ff/enabled? ::ff/wallet.graph) [quo/wallet-graph {:time-frame :empty}])
          (when (not watch-only?)
            [quo/wallet-ctas
-            {:send-action    (fn []
-                               (rf/dispatch [:wallet/clean-send-data])
-                               (rf/dispatch [:wallet/wizard-navigate-forward
-                                             {:start-flow? true
-                                              :flow-id     :wallet-flow}]))
-             :receive-action #(rf/dispatch [:open-modal :screen/wallet.share-address {:status :receive}])
-             :buy-action     #(rf/dispatch [:show-bottom-sheet
-                                            {:content buy-token/view}])
-             :bridge-action  #(rf/dispatch [:wallet/start-bridge])}])
+            {:container-style style/cta-buttons
+             :send-action     (fn []
+                                (rf/dispatch [:wallet/clean-send-data])
+                                (rf/dispatch [:wallet/wizard-navigate-forward
+                                              {:start-flow? true
+                                               :flow-id     :wallet-flow}]))
+             :receive-action  #(rf/dispatch [:open-modal :screen/wallet.share-address
+                                             {:status :receive}])
+             :buy-action      #(rf/dispatch [:show-bottom-sheet
+                                             {:content buy-token/view}])
+             :bridge-action   #(rf/dispatch [:wallet/start-bridge])}])
          [quo/tabs
           {:style            style/tabs
            :size             32
            :default-active   @selected-tab
            :data             (tabs-data watch-only?)
-           :on-change        #(reset! selected-tab %)
+           :on-change        (rn/use-callback (fn [tab]
+                                                (when (and (= :activity tab)
+                                                           (ff/enabled? :FLAG_WALLET_ACTIVITY_ENABLED))
+                                                  (rf/dispatch [:wallet/fetch-activities]))
+                                                (reset! selected-tab tab)))
            :scrollable?      true
            :scroll-on-press? true}]
          [tabs/view {:selected-tab @selected-tab}]

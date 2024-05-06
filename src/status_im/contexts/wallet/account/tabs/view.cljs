@@ -33,7 +33,7 @@
                                                                   [options-drawer/view
                                                                    {:name  (:name collectible-details)
                                                                     :image (:uri preview-url)}])}]))}]
-       :activity     [activity/view]
+       :activity     [activity/view {:activities []}]
        :permissions  [empty-tab/view
                       {:title        (i18n/label :t/no-permissions)
                        :description  (i18n/label :t/no-collectibles-description)

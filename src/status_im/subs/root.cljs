@@ -14,6 +14,7 @@
     status-im.subs.pairing
     status-im.subs.profile
     status-im.subs.shell
+    status-im.subs.wallet.activities
     status-im.subs.wallet.collectibles
     status-im.subs.wallet.networks
     status-im.subs.wallet.saved-addresses

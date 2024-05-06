@@ -62,7 +62,7 @@
        [icons/icon
         :i/keycard-card
         {:color secondary-color}])]]
-   (when (= :derivation-path type)
+   (when (and on-press (= :derivation-path type))
      [rn/pressable
       {:accessibility-label :derivation-path-button
        :on-press            on-press

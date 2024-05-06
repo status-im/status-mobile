@@ -8,6 +8,7 @@
     [reagent.core :as reagent]
     [status-im.common.alert.effects :as alert.effects]
     [status-im.common.device-permissions :as device-permissions]
+    [status-im.config :as config]
     [status-im.constants :as constants]
     [status-im.contexts.chat.messenger.composer.actions.style :as style]
     [status-im.contexts.chat.messenger.composer.constants :as comp-constants]
@@ -235,10 +236,12 @@
                :display        (if @(:recording? state) :none :flex)}}
       [camera-button edit]
       [image-button props animations edit]
-      [reaction-button]
-      [format-button]]
+      (when config/show-not-implemented-features?
+        [reaction-button])
+      (when config/show-not-implemented-features?
+        [format-button])]
      [:f> send-button props state animations window-height images edit send-btn-opacity]
-     (when (and (not edit) (not images))
+     (when (and (not edit) (not images) config/show-not-implemented-features?)
        ;; TODO(alwx): needs to be replaced with an `audio-button` later. See
        ;; https://github.com/status-im/status-mobile/issues/16084 for more details.
        [:f> disabled-audio-button audio-btn-opacity])]))

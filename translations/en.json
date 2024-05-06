@@ -1102,7 +1102,8 @@
     "ok-continue": "Okay, continue",
     "ok-got-it": "Okay, got it",
     "okay": "Okay",
-    "on": "On",
+    "on-capitalized": "On",
+    "on": "on",
     "on-the-web": "On the web",
     "only-mentions": "Only @mentions",
     "open": "Open",
@@ -2594,5 +2595,6 @@
     "this-account-has-no-activity": "This account has no activity",
     "this-address-has-activity": "This address has activity",
     "scanning-for-activity": "Scanning for activity...",
-    "send-community-link": "Send community link"
+    "send-community-link": "Send community link",
+    "at-least-one-network-must-be-activated": "At least 1 network must be activated"
 }
