@@ -28,15 +28,16 @@
      collection-name]]])
 
 (defn cta-buttons
-  [chain-id token-id contract-address]
+  [chain-id token-id contract-address watch-only?]
   (let [theme (quo.theme/use-theme)]
     [rn/view {:style style/buttons-container}
-     [quo/button
-      {:container-style style/send-button
-       :type            :outline
-       :size            40
-       :icon-left       :i/send}
-      (i18n/label :t/send)]
+     (when-not watch-only?
+       [quo/button
+        {:container-style style/send-button
+         :type            :outline
+         :size            40
+         :icon-left       :i/send}
+        (i18n/label :t/send)])
      [quo/button
       {:container-style  style/opensea-button
        :type             :outline
@@ -66,7 +67,7 @@
       (let [theme                       (quo.theme/use-theme)
             collectible                 (rf/sub [:wallet/last-collectible-details])
             animation-shared-element-id (rf/sub [:animation-shared-element-id])
-            wallet-address              (rf/sub [:wallet/current-viewing-account-address])
+            account                     (rf/sub [:wallet/current-viewing-account])
             {:keys [id
                     preview-url
                     collection-data
@@ -90,7 +91,7 @@
                                          :header       collectible-name
                                          :description  collection-name}
             total-owned                 (utils/total-owned-collectible (:ownership collectible)
-                                                                       wallet-address)]
+                                                                       (:address account))]
         (rn/use-unmount #(rf/dispatch [:wallet/clear-last-collectible-details]))
         [scroll-page/scroll-page
          {:navigate-back? true
@@ -128,7 +129,7 @@
                                                                          {:name  collectible-name
                                                                           :image preview-uri}])}])}])))}]
           [header collectible-name collection-name collection-image]
-          [cta-buttons chain-id token-id contract-address]
+          [cta-buttons chain-id token-id contract-address (:watch-only? account)]
           [quo/tabs
            {:size           32
             :style          style/tabs
