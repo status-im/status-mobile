@@ -10,8 +10,7 @@
     [quo.foundations.colors :as colors]
     [quo.theme]
     [react-native.core :as rn]
-    [utils.i18n :as i18n]
-    [utils.re-frame :as rf]))
+    [utils.i18n :as i18n]))
 
 (defn- activity-reply-text-input
   [{:keys [on-update-reply max-reply-length valid-reply?]} reply-input set-reply-input]
@@ -146,14 +145,13 @@
      label]))
 
 (defmethod footer-item-view :status
-  [{:keys [label subtype blur?]} _ _]
-  (let [app-theme (rf/sub [:theme])]
-    [quo.theme/provider app-theme
-     [status-tags/status-tag
-      {:size   :small
-       :label  label
-       :status {:type subtype}
-       :blur?  blur?}]]))
+  [{:keys [label subtype blur? theme]} _ _]
+  [quo.theme/provider theme
+   [status-tags/status-tag
+    {:size   :small
+     :label  label
+     :status {:type subtype}
+     :blur?  blur?}]])
 
 (defn- footer
   [{:keys [replying? items] :as props}]
