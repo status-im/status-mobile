@@ -1,10 +1,11 @@
 (ns status-im.contexts.settings.wallet.keypairs-and-accounts.view
   (:require [clojure.string :as string]
             [quo.core :as quo]
+            [quo.theme]
             [react-native.core :as rn]
             [react-native.safe-area :as safe-area]
-            [status-im.common.not-implemented :as not-implemented]
             [status-im.constants :as constants]
+            [status-im.contexts.settings.wallet.keypairs-and-accounts.actions.view :as actions]
             [status-im.contexts.settings.wallet.keypairs-and-accounts.style :as style]
             [utils.address :as utils]
             [utils.i18n :as i18n]
@@ -34,10 +35,35 @@
   {:margin-horizontal 20
    :margin-vertical   8})
 
+(defn on-options-press
+  [{:keys [theme]
+    :as   props}]
+  (rf/dispatch [:show-bottom-sheet
+                {:content (fn [] [actions/view props])
+                 :theme   theme}]))
+
 (defn- keypair
   [item index _
-   {:keys [profile-picture compressed-key customization-color]}]
-  (let [accounts (parse-accounts (:accounts item))]
+   {:keys [profile-picture compressed-key customization-color]
+    :as   profile-info}]
+  (let [theme            (quo.theme/use-theme)
+        accounts         (parse-accounts (:accounts item))
+        default-keypair? (zero? index)
+        details          {:full-name (:name item)
+                          :address   (when default-keypair?
+                                       (utils/get-shortened-compressed-key compressed-key))}
+        on-press         (rn/use-callback
+                          (fn []
+                            (on-options-press
+                             (merge {:type  (if default-keypair? :default-keypair :keypair)
+                                     :title (:full-name details)
+                                     :theme theme}
+                                    (if default-keypair?
+                                      {:customization-color customization-color
+                                       :profile-picture     profile-picture
+                                       :description         (:address details)}
+                                      {:icon-avatar :i/seed}))))
+                          [details index profile-info theme])]
     [quo/keypair
      {:blur?               false
       :status-indicator    false
@@ -46,12 +72,10 @@
       :accounts            accounts
       :customization-color customization-color
       :container-style     keypair-container-style
-      :profile-picture     (when (zero? index) profile-picture)
-      :type                (if (zero? index) :default-keypair :other)
-      :on-options-press    #(not-implemented/alert)
-      :details             {:full-name (:name item)
-                            :address   (when (zero? index)
-                                         (utils/get-shortened-compressed-key compressed-key))}}]))
+      :profile-picture     (when default-keypair? profile-picture)
+      :type                (if default-keypair? :default-keypair :other)
+      :on-options-press    on-press
+      :details             details}]))
 
 (defn view
   []
