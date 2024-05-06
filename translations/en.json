@@ -2484,6 +2484,7 @@
     "address-no-activity": "This address has no activity",
     "scanning": "Scanning for activity...",
     "keypairs": "Key pairs",
+    "keypairs-and-accounts": "Key pairs and accounts",
     "keypairs-accounts-and-addresses": "Key pairs, accounts and addresses",
     "keypairs-description": "Select key pair to derive your new account from",
     "confirm-account-origin": "Confirm account origin",
