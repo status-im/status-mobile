@@ -503,7 +503,9 @@
      :component saved-addresses-settings/view}
 
     {:name      :screen/settings.keypairs-and-accounts
-     :options   options/transparent-modal-screen-options
+     :options   (merge
+                 options/transparent-modal-screen-options
+                 options/dark-screen)
      :component keypairs-and-accounts/view}
 
     {:name      :screen/settings-messages
