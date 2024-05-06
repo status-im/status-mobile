@@ -785,7 +785,7 @@
    :description            :t/enter-eth
    :ens?                   false
    :input-title            :t/eth-or-ens
-   :screen                 :screen/wallet.add-address
+   :screen                 :screen/wallet.add-address-to-watch
    :confirm-screen         :screen/wallet.confirm-address
    :confirm-screen-props   {:button-label :t/add-watched-address
                             :address-type :t/watched-address

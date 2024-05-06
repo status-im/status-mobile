@@ -1,7 +1,6 @@
-(ns status-im.contexts.wallet.add-account.confirm-address.component-spec
+(ns status-im.contexts.wallet.add-account.confirm-address-to-watch.component-spec
   (:require
-    [status-im.constants :as constants]
-    [status-im.contexts.wallet.add-account.add-address.confirm-address.view :as confirm-address]
+    [status-im.contexts.wallet.add-account.confirm-address-to-watch.view :as confirm-address]
     [test-helpers.component :as h]))
 
 (h/describe "Add Watch Only Account Page"
@@ -15,14 +14,13 @@
                                                     :description :t/enter-eth
                                                     :ens? false
                                                     :input-title :t/eth-or-ens
-                                                    :screen :screen/wallet.add-address
+                                                    :screen :screen/wallet.add-address-to-watch
                                                     :confirm-screen :screen/wallet.confirm-address
                                                     :confirm-screen-props
                                                     {:button-label :t/add-watched-address
                                                      :address-type :t/watched-address
-                                                     :placeholder :t/default-watched-address-placeholder}
-                                                    :adding-address-purpose
-                                                    constants/add-address-to-watch-type}})
+                                                     :placeholder
+                                                     :t/default-watched-address-placeholder}}})
     (h/render-with-theme-provider [confirm-address/view] :dark)
     (h/is-truthy (h/get-by-text "0xmock-address"))
     (h/is-disabled (h/get-by-label-text :confirm-button-label))))

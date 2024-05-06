@@ -511,24 +511,33 @@
          sorted-activities    (sort :timestamp activities)]
      {:db (assoc-in db [:wallet :activities] sorted-activities)})))
 
-(defn- adding-purpose->navigation-method
-  [purpose]
-  (if (= constants/add-address-to-watch-type purpose) :navigate-to :open-modal))
+(defn add-address-to-watch
+  [{:keys [db]} [{:keys [screen] :as props}]]
+  {:fx [[:dispatch [:navigate-to screen props]]]
+   :db (assoc-in db [:wallet :ui :currently-added-address] props)})
 
-(defn add-address
-  [{:keys [db]} [{:keys [screen adding-address-purpose] :as props}]]
-  (let [navigation-method (adding-purpose->navigation-method adding-address-purpose)]
-    {:fx [[:dispatch [navigation-method screen props]]]
-     :db (assoc-in db [:wallet :ui :currently-added-address] props)}))
+(rf/reg-event-fx :wallet/add-address add-address-to-watch)
 
-(rf/reg-event-fx :wallet/add-address add-address)
+(defn add-address-to-save
+  [{:keys [db]} [{:keys [screen] :as props}]]
+  {:fx [[:dispatch [:open-modal screen props]]]
+   :db (assoc-in db [:wallet :ui :currently-added-address] props)})
 
-(defn confirm-add-address
-  [{:keys [db]} [{:keys [ens? address adding-address-purpose]}]]
-  (let [confirm-screen    (get-in db [:wallet :ui :currently-added-address :confirm-screen])
-        navigation-method (adding-purpose->navigation-method adding-address-purpose)]
+(rf/reg-event-fx :wallet/add-address add-address-to-save)
+
+(defn confirm-add-address-to-save
+  [{:keys [db]} [{:keys [ens? address]}]]
+  (let [confirm-screen (get-in db [:wallet :ui :currently-added-address :confirm-screen])]
     {:fx [[:dispatch
-           [navigation-method confirm-screen]]]
+           [:open-modal confirm-screen]]]
      :db (update-in db [:wallet :ui :currently-added-address] assoc :ens ens? :address address)}))
 
-(rf/reg-event-fx :wallet/confirm-add-address confirm-add-address)
+(rf/reg-event-fx :wallet/confirm-add-address-to-save confirm-add-address-to-save)
+
+(defn confirm-add-address-to-watch
+  [{:keys [db]} [{:keys [ens? address]}]]
+  (let [confirm-screen (get-in db [:wallet :ui :currently-added-address :confirm-screen])]
+    {:fx [[:dispatch [:navigate-to confirm-screen]]]
+     :db (update-in db [:wallet :ui :currently-added-address] assoc :ens ens? :address address)}))
+
+(rf/reg-event-fx :wallet/confirm-add-address-to-watch confirm-add-address-to-watch)

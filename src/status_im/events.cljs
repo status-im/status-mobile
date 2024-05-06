@@ -31,8 +31,8 @@
     status-im.contexts.shell.qr-reader.events
     status-im.contexts.shell.share.events
     status-im.contexts.syncing.events
-    status-im.contexts.wallet.add-account.add-address.events
     status-im.contexts.wallet.add-account.create-account.events
+    status-im.contexts.wallet.add-account.events
     status-im.contexts.wallet.collectible.events
     status-im.contexts.wallet.common.wizard.events
     status-im.contexts.wallet.effects

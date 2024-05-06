@@ -1,11 +1,11 @@
-(ns status-im.contexts.wallet.add-account.add-address-to-save.view
+(ns status-im.contexts.wallet.add-account.add-address-to-watch.view
   (:require
     [clojure.string :as string]
     [quo.core :as quo]
     [react-native.core :as rn]
     [status-im.common.floating-button-page.view :as floating-button-page]
     [status-im.contexts.wallet.activity-indicator.view :as activity-indicator]
-    [status-im.contexts.wallet.add-account.add-address-to-save.style :as style]
+    [status-im.contexts.wallet.add-account.add-address-to-watch.style :as style]
     [status-im.contexts.wallet.address-input.view :as address-input]
     [status-im.contexts.wallet.utils :as wallet.utils]
     [status-im.subs.wallet.add-account.address-to-watch]
@@ -13,10 +13,10 @@
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
-(defn- on-press-confirm-add-address-to-save
+(defn- on-press-confirm-add-address-to-watch
   [input-value]
   (rf/dispatch
-   [:wallet/confirm-add-address-to-save
+   [:wallet/confirm-add-address-to-watch
     {:address input-value
      :ens?    (utils.ens/is-valid-eth-name?
                input-value)}]))
@@ -24,9 +24,9 @@
 (defn view
   []
   (let [addresses (rf/sub [:wallet/lowercased-addresses])
-        {:keys [title description input-title accessibility-label]}
+        {:keys [title description input-title adding-address-purpose accessibility-label]}
         (rf/sub [:wallet/currently-added-address])
-        validate #(wallet.utils/validate-fn % addresses false)
+        validate #(wallet.utils/validate-fn % addresses true)
         customization-color (rf/sub [:profile/customization-color])]
     (rf/dispatch [:wallet/clean-scanned-address])
     (rf/dispatch [:wallet/clear-address-activity])
@@ -54,7 +54,7 @@
                                               (= activity-state :scanning)
                                               (not validated-address))
                      :on-press            (fn []
-                                            (on-press-confirm-add-address-to-save input-value)
+                                            (on-press-confirm-add-address-to-watch input-value)
                                             (clear-input))
                      :container-style     {:z-index 2}}
                     (i18n/label :t/continue)]}
@@ -71,6 +71,7 @@
             :set-validation-message set-validation-message
             :set-input-value        set-input-value
             :input-title            (i18n/label input-title)
+            :adding-address-purpose adding-address-purpose
             :accessibility-label    accessibility-label}]
           (if validation-msg
             [quo/info-message

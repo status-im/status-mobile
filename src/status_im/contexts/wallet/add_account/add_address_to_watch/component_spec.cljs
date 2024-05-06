@@ -1,6 +1,6 @@
-(ns status-im.contexts.wallet.add-account.add-address.component-spec
+(ns status-im.contexts.wallet.add-account.add-address-to-watch.component-spec
   (:require
-    [status-im.contexts.wallet.add-account.add-address.view :as add-address-to-watch]
+    [status-im.contexts.wallet.add-account.add-address-to-watch.view :as add-address-to-watch]
     status-im.contexts.wallet.events
     [test-helpers.component :as h]))
 
@@ -19,15 +19,14 @@
        :wallet/currently-added-address      {:title :t/add-address-to-watch
                                              :description :t/enter-eth
                                              :input-title :t/eth-or-ens
-                                             :screen :screen/wallet.add-address
+                                             :screen :screen/wallet.add-address-to-watch
                                              :confirm-screen :screen/wallet.confirm-address
                                              :ens? false
                                              :accessibility-label :add-address-to-watch
                                              :confirm-screen-props
                                              {:button-label :t/add-watched-address
                                               :address-type :t/watched-address
-                                              :placeholder  :t/default-watched-address-placeholder}
-                                             :adding-address-purpose :watch}})))
+                                              :placeholder  :t/default-watched-address-placeholder}}})))
 
   (h/test "validation messages show for already used addressed"
     (h/render-with-theme-provider [add-address-to-watch/view] :dark)

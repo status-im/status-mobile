@@ -1,4 +1,4 @@
-(ns status-im.contexts.wallet.add-account.add-address.events
+(ns status-im.contexts.wallet.add-account.events
   (:require [clojure.string :as string]
             [status-im.contexts.wallet.common.utils.networks :as network-utils]
             [taoensso.timbre :as log]

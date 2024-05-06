@@ -1,19 +1,18 @@
-(ns status-im.contexts.wallet.add-account.confirm-address.view
+(ns status-im.contexts.wallet.add-account.confirm-address-to-save.view
   (:require
-   [clojure.string :as string]
-   [quo.core :as quo]
-   [quo.foundations.colors :as colors]
-   [quo.theme]
-   [react-native.core :as rn]
-   [status-im.common.emoji-picker.utils :as emoji-picker.utils]
-   [status-im.common.not-implemented :as not-implemented]
-   [status-im.constants :as constants]
-   [status-im.contexts.wallet.add-account.confirm-address.style :as style]
-   [status-im.contexts.wallet.common.screen-base.create-or-edit-account.view :as
-    create-or-edit-account]
-   [utils.debounce :as debounce]
-   [utils.i18n :as i18n]
-   [utils.re-frame :as rf]))
+    [clojure.string :as string]
+    [quo.core :as quo]
+    [quo.foundations.colors :as colors]
+    [quo.theme]
+    [react-native.core :as rn]
+    [status-im.common.emoji-picker.utils :as emoji-picker.utils]
+    [status-im.common.not-implemented :as not-implemented]
+    [status-im.contexts.wallet.add-account.confirm-address-to-save.style :as style]
+    [status-im.contexts.wallet.common.screen-base.create-or-edit-account.view :as
+     create-or-edit-account]
+    [utils.debounce :as debounce]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]))
 
 (def ^:const sheet-closing-delay 750)
 
@@ -32,23 +31,15 @@
    sheet-closing-delay))
 
 (defn- on-press-confirm-address
-  [{:keys [adding-address-purpose account-name account-emoji account-color address ens? theme]}]
-  (condp = adding-address-purpose
-    constants/add-address-to-watch-type (rf/dispatch [:wallet/add-account
-                                                      {:sha3-pwd     nil
-                                                       :type         constants/add-address-to-watch-type
-                                                       :account-name account-name
-                                                       :emoji        account-emoji
-                                                       :color        account-color}
-                                                      {:address    address
-                                                       :public-key ""}])
-    constants/add-address-to-save-type  (rf/dispatch
-                                         [:wallet/save-address
-                                          {:address             address
-                                           :name                account-name
-                                           :customization-color account-color
-                                           :ens                 (when ens? address)
-                                           :on-success          #(on-success-confirm-address theme)}])))
+  [{:keys [account-name account-emoji account-color address ens? theme]}]
+  (rf/dispatch
+   [:wallet/save-address
+    {:address             address
+     :name                account-name
+     :customization-color account-color
+     :account-emoji       account-emoji
+     :ens                 (when ens? address)
+     :on-success          #(on-success-confirm-address theme)}]))
 
 (defn to-be-implemented
   []
@@ -66,10 +57,9 @@
         [account-color on-change-color]                (rn/use-state (rand-nth colors/account-colors))
         [account-emoji on-change-emoji]                (rn/use-state (emoji-picker.utils/random-emoji))]
     [:<>
-     (when (= adding-address-purpose constants/add-address-to-save-type)
-       [rn/view {:style style/save-address-drawer-bar-container}
-        [quo/drawer-bar]])
-     [rn/view {:style (style/container adding-address-purpose)}
+     [rn/view {:style style/save-address-drawer-bar-container}
+      [quo/drawer-bar]]
+     [rn/view {:style style/container}
       [create-or-edit-account/view
        {:placeholder         (i18n/label placeholder)
         :account-name        account-name

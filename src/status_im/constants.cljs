@@ -504,6 +504,3 @@
 (def ^:const community-joined-notification-type "communityJoined")
 
 (def ^:const default-telemetry-server-url "https://telemetry.status.im")
-
-(def ^:const add-address-to-watch-type :watch)
-(def ^:const add-address-to-save-type :save)

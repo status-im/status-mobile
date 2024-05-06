@@ -72,9 +72,12 @@
     [status-im.contexts.wallet.account.edit-account.view :as wallet-edit-account]
     [status-im.contexts.wallet.account.share-address.view :as wallet-share-address]
     [status-im.contexts.wallet.account.view :as wallet-accounts]
-    [status-im.contexts.wallet.add-account.add-address.confirm-address.view :as
+    [status-im.contexts.wallet.add-account.add-address-to-save.view :as wallet-add-address-to-save]
+    [status-im.contexts.wallet.add-account.add-address-to-watch.view :as wallet-add-address-to-watch]
+    [status-im.contexts.wallet.add-account.confirm-address-to-save.view :as
+     wallet-confirm-address-to-save]
+    [status-im.contexts.wallet.add-account.confirm-address-to-watch.view :as
      wallet-confirm-address-to-watch]
-    [status-im.contexts.wallet.add-account.add-address.view :as wallet-add-address-to-watch]
     [status-im.contexts.wallet.add-account.create-account.edit-derivation-path.view :as
      wallet-edit-derivation-path]
     [status-im.contexts.wallet.add-account.create-account.import-private-key.view :as
@@ -380,20 +383,20 @@
     {:name      :screen/wallet.edit-account
      :component wallet-edit-account/view}
 
-    {:name      :screen/wallet.add-address
+    {:name      :screen/wallet.add-address-to-watch
      :options   {:insets {:top? true}}
      :component wallet-add-address-to-watch/view}
 
     {:name      :screen/wallet.add-address-to-save
-     :options   options/dark-screen
-     :component wallet-add-address-to-watch/view}
+     :options   (assoc options/dark-screen :sheet? true)
+     :component wallet-add-address-to-save/view}
 
     {:name      :screen/wallet.confirm-address
      :component wallet-confirm-address-to-watch/view}
 
     {:name      :screen/wallet.confirm-address-to-save
      :options   options/dark-screen
-     :component wallet-confirm-address-to-watch/view}
+     :component wallet-confirm-address-to-save/view}
 
     {:name      :screen/wallet.bridge-select-asset
      :options   {:insets                 {:top? true}
