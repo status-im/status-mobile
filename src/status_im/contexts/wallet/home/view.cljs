@@ -2,8 +2,8 @@
   (:require
     [quo.core :as quo]
     [quo.foundations.colors :as colors]
+    [quo.theme]
     [react-native.core :as rn]
-    [reagent.core :as reagent]
     [status-im.common.home.top-nav.view :as common.top-nav]
     [status-im.contexts.wallet.home.style :as style]
     [status-im.contexts.wallet.home.tabs.view :as tabs]
@@ -69,7 +69,8 @@
         account-cards-data              (rf/sub [:wallet/account-cards-data])
         cards                           (conj account-cards-data (new-account-card-data))
         [init-loaded? set-init-loaded]  (rn/use-state false)
-        {:keys [formatted-balance]}     (rf/sub [:wallet/aggregated-token-values-and-balance])]
+        {:keys [formatted-balance]}     (rf/sub [:wallet/aggregated-token-values-and-balance])
+        theme                           (quo.theme/use-theme)]
     (rn/use-effect (fn []
                      (when (and @account-list-ref (pos? (count cards)))
                        (.scrollToOffset ^js @account-list-ref
@@ -83,29 +84,26 @@
      [tokens-loading?])
     [rn/view {:style (style/home-container)}
      [common.top-nav/view]
-     [rn/flat-list
-      {:refresh-control (reagent/as-element
-                         [rn/refresh-control
-                          {:refreshing (and tokens-loading? init-loaded?)
-                           :colors     colors/neutral-40
-                           :tint-color colors/neutral-40
-                           :on-refresh #(rf/dispatch [:wallet/get-accounts])}])
-       :style           {:flex 1}
-       :header  (reagent/as-element
-                 [:<>
-                  [rn/view
-                   [quo/wallet-overview
-                    {:state             (if tokens-loading? :loading :default)
-                     :time-frame        :none
-                     :metrics           :none
-                     :balance           formatted-balance
-                     :networks          networks
-                     :dropdown-on-press #(rf/dispatch [:show-bottom-sheet {:content network-filter/view}])}]]
-                  (when (ff/enabled? ::ff/wallet.graph) [quo/wallet-graph {:time-frame :empty}])]) 
-       :data [{:cards cards
-               :tabs tabs-data}]
-       :render-fn (fn [item]
-                    [:<>
-                     [render-cards (:cards item) account-list-ref]
-                     [render-tabs (:tabs item) set-selected-tab selected-tab]])
-       :footer [tabs/view {:selected-tab selected-tab}]}]]))
+     [quo/refreshable-flat-list
+      {:refresh-control       [rn/refresh-control
+                               {:refreshing (and tokens-loading? init-loaded?)
+                                :colors     colors/neutral-40
+                                :tint-color colors/neutral-40
+                                :on-refresh #(rf/dispatch [:wallet/get-accounts])}]
+       :header                [rn/view {:style (style/header-container theme)}
+                               [quo/wallet-overview
+                                {:state             (if tokens-loading? :loading :default)
+                                 :time-frame        :none
+                                 :metrics           :none
+                                 :balance           formatted-balance
+                                 :networks          networks
+                                 :dropdown-on-press #(rf/dispatch [:show-bottom-sheet
+                                                                   {:content network-filter/view}])}]
+                               (when (ff/enabled? ::ff/wallet.graph)
+                                 [quo/wallet-graph {:time-frame :empty}])
+                               [render-cards cards account-list-ref]
+                               [render-tabs tabs-data set-selected-tab selected-tab]]
+       :sticky-header-indices [0]
+       :data                  []
+       :render-fn             #()
+       :footer                [tabs/view {:selected-tab selected-tab}]}]]))
