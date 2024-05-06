@@ -1,6 +1,5 @@
 (ns status-im.contexts.settings.wallet.wallet-options.view
   (:require [quo.core :as quo]
-            [react-native.core :as rn]
             [react-native.safe-area :as safe-area]
             [status-im.contexts.settings.wallet.wallet-options.style :as style]
             [utils.i18n :as i18n]
@@ -26,11 +25,13 @@
     :blur?     true
     :list-type :settings}])
 
+(defn navigate-back
+  []
+  (rf/dispatch [:navigate-back]))
+
 (defn view
   []
-  (let [inset-top     (safe-area/get-top)
-        navigate-back (rn/use-callback
-                       #(rf/dispatch [:navigate-back]))]
+  (let [inset-top (safe-area/get-top)]
     [quo/overlay
      {:type            :shell
       :container-style (style/page-wrapper inset-top)}
