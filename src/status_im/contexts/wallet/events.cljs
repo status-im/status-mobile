@@ -2,7 +2,6 @@
   (:require
     [camel-snake-kebab.extras :as cske]
     [clojure.string :as string]
-    [react-native.background-timer :as background-timer]
     [react-native.platform :as platform]
     [status-im.constants :as constants]
     [status-im.contexts.wallet.common.utils.networks :as network-utils]
@@ -329,55 +328,19 @@
               (assoc-in [:wallet :ui :search-address :local-suggestions] suggestion)
               (assoc-in [:wallet :ui :search-address :valid-ens-or-address?] (boolean result)))})))
 
-(rf/reg-event-fx :wallet/fetch-address-suggestions
- (fn [{:keys [db]} [_address]]
-   {:db (-> db
-            (assoc-in [:wallet :ui :search-address :local-suggestions] nil)
-            (assoc-in [:wallet :ui :search-address :valid-ens-or-address?] false))}))
-
-(rf/reg-event-fx :wallet/ens-validation-success
- (fn [{:keys [db]} [_ens]]
-   {:db (-> db
-            (assoc-in [:wallet :ui :search-address :local-suggestions] nil)
-            (assoc-in [:wallet :ui :search-address :valid-ens-or-address?] true))}))
-
 (rf/reg-event-fx :wallet/address-validation-success
- (fn [{:keys [db]} [_]]
+ (fn [{:keys [db]}]
    {:db (assoc-in db [:wallet :ui :search-address :valid-ens-or-address?] true)}))
 
-(rf/reg-event-fx :wallet/validate-address
- (fn [{:keys [db]} [address]]
-   (let [current-timeout (get-in db [:wallet :ui :search-address :search-timeout])
-         timeout         (background-timer/set-timeout
-                          #(rf/dispatch [:wallet/address-validation-success address])
-                          2000)]
-     (background-timer/clear-timeout current-timeout)
-     {:db (-> db
-              (assoc-in [:wallet :ui :search-address :search-timeout] timeout)
-              (assoc-in [:wallet :ui :search-address :valid-ens-or-address?] false))})))
-
-(rf/reg-event-fx :wallet/validate-ens
- (fn [{:keys [db]} [ens]]
-   (let [current-timeout (get-in db [:wallet :ui :search-address :search-timeout])
-         timeout         (background-timer/set-timeout
-                          #(rf/dispatch [:wallet/ens-validation-success ens])
-                          2000)]
-     (background-timer/clear-timeout current-timeout)
-     {:db (-> db
-              (assoc-in [:wallet :ui :search-address :search-timeout] timeout)
-              (assoc-in [:wallet :ui :search-address :valid-ens-or-address?] false))})))
+(rf/reg-event-fx :wallet/address-validation-failed
+ (fn [{:keys [db]}]
+   {:db (assoc-in db [:wallet :ui :search-address :valid-ens-or-address?] false)}))
 
 (rf/reg-event-fx :wallet/clean-local-suggestions
  (fn [{:keys [db]}]
-   (let [current-timeout (get-in db [:wallet :ui :search-address :search-timeout])]
-     (background-timer/clear-timeout current-timeout)
-     {:db (-> db
-              (assoc-in [:wallet :ui :search-address :local-suggestions] [])
-              (assoc-in [:wallet :ui :search-address :valid-ens-or-address?] false))})))
-
-(rf/reg-event-fx :wallet/clean-ens-or-address-validation
- (fn [{:keys [db]}]
-   {:db (assoc-in db [:wallet :ui :search-address :valid-ens-or-address?] false)}))
+   {:db (-> db
+            (assoc-in [:wallet :ui :search-address :local-suggestions] [])
+            (assoc-in [:wallet :ui :search-address :valid-ens-or-address?] false))}))
 
 (rf/reg-event-fx
  :wallet/navigate-to-chain-explorer-from-bottom-sheet
