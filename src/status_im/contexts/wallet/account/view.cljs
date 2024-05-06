@@ -51,6 +51,8 @@
                                              {:status :receive}])
              :buy-action      #(rf/dispatch [:show-bottom-sheet
                                              {:content buy-token/view}])
+             :swap-action     (when (ff/enabled? ::ff/wallet.swap)
+                                #(rf/dispatch [:wallet/start-swap]))
              :bridge-action   #(rf/dispatch [:wallet/start-bridge])}])
          [quo/tabs
           {:style            style/tabs
