@@ -9,7 +9,8 @@
 
 (h/deftest-sub :wallet/all-activities
   [sub-name]
-  (testing "It should correctly return the activities list from wallet data"
+  (testing
+    "Return the activities list from wallet data"
     (swap! rf-db/app-db assoc-in
       [:wallet :activities]
       [{:id 1 :name "Transaction1"}
@@ -19,10 +20,12 @@
 
 (h/deftest-sub :wallet/activities-for-current-viewing-account
   [sub-name]
-  (testing "Activities should be filtered and grouped by account and dates"
+  (testing
+    "Return activities filtered and grouped by account and dates"
     (swap! rf-db/app-db assoc
       {:wallet/all-activities                  [{:sender "acc1" :recipient "acc2" :timestamp 1588291200}
-                                                {:sender "acc2" :recipient "acc1" :timestamp 1588377600}]
+                                                {:sender "acc2" :recipient "acc1" :timestamp 1588377600}
+                                                {:sender "acc3" :recipient "acc4" :timestamp 1588464000}]
        :wallet/current-viewing-account-address "acc1"})
     (let [result (rf/sub [sub-name])]
       (is (= [{:title "May 1" :data [{:sender "acc1" :recipient "acc2" :timestamp 1588291200}]}
