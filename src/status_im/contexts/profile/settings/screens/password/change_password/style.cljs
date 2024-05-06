@@ -48,7 +48,7 @@
    :justify-content   :space-between})
 
 (def bottom-part
-  {:margin-bottom   (+ (safe-area/get-bottom) 12)
+  {:margin-bottom   (- (safe-area/get-bottom) 12)
    :justify-content :flex-end})
 
 (def disclaimer-container

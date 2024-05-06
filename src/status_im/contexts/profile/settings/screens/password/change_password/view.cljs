@@ -2,6 +2,7 @@
   (:require
     [quo.core :as quo]
     [react-native.core :as rn]
+    [react-native.platform :as platform]
     [react-native.safe-area :as safe-area]
     [status-im.contexts.profile.settings.screens.password.change-password.events]
     [status-im.contexts.profile.settings.screens.password.change-password.new-password-form :as
@@ -16,8 +17,9 @@
 
 (defn view
   []
-  (let [{:keys [top]} (safe-area/get-insets)
-        current-step  (rf/sub [:settings/change-password-current-step])]
+  (let [{:keys [top]}            (safe-area/get-insets)
+        alert-banners-top-margin (rf/sub [:alert-banners/top-margin])
+        current-step             (rf/sub [:settings/change-password-current-step])]
     (rn/use-unmount #(rf/dispatch [:change-password/reset]))
     [quo/overlay {:type :shell}
      [rn/pressable
@@ -32,7 +34,7 @@
         :on-press   navigate-back}]
       [rn/keyboard-avoiding-view
        {:style                  {:flex 1}
-        :keyboardVerticalOffset (- (safe-area/get-bottom))}
+        :keyboardVerticalOffset (if platform/ios? alert-banners-top-margin 0)}
        (condp = current-step
          :old-password [old-password-form/view]
          :new-password [new-password-form/view])]]]))
