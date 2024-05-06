@@ -78,9 +78,10 @@
 
 (defn add-character
   [state character]
-  (when (can-add-character? state character)
+  (if (can-add-character? state character)
     (set-input-value state
-                     (normalize-value-as-numeric (input-value state) character))))
+                     (normalize-value-as-numeric (input-value state) character))
+    state))
 
 (defn delete-last
   [state]
