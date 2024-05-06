@@ -1,4 +1,4 @@
-(ns status-im.contexts.wallet.add-account.add-address.confirm-address.style
+(ns status-im.contexts.wallet.add-account.confirm-address.style
   (:require [status-im.constants :as constants]))
 
 (defn container

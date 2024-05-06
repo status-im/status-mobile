@@ -1,18 +1,19 @@
-(ns status-im.contexts.wallet.add-account.add-address.confirm-address.view
+(ns status-im.contexts.wallet.add-account.confirm-address.view
   (:require
-    [clojure.string :as string]
-    [quo.core :as quo]
-    [quo.foundations.colors :as colors]
-    [quo.theme]
-    [react-native.core :as rn]
-    [status-im.common.emoji-picker.utils :as emoji-picker.utils]
-    [status-im.constants :as constants]
-    [status-im.contexts.wallet.add-account.add-address.confirm-address.style :as style]
-    [status-im.contexts.wallet.common.screen-base.create-or-edit-account.view :as
-     create-or-edit-account]
-    [utils.debounce :as debounce]
-    [utils.i18n :as i18n]
-    [utils.re-frame :as rf]))
+   [clojure.string :as string]
+   [quo.core :as quo]
+   [quo.foundations.colors :as colors]
+   [quo.theme]
+   [react-native.core :as rn]
+   [status-im.common.emoji-picker.utils :as emoji-picker.utils]
+   [status-im.common.not-implemented :as not-implemented]
+   [status-im.constants :as constants]
+   [status-im.contexts.wallet.add-account.confirm-address.style :as style]
+   [status-im.contexts.wallet.common.screen-base.create-or-edit-account.view :as
+    create-or-edit-account]
+   [utils.debounce :as debounce]
+   [utils.i18n :as i18n]
+   [utils.re-frame :as rf]))
 
 (def ^:const sheet-closing-delay 750)
 
@@ -51,7 +52,7 @@
 
 (defn to-be-implemented
   []
-  (js/alert "To be implemented"))
+  not-implemented/alert)
 
 (defn view
   []

@@ -1,4 +1,4 @@
-(ns status-im.contexts.wallet.add-account.add-address.confirm-address.component-spec
+(ns status-im.contexts.wallet.add-account.confirm-address.component-spec
   (:require
     [status-im.constants :as constants]
     [status-im.contexts.wallet.add-account.add-address.confirm-address.view :as confirm-address]
