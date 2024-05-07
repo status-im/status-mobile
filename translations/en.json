@@ -62,8 +62,8 @@
         "other": "You can select {{count}} more participants"
     },
     "back": "Back",
-    "back-up-seed-phrase": "Back up seed phrase",
-    "back-up-your-seed-phrase": "Back up your seed phrase",
+    "back-up-seed-phrase": "Backup recovery phrase",
+    "back-up-your-seed-phrase": "Backup your recovery phrase",
     "balance": "Balance",
     "begin-set-up": "Begin setup",
     "bio": "Bio",

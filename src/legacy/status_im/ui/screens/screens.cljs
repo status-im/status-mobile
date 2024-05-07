@@ -189,7 +189,7 @@
                 :insets {:top? true}}
     :component backup-settings/backup-settings}
    {:name      :backup-seed
-    :options   {:insets {:top? true}}
+    :options   {:insets {:top? platform/android? :bottom? true}}
     :component profile.seed/backup-seed}
    {:name      :reset-password
     :options   {:topBar (topbar-options :t/reset-password)

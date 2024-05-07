@@ -2,7 +2,6 @@
   (:require
     [legacy.status-im.multiaccounts.reset-password.core :as reset-password]
     [legacy.status-im.multiaccounts.update.core :as multiaccounts.update]
-    [legacy.status-im.ui.components.common.common :as components.common]
     [legacy.status-im.ui.components.core :as components]
     [legacy.status-im.ui.components.list.item :as list.item]
     [legacy.status-im.ui.components.react :as react]
@@ -29,8 +28,7 @@
 
 (views/defview privacy-and-security
   []
-  (views/letsubs [{:keys [mnemonic
-                          preview-privacy?
+  (views/letsubs [{:keys [preview-privacy?
                           messages-from-contacts-only
                           webview-allow-permission-requests?
                           opensea-enabled?
@@ -45,16 +43,6 @@
        :icon-name  :i/close
        :on-press   #(rf/dispatch [:navigate-back])}]
      [react/scroll-view {:padding-vertical 8}
-      [components/list-header (i18n/label :t/security)]
-      [list.item/list-item
-       {:size                :small
-        :title               (i18n/label :t/back-up-seed-phrase)
-        :accessibility-label :back-up-recovery-phrase-button
-        :disabled            (not mnemonic)
-        :chevron             (boolean mnemonic)
-        :accessory           (when mnemonic [components.common/counter {:size 22} 1])
-        :on-press            #(re-frame/dispatch [:navigate-to :backup-seed])}]
-      [separator]
       [components/list-header (i18n/label :t/privacy)]
       [list.item/list-item
        {:size                :small
