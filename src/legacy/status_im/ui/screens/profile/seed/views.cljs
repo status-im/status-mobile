@@ -13,11 +13,11 @@
     [legacy.status-im.utils.utils :as utils]
     [re-frame.core :as re-frame]
     [react-native.core :as rn]
+    [react-native.platform :as platform]
+    [react-native.safe-area :as safe-area]
     [reagent.core :as reagent]
     [utils.i18n :as i18n]
-    [utils.re-frame :as rf]
-    [react-native.platform :as platform]
-    [react-native.safe-area :as safe-area]))
+    [utils.re-frame :as rf]))
 
 (def steps-numbers
   {:intro       1
