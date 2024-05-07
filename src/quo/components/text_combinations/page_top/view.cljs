@@ -37,18 +37,17 @@
   [{:keys        [title title-accessibility-label input counter-top counter-bottom
                   title-right title-right-props]
     avatar-props :avatar}]
-  (let [avatar-props (when avatar-props
-                       (assoc avatar-props :size :size-32))
-        title-props  (assoc title-right-props
-                            :title               title
-                            :right               title-right
-                            :accessibility-label title-accessibility-label)]
+  (let [title-props (assoc title-right-props
+                           :title               title
+                           :right               title-right
+                           :accessibility-label title-accessibility-label)]
     [rn/view {:style style/header}
      [rn/view {:style style/header-title}
       (when avatar-props
-        (if (:group? avatar-props)
-          [group-avatar/view avatar-props]
-          [channel-avatar/view avatar-props]))
+        (let [avatar-props (assoc avatar-props :size :size-32)]
+          (if (:group? avatar-props)
+            [group-avatar/view avatar-props]
+            [channel-avatar/view avatar-props])))
       [standard-title/view title-props]]
      (when (= input :recovery-phrase)
        [header-counter counter-top counter-bottom])]))

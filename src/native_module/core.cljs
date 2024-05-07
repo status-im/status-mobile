@@ -2,6 +2,7 @@
   (:require
     ["react-native" :as react-native]
     [clojure.string :as string]
+    [native-module.utils :as native-utils]
     [react-native.platform :as platform]
     [taoensso.timbre :as log]
     [utils.transforms :as types]))
@@ -543,13 +544,21 @@
   (when platform/android?
     (.resetKeyboardInputCursor ^js (ui-helper) input selection)))
 
-;; passwords are hashed
 (defn reset-password
-  [key-uid current-password# new-password# callback]
-  (log/debug "[native-module] change-database-password")
-  (init-keystore
-   key-uid
-   #(.reEncryptDbAndKeystore ^js (encryption) key-uid current-password# new-password# callback)))
+  ([key-uid current-password-hashed new-password-hashed]
+   (native-utils/promisify-native-module-call reset-password
+                                              key-uid
+                                              current-password-hashed
+                                              new-password-hashed))
+  ([key-uid current-password-hashed new-password-hashed callback]
+   (log/debug "[native-module] change-database-password")
+   (init-keystore
+    key-uid
+    #(.reEncryptDbAndKeystore ^js (encryption)
+                              key-uid
+                              current-password-hashed
+                              new-password-hashed
+                              callback))))
 
 (defn convert-to-keycard-account
   [{:keys [key-uid] :as multiaccount-data} settings current-password# new-password callback]

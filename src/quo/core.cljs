@@ -111,6 +111,7 @@
     quo.components.numbered-keyboard.numbered-keyboard.view
     quo.components.onboarding.small-option-card.view
     quo.components.overlay.view
+    quo.components.password.password-tips.view
     quo.components.password.tips.view
     quo.components.profile.collectible-list-item.view
     quo.components.profile.collectible.view
@@ -356,6 +357,7 @@
 
 ;;;; Password
 (def tips quo.components.password.tips.view/view)
+(def password-tips quo.components.password.password-tips.view/view)
 
 ;;;; Profile
 (def collectible quo.components.profile.collectible.view/collectible)

@@ -1,7 +1,7 @@
 (ns status-im.contexts.shell.activity-center.view
   (:require
     [oops.core :as oops]
-    [react-native.blur :as blur]
+    [quo.core :as quo]
     [react-native.core :as rn]
     [react-native.navigation :as navigation]
     [status-im.contexts.shell.activity-center.header.view :as header]
@@ -67,16 +67,17 @@
     (fn []
       (let [notifications       (rf/sub [:activity-center/notifications])
             customization-color (rf/sub [:profile/customization-color])]
-        [rn/view {:flex 1 :padding-top (navigation/status-bar-height)}
-         [blur/view style/blur]
-         [header/header]
-         [rn/flat-list
-          {:data                      notifications
-           :render-data               {:active-swipeable    active-swipeable
-                                       :customization-color customization-color}
-           :content-container-style   {:flex-grow 1}
-           :empty-component           [empty-tab/empty-tab]
-           :key-fn                    :id
-           :on-scroll-to-index-failed identity
-           :on-end-reached            #(rf/dispatch [:activity-center.notifications/fetch-next-page])
-           :render-fn                 notification-component}]]))))
+        [quo/overlay {:type :shell}
+         [rn/view {:flex 1 :padding-top (navigation/status-bar-height)}
+          [header/header]
+          [rn/flat-list
+           {:data                      notifications
+            :render-data               {:active-swipeable    active-swipeable
+                                        :customization-color customization-color}
+            :content-container-style   {:flex-grow 1}
+            :empty-component           [empty-tab/empty-tab]
+            :key-fn                    :id
+            :on-scroll-to-index-failed identity
+            :on-end-reached            #(rf/dispatch [:activity-center.notifications/fetch-next-page])
+            :render-fn                 notification-component}]]
+        ]))))

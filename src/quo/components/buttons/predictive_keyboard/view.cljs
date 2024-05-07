@@ -70,6 +70,6 @@
                  :type (if (= type :error) :error :default)}
                 (when blur?
                   {:text-color colors/white-opa-70
-                   :icon-color colors/white-opa-70}))
+                   :icon-color colors/white-opa-40}))
          text]
         nil)]]))

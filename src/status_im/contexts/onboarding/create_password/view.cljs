@@ -6,6 +6,7 @@
     [react-native.core :as rn]
     [react-native.safe-area :as safe-area]
     [reagent.core :as reagent]
+    [status-im.constants :as constants]
     [status-im.contexts.onboarding.create-password.style :as style]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]
@@ -80,18 +81,11 @@
        :on-focus       on-input-focus
        :on-blur        on-blur-repeat-password}]]))
 
-(def strength-status
-  {1 :very-weak
-   2 :weak
-   3 :okay
-   4 :strong
-   5 :very-strong})
-
 (defn help
   [{{:keys [lower-case? upper-case? numbers? symbols?]} :validations
     password-strength                                   :password-strength}]
   [rn/view
-   [quo/strength-divider {:type (strength-status password-strength :info)}
+   [quo/strength-divider {:type (constants/strength-status password-strength :info)}
     (i18n/label :t/password-creation-tips-title)]
    [rn/view {:style style/password-tips}
     [quo/tips {:completed? lower-case?}
@@ -109,16 +103,16 @@
                           utils.string/has-upper-case?
                           utils.string/has-numbers?
                           utils.string/has-symbols?
-                          #(utils.string/at-least-n-chars? % 10))]
+                          #(utils.string/at-least-n-chars? % constants/new-password-min-length))]
     (->> password
-         (validations)
-         (zipmap [:lower-case? :upper-case? :numbers? :symbols? :long-enough?]))))
+         validations
+         (zipmap (conj constants/password-tips :long-enough?)))))
 
 (defn calc-password-strength
   [validations]
   (->> (vals validations)
        (filter true?)
-       (count)))
+       count))
 
 (defn password-form
   []

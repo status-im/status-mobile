@@ -58,7 +58,7 @@
       child)))
 
 (defn- outgoing-contact-request-view
-  [{:keys [notification set-swipeable-height customization-color]}]
+  [{:keys [notification set-swipeable-height customization-color]} theme]
   (let [{:keys [chat-id message last-message accepted]} notification
         {:keys [contact-request-state] :as message}     (or message last-message)]
     (if accepted
@@ -89,19 +89,20 @@
                                  :subtype :pending
                                  :key     :status-pending
                                  :blur?   true
-                                 :label   (i18n/label :t/pending)}]
+                                 :label   (i18n/label :t/pending)
+                                 :theme   theme}]
 
                                constants/contact-request-message-state-declined
                                [{:type    :status
                                  :subtype :pending
                                  :key     :status-pending
                                  :blur?   true
-                                 :label   (i18n/label :t/pending)}]
-
+                                 :label   (i18n/label :t/pending)
+                                 :theme   theme}]
                                nil)}])))
 
 (defn- incoming-contact-request-view
-  [{:keys [notification set-swipeable-height customization-color]}]
+  [{:keys [notification set-swipeable-height customization-color]} theme]
   (let [{:keys [id author message last-message]} notification
         message                                  (or message last-message)]
     [quo/activity-log
@@ -122,14 +123,16 @@
           :subtype :positive
           :key     :status-accepted
           :blur?   true
-          :label   (i18n/label :t/accepted)}]
+          :label   (i18n/label :t/accepted)
+          :theme   theme}]
 
         constants/contact-request-message-state-declined
         [{:type    :status
           :subtype :negative
           :key     :status-declined
           :blur?   true
-          :label   (i18n/label :t/declined)}]
+          :label   (i18n/label :t/declined)
+          :theme   theme}]
 
         constants/contact-request-message-state-pending
         [{:type                :button
@@ -151,18 +154,19 @@
   [{:keys [notification] :as props}]
   (let [{:keys [author message last-message]} notification
         {:keys [public-key]}                  (rf/sub [:multiaccount/contact])
-        {:keys [contact-request-state]}       (or message last-message)]
+        {:keys [contact-request-state]}       (or message last-message)
+        app-theme                             (rf/sub [:theme])]
     [swipeable props
      (cond
        (= public-key author)
-       [outgoing-contact-request-view props]
+       [outgoing-contact-request-view props app-theme]
 
        (= contact-request-state constants/contact-request-message-state-accepted)
        [gesture/touchable-without-feedback
         {:on-press (fn []
                      (rf/dispatch [:hide-popover])
                      (rf/dispatch [:chat.ui/start-chat author]))}
-        [incoming-contact-request-view props]]
+        [incoming-contact-request-view props app-theme]]
 
        :else
-       [incoming-contact-request-view props])]))
+       [incoming-contact-request-view props app-theme])]))

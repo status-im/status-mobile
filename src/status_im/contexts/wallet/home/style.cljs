@@ -7,13 +7,10 @@
    :padding-top        8
    :padding-bottom     12})
 
-(def overview-container
-  {:height 86})
-
 (def accounts-list
-  {:padding-top    32
-   :padding-bottom 12
-   :max-height     112})
+  {:padding-top    8
+   :padding-bottom 16
+   :flex-grow      0})
 
 (def accounts-list-container
   {:padding-horizontal 20})

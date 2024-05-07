@@ -13,6 +13,7 @@
     status-im.subs.onboarding
     status-im.subs.pairing
     status-im.subs.profile
+    status-im.subs.settings
     status-im.subs.shell
     status-im.subs.wallet.activities
     status-im.subs.wallet.collectibles
@@ -166,6 +167,9 @@
 
 ;;biometrics
 (reg-root-key-sub :biometrics :biometrics)
+
+;;settings
+(reg-root-key-sub :settings/change-password :settings/change-password)
 
 ;;debug
 (when js/goog.DEBUG
