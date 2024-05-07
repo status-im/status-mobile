@@ -837,11 +837,11 @@
   },
 
   {
-    "path": "org/clojure/tools.logging/1.1.0/tools.logging-1.1.0",
+    "path": "org/clojure/tools.logging/1.2.4/tools.logging-1.2.4",
     "host": "https://repo1.maven.org/maven2",
     "jar": {
-      "sha1": "84cb5d00caa9df2ee504d46f6107f4708271f619",
-      "sha256": "0x2zzivn38z179lxkw9wbi9n9qwsf466lrd9y27khdz7wbxhscb5"
+      "sha1": "3a85764aa30c434a5b0375a2ee72924aa040fa66",
+      "sha256": "0a8riw23pfkiiyz98ccmljpbw1z13mxl73pdgyz80j93s0y0mzj6"
     }
   },
 
@@ -1008,11 +1008,11 @@
   },
 
   {
-    "path": "re-frame/re-frame/1.3.0/re-frame-1.3.0",
+    "path": "re-frame/re-frame/1.4.3/re-frame-1.4.3",
     "host": "https://repo.clojars.org",
     "jar": {
-      "sha1": "b7135a76432b8141027ba1f4eb6bb15a36acfb7c",
-      "sha256": "16wi01z0j4wn04kldwzxvj0pd9dianjyb000nv5611ikhxk1qrps"
+      "sha1": "74e132cc593ed2d72a5d4874954c58677a905f0e",
+      "sha256": "1xdmbjb0gv6dby98y1nx3brz9sdkfzxz9cjk8ajcr1f4zabcaapb"
     }
   },
 
