@@ -40,8 +40,7 @@
 
 (defn- keypair
   [item index _
-   {:keys [profile-picture compressed-key customization-color]
-    :as   profile-info}]
+   {:keys [profile-picture compressed-key customization-color]}]
   (let [theme            (quo.theme/use-theme)
         accounts         (parse-accounts (:accounts item))
         default-keypair? (zero? index)
@@ -51,15 +50,16 @@
         on-press         (rn/use-callback
                           (fn []
                             (on-options-press
-                             (merge {:type  (if default-keypair? :default-keypair :keypair)
-                                     :title (:full-name details)
-                                     :theme theme}
+                             (merge {:theme theme
+                                     :title (:full-name details)}
                                     (if default-keypair?
-                                      {:customization-color customization-color
-                                       :profile-picture     profile-picture
-                                       :description         (:address details)}
-                                      {:icon-avatar :i/seed}))))
-                          [details index profile-info theme])]
+                                      {:type                :default-keypair
+                                       :description         (:address details)
+                                       :customization-color customization-color
+                                       :profile-picture     profile-picture}
+                                      {:type        :keypair
+                                       :icon-avatar :i/seed}))))
+                          [customization-color default-keypair? details profile-picture theme])]
     [quo/keypair
      {:blur?               false
       :status-indicator    false
