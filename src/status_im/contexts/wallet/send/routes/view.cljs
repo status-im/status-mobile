@@ -101,6 +101,7 @@
   [{:keys [network-values token-symbol on-press theme on-save to? loading-suggested-routes?]}]
   [rn/view
    (map-indexed (fn [index {:keys [chain-id total-amount type]}]
+                  (println type "TYPE!!")
                   [rn/view
                    {:key   (str (if to? "to" "from") "-" chain-id)
                     :style {:margin-top (if (pos? index) 11 7.5)}}
