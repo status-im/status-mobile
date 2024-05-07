@@ -65,7 +65,8 @@
 
 (defn- account-switcher-content
   [{:keys [customization-color on-press emoji type
-           background action-icon-name action-on-press]}]
+           background action-icon-name action-on-press
+           behind-overlay?]}]
   [rn/view {:style {:flex            1
                     :flex-direction  :row
                     :justify-content :flex-end}}
@@ -78,7 +79,10 @@
         :accessible          true
         :icon-only?          true
         :on-press            action-on-press
-        :accessibility-label :dapps-button}
+        :accessibility-label :dapps-button
+        :background          (if behind-overlay?
+                               :blur
+                               (when (button-properties/backgrounds background) background))}
        action-icon-name]
       [right-section-spacing]])
    [rn/pressable {:on-press on-press}
@@ -96,7 +100,9 @@
   (cond
     (and support-account-switcher? (= content :account-switcher))
     [account-switcher-content
-     (assoc account-switcher :background background)]
+     (merge account-switcher
+            {:background background
+             :behind-overlay? behind-overlay?})]
 
     (coll? content)
     [rn/view (when min-size? {:style style/right-content-min-size})
