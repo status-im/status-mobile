@@ -125,23 +125,26 @@
                  :address             address
                  :customization-color (keyword colorId)}}])
 
-(defn header
+(defn- header
   [{:keys [title]}]
   [quo/divider-label
    {:container-style {:border-top-color colors/white-opa-5
                       :margin-top       16}}
    title])
 
-(defn footer
+(defn- footer
   []
   [rn/view {:height 8}])
 
-(defn view
+(defn- navigate-back
+  []
+  (rf/dispatch [:navigate-back]))
+
+(defn- view
   []
   (let [inset-top           (safe-area/get-top)
         customization-color (rf/sub [:profile/customization-color])
-        saved-addresses     (rf/sub [:wallet/grouped-saved-addresses])
-        navigate-back       (rn/use-callback #(rf/dispatch [:navigate-back]))]
+        saved-addresses     (rf/sub [:wallet/grouped-saved-addresses])]
     (rn/use-effect
      (fn []
        (rf/dispatch [:wallet/get-saved-addresses])))
