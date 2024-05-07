@@ -37,15 +37,19 @@
   [_ index]
   #js {:length 100 :offset (* 100 index) :index index})
 
+(defn logout-press
+  []
+  (rf/dispatch [:multiaccounts.logout.ui/logout-pressed]))
+
 (defn view
   []
   (let [theme               (quo.theme/use-theme)
         insets              (safe-area/get-insets)
         customization-color (rf/sub [:profile/customization-color])
         scroll-y            (reanimated/use-shared-value 0)
-        logout-press        #(rf/dispatch [:multiaccounts.logout.ui/logout-pressed])
         profile             (rf/sub [:profile/profile])
-        full-name           (profile.utils/displayed-name profile)]
+        full-name           (profile.utils/displayed-name profile)
+        on-scroll           (rn/use-callback #(scroll-handler % scroll-y))]
     [quo/overlay {:type :shell}
      [rn/view
       {:key   :header
@@ -70,13 +74,13 @@
      [rn/flat-list
       {:key                             :list
        :header                          [settings.header/view {:scroll-y scroll-y}]
-       :data                            settings.items/items
+       :data                            (settings.items/items (boolean (:mnemonic profile)))
        :shows-vertical-scroll-indicator false
        :render-fn                       settings-item-view
        :get-item-layout                 get-item-layout
        :footer                          [footer insets logout-press]
        :scroll-event-throttle           16
-       :on-scroll                       #(scroll-handler % scroll-y)
+       :on-scroll                       on-scroll
        :bounces                         false
        :over-scroll-mode                :never}]
      [quo/floating-shell-button

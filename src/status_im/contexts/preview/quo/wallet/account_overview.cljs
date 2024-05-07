@@ -50,7 +50,10 @@
                              :time-frame-string    "16 May"
                              :time-frame-to-string "25 May"
                              :account              :default
-                             :customization-color  :blue})]
+                             :customization-color  :blue
+                             :container-style      {:padding-top        24
+                                                    :padding-horizontal 20
+                                                    :padding-bottom     20}})]
     (fn []
       [preview/preview-container
        {:state                     state

@@ -8,6 +8,7 @@
     [status-im.common.floating-button-page.view :as floating-button-page]
     [status-im.constants :as constants]
     [status-im.contexts.wallet.common.account-switcher.view :as account-switcher]
+    [status-im.contexts.wallet.common.validation :as validation]
     [status-im.contexts.wallet.item-types :as types]
     [status-im.contexts.wallet.send.select-address.style :as style]
     [status-im.contexts.wallet.send.select-address.tabs.view :as tabs]
@@ -22,6 +23,16 @@
    (when (ff/enabled? ::wallet.contacts)
      {:id :tab/contacts :label (i18n/label :t/contacts) :accessibility-label :contacts-tab})
    {:id :tab/my-accounts :label (i18n/label :t/my-accounts) :accessibility-label :my-accounts-tab}])
+
+(defn- validate-address
+  [address]
+  (debounce/debounce-and-dispatch
+   (if (and (> (count address) 0)
+            (not (or (validation/ens-name? address)
+                     (validation/eth-address? address))))
+     [:wallet/address-validation-failed address]
+     [:wallet/address-validation-success address])
+   300))
 
 (defn- address-input
   [input-value input-focused?]
@@ -49,9 +60,7 @@
                                   ; ^ this check is to prevent effect being triggered when screen is
                                   ; loaded but not being shown to the user (deep in the navigation
                                   ; stack) and avoid undesired behaviors
-                                  (debounce/debounce-and-dispatch
-                                   [:wallet/validate-address %]
-                                   300))
+                                  (validate-address %))
         :on-detect-ens         (fn [text cb]
                                  (when (or (= current-screen-id :screen/wallet.select-address)
                                            (= current-screen-id :screen/wallet.scan-address))
@@ -64,6 +73,7 @@
         :on-change-text        (fn [text]
                                  (when (empty? text)
                                    (rf/dispatch [:wallet/clean-local-suggestions]))
+                                 (validate-address text)
                                  (reset! input-value text))
         :valid-ens-or-address? valid-ens-or-address?}])))
 
@@ -167,6 +177,13 @@
            :title-accessibility-label :title-label}]
          [address-input input-value input-focused?]
          [quo/divider-line]
+         (when (and (not valid-ens-or-address?) (> (count @input-value) 0))
+           [rn/view {:style {:padding 20}}
+            [quo/info-message
+             {:type :error
+              :icon :i/info
+              :size :default}
+             (i18n/label :t/invalid-address)]])
          (if (or @input-focused? (> (count @input-value) 0))
            [rn/keyboard-avoiding-view
             {:style                    {:flex 1}

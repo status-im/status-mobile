@@ -10,17 +10,17 @@
 
 (defonce ^:private feature-flags-config
   (reagent/atom
-   {::wallet.bridge-token                (enabled-in-env? :FLAG_BRIDGE_TOKEN_ENABLED)
+   {::community.edit-account-selection   (enabled-in-env? :FLAG_EDIT_ACCOUNT_SELECTION_ENABLED)
+    ::wallet.activities                  (enabled-in-env? :FLAG_WALLET_ACTIVITY_ENABLED)
+    ::wallet.assets-modal-hide           (enabled-in-env? :FLAG_ASSETS_MODAL_HIDE)
+    ::wallet.assets-modal-manage-tokens  (enabled-in-env? :FLAG_ASSETS_MODAL_MANAGE_TOKENS)
+    ::wallet.bridge-token                (enabled-in-env? :FLAG_BRIDGE_TOKEN_ENABLED)
+    ::wallet.contacts                    (enabled-in-env? :FLAG_CONTACTS_ENABLED)
     ::wallet.edit-derivation-path        (enabled-in-env? :FLAG_EDIT_DERIVATION_PATH)
-    ::wallet.remove-account              (enabled-in-env? :FLAG_REMOVE_ACCOUNT_ENABLED)
+    ::wallet.graph                       (enabled-in-env? :FLAG_GRAPH_ENABLED)
     ::wallet.import-private-key          (enabled-in-env? :FLAG_IMPORT_PRIVATE_KEY_ENABLED)
     ::wallet.long-press-watch-only-asset (enabled-in-env? :FLAG_LONG_PRESS_WATCH_ONLY_ASSET_ENABLED)
-    ::wallet.assets-modal-manage-tokens  (enabled-in-env? :FLAG_ASSETS_MODAL_MANAGE_TOKENS)
-    ::wallet.assets-modal-hide           (enabled-in-env? :FLAG_ASSETS_MODAL_HIDE)
-    ::community.edit-account-selection   (enabled-in-env? :FLAG_EDIT_ACCOUNT_SELECTION_ENABLED)
-    ::wallet.contacts                    (enabled-in-env? :FLAG_CONTACTS_ENABLED)
-    ::wallet.wallet-connect              (enabled-in-env? :FLAG_WALLET_CONNECT_ENABLED)
-    ::wallet.activities                  (enabled-in-env? :FLAG_WALLET_ACTIVITY_ENABLED)}))
+    ::wallet.wallet-connect              (enabled-in-env? :FLAG_WALLET_CONNECT_ENABLED)}))
 
 (defn feature-flags [] @feature-flags-config)
 

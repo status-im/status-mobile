@@ -4,8 +4,19 @@
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]))
 
-(def items
-  [[{:title       (i18n/label :t/edit-profile)
+(defn items
+  [mnemonic?]
+  [(when mnemonic?
+     [{:title            (i18n/label :t/back-up-seed-phrase)
+       :on-press         #(rf/dispatch [:open-modal :backup-seed])
+       :image-props      :i/seed
+       :image            :icon
+       :label            :icon
+       :label-props      :i/warning
+       :label-icon-props {:no-color true}
+       :blur?            true
+       :action           :arrow}])
+   [{:title       (i18n/label :t/edit-profile)
      :on-press    #(rf/dispatch [:open-modal :edit-profile])
      :image-props :i/edit
      :image       :icon

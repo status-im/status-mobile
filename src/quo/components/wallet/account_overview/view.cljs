@@ -96,12 +96,12 @@
 
 (defn- view-internal
   [{:keys [state account time-frame time-frame-string time-frame-to-string account-name current-value
-           percentage-change currency-change metrics customization-color]
+           percentage-change currency-change metrics customization-color container-style]
     :or   {customization-color :blue}}]
   (let [theme             (quo.theme/use-theme)
         time-frame-string (time-string time-frame time-frame-string)
         up?               (= metrics :positive)]
-    [rn/view {:style style/account-overview-wrapper}
+    [rn/view {:style (merge container-style style/account-overview-wrapper)}
      (if (= :loading state)
        [loading-state (colors/theme-colors colors/neutral-5 colors/neutral-90 theme)]
        [rn/view
