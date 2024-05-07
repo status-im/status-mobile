@@ -62,7 +62,7 @@
         :unread?             (not read)
         :context             [[common/user-avatar-tag author]
                               [quo/text {:style style/tag-text}
-                               (string/lower-case (i18n/label :t/on))]
+                               (string/lower-case (i18n/label :t/on-capitalized))]
                               (if community-chat?
                                 [quo/context-tag
                                  {:type           :channel

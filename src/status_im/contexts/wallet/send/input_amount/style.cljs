@@ -33,3 +33,8 @@
   {:flex             1
    :height           40
    :background-color :transparent})
+
+(def no-routes-found-container
+  {:height      40
+   :width       "100%"
+   :align-items :center})

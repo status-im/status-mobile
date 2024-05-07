@@ -52,6 +52,9 @@
     [status-im.contexts.profile.settings.screens.messages.blocked-users.view :as
      settings.blocked-users]
     [status-im.contexts.profile.settings.screens.messages.view :as settings.messages]
+    [status-im.contexts.profile.settings.screens.password.change-password.loading :as
+     change-password-loading]
+    [status-im.contexts.profile.settings.screens.password.change-password.view :as change-password]
     [status-im.contexts.profile.settings.screens.password.view :as settings-password]
     [status-im.contexts.profile.settings.view :as settings]
     [status-im.contexts.settings.wallet.saved-addresses.view :as saved-addresses-settings]
@@ -485,7 +488,7 @@
 
     ;; Settings
 
-    {:name      :settings-password
+    {:name      :screen/settings-password
      :options   options/transparent-modal-screen-options
      :component settings-password/view}
 
@@ -503,7 +506,20 @@
 
     {:name      :screen/settings-blocked-users
      :options   options/transparent-modal-screen-options
-     :component settings.blocked-users/view}]
+     :component settings.blocked-users/view}
+
+    {:name      :screen/change-password
+     :options   (assoc options/transparent-modal-screen-options :theme :dark)
+     :component change-password/view}
+
+    {:name      :screen/change-password-loading
+     :options   (assoc
+                 options/transparent-modal-screen-options
+                 :theme              :dark
+                 :popGesture         false
+                 :hardwareBackButton {:dismissModalOnPress false
+                                      :popStackOnPress     false})
+     :component change-password-loading/view}]
 
    [{:name    :shell
      :options {:theme :dark}}]

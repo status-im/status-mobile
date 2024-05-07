@@ -25,10 +25,10 @@
 
 (def link-1x-container
   {:flex            1
-   :height          58
+   :height          57
    :justify-content :center})
 
 (def link-2x-container
   {:flex            1
-   :height          114
+   :height          112
    :justify-content :center})

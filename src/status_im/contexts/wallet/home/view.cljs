@@ -6,6 +6,7 @@
     [status-im.contexts.wallet.home.style :as style]
     [status-im.contexts.wallet.home.tabs.view :as tabs]
     [status-im.contexts.wallet.sheets.network-filter.view :as network-filter]
+    [status-im.feature-flags :as ff]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
@@ -33,7 +34,8 @@
 (def tabs-data
   [{:id :assets :label (i18n/label :t/assets) :accessibility-label :assets-tab}
    {:id :collectibles :label (i18n/label :t/collectibles) :accessibility-label :collectibles-tab}
-   {:id :activity :label (i18n/label :t/activity) :accessibility-label :activity-tab}])
+   (when (ff/enabled? ::ff/wallet.home-activity)
+     {:id :activity :label (i18n/label :t/activity) :accessibility-label :activity-tab})])
 
 (defn view
   []
@@ -53,7 +55,7 @@
                    [(count cards)])
     [rn/view {:style (style/home-container)}
      [common.top-nav/view]
-     [rn/view {:style style/overview-container}
+     [rn/view
       [quo/wallet-overview
        {:state             (if tokens-loading? :loading :default)
         :time-frame        :none
@@ -61,7 +63,7 @@
         :balance           formatted-balance
         :networks          networks
         :dropdown-on-press #(rf/dispatch [:show-bottom-sheet {:content network-filter/view}])}]]
-     [quo/wallet-graph {:time-frame :empty}]
+     (when (ff/enabled? ::ff/wallet.graph) [quo/wallet-graph {:time-frame :empty}])
      [rn/flat-list
       {:ref                               #(reset! account-list-ref %)
        :style                             style/accounts-list
@@ -76,5 +78,8 @@
        :size           32
        :default-active selected-tab
        :data           tabs-data
-       :on-change      #(set-selected-tab %)}]
+       :on-change      (fn [tab]
+                         (when (= :activity tab)
+                           (rf/dispatch [:wallet/fetch-activities]))
+                         (set-selected-tab tab))}]
      [tabs/view {:selected-tab selected-tab}]]))

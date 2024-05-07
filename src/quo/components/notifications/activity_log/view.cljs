@@ -8,6 +8,7 @@
     [quo.components.notifications.activity-log.style :as style]
     [quo.components.tags.status-tags :as status-tags]
     [quo.foundations.colors :as colors]
+    [quo.theme]
     [react-native.core :as rn]
     [utils.i18n :as i18n]))
 
@@ -144,12 +145,13 @@
      label]))
 
 (defmethod footer-item-view :status
-  [{:keys [label subtype blur?]} _ _]
-  [status-tags/status-tag
-   {:size   :small
-    :label  label
-    :status {:type subtype}
-    :blur?  blur?}])
+  [{:keys [label subtype blur? theme]} _ _]
+  [quo.theme/provider theme
+   [status-tags/status-tag
+    {:size   :small
+     :label  label
+     :status {:type subtype}
+     :blur?  blur?}]])
 
 (defn- footer
   [{:keys [replying? items] :as props}]

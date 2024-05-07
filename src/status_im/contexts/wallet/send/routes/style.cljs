@@ -3,20 +3,16 @@
 
 (def routes-container
   {:padding-horizontal 20
-   :flex               1
+   :flex-grow          1
    :padding-vertical   16
-   :width              "100%"
-   :height             "100%"})
+   :width              "100%"})
 
 (def routes-header-container
   {:flex-direction  :row
    :justify-content :space-between})
 
-(defn routes-inner-container
-  [first-item?]
-  {:margin-top      (if first-item? 7.5 11)
-   :flex-direction  :row
-   :align-items     :center
+(def routes-inner-container
+  {:flex-direction  :row
    :justify-content :space-between})
 
 (def section-label-right
@@ -25,19 +21,25 @@
 (def section-label-left
   {:width 136})
 
-(def network-link
+(def network-links-container
   {:margin-horizontal -1.5
-   :z-index           1
+   :margin-top        7.5
+   :z-index           3
    :flex              1})
+
+(defn network-link-container
+  [margin-top inverted?]
+  (cond-> {:position :absolute
+           :left     0
+           :right    0
+           :top      margin-top}
+    inverted?
+    (assoc :transform [{:scaleY -1}])))
 
 (def empty-container
   {:flex-grow       1
    :align-items     :center
    :justify-content :center})
-
-(def add-network
-  {:margin-top 11
-   :align-self :flex-end})
 
 (defn warning-container
   [color theme]

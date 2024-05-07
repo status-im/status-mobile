@@ -1,7 +1,7 @@
 (ns status-im.contexts.wallet.events
   (:require
+    [camel-snake-kebab.extras :as cske]
     [clojure.string :as string]
-    [react-native.background-timer :as background-timer]
     [react-native.platform :as platform]
     [status-im.constants :as constants]
     [status-im.contexts.wallet.common.utils.networks :as network-utils]
@@ -10,6 +10,7 @@
     [status-im.contexts.wallet.item-types :as item-types]
     [taoensso.timbre :as log]
     [utils.collection]
+    [utils.ethereum.chain :as chain]
     [utils.ethereum.eip.eip55 :as eip55]
     [utils.i18n :as i18n]
     [utils.number]
@@ -63,6 +64,7 @@
            (utils.collection/index-by :address (data-store/rpc->accounts wallet-accounts)))
       :fx [[:dispatch [:wallet/get-wallet-token]]
            [:dispatch [:wallet/request-collectibles-for-all-accounts {:new-request? true}]]
+           [:dispatch [:wallet/check-recent-history]]
            (when new-account?
              [:dispatch [:wallet/navigate-to-new-account navigate-to-account]])]})))
 
@@ -326,55 +328,19 @@
               (assoc-in [:wallet :ui :search-address :local-suggestions] suggestion)
               (assoc-in [:wallet :ui :search-address :valid-ens-or-address?] (boolean result)))})))
 
-(rf/reg-event-fx :wallet/fetch-address-suggestions
- (fn [{:keys [db]} [_address]]
-   {:db (-> db
-            (assoc-in [:wallet :ui :search-address :local-suggestions] nil)
-            (assoc-in [:wallet :ui :search-address :valid-ens-or-address?] false))}))
-
-(rf/reg-event-fx :wallet/ens-validation-success
- (fn [{:keys [db]} [_ens]]
-   {:db (-> db
-            (assoc-in [:wallet :ui :search-address :local-suggestions] nil)
-            (assoc-in [:wallet :ui :search-address :valid-ens-or-address?] true))}))
-
 (rf/reg-event-fx :wallet/address-validation-success
- (fn [{:keys [db]} [_]]
+ (fn [{:keys [db]}]
    {:db (assoc-in db [:wallet :ui :search-address :valid-ens-or-address?] true)}))
 
-(rf/reg-event-fx :wallet/validate-address
- (fn [{:keys [db]} [address]]
-   (let [current-timeout (get-in db [:wallet :ui :search-address :search-timeout])
-         timeout         (background-timer/set-timeout
-                          #(rf/dispatch [:wallet/address-validation-success address])
-                          2000)]
-     (background-timer/clear-timeout current-timeout)
-     {:db (-> db
-              (assoc-in [:wallet :ui :search-address :search-timeout] timeout)
-              (assoc-in [:wallet :ui :search-address :valid-ens-or-address?] false))})))
-
-(rf/reg-event-fx :wallet/validate-ens
- (fn [{:keys [db]} [ens]]
-   (let [current-timeout (get-in db [:wallet :ui :search-address :search-timeout])
-         timeout         (background-timer/set-timeout
-                          #(rf/dispatch [:wallet/ens-validation-success ens])
-                          2000)]
-     (background-timer/clear-timeout current-timeout)
-     {:db (-> db
-              (assoc-in [:wallet :ui :search-address :search-timeout] timeout)
-              (assoc-in [:wallet :ui :search-address :valid-ens-or-address?] false))})))
+(rf/reg-event-fx :wallet/address-validation-failed
+ (fn [{:keys [db]}]
+   {:db (assoc-in db [:wallet :ui :search-address :valid-ens-or-address?] false)}))
 
 (rf/reg-event-fx :wallet/clean-local-suggestions
  (fn [{:keys [db]}]
-   (let [current-timeout (get-in db [:wallet :ui :search-address :search-timeout])]
-     (background-timer/clear-timeout current-timeout)
-     {:db (-> db
-              (assoc-in [:wallet :ui :search-address :local-suggestions] [])
-              (assoc-in [:wallet :ui :search-address :valid-ens-or-address?] false))})))
-
-(rf/reg-event-fx :wallet/clean-ens-or-address-validation
- (fn [{:keys [db]}]
-   {:db (assoc-in db [:wallet :ui :search-address :valid-ens-or-address?] false)}))
+   {:db (-> db
+            (assoc-in [:wallet :ui :search-address :local-suggestions] [])
+            (assoc-in [:wallet :ui :search-address :valid-ens-or-address?] false))}))
 
 (rf/reg-event-fx
  :wallet/navigate-to-chain-explorer-from-bottom-sheet
@@ -393,6 +359,20 @@
             :on-error #(log/info "failed to start wallet"
                                  {:error %
                                   :event :wallet/start-wallet})}]]]}))
+
+(rf/reg-event-fx
+ :wallet/check-recent-history
+ (fn [{:keys [db]}]
+   (let [addresses (->> (get-in db [:wallet :accounts])
+                        vals
+                        (map :address))
+         chain-ids (chain/chain-ids db)]
+     {:fx [[:json-rpc/call
+            [{:method   "wallet_checkRecentHistoryForChainIDs"
+              :params   [chain-ids addresses]
+              :on-error #(log/info "failed to check recent history"
+                                   {:error %
+                                    :event :wallet/check-recent-history})}]]]})))
 
 (rf/reg-event-fx :wallet/initialize
  (fn []
@@ -479,3 +459,46 @@
           {:db (update-in db [:wallet :ui :network-filter :selected-networks] update-fn network-name)})))
 
 (rf/reg-event-fx :wallet/update-selected-networks update-selected-networks)
+
+(rf/reg-event-fx
+ :wallet/fetch-activities
+ (fn [{:keys [db]}]
+   (let [addresses      (->> (get-in db [:wallet :accounts])
+                             vals
+                             (map :address))
+         chain-ids      (chain/chain-ids db)
+         request-id     0
+         filters        {:period                {:startTimestamp 0
+                                                 :endTimestamp   0}
+                         :types                 []
+                         :statuses              []
+                         :counterpartyAddresses []
+                         :assets                []
+                         :collectibles          []
+                         :filterOutAssets       false
+                         :filterOutCollectibles false}
+         offset         0
+         limit          20
+         request-params [request-id
+                         addresses
+                         chain-ids
+                         filters
+                         offset
+                         limit]]
+     {:fx [[:json-rpc/call
+            [{;; This method is deprecated and will be replaced by
+              ;; "wallet_startActivityFilterSession"
+              ;; https://github.com/status-im/status-mobile/issues/19864
+              :method   "wallet_filterActivityAsync"
+              :params   request-params
+              :on-error #(log/info "failed to fetch activities"
+                                   {:error %
+                                    :event :wallet/fetch-activities})}]]]})))
+
+(rf/reg-event-fx
+ :wallet/activity-filtering-done
+ (fn [{:keys [db]} [{:keys [message]}]]
+   (let [{:keys [activities]} (transforms/json->clj message)
+         activities           (cske/transform-keys transforms/->kebab-case-keyword activities)
+         sorted-activities    (sort :timestamp activities)]
+     {:db (assoc-in db [:wallet :activities] sorted-activities)})))

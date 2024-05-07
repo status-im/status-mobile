@@ -81,10 +81,10 @@
     res))
 
 (defn delay-render
-  [content]
+  [_]
   (let [render? (reagent/atom false)]
     (js/setTimeout #(reset! render? true) 0)
-    (fn []
+    (fn [content]
       (when @render?
         content))))
 

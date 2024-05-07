@@ -85,7 +85,7 @@
         y           (reanimated/use-shared-value scroll-height)
         animation   (reanimated/interpolate y
                                             input-range
-                                            [1.2 0.5]
+                                            [1 0.5]
                                             {:extrapolateLeft  "clamp"
                                              :extrapolateRight "clamp"})]
     (rn/use-effect #(do

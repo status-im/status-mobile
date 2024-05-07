@@ -3,6 +3,7 @@
             [quo.core :as quo]
             [react-native.core :as rn]
             [status-im.common.not-implemented :as not-implemented]
+            [status-im.config :as config]
             [status-im.constants :as constants]
             [status-im.contexts.profile.contact.add-nickname.view :as add-nickname]
             [status-im.contexts.profile.contact.block-contact.view :as block-contact]
@@ -86,12 +87,13 @@
              :add-divider?        true
              :accessibility-label :remove-nickname
              :danger?             true})
-          {:icon                :i/untrustworthy
-           :label               (i18n/label :t/mark-untrustworthy)
-           :on-press            not-implemented/alert
-           :accessibility-label :mark-untrustworthy
-           :add-divider?        (when-not has-nickname? true)
-           :danger?             true}
+          (when config/show-not-implemented-features?
+            {:icon                :i/untrustworthy
+             :label               (i18n/label :t/mark-untrustworthy)
+             :on-press            not-implemented/alert
+             :accessibility-label :mark-untrustworthy
+             :add-divider?        (when-not has-nickname? true)
+             :danger?             true})
           (when (= constants/contact-request-state-mutual contact-request-state)
             {:icon                :i/remove-user
              :label               (i18n/label :t/remove-contact)

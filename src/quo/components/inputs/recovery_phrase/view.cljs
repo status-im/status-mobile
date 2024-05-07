@@ -40,7 +40,7 @@
 (defn recovery-phrase-input
   [{:keys [customization-color blur? on-focus on-blur mark-errors?
            error-pred-current-word error-pred-written-words word-limit
-           container-style]
+           container-style placeholder-text-color]
     :or   {customization-color      :blue
            word-limit               ##Inf
            error-pred-current-word  (constantly false)
@@ -62,7 +62,8 @@
      [rn/text-input
       (merge {:accessibility-label    :recovery-phrase-input
               :style                  (style/input theme)
-              :placeholder-text-color (style/placeholder-color state theme blur?)
+              :placeholder-text-color (or placeholder-text-color
+                                          (style/placeholder-color state theme blur?))
               :cursor-color           (style/cursor-color customization-color theme)
               :keyboard-appearance    theme
               :multiline              true

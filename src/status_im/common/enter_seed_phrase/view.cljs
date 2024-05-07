@@ -63,6 +63,7 @@
       [quo/recovery-phrase-input
        {:accessibility-label      :passphrase-input
         :placeholder              (i18n/label :t/seed-phrase-placeholder)
+        :placeholder-text-color   colors/white-opa-30
         :auto-capitalize          :none
         :auto-correct             false
         :auto-focus               true

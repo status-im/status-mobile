@@ -1,9 +1,7 @@
 (ns status-im.contexts.syncing.events
   (:require
     [clojure.string :as string]
-    [legacy.status-im.node.core :as node]
     [native-module.core :as native-module]
-    [re-frame.core :as re-frame]
     [react-native.platform :as platform]
     [status-im.config :as config]
     [status-im.constants :as constants]
@@ -25,14 +23,23 @@
   {:db (dissoc db :syncing)})
 
 (defn- get-default-node-config
-  [installation-id]
-  (let [db {:profile/profile {:installation-id           installation-id
-                              :device-name               (native-module/get-installation-name)
-                              :log-level                 config/log-level
-                              :waku-bloom-filter-mode    false
-                              :custom-bootnodes          nil
-                              :custom-bootnodes-enabled? false}}]
-    (node/get-multiaccount-node-config db)))
+  []
+  (let [log-level  config/log-level
+        log-config (if (empty? log-level)
+                     {:LogLevel "ERROR" :LogEnabled false}
+                     {:LogLevel log-level :LogEnabled true})]
+    (merge {:WalletConfig (cond-> {:Enabled true}
+                            (not= config/opensea-api-key "")
+                            (assoc :OpenseaAPIKey config/opensea-api-key))
+            :WakuV2Config {;; Temporary fix until https://github.com/status-im/status-go/issues/3024
+                           ;; is resolved
+                           :Nameserver  "8.8.8.8"
+                           :LightClient false}
+            :ShhextConfig {:VerifyTransactionURL     config/verify-transaction-url
+                           :VerifyENSURL             config/verify-ens-url
+                           :VerifyENSContractAddress config/verify-ens-contract-address
+                           :VerifyTransactionChainID config/verify-transaction-chain-id}}
+           log-config)))
 
 (defn- extract-error
   [json-str]
@@ -67,12 +74,9 @@
     (native-module/local-pairing-preflight-outbound-check callback)))
 
 (rf/defn initiate-local-pairing-with-connection-string
-  {:events       [:syncing/input-connection-string-for-bootstrapping]
-   :interceptors [(re-frame/inject-cofx :random-guid-generator)]}
-  [{:keys [random-guid-generator db]} connection-string]
-  (let [installation-id (random-guid-generator)
-        default-node-config (get-default-node-config installation-id)
-        default-node-config-string (.stringify js/JSON (clj->js default-node-config))
+  {:events [:syncing/input-connection-string-for-bootstrapping]}
+  [{:keys [db]} connection-string]
+  (let [default-node-config-string (.stringify js/JSON (clj->js (get-default-node-config)))
         callback
         (fn [final-node-config]
           (let [config-map (.stringify js/JSON

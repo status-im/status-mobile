@@ -123,10 +123,19 @@
 (def ^:const profile-pictures-visibility-none 3)
 
 (def ^:const min-password-length 6)
+(def ^:const new-password-min-length 10)
 (def ^:const max-group-chat-participants 20)
 (def ^:const max-group-chat-name-length 24)
 (def ^:const default-number-of-messages 20)
 (def ^:const default-number-of-pin-messages 3)
+
+(def ^:const password-tips [:lower-case? :upper-case? :numbers? :symbols?])
+(def ^:const strength-status
+  {1 :very-weak
+   2 :weak
+   3 :okay
+   4 :strong
+   5 :very-strong})
 
 (def ^:const mailserver-password "status-offline-inbox")
 
@@ -182,7 +191,7 @@
 
 (def ^:const community-id-length 68)
 
-  ; BIP44 Wallet Root Key, the extended key from which any wallet can be derived
+; BIP44 Wallet Root Key, the extended key from which any wallet can be derived
 (def ^:const path-wallet-root "m/44'/60'/0'/0")
 ; EIP1581 Root Key, the extended key from which any whisper key/encryption key can be derived
 (def ^:const path-eip1581 "m/43'/60'/1581'")
