@@ -136,6 +136,7 @@
      numbered-keyboard]
     [status-im.contexts.preview.quo.onboarding.small-option-card :as
      small-option-card]
+    [status-im.contexts.preview.quo.password.password-tips :as password-tips]
     [status-im.contexts.preview.quo.password.tips :as tips]
     [status-im.contexts.preview.quo.profile.collectible :as collectible]
     [status-im.contexts.preview.quo.profile.collectible-list-item :as collectible-list-item]
@@ -425,7 +426,9 @@
    :onboarding        [{:name      :small-option-card
                         :component small-option-card/view}]
    :password          [{:name      :tips
-                        :component tips/view}]
+                        :component tips/view}
+                       {:name      :password-tips
+                        :component password-tips/view}]
    :profile           [{:name      :collectible
                         :component collectible/view}
                        {:name      :collectible-list-item

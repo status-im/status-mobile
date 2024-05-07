@@ -23,7 +23,7 @@
      :blur?       true
      :action      :arrow}
     {:title       (i18n/label :t/password)
-     :on-press    #(rf/dispatch [:open-modal :settings-password])
+     :on-press    #(rf/dispatch [:open-modal :screen/settings-password])
      :image-props :i/password
      :image       :icon
      :blur?       true

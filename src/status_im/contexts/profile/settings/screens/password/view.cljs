@@ -2,8 +2,6 @@
   (:require [quo.core :as quo]
             [quo.theme :as quo.theme]
             [status-im.common.biometric.utils :as biometric]
-            [status-im.common.not-implemented :as not-implemented]
-            [status-im.config :as config]
             [status-im.constants :as constants]
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]))
@@ -47,13 +45,12 @@
 
 (defn- get-change-password-item
   []
-  (when config/show-not-implemented-features?
-    {:title       (i18n/label :t/change-password)
-     :on-press    not-implemented/alert
-     :blur?       true
-     :image       :icon
-     :image-props :i/password
-     :action      :arrow}))
+  {:title       (i18n/label :t/change-password)
+   :on-press    #(rf/dispatch [:open-modal :screen/change-password])
+   :blur?       true
+   :image       :icon
+   :image-props :i/password
+   :action      :arrow})
 
 (defn- navigate-back
   []
