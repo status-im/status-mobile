@@ -11,10 +11,11 @@ discussing with as many team members as you can.
 
 ### The `user` namespace
 
-You may optionally create a `src/dev/user.cljs` file. This file is git-ignored
-and it is meant to be your own playground. Clojure developers usually use this
-sort of namespace to create temporary utilities and experiments that aren't
-necessarily useful to others.
+You may optionally create a `src/dev/user.cljs` and/or `src/user.cljs` file.
+These files are git-ignored and are meant to be your own playground. Clojure
+developers usually use such namespaces to create temporary utilities and
+experiments that aren't necessarily useful to others. They are particularly
+valuable for developers adept at the REPL-Driven Development workflow.
 
 Be careful with `make clean` because it will delete all non-tracked git files.
 If you rely on this file, you may prefer to create a symbolic link and store the

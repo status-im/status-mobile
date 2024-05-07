@@ -53,11 +53,12 @@
    :dev {:devtools {:before-load-async status-im.setup.hot-reload/before-reload
                     :after-load-async  status-im.setup.hot-reload/reload
                     :build-notify      status-im.setup.hot-reload/build-notify
-                    :preloads          [;; We require the user namespace so that
+                    :preloads          [;; We preload user namespaces so that
                                         ;; its symbols are available without the
-                                        ;; dev having to evaluate the entire
-                                        ;; namespace at least once after app
-                                        ;; initialization.
+                                        ;; developer having to evaluate the
+                                        ;; entire namespace at least once after
+                                        ;; app initialization.
+                                        user
                                         dev.user
                                         re-frisk-remote.preload
                                         status-im.setup.schema-preload
