@@ -5,13 +5,14 @@
             [react-native.core :as rn]
             [react-native.platform :as platform]
             [react-native.safe-area :as safe-area]
+            [status-im.common.not-implemented :as not-implemented]
             [status-im.common.resources :as resources]
             [status-im.config :as config]
             [status-im.contexts.settings.wallet.saved-addresses.style :as style]
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]))
 
-(defn empty-state
+(defn- empty-state
   []
   (let [theme (quo.theme/use-theme)]
     [quo/empty-state
@@ -20,11 +21,7 @@
       :image           (resources/get-themed-image :sweating-man theme)
       :container-style style/empty-container-style}]))
 
-(defn- not-implemented
-  []
-  (js/alert "Not implemented"))
-
-(defn option
+(defn- option
   [{:keys [icon label on-press danger? sub-label add-divider? accessibility-label right-icon] :as opt}]
   (when opt
     ^{:key label}
@@ -37,24 +34,24 @@
      :add-divider?        add-divider?
      :accessibility-label accessibility-label}))
 
-(defn options
+(defn- options
   [account-name address]
   [(when config/show-not-implemented-features?
      {:icon                :i/arrow-up
       :label               (i18n/label :t/send-to-user {:user account-name})
-      :on-press            not-implemented
+      :on-press            not-implemented/alert
       :accessibility-label :manage-notifications})
    (when config/show-not-implemented-features?
      {:icon                :i/link
       :right-icon          :i/external
       :label               (i18n/label :t/view-address-on-website {:website "Etherscan"})
-      :on-press            not-implemented
+      :on-press            not-implemented/alert
       :accessibility-label :manage-notifications})
    (when config/show-not-implemented-features?
      {:icon                :i/link
       :right-icon          :i/external
       :label               (i18n/label :t/view-address-on-website {:website "Optimistic"})
-      :on-press            not-implemented
+      :on-press            not-implemented/alert
       :accessibility-label :manage-notifications})
    {:icon                :i/share
     :on-press            #(rf/dispatch
@@ -86,21 +83,21 @@
    (when config/show-not-implemented-features?
      {:icon                :i/delete
       :label               (i18n/label :t/remove-account)
-      :on-press            not-implemented
+      :on-press            not-implemented/alert
       :danger?             true
       :accessibility-label :manage-notifications
       :add-divider?        true})])
 
-(defn sample-options
+(defn- sample-options
   [account-name address]
   (keep option (options account-name address)))
 
-(defn account-sheet
+(defn- account-sheet
   [address account-name]
   [quo/action-drawer
    [(sample-options account-name address)]])
 
-(defn on-press-saved-address
+(defn- on-press-saved-address
   [{:keys [address account-name ens-name customization-color]}]
   (rf/dispatch
    [:show-bottom-sheet
