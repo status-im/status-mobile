@@ -24,10 +24,6 @@
                 {:address    address
                  :public-key ""}]))
 
-(defn to-be-implemented
-  []
-  not-implemented/alert)
-
 (defn view
   []
   (let [theme                                          (quo.theme/use-theme)
@@ -79,4 +75,4 @@
                               :weight :monospace}
                              address])
          :container-style style/data-item
-         :on-press        to-be-implemented}]]]]))
+         :on-press        not-implemented/alert}]]]]))
