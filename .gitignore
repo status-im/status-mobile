@@ -127,6 +127,7 @@ fastlane/README.md
 # Clj
 
 .cpcache/
+src/user.cljs
 
 # emacs
 .dir-locals.el

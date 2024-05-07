@@ -53,7 +53,12 @@
    :dev {:devtools {:before-load-async status-im.setup.hot-reload/before-reload
                     :after-load-async  status-im.setup.hot-reload/reload
                     :build-notify      status-im.setup.hot-reload/build-notify
-                    :preloads          [re-frisk-remote.preload
+                    :preloads          [;; We require the user namespace (src/user.cljs) so that
+                                        ;; its symbols are available without the dev having to
+                                        ;; evaluate the entire namespace at least once after app
+                                        ;; initialization.
+                                        user
+                                        re-frisk-remote.preload
                                         status-im.setup.schema-preload
                                         ;; In order to use component test helpers in the REPL we
                                         ;; need to preload namespaces that are not normally required
