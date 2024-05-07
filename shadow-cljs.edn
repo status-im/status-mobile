@@ -54,10 +54,10 @@
                     :after-load-async  status-im.setup.hot-reload/reload
                     :build-notify      status-im.setup.hot-reload/build-notify
                     :preloads          [;; We preload user namespaces so that
-                                        ;; its symbols are available without the
-                                        ;; developer having to evaluate the
-                                        ;; entire namespace at least once after
-                                        ;; app initialization.
+                                        ;; their symbols are available without
+                                        ;; the developer having to manually
+                                        ;; evaluate them after app
+                                        ;; initialization.
                                         user
                                         dev.user
                                         re-frisk-remote.preload
