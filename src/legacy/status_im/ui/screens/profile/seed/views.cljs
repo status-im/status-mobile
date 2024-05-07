@@ -15,7 +15,9 @@
     [react-native.core :as rn]
     [reagent.core :as reagent]
     [utils.i18n :as i18n]
-    [utils.re-frame :as rf]))
+    [utils.re-frame :as rf]
+    [react-native.platform :as platform]
+    [react-native.safe-area :as safe-area]))
 
 (def steps-numbers
   {:intro       1
@@ -157,11 +159,15 @@
 
 (defn backup-seed
   []
-  (let [current-multiaccount                             (rf/sub [:profile/profile])
-        {:keys [step first-word second-word error word]} (rf/sub [:my-profile/recovery])]
+  (let [current-multiaccount             (rf/sub [:profile/profile])
+        {:keys [step first-word
+                second-word error word]} (rf/sub [:my-profile/recovery])
+        footer-container-padding         (+ (safe-area/get-top)
+                                            (rf/sub [:alert-banners/top-margin])
+                                            20)]
     [rn/keyboard-avoiding-view
-     {:style         {:flex 1}
-      :ignore-offset true}
+     {:style                    {:flex 1}
+      :keyboard-vertical-offset (if platform/ios? footer-container-padding 0)}
      [topbar/topbar
       {:title      (i18n/label :t/backup-recovery-phrase)
        :subtitle   (i18n/label :t/step-i-of-n {:step (steps-numbers step) :number 3})
