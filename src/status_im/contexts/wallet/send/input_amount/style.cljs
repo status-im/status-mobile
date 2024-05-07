@@ -41,7 +41,7 @@
    :align-items :center})
 
 (def token-not-available-container
-  {:max-height        90
+  {:height            90
    :flex              1
    :flex-direction    :row
    :background-color  colors/danger-opa-5

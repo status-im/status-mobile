@@ -98,18 +98,26 @@
                             :customization-color color}}]])))
 
 (defn render-network-values
-  [{:keys [network-values token-symbol on-press theme on-save to? loading-suggested-routes?]}]
+  [{:keys [network-values token-symbol on-press theme on-save to? loading-routes?
+           token-not-supported-in-receiver-networks?]}]
   [rn/view
    (map-indexed (fn [index {:keys [chain-id total-amount type]}]
-                  (println type "TYPE!!")
                   [rn/view
                    {:key   (str (if to? "to" "from") "-" chain-id)
                     :style {:margin-top (if (pos? index) 11 7.5)}}
                    [quo/network-bridge
-                    {:amount   (str total-amount " " token-symbol)
+                    {:amount   (if (= type :not-available)
+                                 (i18n/label :t/not-available)
+                                 (str total-amount " " token-symbol))
                      :network  (network-utils/id->network chain-id)
-                     :status   type
-                     :on-press #(when (not loading-suggested-routes?)
+                     :status   (cond (and (= type :not-available)
+                                          loading-routes?
+                                          token-not-supported-in-receiver-networks?)
+                                     :loading
+                                     (= type :not-available)
+                                     :disabled
+                                     :else type)
+                     :on-press #(when (not loading-routes?)
                                   (cond
                                     (= type :add)
                                     (rf/dispatch [:show-bottom-sheet
@@ -181,12 +189,13 @@
 
 (defn view
   [{:keys [token theme input-value valid-input?
-           on-press-to-network current-screen-id]}]
+           on-press-to-network current-screen-id
+           token-not-supported-in-receiver-networks?]}]
   (let [token-symbol (:symbol token)
         nav-current-screen-id (rf/sub [:view-id])
         active-screen? (= nav-current-screen-id current-screen-id)
-        loading-suggested-routes? (rf/sub
-                                   [:wallet/wallet-send-loading-suggested-routes?])
+        loading-routes? (rf/sub
+                         [:wallet/wallet-send-loading-suggested-routes?])
         sender-network-values (rf/sub
                                [:wallet/wallet-send-sender-network-values])
         receiver-network-values (rf/sub
@@ -221,23 +230,26 @@
           :container-style style/section-label-right}]])
      [rn/view {:style style/routes-inner-container}
       [render-network-values
-       {:token-symbol              token-symbol
-        :network-values            sender-network-values
-        :on-press                  #(disable-chain %1
-                                                   disabled-from-chain-ids
-                                                   token-available-networks-for-suggested-routes)
-        :to?                       false
-        :theme                     theme
-        :loading-suggested-routes? loading-suggested-routes?}]
+       {:token-symbol                              token-symbol
+        :network-values                            sender-network-values
+        :on-press                                  #(disable-chain
+                                                     %1
+                                                     disabled-from-chain-ids
+                                                     token-available-networks-for-suggested-routes)
+        :to?                                       false
+        :theme                                     theme
+        :loading-routes?                           loading-routes?
+        :token-not-supported-in-receiver-networks? false}]
       [render-network-links
        {:network-links         network-links
         :sender-network-values sender-network-values}]
       [render-network-values
-       {:token-symbol              token-symbol
-        :network-values            receiver-network-values
-        :on-press                  on-press-to-network
-        :to?                       true
-        :loading-suggested-routes? loading-suggested-routes?
-        :theme                     theme
-        :on-save                   #(fetch-routes input-value valid-input? 0)}]]]))
+       {:token-symbol                              token-symbol
+        :network-values                            receiver-network-values
+        :on-press                                  on-press-to-network
+        :to?                                       true
+        :loading-routes?                           loading-routes?
+        :theme                                     theme
+        :token-not-supported-in-receiver-networks? token-not-supported-in-receiver-networks?
+        :on-save                                   #(fetch-routes input-value valid-input? 0)}]]]))
 

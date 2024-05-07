@@ -2628,5 +2628,6 @@
     "send-community-link": "Send community link",
     "status-is-a-secure-messaging-app": "Status is a secure messaging app, crypto wallet and web3 browser built with the state of the art technology",
     "token-not-available-on-receiver-networks": "{{token-symbol}} is not available on the recipient’s desired networks. Proceed with caution.",
-    "add-networks-token-can-be-sent-to": "Add networks {{token-symbol}} can be sent to"
+    "add-networks-token-can-be-sent-to": "Add networks {{token-symbol}} can be sent to",
+    "not-available": "Not available"
 }

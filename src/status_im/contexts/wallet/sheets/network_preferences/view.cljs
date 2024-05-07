@@ -11,7 +11,7 @@
             [utils.re-frame :as rf]))
 
 (defn view
-  [{:keys [title receiver? section-one-title section-two-title selected-networks account watch-only?]}]
+  [{:keys [title receiver? _section-one-title _section-two-title selected-networks account watch-only?]}]
   (let [state                               (reagent/atom :default)
         {:keys [color address
                 network-preferences-names]} (or account (rf/sub [:wallet/current-viewing-account]))

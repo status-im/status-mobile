@@ -186,16 +186,16 @@
          token-not-supported-in-receiver-networks? (not (some (set receiver-networks)
                                                               token-networks-ids))]
      {:db (cond-> db
-            :always                                   (update-in [:wallet :ui :send] dissoc :collectible)
-            :always                                   (assoc-in [:wallet :ui :send :token-display-name]
-                                                       (:symbol token))
-            token-not-supported-in-receiver-networks? (assoc-in
-                                                       [:wallet :ui :send
-                                                        :token-not-supported-in-receiver-networks?]
-                                                       token-not-supported-in-receiver-networks?)
-            token                                     (assoc-in [:wallet :ui :send :token] token)
-            token-symbol                              (assoc-in [:wallet :ui :send :token-symbol]
-                                                       token-symbol))
+            :always      (update-in [:wallet :ui :send] dissoc :collectible)
+            :always      (assoc-in [:wallet :ui :send :token-display-name]
+                          (:symbol token))
+            :always      (assoc-in
+                          [:wallet :ui :send
+                           :token-not-supported-in-receiver-networks?]
+                          token-not-supported-in-receiver-networks?)
+            token        (assoc-in [:wallet :ui :send :token] token)
+            token-symbol (assoc-in [:wallet :ui :send :token-symbol]
+                          token-symbol))
       :fx [[:dispatch [:wallet/clean-suggested-routes]]
            [:dispatch
             [:wallet/wizard-navigate-forward
