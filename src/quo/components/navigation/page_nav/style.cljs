@@ -1,6 +1,6 @@
 (ns quo.components.navigation.page-nav.style
   (:require
-    [quo.foundations.colors :as colors]))
+   [quo.foundations.colors :as colors]))
 
 (defn container
   [margin-top]
@@ -14,8 +14,7 @@
 
 (defn center-content-container
   [centered? center-opacity]
-  {:flex              1
-   :margin-horizontal 12
+  {:margin-horizontal 12
    :flex-direction    :row
    :align-items       :center
    :justify-content   (if centered? :center :flex-start)

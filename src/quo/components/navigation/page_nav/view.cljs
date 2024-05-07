@@ -1,19 +1,20 @@
 (ns quo.components.navigation.page-nav.view
   (:require
-    [quo.components.avatars.account-avatar.view :as account-avatar]
-    [quo.components.avatars.group-avatar.view :as group-avatar]
-    [quo.components.buttons.button.properties :as button-properties]
-    [quo.components.buttons.button.view :as button]
-    [quo.components.dropdowns.dropdown.properties :as dropdown-properties]
-    [quo.components.dropdowns.dropdown.view :as dropdown]
-    [quo.components.dropdowns.network-dropdown.view :as network-dropdown]
-    [quo.components.icon :as icons]
-    [quo.components.markdown.text :as text]
-    [quo.components.navigation.page-nav.style :as style]
-    [quo.theme]
-    [react-native.core :as rn]
-    [react-native.reanimated :as reanimated]
-    [utils.worklets.profile-header :as header-worklet]))
+   [quo.components.avatars.account-avatar.view :as account-avatar]
+   [quo.components.avatars.group-avatar.view :as group-avatar]
+   [quo.components.buttons.button.properties :as button-properties]
+   [quo.components.buttons.button.view :as button]
+   [quo.components.dropdowns.dropdown.properties :as dropdown-properties]
+   [quo.components.dropdowns.dropdown.view :as dropdown]
+   [quo.components.dropdowns.network-dropdown.view :as network-dropdown]
+   [quo.components.icon :as icons]
+   [quo.components.markdown.text :as text]
+   [quo.components.navigation.page-nav.style :as style]
+   [quo.theme]
+   [react-native.core :as rn]
+   [react-native.reanimated :as reanimated]
+   [status-im.feature-flags :as ff]
+   [utils.worklets.profile-header :as header-worklet]))
 
 (def ^:private button-type
   {:white       :grey
@@ -30,16 +31,17 @@
    & children]
   (into [rn/view {:style (style/container margin-top)}
          (when icon-name
-           [button/button
-            {:type                (button-type background)
-             :icon-only?          true
-             :size                32
-             :on-press            on-press
-             :background          (if behind-overlay?
-                                    :blur
-                                    (when (button-properties/backgrounds background) background))
-             :accessibility-label accessibility-label}
-            icon-name])]
+           [rn/view {:style {:flex 1}}
+            [button/button
+             {:type                (button-type background)
+              :icon-only?          true
+              :size                32
+              :on-press            on-press
+              :background          (if behind-overlay?
+                                     :blur
+                                     (when (button-properties/backgrounds background) background))
+              :accessibility-label accessibility-label}
+             icon-name]])]
         children))
 
 (defn- right-section-spacing [] [rn/view {:style style/right-actions-spacing}])
@@ -62,30 +64,48 @@
         (interpose [right-section-spacing])))
 
 (defn- account-switcher-content
-  [{:keys [customization-color on-press emoji type]}]
-  [rn/pressable {:on-press on-press}
-   [account-avatar/view
-    {:emoji               emoji
-     :size                32
-     :type                (or type :default)
-     :customization-color customization-color}]])
+  [{:keys [customization-color on-press emoji type
+           background action-icon-name action-on-press]}]
+  [rn/view {:style {:flex            1
+                    :flex-direction  :row
+                    :justify-content :flex-end}}
+   (when (and action-icon-name
+              (ff/enabled? ::ff/wallet.wallet-connect))
+     [:<>
+      [button/button
+       {:type                (button-type background)
+        :size                32
+        :accessible          true
+        :icon-only?          true
+        :on-press            action-on-press
+        :accessibility-label :dapps-button}
+       action-icon-name]
+      [right-section-spacing]])
+   [rn/pressable {:on-press on-press}
+    [account-avatar/view
+     {:emoji               emoji
+      :size                32
+      :type                (or type :default)
+      :customization-color customization-color}]]])
 
 (defn- right-content
   [{:keys [background content max-actions min-size? support-account-switcher? account-switcher
            behind-overlay?]
     :or   {support-account-switcher? true}}]
-  [rn/view (when min-size? {:style style/right-content-min-size})
-   (cond
-     (and support-account-switcher? (= content :account-switcher))
-     [account-switcher-content account-switcher]
 
-     (coll? content)
+  (cond
+    (and support-account-switcher? (= content :account-switcher))
+    [account-switcher-content
+     (assoc account-switcher :background background)]
+
+    (coll? content)
+    [rn/view (when min-size? {:style style/right-content-min-size})
      (into [rn/view {:style style/right-actions-container}]
            (add-right-buttons-xf max-actions background behind-overlay?)
-           content)
+           content)]
 
-     :else
-     nil)])
+    :else
+    nil))
 
 (def header-height 155)
 (def page-nav-height 25)
