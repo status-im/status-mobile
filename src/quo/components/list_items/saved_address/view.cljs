@@ -1,5 +1,6 @@
 (ns quo.components.list-items.saved-address.view
   (:require
+    [clojure.string :as string]
     [quo.components.avatars.wallet-user-avatar.view :as wallet-user-avatar]
     [quo.components.icon :as icon]
     [quo.components.list-items.saved-address.style :as style]
@@ -9,32 +10,51 @@
     [react-native.core :as rn]
     [utils.address :as address]))
 
+(def ^:private chains-map
+  {:eth :ethereum
+   :arb :arbitrum
+   :opt :optimism})
+
 (defn- left-container
-  [{:keys [blur? name ens address customization-color]}]
+  [{:keys [blur? ens address customization-color chain-color-map] address-name :name}]
   (let [theme (quo.theme/use-theme)]
     [rn/view {:style style/left-container}
      [wallet-user-avatar/wallet-user-avatar
       {:size                :size-32
-       :full-name           name
+       :full-name           address-name
        :customization-color customization-color}]
      [rn/view {:style style/account-container}
       [text/text
        {:weight :semi-bold
         :size   :paragraph-1
         :style  style/name-text}
-       name]
+       address-name]
       [text/text {:size :paragraph-2}
        [text/text
         {:size   :paragraph-2
          :weight :monospace
          :style  (style/account-address blur? theme)}
+        (map (fn [[chain color]]
+               ^{:key chain}
+               [text/text
+                {:size   :paragraph-2
+                 :weight :monospace
+                 :style  {:color color}} (str (name chain) ":")])
+             chain-color-map)
         (or ens (address/get-shortened-key address))]]]]))
 
 (defn view
-  [{:keys [blur? user-props active-state? customization-color on-press on-options-press]
+  [{:keys [blur? user-props active-state? customization-color on-press on-options-press chains]
     :or   {customization-color :blue
            blur?               false}}]
   (let [theme             (quo.theme/use-theme)
+        chains-vector     (map keyword (string/split chains #":"))
+        chain-color-map   (->> chains-vector
+                               (map (fn [chain-short-keyword]
+                                      (let [chain-full-name (get chains-map chain-short-keyword)]
+                                        {chain-short-keyword (colors/resolve-color chain-full-name
+                                                                                   theme)})))
+                               (into {}))
         [state set-state] (rn/use-state :default)
         active?           (rn/use-ref-atom false)
         timer             (rn/use-ref-atom nil)
@@ -64,7 +84,8 @@
        :name                (:name user-props)
        :ens                 (:ens user-props)
        :address             (:address user-props)
-       :customization-color (or (:customization-color user-props) :blue)}]
+       :customization-color (or (:customization-color user-props) :blue)
+       :chain-color-map     chain-color-map}]
      (when on-options-press
        [rn/pressable
         {:accessibility-label :options-button

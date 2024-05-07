@@ -8,7 +8,8 @@
   [(preview/customization-color-option {:key :account-color})
    {:key :blur? :type :boolean}
    {:key :title :type :text}
-   (preview/customization-color-option)])
+   (preview/customization-color-option)
+   {:key :chains :type :text}])
 
 (defn view
   []
@@ -17,7 +18,8 @@
                              :account-color       :flamingo
                              :title               "Alisher Yakupov"
                              :address             "0x21a...49e"
-                             :on-options-press    #(js/alert "Options button pressed!")})]
+                             :on-options-press    #(js/alert "Options button pressed!")
+                             :chains              "eth:opt:arb:"})]
     (fn []
       [preview/preview-container
        {:state                 state
