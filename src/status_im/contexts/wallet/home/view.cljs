@@ -88,7 +88,7 @@
      [refreshable-flat-list/view
       {:refresh-control       [rn/refresh-control
                                {:refreshing (and tokens-loading? init-loaded?)
-                                :colors     colors/neutral-40
+                                :colors     [colors/neutral-40]
                                 :tint-color colors/neutral-40
                                 :on-refresh #(rf/dispatch [:wallet/get-accounts])}]
        :header                [rn/view {:style (style/header-container theme)}
