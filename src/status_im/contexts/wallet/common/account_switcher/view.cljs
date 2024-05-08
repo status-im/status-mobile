@@ -4,6 +4,7 @@
     [status-im.contexts.wallet.sheets.account-options.view :as account-options]
     [status-im.contexts.wallet.sheets.network-filter.view :as network-filter]
     [status-im.contexts.wallet.sheets.select-account.view :as select-account]
+    [status-im.feature-flags :as ff]
     [utils.re-frame :as rf]))
 
 (defn get-bottom-sheet-args
@@ -31,8 +32,9 @@
       :accessibility-label accessibility-label
       :networks            networks
       :networks-on-press   #(rf/dispatch [:show-bottom-sheet {:content network-filter/view}])
-      :right-side          [{:icon-name :i/dapps
-                             :on-press  #(rf/dispatch [:navigate-to :screen/wallet.connected-dapps])}
+      :right-side          [(when (ff/enabled? ::ff/wallet.wallet-connect)
+                              {:icon-name :i/dapps
+                               :on-press  #(rf/dispatch [:navigate-to :screen/wallet.connected-dapps])})
 
                             {:content-type        :account-switcher
                              :customization-color color

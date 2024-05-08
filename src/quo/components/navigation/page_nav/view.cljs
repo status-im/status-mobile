@@ -316,7 +316,7 @@
      [right-content
       {:background  background
        :content     right-side
-       :max-actions 2
+       :max-actions 3
        :min-size?   true}]]
 
     (:community :network)
