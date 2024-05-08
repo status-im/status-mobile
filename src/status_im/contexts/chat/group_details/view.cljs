@@ -4,6 +4,7 @@
     [quo.foundations.colors :as colors]
     [quo.theme]
     [react-native.core :as rn]
+    [react-native.gesture :as gesture]
     [react-native.safe-area :as safe-area]
     [reagent.core :as reagent]
     [status-im.common.contact-list-item.view :as contact-list-item]
@@ -43,12 +44,11 @@
 
 (defn add-manage-members
   []
-  (let [selected-participants      (rf/sub [:group-chat/selected-participants])
-        deselected-members         (rf/sub [:group-chat/deselected-members])
-        chat-id                    (rf/sub [:get-screen-params :group-details])
-        {:keys [admins] :as group} (rf/sub [:chats/chat-by-id chat-id])
-        theme                      (quo.theme/use-theme)
-        admin?                     (get admins (rf/sub [:multiaccount/public-key]))]
+  (let [selected-participants (rf/sub [:group-chat/selected-participants])
+        deselected-members    (rf/sub [:group-chat/deselected-members])
+        chat-id               (rf/sub [:get-screen-params :group-add-manage-members])
+        group                 (rf/sub [:chats/chat-by-id chat-id])
+        theme                 (quo.theme/use-theme)]
     [rn/view {:flex 1 :margin-top 20}
      [rn/touchable-opacity
       {:on-press            #(rf/dispatch [:navigate-back])
@@ -59,8 +59,8 @@
       {:size   :heading-1
        :weight :semi-bold
        :style  {:margin-left 20}}
-      (i18n/label (if admin? :t/manage-members :t/add-members))]
-     [rn/section-list
+      (i18n/label :t/manage-members)]
+     [gesture/section-list
       {:key-fn                         :title
        :sticky-section-headers-enabled false
        :sections                       (rf/sub [:contacts/grouped-by-first-letter])
@@ -139,7 +139,8 @@
                 :customization-color color}}]
      [quo/channel-actions
       {:container-style style/actions-view
-       :actions         [{:accessibility-label :pinned-messages
+       :actions         [{:big?                (not admin?)
+                          :accessibility-label :pinned-messages
                           :label               (i18n/label :t/pinned-messages)
                           :customization-color color
                           :icon                :i/pin
@@ -155,16 +156,17 @@
                           :on-press            #(rf/dispatch [:chat.ui/mute chat-id (not muted)
                                                               (when-not muted
                                                                 constants/mute-till-unmuted)])}
-                         {:accessibility-label :manage-members
-                          :customization-color color
-                          :icon                :i/add-user
-                          :label               (i18n/label (if admin? :t/manage-members :t/add-members))
-                          :counter-value       (count contacts)
-                          :on-press            (fn []
-                                                 (rf/dispatch [:group/clear-added-participants])
-                                                 (rf/dispatch [:group/clear-removed-members])
-                                                 (rf/dispatch [:open-modal :group-add-manage-members
-                                                               chat-id]))}]}]
+                         (when admin?
+                           {:accessibility-label :manage-members
+                            :customization-color color
+                            :icon                :i/add-user
+                            :label               (i18n/label :t/manage-members)
+                            :counter-value       (count contacts)
+                            :on-press            (fn []
+                                                   (rf/dispatch [:group/clear-added-participants])
+                                                   (rf/dispatch [:group/clear-removed-members])
+                                                   (rf/dispatch [:open-modal :group-add-manage-members
+                                                                 chat-id]))})]}]
      [rn/section-list
       {:key-fn                         :title
        :sticky-section-headers-enabled false
