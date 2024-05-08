@@ -1,11 +1,11 @@
 (ns status-im.contexts.wallet.common.account-switcher.view
   (:require
-    [quo.core :as quo]
-    [status-im.contexts.wallet.sheets.account-options.view :as account-options]
-    [status-im.contexts.wallet.sheets.network-filter.view :as network-filter]
-    [status-im.contexts.wallet.sheets.select-account.view :as select-account]
-    [status-im.feature-flags :as ff]
-    [utils.re-frame :as rf]))
+   [quo.core :as quo]
+   [status-im.contexts.wallet.sheets.account-options.view :as account-options]
+   [status-im.contexts.wallet.sheets.network-filter.view :as network-filter]
+   [status-im.contexts.wallet.sheets.select-account.view :as select-account]
+   [status-im.feature-flags :as ff]
+   [utils.re-frame :as rf]))
 
 (defn get-bottom-sheet-args
   [switcher-type]
@@ -32,7 +32,8 @@
       :accessibility-label accessibility-label
       :networks            networks
       :networks-on-press   #(rf/dispatch [:show-bottom-sheet {:content network-filter/view}])
-      :right-side          [(when (ff/enabled? ::ff/wallet.wallet-connect)
+      :right-side          [(when (and (ff/enabled? ::ff/wallet.wallet-connect)
+                                       (not watch-only?))
                               {:icon-name :i/dapps
                                :on-press  #(rf/dispatch [:navigate-to :screen/wallet.connected-dapps])})
 
