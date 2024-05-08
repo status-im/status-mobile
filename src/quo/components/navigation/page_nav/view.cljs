@@ -31,7 +31,7 @@
    & children]
   (into [rn/view {:style (style/container margin-top)}
          (when icon-name
-           [rn/view {:style {:flex 1}}
+           [rn/view {:style style/page-nav-left-container}
             [button/button
              {:type                (button-type background)
               :icon-only?          true
@@ -67,9 +67,7 @@
   [{:keys [customization-color on-press emoji type
            background action-icon-name action-on-press
            behind-overlay?]}]
-  [rn/view {:style {:flex            1
-                    :flex-direction  :row
-                    :justify-content :flex-end}}
+  [rn/view {:style style/account-switcher-actions-container}
    (when (and action-icon-name
               (ff/enabled? ::ff/wallet.wallet-connect))
      [:<>

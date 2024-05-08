@@ -84,3 +84,11 @@
    :height        24
    :border-radius 12
    :margin-right  6})
+
+(def account-switcher-actions-container
+  {:flex            1
+   :flex-direction  :row
+   :justify-content :flex-end})
+
+(def page-nav-left-container
+  {:flex 1})
