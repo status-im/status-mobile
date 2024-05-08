@@ -42,7 +42,6 @@
 
 (def token-not-available-container
   {:height            90
-   :flex              1
    :flex-direction    :row
    :background-color  colors/danger-opa-5
    :border-color      colors/danger-opa-10

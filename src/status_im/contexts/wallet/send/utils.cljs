@@ -93,7 +93,7 @@
    network-amounts))
 
 (defn network-amounts
-  [network-values disabled-chain-ids receiver-networks token-networks-ids to?]
+  [{:keys [network-values disabled-chain-ids receiver-networks token-networks-ids to?]}]
   (let [disabled-set                             (set disabled-chain-ids)
         receiver-networks-set                    (set receiver-networks)
         network-values-keys                      (set (keys network-values))
@@ -149,7 +149,7 @@
       (conj {:type :add}))))
 
 (defn loading-network-amounts
-  [valid-networks disabled-chain-ids receiver-networks token-networks-ids to?]
+  [{:keys [valid-networks disabled-chain-ids receiver-networks token-networks-ids to?]}]
   (let [disabled-set               (set disabled-chain-ids)
         receiver-networks-set      (set receiver-networks)
         receiver-networks-count    (count receiver-networks)

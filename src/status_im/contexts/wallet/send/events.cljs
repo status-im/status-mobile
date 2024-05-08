@@ -56,19 +56,21 @@
                                                                                :to? true})
            to-network-values-for-ui      (send-utils/network-values-for-ui to-network-amounts-by-chain)
            sender-network-values         (if routes-available?
-                                           (send-utils/network-amounts from-network-values-for-ui
-                                                                       disabled-from-chain-ids
-                                                                       receiver-networks
-                                                                       token-networks-ids
-                                                                       false)
+                                           (send-utils/network-amounts
+                                            {:network-values     from-network-values-for-ui
+                                             :disabled-chain-ids disabled-from-chain-ids
+                                             :receiver-networks  receiver-networks
+                                             :token-networks-ids token-networks-ids
+                                             :to?                false})
                                            (send-utils/reset-network-amounts-to-zero
                                             sender-network-values))
            receiver-network-values       (if routes-available?
-                                           (send-utils/network-amounts to-network-values-for-ui
-                                                                       disabled-from-chain-ids
-                                                                       receiver-networks
-                                                                       token-networks-ids
-                                                                       true)
+                                           (send-utils/network-amounts
+                                            {:network-values     to-network-values-for-ui
+                                             :disabled-chain-ids disabled-from-chain-ids
+                                             :receiver-networks  receiver-networks
+                                             :token-networks-ids token-networks-ids
+                                             :to?                true})
                                            (send-utils/reset-network-amounts-to-zero
                                             receiver-network-values))
            network-links                 (when routes-available?
@@ -332,18 +334,18 @@
          token-networks-ids (when token (mapv #(:chain-id %) (:networks token)))
          sender-network-values (when token-available-networks-for-suggested-routes
                                  (send-utils/loading-network-amounts
-                                  token-available-networks-for-suggested-routes
-                                  disabled-from-chain-ids
-                                  receiver-networks
-                                  token-networks-ids
-                                  false))
+                                  {:valid-networks     token-available-networks-for-suggested-routes
+                                   :disabled-chain-ids disabled-from-chain-ids
+                                   :receiver-networks  receiver-networks
+                                   :token-networks-ids token-networks-ids
+                                   :to?                false}))
          receiver-network-values (when token-available-networks-for-suggested-routes
                                    (send-utils/loading-network-amounts
-                                    token-available-networks-for-suggested-routes
-                                    disabled-from-chain-ids
-                                    receiver-networks
-                                    token-networks-ids
-                                    true))
+                                    {:valid-networks     token-available-networks-for-suggested-routes
+                                     :disabled-chain-ids disabled-from-chain-ids
+                                     :receiver-networks  receiver-networks
+                                     :token-networks-ids token-networks-ids
+                                     :to?                true}))
          request-params [transaction-type-param
                          from-address
                          to-address

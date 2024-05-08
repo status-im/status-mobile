@@ -98,22 +98,26 @@
                                        (rf/dispatch [:wallet/update-receiver-networks chain-ids]))}])}]))
 
 (defn- token-not-available
-  [token-symbol receiver-networks address]
-  [rn/view {:style style/token-not-available-container}
-   [rn/view
-    [quo/icon :i/alert
-     {:size  16
-      :color colors/danger-50}]]
-   [rn/view {:style style/token-not-available-content-container}
-    [quo/text
-     {:style style/token-not-available-text
-      :size  :paragraph-2}
-     (i18n/label :t/token-not-available-on-receiver-networks {:token-symbol token-symbol})]
-    [quo/button
-     {:size                24
-      :customization-color colors/danger-50
-      :on-press            #(open-preferences receiver-networks address)}
-     (i18n/label :t/add-networks-token-can-be-sent-to {:token-symbol token-symbol})]]])
+  [token-symbol receiver-networks token-networks]
+  (let [add-token-networks (fn []
+                             (let [chain-ids (concat receiver-networks
+                                                     (mapv #(:chain-id %) token-networks))]
+                               (rf/dispatch [:wallet/update-receiver-networks chain-ids])))]
+    [rn/view {:style style/token-not-available-container}
+     [rn/view
+      [quo/icon :i/alert
+       {:size  16
+        :color colors/danger-50}]]
+     [rn/view {:style style/token-not-available-content-container}
+      [quo/text
+       {:style style/token-not-available-text
+        :size  :paragraph-2}
+       (i18n/label :t/token-not-available-on-receiver-networks {:token-symbol token-symbol})]
+      [quo/button
+       {:size                24
+        :customization-color colors/danger-50
+        :on-press            add-token-networks}
+       (i18n/label :t/add-networks-token-can-be-sent-to {:token-symbol token-symbol})]]]))
 
 (defn view
   ;; crypto-decimals, limit-crypto and initial-crypto-currency? args are needed
@@ -270,7 +274,7 @@
          (when (and (not loading-routes?)
                     sender-network-values
                     token-not-supported-in-receiver-networks?)
-           [token-not-available token-symbol receiver-networks to-address])
+           [token-not-available token-symbol receiver-networks token-networks])
          (when (or loading-routes? (seq route))
            [estimated-fees
             {:loading-routes? loading-routes?

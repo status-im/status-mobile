@@ -282,11 +282,11 @@
                                :total-amount (money/bignumber "200")
                                :type         :default}
                               {:type :add}]
-          result             (utils/network-amounts network-values
-                                                    disabled-chain-ids
-                                                    receiver-networks
-                                                    token-networks-ids
-                                                    to?)]
+          result             (utils/network-amounts {:network-values     network-values
+                                                     :disabled-chain-ids disabled-chain-ids
+                                                     :receiver-networks  receiver-networks
+                                                     :token-networks-ids token-networks-ids
+                                                     :to?                to?})]
       (is (every? identity (map #(map/deep-compare %1 %2) expected result)))))
 
   (testing "Adds default amount for non-disabled non-receiver networks when to? is false"
@@ -301,11 +301,11 @@
                               {:chain-id     "10"
                                :total-amount (money/bignumber "0")
                                :type         :disabled}]
-          result             (utils/network-amounts network-values
-                                                    disabled-chain-ids
-                                                    receiver-networks
-                                                    token-networks-ids
-                                                    to?)]
+          result             (utils/network-amounts {:network-values     network-values
+                                                     :disabled-chain-ids disabled-chain-ids
+                                                     :receiver-networks  receiver-networks
+                                                     :token-networks-ids token-networks-ids
+                                                     :to?                to?})]
       (is (every? identity (map #(map/deep-compare %1 %2) expected result)))))
 
   (testing "Handles empty inputs correctly"
@@ -315,11 +315,11 @@
           token-networks-ids []
           to?                true
           expected           []
-          result             (utils/network-amounts network-values
-                                                    disabled-chain-ids
-                                                    receiver-networks
-                                                    token-networks-ids
-                                                    to?)]
+          result             (utils/network-amounts {:network-values     network-values
+                                                     :disabled-chain-ids disabled-chain-ids
+                                                     :receiver-networks  receiver-networks
+                                                     :token-networks-ids token-networks-ids
+                                                     :to?                to?})]
       (is (= expected result))))
 
   (testing "Processes case with multiple network interactions"
@@ -339,11 +339,11 @@
                               {:chain-id     "42161"
                                :total-amount (money/bignumber "500")
                                :type         :default}]
-          result             (utils/network-amounts network-values
-                                                    disabled-chain-ids
-                                                    receiver-networks
-                                                    token-networks-ids
-                                                    to?)]
+          result             (utils/network-amounts {:network-values     network-values
+                                                     :disabled-chain-ids disabled-chain-ids
+                                                     :receiver-networks  receiver-networks
+                                                     :token-networks-ids token-networks-ids
+                                                     :to?                to?})]
       (is (every? identity (map #(map/deep-compare %1 %2) expected result))))))
 
 (deftest test-loading-network-amounts
@@ -356,11 +356,11 @@
           expected           [{:chain-id "1" :type :loading}
                               {:chain-id "10" :type :loading}
                               {:type :add}]
-          result             (utils/loading-network-amounts valid-networks
-                                                            disabled-chain-ids
-                                                            receiver-networks
-                                                            token-networks-ids
-                                                            to?)
+          result             (utils/loading-network-amounts {:valid-networks     valid-networks
+                                                             :disabled-chain-ids disabled-chain-ids
+                                                             :receiver-networks  receiver-networks
+                                                             :token-networks-ids token-networks-ids
+                                                             :to?                to?})
           comparisons        (map #(map/deep-compare %1 %2)
                                   expected
                                   result)]
@@ -375,11 +375,11 @@
           expected           [{:chain-id "1" :type :loading}
                               {:chain-id "10" :type :disabled :total-amount (money/bignumber "0")}
                               {:chain-id "42161" :type :disabled :total-amount (money/bignumber "0")}]
-          result             (utils/loading-network-amounts valid-networks
-                                                            disabled-chain-ids
-                                                            receiver-networks
-                                                            token-networks-ids
-                                                            to?)
+          result             (utils/loading-network-amounts {:valid-networks     valid-networks
+                                                             :disabled-chain-ids disabled-chain-ids
+                                                             :receiver-networks  receiver-networks
+                                                             :token-networks-ids token-networks-ids
+                                                             :to?                to?})
           comparisons        (map #(map/deep-compare %1 %2)
                                   expected
                                   result)]
@@ -393,11 +393,11 @@
           to?                true
           expected           [{:chain-id "1" :type :loading}
                               {:chain-id "42161" :type :loading}]
-          result             (utils/loading-network-amounts valid-networks
-                                                            disabled-chain-ids
-                                                            receiver-networks
-                                                            token-networks-ids
-                                                            to?)
+          result             (utils/loading-network-amounts {:valid-networks     valid-networks
+                                                             :disabled-chain-ids disabled-chain-ids
+                                                             :receiver-networks  receiver-networks
+                                                             :token-networks-ids token-networks-ids
+                                                             :to?                to?})
           comparisons        (map #(map/deep-compare %1 %2)
                                   expected
                                   result)]
@@ -411,11 +411,11 @@
           to?                true
           expected           [{:chain-id "1" :type :loading}
                               {:type :add}]
-          result             (utils/loading-network-amounts valid-networks
-                                                            disabled-chain-ids
-                                                            receiver-networks
-                                                            token-networks-ids
-                                                            to?)
+          result             (utils/loading-network-amounts {:valid-networks     valid-networks
+                                                             :disabled-chain-ids disabled-chain-ids
+                                                             :receiver-networks  receiver-networks
+                                                             :token-networks-ids token-networks-ids
+                                                             :to?                to?})
           comparisons        (map #(map/deep-compare %1 %2)
                                   expected
                                   result)]
