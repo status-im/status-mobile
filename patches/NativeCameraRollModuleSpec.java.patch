@@ -1,0 +1,16 @@
+--- /tmp/tmp-status-mobile-ca53bf738/tmp.Ay8Xen8Mmn/NativeCameraRollModuleSpec.java	2024-04-19 12:10:05.789750000 +0200
++++ ./node_modules/@react-native-camera-roll/camera-roll/android/src/paper/java/com/reactnativecommunity/cameraroll/NativeCameraRollModuleSpec.java	2024-04-19 12:12:27.231493426 +0200
+@@ -50,4 +50,13 @@
+   @ReactMethod
+   @DoNotStrip
+   public abstract void getPhotoThumbnail(String internalID, ReadableMap options, Promise promise);
++
++  @ReactMethod
++  @DoNotStrip
++  public abstract void getPhotosCountiOS(String arg, Promise promise);
++
++  @ReactMethod
++  @DoNotStrip
++  public abstract void getFavoritesiOS(String arg, Promise promise);
++
+ }
