@@ -1,9 +1,9 @@
 (ns status-im.contexts.wallet.connected-dapps.view
   (:require
-   [quo.core :as quo]
-   [react-native.core :as rn]
-   [status-im.contexts.wallet.connected-dapps.style :as style]
-   [utils.re-frame :as rf]))
+    [quo.core :as quo]
+    [react-native.core :as rn]
+    [status-im.contexts.wallet.connected-dapps.style :as style]
+    [utils.re-frame :as rf]))
 
 (defn- header
   [{:keys [title subtitle]}]
@@ -23,6 +23,7 @@
      :style  (style/header-text (when subtitle true))}
     title]])
 
-(defn view []
+(defn view
+  []
   [rn/view {:style {:flex 1}}
    [header {:title "Connected dApps"}]])

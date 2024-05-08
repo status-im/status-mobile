@@ -1,10 +1,10 @@
 (ns status-im.contexts.wallet.common.account-switcher.view
   (:require
-   [quo.core :as quo]
-   [status-im.contexts.wallet.sheets.account-options.view :as account-options]
-   [status-im.contexts.wallet.sheets.network-filter.view :as network-filter]
-   [status-im.contexts.wallet.sheets.select-account.view :as select-account]
-   [utils.re-frame :as rf]))
+    [quo.core :as quo]
+    [status-im.contexts.wallet.sheets.account-options.view :as account-options]
+    [status-im.contexts.wallet.sheets.network-filter.view :as network-filter]
+    [status-im.contexts.wallet.sheets.select-account.view :as select-account]
+    [utils.re-frame :as rf]))
 
 (defn get-bottom-sheet-args
   [switcher-type]

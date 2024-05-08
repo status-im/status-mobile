@@ -1,19 +1,19 @@
 (ns quo.components.navigation.page-nav.view
   (:require
-   [quo.components.avatars.account-avatar.view :as account-avatar]
-   [quo.components.avatars.group-avatar.view :as group-avatar]
-   [quo.components.buttons.button.properties :as button-properties]
-   [quo.components.buttons.button.view :as button]
-   [quo.components.dropdowns.dropdown.properties :as dropdown-properties]
-   [quo.components.dropdowns.dropdown.view :as dropdown]
-   [quo.components.dropdowns.network-dropdown.view :as network-dropdown]
-   [quo.components.icon :as icons]
-   [quo.components.markdown.text :as text]
-   [quo.components.navigation.page-nav.style :as style]
-   [quo.theme]
-   [react-native.core :as rn]
-   [react-native.reanimated :as reanimated]
-   [utils.worklets.profile-header :as header-worklet]))
+    [quo.components.avatars.account-avatar.view :as account-avatar]
+    [quo.components.avatars.group-avatar.view :as group-avatar]
+    [quo.components.buttons.button.properties :as button-properties]
+    [quo.components.buttons.button.view :as button]
+    [quo.components.dropdowns.dropdown.properties :as dropdown-properties]
+    [quo.components.dropdowns.dropdown.view :as dropdown]
+    [quo.components.dropdowns.network-dropdown.view :as network-dropdown]
+    [quo.components.icon :as icons]
+    [quo.components.markdown.text :as text]
+    [quo.components.navigation.page-nav.style :as style]
+    [quo.theme]
+    [react-native.core :as rn]
+    [react-native.reanimated :as reanimated]
+    [utils.worklets.profile-header :as header-worklet]))
 
 (def ^:private button-type
   {:white       :grey
@@ -48,7 +48,8 @@
   (fn [{:keys [button-props]}]
     (:content-type button-props)))
 
-(defmethod add-button :account-switcher [{:keys [support-account-switcher? button-props]}]
+(defmethod add-button :account-switcher
+  [{:keys [support-account-switcher? button-props]}]
   (when support-account-switcher?
     (let [{:keys [customization-color on-press emoji type]} button-props]
       [rn/pressable {:on-press on-press}
@@ -58,7 +59,8 @@
          :type                (or type :default)
          :customization-color customization-color}]])))
 
-(defmethod add-button :default [{:keys [background behind-overlay? button-props]}]
+(defmethod add-button :default
+  [{:keys [background behind-overlay? button-props]}]
   (let [{:keys [label icon-name]} button-props]
     [button/button
      (assoc button-props
@@ -76,10 +78,10 @@
   (comp (filter map?)
         (take max-actions)
         (map (fn [button-props]
-               (add-button {:background background
-                            :behind-overlay? behind-overlay?
+               (add-button {:background                background
+                            :behind-overlay?           behind-overlay?
                             :support-account-switcher? support-account-switcher?
-                            :button-props button-props})))
+                            :button-props              button-props})))
         (interpose [right-section-spacing])))
 
 (defn- right-content
@@ -258,20 +260,20 @@
     :no-title
     [page-nav-base props
      [right-content
-      {:background       background
-       :content          right-side
-       :max-actions      3
-       :behind-overlay?  behind-overlay?}]]
+      {:background      background
+       :content         right-side
+       :max-actions     3
+       :behind-overlay? behind-overlay?}]]
 
     :title
     (let [centered? (= text-align :center)]
       [page-nav-base props
        [title-center (assoc props :centered? centered?)]
        [right-content
-        {:background       background
-         :content          right-side
-         :max-actions      (if centered? 1 3)
-         :min-size?        centered?}]])
+        {:background  background
+         :content     right-side
+         :max-actions (if centered? 1 3)
+         :min-size?   centered?}]])
 
     :dropdown
     [page-nav-base props
@@ -286,9 +288,9 @@
     [page-nav-base props
      [token-center props]
      [right-content
-      {:background       background
-       :content          right-side
-       :max-actions      3}]]
+      {:background  background
+       :content     right-side
+       :max-actions 3}]]
 
     :channel
     [page-nav-base props
@@ -312,10 +314,10 @@
     [page-nav-base props
      [wallet-networks-center props]
      [right-content
-      {:background       background
-       :content          right-side
-       :max-actions      2
-       :min-size?        true}]]
+      {:background  background
+       :content     right-side
+       :max-actions 2
+       :min-size?   true}]]
 
     (:community :network)
     [page-nav-base props
