@@ -211,8 +211,11 @@
 
 (defn full-date->short-date
   [s]
-  (let [words (string/split s #"\s+")]
-    (string/join " " (take (- (count words) 2) words))))
+  (let [words     (string/split s #"\s+")
+        last-word (last words)]
+    (if (or (= "AM" last-word) (= "PM" last-word))
+      (string/join " " (take (- (count words) 2) words))
+      s)))
 
 (defn timestamp->relative-short-date
   [ms]

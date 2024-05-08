@@ -8,16 +8,15 @@
  :<- [:wallet]
  :-> :activities)
 
-(rf/reg-sub
- :wallet/activities-for-current-viewing-account
+(rf/reg-sub :wallet/activities-for-current-viewing-account
  :<- [:wallet/all-activities]
  :<- [:wallet/current-viewing-account-address]
  (fn [[activities current-viewing-account-address]]
-   (let [account-activities (filter (fn [{:keys [sender recipient]}]
-                                      (or (= sender current-viewing-account-address)
-                                          (= recipient current-viewing-account-address)))
-                                    activities)
-         grouped-by-day     (group-by (fn [{:keys [timestamp]}]
-                                        (datetime/timestamp->relative-short-date (* timestamp 1000)))
-                                      account-activities)]
-     (map (fn [[date acts]] {:title date :data acts}) grouped-by-day))))
+   (->> activities
+        (filter (fn [{:keys [sender recipient]}]
+                  (or (= sender current-viewing-account-address)
+                      (= recipient current-viewing-account-address))))
+        (group-by (fn [{:keys [timestamp]}]
+                    (datetime/timestamp->relative-short-date (* timestamp 1000))))
+        (map (fn [[date activities]]
+               {:title date :data activities})))))
