@@ -1,7 +1,7 @@
 (ns status-im.contexts.shell.activity-center.notification.contact-requests.view
   (:require
     [quo.core :as quo]
-    [react-native.gesture :as gesture]
+    [react-native.core :as rn]
     [status-im.constants :as constants]
     [status-im.contexts.shell.activity-center.notification.common.style :as common-style]
     [status-im.contexts.shell.activity-center.notification.common.view :as common]
@@ -162,10 +162,8 @@
        [outgoing-contact-request-view props app-theme]
 
        (= contact-request-state constants/contact-request-message-state-accepted)
-       [gesture/touchable-without-feedback
-        {:on-press (fn []
-                     (rf/dispatch [:hide-popover])
-                     (rf/dispatch [:chat.ui/start-chat author]))}
+       [rn/pressable
+        {:on-press #(rf/dispatch [:chat.ui/start-chat author])}
         [incoming-contact-request-view props app-theme]]
 
        :else
