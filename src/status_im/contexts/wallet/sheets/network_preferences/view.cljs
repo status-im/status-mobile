@@ -101,19 +101,20 @@
                                                         :on-change        #(toggle-network (:network-name
                                                                                             network))}))
                             first-section-networks)}]
-         [quo/category
-          {:list-type :settings
-           :blur?     blur?
-           :label     (or second-section-label (i18n/label :t/layer-2))
-           :data      (mapv (fn [network]
-                              (utils/make-network-item {:state            @state
-                                                        :network-name     (:network-name network)
-                                                        :color            color
-                                                        :normal-checkbox? receiver?
-                                                        :networks         (get-current-preferences-names)
-                                                        :on-change        #(toggle-network (:network-name
-                                                                                            network))}))
-                            second-section-networks)}]
+         (when (not-empty second-section-networks)
+           [quo/category
+            {:list-type :settings
+             :blur?     blur?
+             :label     (or second-section-label (i18n/label :t/layer-2))
+             :data      (mapv (fn [network]
+                                (utils/make-network-item {:state @state
+                                                          :network-name (:network-name network)
+                                                          :color color
+                                                          :normal-checkbox? receiver?
+                                                          :networks (get-current-preferences-names)
+                                                          :on-change #(toggle-network (:network-name
+                                                                                       network))}))
+                              second-section-networks)}])
          [quo/bottom-actions
           {:actions          :one-action
            :blur?            blur?
