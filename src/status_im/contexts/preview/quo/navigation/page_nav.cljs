@@ -59,9 +59,9 @@
       :value "2 actions"}
      {:key   (take 3 options)
       :value "3 actions"}
-     {:key   (conj account-switcher-option (take 1 options))
+     {:key   (conj (take 1 options) account-switcher-option)
       :value "1 action + account switcher"}
-     {:key   (conj account-switcher-option (take 2 options))
+     {:key   (conj (take 2 options) account-switcher-option)
       :value "2 actions + account switcher"}]))
 
 (def no-title-descriptor
