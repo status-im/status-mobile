@@ -77,6 +77,9 @@
 (def ^:const contact-request-message-state-declined 3)
 (def ^:const contact-request-message-max-length 280)
 
+(def ^:const keypair-name-max-length 20)
+(def ^:const keypair-name-min-length 5)
+
 (def request-to-join-pending-state 1)
 
 (def reactions

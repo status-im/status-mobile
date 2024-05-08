@@ -1255,6 +1255,7 @@
     "remove-network": "Remove network",
     "remove-token": "Remove token",
     "removed": "removed",
+    "rename-key-pair": "Rename key pair",
     "repeat-pin": "Repeat new 6-digit passcode",
     "repeat-puk": "Repeat new 12-digit PUK",
     "report-bug-email-template": "1. Issue Description\n{{description}}\n\n\n2. Steps to reproduce\n{{steps}}\n\n\n3. Attach screenshots that can demo the problem, please\n",
@@ -2590,6 +2591,8 @@
         "other": "{{count}} addresses"
     },
     "max": "Max: {{number}}",
+    "your-key-pair-name-is-too-long": "Your key pair name is too long",
+    "your-key-pair-name-is-too-short": "Your key pair name is too short",
     "key-name-error-length": "Key name too long",
     "key-name-error-emoji": "Emojis are not allowed",
     "key-name-error-special-char": "Special characters are not allowed",
