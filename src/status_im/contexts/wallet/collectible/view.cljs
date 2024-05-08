@@ -28,7 +28,7 @@
      collection-name]]])
 
 (defn cta-buttons
-  [chain-id token-id contract-address watch-only?]
+  [{:keys [chain-id token-id contract-address watch-only?]}]
   (let [theme (quo.theme/use-theme)]
     [rn/view {:style style/buttons-container}
      (when-not watch-only?
@@ -67,7 +67,7 @@
       (let [theme                       (quo.theme/use-theme)
             collectible                 (rf/sub [:wallet/last-collectible-details])
             animation-shared-element-id (rf/sub [:animation-shared-element-id])
-            account                     (rf/sub [:wallet/current-viewing-account])
+            collectible-owner           (rf/sub [:wallet/last-collectible-details-owner])
             {:keys [id
                     preview-url
                     collection-data
@@ -91,7 +91,7 @@
                                          :header       collectible-name
                                          :description  collection-name}
             total-owned                 (utils/total-owned-collectible (:ownership collectible)
-                                                                       (:address account))]
+                                                                       (:address collectible-owner))]
         (rn/use-unmount #(rf/dispatch [:wallet/clear-last-collectible-details]))
         [scroll-page/scroll-page
          {:navigate-back? true
@@ -129,7 +129,11 @@
                                                                          {:name  collectible-name
                                                                           :image preview-uri}])}])}])))}]
           [header collectible-name collection-name collection-image]
-          [cta-buttons chain-id token-id contract-address (:watch-only? account)]
+          [cta-buttons
+           {:chain-id         chain-id
+            :token-id         token-id
+            :contract-address contract-address
+            :watch-only?      (:watch-only? collectible-owner)}]
           [quo/tabs
            {:size           32
             :style          style/tabs
