@@ -1,0 +1,6 @@
+(ns status-im.contexts.wallet.common.collectibles-tab.style
+  (:require [status-im.contexts.shell.jump-to.constants :as constants]))
+
+(def list-container-style
+  {:margin-horizontal 12
+   :padding-bottom    constants/floating-shell-button-height})
