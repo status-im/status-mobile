@@ -12,11 +12,17 @@
 (defn user-avatar-tag
   [user-id]
   (let [profile (rf/sub [:contacts/contact-by-identity user-id])]
-    [quo/context-tag
-     {:blur?           true
-      :size            24
-      :full-name       (profile.utils/displayed-name profile)
-      :profile-picture (profile.utils/photo profile)}]))
+    [rn/view
+     {:on-start-should-set-responder
+      (fn [_event]
+        (rf/dispatch [:navigate-back])
+        (rf/dispatch [:chat.ui/show-profile user-id])
+        true)}
+     [quo/context-tag
+      {:blur?           true
+       :size            24
+       :full-name       (profile.utils/displayed-name profile)
+       :profile-picture (profile.utils/photo profile)}]]))
 
 (defn- render-swipe-action
   [{:keys [active-swipeable
