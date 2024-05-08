@@ -18,18 +18,17 @@
 (defn- parse-accounts
   [given-accounts]
   (->> given-accounts
-       (filter (fn [{:keys [path]}]
-                 (not (string/starts-with? path constants/path-eip1581))))
-       (map (fn [{:keys [customization-color emoji name address]}]
-              {:account-props {:customization-color customization-color
-                               :size                32
-                               :emoji               emoji
-                               :type                :default
-                               :name                name
-                               :address             address}
-               :networks      []
-               :state         :default
-               :action        :none}))))
+       (keep (fn [{:keys [path customization-color emoji name address]}]
+               (when (not (string/starts-with? path constants/path-eip1581))
+                 {:account-props {:customization-color customization-color
+                                  :size                32
+                                  :emoji               emoji
+                                  :type                :default
+                                  :name                name
+                                  :address             address}
+                  :networks      []
+                  :state         :default
+                  :action        :none})))))
 
 (defn on-options-press
   [{:keys [theme]
