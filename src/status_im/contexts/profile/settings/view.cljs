@@ -58,8 +58,7 @@
         on-scroll           (rn/use-callback #(scroll-handler % scroll-y))]
     [quo/overlay {:type :shell}
      [rn/view
-      {:key   :header
-       :style (style/navigation-wrapper {:customization-color customization-color
+      {:style (style/navigation-wrapper {:customization-color customization-color
                                          :inset               (:top insets)
                                          :theme               theme})}
       [quo/page-nav
@@ -78,8 +77,7 @@
                                                 {:options {:message (:universal-profile-url
                                                                      profile)}}])}]}]]
      [rn/flat-list
-      {:key                             :list
-       :header                          [settings.header/view {:scroll-y scroll-y}]
+      {:header                          [settings.header/view {:scroll-y scroll-y}]
        :data                            (settings.items/items (boolean (:mnemonic profile)))
        :shows-vertical-scroll-indicator false
        :render-fn                       settings-item-view
@@ -90,8 +88,7 @@
        :bounces                         false
        :over-scroll-mode                :never}]
      [quo/floating-shell-button
-      {:key :shell
-       :jump-to
+      {:jump-to
        {:on-press            #(rf/dispatch [:shell/navigate-to-jump-to])
         :customization-color customization-color
         :label               (i18n/label :t/jump-to)}}
