@@ -263,7 +263,9 @@
 (rf/reg-event-fx :wallet/select-bridge-network
  (fn [{:keys [db]} [{:keys [network-chain-id stack-id]}]]
    {:db (assoc-in db [:wallet :ui :send :bridge-to-chain-id] network-chain-id)
-    :fx [[:dispatch [:navigate-to-within-stack [:screen/wallet.bridge-input-amount stack-id]]]]}))
+    :fx [[:dispatch [:wallet/wizard-navigate-forward
+                     {:current-screen stack-id
+                      :flow-id        :wallet-bridge-flow}]]]}))
 
 (rf/reg-event-fx
  :wallet/get-ethereum-chains
