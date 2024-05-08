@@ -28,10 +28,10 @@
                                                    :name   "Coingecko"
                                                    :value  "coingecko.com"}
                              :state               :default
-                             :action              :icon
                              :blur?               false
                              :customization-color :blue
-                             :on-press-icon       (fn [] (js/alert "Button pressed"))})]
+                             :on-press            (fn [{:keys [name]}]
+                                                    (js/alert (str name " got pressed")))})]
     (fn []
       [preview/preview-container {:state state :descriptor descriptor}
        [rn/view

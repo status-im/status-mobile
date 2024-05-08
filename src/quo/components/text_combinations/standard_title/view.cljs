@@ -66,4 +66,4 @@
      :counter [right-counter props]
      :action  [right-action props]
      :tag     [right-tag props]
-     nil)])
+     right)])
