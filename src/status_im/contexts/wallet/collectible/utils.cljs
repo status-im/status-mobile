@@ -1,7 +1,8 @@
 (ns status-im.contexts.wallet.collectible.utils
   (:require [status-im.config :as config]
             [status-im.constants :as constants]
-            [status-im.contexts.wallet.common.utils.networks :as network-utils]))
+            [status-im.contexts.wallet.common.utils.networks :as network-utils]
+            [taoensso.timbre :as log]))
 
 (defn collectible-balance
   [collectible]
@@ -23,7 +24,7 @@
   (if (supported-collectible-types collectible-type)
     true
     (do
-      (println "unsupoorted collectible file type" collectible-type)
+      (log/debug "unsupported collectible file type:" (or collectible-type "Unknown type"))
       false)))
 
 (defn total-owned-collectible

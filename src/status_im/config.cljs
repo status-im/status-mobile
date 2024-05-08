@@ -105,23 +105,6 @@
 (def fast-create-community-enabled?
   (enabled? (get-config :FAST_CREATE_COMMUNITY_ENABLED "0")))
 
-(def default-multiaccount
-  {:preview-privacy?                   blank-preview?
-   :wallet-legacy/visible-tokens       {:mainnet #{:SNT}}
-   :currency                           :usd
-   :appearance                         0
-   :profile-pictures-show-to           2
-   :profile-pictures-visibility        2
-   :log-level                          log-level
-   :webview-allow-permission-requests? false
-   :opensea-enabled?                   false
-   :link-previews-enabled-sites        #{}
-   :link-preview-request-enabled       true})
-
-(defn default-visible-tokens
-  [chain]
-  (get-in default-multiaccount [:wallet-legacy/visible-tokens chain]))
-
 (def waku-nodes-config
   {:status.prod
    ["enrtree://AL65EKLJAUXKKPG43HVTML5EFFWEZ7L4LOKTLZCLJASG4DSESQZEC@prod.status.nodes.status.im"]
