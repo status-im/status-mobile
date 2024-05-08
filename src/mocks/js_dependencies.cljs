@@ -418,6 +418,7 @@
     "react-native-transparent-video"                   react-native-transparent-video
     "react-native-orientation-locker"                  react-native-orientation-locker
     "react-native-gifted-charts"                       react-native-gifted-charts
+    "@walletconnect/react-native-compat"               #js {}
     "../resources/data/emojis/en.json"                 (js/JSON.parse
                                                         (slurp
                                                          "./resources/data/emojis/en.json"))
