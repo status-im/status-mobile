@@ -14,4 +14,5 @@
      :buy-action      #(js/alert "Buy button pressed")
      :send-action     #(js/alert "Send button pressed")
      :receive-action  #(js/alert "Receive button pressed")
-     :bridge-action   #(js/alert "Bridge button pressed")}]])
+     :bridge-action   #(js/alert "Bridge button pressed")
+     :swap-action     #(js/alert "Swap button pressed")}]])

@@ -39,6 +39,7 @@
     status-im.contexts.wallet.events
     status-im.contexts.wallet.send.events
     status-im.contexts.wallet.signals
+    status-im.contexts.wallet.swap.events
     [status-im.db :as db]
     status-im.navigation.effects
     status-im.navigation.events
