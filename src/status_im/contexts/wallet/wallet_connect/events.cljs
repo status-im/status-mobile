@@ -40,6 +40,11 @@
    {:db (assoc db :wallet-connect/current-proposal proposal)}))
 
 (rf/reg-event-fx
+ :wallet-connect/reset-current-session
+ (fn [{:keys [db]}]
+   {:db (dissoc db :wallet-connect/current-proposal)}))
+
+(rf/reg-event-fx
  :wallet-connect/pair
  (fn [{:keys [db]} [url]]
    (let [web3-wallet (get db :wallet-connect/web3-wallet)]
@@ -57,6 +62,11 @@
          web3-wallet          (get db :wallet-connect/web3-wallet)
          current-proposal     (get db :wallet-connect/current-proposal)
          accounts             (get-in db [:wallet :accounts])
+         ;; NOTE: for now using the first account, but should be using the account selected by the
+         ;; user on the connection screen. The default would depend on where the connection started
+         ;; from:
+         ;; - global scanner -> first account in list
+         ;; - wallet account dapps -> account that is selected
          address              (-> accounts keys first)
          formatted-address    (wallet-connect.utils/format-address (first crosschain-ids)
                                                                    address)
@@ -68,4 +78,12 @@
      {:fx [[:effects.wallet-connect/approve-session
             {:web3-wallet          web3-wallet
              :proposal             current-proposal
-             :supported-namespaces supported-namespaces}]]})))
+             :supported-namespaces supported-namespaces
+             :on-success           (fn []
+                                     (log/debug "Wallet Connect session approved")
+                                     (rf/dispatch [:wallet-connect/reset-current-session]))
+             :on-fail              (fn [error]
+                                     (log/error "Wallet Connect session approval failed"
+                                                {:error error
+                                                 :event :wallet-connect/approve-session})
+                                     (rf/dispatch [:wallet-connect/reset-current-session]))}]]})))

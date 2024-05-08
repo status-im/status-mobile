@@ -1,14 +1,14 @@
 (ns status-im.contexts.wallet.wallet-connect.effects
-  (:require [re-frame.core :as rf]
-            [status-im.contexts.wallet.wallet-connect.utils :as wallet-connect.utils]
-            [taoensso.timbre :as log]))
+  (:require [promesa.core :as promesa]
+            [re-frame.core :as rf]
+            [status-im.contexts.wallet.wallet-connect.utils :as wallet-connect.utils]))
 
 (rf/reg-fx
  :effects.wallet-connect/init
  (fn [{:keys [on-success on-fail]}]
    (-> (wallet-connect.utils/init)
-       (.then on-success)
-       (.catch on-fail))))
+       (promesa/then on-success)
+       (promesa/catch on-fail))))
 
 (rf/reg-fx
  :effects.wallet-connect/register-event-listener
@@ -25,19 +25,17 @@
  (fn [{:keys [web3-wallet url on-success on-fail]}]
    (-> (.. web3-wallet -core -pairing)
        (.pair (clj->js {:uri url}))
-       (.then on-success)
-       (.catch on-fail))))
+       (promesa/then on-success)
+       (promesa/catch on-fail))))
 
 (rf/reg-fx
  :effects.wallet-connect/approve-session
- (fn [{:keys [web3-wallet proposal supported-namespaces]}]
+ (fn [{:keys [web3-wallet proposal supported-namespaces on-success on-fail]}]
    (let [{:keys [params id]} proposal
          approved-namespaces (wallet-connect.utils/build-approved-namespaces params
                                                                              supported-namespaces)]
      (-> (.approveSession web3-wallet
                           (clj->js {:id         id
                                     :namespaces approved-namespaces}))
-         (.then #(log/info "Wallet Connect session approved"))
-         (.catch #(log/error "Wallet Connect session approve failed"
-                             {:error %
-                              :event :effects.wallet-connect/approve-session}))))))
+         (promesa/then on-success)
+         (promesa/catch on-fail)))))
