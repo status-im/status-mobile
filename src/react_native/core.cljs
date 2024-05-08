@@ -204,7 +204,7 @@
   (let [[render? set-render] (use-state false)]
     (use-mount
      (fn []
-       (js/setTimeout #(set-render true) 0)))
+       (reagent/next-tick #(set-render true))))
     (when render?
       content)))
 
