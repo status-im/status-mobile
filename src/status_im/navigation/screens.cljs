@@ -392,7 +392,7 @@
      :component wallet-bridge-select-asset/view}
 
     {:name      :screen/wallet.bridge-to
-     :options   {:insets {:top? true}
+     :options   {:insets                 {:top? true}
                  :modalPresentationStyle :overCurrentContext}
      :component wallet-bridge-to/view}
 
