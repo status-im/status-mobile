@@ -229,13 +229,13 @@
 
 (defn make-network-item
   "This function generates props for quo/category component item"
-  [{:keys [network-name color on-change networks state label-props]}]
+  [{:keys [network-name color on-change networks state label-props normal-checkbox?]}]
   (cond-> {:title        (string/capitalize (name network-name))
            :image        :icon-avatar
            :image-props  {:icon (resources/get-network network-name)
                           :size :size-20}
            :action       :selector
-           :action-props {:type                (if (= :default state)
+           :action-props {:type                (if (and (= :default state) (not normal-checkbox?))
                                                  :filled-checkbox
                                                  :checkbox)
                           :customization-color color

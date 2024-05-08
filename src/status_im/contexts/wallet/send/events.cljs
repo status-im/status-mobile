@@ -153,6 +153,7 @@
               (assoc-in [:wallet :ui :send :recipient] (or recipient address))
               (assoc-in [:wallet :ui :send :to-address] to-address)
               (assoc-in [:wallet :ui :send :address-prefix] prefix)
+              (assoc-in [:wallet :ui :send :receiver-preferred-networks] receiver-networks)
               (assoc-in [:wallet :ui :send :receiver-networks] receiver-networks))
       :fx [(when (and collectible-tx? one-collectible?)
              [:dispatch [:wallet/get-suggested-routes {:amount 1}]])

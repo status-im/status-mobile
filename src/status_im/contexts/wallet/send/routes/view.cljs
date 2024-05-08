@@ -9,6 +9,7 @@
     [status-im.contexts.wallet.common.utils.networks :as network-utils]
     [status-im.contexts.wallet.send.routes.style :as style]
     [status-im.contexts.wallet.send.utils :as send-utils]
+    [status-im.contexts.wallet.sheets.network-preferences.view :as network-preferences]
     [utils.debounce :as debounce]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
@@ -97,8 +98,27 @@
                                                    (on-save))
                             :customization-color color}}]])))
 
+(defn- open-preferences
+  []
+  (let [receiver-networks           (rf/sub [:wallet/wallet-send-receiver-networks])
+        receiver-preferred-networks (rf/sub [:wallet/wallet-send-receiver-preferred-networks])]
+    (rf/dispatch
+     [:show-bottom-sheet
+      {:content (fn []
+                  [network-preferences/view
+                   {:title                       (i18n/label :t/edit-receiver-networks)
+                    :first-section-label         (i18n/label :t/preferred-by-receiver)
+                    :second-section-label        (i18n/label :t/not-preferred-by-receiver)
+                    :selected-networks           (set (map network-utils/id->network receiver-networks))
+                    :receiver-preferred-networks receiver-preferred-networks
+                    :button-label                (i18n/label :t/apply)
+                    :on-save                     (fn [chain-ids]
+                                                   (rf/dispatch [:hide-bottom-sheet])
+                                                   (rf/dispatch [:wallet/update-receiver-networks
+                                                                 chain-ids]))}])}])))
+
 (defn render-network-values
-  [{:keys [network-values token-symbol on-press theme on-save to? loading-routes?
+  [{:keys [network-values token-symbol on-press to? loading-routes?
            token-not-supported-in-receiver-networks?]}]
   [rn/view
    (map-indexed (fn [index {:keys [chain-id total-amount type]}]
@@ -120,11 +140,7 @@
                      :on-press #(when (not loading-routes?)
                                   (cond
                                     (= type :add)
-                                    (rf/dispatch [:show-bottom-sheet
-                                                  {:content (fn []
-                                                              [networks-drawer
-                                                               {:theme   theme
-                                                                :on-save on-save}])}])
+                                    (open-preferences)
                                     on-press (on-press chain-id total-amount)))}]])
                 network-values)])
 

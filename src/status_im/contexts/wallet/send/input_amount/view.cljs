@@ -10,11 +10,9 @@
     [status-im.contexts.wallet.common.account-switcher.view :as account-switcher]
     [status-im.contexts.wallet.common.asset-list.view :as asset-list]
     [status-im.contexts.wallet.common.utils :as utils]
-    [status-im.contexts.wallet.common.utils.networks :as network-utils]
     [status-im.contexts.wallet.send.input-amount.style :as style]
     [status-im.contexts.wallet.send.routes.view :as routes]
     [status-im.contexts.wallet.send.utils :as send-utils]
-    [status-im.contexts.wallet.sheets.network-preferences.view :as network-preferences]
     [utils.address :as address]
     [utils.i18n :as i18n]
     [utils.money :as money]
@@ -79,23 +77,6 @@
        :on-token-press           (fn [token]
                                    (rf/dispatch [:wallet/edit-token-to-send token])
                                    (clear-input!))}]]))
-
-(defn- open-preferences
-  [selected-networks account]
-  (rf/dispatch
-   [:show-bottom-sheet
-    {:content (fn []
-                [network-preferences/view
-                 {:title             (i18n/label :t/edit-receiver-networks)
-                  :section-one-title (i18n/label :t/preferred-by-receiver)
-                  :section-two-title (i18n/label :t/not-preferred-by-receiver)
-                  :selected-networks (vec (map network-utils/id->network selected-networks))
-                  :receiver?         true
-                  :account           account
-                  :button-label      "Apply"
-                  :on-save           (fn [chain-ids]
-                                       (rf/dispatch [:hide-bottom-sheet])
-                                       (rf/dispatch [:wallet/update-receiver-networks chain-ids]))}])}]))
 
 (defn- token-not-available
   [token-symbol receiver-networks token-networks]
