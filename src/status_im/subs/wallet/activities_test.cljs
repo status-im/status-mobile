@@ -19,13 +19,14 @@
 (h/deftest-sub :wallet/activities-for-current-viewing-account
   [sub-name]
   (testing "Return activities filtered and grouped by account and dates"
-    (swap!
-      (-> rf-db/app-db
-          (assoc-in [:wallet :activities]
-                    [{:sender "acc1" :recipient "acc2" :timestamp 1588291200}
-                     {:sender "acc2" :recipient "acc1" :timestamp 1588377600}
-                     {:sender "acc3" :recipient "acc4" :timestamp 1588464000}])
-          (assoc-in [:wallet :current-viewing-account-address] "acc1")))
+    (swap! rf-db/app-db
+      (fn [db]
+        (-> db
+            (assoc-in [:wallet :activities]
+                      [{:sender "acc1" :recipient "acc2" :timestamp 1588291200}
+                       {:sender "acc2" :recipient "acc1" :timestamp 1588377600}
+                       {:sender "acc3" :recipient "acc4" :timestamp 1588464000}])
+            (assoc-in [:wallet :current-viewing-account-address] "acc1"))))
     (is (= [{:title "May 1" :data [{:sender "acc1" :recipient "acc2" :timestamp 1588291200}]}
             {:title "May 2" :data [{:sender "acc2" :recipient "acc1" :timestamp 1588377600}]}]
            (rf/sub [sub-name])))))
