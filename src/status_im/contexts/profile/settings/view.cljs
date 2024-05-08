@@ -9,9 +9,15 @@
             [status-im.contexts.profile.settings.list-items :as settings.items]
             [status-im.contexts.profile.settings.style :as style]
             [status-im.contexts.profile.utils :as profile.utils]
+            [status-im.feature-flags :as ff]
             [utils.debounce :as debounce]
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]))
+
+(defn show-settings-item?
+  [{:keys [feature-flag]}]
+  (or (ff/enabled? feature-flag)
+      (nil? feature-flag)))
 
 (defn- settings-item-view
   [data]
@@ -20,7 +26,7 @@
     {:list-type       :settings
      :container-style {:padding-bottom 12}
      :blur?           true
-     :data            data}]])
+     :data            (filterv show-settings-item? data)}]])
 
 (defn scroll-handler
   [event scroll-y]

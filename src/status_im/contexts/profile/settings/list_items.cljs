@@ -35,13 +35,13 @@
      :image       :icon
      :blur?       true
      :action      :arrow}
-    (when (ff/enabled? ::ff/wallet.wallet-settings)
-      {:title       (i18n/label :t/wallet)
-       :on-press    #(rf/dispatch [:open-modal :screen/settings.wallet])
-       :image-props :i/wallet
-       :image       :icon
-       :blur?       true
-       :action      :arrow})
+    {:title        (i18n/label :t/wallet)
+     :on-press     #(rf/dispatch [:open-modal :screen/settings.wallet])
+     :image-props  :i/wallet
+     :image        :icon
+     :blur?        true
+     :action       :arrow
+     :feature-flag ::ff/wallet.wallet-settings}
     (when config/show-not-implemented-features?
       {:title       (i18n/label :t/dapps)
        :on-press    not-implemented/alert
