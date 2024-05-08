@@ -2611,5 +2611,6 @@
     "this-address-has-activity": "This address has activity",
     "scanning-for-activity": "Scanning for activity...",
     "send-community-link": "Send community link",
-    "at-least-one-network-must-be-activated": "At least 1 network must be activated"
+    "at-least-one-network-must-be-activated": "At least 1 network must be activated",
+    "status-is-a-secure-messaging-app": "Status is a secure messaging app, crypto wallet and web3 browser built with the state of the art technology"
 }

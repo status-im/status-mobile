@@ -523,7 +523,7 @@ https://repo.maven.apache.org/maven2/commons-codec/commons-codec/1.6/commons-cod
 https://repo.maven.apache.org/maven2/commons-codec/commons-codec/1.9/commons-codec-1.9.pom
 https://repo.maven.apache.org/maven2/commons-codec/commons-codec/1.10/commons-codec-1.10.pom
 https://repo.maven.apache.org/maven2/commons-codec/commons-codec/1.11/commons-codec-1.11.pom
-https://repo.maven.apache.org/maven2/commons-codec/commons-codec/1.16.1/commons-codec-1.16.1.pom
+https://repo.maven.apache.org/maven2/commons-codec/commons-codec/1.17.0/commons-codec-1.17.0.pom
 https://repo.maven.apache.org/maven2/commons-io/commons-io/2.4/commons-io-2.4.pom
 https://repo.maven.apache.org/maven2/commons-io/commons-io/2.16.1/commons-io-2.16.1.pom
 https://repo.maven.apache.org/maven2/commons-logging/commons-logging/1.1.1/commons-logging-1.1.1.pom
@@ -711,7 +711,7 @@ https://repo.maven.apache.org/maven2/com/google/errorprone/error_prone_annotatio
 https://repo.maven.apache.org/maven2/com/google/errorprone/error_prone_annotations/2.9.0/error_prone_annotations-2.9.0.pom
 https://repo.maven.apache.org/maven2/com/google/errorprone/error_prone_annotations/2.10.0/error_prone_annotations-2.10.0.pom
 https://repo.maven.apache.org/maven2/com/google/errorprone/error_prone_annotations/2.11.0/error_prone_annotations-2.11.0.pom
-https://repo.maven.apache.org/maven2/com/google/errorprone/error_prone_annotations/2.26.1/error_prone_annotations-2.26.1.pom
+https://repo.maven.apache.org/maven2/com/google/errorprone/error_prone_annotations/2.27.1/error_prone_annotations-2.27.1.pom
 https://repo.maven.apache.org/maven2/com/google/errorprone/error_prone_parent/2.0.18/error_prone_parent-2.0.18.pom
 https://repo.maven.apache.org/maven2/com/google/errorprone/error_prone_parent/2.2.0/error_prone_parent-2.2.0.pom
 https://repo.maven.apache.org/maven2/com/google/errorprone/error_prone_parent/2.3.1/error_prone_parent-2.3.1.pom
@@ -723,7 +723,7 @@ https://repo.maven.apache.org/maven2/com/google/errorprone/error_prone_parent/2.
 https://repo.maven.apache.org/maven2/com/google/errorprone/error_prone_parent/2.9.0/error_prone_parent-2.9.0.pom
 https://repo.maven.apache.org/maven2/com/google/errorprone/error_prone_parent/2.10.0/error_prone_parent-2.10.0.pom
 https://repo.maven.apache.org/maven2/com/google/errorprone/error_prone_parent/2.11.0/error_prone_parent-2.11.0.pom
-https://repo.maven.apache.org/maven2/com/google/errorprone/error_prone_parent/2.26.1/error_prone_parent-2.26.1.pom
+https://repo.maven.apache.org/maven2/com/google/errorprone/error_prone_parent/2.27.1/error_prone_parent-2.27.1.pom
 https://repo.maven.apache.org/maven2/com/google/flatbuffers/flatbuffers-java/1.12.0/flatbuffers-java-1.12.0.pom
 https://repo.maven.apache.org/maven2/com/google/google/1/google-1.pom
 https://repo.maven.apache.org/maven2/com/google/guava/failureaccess/1.0.1/failureaccess-1.0.1.pom
@@ -1034,7 +1034,6 @@ https://repo.maven.apache.org/maven2/org/apache/commons/commons-parent/39/common
 https://repo.maven.apache.org/maven2/org/apache/commons/commons-parent/42/commons-parent-42.pom
 https://repo.maven.apache.org/maven2/org/apache/commons/commons-parent/48/commons-parent-48.pom
 https://repo.maven.apache.org/maven2/org/apache/commons/commons-parent/52/commons-parent-52.pom
-https://repo.maven.apache.org/maven2/org/apache/commons/commons-parent/66/commons-parent-66.pom
 https://repo.maven.apache.org/maven2/org/apache/commons/commons-parent/67/commons-parent-67.pom
 https://repo.maven.apache.org/maven2/org/apache/commons/commons-parent/69/commons-parent-69.pom
 https://repo.maven.apache.org/maven2/org/apache/httpcomponents/httpclient/4.1.1/httpclient-4.1.1.pom
@@ -1091,7 +1090,7 @@ https://repo.maven.apache.org/maven2/org/checkerframework/checker-qual/2.8.1/che
 https://repo.maven.apache.org/maven2/org/checkerframework/checker-qual/2.11.1/checker-qual-2.11.1.pom
 https://repo.maven.apache.org/maven2/org/checkerframework/checker-qual/3.5.0/checker-qual-3.5.0.pom
 https://repo.maven.apache.org/maven2/org/checkerframework/checker-qual/3.12.0/checker-qual-3.12.0.pom
-https://repo.maven.apache.org/maven2/org/checkerframework/checker-qual/3.42.0/checker-qual-3.42.0.pom
+https://repo.maven.apache.org/maven2/org/checkerframework/checker-qual/3.43.0/checker-qual-3.43.0.pom
 https://repo.maven.apache.org/maven2/org/codehaus/codehaus-parent/4/codehaus-parent-4.pom
 https://repo.maven.apache.org/maven2/org/codehaus/groovy/groovy-xml/3.0.9/groovy-xml-3.0.9.pom
 https://repo.maven.apache.org/maven2/org/codehaus/groovy/groovy-xml/3.0.10/groovy-xml-3.0.10.pom
@@ -1248,7 +1247,7 @@ https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-reflect/1.6.10/
 https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-reflect/1.6.20/kotlin-reflect-1.6.20.pom
 https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-reflect/1.7.22/kotlin-reflect-1.7.22.pom
 https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-reflect/1.8.20-RC2/kotlin-reflect-1.8.20-RC2.pom
-https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-reflect/2.0.0-RC1/kotlin-reflect-2.0.0-RC1.pom
+https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-reflect/2.0.0-RC2/kotlin-reflect-2.0.0-RC2.pom
 https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-scripting-common/1.6.20/kotlin-scripting-common-1.6.20.pom
 https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-scripting-common/1.7.22/kotlin-scripting-common-1.7.22.pom
 https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-scripting-common/1.8.0/kotlin-scripting-common-1.8.0.pom
@@ -1350,7 +1349,7 @@ https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-stdlib/1.8.20-R
 https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-stdlib/1.8.21/kotlin-stdlib-1.8.21.pom
 https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-stdlib/1.9.0/kotlin-stdlib-1.9.0.pom
 https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-stdlib/1.9.21/kotlin-stdlib-1.9.21.pom
-https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-stdlib/2.0.0-RC1/kotlin-stdlib-2.0.0-RC1.pom
+https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-stdlib/2.0.0-RC2/kotlin-stdlib-2.0.0-RC2.pom
 https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-tooling-core/1.7.22/kotlin-tooling-core-1.7.22.pom
 https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-tooling-core/1.8.0/kotlin-tooling-core-1.8.0.pom
 https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-tooling-core/1.9.0/kotlin-tooling-core-1.9.0.pom
@@ -1369,7 +1368,7 @@ https://repo.maven.apache.org/maven2/org/jetbrains/trove4j/trove4j/20160824/trov
 https://repo.maven.apache.org/maven2/org/json/json/20180813/json-20180813.pom
 https://repo.maven.apache.org/maven2/org/json/json/20240303/json-20240303.pom
 https://repo.maven.apache.org/maven2/org/jsoup/jsoup/1.13.1/jsoup-1.13.1.pom
-https://repo.maven.apache.org/maven2/org/junit/junit-bom/5.10.2/junit-bom-5.10.2.pom
+https://repo.maven.apache.org/maven2/org/junit/junit-bom/5.11.0-M1/junit-bom-5.11.0-M1.pom
 https://repo.maven.apache.org/maven2/org/jvnet/staxex/stax-ex/1.7.7/stax-ex-1.7.7.pom
 https://repo.maven.apache.org/maven2/org/jvnet/staxex/stax-ex/1.8.1/stax-ex-1.8.1.pom
 https://repo.maven.apache.org/maven2/org/jvnet/staxex/stax-ex/1.8/stax-ex-1.8.pom
