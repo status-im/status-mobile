@@ -39,27 +39,29 @@
                  :theme   theme}]))
 
 (defn- keypair
-  [item index _
+  [{:keys [accounts name]}
+   index _
    {:keys [profile-picture compressed-key customization-color]}]
   (let [theme            (quo.theme/use-theme)
-        accounts         (parse-accounts (:accounts item))
+        accounts         (parse-accounts accounts)
         default-keypair? (zero? index)
-        details          {:full-name (:name item)
-                          :address   (when default-keypair?
-                                       (utils/get-shortened-compressed-key compressed-key))}
+        shortened-key    (when default-keypair?
+                           (utils/get-shortened-compressed-key compressed-key))
         on-press         (rn/use-callback
                           (fn []
                             (on-options-press
                              (merge {:theme theme
-                                     :title (:full-name details)}
+                                     :blur? true
+                                     :title name}
                                     (if default-keypair?
                                       {:type                :default-keypair
-                                       :description         (:address details)
+                                       :description         shortened-key
                                        :customization-color customization-color
                                        :profile-picture     profile-picture}
                                       {:type        :keypair
                                        :icon-avatar :i/seed}))))
-                          [customization-color default-keypair? details profile-picture theme])]
+                          [customization-color default-keypair? name
+                           profile-picture shortened-key theme])]
     [quo/keypair
      {:blur?               false
       :status-indicator    false
@@ -71,7 +73,8 @@
       :profile-picture     (when default-keypair? profile-picture)
       :type                (if default-keypair? :default-keypair :other)
       :on-options-press    on-press
-      :details             details}]))
+      :details             {:full-name name
+                            :address   shortened-key}}]))
 
 (defn view
   []

@@ -3,5 +3,4 @@
 
 (defn view
   [props]
-  [quo/drawer-top
-   (merge props {:blur? true})])
+  [quo/drawer-top props])
