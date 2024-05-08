@@ -44,12 +44,11 @@
 
 (defn add-manage-members
   []
-  (let [selected-participants      (rf/sub [:group-chat/selected-participants])
-        deselected-members         (rf/sub [:group-chat/deselected-members])
-        chat-id                    (rf/sub [:get-screen-params :group-details])
-        {:keys [admins] :as group} (rf/sub [:chats/chat-by-id chat-id])
-        theme                      (quo.theme/use-theme)
-        admin?                     (get admins (rf/sub [:multiaccount/public-key]))]
+  (let [selected-participants (rf/sub [:group-chat/selected-participants])
+        deselected-members    (rf/sub [:group-chat/deselected-members])
+        chat-id               (rf/sub [:get-screen-params :group-add-manage-members])
+        group                 (rf/sub [:chats/chat-by-id chat-id])
+        theme                 (quo.theme/use-theme)]
     [rn/view {:flex 1 :margin-top 20}
      [rn/touchable-opacity
       {:on-press            #(rf/dispatch [:navigate-back])
@@ -60,7 +59,7 @@
       {:size   :heading-1
        :weight :semi-bold
        :style  {:margin-left 20}}
-      (i18n/label (if admin? :t/manage-members :t/add-members))]
+      (i18n/label :t/manage-members)]
      [gesture/section-list
       {:key-fn                         :title
        :sticky-section-headers-enabled false
