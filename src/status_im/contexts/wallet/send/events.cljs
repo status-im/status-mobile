@@ -146,7 +146,7 @@
             [:wallet/wizard-navigate-forward
              {:current-screen stack-id
               :start-flow?    start-flow?
-              :flow-id        :wallet-flow}]]]})))
+              :flow-id        :wallet-send-flow}]]]})))
 
 (rf/reg-event-fx
  :wallet/update-receiver-networks
@@ -174,7 +174,7 @@
           [:wallet/wizard-navigate-forward
            {:current-screen stack-id
             :start-flow?    start-flow?
-            :flow-id        :wallet-flow}]]]}))
+            :flow-id        :wallet-send-flow}]]]}))
 
 (rf/reg-event-fx
  :wallet/edit-token-to-send
@@ -236,7 +236,7 @@
           [:wallet/wizard-navigate-forward
            {:current-screen stack-id
             :start-flow?    start-flow?
-            :flow-id        :wallet-flow}]]]}))
+            :flow-id        :wallet-send-flow}]]]}))
 
 (rf/reg-event-fx :wallet/disable-from-networks
  (fn [{:keys [db]} [chain-ids]]
@@ -339,7 +339,7 @@
       :fx [[:dispatch
             [:wallet/wizard-navigate-forward
              {:current-screen :screen/wallet.transaction-confirmation
-              :flow-id        :wallet-flow}]]]})))
+              :flow-id        :wallet-send-flow}]]]})))
 
 (rf/reg-event-fx :wallet/close-transaction-progress-page
  (fn [_]
@@ -509,4 +509,4 @@
           [:wallet/wizard-navigate-forward
            {:current-screen stack-id
             :start-flow?    start-flow?
-            :flow-id        :wallet-flow}]]]}))
+            :flow-id        :wallet-send-flow}]]]}))

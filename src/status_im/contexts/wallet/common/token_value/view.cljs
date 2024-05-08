@@ -34,11 +34,13 @@
    :on-press            #(rf/dispatch [:open-modal :screen/wallet.share-address {:status :receive}])})
 
 (defn- action-bridge
-  []
+  [token-data]
   {:icon                :i/bridge
    :accessibility-label :bridge
    :label               (i18n/label :t/bridge)
-   :on-press            #(js/alert "to be implemented")})
+   :on-press            (fn []
+                          (rf/dispatch [:hide-bottom-sheet])
+                          (rf/dispatch [:wallet/bridge-select-token {:token token-data}]))})
 
 (defn- action-manage-tokens
   [watch-only?]
@@ -66,7 +68,7 @@
         (not watch-only?) (concat [(action-buy)
                                    (action-send token-data)
                                    (action-receive)
-                                   (action-bridge)]))]]))
+                                   (action-bridge token-data)]))]]))
 
 (defn view
   [item _ _ {:keys [watch-only?]}]
