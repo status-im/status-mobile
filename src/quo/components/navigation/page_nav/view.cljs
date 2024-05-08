@@ -65,7 +65,7 @@
     [button/button
      (assoc button-props
             :type       (button-type background)
-            :icon-only? icon-name
+            :icon-only? (boolean icon-name)
             :size       32
             :accessible true
             :background (if behind-overlay?
