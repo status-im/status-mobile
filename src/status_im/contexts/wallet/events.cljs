@@ -516,14 +516,14 @@
   {:fx [[:dispatch [:navigate-to screen props]]]
    :db (assoc-in db [:wallet :ui :currently-added-address] props)})
 
-(rf/reg-event-fx :wallet/add-address add-address-to-watch)
+(rf/reg-event-fx :wallet/add-address-to-watch add-address-to-watch)
 
 (defn add-address-to-save
   [{:keys [db]} [{:keys [screen] :as props}]]
   {:fx [[:dispatch [:open-modal screen props]]]
    :db (assoc-in db [:wallet :ui :currently-added-address] props)})
 
-(rf/reg-event-fx :wallet/add-address add-address-to-save)
+(rf/reg-event-fx :wallet/add-address-to-save add-address-to-save)
 
 (defn confirm-add-address-to-save
   [{:keys [db]} [{:keys [ens? address]}]]

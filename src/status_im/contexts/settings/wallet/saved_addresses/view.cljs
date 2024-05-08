@@ -20,7 +20,7 @@
 (defn on-press-add-saved-address
   []
   (when true
-    (rf/dispatch [:wallet/add-address
+    (rf/dispatch [:wallet/add-address-to-save
                   {:title                :t/add-address
                    :description          :t/save-address-description
                    :input-title          :t/address-or-ens-name
