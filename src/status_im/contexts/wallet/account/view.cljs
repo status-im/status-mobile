@@ -50,38 +50,13 @@
                                              {:status :receive}])
              :buy-action      #(rf/dispatch [:show-bottom-sheet
                                              {:content buy-token/view}])
-<<<<<<< HEAD
-             :swap-action     (when (ff/enabled? ::ff/wallet.swap)
-                                #(rf/dispatch [:wallet/start-swap]))
-             :bridge-action   #(rf/dispatch [:wallet/start-bridge])}])
-=======
-            {:send-action    (fn []
-                               (rf/dispatch [:wallet/clean-send-data])
-                               (rf/dispatch [:wallet/wizard-navigate-forward
-                                             {:start-flow? true
-                                              :flow-id     :wallet-send-flow}]))
-             :receive-action #(rf/dispatch [:open-modal :screen/wallet.share-address {:status :receive}])
-             :buy-action     #(rf/dispatch [:show-bottom-sheet
-                                            {:content buy-token/view}])
-<<<<<<< HEAD
-             :bridge-action  #(rf/dispatch [:wallet/wizard-navigate-forward
-                                            {:start-flow? true
-                                             :flow-id     :wallet-bridge-flow}])}])
->>>>>>> f117ad1bb (lint)
-=======
-             :bridge-action  (fn []
-                               (rf/dispatch [:wallet/clean-send-data])
-                               (rf/dispatch [:wallet/wizard-navigate-forward
-                                             {:start-flow? true
-                                              :flow-id     :wallet-bridge-flow}]))}])
->>>>>>> cf9b01e49 (review)
-=======
              :bridge-action   (fn []
                                 (rf/dispatch [:wallet/clean-send-data])
                                 (rf/dispatch [:wallet/wizard-navigate-forward
                                               {:start-flow? true
-                                               :flow-id     :wallet-bridge-flow}]))}])
->>>>>>> 397f5c19b (lint)
+                                               :flow-id     :wallet-bridge-flow}]))
+             :swap-action     (when (ff/enabled? ::ff/wallet.swap)
+                                #(rf/dispatch [:wallet/start-swap]))}])
          [quo/tabs
           {:style            style/tabs
            :size             32
