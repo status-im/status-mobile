@@ -1,11 +1,7 @@
 (ns status-im.contexts.wallet.send.routes.view
   (:require
-    [clojure.string :as string]
     [quo.core :as quo]
-    [quo.foundations.colors :as colors]
-    [quo.foundations.resources :as resources]
     [react-native.core :as rn]
-    [reagent.core :as reagent]
     [status-im.contexts.wallet.common.utils.networks :as network-utils]
     [status-im.contexts.wallet.send.routes.style :as style]
     [status-im.contexts.wallet.send.utils :as send-utils]
@@ -49,18 +45,17 @@
      [:show-bottom-sheet
       {:content (fn []
                   [network-preferences/view
-                   {:title (i18n/label :t/edit-receiver-networks)
-                    :first-section-label (i18n/label :t/preferred-by-receiver)
-                    :second-section-label (i18n/label :t/not-preferred-by-receiver)
-                    :selected-networks (set (map network-utils/id->network receiver-networks))
+                   {:title                       (i18n/label :t/edit-receiver-networks)
+                    :first-section-label         (i18n/label :t/preferred-by-receiver)
+                    :second-section-label        (i18n/label :t/not-preferred-by-receiver)
+                    :selected-networks           (set (map network-utils/id->network receiver-networks))
                     :receiver-preferred-networks receiver-preferred-networks
-                    :button-label (i18n/label :t/apply-changes)
-                    :warning-label warning-label
-                    :on-save
-                    (fn [chain-ids]
-                      (rf/dispatch [:hide-bottom-sheet])
-                      (rf/dispatch [:wallet/update-receiver-networks
-                                    chain-ids]))}])}])))
+                    :button-label                (i18n/label :t/apply-changes)
+                    :warning-label               warning-label
+                    :on-save                     (fn [chain-ids]
+                                                   (rf/dispatch [:hide-bottom-sheet])
+                                                   (rf/dispatch [:wallet/update-receiver-networks
+                                                                 chain-ids]))}])}])))
 
 (defn render-network-values
   [{:keys [network-values token-symbol on-press to? loading-routes?
