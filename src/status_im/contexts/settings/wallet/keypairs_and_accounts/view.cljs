@@ -77,14 +77,14 @@
 
 (defn view
   []
-  (let [inset-top           (safe-area/get-top)
+  (let [insets              (safe-area/get-insets)
         compressed-key      (rf/sub [:profile/compressed-key])
         profile-picture     (rf/sub [:profile/image])
         customization-color (rf/sub [:profile/customization-color])
         keypairs            (rf/sub [:wallet/keypairs])]
     [quo/overlay
      {:type            :shell
-      :container-style (style/page-wrapper inset-top)}
+      :container-style (style/page-wrapper (:top insets))}
      [quo/page-nav
       {:key        :header
        :background :blur
@@ -102,4 +102,4 @@
         :render-data             {:profile-picture     profile-picture
                                   :compressed-key      compressed-key
                                   :customization-color customization-color}
-        :content-container-style {:padding-bottom 60}}]]]))
+        :content-container-style (style/list-container (:bottom insets))}]]]))

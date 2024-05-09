@@ -5,9 +5,13 @@
    :margin-vertical    12})
 
 (defn page-wrapper
-  [inset-top]
-  {:padding-top inset-top
+  [top-inset]
+  {:padding-top top-inset
    :flex        1})
+
+(defn list-container
+  [bottom-inset]
+  {:padding-bottom bottom-inset})
 
 (def keypair-container-style
   {:margin-horizontal 20
