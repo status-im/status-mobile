@@ -454,3 +454,19 @@
  :wallet/public-address
  :<- [:wallet/create-account]
  :-> :public-address)
+
+(rf/reg-sub
+ :wallet/wallet-send-enabled-networks
+ :<- [:wallet/wallet-send-token]
+ :<- [:wallet/wallet-send-disabled-from-chain-ids]
+ (fn [[{:keys [networks]} disabled-from-chain-ids]]
+   (->> networks
+        (filter #(not (contains? (set disabled-from-chain-ids)
+                                 (:chain-id %))))
+        set)))
+
+(rf/reg-sub
+ :wallet/wallet-send-enabled-from-chain-ids
+ :<- [:wallet/wallet-send-enabled-networks]
+ (fn [send-enabled-networks]
+   (map :chain-id send-enabled-networks)))
