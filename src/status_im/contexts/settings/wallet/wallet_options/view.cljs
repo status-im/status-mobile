@@ -35,6 +35,27 @@
     :blur?     true
     :list-type :settings}])
 
+(defn open-network-settings-modal
+  []
+  (rf/dispatch [:open-modal :screen/settings.network-settings]))
+
+(defn gen-advanced-settings-options
+  []
+  [{:title    (i18n/label :t/network-settings)
+    :blur?    true
+    :on-press open-network-settings-modal
+    :action   :arrow}])
+
+(defn advanced-settings
+  []
+  (when (ff/enabled? ::ff/settings.network-settings)
+    [quo/category
+     {:key       :advanced-wallet-settings
+      :label     (i18n/label :t/advanced)
+      :data      (gen-advanced-settings-options)
+      :blur?     true
+      :list-type :settings}]))
+
 (defn navigate-back
   []
   (rf/dispatch [:navigate-back]))
@@ -53,4 +74,5 @@
      [quo/page-top
       {:title                     (i18n/label :t/wallet)
        :title-accessibility-label :wallet-settings-header}]
-     [basic-settings]]))
+     [basic-settings]
+     [advanced-settings]]))
