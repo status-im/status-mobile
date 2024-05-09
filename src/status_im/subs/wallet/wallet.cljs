@@ -1,6 +1,7 @@
 (ns status-im.subs.wallet.wallet
   (:require [clojure.string :as string]
             [re-frame.core :as rf]
+            [status-im.constants :as constants]
             [status-im.contexts.wallet.common.utils :as utils]
             [status-im.contexts.wallet.common.utils.networks :as network-utils]
             [status-im.subs.wallet.add-account.address-to-watch]
@@ -157,6 +158,24 @@
                 :testnet-enabled? testnet-enabled?
                 :goerli-enabled?  goerli-enabled?})
              selected-networks))))
+
+(rf/reg-sub
+ :wallet/quo-keypairs-accounts
+ :<- [:wallet/keypairs]
+ (fn [keypairs]
+   (->> keypairs
+        (map (fn [{:keys [accounts name]
+                   :as keypair}]
+               {:name     name
+                :accounts (->> accounts
+                               (keep (fn [{:keys [path customization-color emoji name address]}]
+                                       (when (not (string/starts-with? path constants/path-eip1581))
+                                         {:customization-color customization-color
+                                          :size                32
+                                          :emoji               emoji
+                                          :type                :default
+                                          :name                name
+                                          :address             address}))))})))))
 
 (rf/reg-sub
  :wallet/derivation-path-state

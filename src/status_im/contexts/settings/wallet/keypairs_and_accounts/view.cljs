@@ -1,10 +1,8 @@
 (ns status-im.contexts.settings.wallet.keypairs-and-accounts.view
-  (:require [clojure.string :as string]
-            [quo.core :as quo]
+  (:require [quo.core :as quo]
             [quo.theme]
             [react-native.core :as rn]
             [react-native.safe-area :as safe-area]
-            [status-im.constants :as constants]
             [status-im.contexts.settings.wallet.keypairs-and-accounts.actions.view :as actions]
             [status-im.contexts.settings.wallet.keypairs-and-accounts.style :as style]
             [utils.address :as utils]
@@ -15,20 +13,12 @@
   []
   (rf/dispatch [:navigate-back]))
 
-(defn- parse-accounts
-  [given-accounts]
-  (->> given-accounts
-       (keep (fn [{:keys [path customization-color emoji name address]}]
-               (when (not (string/starts-with? path constants/path-eip1581))
-                 {:account-props {:customization-color customization-color
-                                  :size                32
-                                  :emoji               emoji
-                                  :type                :default
-                                  :name                name
-                                  :address             address}
-                  :networks      []
-                  :state         :default
-                  :action        :none})))))
+(defn- keypair-account
+  [account-props]
+  {:account-props account-props
+   :networks      []
+   :state         :default
+   :action        :none})
 
 (defn on-options-press
   [{:keys [theme]
@@ -42,7 +32,7 @@
    index _
    {:keys [profile-picture compressed-key customization-color]}]
   (let [theme            (quo.theme/use-theme)
-        accounts         (parse-accounts accounts)
+        accounts         (map keypair-account accounts)
         default-keypair? (zero? index)
         shortened-key    (when default-keypair?
                            (utils/get-shortened-compressed-key compressed-key))
@@ -77,11 +67,11 @@
 
 (defn view
   []
-  (let [insets              (safe-area/get-insets)
-        compressed-key      (rf/sub [:profile/compressed-key])
-        profile-picture     (rf/sub [:profile/image])
-        customization-color (rf/sub [:profile/customization-color])
-        keypairs            (rf/sub [:wallet/keypairs])]
+  (let [insets                (safe-area/get-insets)
+        compressed-key        (rf/sub [:profile/compressed-key])
+        profile-picture       (rf/sub [:profile/image])
+        customization-color   (rf/sub [:profile/customization-color])
+        quo-keypairs-accounts (rf/sub [:wallet/quo-keypairs-accounts])]
     [quo/overlay
      {:type            :shell
       :container-style (style/page-wrapper (:top insets))}
@@ -97,7 +87,7 @@
         :customization-color customization-color}]]
      [rn/view {:style {:flex 1}}
       [rn/flat-list
-       {:data                    keypairs
+       {:data                    quo-keypairs-accounts
         :render-fn               keypair
         :render-data             {:profile-picture     profile-picture
                                   :compressed-key      compressed-key
