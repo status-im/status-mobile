@@ -3,7 +3,7 @@
     "_comment": "Instead use: scripts/update-status-go.sh <rev>",
     "owner": "status-im",
     "repo": "status-go",
-    "version": "v0.179.13",
-    "commit-sha1": "f3f48654f54aebbb4949129f930fef648d8da8f9",
-    "src-sha256": "09gcr6fgx6v4qdp83w0n2ynnlvwjqid477jgpqjk57l5wfrv2raq"
+    "version": "fix/throughput-limit-issue",
+    "commit-sha1": "4797adf4bcc422d3ec921138a262943eb0824cee",
+    "src-sha256": "04bxxklm7nxc35iz1wnzz3mgbf18rpwhg5pc4khbynflc7mys9q0"
 }
