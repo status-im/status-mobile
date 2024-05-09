@@ -53,6 +53,7 @@
                                                                                      "2500")
                                                                                     :has-error false}}
                                                     :total-balance              100
+                                                    :available-balance          100
                                                     :market-values-per-currency {:usd {:price 10}}}
    :wallet/wallet-send-loading-suggested-routes?   false
    :wallet/wallet-send-route                       [{:from       {:chainid                1
@@ -77,7 +78,15 @@
    :wallet/wallet-send-sender-network-values       nil
    :wallet/wallet-send-receiver-network-values     nil
    :wallet/wallet-send-network-links               nil
-   :wallet/wallet-send-receiver-preferred-networks [1]})
+   :wallet/wallet-send-receiver-preferred-networks [1]
+   :wallet/wallet-send-enabled-networks            [{:source           879
+                                                     :short-name       "eth"
+                                                     :network-name     :mainnet
+                                                     :abbreviated-name "Eth."
+                                                     :chain-id         1
+                                                     :related-chain-id 1
+                                                     :layer            1}]
+   :wallet/wallet-send-enabled-from-chain-ids      [1]})
 
 (h/describe "Send > input amount screen"
   (h/setup-restorable-re-frame)
