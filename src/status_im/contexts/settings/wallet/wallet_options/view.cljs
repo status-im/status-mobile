@@ -2,6 +2,7 @@
   (:require [quo.core :as quo]
             [react-native.safe-area :as safe-area]
             [status-im.contexts.settings.wallet.wallet-options.style :as style]
+            [status-im.feature-flags :as ff]
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]))
 
@@ -15,10 +16,11 @@
 
 (defn gen-basic-settings-options
   []
-  [{:title    (i18n/label :t/keypairs-and-accounts)
-    :blur?    true
-    :on-press open-keypairs-and-accounts-settings-modal
-    :action   :arrow}
+  [(when (ff/enabled? ::ff/settings.keypairs-and-accounts)
+     {:title    (i18n/label :t/keypairs-and-accounts)
+      :blur?    true
+      :on-press open-keypairs-and-accounts-settings-modal
+      :action   :arrow})
    {:title    (i18n/label :t/saved-addresses)
     :blur?    true
     :on-press open-saved-addresses-settings-modal

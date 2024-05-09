@@ -41,7 +41,7 @@
      :image        :icon
      :blur?        true
      :action       :arrow
-     :feature-flag ::ff/wallet.settings}
+     :feature-flag ::ff/settings.wallet-settings}
     (when config/show-not-implemented-features?
       {:title       (i18n/label :t/dapps)
        :on-press    not-implemented/alert

@@ -11,6 +11,9 @@
 
 (def ^:private initial-flags
   {::community.edit-account-selection   (enabled-in-env? :FLAG_EDIT_ACCOUNT_SELECTION_ENABLED)
+   ::settings.wallet-settings           (enabled-in-env? :FLAG_WALLET_SETTINGS_ENABLED)
+   ::settings.keypairs-and-accounts     (enabled-in-env?
+                                         :FLAG_WALLET_SETTINGS_KEYPAIRS_AND_ACCOUNTS_ENABLED)
    ::wallet.activities                  (enabled-in-env? :FLAG_WALLET_ACTIVITY_ENABLED)
    ::wallet.assets-modal-hide           (enabled-in-env? :FLAG_ASSETS_MODAL_HIDE)
    ::wallet.assets-modal-manage-tokens  (enabled-in-env? :FLAG_ASSETS_MODAL_MANAGE_TOKENS)
@@ -21,8 +24,7 @@
    ::wallet.import-private-key          (enabled-in-env? :FLAG_IMPORT_PRIVATE_KEY_ENABLED)
    ::wallet.long-press-watch-only-asset (enabled-in-env? :FLAG_LONG_PRESS_WATCH_ONLY_ASSET_ENABLED)
    ::wallet.swap                        (enabled-in-env? :FLAG_SWAP_ENABLED)
-   ::wallet.wallet-connect              (enabled-in-env? :FLAG_WALLET_CONNECT_ENABLED)
-   ::wallet.settings                    (enabled-in-env? :FLAG_WALLET_SETTINGS_ENABLED)})
+   ::wallet.wallet-connect              (enabled-in-env? :FLAG_WALLET_CONNECT_ENABLED)})
 
 (defonce ^:private feature-flags-config
   (reagent/atom initial-flags))
