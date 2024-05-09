@@ -203,7 +203,6 @@
       (is (= "Today" (datetime/timestamp->relative-short-date 163684800000)))
       (is (= "Today" (datetime/timestamp->relative-short-date 163641600000))))))
 
-
 #_((deftest day-relative-before-yesterday-force-24H-test
      (with-redefs [t/*ms-fn*                 (constantly epoch-plus-3d)
                    datetime/is-24-hour       (constantly true)
