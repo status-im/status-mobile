@@ -19,7 +19,7 @@
   (or (ff/enabled? feature-flag)
       (nil? feature-flag)))
 
-(defn- settings-item-view
+(defn- settings-category-view
   [data]
   [rf/delay-render
    [quo/category
@@ -80,7 +80,7 @@
       {:header                          [settings.header/view {:scroll-y scroll-y}]
        :data                            (settings.items/items (boolean (:mnemonic profile)))
        :shows-vertical-scroll-indicator false
-       :render-fn                       settings-item-view
+       :render-fn                       settings-category-view
        :get-item-layout                 get-item-layout
        :footer                          [footer insets logout-press]
        :scroll-event-throttle           16
