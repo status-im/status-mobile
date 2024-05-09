@@ -14,7 +14,7 @@
 
 (defn view
   []
-  (let [{:keys [name]}                                  (rf/sub [:get-screen-params])
+  (let [{:keys [name key-uid]}                          (rf/sub [:get-screen-params])
         customization-color                             (rf/sub [:profile/customization-color])
         [unsaved-keypair-name set-unsaved-keypair-name] (rn/use-state name)
         [error-msg set-error-msg]                       (rn/use-state nil)
@@ -34,10 +34,12 @@
                                                                            (validate-keypair-name text)))
         on-clear                                        (rn/use-callback (fn []
                                                                            (on-change-text "")))
-        on-continue                                     (rn/use-callback #(rf/dispatch
-                                                                           [:wallet/edit-keypair-name
-                                                                            unsaved-keypair-name])
-                                                                         [unsaved-keypair-name])]
+        on-save                                         (rn/use-callback #(rf/dispatch
+                                                                           [:wallet/rename-keypair
+                                                                            {:key-uid key-uid
+                                                                             :keypair-name
+                                                                             unsaved-keypair-name}])
+                                                                         [unsaved-keypair-name key-uid])]
     [floating-button-page/view
      {:header [quo/page-nav
                {:icon-name           :i/close
@@ -50,7 +52,7 @@
                                                             (string/blank? unsaved-keypair-name)
                                                             (not (string/blank? error-msg)))
                                    :customization-color customization-color
-                                   :on-press            on-continue}
+                                   :on-press            on-save}
                 :container-style  style/bottom-action}]}
      [quo/page-top
       {:container-style style/header-container
