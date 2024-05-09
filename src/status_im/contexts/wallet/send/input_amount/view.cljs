@@ -310,7 +310,7 @@
            :button-one-label (if should-try-again?
                                (i18n/label :t/try-again)
                                button-one-label)
-           :button-one-props (merge button-one-props
+           :button-one-props (merge (when-not should-try-again? button-one-props)
                                     {:disabled? (and (not should-try-again?) confirm-disabled?)
                                      :on-press  (cond
                                                   should-try-again?
