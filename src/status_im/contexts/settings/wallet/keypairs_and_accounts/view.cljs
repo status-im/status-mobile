@@ -21,11 +21,12 @@
                  :theme   theme}]))
 
 (defn- keypair
-  [{:keys [accounts name]}
-   index _
+  [{keypair-type :type
+    :keys        [accounts name]}
+   _ _
    {:keys [profile-picture compressed-key customization-color]}]
   (let [theme            (quo.theme/use-theme)
-        default-keypair? (zero? index)
+        default-keypair? (= keypair-type :profile)
         shortened-key    (when default-keypair?
                            (utils/get-shortened-compressed-key compressed-key))
         on-press         (rn/use-callback
