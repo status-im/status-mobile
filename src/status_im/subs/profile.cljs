@@ -279,7 +279,12 @@
  :<- [:initials-avatar-font-file]
  :<- [:theme]
  (fn [[profile ens-names port font-file theme] [_ avatar-opts]]
-   (replace-multiaccount-image-uri profile ens-names port font-file avatar-opts theme)))
+   ;; Right after logout, this subscription is recomputed, but the sub
+   ;; `:profile/profile` output will always be nil. We skip any further
+   ;; processing because it's wasteful and because it will trigger a schema
+   ;; error.
+   (when profile
+     (replace-multiaccount-image-uri profile ens-names port font-file avatar-opts theme))))
 
 (re-frame/reg-sub
  :profile/image
