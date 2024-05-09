@@ -591,11 +591,11 @@
   [sub-name]
   (testing "returns formatted key-pairs and accounts"
     (swap! rf-db/app-db
-      #(assoc-in %
-        [:wallet :keypairs]
-        [(assoc keypairs-accounts
-                :accounts
-                [wallet-account])]))
+      assoc-in
+      [:wallet :keypairs]
+      [(assoc keypairs-accounts
+              :accounts
+              [wallet-account])])
 
     (let [{:keys [customization-color name address emoji]} wallet-account]
       (is
@@ -614,11 +614,11 @@
 
   (testing "allows for passing account format options"
     (swap! rf-db/app-db
-      #(assoc-in %
-        [:wallet :keypairs]
-        [(assoc keypairs-accounts
-                :accounts
-                [wallet-account])]))
+      assoc-in
+      [:wallet :keypairs]
+      [(assoc keypairs-accounts
+              :accounts
+              [wallet-account])])
 
     (let [{:keys [customization-color
                   name
@@ -646,11 +646,11 @@
 
   (testing "filters non-wallet accounts"
     (swap! rf-db/app-db
-      #(assoc-in %
-        [:wallet :keypairs]
-        [(assoc keypairs-accounts
-                :accounts
-                [chat-account])]))
+      assoc-in
+      [:wallet :keypairs]
+      [(assoc keypairs-accounts
+              :accounts
+              [chat-account])])
     (is
      (match? [{:name     (:name keypairs-accounts)
                :type     (keyword (:type keypairs-accounts))
