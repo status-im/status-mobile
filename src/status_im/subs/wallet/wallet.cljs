@@ -160,22 +160,29 @@
              selected-networks))))
 
 (rf/reg-sub
- :wallet/quo-keypairs-accounts
+ :wallet/settings-keypairs-accounts
  :<- [:wallet/keypairs]
- (fn [keypairs]
+ (fn [keypairs
+      [_
+       {:keys [networks size]
+        :or   {networks []
+               size     32}}]]
    (->> keypairs
-        (map (fn [{:keys [accounts name]
-                   :as keypair}]
-               {:name     name
+        (map (fn [{:keys [accounts name type]}]
+               {:type     (keyword type)
+                :name     name
                 :accounts (->> accounts
                                (keep (fn [{:keys [path customization-color emoji name address]}]
                                        (when (not (string/starts-with? path constants/path-eip1581))
-                                         {:customization-color customization-color
-                                          :size                32
-                                          :emoji               emoji
-                                          :type                :default
-                                          :name                name
-                                          :address             address}))))})))))
+                                         {:account-props {:customization-color customization-color
+                                                          :size                size
+                                                          :emoji               emoji
+                                                          :type                :default
+                                                          :name                name
+                                                          :address             address}
+                                          :networks      networks
+                                          :state         :default
+                                          :action        :none}))))})))))
 
 (rf/reg-sub
  :wallet/derivation-path-state

@@ -13,13 +13,6 @@
   []
   (rf/dispatch [:navigate-back]))
 
-(defn- keypair-account
-  [account-props]
-  {:account-props account-props
-   :networks      []
-   :state         :default
-   :action        :none})
-
 (defn on-options-press
   [{:keys [theme]
     :as   props}]
@@ -32,7 +25,6 @@
    index _
    {:keys [profile-picture compressed-key customization-color]}]
   (let [theme            (quo.theme/use-theme)
-        accounts         (map keypair-account accounts)
         default-keypair? (zero? index)
         shortened-key    (when default-keypair?
                            (utils/get-shortened-compressed-key compressed-key))
@@ -71,7 +63,7 @@
         compressed-key        (rf/sub [:profile/compressed-key])
         profile-picture       (rf/sub [:profile/image])
         customization-color   (rf/sub [:profile/customization-color])
-        quo-keypairs-accounts (rf/sub [:wallet/quo-keypairs-accounts])]
+        quo-keypairs-accounts (rf/sub [:wallet/settings-keypairs-accounts])]
     [quo/overlay
      {:type            :shell
       :container-style (style/page-wrapper (:top insets))}
