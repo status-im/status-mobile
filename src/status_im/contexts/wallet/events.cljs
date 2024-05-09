@@ -327,10 +327,11 @@
  :wallet/set-ens-address
  (fn [{:keys [db]} [result ens]]
    (let [suggestion (if result
-                      [{:type     item-types/address
-                        :ens      ens
-                        :address  (eip55/address->checksum result)
-                        :networks [:ethereum :optimism]}]
+                      [{:type         item-types/address
+                        :ens          ens
+                        :address      (eip55/address->checksum result)
+                        :networks     [:ethereum :optimism]
+                        :full-address (str "eth:opt:" (eip55/address->checksum result))}]
                       [])]
      {:db (-> db
               (assoc-in [:wallet :ui :search-address :local-suggestions] suggestion)
