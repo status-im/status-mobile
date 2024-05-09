@@ -290,11 +290,13 @@
  :wallet/current-viewing-account-tokens-filtered
  :<- [:wallet/current-viewing-account]
  :<- [:wallet/network-details]
- (fn [[account networks] [_ query]]
+ (fn [[account networks] [_ query chain-ids]]
    (let [tokens        (map (fn [token]
                               (assoc token
-                                     :networks      (network-utils/network-list token networks)
-                                     :total-balance (utils/calculate-total-token-balance token)))
+                                     :networks          (network-utils/network-list token networks)
+                                     :available-balance (utils/calculate-total-token-balance token)
+                                     :total-balance     (utils/calculate-total-token-balance token
+                                                                                             chain-ids)))
                             (:tokens account))
          sorted-tokens (sort-by :name compare tokens)]
      (if query
