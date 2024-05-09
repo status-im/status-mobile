@@ -22,7 +22,8 @@
     (doall
      (for [context-name ff/feature-flags-categories
            :let         [context-flags (filter (fn [[k]]
-                                                 (string/includes? (str k) context-name))
+                                                 (= context-name
+                                                    (first (string/split (str (name k)) "."))))
                                                (ff/feature-flags))]]
        ^{:key (str context-name)}
        [rn/view {:style style/container}
