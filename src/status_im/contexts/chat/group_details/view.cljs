@@ -27,10 +27,10 @@
 
 (defn add-member-contact-item-render
   [{:keys [public-key] :as item} _ _ {:keys [group]}]
-  (let [current-pk (rf/sub [:multiaccount/public-key])
+  (let [current-pk         (rf/sub [:multiaccount/public-key])
         {:keys [contacts]} group
-        member?    (contains? contacts public-key)
-        checked?   (reagent/atom member?)]
+        member?            (contains? contacts public-key)
+        checked?           (reagent/atom member?)]
     (fn []
       (let [on-toggle #(group-chat-member-toggle member? (swap! checked? not) public-key)]
         [contact-list-item/contact-list-item
@@ -80,7 +80,7 @@
                                (rf/dispatch [:navigate-back])
                                (js/setTimeout (fn []
                                                 (rf/dispatch
-                                                  [:group-chats.ui/remove-members-pressed chat-id]))
+                                                 [:group-chats.ui/remove-members-pressed chat-id]))
                                               500)
                                (rf/dispatch [:group-chats.ui/add-members-pressed chat-id]))
         :disabled?           (and (zero? (count selected-participants))
@@ -114,7 +114,7 @@
   []
   (let [chat-id         (rf/sub [:get-screen-params :group-details])
         {:keys [admins chat-id chat-name color muted contacts image]
-         :as   group} (rf/sub [:chats/chat-by-id chat-id])
+         :as   group}   (rf/sub [:chats/chat-by-id chat-id])
         members         (rf/sub [:contacts/group-members-sections chat-id])
         pinned-messages (rf/sub [:chats/pinned chat-id])
         current-pk      (rf/sub [:multiaccount/public-key])
