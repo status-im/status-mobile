@@ -22,7 +22,7 @@
    ::wallet.long-press-watch-only-asset (enabled-in-env? :FLAG_LONG_PRESS_WATCH_ONLY_ASSET_ENABLED)
    ::wallet.swap                        (enabled-in-env? :FLAG_SWAP_ENABLED)
    ::wallet.wallet-connect              (enabled-in-env? :FLAG_WALLET_CONNECT_ENABLED)
-   ::wallet.wallet-settings             (enabled-in-env? :FLAG_WALLET_SETTINGS_ENABLED)})
+   ::wallet.settings                    (enabled-in-env? :FLAG_WALLET_SETTINGS_ENABLED)})
 
 (defonce ^:private feature-flags-config
   (reagent/atom initial-flags))
