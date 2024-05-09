@@ -3,6 +3,7 @@
             [quo.foundations.colors :as colors]
             [quo.theme :as quo.theme]
             [react-native.blur :as blur]
+            [react-native.core :as rn]
             [reagent.core :as reagent]
             [status-im.constants :as constants]
             [status-im.contexts.wallet.common.utils :as utils]
@@ -12,7 +13,7 @@
 
 (defn view
   [{:keys [title first-section-label second-section-label selected-networks
-           receiver-preferred-networks account watch-only?]}]
+           warning-label receiver-preferred-networks account watch-only?]}]
   (let [state                               (reagent/atom :default)
         {:keys [color address
                 network-preferences-names]} (or account (rf/sub [:wallet/current-viewing-account]))
@@ -37,24 +38,28 @@
                                                 initial-network-preferences-names
                                                 @network-preferences-names-state))]
     (fn [{:keys [on-save blur? button-label]}]
-      (let [theme                   (quo.theme/use-theme)
-            network-details         (rf/sub [:wallet/network-details])
-            first-section-networks  (filter (fn [network]
-                                              (if receiver-preferred-networks
-                                                (some (fn [chain-id]
-                                                        (= (:chain-id network) chain-id))
-                                                      receiver-preferred-networks)
-                                                (= (:network-name network) :mainnet)))
-                                            network-details)
-            second-section-networks (remove (fn [network]
-                                              (some (fn [chain-id]
-                                                      (= (:chain-id network) chain-id))
-                                                    (map :chain-id first-section-networks)))
-                                            network-details)
-            current-networks        (filter (fn [network]
-                                              (contains? (get-current-preferences-names)
-                                                         (:network-name network)))
-                                            network-details)]
+      (let [theme                            (quo.theme/use-theme)
+            network-details                  (rf/sub [:wallet/network-details])
+            first-section-networks           (filter (fn [network]
+                                                       (if receiver-preferred-networks
+                                                         (some (fn [chain-id]
+                                                                 (= (:chain-id network) chain-id))
+                                                               receiver-preferred-networks)
+                                                         (= (:network-name network) :mainnet)))
+                                                     network-details)
+            second-section-networks          (remove (fn [network]
+                                                       (some (fn [chain-id]
+                                                               (= (:chain-id network) chain-id))
+                                                             (map :chain-id first-section-networks)))
+                                                     network-details)
+            current-networks                 (filter (fn [network]
+                                                       (contains? (get-current-preferences-names)
+                                                                  (:network-name network)))
+                                                     network-details)
+            sending-to-unpreferred-networks? (and receiver?
+                                                  (some #(contains? @network-preferences-names-state
+                                                                    (:network-name %))
+                                                        second-section-networks))]
         [:<>
          ;; quo/overlay isn't compatible with sheets
          (when blur?
@@ -101,6 +106,18 @@
                                                         :on-change        #(toggle-network (:network-name
                                                                                             network))}))
                             first-section-networks)}]
+         (when warning-label
+           [rn/view
+            {:style {:flex-direction    :row
+                     :margin-horizontal 20}}
+            [quo/icon :i/alert
+             {:size  16
+              :color colors/danger-50}]
+            [quo/text
+             {:size  :paragraph-2
+              :style {:margin-left 4
+                      :color       colors/danger-50}}
+             warning-label]])
          (when (not-empty second-section-networks)
            [quo/category
             {:list-type :settings
@@ -115,6 +132,17 @@
                                                           :on-change #(toggle-network (:network-name
                                                                                        network))}))
                               second-section-networks)}])
+         (when sending-to-unpreferred-networks?
+           [rn/view {:style (style/sending-to-unpreferred-networks-alert-container theme)}
+            [rn/view
+             [quo/icon :i/alert
+              {:size  16
+               :color (colors/resolve-color :blue theme)
+               :style {:margin-top 2}}]]
+            [quo/text
+             {:style style/sending-to-unpreferred-networks-text
+              :size  :paragraph-2}
+             (i18n/label :t/sending-to-networks-the-receiver-does-not-prefer)]])
          [quo/bottom-actions
           {:actions          :one-action
            :blur?            blur?
