@@ -102,5 +102,4 @@
         :render-data             {:profile-picture     profile-picture
                                   :compressed-key      compressed-key
                                   :customization-color customization-color}
-        :initial-num-to-render   1
         :content-container-style {:padding-bottom 60}}]]]))
