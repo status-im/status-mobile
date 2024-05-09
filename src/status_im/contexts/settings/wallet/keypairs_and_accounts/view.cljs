@@ -32,16 +32,17 @@
         on-press         (rn/use-callback
                           (fn []
                             (on-options-press
-                             (merge {:theme theme
-                                     :blur? true
-                                     :title name}
-                                    (if default-keypair?
-                                      {:type                :default-keypair
-                                       :description         shortened-key
-                                       :customization-color customization-color
-                                       :profile-picture     profile-picture}
-                                      {:type        :keypair
-                                       :icon-avatar :i/seed}))))
+                             (cond-> {:theme theme
+                                      :blur? true
+                                      :title name}
+                               default-keypair?
+                               (assoc :type                :default-keypair
+                                      :description         shortened-key
+                                      :customization-color customization-color
+                                      :profile-picture     profile-picture)
+                               (not default-keypair?)
+                               (assoc :type        :keypair
+                                      :icon-avatar :i/seed))))
                           [customization-color default-keypair? name
                            profile-picture shortened-key theme])]
     [quo/keypair
