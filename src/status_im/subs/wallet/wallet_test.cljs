@@ -599,18 +599,18 @@
 
     (let [{:keys [customization-color name address emoji]} wallet-account]
       (is
-       (= [{:name     (:name keypairs-accounts)
-            :type     (keyword (:type keypairs-accounts))
-            :accounts [{:account-props {:customization-color customization-color
-                                        :size                32
-                                        :emoji               emoji
-                                        :type                :default
-                                        :name                name
-                                        :address             address}
-                        :networks      []
-                        :state         :default
-                        :action        :none}]}]
-          (rf/sub [sub-name])))))
+       (match? [{:name     (:name keypairs-accounts)
+                 :type     (keyword (:type keypairs-accounts))
+                 :accounts [{:account-props {:customization-color customization-color
+                                             :size                32
+                                             :emoji               emoji
+                                             :type                :default
+                                             :name                name
+                                             :address             address}
+                             :networks      []
+                             :state         :default
+                             :action        :none}]}]
+               (rf/sub [sub-name])))))
 
   (testing "allows for passing account format options"
     (swap! rf-db/app-db
@@ -629,20 +629,20 @@
                            {:network-name :arbitrum :short-name "arb1"}]
           size-option     20]
       (is
-       (= [{:name     (:name keypairs-accounts)
-            :type     (keyword (:type keypairs-accounts))
-            :accounts [{:account-props {:customization-color customization-color
-                                        :size                size-option
-                                        :emoji               emoji
-                                        :type                :default
-                                        :name                name
-                                        :address             address}
-                        :networks      network-options
-                        :state         :default
-                        :action        :none}]}]
-          (rf/sub [sub-name
-                   {:networks network-options
-                    :size     size-option}])))))
+       (match? [{:name     (:name keypairs-accounts)
+                 :type     (keyword (:type keypairs-accounts))
+                 :accounts [{:account-props {:customization-color customization-color
+                                             :size                size-option
+                                             :emoji               emoji
+                                             :type                :default
+                                             :name                name
+                                             :address             address}
+                             :networks      network-options
+                             :state         :default
+                             :action        :none}]}]
+               (rf/sub [sub-name
+                        {:networks network-options
+                         :size     size-option}])))))
 
   (testing "filters non-wallet accounts"
     (swap! rf-db/app-db
@@ -652,10 +652,10 @@
                 :accounts
                 [chat-account])]))
     (is
-     (= [{:name     (:name keypairs-accounts)
-          :type     (keyword (:type keypairs-accounts))
-          :accounts []}]
-        (rf/sub [sub-name])))))
+     (match? [{:name     (:name keypairs-accounts)
+               :type     (keyword (:type keypairs-accounts))
+               :accounts []}]
+             (rf/sub [sub-name])))))
 
 (def local-suggestions ["a" "b"])
 
