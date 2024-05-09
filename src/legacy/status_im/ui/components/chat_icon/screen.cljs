@@ -12,7 +12,8 @@
     [re-frame.core :as re-frame.core]
     [react-native.core :as rn]
     [status-im.contexts.profile.utils :as profile.utils]
-    [utils.ens.core :as utils.ens]))
+    [utils.ens.core :as utils.ens]
+    [utils.image-server :as image-server]))
 
 ;;TODO REWORK THIS NAMESPACE
 
@@ -156,9 +157,11 @@
                                                      (styles/default-chat-icon-text size)
                                                      (styles/emoji-chat-icon-text size))}
                           override-styles)
-        photo-path (if (:fn photo-path)
+        img-config (:config photo-path)
+        photo-path (if img-config
                      ;; temp support new media server avatar for old component
-                     {:uri ((:fn photo-path)
+                     {:uri (image-server/get-image-uri
+                            img-config
                             {:size             size
                              :full-name        name
                              :font-size        (get-in styles [:default-chat-icon-text :font-size])

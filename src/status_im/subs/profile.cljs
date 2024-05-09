@@ -10,7 +10,6 @@
     [status-im.common.pixel-ratio :as pixel-ratio]
     [status-im.constants :as constants]
     [status-im.contexts.profile.utils :as profile.utils]
-    [utils.image-server :as image-server]
     [utils.security.core :as security]))
 
 (re-frame/reg-sub
@@ -43,23 +42,24 @@
          image-name                                                 (-> images first :type)
          override-ring?                                             (when ens-name? false)]
      (when profile
-       {:fn
+       {:config
         (if image-name
-          (image-server/get-account-image-uri-fn {:port           port
-                                                  :ratio          pixel-ratio/ratio
-                                                  :image-name     image-name
-                                                  :key-uid        target-key-uid
-                                                  :theme          theme
-                                                  :override-ring? override-ring?})
-          (image-server/get-initials-avatar-uri-fn
-           {:port                port
-            :ratio               pixel-ratio/ratio
-            :key-uid             target-key-uid
-            :theme               theme
-            :uppercase-ratio     (:uppercase-ratio constants/initials-avatar-font-conf)
-            :customization-color customization-color
-            :override-ring?      override-ring?
-            :font-file           font-file}))}))))
+          {:type    :account
+           :options {:port           port
+                     :ratio          pixel-ratio/ratio
+                     :image-name     image-name
+                     :key-uid        target-key-uid
+                     :theme          theme
+                     :override-ring? override-ring?}}
+          {:type    :initials
+           :options {:port                port
+                     :ratio               pixel-ratio/ratio
+                     :key-uid             target-key-uid
+                     :theme               theme
+                     :uppercase-ratio     (:uppercase-ratio constants/initials-avatar-font-conf)
+                     :customization-color customization-color
+                     :override-ring?      override-ring?
+                     :font-file           font-file}})}))))
 
 ;; DEPRECATED
 ;; use `:profile/public-key` instead
@@ -244,29 +244,31 @@
         ens-name?                     (or ens-name? (seq ens-names))
         avatar-opts                   (assoc avatar-opts :override-ring? (when ens-name? false))
         images-with-uri               (mapv (fn [{key-uid :keyUid image-name :type :as image}]
-                                              (let [uri-fn (image-server/get-account-image-uri-fn
-                                                            (merge
-                                                             {:port       port
-                                                              :ratio      pixel-ratio/ratio
-                                                              :image-name image-name
-                                                              :key-uid    key-uid
-                                                              :theme      theme}
-                                                             avatar-opts))]
-                                                (assoc image :fn uri-fn)))
+                                              (assoc image
+                                                     :config
+                                                     {:type    :account
+                                                      :options (merge
+                                                                {:port       port
+                                                                 :ratio      pixel-ratio/ratio
+                                                                 :image-name image-name
+                                                                 :key-uid    key-uid
+                                                                 :theme      theme}
+                                                                avatar-opts)}))
                                             images)
         new-images                    (if (seq images-with-uri)
                                         images-with-uri
-                                        [{:fn (image-server/get-initials-avatar-uri-fn
-                                               (merge {:port port
-                                                       :ratio pixel-ratio/ratio
-                                                       :uppercase-ratio
-                                                       (:uppercase-ratio
-                                                        constants/initials-avatar-font-conf)
-                                                       :key-uid key-uid
-                                                       :customization-color customization-color
-                                                       :theme theme
-                                                       :font-file font-file}
-                                                      avatar-opts))}])]
+                                        [{:config {:type    :initials
+                                                   :options (merge
+                                                             {:port port
+                                                              :ratio pixel-ratio/ratio
+                                                              :uppercase-ratio
+                                                              (:uppercase-ratio
+                                                               constants/initials-avatar-font-conf)
+                                                              :key-uid key-uid
+                                                              :customization-color customization-color
+                                                              :theme theme
+                                                              :font-file font-file}
+                                                             avatar-opts)}}])]
     (assoc profile :images new-images)))
 
 (re-frame/reg-sub
