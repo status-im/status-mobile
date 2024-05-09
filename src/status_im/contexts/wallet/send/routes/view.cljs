@@ -20,19 +20,6 @@
 (def network-link-1x-height 56)
 (def network-link-2x-height 111)
 
-(defn- make-network-item
-  [{:keys [network-name chain-id] :as _network}
-   {:keys [title color on-change network-preferences] :as _options}]
-  {:title        (or title (string/capitalize (name network-name)))
-   :image        :icon-avatar
-   :image-props  {:icon (resources/get-network network-name)
-                  :size :size-20}
-   :action       :selector
-   :action-props {:type                :checkbox
-                  :customization-color color
-                  :checked?            (some #(= % chain-id) @network-preferences)
-                  :on-change           on-change}})
-
 (defn fetch-routes
   [amount valid-input? bounce-duration-ms]
   (if valid-input?
@@ -40,63 +27,6 @@
      [:wallet/get-suggested-routes {:amount amount}]
      bounce-duration-ms)
     (rf/dispatch [:wallet/clean-suggested-routes])))
-
-(defn networks-drawer
-  [{:keys [on-save theme]}]
-  (let [network-details     (rf/sub [:wallet/network-details])
-        {:keys [color]}     (rf/sub [:wallet/current-viewing-account])
-        selected-networks   (rf/sub [:wallet/wallet-send-receiver-networks])
-        prefix              (rf/sub [:wallet/wallet-send-address-prefix])
-        prefix-seq          (string/split prefix #":")
-        grouped-details     (group-by #(contains? (set prefix-seq) (:short-name %)) network-details)
-        preferred           (get grouped-details true [])
-        not-preferred       (get grouped-details false [])
-        network-preferences (reagent/atom selected-networks)
-        toggle-network      (fn [{:keys [chain-id]}]
-                              (swap! network-preferences
-                                (fn [preferences]
-                                  (if (some #(= % chain-id) preferences)
-                                    (vec (remove #(= % chain-id) preferences))
-                                    (conj preferences chain-id)))))]
-    (fn []
-      [rn/view
-       [quo/drawer-top {:title (i18n/label :t/edit-receiver-networks)}]
-       [quo/category
-        {:list-type :settings
-         :label     (i18n/label :t/preferred-by-receiver)
-         :data      (mapv (fn [network]
-                            (make-network-item network
-                                               {:color               color
-                                                :network-preferences network-preferences
-                                                :on-change           #(toggle-network network)}))
-                          preferred)}]
-       (when (pos? (count not-preferred))
-         [quo/category
-          {:list-type :settings
-           :label     (i18n/label :t/not-preferred-by-receiver)
-           :data      (mapv (fn [network]
-                              (make-network-item network
-                                                 {:color               color
-                                                  :network-preferences network-preferences
-                                                  :on-change           #(toggle-network network)}))
-                            not-preferred)}])
-       (when (not= selected-networks @network-preferences)
-         [rn/view {:style (style/warning-container color theme)}
-          [quo/icon :i/info {:color (colors/resolve-color color theme)}]
-          [quo/text
-           {:size  :paragraph-2
-            :style style/warning-text} (i18n/label :t/receiver-networks-warning)]])
-       [quo/bottom-actions
-        {:actions          :one-action
-         :button-one-label (i18n/label :t/apply-changes)
-         :button-one-props {:disabled?           (or (= selected-networks @network-preferences)
-                                                     (empty? @network-preferences))
-                            :on-press            (fn []
-                                                   (rf/dispatch [:wallet/update-receiver-networks
-                                                                 @network-preferences])
-                                                   (rf/dispatch [:hide-bottom-sheet])
-                                                   (on-save))
-                            :customization-color color}}]])))
 
 (defn- open-preferences
   []
@@ -113,15 +43,8 @@
                                       (i18n/label
                                        :t/token-not-available-on-networks
                                        {:token-symbol token-symbol
-                                        :networks     (->> not-available-tokens
-                                                           (map network-utils/id->network)
-                                                           (map name)
-                                                           (map string/capitalize)
-                                                           (string/join ", ")
-                                                           (fn [s]
-                                                             (string/replace s
-                                                                             #",\s([^,]+)$"
-                                                                             " and $1")))}))]
+                                        :networks     (network-utils/network-ids->formatted-text
+                                                       not-available-tokens)}))]
     (rf/dispatch
      [:show-bottom-sheet
       {:content (fn []
@@ -131,7 +54,7 @@
                     :second-section-label (i18n/label :t/not-preferred-by-receiver)
                     :selected-networks (set (map network-utils/id->network receiver-networks))
                     :receiver-preferred-networks receiver-preferred-networks
-                    :button-label (i18n/label :t/apply)
+                    :button-label (i18n/label :t/apply-changes)
                     :warning-label warning-label
                     :on-save
                     (fn [chain-ids]

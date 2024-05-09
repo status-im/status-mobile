@@ -3,6 +3,8 @@
             [status-im.constants :as constants]
             [utils.number]))
 
+(def ^:private last-comma-followed-by-text-to-end-regex #",\s(?=[^,]+$)")
+
 (def id->network
   {constants/ethereum-mainnet-chain-id constants/mainnet-network-name
    constants/ethereum-goerli-chain-id  constants/mainnet-network-name
@@ -113,3 +115,13 @@
   (as-> prefix $
     (string/split $ ":")
     (map short-name->network $)))
+
+(defn network-ids->formatted-text
+  [network-ids]
+  (let [network-names  (->> network-ids
+                            (map id->network)
+                            (map name)
+                            (map string/capitalize)
+                            (string/join ", "))
+        formatted-text (string/replace network-names last-comma-followed-by-text-to-end-regex " and ")]
+    formatted-text))

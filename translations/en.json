@@ -2631,5 +2631,7 @@
     "add-networks-token-can-be-sent-to": "Add networks {{token-symbol}} can be sent to",
     "not-available": "Not available",
     "token-not-available-on-networks": "{{token-symbol}} is not available on {{networks}}.",
-    "sending-to-networks-the-receiver-does-not-prefer": "Sending to networks the receiver does not prefer may result in recipient having difficulty accessing the sent tokens."
+    "sending-to-networks-the-receiver-does-not-prefer": "Sending to networks the receiver does not prefer may result in recipient having difficulty accessing the sent tokens.",
+    "proceed-anyway": "Proceed anyway",
+    "sending-to-unpreferred-networks": "Sending to unpreferred networks"
 }

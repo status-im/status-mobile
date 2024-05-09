@@ -108,8 +108,7 @@
                             first-section-networks)}]
          (when warning-label
            [rn/view
-            {:style {:flex-direction    :row
-                     :margin-horizontal 20}}
+            {:style style/warning-container}
             [quo/icon :i/alert
              {:size  16
               :color colors/danger-50}]
@@ -136,9 +135,9 @@
            [rn/view {:style (style/sending-to-unpreferred-networks-alert-container theme)}
             [rn/view
              [quo/icon :i/alert
-              {:size  16
-               :color (colors/resolve-color :blue theme)
-               :style {:margin-top 2}}]]
+              {:size            16
+               :color           (colors/resolve-color :blue theme)
+               :container-style {:margin-top 2}}]]
             [quo/text
              {:style style/sending-to-unpreferred-networks-text
               :size  :paragraph-2}

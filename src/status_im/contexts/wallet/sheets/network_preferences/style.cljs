@@ -13,6 +13,11 @@
   {:margin-horizontal 20
    :margin-vertical   8})
 
+(def warning-container
+  {:flex-direction    :row
+   :margin-horizontal 20
+   :align-items       :center})
+
 (defn sending-to-unpreferred-networks-alert-container
   [theme]
   {:height            76
@@ -24,10 +29,7 @@
    :margin-horizontal 20
    :padding           10})
 
-(def sending-to-unpreferred-networks-content-container
-  {:margin-left 8
-   :align-items :flex-start})
-
 (def sending-to-unpreferred-networks-text
   {:flex        1
+   :height      54.6
    :margin-left 8})

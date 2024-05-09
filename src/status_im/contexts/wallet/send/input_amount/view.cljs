@@ -13,6 +13,7 @@
     [status-im.contexts.wallet.send.input-amount.style :as style]
     [status-im.contexts.wallet.send.routes.view :as routes]
     [status-im.contexts.wallet.send.utils :as send-utils]
+    [status-im.contexts.wallet.sheets.unpreferred-networks-alert.view :as unpreferred-networks-alert]
     [utils.address :as address]
     [utils.i18n :as i18n]
     [utils.money :as money]
@@ -100,6 +101,13 @@
         :on-press            add-token-networks}
        (i18n/label :t/add-networks-token-can-be-sent-to {:token-symbol token-symbol})]]]))
 
+(defn- show-unpreferred-networks-alert
+  [on-confirm]
+  (rf/dispatch
+   [:show-bottom-sheet
+    {:content (fn []
+                [unpreferred-networks-alert/view
+                 {:on-confirm on-confirm}])}]))
 (defn view
   ;; crypto-decimals, limit-crypto and initial-crypto-currency? args are needed
   ;; for component tests only
@@ -214,7 +222,11 @@
                                                        (not (nil? routes))
                                                        (not loading-routes?)
                                                        (not token-not-supported-in-receiver-networks?))
-            receiver-networks                         (rf/sub [:wallet/wallet-send-receiver-networks])]
+            receiver-networks                         (rf/sub [:wallet/wallet-send-receiver-networks])
+            receiver-preferred-networks               (rf/sub
+                                                       [:wallet/wallet-send-receiver-preferred-networks])
+            sending-to-unpreferred-networks?          (not= (set receiver-networks)
+                                                            (set receiver-preferred-networks))]
         (rn/use-mount
          (fn []
            (let [dismiss-keyboard-fn   #(when (= % "active") (rn/dismiss-keyboard!))
@@ -277,10 +289,14 @@
                                button-one-label)
            :button-one-props (merge button-one-props
                                     {:disabled? (and (not no-routes-found?) confirm-disabled?)
-                                     :on-press  (if no-routes-found?
+                                     :on-press  (cond
+                                                  no-routes-found?
                                                   #(rf/dispatch [:wallet/get-suggested-routes
                                                                  {:amount (controlled-input/input-value
                                                                            input-state)}])
+                                                  sending-to-unpreferred-networks?
+                                                  #(show-unpreferred-networks-alert on-confirm)
+                                                  :else
                                                   on-confirm)}
                                     (when no-routes-found?
                                       {:type :grey}))}]
