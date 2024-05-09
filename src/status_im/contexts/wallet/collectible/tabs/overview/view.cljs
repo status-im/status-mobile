@@ -1,24 +1,32 @@
 (ns status-im.contexts.wallet.collectible.tabs.overview.view
   (:require
+    [cljs-time.coerce :as coerce]
     [clojure.string :as string]
     [quo.core :as quo]
     [quo.foundations.resources :as quo.resources]
     [quo.theme]
     [react-native.core :as rn]
     [status-im.contexts.wallet.collectible.tabs.overview.style :as style]
+    [utils.datetime :as datetime]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
+(def relevant-date-traits #{"Expiration Date" "Registration Date" "Created Date"})
+
 (defn- trait-item
   [{:keys [trait-type value]}]
-  [quo/data-item
-   {:subtitle-type   :default
-    :card?           true
-    :status          :default
-    :size            :default
-    :title           trait-type
-    :subtitle        value
-    :container-style style/traits-item}])
+  (when (contains? relevant-date-traits trait-type)
+    (let [value-to-int    (js/parseInt value)
+          coerced-value   (coerce/from-date (js/Date. value-to-int))
+          formatted-value (datetime/format-date coerced-value)]
+      [quo/data-item
+       {:subtitle-type   :default
+        :card?           true
+        :status          :default
+        :size            :default
+        :title           trait-type
+        :subtitle        formatted-value
+        :container-style style/traits-item}])))
 
 (defn- traits-section
   []
