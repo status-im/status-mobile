@@ -159,30 +159,33 @@
                 :goerli-enabled?  goerli-enabled?})
              selected-networks))))
 
+(defn- format-settings-keypair-accounts
+  [accounts
+   {:keys [networks size]
+    :or   {networks []
+           size     32}}]
+  (->> accounts
+       (keep (fn [{:keys [path customization-color emoji name address]}]
+               (when-not (string/starts-with? path constants/path-eip1581)
+                 {:account-props {:customization-color customization-color
+                                  :size                size
+                                  :emoji               emoji
+                                  :type                :default
+                                  :name                name
+                                  :address             address}
+                  :networks      networks
+                  :state         :default
+                  :action        :none})))))
+
 (rf/reg-sub
  :wallet/settings-keypairs-accounts
  :<- [:wallet/keypairs]
- (fn [keypairs
-      [_
-       {:keys [networks size]
-        :or   {networks []
-               size     32}}]]
+ (fn [keypairs [_ format-options]]
    (->> keypairs
         (map (fn [{:keys [accounts name type]}]
                {:type     (keyword type)
                 :name     name
-                :accounts (->> accounts
-                               (keep (fn [{:keys [path customization-color emoji name address]}]
-                                       (when (not (string/starts-with? path constants/path-eip1581))
-                                         {:account-props {:customization-color customization-color
-                                                          :size                size
-                                                          :emoji               emoji
-                                                          :type                :default
-                                                          :name                name
-                                                          :address             address}
-                                          :networks      networks
-                                          :state         :default
-                                          :action        :none}))))})))))
+                :accounts (format-settings-keypair-accounts accounts format-options)})))))
 
 (rf/reg-sub
  :wallet/derivation-path-state
