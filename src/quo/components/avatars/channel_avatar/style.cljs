@@ -7,6 +7,7 @@
 (defn outer-container
   [{:keys [size customization-color theme]}]
   (let [container-size (case size
+                         :size-80 80
                          :size-64 64
                          :size-32 32
                          24)]
@@ -21,6 +22,7 @@
   [size]
   {:text-align :center
    :font-size  (case size
+                 :size-80 36
                  :size-64 24
                  :size-32 15
                  11)})
