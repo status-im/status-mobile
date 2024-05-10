@@ -53,7 +53,14 @@
    :dev {:devtools {:before-load-async status-im.setup.hot-reload/before-reload
                     :after-load-async  status-im.setup.hot-reload/reload
                     :build-notify      status-im.setup.hot-reload/build-notify
-                    :preloads          [re-frisk-remote.preload
+                    :preloads          [;; We preload user namespaces so that
+                                        ;; their symbols are available without
+                                        ;; the developer having to manually
+                                        ;; evaluate them after app
+                                        ;; initialization.
+                                        user
+                                        dev.user
+                                        re-frisk-remote.preload
                                         status-im.setup.schema-preload
                                         ;; In order to use component test helpers in the REPL we
                                         ;; need to preload namespaces that are not normally required

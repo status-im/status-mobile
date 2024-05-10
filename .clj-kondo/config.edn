@@ -1,4 +1,5 @@
 {:config-paths ["status-im"]
+ :output       {:exclude-files ["src/user.cljs" "src/dev/user.cljs"]}
  :lint-as      {legacy.status-im.utils.views/defview clojure.core/defn
                 legacy.status-im.utils.views/letsubs clojure.core/let
                 reagent.core/with-let                clojure.core/let
