@@ -37,7 +37,7 @@
            :account-name        name
            :account             (if watch-only? :watched-address :default)
            :customization-color color}]
-         [quo/wallet-graph {:time-frame :empty}]
+         (when (ff/enabled? ::ff/wallet.graph) [quo/wallet-graph {:time-frame :empty}])
          (when (not watch-only?)
            [quo/wallet-ctas
             {:container-style style/cta-buttons
