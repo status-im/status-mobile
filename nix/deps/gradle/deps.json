@@ -8454,20 +8454,16 @@
   },
 
   {
-    "path": "commons-logging/commons-logging/1.3.1",
+    "path": "commons-logging/commons-logging/1.3.2",
     "repo": "https://repo.maven.apache.org/maven2",
     "files": {
-      "commons-logging-1.3.1.pom": {
-        "sha1": "4bfde82c8e291f8e31227a91e0c5e428ee113e2d",
-        "sha256": "sha256-jeGLudCI4RAGLLIgVKx4DfW8A0njFzUbjtFuIH//s7g="
+      "commons-logging-1.3.2.pom": {
+        "sha1": "fcfa9f6e411771b8be9bee29e9d318867d3e1bc3",
+        "sha256": "sha256-ZMFGqsSRjMPiHhMij1/kF4VZM7GBN0zML4me8eFWsm0="
       },
-      "commons-logging-1.3.1-api.jar": {
-        "sha1": "c8395db010f14b2643d838c66703ad7c9325ff3c",
-        "sha256": "sha256-F+1DKWd0Dhql/EJKJGrawLoAamu/2pjKvGkoNRqOuFQ="
-      },
-      "commons-logging-1.3.1.jar": {
-        "sha1": "8cff7dc1e492911f3dd7640ebfb60d6206a1dd40",
-        "sha256": "sha256-lUB7tDN7rWuPsuZHpH+VIZmxUg7ztreTF9H+D8eQuPw="
+      "commons-logging-1.3.2.jar": {
+        "sha1": "3dc966156ef19d23c839715165435e582fafa753",
+        "sha256": "sha256-a4WEJPUYAV8yv80Rg6Nz9Kgn1y0Ca2Ax2gyRzw6PNIk="
       }
     }
   },
@@ -12764,20 +12760,20 @@
   },
 
   {
-    "path": "com/squareup/okhttp3/okhttp-tls/4.9.2",
+    "path": "com/squareup/okhttp3/okhttp-tls/4.11.0",
     "repo": "https://repo.maven.apache.org/maven2",
     "files": {
-      "okhttp-tls-4.9.2.pom": {
-        "sha1": "dec05ee1b4de176f92a12361b1cc82eb7b45857d",
-        "sha256": "sha256-pzMpEUHs6TYBsocbxdsl3laPLAqVohrGEBOkQdQbDBI="
+      "okhttp-tls-4.11.0.pom": {
+        "sha1": "93518ebb24213d6dcbde8e0c21913e40672f80c3",
+        "sha256": "sha256-0SYiMcXxtb/bVe/7+SXas1/dWlNFEvhsSd3HIGY/IEg="
       },
-      "okhttp-tls-4.9.2.jar": {
-        "sha1": "2337dfb8b20de9cecd4ea36d54d15a3d85a3f385",
-        "sha256": "sha256-W8xRWQAJ2M/xShfi7i3cQ6J1HOQZmdhiQaNG8JwiB34="
+      "okhttp-tls-4.11.0.jar": {
+        "sha1": "5ac74e5e234dc2d5cd434ac87df377858a2dcf40",
+        "sha256": "sha256-SuTHCSwBeBhSRQabkSdGX9V8dkSF81ev7USlxIoFNf0="
       },
-      "okhttp-tls-4.9.2.module": {
-        "sha1": "d5ab02f5e49911694f95a23a0a93dd3de27f8dd1",
-        "sha256": "sha256-s001IZvRHujsteSz3Qf0W+iym6Bep5z57dqRYcwlj9E="
+      "okhttp-tls-4.11.0.module": {
+        "sha1": "e790e6e5d0e88f9fc0c70df981e86daf29f411fa",
+        "sha256": "sha256-2m5O5qfdybnUZusr5ScBAmsXms2wClyso08uXTdeSMI="
       }
     }
   },
@@ -12851,6 +12847,25 @@
   },
 
   {
+    "path": "com/squareup/okhttp3/okhttp/4.11.0",
+    "repo": "https://repo.maven.apache.org/maven2",
+    "files": {
+      "okhttp-4.11.0.pom": {
+        "sha1": "723ab52cf1ac14363cb36ab084b0af810c095bef",
+        "sha256": "sha256-ei1Cezixfgdtpk7o0hAuZIiNyyOK7l4tukp3UslKP94="
+      },
+      "okhttp-4.11.0.jar": {
+        "sha1": "436932d695b2c43f2c86b8111c596179cd133d56",
+        "sha256": "sha256-7o9r1s0SVwE9dIMw9MoUdjip+8tS+ziNWsk89TQIdF0="
+      },
+      "okhttp-4.11.0.module": {
+        "sha1": "db24464b688785ba9c5765df8b5508a9b8994b40",
+        "sha256": "sha256-VnwltR13eWF0Q5GE11JBK6l+2f22X8cYQNvFVjvrj6g="
+      }
+    }
+  },
+
+  {
     "path": "com/squareup/okhttp3/parent/3.9.1",
     "repo": "https://repo.maven.apache.org/maven2",
     "files": {
@@ -12873,6 +12888,25 @@
   },
 
   {
+    "path": "com/squareup/okio/okio-jvm/3.2.0",
+    "repo": "https://repo.maven.apache.org/maven2",
+    "files": {
+      "okio-jvm-3.2.0.pom": {
+        "sha1": "749720d97fe3dc16e0d84a05628f4c818b375a85",
+        "sha256": "sha256-XEUflKdr6oYbbvK/hOj1cgBUWWjIZVWr3+0Tx8otSJ0="
+      },
+      "okio-jvm-3.2.0.jar": {
+        "sha1": "332d1c5dc82b0241cb1d35bb0901d28470cc89ca",
+        "sha256": "sha256-tkK670xXAFXeTLPRZnsrFtztkB/4BmNFoGNpGqBgJaQ="
+      },
+      "okio-jvm-3.2.0.module": {
+        "sha1": "09f966bc7d27d5151fa3367e637e098cf7cf4179",
+        "sha256": "sha256-p3jzkIXtar/NaHESmGxjhapXrC2IQLIdlGs8IJXzDqQ="
+      }
+    }
+  },
+
+  {
     "path": "com/squareup/okio/okio-jvm/3.9.0",
     "repo": "https://repo.maven.apache.org/maven2",
     "files": {
@@ -12887,25 +12921,6 @@
       "okio-jvm-3.9.0.module": {
         "sha1": "03406986e50ebaa5d0bdc723bc1f62253b74ccbb",
         "sha256": "sha256-z5coTsYbtR5t/Lx/K22VVsm3s+PLIswOLU8O7782GVs="
-      }
-    }
-  },
-
-  {
-    "path": "com/squareup/okio/okio-metadata/2.8.0",
-    "repo": "https://repo.maven.apache.org/maven2",
-    "files": {
-      "okio-metadata-2.8.0.pom": {
-        "sha1": "dc508270653b48fd92c98866c5f1ed6e3e033cad",
-        "sha256": "sha256-v8xCxsWC2Zl4UgnmAs30RRoyZJrsbg7CaLdIhOA0QAg="
-      },
-      "okio-metadata-2.8.0.jar": {
-        "sha1": "2a068c26cd04cbd7214ae6a4146c5f5424bdb393",
-        "sha256": "sha256-99w4g86uLh/jQl4bVMXfKLiFfF/QA4G1If2mB5DylSw="
-      },
-      "okio-metadata-2.8.0.module": {
-        "sha1": "a5b10ac12aa5f879996e516be24aaeb9b4459873",
-        "sha256": "sha256-pO72Qb5eVGPSeJw8c2AfmpnzbhN3ygB+MPD+5ToFTNw="
       }
     }
   },
@@ -13022,6 +13037,29 @@
       "okio-2.9.0.module": {
         "sha1": "520c235dba7958456a273ae5fdf3d925cbc8a81a",
         "sha256": "sha256-ZbeMGrIdx2QHmNx2fFgJkJFteozPQY2Ksi/jrKC0iO4="
+      }
+    }
+  },
+
+  {
+    "path": "com/squareup/okio/okio/3.2.0",
+    "repo": "https://repo.maven.apache.org/maven2",
+    "files": {
+      "okio-3.2.0.pom": {
+        "sha1": "85284557b21661be1c4983910fef4e35532e1e34",
+        "sha256": "sha256-i0b1jZua6xF4Nh1YpoZfTa1mWTDF/3tV4LqmHvOpcqE="
+      },
+      "okio-3.2.0-all.jar": {
+        "sha1": "22e2a4f865203033fc0f35fd5892a213d21a4710",
+        "sha256": "sha256-Uf+6hylix9O+0SjfKbDeqz7qMfwjfAoMgVjcmQqEh44="
+      },
+      "okio-3.2.0.jar": {
+        "sha1": "afd4b7185a6976c2ac6bfb7b126c257ee9b3e765",
+        "sha256": "sha256-3KkyyyAptsniZ3D4fbCLFNSB/+gTGlnzaaI4XBG+Ti0="
+      },
+      "okio-3.2.0.module": {
+        "sha1": "32c2edb224d6eeaee24f8086e3ac41b92138fadb",
+        "sha256": "sha256-aB9c7BcN5FuVST6e5wWGjrNa34mO4G+W4i0ZclDBsQQ="
       }
     }
   },
@@ -15893,17 +15931,6 @@
       "commons-parent-52.pom": {
         "sha1": "004ee86dedc66d0010ccdc29e5a4ce014c057854",
         "sha256": "sha256-ddvo806Y5MP/QtquSi+etMvNO18QR9VEYKzpBtu0UC4="
-      }
-    }
-  },
-
-  {
-    "path": "org/apache/commons/commons-parent/67",
-    "repo": "https://repo.maven.apache.org/maven2",
-    "files": {
-      "commons-parent-67.pom": {
-        "sha1": "761d110d7313f09bfc20ec1fb1f420da3314958e",
-        "sha256": "sha256-UHrZeCzW5L8io0Eyk2TG2vqqAqsmswy8Z4XPsFlQZ1Y="
       }
     }
   },
@@ -20026,6 +20053,21 @@
   },
 
   {
+    "path": "org/jetbrains/kotlin/kotlin-stdlib-jdk7/1.6.10",
+    "repo": "https://repo.maven.apache.org/maven2",
+    "files": {
+      "kotlin-stdlib-jdk7-1.6.10.pom": {
+        "sha1": "5da7f12df7646d63f35e8a894157143c93efceb4",
+        "sha256": "sha256-YSIR/5MPW1LHJP92NBfVqigd1+AyXDs1yNGBIKao300="
+      },
+      "kotlin-stdlib-jdk7-1.6.10.jar": {
+        "sha1": "e1c380673654a089c4f0c9f83d0ddfdc1efdb498",
+        "sha256": "sha256-Ku3NxrabM731zCNbzqiOfPZgEUa7a83/2zErus174mE="
+      }
+    }
+  },
+
+  {
     "path": "org/jetbrains/kotlin/kotlin-stdlib-jdk7/1.6.20",
     "repo": "https://repo.maven.apache.org/maven2",
     "files": {
@@ -20231,6 +20273,36 @@
       "kotlin-stdlib-jdk8-1.6.0.jar": {
         "sha1": "baf82c475e9372c25407f3d132439e4aa803b8b8",
         "sha256": "sha256-qwVHxJWVMhSl8rKBUAFPTgITNnjVK3fXY3XqI15EPb0="
+      }
+    }
+  },
+
+  {
+    "path": "org/jetbrains/kotlin/kotlin-stdlib-jdk8/1.6.10",
+    "repo": "https://repo.maven.apache.org/maven2",
+    "files": {
+      "kotlin-stdlib-jdk8-1.6.10.pom": {
+        "sha1": "9ad76ce2a9e0473c5d5d4ec01add1b061beb521d",
+        "sha256": "sha256-Q6ZJ+nN7+zX6SvTm3jPi8IpdGRBNdYLqQNvNK2N5Csw="
+      },
+      "kotlin-stdlib-jdk8-1.6.10.jar": {
+        "sha1": "e80fe6ac3c3573a80305f5ec43f86b829e8ab53d",
+        "sha256": "sha256-FFbYLQOeow2EhbAykB9Su/B+fNvoux+HCK0yqFdMQc4="
+      }
+    }
+  },
+
+  {
+    "path": "org/jetbrains/kotlin/kotlin-stdlib-jdk8/1.6.20",
+    "repo": "https://repo.maven.apache.org/maven2",
+    "files": {
+      "kotlin-stdlib-jdk8-1.6.20.pom": {
+        "sha1": "6207ba2d7a89316eafea7f135ef1fc17e41c424b",
+        "sha256": "sha256-GEap+GBLC+HHGiEovb2diQJyAnlCf2ItK5pECsmjwwk="
+      },
+      "kotlin-stdlib-jdk8-1.6.20.jar": {
+        "sha1": "dab8089bca6ac0e394c37281ea8cff2f99acd421",
+        "sha256": "sha256-/asb8SDiteerbXiI6evAJOxrjKcpNhKWOV2rY0shNpU="
       }
     }
   },

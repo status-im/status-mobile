@@ -58,6 +58,9 @@
 -keep interface okhttp3.** { *; }
 -dontwarn okhttp3.**
 
+# to fix : java.security.KeyStoreException: BKS not found
+-keep class org.bouncycastle.** { *; }
+
 # okio
 
 -keep class sun.misc.Unsafe { *; }
@@ -76,3 +79,12 @@
   **[] $VALUES;
   public *;
 }
+
+# react-native-config
+# https://github.com/lugg/react-native-config?tab=readme-ov-file#problems-with-proguard
+-keep class im.status.ethereum.BuildConfig {*;}
+
+# react-native-navigation
+# to fix : java.lang.ClassCastException: java.lang.Class cannot be cast to java.lang.reflect.ParameterizedType
+# at com.reactnativenavigation.views.element.animators.PropertyAnimatorCreator.getChildClass(Unknown Source:13)
+-keep class com.reactnativenavigation.** {*;}

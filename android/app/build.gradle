@@ -59,7 +59,7 @@ react {
 /**
  * Set this to true to Run Proguard on Release builds to minify the Java bytecode.
  */
-def enableProguardInReleaseBuilds = false
+def enableProguardInReleaseBuilds = true
 
 /**
  * The preferred build flavor of JavaScriptCore (JSC)
@@ -233,6 +233,7 @@ android {
         }
         release {
             minifyEnabled enableProguardInReleaseBuilds
+            shrinkResources enableProguardInReleaseBuilds
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
             signingConfig null
         }
@@ -240,10 +241,10 @@ android {
             initWith release
             applicationIdSuffix ".pr"
             versionNameSuffix   ".pr"
-            debuggable          false
+            debuggable false
             matchingFallbacks = ["release"]
-             // necessary to make react-native-config's code generation work
-             resValue "string", "build_config_package", "im.status.ethereum"
+            // necessary to make react-native-config's code generation work
+            resValue "string", "build_config_package", "im.status.ethereum"
         }
     }
 
@@ -293,7 +294,7 @@ dependencies {
     implementation("com.github.status-im:function:0.0.1")
     implementation("com.facebook.fresco:fresco:2.5.0")
     implementation("com.facebook.fresco:animated-gif:2.5.0")
-    implementation("com.squareup.okhttp3:okhttp-tls:4.9.2")
+    implementation("com.squareup.okhttp3:okhttp-tls:4.11.0")
     implementation("com.google.prefab:cli:2.0.0")
     implementation("com.android.tools.build:aapt2:8.1.1-10154469")
 }
