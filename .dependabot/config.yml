@@ -1,0 +1,22 @@
+# https://dependabot.com/docs/config-file/
+
+version: 1
+update_configs:
+  # Keep build.gradle files up to date, batching pull requests weekly
+  - package_manager: "java:gradle"
+    directory: "/android"
+    update_schedule: "weekly"
+    default_reviewers:
+    - "jakubgs"
+    allowed_updates:
+      - match:
+          update_type: "security"
+  # Keep /mobile/js_files/yarn.lock up to date, batching pull requests weekly
+  - package_manager: "javascript"
+    directory: "/"
+    update_schedule: "weekly"
+    allowed_updates:
+    - match:
+        update_type: security
+    default_reviewers:
+    - "jakubgs"
