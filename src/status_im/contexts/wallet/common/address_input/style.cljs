@@ -1,4 +1,4 @@
-(ns status-im.contexts.wallet.address-input.style)
+(ns status-im.contexts.wallet.common.address-input.style)
 
 (def input
   {:flex         1

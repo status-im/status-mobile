@@ -1,4 +1,4 @@
-(ns status-im.contexts.wallet.address-input.view
+(ns status-im.contexts.wallet.common.address-input.view
   (:require [clojure.string :as string]
             [quo.core :as quo]
             [react-native.clipboard :as clipboard]

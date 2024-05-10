@@ -1,4 +1,4 @@
-(ns status-im.contexts.wallet.activity-indicator.view
+(ns status-im.contexts.wallet.common.activity-indicator.view
   (:require [quo.core :as quo]
             [status-im.contexts.wallet.activity-indicator.style :as style]
             [utils.i18n :as i18n]))

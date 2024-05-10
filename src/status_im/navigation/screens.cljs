@@ -395,7 +395,7 @@
      :component wallet-confirm-address-to-watch/view}
 
     {:name      :screen/wallet.confirm-address-to-save
-     :options   options/dark-screen
+     :options   (assoc options/dark-screen :sheet? true)
      :component wallet-confirm-address-to-save/view}
 
     {:name      :screen/wallet.bridge-select-asset
@@ -560,7 +560,7 @@
    (when config/quo-preview-enabled?
      status-im-preview/main-screens)
 
-   (when config/quo-preview-enabled?
+   (when true
      [{:name      :feature-flags
        :options   {:insets {:top? true}}
        :component feature-flags/view}])))
