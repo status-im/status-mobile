@@ -103,8 +103,11 @@
                                           :on-press  #(rf/dispatch
                                                        [:show-bottom-sheet
                                                         {:content (fn [] [options-drawer/view
-                                                                          {:name  collectible-name
-                                                                           :image preview-uri}])
+                                                                          {:name collectible-name
+                                                                           :image preview-uri
+                                                                           :chain-id chain-id
+                                                                           :address
+                                                                           contract-address}])
                                                          :theme   theme}])}]
                            :picture     preview-uri}}
          [rn/view {:style style/container}
@@ -126,8 +129,11 @@
                                                                      {:content
                                                                       (fn []
                                                                         [options-drawer/view
-                                                                         {:name  collectible-name
-                                                                          :image preview-uri}])}])}])))}]
+                                                                         {:name collectible-name
+                                                                          :image preview-uri
+                                                                          :chain-id chain-id
+                                                                          :address
+                                                                          contract-address}])}])}])))}]
           [header collectible-name collection-name collection-image]
           [cta-buttons
            {:chain-id         chain-id
