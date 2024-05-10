@@ -154,7 +154,7 @@
       (let [selected-tab             (or (rf/sub [:wallet/send-tab]) (:id (first tabs-data)))
             valid-ens-or-address?    (boolean (rf/sub [:wallet/valid-ens-or-address?]))
             local-suggestion-address (rf/sub [:wallet/local-suggestions->full-address])
-            color                    (rf/sub [:wallet/current-viewing-account->color])]
+            color                    (rf/sub [:wallet/current-viewing-account-color])]
         [floating-button-page/view
          {:footer-container-padding 0
           :header                   [account-switcher/view

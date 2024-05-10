@@ -262,7 +262,7 @@
                 :formatted-balance formatted-balance)))))
 
 (rf/reg-sub
- :wallet/current-viewing-account->color
+ :wallet/current-viewing-account-color
  :<- [:wallet/current-viewing-account]
  :-> :color)
 
