@@ -4,8 +4,6 @@
     [status-im.common.resources :as status.resources]
     [utils.i18n :as i18n]))
 
-(def address "0x39cf6E0Ba4C4530735616e1Ee7ff5FbCB726fBd4")
-
 (def buy-tokens-list
   [{:title             "Ramp"
     :description       :text

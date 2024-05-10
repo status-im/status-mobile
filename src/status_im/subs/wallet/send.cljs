@@ -32,3 +32,13 @@
    (let [send-tx-ids (set (keys transactions))]
      (select-keys transactions
                   (filter send-tx-ids tx-ids)))))
+
+(rf/reg-sub
+ :wallet/recent-recipients
+ :<- [:wallet/activities-for-current-viewing-account]
+ :<- [:wallet/current-viewing-account-address]
+ (fn [[activities current-viewing-account-address]]
+   (let [users-sent-transactions (filter (fn [{:keys [sender]}]
+                                           (= sender current-viewing-account-address))
+                                         activities)]
+     (set (map :recipient users-sent-transactions)))))
