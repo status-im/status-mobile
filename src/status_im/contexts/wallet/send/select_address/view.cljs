@@ -83,8 +83,7 @@
   (let [theme (quo.theme/use-theme)]
     [quo/text
      {:size  :paragraph-2
-      :style {:padding-horizontal 12
-              :padding-top        4}}
+      :style style/network-text-container}
      (map (fn [network]
             ^{:key (str network)}
             [quo/text
@@ -154,9 +153,8 @@
     (fn []
       (let [selected-tab             (or (rf/sub [:wallet/send-tab]) (:id (first tabs-data)))
             valid-ens-or-address?    (boolean (rf/sub [:wallet/valid-ens-or-address?]))
-            local-suggestions        (rf/sub [:wallet/local-suggestions])
-            local-suggestion-address (:full-address (first local-suggestions))
-            {:keys [color]}          (rf/sub [:wallet/current-viewing-account])]
+            local-suggestion-address (rf/sub [:wallet/local-suggestions->full-address])
+            color                    (rf/sub [:wallet/current-viewing-account->color])]
         [floating-button-page/view
          {:footer-container-padding 0
           :header                   [account-switcher/view
@@ -170,9 +168,8 @@
                                         :disabled?           (not valid-ens-or-address?)
                                         :on-press            #(rf/dispatch
                                                                [:wallet/select-send-address
-                                                                {:address (if local-suggestion-address
-                                                                            local-suggestion-address
-                                                                            @input-value)
+                                                                {:address (or local-suggestion-address
+                                                                              @input-value)
                                                                  :stack-id
                                                                  :screen/wallet.select-address}])
                                         :customization-color color}

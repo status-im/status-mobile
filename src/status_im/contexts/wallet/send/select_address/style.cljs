@@ -15,3 +15,7 @@
   {:justify-self      :flex-end
    :margin-bottom     20
    :margin-horizontal 20})
+
+(def network-text-container
+  {:padding-horizontal 12
+   :padding-top        4})

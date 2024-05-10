@@ -92,3 +92,24 @@
             {:network          %
              :testnet-enabled? testnet-enabled?
              :goerli-enabled?  goerli-enabled?})))))
+
+(def network->short-name
+  {constants/mainnet-network-name  constants/mainnet-short-name
+   constants/optimism-network-name constants/optimism-short-name
+   constants/arbitrum-network-name constants/arbitrum-short-name
+   constants/ethereum-network-name constants/ethereum-short-name})
+
+(def short-name->network
+  {constants/mainnet-short-name  constants/mainnet-network-name
+   constants/optimism-short-name constants/optimism-network-name
+   constants/arbitrum-short-name constants/arbitrum-network-name})
+
+(defn short-names->network-preference-prefix
+  [short-names]
+  (str (string/join ":" short-names) ":"))
+
+(defn network-preference-prefix->network-names
+  [prefix]
+  (as-> prefix $
+    (string/split $ ":")
+    (map short-name->network $)))

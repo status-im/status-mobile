@@ -330,8 +330,13 @@
                       [{:type         item-types/address
                         :ens          ens
                         :address      (eip55/address->checksum result)
-                        :networks     [:ethereum :optimism]
-                        :full-address (str "eth:opt:" (eip55/address->checksum result))}]
+                        :networks     [constants/ethereum-network-name constants/optimism-network-name]
+                        :full-address (str (network-utils/short-names->network-preference-prefix
+                                            [(get network-utils/network->short-name
+                                                  constants/ethereum-network-name)
+                                             (get network-utils/network->short-name
+                                                  constants/optimism-network-name)])
+                                           (eip55/address->checksum result))}]
                       [])]
      {:db (-> db
               (assoc-in [:wallet :ui :search-address :local-suggestions] suggestion)
