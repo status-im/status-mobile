@@ -85,7 +85,6 @@
      [tokens-loading?])
     [rn/view {:style (style/home-container)}
      [common.top-nav/view]
-<<<<<<< HEAD
      [refreshable-flat-list/view
 <<<<<<< HEAD
       {:refresh-control         [rn/refresh-control
@@ -134,6 +133,7 @@
        :data                  []
        :render-fn             #()
        :footer                [tabs/view {:selected-tab selected-tab}]}]]))
+<<<<<<< HEAD
 =======
      [rn/view
       [quo/wallet-overview
@@ -163,3 +163,5 @@
      [tabs/view {:selected-tab selected-tab}]]))
 >>>>>>> f39e5bfea (lint)
 >>>>>>> 347001b89 (lint)
+=======
+>>>>>>> 5f9b023ce (lint)
