@@ -9,18 +9,24 @@
             [status-im.contexts.profile.settings.list-items :as settings.items]
             [status-im.contexts.profile.settings.style :as style]
             [status-im.contexts.profile.utils :as profile.utils]
+            [status-im.feature-flags :as ff]
             [utils.debounce :as debounce]
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]))
 
-(defn- settings-item-view
+(defn show-settings-item?
+  [{:keys [feature-flag]}]
+  (or (ff/enabled? feature-flag)
+      (nil? feature-flag)))
+
+(defn- settings-category-view
   [data]
   [rf/delay-render
    [quo/category
     {:list-type       :settings
      :container-style {:padding-bottom 12}
      :blur?           true
-     :data            data}]])
+     :data            (filter show-settings-item? data)}]])
 
 (defn scroll-handler
   [event scroll-y]
@@ -52,8 +58,7 @@
         on-scroll           (rn/use-callback #(scroll-handler % scroll-y))]
     [quo/overlay {:type :shell}
      [rn/view
-      {:key   :header
-       :style (style/navigation-wrapper {:customization-color customization-color
+      {:style (style/navigation-wrapper {:customization-color customization-color
                                          :inset               (:top insets)
                                          :theme               theme})}
       [quo/page-nav
@@ -72,11 +77,10 @@
                                                 {:options {:message (:universal-profile-url
                                                                      profile)}}])}]}]]
      [rn/flat-list
-      {:key                             :list
-       :header                          [settings.header/view {:scroll-y scroll-y}]
+      {:header                          [settings.header/view {:scroll-y scroll-y}]
        :data                            (settings.items/items (boolean (:mnemonic profile)))
        :shows-vertical-scroll-indicator false
-       :render-fn                       settings-item-view
+       :render-fn                       settings-category-view
        :get-item-layout                 get-item-layout
        :footer                          [footer insets logout-press]
        :scroll-event-throttle           16
@@ -84,8 +88,7 @@
        :bounces                         false
        :over-scroll-mode                :never}]
      [quo/floating-shell-button
-      {:key :shell
-       :jump-to
+      {:jump-to
        {:on-press            #(rf/dispatch [:shell/navigate-to-jump-to])
         :customization-color customization-color
         :label               (i18n/label :t/jump-to)}}
