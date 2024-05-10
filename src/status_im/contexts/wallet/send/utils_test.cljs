@@ -344,6 +344,44 @@
                                                      :receiver-networks  receiver-networks
                                                      :token-networks-ids token-networks-ids
                                                      :to?                to?})]
+      (is (every? identity (map #(map/deep-compare %1 %2) expected result)))))
+
+  (testing "Does not assign :not-available type when to? is false"
+    (let [network-values     {"1" (money/bignumber "100")}
+          disabled-chain-ids ["10"]
+          receiver-networks  ["1"]
+          token-networks-ids ["1" "10"]
+          to?                false
+          expected           [{:chain-id     "1"
+                               :total-amount (money/bignumber "100")
+                               :type         :default}
+                              {:chain-id     "10"
+                               :total-amount (money/bignumber "0")
+                               :type         :disabled}]
+          result             (utils/network-amounts {:network-values     network-values
+                                                     :disabled-chain-ids disabled-chain-ids
+                                                     :receiver-networks  receiver-networks
+                                                     :token-networks-ids token-networks-ids
+                                                     :to?                to?})]
+      (is (every? identity (map #(map/deep-compare %1 %2) expected result)))))
+
+  (testing "Assigns :not-available type to networks not available in token-networks-ids when to? is true"
+    (let [network-values     {"1" (money/bignumber "100")}
+          disabled-chain-ids []
+          receiver-networks  ["1" "10"]
+          token-networks-ids ["1"]
+          to?                false
+          expected           [{:chain-id     "1"
+                               :total-amount (money/bignumber "100")
+                               :type         :default}
+                              {:chain-id     "10"
+                               :total-amount nil
+                               :type         :not-available}]
+          result             (utils/network-amounts {:network-values     network-values
+                                                     :disabled-chain-ids disabled-chain-ids
+                                                     :receiver-networks  receiver-networks
+                                                     :token-networks-ids token-networks-ids
+                                                     :to?                to?})]
       (is (every? identity (map #(map/deep-compare %1 %2) expected result))))))
 
 (deftest test-loading-network-amounts
@@ -410,6 +448,42 @@
           token-networks-ids ["1" "10" "42161"]
           to?                true
           expected           [{:chain-id "1" :type :loading}
+                              {:type :add}]
+          result             (utils/loading-network-amounts {:valid-networks     valid-networks
+                                                             :disabled-chain-ids disabled-chain-ids
+                                                             :receiver-networks  receiver-networks
+                                                             :token-networks-ids token-networks-ids
+                                                             :to?                to?})
+          comparisons        (map #(map/deep-compare %1 %2)
+                                  expected
+                                  result)]
+      (is (every? identity comparisons))))
+
+  (testing
+    "Assigns :not-available type to networks not available in token-networks-ids when to? is false"
+    (let [valid-networks     ["42161"]
+          disabled-chain-ids []
+          receiver-networks  ["1"]
+          token-networks-ids ["42161"]
+          to?                false
+          expected           [{:chain-id "42161" :type :loading}]
+          result             (utils/loading-network-amounts {:valid-networks     valid-networks
+                                                             :disabled-chain-ids disabled-chain-ids
+                                                             :receiver-networks  receiver-networks
+                                                             :token-networks-ids token-networks-ids
+                                                             :to?                to?})
+          comparisons        (map #(map/deep-compare %1 %2)
+                                  expected
+                                  result)]
+      (is (every? identity comparisons))))
+
+  (testing "Assigns :not-available type to networks not available in token-networks-ids when to? is true"
+    (let [valid-networks     ["42161"]
+          disabled-chain-ids []
+          receiver-networks  ["1"]
+          token-networks-ids ["42161"]
+          to?                true
+          expected           [{:chain-id "1" :type :not-available}
                               {:type :add}]
           result             (utils/loading-network-amounts {:valid-networks     valid-networks
                                                              :disabled-chain-ids disabled-chain-ids
