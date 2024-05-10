@@ -1147,10 +1147,13 @@ void _PollSignal(const FunctionCallbackInfo<Value>& args) {
         v8::Local<v8::Function> func = v8::Local<v8::Function>::Cast(args[0]);
         if (!q.empty()) {
           const unsigned argc = 1;
-          v8::Local<v8::Value> argv[argc] =
-          { v8::String::NewFromUtf8(isolate,q.front().c_str()).ToLocalChecked()};
-
-          func->Call(isolate->GetCurrentContext(), v8::Null(isolate), argc, argv);
+          v8::Local<v8::Value> argv[argc] = {v8::String::NewFromUtf8(isolate, q.front().c_str()).ToLocalChecked()};
+          v8::MaybeLocal<v8::Value> result = func->Call(isolate->GetCurrentContext(), v8::Null(isolate), argc, argv);
+          if (result.IsEmpty()) {
+            isolate->ThrowException(Exception::Error(
+                String::NewFromUtf8Literal(isolate, "Error calling the callback function")));
+            return;
+          }
           q.pop();
         }
 }
