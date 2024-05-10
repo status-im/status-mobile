@@ -128,6 +128,7 @@
        :auto-capitalize        :none
        :auto-correct           false
        :spell-check            false
+       :multiline              true
        :keyboard-appearance    theme
        :on-focus               on-focus
        :on-blur                on-blur

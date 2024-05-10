@@ -4,12 +4,13 @@
     [quo.foundations.colors :as colors]
     [react-native.platform :as platform]))
 
+(def ^:const input-height 24)
+
 (defn container
   [container-style]
   (merge {:padding-horizontal 20
           :padding-top        8
           :padding-bottom     16
-          :height             48
           :flex-direction     :row
           :align-items        :flex-start}
          container-style))
@@ -35,7 +36,8 @@
          :color        (colors/theme-colors colors/neutral-100 colors/white theme)
          :margin-top   (if platform/ios? 0 -4)
          :margin-right 8
-         :height       (if platform/ios? 24 40)))
+         :max-height   (+ (* input-height 2) (when platform/ios? 1))
+         :padding      0))
 
 (defn accessory-button
   [blur? theme]
