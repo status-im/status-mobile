@@ -2447,7 +2447,7 @@
     "opensea": "OpenSea",
     "mainnet": "Mainnet",
     "view-on-eth": "View on Etherscan",
-    "view-on-opt": "View on Optimism Explorer",
+    "view-on-oeth": "View on Optimism Explorer",
     "view-on-arb": "View on Arbiscan",
     "copy-address": "Copy address",
     "show-address-qr": "Show address QR",

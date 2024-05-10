@@ -27,8 +27,8 @@
                                 config/mainnet-chain-explorer-link
                                 address])}
        {:icon                :i/link
-        :accessibility-label :view-on-opt
-        :label               (i18n/label :t/view-on-opt)
+        :accessibility-label :view-on-oeth
+        :label               (i18n/label :t/view-on-oeth)
         :right-icon          :i/external
         :on-press            #(rf/dispatch
                                [:wallet/navigate-to-chain-explorer-from-bottom-sheet

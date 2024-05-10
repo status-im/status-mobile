@@ -12,7 +12,7 @@
                name              ""
                ens               ""
                test?             false
-               ;; the chain short names should be a string like eth: or eth:arb:opt:
+               ;; the chain short names should be a string like eth: or eth:arb:oeth:
                chain-short-names (str constants/mainnet-short-name ":")}}]]
    (let [address-to-save {:address           address
                           :name              name

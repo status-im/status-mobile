@@ -48,7 +48,7 @@
      (when show-optimism?
        [network-amount
         {:network  :optimism
-         :amount   (str (:amount optimism) " " (or (:token-symbol optimism) "OPT"))
+         :amount   (str (:amount optimism) " " (or (:token-symbol optimism) "OETH"))
          :divider? show-arbitrum?
          :theme    theme}])
      (when show-arbitrum?
