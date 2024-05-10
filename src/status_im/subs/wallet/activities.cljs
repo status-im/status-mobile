@@ -19,4 +19,5 @@
         (group-by (fn [{:keys [timestamp]}]
                     (datetime/timestamp->relative-short-date (* timestamp 1000))))
         (map (fn [[date activities]]
-               {:title date :data activities})))))
+               {:title date :data activities :timestamp (:timestamp (first activities))}))
+        (sort-by (fn [{:keys [timestamp]}] (- timestamp))))))
