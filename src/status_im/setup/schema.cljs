@@ -90,19 +90,12 @@
   manually call `setup!`, otherwise you won't see any changes. It is safe and
   even expected you will call `setup!` multiple times in REPLs."
   []
-  (try
-    (schema.registry/init-global-registry)
-    (register-schemas)
+  (schema.registry/init-global-registry)
+  (register-schemas)
 
-    ;; In theory not necessary, but sometimes in a REPL session the dev needs to
-    ;; call unstrument! manually.
-    (malli.instrument/unstrument!)
+  ;; In theory not necessary, but sometimes in a REPL session the dev needs to
+  ;; call unstrument! manually.
+  (malli.instrument/unstrument!)
 
-    (malli.dev/start! {:report (schema/reporter)})
-    (log/debug "Schemas initialized.")
-
-    ;; It is relatively easy to write invalid schemas, but we don't want to
-    ;; block the app from initializing if such errors happen, at least not until
-    ;; Malli matures in the project.
-    (catch js/Error e
-      (log/error "Failed to initialize schemas" {:error e}))))
+  (malli.dev/start! {:report (schema/reporter)})
+  (log/debug "Schemas initialized."))

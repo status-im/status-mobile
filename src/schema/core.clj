@@ -19,5 +19,5 @@
        (catch js/Error e#
          (taoensso.timbre/error "Failed to instrument function"
                                 {:symbol ~sym :error e#})
-         ~sym))
+         (throw e#)))
      ~sym))
