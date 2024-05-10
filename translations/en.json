@@ -2599,6 +2599,7 @@
     "key-name-error-special-char": "Special characters are not allowed",
     "key-name-error-too-short": "Key pair name must be at least {{count}} characters",
     "display": "Display",
+    "testnet-mode": "Testnet mode",
     "testnet-mode-enabled": "Testnet mode enabled",
     "online-community-member": "Online",
     "offline-community-member": "Offline",
