@@ -40,19 +40,19 @@
      {:icon                :i/arrow-up
       :label               (i18n/label :t/send-to-user {:user account-name})
       :on-press            not-implemented/alert
-      :accessibility-label :manage-notifications})
+      :accessibility-label :send-to-user})
    (when config/show-not-implemented-features?
      {:icon                :i/link
       :right-icon          :i/external
       :label               (i18n/label :t/view-address-on-website {:website "Etherscan"})
       :on-press            not-implemented/alert
-      :accessibility-label :manage-notifications})
+      :accessibility-label :view-address-on-etherscan})
    (when config/show-not-implemented-features?
      {:icon                :i/link
       :right-icon          :i/external
       :label               (i18n/label :t/view-address-on-website {:website "Optimistic"})
       :on-press            not-implemented/alert
-      :accessibility-label :manage-notifications})
+      :accessibility-label :view-address-on-optimistic})
    {:icon                :i/share
     :on-press            #(rf/dispatch
                            [:open-share
@@ -68,24 +68,24 @@
                                          :message   address
                                          :isNewTask true})}])
     :label               (i18n/label :t/share-address)
-    :accessibility-label :manage-notifications}
+    :accessibility-label :share-saved-address}
    {:icon                :i/qr-code
     :label               (i18n/label :t/show-address-qr)
     :on-press            (fn []
                            (rf/dispatch [:wallet/set-current-viewing-account address])
                            (rf/dispatch [:open-modal :screen/wallet.share-address {:status :share}]))
-    :accessibility-label :manage-notifications}
+    :accessibility-label :show-address-qr-code}
    (when config/show-not-implemented-features?
      {:icon                :i/edit
       :label               (i18n/label :t/edit-account)
       :on-press            #(rf/dispatch [:navigate-to :screen/wallet.edit-account])
-      :accessibility-label :manage-notifications})
+      :accessibility-label :edit-saved-address})
    (when config/show-not-implemented-features?
      {:icon                :i/delete
       :label               (i18n/label :t/remove-account)
       :on-press            not-implemented/alert
       :danger?             true
-      :accessibility-label :manage-notifications
+      :accessibility-label :remove-saved-address
       :add-divider?        true})])
 
 (defn- sample-options

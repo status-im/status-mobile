@@ -85,7 +85,7 @@
        :ens                 (:ens user-props)
        :address             (:address user-props)
        :customization-color (or (:customization-color user-props) :blue)
-       :chain-color-map     chain-color-map}]
+       :chain-color-map     (when chains chain-color-map)}]
      (when on-options-press
        [rn/pressable
         {:accessibility-label :options-button

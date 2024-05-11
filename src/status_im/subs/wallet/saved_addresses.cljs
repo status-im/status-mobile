@@ -22,6 +22,7 @@
    (->> saved-addresses
         vals
         flatten
+        (sort-by :name)
         (group-by #(string/upper-case (first (:name %))))
         (map (fn [[k v]]
                {:title k
