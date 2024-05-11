@@ -1,0 +1,9 @@
+{
+    "_comment": "THIS SHOULD NOT BE EDITED BY HAND.",
+    "_comment": "Instead use: scripts/update-status-go.sh <rev>",
+    "owner": "status-im",
+    "repo": "status-go",
+    "version": "add-emoji-to-saved-addresses",
+    "commit-sha1": "5c1ae90fa682ffb236f35b71c4d2911455bea8ce",
+    "src-sha256": "12xfsxdyclz8mx4qm6lywcbzqkxmrspni44450cqsa5qspdhdrxq"
+}
