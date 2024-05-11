@@ -2613,5 +2613,11 @@
     "scanning-for-activity": "Scanning for activity...",
     "send-community-link": "Send community link",
     "at-least-one-network-must-be-activated": "At least 1 network must be activated",
-    "status-is-a-secure-messaging-app": "Status is a secure messaging app, crypto wallet and web3 browser built with the state of the art technology"
+    "status-is-a-secure-messaging-app": "Status is a secure messaging app, crypto wallet and web3 browser built with the state of the art technology",
+    "send-to-user": "Send to {{user}}",
+    "view-address-on-website": "View address on {{website}}",
+    "saved-address-removed": "Saved address removed",
+    "remove-address": "Remove address",
+    "remove-saved-address-description": "Transaction history relating to this address will no longer be labelled ‘{{name}}’.",
+    "remove-saved-address": "Remove saved address"
 }

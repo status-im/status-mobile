@@ -34,8 +34,44 @@
      :add-divider?        add-divider?
      :accessibility-label accessibility-label}))
 
+(defn- remove-account
+  [address account-name customization-color]
+  (rf/dispatch [:hide-bottom-sheet])
+  (rf/dispatch
+   [:show-bottom-sheet
+    {:theme   :dark
+     :content (fn []
+                [:<>
+                 [quo/drawer-top
+                  {:title               (i18n/label :t/remove-saved-address)
+                   :customization-color customization-color}]
+                 [quo/context-tag
+                  {:type                :default
+                   :customization-color customization-color
+                   :size                24
+                   :full-name           account-name
+                   :container-style     {:padding-horizontal 20
+                                         :margin-bottom      16}}]
+                 [quo/text
+                  {:style {:padding-horizontal 20
+                           :margin-bottom      8}}
+                  (i18n/label :t/remove-saved-address-description {:name account-name})]
+                 [quo/bottom-actions
+                  {:actions          :two-actions
+                   :button-one-label (i18n/label :t/remove)
+                   :button-one-props {:on-press (fn []
+                                                  (rf/dispatch [:wallet/delete-saved-address
+                                                                {:address address
+                                                                 :toast-message
+                                                                 (i18n/label :t/saved-address-removed)
+                                                                 :test? false}]))
+                                      :type     :danger}
+                   :button-two-label (i18n/label :t/cancel)
+                   :button-two-props {:on-press #(rf/dispatch [:hide-bottom-sheet])
+                                      :type     :grey}}]])}]))
+
 (defn- options
-  [account-name address]
+  [account-name address customization-color]
   [(when config/show-not-implemented-features?
      {:icon                :i/arrow-up
       :label               (i18n/label :t/send-to-user {:user account-name})
@@ -82,26 +118,27 @@
       :accessibility-label :edit-saved-address})
    (when config/show-not-implemented-features?
      {:icon                :i/delete
-      :label               (i18n/label :t/remove-account)
-      :on-press            not-implemented/alert
+      :label               (i18n/label :t/remove-address)
+      :on-press            #(remove-account address account-name customization-color)
       :danger?             true
       :accessibility-label :remove-saved-address
       :add-divider?        true})])
 
 (defn- sample-options
-  [account-name address]
-  (keep option (options account-name address)))
+  [account-name address customization-color]
+  (keep option (options account-name address customization-color)))
 
 (defn- account-sheet
-  [address account-name]
+  [address account-name customization-color]
   [quo/action-drawer
-   [(sample-options account-name address)]])
+   [(sample-options account-name address customization-color)]])
 
 (defn- on-press-saved-address
   [{:keys [address account-name ens-name customization-color]}]
   (rf/dispatch
    [:show-bottom-sheet
-    {:selected-item (fn []
+    {:theme         :dark
+     :selected-item (fn []
                       [quo/saved-address
                        {:active-state? false
                         :user-props    {:name                account-name
@@ -110,7 +147,7 @@
                                         :customization-color customization-color}}])
      :content       (fn []
                       [account-sheet
-                       address account-name])}]))
+                       address account-name customization-color])}]))
 
 (defn- saved-address
   [{:keys        [address colorId _chain-short-names _test? ens?]
@@ -128,8 +165,7 @@
 (defn- header
   [{:keys [title]}]
   [quo/divider-label
-   {:container-style {:border-top-color colors/white-opa-5
-                      :margin-top       16}}
+   {:container-style {:border-top-color colors/white-opa-5}}
    title])
 
 (defn- footer
@@ -163,7 +199,6 @@
         :right               :action
         :customization-color customization-color
         :icon                :i/add}]]
-
      [rn/section-list
       {:key-fn                         :title
        :sticky-section-headers-enabled false
