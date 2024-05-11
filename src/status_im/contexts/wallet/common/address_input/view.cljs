@@ -4,7 +4,7 @@
             [react-native.clipboard :as clipboard]
             [react-native.core :as rn]
             [reagent.core :as reagent]
-            [status-im.contexts.wallet.address-input.style :as style]
+            [status-im.contexts.wallet.common.address-input.style :as style]
             [utils.debounce :as debounce]
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]))
