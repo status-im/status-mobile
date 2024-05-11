@@ -1,7 +1,7 @@
 const WebSocket = require('ws');
 const { NativeModules } = require('react-native');
 
-require('@react-native-async-storage/async-storage/jest/async-storage-mock');
+mockAsyncStorage = require('@react-native-async-storage/async-storage/jest/async-storage-mock');
 require('react-native-gesture-handler/jestSetup');
 require('react-native-reanimated/src/reanimated2/jestUtils').setUpTests();
 

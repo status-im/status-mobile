@@ -365,23 +365,21 @@
           :sub-label           nil
           :chevron?            false}))
 
-;; TODO(OmarBasem): to be implemented.
 (defn add-members-entry
-  []
+  [chat-id]
   (entry {:icon                :i/add-user
           :label               (i18n/label :t/add-members)
-          :on-press            #(js/alert "TODO: to be implemented")
+          :on-press            #(rf/dispatch [:open-modal :group-add-manage-members chat-id])
           :danger?             false
           :accessibility-label :add-members
           :sub-label           nil
           :chevron?            false}))
 
-;; TODO(OmarBasem): to be implemented.
 (defn manage-members-entry
-  []
+  [chat-id]
   (entry {:icon                :i/add-user
           :label               (i18n/label :t/manage-members)
-          :on-press            #(js/alert "TODO: to be implemented")
+          :on-press            #(rf/dispatch [:open-modal :group-add-manage-members chat-id])
           :danger?             false
           :accessibility-label :manage-members
           :sub-label           nil
@@ -435,11 +433,8 @@
         admin?          (get admins current-pub-key)]
     [(group-details-entry chat-id)
      (when inside-chat?
-       (if admin?
-         (when config/show-not-implemented-features?
-           (manage-members-entry))
-         (when config/show-not-implemented-features?
-           (add-members-entry))))
+       (when admin?
+         (manage-members-entry chat-id)))
      (when (and admin? inside-chat?)
        (when config/show-not-implemented-features?
          (edit-group-entry)))

@@ -2484,6 +2484,7 @@
     "address-no-activity": "This address has no activity",
     "scanning": "Scanning for activity...",
     "keypairs": "Key pairs",
+    "keypairs-and-accounts": "Key pairs and accounts",
     "keypairs-accounts-and-addresses": "Key pairs, accounts and addresses",
     "keypairs-description": "Select key pair to derive your new account from",
     "confirm-account-origin": "Confirm account origin",
@@ -2611,5 +2612,6 @@
     "this-address-has-activity": "This address has activity",
     "scanning-for-activity": "Scanning for activity...",
     "send-community-link": "Send community link",
-    "at-least-one-network-must-be-activated": "At least 1 network must be activated"
+    "at-least-one-network-must-be-activated": "At least 1 network must be activated",
+    "status-is-a-secure-messaging-app": "Status is a secure messaging app, crypto wallet and web3 browser built with the state of the art technology"
 }

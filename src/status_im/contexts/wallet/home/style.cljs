@@ -1,5 +1,6 @@
 (ns status-im.contexts.wallet.home.style
   (:require
+    [quo.foundations.colors :as colors]
     [react-native.safe-area :as safe-area]))
 
 (def tabs
@@ -22,3 +23,7 @@
   []
   {:margin-top (+ (safe-area/get-top) 8)
    :flex       1})
+
+(defn header-container
+  [theme]
+  {:background-color (colors/theme-colors colors/white colors/neutral-95 theme)})

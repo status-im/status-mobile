@@ -24,7 +24,7 @@
               :color      (colors/theme-colors colors/neutral-50 colors/neutral-40 theme)}} text]])
 
 (defn view
-  [{:keys [buy-action send-action receive-action bridge-action container-style]}]
+  [{:keys [buy-action send-action receive-action bridge-action swap-action container-style]}]
   (let [theme (quo.theme/use-theme)]
     [rn/view {:style container-style}
      [rn/view {:style style/inner-container}
@@ -46,6 +46,13 @@
         :on-press            receive-action
         :theme               theme
         :accessibility-label :receive}]
+      (when swap-action
+        [action-button
+         {:icon                :i/swap
+          :text                (i18n/label :t/swap)
+          :on-press            swap-action
+          :theme               theme
+          :accessibility-label :swap}])
       [action-button
        {:icon                :i/bridge
         :text                (i18n/label :t/bridge)

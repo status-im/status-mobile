@@ -554,6 +554,109 @@
      (= keypairs
         (rf/sub [sub-name])))))
 
+(def chat-account
+  {:path                "m/43'/60'/1581'/0'/0"
+   :emoji               ""
+   :key-uid             "abc"
+   :address             "address-1"
+   :color-id            ""
+   :wallet              false
+   :name                "My Profile"
+   :type                "generated"
+   :chat                true
+   :customization-color :blue
+   :hidden              false
+   :removed             false})
+
+(def wallet-account
+  {:path                "m/44'/60'/0'/0/0"
+   :emoji               "🤡"
+   :key-uid             "abc"
+   :address             "address-2"
+   :wallet              true
+   :name                "My Account"
+   :type                "generated"
+   :chat                false
+   :customization-color :primary
+   :hidden              false
+   :removed             false})
+
+(def keypairs-accounts
+  {:key-uid  "abc"
+   :name     "My Profile"
+   :type     "profile"
+   :accounts []})
+
+(h/deftest-sub :wallet/settings-keypairs-accounts
+  [sub-name]
+  (testing "returns formatted key-pairs and accounts"
+    (swap! rf-db/app-db
+      assoc-in
+      [:wallet :keypairs]
+      [(assoc keypairs-accounts
+              :accounts
+              [wallet-account])])
+
+    (let [{:keys [customization-color name address emoji]} wallet-account]
+      (is
+       (match? [{:name     (:name keypairs-accounts)
+                 :type     (keyword (:type keypairs-accounts))
+                 :accounts [{:account-props {:customization-color customization-color
+                                             :size                32
+                                             :emoji               emoji
+                                             :type                :default
+                                             :name                name
+                                             :address             address}
+                             :networks      []
+                             :state         :default
+                             :action        :none}]}]
+               (rf/sub [sub-name])))))
+
+  (testing "allows for passing account format options"
+    (swap! rf-db/app-db
+      assoc-in
+      [:wallet :keypairs]
+      [(assoc keypairs-accounts
+              :accounts
+              [wallet-account])])
+
+    (let [{:keys [customization-color
+                  name
+                  address
+                  emoji]} wallet-account
+          network-options [{:network-name :ethereum :short-name "eth"}
+                           {:network-name :optimism :short-name "opt"}
+                           {:network-name :arbitrum :short-name "arb1"}]
+          size-option     20]
+      (is
+       (match? [{:name     (:name keypairs-accounts)
+                 :type     (keyword (:type keypairs-accounts))
+                 :accounts [{:account-props {:customization-color customization-color
+                                             :size                size-option
+                                             :emoji               emoji
+                                             :type                :default
+                                             :name                name
+                                             :address             address}
+                             :networks      network-options
+                             :state         :default
+                             :action        :none}]}]
+               (rf/sub [sub-name
+                        {:networks network-options
+                         :size     size-option}])))))
+
+  (testing "filters non-wallet accounts"
+    (swap! rf-db/app-db
+      assoc-in
+      [:wallet :keypairs]
+      [(assoc keypairs-accounts
+              :accounts
+              [chat-account])])
+    (is
+     (match? [{:name     (:name keypairs-accounts)
+               :type     (keyword (:type keypairs-accounts))
+               :accounts []}]
+             (rf/sub [sub-name])))))
+
 (def local-suggestions ["a" "b"])
 
 (h/deftest-sub :wallet/local-suggestions
