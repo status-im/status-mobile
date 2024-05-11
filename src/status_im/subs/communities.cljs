@@ -433,5 +433,13 @@
  (fn [[_ community-id]]
    [(re-frame/subscribe [:communities/community community-id])])
  (fn [{:keys [token-permissions joined] :as community}]
-   (or joined
-       (and (not joined) (empty? token-permissions) (seq community)))))
+   (let [token-permission-to-become-member-or-admin (->> token-permissions
+                                                         (into {})
+                                                         vals
+                                                         (some (fn [{community-permission-type :type}]
+                                                                 (boolean
+                                                                  (constants/community-role-permissions
+                                                                   community-permission-type)))))]
+     (or joined
+         (and (not joined) (empty? token-permissions) (seq community))
+         (not token-permission-to-become-member-or-admin)))))
