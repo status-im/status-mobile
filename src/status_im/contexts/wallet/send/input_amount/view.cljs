@@ -94,7 +94,7 @@
         :color colors/danger-50}]]
      [rn/view {:style style/token-not-available-content-container}
       [quo/text
-       {:style style/token-not-available-text
+       {:style (style/token-not-available-text theme)
         :size  :paragraph-2}
        (i18n/label :t/token-not-available-on-receiver-networks {:token-symbol token-symbol})]
       [quo/button
