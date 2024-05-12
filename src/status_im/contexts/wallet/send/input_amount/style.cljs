@@ -55,8 +55,7 @@
   {:margin-left 8
    :align-items :flex-start})
 
-(defn token-not-available-text
-  [theme]
+(def token-not-available-text
   {:height 36
    :flex   1
-   :color  (colors/resolve-color :danger theme 50)})
+   :color  colors/danger-50})
