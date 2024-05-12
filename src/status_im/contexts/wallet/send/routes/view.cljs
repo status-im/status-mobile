@@ -188,10 +188,11 @@
       [render-network-values
        {:token-symbol                              token-symbol
         :network-values                            sender-network-values
-        :on-press                                  #(disable-chain
-                                                     %1
-                                                     disabled-from-chain-ids
-                                                     token-available-networks-for-suggested-routes)
+        :on-press                                  (fn [chain-id-to-disable]
+                                                     (disable-chain
+                                                      chain-id-to-disable
+                                                      disabled-from-chain-ids
+                                                      token-available-networks-for-suggested-routes))
         :receiver?                                 false
         :theme                                     theme
         :loading-routes?                           loading-routes?
