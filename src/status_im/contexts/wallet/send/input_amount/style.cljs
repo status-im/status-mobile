@@ -40,11 +40,12 @@
    :width       "100%"
    :align-items :center})
 
-(def token-not-available-container
+(defn token-not-available-container
+  [theme]
   {:height            90
    :flex-direction    :row
-   :background-color  colors/danger-opa-5
-   :border-color      colors/danger-opa-10
+   :background-color  (colors/resolve-color :danger theme 5)
+   :border-color      (colors/resolve-color :danger theme 10)
    :border-width      1
    :border-radius     12
    :margin-horizontal 20
@@ -54,7 +55,8 @@
   {:margin-left 8
    :align-items :flex-start})
 
-(def token-not-available-text
+(defn token-not-available-text
+  [theme]
   {:height 36
    :flex   1
-   :color  colors/danger-50})
+   :color  (colors/resolve-color :danger theme 50)})

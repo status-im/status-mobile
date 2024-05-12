@@ -58,12 +58,12 @@
                                                                  chain-ids]))}])}])))
 
 (defn render-network-values
-  [{:keys [network-values token-symbol on-press to? loading-routes?
+  [{:keys [network-values token-symbol on-press receiver? loading-routes?
            token-not-supported-in-receiver-networks?]}]
   [rn/view
    (map-indexed (fn [index {:keys [chain-id total-amount type]}]
                   [rn/view
-                   {:key   (str (if to? "to" "from") "-" chain-id)
+                   {:key   (str (if receiver? "to" "from") "-" chain-id)
                     :style {:margin-top (if (pos? index) 11 7.5)}}
                    [quo/network-bridge
                     {:amount   (if (= type :not-available)
@@ -192,7 +192,7 @@
                                                      %1
                                                      disabled-from-chain-ids
                                                      token-available-networks-for-suggested-routes)
-        :to?                                       false
+        :receiver?                                 false
         :theme                                     theme
         :loading-routes?                           loading-routes?
         :token-not-supported-in-receiver-networks? false}]
@@ -203,7 +203,7 @@
        {:token-symbol                              token-symbol
         :network-values                            receiver-network-values
         :on-press                                  on-press-to-network
-        :to?                                       true
+        :receiver?                                 true
         :loading-routes?                           loading-routes?
         :theme                                     theme
         :token-not-supported-in-receiver-networks? token-not-supported-in-receiver-networks?

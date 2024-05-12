@@ -13,7 +13,7 @@
 
 (defn view
   [{:keys [title first-section-label second-section-label selected-networks
-           warning-label receiver-preferred-networks account watch-only?]}]
+           receiver-preferred-networks account watch-only?]}]
   (let [state                               (reagent/atom :default)
         {:keys [color address
                 network-preferences-names]} (or account (rf/sub [:wallet/current-viewing-account]))
@@ -37,7 +37,7 @@
                                               (if (= @state :default)
                                                 initial-network-preferences-names
                                                 @network-preferences-names-state))]
-    (fn [{:keys [on-save blur? button-label]}]
+    (fn [{:keys [on-save blur? button-label warning-label]}]
       (let [theme                            (quo.theme/use-theme)
             network-details                  (rf/sub [:wallet/network-details])
             first-section-networks           (filter (fn [network]
@@ -103,6 +103,7 @@
                                                         :color            color
                                                         :normal-checkbox? receiver?
                                                         :networks         (get-current-preferences-names)
+                                                        :type             :checkbox
                                                         :on-change        #(toggle-network (:network-name
                                                                                             network))}))
                             first-section-networks)}]
@@ -128,6 +129,7 @@
                                                           :color color
                                                           :normal-checkbox? receiver?
                                                           :networks (get-current-preferences-names)
+                                                          :type :checkbox
                                                           :on-change #(toggle-network (:network-name
                                                                                        network))}))
                               second-section-networks)}])
@@ -150,4 +152,4 @@
                               :on-press            (fn []
                                                      (let [chain-ids (map :chain-id current-networks)]
                                                        (on-save chain-ids)))
-                              :customization-color (or color :blue)}}]]))))
+                              :customization-color color}}]]))))

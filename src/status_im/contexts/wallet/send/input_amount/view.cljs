@@ -3,6 +3,7 @@
     [clojure.string :as string]
     [quo.core :as quo]
     [quo.foundations.colors :as colors]
+    [quo.theme]
     [react-native.core :as rn]
     [react-native.safe-area :as safe-area]
     [reagent.core :as reagent]
@@ -81,18 +82,19 @@
 
 (defn- token-not-available
   [token-symbol receiver-networks token-networks]
-  (let [add-token-networks (fn []
+  (let [theme              (quo.theme/use-theme)
+        add-token-networks (fn []
                              (let [chain-ids (concat receiver-networks
                                                      (mapv #(:chain-id %) token-networks))]
                                (rf/dispatch [:wallet/update-receiver-networks chain-ids])))]
-    [rn/view {:style style/token-not-available-container}
+    [rn/view {:style (style/token-not-available-container theme)}
      [rn/view
       [quo/icon :i/alert
        {:size  16
         :color colors/danger-50}]]
      [rn/view {:style style/token-not-available-content-container}
       [quo/text
-       {:style style/token-not-available-text
+       {:style (style/token-not-available-text theme)
         :size  :paragraph-2}
        (i18n/label :t/token-not-available-on-receiver-networks {:token-symbol token-symbol})]
       [quo/button
