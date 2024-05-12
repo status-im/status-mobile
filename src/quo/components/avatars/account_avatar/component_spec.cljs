@@ -13,7 +13,7 @@
 
   (h/test "with emoji"
     (let [emoji "💸"]
-      (h/render [account-avatar/view {:emoji emoji :size 80}])
+      (h/render [account-avatar/view {:emoji emoji :size 80 :emoji? :true}])
       (h/is-truthy (h/query-by-label-text :account-avatar))
       (h/is-truthy (h/query-by-label-text :account-emoji))
       (h/is-truthy (h/query-by-text emoji))))
@@ -22,7 +22,8 @@
     (let [opts {:emoji               "🏝️"
                 :size                80
                 :type                :default
-                :customization-color :blue}]
+                :customization-color :blue
+                :emoji?              true}]
       (h/render [account-avatar/view opts])
       (h/is-truthy (h/query-by-label-text :account-avatar))
       (h/has-style (h/get-by-label-text :account-avatar)
@@ -39,7 +40,8 @@
     (let [opts {:emoji               "💵"
                 :size                48
                 :type                :watch-only
-                :customization-color :purple}]
+                :customization-color :purple
+                :emoji?              true}]
       (h/render [account-avatar/view opts])
       (h/is-truthy (h/query-by-label-text :account-avatar))
       (h/has-style
@@ -58,7 +60,8 @@
     (let [opts {:emoji               "🏝️"
                 :size                28
                 :type                :default
-                :customization-color :turquoise}]
+                :customization-color :turquoise
+                :emoji?              true}]
       (h/render [account-avatar/view opts])
       (h/is-truthy (h/query-by-label-text :account-avatar))
       (h/has-style (h/get-by-label-text :account-avatar)
@@ -75,7 +78,8 @@
     (let [opts {:emoji               "🎉"
                 :size                16
                 :type                :watch-only
-                :customization-color :copper}]
+                :customization-color :copper
+                :emoji?              true}]
       (h/render [account-avatar/view opts])
       (h/is-truthy (h/query-by-label-text :account-avatar))
       (h/has-style

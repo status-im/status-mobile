@@ -51,7 +51,8 @@
                  button-label]} :confirm-screen-props} (rf/sub [:wallet/currently-added-address])
         [account-name on-change-name]                  (rn/use-state "")
         [account-color on-change-color]                (rn/use-state (rand-nth colors/account-colors))
-        [selected-networks set-selected-networks]      (rn/use-state (set constants/default-network-names))]
+        [selected-networks set-selected-networks]      (rn/use-state (set
+                                                                      constants/default-network-names))]
     [:<>
      [rn/view {:style style/save-address-drawer-bar-container}
       [quo/drawer-bar]]

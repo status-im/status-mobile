@@ -19,8 +19,9 @@
    
     :theme - keyword -> :light/:dark"
   [{:keys [size emoji account-name-initials emoji?]
-    :or   {size  style/default-size
-           emoji "🍑"}
+    :or   {size   style/default-size
+           emoji  "🍑"
+           emoji? true}
     :as   opts}]
   (let [theme      (quo.theme/use-theme)
         emoji-size (style/get-emoji-size size)]
