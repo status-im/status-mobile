@@ -33,6 +33,8 @@
                                             args-with-biometric-btn])
              :on-success     #(rf/dispatch [:standard-auth/on-biometric-success on-auth-success])
              :on-fail        (fn [err]
+                               (rf/dispatch [:standard-auth/authorize-with-password
+                                             args-with-biometric-btn])
                                (when on-auth-fail (on-auth-fail err))
                                (rf/dispatch [:standard-auth/on-biometric-fail err]))}]]]}))
 
