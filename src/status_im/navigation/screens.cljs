@@ -560,7 +560,7 @@
    (when config/quo-preview-enabled?
      status-im-preview/main-screens)
 
-   (when true
+   (when config/quo-preview-enabled?
      [{:name      :feature-flags
        :options   {:insets {:top? true}}
        :component feature-flags/view}])))

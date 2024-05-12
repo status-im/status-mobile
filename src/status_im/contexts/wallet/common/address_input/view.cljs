@@ -5,6 +5,7 @@
             [react-native.core :as rn]
             [reagent.core :as reagent]
             [status-im.contexts.wallet.common.address-input.style :as style]
+            [status-im.contexts.wallet.utils :as wallet.utils]
             [utils.debounce :as debounce]
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]))
@@ -24,13 +25,12 @@
                           (set-validation-message (validate new-text))
                           (set-input-value new-text)
                           (reagent/flush)
-                          (if (and (not-empty new-text) (nil? (validate new-text)))
+                          (if (and (not (string/blank? new-text)) (nil? (validate new-text)))
                             (debounce/debounce-and-dispatch [:wallet/get-address-details new-text]
                                                             500)
                             (rf/dispatch [:wallet/clear-address-activity]))
                           (when (and scanned-address (not= scanned-address new-text))
-                            (rf/dispatch [:wallet/clear-address-activity])
-                            (rf/dispatch [:wallet/clean-scanned-address])))
+                            (wallet.utils/clear-activity-and-scanned-address)))
         paste-on-input  #(clipboard/get-string
                           (fn [clipboard-text]
                             (on-change-text clipboard-text)))]

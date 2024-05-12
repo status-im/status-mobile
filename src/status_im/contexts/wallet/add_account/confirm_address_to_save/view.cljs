@@ -16,7 +16,7 @@
 
 (def ^:const sheet-closing-delay 750)
 
-(defn- on-success-confirm-address
+(defn- on-success-confirm-address-to-save
   [theme]
   (rf/dispatch [:navigate-back])
   (debounce/debounce-and-dispatch
@@ -30,7 +30,7 @@
              :t/address-saved)}]
    sheet-closing-delay))
 
-(defn- on-press-confirm-address
+(defn- on-press-confirm-address-to-save
   [{:keys [account-name account-emoji account-color address ens? theme]}]
   (rf/dispatch
    [:wallet/save-address
@@ -39,7 +39,7 @@
      :customization-color account-color
      :account-emoji       account-emoji
      :ens                 (when ens? address)
-     :on-success          #(on-success-confirm-address theme)}]))
+     :on-success          #(on-success-confirm-address-to-save theme)}]))
 
 (defn view
   []
@@ -70,7 +70,7 @@
         :bottom-action-props {:customization-color account-color
                               :disabled?           (string/blank? account-name)
                               :accessibility-label :confirm-button-label
-                              :on-press            #(on-press-confirm-address
+                              :on-press            #(on-press-confirm-address-to-save
                                                      {:ens?                   ens?
                                                       :adding-address-purpose adding-address-purpose
                                                       :account-name           account-name
@@ -91,8 +91,6 @@
          :custom-subtitle (fn []
                             [quo/text
                              {:size   :paragraph-2
-                              ;; TODO: monospace font
-                              ;; https://github.com/status-im/status-mobile/issues/17009
                               :weight :monospace}
                              address])
          :container-style style/data-item

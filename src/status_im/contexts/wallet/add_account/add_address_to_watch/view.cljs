@@ -26,18 +26,17 @@
   (let [addresses (rf/sub [:wallet/lowercased-addresses])
         {:keys [title description input-title adding-address-purpose accessibility-label]}
         (rf/sub [:wallet/currently-added-address])
-        validate #(wallet.utils/validate-fn % addresses true)
+        validate #(wallet.utils/validate-fn % addresses)
         customization-color (rf/sub [:profile/customization-color])]
-    (rf/dispatch [:wallet/clean-scanned-address])
-    (rf/dispatch [:wallet/clear-address-activity])
+    (rn/use-unmount #(wallet.utils/clear-activity-and-scanned-address))
     (fn []
       (let [activity-state                          (rf/sub [:wallet/watch-address-activity-state])
             validated-address                       (rf/sub [:wallet/watch-address-validated-address])
-            [input-value set-input-value]           (rn/use-state nil)
-            [validation-msg set-validation-message] (rn/use-state nil)
+            [input-value set-input-value]           (rn/use-state "")
+            [validation-msg set-validation-message] (rn/use-state "")
             clear-input                             (fn []
-                                                      (set-input-value nil)
-                                                      (set-validation-message nil)
+                                                      (set-input-value "")
+                                                      (set-validation-message "")
                                                       (wallet.utils/clear-activity-and-scanned-address))]
         [rn/view
          {:style {:flex 1}}

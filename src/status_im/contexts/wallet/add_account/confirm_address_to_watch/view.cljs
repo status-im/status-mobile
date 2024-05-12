@@ -70,7 +70,8 @@
          :custom-subtitle (fn []
                             [quo/text
                              {:size   :paragraph-2
-                              ;; TODO: monospace font
+                              ;; TODO: monospace font and check if it's needed in
+                              ;; add-address-to-save
                               ;; https://github.com/status-im/status-mobile/issues/17009
                               :weight :monospace}
                              address])

@@ -55,15 +55,15 @@
                                         :event :wallet/get-address-details})}]])]})))
 
 (defn add-address-to-watch
-  [{:keys [db]} [{:keys [screen] :as props}]]
-  {:fx [[:dispatch [:navigate-to screen props]]]
+  [{:keys [db]} [props]]
+  {:fx [[:dispatch [:navigate-to :screen/wallet.add-address-to-watch props]]]
    :db (assoc-in db [:wallet :ui :currently-added-address] props)})
 
 (rf/reg-event-fx :wallet/add-address-to-watch add-address-to-watch)
 
 (defn add-address-to-save
-  [{:keys [db]} [{:keys [screen] :as props}]]
-  {:fx [[:dispatch [:open-modal screen props]]]
+  [{:keys [db]} [props]]
+  {:fx [[:dispatch [:open-modal :screen/wallet.add-address-to-save props]]]
    :db (assoc-in db [:wallet :ui :currently-added-address] props)})
 
 (rf/reg-event-fx :wallet/add-address-to-save add-address-to-save)

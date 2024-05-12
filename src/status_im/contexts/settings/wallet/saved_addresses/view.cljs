@@ -5,6 +5,7 @@
             [react-native.safe-area :as safe-area]
             [status-im.common.resources :as resources]
             [status-im.contexts.settings.wallet.saved-addresses.style :as style]
+            [status-im.feature-flags :as ff]
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]))
 
@@ -19,7 +20,7 @@
 
 (defn on-press-add-saved-address
   []
-  (when true
+  (when (ff/enabled? ::ff/wallet.enable-saving-addresses)
     (rf/dispatch [:wallet/add-address-to-save
                   {:title                :t/add-address
                    :description          :t/save-address-description

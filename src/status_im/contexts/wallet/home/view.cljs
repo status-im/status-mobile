@@ -30,13 +30,11 @@
                                            :description :t/enter-eth
                                            :input-title :t/eth-or-ens
                                            :accessibility-label :add-address-to-watch
-                                           :screen :screen/wallet.add-address-to-watch
                                            :confirm-screen :screen/wallet.confirm-address
                                            :confirm-screen-props
                                            {:button-label :t/add-watched-address
                                             :address-type :t/watched-address
-                                            :placeholder
-                                            :t/default-watched-address-placeholder}}])
+                                            :placeholder  :t/default-watched-address-placeholder}}])
       :add-divider?        true}]]])
 
 (defn- new-account-card-data

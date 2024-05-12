@@ -34,8 +34,6 @@
                                                (map :short-name networks))
         address-text                         [text/text
                                               {:size   size
-                                               ;; TODO: monospace font
-                                               ;; https://github.com/status-im/status-mobile/issues/17009
                                                :weight (or weight :monospace)
                                                :style  (style/address-text format blur? theme)}
                                               (if (= format :short)
