@@ -2617,5 +2617,8 @@
     "at-least-one-network-must-be-activated": "At least 1 network must be activated",
     "status-is-a-secure-messaging-app": "Status is a secure messaging app, crypto wallet and web3 browser built with the state of the art technology",
     "save-address-description": "Paste, scan or type ETH address or ENS name",
-    "address-saved": "Address saved"
+    "address-saved": "Address saved",
+    "add-preferences": "Add preferences",
+    "add-network-preferences": "Add network preferences",
+    "add-saved-address-network-preferences-description": "Only change if you know which networks the address owner is happy to to receive funds on."
 }

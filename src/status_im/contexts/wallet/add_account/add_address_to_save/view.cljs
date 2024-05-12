@@ -23,7 +23,7 @@
 
 (defn view
   []
-  (let [addresses (rf/sub [:wallet/lowercased-addresses])
+  (let [addresses (rf/sub [:wallet/lowercased-saved-addresses])
         {:keys [title description input-title accessibility-label]}
         (rf/sub [:wallet/currently-added-address])
         validate #(wallet.utils/validate-fn % addresses)

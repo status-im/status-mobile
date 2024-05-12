@@ -56,23 +56,35 @@
 
 
 (defn root-container
-  [{:keys [type size customization-color]
+  [{:keys [type size customization-color emoji?]
     :or   {size                default-size
            customization-color :blue}}
    theme]
   (let [watch-only? (= type :watch-only)
         width       (cond-> size
                       (keyword? size) (container-size size))]
-    (cond-> {:width            width
-             :height           width
-             :background-color (colors/resolve-color customization-color theme)
-             :border-radius    (get-border-radius size)
-             :border-color     (colors/theme-colors colors/neutral-80-opa-5 colors/white-opa-5 theme)
-             :padding          (get-padding size)
-             :align-items      :center
-             :justify-content  :center}
+    (if emoji?
+      (cond-> {:width            width
+               :height           width
+               :background-color (colors/resolve-color customization-color theme)
+               :border-radius    (get-border-radius size)
+               :border-color     (colors/theme-colors colors/neutral-80-opa-5 colors/white-opa-5 theme)
+               :padding          (get-padding size)
+               :align-items      :center
+               :justify-content  :center}
 
-      watch-only?
-      (assoc :border-width     (get-border-width size)
-             :background-color (colors/resolve-color customization-color theme 10)))))
+        watch-only?
+        (assoc :border-width     (get-border-width size)
+               :background-color (colors/resolve-color customization-color theme 10)))
+      {:width            width
+       :height           width
+       :border-radius    width
+       :align-items      :center
+       :justify-content  :center
+       :color            (colors/resolve-color customization-color theme 60)
+       :background-color (colors/resolve-color customization-color theme 20)})))
+
+(defn account-name
+  [{:keys [customization-color theme]}]
+  {:color (colors/resolve-color customization-color theme 60)})
 

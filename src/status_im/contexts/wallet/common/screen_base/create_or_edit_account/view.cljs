@@ -1,5 +1,6 @@
 (ns status-im.contexts.wallet.common.screen-base.create-or-edit-account.view
-  (:require [quo.core :as quo]
+  (:require [clojure.string :as string]
+            [quo.core :as quo]
             [quo.theme]
             [react-native.core :as rn]
             [react-native.safe-area :as safe-area]
@@ -7,7 +8,8 @@
             [status-im.constants :as constants]
             [status-im.contexts.wallet.common.screen-base.create-or-edit-account.style :as style]
             [utils.i18n :as i18n]
-            [utils.re-frame :as rf]))
+            [utils.re-frame :as rf]
+            [utils.string]))
 
 (defn view
   [{:keys [page-nav-right-side placeholder account-name account-color account-emoji
@@ -23,7 +25,16 @@
                                  (merge {:size 40
                                          :type :primary}
                                         bottom-action-props)
-                                 (i18n/label bottom-action-label)])]
+                                 (i18n/label bottom-action-label)])
+        emoji?                (and account-emoji (fn? on-change-emoji))
+        account-name-initials (when-not emoji?
+                                (->> (string/split (if (string/blank? account-name)
+                                                     placeholder
+                                                     account-name)
+                                                   #" ")
+                                     (map (fn [segment]
+                                            (utils.string/get-initials segment 1)))
+                                     (apply str)))]
     [floating-button-page/view
      {:header                   [quo/page-nav
                                  {:type       :no-title
@@ -40,18 +51,21 @@
       [:<>
        [rn/view {:style style/account-avatar-container}
         [quo/account-avatar
-         {:customization-color account-color
-          :size                80
-          :emoji               account-emoji
-          :type                (if watch-only? :watch-only :default)}]
-        [quo/button
-         {:size            32
-          :type            :grey
-          :background      :photo
-          :icon-only?      true
-          :on-press        #(rf/dispatch [:emoji-picker/open {:on-select on-change-emoji}])
-          :container-style style/reaction-button-container}
-         :i/reaction]]
+         {:customization-color   account-color
+          :size                  80
+          :emoji                 account-emoji
+          :type                  (if watch-only? :watch-only :default)
+          :account-name-initials account-name-initials
+          :emoji?                emoji?}]
+        (when emoji?
+          [quo/button
+           {:size            32
+            :type            :grey
+            :background      :photo
+            :icon-only?      true
+            :on-press        #(rf/dispatch [:emoji-picker/open {:on-select on-change-emoji}])
+            :container-style style/reaction-button-container}
+           :i/reaction])]
        [quo/title-input
         {:placeholder     placeholder
          :max-length      constants/wallet-account-name-max-length

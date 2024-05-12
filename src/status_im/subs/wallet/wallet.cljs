@@ -225,6 +225,14 @@
    (map string/lower-case addresses)))
 
 (rf/reg-sub
+ :wallet/lowercased-saved-addresses
+ :<- [:wallet/saved-addresses]
+ (fn [saved-addresses]
+   (->> saved-addresses
+        keys
+        (map string/lower-case))))
+
+(rf/reg-sub
  :wallet/balances-in-selected-networks
  :<- [:wallet/accounts]
  :<- [:profile/currency]

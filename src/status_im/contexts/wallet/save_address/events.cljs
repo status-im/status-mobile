@@ -2,8 +2,10 @@
   (:require
     [clojure.set :as set]
     [clojure.string :as string]
+    [status-im.common.qr-codes.view :refer [get-network-short-name-url]]
     [status-im.constants :as constants]
     [status-im.contexts.wallet.common.utils :as wallet.utils]
+    [status-im.contexts.wallet.common.utils.networks :as network.utils]
     [utils.re-frame :as rf]))
 
 (def ^:private <-rpc-spec
@@ -45,7 +47,20 @@
 (rf/reg-event-fx
  :wallet/get-saved-addresses-success
  (fn [{:keys [db]} [saved-addresses]]
-   {:db (assoc-in db [:wallet :saved-addresses] (<-rpc saved-addresses))}))
+   {:db (assoc-in db [:wallet :saved-addresses] (group-by :address (<-rpc saved-addresses)))}))
+
+(rf/reg-event-fx
+ :wallet/update-current-address-to-save
+ (fn [{:keys [db]} [chain-ids]]
+   (let [chain-strings                (apply str
+                                             (map (comp get-network-short-name-url
+                                                        network.utils/id->network)
+                                                  chain-ids))
+         current-address-to-save-path [:wallet :ui :currently-added-address]
+         old-saved-address            (get-in db current-address-to-save-path)]
+     {:db (assoc-in db
+           current-address-to-save-path
+           (assoc old-saved-address :chainShortNames chain-strings))})))
 
 (rf/reg-event-fx
  :wallet/get-saved-addresses-error

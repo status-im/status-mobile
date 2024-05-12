@@ -30,7 +30,7 @@
                    :confirm-screen       :screen/wallet.confirm-address-to-save
                    :confirm-screen-props {:button-label :t/save-address
                                           :address-type :t/address
-                                          :placeholder  :t/saved-address}}])))
+                                          :placeholder  :t/address-name}}])))
 
 (defn view
   []
@@ -38,6 +38,7 @@
         customization-color (rf/sub [:profile/customization-color])
         saved-addresses?    (rf/sub [:wallet/saved-addresses?])
         navigate-back       (rn/use-callback #(rf/dispatch [:navigate-back]))]
+    (rn/use-mount #(rf/dispatch [:wallet/get-saved-addresses]))
     [quo/overlay
      {:type            :shell
       :container-style (style/page-wrapper inset-top)}

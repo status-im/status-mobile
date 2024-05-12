@@ -9,8 +9,8 @@
 
 (rf/reg-sub
  :wallet/saved-addresses?
- :<- [:wallet]
- (fn [{:keys [saved-addresses]}]
+ :<- [:wallet/saved-addresses]
+ (fn [saved-addresses]
    (-> saved-addresses seq boolean)))
 
 (rf/reg-sub

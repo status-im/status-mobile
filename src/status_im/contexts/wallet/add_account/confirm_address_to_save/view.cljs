@@ -5,11 +5,12 @@
     [quo.foundations.colors :as colors]
     [quo.theme]
     [react-native.core :as rn]
-    [status-im.common.emoji-picker.utils :as emoji-picker.utils]
-    [status-im.common.not-implemented :as not-implemented]
+    [status-im.constants :as constants]
     [status-im.contexts.wallet.add-account.confirm-address-to-save.style :as style]
     [status-im.contexts.wallet.common.screen-base.create-or-edit-account.view :as
      create-or-edit-account]
+    [status-im.contexts.wallet.common.utils.networks :as network-utils]
+    [status-im.contexts.wallet.sheets.network-preferences.view :as network-preferences]
     [utils.debounce :as debounce]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
@@ -31,13 +32,12 @@
    sheet-closing-delay))
 
 (defn- on-press-confirm-address-to-save
-  [{:keys [account-name account-emoji account-color address ens? theme]}]
+  [{:keys [account-name account-color address ens? theme]}]
   (rf/dispatch
    [:wallet/save-address
     {:address             address
      :name                account-name
      :customization-color account-color
-     :account-emoji       account-emoji
      :ens                 (when ens? address)
      :on-success          #(on-success-confirm-address-to-save theme)}]))
 
@@ -51,7 +51,7 @@
                  button-label]} :confirm-screen-props} (rf/sub [:wallet/currently-added-address])
         [account-name on-change-name]                  (rn/use-state "")
         [account-color on-change-color]                (rn/use-state (rand-nth colors/account-colors))
-        [account-emoji on-change-emoji]                (rn/use-state (emoji-picker.utils/random-emoji))]
+        [selected-networks set-selected-networks]      (rn/use-state (set constants/default-network-names))]
     [:<>
      [rn/view {:style style/save-address-drawer-bar-container}
       [quo/drawer-bar]]
@@ -59,11 +59,9 @@
       [create-or-edit-account/view
        {:placeholder         (i18n/label placeholder)
         :account-name        account-name
-        :account-emoji       account-emoji
         :account-color       account-color
         :on-change-name      on-change-name
         :on-change-color     on-change-color
-        :on-change-emoji     on-change-emoji
         :watch-only?         true
         :top-left-icon       :i/arrow-left
         :bottom-action-label button-label
@@ -74,7 +72,6 @@
                                                      {:ens?                   ens?
                                                       :adding-address-purpose adding-address-purpose
                                                       :account-name           account-name
-                                                      :account-emoji          account-emoji
                                                       :account-color          account-color
                                                       :address                address
                                                       :theme                  theme})}}
@@ -82,7 +79,6 @@
         {:card?           true
          :right-icon      :i/advanced
          :icon-right?     true
-         :emoji           account-emoji
          :title           (i18n/label address-type)
          :subtitle        address
          :status          :default
@@ -94,4 +90,26 @@
                               :weight :monospace}
                              address])
          :container-style style/data-item
-         :on-press        not-implemented/alert}]]]]))
+         :on-press        (rn/use-callback
+                           (fn []
+                             (let [on-save
+                                   (fn [chain-ids]
+                                     (rf/dispatch [:hide-bottom-sheet])
+                                     (set-selected-networks (set (map #(get network-utils/id->network %)
+                                                                      chain-ids)))
+                                     (rf/dispatch [:wallet/update-current-address-to-save chain-ids]))]
+                               (rf/dispatch [:show-bottom-sheet
+                                             {:content
+                                              (fn []
+                                                [network-preferences/view
+                                                 {:button-label (i18n/label :t/add-preferences)
+                                                  :sheet-title (i18n/label :t/add-network-preferences)
+                                                  :sheet-description
+                                                  (i18n/label
+                                                   :t/add-saved-address-network-preferences-description)
+                                                  :selected-networks selected-networks
+                                                  :account {:address address
+                                                            :color   account-color}
+                                                  :on-save on-save
+                                                  :watch-only? true}])}])))
+                           [selected-networks])}]]]]))
