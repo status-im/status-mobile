@@ -4,7 +4,7 @@
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]))
 
-(defn on-cancel-change
+(defn hide-bottom-sheet
   []
   (rf/dispatch [:hide-bottom-sheet]))
 
@@ -14,7 +14,7 @@
 
 (defn on-confirm-change
   [enable?]
-  (rf/dispatch [:hide-bottom-sheet])
+  (hide-bottom-sheet)
   (rf/dispatch [:profile.settings/profile-update :test-networks-enabled? enable? {:on-success logout}]))
 
 (defn testnet-mode-confirm-change-sheet
@@ -46,9 +46,9 @@
       {:title       (i18n/label :t/turn-on-testnet-mode)
        :description (i18n/label :t/testnet-mode-enable-description)
        :on-confirm  #(on-confirm-change enable?)
-       :on-cancel   on-cancel-change}]
+       :on-cancel   hide-bottom-sheet}]
      [testnet-mode-confirm-change-sheet
       {:title       (i18n/label :t/turn-off-testnet-mode)
        :description (i18n/label :t/testnet-mode-disable-description)
        :on-confirm  #(on-confirm-change enable?)
-       :on-cancel   on-cancel-change}])])
+       :on-cancel   hide-bottom-sheet}])])
