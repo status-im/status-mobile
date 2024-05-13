@@ -18,7 +18,8 @@
   [rn/view {:style style/header}
    [quo/text
     {:weight :semi-bold
-     :size   :heading-1} collectible-name]
+     :size   :heading-1}
+    collectible-name]
    [rn/view {:style style/collection-container}
     [rn/view {:style style/collection-avatar-container}
      [quo/collection-avatar {:image collection-image-url}]]
@@ -28,7 +29,7 @@
      collection-name]]])
 
 (defn cta-buttons
-  [{:keys [chain-id token-id contract-address watch-only?]}]
+  [{:keys [chain-id token-id contract-address collectible watch-only?]}]
   (let [theme (quo.theme/use-theme)]
     [rn/view {:style style/buttons-container}
      (when-not watch-only?
@@ -36,7 +37,11 @@
         {:container-style style/send-button
          :type            :outline
          :size            40
-         :icon-left       :i/send}
+         :icon-left       :i/send
+         :on-press        #(rf/dispatch
+                            [:wallet/set-collectible-to-send
+                             {:collectible    collectible
+                              :current-screen :screen/wallet.collectible}])}
         (i18n/label :t/send)])
      [quo/button
       {:container-style  style/opensea-button
@@ -134,7 +139,8 @@
            {:chain-id         chain-id
             :token-id         token-id
             :contract-address contract-address
-            :watch-only?      (:watch-only? collectible-owner)}]
+            :watch-only?      false ;(:watch-only? collectible-owner)
+            :collectible      collectible}]
           [quo/tabs
            {:size           32
             :style          style/tabs
