@@ -93,7 +93,7 @@ in stdenv.mkDerivation rec {
   NODE_OPTIONS = "--openssl-legacy-provider";
 
   phases = [
-    "shellHook" "unpackPhase" "secretsPhase" "buildPhase" "checkPhase" "installPhase"
+    "shellHook" "unpackPhase" "secretsPhase" "buildPhase" "videoSwapPhase" "checkPhase" "installPhase"
   ];
 
   # We use shellHook as a single place to setup env vars for both build derivation and shell
@@ -174,6 +174,34 @@ in stdenv.mkDerivation rec {
     pushd ./android
     ${adhocEnvVars} ${gradleCommand}
     popd > /dev/null
+  '';
+
+  # To reduce APK size by ~ 30 MB
+  doVideoSwap = gradleBuildType != "Debug";
+  videoSwapPhase = ''
+    apkPath="${apksPath}/app-${toLower gradleBuildType}-unsigned.apk"
+
+    tempDir=$(mktemp -d)
+    ${pkgs.unzip}/bin/unzip -q -d $tempDir $apkPath
+
+    # Find and replace MP4 files from the apk with fake files
+    for mp4File in $(find $tempDir/res -name "*.mp4"); do
+      echo "Replacing $mp4File with fake file"
+      rm $mp4File
+      echo "fake" > $mp4File
+    done
+
+    # Repackage the modified APK
+    tempApkPath="$tempDir/modified.apk"
+    (
+      cd $tempDir
+      ${pkgs.zip}/bin/zip -r -q $tempApkPath .
+    )
+
+    # Copy the modified APK back to the desired location
+    cp $tempApkPath $apkPath
+
+    rm -rf $tempDir
   '';
 
   doCheck = buildType != "debug";
