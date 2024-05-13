@@ -64,7 +64,10 @@
         [quo/page-nav
          (cond-> {:margin-top     (safe-area/get-top)
                   :type           :no-title
-                  :background     :blur
+                  :background     (if (or (:blur? page-nav-props)
+                                          (= 1 (reanimated/get-shared-value opacity-animation)))
+                                    :blur
+                                    :photo)
                   :right-side     page-nav-right-section-buttons
                   :center-opacity opacity-animation
                   :overlay-shown? overlay-shown?}
