@@ -3,7 +3,7 @@
     [quo.foundations.colors :as colors]))
 
 (defn container
-  [size card? blur? theme]
+  [{:keys [size card? blur? actionable? theme]}]
   {:flex-direction     :row
    :justify-content    :space-between
    :padding-vertical   (when (= size :default) 8)
@@ -11,8 +11,11 @@
    :border-radius      16
    :border-width       (when (and card? (not= size :small)) 1)
    :background-color   (if blur?
-                         colors/white-opa-5
-                         (colors/theme-colors colors/white colors/neutral-95 theme))
+                         (if actionable? :transparent colors/white-opa-5)
+                         (colors/theme-colors
+                          (if actionable? colors/white colors/neutral-2_5)
+                          (if actionable? colors/neutral-95 colors/neutral-90)
+                          theme))
    :border-color       (if blur?
                          colors/white-opa-10
                          (colors/theme-colors colors/neutral-10

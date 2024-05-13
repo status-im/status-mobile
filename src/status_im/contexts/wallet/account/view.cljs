@@ -33,11 +33,12 @@
           {:type     :wallet-networks
            :on-press #(rf/dispatch [:wallet/close-account-page])}]
          [quo/account-overview
-          {:current-value       formatted-balance
+          {:container-style     style/account-overview
+           :current-value       formatted-balance
            :account-name        name
            :account             (if watch-only? :watched-address :default)
            :customization-color color}]
-         [quo/wallet-graph {:time-frame :empty}]
+         (when (ff/enabled? ::ff/wallet.graph) [quo/wallet-graph {:time-frame :empty}])
          (when (not watch-only?)
            [quo/wallet-ctas
             {:container-style style/cta-buttons

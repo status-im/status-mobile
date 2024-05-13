@@ -12,8 +12,8 @@
      [:lower-case? :boolean]
      [:upper-case? :boolean]
      [:numbers? :boolean]
-     [:symbols? :boolean]]
-    [:any]]])
+     [:symbols? :boolean]]]
+   :any])
 
 (defn- view-internal
   [{:keys [lower-case? upper-case? numbers? symbols?]}]

@@ -4,6 +4,7 @@
     [react-native.fs :as utils.fs]
     [react-native.platform :as platform]
     [schema.core :as schema]
+    [schema.quo]
     [utils.datetime :as datetime]))
 
 (def ^:const image-server-uri-prefix "https://localhost:")
@@ -54,8 +55,7 @@
     4))
 
 (defn get-account-image-uri
-  "fn to get the avatar uri when multiaccount has custom image set
-  not directly called, check `get-account-image-uri-fn`
+  "fn to get the avatar uri when multiaccount has custom image set.
 
   color formats (for all color options):
   #RRGGBB
@@ -67,7 +67,8 @@
   placeholder-avatar: pass image file path as `image-name`
 
   `indicator-size` is outer indicator radius
-  `indicator-size` - `indicator-border` is inner indicator radius"
+  `indicator-size` - `indicator-border` is inner indicator radius
+  `ring?` shows or hides ring for account with ens name"
   [{:keys [port public-key image-name key-uid size theme indicator-size
            indicator-border indicator-center-to-edge indicator-color ring?
            ring-width ratio]}]
@@ -100,38 +101,8 @@
    "&ringWidth="
    (* ring-width ratio)))
 
-(defn get-account-image-uri-fn
-  "pass the result fn to user-avatar component as `:profile-picture`
-
-  use this fn in subs to set multiaccount `:images` as [{:fn ...}]
-  pass the image to user-avatar
-  user-avatar can fill the rest style related options
-
-  set `override-ring?` to a non-nil value to override `ring?`, mainly used to
-  hide ring for account with ens name
-
-  check `get-account-image-uri` for color formats"
-  [{:keys [port public-key key-uid image-name theme override-ring? ratio]}]
-  (fn [{:keys [size indicator-size indicator-border indicator-center-to-edge
-               indicator-color ring? ring-width override-theme]}]
-    (get-account-image-uri
-     {:port                     port
-      :image-name               image-name
-      :size                     size
-      :public-key               public-key
-      :ratio                    ratio
-      :key-uid                  key-uid
-      :theme                    (if (nil? override-theme) theme override-theme)
-      :indicator-size           indicator-size
-      :indicator-border         indicator-border
-      :indicator-center-to-edge indicator-center-to-edge
-      :indicator-color          indicator-color
-      :ring?                    (if (nil? override-ring?) ring? override-ring?)
-      :ring-width               ring-width})))
-
 (defn get-initials-avatar-uri
   "fn to get the avatar uri when account/contact/placeholder has no custom pic set
-  not directly called, check `get-account-initials-uri-fn`
 
   multiaccount: at least one of `key-uid`, `public-key` is required to render the ring
   contact: `public-key` is required to render the ring
@@ -139,6 +110,7 @@
   check `get-account-image-uri` for color formats
   check `get-font-file-ready` for `font-file`
 
+  `ring?` shows or hides ring for account with ens name
   `uppercase-ratio` is the uppercase-height/line-height for `font-file`"
   [{:keys [port public-key key-uid theme ring? length size customization-color
            color font-size font-file uppercase-ratio indicator-size
@@ -185,56 +157,13 @@
    "&ringWidth="
    (* ring-width ratio)))
 
-(schema/=> get-initials-avatar-uri
-  [:=>
-   [:cat
-    [:map
-     [:theme :schema.common/theme]
-     [:color string?]
-     [:background-color {:optional true} [:maybe string?]]
-     [:size number?]
-     [:ratio float?]
-     [:uppercase-ratio number?]
-     [:customization-color :schema.common/customization-color]
-     [:font-size number?]
-     [:font-file string?]]]
-   [:string]])
-
-(defn get-initials-avatar-uri-fn
-  "return a fn that calls `get-account-initials-uri`
-  pass the fn to user-avatar component to fill the style related options
-
-  check `get-account-image-uri` for color formats
+(defn get-contact-image-uri
+  "check `get-account-image-uri` for color formats
   check `get-font-file-ready` for `font-file`
 
-  check `get-account-image-uri-fn` for `override-ring?`"
-  [{:keys [port public-key key-uid theme override-ring? font-file ratio
-           uppercase-ratio customization-color]}]
-  (fn [{:keys [full-name length size font-size color indicator-size indicator-border
-               indicator-color indicator-center-to-edge ring? ring-width
-               override-theme]}]
-    (get-initials-avatar-uri
-     {:port                     port
-      :public-key               public-key
-      :ratio                    ratio
-      :key-uid                  key-uid
-      :full-name                full-name
-      :length                   length
-      :size                     size
-      :customization-color      customization-color
-      :theme                    (if (nil? override-theme) theme override-theme)
-      :ring?                    (if (nil? override-ring?) ring? override-ring?)
-      :ring-width               ring-width
-      :font-size                font-size
-      :color                    color
-      :font-file                font-file
-      :uppercase-ratio          uppercase-ratio
-      :indicator-size           indicator-size
-      :indicator-border         indicator-border
-      :indicator-center-to-edge indicator-center-to-edge
-      :indicator-color          indicator-color})))
-
-(defn get-contact-image-uri
+  `public-key` is required to render the ring
+  `ring?` shows or hides ring for account with ens name
+  `uppercase-ratio` is the uppercase-height/line-height for `font-file`"
   [{:keys [port public-key image-name clock theme indicator-size indicator-border
            indicator-center-to-edge indicator-color size ring? ring-width ratio]}]
   (str
@@ -264,24 +193,6 @@
    "&ringWidth="
    (* ring-width ratio)))
 
-(defn get-contact-image-uri-fn
-  [{:keys [port public-key image-name theme override-ring? clock ratio]}]
-  (fn [{:keys [size indicator-size indicator-border indicator-center-to-edge
-               indicator-color ring? ring-width override-theme]}]
-    (get-contact-image-uri {:port                     port
-                            :ratio                    ratio
-                            :image-name               image-name
-                            :public-key               public-key
-                            :size                     size
-                            :theme                    (if (nil? override-theme) theme override-theme)
-                            :clock                    clock
-                            :indicator-size           indicator-size
-                            :indicator-border         indicator-border
-                            :indicator-center-to-edge indicator-center-to-edge
-                            :indicator-color          indicator-color
-                            :ring?                    (if (nil? override-ring?) ring? override-ring?)
-                            :ring-width               ring-width})))
-
 (defn get-qr-image-uri-for-any-url
   [{:keys [url port qr-size error-level]}]
   (let [qr-url-base64          (js/btoa url)
@@ -299,3 +210,24 @@
                                     "&size="
                                     qr-size)]
     media-server-url))
+
+(defn get-image-uri
+  [{:keys [type options]}
+   profile-picture-options]
+  ((case type
+     :account  get-account-image-uri
+     :contact  get-contact-image-uri
+     :initials get-initials-avatar-uri
+     str)
+   (-> (merge options profile-picture-options)
+       (assoc :ring?
+              (if (nil? (:override-ring? options))
+                (:ring? profile-picture-options)
+                (:override-ring? options))))))
+
+(schema/=> get-image-uri
+  [:=>
+   [:cat
+    :schema.quo/image-uri-config
+    :schema.quo/profile-picture-options]
+   :string])

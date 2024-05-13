@@ -2,7 +2,6 @@
   (:require
     [oops.core :as oops]
     [quo.core :as quo]
-    [react-native.platform :as platform]
     [reagent.core :as reagent]
     [status-im.common.lightbox.constants :as constants]
     [status-im.contexts.chat.messenger.messages.content.lightbox.style :as style]
@@ -36,7 +35,6 @@
                                 [:lightbox/save-image-to-gallery
                                  uri
                                  #(rf/dispatch [:toasts/upsert
-                                                {:id              :random-id
-                                                 :type            :positive
-                                                 :container-style {:bottom (when platform/android? 20)}
-                                                 :text            (i18n/label :t/photo-saved)}])]))}]]]))
+                                                {:id   :random-id
+                                                 :type :positive
+                                                 :text (i18n/label :t/photo-saved)}])]))}]]]))

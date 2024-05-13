@@ -43,7 +43,7 @@
          item]))))
 
 (defn add-manage-members
-  []
+  [{:keys [scroll-enabled? on-scroll]}]
   (let [selected-participants (rf/sub [:group-chat/selected-participants])
         deselected-members    (rf/sub [:group-chat/deselected-members])
         chat-id               (rf/sub [:get-screen-params :group-add-manage-members])
@@ -62,6 +62,8 @@
       (i18n/label :t/manage-members)]
      [gesture/section-list
       {:key-fn                         :title
+       :scroll-enabled                 @scroll-enabled?
+       :on-scroll                      on-scroll
        :sticky-section-headers-enabled false
        :sections                       (rf/sub [:contacts/grouped-by-first-letter])
        :render-section-header-fn       contact-list/contacts-section-header
