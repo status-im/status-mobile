@@ -198,7 +198,7 @@
                      :collectible
                      :token-display-name
                      :amount
-                     (when (= transaction-type :collecible) :tx-type))})))
+                     (when (= transaction-type :collectible) :tx-type))})))
 
 (rf/reg-event-fx :wallet/send-collectibles-amount
  (fn [{:keys [db]} [{:keys [collectible stack-id amount]}]]
