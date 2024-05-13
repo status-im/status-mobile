@@ -133,15 +133,21 @@
         community-channel? (= chat-type constants/community-chat-type)]
     [reanimated/view
      {:style (style/header-image scale top left theme)}
-     (if group-chat
+     (cond
+       community-channel?
+       [quo/channel-avatar
+        {:size                :size-80
+         :full-name           chat-name
+         :customization-color color
+         :emoji               (when-not (string/blank? emoji)
+                                (string/trim emoji))}]
+       group-chat
        [quo/group-avatar
         {:customization-color color
          :size                :size-80
          :picture             profile-picture
-         :emoji               (when (and (not (string/blank? emoji))
-                                         community-channel?)
-                                (string/trim emoji))
          :chat-name           chat-name}]
+       :else
        [quo/user-avatar
         {:full-name       display-name
          :online?         online?

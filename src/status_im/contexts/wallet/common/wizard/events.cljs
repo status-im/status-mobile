@@ -1,11 +1,13 @@
 (ns status-im.contexts.wallet.common.wizard.events
-  (:require [status-im.contexts.wallet.send.flow-config :as wallet-flow]
+  (:require [status-im.contexts.wallet.bridge.flow-config :as wallet-bridge-flow]
+            [status-im.contexts.wallet.send.flow-config :as wallet-send-flow]
             [utils.re-frame :as rf]))
 
 (defn- wizard-find-next-screen
   [db flow-id current-screen]
   (let [flow-config (case flow-id
-                      :wallet-flow wallet-flow/steps
+                      :wallet-send-flow   wallet-send-flow/steps
+                      :wallet-bridge-flow wallet-bridge-flow/steps
                       nil)]
     (first (filter (fn [{:keys [skip-step? screen-id]}]
                      (and (not= screen-id current-screen)

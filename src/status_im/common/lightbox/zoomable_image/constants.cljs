@@ -16,4 +16,4 @@
 
 (def ^:const default-dimension 1000)
 
-(def ^:const margin 8)
+(def ^:const margin 16)

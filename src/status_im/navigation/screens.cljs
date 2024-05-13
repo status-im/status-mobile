@@ -57,6 +57,7 @@
     [status-im.contexts.profile.settings.screens.password.change-password.view :as change-password]
     [status-im.contexts.profile.settings.screens.password.view :as settings-password]
     [status-im.contexts.profile.settings.view :as settings]
+    [status-im.contexts.settings.wallet.keypairs-and-accounts.view :as keypairs-and-accounts]
     [status-im.contexts.settings.wallet.saved-addresses.view :as saved-addresses-settings]
     [status-im.contexts.settings.wallet.wallet-options.view :as wallet-options]
     [status-im.contexts.shell.activity-center.view :as activity-center]
@@ -78,12 +79,12 @@
      wallet-edit-derivation-path]
     [status-im.contexts.wallet.add-account.create-account.import-private-key.view :as
      wallet-import-private-key]
+    [status-im.contexts.wallet.add-account.create-account.key-pair-name.view :as
+     wallet-key-pair-name]
     [status-im.contexts.wallet.add-account.create-account.new-keypair.backup-recovery-phrase.view :as
      wallet-backup-recovery-phrase]
     [status-im.contexts.wallet.add-account.create-account.new-keypair.check-your-backup.view :as
      wallet-check-your-backup]
-    [status-im.contexts.wallet.add-account.create-account.new-keypair.keypair-name.view :as
-     wallet-keypair-name]
     [status-im.contexts.wallet.add-account.create-account.select-keypair.view :as wallet-select-keypair]
     [status-im.contexts.wallet.add-account.create-account.view :as wallet-create-account]
     [status-im.contexts.wallet.bridge.bridge-to.view :as wallet-bridge-to]
@@ -397,7 +398,8 @@
      :component wallet-bridge-select-asset/view}
 
     {:name      :screen/wallet.bridge-to
-     :options   {:insets {:top? true}}
+     :options   {:insets                 {:top? true}
+                 :modalPresentationStyle :overCurrentContext}
      :component wallet-bridge-to/view}
 
     {:name      :screen/wallet.bridge-input-amount
@@ -431,8 +433,8 @@
      :component wallet-check-your-backup/view}
 
     {:name      :screen/wallet.keypair-name
-     :options   {:insets {:top? true :bottom? true}}
-     :component wallet-keypair-name/view}
+     :options   {:insets {:top? true}}
+     :component wallet-key-pair-name/view}
 
     {:name      :screen/wallet.enter-seed-phrase
      :component enter-seed-phrase/view}
@@ -504,6 +506,12 @@
     {:name      :screen/settings.saved-addresses
      :options   options/transparent-modal-screen-options
      :component saved-addresses-settings/view}
+
+    {:name      :screen/settings.keypairs-and-accounts
+     :options   (merge
+                 options/transparent-modal-screen-options
+                 options/dark-screen)
+     :component keypairs-and-accounts/view}
 
     {:name      :screen/settings-messages
      :options   options/transparent-modal-screen-options

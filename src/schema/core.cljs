@@ -91,5 +91,5 @@
                     {:schema-id schema-id
                      :error     e
                      :function  f})
-         f))
+         (throw e)))
      f)))

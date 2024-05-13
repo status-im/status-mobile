@@ -21,7 +21,7 @@
                 [nubank/matcher-combinators "3.8.8"]
 
                 ;; Use the same version specified in the Nix dependency.
-                [clj-kondo/clj-kondo "2023.09.07"]
+                [clj-kondo/clj-kondo "2024.03.13"]
 
                 ;; Routing
                 [bidi "2.1.6"]

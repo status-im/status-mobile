@@ -247,8 +247,13 @@
    (let [to-address (get-in db [:wallet :current-viewing-account-address])]
      {:db (-> db
               (assoc-in [:wallet :ui :send :token] token)
-              (assoc-in [:wallet :ui :send :to-address] to-address))
-      :fx [[:dispatch [:navigate-to-within-stack [:screen/wallet.bridge-to stack-id]]]]})))
+              (assoc-in [:wallet :ui :send :to-address] to-address)
+              (assoc-in [:wallet :ui :send :tx-type] :bridge))
+      :fx [[:dispatch
+            [:wallet/wizard-navigate-forward
+             {:current-screen stack-id
+              :start-flow?    true
+              :flow-id        :wallet-bridge-flow}]]]})))
 
 (rf/reg-event-fx :wallet/start-bridge
  (fn [{:keys [db]}]
@@ -258,7 +263,10 @@
 (rf/reg-event-fx :wallet/select-bridge-network
  (fn [{:keys [db]} [{:keys [network-chain-id stack-id]}]]
    {:db (assoc-in db [:wallet :ui :send :bridge-to-chain-id] network-chain-id)
-    :fx [[:dispatch [:navigate-to-within-stack [:screen/wallet.bridge-input-amount stack-id]]]]}))
+    :fx [[:dispatch
+          [:wallet/wizard-navigate-forward
+           {:current-screen stack-id
+            :flow-id        :wallet-bridge-flow}]]]}))
 
 (rf/reg-event-fx
  :wallet/get-ethereum-chains

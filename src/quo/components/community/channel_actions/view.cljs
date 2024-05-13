@@ -8,9 +8,10 @@
   [rn/view {:style (assoc container-style :flex-direction :row)}
    (map-indexed
     (fn [index action]
-      ^{:key index}
-      [:<>
-       [channel-action/view action]
-       (when (not= action (last actions))
-         [rn/view {:width 16}])])
+      (when action
+        ^{:key index}
+        [:<>
+         [channel-action/view action]
+         (when (not= action (last actions))
+           [rn/view {:style {:width 16}}])]))
     actions)])

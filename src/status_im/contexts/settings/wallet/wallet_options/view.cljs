@@ -1,8 +1,8 @@
 (ns status-im.contexts.settings.wallet.wallet-options.view
   (:require [quo.core :as quo]
-            [react-native.core :as rn]
             [react-native.safe-area :as safe-area]
             [status-im.contexts.settings.wallet.wallet-options.style :as style]
+            [status-im.feature-flags :as ff]
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]))
 
@@ -10,9 +10,18 @@
   []
   (rf/dispatch [:open-modal :screen/settings.saved-addresses]))
 
+(defn open-keypairs-and-accounts-settings-modal
+  []
+  (rf/dispatch [:open-modal :screen/settings.keypairs-and-accounts]))
+
 (defn gen-basic-settings-options
   []
-  [{:title    (i18n/label :t/saved-addresses)
+  [(when (ff/enabled? ::ff/settings.keypairs-and-accounts)
+     {:title    (i18n/label :t/keypairs-and-accounts)
+      :blur?    true
+      :on-press open-keypairs-and-accounts-settings-modal
+      :action   :arrow})
+   {:title    (i18n/label :t/saved-addresses)
     :blur?    true
     :on-press open-saved-addresses-settings-modal
     :action   :arrow}])
@@ -26,11 +35,13 @@
     :blur?     true
     :list-type :settings}])
 
+(defn navigate-back
+  []
+  (rf/dispatch [:navigate-back]))
+
 (defn view
   []
-  (let [inset-top     (safe-area/get-top)
-        navigate-back (rn/use-callback
-                       #(rf/dispatch [:navigate-back]))]
+  (let [inset-top (safe-area/get-top)]
     [quo/overlay
      {:type            :shell
       :container-style (style/page-wrapper inset-top)}
