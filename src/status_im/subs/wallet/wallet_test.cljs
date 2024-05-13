@@ -1,6 +1,7 @@
 (ns status-im.subs.wallet.wallet-test
   (:require
     [cljs.test :refer [is testing use-fixtures]]
+    [clojure.string :as string]
     [re-frame.db :as rf-db]
     [status-im.constants :as constants]
     [status-im.contexts.wallet.db :as db]
@@ -178,6 +179,20 @@
            :short-name "opt"
            :chain-id   10
            :layer      2}]})
+
+(def saved-addresses
+  {"0x1A" {:address "0x1A"
+           :wallet  false
+           :name    "Account One"
+           :color   :blue}
+   "0x2B" {:address "0x2B"
+           :wallet  false
+           :name    "Account One"
+           :color   :blue}
+   "0x3C" {:address "0x3C"
+           :wallet  false
+           :name    "Account One"
+           :color   :blue}})
 
 (h/deftest-sub :wallet/balances-in-selected-networks
   [sub-name]
@@ -801,3 +816,24 @@
       (is (match? (:title result) (:title sample-added-address)))
       (is (match? (:description result) (:description sample-added-address)))
       (is (match? (:adding-address-purpose result) (:adding-address-purpose sample-added-address))))))
+
+(h/deftest-sub :wallet/lowercased-saved-addresses
+  [sub-name]
+  (testing "Testing fetching of lowercased saved addresses"
+    (swap! rf-db/app-db #(assoc-in % [:wallet :saved-addresses] saved-addresses))
+    (let [result   (rf/sub [sub-name])
+          expected (map string/lower-case (keys saved-addresses))]
+      (is (match? result expected)))))
+
+(h/deftest-sub :wallet/saved-addresses?
+  [sub-name]
+  (testing "Testing existance of saved addresses"
+    (swap! rf-db/app-db #(assoc-in % [:wallet :saved-addresses] saved-addresses))
+    (let [result   (rf/sub [sub-name])
+          expected true]
+      (is (match? result expected))))
+  (testing "Testing fetching of lowercased saved addresses"
+    (swap! rf-db/app-db #(assoc-in % [:wallet :saved-addresses] nil))
+    (let [result   (rf/sub [sub-name])
+          expected false]
+      (is (match? result expected)))))
