@@ -20,3 +20,21 @@
            constants/arbitrum-mainnet-chain-id))
     (is (= (utils/network->chain-id {:network :arbitrum :testnet-enabled? true :goerli-enabled? false})
            constants/arbitrum-sepolia-chain-id))))
+
+(deftest test-short-names->network-preference-prefix
+  (testing "short-names->network-preference-prefix function"
+    (is (= (utils/short-names->network-preference-prefix ["eth"])
+           "eth:"))
+    (is (= (utils/short-names->network-preference-prefix ["eth" "opt"])
+           "eth:opt:"))
+    (is (= (utils/short-names->network-preference-prefix ["eth" "opt" "arb1"])
+           "eth:opt:arb1:"))))
+
+(deftest test-network-preference-prefix->network-names
+  (testing "network-preference-prefix->network-names function"
+    (is (= (utils/network-preference-prefix->network-names "eth:")
+           ["eth"]))
+    (is (= (utils/network-preference-prefix->network-names "eth:opt:")
+           ["eth" "opt"]))
+    (is (= (utils/network-preference-prefix->network-names "eth:opt:arb1:")
+           ["eth" "opt" "arb1"]))))
