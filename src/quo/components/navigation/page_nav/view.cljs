@@ -44,48 +44,55 @@
 
 (defn- right-section-spacing [] [rn/view {:style style/right-actions-spacing}])
 
+(defmulti add-button
+  (fn [{:keys [button-props]}]
+    (:content-type button-props)))
+
+(defmethod add-button :account-switcher
+  [{:keys [support-account-switcher? button-props]}]
+  (when support-account-switcher?
+    (let [{:keys [customization-color on-press emoji type]} button-props]
+      [rn/pressable {:on-press on-press}
+       [account-avatar/view
+        {:emoji               emoji
+         :size                32
+         :type                (or type :default)
+         :customization-color customization-color}]])))
+
+(defmethod add-button :default
+  [{:keys [background behind-overlay? button-props]}]
+  (let [{:keys [label icon-name]} button-props]
+    [button/button
+     (assoc button-props
+            :type       (button-type background)
+            :icon-only? (boolean icon-name)
+            :size       32
+            :accessible true
+            :background (if behind-overlay?
+                          :blur
+                          (when (button-properties/backgrounds background) background)))
+     (or label icon-name)]))
+
 (defn- add-right-buttons-xf
-  [max-actions background behind-overlay?]
+  [max-actions background behind-overlay? support-account-switcher?]
   (comp (filter map?)
         (take max-actions)
-        (map (fn [{:keys [icon-name label] :as button-props}]
-               [button/button
-                (assoc button-props
-                       :type       (button-type background)
-                       :icon-only? icon-name
-                       :size       32
-                       :accessible true
-                       :background (if behind-overlay?
-                                     :blur
-                                     (when (button-properties/backgrounds background) background)))
-                (or label icon-name)]))
+        (map (fn [button-props]
+               (add-button {:background                background
+                            :behind-overlay?           behind-overlay?
+                            :support-account-switcher? support-account-switcher?
+                            :button-props              button-props})))
         (interpose [right-section-spacing])))
 
-(defn- account-switcher-content
-  [{:keys [customization-color on-press emoji type]}]
-  [rn/pressable {:on-press on-press}
-   [account-avatar/view
-    {:emoji               emoji
-     :size                32
-     :type                (or type :default)
-     :customization-color customization-color}]])
-
 (defn- right-content
-  [{:keys [background content max-actions min-size? support-account-switcher? account-switcher
+  [{:keys [background content max-actions min-size? support-account-switcher?
            behind-overlay?]
     :or   {support-account-switcher? true}}]
   [rn/view (when min-size? {:style style/right-content-min-size})
-   (cond
-     (and support-account-switcher? (= content :account-switcher))
-     [account-switcher-content account-switcher]
-
-     (coll? content)
+   (when (coll? content)
      (into [rn/view {:style style/right-actions-container}]
-           (add-right-buttons-xf max-actions background behind-overlay?)
-           content)
-
-     :else
-     nil)])
+           (add-right-buttons-xf max-actions background behind-overlay? support-account-switcher?)
+           content))])
 
 (def header-height 155)
 (def page-nav-height 25)
@@ -208,18 +215,10 @@
   - on-press: callback for left button
   - icon-name: icon for left button
   - right-side (optional):
-      - The `:account-switcher` keyword
       - vector of maps to render buttons, e.g.:
         {:icon-name           :i/my-icon
          :on-press            (fn callback [] nil)
          :accessibility-label \"an optional label\"}
-
-  - account-switcher (optional)
-      - props to render dropdown component (emoji only) e.g.:
-       {:customization-color :purple
-        :on-press            (fn [] nil)
-        :state               :default (inherit dropdown states)
-        :emoji               \"🍑\"}
 
   Depending on the `type` selected, different properties are accepted:
   `:title`
@@ -251,7 +250,7 @@
   `:network`
     - network-name
     - network-logo a valid rn/image `:source` value"
-  [{:keys [type right-side background text-align account-switcher behind-overlay?]
+  [{:keys [type right-side background text-align behind-overlay?]
     :or   {type       :no-title
            text-align :center
            right-side :none
@@ -261,22 +260,20 @@
     :no-title
     [page-nav-base props
      [right-content
-      {:background       background
-       :content          right-side
-       :max-actions      3
-       :behind-overlay?  behind-overlay?
-       :account-switcher account-switcher}]]
+      {:background      background
+       :content         right-side
+       :max-actions     3
+       :behind-overlay? behind-overlay?}]]
 
     :title
     (let [centered? (= text-align :center)]
       [page-nav-base props
        [title-center (assoc props :centered? centered?)]
        [right-content
-        {:background       background
-         :content          right-side
-         :max-actions      (if centered? 1 3)
-         :min-size?        centered?
-         :account-switcher account-switcher}]])
+        {:background  background
+         :content     right-side
+         :max-actions (if centered? 1 3)
+         :min-size?   centered?}]])
 
     :dropdown
     [page-nav-base props
@@ -291,10 +288,9 @@
     [page-nav-base props
      [token-center props]
      [right-content
-      {:background       background
-       :content          right-side
-       :max-actions      3
-       :account-switcher account-switcher}]]
+      {:background  background
+       :content     right-side
+       :max-actions 3}]]
 
     :channel
     [page-nav-base props
@@ -318,11 +314,10 @@
     [page-nav-base props
      [wallet-networks-center props]
      [right-content
-      {:background       background
-       :content          right-side
-       :max-actions      1
-       :min-size?        true
-       :account-switcher account-switcher}]]
+      {:background  background
+       :content     right-side
+       :max-actions 3
+       :min-size?   true}]]
 
     (:community :network)
     [page-nav-base props

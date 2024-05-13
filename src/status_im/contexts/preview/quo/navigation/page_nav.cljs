@@ -41,6 +41,12 @@
                :value "Arrow left"}]}])
 
 
+(def account-switcher-option
+  {:content-type        :account-switcher
+   :customization-color :purple
+   :on-press            #(js/alert "Pressed Account Switcher")
+   :emoji               "🍑"})
+
 (def right-side-options
   (let [options [{:icon-name :i/save :on-press #(js/alert "SAVE")}
                  {:icon-name :i/mark-as-read :on-press #(js/alert "MARK AS READ")}
@@ -52,20 +58,21 @@
      {:key   (take 2 options)
       :value "2 actions"}
      {:key   (take 3 options)
-      :value "3 actions"}]))
-
-(def account-switcher
-  {:key :account-switcher})
+      :value "3 actions"}
+     {:key   (conj (take 1 options) account-switcher-option)
+      :value "1 action + account switcher"}
+     {:key   (conj (take 2 options) account-switcher-option)
+      :value "2 actions + account switcher"}]))
 
 (def no-title-descriptor
   [{:key     :right-side
     :type    :select
-    :options (conj right-side-options account-switcher)}])
+    :options right-side-options}])
 
 (def title-descriptor
   [{:key     :right-side
     :type    :select
-    :options (conj right-side-options account-switcher)}
+    :options right-side-options}
    {:key :title :type :text}
    {:key     :text-align
     :type    :select
@@ -79,7 +86,7 @@
 (def token-descriptor
   [{:key     :right-side
     :type    :select
-    :options (conj right-side-options account-switcher)}
+    :options right-side-options}
    {:key     :token-logo
     :type    :select
     :options [{:key   (resources/get-mock-image :status-logo)
@@ -128,7 +135,7 @@
 (def wallet-networks-descriptor
   [{:key     :right-side
     :type    :select
-    :options (conj (take 2 right-side-options) account-switcher)}])
+    :options right-side-options}])
 
 (def community-descriptor
   [{:key     :right-side
@@ -195,9 +202,6 @@
                 :community-logo     (resources/get-mock-image :coinbase)
                 :network-name       "Mainnet"
                 :network-logo       (resources/get-mock-image :diamond)
-                :account-switcher   {:customization-color :purple
-                                     :on-press            #(js/alert "Pressed Account Switcher")
-                                     :emoji               "🍑"}
                 :networks           networks})]
     (fn []
       [preview/preview-container

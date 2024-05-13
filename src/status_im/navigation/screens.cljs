@@ -92,6 +92,7 @@
     [status-im.contexts.wallet.bridge.select-asset.view :as wallet-bridge-select-asset]
     [status-im.contexts.wallet.collectible.view :as wallet-collectible]
     [status-im.contexts.wallet.common.scan-account.view :as wallet-scan-address]
+    [status-im.contexts.wallet.connected-dapps.view :as wallet-connected-dapps]
     [status-im.contexts.wallet.save-address.view :as wallet-save-address]
     [status-im.contexts.wallet.send.from.view :as wallet-select-from]
     [status-im.contexts.wallet.send.select-address.view :as wallet-select-address]
@@ -376,6 +377,10 @@
     {:name      :screen/wallet.accounts
      :options   {:insets {:top? true}}
      :component wallet-accounts/view}
+
+    {:name      :screen/wallet.connected-dapps
+     :options   {:insets {:top? true}}
+     :component wallet-connected-dapps/view}
 
     {:name      :screen/wallet.edit-account
      :component wallet-edit-account/view}
