@@ -205,7 +205,8 @@
                  :options (merge (options/statusbar-and-navbar-options (:theme opts) nil nil)
                                  {:layout  {:componentBackgroundColor :transparent
                                             :orientation              ["portrait"]}
-                                  :overlay {:interceptTouchOutside true}}
+                                  :overlay {:interceptTouchOutside true
+                                            :handleKeyboardEvents  true}}
                                  opts)}})))
 
 (rf/reg-fx :show-toasts
