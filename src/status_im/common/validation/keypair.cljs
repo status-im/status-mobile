@@ -7,11 +7,11 @@
 
 (defn keypair-too-short?
   [s]
-  (< (-> s str string/trim count) constants/keypair-name-min-length))
+  (< (-> s str string/trim count) constants/key-pair-name-min-length))
 
 (defn keypair-too-long?
   [s]
-  (> (-> s str string/trim count) constants/keypair-name-max-length))
+  (> (-> s str string/trim count) constants/key-pair-name-max-length))
 
 (defn validation-keypair-name
   [s]

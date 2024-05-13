@@ -67,8 +67,8 @@
        :placeholder     (i18n/label :t/keypair-name-input-placeholder)
        :label           (i18n/label :t/keypair-name)
        :default-value   unsaved-keypair-name
-       :char-limit      constants/keypair-name-max-length
-       :max-length      constants/keypair-name-max-length
+       :char-limit      constants/key-pair-name-max-length
+       :max-length      constants/key-pair-name-max-length
        :auto-focus      true
        :clearable?      (not (string/blank? unsaved-keypair-name))
        :on-clear        on-clear
