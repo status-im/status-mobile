@@ -15,14 +15,15 @@
 
 (defn on-options-press
   [{:keys [theme]
-    :as   props}]
+    :as   props} keypair]
   (rf/dispatch [:show-bottom-sheet
-                {:content (fn [] [actions/view props])
+                {:content (fn [] [actions/view props keypair])
                  :theme   theme}]))
 
 (defn- keypair
   [{keypair-type :type
-    :keys        [accounts name]}
+    :keys        [accounts name]
+    :as          item}
    _ _
    {:keys [profile-picture compressed-key customization-color]}]
   (let [theme            (quo.theme/use-theme)
@@ -42,7 +43,8 @@
                                       :profile-picture     profile-picture)
                                (not default-keypair?)
                                (assoc :type        :keypair
-                                      :icon-avatar :i/seed))))
+                                      :icon-avatar :i/seed))
+                             item))
                           [customization-color default-keypair? name
                            profile-picture shortened-key theme])]
     [quo/keypair
