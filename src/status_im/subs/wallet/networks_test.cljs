@@ -59,3 +59,26 @@
           :chain-id         10
           :layer            2}]
         (map #(dissoc % :source :related-chain-id) (rf/sub [sub-name]))))))
+
+(h/deftest-sub :wallet/network-details-by-network-name
+  [sub-name]
+  (testing "returns the prod network data that is accessible by the network name"
+    (swap! rf-db/app-db assoc-in [:wallet :networks] network-data)
+    (is
+     (match?
+      {:mainnet  {:network-name     :mainnet
+                  :short-name       "eth"
+                  :chain-id         1
+                  :abbreviated-name "Eth."
+                  :layer            1}
+       :arbitrum {:network-name     :arbitrum
+                  :short-name       "arb1"
+                  :abbreviated-name "Arb1."
+                  :chain-id         42161
+                  :layer            2}
+       :optimism {:network-name     :optimism
+                  :short-name       "opt"
+                  :abbreviated-name "Opt."
+                  :chain-id         10
+                  :layer            2}}
+      (rf/sub [sub-name])))))
