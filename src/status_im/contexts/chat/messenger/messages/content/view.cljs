@@ -35,14 +35,14 @@
 (def delivery-state-showing-time-ms 3000)
 
 (defn avatar-container
-  [{:keys [content last-in-group? pinned-by quoted-message from]} show-reactions?
+  [{:keys [content last-in-group? pinned-by quoted-message from]} hide-reactions?
    in-reaction-or-action-menu? show-user-info? in-pinned-view?]
   (if (or (and (seq (:response-to content))
                quoted-message)
           last-in-group?
           show-user-info?
           pinned-by
-          (not show-reactions?)
+          hide-reactions?
           in-reaction-or-action-menu?)
     [avatar/avatar
      {:public-key from
@@ -58,14 +58,14 @@
            quoted-message
            from
            timestamp]}
-   show-reactions?
+   hide-reactions?
    in-reaction-or-action-menu?
    show-user-info?]
   (when (or (and (seq (:response-to content)) quoted-message)
             last-in-group?
             pinned-by
             show-user-info?
-            (not show-reactions?)
+            hide-reactions?
             in-reaction-or-action-menu?)
     (let [[primary-name secondary-name] (rf/sub [:contacts/contact-two-names-by-identity from])
           {:keys [ens-verified added?]} (rf/sub [:contacts/contact-by-address from])]
@@ -158,7 +158,7 @@
 (defn user-message-content
   []
   (let [show-delivery-state? (reagent/atom false)]
-    (fn [{:keys [message-data context keyboard-shown? show-reactions?
+    (fn [{:keys [message-data context keyboard-shown? hide-reactions?
                  in-reaction-or-action-menu? show-user-info?]}]
       (let [theme                                       (quo.theme/use-theme)
             {:keys [content-type quoted-message content outgoing outgoing-status pinned-by pinned
@@ -226,17 +226,16 @@
           [rn/view
            {:style {:padding-horizontal 4
                     :flex-direction     :row}}
-           [avatar-container message-data show-reactions? in-reaction-or-action-menu? show-user-info?
+           [avatar-container message-data hide-reactions? in-reaction-or-action-menu? show-user-info?
             (:in-pinned-view? context)]
            (into
-            (if show-reactions?
-              [rn/view]
-              [gesture/scroll-view])
+            (if hide-reactions?
+              [gesture/scroll-view]
+              [rn/view])
             [{:style {:margin-left 8
                       :flex        1
-                      :max-height  (when-not show-reactions?
-                                     (* 0.4 height))}}
-             [author message-data show-reactions? in-reaction-or-action-menu? show-user-info?]
+                      :max-height  (when hide-reactions? (* 0.4 height))}}
+             [author message-data hide-reactions? in-reaction-or-action-menu? show-user-info?]
              (condp = content-type
                constants/content-type-text
                [content.text/text-content message-data context]
@@ -271,7 +270,7 @@
 
              (when @show-delivery-state?
                [status/status outgoing-status])])]
-          (when show-reactions?
+          (when-not hide-reactions?
             [reactions/message-reactions-row (assoc message-data :hide-new-reaction-button? true)
              [rn/view {:pointer-events :none}
               [user-message-content
@@ -279,8 +278,7 @@
                 :message-data                message-data
                 :context                     context
                 :in-reaction-or-action-menu? true
-                :keyboard-shown?             keyboard-shown?
-                :show-reactions?             true}]]])]]))))
+                :keyboard-shown?             keyboard-shown?}]]])]]))))
 
 (defn on-long-press
   [{:keys [deleted? deleted-for-me?] :as message-data} context keyboard-shown?]
@@ -301,8 +299,7 @@
             :context                     context
             :keyboard-shown?             keyboard-shown?
             :in-reaction-or-action-menu? true
-            :show-user-info?             false
-            :show-reactions?             true}]]))}]))
+            :show-user-info?             false}]]))}]))
 
 (defn check-if-system-message?
   [content-type]
@@ -347,5 +344,4 @@
        [user-message-content
         {:message-data    message-data
          :context         context
-         :keyboard-shown? keyboard-shown?
-         :show-reactions? true}])]))
+         :keyboard-shown? keyboard-shown?}])]))
