@@ -16,11 +16,12 @@
     (assoc :margin-top 4)))
 
 (defn user-message-content
-  [{:keys [outgoing outgoing-status six-reactions? window-scale small-screen? preview?]}]
+  [{:keys [outgoing outgoing-status six-reactions? window-scale small-screen?
+           in-reaction-or-action-menu?]}]
   {:border-radius      16
-   :padding-horizontal (if preview? 12 8)
-   :padding-top        (if preview? 8 4)
-   :padding-bottom     (if preview?
+   :padding-horizontal (if in-reaction-or-action-menu? 12 8)
+   :padding-top        (if in-reaction-or-action-menu? 8 4)
+   :padding-bottom     (if in-reaction-or-action-menu?
                          12
                          (if (or small-screen?
                                  (and
