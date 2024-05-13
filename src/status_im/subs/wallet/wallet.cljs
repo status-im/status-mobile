@@ -5,7 +5,8 @@
             [status-im.contexts.wallet.common.utils :as utils]
             [status-im.contexts.wallet.common.utils.networks :as network-utils]
             [status-im.subs.wallet.add-account.address-to-watch]
-            [utils.number]))
+            [utils.number]
+            [utils.security.core :as security]))
 
 (defn- filter-networks
   [chain-ids network-details]
@@ -421,3 +422,16 @@
     {:tokens          tokens
      :currency        currency
      :currency-symbol currency-symbol})))
+
+(rf/reg-sub
+ :wallet/import-private-key
+ :<- [:wallet/create-account]
+ (fn [create-account]
+   (some-> create-account
+           :private-key
+           security/unmask)))
+
+(rf/reg-sub
+ :wallet/public-address
+ :<- [:wallet/create-account]
+ :-> :public-address)

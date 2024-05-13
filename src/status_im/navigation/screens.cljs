@@ -79,12 +79,12 @@
      wallet-edit-derivation-path]
     [status-im.contexts.wallet.add-account.create-account.import-private-key.view :as
      wallet-import-private-key]
+    [status-im.contexts.wallet.add-account.create-account.key-pair-name.view :as
+     wallet-key-pair-name]
     [status-im.contexts.wallet.add-account.create-account.new-keypair.backup-recovery-phrase.view :as
      wallet-backup-recovery-phrase]
     [status-im.contexts.wallet.add-account.create-account.new-keypair.check-your-backup.view :as
      wallet-check-your-backup]
-    [status-im.contexts.wallet.add-account.create-account.new-keypair.keypair-name.view :as
-     wallet-keypair-name]
     [status-im.contexts.wallet.add-account.create-account.select-keypair.view :as wallet-select-keypair]
     [status-im.contexts.wallet.add-account.create-account.view :as wallet-create-account]
     [status-im.contexts.wallet.bridge.bridge-to.view :as wallet-bridge-to]
@@ -428,8 +428,8 @@
      :component wallet-check-your-backup/view}
 
     {:name      :screen/wallet.keypair-name
-     :options   {:insets {:top? true :bottom? true}}
-     :component wallet-keypair-name/view}
+     :options   {:insets {:top? true}}
+     :component wallet-key-pair-name/view}
 
     {:name      :screen/wallet.enter-seed-phrase
      :component enter-seed-phrase/view}

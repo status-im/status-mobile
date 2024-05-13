@@ -3,6 +3,7 @@
 
 (def container
   {:flex-direction  :row
+   :flex            1
    :justify-content :space-between})
 
 (def right-counter

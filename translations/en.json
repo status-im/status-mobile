@@ -2593,6 +2593,7 @@
     "key-name-error-length": "Key name too long",
     "key-name-error-emoji": "Emojis are not allowed",
     "key-name-error-special-char": "Special characters are not allowed",
+    "key-name-error-too-short": "Key pair name must be at least {{count}} characters",
     "display": "Display",
     "testnet-mode-enabled": "Testnet mode enabled",
     "online-community-member": "Online",
