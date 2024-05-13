@@ -86,25 +86,26 @@
     [rn/view {:style (style/home-container)}
      [common.top-nav/view]
      [refreshable-flat-list/view
-      {:refresh-control       [rn/refresh-control
-                               {:refreshing (and tokens-loading? init-loaded?)
-                                :colors     [colors/neutral-40]
-                                :tint-color colors/neutral-40
-                                :on-refresh #(rf/dispatch [:wallet/get-accounts])}]
-       :header                [rn/view {:style (style/header-container theme)}
-                               [quo/wallet-overview
-                                {:state             (if tokens-loading? :loading :default)
-                                 :time-frame        :none
-                                 :metrics           :none
-                                 :balance           formatted-balance
-                                 :networks          networks
-                                 :dropdown-on-press #(rf/dispatch [:show-bottom-sheet
-                                                                   {:content network-filter/view}])}]
-                               (when (ff/enabled? ::ff/wallet.graph)
-                                 [quo/wallet-graph {:time-frame :empty}])
-                               [render-cards cards account-list-ref]
-                               [render-tabs tabs-data set-selected-tab selected-tab]]
-       :sticky-header-indices [0]
-       :data                  []
-       :render-fn             #()
-       :footer                [tabs/view {:selected-tab selected-tab}]}]]))
+      {:refresh-control         [rn/refresh-control
+                                 {:refreshing (and tokens-loading? init-loaded?)
+                                  :colors     [colors/neutral-40]
+                                  :tint-color colors/neutral-40
+                                  :on-refresh #(rf/dispatch [:wallet/get-accounts])}]
+       :header                  [rn/view {:style (style/header-container theme)}
+                                 [quo/wallet-overview
+                                  {:state             (if tokens-loading? :loading :default)
+                                   :time-frame        :none
+                                   :metrics           :none
+                                   :balance           formatted-balance
+                                   :networks          networks
+                                   :dropdown-on-press #(rf/dispatch [:show-bottom-sheet
+                                                                     {:content network-filter/view}])}]
+                                 (when (ff/enabled? ::ff/wallet.graph)
+                                   [quo/wallet-graph {:time-frame :empty}])
+                                 [render-cards cards account-list-ref]
+                                 [render-tabs tabs-data set-selected-tab selected-tab]]
+       :content-container-style style/list-container
+       :sticky-header-indices   [0]
+       :data                    []
+       :render-fn               #()
+       :footer                  [tabs/view {:selected-tab selected-tab}]}]]))
