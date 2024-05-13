@@ -33,8 +33,8 @@
 (deftest test-network-preference-prefix->network-names
   (testing "network-preference-prefix->network-names function"
     (is (= (utils/network-preference-prefix->network-names "eth")
-           (seq [:ethereum])))
+           (seq [:mainnet])))
     (is (= (utils/network-preference-prefix->network-names "eth:opt")
-           (seq [:ethereum :optimism])))
+           (seq [:mainnet :optimism])))
     (is (= (utils/network-preference-prefix->network-names "eth:opt:arb1")
-           (seq [:ethereum :optimism :arbitrum])))))
+           (seq [:mainnet :optimism :arbitrum])))))
