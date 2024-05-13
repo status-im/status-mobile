@@ -10,7 +10,7 @@
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]))
 
-(defn navigation-back [] (rf/dispatch [:navigate-back]))
+(defn navigate-back [] (rf/dispatch [:navigate-back]))
 
 (defn view
   []
@@ -43,7 +43,7 @@
     [floating-button-page/view
      {:header [quo/page-nav
                {:icon-name           :i/close
-                :on-press            navigation-back
+                :on-press            navigate-back
                 :accessibility-label :top-bar}]
       :footer [quo/bottom-actions
                {:actions          :one-action

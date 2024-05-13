@@ -5,8 +5,13 @@
             utils.emojilib
             [utils.i18n :as i18n]))
 
-(defn keypair-too-short? [s] (< (count (string/trim (str s))) constants/keypair-name-min-length))
-(defn keypair-too-long? [s] (> (count (string/trim (str s))) constants/keypair-name-max-length))
+(defn keypair-too-short?
+  [s]
+  (< (-> s str string/trim count) constants/keypair-name-min-length))
+
+(defn keypair-too-long?
+  [s]
+  (> (-> s str string/trim count) constants/keypair-name-max-length))
 
 (defn validation-keypair-name
   [s]
