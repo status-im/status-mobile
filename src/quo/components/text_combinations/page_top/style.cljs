@@ -6,10 +6,11 @@
    :padding-horizontal 20
    :row-gap            8})
 
-(def header
+(defn header
+  [title-size]
   {:flex-direction  :row
    :justify-content :space-between
-   :height          32})
+   :height          (if title-size :auto 32)})
 
 (def header-title
   {:flex           1
