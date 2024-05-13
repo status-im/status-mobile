@@ -52,23 +52,24 @@
          (get constants/reactions (:emoji-id reaction))))
 
 (defn message-reactions-row
-  [{:keys [message-id chat-id pinned-by preview?]} user-message-content]
+  [{:keys [message-id chat-id pinned-by hide-new-reaction-button?]} user-message-content]
   (let [theme     (quo.theme/use-theme)
         reactions (rf/sub [:chats/message-reactions message-id chat-id])]
     [:<>
      (when (seq reactions)
        [quo/react
-        {:container-style {:margin-left 44
-                           :margin-top  8}
-         :reactions       (map add-emoji-key reactions)
-         :add-reaction?   (not preview?)
-         :use-case        (when pinned-by :pinned)
-         :on-press        #(on-press (assoc % :message-id message-id))
-         :on-long-press   #(on-long-press (assoc %
-                                                 :message-id           message-id
-                                                 :theme                theme
-                                                 :reactions-order      (map :emoji-id reactions)
-                                                 :user-message-content user-message-content))
-         :on-press-add    #(on-press-add {:chat-id              chat-id
-                                          :message-id           message-id
-                                          :user-message-content user-message-content})}])]))
+        {:container-style           {:margin-left 44
+                                     :margin-top  8}
+         :reactions                 (map add-emoji-key reactions)
+         :hide-new-reaction-button? hide-new-reaction-button?
+         :use-case                  (when pinned-by :pinned)
+         :on-press                  #(on-press (assoc % :message-id message-id))
+         :on-long-press             #(on-long-press (assoc %
+                                                           :message-id           message-id
+                                                           :theme                theme
+                                                           :reactions-order      (map :emoji-id
+                                                                                      reactions)
+                                                           :user-message-content user-message-content))
+         :on-press-add              #(on-press-add {:chat-id              chat-id
+                                                    :message-id           message-id
+                                                    :user-message-content user-message-content})}])]))

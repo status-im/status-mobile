@@ -5,7 +5,8 @@
     [react-native.core :as rn]))
 
 (defn view
-  [{:keys [reactions on-press on-long-press add-reaction? on-press-add use-case container-style]}]
+  [{:keys [reactions on-press on-long-press hide-new-reaction-button? on-press-add use-case
+           container-style]}]
   [rn/view {:style (merge style/container container-style)}
    (for [emoji-reaction reactions
          :let           [{:keys [emoji emoji-id emoji-reaction-id quantity own]} emoji-reaction]]
@@ -19,7 +20,7 @@
        :on-press            #(on-press emoji-reaction)
        :on-long-press       #(on-long-press emoji-reaction)
        :accessibility-label (str "emoji-reaction-" emoji-id)}])
-   (when add-reaction?
+   (when-not hide-new-reaction-button?
      [react-selector/view
       {:on-press            on-press-add
        :state               :add-reaction

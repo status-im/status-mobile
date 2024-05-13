@@ -273,7 +273,7 @@
              (when @show-delivery-state?
                [status/status outgoing-status])])]
           (when show-reactions?
-            [reactions/message-reactions-row (assoc message-data :preview? preview?)
+            [reactions/message-reactions-row (assoc message-data :hide-new-reaction-button? true)
              [rn/view {:pointer-events :none}
               [user-message-content
                {:theme                        theme
