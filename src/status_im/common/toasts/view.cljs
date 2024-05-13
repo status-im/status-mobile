@@ -20,6 +20,7 @@
                                                          [:user :profile-picture]
                                                          profile-picture)
                                                         toast-opts)]
+    (println "typexxx" type toast-opts-with-profile-picture)
     (if (= type :notification)
       [quo/notification toast-opts-with-profile-picture]
       [quo/toast toast-opts-with-profile-picture])))
