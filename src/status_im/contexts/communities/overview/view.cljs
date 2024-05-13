@@ -6,9 +6,10 @@
     [quo.theme]
     [react-native.blur :as blur]
     [react-native.core :as rn]
+    [react-native.safe-area :as safe-area]
     [reagent.core :as reagent]
     [status-im.common.home.actions.view :as actions]
-    [status-im.common.not-implemented :as not-implemented]
+    [status-im.common.resources :as resources]
     [status-im.common.scroll-page.style :as scroll-page.style]
     [status-im.common.scroll-page.view :as scroll-page]
     [status-im.config :as config]
@@ -369,18 +370,25 @@
 
 (defn- community-fetching-placeholder
   [id]
-  (let [fetching? (rf/sub [:communities/fetching-community id])]
+  (let [theme     (quo.theme/use-theme)
+        top-inset (safe-area/get-top)
+        fetching? (rf/sub [:communities/fetching-community id])]
     [rn/view
-     {:style               style/fetching-placeholder
+     {:style               (style/fetching-placeholder top-inset)
       :accessibility-label (if fetching?
                              :fetching-community-overview
                              :failed-to-fetch-community-overview)}
-     [not-implemented/not-implemented
-      [rn/text
-       {:style style/fetching-text}
-       (if fetching?
-         "Fetching community..."
-         "Failed to fetch community")]]]))
+     [quo/page-nav
+      {:title      "Community Overview"
+       :type       :title
+       :text-align :left
+       :icon-name  :i/close
+       :on-press   #(rf/dispatch [:navigate-back])}]
+     [quo/empty-state
+      {:image           (resources/get-themed-image :cat-in-box theme)
+       :description     (when-not fetching? (i18n/label :t/here-is-a-cat-in-a-box-instead))
+       :title           (if fetching? "Fetching community..." "Failed to fetch community")
+       :container-style {:flex 1 :justify-content :center}}]]))
 
 (defn- community-card-page-view
   [id]
