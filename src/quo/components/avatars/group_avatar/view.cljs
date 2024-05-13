@@ -1,6 +1,5 @@
 (ns quo.components.avatars.group-avatar.view
   (:require
-    [clojure.string :as string]
     [quo.components.avatars.group-avatar.style :as style]
     [quo.components.icon :as icon]
     [quo.components.markdown.text :as text]
@@ -22,7 +21,7 @@
              :container 80}})
 
 (defn view
-  [{:keys [size customization-color picture icon-name emoji chat-name]
+  [{:keys [size customization-color picture icon-name emoji]
     :or   {size                :size-20
            customization-color :blue
            picture             nil
@@ -50,14 +49,6 @@
             {:size  :paragraph-1
              :style (dissoc (style/avatar-identifier theme) :font-size)}
             emoji])
-         chat-name
-         (if (= size :size-80)
-           [rn/text
-            {:style (style/avatar-identifier theme)}
-            ((comp first string/upper-case) chat-name)]
-           [text/text
-            {:size :paragraph-1}
-            ((comp first string/upper-case) chat-name)])
          :else
          [icon/icon icon-name
           {:size  icon-size
