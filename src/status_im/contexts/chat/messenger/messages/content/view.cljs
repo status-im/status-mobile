@@ -272,13 +272,17 @@
                [status/status outgoing-status])])]
           (when-not hide-reactions?
             [reactions/message-reactions-row (assoc message-data :hide-new-reaction-button? true)
-             [rn/view {:pointer-events :none}
-              [user-message-content
-               {:theme                       theme
-                :message-data                message-data
-                :context                     context
-                :in-reaction-or-action-menu? true
-                :keyboard-shown?             keyboard-shown?}]]])]]))))
+             (fn [override-opts]
+               [rn/view
+                {:pointer-events :none
+                 :style          style/drawer-message-container}
+                [user-message-content
+                 (merge {:theme                       theme
+                         :message-data                message-data
+                         :context                     context
+                         :in-reaction-or-action-menu? true
+                         :keyboard-shown?             keyboard-shown?}
+                        override-opts)]])])]]))))
 
 (defn on-long-press
   [{:keys [deleted? deleted-for-me?] :as message-data} context keyboard-shown?]
