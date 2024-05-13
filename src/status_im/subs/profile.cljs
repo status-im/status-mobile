@@ -41,7 +41,7 @@
    (let [{:keys [images ens-name? customization-color] :as profile} (get profiles target-key-uid)
          image-name                                                 (-> images first :type)
          override-ring?                                             (when ens-name? false)]
-     (when profile
+     (when (and profile port)
        {:config
         (if image-name
           {:type    :account
