@@ -117,6 +117,7 @@
                    dissoc
                    :suggested-routes
                    :route
+                   :amount
                    :from-values-by-chain
                    :to-values-by-chain
                    :sender-network-values

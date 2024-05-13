@@ -25,6 +25,11 @@
  :-> :transaction-ids)
 
 (rf/reg-sub
+ :wallet/wallet-send-amount
+ :<- [:wallet/wallet-send]
+ :-> :amount)
+
+(rf/reg-sub
  :wallet/send-transaction-progress
  :<- [:wallet/send-transaction-ids]
  :<- [:wallet/transactions]

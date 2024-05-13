@@ -69,6 +69,7 @@
    :view-id                                        :screen/wallet.send-input-amount
    :wallet/wallet-send-to-address                  "0x04371e2d9d66b82f056bc128064"
    :profile/currency-symbol                        "$"
+   :profile/currency                               :usd
    :wallet/token-by-symbol                         {:symbol                     :eth
                                                     :total-balance              100
                                                     :market-values-per-currency {:usd {:price 10}}}
@@ -86,7 +87,8 @@
                                                      :chain-id         1
                                                      :related-chain-id 1
                                                      :layer            1}]
-   :wallet/wallet-send-enabled-from-chain-ids      [1]})
+   :wallet/wallet-send-enabled-from-chain-ids      [1]
+   :wallet/wallet-send-amount                      nil})
 
 (h/describe "Send > input amount screen"
   (h/setup-restorable-re-frame)
@@ -173,6 +175,6 @@
     (h/is-truthy (h/get-by-label-text :container-error))
     (h/fire-event :press (h/query-by-label-text :reorder))
 
-    (-> (h/wait-for #(h/get-by-text "Max: 1000.00 USD"))
+    (-> (h/wait-for #(h/get-by-text "Max: $1000.00"))
         (.then (fn []
                  (h/wait-for #(h/is-truthy (h/get-by-label-text :container))))))))
