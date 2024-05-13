@@ -106,7 +106,8 @@
                                                                           {:name  collectible-name
                                                                            :image preview-uri}])
                                                          :theme   theme}])}]
-                           :picture     preview-uri}}
+                           :picture     preview-uri
+                           :blur?       true}}
          [rn/view {:style style/container}
           [quo/expanded-collectible
            {:image-src       preview-uri

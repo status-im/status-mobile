@@ -1,7 +1,6 @@
 (ns status-im.contexts.wallet.collectible.options.view
   (:require
     [quo.core :as quo]
-    [react-native.platform :as platform]
     [status-im.contexts.wallet.common.utils.external-links :as external-links]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]
@@ -28,10 +27,9 @@
                                 [:lightbox/save-image-to-gallery
                                  uri
                                  #(rf/dispatch [:toasts/upsert
-                                                {:id              :random-id
-                                                 :type            :positive
-                                                 :container-style {:bottom (when platform/android? 20)}
-                                                 :text            (i18n/label :t/photo-saved)}])]))}]
+                                                {:id   :random-id
+                                                 :type :positive
+                                                 :text (i18n/label :t/photo-saved)}])]))}]
       [{:icon                :i/share
         :accessibility-label :share-collectible
         :label               (i18n/label :t/share-collectible)
