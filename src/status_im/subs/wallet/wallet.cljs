@@ -183,9 +183,10 @@
  :<- [:wallet/keypairs]
  (fn [keypairs [_ format-options]]
    (->> keypairs
-        (map (fn [{:keys [accounts name type]}]
+        (map (fn [{:keys [accounts name type key-uid]}]
                {:type     (keyword type)
                 :name     name
+                :key-uid  key-uid
                 :accounts (format-settings-keypair-accounts accounts format-options)})))))
 
 (rf/reg-sub
