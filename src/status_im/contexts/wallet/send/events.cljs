@@ -4,10 +4,10 @@
     [clojure.string :as string]
     [native-module.core :as native-module]
     [status-im.constants :as constants]
+    [status-im.contexts.wallet.collectible.utils :as collectible.utils]
     [status-im.contexts.wallet.common.utils :as utils]
     [status-im.contexts.wallet.common.utils.networks :as network-utils]
     [status-im.contexts.wallet.send.utils :as send-utils]
-    [status-im.contexts.wallet.collectible.utils :as collectible.utils]
     [taoensso.timbre :as log]
     [utils.address :as address]
     [utils.money :as money]
@@ -148,7 +148,7 @@
               (assoc-in [:wallet :ui :send :to-address] to-address)
               (assoc-in [:wallet :ui :send :address-prefix] prefix)
               (assoc-in [:wallet :ui :send :receiver-networks] receiver-networks))
-      :fx [(when (and collectible-tx? one-collectible? )
+      :fx [(when (and collectible-tx? one-collectible?)
              [:dispatch [:wallet/get-suggested-routes {:amount 1}]])
            [:dispatch
             [:wallet/wizard-navigate-forward
@@ -173,8 +173,8 @@
 (rf/reg-event-fx
  :wallet/set-token-to-send
  (fn [{:keys [db]} [{:keys [token-symbol token stack-id start-flow?]}]]
-   ;; `token` is a map extracted from the sender, but in the wallet home page we don't
-   ;; know the sender yet, so we only provide the `token-symbol`, later in
+   ;; `token` is a map extracted from the sender, but in the wallet home page we don't know the
+   ;; sender yet, so we only provide the `token-symbol`, later in
    ;; `:wallet/select-from-account` the `token` key will be set.
    {:db (cond-> db
           :always      (update-in [:wallet :ui :send] dissoc :collectible)
