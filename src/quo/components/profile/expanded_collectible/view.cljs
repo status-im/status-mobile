@@ -34,8 +34,7 @@
     label]])
 
 (defn view-internal
-  [{:keys [container-style square? on-press counter image-src native-ID supported-file?
-           on-collectible-load]}]
+  [{:keys [container-style square? on-press counter image-src native-ID supported-file?]}]
   (let [theme                          (quo.theme/use-theme)
         [image-size set-image-size]    (rn/use-state {})
         [image-error? set-image-error] (rn/use-state false)]
@@ -49,7 +48,7 @@
     [rn/pressable
      {:on-press            (when (and (not image-error?) supported-file?) on-press)
       :accessibility-label :expanded-collectible
-      :style               (merge container-style style/container)}
+      :style               (merge container-style (style/container theme))}
      (cond
        (not supported-file?)
        [fallback-view
@@ -69,8 +68,7 @@
          {:style     (style/image square? (:aspect-ratio image-size))
           :source    image-src
           :native-ID native-ID
-          :on-error  #(set-image-error true)
-          :on-load   on-collectible-load}]
+          :on-error  #(set-image-error true)}]
         [counter-view counter]])]))
 
 (def ?schema
@@ -84,8 +82,7 @@
       [:native-ID {:optional true} [:maybe [:or string? keyword?]]]
       [:square? {:optional true} [:maybe boolean?]]
       [:counter {:optional true} [:maybe string?]]
-      [:on-press {:optional true} [:maybe fn?]]
-      [:on-collectible-load {:optional true} [:maybe fn?]]]]]
+      [:on-press {:optional true} [:maybe fn?]]]]]
    :any])
 
 (def view (schema/instrument #'view-internal ?schema))

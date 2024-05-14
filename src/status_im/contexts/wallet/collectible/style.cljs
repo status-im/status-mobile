@@ -1,15 +1,17 @@
-(ns status-im.contexts.wallet.collectible.style
-  (:require [quo.foundations.colors :as colors]
-            [react-native.core :as rn]
-            [react-native.platform :as platform]))
+(ns status-im.contexts.wallet.collectible.style)
 
 (def container
-  {:margin-bottom 34})
+  {:margin-top    100
+   :margin-bottom 34})
 
 (def preview-container
   {:margin-horizontal 8
-   :margin-top        12
-   :padding-top       100})
+   :margin-top        12})
+
+(def preview
+  {:width         "100%"
+   :aspect-ratio  1
+   :border-radius 16})
 
 (def header
   {:margin-horizontal 20
@@ -41,43 +43,3 @@
 (def opensea-button
   {:flex        1
    :margin-left 6})
-
-(def animated-header
-  {:position :absolute
-   :top      0
-   :left     0
-   :right    0
-   :height   100
-   :z-index  1
-   :overflow :hidden})
-
-(defn scroll-view
-  [safe-area-top]
-  {:flex       1
-   :margin-top (when platform/ios? (- safe-area-top))})
-
-(def gradient-layer
-  {:position    :absolute
-   :top         0
-   :left        0
-   :right       0
-   :bottom      0
-   :flex        1
-   :align-items :center
-   :overflow    :hidden})
-
-(def image-background
-  {:height       (:height (rn/get-window))
-   :aspect-ratio 1})
-
-(def gradient
-  {:position :absolute
-   :top      0
-   :left     0
-   :right    0
-   :bottom   0})
-
-(defn background-color
-  [theme]
-  {:flex             1
-   :background-color (colors/theme-colors colors/white colors/neutral-95 theme)})
