@@ -99,14 +99,13 @@
 (def threshold (- header-height page-nav-height))
 
 (defn- title-center
-  [{:keys [centered? title center-opacity scroll-y]}]
+  [{:keys [title scroll-y center-content-container-style]}]
   (let [animated-style (when scroll-y
                          (header-worklet/profile-header-animation scroll-y
                                                                   threshold
                                                                   page-nav-height))]
     [reanimated/view
-     {:style [(style/center-content-container centered? center-opacity)
-              animated-style]}
+     {:style [center-content-container-style animated-style]}
      [text/text
       {:weight          :medium
        :size            :paragraph-1
@@ -114,14 +113,15 @@
       title]]))
 
 (defn- dropdown-center
-  [{:keys [background dropdown-on-press dropdown-selected? dropdown-text center-opacity]}]
+  [{:keys [background dropdown-on-press dropdown-selected? dropdown-text
+           center-content-container-style]}]
   (let [theme          (quo.theme/use-theme)
         dropdown-type  (cond
                          (= background :photo)                      :grey
                          (and (= theme :dark) (= background :blur)) :grey
                          :else                                      :ghost)
         dropdown-state (if dropdown-selected? :active :default)]
-    [reanimated/view {:style (style/center-content-container true center-opacity)}
+    [reanimated/view {:style center-content-container-style}
      [dropdown/view
       {:type       dropdown-type
        :state      dropdown-state
@@ -131,9 +131,9 @@
       dropdown-text]]))
 
 (defn- token-center
-  [{:keys [background token-logo token-name token-abbreviation center-opacity]}]
+  [{:keys [background token-logo token-name token-abbreviation center-content-container-style]}]
   (let [theme (quo.theme/use-theme)]
-    [reanimated/view {:style (style/center-content-container false center-opacity)}
+    [reanimated/view {:style center-content-container-style}
      [rn/image {:style style/token-logo :source token-logo}]
      [text/text
       {:style           style/token-name
@@ -149,9 +149,9 @@
       token-abbreviation]]))
 
 (defn- channel-center
-  [{:keys [background channel-emoji channel-name channel-icon center-opacity]}]
+  [{:keys [background channel-emoji channel-name channel-icon center-content-container-style]}]
   (let [theme (quo.theme/use-theme)]
-    [reanimated/view {:style (style/center-content-container false center-opacity)}
+    [reanimated/view {:style center-content-container-style}
      [rn/text {:style style/channel-emoji}
       channel-emoji]
      [text/text
@@ -163,9 +163,9 @@
      [icons/icon channel-icon {:size 16 :color (style/channel-icon-color theme background)}]]))
 
 (defn- title-description-center
-  [{:keys [background picture title description center-opacity]}]
+  [{:keys [background picture title description center-content-container-style]}]
   (let [theme (quo.theme/use-theme)]
-    [reanimated/view {:style (style/center-content-container false center-opacity)}
+    [reanimated/view {:style center-content-container-style}
      (when picture
        [rn/view {:style style/group-avatar-picture}
         [group-avatar/view {:picture picture :size :size-28}]])
@@ -184,11 +184,11 @@
        description]]]))
 
 (defn- community-network-center
-  [{:keys [type community-logo network-logo community-name network-name center-opacity]}]
+  [{:keys [type community-logo network-logo community-name network-name center-content-container-style]}]
   (let [community? (= type :community)
         shown-logo (if community? community-logo network-logo)
         shown-name (if community? community-name network-name)]
-    [reanimated/view {:style (style/center-content-container false center-opacity)}
+    [reanimated/view {:style center-content-container-style}
      [rn/image
       {:style  style/community-network-logo
        :source shown-logo}]
@@ -199,8 +199,8 @@
       shown-name]]))
 
 (defn- wallet-networks-center
-  [{:keys [networks networks-on-press background center-opacity]}]
-  [reanimated/view {:style (style/center-content-container true center-opacity)}
+  [{:keys [networks networks-on-press background center-content-container-style]}]
+  [reanimated/view {:style center-content-container-style}
    [network-dropdown/view
     {:state    :default
      :on-press networks-on-press
@@ -250,82 +250,91 @@
   `:network`
     - network-name
     - network-logo a valid rn/image `:source` value"
-  [{:keys [type right-side background text-align behind-overlay?]
+  [{:keys [type right-side background text-align behind-overlay? center-opacity]
     :or   {type       :no-title
            text-align :center
            right-side :none
            background :white}
     :as   props}]
-  (case type
-    :no-title
-    [page-nav-base props
-     [right-content
-      {:background      background
-       :content         right-side
-       :max-actions     3
-       :behind-overlay? behind-overlay?}]]
-
-    :title
-    (let [centered? (= text-align :center)]
+  (let [center-content-container-style (reanimated/apply-animations-to-style
+                                        (if center-opacity
+                                          {:opacity center-opacity}
+                                          nil)
+                                        (style/center-content-container
+                                         (and (= type :title) (= text-align :center))))
+        props-with-style               (assoc props
+                                              :center-content-container-style
+                                              center-content-container-style)]
+    (case type
+      :no-title
       [page-nav-base props
-       [title-center (assoc props :centered? centered?)]
+       [right-content
+        {:background      background
+         :content         right-side
+         :max-actions     3
+         :behind-overlay? behind-overlay?}]]
+
+      :title
+      (let [centered? (= text-align :center)]
+        [page-nav-base props
+         [title-center props-with-style]
+         [right-content
+          {:background  background
+           :content     right-side
+           :max-actions (if centered? 1 3)
+           :min-size?   centered?}]])
+
+      :dropdown
+      [page-nav-base props
+       [dropdown-center props-with-style]
+       [right-content
+        {:background                background
+         :content                   right-side
+         :max-actions               1
+         :support-account-switcher? false}]]
+
+      :token
+      [page-nav-base props
+       [token-center props-with-style]
        [right-content
         {:background  background
          :content     right-side
-         :max-actions (if centered? 1 3)
-         :min-size?   centered?}]])
+         :max-actions 3}]]
 
-    :dropdown
-    [page-nav-base props
-     [dropdown-center props]
-     [right-content
-      {:background                background
-       :content                   right-side
-       :max-actions               1
-       :support-account-switcher? false}]]
+      :channel
+      [page-nav-base props
+       [channel-center props-with-style]
+       [right-content
+        {:background                background
+         :content                   right-side
+         :max-actions               3
+         :support-account-switcher? false}]]
 
-    :token
-    [page-nav-base props
-     [token-center props]
-     [right-content
-      {:background  background
-       :content     right-side
-       :max-actions 3}]]
+      :title-description
+      [page-nav-base props
+       [title-description-center props-with-style]
+       [right-content
+        {:background                background
+         :content                   right-side
+         :max-actions               2
+         :support-account-switcher? false}]]
 
-    :channel
-    [page-nav-base props
-     [channel-center props]
-     [right-content
-      {:background                background
-       :content                   right-side
-       :max-actions               3
-       :support-account-switcher? false}]]
+      :wallet-networks
+      [page-nav-base props
+       [wallet-networks-center props-with-style]
+       [right-content
+        {:background  background
+         :content     right-side
+         :max-actions 3
+         :min-size?   true}]]
 
-    :title-description
-    [page-nav-base props
-     [title-description-center props]
-     [right-content
-      {:background                background
-       :content                   right-side
-       :max-actions               2
-       :support-account-switcher? false}]]
+      (:community :network)
+      [page-nav-base props
+       [community-network-center props-with-style]
+       [right-content
+        {:background                background
+         :content                   right-side
+         :max-actions               3
+         :support-account-switcher? false}]]
 
-    :wallet-networks
-    [page-nav-base props
-     [wallet-networks-center props]
-     [right-content
-      {:background  background
-       :content     right-side
-       :max-actions 3
-       :min-size?   true}]]
-
-    (:community :network)
-    [page-nav-base props
-     [community-network-center props]
-     [right-content
-      {:background                background
-       :content                   right-side
-       :max-actions               3
-       :support-account-switcher? false}]]
-
-    nil))
+      nil)))
