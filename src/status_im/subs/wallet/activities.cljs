@@ -1,5 +1,7 @@
 (ns status-im.subs.wallet.activities
-  (:require [re-frame.core :as rf]))
+  (:require
+    [re-frame.core :as rf]
+    [utils.datetime :as datetime]))
 
 (rf/reg-sub
  :wallet/all-activities
@@ -11,7 +13,11 @@
  :<- [:wallet/all-activities]
  :<- [:wallet/current-viewing-account-address]
  (fn [[activities current-viewing-account-address]]
-   (filter (fn [{:keys [sender recipient]}]
-             (or (= sender current-viewing-account-address)
-                 (= recipient current-viewing-account-address)))
-           activities)))
+   (let [relevant-activities (filter (fn [{:keys [sender recipient]}]
+                                       (or (= sender current-viewing-account-address)
+                                           (= recipient current-viewing-account-address)))
+                                     activities)
+         grouped-by-day      (group-by (fn [{:keys [timestamp]}]
+                                         (datetime/timestamp->relative-short-date (* timestamp 1000)))
+                                       relevant-activities)]
+     (map (fn [[date acts]] {:title date :data acts}) grouped-by-day))))
