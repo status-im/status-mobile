@@ -14,54 +14,67 @@
   (rf/dispatch [:navigate-back]))
 
 (defn make-network-settings-item
-  [{:keys [network-name]}]
-  {:blur?       true
-   :title       (i18n/label network-name)
-   :image       :icon-avatar
-   :image-props {:icon (resources/get-network network-name)
-                 :size :size-20}})
+  [{:keys [details testnet-label testnet-mode?]}]
+  (let [{:keys [network-name]} details]
+    (cond-> {:blur?       true
+             :title       (i18n/label network-name)
+             :image       :icon-avatar
+             :image-props {:icon (resources/get-network network-name)
+                           :size :size-20}}
+      testnet-mode? (assoc
+                     :label       :text
+                     :label-props testnet-label))))
 
 (defn mainnet-settings
-  [mainnet-details]
+  [{:keys [networks testnet-mode?]}]
   [quo/category
    {:key       :mainnet-settings
-    :data      [(make-network-settings-item mainnet-details)]
+    :data      [(make-network-settings-item
+                 {:details       (:mainnet networks)
+                  :testnet-mode? testnet-mode?
+                  :testnet-label (i18n/label :t/sepolia-active)})]
     :blur?     true
     :list-type :settings}])
 
 (defn layer-2-settings
-  [networks-by-name]
+  [{:keys [networks testnet-mode?]}]
   [quo/category
    {:key       :layer-2-settings
     :label     (i18n/label :t/layer-2)
     :data      (map make-network-settings-item
-                    [(:optimism networks-by-name)
-                     (:arbitrum networks-by-name)])
+                    [{:details       (:optimism networks)
+                      :testnet-mode? testnet-mode?
+                      :testnet-label [quo/text
+                                      {:style style/testnet-not-available}
+                                      (i18n/label :t/testnet-not-available)]}
+                     {:details       (:arbitrum networks)
+                      :testnet-mode? testnet-mode?
+                      :testnet-label (i18n/label :t/sepolia-active)}])
     :blur?     true
     :list-type :settings}])
 
 (defn testnet-mode-setting
-  [{:keys [on-enable on-disable]}]
-  (let [testnet-mode-enabled? (rf/sub [:profile/test-networks-enabled?])
-        on-change-testnet     (rn/use-callback
-                               (fn [active?]
-                                 (if active? (on-enable) (on-disable)))
-                               [on-enable on-disable])]
+  [{:keys [testnet-mode? on-enable on-disable]}]
+  (let [on-change-testnet (rn/use-callback
+                           (fn [active?]
+                             (if active? (on-enable) (on-disable)))
+                           [on-enable on-disable])]
     {:blur?        true
      :title        (i18n/label :t/testnet-mode)
      :action       :selector
      :image        :icon
      :image-props  :i/settings
      :action-props {:on-change on-change-testnet
-                    :checked?  (boolean testnet-mode-enabled?)}}))
+                    :checked?  (boolean testnet-mode?)}}))
 
 (defn advanced-settings
-  [{:keys [enable-testnet disable-testnet]}]
+  [{:keys [testnet-mode? enable-testnet disable-testnet]}]
   [quo/category
    {:key       :advanced-settings
     :label     (i18n/label :t/advanced)
-    :data      [(testnet-mode-setting {:on-enable  enable-testnet
-                                       :on-disable disable-testnet})]
+    :data      [(testnet-mode-setting {:testnet-mode? testnet-mode?
+                                       :on-enable     enable-testnet
+                                       :on-disable    disable-testnet})]
     :blur?     true
     :list-type :settings}])
 
@@ -76,6 +89,7 @@
   (let [insets           (safe-area/get-insets)
         theme            (quo.theme/use-theme)
         networks-by-name (rf/sub [:wallet/network-details-by-network-name])
+        testnet-mode?    (rf/sub [:profile/test-networks-enabled?])
         enable-testnet   (rn/use-callback
                           (fn []
                             (on-change-testnet {:theme   theme
@@ -101,9 +115,14 @@
      [rn/view {:style (style/settings-container (:bottom insets))}
       (when networks-by-name
         [rn/view {:style style/networks-container}
-         [mainnet-settings (:mainnet networks-by-name)]
-         [layer-2-settings networks-by-name]])
+         [mainnet-settings
+          {:networks      networks-by-name
+           :testnet-mode? testnet-mode?}]
+         [layer-2-settings
+          {:networks      networks-by-name
+           :testnet-mode? testnet-mode?}]])
       [rn/view {:style style/advanced-settings-container}
        [advanced-settings
-        {:enable-testnet  enable-testnet
+        {:testnet-mode?   testnet-mode?
+         :enable-testnet  enable-testnet
          :disable-testnet disable-testnet}]]]]))
