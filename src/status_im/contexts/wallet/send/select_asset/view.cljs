@@ -67,6 +67,7 @@
                          (rf/dispatch [:wallet/clean-selected-token])
                          (rf/dispatch [:wallet/clean-selected-collectible])
                          (rf/dispatch [:navigate-back]))]
+    (rn/use-unmount #(rf/dispatch [:wallet/clean-selected-token]))
     (fn []
       [rn/safe-area-view {:style style/container}
        [account-switcher/view
