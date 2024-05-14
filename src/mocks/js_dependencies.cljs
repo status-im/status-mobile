@@ -438,7 +438,6 @@
     "../src/js/worklets/parallax.js"                   #js {}
     "../src/js/worklets/profile_header.js"             #js {}
     "../src/js/worklets/identifiers_highlighting.js"   #js {}
-    "../src/js/worklets/header_animations.js"          #js {}
     "./fleets.js"                                      default-fleets
     "../translations/ar.json"                          (js/JSON.parse (slurp "./translations/ar.json"))
     "../translations/de.json"                          (js/JSON.parse (slurp "./translations/de.json"))

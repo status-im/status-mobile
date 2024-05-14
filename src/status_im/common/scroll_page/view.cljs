@@ -108,7 +108,7 @@
          children]
       (let [theme (quo.theme/use-theme)]
         [:<>
-         [f-scroll-page-header
+         [:f> f-scroll-page-header
           {:scroll-height  @scroll-height
            :height         height
            :sticky-header  sticky-header
