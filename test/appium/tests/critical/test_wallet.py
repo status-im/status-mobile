@@ -7,7 +7,7 @@ from selenium.common import TimeoutException
 from base_test_case import MultipleSharedDeviceTestCase, create_shared_drivers
 from support.api.network_api import NetworkApi
 from tests import marks, run_in_parallel
-from users import transaction_recipients
+from users import recovery_users
 from views.sign_in_view import SignInView
 
 
@@ -20,7 +20,9 @@ class TestWalletMultipleDevice(MultipleSharedDeviceTestCase):
         self.network_api = NetworkApi()
         self.drivers, self.loop = create_shared_drivers(2)
         self.sign_in_1, self.sign_in_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
-        self.sender, self.receiver = transaction_recipients['J'], transaction_recipients['K']
+        passphrases, addresses = list(recovery_users), list(recovery_users.values())
+        self.sender = {'passphrase': passphrases[0], 'address': addresses[0]}
+        self.receiver = {'passphrase': passphrases[1], 'address': addresses[1]}
         self.sender_username, self.receiver_username = 'sender', 'receiver'
         self.loop.run_until_complete(
             run_in_parallel(((self.sign_in_1.recover_access, {'passphrase': self.sender['passphrase'],
@@ -66,7 +68,7 @@ class TestWalletMultipleDevice(MultipleSharedDeviceTestCase):
                 exp_amount = round(initial_eth_amount + amount_to_send, 4)
 
             # for _ in range(12):  # ToDo: 120 sec wait time, enable when autoupdate feature is ready
-            wallet_view.wallet_tab.click()
+            wallet_view.wallet_tab.wait_and_click()
             new_eth_amount = round(wallet_view.get_asset(asset_name='Ether').get_amount(), 4)
             if user_name == 'sender' and new_eth_amount <= exp_amount:
                 return
@@ -77,7 +79,7 @@ class TestWalletMultipleDevice(MultipleSharedDeviceTestCase):
             self.errors.append(
                 "Eth amount in the %ss wallet is %s but should be %s" % (user_name, new_eth_amount, exp_amount))
 
-        # ToDo: disable relogin when autoupdate feature ia ready
+        # ToDo: disable relogin when autoupdate feature is ready
         self.home_1.just_fyi("Relogin for getting an updated balance")
         self.home_2.just_fyi("Relogin for getting an updated balance")
         for _ in range(6):  # just waiting 1 minute here to be sure that balances are updated
@@ -187,6 +189,7 @@ class TestWalletOneDevice(MultipleSharedDeviceTestCase):
         self.wallet_view.just_fyi("Adding new watch only account")
         new_account_name = "Account to watch"
         address_to_watch = "0x8d2413447ff297d30bdc475f6d5cb00254685aae"
+        self.wallet_view.navigate_back_to_wallet_view()
         self.wallet_view.add_watch_only_account(address=address_to_watch, account_name=new_account_name)
 
         if self.wallet_view.account_name_text.text != new_account_name:
