@@ -27,6 +27,6 @@
                        {:sender "acc2" :recipient "acc1" :timestamp 1588377600}
                        {:sender "acc3" :recipient "acc4" :timestamp 1588464000}])
             (assoc-in [:wallet :current-viewing-account-address] "acc1"))))
-    (is (= [{:title "May 1, 2020" :data [{:sender "acc1" :recipient "acc2" :timestamp 1588291200}]}
-            {:title "May 2, 2020" :data [{:sender "acc2" :recipient "acc1" :timestamp 1588377600}]}]
+    (is (= [{:title "May 2, 2020" :data [{:sender "acc2" :recipient "acc1" :timestamp 1588377600}] :timestamp 1588377600}
+            {:title "May 1, 2020" :data [{:sender "acc1" :recipient "acc2" :timestamp 1588291200}] :timestamp 1588291200}]
            (rf/sub [sub-name])))))
