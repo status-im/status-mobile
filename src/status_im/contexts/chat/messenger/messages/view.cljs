@@ -23,17 +23,21 @@
 
 (defn lazy-chat-screen
   [chat-screen-layout-calculations-complete?]
-  (let [screen-loaded? (rf/sub [:shell/chat-screen-loaded?])
-        props          {:insets (safe-area/get-insets)
-                        :content-height (atom 0)
-                        :layout-height (atom 0)
-                        :distance-atom (atom 0)
-                        :distance-from-list-top (reanimated/use-shared-value 0)
-                        :chat-list-scroll-y (reanimated/use-shared-value 0)
-                        :chat-screen-layout-calculations-complete?
-                        chat-screen-layout-calculations-complete?}]
+  (let [screen-loaded?         (rf/sub [:shell/chat-screen-loaded?])
+        distance-from-list-top (reanimated/use-shared-value 0)
+        chat-list-scroll-y     (reanimated/use-shared-value 0)
+        props                  {:insets (safe-area/get-insets)
+                                :content-height (atom 0)
+                                :layout-height (atom 0)
+                                :distance-atom (atom 0)
+                                :distance-from-list-top distance-from-list-top
+                                :chat-list-scroll-y chat-list-scroll-y
+                                :chat-screen-layout-calculations-complete?
+                                chat-screen-layout-calculations-complete?}]
     (when-not screen-loaded?
-      (reanimated/set-shared-value chat-screen-layout-calculations-complete? false))
+      (reanimated/set-shared-value chat-screen-layout-calculations-complete? false)
+      (reanimated/set-shared-value distance-from-list-top 0)
+      (reanimated/set-shared-value chat-list-scroll-y 0))
     (when screen-loaded?
       [chat-screen props])))
 
