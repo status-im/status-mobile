@@ -2,12 +2,9 @@
   (:require
     [quo.core :as quo]
     [react-native.core :as rn]
+    [status-im.contexts.wallet.common.token-value.view :as token-value]
     [status-im.contexts.wallet.home.tabs.assets.style :as style]
     [utils.re-frame :as rf]))
-
-(defn- token-value
-  [item & _rest]
-  [quo/token-value item])
 
 (defn view
   []
@@ -19,6 +16,6 @@
         :parent-height 560
         :animated?     false}]
       [rn/flat-list
-       {:render-fn               token-value
+       {:render-fn               token-value/view
         :data                    tokens
         :content-container-style style/list-container}])))

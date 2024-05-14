@@ -67,27 +67,26 @@
 
 (defn toast
   "Options:
-   
+
    :type => :neutral/:negative/:positive
    "
-  [{:keys [type icon title text action undo-duration undo-on-press container-style theme user]
+  [{:keys [type icon title text action undo-duration undo-on-press container-style user]
     :or   {type :neutral icon :i/placeholder}}]
-  (let [context-theme (quo.theme/use-theme)
-        context-theme (or theme context-theme)
-        icon-name     (case type
-                        :positive (if (= theme :light)
-                                    :i/correct
-                                    :i/correct-dark)
-                        :negative (if (= theme :light)
-                                    :i/incorrect
-                                    :i/incorrect-dark)
-                        :neutral  icon)]
-    [quo.theme/provider context-theme
+  (let [theme     (quo.theme/use-theme)
+        icon-name (case type
+                    :positive (if (= theme :light)
+                                :i/correct
+                                :i/correct-dark)
+                    :negative (if (= theme :light)
+                                :i/incorrect
+                                :i/incorrect-dark)
+                    :neutral  icon)]
+    [quo.theme/provider theme
      [toast-container
       {:left            (cond user
                               [user-avatar/user-avatar user]
                               icon-name
-                              [icon/icon icon-name (style/icon type context-theme)])
+                              [icon/icon icon-name (style/icon type theme)])
        :title           title
        :text            text
        :right           (if undo-duration
@@ -96,3 +95,4 @@
                             :undo-on-press undo-on-press}]
                           action)
        :container-style container-style}]]))
+

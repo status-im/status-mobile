@@ -139,7 +139,7 @@ _install-hooks: ##@prepare Create prepare-commit-msg git hook symlink
 
 # Remove directories and ignored files
 clean: SHELL := /bin/sh
-clean: _fix-node-perms _tmpdir-rm ##@prepare Remove all output folders
+clean: _fix-node-perms _tmpdir-rm ios-clean android-clean ##@prepare Remove all output folders
 	git clean -dXf
 
 # Remove directories, ignored and non-ignored files
@@ -195,6 +195,10 @@ xcode-clean: SHELL := /bin/sh
 xcode-clean: XCODE_HOME := $(HOME)/Library/Developer/Xcode
 xcode-clean: ##@prepare Clean XCode derived data and archives
 	rm -fr $(XCODE_HOME)/DerivedData/StatusIm-* $(XCODE_HOME)/Archives/*/StatusIm*
+
+ios-simulator-cache-clean: SHELL := /bin/sh
+ios-simulator-cache-clean: ##@prepare Clean iOS Simulator Caches
+	rm -rf ~/Library/Developer/CoreSimulator/Cache
 
 #----------------
 # Release builds
@@ -409,13 +413,17 @@ geth-connect: ##@other Connect to Geth on the device
 	build/bin/geth attach http://localhost:8545
 
 ios-clean: SHELL := /bin/sh
+ios-clean: ios-simulator-cache-clean
 ios-clean: ##@prepare Clean iOS build artifacts
 	git clean -dxf -f target/ios
 
-android-clean: export TARGET := gradle
+android-clean: SHELL := /bin/sh
 android-clean: ##@prepare Clean Gradle state
 	git clean -dxf -f ./android/app/build; \
-	[[ -d android/.gradle ]] && cd android && ./gradlew clean
+	rm -rf android/.gradle \
+	rm -rf android/build \
+	rm -rf ~/.gradle
+
 
 android-ports: export TARGET := android-sdk
 android-ports: ##@other Add proxies to Android Device/Simulator

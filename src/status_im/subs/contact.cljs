@@ -8,10 +8,10 @@
     [status-im.common.pixel-ratio :as pixel-ratio]
     [status-im.constants :as constants]
     [status-im.contexts.profile.utils :as profile.utils]
+    [status-im.subs.chat.utils :as chat.utils]
     [utils.address :as address]
     [utils.collection]
-    [utils.i18n :as i18n]
-    [utils.image-server :as image-server]))
+    [utils.i18n :as i18n]))
 
 (defn query-chat-contacts
   [{:keys [contacts]} all-contacts query-fn]
@@ -44,37 +44,40 @@
         (reduce (fn [acc image]
                   (let [image-name (:type image)
                         clock      (:clock image)
-                        uri        (image-server/get-contact-image-uri-fn
-                                    {:port port
-                                     :ratio pixel-ratio/ratio
-                                     :public-key
-                                     public-key
-                                     :image-name
-                                     image-name
-                                     ; We pass the clock so that we reload the
-                                     ; image if the image is updated
-                                     :clock
-                                     clock
-                                     :theme
-                                     theme
-                                     :override-ring?
-                                     (when ens-name false)})]
-                    (assoc-in acc [(keyword image-name) :fn] uri)))
+                        options    {:port port
+                                    :ratio pixel-ratio/ratio
+                                    :public-key
+                                    public-key
+                                    :image-name
+                                    image-name
+                                    ; We pass the clock so that we reload the
+                                    ; image if the image is updated
+                                    :clock
+                                    clock
+                                    :theme
+                                    theme
+                                    :override-ring?
+                                    (when ens-name false)}]
+                    (assoc-in acc
+                     [(keyword image-name) :config]
+                     {:type    :contact
+                      :options options})))
                 images
                 (vals images))
 
         images (if (seq images)
                  images
                  {:thumbnail
-                  {:fn (image-server/get-initials-avatar-uri-fn
-                        {:port                port
-                         :ratio               pixel-ratio/ratio
-                         :public-key          public-key
-                         :override-ring?      (when ens-name false)
-                         :uppercase-ratio     (:uppercase-ratio constants/initials-avatar-font-conf)
-                         :customization-color customization-color
-                         :theme               theme
-                         :font-file           font-file})}})]
+                  {:config {:type    :initials
+                            :options {:port                port
+                                      :ratio               pixel-ratio/ratio
+                                      :public-key          public-key
+                                      :override-ring?      (when ens-name false)
+                                      :uppercase-ratio     (:uppercase-ratio
+                                                            constants/initials-avatar-font-conf)
+                                      :customization-color customization-color
+                                      :theme               theme
+                                      :font-file           font-file}}}})]
 
     (assoc contact :images images)))
 
@@ -151,7 +154,7 @@
  (fn [[members contacts]]
    (-> (reduce
         (fn [acc contact]
-          (let [first-char (first (:alias contact))]
+          (let [first-char (first (:primary-name contact))]
             (if (get acc first-char)
               (update-in acc [first-char :data] #(conj % contact))
               (assoc acc first-char {:title first-char :data [contact]}))))
@@ -165,7 +168,7 @@
  :<- [:contacts/active]
  (fn [active-contacts]
    (->> active-contacts
-        (sort-by :alias)
+        (sort-by :primary-name)
         (sort-by
          #(visibility-status-utils/visibility-status-order (:public-key %))))))
 
@@ -358,9 +361,20 @@
 (re-frame/reg-sub
  :contacts/group-members-sections
  (fn [[_ chat-id]]
-   [(re-frame/subscribe [:contacts/contacts-by-chat chat-id])])
- (fn [[members]]
-   (let [admins  (filter :admin? members)
+   [(re-frame/subscribe [:contacts/contacts-by-chat chat-id])
+    (re-frame/subscribe [:visibility-status-updates])
+    (re-frame/subscribe [:multiaccount/public-key])
+    (re-frame/subscribe [:multiaccount/current-user-visibility-status])])
+ (fn [[members status-updates current-user-public-key current-user-visibility-status]]
+   (let [members (map (fn [{:keys [public-key] :as member}]
+                        (assoc member
+                               :online?
+                               (chat.utils/online?
+                                (if (= public-key current-user-public-key)
+                                  (:status-type current-user-visibility-status)
+                                  (get-in status-updates [public-key :status-type])))))
+                      members)
+         admins  (filter :admin? members)
          online  (filter #(and (not (:admin? %)) (:online? %)) members)
          offline (filter #(and (not (:admin? %)) (not (:online? %))) members)]
      (vals (cond-> {}

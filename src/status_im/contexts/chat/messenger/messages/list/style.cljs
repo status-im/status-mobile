@@ -48,10 +48,11 @@
    {:transform [{:scale scale}]
     :top       top
     :left      left}
-   {:position      :absolute
-    :border-width  4
-    :border-radius 50
-    :border-color  (colors/theme-colors colors/white colors/neutral-95 theme)}))
+   {:position         :absolute
+    :border-width     4
+    :border-radius    50
+    :background-color (colors/theme-colors colors/white colors/neutral-95 theme)
+    :border-color     (colors/theme-colors colors/white colors/neutral-95 theme)}))
 
 (defn user-name-container
   [top left]

@@ -11,15 +11,15 @@
 
 (defn- initials
   [{:keys [full-name size customization-color theme]}]
-  (let [amount-initials (if (#{:size-32 :size-64} size) 2 1)
+  (let [amount-initials (if (#{:size-32 :size-64 :size-80} size) 2 1)
         channel-name    (utils.string/safe-replace full-name "#" "")]
     [text/text
      (cond-> {:accessibility-label :initials
               :style               {:color (colors/resolve-color customization-color theme)}
               :size                :paragraph-2
               :weight              :semi-bold}
-       (= size :size-64) (assoc :size   :heading-1
-                                :weight :medium))
+       (#{:size-64 :size-80} size) (assoc :size   :heading-1
+                                          :weight :medium))
      (utils.string/get-initials channel-name amount-initials)]))
 
 (defn- lock

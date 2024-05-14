@@ -18,7 +18,8 @@
   [rn/view {:style style/header}
    [quo/text
     {:weight :semi-bold
-     :size   :heading-1} collectible-name]
+     :size   :heading-1}
+    collectible-name]
    [rn/view {:style style/collection-container}
     [rn/view {:style style/collection-avatar-container}
      [quo/collection-avatar {:image collection-image-url}]]
@@ -28,15 +29,20 @@
      collection-name]]])
 
 (defn cta-buttons
-  [chain-id token-id contract-address]
+  [{:keys [chain-id token-id contract-address collectible watch-only?]}]
   (let [theme (quo.theme/use-theme)]
     [rn/view {:style style/buttons-container}
-     [quo/button
-      {:container-style style/send-button
-       :type            :outline
-       :size            40
-       :icon-left       :i/send}
-      (i18n/label :t/send)]
+     (when-not watch-only?
+       [quo/button
+        {:container-style style/send-button
+         :type            :outline
+         :size            40
+         :icon-left       :i/send
+         :on-press        #(rf/dispatch
+                            [:wallet/set-collectible-to-send
+                             {:collectible    collectible
+                              :current-screen :screen/wallet.collectible}])}
+        (i18n/label :t/send)])
      [quo/button
       {:container-style  style/opensea-button
        :type             :outline
@@ -66,7 +72,7 @@
       (let [theme                       (quo.theme/use-theme)
             collectible                 (rf/sub [:wallet/last-collectible-details])
             animation-shared-element-id (rf/sub [:animation-shared-element-id])
-            wallet-address              (rf/sub [:wallet/current-viewing-account-address])
+            collectible-owner           (rf/sub [:wallet/last-collectible-details-owner])
             {:keys [id
                     preview-url
                     collection-data
@@ -90,7 +96,7 @@
                                          :header       collectible-name
                                          :description  collection-name}
             total-owned                 (utils/total-owned-collectible (:ownership collectible)
-                                                                       wallet-address)]
+                                                                       (:address collectible-owner))]
         (rn/use-unmount #(rf/dispatch [:wallet/clear-last-collectible-details]))
         [scroll-page/scroll-page
          {:navigate-back? true
@@ -105,7 +111,8 @@
                                                                           {:name  collectible-name
                                                                            :image preview-uri}])
                                                          :theme   theme}])}]
-                           :picture     preview-uri}}
+                           :picture     preview-uri
+                           :blur?       true}}
          [rn/view {:style style/container}
           [quo/expanded-collectible
            {:image-src       preview-uri
@@ -128,7 +135,12 @@
                                                                          {:name  collectible-name
                                                                           :image preview-uri}])}])}])))}]
           [header collectible-name collection-name collection-image]
-          [cta-buttons chain-id token-id contract-address]
+          [cta-buttons
+           {:chain-id         chain-id
+            :token-id         token-id
+            :contract-address contract-address
+            :watch-only?      false ;(:watch-only? collectible-owner)
+            :collectible      collectible}]
           [quo/tabs
            {:size           32
             :style          style/tabs

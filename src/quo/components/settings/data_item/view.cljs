@@ -125,7 +125,12 @@
        {:accessibility-label :data-item
         :disabled            (not icon-right?)
         :on-press            on-press
-        :style               (merge (style/container size card? blur? theme) container-style)}
+        :style               (merge (style/container {:size        size
+                                                      :card?       card?
+                                                      :blur?       blur?
+                                                      :actionable? on-press
+                                                      :theme       theme})
+                                    container-style)}
        [left-side props]
        (when (and (= :default status) (not= :small size))
          [right-side

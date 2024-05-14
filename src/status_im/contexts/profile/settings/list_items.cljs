@@ -1,6 +1,7 @@
 (ns status-im.contexts.profile.settings.list-items
   (:require [status-im.common.not-implemented :as not-implemented]
             [status-im.config :as config]
+            [status-im.feature-flags :as ff]
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]))
 
@@ -34,12 +35,13 @@
      :image       :icon
      :blur?       true
      :action      :arrow}
-    {:title       (i18n/label :t/wallet)
-     :on-press    #(rf/dispatch [:open-modal :screen/settings.wallet])
-     :image-props :i/wallet
-     :image       :icon
-     :blur?       true
-     :action      :arrow}
+    {:title        (i18n/label :t/wallet)
+     :on-press     #(rf/dispatch [:open-modal :screen/settings.wallet])
+     :image-props  :i/wallet
+     :image        :icon
+     :blur?        true
+     :action       :arrow
+     :feature-flag ::ff/settings.wallet-settings}
     (when config/show-not-implemented-features?
       {:title       (i18n/label :t/dapps)
        :on-press    not-implemented/alert
