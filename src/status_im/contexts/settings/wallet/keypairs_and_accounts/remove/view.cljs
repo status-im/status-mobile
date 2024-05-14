@@ -9,9 +9,9 @@
 
 (defn view
   [{:keys [name key-uid]}]
-  (let [customization-color (rf/sub [:profile/customization-color])
-        on-remove           (rn/use-callback #()
-                                             [key-uid])]
+  (let [on-remove (rn/use-callback #(rf/dispatch
+                                     [:wallet/remove-keypair key-uid])
+                                   [key-uid])]
     [:<>
      [quo/page-top
       {:container-style style/header-container

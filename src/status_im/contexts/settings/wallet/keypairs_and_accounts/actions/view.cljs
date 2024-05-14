@@ -31,13 +31,14 @@
            :label               (i18n/label :t/show-encrypted-qr-of-key-pairs)
            :on-press            #(on-show-qr key-pair)}])
        (when (= (:type props) :keypair)
-         [{:icon                :i/edit
-           :accessibility-label :rename-key-pair
-           :label               (i18n/label :t/rename-key-pair)
-           :on-press            #(on-rename-key-pair key-pair)}]
-         [{:icon                :i/delete
-           :accessibility-label :remove-key-pair
-           :add-divider?        true
-           :danger?             true
-           :label               (i18n/label :t/remove-key-pair-and-derived-accounts)
-           :on-press            #(on-remove-key-pair key-pair)}])]]]))
+         (concat
+          [{:icon                :i/edit
+            :accessibility-label :rename-key-pair
+            :label               (i18n/label :t/rename-key-pair)
+            :on-press            #(on-rename-key-pair key-pair)}]
+          [{:icon                :i/delete
+            :accessibility-label :remove-key-pair
+            :add-divider?        true
+            :danger?             true
+            :label               (i18n/label :t/remove-key-pair-and-derived-accounts)
+            :on-press            #(on-remove-key-pair key-pair)}]))]]]))
