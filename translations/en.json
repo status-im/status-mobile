@@ -2574,6 +2574,8 @@
     "keypair-name-input-placeholder": "Collectibles account, Old vault....",
     "key-pair-name-updated": "Key pair name updated",
     "goerli-testnet-toggle-confirmation": "Are you sure you want to toggle Goerli? This will log you out and you will have to login again.",
+    "sepolia-active": "Sepolia active",
+    "testnet-not-available": "Testnet not available",
     "bridged-to": "Bridged to {{network}}",
     "slide-to-bridge": "Slide to bridge",
     "provider-is-down": "The provider for the following chain(s) is down: {{chains}}",
