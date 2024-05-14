@@ -14,7 +14,7 @@
   []
   (rf/dispatch [:open-modal :screen/settings.keypairs-and-accounts]))
 
-(defn gen-basic-settings-options
+(defn basic-settings-options
   []
   [(when (ff/enabled? ::ff/settings.keypairs-and-accounts)
      {:title    (i18n/label :t/keypairs-and-accounts)
@@ -31,7 +31,7 @@
   [quo/category
    {:key       :basic-wallet-settings
     :label     (i18n/label :t/keypairs-accounts-and-addresses)
-    :data      (gen-basic-settings-options)
+    :data      (basic-settings-options)
     :blur?     true
     :list-type :settings}])
 
@@ -39,7 +39,7 @@
   []
   (rf/dispatch [:open-modal :screen/settings.network-settings]))
 
-(defn gen-advanced-settings-options
+(defn advanced-settings-options
   []
   [{:title    (i18n/label :t/network-settings)
     :blur?    true
@@ -52,7 +52,7 @@
     [quo/category
      {:key       :advanced-wallet-settings
       :label     (i18n/label :t/advanced)
-      :data      (gen-advanced-settings-options)
+      :data      (advanced-settings-options)
       :blur?     true
       :list-type :settings}]))
 
