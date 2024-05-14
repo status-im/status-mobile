@@ -5,6 +5,7 @@
     [clojure.string :as string]
     [quo.core :as quo]
     [quo.foundations.colors :as colors]
+    [quo.foundations.resources :as quo.resources]
     [quo.theme :as quo.theme]
     [react-native.blur :as blur]
     [react-native.clipboard :as clipboard]
@@ -294,6 +295,80 @@
                          (map (fn [k]
                                 {:key k :value (string/capitalize (name k))})))}
           opts)))
+
+(def named-context-tags
+  {:asset.snt        {:key   {:size   24
+                              :type   :token
+                              :token  "SNT"
+                              :amount 1500}
+                      :value "SNT"}
+   :asset.dai        {:key   {:size   24
+                              :type   :token
+                              :token  "DAI"
+                              :amount 2400}
+                      :value "UNK"}
+   :collectible      {:key   {:size               24
+                              :type               :collectible
+                              :collectible        (resources/mock-images :collectible)
+                              :collectible-name   "Collectible"
+                              :collectible-number "123"}
+                      :value "Collectible"}
+   :account.vegas    {:key   {:size         24
+                              :type         :account
+                              :account-name "Trip to Vegas"
+                              :emoji        "🤑"}
+                      :value "Account: Trip to Vegas"}
+   :account.piggy    {:key   {:size         24
+                              :type         :account
+                              :account-name "Piggy bank"
+                              :emoji        "🐷"}
+                      :value "Account: Piggy bank"}
+   :person.aretha    {:key   {:size            24
+                              :type            :default
+                              :full-name       "Aretha Gosling"
+                              :profile-picture (resources/mock-images :user-picture-female2)}
+                      :value "Person: Aretha Gosling"}
+   :person.jessica   {:key   {:size            24
+                              :type            :default
+                              :full-name       "Jessica Stewart"
+                              :profile-picture (resources/mock-images :user-picture-female2)}
+                      :value "Person: Jessica Stewart"}
+   :person.bond      {:key   {:size            24
+                              :type            :default
+                              :full-name       "James Bond"
+                              :profile-picture (resources/mock-images :user-picture-male4)}
+                      :value "Person: James Bond"}
+   :network.mainnet  {:key   {:size         24
+                              :type         :network
+                              :network-logo (quo.resources/get-network :ethereum)
+                              :network-name "Mainnet"}
+                      :value "Network: Mainnet"}
+   :network.optimism {:key   {:size         24
+                              :type         :network
+                              :network-logo (quo.resources/get-network :optimism)
+                              :network-name "Optimism"}
+                      :value "Network: Optimism"}
+   :network.arbitrum {:key   {:size         24
+                              :type         :network
+                              :network-logo (quo.resources/get-network :arbitrum)
+                              :network-name "Arbitrum"}
+                      :value "Network: Arbitrum"}
+   :network.multi    {:key   {:size     24
+                              :type     :multinetwork
+                              :networks [(quo.resources/get-network :ethereum)
+                                         (quo.resources/get-network :arbitrum)
+                                         (quo.resources/get-network :optimism)]}
+                      :value "Network: Multinetwork"}
+   :market.moonpay   {:key   {:size         24
+                              :type         :network
+                              :network-logo (quo.resources/get-network :ethereum)
+                              :network-name "Moonpay"}
+                      :value "Market: Moonpay"}
+   :market.binance   {:key   {:size         24
+                              :type         :network
+                              :network-logo (quo.resources/get-network :ethereum)
+                              :network-name "Binance"}
+                      :value "Market: Binance"}})
 
 (defn blur-view
   [{:keys [show-blur-background? image height blur-view-props style theme]} & children]
