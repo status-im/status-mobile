@@ -62,8 +62,8 @@
 
 (def login-node-config
   {:WalletConfig (cond-> {:Enabled true}
-                   (not= config/infura-key "")
-                   (assoc :InfuraKey config/infura-key)
+                   (not= config/pokt-key "")
+                   (assoc :PoktKey config/pokt-key)
 
                    (not= config/opensea-api-key "")
                    (assoc :OpenseaAPIKey config/opensea-api-key))})

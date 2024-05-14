@@ -20,9 +20,11 @@
 ;; flags stay up to date and are removed once behavior introduced is stable.
 
 (goog-define INFURA_TOKEN "800c641949d64d768a5070a1b0511938")
+(goog-define POKT_TOKEN "")
 (goog-define OPENSEA_API_KEY "")
 
 (def infura-key INFURA_TOKEN)
+(def pokt-key POKT_TOKEN)
 (def mainnet-rpc-url (str "https://eth-archival.gateway.pokt.network/v1/lb/" POKT_TOKEN))
 (def testnet-rpc-url (str "https://ropsten.infura.io/v3/" INFURA_TOKEN))
 (def goerli-rpc-url (str "https://goerli-archival.gateway.pokt.network/v1/lb/" POKT_TOKEN))
