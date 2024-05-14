@@ -257,6 +257,12 @@
 (def regx-starts-with-uuid #"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}")
 (def regx-full-or-partial-address #"^0x[a-fA-F0-9]{1,40}$")
 
+;; Wallet Connect
+(def ^:const optimism-crosschain-id "eip155:10")
+(def ^:const wallet-connect-supported-methods ["eth_sendTransaction" "personal_sign"])
+(def ^:const wallet-connect-supported-events ["accountsChanged" "chainChanged"])
+(def ^:const wallet-connect-session-proposal-event "session_proposal")
+
 (def ^:const dapp-permission-contact-code "contact-code")
 (def ^:const dapp-permission-web3 "web3")
 (def ^:const dapp-permission-qr-code "qr-code")
