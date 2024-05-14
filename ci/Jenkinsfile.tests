@@ -34,6 +34,11 @@ pipeline {
       description: 'Whether to run optional and slow contract tests.',
       defaultValue: false,
     )
+    booleanParam(
+      name: 'RUN_INTEGRATION_TESTS',
+      description: 'Whether to run optional and slow integration tests.',
+      defaultValue: false,
+    )
   }
 
   environment {
@@ -68,6 +73,7 @@ pipeline {
           steps { make('test-contract') }
         }
         stage('Integration') {
+          when { expression { params.RUN_INTEGRATION_TESTS } }
           steps { make('test-integration') }
         }
       }
