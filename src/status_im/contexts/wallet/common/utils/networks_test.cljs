@@ -1,6 +1,6 @@
 (ns status-im.contexts.wallet.common.utils.networks-test
   (:require
-    [cljs.test :refer [deftest is testing]]
+    [cljs.test :refer [are deftest is testing]]
     [status-im.constants :as constants]
     [status-im.contexts.wallet.common.utils.networks :as utils]))
 
@@ -21,15 +21,6 @@
     (is (= (utils/network->chain-id {:network :arbitrum :testnet-enabled? true :goerli-enabled? false})
            constants/arbitrum-sepolia-chain-id))))
 
-(deftest test-short-names->network-preference-prefix
-  (testing "short-names->network-preference-prefix function"
-    (is (= (utils/short-names->network-preference-prefix ["eth"])
-           "eth:"))
-    (is (= (utils/short-names->network-preference-prefix ["eth" "opt"])
-           "eth:opt:"))
-    (is (= (utils/short-names->network-preference-prefix ["eth" "opt" "arb1"])
-           "eth:opt:arb1:"))))
-
 (deftest test-network-preference-prefix->network-names
   (testing "network-preference-prefix->network-names function"
     (is (= (utils/network-preference-prefix->network-names "eth")
@@ -38,3 +29,17 @@
            (seq [:mainnet :optimism])))
     (is (= (utils/network-preference-prefix->network-names "eth:opt:arb1")
            (seq [:mainnet :optimism :arbitrum])))))
+
+(deftest short-names->network-preference-prefix-test
+  (are [expected short-names]
+   (= expected (utils/short-names->network-preference-prefix short-names))
+   "eth:"          ["eth"]
+   "eth:opt:"      ["eth" "opt"]
+   "eth:opt:arb1:" ["eth" "opt" "arb1"]))
+
+(deftest network-preference-prefix->network-names-test
+  (are [expected short-names]
+   (= expected (utils/network-preference-prefix->network-names short-names))
+   (seq [:mainnet])                     "eth"
+   (seq [:mainnet :optimism])           "eth:opt"
+   (seq [:mainnet :optimism :arbitrum]) "eth:opt:arb1"))
