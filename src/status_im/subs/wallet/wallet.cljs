@@ -263,6 +263,11 @@
                 :formatted-balance formatted-balance)))))
 
 (rf/reg-sub
+ :wallet/current-viewing-account-color
+ :<- [:wallet/current-viewing-account]
+ :-> :color)
+
+(rf/reg-sub
  :wallet/current-viewing-account-keypair
  :<- [:wallet/current-viewing-account]
  :<- [:wallet/keypairs]
@@ -396,6 +401,12 @@
  :wallet/local-suggestions
  :<- [:wallet/search-address]
  :-> :local-suggestions)
+
+(rf/reg-sub
+ :wallet/local-suggestions->full-address
+ :<- [:wallet/local-suggestions]
+ (fn [local-suggestions]
+   (:full-address (first local-suggestions))))
 
 (rf/reg-sub
  :wallet/valid-ens-or-address?

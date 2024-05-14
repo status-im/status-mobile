@@ -464,6 +464,7 @@
   #{ethereum-sepolia-chain-id arbitrum-sepolia-chain-id optimism-sepolia-chain-id})
 
 (def ^:const mainnet-short-name "eth")
+(def ^:const ethereum-short-name "eth")
 (def ^:const optimism-short-name "opt")
 (def ^:const arbitrum-short-name "arb1")
 
@@ -474,6 +475,7 @@
 (def ^:const arbitrum-abbreviated-name "Arb1.")
 
 (def ^:const mainnet-network-name :mainnet)
+(def ^:const ethereum-network-name :ethereum)
 (def ^:const optimism-network-name :optimism)
 (def ^:const arbitrum-network-name :arbitrum)
 

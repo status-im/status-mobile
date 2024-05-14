@@ -2,6 +2,7 @@
   (:require
     [quo.core :as quo]
     [quo.foundations.colors :as colors]
+    [quo.theme]
     [react-native.core :as rn]
     [react-native.safe-area :as safe-area]
     [reagent.core :as reagent]
@@ -78,23 +79,22 @@
         :valid-ens-or-address? valid-ens-or-address?}])))
 
 (defn- ens-linked-address
-  [{:keys [address networks theme]}]
-  [quo/text
-   {:size  :paragraph-2
-    :style {:padding-horizontal 12
-            :padding-top        4}}
-   (map (fn [network]
-          ^{:key (str network)}
-          [quo/text
-           {:size  :paragraph-2
-            :style {:color (colors/resolve-color network theme)}}
-           (str (subs (name network) 0 3) ":")])
-        networks)
-   [quo/text
-    {:size   :paragraph-2
-     :weight :monospace
-     :style  {:color (colors/theme-colors colors/neutral-100 colors/white theme)}}
-    address]])
+  [{:keys [address networks]}]
+  (let [theme (quo.theme/use-theme)]
+    [quo/text
+     {:size  :paragraph-2
+      :style style/network-text-container}
+     (map (fn [network]
+            ^{:key (str network)}
+            [quo/text
+             {:size  :paragraph-2
+              :style {:color (colors/resolve-color network theme)}}
+             (str (subs (name network) 0 3) ":")])
+          networks)
+     [quo/text
+      {:size   :paragraph-2
+       :weight :monospace}
+      address]]))
 
 (defn- suggestion-component
   []
@@ -151,9 +151,10 @@
         input-value    (reagent/atom "")
         input-focused? (reagent/atom false)]
     (fn []
-      (let [selected-tab          (or (rf/sub [:wallet/send-tab]) (:id (first tabs-data)))
-            valid-ens-or-address? (boolean (rf/sub [:wallet/valid-ens-or-address?]))
-            {:keys [color]}       (rf/sub [:wallet/current-viewing-account])]
+      (let [selected-tab             (or (rf/sub [:wallet/send-tab]) (:id (first tabs-data)))
+            valid-ens-or-address?    (boolean (rf/sub [:wallet/valid-ens-or-address?]))
+            local-suggestion-address (rf/sub [:wallet/local-suggestions->full-address])
+            color                    (rf/sub [:wallet/current-viewing-account-color])]
         [floating-button-page/view
          {:footer-container-padding 0
           :header                   [account-switcher/view
@@ -167,7 +168,8 @@
                                         :disabled?           (not valid-ens-or-address?)
                                         :on-press            #(rf/dispatch
                                                                [:wallet/select-send-address
-                                                                {:address @input-value
+                                                                {:address (or local-suggestion-address
+                                                                              @input-value)
                                                                  :stack-id
                                                                  :screen/wallet.select-address}])
                                         :customization-color color}
