@@ -4,6 +4,7 @@
     [clojure.string :as string]
     [native-module.core :as native-module]
     [status-im.constants :as constants]
+    [status-im.contexts.wallet.collectible.utils :as collectible.utils]
     [status-im.contexts.wallet.common.utils :as utils]
     [status-im.contexts.wallet.common.utils.networks :as network-utils]
     [status-im.contexts.wallet.send.utils :as send-utils]
@@ -136,13 +137,20 @@
          receiver-networks   (network-utils/resolve-receiver-networks
                               {:prefix           prefix
                                :testnet-enabled? testnet-enabled?
-                               :goerli-enabled?  goerli-enabled?})]
+                               :goerli-enabled?  goerli-enabled?})
+         collectible-tx?     (= (-> db :wallet :ui :send :tx-type) :collectible)
+         collectible         (when collectible-tx?
+                               (-> db :wallet :ui :send :collectible))
+         one-collectible?    (when collectible-tx?
+                               (= (collectible.utils/collectible-balance collectible) 1))]
      {:db (-> db
               (assoc-in [:wallet :ui :send :recipient] (or recipient address))
               (assoc-in [:wallet :ui :send :to-address] to-address)
               (assoc-in [:wallet :ui :send :address-prefix] prefix)
               (assoc-in [:wallet :ui :send :receiver-networks] receiver-networks))
-      :fx [[:dispatch
+      :fx [(when (and collectible-tx? one-collectible?)
+             [:dispatch [:wallet/get-suggested-routes {:amount 1}]])
+           [:dispatch
             [:wallet/wizard-navigate-forward
              {:current-screen stack-id
               :start-flow?    start-flow?
@@ -163,12 +171,16 @@
       :fx [[:dispatch [:wallet/get-suggested-routes {:amount amount}]]]})))
 
 (rf/reg-event-fx
- :wallet/send-select-token
- (fn [{:keys [db]} [{:keys [token stack-id start-flow?]}]]
-   {:db (-> db
-            (update-in [:wallet :ui :send] dissoc :collectible)
-            (assoc-in [:wallet :ui :send :token] token)
-            (assoc-in [:wallet :ui :send :token-display-name] (:symbol token)))
+ :wallet/set-token-to-send
+ (fn [{:keys [db]} [{:keys [token-symbol token stack-id start-flow?]}]]
+   ;; `token` is a map extracted from the sender, but in the wallet home page we don't know the
+   ;; sender yet, so we only provide the `token-symbol`, later in
+   ;; `:wallet/select-from-account` the `token` key will be set.
+   {:db (cond-> db
+          :always      (update-in [:wallet :ui :send] dissoc :collectible)
+          :always      (assoc-in [:wallet :ui :send :token-display-name] (:symbol token))
+          token        (assoc-in [:wallet :ui :send :token] token)
+          token-symbol (assoc-in [:wallet :ui :send :token-symbol] token-symbol))
     :fx [[:dispatch [:wallet/clean-suggested-routes]]
          [:dispatch
           [:wallet/wizard-navigate-forward
@@ -198,38 +210,49 @@
                      :collectible
                      :token-display-name
                      :amount
-                     (when (= transaction-type :collecible) :tx-type))})))
+                     (when (= transaction-type :collectible) :tx-type))})))
 
-(rf/reg-event-fx :wallet/send-collectibles-amount
- (fn [{:keys [db]} [{:keys [collectible stack-id amount]}]]
+(rf/reg-event-fx
+ :wallet/set-collectible-to-send
+ (fn [{db :db} [{:keys [collectible current-screen]}]]
    (let [collection-data    (:collection-data collectible)
          collectible-data   (:collectible-data collectible)
          collectible-id     (get-in collectible [:id :token-id])
+         one-collectible?   (= (collectible.utils/collectible-balance collectible) 1)
          token-display-name (cond
                               (and collectible
                                    (not (string/blank? (:name collectible-data))))
                               (:name collectible-data)
 
                               collectible
-                              (str (:name collection-data) " #" collectible-id))]
-     {:db (-> db
-              (update-in [:wallet :ui :send] dissoc :token)
-              (assoc-in [:wallet :ui :send :collectible] collectible)
-              (assoc-in [:wallet :ui :send :token-display-name] token-display-name)
-              (assoc-in [:wallet :ui :send :tx-type] :collectible)
-              (assoc-in [:wallet :ui :send :amount] amount))
-      :fx [[:dispatch [:wallet/get-suggested-routes {:amount amount}]]
-           [:navigate-to-within-stack [:screen/wallet.transaction-confirmation stack-id]]]})))
+                              (str (:name collection-data) " #" collectible-id))
+         collectible-tx     (-> db
+                                (update-in [:wallet :ui :send] dissoc :token)
+                                (assoc-in [:wallet :ui :send :collectible] collectible)
+                                (assoc-in [:wallet :ui :send :token-display-name] token-display-name)
+                                (assoc-in [:wallet :ui :send :tx-type] :collectible))
+         recipient-set?     (-> db :wallet :ui :send :recipient)]
+     {:db (cond-> collectible-tx
+            one-collectible? (assoc-in [:wallet :ui :send :amount] 1))
+      :fx [(when (and one-collectible? recipient-set?)
+             [:dispatch [:wallet/get-suggested-routes {:amount 1}]])
+           [:dispatch
+            [:wallet/wizard-navigate-forward
+             {:current-screen current-screen
+              :flow-id        :wallet-send-flow}]]]})))
 
-(rf/reg-event-fx :wallet/select-collectibles-amount
- (fn [{:keys [db]} [{:keys [collectible stack-id]}]]
-   {:db (-> db
-            (update-in [:wallet :ui :send] dissoc :token)
-            (assoc-in [:wallet :ui :send :collectible] collectible)
-            (assoc-in [:wallet :ui :send :tx-type] :collectible))
-    :fx [[:navigate-to-within-stack [:screen/wallet.select-collectible-amount stack-id]]]}))
+(rf/reg-event-fx
+ :wallet/set-collectible-amount-to-send
+ (fn [{db :db} [{:keys [stack-id amount]}]]
+   {:db (assoc-in db [:wallet :ui :send :amount] amount)
+    :fx [[:dispatch [:wallet/get-suggested-routes {:amount amount}]]
+         [:dispatch
+          [:wallet/wizard-navigate-forward
+           {:current-screen stack-id
+            :flow-id        :wallet-send-flow}]]]}))
 
-(rf/reg-event-fx :wallet/send-select-amount
+(rf/reg-event-fx
+ :wallet/set-token-amount-to-send
  (fn [{:keys [db]} [{:keys [amount stack-id start-flow?]}]]
    {:db (assoc-in db [:wallet :ui :send :amount] amount)
     :fx [[:dispatch
@@ -503,10 +526,21 @@
 
 (rf/reg-event-fx
  :wallet/select-from-account
- (fn [_ [{:keys [address stack-id start-flow?]}]]
-   {:fx [[:dispatch [:wallet/switch-current-viewing-account address]]
-         [:dispatch
-          [:wallet/wizard-navigate-forward
-           {:current-screen stack-id
-            :start-flow?    start-flow?
-            :flow-id        :wallet-send-flow}]]]}))
+ (fn [{db :db} [{:keys [address stack-id start-flow?]}]]
+   (let [token-symbol (-> db :wallet :ui :send :token-symbol)
+         token        (when token-symbol
+                        ;; When this flow has started in the wallet home page, we know the
+                        ;; token or collectible to send, but we don't know from which
+                        ;; account, so we extract the token data from the picked account.
+                        (utils/get-token-from-account db token-symbol address))]
+     {:db (if token-symbol
+            (-> db
+                (assoc-in [:wallet :ui :send :token] token)
+                (update-in [:wallet :ui :send] dissoc :token-symbol))
+            db)
+      :fx [[:dispatch [:wallet/switch-current-viewing-account address]]
+           [:dispatch
+            [:wallet/wizard-navigate-forward
+             {:current-screen stack-id
+              :start-flow?    start-flow?
+              :flow-id        :wallet-send-flow}]]]})))

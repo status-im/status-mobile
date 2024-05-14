@@ -271,3 +271,10 @@
     (str (get-in collectible [:id :contract-id :address])
          ":"
          (get-in collectible [:id :token-id]))))
+
+(defn get-token-from-account
+  [db token-symbol address]
+  (let [address-tokens (-> db :wallet :accounts (get address) :tokens)]
+    (some #(when (= token-symbol (:symbol %))
+             %)
+          address-tokens)))

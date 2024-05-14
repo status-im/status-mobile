@@ -15,16 +15,14 @@
    :right-icon          :i/external})
 
 (defn- action-send
-  [token-data]
+  [send-params]
   {:icon                :i/send
    :accessibility-label :send
    :label               (i18n/label :t/send)
    :on-press            (fn []
                           (rf/dispatch [:hide-bottom-sheet])
                           (rf/dispatch [:wallet/clean-send-data])
-                          (rf/dispatch [:wallet/send-select-token
-                                        {:token       token-data
-                                         :start-flow? true}]))})
+                          (rf/dispatch [:wallet/set-token-to-send send-params]))})
 
 (defn- action-receive
   []
@@ -59,14 +57,21 @@
 
 (defn token-value-drawer
   [token watch-only?]
-  (let [token-data (first (rf/sub [:wallet/current-viewing-account-tokens-filtered (:token token)]))]
+  (let [token-symbol      (:token token)
+        token-data        (first (rf/sub [:wallet/current-viewing-account-tokens-filtered token-symbol]))
+        selected-account? (rf/sub [:wallet/current-viewing-account-address])
+        send-params       (if selected-account?
+                            {:token       token-data
+                             :start-flow? true}
+                            {:token-symbol token-symbol
+                             :start-flow?  true})]
     [quo/action-drawer
      [(cond->> [(when (ff/enabled? ::ff/wallet.assets-modal-manage-tokens)
                   (action-manage-tokens watch-only?))
                 (when (ff/enabled? ::ff/wallet.assets-modal-hide)
                   (action-hide))]
         (not watch-only?) (concat [(action-buy)
-                                   (action-send token-data)
+                                   (action-send send-params)
                                    (action-receive)
                                    (action-bridge token-data)]))]]))
 

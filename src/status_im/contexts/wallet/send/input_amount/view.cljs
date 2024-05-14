@@ -97,7 +97,7 @@
       (let [[input-state set-input-state] (rn/use-state controlled-input/init-state)
             clear-input!                  #(set-input-state controlled-input/delete-all)
             handle-on-confirm             (fn []
-                                            (rf/dispatch [:wallet/send-select-amount
+                                            (rf/dispatch [:wallet/set-token-amount-to-send
                                                           {:amount   (controlled-input/input-value
                                                                       input-state)
                                                            :stack-id current-screen-id}]))
