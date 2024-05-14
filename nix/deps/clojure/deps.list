@@ -91,7 +91,7 @@ org/clojure/test.check/1.1.1/test.check-1.1.1.jar
 org/clojure/tools.analyzer/1.1.0/tools.analyzer-1.1.0.jar
 org/clojure/tools.analyzer.jvm/1.2.2/tools.analyzer.jvm-1.2.2.jar
 org/clojure/tools.cli/1.0.206/tools.cli-1.0.206.jar
-org/clojure/tools.logging/1.1.0/tools.logging-1.1.0.jar
+org/clojure/tools.logging/1.2.4/tools.logging-1.2.4.jar
 org/clojure/tools.macro/0.1.5/tools.macro-0.1.5.jar
 org/clojure/tools.reader/1.3.7/tools.reader-1.3.7.jar
 org/javassist/javassist/3.18.1-GA/javassist-3.18.1-GA.jar
@@ -110,7 +110,7 @@ prismatic/schema/1.1.7/schema-1.1.7.jar
 reagent/reagent/1.2.0/reagent-1.2.0.jar
 re-com/re-com/2.8.0/re-com-2.8.0.jar
 refactor-nrepl/refactor-nrepl/3.9.1/refactor-nrepl-3.9.1.jar
-re-frame/re-frame/1.3.0/re-frame-1.3.0.jar
+re-frame/re-frame/1.4.3/re-frame-1.4.3.jar
 re-frisk-remote/re-frisk-remote/1.6.0/re-frisk-remote-1.6.0.jar
 re-frisk/sente/1.15.0/sente-1.15.0.jar
 ring-cors/ring-cors/0.1.8/ring-cors-0.1.8.jar
