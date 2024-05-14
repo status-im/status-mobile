@@ -55,10 +55,10 @@
        :status          (if incorrect-value? :error :default)}]
      [quo/bottom-actions
       {:actions          :one-action
-       :button-one-props {:on-press  #(rf/dispatch [:wallet/send-collectibles-amount
-                                                    {:collectible collectible
-                                                     :amount      value
-                                                     :stack-id    :screen/wallet.select-asset}])
+       :button-one-props {:on-press  #(rf/dispatch
+                                       [:wallet/set-collectible-amount-to-send
+                                        {:stack-id :screen/wallet.select-collectible-amount
+                                         :amount   value}])
                           :disabled? incorrect-value?}
        :button-one-label (i18n/label :t/confirm)}]
      [quo/numbered-keyboard

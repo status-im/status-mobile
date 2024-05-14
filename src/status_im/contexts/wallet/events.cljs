@@ -31,7 +31,8 @@
 (rf/reg-event-fx :wallet/navigate-to-account
  (fn [{:keys [db]} [address]]
    {:db (assoc-in db [:wallet :current-viewing-account-address] address)
-    :fx [[:dispatch [:navigate-to :screen/wallet.accounts address]]]}))
+    :fx [[:dispatch [:navigate-to :screen/wallet.accounts address]]
+         [:dispatch [:wallet/fetch-activities]]]}))
 
 (rf/reg-event-fx :wallet/navigate-to-new-account
  (fn [{:keys [db]} [address]]

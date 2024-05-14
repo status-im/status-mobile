@@ -1,5 +1,9 @@
 (ns status-im.contexts.wallet.wallet-connect.utils
+  ;; NOTE: Not sorting namespaces since @walletconnect/react-native-compat should be the first
+  #_{:clj-kondo/ignore [:unsorted-required-namespaces]}
   (:require ["@walletconnect/core" :refer [Core]]
+            ["@walletconnect/react-native-compat"]
+            ["@walletconnect/utils" :refer [buildApprovedNamespaces]]
             ["@walletconnect/web3wallet" :refer [Web3Wallet]]
             [status-im.config :as config]
             [utils.i18n :as i18n]))
@@ -23,3 +27,13 @@
     (Web3Wallet.init
      (clj->js {:core     core
                :metadata wallet-connect-metadata}))))
+
+(defn build-approved-namespaces
+  [proposal supported-namespaces]
+  (buildApprovedNamespaces
+   (clj->js {:proposal            proposal
+             :supportedNamespaces supported-namespaces})))
+
+(defn format-address
+  [chain-id address]
+  (str chain-id ":" address))

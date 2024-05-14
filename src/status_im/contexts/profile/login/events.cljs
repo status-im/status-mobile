@@ -8,6 +8,7 @@
     [status-im.constants :as constants]
     status-im.contexts.profile.login.effects
     [status-im.contexts.profile.rpc :as profile.rpc]
+    [status-im.feature-flags :as ff]
     [taoensso.timbre :as log]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]
@@ -104,6 +105,8 @@
            [:chat.ui/request-link-preview-whitelist]
            [:visibility-status-updates/fetch]
            [:switcher-cards/fetch]
+           (when (ff/enabled? ::ff/wallet.wallet-connect)
+             [:dispatch [:wallet-connect/init]])
            (when-not (:universal-links/handling db)
              [:effects.chat/open-last-chat key-uid])
            (when notifications-enabled?
