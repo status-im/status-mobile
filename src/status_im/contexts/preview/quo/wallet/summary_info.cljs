@@ -1,20 +1,13 @@
 (ns status-im.contexts.preview.quo.wallet.summary-info
   (:require
+    [quo.components.wallet.summary-info.schema :refer [?schema]]
     [quo.core :as quo]
     [reagent.core :as reagent]
     [status-im.common.resources :as resources]
-    [status-im.contexts.preview.quo.preview :as preview]))
+    [status-im.contexts.preview.quo.preview :as preview]
+    [status-im.contexts.preview.quo.preview-generator :as preview-gen]))
 
-
-(def descriptor
-  [{:key     :type
-    :type    :select
-    :options [{:key :status-account}
-              {:key :user}
-              {:key :saved-account}
-              {:key :account}]}
-   {:key :networks? :type :boolean}])
-
+(def descriptor (preview-gen/schema->descriptor ?schema))
 
 (defn view
   []

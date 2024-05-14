@@ -1,20 +1,13 @@
 (ns status-im.contexts.preview.quo.wallet.account-origin
   (:require
+    [quo.components.wallet.account-origin.schema :refer [?schema]]
     [quo.core :as quo]
     [reagent.core :as reagent]
     [status-im.common.resources :as resources]
-    [status-im.contexts.preview.quo.preview :as preview]))
+    [status-im.contexts.preview.quo.preview :as preview]
+    [status-im.contexts.preview.quo.preview-generator :as preview-gen]))
 
-(def descriptor
-  [{:type    :select
-    :key     :type
-    :options [{:key :default-keypair}
-              {:key :recovery-phrase}
-              {:key :private-key}]}
-   {:type    :select
-    :key     :stored
-    :options [{:key :on-device}
-              {:key :on-keycard}]}])
+(def descriptor (preview-gen/schema->descriptor ?schema))
 
 (defn view
   []

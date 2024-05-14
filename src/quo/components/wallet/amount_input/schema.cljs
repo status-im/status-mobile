@@ -6,6 +6,8 @@
     [:props
      [:map {:closed true}
       [:status {:optional true} [:maybe [:enum :default :error]]]
+      [:on-dec-press {:optional true} fn?]
+      [:on-inc-press {:optional true} fn?]
       [:on-change-text {:optional true} [:maybe fn?]]
       [:container-style {:optional true} [:maybe :map]]
       [:min-value {:optional true} [:maybe :int]]

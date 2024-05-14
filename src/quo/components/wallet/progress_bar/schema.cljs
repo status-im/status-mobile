@@ -7,5 +7,6 @@
      [:map
       [:customization-color {:optional true} [:maybe :schema.common/customization-color]]
       [:progressed-value {:optional true} [:maybe [:or :string :int]]]
-      [:full-width? {:optional true} [:maybe :boolean]]]]]
+      [:full-width? {:optional true} [:maybe :boolean]]
+      [:state [:enum :pending :confirmed :finalized :error]]]]]
    :any])

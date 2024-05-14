@@ -1,59 +1,50 @@
 (ns status-im.contexts.preview.quo.wallet.transaction-progress
   (:require
+    [quo.components.wallet.transaction-progress.schema :refer [?schema]]
     [quo.core :as quo]
     [react-native.core :as rn]
     [reagent.core :as reagent]
     [status-im.common.resources :as resources]
-    [status-im.contexts.preview.quo.preview :as preview]))
+    [status-im.contexts.preview.quo.preview :as preview]
+    [status-im.contexts.preview.quo.preview-generator :as preview-gen]))
 
 (def descriptor
-  [{:type :text
-    :key  :title}
-   {:type :text
-    :key  :tag-name}
-   {:type :text
-    :key  :epoch-number-mainnet}
-   {:type :text
-    :key  :epoch-number-optimism}
-   {:type :text
-    :key  :epoch-number-arbitrum}
-   {:type :text
-    :key  :tag-number}
-   {:type :number
-    :key  :optimism-progress-percentage}
-   {:type :number
-    :key  :arbitrum-progress-percentage}
-   {:type    :select
-    :key     :network
-    :options [{:key :mainnet}
-              {:key :optimism}
-              {:key :arbitrum}
-              {:key :optimism-arbitrum}]}
-   {:type    :select
-    :key     :state-mainnet
-    :options [{:key :pending}
-              {:key :sending}
-              {:key :confirmed}
-              {:key :finalising}
-              {:key :finalized}
-              {:key :error}]}
-   {:type    :select
-    :key     :state-optimism
-    :options [{:key :pending}
-              {:key :sending}
-              {:key :confirmed}
-              {:key :finalising}
-              {:key :finalized}
-              {:key :error}]}
-   {:type    :select
-    :key     :state-arbitrum
-    :options [{:key :pending}
-              {:key :sending}
-              {:key :confirmed}
-              {:key :finalising}
-              {:key :finalized}
-              {:key :error}]}
-   (preview/customization-color-option)])
+  (conj (preview-gen/schema->descriptor ?schema)
+        {:type :text :key :epoch-number-mainnet}
+        {:type :text :key :epoch-number-optimism}
+        {:type :text :key :epoch-number-arbitrum}
+        {:type :number :key :optimism-progress-percentage}
+        {:type :number :key :arbitrum-progress-percentage}
+        {:type    :select
+         :key     :network
+         :options [{:key :mainnet}
+                   {:key :optimism}
+                   {:key :arbitrum}
+                   {:key :optimism-arbitrum}]}
+        {:type    :select
+         :key     :state-mainnet
+         :options [{:key :pending}
+                   {:key :sending}
+                   {:key :confirmed}
+                   {:key :finalising}
+                   {:key :finalized}
+                   {:key :error}]}
+        {:type    :select
+         :key     :state-optimism
+         :options [{:key :pending}
+                   {:key :sending}
+                   {:key :confirmed}
+                   {:key :finalising}
+                   {:key :finalized}
+                   {:key :error}]}
+        {:type    :select
+         :key     :state-arbitrum
+         :options [{:key :pending}
+                   {:key :sending}
+                   {:key :confirmed}
+                   {:key :finalising}
+                   {:key :finalized}
+                   {:key :error}]}))
 
 (def total-box 85)
 (def counter (reagent/atom 0))

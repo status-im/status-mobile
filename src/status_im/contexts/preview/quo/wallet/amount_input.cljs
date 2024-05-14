@@ -1,20 +1,12 @@
 (ns status-im.contexts.preview.quo.wallet.amount-input
   (:require
+    [quo.components.wallet.amount-input.schema :refer [?schema]]
     [quo.core :as quo]
     [reagent.core :as reagent]
-    [status-im.contexts.preview.quo.preview :as preview]))
+    [status-im.contexts.preview.quo.preview :as preview]
+    [status-im.contexts.preview.quo.preview-generator :as preview-gen]))
 
-(def descriptor
-  [{:key  :max-value
-    :type :number}
-   {:key  :min-value
-    :type :number}
-   {:key  :value
-    :type :number}
-   {:type    :select
-    :key     :status
-    :options [{:key :default}
-              {:key :error}]}])
+(def descriptor (preview-gen/schema->descriptor ?schema))
 
 (defn view
   []
@@ -22,14 +14,11 @@
                                     :min-value 0
                                     :value     1
                                     :status    :default})
-        on-inc-press (fn [] (swap! state #(assoc % :value (inc (:value %)))))
-        on-dec-press (fn [] (swap! state #(assoc % :value (dec (:value %)))))]
+        on-inc-press (fn [] (swap! state update :value inc))
+        on-dec-press (fn [] (swap! state update :value dec))]
     (fn []
-      [preview/preview-container
-       {:state      state
-        :descriptor descriptor}
+      [preview/preview-container {:state state :descriptor descriptor}
        [quo/amount-input
-        (merge
-         @state
-         {:on-dec-press on-dec-press
-          :on-inc-press on-inc-press})]])))
+        (assoc @state
+               :on-dec-press on-dec-press
+               :on-inc-press on-inc-press)]])))

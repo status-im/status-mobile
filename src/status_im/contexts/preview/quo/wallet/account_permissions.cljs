@@ -1,31 +1,24 @@
 (ns status-im.contexts.preview.quo.wallet.account-permissions
   (:require
+    [quo.components.wallet.account-permissions.schema :refer [?schema]]
     [quo.core :as quo]
     [reagent.core :as reagent]
-    [status-im.contexts.preview.quo.preview :as preview]))
+    [status-im.contexts.preview.quo.preview :as preview]
+    [status-im.contexts.preview.quo.preview-generator :as preview-gen]))
 
-(def ^:private descriptor
-  [{:key  :name
-    :type :text}
-   {:key  :address
-    :type :text}
-   {:key  :emoji
-    :type :text}
-   (preview/customization-color-option {:key :account-color})
-   {:key  :keycard?
-    :type :boolean}
-   {:key  :checked?
-    :type :boolean}
-   {:key  :disabled?
-    :type :boolean}
-   {:key     :token-details
-    :type    :select
-    :options [{:key :no-tokens}
-              {:key :empty-token-list}
-              {:key :1-token}
-              {:key :3-tokens}
-              {:key :5-tokens}]}
-   (preview/customization-color-option {:key :customization-color})])
+(def descriptor
+  (conj (preview-gen/schema->descriptor ?schema)
+        (preview/customization-color-option {:key :account-color})
+        {:key     :token-details
+         :type    :select
+         :options [{:key :no-tokens}
+                   {:key :empty-token-list}
+                   {:key :1-token}
+                   {:key :3-tokens}
+                   {:key :5-tokens}]}
+        {:key :name :type :text}
+        {:key :address :type :text}
+        {:key :emoji :type :text}))
 
 (def ^:private token-details
   {:no-tokens        nil

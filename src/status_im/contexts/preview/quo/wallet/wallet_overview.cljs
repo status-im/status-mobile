@@ -1,37 +1,15 @@
 (ns status-im.contexts.preview.quo.wallet.wallet-overview
   (:require
+    [quo.components.wallet.wallet-overview.schema :refer [?schema]]
     [quo.core :as quo]
     [quo.foundations.resources :as quo.resources]
     [reagent.core :as reagent]
-    [status-im.contexts.preview.quo.preview :as preview]))
+    [status-im.contexts.preview.quo.preview :as preview]
+    [status-im.contexts.preview.quo.preview-generator :as preview-gen]))
 
-(def descriptor
-  [{:key     :state
-    :type    :select
-    :options [{:key :loading}
-              {:key :default}]}
-   {:key     :time-frame
-    :type    :select
-    :options [{:key :none}
-              {:key :selected}
-              {:key   :one-week
-               :value "1 Week"}
-              {:key   :one-month
-               :value "1 Month"}
-              {:key   :three-months
-               :value "3 Months"}
-              {:key   :one-year
-               :value "1 Year"}
-              {:key   :all-time
-               :value "All time"}
-              {:key :custom}]}
-   {:key     :metrics
-    :type    :select
-    :options [{:key :none}
-              {:key :positive}
-              {:key :negative}]}])
+(def descriptor (preview-gen/schema->descriptor ?schema))
 
-(def ^:private networks-list
+(def networks-list
   [{:source (quo.resources/get-network :ethereum)}
    {:source (quo.resources/get-network :optimism)}
    {:source (quo.resources/get-network :arbitrum)}])

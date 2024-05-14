@@ -1,19 +1,12 @@
 (ns status-im.contexts.preview.quo.counter.step
   (:require
+    [quo.components.counter.step.view :refer [?schema]]
     [quo.core :as quo]
     [reagent.core :as reagent]
-    [status-im.contexts.preview.quo.preview :as preview]))
+    [status-im.contexts.preview.quo.preview :as preview]
+    [status-im.contexts.preview.quo.preview-generator :as preview-gen]))
 
-(def descriptor
-  [{:key     :type
-    :type    :select
-    :options [{:key :neutral}
-              {:key :active}
-              {:key :complete}]}
-   {:key  :in-blur-view?
-    :type :boolean}
-   {:key  :value
-    :type :text}])
+(def descriptor (preview-gen/schema->descriptor ?schema))
 
 (defn view
   []

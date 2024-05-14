@@ -1,30 +1,14 @@
 (ns status-im.contexts.preview.quo.tags.collectible-tag
   (:require
+    [quo.components.tags.collectible-tag.schema :refer [?schema]]
     [quo.core :as quo]
     [react-native.core :as rn]
     [reagent.core :as reagent]
     [status-im.common.resources :as resources]
-    [status-im.contexts.preview.quo.preview :as preview]))
+    [status-im.contexts.preview.quo.preview :as preview]
+    [status-im.contexts.preview.quo.preview-generator :as preview-gen]))
 
-(def descriptor
-  [{:key     :size
-    :type    :select
-    :options [{:key   :size-24
-               :value "Size 24"}
-              {:key   :size-32
-               :value "Size 32"}]}
-   {:key     :options
-    :type    :select
-    :options [{:key   :add
-               :value :add}
-              {:key   :hold
-               :value :hold}]}
-   {:key  :blur?
-    :type :boolean}
-   {:key  :collectible-name
-    :type :text}
-   {:key  :collectible-id
-    :type :text}])
+(def descriptor (preview-gen/schema->descriptor ?schema))
 
 (defn view
   []

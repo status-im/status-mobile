@@ -1,32 +1,15 @@
 (ns status-im.contexts.preview.quo.wallet.network-link
   (:require
+    [quo.components.wallet.network-link.schema :refer [?schema]]
     [quo.core :as quo]
     [react-native.core :as rn]
     [reagent.core :as reagent]
-    [status-im.contexts.preview.quo.preview :as preview]))
-
-(def networks
-  [{:key   :ethereum
-    :value "Ethereum"}
-   {:key   :optimism
-    :value "Optimism"}
-   {:key   :arbitrum
-    :vault "Arbitrum"}])
+    [status-im.contexts.preview.quo.preview :as preview]
+    [status-im.contexts.preview.quo.preview-generator :as preview-gen]))
 
 (def descriptor
-  [{:key     :shape
-    :type    :select
-    :options [{:key :linear}
-              {:key :1x}
-              {:key :2x}]}
-   {:key     :source
-    :type    :select
-    :options networks}
-   {:key     :destination
-    :type    :select
-    :options networks}
-   {:key  :width
-    :type :number}])
+  (conj (preview-gen/schema->descriptor ?schema)
+        {:key :width :type :number}))
 
 (defn view
   []

@@ -1,22 +1,13 @@
 (ns status-im.contexts.preview.quo.wallet.progress-bar
   (:require
+    [quo.components.wallet.progress-bar.schema :refer [?schema]]
     [quo.core :as quo]
     [react-native.core :as rn]
     [reagent.core :as reagent]
-    [status-im.contexts.preview.quo.preview :as preview]))
+    [status-im.contexts.preview.quo.preview :as preview]
+    [status-im.contexts.preview.quo.preview-generator :as preview-gen]))
 
-(def descriptor
-  [{:key     :state
-    :type    :select
-    :options [{:key :pending}
-              {:key :confirmed}
-              {:key :finalized}
-              {:key :error}]}
-   {:key  :full-width?
-    :type :boolean}
-   {:key  :progressed-value
-    :type :text}
-   (preview/customization-color-option)])
+(def descriptor (preview-gen/schema->descriptor ?schema))
 
 (defn view
   []

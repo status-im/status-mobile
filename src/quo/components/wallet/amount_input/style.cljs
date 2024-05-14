@@ -11,8 +11,8 @@
 
 (defn input-text
   [theme type]
-  {:padding 0
-   :align   :center
-   :color   (if (= type :error)
-              (colors/resolve-color :danger theme)
-              (colors/theme-colors colors/neutral-100 colors/white theme))})
+  {:padding    0
+   :text-align :center
+   :color      (if (= type :error)
+                 (colors/resolve-color :danger theme)
+                 (colors/theme-colors colors/neutral-100 colors/white theme))})

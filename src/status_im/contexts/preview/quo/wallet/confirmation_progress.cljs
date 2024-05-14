@@ -1,27 +1,13 @@
 (ns status-im.contexts.preview.quo.wallet.confirmation-progress
   (:require
+    [quo.components.wallet.confirmation-progress.schema :refer [?schema]]
     [quo.core :as quo]
     [react-native.core :as rn]
     [reagent.core :as reagent]
-    [status-im.contexts.preview.quo.preview :as preview]))
+    [status-im.contexts.preview.quo.preview :as preview]
+    [status-im.contexts.preview.quo.preview-generator :as preview-gen]))
 
-(def descriptor
-  [{:type :number
-    :key  :progress-value}
-   {:type    :select
-    :key     :network
-    :options [{:key :mainnet}
-              {:key :optimism}
-              {:key :arbitrum}]}
-   {:type    :select
-    :key     :state
-    :options [{:key :pending}
-              {:key :sending}
-              {:key :confirmed}
-              {:key :finalising}
-              {:key :finalized}
-              {:key :error}]}
-   (preview/customization-color-option)])
+(def descriptor (preview-gen/schema->descriptor ?schema {:exclude-keys #{:counter :total-box}}))
 
 (def total-box 85)
 (def counter (reagent/atom 0))

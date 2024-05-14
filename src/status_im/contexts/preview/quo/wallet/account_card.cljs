@@ -1,27 +1,14 @@
 (ns status-im.contexts.preview.quo.wallet.account-card
   (:require
+    [quo.components.wallet.account-card.schema :refer [?schema]]
     [quo.core :as quo]
     [react-native.core :as rn]
     [reagent.core :as reagent]
     [status-im.contexts.preview.quo.preview :as preview]
+    [status-im.contexts.preview.quo.preview-generator :as preview-gen]
     [utils.collection]))
 
-(def descriptor
-  [{:key     :type
-    :type    :select
-    :options [{:key :default}
-              {:key :watch-only}
-              {:key :add-account}
-              {:key :empty}
-              {:key :missing-keypair}]}
-   (preview/customization-color-option)
-   {:key :name :type :text}
-   {:key :balance :type :text}
-   {:key :percentage-value :type :text}
-   {:key :amount :type :text}
-   {:key :metrics? :type :boolean}
-   {:key :loading? :type :boolean}
-   {:key :emoji :type :text}])
+(def descriptor (preview-gen/schema->descriptor ?schema))
 
 (defn initial-state
   [type]

@@ -1,43 +1,12 @@
 (ns status-im.contexts.preview.quo.wallet.account-overview
   (:require
+    [quo.components.wallet.account-overview.schema :refer [?schema]]
     [quo.core :as quo]
     [reagent.core :as reagent]
-    [status-im.contexts.preview.quo.preview :as preview]))
+    [status-im.contexts.preview.quo.preview :as preview]
+    [status-im.contexts.preview.quo.preview-generator :as preview-gen]))
 
-(def descriptor
-  [{:key :time-frame-string :type :text}
-   {:key :time-frame-to-string :type :text}
-   {:key :percentage-change :type :text}
-   {:key :currency-change :type :text}
-   {:key :current-value :type :text}
-   {:key     :state
-    :type    :select
-    :options [{:key :default}
-              {:key :loading}]}
-   {:key     :metrics
-    :type    :select
-    :options [{:key :positive}
-              {:key :negative}]}
-   {:key :account-name :type :text}
-   (preview/customization-color-option)
-   {:key     :account
-    :type    :select
-    :options [{:key :watched-address}
-              {:key :default}]}
-   {:key     :time-frame
-    :type    :select
-    :options [{:key   :one-week
-               :value "1 Week"}
-              {:key   :one-month
-               :value "1 Month"}
-              {:key   :three-months
-               :value "3 Months"}
-              {:key   :one-year
-               :value "1 Year"}
-              {:key   :all-time
-               :value "All time"}
-              {:key   :custom
-               :value "Custom"}]}])
+(def descriptor (preview-gen/schema->descriptor ?schema))
 
 (defn view
   []
