@@ -23,9 +23,9 @@
 (goog-define OPENSEA_API_KEY "")
 
 (def infura-key INFURA_TOKEN)
-(def mainnet-rpc-url (str "https://mainnet.infura.io/v3/" INFURA_TOKEN))
+(def mainnet-rpc-url (str "https://eth-archival.gateway.pokt.network/v1/lb/" POKT_TOKEN))
 (def testnet-rpc-url (str "https://ropsten.infura.io/v3/" INFURA_TOKEN))
-(def goerli-rpc-url  (str "https://goerli.infura.io/v3/" INFURA_TOKEN))
+(def goerli-rpc-url (str "https://goerli-archival.gateway.pokt.network/v1/lb/" POKT_TOKEN))
 (def opensea-api-key OPENSEA_API_KEY)
 (def bootnodes-settings-enabled? (enabled? (get-config :BOOTNODES_SETTINGS_ENABLED "1")))
 (def rpc-networks-only? (enabled? (get-config :RPC_NETWORKS_ONLY "1")))
