@@ -70,9 +70,9 @@
    (when (seq network-details)
      (->> network-details
           (group-by :network-name)
-          (map (fn [[network-key network-group]]
-                 [network-key (first network-group)]))
-          (into {})))))
+          (reduce-kv (fn [acc network-key network-group]
+                       (assoc acc network-key (first network-group)))
+                     {})))))
 
 (re-frame/reg-sub
  :wallet/network-details-by-chain-id
