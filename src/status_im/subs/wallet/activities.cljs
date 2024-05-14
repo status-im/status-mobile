@@ -1,6 +1,7 @@
 (ns status-im.subs.wallet.activities
   (:require
     [re-frame.core :as rf]
+    [status-im.contexts.wallet.common.activity-tab.constants :as constants]
     [utils.datetime :as datetime]))
 
 (rf/reg-sub
@@ -13,9 +14,11 @@
  :<- [:wallet/current-viewing-account-address]
  (fn [[activities current-viewing-account-address]]
    (->> activities
-        (filter (fn [{:keys [sender recipient]}]
-                  (or (= sender current-viewing-account-address)
-                      (= recipient current-viewing-account-address))))
+        (filter (fn [{:keys [sender recipient activity-type]}]
+                  (let [receiving-activity? (= activity-type constants/wallet-activity-type-receive)
+                        relevant-address    (if receiving-activity? recipient sender)]
+                    (= relevant-address current-viewing-account-address))))
+        (distinct)
         (group-by (fn [{:keys [timestamp]}]
                     (datetime/timestamp->relative-short-date (* timestamp 1000))))
         (map (fn [[date activities]]
