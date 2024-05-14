@@ -46,15 +46,17 @@
 
 (defn view
   [{:keys [enable?]}]
-  [:<>
-   (if enable?
-     [testnet-mode-confirm-change-sheet
-      {:title       (i18n/label :t/turn-on-testnet-mode)
-       :description (i18n/label :t/testnet-mode-enable-description)
-       :on-confirm  #(on-confirm-change enable?)
-       :on-cancel   hide-bottom-sheet}]
-     [testnet-mode-confirm-change-sheet
-      {:title       (i18n/label :t/turn-off-testnet-mode)
-       :description (i18n/label :t/testnet-mode-disable-description)
-       :on-confirm  #(on-confirm-change enable?)
-       :on-cancel   hide-bottom-sheet}])])
+  (let [on-confirm (rn/use-callback
+                    #(on-confirm-change enable?)
+                    [enable?])]
+    (if enable?
+      [testnet-mode-confirm-change-sheet
+       {:title       (i18n/label :t/turn-on-testnet-mode)
+        :description (i18n/label :t/testnet-mode-enable-description)
+        :on-confirm  on-confirm
+        :on-cancel   hide-bottom-sheet}]
+      [testnet-mode-confirm-change-sheet
+       {:title       (i18n/label :t/turn-off-testnet-mode)
+        :description (i18n/label :t/testnet-mode-disable-description)
+        :on-confirm  on-confirm
+        :on-cancel   hide-bottom-sheet}])))
