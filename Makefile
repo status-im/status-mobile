@@ -353,6 +353,7 @@ test: export SHADOW_NS_REGEXP := .*-test$$
 test: ##@test Run all Clojure tests
 test: _test-clojure
 
+test-watch-for-repl: export TARGET := default
 test-watch-for-repl: export SHADOW_OUTPUT_TO := target/test/test.js
 test-watch-for-repl: export SHADOW_NS_REGEXP := .*-test$$
 test-watch-for-repl: status-go-library
