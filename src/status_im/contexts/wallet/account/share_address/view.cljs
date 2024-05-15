@@ -58,7 +58,7 @@
     (fn []
       (let [{:keys [address color emoji watch-only?]
              :as   account}     (rf/sub [:wallet/current-viewing-account])
-            preferred-networks  (rf/sub [:wallet/preferred-chains-for-address address])
+            preferred-networks  (rf/sub [:wallet/preferred-chain-names-for-address address])
             share-title         (str (:name account) " " (i18n/label :t/address))
             qr-url              (utils/get-wallet-qr {:wallet-type       @wallet-type
                                                       :selected-networks @selected-networks
@@ -74,7 +74,7 @@
                                   :receive (i18n/label :t/receive)
                                   nil)]
 
-        (rn/use-mount #(reset! selected-networks (mapv :network-name preferred-networks)))
+        (rn/use-mount #(reset! selected-networks preferred-networks))
 
         [quo/overlay {:type :shell}
          [rn/view

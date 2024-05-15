@@ -422,6 +422,13 @@
      (filter #(preferred-chains-ids (:chain-id %)) network-details))))
 
 (rf/reg-sub
+ :wallet/preferred-chain-names-for-address
+ (fn [[_ address]]
+   (rf/subscribe [:wallet/preferred-chains-for-address address]))
+ (fn [preferred-chains-for-address _]
+   (map :network-name preferred-chains-for-address)))
+
+(rf/reg-sub
  :wallet/transactions
  :<- [:wallet]
  :-> :transactions)
