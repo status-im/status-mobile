@@ -13,9 +13,11 @@
   {:margin-horizontal 20
    :margin-vertical   8})
 
-(def warning-container
+(defn warning-container
+  [sending-to-unpreferred-networks?]
   {:flex-direction    :row
    :margin-horizontal 20
+   :margin-bottom     (when sending-to-unpreferred-networks? 8)
    :align-items       :center})
 
 (defn sending-to-unpreferred-networks-alert-container

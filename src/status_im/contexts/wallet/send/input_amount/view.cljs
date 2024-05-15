@@ -227,8 +227,12 @@
             receiver-networks                         (rf/sub [:wallet/wallet-send-receiver-networks])
             receiver-preferred-networks               (rf/sub
                                                        [:wallet/wallet-send-receiver-preferred-networks])
-            sending-to-unpreferred-networks?          (not= (set receiver-networks)
-                                                            (set receiver-preferred-networks))]
+            receiver-preferred-networks-set           (set receiver-preferred-networks)
+            sending-to-unpreferred-networks?          (not (every? (fn [receiver-selected-network]
+                                                                     (contains?
+                                                                      receiver-preferred-networks-set
+                                                                      receiver-selected-network))
+                                                                   receiver-networks))]
         (rn/use-mount
          (fn []
            (let [dismiss-keyboard-fn   #(when (= % "active") (rn/dismiss-keyboard!))

@@ -26,35 +26,66 @@
 
 (defn- open-preferences
   []
-  (let [receiver-networks           (rf/sub [:wallet/wallet-send-receiver-networks])
-        receiver-preferred-networks (rf/sub [:wallet/wallet-send-receiver-preferred-networks])
-        {token-symbol   :symbol
-         token-networks :networks}  (rf/sub [:wallet/wallet-send-token])
-        token-chain-ids-set         (set (mapv #(:chain-id %) token-networks))
-        not-available-networks      (filter (fn [preferred-chain-id]
-                                              (not (contains? token-chain-ids-set preferred-chain-id)))
-                                            receiver-preferred-networks)
-        warning-label               (when (not-empty not-available-networks)
-                                      (i18n/label
-                                       :t/token-not-available-on-networks
-                                       {:token-symbol token-symbol
-                                        :networks     (network-utils/network-ids->formatted-text
-                                                       not-available-networks)}))]
-    (rf/dispatch
-     [:show-bottom-sheet
-      {:content (fn []
-                  [network-preferences/view
-                   {:title                       (i18n/label :t/edit-receiver-networks)
-                    :first-section-label         (i18n/label :t/preferred-by-receiver)
-                    :second-section-label        (i18n/label :t/not-preferred-by-receiver)
-                    :selected-networks           (set (map network-utils/id->network receiver-networks))
-                    :receiver-preferred-networks receiver-preferred-networks
-                    :button-label                (i18n/label :t/apply-changes)
-                    :warning-label               warning-label
-                    :on-save                     (fn [chain-ids]
-                                                   (rf/dispatch [:hide-bottom-sheet])
-                                                   (rf/dispatch [:wallet/update-receiver-networks
-                                                                 chain-ids]))}])}])))
+  (rf/dispatch
+   [:show-bottom-sheet
+    {:content
+     (fn []
+       (let [receiver-networks                        (rf/sub [:wallet/wallet-send-receiver-networks])
+             receiver-preferred-networks              (rf/sub
+                                                       [:wallet/wallet-send-receiver-preferred-networks])
+             {token-symbol   :symbol
+              token-networks :networks}               (rf/sub [:wallet/wallet-send-token])
+             token-chain-ids-set                      (set (mapv #(:chain-id %) token-networks))
+             [selected-receiver-networks
+              set-selected-receiver-networks]         (rn/use-state receiver-networks)
+             receiver-preferred-networks-set          (set receiver-preferred-networks)
+             receiver-selected-preferred-networks     (filter #(contains?
+                                                                receiver-preferred-networks-set
+                                                                %)
+                                                              selected-receiver-networks)
+             receiver-selected-non-preferred-networks (filter #(not (contains?
+                                                                     receiver-preferred-networks-set
+                                                                     %))
+                                                              selected-receiver-networks)
+             not-available-preferred-networks         (filter (fn [preferred-chain-id]
+                                                                (not (contains? token-chain-ids-set
+                                                                                preferred-chain-id)))
+                                                              receiver-selected-preferred-networks)
+             not-available-non-preferred-networks     (filter (fn [preferred-chain-id]
+                                                                (not (contains?
+                                                                      token-chain-ids-set
+                                                                      preferred-chain-id)))
+                                                              receiver-selected-non-preferred-networks)
+             first-section-warning-label              (when (not-empty not-available-preferred-networks)
+                                                        (i18n/label
+                                                         :t/token-not-available-on-networks
+                                                         {:token-symbol token-symbol
+                                                          :networks
+                                                          (network-utils/network-ids->formatted-text
+                                                           not-available-preferred-networks)}))
+             second-section-warning-label             (when (not-empty
+                                                             not-available-non-preferred-networks)
+                                                        (i18n/label
+                                                         :t/token-not-available-on-networks
+                                                         {:token-symbol token-symbol
+                                                          :networks
+                                                          (network-utils/network-ids->formatted-text
+                                                           not-available-non-preferred-networks)}))]
+         [network-preferences/view
+          {:title                        (i18n/label :t/edit-receiver-networks)
+           :first-section-label          (i18n/label :t/preferred-by-receiver)
+           :second-section-label         (i18n/label :t/not-preferred-by-receiver)
+           :selected-networks            (set (map network-utils/id->network
+                                                   receiver-networks))
+           :receiver-preferred-networks  receiver-preferred-networks
+           :button-label                 (i18n/label :t/apply-changes)
+           :first-section-warning-label  first-section-warning-label
+           :second-section-warning-label second-section-warning-label
+           :on-change                    #(set-selected-receiver-networks %)
+           :on-save                      (fn [chain-ids]
+                                           (rf/dispatch [:hide-bottom-sheet])
+                                           (rf/dispatch [:wallet/update-receiver-networks
+                                                         chain-ids]))}]))}]))
 
 (defn render-network-values
   [{:keys [network-values token-symbol on-press receiver? loading-routes?

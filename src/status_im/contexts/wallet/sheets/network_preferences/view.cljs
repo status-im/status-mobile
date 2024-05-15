@@ -37,7 +37,8 @@
                                               (if (= @state :default)
                                                 initial-network-preferences-names
                                                 @network-preferences-names-state))]
-    (fn [{:keys [on-save blur? button-label warning-label]}]
+    (fn [{:keys [on-save on-change blur? button-label first-section-warning-label
+                 second-section-warning-label]}]
       (let [theme                            (quo.theme/use-theme)
             network-details                  (rf/sub [:wallet/network-details])
             first-section-networks           (filter (fn [network]
@@ -98,18 +99,23 @@
            :blur?     blur?
            :label     (when first-section-label first-section-label)
            :data      (mapv (fn [network]
-                              (utils/make-network-item {:state            @state
-                                                        :network-name     (:network-name network)
-                                                        :color            color
-                                                        :normal-checkbox? receiver?
-                                                        :networks         (get-current-preferences-names)
-                                                        :type             :checkbox
-                                                        :on-change        #(toggle-network (:network-name
-                                                                                            network))}))
+                              (utils/make-network-item
+                               {:state            @state
+                                :network-name     (:network-name network)
+                                :color            color
+                                :normal-checkbox? receiver?
+                                :networks         (get-current-preferences-names)
+                                :type             :checkbox
+                                :on-change        (fn []
+                                                    (toggle-network (:network-name
+                                                                     network))
+                                                    (when on-change
+                                                      (let [chain-ids (map :chain-id current-networks)]
+                                                        (on-change chain-ids))))}))
                             first-section-networks)}]
-         (when warning-label
+         (when first-section-warning-label
            [rn/view
-            {:style style/warning-container}
+            {:style (style/warning-container false)}
             [quo/icon :i/alert
              {:size  16
               :color colors/danger-50}]
@@ -117,22 +123,38 @@
              {:size  :paragraph-2
               :style {:margin-left 4
                       :color       colors/danger-50}}
-             warning-label]])
+             first-section-warning-label]])
          (when (not-empty second-section-networks)
            [quo/category
             {:list-type :settings
              :blur?     blur?
              :label     (or second-section-label (i18n/label :t/layer-2))
              :data      (mapv (fn [network]
-                                (utils/make-network-item {:state @state
-                                                          :network-name (:network-name network)
-                                                          :color color
-                                                          :normal-checkbox? receiver?
-                                                          :networks (get-current-preferences-names)
-                                                          :type :checkbox
-                                                          :on-change #(toggle-network (:network-name
-                                                                                       network))}))
+                                (utils/make-network-item
+                                 {:state            @state
+                                  :network-name     (:network-name network)
+                                  :color            color
+                                  :normal-checkbox? receiver?
+                                  :networks         (get-current-preferences-names)
+                                  :type             :checkbox
+                                  :on-change        (fn []
+                                                      (toggle-network (:network-name
+                                                                       network))
+                                                      (when on-change
+                                                        (let [chain-ids (map :chain-id current-networks)]
+                                                          (on-change chain-ids))))}))
                               second-section-networks)}])
+         (when second-section-warning-label
+           [rn/view
+            {:style (style/warning-container sending-to-unpreferred-networks?)}
+            [quo/icon :i/alert
+             {:size  16
+              :color colors/danger-50}]
+            [quo/text
+             {:size  :paragraph-2
+              :style {:margin-left 4
+                      :color       colors/danger-50}}
+             second-section-warning-label]])
          (when sending-to-unpreferred-networks?
            [rn/view {:style (style/sending-to-unpreferred-networks-alert-container theme)}
             [rn/view
