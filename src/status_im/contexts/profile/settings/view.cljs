@@ -26,7 +26,7 @@
     {:list-type       :settings
      :container-style {:padding-bottom 12}
      :blur?           true
-     :data            (filter show-settings-item? data)}]))
+     :data            (doall (filter show-settings-item? data))}]))
 
 (defn scroll-handler
   [event scroll-y]

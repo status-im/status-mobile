@@ -59,6 +59,7 @@
     [status-im.contexts.profile.settings.view :as settings]
     [status-im.contexts.settings.wallet.keypairs-and-accounts.rename.view :as keypair-rename]
     [status-im.contexts.settings.wallet.keypairs-and-accounts.view :as keypairs-and-accounts]
+    [status-im.contexts.settings.wallet.network-settings.view :as network-settings]
     [status-im.contexts.settings.wallet.saved-addresses.view :as saved-addresses-settings]
     [status-im.contexts.settings.wallet.wallet-options.view :as wallet-options]
     [status-im.contexts.shell.activity-center.view :as activity-center]
@@ -517,6 +518,10 @@
                  options/transparent-modal-screen-options
                  options/dark-screen)
      :component keypairs-and-accounts/view}
+
+    {:name      :screen/settings.network-settings
+     :options   options/transparent-modal-screen-options
+     :component network-settings/view}
 
     {:name      :screen/settings-messages
      :options   options/transparent-modal-screen-options
