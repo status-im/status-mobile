@@ -5,7 +5,7 @@
   (let [collectible-stored (-> db :wallet :ui :send :collectible)
         tx-type            (-> db :wallet :ui :send :tx-type)]
     (and (some? collectible-stored)
-         (= tx-type :collectible))))
+         (contains? #{:collectible :collectible-multi} tx-type))))
 
 (defn- token-selected?
   [db]

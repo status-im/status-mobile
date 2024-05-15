@@ -144,7 +144,8 @@
                               {:prefix           prefix
                                :testnet-enabled? testnet-enabled?
                                :goerli-enabled?  goerli-enabled?})
-         collectible-tx?     (= (-> db :wallet :ui :send :tx-type) :collectible)
+         collectible-tx?     (contains? #{:collectible :collectible-multi}
+                                        (-> db :wallet :ui :send :tx-type))
          collectible         (when collectible-tx?
                                (-> db :wallet :ui :send :collectible))
          one-collectible?    (when collectible-tx?
@@ -235,13 +236,17 @@
                      :collectible
                      :token-display-name
                      :amount
-                     (when (= transaction-type :collectible) :tx-type))})))
+                     (when (contains? #{:collectible :collectible-multi} transaction-type) :tx-type))})))
 
 (rf/reg-event-fx
  :wallet/set-collectible-to-send
  (fn [{db :db} [{:keys [collectible current-screen]}]]
    (let [collection-data    (:collection-data collectible)
          collectible-data   (:collectible-data collectible)
+         contract-type      (:contract-type collectible)
+         tx-type            (if (= contract-type constants/contract-type-erc-1155)
+                              :collectible-multi
+                              :collectible)
          collectible-id     (get-in collectible [:id :token-id])
          one-collectible?   (= (collectible.utils/collectible-balance collectible) 1)
          token-display-name (cond
@@ -255,7 +260,7 @@
                                 (update-in [:wallet :ui :send] dissoc :token)
                                 (assoc-in [:wallet :ui :send :collectible] collectible)
                                 (assoc-in [:wallet :ui :send :token-display-name] token-display-name)
-                                (assoc-in [:wallet :ui :send :tx-type] :collectible))
+                                (assoc-in [:wallet :ui :send :tx-type] tx-type))
          recipient-set?     (-> db :wallet :ui :send :recipient)]
      {:db (cond-> collectible-tx
             one-collectible? (assoc-in [:wallet :ui :send :amount] 1))
@@ -322,8 +327,9 @@
                                          network-chain-ids))
          from-locked-amount {}
          transaction-type-param (case transaction-type
-                                  :collectible constants/send-type-erc-721-transfer
-                                  :bridge      constants/send-type-bridge
+                                  :collectible       constants/send-type-erc-721-transfer
+                                  :collectible-multi constants/send-type-erc-1155-transfer
+                                  :bridge            constants/send-type-bridge
                                   constants/send-type-transfer)
          balances-per-chain (when token (:balances-per-chain token))
          token-available-networks-for-suggested-routes
@@ -494,8 +500,9 @@
          from-address (get-in db [:wallet :current-viewing-account-address])
          transaction-type (get-in db [:wallet :ui :send :tx-type])
          transaction-type-param (case transaction-type
-                                  :collectible constants/send-type-erc-721-transfer
-                                  :bridge      constants/send-type-bridge
+                                  :collectible       constants/send-type-erc-721-transfer
+                                  :collectible-multi constants/send-type-erc-1155-transfer
+                                  :bridge            constants/send-type-bridge
                                   constants/send-type-transfer)
          token (get-in db [:wallet :ui :send :token])
          collectible (get-in db [:wallet :ui :send :collectible])
