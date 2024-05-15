@@ -4,8 +4,6 @@
     [react-native.core :as rn]
     [react-native.platform :as platform]
     [react-native.safe-area :as safe-area]
-    [status-im.common.parallax.blacklist :as blacklist]
-    [status-im.common.parallax.view :as parallax]
     [status-im.common.resources :as resources]
     [status-im.contexts.onboarding.enable-notifications.style :as style]
     [status-im.contexts.shell.jump-to.utils :as shell.utils]
@@ -55,13 +53,6 @@
        :container-style     {:margin-top 12}}
       (i18n/label :t/maybe-later)]]))
 
-(defn enable-notifications-parallax
-  []
-  (let [stretch (if rn/small-screen? -40 -25)]
-    [parallax/video
-     {:layers  (:notifications resources/parallax-video)
-      :stretch stretch}]))
-
 (defn enable-notifications-simple
   []
   (let [width (:width (rn/get-window))]
@@ -70,7 +61,7 @@
       :style       (style/page-illustration width)
       :source      (resources/get-image :notifications)}]))
 
-(defn f-enable-notifications
+(defn view
   []
   (let [insets (safe-area/get-insets)]
     [rn/view {:style (style/page-container insets)}
@@ -80,11 +71,5 @@
         :icon-name  :i/arrow-left
         :on-press   #(rf/dispatch [:navigate-back])}]
       [page-title]]
-     (if blacklist/blacklisted?
-       [enable-notifications-simple]
-       [enable-notifications-parallax])
+     [enable-notifications-simple]
      [enable-notification-buttons {:insets insets}]]))
-
-(defn view
-  []
-  [:f> f-enable-notifications])

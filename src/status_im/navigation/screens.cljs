@@ -304,7 +304,7 @@
                  :popGesture         false
                  :hardwareBackButton {:dismissModalOnPress false
                                       :popStackOnPress     false}}
-     :component generating-keys/generating-keys}
+     :component generating-keys/view}
 
     {:name      :screen/onboarding.enter-seed-phrase
      :options   {:theme      :dark
