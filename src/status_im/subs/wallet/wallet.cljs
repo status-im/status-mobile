@@ -409,6 +409,19 @@
         accounts)))
 
 (rf/reg-sub
+ :wallet/preferred-chains-for-address
+ :<- [:wallet/accounts]
+ :<- [:wallet/network-details]
+ :<- [:profile/test-networks-enabled?]
+ (fn [[accounts network-details test-networks-enabled?] [_ address]]
+   (let [preferred-chains-ids (some #(when (= (:address %) address)
+                                       (if test-networks-enabled?
+                                         (:test-preferred-chain-ids %)
+                                         (:prod-preferred-chain-ids %)))
+                                    accounts)]
+     (filter #(preferred-chains-ids (:chain-id %)) network-details))))
+
+(rf/reg-sub
  :wallet/transactions
  :<- [:wallet]
  :-> :transactions)
