@@ -296,7 +296,7 @@
                                 {:key k :value (string/capitalize (name k))})))}
           opts)))
 
-(def named-context-tags
+(def context-tag-options
   {:asset.snt        {:key   {:size   24
                               :type   :token
                               :token  "SNT"

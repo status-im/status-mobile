@@ -5,7 +5,7 @@
     [reagent.core :as reagent]
     [status-im.contexts.preview.quo.preview :as preview]))
 
-(def context-tags (vals preview/named-context-tags))
+(def context-tags (vals preview/context-tag-options))
 
 (def prefixes
   [{:key :t/to}
@@ -81,13 +81,13 @@
                 :timestamp         "Today 22:20"
                 :status            :pending
                 :counter           1
-                :first-tag         (get-in preview/named-context-tags [:asset.snt :key])
+                :first-tag         (get-in preview/context-tag-options [:asset.snt :key])
                 :second-tag-prefix :t/from
-                :second-tag        (get-in preview/named-context-tags [:account.piggy :key])
+                :second-tag        (get-in preview/context-tag-options [:account.piggy :key])
                 :third-tag-prefix  :t/to
-                :third-tag         (get-in preview/named-context-tags [:person.aretha :key])
+                :third-tag         (get-in preview/context-tag-options [:person.aretha :key])
                 :fourth-tag-prefix :t/via
-                :fourth-tag        (get-in preview/named-context-tags [:network.mainnet :key])
+                :fourth-tag        (get-in preview/context-tag-options [:network.mainnet :key])
                 :blur?             false})]
     (fn []
       [preview/preview-container

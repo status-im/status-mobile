@@ -4,7 +4,7 @@
     [reagent.core :as reagent]
     [status-im.contexts.preview.quo.preview :as preview]))
 
-(def context-tags (vals preview/named-context-tags))
+(def context-tags (vals preview/context-tag-options))
 
 (def prefixes
   [{:key :t/to}
@@ -63,14 +63,14 @@
   []
   (let [state (reagent/atom
                {:transaction       :send
-                :first-tag         (get-in preview/named-context-tags [:asset.snt :key])
+                :first-tag         (get-in preview/context-tag-options [:asset.snt :key])
                 :second-tag-prefix :t/from
-                :second-tag        (get-in preview/named-context-tags [:account.piggy :key])
+                :second-tag        (get-in preview/context-tag-options [:account.piggy :key])
                 :third-tag-prefix  nil
-                :third-tag         (get-in preview/named-context-tags [:person.aretha :key])
+                :third-tag         (get-in preview/context-tag-options [:person.aretha :key])
                 :fourth-tag-prefix :t/via
-                :fourth-tag        (get-in preview/named-context-tags [:network.mainnet :key])
-                :fifth-tag         (get-in preview/named-context-tags [:network.optimism :key])
+                :fourth-tag        (get-in preview/context-tag-options [:network.mainnet :key])
+                :fifth-tag         (get-in preview/context-tag-options [:network.optimism :key])
                 :max-fees          "€55.57"
                 :nonce             26
                 :input-data        "Hello from Porto"})]
