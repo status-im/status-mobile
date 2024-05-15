@@ -13,6 +13,7 @@
                 [funcool/promesa "11.0.678"]
 
                 ;; Dev dependencies
+                [com.github.jpmonettas/flow-storm-inst "3.7.5"]
                 [refactor-nrepl "3.9.1"]
                 [cider/cider-nrepl "0.31.0"]
                 [cider/piggieback "0.4.1"]
@@ -53,7 +54,10 @@
    :dev {:devtools {:before-load-async status-im.setup.hot-reload/before-reload
                     :after-load-async  status-im.setup.hot-reload/reload
                     :build-notify      status-im.setup.hot-reload/build-notify
-                    :preloads          [re-frisk-remote.preload
+                    :preloads          [;; The official recommendation is to
+                                        ;; load the debugger preload first.
+                                        flow-storm.api
+                                        re-frisk-remote.preload
                                         status-im.setup.schema-preload
                                         ;; In order to use component test helpers in the REPL we
                                         ;; need to preload namespaces that are not normally required
