@@ -144,7 +144,7 @@
                               {:prefix           prefix
                                :testnet-enabled? testnet-enabled?
                                :goerli-enabled?  goerli-enabled?})
-         collectible-tx?     (contains? #{:collectible :collectible-multi}
+         collectible-tx?     (contains? #{:collectible-erc-721 :collectible-erc-1155}
                                         (-> db :wallet :ui :send :tx-type))
          collectible         (when collectible-tx?
                                (-> db :wallet :ui :send :collectible))
@@ -236,7 +236,9 @@
                      :collectible
                      :token-display-name
                      :amount
-                     (when (contains? #{:collectible :collectible-multi} transaction-type) :tx-type))})))
+                     (when (contains? #{:collectible-erc-721 :collectible-erc-1155}
+                                      transaction-type)
+                       :tx-type))})))
 
 (rf/reg-event-fx
  :wallet/set-collectible-to-send
@@ -245,8 +247,8 @@
          collectible-data   (:collectible-data collectible)
          contract-type      (:contract-type collectible)
          tx-type            (if (= contract-type constants/contract-type-erc-1155)
-                              :collectible-multi
-                              :collectible)
+                              :collectible-erc-1155
+                              :collectible-erc-721)
          collectible-id     (get-in collectible [:id :token-id])
          one-collectible?   (= (collectible.utils/collectible-balance collectible) 1)
          token-display-name (cond
@@ -327,9 +329,9 @@
                                          network-chain-ids))
          from-locked-amount {}
          transaction-type-param (case transaction-type
-                                  :collectible       constants/send-type-erc-721-transfer
-                                  :collectible-multi constants/send-type-erc-1155-transfer
-                                  :bridge            constants/send-type-bridge
+                                  :collectible-erc-721  constants/send-type-erc-721-transfer
+                                  :collectible-erc-1155 constants/send-type-erc-1155-transfer
+                                  :bridge               constants/send-type-bridge
                                   constants/send-type-transfer)
          balances-per-chain (when token (:balances-per-chain token))
          token-available-networks-for-suggested-routes
@@ -508,9 +510,9 @@
          from-address (get-in db [:wallet :current-viewing-account-address])
          transaction-type (get-in db [:wallet :ui :send :tx-type])
          transaction-type-param (case transaction-type
-                                  :collectible       constants/send-type-erc-721-transfer
-                                  :collectible-multi constants/send-type-erc-1155-transfer
-                                  :bridge            constants/send-type-bridge
+                                  :collectible-erc-721  constants/send-type-erc-721-transfer
+                                  :collectible-erc-1155 constants/send-type-erc-1155-transfer
+                                  :bridge               constants/send-type-bridge
                                   constants/send-type-transfer)
          token (get-in db [:wallet :ui :send :token])
          collectible (get-in db [:wallet :ui :send :collectible])
