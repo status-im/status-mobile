@@ -1,10 +1,8 @@
 (ns react-native.wallet-connect
-  ;; NOTE: Not sorting namespaces since @walletconnect/react-native-compat should be the first
-  #_{:clj-kondo/ignore [:unsorted-required-namespaces]}
-  (:require ["@walletconnect/react-native-compat"]
-            ["@walletconnect/core" :refer [Core]]
-            ["@walletconnect/web3wallet" :refer [Web3Wallet]]
-            ["@walletconnect/utils" :refer [buildApprovedNamespaces]]))
+  (:require
+    ["@walletconnect/core" :refer [Core]]
+    ["@walletconnect/utils" :refer [buildApprovedNamespaces]]
+    ["@walletconnect/web3wallet" :refer [Web3Wallet]]))
 
 (defn- wallet-connect-core
   [project-id]
