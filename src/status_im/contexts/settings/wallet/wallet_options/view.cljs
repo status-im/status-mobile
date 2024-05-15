@@ -14,7 +14,7 @@
   []
   (rf/dispatch [:open-modal :screen/settings.keypairs-and-accounts]))
 
-(defn gen-basic-settings-options
+(defn basic-settings-options
   []
   [(when (ff/enabled? ::ff/settings.keypairs-and-accounts)
      {:title    (i18n/label :t/keypairs-and-accounts)
@@ -31,9 +31,30 @@
   [quo/category
    {:key       :basic-wallet-settings
     :label     (i18n/label :t/keypairs-accounts-and-addresses)
-    :data      (gen-basic-settings-options)
+    :data      (basic-settings-options)
     :blur?     true
     :list-type :settings}])
+
+(defn open-network-settings-modal
+  []
+  (rf/dispatch [:open-modal :screen/settings.network-settings]))
+
+(defn advanced-settings-options
+  []
+  [{:title    (i18n/label :t/network-settings)
+    :blur?    true
+    :on-press open-network-settings-modal
+    :action   :arrow}])
+
+(defn advanced-settings
+  []
+  (when (ff/enabled? ::ff/settings.network-settings)
+    [quo/category
+     {:key       :advanced-wallet-settings
+      :label     (i18n/label :t/advanced)
+      :data      (advanced-settings-options)
+      :blur?     true
+      :list-type :settings}]))
 
 (defn navigate-back
   []
@@ -53,4 +74,5 @@
      [quo/page-top
       {:title                     (i18n/label :t/wallet)
        :title-accessibility-label :wallet-settings-header}]
-     [basic-settings]]))
+     [basic-settings]
+     [advanced-settings]]))

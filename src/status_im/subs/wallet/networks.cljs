@@ -64,6 +64,17 @@
         (sort-by (juxt :layer :short-name)))))
 
 (re-frame/reg-sub
+ :wallet/network-details-by-network-name
+ :<- [:wallet/network-details]
+ (fn [network-details]
+   (when (seq network-details)
+     (->> network-details
+          (group-by :network-name)
+          (reduce-kv (fn [acc network-key network-group]
+                       (assoc acc network-key (first network-group)))
+                     {})))))
+
+(re-frame/reg-sub
  :wallet/network-details-by-chain-id
  :<- [:wallet/network-details]
  (fn [networks [_ chain-id]]
