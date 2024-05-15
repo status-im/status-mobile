@@ -73,5 +73,4 @@
            {:on-press            #(rf/dispatch [:shell/navigate-to-jump-to])
             :customization-color customization-color
             :label               (i18n/label :t/jump-to)}}
-          {:position :absolute
-           :bottom   0}]]))))
+          style/shell-button]]))))
