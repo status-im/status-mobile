@@ -104,6 +104,11 @@
  :-> :token)
 
 (rf/reg-sub
+ :wallet/wallet-send-token-symbol
+ :<- [:wallet/wallet-send]
+ :-> :token-symbol)
+
+(rf/reg-sub
  :wallet/wallet-send-disabled-from-chain-ids
  :<- [:wallet/wallet-send]
  :-> :disabled-from-chain-ids)
@@ -331,6 +336,19 @@
  :<- [:wallet/accounts-with-customization-color]
  (fn [accounts]
    (remove :watch-only? accounts)))
+
+(rf/reg-sub
+ :wallet/accounts-with-current-asset
+ :<- [:wallet/accounts-without-watched-accounts]
+ :<- [:wallet/wallet-send-token-symbol]
+ :<- [:wallet/wallet-send-token]
+ (fn [[accounts token-symbol token]]
+   (let [asset-symbol (or token-symbol (:symbol token))]
+     (if asset-symbol
+       (filter (fn [account]
+                 (some #(= (:symbol %) asset-symbol) (:tokens account)))
+               accounts)
+       accounts))))
 
 (rf/reg-sub
  :wallet/current-viewing-account-token-values
