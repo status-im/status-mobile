@@ -461,6 +461,14 @@
                     :TokenID   token-id
                     :ChainID   to-chain-id))
 
+      (= bridge-name constants/bridge-name-erc-1155-transfer)
+      (assoc :ERC1155TransferTx
+             (assoc tx-data
+                    :Recipient to-address
+                    :TokenID   token-id
+                    :ChainID   to-chain-id
+                    :Amount    amount-in))
+
       (= bridge-name constants/bridge-name-transfer)
       (assoc :TransferTx tx-data)
 
