@@ -15,13 +15,11 @@
 
 (def buttons-container
   {:flex-direction :row
-   :align-items    :center
-   :padding-top    (when platform/android? 2)})
+   :align-items    :flex-start})
 
 (def clear-icon-container
-  {:justify-content :center
+  {:justify-content :flex-start
    :align-items     :center
-   :padding-top     (if platform/ios? 6 2)
    :height          24
    :width           20})
 
