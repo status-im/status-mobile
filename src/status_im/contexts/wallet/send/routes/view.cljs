@@ -30,17 +30,16 @@
         receiver-preferred-networks (rf/sub [:wallet/wallet-send-receiver-preferred-networks])
         {token-symbol   :symbol
          token-networks :networks}  (rf/sub [:wallet/wallet-send-token])
-        not-available-tokens        (filter (fn [preferred-chain-id]
-                                              (not-any? (fn [token-chain-id]
-                                                          (= preferred-chain-id token-chain-id))
-                                                        token-networks))
+        token-chain-ids-set         (set (mapv #(:chain-id %) token-networks))
+        not-available-networks      (filter (fn [preferred-chain-id]
+                                              (not (contains? token-chain-ids-set preferred-chain-id)))
                                             receiver-preferred-networks)
-        warning-label               (when (not-empty not-available-tokens)
+        warning-label               (when (not-empty not-available-networks)
                                       (i18n/label
                                        :t/token-not-available-on-networks
                                        {:token-symbol token-symbol
                                         :networks     (network-utils/network-ids->formatted-text
-                                                       not-available-tokens)}))]
+                                                       not-available-networks)}))]
     (rf/dispatch
      [:show-bottom-sheet
       {:content (fn []
