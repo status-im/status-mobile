@@ -39,32 +39,38 @@
            token-decimals                (if collectible 0 (:decimals token))
            native-token?                 (and token (= token-display-name "ETH"))
            routes-available?             (pos? (count chosen-route))
+           token-networks                (:networks token)
+           token-networks-ids            (when token-networks (mapv #(:chain-id %) token-networks))
            from-network-amounts-by-chain (send-utils/network-amounts-by-chain {:route chosen-route
                                                                                :token-decimals
                                                                                token-decimals
                                                                                :native-token?
                                                                                native-token?
-                                                                               :to? false})
+                                                                               :receiver? false})
            from-network-values-for-ui    (send-utils/network-values-for-ui from-network-amounts-by-chain)
            to-network-amounts-by-chain   (send-utils/network-amounts-by-chain {:route chosen-route
                                                                                :token-decimals
                                                                                token-decimals
                                                                                :native-token?
                                                                                native-token?
-                                                                               :to? true})
+                                                                               :receiver? true})
            to-network-values-for-ui      (send-utils/network-values-for-ui to-network-amounts-by-chain)
            sender-network-values         (if routes-available?
-                                           (send-utils/network-amounts from-network-values-for-ui
-                                                                       disabled-from-chain-ids
-                                                                       receiver-networks
-                                                                       false)
+                                           (send-utils/network-amounts
+                                            {:network-values     from-network-values-for-ui
+                                             :disabled-chain-ids disabled-from-chain-ids
+                                             :receiver-networks  receiver-networks
+                                             :token-networks-ids token-networks-ids
+                                             :receiver?          false})
                                            (send-utils/reset-network-amounts-to-zero
                                             sender-network-values))
            receiver-network-values       (if routes-available?
-                                           (send-utils/network-amounts to-network-values-for-ui
-                                                                       disabled-from-chain-ids
-                                                                       receiver-networks
-                                                                       true)
+                                           (send-utils/network-amounts
+                                            {:network-values     to-network-values-for-ui
+                                             :disabled-chain-ids disabled-from-chain-ids
+                                             :receiver-networks  receiver-networks
+                                             :token-networks-ids token-networks-ids
+                                             :receiver?          true})
                                            (send-utils/reset-network-amounts-to-zero
                                             receiver-network-values))
            network-links                 (when routes-available?
@@ -147,6 +153,7 @@
               (assoc-in [:wallet :ui :send :recipient] (or recipient address))
               (assoc-in [:wallet :ui :send :to-address] to-address)
               (assoc-in [:wallet :ui :send :address-prefix] prefix)
+              (assoc-in [:wallet :ui :send :receiver-preferred-networks] receiver-networks)
               (assoc-in [:wallet :ui :send :receiver-networks] receiver-networks))
       :fx [(when (and collectible-tx? one-collectible?)
              [:dispatch [:wallet/get-suggested-routes {:amount 1}]])
@@ -176,26 +183,44 @@
    ;; `token` is a map extracted from the sender, but in the wallet home page we don't know the
    ;; sender yet, so we only provide the `token-symbol`, later in
    ;; `:wallet/select-from-account` the `token` key will be set.
-   {:db (cond-> db
-          :always      (update-in [:wallet :ui :send] dissoc :collectible)
-          :always      (assoc-in [:wallet :ui :send :token-display-name] (:symbol token))
-          token        (assoc-in [:wallet :ui :send :token] token)
-          token-symbol (assoc-in [:wallet :ui :send :token-symbol] token-symbol))
-    :fx [[:dispatch [:wallet/clean-suggested-routes]]
-         [:dispatch
-          [:wallet/wizard-navigate-forward
-           {:current-screen stack-id
-            :start-flow?    start-flow?
-            :flow-id        :wallet-send-flow}]]]}))
+   (let [{token-networks :networks}                token
+         receiver-networks                         (get-in db [:wallet :ui :send :receiver-networks])
+         token-networks-ids                        (mapv #(:chain-id %) token-networks)
+         token-not-supported-in-receiver-networks? (not (some (set receiver-networks)
+                                                              token-networks-ids))]
+     {:db (cond-> db
+            :always      (update-in [:wallet :ui :send] dissoc :collectible)
+            :always      (assoc-in [:wallet :ui :send :token-display-name]
+                          (:symbol token))
+            :always      (assoc-in
+                          [:wallet :ui :send
+                           :token-not-supported-in-receiver-networks?]
+                          token-not-supported-in-receiver-networks?)
+            token        (assoc-in [:wallet :ui :send :token] token)
+            token-symbol (assoc-in [:wallet :ui :send :token-symbol]
+                          token-symbol))
+      :fx [[:dispatch [:wallet/clean-suggested-routes]]
+           [:dispatch
+            [:wallet/wizard-navigate-forward
+             {:current-screen stack-id
+              :start-flow?    start-flow?
+              :flow-id        :wallet-send-flow}]]]})))
 
 (rf/reg-event-fx
  :wallet/edit-token-to-send
  (fn [{:keys [db]} [token]]
-   {:db (-> db
-            (assoc-in [:wallet :ui :send :token] token)
-            (assoc-in [:wallet :ui :send :token-display-name] token))
-    :fx [[:dispatch [:hide-bottom-sheet]]
-         [:dispatch [:wallet/clean-suggested-routes]]]}))
+   (let [{token-networks :networks}                token
+         receiver-networks                         (get-in db [:wallet :ui :send :receiver-networks])
+         token-networks-ids                        (mapv #(:chain-id %) token-networks)
+         token-not-supported-in-receiver-networks? (not (some (set receiver-networks)
+                                                              token-networks-ids))]
+     {:db (-> db
+              (assoc-in [:wallet :ui :send :token] token)
+              (assoc-in [:wallet :ui :send :token-display-name] token)
+              (assoc-in [:wallet :ui :send :token-not-supported-in-receiver-networks?]
+                        token-not-supported-in-receiver-networks?))
+      :fx [[:dispatch [:hide-bottom-sheet]]
+           [:dispatch [:wallet/clean-suggested-routes]]]})))
 
 (rf/reg-event-fx :wallet/clean-selected-token
  (fn [{:keys [db]}]
@@ -307,18 +332,21 @@
                                                                       balances-per-chain
                                                                       :disabled-chain-ids
                                                                       disabled-from-chain-ids}))
+         token-networks-ids (when token (mapv #(:chain-id %) (:networks token)))
          sender-network-values (when token-available-networks-for-suggested-routes
                                  (send-utils/loading-network-amounts
-                                  token-available-networks-for-suggested-routes
-                                  disabled-from-chain-ids
-                                  receiver-networks
-                                  false))
+                                  {:valid-networks     token-available-networks-for-suggested-routes
+                                   :disabled-chain-ids disabled-from-chain-ids
+                                   :receiver-networks  receiver-networks
+                                   :token-networks-ids token-networks-ids
+                                   :receiver?          false}))
          receiver-network-values (when token-available-networks-for-suggested-routes
                                    (send-utils/loading-network-amounts
-                                    token-available-networks-for-suggested-routes
-                                    disabled-from-chain-ids
-                                    receiver-networks
-                                    true))
+                                    {:valid-networks     token-available-networks-for-suggested-routes
+                                     :disabled-chain-ids disabled-from-chain-ids
+                                     :receiver-networks  receiver-networks
+                                     :token-networks-ids token-networks-ids
+                                     :receiver?          true}))
          request-params [transaction-type-param
                          from-address
                          to-address

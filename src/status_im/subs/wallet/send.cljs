@@ -42,3 +42,8 @@
                                            (= sender current-viewing-account-address))
                                          activities)]
      (set (map :recipient users-sent-transactions)))))
+
+(rf/reg-sub
+ :wallet/send-token-not-supported-in-receiver-networks?
+ :<- [:wallet/wallet-send]
+ :-> :token-not-supported-in-receiver-networks?)

@@ -76,7 +76,8 @@
    :wallet/wallet-send-to-values-by-chain          {1 (money/bignumber "250")}
    :wallet/wallet-send-sender-network-values       nil
    :wallet/wallet-send-receiver-network-values     nil
-   :wallet/wallet-send-network-links               nil})
+   :wallet/wallet-send-network-links               nil
+   :wallet/wallet-send-receiver-preferred-networks [1]})
 
 (h/describe "Send > input amount screen"
   (h/setup-restorable-re-frame)

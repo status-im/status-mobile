@@ -43,3 +43,21 @@
    (seq [:mainnet])                     "eth"
    (seq [:mainnet :optimism])           "eth:opt"
    (seq [:mainnet :optimism :arbitrum]) "eth:opt:arb1"))
+
+(deftest test-network-ids->formatted-text
+  (testing "Empty network-ids should return an empty string"
+    (is (= "" (utils/network-ids->formatted-text []))))
+
+  (testing "Single network-id should return the capitalized name of that network"
+    (is (= "Mainnet" (utils/network-ids->formatted-text [constants/ethereum-mainnet-chain-id]))))
+
+  (testing "Two network-ids should return a comma-separated string with 'and' for the last item"
+    (is (= "Mainnet and Optimism"
+           (utils/network-ids->formatted-text [constants/ethereum-mainnet-chain-id
+                                               constants/optimism-mainnet-chain-id]))))
+
+  (testing "Multiple network-ids should return a comma-separated string with 'and' for the last item"
+    (is (= "Mainnet, Optimism and Arbitrum"
+           (utils/network-ids->formatted-text [constants/ethereum-mainnet-chain-id
+                                               constants/optimism-mainnet-chain-id
+                                               constants/arbitrum-mainnet-chain-id])))))

@@ -2624,7 +2624,14 @@
     "this-account-has-no-activity": "This account has no activity",
     "this-address-has-activity": "This address has activity",
     "scanning-for-activity": "Scanning for activity...",
-    "send-community-link": "Send community link",
     "at-least-one-network-must-be-activated": "At least 1 network must be activated",
-    "status-is-a-secure-messaging-app": "Status is a secure messaging app, crypto wallet and web3 browser built with the state of the art technology"
+    "send-community-link": "Send community link",
+    "status-is-a-secure-messaging-app": "Status is a secure messaging app, crypto wallet and web3 browser built with the state of the art technology",
+    "token-not-available-on-receiver-networks": "{{token-symbol}} is not available on the recipient’s desired networks. Proceed with caution.",
+    "add-networks-token-can-be-sent-to": "Add networks {{token-symbol}} can be sent to",
+    "not-available": "Not available",
+    "token-not-available-on-networks": "{{token-symbol}} is not available on {{networks}}.",
+    "sending-to-networks-the-receiver-does-not-prefer": "Sending to networks the receiver does not prefer may result in recipient having difficulty accessing the sent tokens.",
+    "proceed-anyway": "Proceed anyway",
+    "sending-to-unpreferred-networks": "Sending to unpreferred networks"
 }
