@@ -22,7 +22,7 @@
     :height           height
     :right            0
     :left             0
-    :background-color (if platform/ios?
+    :background-color (if platform/android?
                         (colors/theme-colors
                          colors/white-opa-70
                          colors/neutral-95-opa-70
