@@ -14,26 +14,27 @@
     [react-native.core :as rn]
     [utils.i18n :as i18n]))
 
-(def ^:private left-image-supported-types #{:account :keypair :default-keypair})
+(def ^:private left-image-supported-types #{:account :keypair :missing-keypair :default-keypair})
 
 (defn- left-image
   [{:keys [type customization-color account-avatar-emoji account-avatar-type icon-avatar
            profile-picture]}]
   (case type
-    :account         [account-avatar/view
-                      {:customization-color customization-color
-                       :size                32
-                       :emoji               account-avatar-emoji
-                       :type                (or account-avatar-type :default)}]
-    :keypair         [icon-avatar/icon-avatar
-                      {:icon    icon-avatar
-                       :border? true
-                       :color   :neutral}]
+    :account           [account-avatar/view
+                        {:customization-color customization-color
+                         :size                32
+                         :emoji               account-avatar-emoji
+                         :type                (or account-avatar-type :default)}]
+    (:keypair
+     :missing-keypair) [icon-avatar/icon-avatar
+                        {:icon    icon-avatar
+                         :border? true
+                         :color   :neutral}]
 
-    :default-keypair [user-avatar/user-avatar
-                      {:size              :small
-                       :status-indicator? false
-                       :profile-picture   profile-picture}]
+    :default-keypair   [user-avatar/user-avatar
+                        {:size              :small
+                         :status-indicator? false
+                         :profile-picture   profile-picture}]
     nil))
 
 (defn- keypair-subtitle
@@ -52,6 +53,15 @@
       {:color           (colors/theme-colors colors/neutral-50 colors/neutral-40 theme)
        :size            16
        :container-style style/keycard-icon}])])
+
+(defn- missing-keypair-subtitle
+  [{:keys [theme blur?]}]
+  [rn/view {:style style/row}
+   [text/text
+    {:size   :paragraph-2
+     :weight :regular
+     :style  (style/description theme blur?)}
+    (i18n/label :t/import-to-use-derived-accounts)]])
 
 (defn- account-subtitle
   [{:keys [networks theme blur? description]}]
@@ -111,6 +121,11 @@
      {:theme    theme
       :blur?    blur?
       :keycard? keycard?}]
+
+    (= :missing-keypair type)
+    [missing-keypair-subtitle
+     {:theme theme
+      :blur? blur?}]
 
     (= :account type)
     [account-subtitle

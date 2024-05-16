@@ -102,6 +102,16 @@
     (-> (h/expect (h/get-by-translation-text :t/on-keycard))
         (.toBeTruthy)))
 
+  (h/test "component renders in missing-keypair"
+    (h/render-with-theme-provider [quo/drawer-top
+                                   {:title       "Title"
+                                    :icon-avatar :i/placeholder
+                                    :type        :missing-keypair}]
+                                  theme)
+    (h/is-truthy (h/get-by-text "Title"))
+    (-> (h/expect (h/get-by-translation-text :t/import-to-use-derived-accounts))
+        (.toBeTruthy)))
+
   (h/test "component renders in default-keypair type"
     (h/render-with-theme-provider [quo/drawer-top
                                    {:title       "Title"
