@@ -20,6 +20,7 @@
 (def clear-icon-container
   {:justify-content :flex-start
    :align-items     :center
+   :padding-top     (when platform/ios? 4)
    :height          24
    :width           20})
 
@@ -30,7 +31,7 @@
                           nil)
          :flex         1
          :color        (colors/theme-colors colors/neutral-100 colors/white theme)
-         :margin-top   (if platform/ios? 0 -4)
+         :margin-top   -4
          :margin-right 8
          :max-height   50
          :padding      0))
