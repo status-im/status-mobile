@@ -52,7 +52,7 @@
         field-value (reagent/cursor state [(:key args)])
         active?     @field-value]
     [rn/view {:style style/field-row}
-     [label-view state label]
+     [label-view state label theme]
      [rn/view {:style (style/boolean-container)}
       [rn/pressable
        {:style    (style/boolean-button {:active? active? :left? true} theme)
@@ -70,7 +70,7 @@
   (let [label       (or label (key->text-label (:key args)))
         field-value (reagent/cursor state [(:key args)])]
     [rn/view {:style style/field-row}
-     [label-view state label]
+     [label-view state label theme]
      [rn/view {:style style/field-column}
       [rn/text-input
        (merge
@@ -92,7 +92,7 @@
   (let [label       (or label (key->text-label (:key args)))
         field-value (reagent/cursor state [(:key args)])]
     [rn/view {:style style/field-row}
-     [label-view state label]
+     [label-view state label theme]
      [rn/view {:style style/field-column}
       [rn/text-input
        (merge
@@ -169,7 +169,7 @@
             field-value     (reagent/cursor state [(:key args)])
             selected-option (find-selected-option @field-value options)]
         [rn/view {:style style/field-row}
-         [label-view state label]
+         [label-view state label theme]
          [rn/view {:style style/field-column}
           [customizer-select-modal
            {:open        open
@@ -252,7 +252,7 @@
             selected-keys    (reagent/cursor state [(:key args)])
             selected-options (filter-by-keys options @selected-keys)]
         [rn/view {:style style/field-row}
-         [label-view state label]
+         [label-view state label theme]
          [rn/view {:style style/field-column}
           [customizer-multi-select-modal
            {:open-atom          open

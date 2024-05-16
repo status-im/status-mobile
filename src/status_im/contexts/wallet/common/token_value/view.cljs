@@ -1,5 +1,6 @@
 (ns status-im.contexts.wallet.common.token-value.view
   (:require [quo.core :as quo]
+            [status-im.common.not-implemented :as not-implemented]
             [status-im.contexts.wallet.sheets.buy-token.view :as buy-token]
             [status-im.feature-flags :as ff]
             [utils.i18n :as i18n]
@@ -40,6 +41,13 @@
                           (rf/dispatch [:hide-bottom-sheet])
                           (rf/dispatch [:wallet/bridge-select-token {:token token-data}]))})
 
+(defn- action-swap
+  []
+  {:icon                :i/swap
+   :accessibility-label :swap
+   :label               (i18n/label :t/swap)
+   :on-press            #(not-implemented/alert)})
+
 (defn- action-manage-tokens
   [watch-only?]
   {:icon                :i/settings
@@ -73,6 +81,7 @@
         (not watch-only?) (concat [(action-buy)
                                    (action-send send-params)
                                    (action-receive)
+                                   (when (ff/enabled? ::ff/wallet.swap) (action-swap))
                                    (action-bridge token-data)]))]]))
 
 (defn view

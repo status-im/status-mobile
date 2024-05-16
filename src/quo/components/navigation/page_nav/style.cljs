@@ -13,13 +13,12 @@
    :align-items        :center})
 
 (defn center-content-container
-  [centered? center-opacity]
+  [centered?]
   {:flex              1
    :margin-horizontal 12
    :flex-direction    :row
    :align-items       :center
-   :justify-content   (if centered? :center :flex-start)
-   :opacity           center-opacity})
+   :justify-content   (if centered? :center :flex-start)})
 
 (def right-actions-container
   {:flex-direction :row})
