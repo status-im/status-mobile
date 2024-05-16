@@ -3,6 +3,7 @@
     ;; NOTE: Do NOT sort i18n-resources because it MUST be loaded first.
     [status-im.setup.i18n-resources :as i18n-resources]
     #_{:clj-kondo/ignore [:unsorted-required-namespaces]}
+    ["@walletconnect/react-native-compat"]
     legacy.status-im.events
     legacy.status-im.subs.root
     [native-module.core :as native-module]

@@ -258,6 +258,9 @@
 (def regx-full-or-partial-address #"^0x[a-fA-F0-9]{1,40}$")
 
 ;; Wallet Connect
+(def ^:const wallet-connect-metadata-icon
+  "https://res.cloudinary.com/dhgck7ebz/image/upload/f_auto,c_limit,w_1080,q_auto/Brand/Logo%20Section/Mark/Mark_01")
+(def ^:const wallet-connect-metadata-url "https://status.app")
 (def ^:const optimism-crosschain-id "eip155:10")
 (def ^:const wallet-connect-supported-methods ["eth_sendTransaction" "personal_sign"])
 (def ^:const wallet-connect-supported-events ["accountsChanged" "chainChanged"])
