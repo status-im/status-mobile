@@ -467,12 +467,8 @@
   #{ethereum-sepolia-chain-id arbitrum-sepolia-chain-id optimism-sepolia-chain-id})
 
 (def ^:const mainnet-short-name "eth")
-<<<<<<< HEAD
 (def ^:const ethereum-short-name "eth")
-(def ^:const optimism-short-name "opt")
-=======
 (def ^:const optimism-short-name "oeth")
->>>>>>> d4c148316 (update opt to oeth)
 (def ^:const arbitrum-short-name "arb1")
 
 (def ^:const default-multichain-address-prefix "eth:oeth:arb1:")
