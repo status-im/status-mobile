@@ -50,7 +50,7 @@ class TestDeepLinksOneDevice(MultipleSharedDeviceTestCase):
         closed_community_urls = {
             "https://status.app/c/G0IAAGRy3S0pLm1NeQ91pwKgFaFGoIlkxXmDxITXXi3KdZ7vpb9-ERczhqwoFwMK6sCPnKwA#zQ3shtJ8A3rxUZWcfWDL3vKYQBt3jMPTuf44dJUGfjZjsek66":
                 "e2e community token-gated",
-            "https://status.app/c/G1AAAGR0G-IRb2YJD4lRXwLusAFnGrDHGNl6Wt55MIARwVYvarnO873011-fdVSz1kHSan-qq0G96vOaMqyTRhJnQV74KCUr#zQ3shb9irJR66rhG1E8sQZX8pDU3dpGm4daYSmPVDd2e73ewE":
+            "https://status.app/c/GzwAAGS9TbI9CiYaoZj0TRNelWAPwk8gSHIEmqgqb0ADPw5rnFvk6bp_n3BlZxVMshmxFyI=#zQ3shkrmSmwb66sw2EuUvC5iqiNqEeevTfjtks3p8ZaaCYoNj":
                 "Open community for e2e",
             "https://status.app/c/GzAAAORtwyW4xNWM4td0F7hOnYZ1apSqCCRUUR0qxD19n3Ec97fX_aIVIGFWbdUM#zQ3shk6dgK8dYWWSC4m8Jj5c91zyfhfj1fFkgypS8D9gsXkrK":
                 "Closed community"
@@ -96,7 +96,7 @@ class TestDeepLinksOneDevice(MultipleSharedDeviceTestCase):
         community_links = {
             "status.app://c/G0IAAGRy3S0pLm1NeQ91pwKgFaFGoIlkxXmDxITXXi3KdZ7vpb9-ERczhqwoFwMK6sCPnKwA#zQ3shtJ8A3rxUZWcfWDL3vKYQBt3jMPTuf44dJUGfjZjsek66":
                 "e2e community token-gated",
-            "status.app://c/G1AAAGR0G-IRb2YJD4lRXwLusAFnGrDHGNl6Wt55MIARwVYvarnO873011-fdVSz1kHSan-qq0G96vOaMqyTRhJnQV74KCUr#zQ3shb9irJR66rhG1E8sQZX8pDU3dpGm4daYSmPVDd2e73ewE":
+            "status.app://c/GzwAAGS9TbI9CiYaoZj0TRNelWAPwk8gSHIEmqgqb0ADPw5rnFvk6bp_n3BlZxVMshmxFyI=#zQ3shkrmSmwb66sw2EuUvC5iqiNqEeevTfjtks3p8ZaaCYoNj":
                 "Open community for e2e",
             "status.app://c/GzAAAORtwyW4xNWM4td0F7hOnYZ1apSqCCRUUR0qxD19n3Ec97fX_aIVIGFWbdUM#zQ3shk6dgK8dYWWSC4m8Jj5c91zyfhfj1fFkgypS8D9gsXkrK":
                 "Closed community"

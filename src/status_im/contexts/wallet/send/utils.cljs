@@ -43,21 +43,22 @@
   (money/wei->ether (reduce money/add (map calculate-gas-fee route))))
 
 (defn network-amounts-by-chain
-  [{:keys [route token-decimals native-token? to?]}]
-  (reduce (fn [acc path]
-            (let [amount-hex   (if to? (:amount-in path) (:amount-out path))
-                  amount-units (native-module/hex-to-number
-                                (utils.hex/normalize-hex amount-hex))
-                  amount       (money/with-precision
-                                (if native-token?
-                                  (money/wei->ether amount-units)
-                                  (money/token->unit amount-units
-                                                     token-decimals))
-                                6)
-                  chain-id     (if to? (get-in path [:to :chain-id]) (get-in path [:from :chain-id]))]
-              (update acc chain-id money/add amount)))
-          {}
-          route))
+  [{:keys [route token-decimals native-token? receiver?]}]
+  (reduce
+   (fn [acc path]
+     (let [amount-hex   (if receiver? (:amount-in path) (:amount-out path))
+           amount-units (native-module/hex-to-number
+                         (utils.hex/normalize-hex amount-hex))
+           amount       (money/with-precision
+                         (if native-token?
+                           (money/wei->ether amount-units)
+                           (money/token->unit amount-units
+                                              token-decimals))
+                         6)
+           chain-id     (if receiver? (get-in path [:to :chain-id]) (get-in path [:from :chain-id]))]
+       (update acc chain-id money/add amount)))
+   {}
+   route))
 
 (defn network-values-for-ui
   [amounts]
@@ -93,62 +94,103 @@
    network-amounts))
 
 (defn network-amounts
-  [network-values disabled-chain-ids receiver-networks to?]
-  (let [disabled-set           (set disabled-chain-ids)
-        receiver-networks-set  (set receiver-networks)
-        network-values-keys    (set (keys network-values))
-        routes-found?          (pos? (count network-values-keys))
-        updated-network-values (when routes-found?
-                                 (reduce (fn [acc k]
-                                           (if (or (contains? network-values-keys k)
-                                                   (and to?
-                                                        (not (contains? receiver-networks-set k))))
-                                             acc
-                                             (assoc acc k (money/bignumber "0"))))
-                                         network-values
-                                         disabled-chain-ids))]
-    (cond-> (->> updated-network-values
-                 (map
-                  (fn [[k v]]
-                    {:chain-id     k
-                     :total-amount v
-                     :type         (if (or to? (not (contains? disabled-set k))) :default :disabled)}))
-                 (sort-by #(get network-priority-score (network-utils/id->network (:chain-id %))))
-                 (filter
-                  #(or (and to?
-                            (or (contains? receiver-networks-set (:chain-id %))
-                                (money/greater-than (:total-amount %) (money/bignumber "0"))))
-                       (not to?)))
-                 (vec))
-      (and to?
+  [{:keys [network-values disabled-chain-ids receiver-networks token-networks-ids receiver?]}]
+  (let [disabled-set                             (set disabled-chain-ids)
+        receiver-networks-set                    (set receiver-networks)
+        network-values-keys                      (set (keys network-values))
+        routes-found?                            (pos? (count network-values-keys))
+        token-networks-ids-set                   (set token-networks-ids)
+        not-available-networks                   (if receiver?
+                                                   (filter #(not (token-networks-ids-set %))
+                                                           receiver-networks)
+                                                   [])
+        not-available-networks-set               (set not-available-networks)
+        network-values-with-disabled-chains      (when routes-found?
+                                                   (reduce
+                                                    (fn [acc k]
+                                                      (if (or (contains? network-values-keys k)
+                                                              (and receiver?
+                                                                   (not (contains? receiver-networks-set
+                                                                                   k))))
+                                                        acc
+                                                        (assoc acc k (money/bignumber "0"))))
+                                                    network-values
+                                                    disabled-chain-ids))
+        network-values-with-not-available-chains (if (and receiver? routes-found?)
+                                                   (let [network-values-keys
+                                                         (set (keys
+                                                               network-values-with-disabled-chains))]
+                                                     (reduce
+                                                      (fn [acc k]
+                                                        (if (not (contains? network-values-keys k))
+                                                          (assoc acc k nil)
+                                                          acc))
+                                                      network-values-with-disabled-chains
+                                                      not-available-networks))
+                                                   network-values-with-disabled-chains)]
+    (cond-> (->>
+              network-values-with-not-available-chains
+              (map
+               (fn [[chain-id amount]]
+                 {:chain-id     chain-id
+                  :total-amount amount
+                  :type         (cond
+                                  (contains? not-available-networks-set chain-id)         :not-available
+                                  (or receiver? (not (contains? disabled-set chain-id)))  :default
+                                  (and (not receiver?) (contains? disabled-set chain-id)) :disabled)}))
+              (sort-by (fn [network-amount]
+                         (get network-priority-score
+                              (network-utils/id->network (:chain-id network-amount)))))
+              (filter
+               (fn [network-amount]
+                 (or (and receiver?
+                          (or (contains? receiver-networks-set (:chain-id network-amount))
+                              (money/greater-than (:total-amount network-amount) (money/bignumber "0"))))
+                     (not receiver?))))
+              (vec))
+      (and receiver?
            routes-found?
-           (< (count updated-network-values) available-networks-count))
+           (< (count network-values-with-not-available-chains) available-networks-count))
       (conj {:type :add}))))
 
 (defn loading-network-amounts
-  [valid-networks disabled-chain-ids receiver-networks to?]
-  (let [disabled-set            (set disabled-chain-ids)
-        receiver-networks-set   (set receiver-networks)
-        receiver-networks-count (count receiver-networks)
-        valid-networks          (concat valid-networks disabled-chain-ids)]
+  [{:keys [valid-networks disabled-chain-ids receiver-networks token-networks-ids receiver?]}]
+  (let [disabled-set               (set disabled-chain-ids)
+        receiver-networks-set      (set receiver-networks)
+        receiver-networks-count    (count receiver-networks)
+        token-networks-ids-set     (set token-networks-ids)
+        valid-networks-set         (set valid-networks)
+        not-available-networks     (if receiver?
+                                     (filter #(not (token-networks-ids-set %)) receiver-networks)
+                                     [])
+        not-available-networks-set (set not-available-networks)
+        valid-networks             (concat valid-networks
+                                           disabled-chain-ids
+                                           (when receiver?
+                                             (filter #(not (valid-networks-set %))
+                                                     not-available-networks)))]
     (cond-> (->> valid-networks
-                 (map (fn [k]
-                        (cond-> {:chain-id k
-                                 :type     (if (or to?
-                                                   (not (contains? disabled-set k)))
-                                             :loading
-                                             :disabled)}
-                          (and (not to?) (contains? disabled-set k))
-                          (assoc :total-amount (money/bignumber "0")))))
-                 (sort-by (fn [item]
+                 (map
+                  (fn [chain-id]
+                    (cond->
+                      {:chain-id chain-id
+                       :type     (cond
+                                   (contains? not-available-networks-set chain-id)         :not-available
+                                   (or receiver?
+                                       (not (contains? disabled-set chain-id)))            :loading
+                                   (and (not receiver?) (contains? disabled-set chain-id)) :disabled)}
+                      (and (not receiver?) (contains? disabled-set chain-id))
+                      (assoc :total-amount (money/bignumber "0")))))
+                 (sort-by (fn [network-amount]
                             (get network-priority-score
-                                 (network-utils/id->network (:chain-id item)))))
+                                 (network-utils/id->network (:chain-id network-amount)))))
                  (filter
-                  #(or (and to? (contains? receiver-networks-set (:chain-id %)))
-                       (and (not to?)
-                            (not (contains? disabled-chain-ids (:chain-id %))))))
+                  (fn [network-amount]
+                    (or (and receiver? (contains? receiver-networks-set (:chain-id network-amount)))
+                        (and (not receiver?)
+                             (not (contains? disabled-chain-ids (:chain-id network-amount)))))))
                  (vec))
-      (and to? (< receiver-networks-count available-networks-count)) (conj {:type :add}))))
+      (and receiver? (< receiver-networks-count available-networks-count)) (conj {:type :add}))))
 
 (defn network-links
   [route from-values-by-chain to-values-by-chain]

@@ -126,25 +126,32 @@
                                         (-> user-name
                                             (string/replace "<b>" "")
                                             (string/replace "</b>" "")))]
-    [rn/view
-     {:style {:flex-direction     :row
-              :padding-horizontal 12
-              :padding-top        4}}
-     [fast-image/fast-image
-      {:source {:uri user-avatar}
-       :style  {:width         32
-                :margin-top    4
-                :border-radius 16
-                :height        32}}]
-     [rn/view {:margin-left 8 :flex 1}
-      [quo/author
-       {:primary-name   (str user-name)
-        :short-chat-key (str "Bridged from " bridge-name)
-        :time-str       (datetime/timestamp->time timestamp)}]
-      [quo/text
-       {:size  :paragraph-1
-        :style {:line-height 22.75}}
-       content]]]))
+    (when (and user-name content)
+      [rn/view
+       {:style {:flex-direction     :row
+                :padding-horizontal 12
+                :padding-top        4}}
+       [fast-image/fast-image
+        {:source           {:uri user-avatar}
+         :fallback-content [quo/user-avatar
+                            {:full-name         user-name
+                             :ring?             false
+                             :online?           false
+                             :status-indicator? false
+                             :size              :small}]
+         :style            {:width         32
+                            :margin-top    4
+                            :border-radius 16
+                            :height        32}}]
+       [rn/view {:margin-left 8 :flex 1}
+        [quo/author
+         {:primary-name   (str user-name)
+          :short-chat-key (str "Bridged from " bridge-name)
+          :time-str       (datetime/timestamp->time timestamp)}]
+        [quo/text
+         {:size  :paragraph-1
+          :style {:line-height 22.75}}
+         content]]])))
 
 (declare on-long-press)
 

@@ -1,14 +1,11 @@
 (ns status-im.contexts.wallet.send.routes.view
   (:require
-    [clojure.string :as string]
     [quo.core :as quo]
-    [quo.foundations.colors :as colors]
-    [quo.foundations.resources :as resources]
     [react-native.core :as rn]
-    [reagent.core :as reagent]
     [status-im.contexts.wallet.common.utils.networks :as network-utils]
     [status-im.contexts.wallet.send.routes.style :as style]
     [status-im.contexts.wallet.send.utils :as send-utils]
+    [status-im.contexts.wallet.sheets.network-preferences.view :as network-preferences]
     [utils.debounce :as debounce]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
@@ -19,19 +16,6 @@
 (def network-link-1x-height 56)
 (def network-link-2x-height 111)
 
-(defn- make-network-item
-  [{:keys [network-name chain-id] :as _network}
-   {:keys [title color on-change network-preferences] :as _options}]
-  {:title        (or title (string/capitalize (name network-name)))
-   :image        :icon-avatar
-   :image-props  {:icon (resources/get-network network-name)
-                  :size :size-20}
-   :action       :selector
-   :action-props {:type                :checkbox
-                  :customization-color color
-                  :checked?            (some #(= % chain-id) @network-preferences)
-                  :on-change           on-change}})
-
 (defn fetch-routes
   [amount valid-input? bounce-duration-ms]
   (if valid-input?
@@ -40,82 +24,93 @@
      bounce-duration-ms)
     (rf/dispatch [:wallet/clean-suggested-routes])))
 
-(defn networks-drawer
-  [{:keys [on-save theme]}]
-  (let [network-details     (rf/sub [:wallet/network-details])
-        {:keys [color]}     (rf/sub [:wallet/current-viewing-account])
-        selected-networks   (rf/sub [:wallet/wallet-send-receiver-networks])
-        prefix              (rf/sub [:wallet/wallet-send-address-prefix])
-        prefix-seq          (string/split prefix #":")
-        grouped-details     (group-by #(contains? (set prefix-seq) (:short-name %)) network-details)
-        preferred           (get grouped-details true [])
-        not-preferred       (get grouped-details false [])
-        network-preferences (reagent/atom selected-networks)
-        toggle-network      (fn [{:keys [chain-id]}]
-                              (swap! network-preferences
-                                (fn [preferences]
-                                  (if (some #(= % chain-id) preferences)
-                                    (vec (remove #(= % chain-id) preferences))
-                                    (conj preferences chain-id)))))]
-    (fn []
-      [rn/view
-       [quo/drawer-top {:title (i18n/label :t/edit-receiver-networks)}]
-       [quo/category
-        {:list-type :settings
-         :label     (i18n/label :t/preferred-by-receiver)
-         :data      (mapv (fn [network]
-                            (make-network-item network
-                                               {:color               color
-                                                :network-preferences network-preferences
-                                                :on-change           #(toggle-network network)}))
-                          preferred)}]
-       (when (pos? (count not-preferred))
-         [quo/category
-          {:list-type :settings
-           :label     (i18n/label :t/not-preferred-by-receiver)
-           :data      (mapv (fn [network]
-                              (make-network-item network
-                                                 {:color               color
-                                                  :network-preferences network-preferences
-                                                  :on-change           #(toggle-network network)}))
-                            not-preferred)}])
-       (when (not= selected-networks @network-preferences)
-         [rn/view {:style (style/warning-container color theme)}
-          [quo/icon :i/info {:color (colors/resolve-color color theme)}]
-          [quo/text
-           {:size  :paragraph-2
-            :style style/warning-text} (i18n/label :t/receiver-networks-warning)]])
-       [quo/bottom-actions
-        {:actions          :one-action
-         :button-one-label (i18n/label :t/apply-changes)
-         :button-one-props {:disabled?           (or (= selected-networks @network-preferences)
-                                                     (empty? @network-preferences))
-                            :on-press            (fn []
-                                                   (rf/dispatch [:wallet/update-receiver-networks
-                                                                 @network-preferences])
-                                                   (rf/dispatch [:hide-bottom-sheet])
-                                                   (on-save))
-                            :customization-color color}}]])))
+(defn- open-preferences
+  []
+  (rf/dispatch
+   [:show-bottom-sheet
+    {:content
+     (fn []
+       (let [receiver-networks                        (rf/sub [:wallet/wallet-send-receiver-networks])
+             receiver-preferred-networks              (rf/sub
+                                                       [:wallet/wallet-send-receiver-preferred-networks])
+             {token-symbol   :symbol
+              token-networks :networks}               (rf/sub [:wallet/wallet-send-token])
+             token-chain-ids-set                      (set (mapv #(:chain-id %) token-networks))
+             [selected-receiver-networks
+              set-selected-receiver-networks]         (rn/use-state receiver-networks)
+             receiver-preferred-networks-set          (set receiver-preferred-networks)
+             receiver-selected-preferred-networks     (filter #(contains?
+                                                                receiver-preferred-networks-set
+                                                                %)
+                                                              selected-receiver-networks)
+             receiver-selected-non-preferred-networks (filter #(not (contains?
+                                                                     receiver-preferred-networks-set
+                                                                     %))
+                                                              selected-receiver-networks)
+             not-available-preferred-networks         (filter (fn [preferred-chain-id]
+                                                                (not (contains? token-chain-ids-set
+                                                                                preferred-chain-id)))
+                                                              receiver-selected-preferred-networks)
+             not-available-non-preferred-networks     (filter (fn [preferred-chain-id]
+                                                                (not (contains?
+                                                                      token-chain-ids-set
+                                                                      preferred-chain-id)))
+                                                              receiver-selected-non-preferred-networks)
+             first-section-warning-label              (when (not-empty not-available-preferred-networks)
+                                                        (i18n/label
+                                                         :t/token-not-available-on-networks
+                                                         {:token-symbol token-symbol
+                                                          :networks
+                                                          (network-utils/network-ids->formatted-text
+                                                           not-available-preferred-networks)}))
+             second-section-warning-label             (when (not-empty
+                                                             not-available-non-preferred-networks)
+                                                        (i18n/label
+                                                         :t/token-not-available-on-networks
+                                                         {:token-symbol token-symbol
+                                                          :networks
+                                                          (network-utils/network-ids->formatted-text
+                                                           not-available-non-preferred-networks)}))]
+         [network-preferences/view
+          {:title                        (i18n/label :t/edit-receiver-networks)
+           :first-section-label          (i18n/label :t/preferred-by-receiver)
+           :second-section-label         (i18n/label :t/not-preferred-by-receiver)
+           :selected-networks            (set (map network-utils/id->network
+                                                   receiver-networks))
+           :receiver-preferred-networks  receiver-preferred-networks
+           :button-label                 (i18n/label :t/apply-changes)
+           :first-section-warning-label  first-section-warning-label
+           :second-section-warning-label second-section-warning-label
+           :on-change                    #(set-selected-receiver-networks %)
+           :on-save                      (fn [chain-ids]
+                                           (rf/dispatch [:hide-bottom-sheet])
+                                           (rf/dispatch [:wallet/update-receiver-networks
+                                                         chain-ids]))}]))}]))
 
 (defn render-network-values
-  [{:keys [network-values token-symbol on-press theme on-save to? loading-suggested-routes?]}]
+  [{:keys [network-values token-symbol on-press receiver? loading-routes?
+           token-not-supported-in-receiver-networks?]}]
   [rn/view
    (map-indexed (fn [index {:keys [chain-id total-amount type]}]
                   [rn/view
-                   {:key   (str (if to? "to" "from") "-" chain-id)
+                   {:key   (str (if receiver? "to" "from") "-" chain-id)
                     :style {:margin-top (if (pos? index) 11 7.5)}}
                    [quo/network-bridge
-                    {:amount   (str total-amount " " token-symbol)
+                    {:amount   (if (= type :not-available)
+                                 (i18n/label :t/not-available)
+                                 (str total-amount " " token-symbol))
                      :network  (network-utils/id->network chain-id)
-                     :status   type
-                     :on-press #(when (not loading-suggested-routes?)
+                     :status   (cond (and (= type :not-available)
+                                          loading-routes?
+                                          token-not-supported-in-receiver-networks?)
+                                     :loading
+                                     (= type :not-available)
+                                     :disabled
+                                     :else type)
+                     :on-press #(when (not loading-routes?)
                                   (cond
                                     (= type :add)
-                                    (rf/dispatch [:show-bottom-sheet
-                                                  {:content (fn []
-                                                              [networks-drawer
-                                                               {:theme   theme
-                                                                :on-save on-save}])}])
+                                    (open-preferences)
                                     on-press (on-press chain-id total-amount)))}]])
                 network-values)])
 
@@ -180,12 +175,13 @@
 
 (defn view
   [{:keys [token theme input-value valid-input?
-           on-press-to-network current-screen-id]}]
+           on-press-to-network current-screen-id
+           token-not-supported-in-receiver-networks?]}]
   (let [token-symbol (:symbol token)
         nav-current-screen-id (rf/sub [:view-id])
         active-screen? (= nav-current-screen-id current-screen-id)
-        loading-suggested-routes? (rf/sub
-                                   [:wallet/wallet-send-loading-suggested-routes?])
+        loading-routes? (rf/sub
+                         [:wallet/wallet-send-loading-suggested-routes?])
         sender-network-values (rf/sub
                                [:wallet/wallet-send-sender-network-values])
         receiver-network-values (rf/sub
@@ -220,23 +216,27 @@
           :container-style style/section-label-right}]])
      [rn/view {:style style/routes-inner-container}
       [render-network-values
-       {:token-symbol              token-symbol
-        :network-values            sender-network-values
-        :on-press                  #(disable-chain %1
-                                                   disabled-from-chain-ids
-                                                   token-available-networks-for-suggested-routes)
-        :to?                       false
-        :theme                     theme
-        :loading-suggested-routes? loading-suggested-routes?}]
+       {:token-symbol                              token-symbol
+        :network-values                            sender-network-values
+        :on-press                                  (fn [chain-id-to-disable]
+                                                     (disable-chain
+                                                      chain-id-to-disable
+                                                      disabled-from-chain-ids
+                                                      token-available-networks-for-suggested-routes))
+        :receiver?                                 false
+        :theme                                     theme
+        :loading-routes?                           loading-routes?
+        :token-not-supported-in-receiver-networks? false}]
       [render-network-links
        {:network-links         network-links
         :sender-network-values sender-network-values}]
       [render-network-values
-       {:token-symbol              token-symbol
-        :network-values            receiver-network-values
-        :on-press                  on-press-to-network
-        :to?                       true
-        :loading-suggested-routes? loading-suggested-routes?
-        :theme                     theme
-        :on-save                   #(fetch-routes input-value valid-input? 0)}]]]))
+       {:token-symbol                              token-symbol
+        :network-values                            receiver-network-values
+        :on-press                                  on-press-to-network
+        :receiver?                                 true
+        :loading-routes?                           loading-routes?
+        :theme                                     theme
+        :token-not-supported-in-receiver-networks? token-not-supported-in-receiver-networks?
+        :on-save                                   #(fetch-routes input-value valid-input? 0)}]]]))
 

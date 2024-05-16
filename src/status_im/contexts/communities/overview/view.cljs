@@ -73,25 +73,26 @@
                  (into #{} (map (comp :name second) channels-list)))
     :style     (style/channel-list-component)}
    (for [[category-id {:keys [chats name collapsed?]}] channels-list]
-     [rn/view
-      {:key       category-id
-       ;; on-layout fires only when the component re-renders, so
-       ;; in case the category hasn't changed, it will not be fired
-       :on-layout #(on-category-layout name category-id (int (layout-y %)))}
-      (when-not (= constants/empty-category-id category-id)
-        [quo/divider-label
-         {:on-press     #(collapse-category community-id category-id collapsed?)
-          :chevron-icon (if collapsed? :i/chevron-right :i/chevron-down)
-          :chevron      :left}
-         name])
-      (when-not collapsed?
-        [rn/view {:style {:padding-horizontal 8}}
-         (let [last-item-index (dec (count chats))]
-           (map-indexed
-            (fn [index chat]
-              ^{:key (:id chat)}
-              [channel-chat-item community-id chat (= index last-item-index)])
-            chats))])])])
+     (when (seq chats)
+       [rn/view
+        {:key       category-id
+         ;; on-layout fires only when the component re-renders, so
+         ;; in case the category hasn't changed, it will not be fired
+         :on-layout #(on-category-layout name category-id (int (layout-y %)))}
+        (when-not (= constants/empty-category-id category-id)
+          [quo/divider-label
+           {:on-press     #(collapse-category community-id category-id collapsed?)
+            :chevron-icon (if collapsed? :i/chevron-right :i/chevron-down)
+            :chevron      :left}
+           name])
+        (when-not collapsed?
+          [rn/view {:style {:padding-horizontal 8}}
+           (let [last-item-index (dec (count chats))]
+             (map-indexed
+              (fn [index chat]
+                ^{:key (:id chat)}
+                [channel-chat-item community-id chat (= index last-item-index)])
+              chats))])]))])
 
 (defn- get-access-type
   [access]
@@ -379,7 +380,7 @@
                              :fetching-community-overview
                              :failed-to-fetch-community-overview)}
      [quo/page-nav
-      {:title      "Community Overview"
+      {:title      (i18n/label :t/community-overview)
        :type       :title
        :text-align :left
        :icon-name  :i/close
@@ -387,7 +388,9 @@
      [quo/empty-state
       {:image           (resources/get-themed-image :cat-in-box theme)
        :description     (when-not fetching? (i18n/label :t/here-is-a-cat-in-a-box-instead))
-       :title           (if fetching? "Fetching community..." "Failed to fetch community")
+       :title           (if fetching?
+                          (i18n/label :t/fetching-community)
+                          (i18n/label :t/failed-to-fetch-community))
        :container-style {:flex 1 :justify-content :center}}]]))
 
 (defn- community-card-page-view

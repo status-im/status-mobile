@@ -4,8 +4,6 @@
     [react-native.core :as rn]
     [react-native.safe-area :as safe-area]
     [status-im.common.biometric.utils :as biometric]
-    [status-im.common.parallax.blacklist :as blacklist]
-    [status-im.common.parallax.view :as parallax]
     [status-im.common.resources :as resources]
     [status-im.contexts.onboarding.enable-biometrics.style :as style]
     [status-im.navigation.state :as state]
@@ -49,16 +47,6 @@
        :container-style     {:margin-top 12}}
       (i18n/label :t/maybe-later)]]))
 
-(defn enable-biometrics-parallax
-  []
-  (let [stretch (if rn/small-screen? 25 40)]
-    [rn/view
-     {:position :absolute
-      :top      12}
-     [parallax/video
-      {:layers  (:biometrics resources/parallax-video)
-       :stretch stretch}]]))
-
 (defn enable-biometrics-simple
   []
   (let [width (:width (rn/get-window))]
@@ -67,17 +55,10 @@
       :style       (style/page-illustration width)
       :source      (resources/get-image :biometrics)}]))
 
-(defn f-enable-biometrics
+(defn view
   []
   (let [insets (safe-area/get-insets)]
     [rn/view {:style (style/page-container insets)}
      [page-title]
-     (if blacklist/blacklisted?
-       [enable-biometrics-simple]
-       [enable-biometrics-parallax])
+     [enable-biometrics-simple]
      [enable-biometrics-buttons insets]]))
-
-(defn view
-  []
-  [:f> f-enable-biometrics])
-

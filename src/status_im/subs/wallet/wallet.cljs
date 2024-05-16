@@ -89,6 +89,11 @@
  :-> :receiver-networks)
 
 (rf/reg-sub
+ :wallet/wallet-send-receiver-preferred-networks
+ :<- [:wallet/wallet-send]
+ :-> :receiver-preferred-networks)
+
+(rf/reg-sub
  :wallet/wallet-send-route
  :<- [:wallet/wallet-send]
  :-> :route)

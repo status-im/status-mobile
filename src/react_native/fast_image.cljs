@@ -15,7 +15,7 @@
   [_]
   (let [loaded? (reagent/atom false)
         error?  (reagent/atom false)]
-    (fn [{:keys [source] :as props}]
+    (fn [{:keys [source fallback-content] :as props}]
       [fast-image-class
        (merge
         props
@@ -35,6 +35,6 @@
        (when (or @error? (not @loaded?))
          [placeholder (:style props)
           (if @error?
-            [rn/text "X"]
+            (or fallback-content [rn/text "X"])
             (when-not @loaded?
               [rn/activity-indicator {:animating true}]))])])))

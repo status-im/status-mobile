@@ -4,8 +4,6 @@
     [react-native.core :as rn]
     [react-native.reanimated :as reanimated]
     [react-native.safe-area :as safe-area]
-    [status-im.common.parallax.blacklist :as blacklist]
-    [status-im.common.parallax.view :as parallax]
     [status-im.common.resources :as resources]
     [status-im.contexts.onboarding.generating-keys.style :as style]
     [utils.i18n :as i18n]))
@@ -62,7 +60,7 @@
                                                                 "easing"   (:linear
                                                                             reanimated/easings))))))
 
-(defn f-title
+(defn title
   [insets generate-keys-opacity saving-keys-opacity keys-saved-opacity]
   (let [top-insets (+ (if rn/small-screen? 62 112) (:insets insets))]
     [rn/view
@@ -84,15 +82,7 @@
                {:position :absolute})}
       [keys-saved-title]]]))
 
-(defn f-page-title
-  [insets]
-  (let [generate-keys-opacity (reanimated/use-shared-value 1)
-        saving-keys-opacity   (reanimated/use-shared-value 0)
-        keys-saved-opacity    (reanimated/use-shared-value 0)]
-    (sequence-animation generate-keys-opacity saving-keys-opacity keys-saved-opacity)
-    [:f> f-title insets generate-keys-opacity saving-keys-opacity keys-saved-opacity]))
-
-(defn f-simple-page-content
+(defn content
   [generate-keys-opacity saving-keys-opacity keys-saved-opacity]
   (let [width (:width (rn/get-window))]
     [rn/view
@@ -123,36 +113,14 @@
         :style       (style/page-illustration width)
         :source      (resources/get-image :generate-keys3)}]]]))
 
-(defn parallax-page
-  [insets]
-  [:<>
-   [parallax/video
-    {:stretch           -20
-     :container-style   {:top  40
-                         :left 20}
-     :layers            (:generate-keys resources/parallax-video)
-     :disable-parallax? true
-     :enable-looping?   false}]
-   [:f> f-page-title insets]])
-
-(defn f-simple-page
-  [insets]
-  (let [generate-keys-opacity (reanimated/use-shared-value 1)
+(defn view
+  []
+  (let [insets                (safe-area/get-insets)
+        generate-keys-opacity (reanimated/use-shared-value 1)
         saving-keys-opacity   (reanimated/use-shared-value 0)
         keys-saved-opacity    (reanimated/use-shared-value 0)]
-    (sequence-animation generate-keys-opacity saving-keys-opacity keys-saved-opacity)
-    [:<>
-     [:f> f-title insets generate-keys-opacity saving-keys-opacity keys-saved-opacity]
-     [:f> f-simple-page-content generate-keys-opacity saving-keys-opacity keys-saved-opacity]]))
-
-(defn f-generating-keys
-  []
-  (let [insets (safe-area/get-insets)]
     [rn/view {:style (style/page-container insets)}
-     (if blacklist/blacklisted?
-       [:f> f-simple-page insets]
-       [parallax-page insets])]))
-
-(defn generating-keys
-  []
-  [:f> f-generating-keys])
+     (sequence-animation generate-keys-opacity saving-keys-opacity keys-saved-opacity)
+     [:<>
+      [title insets generate-keys-opacity saving-keys-opacity keys-saved-opacity]
+      [content generate-keys-opacity saving-keys-opacity keys-saved-opacity]]]))

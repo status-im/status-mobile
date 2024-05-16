@@ -128,19 +128,6 @@
    :user-picture-male4    (js/require "../resources/images/mock2/user_picture_male4.png")
    :user-picture-male5    (js/require "../resources/images/mock2/user_picture_male5.png")})
 
-(def parallax-video
-  {:biometrics    [(js/require "../resources/videos2/biometrics_01.mp4")
-                   (js/require "../resources/videos2/biometrics_02.mp4")
-                   (js/require "../resources/videos2/biometrics_03.mp4")
-                   (js/require "../resources/videos2/biometrics_04.mp4")]
-   :generate-keys [(js/require "../resources/videos2/generating_keys_01.mp4")
-                   (js/require "../resources/videos2/generating_keys_02.mp4")
-                   (js/require "../resources/videos2/generating_keys_03.mp4")]
-   :notifications [(js/require "../resources/videos2/notifications_01.mp4")
-                   (js/require "../resources/videos2/notifications_02.mp4")
-                   (js/require "../resources/videos2/notifications_03.mp4")
-                   (js/require "../resources/videos2/notifications_04.mp4")]})
-
 (def services
   {:latamex (js/require "../resources/images/services/Latamex.png")
    :moonpay (js/require "../resources/images/services/Moonpay.png")
