@@ -13,7 +13,35 @@
   [{:keys [primary-name secondary-name style short-chat-key time-str contact? verified? untrustworthy?
            muted? size]
     :or   {size 13}}]
-  (let [theme (quo.theme/use-theme)]
+  (let [theme (quo.theme/use-theme)
+
+        short-chat-key-component
+        (when (and (not verified?) short-chat-key)
+          [text/text
+           {:weight          :monospace
+            :size            :label
+            :number-of-lines 1
+            :style           (style/chat-key-text theme)}
+           short-chat-key])
+
+        time-str-component
+        (when time-str
+          [text/text
+           {:monospace           true
+            :size                :label
+            :accessibility-label :message-timestamp
+            :number-of-lines     1
+            :style               (style/time-text theme)}
+           time-str])
+
+        middle-dot-seperator-component
+        (when (and short-chat-key-component time-str-component)
+          [text/text
+           {:monospace       true
+            :size            :label
+            :number-of-lines 1
+            :style           (style/middle-dot theme)}
+           middle-dot])]
     [rn/view
      {:style (merge (style/container size) style)}
      [text/text
@@ -23,7 +51,7 @@
        :accessibility-label :author-primary-name
        :style               (style/primary-name muted? theme size)}
       primary-name]
-     (when (not (string/blank? secondary-name))
+     (when-not (string/blank? secondary-name)
        [:<>
         [text/text
          {:size            :label
@@ -41,38 +69,22 @@
        [icons/icon :main-icons2/contact
         {:size            12
          :no-color        true
-         :container-style (style/icon-container true)}])
+         :container-style (style/icon-container true size)}])
      (cond
        verified?
        [icons/icon :main-icons2/verified
         {:size            12
          :no-color        true
-         :container-style (style/icon-container contact?)}]
+         :container-style (style/icon-container contact? size)}]
        untrustworthy?
        [icons/icon :main-icons2/untrustworthy
         {:size            12
          :no-color        true
-         :container-style (style/icon-container contact?)}])
-     [rn/view {:style style/details-container}
-      (when (and (not verified?) short-chat-key)
-        [text/text
-         {:weight          :monospace
-          :size            :label
-          :number-of-lines 1
-          :style           (style/chat-key-text theme)}
-         short-chat-key])
-      (when (and (not verified?) time-str short-chat-key)
-        [text/text
-         {:monospace       true
-          :size            :label
-          :number-of-lines 1
-          :style           (style/middle-dot theme)}
-         middle-dot])
-      (when time-str
-        [text/text
-         {:monospace           true
-          :size                :label
-          :accessibility-label :message-timestamp
-          :number-of-lines     1
-          :style               (style/time-text theme)}
-         time-str])]]))
+         :container-style (style/icon-container contact? size)}])
+
+     (when (or short-chat-key-component time-str-component)
+       [rn/view {:style {:width 8}}])
+
+     short-chat-key-component
+     middle-dot-seperator-component
+     time-str-component]))
