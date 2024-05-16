@@ -9372,10 +9372,6 @@ react-native-svg@13.10.0:
     css-select "^5.1.0"
     css-tree "^1.1.3"
 
-"react-native-transparent-video@git+https://github.com/status-im/react-native-transparent-video.git#refs/tags/0.1.1":
-  version "0.1.0"
-  resolved "git+https://github.com/status-im/react-native-transparent-video.git#1327fc622f7521269f66299c3aca610494c76fe1"
-
 react-native-url-polyfill@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/react-native-url-polyfill/-/react-native-url-polyfill-2.0.0.tgz#db714520a2985cff1d50ab2e66279b9f91ffd589"
