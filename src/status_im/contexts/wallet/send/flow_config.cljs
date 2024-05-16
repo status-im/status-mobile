@@ -18,7 +18,7 @@
     :skip-step? (fn [db] (some? (get-in db [:wallet :ui :send :recipient])))}
    {:screen-id  :screen/wallet.select-asset
     :skip-step? (fn [db] (or (token-selected? db) (collectible-selected? db)))}
-   {:screen-id :screen/wallet.send-input-amount
+   {:screen-id  :screen/wallet.send-input-amount
     :skip-step? (fn [db] (= (get-in db [:wallet :ui :send :tx-type]) :collectible))}
    {:screen-id  :screen/wallet.select-collectible-amount
     :skip-step? (fn [db]
