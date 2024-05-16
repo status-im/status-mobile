@@ -12,6 +12,14 @@
 (use-fixtures :each
               {:before #(reset! rf-db/app-db {})})
 
+(def ^:private accounts-with-tokens
+  {:0x1 {:tokens                    [{:symbol "ETH"} {:symbol "SNT"}]
+         :network-preferences-names #{}
+         :customization-color       nil}
+   :0x2 {:tokens                    [{:symbol "SNT"}]
+         :network-preferences-names #{}
+         :customization-color       nil}})
+
 (def tokens-0x1
   [{:decimals                   1
     :symbol                     "ETH"
@@ -455,6 +463,46 @@
         :removed                   false
         :tokens                    tokens-0x2})
       (rf/sub [sub-name])))))
+
+(h/deftest-sub :wallet/accounts-with-current-asset
+  [sub-name]
+  (testing "returns the accounts list with the current asset using token-symbol"
+    (swap! rf-db/app-db
+      #(-> %
+           (assoc-in [:wallet :accounts] accounts-with-tokens)
+           (assoc-in [:wallet :ui :send :token-symbol] "ETH")))
+    (let [result (rf/sub [sub-name])]
+      (is (match? result
+                  [{:tokens                    [{:symbol "ETH"} {:symbol "SNT"}]
+                    :network-preferences-names #{}
+                    :customization-color       nil}]))))
+
+  (testing "returns the accounts list with the current asset using token"
+    (swap! rf-db/app-db
+      #(-> %
+           (assoc-in [:wallet :accounts] accounts-with-tokens)
+           (assoc-in [:wallet :ui :send :token] {:symbol "ETH"})))
+    (let [result (rf/sub [sub-name])]
+      (is (match? result
+                  [{:tokens                    [{:symbol "ETH"} {:symbol "SNT"}]
+                    :network-preferences-names #{}
+                    :customization-color       nil}]))))
+
+  (testing
+    "returns the full accounts list with the current asset using token-symbol if each account has the asset"
+    (swap! rf-db/app-db
+      #(-> %
+           (assoc-in [:wallet :accounts] accounts-with-tokens)
+           (assoc-in [:wallet :ui :send :token-symbol] "SNT")))
+    (let [result (rf/sub [sub-name])]
+      (is (match? result (vals accounts-with-tokens)))))
+
+  (testing "returns the accounts list when there is no current asset"
+    (swap! rf-db/app-db
+      #(-> %
+           (assoc-in [:wallet :accounts] accounts-with-tokens)))
+    (let [result (rf/sub [sub-name])]
+      (is (match? result (vals accounts-with-tokens))))))
 
 (h/deftest-sub :wallet/network-preference-details
   [sub-name]
