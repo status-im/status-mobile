@@ -246,7 +246,7 @@
    (let [collection-data    (:collection-data collectible)
          collectible-data   (:collectible-data collectible)
          contract-type      (:contract-type collectible)
-         tx-type            (if (= contract-type constants/contract-type-erc-1155)
+         tx-type            (if (= contract-type constants/wallet-contract-type-erc-1155)
                               :collectible-erc-1155
                               :collectible-erc-721)
          collectible-id     (get-in collectible [:id :token-id])

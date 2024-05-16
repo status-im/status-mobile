@@ -513,10 +513,10 @@
 (def ^:const bridge-name-erc-1155-transfer "ERC1155Transfer")
 (def ^:const bridge-name-hop "Hop")
 
-(def ^:const contract-type-uknown 0)
-(def ^:const contract-type-erc-20 1)
-(def ^:const contract-type-erc-721 2)
-(def ^:const contract-type-erc-1155 3)
+(def ^:const wallet-contract-type-uknown 0)
+(def ^:const wallet-contract-type-erc-20 1)
+(def ^:const wallet-contract-type-erc-721 2)
+(def ^:const wallet-contract-type-erc-1155 3)
 
 (def ^:const alert-banner-height 40)
 
