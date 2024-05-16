@@ -5,8 +5,8 @@
     [status-im.common.muting.helpers :refer [format-mute-till]]
     [status-im.constants :as constants]
     [status-im.contexts.communities.actions.leave.view :as leave-menu]
+    [status-im.contexts.communities.actions.permissions-sheet.view :as permissions-sheet]
     [status-im.contexts.communities.actions.see-rules.view :as see-rules]
-    [status-im.contexts.communities.actions.token-gating.view :as token-gating]
     [status-im.feature-flags :as ff]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
@@ -39,8 +39,7 @@
    :right-icon          :i/chevron-right
    :accessibility-label :view-token-gating
    :on-press            #(rf/dispatch [:show-bottom-sheet
-                                       {:content                 (fn [] [token-gating/token-requirements
-                                                                         id])
+                                       {:content                 (fn [] [permissions-sheet/view id])
                                         :padding-bottom-override 16}])
    :label               (i18n/label :t/view-token-gating)})
 

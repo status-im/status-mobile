@@ -45,9 +45,9 @@
     [status-im.contexts.preview.quo.community.community-membership-list-view
      :as community-membership-list-view]
     [status-im.contexts.preview.quo.community.community-stat :as community-stat]
+    [status-im.contexts.preview.quo.community.community-token-gating :as community-token-gating]
     [status-im.contexts.preview.quo.community.discover-card :as discover-card]
     [status-im.contexts.preview.quo.community.list-item :as community-list-item]
-    [status-im.contexts.preview.quo.community.token-gating :as token-gating]
     [status-im.contexts.preview.quo.counter.collectible-counter :as collectible-counter]
     [status-im.contexts.preview.quo.counter.counter :as counter]
     [status-im.contexts.preview.quo.counter.step :as step]
@@ -266,15 +266,14 @@
                         :component community-card/view}
                        {:name      :community-detail-token-gating
                         :component community-detail-token-gating/view}
+                       {:name      :community-token-gating
+                        :component community-token-gating/view}
                        {:name      :community-membership-list-view
                         :component community-membership-list-view/view}
                        {:name      :community-stat
                         :component community-stat/view}
                        {:name      :discover-card
                         :component discover-card/view}
-                       {:name      :token-gating
-                        :options   {:insets {:bottom? true}}
-                        :component token-gating/view}
                        {:name      :channel-action
                         :options   {:insets {:bottom? true}}
                         :component channel-action/view}
