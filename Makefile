@@ -353,13 +353,11 @@ test: export SHADOW_NS_REGEXP := .*-test$$
 test: ##@test Run all Clojure tests
 test: _test-clojure
 
+test-watch-for-repl: export TARGET := default
 test-watch-for-repl: export SHADOW_OUTPUT_TO := target/test/test.js
 test-watch-for-repl: export SHADOW_NS_REGEXP := .*-test$$
-test-watch-for-repl: status-go-library
 test-watch-for-repl: ##@test Watch all Clojure tests and support REPL connections
-	yarn node-pre-gyp rebuild
-	rm -f target/test/test.js
-	yarn shadow-cljs compile mocks && \
+	yarn install && shadow-cljs compile mocks && \
 	concurrently --kill-others --prefix-colors 'auto' --names 'build,repl' \
 		'yarn shadow-cljs watch test --verbose' \
 		"until [ -f $$SHADOW_OUTPUT_TO ] ; do sleep 1 ; done ; node --require ./test-resources/override.js $$SHADOW_OUTPUT_TO --repl"
