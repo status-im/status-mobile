@@ -1,10 +1,4 @@
-(ns legacy.status-im.browser.permissions-test
-  (:require
-    [cljs.test :refer-macros [deftest is testing]]
-    [legacy.status-im.browser.core :as browser]
-    [legacy.status-im.browser.core-test :as core.tests]
-    [legacy.status-im.browser.permissions :as permissions]
-    [legacy.status-im.utils.deprecated-types :as types]))
+(ns legacy.status-im.browser.permissions-test)
 
 #_(deftest permissions-test
     (let [dapp-name  "test.com"

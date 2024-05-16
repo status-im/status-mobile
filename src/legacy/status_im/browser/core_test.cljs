@@ -1,8 +1,5 @@
 (ns legacy.status-im.browser.core-test
   (:require
-    [cljs.test :refer-macros [deftest is testing]]
-    [legacy.status-im.browser.core :as browser]
-    [utils.i18n :as i18n]
     [utils.url :as url]))
 
 (defn has-wrong-properties?
@@ -102,7 +99,8 @@
                                                    dapp1-id
                                                    {:browser-id    dapp1-id
                                                     :history-index 0
-                                                    :history       ["https://cryptokitties.co" dapp1-url2]
+                                                    :history       ["https://cryptokitties.co"
+                                                                    dapp1-url2]
                                                     :dapp?         false
                                                     :name          (i18n/label :t/browser)}))
                        "some properties of the browser are not correct")
@@ -115,7 +113,8 @@
                                                     dapp1-id
                                                     {:browser-id    dapp1-id
                                                      :history-index 1
-                                                     :history       ["https://cryptokitties.co" dapp1-url2]
+                                                     :history       ["https://cryptokitties.co"
+                                                                     dapp1-url2]
                                                      :dapp?         false
                                                      :name          (i18n/label :t/browser)}))
                             "some properties of the browser are not correct"))))))))))))
