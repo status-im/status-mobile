@@ -57,6 +57,8 @@
     [status-im.contexts.profile.settings.screens.password.change-password.view :as change-password]
     [status-im.contexts.profile.settings.screens.password.view :as settings-password]
     [status-im.contexts.profile.settings.view :as settings]
+    [status-im.contexts.settings.wallet.keypairs-and-accounts.encrypted-qr.view :as
+     encrypted-key-pair-qr]
     [status-im.contexts.settings.wallet.keypairs-and-accounts.rename.view :as keypair-rename]
     [status-im.contexts.settings.wallet.keypairs-and-accounts.view :as keypairs-and-accounts]
     [status-im.contexts.settings.wallet.network-settings.view :as network-settings]
@@ -508,6 +510,10 @@
     {:name      :screen/settings.rename-keypair
      :options   (assoc options/dark-screen :sheet? true)
      :component keypair-rename/view}
+
+    {:name      :screen/settings.encrypted-key-pair-qr
+     :options   options/transparent-screen-options
+     :component encrypted-key-pair-qr/view}
 
     {:name      :screen/settings.saved-addresses
      :options   options/transparent-modal-screen-options
