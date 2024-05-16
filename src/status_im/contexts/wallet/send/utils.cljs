@@ -209,8 +209,10 @@
           []
           route))
 
-(defn is-collectible?
+(def ^:private collectible-tx-set
+  #{:tx/collectible-erc-721
+    :tx/collectible-erc-1155})
+
+(defn tx-type-collectible?
   [tx-type]
-  (let [tx-set #{:collectible-erc-721 :collectible-erc-1155}]
-    (contains? tx-set
-               tx-type)))
+  (contains? collectible-tx-set tx-type))
