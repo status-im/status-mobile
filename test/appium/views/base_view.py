@@ -447,6 +447,18 @@ class BaseView(object):
                 counter += 1
         self.driver.info("Could not reach chat view by pressing system back button")
 
+    def navigate_back_to_wallet_view(self, attempts=3):
+        counter = 0
+        element = self.get_wallet_view().network_drop_down
+        while not element.is_element_displayed(1) and counter <= attempts:
+            self.driver.press_keycode(4)
+            try:
+                element.wait_for_element(2)
+                return
+            except (NoSuchElementException, TimeoutException):
+                counter += 1
+        self.driver.info("Could not reach wallet view by pressing system back button")
+
     def get_app_from_background(self):
         self.driver.info('Get Status back from Recent apps')
         self.driver.press_keycode(187)

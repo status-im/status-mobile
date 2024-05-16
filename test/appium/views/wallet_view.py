@@ -32,6 +32,7 @@ class WalletView(BaseView):
     def __init__(self, driver):
         super().__init__(driver)
         # Wallet view
+        self.network_drop_down = Button(self.driver, accessibility_id='network-dropdown')
         self.collectibles_tab = Button(self.driver, accessibility_id='Collectibles')
         self.add_account_button = Button(self.driver, accessibility_id='add-account')
 
