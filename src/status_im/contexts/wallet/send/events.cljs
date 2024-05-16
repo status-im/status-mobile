@@ -144,8 +144,8 @@
                               {:prefix           prefix
                                :testnet-enabled? testnet-enabled?
                                :goerli-enabled?  goerli-enabled?})
-         collectible-tx?     (contains? #{:collectible-erc-721 :collectible-erc-1155}
-                                        (-> db :wallet :ui :send :tx-type))
+         collectible-tx?     (send-utils/is-collectible?
+                              (-> db :wallet :ui :send :tx-type))
          collectible         (when collectible-tx?
                                (-> db :wallet :ui :send :collectible))
          one-collectible?    (when collectible-tx?
@@ -236,8 +236,8 @@
                      :collectible
                      :token-display-name
                      :amount
-                     (when (contains? #{:collectible-erc-721 :collectible-erc-1155}
-                                      transaction-type)
+                     (when (send-utils/is-collectible?
+                            transaction-type)
                        :tx-type))})))
 
 (rf/reg-event-fx

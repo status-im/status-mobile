@@ -208,3 +208,9 @@
                      :position-diff position-diff})))
           []
           route))
+
+(defn is-collectible?
+  [tx-type]
+  (let [tx-set #{:collectible-erc-721 :collectible-erc-1155}]
+    (contains? tx-set
+               tx-type)))

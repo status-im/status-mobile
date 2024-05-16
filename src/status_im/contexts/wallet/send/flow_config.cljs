@@ -1,12 +1,13 @@
-(ns status-im.contexts.wallet.send.flow-config)
+(ns status-im.contexts.wallet.send.flow-config
+  (:require
+    [status-im.contexts.wallet.send.utils :as send-utils]))
 
 (defn- collectible-selected?
   [db]
   (let [collectible-stored (-> db :wallet :ui :send :collectible)
         tx-type            (-> db :wallet :ui :send :tx-type)]
     (and (some? collectible-stored)
-         (contains? #{:collectible-erc-721 :collectible-erc-1155}
-                    tx-type))))
+         (send-utils/is-collectible? tx-type))))
 
 (defn- token-selected?
   [db]
