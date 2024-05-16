@@ -101,39 +101,6 @@
    :top      8
    :right    8})
 
-(def token-tag-spacing
-  {:padding-top  10
-   :margin-right 8})
-
-(defn token-row
-  [padding?]
-  (merge
-   {:flex-direction :row
-    :flex-wrap      :wrap
-    :align-items    :center}
-   (when padding?
-     {:padding-horizontal 12})))
-
-(defn token-row-or-text
-  [padding? theme]
-  (merge
-   {:padding-top   4
-    :margin-bottom -2
-    :color         (colors/theme-colors
-                    colors/neutral-50
-                    colors/neutral-40
-                    theme)}
-   (when padding?
-     {:padding-left 12})))
-
-(defn token-row-or-border
-  [theme]
-  {:height           1
-   :background-color (colors/theme-colors
-                      colors/neutral-20
-                      colors/neutral-80
-                      theme)})
-
 (defn loading-card
   [width theme]
   (merge
