@@ -191,6 +191,7 @@
                                   :type                :default
                                   :name                name
                                   :address             address}
+                  :blur?         true
                   :networks      networks
                   :state         :default
                   :action        :none})))))

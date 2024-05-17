@@ -48,7 +48,7 @@
                           [customization-color default-keypair? name
                            profile-picture shortened-key theme])]
     [quo/keypair
-     {:blur?               false
+     {:blur?               true
       :status-indicator    false
       :stored              :on-device
       :action              :options

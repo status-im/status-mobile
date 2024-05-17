@@ -607,6 +607,7 @@
                                              :type                :default
                                              :name                name
                                              :address             address}
+                             :blur?         true
                              :networks      []
                              :state         :default
                              :action        :none}]}]
