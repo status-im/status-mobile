@@ -209,6 +209,20 @@
       (previous-years? datetime)
       (.format ^js (date-fmt) datetime))))
 
+(defn full-date->short-date
+  [s]
+  (let [words     (string/split s #"\s+")
+        last-word (last words)]
+    (if (or (= "AM" last-word) (= "PM" last-word))
+      (string/join " " (take (- (count words) 2) words))
+      s)))
+
+(defn timestamp->relative-short-date
+  [ms]
+  (->> ms
+       timestamp->relative
+       full-date->short-date))
+
 (defn timestamp->mini-date
   [ms]
   (.format ^js (short-date-fmt)

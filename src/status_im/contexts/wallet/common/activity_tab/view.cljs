@@ -66,8 +66,10 @@
        {:title       (i18n/label :t/no-activity)
         :description (i18n/label :t/empty-tab-description)
         :image       (resources/get-themed-image :no-activity theme)}]
-      [rn/flat-list
-       {:data                    activity-list
-        :style                   {:flex 1}
-        :content-container-style {:padding-bottom jump-to.constants/floating-shell-button-height}
-        :render-fn               activity-item}])))
+      [rn/section-list
+       {:sections                       activity-list
+        :sticky-section-headers-enabled false
+        :style                          {:flex 1}
+        :content-container-style        {:padding-bottom jump-to.constants/floating-shell-button-height}
+        :render-fn                      activity-item
+        :render-section-header-fn       (fn [{:keys [title]}] [quo/divider-date title])}])))

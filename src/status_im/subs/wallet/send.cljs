@@ -37,10 +37,11 @@
  :wallet/recent-recipients
  :<- [:wallet/activities-for-current-viewing-account]
  :<- [:wallet/current-viewing-account-address]
- (fn [[activities current-viewing-account-address]]
-   (let [users-sent-transactions (filter (fn [{:keys [sender]}]
+ (fn [[sections current-viewing-account-address]]
+   (let [all-transactions        (mapcat :data sections)
+         users-sent-transactions (filter (fn [{:keys [sender]}]
                                            (= sender current-viewing-account-address))
-                                         activities)]
+                                         all-transactions)]
      (set (map :recipient users-sent-transactions)))))
 
 (rf/reg-sub
