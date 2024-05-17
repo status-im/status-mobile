@@ -1,5 +1,6 @@
 (ns status-im.contexts.wallet.wallet-connect.effects
-  (:require [promesa.core :as promesa]
+  (:require [native-module.core :as native-module]
+            [promesa.core :as promesa]
             [re-frame.core :as rf]
             [react-native.wallet-connect :as wallet-connect]
             [status-im.config :as config]
@@ -46,5 +47,24 @@
      (-> (.approveSession web3-wallet
                           (clj->js {:id         id
                                     :namespaces approved-namespaces}))
+         (promesa/then on-success)
+         (promesa/catch on-fail)))))
+
+(rf/reg-fx
+ :effects.wallet-connect/sign-message
+ (fn [{:keys [web3-wallet password address message topic id on-success on-fail]}]
+   (letfn [(build-rpc-response [signed-message]
+             (clj->js {:topic    topic
+                       :response {:id      id
+                                  :jsonrpc "2.0"
+                                  :result  signed-message}}))]
+     (-> (promesa/->> (clj->js {:data     message
+                                :address  address
+                                :password password})
+                      (.stringify js/JSON)
+                      (native-module/sign-message)
+                      build-rpc-response
+                      (.respondSessionRequest web3-wallet))
+         (promesa/then #(clj->js % :keywordize-keys true))
          (promesa/then on-success)
          (promesa/catch on-fail)))))

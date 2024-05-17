@@ -359,9 +359,11 @@
 
 (defn sign-message
   "NOTE: beware, the password in rpcParams has to be sha3 hashed"
-  [rpcParams callback]
-  (log/debug "[native-module] sign-message")
-  (.signMessage ^js (encryption) rpcParams callback))
+  ([rpcParams]
+   (native-utils/promisify-native-module-call sign-message rpcParams))
+  ([rpcParams callback]
+   (log/debug "[native-module] sign-message")
+   (.signMessage ^js (encryption) rpcParams callback)))
 
 (defn recover-message
   [rpcParams callback]
