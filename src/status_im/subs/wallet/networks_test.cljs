@@ -77,8 +77,8 @@
                   :chain-id         42161
                   :layer            2}
        :optimism {:network-name     :optimism
-                  :short-name       "opt"
-                  :abbreviated-name "Opt."
+                  :short-name       "oeth"
+                  :abbreviated-name "Oeth."
                   :chain-id         10
                   :layer            2}}
       (rf/sub [sub-name])))))

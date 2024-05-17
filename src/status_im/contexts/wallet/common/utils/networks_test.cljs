@@ -33,7 +33,7 @@
 (deftest short-names->network-preference-prefix-test
   (are [expected short-names]
    (= expected (utils/short-names->network-preference-prefix short-names))
-   "eth:"          ["eth"]
+   "eth:"           ["eth"]
    "eth:oeth:"      ["eth" "oeth"]
    "eth:oeth:arb1:" ["eth" "oeth" "arb1"]))
 
