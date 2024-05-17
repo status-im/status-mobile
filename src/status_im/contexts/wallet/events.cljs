@@ -521,3 +521,20 @@
          activities           (cske/transform-keys transforms/->kebab-case-keyword activities)
          sorted-activities    (sort :timestamp activities)]
      {:db (assoc-in db [:wallet :activities] sorted-activities)})))
+
+(rf/reg-event-fx
+ :wallet/get-crypto-on-ramps-success
+ (fn [{:keys [db]} [data]]
+   {:db (assoc-in db
+         [:wallet :crypto-on-ramps]
+         (cske/transform-keys transforms/->kebab-case-keyword data))}))
+
+(rf/reg-event-fx
+ :wallet/get-crypto-on-ramps
+ (fn [_]
+   {:fx [[:json-rpc/call
+          [{:method     "wallet_getCryptoOnRamps"
+            :on-success [:wallet/get-crypto-on-ramps-success]
+            :on-error   #(log/info "failed to fetch crypto on ramps"
+                                   {:error %
+                                    :event :wallet/get-crypto-on-ramps})}]]]}))
