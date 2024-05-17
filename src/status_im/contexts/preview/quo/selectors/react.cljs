@@ -15,7 +15,7 @@
 (def ^:private memo-gen-quantity (memoize gen-quantity))
 
 (def ^:private descriptor
-  [{:key  :add-reaction?
+  [{:key  :hide-new-reaction-button?
     :type :boolean}
    {:label   "Reactions"
     :key     :reaction-ids
@@ -37,10 +37,10 @@
 
 (defn preview-react
   []
-  (let [state             (reagent/atom {:add-reaction? true
-                                         :max-count     1000
-                                         :reaction-ids  [1 2 3]
-                                         :use-case      :default})
+  (let [state             (reagent/atom {:hide-new-reaction-button? true
+                                         :max-count                 1000
+                                         :reaction-ids              [1 2 3]
+                                         :use-case                  :default})
         pressed-reactions (reagent/atom #{1})]
 
     (fn []
@@ -63,14 +63,14 @@
                                  (colors/custom-color :blue 50 10))
            :align-items        :flex-start}
           [quo/react
-           {:reactions     reactions
-            :add-reaction? (:add-reaction? @state)
-            :use-case      (:use-case @state)
-            :on-press      (fn [reaction]
-                             (let [reaction-id    (:emoji-id reaction)
-                                   change-pressed (partial swap! pressed-reactions)]
-                               (if (contains? @pressed-reactions reaction-id)
-                                 (change-pressed disj reaction-id)
-                                 (change-pressed conj reaction-id))))
-            :on-long-press identity
-            :on-press-new  identity}]]]))))
+           {:reactions                 reactions
+            :hide-new-reaction-button? (:hide-new-reaction-button? @state)
+            :use-case                  (:use-case @state)
+            :on-press                  (fn [reaction]
+                                         (let [reaction-id    (:emoji-id reaction)
+                                               change-pressed (partial swap! pressed-reactions)]
+                                           (if (contains? @pressed-reactions reaction-id)
+                                             (change-pressed disj reaction-id)
+                                             (change-pressed conj reaction-id))))
+            :on-long-press             identity
+            :on-press-new              identity}]]]))))

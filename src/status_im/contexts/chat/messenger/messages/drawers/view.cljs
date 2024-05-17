@@ -105,61 +105,67 @@
               ;; https://github.com/status-im/status-mobile/issues/15298 is implemented
               (not= content-type constants/content-type-image)
               (not= content-type constants/content-type-audio))
-     [{:type     :main
-       :on-press #(rf/dispatch [:chat.ui/edit-message message-data])
-       :label    (i18n/label :t/edit-message)
-       :icon     :i/edit
-       :id       :edit}])
+     [{:type                :main
+       :on-press            #(rf/dispatch [:chat.ui/edit-message message-data])
+       :label               (i18n/label :t/edit-message)
+       :icon                :i/edit
+       :accessibility-label :edit-message
+       :id                  :edit}])
    (when (and able-to-send-message? (not= outgoing-status :sending) (not (or deleted? deleted-for-me?)))
-     [{:type     :main
-       :on-press #(rf/dispatch [:chat.ui/reply-to-message message-data])
-       :label    (i18n/label :t/message-reply)
-       :icon     :i/reply
-       :id       :reply}])
+     [{:type                :main
+       :on-press            #(rf/dispatch [:chat.ui/reply-to-message message-data])
+       :label               (i18n/label :t/message-reply)
+       :icon                :i/reply
+       :accessibility-label :reply-message
+       :id                  :reply}])
    (when (and (not (or deleted? deleted-for-me?))
               (not= content-type constants/content-type-audio))
-     [{:type     :main
-       :on-press #(clipboard/set-string
-                   (reply/get-quoted-text-with-mentions
-                    (get content :parsed-text)))
-       :label    (i18n/label :t/copy-text)
-       :icon     :i/copy
-       :id       :copy}])
+     [{:type                :main
+       :on-press            #(clipboard/set-string
+                              (reply/get-quoted-text-with-mentions
+                               (get content :parsed-text)))
+       :label               (i18n/label :t/copy-text)
+       :accessibility-label :copy-text
+       :icon                :i/copy
+       :id                  :copy}])
    ;; pinning images are temporarily disabled
    (when (and message-pin-enabled
               (not= content-type constants/content-type-image))
-     [{:type     :main
-       :on-press #(pin-message message-data)
-       :label    (i18n/label (if pinned-by
-                               (if community? :t/unpin-from-channel :t/unpin-from-chat)
-                               (if community? :t/pin-to-channel :t/pin-to-chat)))
-       :icon     :i/pin
-       :id       (if pinned-by :unpin :pin)}])
+     [{:type                :main
+       :on-press            #(pin-message message-data)
+       :label               (i18n/label (if pinned-by
+                                          (if community? :t/unpin-from-channel :t/unpin-from-chat)
+                                          (if community? :t/pin-to-channel :t/pin-to-chat)))
+       :accessibility-label (if pinned-by :unpin-message :pin-message)
+       :icon                :i/pin
+       :id                  (if pinned-by :unpin :pin)}])
    (when-not (or deleted? deleted-for-me?)
-     [{:type     :danger
-       :on-press (fn []
-                   (rf/dispatch
-                    [:hide-bottom-sheet])
-                   (rf/dispatch [:chat.ui/delete-message-for-me message-data
-                                 config/delete-message-for-me-undo-time-limit-ms]))
+     [{:type                :danger
+       :on-press            (fn []
+                              (rf/dispatch
+                               [:hide-bottom-sheet])
+                              (rf/dispatch [:chat.ui/delete-message-for-me message-data
+                                            config/delete-message-for-me-undo-time-limit-ms]))
 
-       :label    (i18n/label :t/delete-for-me)
-       :icon     :i/delete
-       :id       :delete-for-me}])
+       :label               (i18n/label :t/delete-for-me)
+       :accessibility-label :delete-for-me
+       :icon                :i/delete
+       :id                  :delete-for-me}])
    (when (cond
            deleted?   false
            outgoing   true
            community? can-delete-message-for-everyone?
            group-chat group-admin?
            :else      false)
-     [{:type     :danger
-       :on-press (fn []
-                   (rf/dispatch [:hide-bottom-sheet])
-                   (rf/dispatch [:chat.ui/delete-message message-data
-                                 config/delete-message-undo-time-limit-ms]))
-       :label    (i18n/label :t/delete-for-everyone)
-       :icon     :i/delete
-       :id       :delete-for-all}])))
+     [{:type                :danger
+       :on-press            (fn []
+                              (rf/dispatch [:hide-bottom-sheet])
+                              (rf/dispatch [:chat.ui/delete-message message-data
+                                            config/delete-message-undo-time-limit-ms]))
+       :label               (i18n/label :t/delete-for-everyone)
+       :accessibility-label :delete-for-everyone
+       :icon                :i/delete
+       :id                  :delete-for-all}])))
 
 (defn extract-id
   [reactions id]
@@ -180,7 +186,7 @@
     [rn/view
      {:style {:flex-direction     :row
               :justify-content    :space-between
-              :padding-horizontal 30
+              :padding-horizontal 22
               :padding-top        5
               :padding-bottom     15}}
      (for [[id reaction-name] constants/reactions
@@ -221,10 +227,10 @@
         (for [action main-actions]
           (let [on-press (:on-press action)]
             ^{:key (:id action)}
-            [quo/menu-item
+            [quo/drawer-action
              {:type                :main
               :title               (:label action)
-              :accessibility-label (:label action)
+              :accessibility-label (:accessibility-label action)
               :icon                (:icon action)
               :on-press            (fn []
                                      (rf/dispatch [:hide-bottom-sheet])
@@ -238,10 +244,10 @@
         (for [action danger-actions]
           (let [on-press (:on-press action)]
             ^{:key (:id action)}
-            [quo/menu-item
+            [quo/drawer-action
              {:type                :danger
               :title               (:label action)
-              :accessibility-label (:label action)
+              :accessibility-label (:accessibility-label action)
               :icon                (:icon action)
               :on-press            (fn []
                                      (rf/dispatch [:hide-bottom-sheet])
@@ -255,10 +261,10 @@
         (for [action admin-actions]
           (let [on-press (:on-press action)]
             ^{:key (:id action)}
-            [quo/menu-item
+            [quo/drawer-action
              {:type                :danger
               :title               (:label action)
-              :accessibility-label (:label action)
+              :accessibility-label (:accessibility-label action)
               :icon                (:icon action)
               :on-press            (fn []
                                      (rf/dispatch [:hide-bottom-sheet])

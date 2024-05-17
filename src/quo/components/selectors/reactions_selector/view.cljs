@@ -20,4 +20,6 @@
       :style                   (merge (style/container pressed? theme)
                                       container-style)
       :on-press                on-press}
-     [rn/text (reactions.resource/system-emojis emoji)]]))
+     [rn/text
+      {:style style/emoji-text-style}
+      (reactions.resource/system-emojis emoji)]]))

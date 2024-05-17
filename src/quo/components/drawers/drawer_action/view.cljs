@@ -10,11 +10,13 @@
     [schema.core :as schema]))
 
 (defn view-internal
-  [{:keys [action icon description state title on-press
-           customization-color blur?]
-    :or   {customization-color :blue
-           blur?               false}}]
+  [{:keys       [action icon description state title on-press customization-color
+                 blur? accessibility-label]
+    action-type :type
+    :or         {customization-color :blue
+                 blur?               false}}]
   (let [theme                  (quo.theme/use-theme)
+        action-type            (or action-type :main)
         [pressed? set-pressed] (rn/use-state false)
         on-press-in            (rn/use-callback #(set-pressed true))
         on-press-out           (rn/use-callback #(set-pressed false))]
@@ -29,16 +31,21 @@
                                              :pressed?            pressed?
                                              :description?        (not-empty description)
                                              :blur?               blur?})
-      :accessibility-label :container}
+      :accessibility-label accessibility-label}
      (when icon
        [icon/icon icon
         {:accessibility-label :left-icon
          :container-style     (style/left-icon)
          :color               (style/icon-color {:theme theme
+                                                 :type  action-type
                                                  :blur? blur?})}])
 
-     [rn/view {:style (style/text-container)}
-      [text/text {:weight :medium}
+     [rn/view
+      {:style (style/text-container)}
+      [text/text
+       (style/text {:theme theme
+                    :type  action-type
+                    :blur? blur?})
        title]
 
       (when (seq description)
@@ -61,6 +68,7 @@
        [icon/icon :i/chevron-right
         {:accessibility-label :arrow-icon
          :color               (style/icon-color {:theme theme
+                                                 :type  action-type
                                                  :blur? blur?})}]
 
        (= state :selected)
