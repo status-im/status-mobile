@@ -1,13 +1,10 @@
 (ns quo.components.profile.expanded-collectible.style
-  (:require [quo.foundations.colors :as colors]
-            [quo.foundations.shadows :as shadows]))
+  (:require [quo.foundations.colors :as colors]))
 
-(defn container
-  [theme]
-  (merge (shadows/get 2 theme)
-         {:align-items     :center
-          :justify-content :center
-          :border-radius   16}))
+(def container
+  {:align-items     :center
+   :justify-content :center
+   :border-radius   16})
 
 (defn image
   [square? aspect-ratio]

@@ -9,20 +9,18 @@
   (merge {:padding-horizontal 20
           :padding-top        8
           :padding-bottom     16
-          :height             48
           :flex-direction     :row
           :align-items        :flex-start}
          container-style))
 
 (def buttons-container
   {:flex-direction :row
-   :align-items    :center
-   :padding-top    (when platform/android? 2)})
+   :align-items    :flex-start})
 
 (def clear-icon-container
-  {:justify-content :center
+  {:justify-content :flex-start
    :align-items     :center
-   :padding-top     (if platform/ios? 6 2)
+   :padding-top     (when platform/ios? 4)
    :height          24
    :width           20})
 
@@ -33,9 +31,10 @@
                           nil)
          :flex         1
          :color        (colors/theme-colors colors/neutral-100 colors/white theme)
-         :margin-top   (if platform/ios? 0 -4)
+         :margin-top   -4
          :margin-right 8
-         :height       (if platform/ios? 24 40)))
+         :max-height   50
+         :padding      0))
 
 (defn accessory-button
   [blur? theme]

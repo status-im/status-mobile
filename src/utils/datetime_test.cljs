@@ -174,6 +174,35 @@
       (is (= "Today 12:00 PM" (datetime/timestamp->relative 163684800000)))
       (is (= "Today 12:00 AM" (datetime/timestamp->relative 163641600000))))))
 
+(deftest timestamp->relative-short-date-test
+  (with-redefs [t/*ms-fn*                 (constantly 163696545000)
+                datetime/time-zone-offset (t/period :hours 0)
+                datetime/is-24-hour       (constantly false)]
+    (testing "short date format for previous years"
+      (is (= "Dec 31, 1974" (datetime/timestamp->relative-short-date 157766399000)))
+      (is (= "Jan 1, 1973" (datetime/timestamp->relative-short-date 94694400000))))
+
+    (testing "short date format for dates 7 days ago or older, but in the current year"
+      (is (= "03 Mar" (datetime/timestamp->relative-short-date 163091745000)))
+      (is (= "02 Mar" (datetime/timestamp->relative-short-date 163004400000)))
+      (is (= "01 Jan" (datetime/timestamp->relative-short-date 157820400000))))
+
+    (testing "short date format for dates within the last 6 days"
+      (is (= "Sat" (datetime/timestamp->relative-short-date 163523745000)))
+      (is (= "Fri" (datetime/timestamp->relative-short-date 163437345000)))
+      (is (= "Thu" (datetime/timestamp->relative-short-date 163350945000)))
+      (is (= "Wed" (datetime/timestamp->relative-short-date 163264545000)))
+      (is (= "Tue" (datetime/timestamp->relative-short-date 163178145000))))
+
+    (testing "short date format for yesterday"
+      (is (= "Yesterday" (datetime/timestamp->relative-short-date 163610145000)))
+      (is (= "Yesterday" (datetime/timestamp->relative-short-date 163641599000))))
+
+    (testing "short date format for today, at various timestamps"
+      (is (= "Today" (datetime/timestamp->relative-short-date 163696545000)))
+      (is (= "Today" (datetime/timestamp->relative-short-date 163684800000)))
+      (is (= "Today" (datetime/timestamp->relative-short-date 163641600000))))))
+
 #_((deftest day-relative-before-yesterday-force-24H-test
      (with-redefs [t/*ms-fn*                 (constantly epoch-plus-3d)
                    datetime/is-24-hour       (constantly true)

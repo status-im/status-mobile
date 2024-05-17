@@ -14,7 +14,8 @@
    ::settings.wallet-settings           (enabled-in-env? :FLAG_WALLET_SETTINGS_ENABLED)
    ::settings.keypairs-and-accounts     (enabled-in-env?
                                          :FLAG_WALLET_SETTINGS_KEYPAIRS_AND_ACCOUNTS_ENABLED)
-   ::wallet.activities                  (enabled-in-env? :FLAG_WALLET_ACTIVITY_ENABLED)
+   ::settings.network-settings          (enabled-in-env?
+                                         :FLAG_WALLET_SETTINGS_NETWORK_SETTINGS_ENABLED)
    ::wallet.assets-modal-hide           (enabled-in-env? :FLAG_ASSETS_MODAL_HIDE)
    ::wallet.assets-modal-manage-tokens  (enabled-in-env? :FLAG_ASSETS_MODAL_MANAGE_TOKENS)
    ::wallet.bridge-token                (enabled-in-env? :FLAG_BRIDGE_TOKEN_ENABLED)

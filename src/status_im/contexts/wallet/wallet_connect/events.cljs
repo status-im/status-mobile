@@ -2,7 +2,6 @@
   (:require [re-frame.core :as rf]
             [status-im.constants :as constants]
             status-im.contexts.wallet.wallet-connect.effects
-            [status-im.contexts.wallet.wallet-connect.utils :as wallet-connect.utils]
             [taoensso.timbre :as log]))
 
 (rf/reg-event-fx
@@ -23,13 +22,13 @@
  (fn [{:keys [db]}]
    (let [web3-wallet (get db :wallet-connect/web3-wallet)]
      {:fx [[:effects.wallet-connect/register-event-listener
-            web3-wallet
-            constants/wallet-connect-session-proposal-event
-            #(rf/dispatch [:wallet-connect/on-session-proposal %])]]})))
+            [web3-wallet
+             constants/wallet-connect-session-proposal-event
+             #(rf/dispatch [:wallet-connect/on-session-proposal %])]]]})))
 
 (rf/reg-event-fx
  :wallet-connect/on-init-fail
- (fn [error]
+ (fn [_ [error]]
    (log/error "Failed to initialize Wallet Connect"
               {:error error
                :event :wallet-connect/on-init-fail})))
@@ -51,7 +50,7 @@
      {:fx [[:effects.wallet-connect/pair
             {:web3-wallet web3-wallet
              :url         url
-             :on-fail     #(log/error "Failed to pair with dApp")
+             :on-fail     #(log/error "Failed to pair with dApp" {:error %})
              :on-success  #(log/info "dApp paired successfully")}]]})))
 
 (rf/reg-event-fx
@@ -68,8 +67,7 @@
          ;; - global scanner -> first account in list
          ;; - wallet account dapps -> account that is selected
          address              (-> accounts keys first)
-         formatted-address    (wallet-connect.utils/format-address (first crosschain-ids)
-                                                                   address)
+         formatted-address    (str (first crosschain-ids) ":" address)
          supported-namespaces (clj->js {:eip155
                                         {:chains   crosschain-ids
                                          :methods  constants/wallet-connect-supported-methods
@@ -80,7 +78,7 @@
              :proposal             current-proposal
              :supported-namespaces supported-namespaces
              :on-success           (fn []
-                                     (log/debug "Wallet Connect session approved")
+                                     (log/info "Wallet Connect session approved")
                                      (rf/dispatch [:wallet-connect/reset-current-session]))
              :on-fail              (fn [error]
                                      (log/error "Wallet Connect session approval failed"

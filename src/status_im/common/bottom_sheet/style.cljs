@@ -8,7 +8,6 @@
 (defn sheet
   [{:keys [max-height]}]
   {:position                :absolute
-   :overflow                :hidden
    :bottom                  0
    :left                    0
    :right                   0

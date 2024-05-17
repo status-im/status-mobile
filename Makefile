@@ -333,14 +333,17 @@ shadow-server: export TARGET := clojure
 shadow-server:##@ Start shadow-cljs in server mode for watching
 	yarn shadow-cljs server
 
-_test-clojure: export TARGET := default
+_test-clojure: export TARGET := clojure
 _test-clojure: export WATCH ?= false
+_test-clojure: status-go-library
 _test-clojure:
 ifeq ($(WATCH), true)
-	yarn install && shadow-cljs compile mocks && \
+	yarn node-pre-gyp rebuild && \
+	yarn shadow-cljs compile mocks && \
 	nodemon --exec "yarn shadow-cljs compile test && node --require ./test-resources/override.js $$SHADOW_OUTPUT_TO" -e cljs
 else
-	yarn install && shadow-cljs compile mocks && \
+	yarn node-pre-gyp rebuild && \
+	yarn shadow-cljs compile mocks && \
 	yarn shadow-cljs compile test && \
 	node --require ./test-resources/override.js "$$SHADOW_OUTPUT_TO"
 endif

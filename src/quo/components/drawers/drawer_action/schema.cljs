@@ -4,6 +4,8 @@
   [:=>
    [:cat
     [:map {:closed true}
+     [:accessibility-label {:optional true} [:maybe :keyword]]
+     [:type {:optional true} [:maybe [:enum :main :danger]]]
      [:action {:optional true} [:maybe [:enum :arrow :toggle]]]
      [:icon {:optional true} [:maybe :keyword]]
      [:description {:optional true} [:maybe :string]]
