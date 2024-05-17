@@ -18,7 +18,7 @@
    (let [event-type  (oops/oget event-js "type")
          blockNumber (oops/oget event-js "blockNumber")
          accounts    (oops/oget event-js "accounts")]
-     (log/debug "[wallet-subs] New wallet event"
+     (log/debug "[wallet] Wallet signal received"
                 {:type         event-type
                  :block-number blockNumber
                  :accounts     accounts})
