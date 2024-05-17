@@ -40,15 +40,16 @@
                                                     :mixedcase-address "0x7bcDfc75c431"
                                                     :public-key "0x04371e2d9d66b82f056bc128064"
                                                     :removed false}
-   :wallet/wallet-send-token                       {:symbol   :eth
-                                                    :networks [{:source           879
-                                                                :short-name       "eth"
-                                                                :network-name     :mainnet
-                                                                :abbreviated-name "Eth."
-                                                                :chain-id         1
-                                                                :related-chain-id 1
-                                                                :layer            1}]}
-   :wallet/current-viewing-account-tokens-filtered {:balances-per-chain         {1 {:raw-balance
+   :wallet/wallet-send-token                       {:symbol                     :eth
+                                                    :networks                   [{:source 879
+                                                                                  :short-name "eth"
+                                                                                  :network-name :mainnet
+                                                                                  :abbreviated-name
+                                                                                  "Eth."
+                                                                                  :chain-id 1
+                                                                                  :related-chain-id 1
+                                                                                  :layer 1}]
+                                                    :balances-per-chain         {1 {:raw-balance
                                                                                     (money/bignumber
                                                                                      "2500")
                                                                                     :has-error false}}
@@ -72,6 +73,11 @@
    :profile/currency                               :usd
    :wallet/token-by-symbol                         {:symbol                     :eth
                                                     :total-balance              100
+                                                    :available-balance          100
+                                                    :balances-per-chain         {1 {:raw-balance
+                                                                                    (money/bignumber
+                                                                                     "2500")
+                                                                                    :has-error false}}
                                                     :market-values-per-currency {:usd {:price 10}}}
    :wallet/wallet-send-disabled-from-chain-ids     []
    :wallet/wallet-send-from-values-by-chain        {1 (money/bignumber "250")}

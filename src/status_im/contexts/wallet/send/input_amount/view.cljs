@@ -143,18 +143,18 @@
                                                 input-state)
                                                :stack-id current-screen-id}]))
             {fiat-currency :currency} (rf/sub [:profile/profile])
-            {token-symbol   :symbol
+            {token-symbol :symbol
              token-networks :networks
-             token-decimals :decimals} (rf/sub [:wallet/wallet-send-token])
+             token-decimals :decimals
+             :as
+             token} (rf/sub [:wallet/wallet-send-token])
             send-enabled-networks (rf/sub [:wallet/wallet-send-enabled-networks])
             enabled-from-chain-ids (rf/sub
                                     [:wallet/wallet-send-enabled-from-chain-ids])
-            {token-balance :total-balance
-             available-balance :available-balance
-             :as
-             token} (rf/sub
-                     [:wallet/current-viewing-account-tokens-filtered
-                      (str token-symbol) enabled-from-chain-ids])
+            {token-balance     :total-balance
+             available-balance :available-balance} (rf/sub [:wallet/token-by-symbol
+                                                            (str token-symbol)
+                                                            enabled-from-chain-ids])
             currency-symbol (rf/sub [:profile/currency-symbol])
             currency (rf/sub [:profile/currency])
             conversion-rate (-> token :market-values-per-currency currency :price)
