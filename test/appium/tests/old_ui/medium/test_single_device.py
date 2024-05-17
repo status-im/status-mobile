@@ -1,7 +1,6 @@
 import re
 import random
-from tests import marks, mailserver_ams, mailserver_gc, mailserver_hk, used_fleet, common_password,\
-    pair_code, unique_password
+from tests import marks, common_password, pair_code, unique_password
 from tests.users import user_mainnet, chat_users, recovery_users, transaction_senders, basic_user,\
     wallet_users, ens_user_message_sender, ens_user
 from tests.base_test_case import SingleDeviceTestCase
@@ -925,43 +924,6 @@ class TestChatManagement(SingleDeviceTestCase):
         profile.request_a_feature_button.click()
         if not profile.element_by_text("#support").is_element_displayed(30):
             self.errors.append("Support channel is not suggested for requesting a feature")
-        self.errors.verify_no_errors()
-
-    @marks.testrail_id(5766)
-    def test_profile_use_pinned_history_node_from_list(self):
-        home = SignInView(self.driver).create_user()
-        profile = home.profile_button.click()
-        home.profile_button.click()
-
-        home.just_fyi('pin history node')
-        profile.sync_settings_button.click()
-        node_gc, node_ams, node_hk = [profile.return_mailserver_name(history_node_name, used_fleet) for
-                                      history_node_name in (mailserver_gc, mailserver_ams, mailserver_hk)]
-        h_node = node_ams
-        profile.mail_server_button.click()
-        profile.mail_server_auto_selection_button.click()
-        profile.mail_server_by_name(h_node).click()
-        profile.confirm_button.click()
-        if profile.element_by_translation_id("mailserver-error-title").is_element_displayed(10):
-            h_node = node_hk
-            profile.element_by_translation_id("mailserver-pick-another", uppercase=True).click()
-            profile.mail_server_by_name(h_node).click()
-            profile.confirm_button.click()
-            if profile.element_by_translation_id("mailserver-error-title").is_element_displayed(10):
-                self.driver.fail("Couldn't connect to any history node")
-
-        profile.just_fyi('check that history node is pinned')
-        profile.close_button.click()
-        if not profile.element_by_text(h_node).is_element_displayed():
-            self.errors.append('"%s" history node is not pinned' % h_node)
-
-        profile.just_fyi('Relogin and check that settings are preserved')
-        home.reopen_app()
-        home.profile_button.click()
-        profile.sync_settings_button.click()
-        if not profile.element_by_text(h_node).is_element_displayed():
-            self.errors.append('"%s" history node is not pinned' % h_node)
-
         self.errors.verify_no_errors()
 
     @marks.testrail_id(6318)
