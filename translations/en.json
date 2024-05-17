@@ -2557,7 +2557,7 @@
     "watched-account-removed": "Watched address has been removed",
     "account-removed": "Account has been removed",
     "share-address-title": "{{address}} address",
-    "check-your-backup": "Check your backup",
+    "confirm-backup": "Confirm backup",
     "confirm-the-position": "Confirm the position of certain words in your recovery phrase",
     "do-not-cheat": "Don't try to cheat",
     "do-not-cheat-description": "These 12 words give access to all of your funds so it is important that you write them in the correct order, take it seriously.",

@@ -85,8 +85,8 @@
      wallet-key-pair-name]
     [status-im.contexts.wallet.add-account.create-account.new-keypair.backup-recovery-phrase.view :as
      wallet-backup-recovery-phrase]
-    [status-im.contexts.wallet.add-account.create-account.new-keypair.check-your-backup.view :as
-     wallet-check-your-backup]
+    [status-im.contexts.wallet.add-account.create-account.new-keypair.confirm-backup.view :as
+     wallet-confirm-backup]
     [status-im.contexts.wallet.add-account.create-account.select-keypair.view :as wallet-select-keypair]
     [status-im.contexts.wallet.add-account.create-account.view :as wallet-create-account]
     [status-im.contexts.wallet.bridge.bridge-to.view :as wallet-bridge-to]
@@ -430,9 +430,9 @@
      :options   {:insets {:top? true :bottom? true}}
      :component wallet-backup-recovery-phrase/view}
 
-    {:name      :screen/wallet.check-your-backup
+    {:name      :screen/wallet.confirm-backup
      :options   {:insets {:top? true :bottom? true}}
-     :component wallet-check-your-backup/view}
+     :component wallet-confirm-backup/view}
 
     {:name      :screen/wallet.keypair-name
      :options   {:insets {:top? true}}

@@ -27,7 +27,7 @@
   {:db (-> db
            (assoc-in [:wallet :ui :create-account :seed-phrase] seed-phrase)
            (assoc-in [:wallet :ui :create-account :random-phrase] random-phrase))
-   :fx [[:dispatch-later [{:ms 20 :dispatch [:navigate-to :screen/wallet.check-your-backup]}]]]})
+   :fx [[:dispatch-later [{:ms 20 :dispatch [:navigate-to :screen/wallet.confirm-backup]}]]]})
 
 (rf/reg-event-fx :wallet/store-seed-phrase store-seed-phrase)
 

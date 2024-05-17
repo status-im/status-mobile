@@ -1,9 +1,9 @@
-(ns status-im.contexts.wallet.add-account.create-account.new-keypair.check-your-backup.view
+(ns status-im.contexts.wallet.add-account.create-account.new-keypair.confirm-backup.view
   (:require
     [quo.core :as quo]
     [react-native.core :as rn]
     [reagent.core :as reagent]
-    [status-im.contexts.wallet.add-account.create-account.new-keypair.check-your-backup.style :as style]
+    [status-im.contexts.wallet.add-account.create-account.new-keypair.confirm-backup.style :as style]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]
     [utils.security.core :as security]))
@@ -95,7 +95,7 @@
            :on-press            #(rf/dispatch [:navigate-back])
            :accessibility-label :top-bar}]
          [quo/page-top
-          {:title            (i18n/label :t/check-your-backup)
+          {:title            (i18n/label :t/confirm-backup)
            :description      :text
            :description-text (i18n/label :t/confirm-the-position)}]
          [rn/flat-list
