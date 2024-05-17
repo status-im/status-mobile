@@ -20,6 +20,7 @@
   (let [{:keys [key-uid]}             (rf/sub [:get-screen-params])
         {:keys [customization-color]} (rf/sub [:profile/profile-with-image])
         [code set-code]               (rn/use-state nil)
+        valid-connection-string?      (rn/use-memo #(sync-utils/valid-connection-string? code) [code])
         validate-and-set-code         (rn/use-callback (fn [connection-string]
                                                          (when (sync-utils/valid-connection-string?
                                                                 connection-string)
@@ -47,7 +48,7 @@
           :style  {:color colors/white}}
          (i18n/label :t/encrypted-key-pairs)]]
        [rn/view {:style style/qr-container}
-        (if (sync-utils/valid-connection-string? code)
+        (if valid-connection-string?
           [qr-codes/qr-code {:url code}]
           [rn/view {:style {:flex-direction :row}}
            [rn/image
@@ -56,7 +57,7 @@
                       :background-color colors/white-opa-70
                       :border-radius    12
                       :aspect-ratio     1}}]])
-        (when (sync-utils/valid-connection-string? code)
+        (when valid-connection-string?
           [rn/view {:style style/valid-cs-container}
            [rn/view {:style style/sub-text-container}
             [quo/text
@@ -80,7 +81,7 @@
              :container-style {:margin-top 12}
              :icon-left       :i/copy}
             (i18n/label :t/copy-qr)]])
-        (when-not (sync-utils/valid-connection-string? code)
+        (when-not valid-connection-string?
           [rn/view {:style style/standard-auth}
            [standard-auth/slide-button
             {:blur?                 true
@@ -90,7 +91,7 @@
              :on-auth-success       on-auth-success
              :auth-button-label     (i18n/label :t/reveal-qr-code)
              :auth-button-icon-left :i/reveal}]])]]
-      (when-not (sync-utils/valid-connection-string? code)
+      (when-not valid-connection-string?
         [quo/text
          {:size  :paragraph-2
           :style style/warning-text}

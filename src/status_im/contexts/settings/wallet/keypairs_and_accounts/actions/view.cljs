@@ -14,7 +14,6 @@
 (defn view
   [props data]
   (let [has-paired-device (rf/sub [:pairing/has-paired-devices])]
-    (println has-paired-device)
     [:<>
      [quo/drawer-top props]
      [quo/action-drawer

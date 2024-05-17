@@ -112,6 +112,12 @@ RCT_EXPORT_METHOD(getConnectionStringForExportingKeypairsKeystores:(NSString *)c
     NSData *configData = [configJSON dataUsingEncoding:NSUTF8StringEncoding];
     NSError *error;
     NSMutableDictionary *configDict = [NSJSONSerialization JSONObjectWithData:configData options:NSJSONReadingMutableContainers error:&error];
+    NSMutableDictionary *senderConfig = configDict[@"senderConfig"];
+    NSString *keyUID = senderConfig[@"loggedInKeyUid"];
+    NSURL *multiaccountKeystoreDir = [Utils getKeyStoreDirForKeyUID:keyUID];
+    NSString *keystoreDir = multiaccountKeystoreDir.path;
+
+    [senderConfig setValue:keystoreDir forKey:@"keystorePath"];
     NSString *modifiedConfigJSON = [Utils jsonStringWithPrettyPrint:NO fromDictionary:configDict];
 
     NSString *result = StatusgoGetConnectionStringForExportingKeypairsKeystores(modifiedConfigJSON);

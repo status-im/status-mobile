@@ -78,6 +78,11 @@ class NetworkManager(private val reactContext: ReactApplicationContext) : ReactC
     @ReactMethod
     fun getConnectionStringForExportingKeypairsKeystores(configJSON: String, callback: Callback) {
         val jsonConfig = JSONObject(configJSON)
+        val senderConfig = jsonConfig.getJSONObject("senderConfig")
+        val keyUID = senderConfig.getString("loggedInKeyUid")
+        val keyStorePath = utils.getKeyStorePath(keyUID)
+        senderConfig.put("keystorePath", keyStorePath)
+
         utils.executeRunnableStatusGoMethod(
                 { Statusgo.getConnectionStringForExportingKeypairsKeystores(jsonConfig.toString()) },
                 callback)
