@@ -3,7 +3,6 @@
     [clojure.string :as string]
     [quo.core :as quo]
     [react-native.core :as rn]
-    [reagent.core :as reagent]
     [status-im.contexts.wallet.common.account-switcher.view :as account-switcher]
     [status-im.contexts.wallet.common.asset-list.view :as asset-list]
     [status-im.contexts.wallet.common.collectibles-tab.view :as collectibles-tab]
@@ -59,33 +58,32 @@
 
 (defn view
   []
-  (let [selected-tab   (reagent/atom (:id (first tabs-data)))
-        search-text    (reagent/atom "")
-        on-change-text #(reset! search-text %)
-        on-change-tab  #(reset! selected-tab %)
-        on-close       (fn []
-                         (rf/dispatch [:wallet/clean-selected-token])
-                         (rf/dispatch [:wallet/clean-selected-collectible])
-                         (rf/dispatch [:navigate-back]))]
+  (let [[selected-tab set-selected-tab] (rn/use-state (:id (first tabs-data)))
+        [search-text set-search-text]   (rn/use-state "")
+        on-change-text                  #(set-search-text %)
+        on-change-tab                   #(set-selected-tab %)
+        on-close                        (fn []
+                                          (rf/dispatch [:wallet/clean-selected-token])
+                                          (rf/dispatch [:wallet/clean-selected-collectible])
+                                          (rf/dispatch [:navigate-back]))]
     (rn/use-unmount (fn []
                       (rf/dispatch [:wallet/clean-selected-token])
                       (rf/dispatch [:wallet/clean-selected-collectible])))
-    (fn []
-      [rn/safe-area-view {:style style/container}
-       [account-switcher/view
-        {:icon-name     :i/arrow-left
-         :on-press      on-close
-         :switcher-type :select-account}]
-       [quo/page-top
-        {:title                     (i18n/label :t/select-asset)
-         :title-accessibility-label :title-label}]
-       [quo/segmented-control
-        {:size            32
-         :blur?           false
-         :symbol          false
-         :default-active  :tab/assets
-         :container-style {:margin-horizontal 20
-                           :margin-vertical   8}
-         :data            tabs-data
-         :on-change       on-change-tab}]
-       [tab-view @search-text @selected-tab on-change-text]])))
+    [rn/safe-area-view {:style style/container}
+     [account-switcher/view
+      {:icon-name     :i/arrow-left
+       :on-press      on-close
+       :switcher-type :select-account}]
+     [quo/page-top
+      {:title                     (i18n/label :t/select-asset)
+       :title-accessibility-label :title-label}]
+     [quo/segmented-control
+      {:size            32
+       :blur?           false
+       :symbol          false
+       :default-active  :tab/assets
+       :container-style {:margin-horizontal 20
+                         :margin-vertical   8}
+       :data            tabs-data
+       :on-change       on-change-tab}]
+     [tab-view search-text selected-tab on-change-text]]))
