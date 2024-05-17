@@ -13,15 +13,18 @@
 
 (defn view
   [props data]
-  [:<>
-   [quo/drawer-top props]
-   [quo/action-drawer
-    (when (= (:type props) :keypair)
-      [[{:icon                :i/qr-code
-         :accessibility-label :show-key-pr-qr
-         :label               (i18n/label :t/show-encrypted-qr-of-key-pairs)
-         :on-press            #(on-show-qr data)}]
-       [{:icon                :i/edit
-         :accessibility-label :rename-key-pair
-         :label               (i18n/label :t/rename-key-pair)
-         :on-press            #(on-rename-request data)}]])]])
+  (let [has-paired-device (rf/sub [:pairing/has-paired-devices])]
+    (println has-paired-device)
+    [:<>
+     [quo/drawer-top props]
+     [quo/action-drawer
+      [(when has-paired-device
+         [{:icon                :i/qr-code
+           :accessibility-label :show-key-pr-qr
+           :label               (i18n/label :t/show-encrypted-qr-of-key-pairs)
+           :on-press            #(on-show-qr data)}])
+       (when (= (:type props) :keypair)
+         [{:icon                :i/edit
+           :accessibility-label :rename-key-pair
+           :label               (i18n/label :t/rename-key-pair)
+           :on-press            #(on-rename-request data)}])]]]))

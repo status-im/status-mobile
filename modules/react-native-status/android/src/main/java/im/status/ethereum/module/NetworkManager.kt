@@ -75,4 +75,12 @@ class NetworkManager(private val reactContext: ReactApplicationContext) : ReactC
         utils.executeRunnableStatusGoMethod({ Statusgo.recover(rpcParams) }, callback)
     }
 
+    @ReactMethod
+    fun getConnectionStringForExportingKeypairsKeystores(configJSON: String, callback: Callback) {
+        val jsonConfig = JSONObject(configJSON)
+        utils.executeRunnableStatusGoMethod(
+                { Statusgo.getConnectionStringForExportingKeypairsKeystores(jsonConfig.toString()) },
+                callback)
+    }
+
 }

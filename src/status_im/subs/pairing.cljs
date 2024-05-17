@@ -28,3 +28,9 @@
  :<- [:syncing]
  (fn [syncing]
    (:pairing-status syncing)))
+
+(re-frame/reg-sub
+ :pairing/has-paired-devices
+ :<- [:pairing/enabled-installations]
+ (fn [installations]
+   (> (count installations) 1)))

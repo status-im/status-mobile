@@ -17,16 +17,21 @@
 
 (defn view
   []
-  (let [{:keys [customization-color]} (rf/sub [:profile/profile-with-image])
+  (let [{:keys [key-uid]}             (rf/sub [:get-screen-params])
+        {:keys [customization-color]} (rf/sub [:profile/profile-with-image])
         [code set-code]               (rn/use-state nil)
         validate-and-set-code         (rn/use-callback (fn [connection-string]
                                                          (when (sync-utils/valid-connection-string?
                                                                 connection-string)
                                                            (set-code connection-string))))
         cleanup-clock                 (rn/use-callback #(set-code nil))
-        on-auth-success               (fn [entered-password]
-                                        (rf/dispatch [:syncing/get-connection-string entered-password
-                                                      validate-and-set-code]))]
+        on-auth-success               (rn/use-callback (fn [entered-password]
+                                                         (rf/dispatch
+                                                          [:wallet/get-key-pair-export-connection
+                                                           {:sha3-pwd        entered-password
+                                                            :keypair-key-uid key-uid
+                                                            :callback        validate-and-set-code}]))
+                                                       [key-uid])]
     [rn/view {:style (style/container-main)}
      [rn/scroll-view
       [quo/page-nav
