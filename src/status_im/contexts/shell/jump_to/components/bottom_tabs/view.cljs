@@ -6,7 +6,6 @@
     [react-native.gesture :as gesture]
     [react-native.platform :as platform]
     [react-native.reanimated :as reanimated]
-    [status-im.config :as config]
     [status-im.contexts.shell.jump-to.animation :as animation]
     [status-im.contexts.shell.jump-to.components.bottom-tabs.style :as style]
     [status-im.contexts.shell.jump-to.constants :as shell.constants]
@@ -71,5 +70,4 @@
        [gesture/gesture-detector {:gesture messages-double-tap-gesture}
         [bottom-tab :i/messages :chats-stack shared-values notifications-data]]
        [bottom-tab :i/wallet :wallet-stack shared-values notifications-data]
-       (when config/show-not-implemented-features?
-         [bottom-tab :i/browser :browser-stack shared-values notifications-data])]]]))
+       [bottom-tab :i/browser :browser-stack shared-values notifications-data]]]]))
