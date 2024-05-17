@@ -46,70 +46,94 @@
   (str (humanize k) ":"))
 
 (defn- customizer-boolean
-  [{:keys [label state] :as args}]
-  (let [theme       (quo.theme/use-theme)
-        label       (or label (key->boolean-label (:key args)))
-        field-value (reagent/cursor state [(:key args)])
-        active?     @field-value]
+  [{:keys [label state set-state] :as args}]
+  (let [theme           (quo.theme/use-theme)
+        label           (or label (key->boolean-label (:key args)))
+        field-cursor    (when-not (fn? set-state)
+                          (reagent/cursor state [(:key args)]))
+        field-value     (if (fn? set-state)
+                          (get state (:key args))
+                          @field-cursor)
+        set-field-value (fn [value]
+                          (if (fn? set-state)
+                            (set-state (assoc state (:key args) value))
+                            (reset! field-cursor value)))]
     [rn/view {:style style/field-row}
      [label-view state label theme]
      [rn/view {:style (style/boolean-container)}
       [rn/pressable
-       {:style    (style/boolean-button {:active? active? :left? true} theme)
-        :on-press #(reset! field-value true)}
-       [rn/text {:style (style/field-text active? theme)}
+       {:style    (style/boolean-button {:active? field-value :left? true} theme)
+        :on-press #(set-field-value true)}
+       [rn/text {:style (style/field-text field-value theme)}
         "True"]]
       [rn/pressable
-       {:style    (style/boolean-button {:active? (not active?) :left? false} theme)
-        :on-press #(reset! field-value false)}
-       [rn/text {:style (style/field-text (not active?) theme)}
+       {:style    (style/boolean-button {:active? (not field-value) :left? false} theme)
+        :on-press #(set-field-value false)}
+       [rn/text {:style (style/field-text (not field-value) theme)}
         "False"]]]]))
 
 (defn- customizer-text
-  [{:keys [label state limit suffix] :as args} theme]
-  (let [label       (or label (key->text-label (:key args)))
-        field-value (reagent/cursor state [(:key args)])]
+  [{:keys [label state set-state limit suffix] :as args} theme]
+  (let [label           (or label (key->text-label (:key args)))
+        field-cursor    (when-not (fn? set-state)
+                          (reagent/cursor state [(:key args)]))
+        field-value     (if (fn? set-state)
+                          (get state (:key args))
+                          @field-cursor)
+        set-field-value (fn [value]
+                          (if (fn? set-state)
+                            (set-state (assoc state (:key args) value))
+                            (reset! field-cursor value)))]
     [rn/view {:style style/field-row}
      [label-view state label theme]
      [rn/view {:style style/field-column}
       [rn/text-input
        (merge
-        {:value               @field-value
+        {:value               field-value
          :show-cancel         false
          :style               (style/field-container false theme)
          :keyboard-appearance theme
          :on-change-text      (fn [text]
-                                (reset! field-value (if (and suffix
-                                                             (> (count text) (count @field-value)))
-                                                      (str (string/replace text suffix "") suffix)
-                                                      text))
-                                (reagent/flush))}
+                                (set-field-value (if (and suffix
+                                                          (> (count text) (count field-value)))
+                                                   (str (string/replace text suffix "") suffix)
+                                                   text))
+                                (when-not (fn? set-state)
+                                  (reagent/flush)))}
         (when limit
           {:max-length limit}))]]]))
 
 (defn- customizer-number
-  [{:keys [label state default] :as args} theme]
-  (let [label       (or label (key->text-label (:key args)))
-        field-value (reagent/cursor state [(:key args)])]
+  [{:keys [label state set-state default] :as args} theme]
+  (let [label           (or label (key->text-label (:key args)))
+        field-cursor    (when-not (fn? set-state)
+                          (reagent/cursor state [(:key args)]))
+        field-value     (if (fn? set-state)
+                          (get state (:key args))
+                          @field-cursor)
+        set-field-value (fn [value]
+                          (if (fn? set-state)
+                            (set-state (assoc state (:key args) value))
+                            (reset! field-cursor value)))]
     [rn/view {:style style/field-row}
      [label-view state label theme]
      [rn/view {:style style/field-column}
       [rn/text-input
-       (merge
-        {:value               (str @field-value)
-         :show-cancel         false
-         :style               (style/field-container false theme)
-         :keyboard-appearance theme
-         :on-change-text      (fn [text]
-                                (reset! field-value (utils.number/parse-int text default))
-                                (reagent/flush))})]]]))
+       {:value               (str field-value)
+        :show-cancel         false
+        :style               (style/field-container false theme)
+        :keyboard-appearance theme
+        :on-change-text      (fn [text]
+                               (set-field-value (utils.number/parse-int text default))
+                               (when-not (fn? set-state)
+                                 (reagent/flush)))}]]]))
 
 (defn- find-selected-option
   [id v]
   (first (filter #(= (:key %) id) v)))
 
 (defn- customizer-select-modal
-  [{:keys [open options field-value]}]
+  [{:keys [open options field-value set-field-value]}]
   (let [theme (quo.theme/use-theme)]
     [rn/modal
      {:visible                @open
@@ -125,17 +149,17 @@
                :let              [v (or v (humanize k))]]
            ^{:key k}
            [rn/pressable
-            {:style    (style/select-option (= @field-value k) theme)
+            {:style    (style/select-option (= field-value k) theme)
              :on-press (fn []
                          (reset! open false)
-                         (reset! field-value k))}
-            [rn/text {:style (style/field-text (= @field-value k) theme)}
+                         (set-field-value k))}
+            [rn/text {:style (style/field-text (= field-value k) theme)}
              v]]))]
        [rn/view {:style (style/footer theme)}
         [rn/pressable
          {:style    (style/select-button theme)
           :on-press (fn []
-                      (reset! field-value nil)
+                      (set-field-value nil)
                       (reset! open false))}
          [rn/text {:style (style/field-text false theme)}
           "Clear"]]
@@ -163,22 +187,31 @@
 (defn- customizer-select
   []
   (let [open (reagent/atom nil)]
-    (fn [{:keys [label state options] :as args}]
+    (fn [{:keys [label state set-state options] :as args}]
       (let [theme           (quo.theme/use-theme)
             label           (or label (key->text-label (:key args)))
-            field-value     (reagent/cursor state [(:key args)])
-            selected-option (find-selected-option @field-value options)]
+            field-cursor    (when-not (fn? set-state)
+                              (reagent/cursor state [(:key args)]))
+            field-value     (if (fn? set-state)
+                              (get state (:key args))
+                              @field-cursor)
+            set-field-value (fn [value]
+                              (if (fn? set-state)
+                                (set-state (assoc state (:key args) value))
+                                (reset! field-cursor value)))
+            selected-option (find-selected-option field-value options)]
         [rn/view {:style style/field-row}
          [label-view state label theme]
          [rn/view {:style style/field-column}
           [customizer-select-modal
-           {:open        open
-            :options     options
-            :field-value field-value}]
+           {:open            open
+            :options         options
+            :field-value     field-value
+            :set-field-value set-field-value}]
           [customizer-select-button {:open open :selected-option selected-option} theme]]]))))
 
 (defn- customizer-multi-select-modal
-  [{:keys [open-atom options selected-keys-atom]}]
+  [{:keys [open-atom options field-value set-field-value]}]
   (let [theme (quo.theme/use-theme)]
     [rn/modal
      {:visible                @open-atom
@@ -193,13 +226,13 @@
          (for [{k :key v :value} options
                :let              [v (or v (humanize k))]]
            ^{:key k}
-
-           (let [checked?   (boolean (some #(= k %) @selected-keys-atom))
+           (let [checked?   (boolean (some #(= k %) field-value))
                  remove-key (fn [v] (filterv #(not= % k) v))
                  on-press   (fn []
-                              (swap! selected-keys-atom
-                                (if checked? remove-key conj)
-                                k))]
+                              (set-field-value
+                               (if checked?
+                                 (remove-key field-value)
+                                 (conj field-value k))))]
              [rn/pressable
               {:style    (style/multi-select-option theme)
                :on-press on-press}
@@ -212,7 +245,7 @@
         [rn/pressable
          {:style    (style/select-button theme)
           :on-press (fn []
-                      (reset! selected-keys-atom nil)
+                      (set-field-value nil)
                       (reset! open-atom false))}
          [rn/text {:style (style/field-text false theme)}
           "Clear"]]
@@ -246,41 +279,51 @@
 (defn- customizer-multi-select
   []
   (let [open (reagent/atom nil)]
-    (fn [{:keys [label state options] :as args}]
+    (fn [{:keys [label state set-state options] :as args}]
       (let [theme            (quo.theme/use-theme)
             label            (or label (key->text-label (:key args)))
-            selected-keys    (reagent/cursor state [(:key args)])
-            selected-options (filter-by-keys options @selected-keys)]
+            field-cursor     (when-not (fn? set-state)
+                               (reagent/cursor state [(:key args)]))
+            field-value      (if (fn? set-state)
+                               (get state (:key args))
+                               @field-cursor)
+            set-field-value  (fn [value]
+                               (if (fn? set-state)
+                                 (set-state (assoc state (:key args) value))
+                                 (reset! field-cursor value)))
+            selected-options (filter-by-keys options field-value)]
         [rn/view {:style style/field-row}
          [label-view state label theme]
          [rn/view {:style style/field-column}
           [customizer-multi-select-modal
-           {:open-atom          open
-            :selected-keys-atom selected-keys
-            :options            options}]
+           {:open-atom       open
+            :field-value     field-value
+            :set-field-value set-field-value
+            :options         options}]
           [customizer-multi-select-button {:open open :selected-options selected-options} theme]]]))))
 
 (defn customizer
-  [state descriptors theme]
+  [state set-state descriptors theme]
   [rn/view
    {:style {:flex-shrink        1
             :padding-horizontal 20}}
    (doall
     (for [desc descriptors
           :let [desc-path  (:path desc)
-                new-state  (if desc-path
-                             (reagent/cursor state desc-path)
-                             state)
-                descriptor (assoc desc :state new-state)]]
+                descriptor (if (fn? set-state)
+                             (assoc desc :state state :set-state set-state)
+                             (let [new-state (if desc-path
+                                               (reagent/cursor state desc-path)
+                                               state)]
+                               (assoc desc :state new-state)))]]
       ^{:key (:key desc)}
-      [:<>
-       (case (:type desc)
-         :boolean      [customizer-boolean descriptor]
-         :text         [customizer-text descriptor theme]
-         :number       [customizer-number descriptor theme]
-         :select       [customizer-select descriptor]
-         :multi-select [customizer-multi-select descriptor]
-         nil)]))])
+      (case (:type desc)
+        :boolean      [customizer-boolean descriptor]
+        :text         [customizer-text descriptor theme]
+        :number       [customizer-number descriptor theme]
+        :select       [customizer-select descriptor]
+        :multi-select [customizer-multi-select descriptor]
+        nil)))])
 
 (defn customization-color-option
   ([]
@@ -325,7 +368,7 @@
          children)])
 
 (defn- f-preview-container
-  [{:keys [title state descriptor blur? blur-dark-only?
+  [{:keys [title state set-state descriptor blur? blur-dark-only?
            component-container-style
            blur-container-style blur-view-props blur-height show-blur-background? full-screen?]
     :or   {blur-height 200}}
@@ -352,7 +395,7 @@
          :on-press rn/dismiss-keyboard!}
         (when descriptor
           [rn/view {:style style/customizer-container}
-           [customizer state descriptor theme]])
+           [customizer state set-state descriptor theme]])
         (if blur?
           [rn/view {:style (merge style/component-container component-container-style)}
            (into [blur-view
@@ -371,8 +414,11 @@
           (into [rn/view {:style (merge style/component-container component-container-style)}]
                 children))]
        (when state
-         (let [decr-state (if descriptor (select-keys @state (mapv :key (flatten descriptor))) @state)
-               state-str  (with-out-str (cljs.pprint/pprint decr-state))]
+         (let [actual-state (if (fn? set-state) state @state)
+               decr-state   (if descriptor
+                              (select-keys actual-state (mapv :key (flatten descriptor)))
+                              actual-state)
+               state-str    (with-out-str (cljs.pprint/pprint decr-state))]
            [rn/view {:style {:margin 50}}
             [quo/text {:style {:margin-bottom 10}} "State map (click on map to copy)"]
             [rn/pressable
