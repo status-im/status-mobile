@@ -16,22 +16,20 @@
     (assoc :margin-top 4)))
 
 (defn user-message-content
-  [{:keys [outgoing outgoing-status six-reactions? window-scale small-screen? preview?]}]
+  [{:keys [outgoing outgoing-status six-reactions? window-scale small-screen?]}]
   {:border-radius      16
-   :padding-horizontal (if preview? 12 8)
-   :padding-top        (if preview? 8 4)
-   :padding-bottom     (if preview?
-                         12
-                         (if (or small-screen?
-                                 (and
-                                  (> 3 window-scale)
-                                  six-reactions?))
-                           (* message-padding-scaling-ratio window-scale)
-                           4))
+   :padding-horizontal 8
+   :padding-top        4
+   :padding-bottom     (if (or small-screen?
+                               (and
+                                (> 3 window-scale)
+                                six-reactions?))
+                         (* message-padding-scaling-ratio window-scale)
+                         4)
    :opacity            (if (and outgoing (= outgoing-status :sending))
                          0.5
                          1)})
 
 (def drawer-message-container
   {:padding-top    4
-   :padding-bottom 8})
+   :padding-bottom 4})
