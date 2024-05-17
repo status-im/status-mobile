@@ -169,23 +169,31 @@
  :chats/current-chat-chat-view
  :<- [:chats/current-chat]
  (fn [current-chat]
-   (select-keys current-chat
-                [:chat-id
-                 :able-to-send-message?
-                 :group-chat
-                 :admins
-                 :invitation-admin
-                 :public?
-                 :chat-type
-                 :color
-                 :contact-request-state
-                 :chat-name
-                 :synced-to
-                 :synced-from
-                 :community-id
-                 :emoji
-                 :description
-                 :last-message])))
+   (assoc
+    (select-keys current-chat
+                 [:chat-id
+                  :able-to-send-message?
+                  :group-chat
+                  :admins
+                  :invitation-admin
+                  :public?
+                  :chat-type
+                  :color
+                  :contact-request-state
+                  :chat-name
+                  :synced-to
+                  :synced-from
+                  :community-id
+                  :emoji
+                  :description])
+    :empty-chat?
+    (not (:last-message current-chat)))))
+
+(re-frame/reg-sub
+ :chats/current-chat-exist?
+ :<- [:chats/current-chat-chat-view]
+ (fn [current-chat]
+   (boolean (:chat-id current-chat))))
 
 (re-frame/reg-sub
  :chats/current-chat-color

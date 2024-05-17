@@ -192,3 +192,18 @@
         chats)
       (let [result (rf/sub [sub-name chat-id])]
         (= image-data result)))))
+
+(h/deftest-sub :chats/current-chat-exist?
+  [sub-name]
+  (testing "current chat without chat-id"
+    (let [chats {chat-id (dissoc one-to-one-chat :chat-id)}]
+      (swap! rf-db/app-db assoc
+        :chats           chats
+        :current-chat-id chat-id)
+      (is (false? (rf/sub [sub-name])))))
+  (testing "current chat with chat-id"
+    (let [chats {chat-id one-to-one-chat}]
+      (swap! rf-db/app-db assoc
+        :chats           chats
+        :current-chat-id chat-id)
+      (is (true? (rf/sub [sub-name]))))))

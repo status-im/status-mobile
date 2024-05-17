@@ -13,13 +13,15 @@
 
 (defn- chat-screen
   [{:keys [insets] :as props}]
-  (let [alert-banners-top-margin (rf/sub [:alert-banners/top-margin])]
-    [rn/keyboard-avoiding-view
-     {:style                    style/keyboard-avoiding-container
-      :keyboard-vertical-offset (- (if platform/ios? alert-banners-top-margin 0) (:bottom insets))}
-     [list.view/messages-list-content props]
-     [messages.navigation/view props]
-     [composer.view/composer props]]))
+  (let [alert-banners-top-margin (rf/sub [:alert-banners/top-margin])
+        chat-exist?              (rf/sub [:chats/current-chat-exist?])]
+    (when chat-exist?
+      [rn/keyboard-avoiding-view
+       {:style                    style/keyboard-avoiding-container
+        :keyboard-vertical-offset (- (if platform/ios? alert-banners-top-margin 0) (:bottom insets))}
+       [list.view/messages-list-content props]
+       [messages.navigation/view props]
+       [composer.view/composer props]])))
 
 (defn lazy-chat-screen
   [chat-screen-layout-calculations-complete?]
