@@ -25,24 +25,24 @@
   (testing "network-preference-prefix->network-names function"
     (is (= (utils/network-preference-prefix->network-names "eth")
            (seq [:mainnet])))
-    (is (= (utils/network-preference-prefix->network-names "eth:opt")
+    (is (= (utils/network-preference-prefix->network-names "eth:oeth")
            (seq [:mainnet :optimism])))
-    (is (= (utils/network-preference-prefix->network-names "eth:opt:arb1")
+    (is (= (utils/network-preference-prefix->network-names "eth:oeth:arb1")
            (seq [:mainnet :optimism :arbitrum])))))
 
 (deftest short-names->network-preference-prefix-test
   (are [expected short-names]
    (= expected (utils/short-names->network-preference-prefix short-names))
    "eth:"          ["eth"]
-   "eth:opt:"      ["eth" "opt"]
-   "eth:opt:arb1:" ["eth" "opt" "arb1"]))
+   "eth:oeth:"      ["eth" "oeth"]
+   "eth:oeth:arb1:" ["eth" "oeth" "arb1"]))
 
 (deftest network-preference-prefix->network-names-test
   (are [expected short-names]
    (= expected (utils/network-preference-prefix->network-names short-names))
    (seq [:mainnet])                     "eth"
-   (seq [:mainnet :optimism])           "eth:opt"
-   (seq [:mainnet :optimism :arbitrum]) "eth:opt:arb1"))
+   (seq [:mainnet :optimism])           "eth:oeth"
+   (seq [:mainnet :optimism :arbitrum]) "eth:oeth:arb1"))
 
 (deftest test-network-ids->formatted-text
   (testing "Empty network-ids should return an empty string"
