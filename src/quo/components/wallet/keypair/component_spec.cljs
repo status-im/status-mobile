@@ -13,7 +13,7 @@
                     :name                "Trip to Vegas"
                     :address             "0x0ah...71a"}
     :networks      [{:network-name :ethereum :short-name "eth"}
-                    {:network-name :optimism :short-name "opt"}]
+                    {:network-name :optimism :short-name "oeth"}]
     :action        :none}])
 
 (def default-details

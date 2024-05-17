@@ -50,5 +50,5 @@
                  (-> (h/wait-for #(h/get-by-label-text :share-qr-code-settings))
                      (.then (fn []
                               (h/is-truthy (h/get-by-text "eth:"))
-                              (h/is-truthy (h/get-by-text "opt:"))
+                              (h/is-truthy (h/get-by-text "oeth:"))
                               (h/is-truthy (h/get-by-text "arb1:"))))))))))

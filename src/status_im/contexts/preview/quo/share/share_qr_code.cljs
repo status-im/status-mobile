@@ -82,7 +82,7 @@
   [network]
   (case network
     :ethereum "eth:"
-    :optimism "opt:"
+    :optimism "oeth:"
     :arbitrum "arb1:"
     (str (name network) ":")))
 

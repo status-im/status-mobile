@@ -251,7 +251,7 @@
 (def regx-community-universal-link #"((^https?://status.app/)|(^status-app://))c/([\x00-\x7F]+)$")
 (def regx-deep-link #"((^ethereum:.*)|(^status-app://[\x00-\x7F]+$))")
 (def regx-ens #"^(?=.{5,255}$)([a-zA-Z0-9-]+\.)*[a-zA-Z0-9-]+\.[a-zA-Z]{2,}$")
-(def regx-multichain-address #"^(?:(?:eth:|arb1:|opt:)(?=:|))*0x[0-9a-fA-F]{40}$")
+(def regx-multichain-address #"^(?:(?:eth:|arb1:|oeth:)(?=:|))*0x[0-9a-fA-F]{40}$")
 
 (def regx-address-contains #"(?i)0x[a-fA-F0-9]{40}")
 (def regx-starts-with-uuid #"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}")
@@ -468,13 +468,13 @@
 
 (def ^:const mainnet-short-name "eth")
 (def ^:const ethereum-short-name "eth")
-(def ^:const optimism-short-name "opt")
+(def ^:const optimism-short-name "oeth")
 (def ^:const arbitrum-short-name "arb1")
 
-(def ^:const default-multichain-address-prefix "eth:opt:arb1:")
+(def ^:const default-multichain-address-prefix "eth:oeth:arb1:")
 
 (def ^:const mainnet-abbreviated-name "Eth.")
-(def ^:const optimism-abbreviated-name "Opt.")
+(def ^:const optimism-abbreviated-name "Oeth.")
 (def ^:const arbitrum-abbreviated-name "Arb1.")
 
 (def ^:const mainnet-network-name :mainnet)

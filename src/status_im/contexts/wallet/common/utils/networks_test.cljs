@@ -12,9 +12,9 @@
            constants/ethereum-sepolia-chain-id))
     (is (= (utils/network->chain-id {:network "optimism" :testnet-enabled? true :goerli-enabled? false})
            constants/optimism-sepolia-chain-id))
-    (is (= (utils/network->chain-id {:network "opt" :testnet-enabled? false :goerli-enabled? true})
+    (is (= (utils/network->chain-id {:network "oeth" :testnet-enabled? false :goerli-enabled? true})
            constants/optimism-mainnet-chain-id))
-    (is (= (utils/network->chain-id {:network :opt :testnet-enabled? true :goerli-enabled? true})
+    (is (= (utils/network->chain-id {:network :oeth :testnet-enabled? true :goerli-enabled? true})
            constants/optimism-goerli-chain-id))
     (is (= (utils/network->chain-id {:network :arb1 :testnet-enabled? false :goerli-enabled? false})
            constants/arbitrum-mainnet-chain-id))
@@ -25,24 +25,24 @@
   (testing "network-preference-prefix->network-names function"
     (is (= (utils/network-preference-prefix->network-names "eth")
            (seq [:mainnet])))
-    (is (= (utils/network-preference-prefix->network-names "eth:opt")
+    (is (= (utils/network-preference-prefix->network-names "eth:oeth")
            (seq [:mainnet :optimism])))
-    (is (= (utils/network-preference-prefix->network-names "eth:opt:arb1")
+    (is (= (utils/network-preference-prefix->network-names "eth:oeth:arb1")
            (seq [:mainnet :optimism :arbitrum])))))
 
 (deftest short-names->network-preference-prefix-test
   (are [expected short-names]
    (= expected (utils/short-names->network-preference-prefix short-names))
-   "eth:"          ["eth"]
-   "eth:opt:"      ["eth" "opt"]
-   "eth:opt:arb1:" ["eth" "opt" "arb1"]))
+   "eth:"           ["eth"]
+   "eth:oeth:"      ["eth" "oeth"]
+   "eth:oeth:arb1:" ["eth" "oeth" "arb1"]))
 
 (deftest network-preference-prefix->network-names-test
   (are [expected short-names]
    (= expected (utils/network-preference-prefix->network-names short-names))
    (seq [:mainnet])                     "eth"
-   (seq [:mainnet :optimism])           "eth:opt"
-   (seq [:mainnet :optimism :arbitrum]) "eth:opt:arb1"))
+   (seq [:mainnet :optimism])           "eth:oeth"
+   (seq [:mainnet :optimism :arbitrum]) "eth:oeth:arb1"))
 
 (deftest test-network-ids->formatted-text
   (testing "Empty network-ids should return an empty string"

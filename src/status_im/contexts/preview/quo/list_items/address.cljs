@@ -14,7 +14,7 @@
   []
   (let [state (reagent/atom {:address  "0x0ah...78b"
                              :networks [{:network-name :ethereum :short-name "eth"}
-                                        {:network-name :optimism :short-name "opt"}]})]
+                                        {:network-name :optimism :short-name "oeth"}]})]
     (fn []
       [preview/preview-container
        {:state                 state

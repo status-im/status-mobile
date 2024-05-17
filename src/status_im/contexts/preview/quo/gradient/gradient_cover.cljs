@@ -16,7 +16,7 @@
      :blur?                false
      :title                "Collectibles vault"
      :networks             [{:network-name :ethereum :short-name "eth"}
-                            {:network-name :optimism :short-name "opt"}]
+                            {:network-name :optimism :short-name "oeth"}]
      :description          "0x0ah...78b"
      :account-avatar-emoji "🍿"
      :customization-color  (or customization-color :blue)}]

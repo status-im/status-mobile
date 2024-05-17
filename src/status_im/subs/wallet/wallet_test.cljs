@@ -163,7 +163,7 @@
            :related-chain-id 42161
            :layer            2}
           {:test?            true
-           :short-name       "opt"
+           :short-name       "oeth"
            :related-chain-id 10
            :layer            2}]
    :prod [{:test?      false
@@ -175,7 +175,7 @@
            :chain-id   42161
            :layer      2}
           {:test?      false
-           :short-name "opt"
+           :short-name "oeth"
            :chain-id   10
            :layer      2}]})
 
@@ -477,9 +477,9 @@
                :chain-id         42161
                :related-chain-id nil
                :layer            2}
-              {:short-name       "opt"
+              {:short-name       "oeth"
                :network-name     :optimism
-               :abbreviated-name "Opt."
+               :abbreviated-name "Oeth."
                :chain-id         10
                :related-chain-id nil
                :layer            2}]
@@ -625,7 +625,7 @@
                   address
                   emoji]} wallet-account
           network-options [{:network-name :ethereum :short-name "eth"}
-                           {:network-name :optimism :short-name "opt"}
+                           {:network-name :optimism :short-name "oeth"}
                            {:network-name :arbitrum :short-name "arb1"}]
           size-option     20]
       (is

@@ -102,7 +102,7 @@
                               :address           "x000"}]
 
       (is (= (utils/get-wallet-qr wallet-multichain)
-             "eth:opt:x000"))
+             "eth:oeth:x000"))
 
       (is (= (utils/get-wallet-qr wallet-singlechain)
              "x000")))))
