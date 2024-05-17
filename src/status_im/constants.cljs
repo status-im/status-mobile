@@ -506,10 +506,17 @@
 (def ^:const send-type-stickers-buy 4)
 (def ^:const send-type-bridge 5)
 (def ^:const send-type-erc-721-transfer 6)
+(def ^:const send-type-erc-1155-transfer 7)
 
 (def ^:const bridge-name-transfer "Transfer")
 (def ^:const bridge-name-erc-721-transfer "ERC721Transfer")
+(def ^:const bridge-name-erc-1155-transfer "ERC1155Transfer")
 (def ^:const bridge-name-hop "Hop")
+
+(def ^:const wallet-contract-type-uknown 0)
+(def ^:const wallet-contract-type-erc-20 1)
+(def ^:const wallet-contract-type-erc-721 2)
+(def ^:const wallet-contract-type-erc-1155 3)
 
 (def ^:const alert-banner-height 40)
 

@@ -250,7 +250,7 @@
      {:db (-> db
               (assoc-in [:wallet :ui :send :token] token)
               (assoc-in [:wallet :ui :send :to-address] to-address)
-              (assoc-in [:wallet :ui :send :tx-type] :bridge))
+              (assoc-in [:wallet :ui :send :tx-type] :tx/bridge))
       :fx [[:dispatch
             [:wallet/wizard-navigate-forward
              {:current-screen stack-id
@@ -259,7 +259,7 @@
 
 (rf/reg-event-fx :wallet/start-bridge
  (fn [{:keys [db]}]
-   {:db (assoc-in db [:wallet :ui :send :tx-type] :bridge)
+   {:db (assoc-in db [:wallet :ui :send :tx-type] :tx/bridge)
     :fx [[:dispatch [:open-modal :screen/wallet.bridge-select-asset]]]}))
 
 (rf/reg-event-fx :wallet/select-bridge-network

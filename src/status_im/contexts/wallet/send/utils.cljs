@@ -208,3 +208,11 @@
                      :position-diff position-diff})))
           []
           route))
+
+(def ^:private collectible-tx-set
+  #{:tx/collectible-erc-721
+    :tx/collectible-erc-1155})
+
+(defn tx-type-collectible?
+  [tx-type]
+  (contains? collectible-tx-set tx-type))

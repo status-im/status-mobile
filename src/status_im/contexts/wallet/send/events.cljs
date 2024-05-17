@@ -144,7 +144,8 @@
                               {:prefix           prefix
                                :testnet-enabled? testnet-enabled?
                                :goerli-enabled?  goerli-enabled?})
-         collectible-tx?     (= (-> db :wallet :ui :send :tx-type) :collectible)
+         collectible-tx?     (send-utils/tx-type-collectible?
+                              (-> db :wallet :ui :send :tx-type))
          collectible         (when collectible-tx?
                                (-> db :wallet :ui :send :collectible))
          one-collectible?    (when collectible-tx?
@@ -235,13 +236,19 @@
                      :collectible
                      :token-display-name
                      :amount
-                     (when (= transaction-type :collectible) :tx-type))})))
+                     (when (send-utils/tx-type-collectible?
+                            transaction-type)
+                       :tx-type))})))
 
 (rf/reg-event-fx
  :wallet/set-collectible-to-send
  (fn [{db :db} [{:keys [collectible current-screen]}]]
    (let [collection-data    (:collection-data collectible)
          collectible-data   (:collectible-data collectible)
+         contract-type      (:contract-type collectible)
+         tx-type            (if (= contract-type constants/wallet-contract-type-erc-1155)
+                              :tx/collectible-erc-1155
+                              :tx/collectible-erc-721)
          collectible-id     (get-in collectible [:id :token-id])
          one-collectible?   (= (collectible.utils/collectible-balance collectible) 1)
          token-display-name (cond
@@ -255,7 +262,7 @@
                                 (update-in [:wallet :ui :send] dissoc :token)
                                 (assoc-in [:wallet :ui :send :collectible] collectible)
                                 (assoc-in [:wallet :ui :send :token-display-name] token-display-name)
-                                (assoc-in [:wallet :ui :send :tx-type] :collectible))
+                                (assoc-in [:wallet :ui :send :tx-type] tx-type))
          recipient-set?     (-> db :wallet :ui :send :recipient)]
      {:db (cond-> collectible-tx
             one-collectible? (assoc-in [:wallet :ui :send :amount] 1))
@@ -314,7 +321,7 @@
          amount-in (send-utils/amount-in-hex amount (if token token-decimal 0))
          from-address wallet-address
          disabled-from-chain-ids disabled-from-chain-ids
-         disabled-to-chain-ids (if (= transaction-type :bridge)
+         disabled-to-chain-ids (if (= transaction-type :tx/bridge)
                                  (filter #(not= % bridge-to-chain-id) network-chain-ids)
                                  (filter (fn [chain-id]
                                            (not (some #(= chain-id %)
@@ -322,8 +329,9 @@
                                          network-chain-ids))
          from-locked-amount {}
          transaction-type-param (case transaction-type
-                                  :collectible constants/send-type-erc-721-transfer
-                                  :bridge      constants/send-type-bridge
+                                  :tx/collectible-erc-721  constants/send-type-erc-721-transfer
+                                  :tx/collectible-erc-1155 constants/send-type-erc-1155-transfer
+                                  :tx/bridge               constants/send-type-bridge
                                   constants/send-type-transfer)
          balances-per-chain (when token (:balances-per-chain token))
          token-available-networks-for-suggested-routes
@@ -455,6 +463,14 @@
                     :TokenID   token-id
                     :ChainID   to-chain-id))
 
+      (= bridge-name constants/bridge-name-erc-1155-transfer)
+      (assoc :ERC1155TransferTx
+             (assoc tx-data
+                    :Recipient to-address
+                    :TokenID   token-id
+                    :ChainID   to-chain-id
+                    :Amount    amount-in))
+
       (= bridge-name constants/bridge-name-transfer)
       (assoc :TransferTx tx-data)
 
@@ -494,8 +510,9 @@
          from-address (get-in db [:wallet :current-viewing-account-address])
          transaction-type (get-in db [:wallet :ui :send :tx-type])
          transaction-type-param (case transaction-type
-                                  :collectible constants/send-type-erc-721-transfer
-                                  :bridge      constants/send-type-bridge
+                                  :tx/collectible-erc-721  constants/send-type-erc-721-transfer
+                                  :tx/collectible-erc-1155 constants/send-type-erc-1155-transfer
+                                  :tx/bridge               constants/send-type-bridge
                                   constants/send-type-transfer)
          token (get-in db [:wallet :ui :send :token])
          collectible (get-in db [:wallet :ui :send :collectible])
