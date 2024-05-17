@@ -18,12 +18,13 @@
   (h/setup-restorable-re-frame)
   (h/before-each
    (fn []
-     (h/setup-subs {:dimensions/window-width 500
-                    :mediaserver/port        200
-                    :wallet/accounts         [{:address "0x707f635951193ddafbb40971a0fcaab8a6415160"
-                                               :name    "Wallet One"
-                                               :emoji   "😆"
-                                               :color   :blue}]})))
+     (h/setup-subs {:dimensions/window-width                  500
+                    :mediaserver/port                         200
+                    :wallet/accounts                          [{:address "0x707f635951193ddafbb40971a0fcaab8a6415160"
+                                                                :name    "Wallet One"
+                                                                :emoji   "😆"
+                                                                :color   :blue}]
+                    :wallet/preferred-chain-names-for-address #{:eth :opt :arb1}})))
 
   (h/test "should display the wallet tab"
     (render-wallet-view)
@@ -37,12 +38,7 @@
                  (h/is-truthy (h/query-by-text "0x707f635951193ddafbb40971a0fcaab8a6415160"))
                  (h/is-falsy (h/query-by-text "eth:"))))))
 
-  ;; NOTE: Fails with error below possibly due to Infura outage:
-  ;;    FAIL  ./status_im.contexts.shell.share.wallet.component_spec.js
-  ;;  ● share wallet addresses › should display the multichain account
-  ;;
-  ;;   No protocol method IDeref.-deref defined for type undefined
-  (h/test-skip "should display the multichain account"
+  (h/test "should display the multichain account"
     (render-wallet-view)
     (-> (h/wait-for #(h/get-by-label-text :share-qr-code-multichain-tab))
         (.then (fn []
