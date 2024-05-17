@@ -321,7 +321,7 @@
          amount-in (send-utils/amount-in-hex amount (if token token-decimal 0))
          from-address wallet-address
          disabled-from-chain-ids disabled-from-chain-ids
-         disabled-to-chain-ids (if (= transaction-type :bridge)
+         disabled-to-chain-ids (if (= transaction-type :tx/bridge)
                                  (filter #(not= % bridge-to-chain-id) network-chain-ids)
                                  (filter (fn [chain-id]
                                            (not (some #(= chain-id %)
@@ -331,7 +331,7 @@
          transaction-type-param (case transaction-type
                                   :tx/collectible-erc-721  constants/send-type-erc-721-transfer
                                   :tx/collectible-erc-1155 constants/send-type-erc-1155-transfer
-                                  :bridge                  constants/send-type-bridge
+                                  :tx/bridge               constants/send-type-bridge
                                   constants/send-type-transfer)
          balances-per-chain (when token (:balances-per-chain token))
          token-available-networks-for-suggested-routes
@@ -512,7 +512,7 @@
          transaction-type-param (case transaction-type
                                   :tx/collectible-erc-721  constants/send-type-erc-721-transfer
                                   :tx/collectible-erc-1155 constants/send-type-erc-1155-transfer
-                                  :bridge                  constants/send-type-bridge
+                                  :tx/bridge               constants/send-type-bridge
                                   constants/send-type-transfer)
          token (get-in db [:wallet :ui :send :token])
          collectible (get-in db [:wallet :ui :send :collectible])
