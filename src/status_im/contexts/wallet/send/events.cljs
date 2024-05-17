@@ -387,10 +387,7 @@
      {:db (-> db
               (assoc-in [:wallet :transactions] transaction-details)
               (assoc-in [:wallet :ui :send :transaction-ids] transaction-ids))
-      :fx [[:dispatch
-            [:wallet/wizard-navigate-forward
-             {:current-screen :screen/wallet.transaction-confirmation
-              :flow-id        :wallet-send-flow}]]]})))
+      :fx [[:dispatch [:dismiss-modal :screen/wallet.transaction-confirmation]]]})))
 
 (rf/reg-event-fx :wallet/close-transaction-progress-page
  (fn [_]
@@ -399,7 +396,7 @@
          [:dispatch [:wallet/clean-send-address]]
          [:dispatch [:wallet/clean-disabled-from-networks]]
          [:dispatch [:wallet/select-address-tab nil]]
-         [:dispatch [:dismiss-modal :screen/wallet.transaction-progress]]]}))
+         [:dispatch [:dismiss-modal :screen/wallet.transaction-confirmation]]]}))
 
 (defn- transaction-data
   [{:keys [from-address to-address token-address route data eth-transfer?]}]
