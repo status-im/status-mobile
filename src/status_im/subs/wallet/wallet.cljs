@@ -161,6 +161,11 @@
  :-> :network-links)
 
 (rf/reg-sub
+ :wallet/wallet-send-tx-type
+ :<- [:wallet/wallet-send]
+ :-> :tx-type)
+
+(rf/reg-sub
  :wallet/keypairs
  :<- [:wallet]
  :-> :keypairs)

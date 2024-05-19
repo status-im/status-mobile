@@ -17,6 +17,7 @@
    :padding-vertical   8
    :border-radius      12
    :height             56
+   :opacity            (if (= state :disabled) 0.3 1)
    :background-color   (background-color state customization-color theme)})
 
 (def info
