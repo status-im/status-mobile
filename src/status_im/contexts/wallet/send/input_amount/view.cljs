@@ -1,25 +1,24 @@
 (ns status-im.contexts.wallet.send.input-amount.view
   (:require
-    [clojure.string :as string]
-    [quo.core :as quo]
-    [quo.foundations.colors :as colors]
-    [quo.theme]
-    [react-native.core :as rn]
-    [react-native.safe-area :as safe-area]
-    [reagent.core :as reagent]
-    [status-im.common.controlled-input.utils :as controlled-input]
-    [status-im.contexts.wallet.common.account-switcher.view :as account-switcher]
-    [status-im.contexts.wallet.common.asset-list.view :as asset-list]
-    [status-im.contexts.wallet.common.utils :as utils]
-    [status-im.contexts.wallet.send.input-amount.style :as style]
-    [status-im.contexts.wallet.send.routes.view :as routes]
-    [status-im.contexts.wallet.send.utils :as send-utils]
-    [status-im.contexts.wallet.sheets.unpreferred-networks-alert.view :as unpreferred-networks-alert]
-    [utils.debounce :as debounce]
-    [utils.i18n :as i18n]
-    [utils.money :as money]
-    [utils.number :as number]
-    [utils.re-frame :as rf]))
+   [clojure.string :as string]
+   [quo.core :as quo]
+   [quo.foundations.colors :as colors]
+   [quo.theme]
+   [react-native.core :as rn]
+   [react-native.safe-area :as safe-area]
+   [status-im.common.controlled-input.utils :as controlled-input]
+   [status-im.contexts.wallet.common.account-switcher.view :as account-switcher]
+   [status-im.contexts.wallet.common.asset-list.view :as asset-list]
+   [status-im.contexts.wallet.common.utils :as utils]
+   [status-im.contexts.wallet.send.input-amount.style :as style]
+   [status-im.contexts.wallet.send.routes.view :as routes]
+   [status-im.contexts.wallet.send.utils :as send-utils]
+   [status-im.contexts.wallet.sheets.unpreferred-networks-alert.view :as unpreferred-networks-alert]
+   [utils.debounce :as debounce]
+   [utils.i18n :as i18n]
+   [utils.money :as money]
+   [utils.number :as number]
+   [utils.re-frame :as rf]))
 
 (defn- make-limit-label-crypto
   [amount currency]
@@ -97,7 +96,7 @@
      [rn/view
       [quo/icon :i/alert
        {:size  16
-        :color colors/danger-50}]]
+        :color (colors/resolve-color :danger theme)}]]
      [rn/view {:style style/token-not-available-content-container}
       [quo/text
        {:style (style/token-not-available-text theme)
@@ -105,7 +104,7 @@
        (i18n/label :t/token-not-available-on-receiver-networks {:token-symbol token-symbol})]
       [quo/button
        {:size                24
-        :customization-color colors/danger-50
+        :customization-color (colors/resolve-color :danger theme)
         :on-press            add-token-networks}
        (i18n/label :t/add-networks-token-can-be-sent-to {:token-symbol token-symbol})]]]))
 
@@ -141,7 +140,7 @@
     :or                      {initial-crypto-currency? true}}]
   (let [_ (rn/dismiss-keyboard!)
         bottom           (safe-area/get-bottom)
-        crypto-currency? (reagent/atom initial-crypto-currency?)
+        [crypto-currency? set-crypto-currency] (rn/use-state initial-crypto-currency?)
         on-navigate-back on-navigate-back]
     (fn []
       (let [[input-state set-input-state] (rn/use-state controlled-input/init-state)
@@ -184,10 +183,10 @@
                                         available-balance))
             current-fiat-limit (.toFixed (* token-balance conversion-rate) 2)
             available-fiat-limit (.toFixed (* available-balance conversion-rate) 2)
-            current-limit (if @crypto-currency?
+            current-limit (if crypto-currency?
                             current-crypto-limit
                             current-fiat-limit)
-            available-limit (if @crypto-currency?
+            available-limit (if crypto-currency?
                               available-crypto-limit
                               available-fiat-limit)
             valid-input? (not (or (string/blank?
@@ -207,7 +206,7 @@
                                                   input-state))
                                   (<= input-num-value 0)
                                   (> input-num-value current-limit))
-            amount (if @crypto-currency?
+            amount (if crypto-currency?
                      input-amount
                      (number/remove-trailing-zeroes
                       (.toFixed (/ input-amount conversion-rate)
@@ -274,7 +273,8 @@
             input-error (controlled-input/input-error input-state)
             limit-insufficient? (> (controlled-input/numeric-value input-state)
                                    current-limit)
-            should-try-again? (and (not limit-insufficient?) no-routes-found?)]
+            should-try-again? (and (not limit-insufficient?) no-routes-found?)
+            current-address (rf/sub [:wallet/current-viewing-account-address])]
         (rn/use-mount
          (fn []
            (let [dismiss-keyboard-fn   #(when (= % "active") (rn/dismiss-keyboard!))
@@ -289,6 +289,11 @@
            (when input-error (debounce/clear-all))
            (when (and limit-insufficient? routes) (rf/dispatch [:wallet/reset-network-amounts-to-zero])))
          [input-error])
+        (rn/use-effect
+         (fn []
+           (when (not= input-state controlled-input/init-state)
+             (set-input-state controlled-input/init-state)))
+         [current-address])
         [rn/view
          {:style               style/screen
           :accessibility-label (str "container"
@@ -307,7 +312,7 @@
            :networks        (seq send-enabled-networks)
            :title           (i18n/label
                              :t/send-limit
-                             {:limit (if @crypto-currency?
+                             {:limit (if crypto-currency?
                                        (make-limit-label-crypto current-limit token-symbol)
                                        (make-limit-label-fiat current-limit currency-symbol))})
            :conversion      conversion-rate
@@ -315,7 +320,7 @@
            :value           input-amount
            :on-swap         (fn [swap-to-crypto-currency?]
                               (set-just-toggled-mode? true)
-                              (reset! crypto-currency? swap-to-crypto-currency?)
+                              (set-crypto-currency swap-to-crypto-currency?)
                               (set-input-state
                                (fn [input-state]
                                  (controlled-input/set-input-value
@@ -358,7 +363,7 @@
                                                   should-try-again?
                                                   #(let [input-amount (controlled-input/input-value
                                                                        input-state)
-                                                         amount       (if @crypto-currency?
+                                                         amount       (if crypto-currency?
                                                                         input-amount
                                                                         (.toFixed (* token-balance
                                                                                      conversion-rate)
@@ -377,7 +382,7 @@
            :delete-key?          true
            :on-press             (fn [c]
                                    (let [new-text      (str input-amount c)
-                                         max-decimals  (if @crypto-currency? crypto-decimals 2)
+                                         max-decimals  (if crypto-currency? crypto-decimals 2)
                                          regex-pattern (str "^\\d*\\.?\\d{0," max-decimals "}$")
                                          regex         (re-pattern regex-pattern)]
                                      (when (and (not loading-routes?)
