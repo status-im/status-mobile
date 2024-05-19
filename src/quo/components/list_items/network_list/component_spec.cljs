@@ -8,8 +8,7 @@
   (h/render-with-theme-provider component :light))
 
 (def props
-  {:theme               :light
-   :state               :default
+  {:state               :default
    :label               "Mainnet"
    :network-image       873
    :customization-color :blue
