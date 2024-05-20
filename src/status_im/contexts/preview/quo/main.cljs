@@ -103,6 +103,7 @@
     [status-im.contexts.preview.quo.list-items.address :as address]
     [status-im.contexts.preview.quo.list-items.channel :as channel]
     [status-im.contexts.preview.quo.list-items.dapp :as dapp]
+    [status-im.contexts.preview.quo.list-items.missing-keypair :as missing-keypair]
     [status-im.contexts.preview.quo.list-items.network-list :as network-list]
     [status-im.contexts.preview.quo.list-items.preview-lists :as preview-lists]
     [status-im.contexts.preview.quo.list-items.quiz-item :as quiz-item]
@@ -380,6 +381,8 @@
                         :component community-list-item/view}
                        {:name      :dapp
                         :component dapp/preview}
+                       {:name      :missing-keypair
+                        :component missing-keypair/view}
                        {:name      :network-list
                         :component network-list/view}
                        {:name      :preview-lists
