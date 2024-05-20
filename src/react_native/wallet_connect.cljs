@@ -1,7 +1,7 @@
 (ns react-native.wallet-connect
   (:require
     ["@walletconnect/core" :refer [Core]]
-    ["@walletconnect/utils" :refer [buildApprovedNamespaces]]
+    ["@walletconnect/utils" :refer [buildApprovedNamespaces getSdkError]]
     ["@walletconnect/web3wallet" :refer [Web3Wallet]]))
 
 (defn- wallet-connect-core
@@ -20,3 +20,7 @@
   (buildApprovedNamespaces
    (clj->js {:proposal            proposal
              :supportedNamespaces supported-namespaces})))
+
+(defn get-sdk-error
+  [error-key]
+  (getSdkError error-key))

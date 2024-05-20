@@ -1,11 +1,15 @@
 (ns status-im.contexts.wallet.wallet-connect.effects
-  (:require [native-module.core :as native-module]
+  (:require [cljs-bean.core :as bean]
+            [native-module.core :as native-module]
             [promesa.core :as promesa]
             [re-frame.core :as rf]
             [react-native.wallet-connect :as wallet-connect]
             [status-im.config :as config]
             [status-im.constants :as constants]
-            [utils.i18n :as i18n]))
+            [status-im.contexts.wallet.wallet-connect.core :as wallet-connect-core]
+            [utils.i18n :as i18n]
+            [utils.security.core :as security]
+            [utils.transforms :as transforms]))
 
 (rf/reg-fx
  :effects.wallet-connect/init
@@ -42,8 +46,9 @@
  :effects.wallet-connect/approve-session
  (fn [{:keys [web3-wallet proposal supported-namespaces on-success on-fail]}]
    (let [{:keys [params id]} proposal
-         approved-namespaces (wallet-connect/build-approved-namespaces params
-                                                                       supported-namespaces)]
+         approved-namespaces (wallet-connect/build-approved-namespaces
+                              params
+                              supported-namespaces)]
      (-> (.approveSession web3-wallet
                           (clj->js {:id         id
                                     :namespaces approved-namespaces}))
@@ -52,19 +57,36 @@
 
 (rf/reg-fx
  :effects.wallet-connect/sign-message
- (fn [{:keys [web3-wallet password address message topic id on-success on-fail]}]
-   (letfn [(build-rpc-response [signed-message]
-             (clj->js {:topic    topic
-                       :response {:id      id
-                                  :jsonrpc "2.0"
-                                  :result  signed-message}}))]
-     (-> (promesa/->> (clj->js {:data     message
-                                :address  address
-                                :password password})
-                      (.stringify js/JSON)
-                      (native-module/sign-message)
-                      build-rpc-response
-                      (.respondSessionRequest web3-wallet))
-         (promesa/then #(clj->js % :keywordize-keys true))
-         (promesa/then on-success)
-         (promesa/catch on-fail)))))
+ (fn [{:keys [password address data on-success on-fail]}]
+   (-> (promesa/-> {:data     data
+                    :account  address
+                    :password (security/safe-unmask-data password)}
+                   bean/->js
+                   transforms/clj->json
+                   native-module/sign-message
+                   wallet-connect-core/extract-native-call-signature)
+       (promesa/then on-success)
+       (promesa/catch on-fail))))
+
+(rf/reg-fx
+ :effects.wallet-connect/sign-typed-data
+ (fn [{:keys [password address data version on-success on-fail]}]
+   (-> (promesa/-> {:v1 native-module/sign-typed-data
+                    :v4 native-module/sign-typed-data-v4}
+                   (get version)
+                   (apply [data address (security/safe-unmask-data password)])
+                   wallet-connect-core/extract-native-call-signature)
+       (promesa/then on-success)
+       (promesa/catch on-fail))))
+
+(rf/reg-fx
+ :effects.wallet-connect/respond-session-request
+ (fn [{:keys [web3-wallet topic id result on-success on-fail]}]
+   (-> (promesa/->> {:topic    topic
+                     :response {:id      id
+                                :jsonrpc "2.0"
+                                :result  result}}
+                    clj->js
+                    (.respondSessionRequest web3-wallet))
+       (promesa/then on-success)
+       (promesa/catch on-fail))))

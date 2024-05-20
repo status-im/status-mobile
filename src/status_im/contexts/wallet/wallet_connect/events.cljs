@@ -1,9 +1,12 @@
 (ns status-im.contexts.wallet.wallet-connect.events
-  (:require [native-module.core :as native-module]
-            [re-frame.core :as rf]
+  (:require [re-frame.core :as rf]
             [status-im.constants :as constants]
+            [status-im.contexts.wallet.wallet-connect.core :as wallet-connect-core]
             status-im.contexts.wallet.wallet-connect.effects
-            [taoensso.timbre :as log]))
+            status-im.contexts.wallet.wallet-connect.processing-events
+            status-im.contexts.wallet.wallet-connect.responding-events
+            [taoensso.timbre :as log]
+            [utils.ethereum.chain :as chain]))
 
 (rf/reg-event-fx
  :wallet-connect/init
@@ -46,14 +49,19 @@
 
 (rf/reg-event-fx
  :wallet-connect/on-session-request
- (fn [{:keys [db]} [event]]
-   (log/info "Received Wallet Connect session request")
-   {:db (assoc db :wallet-connect/current-request-event event)}))
+ (fn [_ [event]]
+   (log/info "Received Wallet Connect session request: " event)
+   {:fx [[:dispatch [:wallet-connect/process-session-request event]]]}))
 
 (rf/reg-event-fx
- :wallet-connect/reset-current-session
+ :wallet-connect/reset-current-session-proposal
  (fn [{:keys [db]}]
    {:db (dissoc db :wallet-connect/current-proposal)}))
+
+(rf/reg-event-fx
+ :wallet-connect/reset-current-session-request
+ (fn [{:keys [db]}]
+   {:db (dissoc db :wallet-connect/current-request)}))
 
 (rf/reg-event-fx
  :wallet-connect/pair
@@ -66,63 +74,45 @@
              :on-success  #(log/info "dApp paired successfully")}]]})))
 
 (rf/reg-event-fx
+ :wallet-connect/close-session-request
+ (fn [_ _]
+   {:fx [[:dispatch [:navigate-back]]
+         [:dispatch [:wallet-connect/reset-current-session-request]]]}))
+
+
+(rf/reg-event-fx
  :wallet-connect/approve-session
  (fn [{:keys [db]}]
-   ;; NOTE: hardcoding optimism for the base implementation
-   (let [crosschain-ids       [constants/optimism-crosschain-id]
-         web3-wallet          (get db :wallet-connect/web3-wallet)
+   (let [web3-wallet          (get db :wallet-connect/web3-wallet)
          current-proposal     (get db :wallet-connect/current-proposal)
          accounts             (get-in db [:wallet :accounts])
+         supported-chain-ids  (->> db
+                                   chain/chain-ids
+                                   (map wallet-connect-core/chain-id->eip155)
+                                   vec)
          ;; NOTE: for now using the first account, but should be using the account selected by the
          ;; user on the connection screen. The default would depend on where the connection started
          ;; from:
          ;; - global scanner -> first account in list
          ;; - wallet account dapps -> account that is selected
          address              (-> accounts keys first)
-         formatted-address    (str (first crosschain-ids) ":" address)
+         accounts             (-> (partial wallet-connect-core/format-eip155-address address)
+                                  (map supported-chain-ids))
          supported-namespaces (clj->js {:eip155
-                                        {:chains   crosschain-ids
+                                        {:chains   supported-chain-ids
                                          :methods  constants/wallet-connect-supported-methods
                                          :events   constants/wallet-connect-supported-events
-                                         :accounts [formatted-address]}})]
+                                         :accounts accounts}})]
      {:fx [[:effects.wallet-connect/approve-session
             {:web3-wallet          web3-wallet
              :proposal             current-proposal
              :supported-namespaces supported-namespaces
              :on-success           (fn []
                                      (log/info "Wallet Connect session approved")
-                                     (rf/dispatch [:wallet-connect/reset-current-session]))
+                                     (rf/dispatch [:wallet-connect/reset-current-session-proposal]))
              :on-fail              (fn [error]
                                      (log/error "Wallet Connect session approval failed"
                                                 {:error error
                                                  :event :wallet-connect/approve-session})
-                                     (rf/dispatch [:wallet-connect/reset-current-session]))}]]})))
-
-(rf/reg-event-fx
- :wallet-connect/respond-session-request
- (fn [{:keys [db]}]
-   (let [{:keys [topic params id]} (get db :wallet-connect/current-request-event)
-         web3-wallet               (get db :wallet-connect/web3-wallet)
-         message                   (-> params :request :params first native-module/hex-to-utf8)
-         ;; NOTE: for now using the first account, but should be using the account selected by the
-         ;; user on the connection screen. The default would depend on where the connection started
-         ;; from:
-         ;; - global scanner -> first account in list
-         ;; - wallet account dapps -> account that is selected
-         accounts                  (get-in db [:wallet :accounts])
-         address                   (-> accounts keys first)
-         ;; TODO: get password from standard-auth
-         password                  (native-module/sha3 "1111111111")]
-
-     ;; FIXME: getting #error {:message "Native module call error", :data {:error {:message "account
-     ;; doesn't exist"}}}}
-
-     {:fx [[:effects.wallet-connect/sign-message
-            {:web3-wallet web3-wallet
-             :password    password
-             :address     address
-             :message     message
-             :topic       topic
-             :id          id
-             :on-fail     #(log/error "Failed to send signed message to dApp" {:error %})
-             :on-success  #(println "Successfully sent signed message to dApp" %)}]]})))
+                                     (rf/dispatch
+                                      [:wallet-connect/reset-current-session-proposal]))}]]})))
