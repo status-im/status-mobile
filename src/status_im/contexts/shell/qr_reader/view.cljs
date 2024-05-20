@@ -118,6 +118,7 @@
        (rn/dismiss-keyboard!))
      [scan-qr-code/view
       {:title           (i18n/label :t/scan-qr)
+       :share-button?   true
        :on-success-scan on-qr-code-scanned}]]))
 
 (defn view
