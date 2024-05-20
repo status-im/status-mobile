@@ -35,6 +35,7 @@
            receiver-networks             (get-in db [:wallet :ui :send :receiver-networks])
            receiver-network-values       (get-in db [:wallet :ui :send :receiver-network-values])
            sender-network-values         (get-in db [:wallet :ui :send :sender-network-values])
+           tx-type                       (get-in db [:wallet :ui :send :tx-type])
            disabled-from-chain-ids       (or (get-in db [:wallet :ui :send :disabled-from-chain-ids]) [])
            token-decimals                (if collectible 0 (:decimals token))
            native-token?                 (and token (= token-display-name "ETH"))
@@ -61,6 +62,7 @@
                                              :disabled-chain-ids disabled-from-chain-ids
                                              :receiver-networks  receiver-networks
                                              :token-networks-ids token-networks-ids
+                                             :tx-type            tx-type
                                              :receiver?          false})
                                            (send-utils/reset-network-amounts-to-zero
                                             sender-network-values))
@@ -70,6 +72,7 @@
                                              :disabled-chain-ids disabled-from-chain-ids
                                              :receiver-networks  receiver-networks
                                              :token-networks-ids token-networks-ids
+                                             :tx-type            tx-type
                                              :receiver?          true})
                                            (send-utils/reset-network-amounts-to-zero
                                             receiver-network-values))
@@ -343,18 +346,28 @@
          token-networks-ids (when token (mapv #(:chain-id %) (:networks token)))
          sender-network-values (when token-available-networks-for-suggested-routes
                                  (send-utils/loading-network-amounts
-                                  {:valid-networks     token-available-networks-for-suggested-routes
+                                  {:valid-networks     (if (= transaction-type :tx/bridge)
+                                                         (filter
+                                                          #(not= bridge-to-chain-id %)
+                                                          token-available-networks-for-suggested-routes)
+                                                         token-available-networks-for-suggested-routes)
                                    :disabled-chain-ids disabled-from-chain-ids
                                    :receiver-networks  receiver-networks
                                    :token-networks-ids token-networks-ids
+                                   :tx-type            transaction-type
                                    :receiver?          false}))
          receiver-network-values (when token-available-networks-for-suggested-routes
                                    (send-utils/loading-network-amounts
-                                    {:valid-networks     token-available-networks-for-suggested-routes
+                                    {:valid-networks (if (= transaction-type :tx/bridge)
+                                                       (filter
+                                                        #(= bridge-to-chain-id %)
+                                                        token-available-networks-for-suggested-routes)
+                                                       token-available-networks-for-suggested-routes)
                                      :disabled-chain-ids disabled-from-chain-ids
-                                     :receiver-networks  receiver-networks
+                                     :receiver-networks receiver-networks
                                      :token-networks-ids token-networks-ids
-                                     :receiver?          true}))
+                                     :tx-type transaction-type
+                                     :receiver? true}))
          request-params [transaction-type-param
                          from-address
                          to-address
