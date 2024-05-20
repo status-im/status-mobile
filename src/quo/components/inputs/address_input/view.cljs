@@ -171,7 +171,8 @@
         [loading-icon blur? theme]])
      (when (and (or (= status :loading)
                     (= status :default))
-                valid-ens-or-address?)
+                valid-ens-or-address?
+                (not-empty value))
        [rn/view
         {:style               style/buttons-container
          :accessibility-label :positive-button-container}
