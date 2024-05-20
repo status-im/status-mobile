@@ -197,6 +197,7 @@
     [status-im.contexts.preview.quo.wallet.confirmation-progress :as
      confirmation-progress]
     [status-im.contexts.preview.quo.wallet.keypair :as keypair]
+    [status-im.contexts.preview.quo.wallet.missing-keypairs :as missing-keypairs]
     [status-im.contexts.preview.quo.wallet.network-amount :as network-amount]
     [status-im.contexts.preview.quo.wallet.network-bridge :as network-bridge]
     [status-im.contexts.preview.quo.wallet.network-link :as network-link]
@@ -538,6 +539,8 @@
                        {:name      :confirmation-progress
                         :component confirmation-progress/view}
                        {:name :keypair :component keypair/view}
+                       {:name      :missing-keypairs
+                        :component missing-keypairs/view}
                        {:name :network-amount :component network-amount/view}
                        {:name :network-bridge :component network-bridge/view}
                        {:name :network-link :component network-link/view}
