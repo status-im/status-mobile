@@ -19,10 +19,12 @@
                                     (on-options-press event keypair))
                                   [keypair on-options-press])]
     [rn/view
-     {:style               style/container
+     {:style               (style/container {:theme theme
+                                             :blur? blur?})
       :accessibility-label :missing-keypair-item}
      [rn/view
-      {:style               style/icon-container
+      {:style               (style/icon-container {:theme theme
+                                                   :blur? blur?})
        :accessibility-label :icon}
       [icon-avatar/icon-avatar
        {:size    :size-32

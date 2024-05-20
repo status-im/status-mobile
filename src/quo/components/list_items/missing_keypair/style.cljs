@@ -2,20 +2,34 @@
   (:require
     [quo.foundations.colors :as colors]))
 
-(def container
+(defn container
+  [{:keys [blur? theme]}]
   {:flex-direction   :row
    :align-items      :center
-   :background-color colors/white-opa-5
    :flex             1
    :padding-right    12
    :padding-left     8
    :padding-vertical 8
-   :border-radius    12})
+   :border-radius    12
+   :border-width     (if blur? 0 1)
+   :border-color     (colors/theme-colors colors/neutral-10
+                                          colors/neutral-80
+                                          theme)
+   :background-color (if blur?
+                       colors/white-opa-5
+                       (colors/theme-colors colors/neutral-2_5
+                                            colors/neutral-80-opa-40
+                                            theme))})
 
-(def icon-container
+(defn icon-container
+  [{:keys [blur? theme]}]
   {:border-radius 32
    :border-width  1
-   :border-color  colors/white-opa-5})
+   :border-color  (if blur?
+                    colors/white-opa-5
+                    (colors/theme-colors colors/neutral-20
+                                         colors/neutral-80
+                                         theme))})
 
 (def name-container
   {:flex          1
