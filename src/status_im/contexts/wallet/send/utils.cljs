@@ -83,7 +83,7 @@
 (def ^:private available-networks-count
   (count (set (keys network-priority-score))))
 
-(defn reset-network-amounts-to-zero
+(defn reset-loading-network-amounts-to-zero
   [network-amounts]
   (map
    (fn [network-amount]
@@ -91,6 +91,20 @@
        (= (:type network-amount) :loading)
        (assoc :total-amount (money/bignumber "0")
               :type         :default)))
+   network-amounts))
+
+(defn reset-network-amounts-to-zero
+  [{:keys [network-amounts disabled-chain-ids]}]
+  (map
+   (fn [network-amount]
+     (let [disabled-chain-ids-set (set disabled-chain-ids)
+           disabled?              (contains? disabled-chain-ids-set
+                                             (:chain-id network-amount))]
+       (cond-> network-amount
+         (and (not= (:type network-amount) :add)
+              (not= (:type network-amount) :not-available))
+         (assoc :total-amount (money/bignumber "0")
+                :type         (if disabled? :disabled :default)))))
    network-amounts))
 
 (defn network-amounts

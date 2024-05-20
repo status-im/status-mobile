@@ -274,7 +274,9 @@
            (set-input-state #(controlled-input/set-upper-limit % current-limit)))
          [current-limit])
         (rn/use-effect
-         #(when input-error (debounce/clear-all))
+         (fn []
+           (when input-error (debounce/clear-all))
+           (when (and limit-insufficient? routes) (rf/dispatch [:wallet/reset-network-amounts-to-zero])))
          [input-error])
         [rn/view
          {:style               style/screen
@@ -326,12 +328,12 @@
                     sender-network-values
                     token-not-supported-in-receiver-networks?)
            [token-not-available token-symbol receiver-networks token-networks])
-         (when (or loading-routes? (seq route))
+         (when (or loading-routes? fee-formatted)
            [estimated-fees
             {:loading-routes? loading-routes?
              :fees            fee-formatted
              :amount          amount-text}])
-         (when (or no-routes-found? limit-insufficient?)
+         (when (and (or no-routes-found? limit-insufficient?) (not-empty sender-network-values))
            [rn/view {:style style/no-routes-found-container}
             [quo/info-message
              {:type  :error
