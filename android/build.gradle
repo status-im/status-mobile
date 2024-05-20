@@ -1,0 +1,87 @@
+// Top-level build file where you can add configuration options common to all sub-projects/modules.
+
+/**
+* Project-wide gradle configuration properties for use by all modules
+*/
+ext {
+    // kotlin_version is needed for react-native-camera-kit library
+    kotlin_version      = project.kotlinPluginVersion
+    RNNKotlinVersion    = project.kotlinPluginVersion
+    RNGH_kotlinVersion  = project.kotlinPluginVersion
+    buildToolsVersion   = project.buildToolsVersion
+    minSdkVersion       = Integer.valueOf(project.minSdkVersion)
+    compileSdkVersion   = Integer.valueOf(project.compileSdkVersion)
+    targetSdkVersion    = Integer.valueOf(project.targetSdkVersion)
+    supportLibVersion   = project.supportLibVersion
+    gradlePluginVersion = project.gradlePluginVersion
+    kotlinVersion       = project.kotlinPluginVersion
+    kotlinPluginVersion = project.kotlinPluginVersion
+    kotlinToolsVersion  = project.kotlinPluginVersion
+    ndkVersion = "25.2.9519653"
+}
+
+buildscript {
+    repositories {
+        flatDir { dirs "libs", "${rootDir}/app/libs" }
+        google()
+        mavenCentral()
+    }
+    dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:${project.ext.kotlinPluginVersion}"
+        classpath("com.android.tools.build:gradle")
+        classpath("com.facebook.react:react-native-gradle-plugin")
+        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin")
+    }
+}
+
+subprojects {
+    afterEvaluate {
+        if (project.hasProperty("android")) {
+            android {
+                compileSdkVersion rootProject.ext.compileSdkVersion
+                buildToolsVersion rootProject.ext.buildToolsVersion
+
+                defaultConfig {
+                    targetSdkVersion rootProject.ext.targetSdkVersion
+                }
+
+                // Speed up Tests Stage
+                tasks.withType(Test).configureEach {
+                    // https://docs.gradle.org/current/userguide/performance.html#execute_tests_in_parallel
+                    maxParallelForks = Runtime.runtime.availableProcessors().intdiv(2) ?: 1
+                    // https://docs.gradle.org/current/userguide/performance.html#fork_tests_into_multiple_processes
+                    forkEvery = 100
+                    // https://docs.gradle.org/current/userguide/performance.html#disable_reports
+                    reports.html.required = false
+                    reports.junitXml.required = false
+                }
+                // Speed up Java Compile Stage
+                // https://docs.gradle.org/current/userguide/performance.html#run_the_compiler_as_a_separate_process
+                tasks.withType(JavaCompile).configureEach {
+                    options.fork = true
+                }
+
+            }
+        }
+    }
+}
+
+apply plugin: "com.facebook.react.rootproject"
+
+allprojects {
+    beforeEvaluate {
+        if (System.env.STATUS_GO_ANDROID_LIBDIR == null || System.env.STATUS_GO_ANDROID_LIBDIR == "") {
+            throw new GradleException('STATUS_GO_ANDROID_LIBDIR environment variable is not valid!')
+        }
+    }
+    repositories {
+        mavenLocal()
+        // Android JSC is installed from npm
+        maven { url("$rootDir/../node_modules/jsc-android/dist") }
+        // For geth, function, and status-go
+        flatDir { dirs "libs", System.env.STATUS_GO_ANDROID_LIBDIR }
+        google()
+        mavenCentral()
+        maven { url 'https://mvnrepository.com/artifact/com.github.gundy/semver4j'}
+    }
+}
