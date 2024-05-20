@@ -138,11 +138,15 @@
             {fiat-currency :currency}                 (rf/sub [:profile/profile])
             {token-symbol   :symbol
              token-networks :networks}                (rf/sub [:wallet/wallet-send-token])
+            send-enabled-networks                     (rf/sub [:wallet/wallet-send-enabled-networks])
+            enabled-from-chain-ids                    (rf/sub
+                                                       [:wallet/wallet-send-enabled-from-chain-ids])
             {token-balance :total-balance
+             available-balance :available-balance
              :as
              token}                                   (rf/sub
                                                        [:wallet/current-viewing-account-tokens-filtered
-                                                        (str token-symbol)])
+                                                        (str token-symbol) enabled-from-chain-ids])
             conversion-rate                           (-> token :market-values-per-currency :usd :price)
             loading-routes?                           (rf/sub
                                                        [:wallet/wallet-send-loading-suggested-routes?])
@@ -153,12 +157,22 @@
             on-confirm                                (or default-on-confirm handle-on-confirm)
             crypto-decimals                           (or default-crypto-decimals
                                                           (utils/get-crypto-decimals-count token))
-            crypto-limit                              (or default-limit-crypto
+            current-crypto-limit                      (or default-limit-crypto
                                                           (utils/get-standard-crypto-format
                                                            token
                                                            token-balance))
-            fiat-limit                                (.toFixed (* token-balance conversion-rate) 2)
-            current-limit                             (if @crypto-currency? crypto-limit fiat-limit)
+            available-crypto-limit                    (or default-limit-crypto
+                                                          (utils/get-standard-crypto-format
+                                                           token
+                                                           available-balance))
+            current-fiat-limit                        (.toFixed (* token-balance conversion-rate) 2)
+            available-fiat-limit                      (.toFixed (* available-balance conversion-rate) 2)
+            current-limit                             (if @crypto-currency?
+                                                        current-crypto-limit
+                                                        current-fiat-limit)
+            available-limit                           (if @crypto-currency?
+                                                        available-crypto-limit
+                                                        available-fiat-limit)
             valid-input?                              (not (or (string/blank?
                                                                 (controlled-input/input-value
                                                                  input-state))
@@ -167,7 +181,7 @@
                                                                    0)
                                                                (> (controlled-input/numeric-value
                                                                    input-state)
-                                                                  current-limit)))
+                                                                  available-limit)))
             current-currency                          (if @crypto-currency? token-symbol fiat-currency)
             input-num-value                           (controlled-input/numeric-value input-state)
             confirm-disabled?                         (or (nil? route)
@@ -232,7 +246,10 @@
                                                                      (contains?
                                                                       receiver-preferred-networks-set
                                                                       receiver-selected-network))
-                                                                   receiver-networks))]
+                                                                   receiver-networks))
+            limit-insufficient?                       (> (controlled-input/numeric-value input-state)
+                                                         current-limit)
+            should-try-again?                         (and (not limit-insufficient?) no-routes-found?)]
         (rn/use-mount
          (fn []
            (let [dismiss-keyboard-fn   #(when (= % "active") (rn/dismiss-keyboard!))
@@ -256,7 +273,7 @@
            :currency        current-currency
            :crypto-decimals crypto-decimals
            :error?          (controlled-input/input-error input-state)
-           :networks        (seq token-networks)
+           :networks        (seq send-enabled-networks)
            :title           (i18n/label :t/send-limit
                                         {:limit (make-limit-label current-limit current-currency)})
            :conversion      conversion-rate
@@ -280,7 +297,7 @@
              :fees            fee-formatted
              :amount          amount-text
              :receiver        (address/get-shortened-key to-address)}])
-         (when no-routes-found?
+         (when (or no-routes-found? limit-insufficient?)
            [rn/view {:style style/no-routes-found-container}
             [quo/info-message
              {:type  :error
@@ -290,13 +307,13 @@
              (i18n/label :t/no-routes-found)]])
          [quo/bottom-actions
           {:actions          :one-action
-           :button-one-label (if no-routes-found?
+           :button-one-label (if should-try-again?
                                (i18n/label :t/try-again)
                                button-one-label)
            :button-one-props (merge button-one-props
-                                    {:disabled? (and (not no-routes-found?) confirm-disabled?)
+                                    {:disabled? (and (not should-try-again?) confirm-disabled?)
                                      :on-press  (cond
-                                                  no-routes-found?
+                                                  should-try-again?
                                                   #(rf/dispatch [:wallet/get-suggested-routes
                                                                  {:amount (controlled-input/input-value
                                                                            input-state)}])
@@ -304,7 +321,7 @@
                                                   #(show-unpreferred-networks-alert on-confirm)
                                                   :else
                                                   on-confirm)}
-                                    (when no-routes-found?
+                                    (when should-try-again?
                                       {:type :grey}))}]
          [quo/numbered-keyboard
           {:container-style      (style/keyboard-container bottom)

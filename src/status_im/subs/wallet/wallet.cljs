@@ -290,11 +290,13 @@
  :wallet/current-viewing-account-tokens-filtered
  :<- [:wallet/current-viewing-account]
  :<- [:wallet/network-details]
- (fn [[account networks] [_ query]]
+ (fn [[account networks] [_ query chain-ids]]
    (let [tokens        (map (fn [token]
                               (assoc token
-                                     :networks      (network-utils/network-list token networks)
-                                     :total-balance (utils/calculate-total-token-balance token)))
+                                     :networks          (network-utils/network-list token networks)
+                                     :available-balance (utils/calculate-total-token-balance token)
+                                     :total-balance     (utils/calculate-total-token-balance token
+                                                                                             chain-ids)))
                             (:tokens account))
          sorted-tokens (sort-by :name compare tokens)]
      (if query
@@ -452,3 +454,19 @@
  :wallet/public-address
  :<- [:wallet/create-account]
  :-> :public-address)
+
+(rf/reg-sub
+ :wallet/wallet-send-enabled-networks
+ :<- [:wallet/wallet-send-token]
+ :<- [:wallet/wallet-send-disabled-from-chain-ids]
+ (fn [[{:keys [networks]} disabled-from-chain-ids]]
+   (->> networks
+        (filter #(not (contains? (set disabled-from-chain-ids)
+                                 (:chain-id %))))
+        set)))
+
+(rf/reg-sub
+ :wallet/wallet-send-enabled-from-chain-ids
+ :<- [:wallet/wallet-send-enabled-networks]
+ (fn [send-enabled-networks]
+   (map :chain-id send-enabled-networks)))
