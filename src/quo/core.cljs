@@ -170,6 +170,7 @@
     quo.components.wallet.approval-label.view
     quo.components.wallet.confirmation-progress.view
     quo.components.wallet.keypair.view
+    quo.components.wallet.missing-keypairs.view
     quo.components.wallet.network-amount.view
     quo.components.wallet.network-bridge.view
     quo.components.wallet.network-link.view
@@ -442,6 +443,7 @@
 (def approval-label quo.components.wallet.approval-label.view/view)
 (def confirmation-progress quo.components.wallet.confirmation-progress.view/view)
 (def keypair quo.components.wallet.keypair.view/view)
+(def missing-keypairs quo.components.wallet.missing-keypairs.view/view)
 (def network-amount quo.components.wallet.network-amount.view/view)
 (def network-bridge quo.components.wallet.network-bridge.view/view)
 (def network-routing quo.components.wallet.network-routing.view/view)
