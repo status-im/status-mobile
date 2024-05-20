@@ -20,6 +20,22 @@
                 {:content (fn [] [actions/view props keypair])
                  :theme   theme}]))
 
+(defn options-drawer-props
+  [{{:keys [name]} :keypair
+    :keys          [type theme shortened-key customization-color profile-picture]}]
+  (cond-> {:theme theme
+           :type  type
+           :blur? true
+           :title name}
+    (= type :default-keypair)
+    (assoc :description         shortened-key
+           :customization-color customization-color
+           :profile-picture     profile-picture)
+    (= type :keypair)
+    (assoc :icon-avatar :i/seed)
+    (= type :missing-keypair)
+    (assoc :icon-avatar :i/seed)))
+
 (defn- keypair
   [{keypair-type :type
     :keys        [accounts name]
@@ -33,19 +49,15 @@
         on-press         (rn/use-callback
                           (fn []
                             (on-options-press
-                             (cond-> {:theme theme
-                                      :blur? true
-                                      :title name}
-                               default-keypair?
-                               (assoc :type                :default-keypair
-                                      :description         shortened-key
-                                      :customization-color customization-color
-                                      :profile-picture     profile-picture)
-                               (not default-keypair?)
-                               (assoc :type        :keypair
-                                      :icon-avatar :i/seed))
+                             (options-drawer-props
+                              {:theme               theme
+                               :keypair             item
+                               :type                (if default-keypair? :default-keypair :keypair)
+                               :shortened-key       shortened-key
+                               :customization-color customization-color
+                               :profile-picture     profile-picture})
                              item))
-                          [customization-color default-keypair? name
+                          [customization-color default-keypair? item
                            profile-picture shortened-key theme])]
     [quo/keypair
      {:blur?               true
@@ -61,13 +73,26 @@
       :details             {:full-name name
                             :address   shortened-key}}]))
 
+(defn on-missing-keypair-options-press
+  [_event keypair-data]
+  (rf/dispatch [:show-bottom-sheet
+                {:theme   :dark
+                 :content (fn [] [actions/view
+                                  (options-drawer-props
+                                   {:theme   :dark
+                                    :type    :missing-keypair
+                                    :blur?   true
+                                    :keypair keypair-data})
+                                  keypair-data])}]))
+
 (defn view
   []
-  (let [insets                (safe-area/get-insets)
-        compressed-key        (rf/sub [:profile/compressed-key])
-        profile-picture       (rf/sub [:profile/image])
-        customization-color   (rf/sub [:profile/customization-color])
-        quo-keypairs-accounts (rf/sub [:wallet/settings-keypairs-accounts])]
+  (let [insets                        (safe-area/get-insets)
+        compressed-key                (rf/sub [:profile/compressed-key])
+        profile-picture               (rf/sub [:profile/image])
+        customization-color           (rf/sub [:profile/customization-color])
+        {missing-keypairs  :missing
+         operable-keypairs :operable} (rf/sub [:wallet/settings-keypairs-accounts])]
     [quo/overlay
      {:type            :shell
       :container-style (style/page-wrapper (:top insets))}
@@ -81,9 +106,15 @@
        {:title               (i18n/label :t/keypairs-and-accounts)
         :accessibility-label :keypairs-and-accounts-header
         :customization-color customization-color}]]
-     [rn/view {:style {:flex 1}}
+     [rn/view {:style style/settings-keypairs-container}
+      (when (seq missing-keypairs)
+        [quo/missing-keypairs
+         {:blur?            true
+          :keypairs         missing-keypairs
+          :container-style  style/missing-keypairs-container-style
+          :on-options-press on-missing-keypair-options-press}])
       [rn/flat-list
-       {:data                    quo-keypairs-accounts
+       {:data                    operable-keypairs
         :render-fn               keypair
         :render-data             {:profile-picture     profile-picture
                                   :compressed-key      compressed-key
