@@ -1,4 +1,4 @@
-(ns status-im.contexts.wallet.add-account.create-account.new-keypair.check-your-backup.style)
+(ns status-im.contexts.wallet.add-account.create-account.new-keypair.confirm-backup.style)
 
 (def header-container
   {:margin-horizontal 20
