@@ -59,7 +59,7 @@
      :label           :none
      :status          (if loading-routes? :loading :default)
      :size            :small
-     :title           (i18n/label :t/user-gets {:name receiver})
+     :title           (i18n/label :t/recipient-gets)
      :subtitle        amount}]])
 
 (defn- every-network-value-is-zero?
