@@ -9,7 +9,7 @@
 #include <string>
 #include <queue>
 
-#include "../../../status-go-library/libstatus.h"
+#include "../../../result/status-go-library/libstatus.h"
 
 namespace status {
 
