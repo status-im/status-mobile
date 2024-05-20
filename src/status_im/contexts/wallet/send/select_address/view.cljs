@@ -156,24 +156,26 @@
             local-suggestion-address (rf/sub [:wallet/local-suggestions->full-address])
             color                    (rf/sub [:wallet/current-viewing-account-color])]
         [floating-button-page/view
-         {:footer-container-padding 0
-          :header                   [account-switcher/view
-                                     {:on-press      on-close
-                                      :margin-top    (safe-area/get-top)
-                                      :switcher-type :select-account}]
-          :footer                   (when (> (count @input-value) 0)
-                                      [quo/button
-                                       {:accessibility-label :continue-button
-                                        :type                :primary
-                                        :disabled?           (not valid-ens-or-address?)
-                                        :on-press            #(rf/dispatch
-                                                               [:wallet/select-send-address
-                                                                {:address (or local-suggestion-address
-                                                                              @input-value)
-                                                                 :stack-id
-                                                                 :screen/wallet.select-address}])
-                                        :customization-color color}
-                                       (i18n/label :t/continue)])}
+         {:footer-container-padding     0
+          :keyboard-should-persist-taps true
+          :header                       [account-switcher/view
+                                         {:on-press      on-close
+                                          :margin-top    (safe-area/get-top)
+                                          :switcher-type :select-account}]
+          :footer                       (when (> (count @input-value) 0)
+                                          [quo/button
+                                           {:accessibility-label :continue-button
+                                            :type                :primary
+                                            :disabled?           (not valid-ens-or-address?)
+                                            :on-press            #(rf/dispatch
+                                                                   [:wallet/select-send-address
+                                                                    {:address (or
+                                                                               local-suggestion-address
+                                                                               @input-value)
+                                                                     :stack-id
+                                                                     :screen/wallet.select-address}])
+                                            :customization-color color}
+                                           (i18n/label :t/continue)])}
          [quo/page-top
           {:title                     (i18n/label :t/send-to)
            :title-accessibility-label :title-label}]
