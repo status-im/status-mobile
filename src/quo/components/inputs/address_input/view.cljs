@@ -133,8 +133,7 @@
        :on-focus               on-focus
        :on-blur                on-blur
        :on-change-text         on-change}]
-     (when (or (= status :default)
-               (= status :active))
+     (when (empty? value)
        [rn/view
         {:style               style/buttons-container
          :accessibility-label :paste-scan-buttons-container}
@@ -155,7 +154,9 @@
             :inner-style         (style/accessory-button blur? theme)
             :on-press            on-scan}
            :main-icons/scan])])
-     (when (= status :typing)
+     (when (or (= status :typing)
+               (and (= status :active)
+                    (not-empty value)))
        [rn/view
         {:style               style/buttons-container
          :accessibility-label :clear-button-container}
@@ -168,7 +169,10 @@
         {:style               style/buttons-container
          :accessibility-label :loading-button-container}
         [loading-icon blur? theme]])
-     (when (and (= status :loading) valid-ens-or-address?)
+     (when (and (or (= status :loading)
+                    (= status :default))
+                valid-ens-or-address?
+                (not-empty value))
        [rn/view
         {:style               style/buttons-container
          :accessibility-label :positive-button-container}

@@ -12,30 +12,22 @@
   {:padding-horizontal 20
    :padding-bottom     4
    :height             36
-   :flex-direction     :row
-   :justify-content    :space-between})
+   :flex-direction     :row})
 
 (defn token-name
   [theme]
   {:color          (colors/theme-colors colors/neutral-50 colors/neutral-40 theme)
-   :margin-right   8
-   :padding-bottom 2})
-
-(def token-label-container
-  {:position       :absolute
-   :left           40 ; token image size + margin
-   :right          0
-   :bottom         0
-   :top            0
-   :flex-direction :row
-   :align-items    :flex-end})
+   :padding-bottom 3})
 
 (def text-input-container
-  {:position :absolute
-   :top      0
-   :bottom   0
-   :left     40 ; token image size + margin
-   :right    0})
+  {:flex-direction :row
+   :align-items    :flex-end})
+
+(defn input-container
+  [window-width]
+  {:width        (- window-width 120)
+   :margin-left  8
+   :margin-right 8})
 
 (def text-input-dimensions
   (-> typography/heading-1
@@ -54,7 +46,8 @@
          :color
          (if error?
            (colors/resolve-color :danger theme)
-           (colors/theme-colors colors/neutral-100 colors/white theme))))
+           (colors/theme-colors colors/neutral-100 colors/white theme))
+         :flex-shrink 1))
 
 (defn placeholder-text
   [theme]

@@ -16,8 +16,8 @@
 (def network-link-1x-height 56)
 (def network-link-2x-height 111)
 
-(defn fetch-routes
-  [amount valid-input? bounce-duration-ms]
+(defn- fetch-routes
+  [{:keys [amount bounce-duration-ms valid-input?]}]
   (if valid-input?
     (debounce/debounce-and-dispatch
      [:wallet/get-suggested-routes {:amount amount}]
@@ -174,8 +174,8 @@
                      :text (i18n/label :t/at-least-one-network-must-be-activated)}]))))
 
 (defn view
-  [{:keys [token theme input-value valid-input?
-           on-press-to-network current-screen-id
+  [{:keys [token theme input-value value valid-input?
+           lock-fetch-routes? on-press-to-network current-screen-id
            token-not-supported-in-receiver-networks?]}]
   (let [token-symbol (:symbol token)
         nav-current-screen-id (rf/sub [:view-id])
@@ -198,12 +198,21 @@
           :disabled-chain-ids disabled-from-chain-ids})
         show-routes? (not-empty sender-network-values)]
     (rn/use-effect
-     #(when (and active-screen? (> (count token-available-networks-for-suggested-routes) 0))
-        (fetch-routes input-value valid-input? 2000))
+     (fn []
+       (when (and active-screen?
+                  (> (count token-available-networks-for-suggested-routes) 0)
+                  (not lock-fetch-routes?))
+         (fetch-routes
+          {:amount             value
+           :valid-input?       valid-input?
+           :bounce-duration-ms 2000})))
      [input-value valid-input?])
     (rn/use-effect
      #(when (and active-screen? (> (count token-available-networks-for-suggested-routes) 0))
-        (fetch-routes input-value valid-input? 0))
+        (fetch-routes
+         {:amount             value
+          :valid-input?       valid-input?
+          :bounce-duration-ms 0}))
      [disabled-from-chain-ids])
     [rn/scroll-view {:content-container-style style/routes-container}
      (when show-routes?
@@ -238,5 +247,8 @@
         :loading-routes?                           loading-routes?
         :theme                                     theme
         :token-not-supported-in-receiver-networks? token-not-supported-in-receiver-networks?
-        :on-save                                   #(fetch-routes input-value valid-input? 0)}]]]))
+        :on-save                                   #(fetch-routes
+                                                     {:amount             input-value
+                                                      :valid-input?       valid-input?
+                                                      :bounce-duration-ms 0})}]]]))
 

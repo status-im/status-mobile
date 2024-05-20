@@ -37,7 +37,7 @@
   [state]
   (set-input-error state (upper-limit-exceeded? state)))
 
-(defn- set-input-value
+(defn set-input-value
   [state value]
   (-> state
       (assoc :value value)

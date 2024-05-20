@@ -1,4 +1,5 @@
-(ns utils.number)
+(ns utils.number
+  (:require [clojure.string :as string]))
 
 (defn naive-round
   "Quickly and naively round number `n` up to `decimal-places`.
@@ -29,3 +30,13 @@
   if `num` exceeds a given bound, then returns the bound exceeded."
   [number lower-bound upper-bound]
   (max lower-bound (min number upper-bound)))
+
+(defn remove-trailing-zeroes
+  [num]
+  (let [parts (string/split (str num) #"\.")]
+    (str (first parts)
+         (if-let [decimals (second parts)]
+           (if (seq (string/replace decimals #"0+$" ""))
+             (str "." (string/replace decimals #"0+$" ""))
+             "")
+           ""))))

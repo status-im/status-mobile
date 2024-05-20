@@ -1119,14 +1119,14 @@ PODS:
     - React
   - ReactNativeCameraKit (14.0.0-beta13):
     - React-Core
-  - ReactNativeNavigation (7.38.3):
+  - ReactNativeNavigation (7.39.0):
     - HMSegmentedControl
     - React-Core
     - React-CoreModules
     - React-RCTImage
     - React-RCTText
-    - ReactNativeNavigation/Core (= 7.38.3)
-  - ReactNativeNavigation/Core (7.38.3):
+    - ReactNativeNavigation/Core (= 7.39.0)
+  - ReactNativeNavigation/Core (7.39.0):
     - HMSegmentedControl
     - React-Core
     - React-CoreModules
@@ -1484,7 +1484,7 @@ SPEC CHECKSUMS:
   FBLazyVector: 56e0e498dbb513b96c40bac6284729ba4e62672d
   FBReactNativeSpec: 146c741a3f40361f6bc13a4ba284678cbedb5881
   fmt: ff9d55029c625d3757ed641535fd4a75fedc7ce9
-  glog: 530710e7949eb12c82670bd09e946becf50a3c2a
+  glog: c5d68082e772fa1c511173d6b30a9de2c05a69a2
   hermes-engine: 1d1835b2cc54c381909d94d1b3c8e0a2f1a94a0e
   HMSegmentedControl: 34c1f54d822d8308e7b24f5d901ec674dfa31352
   Keycard: ac6df4d91525c3c82635ac24d4ddd9a80aca5fc8
@@ -1551,7 +1551,7 @@ SPEC CHECKSUMS:
   ReactCommon: 2947b0bffd82ea0e58ca7928881152d4c6dae9af
   ReactNativeAudioToolkit: de9610f323e855ac6574be8c99621f3d57c5df06
   ReactNativeCameraKit: d95d3e19c514526a234d9f93c6db7e7f10eef9ea
-  ReactNativeNavigation: 46305e1026fa4cdcf0cfb3822932fc58d090668d
+  ReactNativeNavigation: 679d8c8bf3b8ae98d285bce810964d10da85dbdb
   RNCAsyncStorage: c913ede1fa163a71cea118ed4670bbaaa4b511bb
   RNCClipboard: 60fed4b71560d7bfe40e9d35dea9762b024da86d
   RNCMaskedView: 71fc32d971f03b7f03d6ab6b86b730c4ee64f5b6
