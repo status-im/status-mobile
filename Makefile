@@ -255,7 +255,7 @@ status-go-ios: ##@status-go Compile status-go for iOS app
 
 status-go-library: SHELL := /bin/sh
 status-go-library: ##@status-go Compile status-go for node-js
-	unzip -d ./result/ status-go-library.zip
+	unzip -j -o -d ./result/ status-go-library.zip
 
 #--------------
 # Watch, Build & Review changes
@@ -338,9 +338,11 @@ _test-clojure: export WATCH ?= false
 _test-clojure: status-go-library
 _test-clojure:
 ifeq ($(WATCH), true)
+	yarn node-pre-gyp rebuild && \
 	yarn shadow-cljs compile mocks && \
 	nodemon --exec "yarn shadow-cljs compile test && node --require ./test-resources/override.js $$SHADOW_OUTPUT_TO" -e cljs
 else
+	yarn node-pre-gyp rebuild && \
 	yarn shadow-cljs compile mocks && \
 	yarn shadow-cljs compile test && \
 	node --require ./test-resources/override.js "$$SHADOW_OUTPUT_TO"
