@@ -528,7 +528,7 @@ https://repo.maven.apache.org/maven2/commons-io/commons-io/2.4/commons-io-2.4.po
 https://repo.maven.apache.org/maven2/commons-io/commons-io/2.16.1/commons-io-2.16.1.pom
 https://repo.maven.apache.org/maven2/commons-logging/commons-logging/1.1.1/commons-logging-1.1.1.pom
 https://repo.maven.apache.org/maven2/commons-logging/commons-logging/1.2/commons-logging-1.2.pom
-https://repo.maven.apache.org/maven2/commons-logging/commons-logging/1.3.1/commons-logging-1.3.1.pom
+https://repo.maven.apache.org/maven2/commons-logging/commons-logging/1.3.2/commons-logging-1.3.2.pom
 https://repo.maven.apache.org/maven2/com/adobe/xmp/xmpcore/6.1.11/xmpcore-6.1.11.pom
 https://repo.maven.apache.org/maven2/com/afollestad/material-dialogs/commons/0.9.6.0/commons-0.9.6.0.pom
 https://repo.maven.apache.org/maven2/com/afollestad/material-dialogs/core/0.9.6.0/core-0.9.6.0.pom
@@ -806,15 +806,16 @@ https://repo.maven.apache.org/maven2/com/squareup/javapoet/1.8.0/javapoet-1.8.0.
 https://repo.maven.apache.org/maven2/com/squareup/javapoet/1.10.0/javapoet-1.10.0.pom
 https://repo.maven.apache.org/maven2/com/squareup/javapoet/1.13.0/javapoet-1.13.0.pom
 https://repo.maven.apache.org/maven2/com/squareup/javawriter/2.5.0/javawriter-2.5.0.pom
-https://repo.maven.apache.org/maven2/com/squareup/okhttp3/okhttp-tls/4.9.2/okhttp-tls-4.9.2.pom
+https://repo.maven.apache.org/maven2/com/squareup/okhttp3/okhttp-tls/4.11.0/okhttp-tls-4.11.0.pom
 https://repo.maven.apache.org/maven2/com/squareup/okhttp3/okhttp-urlconnection/4.9.2/okhttp-urlconnection-4.9.2.pom
 https://repo.maven.apache.org/maven2/com/squareup/okhttp3/okhttp/3.9.1/okhttp-3.9.1.pom
 https://repo.maven.apache.org/maven2/com/squareup/okhttp3/okhttp/3.12.1/okhttp-3.12.1.pom
 https://repo.maven.apache.org/maven2/com/squareup/okhttp3/okhttp/4.9.2/okhttp-4.9.2.pom
+https://repo.maven.apache.org/maven2/com/squareup/okhttp3/okhttp/4.11.0/okhttp-4.11.0.pom
 https://repo.maven.apache.org/maven2/com/squareup/okhttp3/parent/3.9.1/parent-3.9.1.pom
 https://repo.maven.apache.org/maven2/com/squareup/okhttp3/parent/3.12.1/parent-3.12.1.pom
+https://repo.maven.apache.org/maven2/com/squareup/okio/okio-jvm/3.2.0/okio-jvm-3.2.0.pom
 https://repo.maven.apache.org/maven2/com/squareup/okio/okio-jvm/3.9.0/okio-jvm-3.9.0.pom
-https://repo.maven.apache.org/maven2/com/squareup/okio/okio-metadata/2.8.0/okio-metadata-2.8.0.pom
 https://repo.maven.apache.org/maven2/com/squareup/okio/okio-parent/1.13.0/okio-parent-1.13.0.pom
 https://repo.maven.apache.org/maven2/com/squareup/okio/okio-parent/1.15.0/okio-parent-1.15.0.pom
 https://repo.maven.apache.org/maven2/com/squareup/okio/okio-parent/1.17.4/okio-parent-1.17.4.pom
@@ -823,6 +824,7 @@ https://repo.maven.apache.org/maven2/com/squareup/okio/okio/1.15.0/okio-1.15.0.p
 https://repo.maven.apache.org/maven2/com/squareup/okio/okio/1.17.4/okio-1.17.4.pom
 https://repo.maven.apache.org/maven2/com/squareup/okio/okio/2.8.0/okio-2.8.0.pom
 https://repo.maven.apache.org/maven2/com/squareup/okio/okio/2.9.0/okio-2.9.0.pom
+https://repo.maven.apache.org/maven2/com/squareup/okio/okio/3.2.0/okio-3.2.0.pom
 https://repo.maven.apache.org/maven2/com/squareup/okio/okio/3.9.0/okio-3.9.0.pom
 https://repo.maven.apache.org/maven2/com/sun/activation/all/1.2.0/all-1.2.0.pom
 https://repo.maven.apache.org/maven2/com/sun/activation/all/1.2.1/all-1.2.1.pom
@@ -1032,7 +1034,6 @@ https://repo.maven.apache.org/maven2/org/apache/commons/commons-parent/39/common
 https://repo.maven.apache.org/maven2/org/apache/commons/commons-parent/42/commons-parent-42.pom
 https://repo.maven.apache.org/maven2/org/apache/commons/commons-parent/48/commons-parent-48.pom
 https://repo.maven.apache.org/maven2/org/apache/commons/commons-parent/52/commons-parent-52.pom
-https://repo.maven.apache.org/maven2/org/apache/commons/commons-parent/67/commons-parent-67.pom
 https://repo.maven.apache.org/maven2/org/apache/commons/commons-parent/69/commons-parent-69.pom
 https://repo.maven.apache.org/maven2/org/apache/httpcomponents/httpclient/4.1.1/httpclient-4.1.1.pom
 https://repo.maven.apache.org/maven2/org/apache/httpcomponents/httpclient/4.2.6/httpclient-4.2.6.pom
@@ -1300,6 +1301,7 @@ https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-stdlib-jdk7/1.5
 https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-stdlib-jdk7/1.5.30/kotlin-stdlib-jdk7-1.5.30.pom
 https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-stdlib-jdk7/1.5.31/kotlin-stdlib-jdk7-1.5.31.pom
 https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-stdlib-jdk7/1.6.0/kotlin-stdlib-jdk7-1.6.0.pom
+https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-stdlib-jdk7/1.6.10/kotlin-stdlib-jdk7-1.6.10.pom
 https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-stdlib-jdk7/1.6.20/kotlin-stdlib-jdk7-1.6.20.pom
 https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-stdlib-jdk7/1.8.0/kotlin-stdlib-jdk7-1.8.0.pom
 https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-stdlib-jdk7/1.8.20-RC2/kotlin-stdlib-jdk7-1.8.20-RC2.pom
@@ -1314,6 +1316,8 @@ https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-stdlib-jdk8/1.5
 https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-stdlib-jdk8/1.5.30/kotlin-stdlib-jdk8-1.5.30.pom
 https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-stdlib-jdk8/1.5.31/kotlin-stdlib-jdk8-1.5.31.pom
 https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-stdlib-jdk8/1.6.0/kotlin-stdlib-jdk8-1.6.0.pom
+https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-stdlib-jdk8/1.6.10/kotlin-stdlib-jdk8-1.6.10.pom
+https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-stdlib-jdk8/1.6.20/kotlin-stdlib-jdk8-1.6.20.pom
 https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-stdlib-jdk8/1.8.0/kotlin-stdlib-jdk8-1.8.0.pom
 https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-stdlib-jdk8/1.8.20-RC2/kotlin-stdlib-jdk8-1.8.20-RC2.pom
 https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-stdlib-jdk8/1.8.21/kotlin-stdlib-jdk8-1.8.21.pom
