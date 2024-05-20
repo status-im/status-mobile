@@ -201,7 +201,7 @@
           {:title    (if (= transaction-type :tx/bridge)
                        (i18n/label :t/bridged-to
                                    {:network (:abbreviated-name to-network)})
-                       (i18n/label :t/user-gets {:name (utils/get-shortened-address to-address)}))
+                       (i18n/label :t/recipient-gets))
            :subtitle (str amount " " token-display-name)}]]
         :else
         [quo/text {:style {:align-self :center}}
