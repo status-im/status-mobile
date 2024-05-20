@@ -62,19 +62,20 @@
 ;; ---
 
 (defn on-message-submit
-  [state _event]
-  (js/console.log "on-press state" (clj->js state))
-  (let [{:keys [public-key message]} state]
-    ;;  (rf/dispatch [:hide-bottom-sheet])
-    ;;  (rf/dispatch [:contact.ui/send-contact-request
-    ;;                public-key message])
-    (rf/dispatch [:toasts/upsert
-                  {:id   :send-contact-request
-                   :type :positive
-                   :text message}])))
+  [public-key message _event]
+  (rf/dispatch [:hide-bottom-sheet])
+  (rf/dispatch [:contact.ui/send-contact-request public-key message])
+  (rf/dispatch [:toasts/upsert
+                {:id   :send-contact-request
+                 :type :positive
+                 :text (i18n/label
+                        :t/contact-request-was-sent)}]))
 
 (defn on-message-change
-  [{:keys [set-message]} message-text]
+  [set-message full-name message-text]
+  ;; This is just an example tap to check that when full-name is recomputed,
+  ;; this function sees the most up-to-date value.
+  (tap> [:on-message-change full-name message-text])
   (set-message message-text))
 
 (defn use-event
@@ -91,7 +92,72 @@
             (assoc acc label (bind f)))
           {}))))
 
-(defn view
+(defn view--using-factory-with-form-2
+  []
+  (let [on-change-factory (rn/make-fn-factory on-message-change)
+        on-submit-factory (rn/make-fn-factory on-message-submit)]
+    (fn []
+      (let [{:keys [public-key customization-color]
+             :as   profile}       (rf/sub [:contacts/current-contact])
+            full-name             (profile.utils/displayed-name profile)
+            profile-picture       (profile.utils/photo profile)
+            input-ref             (rn/use-ref-atom nil)
+            [message set-message] (rn/use-state "")
+            on-change             (on-change-factory set-message full-name)
+            on-submit             (on-submit-factory public-key message)]
+        (rn/use-mount
+         (fn []
+           (let [listener (.addListener rn/keyboard
+                                        "keyboardDidHide"
+                                        (fn [_event]
+                                          (when (and platform/android? @input-ref)
+                                            (.blur ^js @input-ref))))]
+             #(.remove ^js listener))))
+        [:<>
+         [quo/drawer-top
+          {:type                :context-tag
+           :context-tag-type    :default
+           :title               (i18n/label :t/send-contact-request)
+           :full-name           full-name
+           :profile-picture     profile-picture
+           :customization-color customization-color}]
+         [quo/text {:style style/message-prompt-wrapper}
+          (i18n/label :t/contact-request-message-prompt)]
+         [rn/view {:style style/message-input-wrapper}
+          [quo/input
+           {:type                  :text
+            :ref                   #(reset! input-ref %)
+            :multiline?            true
+            :char-limit            constants/contact-request-message-max-length
+            :max-length            constants/contact-request-message-max-length
+            :placeholder           (i18n/label :t/type-something)
+            :auto-focus            true
+            :accessibility-label   :contact-request-message
+            :label                 (i18n/label :t/message)
+            :on-change-text        on-change
+            :container-style       {:flex-shrink 1}
+            :input-container-style {:flex-shrink 1}}]]
+         [quo/bottom-actions
+          {:container-style  {:style {:flex 1}}
+           :actions          :one-action
+           :button-one-props {:disabled?           (string/blank? message)
+                              :accessibility-label :send-contact-request
+                              :customization-color :purple
+                              :on-press            on-submit}
+           :button-one-label "Past Present Sub"}]
+         [quo/bottom-actions
+          {:container-style  {:style {:flex 1}}
+           :actions          :two-actions
+           :button-one-props {:accessibility-label :send-contact-request
+                              :customization-color :blue
+                              :on-press            on-submit}
+           :button-one-label "Snapshot"
+           :button-two-props {:accessibility-label :test-button
+                              :customization-color :orange
+                              :on-press            on-submit}
+           :button-two-label "Sub"}]]))))
+
+(defn view--using-factory-hook
   []
   (let [{:keys [public-key customization-color]
          :as   profile}       (rf/sub [:contacts/current-contact])
@@ -99,11 +165,11 @@
         profile-picture       (profile.utils/photo profile)
         input-ref             (rn/use-ref-atom nil)
         [message set-message] (rn/use-state "")
-        on-change             (use-event on-message-change
-                                         {:set-message set-message})
-        on-submit             (use-event on-message-submit
-                                         {:public-key public-key
-                                          :message    message})]
+        on-change             (rn/use-fn-factory on-message-change set-message full-name)
+        on-submit             (rn/use-fn-factory on-message-submit public-key message)]
+    ;; `on-change` is always the same function instance, even if the arguments
+    ;; `set-message` and `full-name` change.
+    (tap> {:hashes {:on-change (hash on-change)}})
     (rn/use-mount
      (fn []
        (let [listener (.addListener rn/keyboard
@@ -156,3 +222,4 @@
                           :on-press            on-submit}
        :button-two-label "Sub"}]]))
 
+(def view view--using-factory-hook)

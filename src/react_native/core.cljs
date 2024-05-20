@@ -203,6 +203,35 @@
   ([handler deps]
    (react/useCallback handler (get-js-deps deps))))
 
+(defn use-fn-factory-factory
+  "A dirty code translation from the form-2 solution `make-fn-factory`."
+  [f]
+  (let [*args1  (use-ref-atom nil)
+        cached  (use-ref-atom
+                 (fn [& args2]
+                   (apply f (concat @*args1 args2))))
+        factory (use-ref-atom
+                 (fn factory
+                   [& args1]
+                   (reset! *args1 args1)
+                   @cached))]
+    @factory))
+
+(defn use-fn-factory
+  [f & args]
+  (let [factory (use-fn-factory-factory f)]
+    (apply factory args)))
+
+(defn make-fn-factory
+  "Should be used in a form-2 component."
+  [f]
+  (let [*args1 (atom nil)
+        cached (fn [& args2]
+                 (apply f (concat @*args1 args2)))]
+    (fn [& args1]
+      (reset! *args1 args1)
+      cached)))
+
 (defn use-memo
   [handler deps]
   (react/useMemo handler (get-js-deps deps)))
