@@ -601,3 +601,11 @@
   (.createAccountFromMnemonicAndDeriveAccountsForPaths ^js (account-manager)
                                                        (types/clj->json mnemonic)
                                                        #(callback (types/json->clj %))))
+
+(defn get-connection-string-for-exporting-keypairs-keystores
+  "Generates connection string form status-go for the purpose of exporting keypairs and keystores on sender side"
+  [config-json callback]
+  (log/info "[native-module] Fetching Export Keypairs Connection String"
+            {:fn          :get-connection-string-for-exporting-keypairs-keystores
+             :config-json config-json})
+  (.getConnectionStringForExportingKeypairsKeystores ^js (network) config-json callback))
