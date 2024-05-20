@@ -597,12 +597,13 @@ com.google.test.platform:core-proto:0.0.2-dev
 com.ibm.icu:icu4j:53.1
 com.intellij:annotations:12.0
 com.parse.bolts:bolts-tasks:1.4.0
-com.squareup.okhttp3:okhttp-tls:4.9.2
+com.squareup.okhttp3:okhttp-tls:4.11.0
 com.squareup.okhttp3:okhttp-urlconnection:4.9.2
 com.squareup.okhttp3:okhttp:4.9.2
-com.squareup.okio:okio-metadata:2.8.0
-com.squareup.okio:okio:2.8.0
+com.squareup.okhttp3:okhttp:4.11.0
+com.squareup.okio:okio-jvm:3.2.0
 com.squareup.okio:okio:2.9.0
+com.squareup.okio:okio:3.2.0
 com.squareup:javapoet:1.8.0
 com.squareup:javapoet:1.10.0
 com.squareup:javapoet:1.13.0
