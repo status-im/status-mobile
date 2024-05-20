@@ -28,6 +28,7 @@
     [scan-qr-code/view
      {:title           (i18n/label :t/scan-qr)
       :subtitle        (i18n/label :t/scan-an-account-qr-code)
+      :share-button?   false
       :error-message   (i18n/label :t/oops-this-qr-does-not-contain-an-address)
       :validate-fn     #(contains-supported-address? %)
       :on-success-scan (fn [result]
