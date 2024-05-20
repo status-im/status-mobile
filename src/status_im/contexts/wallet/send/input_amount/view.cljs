@@ -16,17 +16,23 @@
     [status-im.contexts.wallet.send.utils :as send-utils]
     [status-im.contexts.wallet.sheets.unpreferred-networks-alert.view :as unpreferred-networks-alert]
     [utils.address :as address]
+    [utils.debounce :as debounce]
     [utils.i18n :as i18n]
     [utils.money :as money]
+    [utils.number :as number]
     [utils.re-frame :as rf]))
 
-(defn- make-limit-label
+(defn- make-limit-label-crypto
   [amount currency]
   (str amount
        " "
        (some-> currency
                name
                string/upper-case)))
+
+(defn- make-limit-label-fiat
+  [amount currency-symbol]
+  (str currency-symbol amount))
 
 (defn- estimated-fees
   [{:keys [loading-routes? fees amount receiver]}]
@@ -61,6 +67,7 @@
   (every? (fn [{:keys [total-amount]}]
             (and
              total-amount
+             (money/bignumber? total-amount)
              (money/equal-to total-amount
                              (money/bignumber "0"))))
           sender-network-values))
@@ -127,129 +134,138 @@
         crypto-currency? (reagent/atom initial-crypto-currency?)
         on-navigate-back on-navigate-back]
     (fn []
-      (let [[input-state set-input-state]             (rn/use-state controlled-input/init-state)
-            clear-input!                              #(set-input-state controlled-input/delete-all)
-            handle-on-confirm                         (fn []
-                                                        (rf/dispatch [:wallet/set-token-amount-to-send
-                                                                      {:amount
-                                                                       (controlled-input/input-value
-                                                                        input-state)
-                                                                       :stack-id current-screen-id}]))
-            {fiat-currency :currency}                 (rf/sub [:profile/profile])
+      (let [[input-state set-input-state] (rn/use-state controlled-input/init-state)
+            [just-toggled-mode? set-just-toggled-mode?] (rn/use-state false)
+            clear-input! #(set-input-state controlled-input/delete-all)
+            handle-on-confirm (fn []
+                                (rf/dispatch [:wallet/set-token-amount-to-send
+                                              {:amount
+                                               (controlled-input/input-value
+                                                input-state)
+                                               :stack-id current-screen-id}]))
+            {fiat-currency :currency} (rf/sub [:profile/profile])
             {token-symbol   :symbol
-             token-networks :networks}                (rf/sub [:wallet/wallet-send-token])
-            send-enabled-networks                     (rf/sub [:wallet/wallet-send-enabled-networks])
-            enabled-from-chain-ids                    (rf/sub
-                                                       [:wallet/wallet-send-enabled-from-chain-ids])
+             token-networks :networks
+             token-decimals :decimals} (rf/sub [:wallet/wallet-send-token])
+            send-enabled-networks (rf/sub [:wallet/wallet-send-enabled-networks])
+            enabled-from-chain-ids (rf/sub
+                                    [:wallet/wallet-send-enabled-from-chain-ids])
             {token-balance :total-balance
              available-balance :available-balance
              :as
-             token}                                   (rf/sub
-                                                       [:wallet/current-viewing-account-tokens-filtered
-                                                        (str token-symbol) enabled-from-chain-ids])
-            conversion-rate                           (-> token :market-values-per-currency :usd :price)
-            loading-routes?                           (rf/sub
-                                                       [:wallet/wallet-send-loading-suggested-routes?])
-
-            route                                     (rf/sub [:wallet/wallet-send-route])
-            to-address                                (rf/sub [:wallet/wallet-send-to-address])
-
-            on-confirm                                (or default-on-confirm handle-on-confirm)
-            crypto-decimals                           (or default-crypto-decimals
-                                                          (utils/get-crypto-decimals-count token))
-            current-crypto-limit                      (or default-limit-crypto
-                                                          (utils/get-standard-crypto-format
-                                                           token
-                                                           token-balance))
-            available-crypto-limit                    (or default-limit-crypto
-                                                          (utils/get-standard-crypto-format
-                                                           token
-                                                           available-balance))
-            current-fiat-limit                        (.toFixed (* token-balance conversion-rate) 2)
-            available-fiat-limit                      (.toFixed (* available-balance conversion-rate) 2)
-            current-limit                             (if @crypto-currency?
-                                                        current-crypto-limit
-                                                        current-fiat-limit)
-            available-limit                           (if @crypto-currency?
-                                                        available-crypto-limit
-                                                        available-fiat-limit)
-            valid-input?                              (not (or (string/blank?
-                                                                (controlled-input/input-value
-                                                                 input-state))
-                                                               (<= (controlled-input/numeric-value
-                                                                    input-state)
-                                                                   0)
-                                                               (> (controlled-input/numeric-value
-                                                                   input-state)
-                                                                  available-limit)))
-            current-currency                          (if @crypto-currency? token-symbol fiat-currency)
-            input-num-value                           (controlled-input/numeric-value input-state)
-            confirm-disabled?                         (or (nil? route)
-                                                          (empty? route)
-                                                          (string/blank? (controlled-input/input-value
-                                                                          input-state))
-                                                          (<= input-num-value 0)
-                                                          (> input-num-value current-limit))
-            amount-text                               (str (controlled-input/input-value input-state)
-                                                           " "
-                                                           token-symbol)
-            first-route                               (first route)
-            native-currency-symbol                    (when-not confirm-disabled?
-                                                        (get-in first-route
-                                                                [:from :native-currency-symbol]))
-            native-token                              (when native-currency-symbol
-                                                        (rf/sub [:wallet/token-by-symbol
-                                                                 native-currency-symbol]))
-            fee-in-native-token                       (when-not confirm-disabled?
-                                                        (send-utils/calculate-full-route-gas-fee route))
-            fee-in-crypto-formatted                   (when fee-in-native-token
-                                                        (utils/get-standard-crypto-format
-                                                         native-token
-                                                         fee-in-native-token))
-            fee-in-fiat                               (when-not confirm-disabled?
-                                                        (utils/calculate-token-fiat-value
-                                                         {:currency fiat-currency
-                                                          :balance  fee-in-native-token
-                                                          :token    native-token}))
-            currency-symbol                           (rf/sub [:profile/currency-symbol])
-            fee-formatted                             (when fee-in-fiat
-                                                        (utils/get-standard-fiat-format
-                                                         fee-in-crypto-formatted
-                                                         currency-symbol
-                                                         fee-in-fiat))
-            show-select-asset-sheet                   #(rf/dispatch
-                                                        [:show-bottom-sheet
-                                                         {:content (fn []
-                                                                     [select-asset-bottom-sheet
-                                                                      clear-input!])}])
-            sender-network-values                     (rf/sub
-                                                       [:wallet/wallet-send-sender-network-values])
-            receiver-network-values                   (rf/sub
-                                                       [:wallet/wallet-send-receiver-network-values])
+             token} (rf/sub
+                     [:wallet/current-viewing-account-tokens-filtered
+                      (str token-symbol) enabled-from-chain-ids])
+            currency-symbol (rf/sub [:profile/currency-symbol])
+            currency (rf/sub [:profile/currency])
+            conversion-rate (-> token :market-values-per-currency currency :price)
+            loading-routes? (rf/sub
+                             [:wallet/wallet-send-loading-suggested-routes?])
+            route (rf/sub [:wallet/wallet-send-route])
+            to-address (rf/sub [:wallet/wallet-send-to-address])
+            on-confirm (or default-on-confirm handle-on-confirm)
+            crypto-decimals (or token-decimals default-crypto-decimals)
+            current-crypto-limit (or default-limit-crypto
+                                     (utils/get-standard-crypto-format
+                                      token
+                                      token-balance))
+            available-crypto-limit (or default-limit-crypto
+                                       (utils/get-standard-crypto-format
+                                        token
+                                        available-balance))
+            current-fiat-limit (.toFixed (* token-balance conversion-rate) 2)
+            available-fiat-limit (.toFixed (* available-balance conversion-rate) 2)
+            current-limit (if @crypto-currency?
+                            current-crypto-limit
+                            current-fiat-limit)
+            available-limit (if @crypto-currency?
+                              available-crypto-limit
+                              available-fiat-limit)
+            valid-input? (not (or (string/blank?
+                                   (controlled-input/input-value
+                                    input-state))
+                                  (<= (controlled-input/numeric-value
+                                       input-state)
+                                      0)
+                                  (> (controlled-input/numeric-value
+                                      input-state)
+                                     available-limit)))
+            input-num-value (controlled-input/numeric-value input-state)
+            input-amount (controlled-input/input-value input-state)
+            confirm-disabled? (or (nil? route)
+                                  (empty? route)
+                                  (string/blank? (controlled-input/input-value
+                                                  input-state))
+                                  (<= input-num-value 0)
+                                  (> input-num-value current-limit))
+            amount (if @crypto-currency?
+                     input-amount
+                     (number/remove-trailing-zeroes
+                      (.toFixed (/ input-amount conversion-rate)
+                                crypto-decimals)))
+            send-amount (rf/sub [:wallet/wallet-send-amount])
+            amount-text (str (number/remove-trailing-zeroes
+                              (.toFixed (js/parseFloat send-amount)
+                                        (min token-decimals 6)))
+                             " "
+                             token-symbol)
+            first-route (first route)
+            native-currency-symbol (when-not confirm-disabled?
+                                     (get-in first-route
+                                             [:from :native-currency-symbol]))
+            native-token (when native-currency-symbol
+                           (rf/sub [:wallet/token-by-symbol
+                                    native-currency-symbol]))
+            fee-in-native-token (when-not confirm-disabled?
+                                  (send-utils/calculate-full-route-gas-fee route))
+            fee-in-crypto-formatted (when fee-in-native-token
+                                      (utils/get-standard-crypto-format
+                                       native-token
+                                       fee-in-native-token))
+            fee-in-fiat (when-not confirm-disabled?
+                          (utils/calculate-token-fiat-value
+                           {:currency fiat-currency
+                            :balance  fee-in-native-token
+                            :token    native-token}))
+            fee-formatted (when fee-in-fiat
+                            (utils/get-standard-fiat-format
+                             fee-in-crypto-formatted
+                             currency-symbol
+                             fee-in-fiat))
+            show-select-asset-sheet #(rf/dispatch
+                                      [:show-bottom-sheet
+                                       {:content (fn []
+                                                   [select-asset-bottom-sheet
+                                                    clear-input!])}])
+            sender-network-values (rf/sub
+                                   [:wallet/wallet-send-sender-network-values])
+            receiver-network-values (rf/sub
+                                     [:wallet/wallet-send-receiver-network-values])
             token-not-supported-in-receiver-networks? (every? #(= (:type %) :not-available)
                                                               (filter #(not= (:type %) :add)
                                                                       receiver-network-values))
-            suggested-routes                          (rf/sub [:wallet/wallet-send-suggested-routes])
-            routes                                    (when suggested-routes
-                                                        (or (:best suggested-routes) []))
-            no-routes-found?                          (and
-                                                       (every-network-value-is-zero?
-                                                        sender-network-values)
-                                                       (not (nil? routes))
-                                                       (not loading-routes?)
-                                                       (not token-not-supported-in-receiver-networks?))
-            receiver-networks                         (rf/sub [:wallet/wallet-send-receiver-networks])
-            receiver-preferred-networks               (rf/sub
-                                                       [:wallet/wallet-send-receiver-preferred-networks])
-            receiver-preferred-networks-set           (set receiver-preferred-networks)
-            sending-to-unpreferred-networks?          (not (every? (fn [receiver-selected-network]
-                                                                     (contains?
-                                                                      receiver-preferred-networks-set
-                                                                      receiver-selected-network))
-                                                                   receiver-networks))
-            limit-insufficient?                       (> (controlled-input/numeric-value input-state)
-                                                         current-limit)
-            should-try-again?                         (and (not limit-insufficient?) no-routes-found?)]
+            suggested-routes (rf/sub [:wallet/wallet-send-suggested-routes])
+            routes (when suggested-routes
+                     (or (:best suggested-routes) []))
+            no-routes-found? (and
+                              (every-network-value-is-zero?
+                               sender-network-values)
+                              (not (nil? routes))
+                              (not loading-routes?)
+                              (not token-not-supported-in-receiver-networks?))
+            receiver-networks (rf/sub [:wallet/wallet-send-receiver-networks])
+            receiver-preferred-networks (rf/sub
+                                         [:wallet/wallet-send-receiver-preferred-networks])
+            receiver-preferred-networks-set (set receiver-preferred-networks)
+            sending-to-unpreferred-networks? (not (every? (fn [receiver-selected-network]
+                                                            (contains?
+                                                             receiver-preferred-networks-set
+                                                             receiver-selected-network))
+                                                          receiver-networks))
+            input-error (controlled-input/input-error input-state)
+            limit-insufficient? (> (controlled-input/numeric-value input-state)
+                                   current-limit)
+            should-try-again? (and (not limit-insufficient?) no-routes-found?)]
         (rn/use-mount
          (fn []
            (let [dismiss-keyboard-fn   #(when (= % "active") (rn/dismiss-keyboard!))
@@ -259,6 +275,9 @@
          (fn []
            (set-input-state #(controlled-input/set-upper-limit % current-limit)))
          [current-limit])
+        (rn/use-effect
+         #(when input-error (debounce/clear-all))
+         [input-error])
         [rn/view
          {:style               style/screen
           :accessibility-label (str "container"
@@ -270,22 +289,40 @@
          [quo/token-input
           {:container-style style/input-container
            :token           token-symbol
-           :currency        current-currency
-           :crypto-decimals crypto-decimals
+           :currency        fiat-currency
+           :currency-symbol currency-symbol
+           :crypto-decimals (min token-decimals 6)
            :error?          (controlled-input/input-error input-state)
            :networks        (seq send-enabled-networks)
-           :title           (i18n/label :t/send-limit
-                                        {:limit (make-limit-label current-limit current-currency)})
+           :title           (i18n/label
+                             :t/send-limit
+                             {:limit (if @crypto-currency?
+                                       (make-limit-label-crypto current-limit token-symbol)
+                                       (make-limit-label-fiat current-limit currency-symbol))})
            :conversion      conversion-rate
            :show-keyboard?  false
-           :value           (controlled-input/input-value input-state)
-           :on-swap         #(reset! crypto-currency? %)
+           :value           input-amount
+           :on-swap         (fn [swap-to-crypto-currency?]
+                              (set-just-toggled-mode? true)
+                              (reset! crypto-currency? swap-to-crypto-currency?)
+                              (set-input-state
+                               (fn [input-state]
+                                 (controlled-input/set-input-value
+                                  input-state
+                                  (let [value     (controlled-input/input-value input-state)
+                                        new-value (if swap-to-crypto-currency?
+                                                    (.toFixed (/ value conversion-rate)
+                                                              crypto-decimals)
+                                                    (.toFixed (* value conversion-rate) 12))]
+                                    (number/remove-trailing-zeroes new-value))))))
            :on-token-press  show-select-asset-sheet}]
          [routes/view
           {:token                                     token
-           :input-value                               (controlled-input/input-value input-state)
+           :input-value                               input-amount
+           :value                                     amount
            :valid-input?                              valid-input?
            :token-not-supported-in-receiver-networks? token-not-supported-in-receiver-networks?
+           :lock-fetch-routes?                        just-toggled-mode?
            :current-screen-id                         current-screen-id}]
          (when (and (not loading-routes?)
                     sender-network-values
@@ -314,9 +351,15 @@
                                     {:disabled? (and (not should-try-again?) confirm-disabled?)
                                      :on-press  (cond
                                                   should-try-again?
-                                                  #(rf/dispatch [:wallet/get-suggested-routes
-                                                                 {:amount (controlled-input/input-value
-                                                                           input-state)}])
+                                                  #(let [input-amount (controlled-input/input-value
+                                                                       input-state)
+                                                         amount       (if @crypto-currency?
+                                                                        input-amount
+                                                                        (.toFixed (* token-balance
+                                                                                     conversion-rate)
+                                                                                  2))]
+                                                     (rf/dispatch [:wallet/get-suggested-routes
+                                                                   {:amount amount}]))
                                                   sending-to-unpreferred-networks?
                                                   #(show-unpreferred-networks-alert on-confirm)
                                                   :else
@@ -328,11 +371,22 @@
            :left-action          :dot
            :delete-key?          true
            :on-press             (fn [c]
-                                   (when-not loading-routes?
-                                     (set-input-state #(controlled-input/add-character % c))))
+                                   (let [new-text      (str input-amount c)
+                                         max-decimals  (if @crypto-currency? crypto-decimals 2)
+                                         regex-pattern (str "^\\d*\\.?\\d{0," max-decimals "}$")
+                                         regex         (re-pattern regex-pattern)]
+                                     (when (and (not loading-routes?)
+                                                (re-matches regex new-text))
+                                       (debounce/clear-all)
+                                       (set-just-toggled-mode? false)
+                                       (set-input-state #(controlled-input/add-character % c)))))
            :on-delete            (fn []
                                    (when-not loading-routes?
+                                     (debounce/clear-all)
+                                     (set-just-toggled-mode? false)
                                      (set-input-state controlled-input/delete-last)))
            :on-long-press-delete (fn []
                                    (when-not loading-routes?
+                                     (debounce/clear-all)
+                                     (set-just-toggled-mode? false)
                                      (set-input-state controlled-input/delete-all)))}]]))))

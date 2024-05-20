@@ -4,7 +4,7 @@
             [status-im.common.qr-codes.view :as qr-codes]
             [status-im.constants :as constants]
             [utils.money :as money]
-            [utils.number]))
+            [utils.number :as number]))
 
 (defn get-first-name
   [full-name]
@@ -56,16 +56,6 @@
       (inc max-decimals)
       max-decimals)))
 
-(defn remove-trailing-zeroes
-  [num]
-  (let [parts (clojure.string/split (str num) #"\.")]
-    (str (first parts)
-         (if-let [decimals (second parts)]
-           (if (seq (clojure.string/replace decimals #"0+$" ""))
-             (str "." (clojure.string/replace decimals #"0+$" ""))
-             "")
-           ""))))
-
 (defn get-crypto-decimals-count
   [{:keys [market-values-per-currency]}]
   (let [price          (get-in market-values-per-currency [:usd :price])
@@ -83,8 +73,8 @@
           one-cent-value (if (pos? price) (/ 0.01 price) 0)
           decimals-count (calc-max-crypto-decimals one-cent-value)]
       (if (< token-units one-cent-value)
-        (str "<" (remove-trailing-zeroes (.toFixed one-cent-value decimals-count)))
-        (remove-trailing-zeroes (.toFixed token-units decimals-count))))))
+        (str "<" (number/remove-trailing-zeroes (.toFixed one-cent-value decimals-count)))
+        (number/remove-trailing-zeroes (.toFixed token-units decimals-count))))))
 
 (defn get-market-value
   [currency {:keys [market-values-per-currency]}]
