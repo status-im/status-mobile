@@ -19,11 +19,12 @@
   (h/before-each
    (fn []
      (h/setup-subs {:dimensions/window-width 500
-                    :mediaserver/port        200
-                    :wallet/accounts         [{:address "0x707f635951193ddafbb40971a0fcaab8a6415160"
-                                               :name    "Wallet One"
-                                               :emoji   "😆"
-                                               :color   :blue}]})))
+                    :mediaserver/port 200
+                    :wallet/accounts [{:address "0x707f635951193ddafbb40971a0fcaab8a6415160"
+                                       :name    "Wallet One"
+                                       :emoji   "😆"
+                                       :color   :blue}]
+                    :wallet/preferred-chain-names-for-address #{:eth :oeth :arb1}})))
 
   (h/test "should display the wallet tab"
     (render-wallet-view)

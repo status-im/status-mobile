@@ -5,7 +5,6 @@
     [react-native.core :as rn]
     [react-native.platform :as platform]
     [reagent.core :as reagent]
-    [status-im.constants :as constants]
     [status-im.contexts.shell.share.style :as style]
     [status-im.contexts.shell.share.wallet.style :as wallet-style]
     [status-im.contexts.wallet.common.utils :as utils]
@@ -51,9 +50,9 @@
                                                                       chain-ids)))}])}]))
 
 (defn- wallet-qr-code-item
-  [{:keys [account index]}]
+  [{:keys [account index preferred-chains]}]
   (let [{window-width :width} (rn/get-window)
-        selected-networks     (reagent/atom constants/default-network-names)
+        selected-networks     (reagent/atom preferred-chains)
         wallet-type           (reagent/atom :multichain)
         on-settings-press     #(open-preferences selected-networks account)
         on-legacy-press       #(reset! wallet-type :legacy)
@@ -97,10 +96,11 @@
      ^{:key i} [indicator (= current-index i)])])
 
 (defn render-item
-  [item]
+  [{:keys [address] :as account}]
   [wallet-qr-code-item
-   {:account item
-    :index   (:position item)}])
+   {:account          account
+    :index            (:position account)
+    :preferred-chains (rf/sub [:wallet/preferred-chain-names-for-address address])}])
 
 (defn- qr-code-visualized-index
   [offset qr-code-size num-qr-codes]
