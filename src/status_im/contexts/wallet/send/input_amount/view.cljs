@@ -15,7 +15,6 @@
     [status-im.contexts.wallet.send.routes.view :as routes]
     [status-im.contexts.wallet.send.utils :as send-utils]
     [status-im.contexts.wallet.sheets.unpreferred-networks-alert.view :as unpreferred-networks-alert]
-    [utils.address :as address]
     [utils.debounce :as debounce]
     [utils.i18n :as i18n]
     [utils.money :as money]
@@ -35,7 +34,7 @@
   (str currency-symbol amount))
 
 (defn- estimated-fees
-  [{:keys [loading-routes? fees amount receiver]}]
+  [{:keys [loading-routes? fees amount]}]
   [rn/view {:style style/estimated-fees-container}
    [rn/view {:style style/estimated-fees-content-container}
     [quo/button
@@ -59,7 +58,7 @@
      :label           :none
      :status          (if loading-routes? :loading :default)
      :size            :small
-     :title           (i18n/label :t/user-gets {:name receiver})
+     :title           (i18n/label :t/recipient-gets)
      :subtitle        amount}]])
 
 (defn- every-network-value-is-zero?
@@ -162,7 +161,6 @@
             loading-routes? (rf/sub
                              [:wallet/wallet-send-loading-suggested-routes?])
             route (rf/sub [:wallet/wallet-send-route])
-            to-address (rf/sub [:wallet/wallet-send-to-address])
             on-confirm (or default-on-confirm handle-on-confirm)
             crypto-decimals (or token-decimals default-crypto-decimals)
             current-crypto-limit (or default-limit-crypto
@@ -332,8 +330,7 @@
            [estimated-fees
             {:loading-routes? loading-routes?
              :fees            fee-formatted
-             :amount          amount-text
-             :receiver        (address/get-shortened-key to-address)}])
+             :amount          amount-text}])
          (when (or no-routes-found? limit-insufficient?)
            [rn/view {:style style/no-routes-found-container}
             [quo/info-message

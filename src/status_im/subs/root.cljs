@@ -16,6 +16,7 @@
     status-im.subs.settings
     status-im.subs.shell
     status-im.subs.wallet.activities
+    status-im.subs.wallet.buy
     status-im.subs.wallet.collectibles
     status-im.subs.wallet.networks
     status-im.subs.wallet.saved-addresses
