@@ -42,6 +42,7 @@
       (update :prod-preferred-chain-ids chain-ids-string->set)
       (update :test-preferred-chain-ids chain-ids-string->set)
       (update :type keyword)
+      (update :operable keyword)
       (update :color #(if (seq %) (keyword %) constants/account-default-customization-color))
       (update :emoji sanitize-emoji)
       (assoc :default-account? (:wallet account))

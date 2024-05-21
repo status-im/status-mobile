@@ -104,7 +104,7 @@
           :position                 0
           :clock                    1698945829328
           :created-at               1698928839000
-          :operable                 "fully"
+          :operable                 :fully
           :mixedcase-address        "0x7bcDfc75c431"
           :public-key               "0x04371e2d9d66b82f056bc128064"
           :removed                  false
@@ -125,7 +125,7 @@
           :position                 1
           :clock                    1698945829328
           :created-at               1698928839000
-          :operable                 "fully"
+          :operable                 :fully
           :mixedcase-address        "0x7bcDfc75c431"
           :public-key               "0x04371e2d9d66b82f056bc128064"
           :removed                  false
@@ -146,7 +146,7 @@
           :position                 2
           :clock                    1698945829328
           :created-at               1698928839000
-          :operable                 "fully"
+          :operable                 :fully
           :mixedcase-address        "0x7bcDfc75c431"
           :public-key               "0x"
           :removed                  false
@@ -221,7 +221,7 @@
              :position                  0
              :clock                     1698945829328
              :created-at                1698928839000
-             :operable                  "fully"
+             :operable                  :fully
              :mixedcase-address         "0x7bcDfc75c431"
              :public-key                "0x04371e2d9d66b82f056bc128064"
              :removed                   false
@@ -243,7 +243,7 @@
              :position                  1
              :clock                     1698945829328
              :created-at                1698928839000
-             :operable                  "fully"
+             :operable                  :fully
              :mixedcase-address         "0x7bcDfc75c431"
              :public-key                "0x04371e2d9d66b82f056bc128064"
              :removed                   false
@@ -265,7 +265,7 @@
              :position                  2
              :clock                     1698945829328
              :created-at                1698928839000
-             :operable                  "fully"
+             :operable                  :fully
              :mixedcase-address         "0x7bcDfc75c431"
              :public-key                "0x"
              :removed                   false
@@ -308,7 +308,7 @@
            :position                  0
            :clock                     1698945829328
            :created-at                1698928839000
-           :operable                  "fully"
+           :operable                  :fully
            :mixedcase-address         "0x7bcDfc75c431"
            :public-key                "0x04371e2d9d66b82f056bc128064"
            :removed                   false
@@ -369,7 +369,7 @@
           :position                  0
           :clock                     1698945829328
           :created-at                1698928839000
-          :operable                  "fully"
+          :operable                  :fully
           :mixedcase-address         "0x7bcDfc75c431"
           :public-key                "0x04371e2d9d66b82f056bc128064"
           :removed                   false
@@ -391,7 +391,7 @@
           :position                  2
           :clock                     1698945829328
           :created-at                1698928839000
-          :operable                  "fully"
+          :operable                  :fully
           :mixedcase-address         "0x7bcDfc75c431"
           :public-key                "0x"
           :removed                   false
@@ -426,7 +426,7 @@
         :position                  0
         :clock                     1698945829328
         :created-at                1698928839000
-        :operable                  "fully"
+        :operable                  :fully
         :mixedcase-address         "0x7bcDfc75c431"
         :public-key                "0x04371e2d9d66b82f056bc128064"
         :removed                   false
@@ -449,7 +449,7 @@
         :position                  1
         :clock                     1698945829328
         :created-at                1698928839000
-        :operable                  "fully"
+        :operable                  :fully
         :mixedcase-address         "0x7bcDfc75c431"
         :public-key                "0x04371e2d9d66b82f056bc128064"
         :removed                   false
@@ -579,7 +579,7 @@
    :chat                false
    :customization-color :primary
    :hidden              false
-   :operable            "fully"
+   :operable            :fully
    :removed             false})
 
 (def inoperable-wallet-account
@@ -593,7 +593,7 @@
    :chat                false
    :customization-color :primary
    :hidden              false
-   :operable            "no"
+   :operable            :no
    :removed             false})
 
 (def default-keypair-accounts
