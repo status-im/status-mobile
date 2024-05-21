@@ -24,6 +24,7 @@
     [status-im.contexts.preview.quo.buttons.predictive-keyboard :as
      predictive-keyboard]
     [status-im.contexts.preview.quo.buttons.slide-button :as slide-button]
+    [status-im.contexts.preview.quo.buttons.swap-order-button :as swap-order-button]
     [status-im.contexts.preview.quo.buttons.wallet-button :as wallet-button]
     [status-im.contexts.preview.quo.buttons.wallet-ctas :as wallet-ctas]
     [status-im.contexts.preview.quo.calendar.calendar :as calendar]
@@ -241,6 +242,8 @@
                         :component dynamic-button/view}
                        {:name      :slide-button
                         :component slide-button/view}
+                       {:name      :swap-order-button
+                        :component swap-order-button/view}
                        {:name      :predictive-keyboard
                         :component predictive-keyboard/view}
                        {:name      :wallet-button
