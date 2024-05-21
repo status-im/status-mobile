@@ -1,7 +1,8 @@
 (ns status-im.contexts.wallet.add-account.create-account.utils
   (:require [status-im.constants :as constants]))
 
-(defn first-derived-account [account-data]
+(defn first-derived-account
+  [account-data]
   (-> account-data :derived first val))
 
 (defn prepare-new-account

@@ -1,10 +1,10 @@
 (ns status-im.contexts.wallet.add-account.create-account.events-test
   (:require
-   [cljs.test :refer-macros [deftest is]]
-   [matcher-combinators.test]
-   [status-im.constants :as constants]
-   [status-im.contexts.wallet.add-account.create-account.events :as events]
-   [utils.security.core :as security]))
+    [cljs.test :refer-macros [deftest is]]
+    [matcher-combinators.test]
+    [status-im.constants :as constants]
+    [status-im.contexts.wallet.add-account.create-account.events :as events]
+    [utils.security.core :as security]))
 
 (deftest confirm-account-origin
   (let [db          {:wallet {:ui {:create-account {}}}}
@@ -25,7 +25,7 @@
 
 (deftest store-account-generated
   (let [db              {:wallet {:ui {:create-account
-                                       {:new-keypair {:seed-phrase   "test-secret",
+                                       {:new-keypair {:seed-phrase   "test-secret"
                                                       :random-phrase "random-test"}}}}}
         mnemonic        "my mnemonic"
         masked-mnemonic (security/mask-data mnemonic)
@@ -43,8 +43,14 @@
                                     [:wallet :ui :create-account :new-keypair :new-account-data]
                                     dissoc
                                     :mnemonic)
-        unmask-mnemonic #(-> % :wallet :ui :create-account :new-keypair :new-account-data
-                             :mnemonic security/safe-unmask-data)]
+        unmask-mnemonic #(-> %
+                             :wallet
+                             :ui
+                             :create-account
+                             :new-keypair
+                             :new-account-data
+                             :mnemonic
+                             security/safe-unmask-data)]
     (is (= (remove-mnemonic result-db) (remove-mnemonic expected-db)))
     (is (= (unmask-mnemonic result-db) (unmask-mnemonic expected-db)))))
 

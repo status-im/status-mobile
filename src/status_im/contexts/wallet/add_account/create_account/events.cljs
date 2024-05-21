@@ -28,11 +28,14 @@
 
 (defn store-new-seed-phrase
   [{:keys [db]} [{:keys [seed-phrase random-phrase]}]]
-  {:db (update-in db [:wallet :ui :create-account :new-keypair] assoc
+  {:db (update-in db
+                  [:wallet :ui :create-account :new-keypair]
+                  assoc
                   :seed-phrase   seed-phrase
                   :random-phrase random-phrase)
-   :fx [[:dispatch-later [{:ms       20
-                           :dispatch [:navigate-to :screen/wallet.confirm-backup]}]]]})
+   :fx [[:dispatch-later
+         [{:ms       20
+           :dispatch [:navigate-to :screen/wallet.confirm-backup]}]]]})
 
 (rf/reg-event-fx :wallet/store-new-seed-phrase store-new-seed-phrase)
 
@@ -57,11 +60,14 @@
   [{:keys [db]} [{:keys [new-account-data keypair-name]}]]
   (let [new-account (update new-account-data :mnemonic security/mask-data)]
     {:db (-> db
-             (update-in [:wallet :ui :create-account :new-keypair] assoc
+             (update-in [:wallet :ui :create-account :new-keypair]
+                        assoc
                         :new-account-data new-account
-                        :keypair-name keypair-name)
-             (update-in [:wallet :ui :create-account :new-keypair] dissoc
-                        :seed-phrase :random-phrase))
+                        :keypair-name     keypair-name)
+             (update-in [:wallet :ui :create-account :new-keypair]
+                        dissoc
+                        :seed-phrase
+                        :random-phrase))
      :fx [[:dispatch [:navigate-back-to :screen/wallet.create-account]]]}))
 
 (rf/reg-event-fx :wallet/store-account-generated store-account-generated)
@@ -140,15 +146,15 @@
  (fn [{db :db} [password account-preferences]]
    (let [{:keys [keypair-name
                  new-account-data]} (-> db :wallet :ui :create-account :new-keypair)
-         keypair-with-account (create-account.utils/prepare-new-account
-                               {:keypair-name        keypair-name
-                                :account-data        new-account-data
-                                :account-preferences account-preferences})
-         new-address          (some-> new-account-data
-                                (create-account.utils/first-derived-account)
-                                (:address)
-                                (string/lower-case))
-         unmasked-password    (security/safe-unmask-data password)]
+         keypair-with-account       (create-account.utils/prepare-new-account
+                                     {:keypair-name        keypair-name
+                                      :account-data        new-account-data
+                                      :account-preferences account-preferences})
+         new-address                (some-> new-account-data
+                                            (create-account.utils/first-derived-account)
+                                            (:address)
+                                            (string/lower-case))
+         unmasked-password          (security/safe-unmask-data password)]
      {:fx [[:json-rpc/call
             [{:method     "accounts_addKeypair"
               :params     [unmasked-password keypair-with-account]

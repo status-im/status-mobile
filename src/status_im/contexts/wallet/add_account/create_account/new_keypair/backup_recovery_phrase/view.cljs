@@ -109,7 +109,8 @@
               :button-one-props {:disabled?           (some false? (vals @checked?))
                                  :customization-color customization-color
                                  :on-press            #(rf/dispatch [:wallet/store-new-seed-phrase
-                                                                     {:seed-phrase   (security/mask-data @seed-phrase)
+                                                                     {:seed-phrase   (security/mask-data
+                                                                                      @seed-phrase)
                                                                       :random-phrase @random-phrase}])}}]
             [quo/text
              {:size  :paragraph-2

@@ -1,23 +1,23 @@
 (ns status-im.contexts.wallet.events
   (:require
-   [camel-snake-kebab.extras :as cske]
-   [clojure.string :as string]
-   [react-native.platform :as platform]
-   [status-im.constants :as constants]
-   [status-im.contexts.settings.wallet.events]
-   [status-im.contexts.wallet.common.utils.networks :as network-utils]
-   [status-im.contexts.wallet.data-store :as data-store]
-   [status-im.contexts.wallet.db :as db]
-   [status-im.contexts.wallet.item-types :as item-types]
-   [taoensso.timbre :as log]
-   [utils.collection]
-   [utils.ethereum.chain :as chain]
-   [utils.ethereum.eip.eip55 :as eip55]
-   [utils.i18n :as i18n]
-   [utils.number]
-   [utils.re-frame :as rf]
-   [utils.security.core :as security]
-   [utils.transforms :as transforms]))
+    [camel-snake-kebab.extras :as cske]
+    [clojure.string :as string]
+    [react-native.platform :as platform]
+    [status-im.constants :as constants]
+    [status-im.contexts.settings.wallet.events]
+    [status-im.contexts.wallet.common.utils.networks :as network-utils]
+    [status-im.contexts.wallet.data-store :as data-store]
+    [status-im.contexts.wallet.db :as db]
+    [status-im.contexts.wallet.item-types :as item-types]
+    [taoensso.timbre :as log]
+    [utils.collection]
+    [utils.ethereum.chain :as chain]
+    [utils.ethereum.eip.eip55 :as eip55]
+    [utils.i18n :as i18n]
+    [utils.number]
+    [utils.re-frame :as rf]
+    [utils.security.core :as security]
+    [utils.transforms :as transforms]))
 
 (rf/reg-event-fx :wallet/show-account-created-toast
  (fn [{:keys [db]} [address]]
@@ -187,7 +187,8 @@
       [{:keys [password account-name emoji color type]
         :or   {type :generated}}
        {:keys [public-key address path] :as _derived-account}]]
-   (let [lowercase-address (some-> address (string/lower-case))
+   (let [lowercase-address (some-> address
+                                   (string/lower-case))
          key-uid           (get-in db [:wallet :ui :create-account :selected-keypair-uid])
          account-config    {:key-uid    (when (= type :generated) key-uid)
                             :wallet     false
