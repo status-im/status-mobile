@@ -2,8 +2,9 @@
   (:require [quo.foundations.colors :as colors]))
 
 (def detail-item
-  {:flex   1
-   :height 36})
+  {:flex             1
+   :height           36
+   :background-color :transparent})
 
 (def content-container
   {:padding-top        12
@@ -14,22 +15,14 @@
   {:margin-right 4})
 
 (defn details-container
-  [{:keys [loading-suggested-routes? route-loaded? theme]}]
-  {:flex-direction     :row
-   :justify-content    (if route-loaded? :space-between :center)
-   :height             (when (or loading-suggested-routes? route-loaded?) 52)
-   :padding-horizontal 12
-   :padding-top        7
-   :padding-bottom     8
-   :border-radius      16
-   :border-width       1
-   :border-color       (if (or loading-suggested-routes? route-loaded?)
-                         (colors/theme-colors colors/neutral-10 colors/neutral-90 theme)
-                         :transparent)})
-
-(def details-title-container
-  {:padding-horizontal 20
-   :padding-bottom     16})
+  [{:keys [loading-suggested-routes? route-loaded?]}]
+  {:flex-direction    :row
+   :width             "100%"
+   :justify-content   (if route-loaded? :space-between :center)
+   :height            (when (or loading-suggested-routes? route-loaded?) 52)
+   :margin-horizontal 5
+   :padding-top       7
+   :margin-bottom     8})
 
 (defn section-label
   [theme]
