@@ -1,18 +1,31 @@
 (ns status-im.contexts.chat.messenger.messages.view
   (:require
+    [clojure.string :as string]
     [quo.theme :as quo.theme]
     [react-native.core :as rn]
     [react-native.platform :as platform]
     [react-native.reanimated :as reanimated]
     [react-native.safe-area :as safe-area]
     [reagent.core :as reagent]
-    [status-im.contexts.chat.messenger.composer.view :as composer.view]
+    [status-im.contexts.chat.messenger.composer.view :as composer]
+    [status-im.contexts.chat.messenger.messages.contact-requests.bottom-drawer.view :as
+     contact-requests.bottom-drawer]
     [status-im.contexts.chat.messenger.messages.list.style :as style]
     [status-im.contexts.chat.messenger.messages.list.view :as list.view]
     [status-im.contexts.chat.messenger.messages.navigation.view :as messages.navigation]
+    [status-im.contexts.chat.messenger.messages.scroll-to-bottom.view :as scroll-to-bottom]
     [status-im.contexts.chat.messenger.placeholder.view :as placeholder.view]
     [status-im.feature-flags :as ff]
     [utils.re-frame :as rf]))
+
+(defn- footer
+  [props]
+  (let [current-chat-id       (rf/sub [:chats/current-chat-id])
+        able-to-send-message? (rf/sub [:chats/able-to-send-message?])]
+    (when-not (string/blank? current-chat-id)
+      (if able-to-send-message?
+        [composer/view props]
+        [contact-requests.bottom-drawer/view {:contact-id current-chat-id}]))))
 
 (defn- chat-screen
   [{:keys [insets] :as props}]
@@ -23,9 +36,11 @@
       [rn/keyboard-avoiding-view
        {:style                    (style/keyboard-avoiding-container theme)
         :keyboard-vertical-offset (- (if platform/ios? alert-banners-top-margin 0) (:bottom insets))}
-       [list.view/messages-list-content props]
+       [:<>
+        [list.view/messages-list-content props]
+        [scroll-to-bottom/button props]]
        [messages.navigation/view props]
-       [composer.view/composer props]])))
+       [footer props]])))
 
 (defn lazy-chat-screen
   [chat-screen-layout-calculations-complete? *screen-loaded?*]

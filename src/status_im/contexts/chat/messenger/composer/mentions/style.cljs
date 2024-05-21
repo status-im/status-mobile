@@ -5,7 +5,6 @@
     [react-native.reanimated :as reanimated]
     [status-im.contexts.chat.messenger.composer.constants :as constants]))
 
-
 (defn shadow
   [theme]
   (if platform/ios?
@@ -16,12 +15,12 @@
     {:elevation 10}))
 
 (defn container
-  [opacity bottom theme]
+  [opacity top theme]
   (reanimated/apply-animations-to-style
    {:opacity opacity}
    (merge
     {:position         :absolute
-     :bottom           bottom
+     :top              (- (+ 8 top))
      :left             8
      :right            8
      :border-radius    16

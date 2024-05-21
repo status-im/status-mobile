@@ -21,6 +21,12 @@
      (when (empty? new-input)
        (mentions/clear-mentions)))))
 
+(rf/defn set-chat-input-ref
+  {:events [:chat/set-input-ref]}
+  [{:keys [db]} input-ref]
+  (let [current-chat-id (:current-chat-id db)]
+    {:db (assoc-in db [:chat/inputs current-chat-id :input-ref] input-ref)}))
+
 (rf/defn set-input-content-height
   {:events [:chat.ui/set-input-content-height]}
   [{db :db} content-height chat-id]
@@ -69,15 +75,14 @@
   [{:keys [db]} message]
   (let [current-chat-id (:current-chat-id db)
         text            (get-in message [:content :text])]
-    {:db         (-> db
-                     (assoc-in [:chat/inputs current-chat-id :metadata :editing-message]
-                               message)
-                     (assoc-in [:chat/inputs current-chat-id :metadata :responding-to-message] nil)
-                     (update-in [:chat/inputs current-chat-id :metadata]
-                                dissoc
-                                :sending-image))
-     :dispatch-n [[:chat.ui/set-chat-input-text nil current-chat-id]
-                  [:mention/to-input-field text current-chat-id]]}))
+    {:db       (-> db
+                   (assoc-in [:chat/inputs current-chat-id :metadata :editing-message]
+                             message)
+                   (assoc-in [:chat/inputs current-chat-id :metadata :responding-to-message] nil)
+                   (update-in [:chat/inputs current-chat-id :metadata]
+                              dissoc
+                              :sending-image))
+     :dispatch [:mention/to-input-field text current-chat-id]}))
 
 (rf/defn cancel-message-reply
   "Cancels stage message reply"
@@ -260,3 +265,8 @@
     (if editing-message
       (send-edited-message cofx input-text editing-message)
       (send-messages cofx input-text current-chat-id))))
+
+(rf/reg-fx :effects/set-input-text-value
+ (fn [[input-ref text-value]]
+   (when (and (not (string/blank? text-value)) input-ref)
+     (.setNativeProps ^js input-ref (clj->js {:text (emoji/text->emoji text-value)})))))
