@@ -14,54 +14,46 @@
     [react-native.core :as rn]
     [utils.i18n :as i18n]))
 
-(def ^:private left-image-supported-types #{:account :keypair :missing-keypair :default-keypair})
+(def ^:private left-image-supported-types #{:account :keypair :default-keypair})
 
 (defn- left-image
   [{:keys [type customization-color account-avatar-emoji account-avatar-type icon-avatar
            profile-picture]}]
   (case type
-    :account           [account-avatar/view
-                        {:customization-color customization-color
-                         :size                32
-                         :emoji               account-avatar-emoji
-                         :type                (or account-avatar-type :default)}]
-    (:keypair
-     :missing-keypair) [icon-avatar/icon-avatar
-                        {:icon    icon-avatar
-                         :border? true
-                         :color   :neutral}]
+    :account         [account-avatar/view
+                      {:customization-color customization-color
+                       :size                32
+                       :emoji               account-avatar-emoji
+                       :type                (or account-avatar-type :default)}]
+    :keypair         [icon-avatar/icon-avatar
+                      {:icon    icon-avatar
+                       :border? true
+                       :color   :neutral}]
 
-    :default-keypair   [user-avatar/user-avatar
-                        {:size              :small
-                         :status-indicator? false
-                         :profile-picture   profile-picture}]
+    :default-keypair [user-avatar/user-avatar
+                      {:size              :small
+                       :status-indicator? false
+                       :profile-picture   profile-picture}]
     nil))
 
 (defn- keypair-subtitle
-  [{:keys [theme blur? keycard?]}]
+  [{:keys [theme blur? stored]}]
   [rn/view {:style style/row}
    [text/text
     {:size   :paragraph-2
      :weight :regular
      :style  (style/description theme blur?)}
-    (if keycard?
-      (i18n/label :t/on-keycard)
+    (case stored
+      :on-device  (i18n/label :t/on-device)
+      :on-keycard (i18n/label :t/on-keycard)
+      :missing    (i18n/label :t/import-to-use-derived-accounts)
       (i18n/label :t/on-device))]
-   (when keycard?
+   (when (= stored :on-keycard)
      [icons/icon
       :i/keycard-card
       {:color           (colors/theme-colors colors/neutral-50 colors/neutral-40 theme)
        :size            16
        :container-style style/keycard-icon}])])
-
-(defn- missing-keypair-subtitle
-  [{:keys [theme blur?]}]
-  [rn/view {:style style/row}
-   [text/text
-    {:size   :paragraph-2
-     :weight :regular
-     :style  (style/description theme blur?)}
-    (i18n/label :t/import-to-use-derived-accounts)]])
 
 (defn- account-subtitle
   [{:keys [networks theme blur? description]}]
@@ -113,19 +105,14 @@
    description])
 
 (defn- subtitle
-  [{:keys [type theme blur? keycard? networks description community-name community-logo
+  [{:keys [type theme blur? stored networks description community-name community-logo
            context-tag-type account-name emoji customization-color full-name profile-picture]}]
   (cond
     (= :keypair type)
     [keypair-subtitle
-     {:theme    theme
-      :blur?    blur?
-      :keycard? keycard?}]
-
-    (= :missing-keypair type)
-    [missing-keypair-subtitle
-     {:theme theme
-      :blur? blur?}]
+     {:theme  theme
+      :blur?  blur?
+      :stored stored}]
 
     (= :account type)
     [account-subtitle
@@ -210,7 +197,7 @@
 (defn view
   [{:keys [title title-icon type description blur? community-name community-logo button-icon
            account-name emoji context-tag-type button-type container-style
-           on-button-press on-button-long-press profile-picture keycard? networks label full-name
+           on-button-press on-button-long-press profile-picture stored networks label full-name
            button-disabled? account-avatar-emoji account-avatar-type customization-color icon-avatar]}]
   (let [theme (quo.theme/use-theme)]
     [rn/view {:style (merge style/container container-style)}
@@ -235,7 +222,7 @@
        {:type                type
         :theme               theme
         :blur?               blur?
-        :keycard?            keycard?
+        :stored              stored
         :networks            networks
         :description         description
         :community-name      community-name

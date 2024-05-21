@@ -22,18 +22,17 @@
 
 (defn options-drawer-props
   [{{:keys [name]} :keypair
-    :keys          [type theme shortened-key customization-color profile-picture]}]
-  (cond-> {:theme theme
-           :type  type
-           :blur? true
-           :title name}
+    :keys          [type stored theme shortened-key customization-color profile-picture]}]
+  (cond-> {:theme  theme
+           :type   type
+           :blur?  true
+           :title  name
+           :stored stored}
     (= type :default-keypair)
     (assoc :description         shortened-key
            :customization-color customization-color
            :profile-picture     profile-picture)
     (= type :keypair)
-    (assoc :icon-avatar :i/seed)
-    (= type :missing-keypair)
     (assoc :icon-avatar :i/seed)))
 
 (defn- keypair
@@ -53,6 +52,7 @@
                               {:theme               theme
                                :keypair             item
                                :type                (if default-keypair? :default-keypair :keypair)
+                               :stored              :on-device
                                :shortened-key       shortened-key
                                :customization-color customization-color
                                :profile-picture     profile-picture})
@@ -80,7 +80,8 @@
                  :content (fn [] [actions/view
                                   (options-drawer-props
                                    {:theme   :dark
-                                    :type    :missing-keypair
+                                    :type    :keypair
+                                    :stored  :missing
                                     :blur?   true
                                     :keypair keypair-data})
                                   keypair-data])}]))
