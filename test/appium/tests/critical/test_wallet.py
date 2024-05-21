@@ -116,6 +116,7 @@ class TestWalletMultipleDevice(MultipleSharedDeviceTestCase):
 
     @marks.testrail_id(727230)
     def test_wallet_send_asset_from_drawer(self):
+        self.wallet_view.navigate_back_to_wallet_view()
         sender_balance, receiver_balance, eth_amount_sender, eth_amount_receiver = self._get_balances_before_tx()
         self.wallet_2.close_account_button.click()
         self.wallet_2.chats_tab.click()
@@ -208,10 +209,10 @@ class TestWalletOneDevice(MultipleSharedDeviceTestCase):
             self.errors.append("Can't swipe between accounts, account to watch is not shown")
         else:
             shown_address = self.home_view.copy_wallet_address()
-            if set(shown_address.split(':')) != {'eth', 'arb1', 'opt', address_to_watch}:
+            if set(shown_address.split(':')) != {'eth', 'arb1', 'oeth', address_to_watch}:
                 self.home_view.driver.fail(
                     "Incorrect address '%s' is shown when swiping between accounts, expected one is '%s'" % (
-                        shown_address, ':'.join(address_to_watch)))
+                        shown_address, address_to_watch))
         self.home_view.click_system_back_button()
 
         self.wallet_view.just_fyi("Removing account to watch")
