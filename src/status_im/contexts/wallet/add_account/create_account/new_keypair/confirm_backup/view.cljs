@@ -65,7 +65,7 @@
         quiz-index                          (reagent/atom 0)
         incorrect-count                     (reagent/atom 0)
         show-error?                         (reagent/atom false)
-        {:keys [seed-phrase random-phrase]} (rf/sub [:wallet/create-account])
+        {:keys [seed-phrase random-phrase]} (rf/sub [:wallet/create-account-new-keypair])
         unmasked-seed-phrase                (security/safe-unmask-data seed-phrase)]
     (fn []
       (let [current-word-index            (get random-indices
@@ -82,7 +82,7 @@
                                                 (when (= @quiz-index questions-count)
                                                   (rf/dispatch [:navigate-to
                                                                 :screen/wallet.keypair-name
-                                                                {:workflow :new-key-pair}])))
+                                                                {:workflow :new-keypair}])))
                                               (do
                                                 (when (> @incorrect-count 0)
                                                   (rf/dispatch [:show-bottom-sheet
