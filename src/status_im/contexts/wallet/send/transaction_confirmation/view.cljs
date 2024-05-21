@@ -165,7 +165,7 @@
     :subtitle        subtitle}])
 
 (defn- transaction-details
-  [{:keys [estimated-time-min max-fees token-display-name amount to-address to-network route
+  [{:keys [estimated-time-min max-fees token-display-name amount to-network route
            transaction-type
            theme]}]
   (let [currency-symbol           (rf/sub [:profile/currency-symbol])
@@ -297,7 +297,6 @@
              :max-fees           max-fees
              :token-display-name token-display-name
              :amount             amount
-             :to-address         to-address
              :to-network         bridge-to-network
              :theme              theme
              :route              route
