@@ -18,7 +18,8 @@
 (re-frame/reg-fx
  :resolve-public-key
  (fn [{:keys [chain-id contact-identity cb]}]
-   (let [ens-name (stateofus/ens-name-parse contact-identity)]
+   (let [ens-name (stateofus/ens-name-parse contact-identity)
+         _ (println "test")]
      (ens/pubkey chain-id ens-name cb))))
 
 ;;NOTE we want to handle only last resolve
