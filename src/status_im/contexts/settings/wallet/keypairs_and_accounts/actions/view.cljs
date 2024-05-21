@@ -22,7 +22,7 @@
            :accessibility-label :show-key-pr-qr
            :label               (i18n/label :t/show-encrypted-qr-of-key-pairs)
            :on-press            #(on-show-qr data)}])
-       (when (not= (:type props) :default-keypair)
+       (when (= (:type props) :keypair)
          [{:icon                :i/edit
            :accessibility-label :rename-key-pair
            :label               (i18n/label :t/rename-key-pair)
