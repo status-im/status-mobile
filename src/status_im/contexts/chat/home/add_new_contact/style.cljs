@@ -5,32 +5,25 @@
   [theme]
   {:flex               1
    :background-color   (colors/theme-colors colors/white colors/neutral-95 theme)
-   :justify-content    :space-between
-   :align-items        :center
    :margin-top         2
    :padding-horizontal 20})
 
 (def container-invalid
-  {:style {:flex-direction :row
-           :align-items    :center
-           :margin-top     8}})
+  {:flex-direction :row
+   :margin-top     8})
 
 (defn text-description
   [theme]
-  {:size   :paragraph-2
-   :weight :medium
-   :style  {:margin-bottom 6
-            :color         (colors/theme-colors colors/neutral-50 colors/neutral-40 theme)}})
+  {:margin-bottom 6
+   :color         (colors/theme-colors colors/neutral-50 colors/neutral-40 theme)})
 
 (def icon-invalid
   {:size  16
    :color colors/danger-50})
 
 (def text-invalid
-  {:size  :paragraph-2
-   :align :left
-   :style {:margin-left 4
-           :color       colors/danger-50}})
+  {:margin-left 4
+   :color       colors/danger-50})
 
 (def input-and-scan-container
   {:flex-direction :row
