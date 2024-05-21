@@ -24,7 +24,7 @@
                                        :name    "Wallet One"
                                        :emoji   "😆"
                                        :color   :blue}]
-                    :wallet/preferred-chain-names-for-address #{:eth :opt :arb1}})))
+                    :wallet/preferred-chain-names-for-address #{:eth :oeth :arb1}})))
 
   (h/test "should display the wallet tab"
     (render-wallet-view)
