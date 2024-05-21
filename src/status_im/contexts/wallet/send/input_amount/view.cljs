@@ -116,6 +116,17 @@
     {:content (fn []
                 [unpreferred-networks-alert/view
                  {:on-confirm on-confirm}])}]))
+
+(defn- no-routes-found
+  []
+  [rn/view {:style style/no-routes-found-container}
+   [quo/info-message
+    {:type  :error
+     :icon  :i/alert
+     :size  :default
+     :style {:margin-top 15}}
+    (i18n/label :t/no-routes-found)]])
+
 (defn view
   ;; crypto-decimals, limit-crypto and initial-crypto-currency? args are needed
   ;; for component tests only
@@ -334,13 +345,7 @@
              :fees            fee-formatted
              :amount          amount-text}])
          (when (and (or no-routes-found? limit-insufficient?) (not-empty sender-network-values))
-           [rn/view {:style style/no-routes-found-container}
-            [quo/info-message
-             {:type  :error
-              :icon  :i/alert
-              :size  :default
-              :style {:margin-top 15}}
-             (i18n/label :t/no-routes-found)]])
+           [no-routes-found])
          [quo/bottom-actions
           {:actions          :one-action
            :button-one-label (if should-try-again?
