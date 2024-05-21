@@ -168,7 +168,8 @@
            (#{constants/content-type-text
               constants/content-type-image
               constants/content-type-sticker
-              constants/content-type-emoji}
+              constants/content-type-emoji
+              constants/content-type-contact-request}
             (:content-type pinned-message))
            (resolver/resolve-message latest-pin-text)
            :else latest-pin-text))))
