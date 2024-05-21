@@ -585,13 +585,16 @@
 
 (rf/reg-event-fx
  :wallet/select-from-account
- (fn [{db :db} [{:keys [address stack-id start-flow?]}]]
+ (fn [{db :db} [{:keys [address stack-id network-details start-flow?]}]]
    (let [token-symbol (-> db :wallet :ui :send :token-symbol)
          token        (when token-symbol
                         ;; When this flow has started in the wallet home page, we know the
                         ;; token or collectible to send, but we don't know from which
                         ;; account, so we extract the token data from the picked account.
-                        (utils/get-token-from-account db token-symbol address))]
+                        (let [token (utils/get-token-from-account db token-symbol address)]
+                          (assoc token
+                                 :networks      (network-utils/network-list token network-details)
+                                 :total-balance (utils/calculate-total-token-balance token))))]
      {:db (if token-symbol
             (-> db
                 (assoc-in [:wallet :ui :send :token] token)
