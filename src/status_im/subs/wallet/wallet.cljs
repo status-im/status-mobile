@@ -210,7 +210,6 @@
  (fn [[keypairs accounts] [_ format-options]]
    (let [grouped-accounts      (->> accounts
                                     (map #(select-keys % [:operable :key-uid]))
-                                    (map #(update-in % [:operable] keyword))
                                     (group-by :operable))
          operable-key-pair-ids (->> (map :key-uid (:fully grouped-accounts))
                                     (into #{}))
