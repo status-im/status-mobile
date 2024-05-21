@@ -1,9 +1,6 @@
-{ stdenv, meta, source, buildGo119Package, buildGo120Package }:
-let
-  # https://github.com/status-im/status-mobile/issues/19802
-  # only for Darwin to fix Integration Tests failing with missing symbols on go 1.20
-  buildGoPackageIntegrationTest = if stdenv.isDarwin then buildGo119Package else buildGo120Package;
-in buildGoPackageIntegrationTest {
+{ stdenv, meta, source, buildGoPackage }:
+
+buildGoPackage {
   pname = source.repo;
   version = "${source.cleanVersion}-${source.shortRev}";
 
