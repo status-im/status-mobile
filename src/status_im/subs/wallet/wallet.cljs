@@ -101,7 +101,19 @@
 (rf/reg-sub
  :wallet/wallet-send-token
  :<- [:wallet/wallet-send]
- :-> :token)
+ :<- [:wallet/network-details]
+ :<- [:wallet/wallet-send-disabled-from-chain-ids]
+ (fn [[wallet-send networks disabled-from-chain-ids]]
+   (let [token                  (:token wallet-send)
+         enabled-from-chain-ids (->> networks
+                                     (filter #(not (contains? (set disabled-from-chain-ids)
+                                                              (:chain-id %))))
+                                     (map :chain-id)
+                                     set)]
+     (assoc token
+            :networks          (network-utils/network-list token networks)
+            :available-balance (utils/calculate-total-token-balance token)
+            :total-balance     (utils/calculate-total-token-balance token enabled-from-chain-ids)))))
 
 (rf/reg-sub
  :wallet/wallet-send-disabled-from-chain-ids
@@ -310,11 +322,13 @@
  :wallet/token-by-symbol
  :<- [:wallet/current-viewing-account]
  :<- [:wallet/network-details]
- (fn [[account networks] [_ token-symbol]]
+ (fn [[account networks] [_ token-symbol chain-ids]]
    (let [tokens (map (fn [token]
                        (assoc token
-                              :networks      (network-utils/network-list token networks)
-                              :total-balance (utils/calculate-total-token-balance token)))
+                              :networks          (network-utils/network-list token networks)
+                              :available-balance (utils/calculate-total-token-balance token)
+                              :total-balance     (utils/calculate-total-token-balance token
+                                                                                      chain-ids)))
                      (:tokens account))
          token  (first (filter #(= (string/lower-case (:symbol %))
                                    (string/lower-case token-symbol))

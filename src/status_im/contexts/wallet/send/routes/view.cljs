@@ -189,9 +189,7 @@
         network-links (rf/sub [:wallet/wallet-send-network-links])
         disabled-from-chain-ids (rf/sub
                                  [:wallet/wallet-send-disabled-from-chain-ids])
-        {token-balances-per-chain :balances-per-chain} (rf/sub
-                                                        [:wallet/current-viewing-account-tokens-filtered
-                                                         (str token-symbol)])
+        {token-balances-per-chain :balances-per-chain} (rf/sub [:wallet/wallet-send-token])
         token-available-networks-for-suggested-routes
         (send-utils/token-available-networks-for-suggested-routes
          {:balances-per-chain token-balances-per-chain
