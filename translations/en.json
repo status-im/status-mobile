@@ -2397,7 +2397,6 @@
     "no-activity": "No activity",
     "empty-tab-description": "C'mon do something...",
     "buy": "Buy",
-    "confirm-bridge": "Confirm bridge",
     "bridge": "Bridge",
     "bridge-to": "Bridge {{name}} to",
     "on-device": "On device",
@@ -2638,5 +2637,7 @@
     "token-not-available-on-networks": "{{token-symbol}} is not available on {{networks}}.",
     "sending-to-networks-the-receiver-does-not-prefer": "Sending to networks the receiver does not prefer may result in recipient having difficulty accessing the sent tokens.",
     "proceed-anyway": "Proceed anyway",
-    "sending-to-unpreferred-networks": "Sending to unpreferred networks"
+    "sending-to-unpreferred-networks": "Sending to unpreferred networks",
+    "review-send": "Review send",
+    "review-bridge": "Review bridge"
 }
