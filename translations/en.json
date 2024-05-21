@@ -2516,7 +2516,7 @@
     "this-address-has-no-activity": "This address has no activity",
     "details": "Details",
     "est-time": "Est. time",
-    "user-gets": "{{name}} gets",
+    "recipient-gets": "Recipient gets",
     "slide-to-send": "Slide to send",
     "generate-new-keypair": "Generate new key pair",
     "import-using-phrase": "Import using recovery phrase",

@@ -165,7 +165,7 @@
     :subtitle        subtitle}])
 
 (defn- transaction-details
-  [{:keys [estimated-time-min max-fees token-display-name amount to-address to-network route
+  [{:keys [estimated-time-min max-fees token-display-name amount to-network route
            transaction-type
            theme]}]
   (let [currency-symbol           (rf/sub [:profile/currency-symbol])
@@ -201,7 +201,7 @@
           {:title    (if (= transaction-type :tx/bridge)
                        (i18n/label :t/bridged-to
                                    {:network (:abbreviated-name to-network)})
-                       (i18n/label :t/user-gets {:name (utils/get-shortened-address to-address)}))
+                       (i18n/label :t/recipient-gets))
            :subtitle (str amount " " token-display-name)}]]
         :else
         [quo/text {:style {:align-self :center}}
@@ -297,7 +297,6 @@
              :max-fees           max-fees
              :token-display-name token-display-name
              :amount             amount
-             :to-address         to-address
              :to-network         bridge-to-network
              :theme              theme
              :route              route
