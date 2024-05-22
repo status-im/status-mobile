@@ -99,20 +99,21 @@
  (fn [_ [toast-message]]
    {:fx [[:dispatch [:toasts/upsert {:type :positive :text toast-message}]]]}))
 
-(defn remove-account-success
-  [_ [toast-message _]]
-  {:fx [[:dispatch [:wallet/clean-current-viewing-account]]
-        [:dispatch [:wallet/get-accounts]]
-        [:dispatch [:wallet/get-keypairs]]
-        [:dispatch-later
-         {:ms       100
-          :dispatch [:hide-bottom-sheet]}]
-        [:dispatch-later
-         {:ms       100
-          :dispatch [:pop-to-root :shell-stack]}]
-        [:dispatch-later
-         {:ms       100
-          :dispatch [:wallet/show-account-deleted-toast toast-message]}]]})
+(rf/reg-event-fx
+ :remove-account-success
+ (fn [_ [toast-message _]]
+   {:fx [[:dispatch [:wallet/clean-current-viewing-account]]
+         [:dispatch [:wallet/get-accounts]]
+         [:dispatch [:wallet/get-keypairs]]
+         [:dispatch-later
+          {:ms       100
+           :dispatch [:hide-bottom-sheet]}]
+         [:dispatch-later
+          {:ms       100
+           :dispatch [:pop-to-root :shell-stack]}]
+         [:dispatch-later
+          {:ms       100
+           :dispatch [:wallet/show-account-deleted-toast toast-message]}]]}))
 
 (rf/reg-event-fx
  :wallet/remove-account
