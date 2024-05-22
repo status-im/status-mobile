@@ -41,7 +41,7 @@
                            :VerifyTransactionChainID config/verify-transaction-chain-id}}
            log-config)))
 
-(defn- extract-error
+(defn extract-error
   [json-str]
   (-> json-str
       transforms/json->clj

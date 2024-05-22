@@ -609,3 +609,15 @@
             {:fn          :get-connection-string-for-exporting-keypairs-keystores
              :config-json config-json})
   (.getConnectionStringForExportingKeypairsKeystores ^js (network) config-json callback))
+
+(defn input-connection-string-for-importing-keypairs-keystores
+  "Provides connection string to status-go for the purpose of importing keypairs and keystores on the receiver side"
+  [connection-string config-json callback]
+  (log/info "[native-module] Sending Import Keypairs Connection String"
+            {:fn                :input-connection-string-for-importing-keypairs-keystores
+             :config-json       config-json
+             :connection-string connection-string})
+  (.inputConnectionStringForImportingKeypairsKeystores ^js (network)
+                                                       connection-string
+                                                       config-json
+                                                       callback))
