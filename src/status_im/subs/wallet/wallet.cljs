@@ -184,7 +184,10 @@
  :<- [:wallet/keypairs]
  :<- [:wallet/selected-keypair-uid]
  (fn [[keypairs selected-keypair-uid]]
-   (= selected-keypair-uid (:key-uid (first keypairs)))))
+   (let [primary-keypair-uid (->> keypairs
+                                  (some #(when (= (:type %) "profile") %))
+                                  (:key-uid))]
+     (= selected-keypair-uid primary-keypair-uid))))
 
 (rf/reg-sub
  :wallet/selected-networks->chain-ids
