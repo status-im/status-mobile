@@ -161,7 +161,8 @@
         enabled-from-chain-ids                      (rf/sub
                                                      [:wallet/wallet-send-enabled-from-chain-ids])
         {token-balance     :total-balance
-         available-balance :available-balance}      (rf/sub [:wallet/token-by-symbol
+         available-balance :available-balance
+         :as               token-by-symbol}         (rf/sub [:wallet/token-by-symbol
                                                              (str token-symbol)
                                                              enabled-from-chain-ids])
         currency-symbol                             (rf/sub [:profile/currency-symbol])
@@ -337,7 +338,7 @@
                                 (number/remove-trailing-zeroes new-value))))))
        :on-token-press  show-select-asset-sheet}]
      [routes/view
-      {:token                                     token
+      {:token                                     token-by-symbol
        :input-value                               input-amount
        :value                                     amount
        :valid-input?                              valid-input?
@@ -373,7 +374,8 @@
                                                                                  conversion-rate)
                                                                               2))]
                                                  (rf/dispatch [:wallet/get-suggested-routes
-                                                               {:amount amount}]))
+                                                               {:amount        amount
+                                                                :updated-token token-by-symbol}]))
                                               sending-to-unpreferred-networks?
                                               #(show-unpreferred-networks-alert on-confirm)
                                               :else
