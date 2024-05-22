@@ -9,7 +9,7 @@
   []
   [input-amount/view
    {:current-screen-id :screen/wallet.send-input-amount
-    :button-one-label  (i18n/label :t/confirm)
+    :button-one-label  (i18n/label :t/review-send)
     :on-navigate-back  (fn []
                          (rf/dispatch [:wallet/clean-disabled-from-networks])
                          (rf/dispatch [:wallet/clean-send-amount])
