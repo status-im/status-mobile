@@ -208,8 +208,6 @@
 (def ^:const path-ledger-live "m/44'/60'")
 (def ^:const path-keepkey "m/44'/60'")
 
-(def ^:const wallet-initial-derivation-path "m/44'/60'/0'/0/0")
-
 (def ^:const path-default-wallet-keyword (keyword path-default-wallet))
 (def ^:const path-whisper-keyword (keyword path-whisper))
 (def ^:const path-wallet-root-keyword (keyword path-wallet-root))

@@ -77,7 +77,7 @@
   (let [seed-phrase (-> db :wallet :ui :create-account :new-keypair :seed-phrase)]
     {:fx [[:effects.wallet/create-account-from-mnemonic
            {:mnemonic-phrase (security/safe-unmask-data seed-phrase)
-            :paths           [constants/wallet-initial-derivation-path]
+            :paths           [constants/path-default-wallet]
             :on-success      (fn [new-account-data]
                                (rf/dispatch [:wallet/store-account-generated
                                              {:new-account-data new-account-data

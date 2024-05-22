@@ -60,7 +60,7 @@
         props            [{:keypair-name "test-keypair"}]
         expected-effects [[:effects.wallet/create-account-from-mnemonic
                            {:mnemonic-phrase "test-secret"
-                            :paths           [constants/wallet-initial-derivation-path]}]]
+                            :paths           [constants/path-default-wallet]}]]
         effects          (events/generate-account-for-keypair {:db db} props)]
     (is (match?
          (update-in effects [:fx 0 1] dissoc :on-success)

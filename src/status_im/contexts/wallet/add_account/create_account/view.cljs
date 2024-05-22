@@ -183,7 +183,7 @@
           {:account-color     @account-color
            :set-account-color set-account-color}]
          [new-account-origin
-          {:derivation-path     constants/wallet-initial-derivation-path
+          {:derivation-path     constants/path-default-wallet
            :customization-color customization-color
            :keypair-title       keypair-name}]]))))
 

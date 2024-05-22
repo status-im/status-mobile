@@ -15,7 +15,7 @@
                            :wallet     false
                            :chat       false
                            :type       :seed
-                           :path       constants/wallet-initial-derivation-path
+                           :path       constants/path-default-wallet
                            :public-key (:publicKey account-to-create)
                            :name       account-name
                            :emoji      emoji
