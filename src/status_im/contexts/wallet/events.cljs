@@ -101,8 +101,9 @@
 
 (rf/reg-event-fx
  :wallet/remove-account-success
- (fn [_ [toast-message _]]
-   {:fx [[:dispatch [:wallet/get-accounts]]
+ (fn [{:keys [db]} [toast-message _]]
+   {:db (assoc-in db [:wallet :current-viewing-account-address] nil)
+    :fx [[:dispatch [:wallet/get-accounts]]
          [:dispatch [:wallet/get-keypairs]]
          [:dispatch-later
           {:ms       100
