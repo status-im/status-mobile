@@ -195,17 +195,40 @@
                   :state         :default
                   :action        :none})))))
 
+(defn- format-settings-missing-keypair-accounts
+  [accounts]
+  (->> accounts
+       (map (fn [{:keys [customization-color emoji]}]
+              {:customization-color customization-color
+               :emoji               emoji
+               :type                :default}))))
+
 (rf/reg-sub
  :wallet/settings-keypairs-accounts
  :<- [:wallet/keypairs]
- (fn [keypairs [_ format-options]]
-   (->> keypairs
-        (map (fn [{:keys [accounts name type key-uid]}]
-               {:type     (keyword type)
-                :name     name
-                :key-uid  key-uid
-                :accounts (format-settings-keypair-accounts accounts format-options)})))))
-
+ :<- [:wallet/accounts]
+ (fn [[keypairs accounts] [_ format-options]]
+   (let [grouped-accounts      (->> accounts
+                                    (map #(select-keys % [:operable :key-uid]))
+                                    (group-by :operable))
+         operable-key-pair-ids (->> (map :key-uid (:fully grouped-accounts))
+                                    (into #{}))
+         missing-key-pair-ids  (->> (map :key-uid (:no grouped-accounts))
+                                    (into #{}))]
+     {:operable (->> keypairs
+                     (filter #(contains? operable-key-pair-ids (:key-uid %)))
+                     (map (fn [{:keys [accounts name type key-uid]}]
+                            {:type     (keyword type)
+                             :name     name
+                             :key-uid  key-uid
+                             :accounts (format-settings-keypair-accounts accounts format-options)})))
+      :missing  (->> keypairs
+                     (filter #(contains? missing-key-pair-ids (:key-uid %)))
+                     (map (fn [{:keys [accounts name type key-uid]}]
+                            {:type     (keyword type)
+                             :name     name
+                             :key-uid  key-uid
+                             :accounts (format-settings-missing-keypair-accounts accounts)})))})))
 (rf/reg-sub
  :wallet/derivation-path-state
  :<- [:wallet/create-account]

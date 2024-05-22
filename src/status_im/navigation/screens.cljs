@@ -520,9 +520,7 @@
      :component saved-addresses-settings/view}
 
     {:name      :screen/settings.keypairs-and-accounts
-     :options   (merge
-                 options/transparent-modal-screen-options
-                 options/dark-screen)
+     :options   options/transparent-modal-screen-options
      :component keypairs-and-accounts/view}
 
     {:name      :screen/settings.network-settings

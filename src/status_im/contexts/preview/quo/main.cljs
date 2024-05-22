@@ -103,6 +103,7 @@
     [status-im.contexts.preview.quo.list-items.address :as address]
     [status-im.contexts.preview.quo.list-items.channel :as channel]
     [status-im.contexts.preview.quo.list-items.dapp :as dapp]
+    [status-im.contexts.preview.quo.list-items.missing-keypair :as missing-keypair]
     [status-im.contexts.preview.quo.list-items.network-list :as network-list]
     [status-im.contexts.preview.quo.list-items.preview-lists :as preview-lists]
     [status-im.contexts.preview.quo.list-items.quiz-item :as quiz-item]
@@ -196,6 +197,7 @@
     [status-im.contexts.preview.quo.wallet.confirmation-progress :as
      confirmation-progress]
     [status-im.contexts.preview.quo.wallet.keypair :as keypair]
+    [status-im.contexts.preview.quo.wallet.missing-keypairs :as missing-keypairs]
     [status-im.contexts.preview.quo.wallet.network-amount :as network-amount]
     [status-im.contexts.preview.quo.wallet.network-bridge :as network-bridge]
     [status-im.contexts.preview.quo.wallet.network-link :as network-link]
@@ -380,6 +382,8 @@
                         :component community-list-item/view}
                        {:name      :dapp
                         :component dapp/preview}
+                       {:name      :missing-keypair
+                        :component missing-keypair/view}
                        {:name      :network-list
                         :component network-list/view}
                        {:name      :preview-lists
@@ -535,6 +539,8 @@
                        {:name      :confirmation-progress
                         :component confirmation-progress/view}
                        {:name :keypair :component keypair/view}
+                       {:name      :missing-keypairs
+                        :component missing-keypairs/view}
                        {:name :network-amount :component network-amount/view}
                        {:name :network-bridge :component network-bridge/view}
                        {:name :network-link :component network-link/view}
