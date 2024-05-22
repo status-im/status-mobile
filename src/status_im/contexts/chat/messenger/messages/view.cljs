@@ -26,7 +26,7 @@
        [composer.view/composer props]])))
 
 (defn lazy-chat-screen
-  [chat-screen-layout-calculations-complete? screen-loaded-atom?]
+  [chat-screen-layout-calculations-complete? *screen-loaded?*]
   (let [screen-loaded?         (rf/sub [:shell/chat-screen-loaded?])
         distance-from-list-top (reanimated/use-shared-value 0)
         chat-list-scroll-y     (reanimated/use-shared-value 0)
@@ -38,21 +38,21 @@
                                 :chat-list-scroll-y chat-list-scroll-y
                                 :chat-screen-layout-calculations-complete?
                                 chat-screen-layout-calculations-complete?}]
-    (when screen-loaded-atom?
-      (rn/use-mount #(reset! screen-loaded-atom? true)))
-    (when-not (if screen-loaded-atom? @screen-loaded-atom? screen-loaded?)
+    (when *screen-loaded?*
+      (rn/use-mount #(reset! *screen-loaded?* true)))
+    (when-not (if *screen-loaded?* @*screen-loaded?* screen-loaded?)
       (reanimated/set-shared-value chat-screen-layout-calculations-complete? false)
       (reanimated/set-shared-value distance-from-list-top 0)
       (reanimated/set-shared-value chat-list-scroll-y 0))
-    (when (if screen-loaded-atom? @screen-loaded-atom? screen-loaded?)
+    (when (if *screen-loaded?* @*screen-loaded?* screen-loaded?)
       [chat-screen props])))
 
 (defn chat
   []
   (let [chat-screen-layout-calculations-complete? (reanimated/use-shared-value false)
         jump-to-enabled?                          (ff/enabled? ::ff/shell.jump-to)
-        screen-loaded-atom?                       (when-not jump-to-enabled?
+        *screen-loaded?*                          (when-not jump-to-enabled?
                                                     (reagent/atom false))]
     [:<>
-     [lazy-chat-screen chat-screen-layout-calculations-complete? screen-loaded-atom?]
+     [lazy-chat-screen chat-screen-layout-calculations-complete? *screen-loaded?*]
      [placeholder.view/view chat-screen-layout-calculations-complete?]]))
