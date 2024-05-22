@@ -28,6 +28,7 @@
       (let [{:keys [name color formatted-balance
                     watch-only?]} (rf/sub [:wallet/current-viewing-account])
             customization-color   (rf/sub [:profile/customization-color])]
+        (rn/use-unmount #(rf/dispatch [:wallet/close-account-page]))
         [rn/view {:style {:flex 1}}
          [account-switcher/view
           {:type     :wallet-networks
