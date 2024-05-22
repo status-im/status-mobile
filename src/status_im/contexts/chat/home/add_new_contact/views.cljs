@@ -18,7 +18,10 @@
         theme                                 (quo.theme/use-theme)]
     (when primary-name
       [rn/view style/found-user
-       [quo/text (style/text-description theme)
+       [quo/text
+        {:size   :paragraph-2
+         :weight :medium
+         :style  (style/text-description theme)}
         (i18n/label :t/user-found)]
        [rn/view (style/found-user-container theme)
         [quo/user-avatar
@@ -105,7 +108,9 @@
   [message]
   [rn/view style/container-invalid
    [quo/icon :i/alert style/icon-invalid]
-   [quo/text style/text-invalid
+   [quo/text
+    {:size  :paragraph-2
+     :style style/text-invalid}
     (i18n/label (or message :t/invalid-ens-or-key))]])
 
 (defn navigate-back [] (rf/dispatch [:navigate-back]))
