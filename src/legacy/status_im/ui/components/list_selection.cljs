@@ -28,11 +28,13 @@
 (defn browse
   [link]
   (show {:title       (i18n/label :t/browsing-title)
-         :options     [(when config/show-not-implemented-features?
-                         {:label  (i18n/label :t/browsing-open-in-status)
-                          :action #(re-frame/dispatch [:browser.ui/open-url link])})
-                       {:label  (i18n/label (platform-web-browser))
-                        :action #(.openURL ^js react/linking (url/normalize-url link))}]
+         :options     (if config/show-not-implemented-features?
+                        [{:label  (i18n/label :t/browsing-open-in-status)
+                          :action #(re-frame/dispatch [:browser.ui/open-url link])}
+                         {:label  (i18n/label (platform-web-browser))
+                          :action #(.openURL ^js react/linking (url/normalize-url link))}]
+                        [{:label  (i18n/label (platform-web-browser))
+                          :action #(.openURL ^js react/linking (url/normalize-url link))}])
          :cancel-text (i18n/label :t/browsing-cancel)}))
 
 (defn browse-in-web-browser
