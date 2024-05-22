@@ -1,34 +1,31 @@
 (ns status-im.contexts.wallet.send.select-collectible-amount.view
   (:require
-    [quo.core :as quo]
-    [react-native.core :as rn]
-    [status-im.contexts.wallet.collectible.utils :as utils]
-    [status-im.contexts.wallet.common.account-switcher.view :as account-switcher]
-    [status-im.contexts.wallet.send.select-collectible-amount.style :as style]
-    [utils.i18n :as i18n]
-    [utils.re-frame :as rf]))
+   [quo.core :as quo]
+   [react-native.core :as rn]
+    [status-im.common.controlled-input.utils :as controlled-input]
+   [status-im.contexts.wallet.collectible.utils :as utils]
+   [status-im.contexts.wallet.common.account-switcher.view :as account-switcher]
+   [status-im.contexts.wallet.send.select-collectible-amount.style :as style]
+   [utils.i18n :as i18n]
+   [utils.re-frame :as rf]))
 
 (defn view
   []
   (let [on-close              (rn/use-callback #(rf/dispatch [:navigate-back]))
-        [value set-value]     (rn/use-state 1)
-        inc-value             (rn/use-callback (fn [] (set-value (inc value)))
-                                               [value])
-        dec-value             (rn/use-callback (fn [] (set-value (dec value)))
-                                               [value])
-        add-digit             (rn/use-callback (fn [digit]
-                                                 (set-value (+ (js/parseInt digit)
-                                                               (* value 10))))
-                                               [value])
-        delete-digit          (rn/use-callback (fn []
-                                                 (set-value (Math/floor (/ value 10))))
-                                               [value])
-
+        [value set-value]     (rn/use-state controlled-input/init-state)
         send-transaction-data (rf/sub [:wallet/wallet-send])
         collectible           (:collectible send-transaction-data)
         balance               (utils/collectible-balance collectible)
         preview-uri           (get-in collectible [:preview-url :uri])
-        incorrect-value?      (or (< value 1) (> value balance))]
+        incorrect-value?      (controlled-input/input-error value)]
+    (rn/use-mount
+     (fn []
+       (set-value #(controlled-input/set-numeric-value % 1))
+       (set-value #(controlled-input/set-lower-limit % 1))))
+    (rn/use-state
+     (fn []
+       (set-value #(controlled-input/set-upper-limit % balance)))
+     [balance])
     [rn/view
      [account-switcher/view
       {:icon-name     :i/arrow-left
@@ -46,11 +43,11 @@
        :container-style style/network-tags-container}]
 
      [quo/amount-input
-      {:max-value       (if (integer? balance) balance 0)
-       :min-value       1
-       :value           value
-       :on-inc-press    inc-value
-       :on-dec-press    dec-value
+      {:max-value       (controlled-input/upper-limit value)
+       :min-value       (controlled-input/lower-limit value)
+       :value           (controlled-input/numeric-value value)
+       :on-inc-press    (fn [] (set-value #(controlled-input/increase %)))
+       :on-dec-press    (fn [] (set-value #(controlled-input/decrease %)))
        :container-style style/amount-input-container
        :status          (if incorrect-value? :error :default)}]
      [quo/bottom-actions
@@ -58,12 +55,11 @@
        :button-one-props {:on-press  #(rf/dispatch
                                        [:wallet/set-collectible-amount-to-send
                                         {:stack-id :screen/wallet.select-collectible-amount
-                                         :amount   value}])
+                                         :amount   (controlled-input/numeric-value value)}])
                           :disabled? incorrect-value?}
        :button-one-label (i18n/label :t/confirm)}]
      [quo/numbered-keyboard
       {:left-action :none
        :delete-key? true
-       :on-press    add-digit
-       :on-delete   delete-digit}]]))
-
+       :on-press    (fn [c] (set-value #(controlled-input/add-character % c)))
+       :on-delete   (fn [] (set-value controlled-input/delete-last))}]]))
