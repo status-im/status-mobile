@@ -3,6 +3,7 @@
     [react-native.core :as rn]
     [status-im.constants :as constants]))
 
+;;;; Modal Transitions
 (def sign-in-modal-animations
   {:showModal    {:translationY {:from     (:height (rn/get-window))
                                  :to       0
@@ -38,3 +39,12 @@
    :dismissModal {:translationX {:from     0
                                  :to       (:width (rn/get-window))
                                  :duration constants/onboarding-modal-animation-duration}}})
+
+;;;; Stack Transitions
+(def stack-slide-animation
+  {:push {:content {:translationX {:from     (:width (rn/get-window))
+                                   :to       0
+                                   :duration 200}}}
+   :pop  {:content {:translationX {:from     0
+                                   :to       (:width (rn/get-window))
+                                   :duration 200}}}})

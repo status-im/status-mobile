@@ -129,8 +129,7 @@
      :component shell-qr-reader/view}
 
     {:name      :chat
-     :options   {:insets     {:top? true}
-                 :popGesture false}
+     :options   {:popGesture false}
      :component chat/chat}
 
     {:name      :start-a-new-chat

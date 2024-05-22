@@ -147,7 +147,7 @@
                           (:current-chat-id db))
                      (conj [:chat/close]))})
     {:db          (assoc db :view-id go-to-view-id)
-     :navigate-to [go-to-view-id (:theme db)]}))
+     :navigate-to [go-to-view-id (:theme db) animation]}))
 
 (rf/defn shell-navigate-back
   {:events [:shell/navigate-back]}

@@ -6,6 +6,7 @@
     [status-im.contexts.shell.jump-to.constants :as shell.constants]
     [status-im.contexts.shell.jump-to.state :as state]
     [status-im.contexts.shell.jump-to.utils :as utils]
+    [status-im.feature-flags :as ff]
     [utils.worklets.shell :as worklets.shell]))
 
 (defn calculate-home-stack-position
@@ -109,8 +110,11 @@
         switcher-card-top-position (+ (safe-area/get-top) 120)
         shared-values
         {:selected-stack-id (reanimated/use-shared-value
-                             (name (or @state/selected-stack-id :communities-stack)))
-         :home-stack-state  (reanimated/use-shared-value @state/home-stack-state)}]
+                             (name (or @state/selected-stack-id shell.constants/default-selected-stack)))
+         :home-stack-state  (reanimated/use-shared-value
+                             (if (ff/enabled? ::ff/shell.jump-to)
+                               @state/home-stack-state
+                               shell.constants/open-without-animation))}]
     ;; Whenever shell stack is created, calculate shared values function is called
     ;; Means On login and on UI reloading (like changing theme)
     ;; So we are also resetting bottom tabs here (disabling loading of unselected tabs),

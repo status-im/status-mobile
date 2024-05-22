@@ -7,6 +7,7 @@
             [status-im.contexts.profile.contact.actions.view :as actions]
             [status-im.contexts.profile.contact.header.view :as contact-header]
             [status-im.contexts.shell.jump-to.constants :as jump-to.constants]
+            [status-im.feature-flags :as ff]
             [utils.debounce :as debounce]
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]))
@@ -40,10 +41,11 @@
                                         :on-press            on-show-actions
                                         :accessibility-label :contact-actions}]}}
       [contact-header/view {:scroll-y scroll-y}]]
-     [quo/floating-shell-button
-      {:jump-to
-       {:on-press            on-jump-to
-        :customization-color profile-customization-color
-        :label               (i18n/label :t/jump-to)}}
-      {:position :absolute
-       :bottom   jump-to.constants/floating-shell-button-height}]]))
+     (when (ff/enabled? ::ff/shell.jump-to)
+       [quo/floating-shell-button
+        {:jump-to
+         {:on-press            on-jump-to
+          :customization-color profile-customization-color
+          :label               (i18n/label :t/jump-to)}}
+        {:position :absolute
+         :bottom   jump-to.constants/floating-shell-button-height}])]))

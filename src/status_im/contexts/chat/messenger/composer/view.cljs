@@ -27,6 +27,7 @@
     [status-im.contexts.chat.messenger.composer.utils :as utils]
     [status-im.contexts.chat.messenger.messages.contact-requests.bottom-drawer.view :as
      contact-requests.bottom-drawer]
+    [status-im.feature-flags :as ff]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
@@ -95,7 +96,8 @@
       (:edit subscriptions)]
      [rn/view
       {:style style/composer-sheet-and-jump-to-container}
-      [sub-view/shell-button shared-values chat-list-scroll-y window-height]
+      (when (ff/enabled? ::ff/shell.jump-to)
+        [sub-view/shell-button shared-values chat-list-scroll-y window-height])
       [gesture/gesture-detector
        {:gesture
         (drag-gesture/drag-gesture props state animations dimensions keyboard-shown)}
