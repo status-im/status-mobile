@@ -100,7 +100,7 @@
    {:fx [[:dispatch [:toasts/upsert {:type :positive :text toast-message}]]]}))
 
 (rf/reg-event-fx
- :remove-account-success
+ :wallet/remove-account-success
  (fn [_ [toast-message _]]
    {:fx [[:dispatch [:wallet/clean-current-viewing-account]]
          [:dispatch [:wallet/get-accounts]]
