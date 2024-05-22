@@ -95,6 +95,7 @@
     quo.components.wallet.account-overview.component-spec
     quo.components.wallet.account-permissions.component-spec
     quo.components.wallet.amount-input.component-spec
+    quo.components.wallet.approval-label.component-spec
     quo.components.wallet.confirmation-progress.component-spec
     quo.components.wallet.keypair.component-spec
     quo.components.wallet.network-amount.component-spec

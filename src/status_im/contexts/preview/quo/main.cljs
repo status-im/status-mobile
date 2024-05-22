@@ -191,6 +191,7 @@
      account-overview]
     [status-im.contexts.preview.quo.wallet.account-permissions :as account-permissions]
     [status-im.contexts.preview.quo.wallet.amount-input :as amount-input]
+    [status-im.contexts.preview.quo.wallet.approval-label :as approval-label]
     [status-im.contexts.preview.quo.wallet.confirmation-progress :as
      confirmation-progress]
     [status-im.contexts.preview.quo.wallet.keypair :as keypair]
@@ -526,6 +527,8 @@
                         :component account-permissions/view}
                        {:name      :amount-input
                         :component amount-input/view}
+                       {:name      :approval-label
+                        :component approval-label/view}
                        {:name      :confirmation-progress
                         :component confirmation-progress/view}
                        {:name :keypair :component keypair/view}

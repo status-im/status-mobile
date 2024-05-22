@@ -165,6 +165,7 @@
     quo.components.wallet.account-permissions.view
     quo.components.wallet.address-text.view
     quo.components.wallet.amount-input.view
+    quo.components.wallet.approval-label.view
     quo.components.wallet.confirmation-progress.view
     quo.components.wallet.keypair.view
     quo.components.wallet.network-amount.view
@@ -434,6 +435,7 @@
 (def account-permissions quo.components.wallet.account-permissions.view/view)
 (def address-text quo.components.wallet.address-text.view/view)
 (def amount-input quo.components.wallet.amount-input.view/view)
+(def approval-label quo.components.wallet.approval-label.view/view)
 (def confirmation-progress quo.components.wallet.confirmation-progress.view/view)
 (def keypair quo.components.wallet.keypair.view/view)
 (def network-amount quo.components.wallet.network-amount.view/view)
