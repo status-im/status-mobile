@@ -17,6 +17,7 @@
     quo.components.buttons.logout-button.view
     quo.components.buttons.predictive-keyboard.view
     quo.components.buttons.slide-button.view
+    quo.components.buttons.swap-order-button.view
     quo.components.buttons.wallet-button.view
     quo.components.buttons.wallet-ctas.view
     quo.components.calendar.calendar-day.view
@@ -202,6 +203,7 @@
 (def logout-button quo.components.buttons.logout-button.view/view)
 (def predictive-keyboard quo.components.buttons.predictive-keyboard.view/view)
 (def slide-button quo.components.buttons.slide-button.view/view)
+(def swap-order-button quo.components.buttons.swap-order-button.view/view)
 (def wallet-button quo.components.buttons.wallet-button.view/view)
 (def wallet-ctas quo.components.buttons.wallet-ctas.view/view)
 
