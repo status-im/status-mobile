@@ -1,13 +1,13 @@
 (ns status-im.contexts.wallet.send.select-collectible-amount.view
   (:require
-   [quo.core :as quo]
-   [react-native.core :as rn]
+    [quo.core :as quo]
+    [react-native.core :as rn]
     [status-im.common.controlled-input.utils :as controlled-input]
-   [status-im.contexts.wallet.collectible.utils :as utils]
-   [status-im.contexts.wallet.common.account-switcher.view :as account-switcher]
-   [status-im.contexts.wallet.send.select-collectible-amount.style :as style]
-   [utils.i18n :as i18n]
-   [utils.re-frame :as rf]))
+    [status-im.contexts.wallet.collectible.utils :as utils]
+    [status-im.contexts.wallet.common.account-switcher.view :as account-switcher]
+    [status-im.contexts.wallet.send.select-collectible-amount.style :as style]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]))
 
 (defn view
   []

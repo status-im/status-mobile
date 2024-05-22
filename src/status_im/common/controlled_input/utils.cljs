@@ -1,7 +1,6 @@
 (ns status-im.common.controlled-input.utils
   (:require
-    [clojure.string :as string]
-    [status-im.contexts.chat.messenger.messages.list.state :as state]))
+    [clojure.string :as string]))
 
 (def init-state
   {:value       ""
@@ -47,8 +46,9 @@
 
 (defn- recheck-errorness
   [state]
-  (set-input-error state (or (upper-limit-exceeded? state)
-                             (lower-limit-exceeded? state))))
+  (set-input-error state
+                   (or (upper-limit-exceeded? state)
+                       (lower-limit-exceeded? state))))
 
 (defn set-input-value
   [state value]
