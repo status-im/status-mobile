@@ -511,9 +511,11 @@
 (rf/reg-event-fx
  :wallet/get-crypto-on-ramps-success
  (fn [{:keys [db]} [data]]
-   {:db (assoc-in db
-         [:wallet :crypto-on-ramps]
-         (cske/transform-keys transforms/->kebab-case-keyword data))}))
+   (let [crypto-on-ramps (cske/transform-keys transforms/->kebab-case-keyword data)]
+     {:db (assoc-in db
+           [:wallet :crypto-on-ramps]
+           {:one-time  (remove #(string/blank? (:site-url %)) crypto-on-ramps)
+            :recurrent (remove #(string/blank? (:recurrent-site-url %)) crypto-on-ramps)})})))
 
 (rf/reg-event-fx
  :wallet/get-crypto-on-ramps

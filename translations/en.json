@@ -2483,6 +2483,8 @@
     "oops-this-qr-does-not-contain-an-address": "Oops! This QR does not contain an address",
     "scan-an-account-qr-code": "Scan an account QR code",
     "buy-assets": "Buy assets",
+    "one-time": "One time",
+    "recurrent": "Recurrent",
     "account-info": "Account info",
     "network-preferences": "Network preferences",
     "network-preferences-desc-1": "Select which networks this address is happy to receive funds on",
