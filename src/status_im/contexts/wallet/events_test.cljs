@@ -124,6 +124,6 @@
   (testing "remove-account-success"
     (let [db          {:wallet {:current-viewing-account-address "0x123"}}
           expected-db {:wallet {}}
-          effects     (events/remove-account-success {:db db} ["toast message"])
+          effects     (events/remove-account-success {:db db} nil)
           result-db   (:db effects)]
       (is (match? result-db expected-db)))))

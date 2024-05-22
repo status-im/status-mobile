@@ -100,19 +100,19 @@
    {:fx [[:dispatch [:toasts/upsert {:type :positive :text toast-message}]]]}))
 
 (defn remove-account-success
-   [{:keys [db]} [toast-message _]]
-   {:db (assoc-in db [:wallet :current-viewing-account-address] nil)
-    :fx [[:dispatch [:wallet/get-accounts]]
-         [:dispatch [:wallet/get-keypairs]]
-         [:dispatch-later
-          {:ms       100
-           :dispatch [:hide-bottom-sheet]}]
-         [:dispatch-later
-          {:ms       100
-           :dispatch [:pop-to-root :shell-stack]}]
-         [:dispatch-later
-          {:ms       100
-           :dispatch [:wallet/show-account-deleted-toast toast-message]}]]})
+  [{:keys [db]} [toast-message _]]
+  {:db (assoc-in db [:wallet :current-viewing-account-address] nil)
+   :fx [[:dispatch [:wallet/get-accounts]]
+        [:dispatch [:wallet/get-keypairs]]
+        [:dispatch-later
+         {:ms       100
+          :dispatch [:hide-bottom-sheet]}]
+        [:dispatch-later
+         {:ms       100
+          :dispatch [:pop-to-root :shell-stack]}]
+        [:dispatch-later
+         {:ms       100
+          :dispatch [:wallet/show-account-deleted-toast toast-message]}]]})
 
 (rf/reg-event-fx :wallet/remove-account-success remove-account-success)
 
