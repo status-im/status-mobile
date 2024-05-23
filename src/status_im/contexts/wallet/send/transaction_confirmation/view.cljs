@@ -30,10 +30,10 @@
          (i18n/label :t/bridge)
          (i18n/label :t/send))]
       [quo/summary-tag
-       {:token        (if collectible? "" token-display-name)
-        :label        (str amount " " token-display-name)
-        :type         (if collectible? :collectible :token)
-        :image-source (if collectible? image-url :eth)}]]
+       (cond-> {:token (if collectible? "" token-display-name)
+                :label (str amount " " token-display-name)
+                :type  (if collectible? :collectible :token)}
+         collectible? (assoc :image-source image-url))]]
      (if (= transaction-type :tx/bridge)
        (doall
         (map-indexed
@@ -215,6 +215,8 @@
                                            (get-in collectible [:preview-url :uri]))
             transaction-type             (:tx-type send-transaction-data)
             estimated-time-min           (reduce + (map :estimated-time route))
+            token-symbol                 (or token-display-name
+                                             (-> send-transaction-data :token :symbol))
             first-route                  (first route)
             native-currency-symbol       (get-in first-route [:from :native-currency-symbol])
             native-token                 (when native-currency-symbol
@@ -271,7 +273,7 @@
            :customization-color      (:color account)}
           [rn/view
            [transaction-title
-            {:token-display-name token-display-name
+            {:token-display-name token-symbol
              :amount             amount
              :account            account
              :to-address         to-address
@@ -281,7 +283,7 @@
              :transaction-type   transaction-type
              :collectible?       collectible?}]
            [user-summary
-            {:token-display-name  token-display-name
+            {:token-display-name  token-symbol
              :summary-type        :status-account
              :accessibility-label :summary-from-label
              :label               (i18n/label :t/from-capitalized)
@@ -289,7 +291,7 @@
              :account-props       from-account-props
              :theme               theme}]
            [user-summary
-            {:token-display-name  token-display-name
+            {:token-display-name  token-symbol
              :summary-type        (if (= transaction-type :tx/bridge)
                                     :status-account
                                     :account)
