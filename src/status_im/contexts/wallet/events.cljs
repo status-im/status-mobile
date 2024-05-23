@@ -259,12 +259,13 @@
 (rf/reg-event-fx :wallet/get-keypairs get-keypairs)
 
 (rf/reg-event-fx :wallet/bridge-select-token
- (fn [{:keys [db]} [{:keys [token stack-id]}]]
+ (fn [{:keys [db]} [{:keys [token token-symbol stack-id]}]]
    (let [to-address (get-in db [:wallet :current-viewing-account-address])]
-     {:db (-> db
-              (assoc-in [:wallet :ui :send :token] token)
-              (assoc-in [:wallet :ui :send :to-address] to-address)
-              (assoc-in [:wallet :ui :send :tx-type] :tx/bridge))
+     {:db (cond-> db
+            token             (assoc-in [:wallet :ui :send :token] token)
+            token-symbol      (assoc-in [:wallet :ui :send :token-symbol] token-symbol)
+            (nil? to-address) (assoc-in [:wallet :ui :send :to-address] to-address)
+            :always           (assoc-in [:wallet :ui :send :tx-type] :tx/bridge))
       :fx [[:dispatch
             [:wallet/wizard-navigate-forward
              {:current-screen stack-id

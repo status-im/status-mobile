@@ -655,23 +655,26 @@
 (rf/reg-event-fx
  :wallet/select-from-account
  (fn [{db :db} [{:keys [address stack-id network-details start-flow?]}]]
-   (let [token-symbol (-> db :wallet :ui :send :token-symbol)
-         token        (when token-symbol
-                        ;; When this flow has started in the wallet home page, we know the
-                        ;; token or collectible to send, but we don't know from which
-                        ;; account, so we extract the token data from the picked account.
-                        (let [token (utils/get-token-from-account db token-symbol address)]
-                          (assoc token
-                                 :networks      (network-utils/network-list token network-details)
-                                 :total-balance (utils/calculate-total-token-balance token))))]
-     {:db (if token-symbol
-            (-> db
-                (assoc-in [:wallet :ui :send :token] token)
-                (update-in [:wallet :ui :send] dissoc :token-symbol))
-            db)
+   (let [{:keys [token-symbol
+                 tx-type]} (-> db :wallet :ui :send)
+         token             (when token-symbol
+                             ;; When this flow has started in the wallet home page, we know the
+                             ;; token or collectible to send, but we don't know from which
+                             ;; account, so we extract the token data from the picked account.
+                             (let [token (utils/get-token-from-account db token-symbol address)]
+                               (assoc token
+                                      :networks      (network-utils/network-list token network-details)
+                                      :total-balance (utils/calculate-total-token-balance token))))
+         bridge-tx?        (= tx-type :tx/bridge)
+         flow-id           (if bridge-tx?
+                             :wallet-bridge-flow
+                             :wallet-send-flow)]
+     {:db (cond-> db
+            token-symbol (assoc-in [:wallet :ui :send :token] token)
+            bridge-tx?   (assoc-in [:wallet :ui :send :to-address] address))
       :fx [[:dispatch [:wallet/switch-current-viewing-account address]]
            [:dispatch
             [:wallet/wizard-navigate-forward
              {:current-screen stack-id
               :start-flow?    start-flow?
-              :flow-id        :wallet-send-flow}]]]})))
+              :flow-id        flow-id}]]]})))
