@@ -375,7 +375,7 @@
              [:dispatch
               [:chat/navigate-to-chat chat-id
                (when-not (ff/enabled? ::ff/shell.jump-to)
-                 transitions/stack-slide-animation)]])]}
+                 transitions/stack-slide-transition)]])]}
      (when-not (get-in db [:chats chat-id :community-id])
        {:db (assoc-in db [:chats chat-id :community-id] community-id)}))))
 

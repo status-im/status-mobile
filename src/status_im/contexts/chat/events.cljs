@@ -214,8 +214,9 @@
   [cofx chat-id animation]
   (rf/merge
    cofx
-   (navigation/pop-to-root :shell-stack)
-   (navigate-to-chat chat-id animation)))
+   {:dispatch-later {:ms       500
+                     :dispatch [:chat/navigate-to-chat chat-id animation]}}
+   (navigation/pop-to-root :shell-stack)))
 
 (rf/defn handle-clear-history-response
   {:events [:chat/history-cleared]}

@@ -129,7 +129,8 @@
      :component shell-qr-reader/view}
 
     {:name      :chat
-     :options   {:popGesture false}
+     :options   {:popGesture false
+                 :animations transitions/stack-transition-from-bottom}
      :component chat/chat}
 
     {:name      :start-a-new-chat
@@ -211,6 +212,7 @@
      :component communities.discover/view}
 
     {:name      :community-overview
+     :options   {:animations transitions/stack-transition-from-bottom}
      :component communities.overview/view}
 
     {:name      :settings
