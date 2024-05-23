@@ -305,6 +305,10 @@
             :start-flow?    start-flow?
             :flow-id        :wallet-send-flow}]]]}))
 
+(rf/reg-event-fx
+ :wallet/clean-bridge-to-selection
+ (fn [{:keys [db]}]
+   {:db (update-in db [:wallet :ui :send] dissoc :bridge-to-chain-id)}))
 (rf/reg-event-fx :wallet/disable-from-networks
  (fn [{:keys [db]} [chain-ids]]
    {:db (assoc-in db [:wallet :ui :send :disabled-from-chain-ids] chain-ids)}))

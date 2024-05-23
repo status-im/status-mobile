@@ -53,7 +53,9 @@
                                      {:name (string/upper-case (str token-symbol))})]
     [rn/view
      [account-switcher/view
-      {:on-press            #(rf/dispatch [:navigate-back])
+      {:on-press            (fn []
+                              (rf/dispatch [:wallet/clean-bridge-to-selection])
+                              (rf/dispatch [:navigate-back]))
        :icon-name           :i/arrow-left
        :accessibility-label :top-bar
        :switcher-type       :select-account}]
