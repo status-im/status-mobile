@@ -16,8 +16,7 @@
 
 (defn- navigate-back-handler
   []
-  (when (or (seq @navigation.state/modals)
-            (seq (utils/open-floating-screens)))
+  (when-not (= 1 (count (navigation.state/get-navigation-state)))
     (rf/dispatch [:navigate-back])
     true))
 
