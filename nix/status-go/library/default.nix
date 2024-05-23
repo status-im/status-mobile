@@ -15,6 +15,10 @@ buildGoPackage {
   # TODO: try removing when go is upgraded to 1.22
   GODEBUG = "netdns=cgo+2";
 
+  # Since go 1.21 status-go compiled library includes references to cgo runtime.
+  # FIXME: Remove this when go 1.23 or later versions fix this madness.
+  allowGoReference = true;
+
   preBuild = ''
     pushd go/src/$goPackagePath
     go run cmd/library/*.go > $NIX_BUILD_TOP/main.go
