@@ -12,17 +12,20 @@
 (defn view
   []
   (let [on-close              (rn/use-callback #(rf/dispatch [:navigate-back]))
-        [value set-value]     (rn/use-state controlled-input/init-state)
         send-transaction-data (rf/sub [:wallet/wallet-send])
         collectible           (:collectible send-transaction-data)
         balance               (utils/collectible-balance collectible)
+        [value set-value]     (rn/use-state (-> controlled-input/init-state
+                                                (controlled-input/set-numeric-value 1)
+                                                (controlled-input/set-lower-limit 1)))
         preview-uri           (get-in collectible [:preview-url :uri])
-        incorrect-value?      (controlled-input/input-error value)]
-    (rn/use-mount
-     (fn []
-       (set-value #(controlled-input/set-numeric-value % 1))
-       (set-value #(controlled-input/set-lower-limit % 1))))
-    (rn/use-state
+        incorrect-value?      (controlled-input/input-error value)
+        increase-value        (rn/use-callback #(set-value controlled-input/increase))
+        decrease-value        (rn/use-callback #(set-value controlled-input/decrease))
+        delete-character      (rn/use-callback #(set-value controlled-input/delete-last))
+        add-character         (rn/use-callback (fn [c]
+                                                 (set-value #(controlled-input/add-character % c))))]
+    (rn/use-effect
      (fn []
        (set-value #(controlled-input/set-upper-limit % balance)))
      [balance])
@@ -41,13 +44,12 @@
       {:title           (i18n/label :t/max {:number balance})
        :status          (if incorrect-value? :error :default)
        :container-style style/network-tags-container}]
-
      [quo/amount-input
       {:max-value       (controlled-input/upper-limit value)
        :min-value       (controlled-input/lower-limit value)
        :value           (controlled-input/numeric-value value)
-       :on-inc-press    (fn [] (set-value #(controlled-input/increase %)))
-       :on-dec-press    (fn [] (set-value #(controlled-input/decrease %)))
+       :on-inc-press    increase-value
+       :on-dec-press    decrease-value
        :container-style style/amount-input-container
        :status          (if incorrect-value? :error :default)}]
      [quo/bottom-actions
@@ -61,5 +63,5 @@
      [quo/numbered-keyboard
       {:left-action :none
        :delete-key? true
-       :on-press    (fn [c] (set-value #(controlled-input/add-character % c)))
-       :on-delete   (fn [] (set-value controlled-input/delete-last))}]]))
+       :on-press    add-character
+       :on-delete   delete-character}]]))
