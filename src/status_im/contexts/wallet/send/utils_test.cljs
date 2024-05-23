@@ -209,13 +209,13 @@
                                                                    :disabled-chain-ids
                                                                    disabled-chain-ids}))))))
 
-(deftest test-reset-network-amounts-to-zero
+(deftest test-reset-loading-network-amounts-to-zero
   (testing "Correctly resets loading network amounts to zero and changes type to default"
     (let [network-amounts [{:chain-id 1 :total-amount (money/bignumber "100") :type :loading}
                            {:chain-id 10 :total-amount (money/bignumber "200") :type :default}]
           expected        [{:chain-id 1 :total-amount (money/bignumber "0") :type :default}
                            {:chain-id 10 :total-amount (money/bignumber "200") :type :default}]
-          result          (utils/reset-network-amounts-to-zero network-amounts)
+          result          (utils/reset-loading-network-amounts-to-zero network-amounts)
           comparisons     (map #(map/deep-compare %1 %2)
                                expected
                                result)]
@@ -226,7 +226,7 @@
                            {:chain-id 10 :total-amount (money/bignumber "0") :type :disabled}]
           expected        [{:chain-id 1 :total-amount (money/bignumber "100") :type :default}
                            {:chain-id 10 :total-amount (money/bignumber "0") :type :disabled}]
-          result          (utils/reset-network-amounts-to-zero network-amounts)
+          result          (utils/reset-loading-network-amounts-to-zero network-amounts)
           comparisons     (map #(map/deep-compare %1 %2)
                                expected
                                result)]
@@ -235,7 +235,7 @@
   (testing "Processes an empty list without error"
     (let [network-amounts []
           expected        []
-          result          (utils/reset-network-amounts-to-zero network-amounts)
+          result          (utils/reset-loading-network-amounts-to-zero network-amounts)
           comparisons     (map #(map/deep-compare %1 %2)
                                expected
                                result)]
@@ -246,7 +246,7 @@
                            {:chain-id 10 :total-amount (money/bignumber "200") :type :loading}]
           expected        [{:chain-id 1 :total-amount (money/bignumber "0") :type :default}
                            {:chain-id 10 :total-amount (money/bignumber "0") :type :default}]
-          result          (utils/reset-network-amounts-to-zero network-amounts)
+          result          (utils/reset-loading-network-amounts-to-zero network-amounts)
           comparisons     (map #(map/deep-compare %1 %2)
                                expected
                                result)]
@@ -261,7 +261,7 @@
                            {:chain-id 10 :total-amount (money/bignumber "200") :type :default}
                            {:chain-id 42161 :total-amount (money/bignumber "0") :type :default}
                            {:chain-id 59144 :total-amount (money/bignumber "0") :type :disabled}]
-          result          (utils/reset-network-amounts-to-zero network-amounts)
+          result          (utils/reset-loading-network-amounts-to-zero network-amounts)
           comparisons     (map #(map/deep-compare %1 %2)
                                expected
                                result)]
