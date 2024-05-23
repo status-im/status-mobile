@@ -13,6 +13,10 @@
     {:current-screen-id :screen/wallet.bridge-input-amount
      :button-one-label  (i18n/label :t/review-bridge)
      :button-one-props  {:icon-left :i/bridge}
+     :on-confirm        (fn [amount]
+                          (rf/dispatch [:wallet/set-token-amount-to-bridge
+                                        {:amount   amount
+                                         :stack-id :screen/wallet.bridge-input-amount}]))
      :on-navigate-back  (fn []
                           (rf/dispatch [:wallet/clean-disabled-from-networks])
                           (rf/dispatch [:wallet/clean-send-amount])

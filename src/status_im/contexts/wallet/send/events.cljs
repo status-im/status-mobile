@@ -306,6 +306,16 @@
             :flow-id        :wallet-send-flow}]]]}))
 
 (rf/reg-event-fx
+ :wallet/set-token-amount-to-bridge
+ (fn [{:keys [db]} [{:keys [amount stack-id start-flow?]}]]
+   {:db (assoc-in db [:wallet :ui :send :amount] amount)
+    :fx [[:dispatch
+          [:wallet/wizard-navigate-forward
+           {:current-screen stack-id
+            :start-flow?    start-flow?
+            :flow-id        :wallet-bridge-flow}]]]}))
+
+(rf/reg-event-fx
  :wallet/clean-bridge-to-selection
  (fn [{:keys [db]}]
    {:db (update-in db [:wallet :ui :send] dissoc :bridge-to-chain-id)}))
