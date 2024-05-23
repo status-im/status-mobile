@@ -88,7 +88,7 @@
 (defn- navigate
   [[component theme animations]]
   (let [{:keys [options]} (get views/screens component)
-        options           (if animations (assoc options :animations animations) options)]
+        options           (if (map? animations) (assoc options :animations animations) options)]
     (dismiss-all-modals)
     (navigation/push
      (name @state/root-id)
