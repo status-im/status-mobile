@@ -60,16 +60,16 @@
 (rf/reg-event-fx
  :wallet/get-accounts-success
  (fn [{:keys [db]} [accounts]]
-   (let [wallet-accounts     (filter #(not (:chat %)) accounts)
+   (let [wallet-accounts     (data-store/rpc->accounts accounts)
          wallet-db           (get db :wallet)
          new-account?        (:new-account? wallet-db)
          navigate-to-account (:navigate-to-account wallet-db)]
      {:db (assoc-in db
            [:wallet :accounts]
-           (utils.collection/index-by :address (data-store/rpc->accounts wallet-accounts)))
-      :fx [[:dispatch [:wallet/get-wallet-token]]
+           (utils.collection/index-by :address wallet-accounts))
+      :fx [[:dispatch [:wallet/get-wallet-token-for-all-accounts]]
            [:dispatch [:wallet/request-collectibles-for-all-accounts {:new-request? true}]]
-           [:dispatch [:wallet/check-recent-history]]
+           [:dispatch [:wallet/check-recent-history-for-all-accounts]]
            (when new-account?
              [:dispatch [:wallet/navigate-to-new-account navigate-to-account]])]})))
 
@@ -82,6 +82,14 @@
             :on-error   #(log/info "failed to get accounts "
                                    {:error %
                                     :event :wallet/get-accounts})}]]]}))
+
+(rf/reg-event-fx
+ :wallet/process-account-from-signal
+ (fn [{:keys [db]} [{:keys [address] :as account}]]
+   {:db (assoc-in db [:wallet :accounts address] (data-store/rpc->account account))
+    :fx [[:dispatch [:wallet/get-wallet-token-for-account address]]
+         [:dispatch [:wallet/request-new-collectibles-for-account-from-signal address]]
+         [:dispatch [:wallet/check-recent-history-for-account address]]]}))
 
 (rf/reg-event-fx
  :wallet/save-account
@@ -130,30 +138,37 @@
                                     :event :wallet/remove-account})}]]]}))
 
 (rf/reg-event-fx
- :wallet/get-wallet-token
+ :wallet/get-wallet-token-for-all-accounts
  (fn [{:keys [db]}]
-   (let [addresses (->> (get-in db [:wallet :accounts])
-                        vals
-                        (map :address))]
-     {:db (assoc-in db [:wallet :ui :tokens-loading?] true)
-      :fx [[:json-rpc/call
-            [{:method     "wallet_getWalletToken"
-              :params     [addresses]
-              :on-success [:wallet/store-wallet-token]
-              :on-error   [:wallet/get-wallet-token-failed addresses]}]]]})))
+   {:fx (->> (get-in db [:wallet :accounts])
+             vals
+             (map :address)
+             (mapv
+              (fn [address]
+                [:dispatch [:wallet/get-wallet-token-for-account address]])))}))
 
 (rf/reg-event-fx
- :wallet/get-wallet-token-failed
- (fn [{:keys [db]} [params error]]
+ :wallet/get-wallet-token-for-account
+ (fn [{:keys [db]} [address]]
+   {:db (assoc-in db [:wallet :ui :tokens-loading address] true)
+    :fx [[:json-rpc/call
+          [{:method     "wallet_getWalletToken"
+            :params     [[address]]
+            :on-success [:wallet/store-wallet-token address]
+            :on-error   [:wallet/get-wallet-token-for-account-failed address]}]]]}))
+
+(rf/reg-event-fx
+ :wallet/get-wallet-token-for-account-failed
+ (fn [{:keys [db]} [address error]]
    (log/info "failed to get wallet token "
              {:error  error
-              :event  :wallet/get-wallet-token
-              :params params})
-   {:db (assoc-in db [:wallet :ui :tokens-loading?] false)}))
+              :event  :wallet/get-wallet-token-for-account
+              :params address})
+   {:db (assoc-in db [:wallet :ui :tokens-loading address] false)}))
 
 (rf/reg-event-fx
  :wallet/store-wallet-token
- (fn [{:keys [db]} [raw-tokens-data]]
+ (fn [{:keys [db]} [address raw-tokens-data]]
    (let [tokens     (data-store/rpc->tokens raw-tokens-data)
          add-tokens (fn [stored-accounts tokens-per-account]
                       (reduce-kv (fn [accounts address tokens-data]
@@ -164,7 +179,7 @@
                                  tokens-per-account))]
      {:db (-> db
               (update-in [:wallet :accounts] add-tokens tokens)
-              (assoc-in [:wallet :ui :tokens-loading?] false))})))
+              (assoc-in [:wallet :ui :tokens-loading address] false))})))
 
 (rf/defn scan-address-success
   {:events [:wallet/scan-address-success]}
@@ -354,7 +369,7 @@
 
 (rf/reg-event-fx :wallet/reload
  (fn [_]
-   {:fx [[:dispatch-n [[:wallet/get-wallet-token]]]]}))
+   {:fx [[:dispatch-n [[:wallet/get-wallet-token-for-all-accounts]]]]}))
 
 (rf/reg-event-fx :wallet/start-wallet
  (fn [_]
@@ -365,18 +380,26 @@
                                   :event :wallet/start-wallet})}]]]}))
 
 (rf/reg-event-fx
- :wallet/check-recent-history
+ :wallet/check-recent-history-for-all-accounts
  (fn [{:keys [db]}]
-   (let [addresses (->> (get-in db [:wallet :accounts])
-                        vals
-                        (map :address))
-         chain-ids (chain/chain-ids db)]
+   {:fx (->> (get-in db [:wallet :accounts])
+             vals
+             (map :address)
+             (mapv (fn [address]
+                     [:dispatch [:wallet/check-recent-history-for-account address]])))}))
+
+(rf/reg-event-fx
+ :wallet/check-recent-history-for-account
+ (fn [{:keys [db]} [address]]
+   (let [chain-ids (chain/chain-ids db)
+         params    [chain-ids [address]]]
      {:fx [[:json-rpc/call
             [{:method   "wallet_checkRecentHistoryForChainIDs"
-              :params   [chain-ids addresses]
+              :params   params
               :on-error #(log/info "failed to check recent history"
-                                   {:error %
-                                    :event :wallet/check-recent-history})}]]]})))
+                                   {:error  %
+                                    :event  :wallet/check-recent-history-for-account
+                                    :params params})}]]]})))
 
 (rf/reg-event-fx :wallet/initialize
  (fn []
@@ -536,3 +559,27 @@
               :params     [chain-id ens]
               :on-success on-success
               :on-error   on-error}]]]})))
+
+(rf/reg-event-fx
+ :wallet/process-keypair-from-backup
+ (fn [{:keys [db]} [{:keys [backedUpKeypair]}]]
+   (let [{:keys [key-uid accounts]} backedUpKeypair
+         keypairs-db                (get-in db [:wallet :keypairs])
+         updated-keypairs           (-> (filter #(not= (:key-uid %) key-uid) keypairs-db)
+                                        (conj backedUpKeypair)
+                                        data-store/rpc->keypairs)
+         accounts-fx                (mapv (fn [{:keys [chat] :as account}]
+                                            ;; We exclude the chat account from the profile keypair
+                                            ;; for fetching the assets
+                                            (when-not chat
+                                              [:dispatch
+                                               [:wallet/process-account-from-signal
+                                                account]]))
+                                          accounts)]
+     {:db (assoc-in db [:wallet :keypairs] updated-keypairs)
+      :fx accounts-fx})))
+
+(rf/reg-event-fx
+ :wallet/process-watch-only-account-from-backup
+ (fn [_ [{:keys [backedUpWatchOnlyAccount]}]]
+   {:fx [[:dispatch [:wallet/process-account-from-signal backedUpWatchOnlyAccount]]]}))

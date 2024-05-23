@@ -111,6 +111,18 @@
       :fx collectible-requests})))
 
 (rf/reg-event-fx
+ :wallet/request-new-collectibles-for-account-from-signal
+ (fn [{:keys [db]} [address]]
+   (let [pending-requests (get-in db [:wallet :ui :collectibles :pending-requests] -1)
+         [request-id]     (get-unique-collectible-request-id 1)]
+     {:db (assoc-in db [:wallet :ui :collectibles :pending-requests] (inc pending-requests))
+      :fx [[:dispatch
+            [:wallet/request-new-collectibles-for-account
+             {:request-id request-id
+              :account    address
+              :amount     collectibles-request-batch-size}]]]})))
+
+(rf/reg-event-fx
  :wallet/request-collectibles-for-current-viewing-account
  (fn [{:keys [db]} _]
    (let [current-viewing-account (-> db :wallet :current-viewing-account-address)
