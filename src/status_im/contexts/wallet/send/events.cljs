@@ -197,8 +197,8 @@
    (let [{token-networks :networks}                token
          receiver-networks                         (get-in db [:wallet :ui :send :receiver-networks])
          token-networks-ids                        (mapv #(:chain-id %) token-networks)
-         token-not-supported-in-receiver-networks? (not (some (set receiver-networks)
-                                                              token-networks-ids))]
+         token-not-supported-in-receiver-networks? (not-any? (set receiver-networks)
+                                                             token-networks-ids)]
      {:db (cond-> db
             :always      (update-in [:wallet :ui :send] dissoc :collectible)
             :always      (assoc-in [:wallet :ui :send :token-display-name]
@@ -319,6 +319,15 @@
  :wallet/clean-bridge-to-selection
  (fn [{:keys [db]}]
    {:db (update-in db [:wallet :ui :send] dissoc :bridge-to-chain-id)}))
+
+(rf/reg-event-fx
+ :wallet/clean-routes-calculation
+ (fn [{:keys [db]}]
+   (let [keys-to-remove [:to-values-by-chain :network-links :sender-network-values :route
+                         :receiver-network-values :suggested-routes :from-values-by-chain
+                         :loading-suggested-routes? :suggested-routes-call-timestamp]]
+     {:db (update-in db [:wallet :ui :send] #(apply dissoc % keys-to-remove))})))
+
 (rf/reg-event-fx :wallet/disable-from-networks
  (fn [{:keys [db]} [chain-ids]]
    {:db (assoc-in db [:wallet :ui :send :disabled-from-chain-ids] chain-ids)}))
