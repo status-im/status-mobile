@@ -37,16 +37,18 @@
     nil))
 
 (defn- keypair-subtitle
-  [{:keys [theme blur? keycard?]}]
+  [{:keys [theme blur? stored]}]
   [rn/view {:style style/row}
    [text/text
     {:size   :paragraph-2
      :weight :regular
      :style  (style/description theme blur?)}
-    (if keycard?
-      (i18n/label :t/on-keycard)
+    (case stored
+      :on-device  (i18n/label :t/on-device)
+      :on-keycard (i18n/label :t/on-keycard)
+      :missing    (i18n/label :t/import-to-use-derived-accounts)
       (i18n/label :t/on-device))]
-   (when keycard?
+   (when (= stored :on-keycard)
      [icons/icon
       :i/keycard-card
       {:color           (colors/theme-colors colors/neutral-50 colors/neutral-40 theme)
@@ -103,14 +105,14 @@
    description])
 
 (defn- subtitle
-  [{:keys [type theme blur? keycard? networks description community-name community-logo
+  [{:keys [type theme blur? stored networks description community-name community-logo
            context-tag-type account-name emoji customization-color full-name profile-picture]}]
   (cond
     (= :keypair type)
     [keypair-subtitle
-     {:theme    theme
-      :blur?    blur?
-      :keycard? keycard?}]
+     {:theme  theme
+      :blur?  blur?
+      :stored stored}]
 
     (= :account type)
     [account-subtitle
@@ -195,7 +197,7 @@
 (defn view
   [{:keys [title title-icon type description blur? community-name community-logo button-icon
            account-name emoji context-tag-type button-type container-style
-           on-button-press on-button-long-press profile-picture keycard? networks label full-name
+           on-button-press on-button-long-press profile-picture stored networks label full-name
            button-disabled? account-avatar-emoji account-avatar-type customization-color icon-avatar]}]
   (let [theme (quo.theme/use-theme)]
     [rn/view {:style (merge style/container container-style)}
@@ -220,7 +222,7 @@
        {:type                type
         :theme               theme
         :blur?               blur?
-        :keycard?            keycard?
+        :stored              stored
         :networks            networks
         :description         description
         :community-name      community-name

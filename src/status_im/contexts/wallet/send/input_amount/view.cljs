@@ -116,6 +116,17 @@
     {:content (fn []
                 [unpreferred-networks-alert/view
                  {:on-confirm on-confirm}])}]))
+
+(defn- no-routes-found
+  []
+  [rn/view {:style style/no-routes-found-container}
+   [quo/info-message
+    {:type  :error
+     :icon  :i/alert
+     :size  :default
+     :style {:margin-top 15}}
+    (i18n/label :t/no-routes-found)]])
+
 (defn view
   ;; crypto-decimals, limit-crypto and initial-crypto-currency? args are needed
   ;; for component tests only
@@ -274,7 +285,9 @@
            (set-input-state #(controlled-input/set-upper-limit % current-limit)))
          [current-limit])
         (rn/use-effect
-         #(when input-error (debounce/clear-all))
+         (fn []
+           (when input-error (debounce/clear-all))
+           (when (and limit-insufficient? routes) (rf/dispatch [:wallet/reset-network-amounts-to-zero])))
          [input-error])
         [rn/view
          {:style               style/screen
@@ -326,26 +339,21 @@
                     sender-network-values
                     token-not-supported-in-receiver-networks?)
            [token-not-available token-symbol receiver-networks token-networks])
-         (when (or loading-routes? (seq route))
+         (when (or loading-routes? fee-formatted)
            [estimated-fees
             {:loading-routes? loading-routes?
              :fees            fee-formatted
              :amount          amount-text}])
-         (when (or no-routes-found? limit-insufficient?)
-           [rn/view {:style style/no-routes-found-container}
-            [quo/info-message
-             {:type  :error
-              :icon  :i/alert
-              :size  :default
-              :style {:margin-top 15}}
-             (i18n/label :t/no-routes-found)]])
+         (when (and (or no-routes-found? limit-insufficient?) (not-empty sender-network-values))
+           [no-routes-found])
          [quo/bottom-actions
           {:actions          :one-action
            :button-one-label (if should-try-again?
                                (i18n/label :t/try-again)
                                button-one-label)
            :button-one-props (merge (when-not should-try-again? button-one-props)
-                                    {:disabled? (and (not should-try-again?) confirm-disabled?)
+                                    {:disabled? (or loading-routes?
+                                                    (and (not should-try-again?) confirm-disabled?))
                                      :on-press  (cond
                                                   should-try-again?
                                                   #(let [input-amount (controlled-input/input-value

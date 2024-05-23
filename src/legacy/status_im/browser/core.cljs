@@ -11,9 +11,11 @@
     [legacy.status-im.utils.random :as random]
     [native-module.core :as native-module]
     [re-frame.core :as re-frame]
+    [react-native.core :as react]
     [react-native.platform :as platform]
     [status-im.common.json-rpc.events :as json-rpc]
     [status-im.common.universal-links :as links]
+    [status-im.config :as config]
     [status-im.constants :as constants]
     [status-im.contexts.chat.events :as chat.events]
     [status-im.navigation.events :as navigation]
@@ -302,16 +304,18 @@
                         :history       [normalized-url]}]
     (if (links/universal-link? normalized-url)
       {:dispatch [:universal-links/handle-url normalized-url]}
-      (rf/merge cofx
-                {:db (assoc db
-                            :browser/options
-                            {:browser-id (:browser-id browser)}
-                            :browser/screen-id :browser)}
-                (navigation/pop-to-root :shell-stack)
-                (chat.events/close-chat)
-                (navigation/change-tab :browser-stack)
-                (update-browser browser)
-                (resolve-url nil)))))
+      (if config/show-not-implemented-features?
+        (rf/merge cofx
+                  {:db (assoc db
+                              :browser/options
+                              {:browser-id (:browser-id browser)}
+                              :browser/screen-id :browser)}
+                  (navigation/pop-to-root :shell-stack)
+                  (chat.events/close-chat)
+                  (navigation/change-tab :browser-stack)
+                  (update-browser browser)
+                  (resolve-url nil))
+        (.openURL ^js react/linking (url/normalize-url url))))))
 
 (rf/defn open-existing-browser
   "Opens an existing browser with it's history"

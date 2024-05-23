@@ -1,6 +1,6 @@
 (ns status-im.setup.dev
   (:require
-    ["react-native" :refer (DevSettings LogBox)]
+    ["react-native" :refer (DevSettings LogBox NativeModules)]
     [react-native.platform :as platform]
     [status-im.setup.schema :as schema]
     [utils.re-frame :as rf]))
@@ -48,9 +48,15 @@
                            :json-rpc/call})
   (when ^:boolean js/goog.DEBUG
     (schema/setup!)
-    (when (and platform/ios? DevSettings)
-      ;;on Android this method doesn't work
-      (when-let [nm (.-_nativeModule DevSettings)]
+    (when platform/ios?
+      ;; on Android this method doesn't work
+      (when-let [setHotLoadingEnabled (or
+                                       (and NativeModules
+                                            (.-DevSettings NativeModules)
+                                            (.-setHotLoadingEnabled (.-DevSettings NativeModules)))
+                                       (and DevSettings
+                                            (.-_nativeModule DevSettings)
+                                            (.-setHotLoadingEnabled (.-_nativeModule DevSettings))))]
         ;;there is a bug in RN, so we have to enable it first and then disable
-        (.setHotLoadingEnabled ^js nm true)
-        (js/setTimeout #(.setHotLoadingEnabled ^js nm false) 1000)))))
+        (setHotLoadingEnabled true)
+        (js/setTimeout #(setHotLoadingEnabled false) 1000)))))

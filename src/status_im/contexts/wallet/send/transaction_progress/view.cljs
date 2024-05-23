@@ -71,4 +71,5 @@
            {:source (resources/get-image :transaction-progress)
             :style  {:margin-bottom 12}}]
           [quo/standard-title
-           {:title (titles (combined-status-overview transaction-details))}]]]))))
+           {:container-style {:flex 1}
+            :title           (titles (combined-status-overview transaction-details))}]]]))))

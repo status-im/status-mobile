@@ -25,8 +25,11 @@
                :value "null"}]}
    {:key  :blur?
     :type :boolean}
-   {:key  :keycard?
-    :type :boolean}
+   {:key     :stored
+    :type    :select
+    :options [{:key :on-device}
+              {:key :on-keycard}
+              {:key :missing}]}
    {:key  :title
     :type :text}
    {:key  :description
@@ -44,7 +47,7 @@
                   :title                "Title"
                   :type                 :default
                   :label                "Drawer label"
-                  :keycard?             true
+                  :stored               :on-device
                   :networks             [{:network-name :ethereum :short-name "eth"}]
                   :description          "0x62b...0a5"
                   :button-icon          :i/placeholder

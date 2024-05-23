@@ -85,6 +85,7 @@
     quo.components.list-items.community.view
     quo.components.list-items.dapp.view
     quo.components.list-items.menu-item
+    quo.components.list-items.missing-keypair.view
     quo.components.list-items.network-list.view
     quo.components.list-items.preview-list.view
     quo.components.list-items.quiz-item.view
@@ -169,6 +170,7 @@
     quo.components.wallet.approval-label.view
     quo.components.wallet.confirmation-progress.view
     quo.components.wallet.keypair.view
+    quo.components.wallet.missing-keypairs.view
     quo.components.wallet.network-amount.view
     quo.components.wallet.network-bridge.view
     quo.components.wallet.network-link.view
@@ -320,6 +322,7 @@
 (def community-list quo.components.list-items.community.view/view)
 (def dapp quo.components.list-items.dapp.view/view)
 (def menu-item quo.components.list-items.menu-item/menu-item)
+(def missing-keypair quo.components.list-items.missing-keypair.view/view)
 (def network-list quo.components.list-items.network-list.view/view)
 (def preview-list quo.components.list-items.preview-list.view/view)
 (def quiz-item quo.components.list-items.quiz-item.view/view)
@@ -440,6 +443,7 @@
 (def approval-label quo.components.wallet.approval-label.view/view)
 (def confirmation-progress quo.components.wallet.confirmation-progress.view/view)
 (def keypair quo.components.wallet.keypair.view/view)
+(def missing-keypairs quo.components.wallet.missing-keypairs.view/view)
 (def network-amount quo.components.wallet.network-amount.view/view)
 (def network-bridge quo.components.wallet.network-bridge.view/view)
 (def network-routing quo.components.wallet.network-routing.view/view)
