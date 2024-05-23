@@ -15,8 +15,8 @@
     [utils.security.core :as security]))
 
 (defn- transaction-title
-  [{:keys [token-display-name amount account to-address route to-network image-url transaction-type
-           collectible?]}]
+  [{:keys [token-display-name amount account to-address route to-network image-url
+           transaction-type collectible?]}]
   (let [to-network-name  (:network-name to-network)
         to-network-color (if (= to-network-name :mainnet) :ethereum to-network-name)]
     [rn/view {:style style/content-container}
@@ -35,46 +35,49 @@
         :type         (if collectible? :collectible :token)
         :image-source (if collectible? image-url :eth)}]]
      (if (= transaction-type :tx/bridge)
-       (map-indexed
-        (fn [idx path]
-          (let [from-network             (:from path)
-                chain-id                 (:chain-id from-network)
-                network                  (rf/sub [:wallet/network-details-by-chain-id
-                                                  chain-id])
-                network-name             (:network-name network)
-                network-name-text        (name network-name)
-                network-name-capitalized (when (seq network-name-text)
-                                           (string/capitalize network-name-text))
-                network-color            (if (= network-name :mainnet) :ethereum network-name)]
-            [rn/view
-             {:style {:flex-direction :row
-                      :margin-top     4}}
-             (if (zero? idx)
-               [:<>
-                [quo/text
-                 {:size                :heading-1
-                  :weight              :semi-bold
-                  :style               style/title-container
-                  :accessibility-label :send-label}
-                 (i18n/label :t/from)]
-                [quo/summary-tag
-                 {:label               network-name-capitalized
-                  :type                :network
-                  :image-source        (:source network)
-                  :customization-color network-color}]]
-               [:<>
-                [quo/text
-                 {:size                :heading-1
-                  :weight              :semi-bold
-                  :style               style/title-container
-                  :accessibility-label :send-label}
-                 (str (i18n/label :t/and) " ")]
-                [quo/summary-tag
-                 {:label               network-name-capitalized
-                  :type                :network
-                  :image-source        (:source network)
-                  :customization-color network-color}]])]))
-        route)
+       (doall
+        (map-indexed
+         (fn [idx path]
+           (let [from-network             (:from path)
+                 chain-id                 (:chain-id from-network)
+                 network                  (rf/sub [:wallet/network-details-by-chain-id
+                                                   chain-id])
+                 network-name             (:network-name network)
+                 network-name-text        (name network-name)
+                 network-name-capitalized (when (seq network-name-text)
+                                            (string/capitalize network-name-text))
+                 network-color            (if (= network-name :mainnet) :ethereum network-name)]
+             (with-meta
+               [rn/view
+                {:style {:flex-direction :row
+                         :margin-top     4}}
+                (if (zero? idx)
+                  [:<>
+                   [quo/text
+                    {:size                :heading-1
+                     :weight              :semi-bold
+                     :style               style/title-container
+                     :accessibility-label :send-label}
+                    (i18n/label :t/from)]
+                   [quo/summary-tag
+                    {:label               network-name-capitalized
+                     :type                :network
+                     :image-source        (:source network)
+                     :customization-color network-color}]]
+                  [:<>
+                   [quo/text
+                    {:size                :heading-1
+                     :weight              :semi-bold
+                     :style               style/title-container
+                     :accessibility-label :send-label}
+                    (str (i18n/label :t/and) " ")]
+                   [quo/summary-tag
+                    {:label               network-name-capitalized
+                     :type                :network
+                     :image-source        (:source network)
+                     :customization-color network-color}]])]
+               {:key (str "transaction-title" idx)})))
+         route))
        [rn/view
         {:style {:flex-direction :row
                  :margin-top     4}}
@@ -126,15 +129,18 @@
 (defn- user-summary
   [{:keys [network-values token-display-name account-props theme label accessibility-label
            summary-type]}]
-  (let [network-values
-        (reduce-kv
-         (fn [acc chain-id amount]
-           (let [network-name (network-utils/id->network chain-id)]
-             (assoc acc
-                    (if (= network-name :mainnet) :ethereum network-name)
-                    {:amount amount :token-symbol token-display-name})))
-         {}
-         network-values)]
+  (let [network-values (reduce-kv
+                        (fn [acc chain-id amount]
+                          (let [network-name    (network-utils/id->network chain-id)
+                                network-keyword (if (= network-name :mainnet)
+                                                  :ethereum
+                                                  network-name)]
+                            (assoc acc
+                                   network-keyword
+                                   {:amount       amount
+                                    :token-symbol token-display-name})))
+                        {}
+                        network-values)]
     [rn/view
      {:style {:padding-horizontal 20
               :padding-bottom     16}}
