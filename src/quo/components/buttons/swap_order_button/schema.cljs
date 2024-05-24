@@ -7,5 +7,5 @@
      [:map {:closed true}
       [:disabled? {:optional true} [:maybe :boolean]]
       [:on-press fn?]
-      [:container-style {:optional true} [:maybe :any]]]]]
+      [:container-style {:optional true} [:maybe :map]]]]]
    :any])

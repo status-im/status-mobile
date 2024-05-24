@@ -1,6 +1,7 @@
 (ns quo.core-spec
   (:require
     quo.components.avatars.account-avatar.component-spec
+    quo.components.avatars.community-avatar.component-spec
     quo.components.avatars.token-avatar.component-spec
     quo.components.avatars.user-avatar.component-spec
     quo.components.banners.banner.component-spec
