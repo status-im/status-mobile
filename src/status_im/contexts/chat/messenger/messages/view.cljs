@@ -1,5 +1,6 @@
 (ns status-im.contexts.chat.messenger.messages.view
   (:require
+    [quo.theme :as quo.theme]
     [react-native.core :as rn]
     [react-native.platform :as platform]
     [react-native.reanimated :as reanimated]
@@ -15,11 +16,12 @@
 
 (defn- chat-screen
   [{:keys [insets] :as props}]
-  (let [alert-banners-top-margin (rf/sub [:alert-banners/top-margin])
+  (let [theme                    (quo.theme/use-theme)
+        alert-banners-top-margin (rf/sub [:alert-banners/top-margin])
         chat-exist?              (rf/sub [:chats/current-chat-exist?])]
     (when chat-exist?
       [rn/keyboard-avoiding-view
-       {:style                    style/keyboard-avoiding-container
+       {:style                    (style/keyboard-avoiding-container theme)
         :keyboard-vertical-offset (- (if platform/ios? alert-banners-top-margin 0) (:bottom insets))}
        [list.view/messages-list-content props]
        [messages.navigation/view props]
