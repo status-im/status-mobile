@@ -13,15 +13,13 @@
                                      [:wallet/remove-keypair key-uid])
                                    [key-uid])]
     [:<>
-     [quo/page-top
-      {:container-style style/header-container
-       :title           (i18n/label :t/remove-key-pair-and-derived-accounts)
-       :title-size      :heading-2
-       :description     :context-tag
-       :context-tag     {:type    :icon
-                         :size    24
-                         :context name
-                         :icon    :i/seed-phrase}}]
+     [quo/drawer-top
+      {:container-style  style/header-container
+       :title            (i18n/label :t/remove-key-pair-and-derived-accounts)
+       :type             :context-tag
+       :context-tag-type :icon
+       :context          name
+       :icon             :i/seed-phrase}]
      [rn/view {:style style/content}
       [quo/text
        {:style  {:margin-top 4}
