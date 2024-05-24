@@ -10,8 +10,11 @@
     [status-im.contexts.preview.quo.avatars.account-avatar :as account-avatar]
     [status-im.contexts.preview.quo.avatars.channel-avatar :as channel-avatar]
     [status-im.contexts.preview.quo.avatars.collection-avatar :as collection-avatar]
+    [status-im.contexts.preview.quo.avatars.community-avatar :as community-avatar]
+    [status-im.contexts.preview.quo.avatars.dapp-avatar :as dapp-avatar]
     [status-im.contexts.preview.quo.avatars.group-avatar :as group-avatar]
     [status-im.contexts.preview.quo.avatars.icon-avatar :as icon-avatar]
+    [status-im.contexts.preview.quo.avatars.token-avatar :as token-avatar]
     [status-im.contexts.preview.quo.avatars.user-avatar :as user-avatar]
     [status-im.contexts.preview.quo.avatars.wallet-user-avatar :as
      wallet-user-avatar]
@@ -220,10 +223,16 @@
                         :component shadows/view}]
    :animated-list     [{:name      :animated-header-list
                         :component animated-header-list/mock-screen}]
-   :avatar            [{:name      :group-avatar
+   :avatar            [{:name      :community-avatar
+                        :component community-avatar/view}
+                       {:name      :dapp-avatar
+                        :component dapp-avatar/view}
+                       {:name      :group-avatar
                         :component group-avatar/view}
                        {:name      :icon-avatar
                         :component icon-avatar/view}
+                       {:name      :token-avatar
+                        :component token-avatar/view}
                        {:name      :user-avatar
                         :component user-avatar/view}
                        {:name      :wallet-user-avatar

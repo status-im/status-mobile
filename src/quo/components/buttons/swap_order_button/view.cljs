@@ -7,7 +7,7 @@
             [react-native.core :as rn]
             [schema.core :as schema]))
 
-(defn view-internal
+(defn- view-internal
   [{:keys [disabled? on-press container-style]}]
   (let [theme                  (quo.theme/use-theme)
         [pressed? set-pressed] (rn/use-state false)

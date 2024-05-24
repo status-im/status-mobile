@@ -26,7 +26,7 @@
 (goog-define ALCHEMY_OPTIMISM_SEPOLIA_TOKEN "")
 (goog-define WALLET_CONNECT_PROJECT_ID "")
 
-(def mainnet-rpc-url (str "https://eth-archival.gateway.pokt.network/v1/lb/" POKT_TOKEN))
+(def mainnet-rpc-url (str "https://eth-archival.rpc.grove.city/v1/" POKT_TOKEN))
 (def goerli-rpc-url (str "https://goerli-archival.gateway.pokt.network/v1/lb/" POKT_TOKEN))
 (def mainnet-chain-explorer-link "https://etherscan.io/address/")
 (def optimism-mainnet-chain-explorer-link "https://optimistic.etherscan.io/address/")

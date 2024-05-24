@@ -3,6 +3,7 @@
     [quo.core :as quo]
     [status-im.common.mute-drawer.view :as mute-options]
     [status-im.common.muting.helpers :refer [format-mute-till]]
+    [status-im.config :as config]
     [status-im.constants :as constants]
     [status-im.contexts.communities.actions.leave.view :as leave-menu]
     [status-im.contexts.communities.actions.permissions-sheet.view :as permissions-sheet]
@@ -83,11 +84,12 @@
 
 (defn community-notification-settings
   [id]
-  {:icon                :i/notifications
-   :accessibility-label :community-notification-settings
-   :label               (i18n/label :t/notification-settings)
-   :on-press            #(js/alert (str "implement action" id))
-   :right-icon          :i/chevron-right})
+  (when config/show-not-implemented-features?
+    {:icon                :i/notifications
+     :accessibility-label :community-notification-settings
+     :label               (i18n/label :t/notification-settings)
+     :on-press            #(js/alert (str "implement action" id))
+     :right-icon          :i/chevron-right}))
 
 (defn invite-contacts
   [id]
