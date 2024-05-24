@@ -112,16 +112,16 @@
        :accessibility-label :keypairs-and-accounts-header
        :customization-color customization-color}]
      [rn/view {:style style/settings-keypairs-container}
-      (when (seq missing-keypairs)
-        [quo/missing-keypairs
-         {:blur?            true
-          :keypairs         missing-keypairs
-          :on-import-press  on-import-press
-          :container-style  style/missing-keypairs-container-style
-          :on-options-press on-missing-keypair-options-press}])
       [rn/flat-list
        {:data                    operable-keypairs
         :render-fn               keypair
+        :header                  (when (seq missing-keypairs)
+                                   [quo/missing-keypairs
+                                    {:blur?            true
+                                     :keypairs         missing-keypairs
+                                     :on-import-press  on-import-press
+                                     :container-style  style/missing-keypairs-container-style
+                                     :on-options-press on-missing-keypair-options-press}])
         :render-data             {:profile-picture     profile-picture
                                   :compressed-key      compressed-key
                                   :customization-color customization-color}
