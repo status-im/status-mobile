@@ -12,8 +12,9 @@
   [keypairs key-uid update-fn]
   (mapcat (fn [keypair]
             (if (= (keypair :key-uid) key-uid)
-              (let [updated (update-fn keypair)]
-                (if (nil? updated) [] [updated]))
+              (if-let [updated (update-fn keypair)]
+                [updated]
+                [])
               [keypair]))
    keypairs))
 
@@ -26,8 +27,9 @@
     :fx [[:dispatch [:navigate-back]]
          [:dispatch
           [:toasts/upsert
-           {:type :positive
-            :text (i18n/label :t/key-pair-name-updated)}]]]}))
+           {:type  :positive
+            :theme :dark
+            :text  (i18n/label :t/key-pair-name-updated)}]]]}))
 
 (defn rename-keypair
   [_ [{:keys [key-uid keypair-name]}]]
@@ -67,8 +69,9 @@
     :fx [[:dispatch [:hide-bottom-sheet]]
          [:dispatch
           [:toasts/upsert
-           {:type :positive
-            :text (i18n/label :t/key-pair-removed)}]]]}))
+           {:type  :positive
+            :theme :dark
+            :text  (i18n/label :t/key-pair-removed)}]]]}))
 
 (defn remove-keypair
   [_ [key-uid]]
