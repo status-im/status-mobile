@@ -422,7 +422,7 @@
                {:id       :chains-down
                 :type     :negative
                 :text     (i18n/label :t/provider-is-down {:chains chain-names})
-                :duration 10000}]])]})))
+                :duration constants/toast-chain-down-duration}]])]})))
 
 (defn reset-selected-networks
   [{:keys [db]}]
