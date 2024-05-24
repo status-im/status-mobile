@@ -83,7 +83,6 @@ def jscFlavor = 'org.webkit:android-jsc:+'
  */
 def enableHermes = hermesEnabled.toBoolean();
 
-
 def getCommitHash = { ->
     if (project.hasProperty("commitHash")) {
         return project.commitHash
@@ -278,11 +277,14 @@ dependencies {
     // The version of react-native is set by the React Native Gradle Plugin
     implementation("com.facebook.react:react-android")
     implementation("androidx.core:core-splashscreen:1.0.0")
-    // we don't use hermes for debug but we need its pom file for release builds
-    // https://github.com/status-im/status-mobile/pull/18675
-    implementation("com.facebook.react:hermes-android")
-    // FIXME: implementing both hermes & JSC increases bundle size by ~ 2MB
-    implementation(jscFlavor)
+
+    if (enableHermes) {
+        implementation("com.facebook.react:hermes-android")
+    } else {
+        // https://github.com/status-im/status-mobile/issues/18493
+        // we don't use hermes for debug builds because it crashes too often
+        implementation(jscFlavor)
+    }
 
     // react-native-screens
     implementation("androidx.appcompat:appcompat:1.1.0-rc01")
