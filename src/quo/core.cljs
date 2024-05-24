@@ -7,6 +7,7 @@
     quo.components.avatars.collection-avatar.view
     quo.components.avatars.group-avatar.view
     quo.components.avatars.icon-avatar
+    quo.components.avatars.token-avatar.view
     quo.components.avatars.user-avatar.view
     quo.components.avatars.wallet-user-avatar.view
     quo.components.banners.banner.view
@@ -192,6 +193,7 @@
 (def collection-avatar quo.components.avatars.collection-avatar.view/view)
 (def group-avatar quo.components.avatars.group-avatar.view/view)
 (def icon-avatar quo.components.avatars.icon-avatar/icon-avatar)
+(def token-avatar quo.components.avatars.token-avatar.view/view)
 (def user-avatar quo.components.avatars.user-avatar.view/user-avatar)
 (def wallet-user-avatar quo.components.avatars.wallet-user-avatar.view/wallet-user-avatar)
 
