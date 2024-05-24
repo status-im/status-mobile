@@ -46,8 +46,6 @@
                                                                     :public-key ""}])}}
         [quo/data-item
          {:card?           true
-          :right-icon      :i/advanced
-          :icon-right?     true
           :emoji           @account-emoji
           :title           (i18n/label :t/watched-address)
           :subtitle        address
@@ -60,5 +58,4 @@
                                     ;; https://github.com/status-im/status-mobile/issues/17009
                                     :weight :monospace}
                                    address])
-          :container-style style/data-item
-          :on-press        #(js/alert "To be implemented")}]]])))
+          :container-style style/data-item}]]])))

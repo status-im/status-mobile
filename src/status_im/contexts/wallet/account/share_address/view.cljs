@@ -50,7 +50,7 @@
 (defn view
   []
   (let [padding-top         (:top (safe-area/get-insets))
-        wallet-type         (reagent/atom :legacy)
+        wallet-type         (reagent/atom :multichain)
         selected-networks   (reagent/atom constants/default-network-names)
         on-settings-press   #(open-preferences selected-networks)
         on-legacy-press     #(reset! wallet-type :legacy)
