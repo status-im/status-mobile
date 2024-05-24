@@ -24,7 +24,7 @@
                                           :on-auth-success       on-auth-success
                                           :on-auth-fail          on-auth-fail
                                           :auth-button-label     auth-button-label}]))
-                         (into [] (concat [theme] dependencies)))]
+                         (vec (conj dependencies on-auth-success on-auth-fail)))]
     [quo/slide-button
      {:container-style     container-style
       :size                size

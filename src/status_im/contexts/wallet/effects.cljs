@@ -2,15 +2,18 @@
   (:require
     [clojure.string :as string]
     [native-module.core :as native-module]
-    [re-frame.core :as rf]))
+    [re-frame.core :as rf]
+    [taoensso.timbre :as log]))
 
 (rf/reg-fx
  :effects.wallet/create-account-from-mnemonic
- (fn [{:keys [seed-phrase keypair-name]}]
-   (native-module/create-account-from-mnemonic
-    {:MnemonicPhrase (if (string? seed-phrase)
-                       seed-phrase
-                       (string/join " " seed-phrase))}
-    (fn [new-keypair]
-      (rf/dispatch [:wallet/new-keypair-created
-                    {:new-keypair (assoc new-keypair :keypair-name keypair-name)}])))))
+ (fn [{:keys [mnemonic-phrase paths on-success]
+       :or   {paths []}}]
+   (let [phrase (condp #(%1 %2) mnemonic-phrase
+                  string? mnemonic-phrase
+                  coll?   (string/join " " mnemonic-phrase)
+                  (log/error "Unexpected value " mnemonic-phrase))]
+     (native-module/create-account-from-mnemonic
+      {:MnemonicPhrase phrase
+       :paths          paths}
+      on-success))))

@@ -48,6 +48,11 @@
  :-> :create-account)
 
 (rf/reg-sub
+ :wallet/create-account-new-keypair
+ :<- [:wallet/create-account]
+ :-> :new-keypair)
+
+(rf/reg-sub
  :wallet/network-filter
  :<- [:wallet/ui]
  :-> :network-filter)
@@ -164,6 +169,25 @@
  :wallet/selected-keypair-uid
  :<- [:wallet/create-account]
  :-> :selected-keypair-uid)
+
+(rf/reg-sub
+ :wallet/selected-keypair
+ :<- [:wallet/keypairs]
+ :<- [:wallet/selected-keypair-uid]
+ (fn [[keypairs selected-keypair-uid]]
+   (some #(when (= (:key-uid %) selected-keypair-uid)
+            %)
+         keypairs)))
+
+(rf/reg-sub
+ :wallet/selected-primary-keypair?
+ :<- [:wallet/keypairs]
+ :<- [:wallet/selected-keypair-uid]
+ (fn [[keypairs selected-keypair-uid]]
+   (let [primary-keypair-uid (->> keypairs
+                                  (some #(when (= (:type %) "profile") %))
+                                  (:key-uid))]
+     (= selected-keypair-uid primary-keypair-uid))))
 
 (rf/reg-sub
  :wallet/selected-networks->chain-ids
