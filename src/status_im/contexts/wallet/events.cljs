@@ -260,12 +260,13 @@
 
 (rf/reg-event-fx :wallet/bridge-select-token
  (fn [{:keys [db]} [{:keys [token token-symbol stack-id]}]]
-   (let [to-address (get-in db [:wallet :current-viewing-account-address])]
+   (let [missing-recipient? (-> db :wallet :ui :send :to-address nil?)
+         to-address         (-> db :wallet :current-viewing-account-address)]
      {:db (cond-> db
-            token             (assoc-in [:wallet :ui :send :token] token)
-            token-symbol      (assoc-in [:wallet :ui :send :token-symbol] token-symbol)
-            (nil? to-address) (assoc-in [:wallet :ui :send :to-address] to-address)
-            :always           (assoc-in [:wallet :ui :send :tx-type] :tx/bridge))
+            :always            (assoc-in [:wallet :ui :send :tx-type] :tx/bridge)
+            token              (assoc-in [:wallet :ui :send :token] token)
+            token-symbol       (assoc-in [:wallet :ui :send :token-symbol] token-symbol)
+            missing-recipient? (assoc-in [:wallet :ui :send :to-address] to-address))
       :fx [[:dispatch
             [:wallet/wizard-navigate-forward
              {:current-screen stack-id

@@ -33,7 +33,9 @@
     [rn/view {:style {:flex 1}}
      [account-switcher/view
       {:type     :wallet-networks
-       :on-press #(rf/dispatch [:wallet/close-account-page])}]
+       :on-press (fn []
+                       (rf/dispatch [:wallet/clean-send-data])
+                       (rf/dispatch [:wallet/close-account-page]))}]
      [quo/account-overview
       {:container-style     style/account-overview
        :current-value       formatted-balance

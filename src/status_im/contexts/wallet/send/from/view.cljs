@@ -19,6 +19,7 @@
 (defn- on-close
   []
   (rf/dispatch [:wallet/clean-current-viewing-account])
+  (rf/dispatch [:wallet/clean-send-data])
   (rf/dispatch [:navigate-back]))
 
 (defn- render-fn
