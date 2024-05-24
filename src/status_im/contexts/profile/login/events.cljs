@@ -53,15 +53,11 @@
                       (assoc-in [:activity-center :loading?] true))
             pairing-completed?
             (dissoc :syncing))
-      :fx (into [[:dispatch [:universal-links/generate-profile-url]]
+      :fx (into [[:dispatch [:profile.login/start-messenger]]
+                 [:dispatch [:universal-links/generate-profile-url]]
                  [:dispatch [:community/fetch]]
                  [:dispatch [:wallet/initialize]]
                  [:push-notifications/load-preferences]
-                 [:fetch-chats-preview
-                  {:on-success (fn [result]
-                                 (rf/dispatch [:chats-list/load-success result])
-                                 (rf/dispatch [:communities/get-user-requests-to-join])
-                                 (rf/dispatch [:profile.login/get-chats-callback]))}]
                  [:profile.config/get-node-config]
                  [:logs/set-level log-level]
                  [:activity-center.notifications/fetch-pending-contact-requests-fx]
@@ -90,12 +86,7 @@
    (let [{:keys [notifications-enabled? key-uid
                  preview-privacy?]} (:profile/profile db)]
      {:db db
-      :fx [[:json-rpc/call
-            [{:method     "wakuext_startMessenger"
-              :on-success [:profile.login/messenger-started]
-              :on-error   #(log/error
-                            "failed to start messenger")}]]
-           [:effects.profile/enable-local-notifications]
+      :fx [[:effects.profile/enable-local-notifications]
            [:contacts/initialize-contacts]
            [:browser/initialize-browser]
            [:dispatch [:mobile-network/on-network-status-change]]
@@ -112,13 +103,25 @@
            (when notifications-enabled?
              [:effects/push-notifications-enable])]})))
 
+(rf/reg-event-fx :profile.login/start-messenger
+ (fn []
+   {:fx [[:json-rpc/call
+          [{:method     "wakuext_startMessenger"
+            :on-success [:profile.login/messenger-started]
+            :on-error   #(log/error "failed to start messenger" %)}]]]}))
+
 (rf/reg-event-fx :profile.login/messenger-started
  (fn [{:keys [db]} [{:keys [mailservers]}]]
    (let [new-account? (get db :onboarding/new-account?)]
      {:db (-> db
               (assoc :messenger/started? true)
               (mailserver/add-mailservers mailservers))
-      :fx [[:json-rpc/call
+      :fx [[:fetch-chats-preview
+            {:on-success (fn [result]
+                           (rf/dispatch [:chats-list/load-success result])
+                           (rf/dispatch [:communities/get-user-requests-to-join])
+                           (rf/dispatch [:profile.login/get-chats-callback]))}]
+           [:json-rpc/call
             [{:method     "admin_nodeInfo"
               :on-success [:profile.login/node-info-fetched]
               :on-error   #(log/error "node-info: failed error" %)}]]
