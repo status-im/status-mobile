@@ -11,6 +11,7 @@
     [status-im.contexts.preview.quo.avatars.channel-avatar :as channel-avatar]
     [status-im.contexts.preview.quo.avatars.collection-avatar :as collection-avatar]
     [status-im.contexts.preview.quo.avatars.community-avatar :as community-avatar]
+    [status-im.contexts.preview.quo.avatars.dapp-avatar :as dapp-avatar]
     [status-im.contexts.preview.quo.avatars.group-avatar :as group-avatar]
     [status-im.contexts.preview.quo.avatars.icon-avatar :as icon-avatar]
     [status-im.contexts.preview.quo.avatars.token-avatar :as token-avatar]
@@ -224,6 +225,8 @@
                         :component animated-header-list/mock-screen}]
    :avatar            [{:name      :community-avatar
                         :component community-avatar/view}
+                       {:name      :dapp-avatar
+                        :component dapp-avatar/view}
                        {:name      :group-avatar
                         :component group-avatar/view}
                        {:name      :icon-avatar

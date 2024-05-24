@@ -6,6 +6,7 @@
     quo.components.avatars.channel-avatar.view
     quo.components.avatars.collection-avatar.view
     quo.components.avatars.community-avatar.view
+    quo.components.avatars.dapp-avatar.view
     quo.components.avatars.group-avatar.view
     quo.components.avatars.icon-avatar
     quo.components.avatars.token-avatar.view
@@ -193,6 +194,7 @@
 (def channel-avatar quo.components.avatars.channel-avatar.view/view)
 (def collection-avatar quo.components.avatars.collection-avatar.view/view)
 (def community-avatar quo.components.avatars.community-avatar.view/view)
+(def dapp-avatar quo.components.avatars.dapp-avatar.view/view)
 (def group-avatar quo.components.avatars.group-avatar.view/view)
 (def icon-avatar quo.components.avatars.icon-avatar/icon-avatar)
 (def token-avatar quo.components.avatars.token-avatar.view/view)
