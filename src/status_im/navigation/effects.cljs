@@ -199,15 +199,16 @@
   ([component] (show-overlay component {}))
   ([component opts]
    (navigation/dissmiss-overlay component)
-   (navigation/show-overlay
-    {:component {:name    component
-                 :id      component
-                 :options (merge (options/statusbar-and-navbar-options (:theme opts) nil nil)
-                                 {:layout  {:componentBackgroundColor :transparent
-                                            :orientation              ["portrait"]}
-                                  :overlay {:interceptTouchOutside true
-                                            :handleKeyboardEvents  true}}
-                                 opts)}})))
+   (let [theme (rf/sub [:theme])]
+     (navigation/show-overlay
+      {:component {:name    component
+                   :id      component
+                   :options (merge (options/statusbar-and-navbar-options theme nil nil)
+                                   {:layout  {:componentBackgroundColor :transparent
+                                              :orientation              ["portrait"]}
+                                    :overlay {:interceptTouchOutside true
+                                              :handleKeyboardEvents  true}}
+                                   opts)}}))))
 
 (rf/reg-fx :show-toasts
  (fn [[view-id theme]]
