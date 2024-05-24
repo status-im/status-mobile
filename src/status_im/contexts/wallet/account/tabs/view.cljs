@@ -11,6 +11,22 @@
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
+(defn- on-collectible-press
+  [{:keys [id]}]
+  (rf/dispatch [:wallet/get-collectible-details id]))
+
+(defn- on-collectible-long-press
+  [{:keys [preview-url collectible-details]}]
+  (rf/dispatch [:show-bottom-sheet
+                {:content (fn []
+                            [options-drawer/view
+                             {:name  (:name collectible-details)
+                              :image (:uri preview-url)}])}]))
+
+(defn- on-end-reached
+  []
+  (rf/dispatch [:wallet/request-collectibles-for-current-viewing-account]))
+
 (defn view
   [{:keys [selected-tab]}]
   (let [collectible-list        (rf/sub
@@ -20,19 +36,11 @@
      (case selected-tab
        :assets       [assets/view]
        :collectibles [collectibles/view
-                      {:collectibles collectible-list
-                       :current-account-address current-account-address
-                       :on-end-reached #(rf/dispatch
-                                         [:wallet/request-collectibles-for-current-viewing-account])
-                       :on-collectible-press (fn [{:keys [id]}]
-                                               (rf/dispatch [:wallet/get-collectible-details id]))
-                       :on-collectible-long-press (fn [{:keys [preview-url collectible-details]}]
-                                                    (rf/dispatch
-                                                     [:show-bottom-sheet
-                                                      {:content (fn []
-                                                                  [options-drawer/view
-                                                                   {:name  (:name collectible-details)
-                                                                    :image (:uri preview-url)}])}]))}]
+                      {:collectibles              collectible-list
+                       :current-account-address   current-account-address
+                       :on-end-reached            on-end-reached
+                       :on-collectible-press      on-collectible-press
+                       :on-collectible-long-press on-collectible-long-press}]
        :activity     [activity/view]
        :permissions  [empty-tab/view
                       {:title        (i18n/label :t/no-permissions)
