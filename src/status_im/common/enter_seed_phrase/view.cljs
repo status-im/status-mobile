@@ -31,10 +31,10 @@
   (comp not word-in-dictionary?))
 
 (defn- header
-  [seed-phrase-count]
+  [text seed-phrase-count]
   [rn/view {:style style/header-container}
    [quo/text {:weight :semi-bold :size :heading-1}
-    (i18n/label :t/use-recovery-phrase)]
+    text]
    [rn/view {:style style/word-count-container}
     [quo/text
      {:style  {:color colors/white-opa-40}
@@ -51,34 +51,26 @@
       (string/replace #"\s+" " ")
       (string/trim)))
 
-(defn- recovery-form
-  [{:keys [seed-phrase word-count error-state? all-words-valid? on-change-seed-phrase
-           keyboard-shown? on-submit]}]
-  (let [button-disabled? (or error-state?
-                             (not (constants/seed-phrase-valid-length word-count))
-                             (not all-words-valid?))]
-    [rn/view {:style style/form-container}
-     [header word-count]
-     [rn/view {:style style/input-container}
-      [quo/recovery-phrase-input
-       {:accessibility-label      :passphrase-input
-        :placeholder              (i18n/label :t/seed-phrase-placeholder)
-        :placeholder-text-color   colors/white-opa-30
-        :auto-capitalize          :none
-        :auto-correct             false
-        :auto-focus               true
-        :mark-errors?             true
-        :word-limit               max-seed-phrase-length
-        :error-pred-current-word  partial-word-not-in-dictionary?
-        :error-pred-written-words word-not-in-dictionary?
-        :on-change-text           on-change-seed-phrase}
-       seed-phrase]]
-     [quo/button
-      {:container-style (style/continue-button keyboard-shown?)
-       :type            :primary
-       :disabled?       button-disabled?
-       :on-press        on-submit}
-      (i18n/label :t/continue)]]))
+(defn- recovery-phrase-form
+  [{:keys [title seed-phrase word-count on-change-seed-phrase]} & children]
+  (->> children
+       (into
+        [rn/view {:style style/form-container}
+         [header title word-count]
+         [rn/view {:style style/input-container}
+          [quo/recovery-phrase-input
+           {:accessibility-label      :passphrase-input
+            :placeholder              (i18n/label :t/seed-phrase-placeholder)
+            :placeholder-text-color   colors/white-opa-30
+            :auto-capitalize          :none
+            :auto-correct             false
+            :auto-focus               true
+            :mark-errors?             true
+            :word-limit               max-seed-phrase-length
+            :error-pred-current-word  partial-word-not-in-dictionary?
+            :error-pred-written-words word-not-in-dictionary?
+            :on-change-text           on-change-seed-phrase}
+           seed-phrase]]])))
 
 (defn keyboard-suggestions
   [current-word]
@@ -86,8 +78,8 @@
        (filter #(string/starts-with? % current-word))
        (take 7)))
 
-(defn screen
-  [recovering-keypair?]
+(defn recovery-phrase-screen
+  [{:keys [title recovering-keypair? render-controls]}]
   (reagent/with-let [keyboard-shown?         (reagent/atom false)
                      keyboard-show-listener  (.addListener rn/keyboard
                                                            "keyboardDidShow"
@@ -102,6 +94,8 @@
                                                (when @invalid-seed-phrase?
                                                  (reset! invalid-seed-phrase? false))
                                                (reset! seed-phrase new-phrase))
+                     prepare-seed-phrase     (fn [seed-phrase]
+                                               (-> seed-phrase clean-seed-phrase security/mask-data))
                      on-submit               (fn []
                                                (swap! seed-phrase clean-seed-phrase)
                                                (if recovering-keypair?
@@ -139,16 +133,30 @@
                                      words-exceeded?       (i18n/label :t/seed-phrase-words-exceeded)
                                      error-in-words?       (i18n/label :t/seed-phrase-error)
                                      @invalid-seed-phrase? (i18n/label :t/seed-phrase-invalid)
-                                     :else                 (i18n/label :t/seed-phrase-info))]
+                                     :else                 (i18n/label :t/seed-phrase-info))
+          error-state?             (= suggestions-state :error)
+          button-disabled?         (or error-state?
+                                       (not (constants/seed-phrase-valid-length word-count))
+                                       (not all-words-valid?))]
       [:<>
-       [recovery-form
-        {:seed-phrase           @seed-phrase
-         :error-state?          (= suggestions-state :error)
-         :all-words-valid?      all-words-valid?
+       [recovery-phrase-form
+        {:title                 title
+         :seed-phrase           @seed-phrase
          :on-change-seed-phrase on-change-seed-phrase
-         :word-count            word-count
-         :on-submit             on-submit
-         :keyboard-shown?       @keyboard-shown?}]
+         :word-count            word-count}
+        (if (fn? render-controls)
+          (render-controls {:submit-disabled?        button-disabled?
+                            :keyboard-shown?         @keyboard-shown?
+                            :container-style         (style/continue-button @keyboard-shown?)
+                            :prepare-seed-phrase     prepare-seed-phrase
+                            :seed-phrase             @seed-phrase
+                            :set-invalid-seed-phrase set-invalid-seed-phrase})
+          [quo/button
+           {:container-style (style/continue-button @keyboard-shown?)
+            :type            :primary
+            :disabled?       button-disabled?
+            :on-press        on-submit}
+           (i18n/label :t/continue)])]
        (when @keyboard-shown?
          [rn/view {:style style/keyboard-container}
           [quo/predictive-keyboard
@@ -161,16 +169,28 @@
      (.remove keyboard-show-listener)
      (.remove keyboard-hide-listener))))
 
+(defn screen
+  [{:keys [initial-insets title navigation-icon recovering-keypair? render-controls]}]
+  (let [{navigation-bar-top :top} initial-insets]
+    [rn/view {:style style/full-layout}
+     [rn/keyboard-avoiding-view {:style style/page-container}
+      [quo/page-nav
+       {:margin-top navigation-bar-top
+        :background :blur
+        :icon-name  (or navigation-icon
+                        (if recovering-keypair? :i/close :i/arrow-left))
+        :on-press   #(rf/dispatch [:navigate-back])}]
+      [recovery-phrase-screen
+       {:title               title
+        :render-controls     render-controls
+        :recovering-keypair? recovering-keypair?}]]]))
+
 (defn view
   []
-  (let [{navigation-bar-top :top} (safe-area/get-insets)]
+  (let [insets (safe-area/get-insets)]
     (fn []
       (let [{:keys [recovering-keypair?]} (rf/sub [:get-screen-params])]
-        [rn/view {:style style/full-layout}
-         [rn/keyboard-avoiding-view {:style style/page-container}
-          [quo/page-nav
-           {:margin-top navigation-bar-top
-            :background :blur
-            :icon-name  (if recovering-keypair? :i/close :i/arrow-left)
-            :on-press   #(rf/dispatch [:navigate-back])}]
-          [screen recovering-keypair?]]]))))
+        [screen
+         {:title               (i18n/label :t/use-recovery-phrase)
+          :initial-insets      insets
+          :recovering-keypair? recovering-keypair?}]))))
