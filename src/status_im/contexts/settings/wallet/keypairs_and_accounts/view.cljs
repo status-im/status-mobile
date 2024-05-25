@@ -14,11 +14,12 @@
   (rf/dispatch [:navigate-back]))
 
 (defn on-options-press
-  [{:keys [theme]
-    :as   props} keypair]
+  [{:keys [drawer-props keypair]}]
   (rf/dispatch [:show-bottom-sheet
-                {:content (fn [] [actions/view props keypair])
-                 :theme   theme}]))
+                {:content (fn [] [actions/view
+                                  {:drawer-props drawer-props
+                                   :keypair      keypair}])
+                 :theme   (:theme drawer-props)}]))
 
 (defn options-drawer-props
   [{{:keys [name]} :keypair
@@ -48,15 +49,17 @@
         on-press         (rn/use-callback
                           (fn []
                             (on-options-press
-                             (options-drawer-props
-                              {:theme               theme
-                               :keypair             item
-                               :type                (if default-keypair? :default-keypair :keypair)
-                               :stored              :on-device
-                               :shortened-key       shortened-key
-                               :customization-color customization-color
-                               :profile-picture     profile-picture})
-                             item))
+                             {:keypair      item
+                              :drawer-props (options-drawer-props
+                                             {:theme               theme
+                                              :keypair             item
+                                              :type                (if default-keypair?
+                                                                     :default-keypair
+                                                                     :keypair)
+                                              :stored              :on-device
+                                              :shortened-key       shortened-key
+                                              :customization-color customization-color
+                                              :profile-picture     profile-picture})}))
                           [customization-color default-keypair? item
                            profile-picture shortened-key theme])]
     [quo/keypair
@@ -78,13 +81,14 @@
   (rf/dispatch [:show-bottom-sheet
                 {:theme   :dark
                  :content (fn [] [actions/view
-                                  (options-drawer-props
-                                   {:theme   :dark
-                                    :type    :keypair
-                                    :stored  :missing
-                                    :blur?   true
-                                    :keypair keypair-data})
-                                  keypair-data])}]))
+                                  {:keypair          keypair-data
+                                   :missing-keypair? true
+                                   :drawer-props     (options-drawer-props
+                                                      {:theme   :dark
+                                                       :type    :keypair
+                                                       :stored  :missing
+                                                       :blur?   true
+                                                       :keypair keypair-data})}])}]))
 
 (defn view
   []
