@@ -52,7 +52,7 @@
       (string/trim)))
 
 (defn- recovery-phrase-form
-  [{:keys [title seed-phrase word-count on-change-seed-phrase]} & children]
+  [{:keys [title seed-phrase word-count on-change-seed-phrase on-input-ref]} & children]
   (->> children
        (into
         [rn/view {:style style/form-container}
@@ -60,6 +60,7 @@
          [rn/view {:style style/input-container}
           [quo/recovery-phrase-input
            {:accessibility-label      :passphrase-input
+            :on-input-ref             on-input-ref
             :placeholder              (i18n/label :t/seed-phrase-placeholder)
             :placeholder-text-color   colors/white-opa-30
             :auto-capitalize          :none
@@ -88,6 +89,13 @@
                                                            "keyboardDidHide"
                                                            #(reset! keyboard-shown? false))
                      invalid-seed-phrase?    (reagent/atom false)
+                     input-ref               (reagent/atom nil)
+                     on-input-ref            (fn [ref]
+                                               (reset! input-ref ref))
+                     focus-input             (fn []
+                                               (let [ref @input-ref]
+                                                 (when ref
+                                                   (.focus ref))))
                      set-invalid-seed-phrase #(reset! invalid-seed-phrase? true)
                      seed-phrase             (reagent/atom "")
                      on-change-seed-phrase   (fn [new-phrase]
@@ -143,12 +151,14 @@
         {:title                 title
          :seed-phrase           @seed-phrase
          :on-change-seed-phrase on-change-seed-phrase
-         :word-count            word-count}
+         :word-count            word-count
+         :on-input-ref          on-input-ref}
         (if (fn? render-controls)
           (render-controls {:submit-disabled?        button-disabled?
                             :keyboard-shown?         @keyboard-shown?
                             :container-style         (style/continue-button @keyboard-shown?)
                             :prepare-seed-phrase     prepare-seed-phrase
+                            :focus-input             focus-input
                             :seed-phrase             @seed-phrase
                             :set-invalid-seed-phrase set-invalid-seed-phrase})
           [quo/button
