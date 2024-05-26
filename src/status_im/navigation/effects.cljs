@@ -199,24 +199,21 @@
   ([component] (show-overlay component {}))
   ([component opts]
    (navigation/dissmiss-overlay component)
-   (let [theme (rf/sub [:theme])]
+   (let [theme                              (rf/sub [:theme])
+         [rnn-status-bar _ nav-bar-color _] (get-status-nav-color component theme)]
      (navigation/show-overlay
       {:component {:name    component
                    :id      component
-                   :options (merge (options/statusbar-and-navbar-options theme nil nil)
-                                   {:layout  {:componentBackgroundColor :transparent
-                                              :orientation              ["portrait"]}
-                                    :overlay {:interceptTouchOutside true
-                                              :handleKeyboardEvents  true}}
-                                   opts)}}))))
+                   :options (merge
+                             (options/statusbar-and-navbar-options theme rnn-status-bar nav-bar-color)
+                             {:layout  {:componentBackgroundColor :transparent
+                                        :orientation              ["portrait"]}
+                              :overlay {:interceptTouchOutside true
+                                        :handleKeyboardEvents  true}}
+                             opts)}}))))
 
 (rf/reg-fx :show-toasts
- (fn [[view-id theme]]
-   (let [[rnn-status-bar nav-bar-color] (get-status-nav-color view-id theme)]
-     (show-overlay "toasts"
-                   (assoc (options/statusbar-and-navbar-options nil rnn-status-bar nav-bar-color)
-                          :overlay
-                          {:interceptTouchOutside false})))))
+ (fn [] (show-overlay "toasts")))
 
 (rf/reg-fx :hide-toasts
  (fn [] (navigation/dissmiss-overlay "toasts")))
