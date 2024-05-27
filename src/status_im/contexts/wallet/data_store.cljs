@@ -110,7 +110,7 @@
         :nativeCurrencySymbol   :native-currency-symbol
         :nativeCurrencyName     :native-currency-symbol})))
 
-(defn get-keypair-operability
+(defn get-keypair-lowest-operability
   [{:keys [accounts]}]
   (cond
     (some #(= (:operable %) :no) accounts)
@@ -124,7 +124,7 @@
 
 (defn- add-keys-to-keypair
   [keypair]
-  (assoc keypair :operable (get-keypair-operability keypair)))
+  (assoc keypair :lowest-operability (get-keypair-lowest-operability keypair)))
 
 (defn rpc->keypair
   [keypair]

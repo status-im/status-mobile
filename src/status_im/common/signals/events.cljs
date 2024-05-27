@@ -107,7 +107,7 @@
 
       "waku.backedup.keypair"
       {:fx [[:dispatch [:wallet/process-keypair-from-backup (transforms/js->clj event-js)]]]}
-      
+
       "waku.backedup.watch-only-account"
       {:fx [[:dispatch [:wallet/process-watch-only-account-from-backup (transforms/js->clj event-js)]]]}
 

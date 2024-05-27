@@ -142,9 +142,8 @@
  (fn [{:keys [db]}]
    {:fx (->> (get-in db [:wallet :accounts])
              vals
-             (map :address)
              (mapv
-              (fn [address]
+              (fn [{:keys [address]}]
                 [:dispatch [:wallet/get-wallet-token-for-account address]])))}))
 
 (rf/reg-event-fx
@@ -369,7 +368,7 @@
 
 (rf/reg-event-fx :wallet/reload
  (fn [_]
-   {:fx [[:dispatch-n [[:wallet/get-wallet-token-for-all-accounts]]]]}))
+   {:fx [[:dispatch [:wallet/get-wallet-token-for-all-accounts]]]}))
 
 (rf/reg-event-fx :wallet/start-wallet
  (fn [_]
@@ -384,8 +383,7 @@
  (fn [{:keys [db]}]
    {:fx (->> (get-in db [:wallet :accounts])
              vals
-             (map :address)
-             (mapv (fn [address]
+             (mapv (fn [{:keys [address]}]
                      [:dispatch [:wallet/check-recent-history-for-account address]])))}))
 
 (rf/reg-event-fx
