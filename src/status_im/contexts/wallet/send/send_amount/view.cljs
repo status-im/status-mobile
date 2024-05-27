@@ -10,8 +10,9 @@
   [input-amount/view
    {:current-screen-id :screen/wallet.send-input-amount
     :button-one-label  (i18n/label :t/review-send)
-    :on-navigate-back  (fn []
+    :on-navigate-back  (fn [hardware?]
                          (rf/dispatch [:wallet/clean-disabled-from-networks])
                          (rf/dispatch [:wallet/clean-from-locked-amounts])
                          (rf/dispatch [:wallet/clean-send-amount])
-                         (rf/dispatch [:navigate-back]))}])
+                         (when-not hardware?
+                           (rf/dispatch [:navigate-back])))}])

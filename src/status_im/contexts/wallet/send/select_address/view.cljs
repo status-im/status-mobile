@@ -170,21 +170,34 @@
 
 (defn view
   []
-  (let [on-close       (fn []
+  (let [on-close       (fn [hardware?]
                          (rf/dispatch [:wallet/clean-scanned-address])
                          (rf/dispatch [:wallet/clean-local-suggestions])
                          (rf/dispatch [:wallet/clean-selected-collectible])
                          (rf/dispatch [:wallet/clean-send-address])
                          (rf/dispatch [:wallet/clean-disabled-from-networks])
                          (rf/dispatch [:wallet/select-address-tab nil])
-                         (rf/dispatch [:navigate-back]))
+                         (when-not hardware?
+                           (rf/dispatch [:navigate-back])))
         on-change-tab  #(rf/dispatch [:wallet/select-address-tab %])
         input-value    (reagent/atom "")
         input-focused? (reagent/atom false)]
     (fn []
+<<<<<<< HEAD
       (let [selected-tab          (or (rf/sub [:wallet/send-tab]) (:id (first tabs-data)))
+<<<<<<< HEAD
             valid-ens-or-address? (boolean (rf/sub [:wallet/valid-ens-or-address?]))
             searching-address?    (rf/sub [:wallet/searching-address?])]
+=======
+            valid-ens-or-address? (boolean (rf/sub [:wallet/valid-ens-or-address?]))]
+=======
+      (let [selected-tab             (or (rf/sub [:wallet/send-tab]) (:id (first tabs-data)))
+            valid-ens-or-address?    (boolean (rf/sub [:wallet/valid-ens-or-address?]))
+            local-suggestion-address (rf/sub [:wallet/local-suggestions->full-address])
+            color                    (rf/sub [:wallet/current-viewing-account-color])]
+        (rn/use-unmount #(on-close true))
+>>>>>>> 8d6b99b3d (lint)
+>>>>>>> 5e9ffc7f62 (lint)
         [floating-button-page/view
          {:content-container-style      {:flex 1}
           :footer-container-padding     0

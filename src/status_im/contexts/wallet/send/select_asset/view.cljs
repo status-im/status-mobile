@@ -62,13 +62,12 @@
         [search-text set-search-text]   (rn/use-state "")
         on-change-text                  #(set-search-text %)
         on-change-tab                   #(set-selected-tab %)
-        on-close                        (fn []
+        on-close                        (fn [hardware?]
                                           (rf/dispatch [:wallet/clean-selected-token])
                                           (rf/dispatch [:wallet/clean-selected-collectible])
-                                          (rf/dispatch [:navigate-back]))]
-    (rn/use-unmount (fn []
-                      (rf/dispatch [:wallet/clean-selected-token])
-                      (rf/dispatch [:wallet/clean-selected-collectible])))
+                                          (when-not hardware?
+                                            (rf/dispatch [:navigate-back])))]
+    (rn/use-unmount #(on-close true))
     [rn/safe-area-view {:style style/container}
      [account-switcher/view
       {:icon-name     :i/arrow-left
