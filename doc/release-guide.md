@@ -51,6 +51,8 @@ Jenkins will automatically build this branch and create release candidates.
 Those will go through the QA process and the QA team will let us know when
 tested successfully.
 
+You can see the state at https://ci.infra.status.im/ -> status-mobile -> release -> pick the right version number
+
 ## Bugfixes before an app is released
 
 Because both `status-mobile` and `status-go` might have newer commits that we don't want to include, bug fixes should be applied separately to develop and the release branch.
