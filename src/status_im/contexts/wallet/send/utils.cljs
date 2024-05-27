@@ -67,12 +67,25 @@
              {}
              amounts))
 
+(defn add-zero-values-to-network-values
+  [network-values all-possible-chain-ids]
+  (reduce
+   (fn [acc chain-id]
+     (let [route-value (get network-values chain-id)]
+       (assoc acc chain-id (or route-value (money/bignumber "0")))))
+   {}
+   all-possible-chain-ids))
+
 (defn token-available-networks-for-suggested-routes
-  [{:keys [balances-per-chain disabled-chain-ids]}]
+  [{:keys [balances-per-chain disabled-chain-ids only-with-balance?]}]
   (let [disabled-set (set disabled-chain-ids)]
     (->> balances-per-chain
-         (filter (fn [[_ {:keys [chain-id]}]]
-                   (not (contains? disabled-set chain-id))))
+         (filter (fn [[_ {:keys [chain-id raw-balance]}]]
+                   (and (not (contains? disabled-set chain-id))
+                        (or (not only-with-balance?)
+                            (and only-with-balance?
+                                 (money/bignumber? raw-balance)
+                                 (money/greater-than raw-balance (money/bignumber "0")))))))
          (map first))))
 
 (def ^:private network-priority-score

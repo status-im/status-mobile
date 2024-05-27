@@ -17,10 +17,12 @@
 (def network-link-2x-height 111)
 
 (defn- fetch-routes
-  [{:keys [amount bounce-duration-ms valid-input?]}]
+  [{:keys [amount bounce-duration-ms token valid-input?]}]
   (if valid-input?
     (debounce/debounce-and-dispatch
-     [:wallet/get-suggested-routes {:amount amount}]
+     [:wallet/get-suggested-routes
+      {:amount        amount
+       :updated-token token}]
      bounce-duration-ms)
     (rf/dispatch [:wallet/clean-suggested-routes])))
 
@@ -203,14 +205,16 @@
          (fetch-routes
           {:amount             value
            :valid-input?       valid-input?
-           :bounce-duration-ms 2000})))
+           :bounce-duration-ms 2000
+           :token              token})))
      [input-value valid-input?])
     (rn/use-effect
      #(when (and active-screen? (> (count token-available-networks-for-suggested-routes) 0))
         (fetch-routes
          {:amount             value
           :valid-input?       valid-input?
-          :bounce-duration-ms 0}))
+          :bounce-duration-ms 0
+          :token              token}))
      [disabled-from-chain-ids])
     [rn/scroll-view {:content-container-style style/routes-container}
      (when show-routes?
