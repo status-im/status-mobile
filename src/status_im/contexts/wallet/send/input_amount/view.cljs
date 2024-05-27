@@ -322,7 +322,7 @@
        (let [dismiss-keyboard-fn   #(when (= % "active") (rn/dismiss-keyboard!))
              app-keyboard-listener (.addEventListener rn/app-state "change" dismiss-keyboard-fn)]
          #(.remove app-keyboard-listener))))
-    (rn/use-unmount #(on-navigate-back true))
+    (rn/use-unmount on-navigate-back)
     (rn/use-effect
      (fn []
        (set-input-state #(controlled-input/set-upper-limit % current-limit)))
@@ -347,7 +347,7 @@
                                 (when (controlled-input/input-error input-state) "-error"))}
      [account-switcher/view
       {:icon-name     :i/arrow-left
-       :on-press      on-navigate-back
+       :on-press      #(rf/dispatch [:navigate-back])
        :switcher-type :select-account}]
      [quo/token-input
       {:container-style  style/input-container

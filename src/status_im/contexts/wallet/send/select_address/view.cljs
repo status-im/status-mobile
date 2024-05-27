@@ -170,15 +170,13 @@
 
 (defn view
   []
-  (let [on-close       (fn [hardware?]
+  (let [on-close       (fn []
                          (rf/dispatch [:wallet/clean-scanned-address])
                          (rf/dispatch [:wallet/clean-local-suggestions])
                          (rf/dispatch [:wallet/clean-selected-collectible])
                          (rf/dispatch [:wallet/clean-send-address])
                          (rf/dispatch [:wallet/clean-disabled-from-networks])
-                         (rf/dispatch [:wallet/select-address-tab nil])
-                         (when-not hardware?
-                           (rf/dispatch [:navigate-back])))
+                         (rf/dispatch [:wallet/select-address-tab nil]))
         on-change-tab  #(rf/dispatch [:wallet/select-address-tab %])
         input-value    (reagent/atom "")
         input-focused? (reagent/atom false)]
@@ -195,15 +193,22 @@
             valid-ens-or-address?    (boolean (rf/sub [:wallet/valid-ens-or-address?]))
             local-suggestion-address (rf/sub [:wallet/local-suggestions->full-address])
             color                    (rf/sub [:wallet/current-viewing-account-color])]
+<<<<<<< HEAD
         (rn/use-unmount #(on-close true))
 >>>>>>> 8d6b99b3d (lint)
+<<<<<<< HEAD
 >>>>>>> 5e9ffc7f62 (lint)
+=======
+=======
+        (rn/use-unmount on-close)
+>>>>>>> e5ac6dc2d (lint)
+>>>>>>> 1f13216998 (lint)
         [floating-button-page/view
          {:content-container-style      {:flex 1}
           :footer-container-padding     0
           :keyboard-should-persist-taps true
           :header                       [account-switcher/view
-                                         {:on-press      on-close
+                                         {:on-press      #(rf/dispatch [:navigate-back])
                                           :margin-top    (safe-area/get-top)
                                           :switcher-type :select-account}]
           :footer                       (when-not (string/blank? @input-value)

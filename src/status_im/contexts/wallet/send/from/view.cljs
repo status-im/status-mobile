@@ -17,6 +17,7 @@
                  :stack-id        :screen/wallet.select-from}]))
 
 (defn- on-close
+<<<<<<< HEAD
   [hardware?]
   (rf/dispatch [:wallet/clean-current-viewing-account])
 <<<<<<< HEAD
@@ -26,6 +27,10 @@
   (when-not hardware?
     (rf/dispatch [:navigate-back])))
 >>>>>>> 399110fcf (lint)
+=======
+  []
+  (rf/dispatch [:wallet/clean-current-viewing-account]))
+>>>>>>> e51cdfdb9 (lint)
 
 (defn- render-fn
   [item _ _ {:keys [network-details]}]
@@ -47,13 +52,20 @@
   (let [accounts (rf/sub [:wallet/accounts-with-current-asset])]
 =======
   (let [accounts (rf/sub [:wallet/accounts-without-watched-accounts])]
+<<<<<<< HEAD
     (rn/use-unmount #(on-close true))
 >>>>>>> 0c615a045 (lint)
+<<<<<<< HEAD
 >>>>>>> 399110fcf (lint)
+=======
+=======
+    (rn/use-unmount on-close)
+>>>>>>> 4bd61c92b (lint)
+>>>>>>> e51cdfdb9 (lint)
     [floating-button-page/view
      {:footer-container-padding 0
       :header                   [account-switcher/view
-                                 {:on-press      on-close
+                                 {:on-press      #(rf/dispatch [:navigate-back])
                                   :margin-top    (safe-area/get-top)
                                   :switcher-type :select-account}]}
 
