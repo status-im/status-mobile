@@ -251,9 +251,11 @@
                                                      [:wallet/wallet-send-sender-network-values])
         receiver-network-values                     (rf/sub
                                                      [:wallet/wallet-send-receiver-network-values])
-        token-not-supported-in-receiver-networks?   (every? #(= (:type %) :not-available)
-                                                            (filter #(not= (:type %) :add)
-                                                                    receiver-network-values))
+        tx-type                                     (rf/sub [:wallet/wallet-send-tx-type])
+        token-not-supported-in-receiver-networks?   (and (not= tx-type :tx/bridge)
+                                                         (->> receiver-network-values
+                                                              (remove #(= (:type %) :add))
+                                                              (every? #(= (:type %) :not-available))))
         suggested-routes                            (rf/sub [:wallet/wallet-send-suggested-routes])
         routes                                      (when suggested-routes
                                                       (or (:best suggested-routes) []))

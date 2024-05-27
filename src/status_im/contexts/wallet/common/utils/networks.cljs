@@ -125,3 +125,9 @@
                             (string/join ", "))
         formatted-text (string/replace network-names last-comma-followed-by-text-to-end-regex " and ")]
     formatted-text))
+
+(defn token-available-on-network?
+  [token-networks chain-id]
+  (let [token-networks-ids     (mapv #(:chain-id %) token-networks)
+        token-networks-ids-set (set token-networks-ids)]
+    (contains? token-networks-ids-set chain-id)))
