@@ -30,28 +30,54 @@
     [status-im.contexts.chat.messenger.messages.drawers.view :as drawers]
     [utils.address :as address]
     [utils.datetime :as datetime]
+    [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
 (def delivery-state-showing-time-ms 3000)
 
+(defn- bridge-message-user-name
+  [user-name]
+  (when (string? user-name)
+    (-> user-name
+        (string/replace "<b>" "")
+        (string/replace "</b>" ""))))
+
 (defn avatar-container
-  [{:keys [content last-in-group? pinned-by quoted-message from]} hide-reactions?
-   in-reaction-or-action-menu? show-user-info? in-pinned-view?]
-  (if (or (and (seq (:response-to content))
-               quoted-message)
-          last-in-group?
-          show-user-info?
-          pinned-by
-          hide-reactions?
-          in-reaction-or-action-menu?)
+  [{:keys [content last-in-group? pinned-by quoted-message from bridge-message]}
+   hide-reactions? in-reaction-or-action-menu? show-user-info? in-pinned-view?]
+  (cond
+    (:user-avatar bridge-message)
+    [fast-image/fast-image
+     {:source           {:uri (:user-avatar bridge-message)}
+      :fallback-content [quo/user-avatar
+                         {:full-name         (bridge-message-user-name (:user-name bridge-message))
+                          :ring?             false
+                          :online?           false
+                          :status-indicator? false
+                          :size              :small}]
+      :style            {:width         32
+                         :margin-top    4
+                         :border-radius 16
+                         :height        32}}]
+
+    (or (and (seq (:response-to content))
+             quoted-message)
+        last-in-group?
+        show-user-info?
+        pinned-by
+        hide-reactions?
+        in-reaction-or-action-menu?)
     [avatar/avatar
      {:public-key from
       :size       :small
       :hide-ring? (or in-pinned-view? in-reaction-or-action-menu?)}]
+
+    :else
     [rn/view {:padding-top 4 :width 32}]))
 
 (defn author
-  [{:keys [content
+  [{:keys [bridge-message
+           content
            compressed-key
            last-in-group?
            pinned-by
@@ -62,20 +88,27 @@
    in-reaction-or-action-menu?
    show-user-info?]
   (when (or (and (seq (:response-to content)) quoted-message)
+            (seq bridge-message)
             last-in-group?
             pinned-by
             show-user-info?
             hide-reactions?
             in-reaction-or-action-menu?)
-    (let [[primary-name secondary-name] (rf/sub [:contacts/contact-two-names-by-identity from])
-          {:keys [ens-verified added?]} (rf/sub [:contacts/contact-by-address from])]
+    (let [{:keys [user-name bridge-name]} bridge-message
+          [primary-name secondary-name]   (when-not bridge-message
+                                            (rf/sub [:contacts/contact-two-names-by-identity from]))
+          {:keys [ens-verified added?]}   (when-not bridge-message
+                                            (rf/sub [:contacts/contact-by-address from]))
+          user-name                       (bridge-message-user-name user-name)]
       [quo/author
-       {:primary-name   primary-name
+       {:primary-name   (or user-name primary-name)
         :secondary-name secondary-name
-        :short-chat-key (address/get-shortened-compressed-key (or compressed-key from))
+        :short-chat-key (if bridge-message
+                          (i18n/label :t/bridge-from {:bridge-name bridge-name})
+                          (address/get-shortened-compressed-key (or compressed-key from)))
         :time-str       (datetime/timestamp->time timestamp)
-        :contact?       added?
-        :verified?      ens-verified}])))
+        :contact?       (when-not bridge-message added?)
+        :verified?      (when-not bridge-message ens-verified)}])))
 
 (defn system-message-contact-request
   [{:keys [chat-id timestamp-str from]} type]
@@ -118,42 +151,14 @@
       constants/content-type-system-message-mutual-event-sent
       [system-message-contact-request message-data :contact-request])))
 
-(defn bridge-message-content
-  [{:keys [bridge-message timestamp]}]
-  (let [{:keys [user-avatar user-name
-                bridge-name content]} bridge-message
-        user-name                     (when (string? user-name)
-                                        (-> user-name
-                                            (string/replace "<b>" "")
-                                            (string/replace "</b>" "")))]
-    (when (and user-name content)
-      [rn/view
-       {:style {:flex-direction     :row
-                :padding-horizontal 12
-                :padding-top        4}}
-       [fast-image/fast-image
-        {:source           {:uri user-avatar}
-         :fallback-content [quo/user-avatar
-                            {:full-name         user-name
-                             :ring?             false
-                             :online?           false
-                             :status-indicator? false
-                             :size              :small}]
-         :style            {:width         32
-                            :margin-top    4
-                            :border-radius 16
-                            :height        32}}]
-       [rn/view {:margin-left 8 :flex 1}
-        [quo/author
-         {:primary-name   (str user-name)
-          :short-chat-key (str "Bridged from " bridge-name)
-          :time-str       (datetime/timestamp->time timestamp)}]
-        [quo/text
-         {:size  :paragraph-1
-          :style {:line-height 22.75}}
-         content]]])))
-
 (declare on-long-press)
+
+(defn- bridge-message-content
+  [content]
+  [quo/text
+   {:size  :paragraph-1
+    :style {:line-height 22.75}}
+   content])
 
 (defn user-message-content
   []
@@ -162,6 +167,7 @@
                  in-reaction-or-action-menu? show-user-info?]}]
       (let [theme                                       (quo.theme/use-theme)
             {:keys [content-type quoted-message content outgoing outgoing-status pinned-by pinned
+                    bridge-message
                     last-in-group? message-id chat-id]} message-data
             {:keys [disable-message-long-press?]}       context
             first-image                                 (first (:album message-data))
@@ -191,7 +197,13 @@
                                                                  chat-id])
             six-reactions?                              (-> reactions
                                                             count
-                                                            (= 6))]
+                                                            (= 6))
+            content-type                                (if (and
+                                                             (= content-type
+                                                                constants/content-type-bridge-message)
+                                                             (seq (:parsed-text content)))
+                                                          constants/content-type-text
+                                                          content-type)]
         [rn/touchable-highlight
          {:accessibility-label (if (and outgoing (= outgoing-status :sending))
                                  :message-sending
@@ -237,8 +249,12 @@
                       :max-height  (when hide-reactions? (* 0.4 height))}}
              [author message-data hide-reactions? in-reaction-or-action-menu? show-user-info?]
              (condp = content-type
+
                constants/content-type-text
                [content.text/text-content message-data context]
+
+               constants/content-type-bridge-message
+               [bridge-message-content (:content bridge-message)]
 
                constants/content-type-contact-request
                [content.text/text-content message-data context]
@@ -339,10 +355,6 @@
                                context
                                keyboard-shown?))
         context]
-
-
-       (= content-type constants/content-type-bridge-message)
-       [bridge-message-content message-data]
 
        :else
        [user-message-content

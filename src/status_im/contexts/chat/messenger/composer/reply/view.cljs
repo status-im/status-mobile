@@ -66,14 +66,25 @@
      :style               style/reply-deleted-message}
     (i18n/label :t/message-deleted)]])
 
+(defn- bridge-message-user-name
+  [user-name]
+  (when (string? user-name)
+    (-> user-name
+        (string/replace "<b>" "")
+        (string/replace "</b>" ""))))
+
 (defn reply-from
-  [{:keys [from contact-name current-public-key pin?]}]
-  (let [[primary-name _] (rf/sub [:contacts/contact-two-names-by-identity from])
-        photo-path       (rf/sub [:chats/photo-path from])]
+  [{:keys [from contact-name current-public-key pin? bridge-message]}]
+  (let [{user-name :userName user-avatar :userAvatar} bridge-message
+        [primary-name _]                              (rf/sub [:contacts/contact-two-names-by-identity
+                                                               from])
+        photo-path                                    (rf/sub [:chats/photo-path from])]
     [rn/view {:style style/reply-from}
      [quo/user-avatar
-      {:full-name         primary-name
-       :profile-picture   photo-path
+      {:full-name         (if bridge-message
+                            (bridge-message-user-name user-name)
+                            primary-name)
+       :profile-picture   (or user-avatar photo-path)
        :status-indicator? false
        :size              :xxxs
        :ring?             false}]
@@ -82,11 +93,13 @@
        :size            (if pin? :label :paragraph-2)
        :number-of-lines 1
        :style           style/message-author-text}
-      (format-reply-author from contact-name current-public-key)]]))
+      (if bridge-message
+        user-name
+        (format-reply-author from contact-name current-public-key))]]))
 
 (defn quoted-message
   [{:keys [from content-type contentType parsed-text content deleted? deleted-for-me?
-           album-images-count]}
+           album-images-count bridge-message]}
    in-chat-input? pin? recording-audio? input-ref]
   (let [[primary-name _]   (rf/sub [:contacts/contact-two-names-by-identity from])
         current-public-key (rf/sub [:multiaccount/public-key])
@@ -110,7 +123,8 @@
           {:pin?               pin?
            :from               from
            :contact-name       primary-name
-           :current-public-key current-public-key}]
+           :current-public-key current-public-key
+           :bridge-message     bridge-message}]
          (when (not-empty text)
            [quo/text
             {:number-of-lines     1

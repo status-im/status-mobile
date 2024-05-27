@@ -97,7 +97,8 @@
                :deleted          :deleted?
                :deletedForMe     :deleted-for-me?
                :communityId      :community-id
-               :albumImagesCount :album-images-count})
+               :albumImagesCount :album-images-count
+               :bridgeMessage    :bridge-message})
       (update :outgoing-status keyword)
       (update :command-parameters
               set/rename-keys
