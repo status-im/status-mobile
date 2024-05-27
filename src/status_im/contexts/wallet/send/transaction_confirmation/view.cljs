@@ -26,7 +26,7 @@
         :weight              :semi-bold
         :style               style/title-container
         :accessibility-label :send-label}
-       (if (= transaction-type :bridge)
+       (if (= transaction-type :tx/bridge)
          (i18n/label :t/bridge)
          (i18n/label :t/send))]
       [quo/summary-tag
@@ -34,7 +34,7 @@
         :label        (str amount " " token-display-name)
         :type         (if collectible? :collectible :token)
         :image-source (if collectible? image-url :eth)}]]
-     (if (= transaction-type :bridge)
+     (if (= transaction-type :tx/bridge)
        (map-indexed
         (fn [idx path]
           (let [from-network             (:from path)
@@ -98,7 +98,7 @@
         :style               style/title-container
         :accessibility-label :send-label}
        (i18n/label :t/to)]
-      (if (= transaction-type :bridge)
+      (if (= transaction-type :tx/bridge)
         [quo/summary-tag
          {:type                :network
           :image-source        (:source to-network)
@@ -107,7 +107,7 @@
         [quo/summary-tag
          {:type  :address
           :label (utils/get-shortened-address to-address)}])]
-     (when (= transaction-type :bridge)
+     (when (= transaction-type :tx/bridge)
        [rn/view
         {:style {:flex-direction :row
                  :margin-top     4}}
@@ -165,7 +165,7 @@
     :subtitle        subtitle}])
 
 (defn- transaction-details
-  [{:keys [estimated-time-min max-fees token-display-name amount to-address to-network route
+  [{:keys [estimated-time-min max-fees token-display-name amount to-network route
            transaction-type
            theme]}]
   (let [currency-symbol           (rf/sub [:profile/currency-symbol])
@@ -198,10 +198,10 @@
                                  {:amount (str max-fees)
                                   :symbol currency-symbol})}]
          [data-item
-          {:title    (if (= transaction-type :bridge)
+          {:title    (if (= transaction-type :tx/bridge)
                        (i18n/label :t/bridged-to
                                    {:network (:abbreviated-name to-network)})
-                       (i18n/label :t/user-gets {:name (utils/get-shortened-address to-address)}))
+                       (i18n/label :t/recipient-gets))
            :subtitle (str amount " " token-display-name)}]]
         :else
         [quo/text {:style {:align-self :center}}
@@ -249,7 +249,7 @@
            :footer                   (when (and route (seq route))
                                        [standard-auth/slide-button
                                         {:size                :size-48
-                                         :track-text          (if (= transaction-type :bridge)
+                                         :track-text          (if (= transaction-type :tx/bridge)
                                                                 (i18n/label :t/slide-to-bridge)
                                                                 (i18n/label :t/slide-to-send))
                                          :container-style     {:z-index 2}
@@ -282,12 +282,12 @@
              :theme               theme}]
            [user-summary
             {:token-display-name  token-display-name
-             :summary-type        (if (= transaction-type :bridge)
+             :summary-type        (if (= transaction-type :tx/bridge)
                                     :status-account
                                     :account)
              :accessibility-label :summary-to-label
              :label               (i18n/label :t/to-capitalized)
-             :account-props       (if (= transaction-type :bridge)
+             :account-props       (if (= transaction-type :tx/bridge)
                                     from-account-props
                                     user-props)
              :network-values      to-values-by-chain
@@ -297,7 +297,6 @@
              :max-fees           max-fees
              :token-display-name token-display-name
              :amount             amount
-             :to-address         to-address
              :to-network         bridge-to-network
              :theme              theme
              :route              route

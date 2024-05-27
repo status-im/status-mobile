@@ -163,15 +163,10 @@
  (fn [pinned-message _]
    (let [latest-pin-text                    (message-text pinned-message)
          {:keys [deleted? deleted-for-me?]} pinned-message]
-     (cond deleted? (i18n/label :t/message-deleted-for-everyone)
-           deleted-for-me? (i18n/label :t/message-deleted-for-you)
-           (#{constants/content-type-text
-              constants/content-type-image
-              constants/content-type-sticker
-              constants/content-type-emoji}
-            (:content-type pinned-message))
-           (resolver/resolve-message latest-pin-text)
-           :else latest-pin-text))))
+     (cond deleted?                  (i18n/label :t/message-deleted-for-everyone)
+           deleted-for-me?           (i18n/label :t/message-deleted-for-you)
+           (string? latest-pin-text) latest-pin-text
+           :else                     (resolver/resolve-message latest-pin-text)))))
 
 (re-frame/reg-sub
  :chats/pin-messages-count

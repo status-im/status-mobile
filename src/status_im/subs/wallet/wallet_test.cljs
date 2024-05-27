@@ -112,7 +112,7 @@
           :position                 0
           :clock                    1698945829328
           :created-at               1698928839000
-          :operable                 "fully"
+          :operable                 :fully
           :mixedcase-address        "0x7bcDfc75c431"
           :public-key               "0x04371e2d9d66b82f056bc128064"
           :removed                  false
@@ -133,7 +133,7 @@
           :position                 1
           :clock                    1698945829328
           :created-at               1698928839000
-          :operable                 "fully"
+          :operable                 :fully
           :mixedcase-address        "0x7bcDfc75c431"
           :public-key               "0x04371e2d9d66b82f056bc128064"
           :removed                  false
@@ -154,7 +154,7 @@
           :position                 2
           :clock                    1698945829328
           :created-at               1698928839000
-          :operable                 "fully"
+          :operable                 :fully
           :mixedcase-address        "0x7bcDfc75c431"
           :public-key               "0x"
           :removed                  false
@@ -171,7 +171,7 @@
            :related-chain-id 42161
            :layer            2}
           {:test?            true
-           :short-name       "opt"
+           :short-name       "oeth"
            :related-chain-id 10
            :layer            2}]
    :prod [{:test?      false
@@ -183,7 +183,7 @@
            :chain-id   42161
            :layer      2}
           {:test?      false
-           :short-name "opt"
+           :short-name "oeth"
            :chain-id   10
            :layer      2}]})
 
@@ -229,7 +229,7 @@
              :position                  0
              :clock                     1698945829328
              :created-at                1698928839000
-             :operable                  "fully"
+             :operable                  :fully
              :mixedcase-address         "0x7bcDfc75c431"
              :public-key                "0x04371e2d9d66b82f056bc128064"
              :removed                   false
@@ -251,7 +251,7 @@
              :position                  1
              :clock                     1698945829328
              :created-at                1698928839000
-             :operable                  "fully"
+             :operable                  :fully
              :mixedcase-address         "0x7bcDfc75c431"
              :public-key                "0x04371e2d9d66b82f056bc128064"
              :removed                   false
@@ -273,7 +273,7 @@
              :position                  2
              :clock                     1698945829328
              :created-at                1698928839000
-             :operable                  "fully"
+             :operable                  :fully
              :mixedcase-address         "0x7bcDfc75c431"
              :public-key                "0x"
              :removed                   false
@@ -316,7 +316,7 @@
            :position                  0
            :clock                     1698945829328
            :created-at                1698928839000
-           :operable                  "fully"
+           :operable                  :fully
            :mixedcase-address         "0x7bcDfc75c431"
            :public-key                "0x04371e2d9d66b82f056bc128064"
            :removed                   false
@@ -377,7 +377,7 @@
           :position                  0
           :clock                     1698945829328
           :created-at                1698928839000
-          :operable                  "fully"
+          :operable                  :fully
           :mixedcase-address         "0x7bcDfc75c431"
           :public-key                "0x04371e2d9d66b82f056bc128064"
           :removed                   false
@@ -399,7 +399,7 @@
           :position                  2
           :clock                     1698945829328
           :created-at                1698928839000
-          :operable                  "fully"
+          :operable                  :fully
           :mixedcase-address         "0x7bcDfc75c431"
           :public-key                "0x"
           :removed                   false
@@ -434,7 +434,7 @@
         :position                  0
         :clock                     1698945829328
         :created-at                1698928839000
-        :operable                  "fully"
+        :operable                  :fully
         :mixedcase-address         "0x7bcDfc75c431"
         :public-key                "0x04371e2d9d66b82f056bc128064"
         :removed                   false
@@ -457,7 +457,7 @@
         :position                  1
         :clock                     1698945829328
         :created-at                1698928839000
-        :operable                  "fully"
+        :operable                  :fully
         :mixedcase-address         "0x7bcDfc75c431"
         :public-key                "0x04371e2d9d66b82f056bc128064"
         :removed                   false
@@ -525,9 +525,9 @@
                :chain-id         42161
                :related-chain-id nil
                :layer            2}
-              {:short-name       "opt"
+              {:short-name       "oeth"
                :network-name     :optimism
-               :abbreviated-name "Opt."
+               :abbreviated-name "Oeth."
                :chain-id         10
                :related-chain-id nil
                :layer            2}]
@@ -616,7 +616,7 @@
    :hidden              false
    :removed             false})
 
-(def wallet-account
+(def operable-wallet-account
   {:path                "m/44'/60'/0'/0/0"
    :emoji               "🤡"
    :key-uid             "abc"
@@ -627,83 +627,147 @@
    :chat                false
    :customization-color :primary
    :hidden              false
+   :operable            :fully
    :removed             false})
 
-(def keypairs-accounts
+(def inoperable-wallet-account
+  {:path                "m/44'/60'/0'/0/0"
+   :emoji               "🧠"
+   :key-uid             "def"
+   :address             "address-3"
+   :wallet              true
+   :name                "My Other Account"
+   :type                "generated"
+   :chat                false
+   :customization-color :primary
+   :hidden              false
+   :operable            :no
+   :removed             false})
+
+(def default-keypair-accounts
   {:key-uid  "abc"
    :name     "My Profile"
    :type     "profile"
+   :accounts []})
+
+(def seed-phrase-keypair-accounts
+  {:key-uid  "def"
+   :name     "My Key Pair"
+   :type     "seed"
    :accounts []})
 
 (h/deftest-sub :wallet/settings-keypairs-accounts
   [sub-name]
   (testing "returns formatted key-pairs and accounts"
     (swap! rf-db/app-db
-      assoc-in
-      [:wallet :keypairs]
-      [(assoc keypairs-accounts
-              :accounts
-              [wallet-account])])
+      (fn [db]
+        (-> db
+            (assoc-in
+             [:wallet :keypairs]
+             [(assoc default-keypair-accounts
+                     :accounts
+                     [operable-wallet-account])
+              (assoc seed-phrase-keypair-accounts
+                     :accounts
+                     [inoperable-wallet-account])])
+            (assoc-in
+             [:wallet :accounts]
+             {(:address operable-wallet-account)   operable-wallet-account
+              (:address inoperable-wallet-account) inoperable-wallet-account}))))
 
-    (let [{:keys [customization-color name address emoji]} wallet-account]
-      (is
-       (match? [{:name     (:name keypairs-accounts)
-                 :type     (keyword (:type keypairs-accounts))
-                 :accounts [{:account-props {:customization-color customization-color
-                                             :size                32
-                                             :emoji               emoji
-                                             :type                :default
-                                             :name                name
-                                             :address             address}
-                             :networks      []
-                             :state         :default
-                             :action        :none}]}]
-               (rf/sub [sub-name])))))
+    (is
+     (match?
+      {:missing  [{:name     (:name seed-phrase-keypair-accounts)
+                   :key-uid  (:key-uid seed-phrase-keypair-accounts)
+                   :type     (keyword (:type seed-phrase-keypair-accounts))
+                   :accounts [{:customization-color (:customization-color inoperable-wallet-account)
+                               :emoji               (:emoji inoperable-wallet-account)
+                               :type                :default}]}]
+       :operable [{:name     (:name default-keypair-accounts)
+                   :key-uid  (:key-uid default-keypair-accounts)
+                   :type     (keyword (:type default-keypair-accounts))
+                   :accounts [{:account-props {:customization-color (:customization-color
+                                                                     operable-wallet-account)
+                                               :size                32
+                                               :emoji               (:emoji operable-wallet-account)
+                                               :type                :default
+                                               :name                (:name operable-wallet-account)
+                                               :address             (:address operable-wallet-account)}
+                               :networks      []
+                               :state         :default
+                               :action        :none}]}]}
+      (rf/sub [sub-name]))))
 
   (testing "allows for passing account format options"
     (swap! rf-db/app-db
-      assoc-in
-      [:wallet :keypairs]
-      [(assoc keypairs-accounts
-              :accounts
-              [wallet-account])])
+      (fn [db]
+        (-> db
+            (assoc-in
+             [:wallet :keypairs]
+             [(assoc default-keypair-accounts
+                     :accounts
+                     [operable-wallet-account])])
+            (assoc-in
+             [:wallet :accounts]
+             {(:address operable-wallet-account) operable-wallet-account}))))
 
     (let [{:keys [customization-color
                   name
                   address
-                  emoji]} wallet-account
+                  emoji]} operable-wallet-account
           network-options [{:network-name :ethereum :short-name "eth"}
-                           {:network-name :optimism :short-name "opt"}
+                           {:network-name :optimism :short-name "oeth"}
                            {:network-name :arbitrum :short-name "arb1"}]
           size-option     20]
       (is
-       (match? [{:name     (:name keypairs-accounts)
-                 :type     (keyword (:type keypairs-accounts))
-                 :accounts [{:account-props {:customization-color customization-color
-                                             :size                size-option
-                                             :emoji               emoji
-                                             :type                :default
-                                             :name                name
-                                             :address             address}
-                             :networks      network-options
-                             :state         :default
-                             :action        :none}]}]
+       (match? {:missing  []
+                :operable [{:name     (:name default-keypair-accounts)
+                            :key-uid  (:key-uid default-keypair-accounts)
+                            :type     (keyword (:type default-keypair-accounts))
+                            :accounts [{:account-props {:customization-color customization-color
+                                                        :size                size-option
+                                                        :emoji               emoji
+                                                        :type                :default
+                                                        :name                name
+                                                        :address             address}
+                                        :networks      network-options
+                                        :state         :default
+                                        :action        :none}]}]}
                (rf/sub [sub-name
                         {:networks network-options
                          :size     size-option}])))))
 
   (testing "filters non-wallet accounts"
     (swap! rf-db/app-db
-      assoc-in
-      [:wallet :keypairs]
-      [(assoc keypairs-accounts
-              :accounts
-              [chat-account])])
+      (fn [db]
+        (-> db
+            (assoc-in
+             [:wallet :keypairs]
+             [(assoc default-keypair-accounts
+                     :accounts
+                     [operable-wallet-account
+                      chat-account])])
+            (assoc-in
+             [:wallet :accounts]
+             {(:address operable-wallet-account) operable-wallet-account
+              (:address chat-account)            chat-account}))))
     (is
-     (match? [{:name     (:name keypairs-accounts)
-               :type     (keyword (:type keypairs-accounts))
-               :accounts []}]
-             (rf/sub [sub-name])))))
+     (match?
+      {:missing  []
+       :operable [{:name     (:name default-keypair-accounts)
+                   :key-uid  (:key-uid default-keypair-accounts)
+                   :type     (keyword (:type default-keypair-accounts))
+                   :accounts [{:account-props {:customization-color (:customization-color
+                                                                     operable-wallet-account)
+                                               :size                32
+                                               :emoji               (:emoji operable-wallet-account)
+                                               :type                :default
+                                               :name                (:name operable-wallet-account)
+                                               :address             (:address operable-wallet-account)}
+                               :networks      []
+                               :state         :default
+                               :action        :none}]}]}
+      (rf/sub [sub-name])))))
 
 (def local-suggestions ["a" "b"])
 

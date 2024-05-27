@@ -8,6 +8,22 @@
     [status-im.contexts.wallet.home.tabs.style :as style]
     [utils.re-frame :as rf]))
 
+(defn- on-collectible-long-press
+  [{:keys [preview-url collectible-details id]}]
+  (let [chain-id (get-in id [:contract-id :chain-id])
+        address  (get-in id [:contract-id :address])]
+    (rf/dispatch [:show-bottom-sheet
+                  {:content (fn []
+                              [options-drawer/view
+                               {:chain-id chain-id
+                                :address  address
+                                :name     (:name collectible-details)
+                                :image    (:uri preview-url)}])}])))
+
+(defn- on-collectible-press
+  [{:keys [id]}]
+  (rf/dispatch [:wallet/get-collectible-details id]))
+
 (defn view
   [{:keys [selected-tab]}]
   (let [collectible-list     (rf/sub [:wallet/all-collectibles-list-in-selected-networks])
@@ -18,20 +34,7 @@
        :assets       [assets/view]
        :collectibles [collectibles/view
                       {:collectibles              collectible-list
-                       :on-collectible-long-press (fn [{:keys [preview-url collectible-details id]}]
-                                                    (let [chain-id (get-in id [:contract-id :chain-id])
-                                                          address  (get-in id [:contract-id :address])]
-                                                      (rf/dispatch
-                                                       [:show-bottom-sheet
-                                                        {:content (fn []
-                                                                    [options-drawer/view
-                                                                     {:chain-id chain-id
-                                                                      :address  address
-                                                                      :name     (:name
-                                                                                 collectible-details)
-                                                                      :image    (:uri
-                                                                                 preview-url)}])}])))
+                       :on-collectible-long-press on-collectible-long-press
                        :on-end-reached            request-collectibles
-                       :on-collectible-press      (fn [{:keys [id]}]
-                                                    (rf/dispatch [:wallet/get-collectible-details id]))}]
+                       :on-collectible-press      on-collectible-press}]
        [activity/view {:activities []}])]))

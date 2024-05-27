@@ -28,6 +28,7 @@
       (let [{:keys [name color formatted-balance
                     watch-only?]} (rf/sub [:wallet/current-viewing-account])
             customization-color   (rf/sub [:profile/customization-color])]
+        (rn/use-unmount #(rf/dispatch [:wallet/close-account-page]))
         [rn/view {:style {:flex 1}}
          [account-switcher/view
           {:type     :wallet-networks
@@ -67,9 +68,10 @@
            :scrollable?      true
            :scroll-on-press? true}]
          [tabs/view {:selected-tab @selected-tab}]
-         [quo/floating-shell-button
-          {:jump-to
-           {:on-press            #(rf/dispatch [:shell/navigate-to-jump-to])
-            :customization-color customization-color
-            :label               (i18n/label :t/jump-to)}}
-          style/shell-button]]))))
+         (when (ff/enabled? ::ff/shell.jump-to)
+           [quo/floating-shell-button
+            {:jump-to
+             {:on-press            #(rf/dispatch [:shell/navigate-to-jump-to])
+              :customization-color customization-color
+              :label               (i18n/label :t/jump-to)}}
+            style/shell-button])]))))

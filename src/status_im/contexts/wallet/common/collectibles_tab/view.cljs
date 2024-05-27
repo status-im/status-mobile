@@ -9,10 +9,14 @@
     [status-im.contexts.wallet.common.empty-tab.view :as empty-tab]
     [utils.i18n :as i18n]))
 
-(defn- render-fn
-  [{:keys [preview-url collection-data ownership collectible-data] :as collectible} index address
-   on-press on-long-press]
-  (let [total-owned (utils/total-owned-collectible ownership address)]
+(defn- collectible-item
+  [{:keys [preview-url collection-data collectible-data total-owned on-press on-long-press]
+    :as   collectible}
+   index]
+  (let [on-press-fn      (rn/use-callback #(when on-press
+                                             (on-press collectible)))
+        on-long-press-fn (rn/use-callback #(when on-long-press
+                                             (on-long-press collectible)))]
     [quo/collectible-list-item
      {:type                 :card
       :image-src            (:uri preview-url)
@@ -21,18 +25,15 @@
       :supported-file?      (utils/supported-file? (:animation-media-type collectible-data))
       :gradient-color-index (keyword (str "gradient-" (inc (mod index 5))))
       :counter              (utils/collectible-owned-counter total-owned)
-      :container-style      {:padding 8
-                             :width   "50%"}
-      :on-press             #(when on-press
-                               (on-press collectible))
-      :on-long-press        #(when on-long-press
-                               (on-long-press collectible))}]))
+      :container-style      style/collectible-container
+      :on-press             on-press-fn
+      :on-long-press        on-long-press-fn}]))
 
 (defn view
-  [{:keys [collectibles filtered? on-collectible-press on-end-reached current-account-address
-           on-collectible-long-press]}]
-  (let [no-results-match-query? (and filtered? (empty? collectibles))
-        theme                   (quo.theme/use-theme)]
+  [{:keys [collectibles filtered? on-end-reached
+           on-collectible-press current-account-address on-collectible-long-press]}]
+  (let [theme                   (quo.theme/use-theme)
+        no-results-match-query? (and filtered? (empty? collectibles))]
     (cond
       no-results-match-query?
       [rn/view {:style {:flex 1 :justify-content :center}}
@@ -48,17 +49,25 @@
         :image       (resources/get-themed-image :no-collectibles theme)}]
 
       :else
-      [rn/flat-list
-       {:data                     collectibles
-        :style                    {:flex 1}
-        :content-container-style  style/list-container-style
-        :window-size              11
-        :num-columns              2
-        :render-fn                (fn [item index]
-                                    (render-fn item
-                                               index
-                                               current-account-address
-                                               on-collectible-press
-                                               on-collectible-long-press))
-        :on-end-reached           on-end-reached
-        :on-end-reached-threshold 4}])))
+      ;; TODO: https://github.com/status-im/status-mobile/issues/20137
+      ;; 1. If possible, move `collectibles-data` calculation to a subscription
+      ;; 2. Optimization: do not recalculate all the collectibles, process only the new ones
+      (let [collectibles-data (map-indexed (fn [index {:keys [ownership] :as collectible}]
+                                             (assoc collectible
+                                                    :total-owned       (utils/total-owned-collectible
+                                                                        ownership
+                                                                        current-account-address)
+                                                    :on-long-press     on-collectible-long-press
+                                                    :on-press          on-collectible-press
+                                                    :collectible-index index))
+                                           collectibles)]
+        [rn/flat-list
+         {:data                     collectibles-data
+          :style                    {:flex 1}
+          :content-container-style  style/list-container-style
+          :window-size              11
+          :num-columns              2
+          :render-fn                collectible-item
+          :on-end-reached           on-end-reached
+          :key-fn                   :collectible-index
+          :on-end-reached-threshold 4}]))))

@@ -5,18 +5,22 @@
 (def container-border-radius 12)
 (def card-image-padding-vertical 3)
 (def card-image-padding-horizontal 3)
+(def default-opacity-for-loader 1)
+(def default-opacity-for-image 0)
 
 (defn fallback
-  [{:keys [theme]}]
-  {:background-color (colors/theme-colors colors/neutral-2_5 colors/neutral-90 theme)
-   :border-style     :dashed
-   :border-color     (colors/theme-colors colors/neutral-20 colors/neutral-80 theme)
-   :border-width     1
-   :border-radius    container-border-radius
-   :width            "100%"
-   :aspect-ratio     1
-   :align-items      :center
-   :justify-content  :center})
+  [{:keys [theme opacity]}]
+  [{:opacity opacity}
+   {:opacity          default-opacity-for-image
+    :background-color (colors/theme-colors colors/neutral-2_5 colors/neutral-90 theme)
+    :border-style     :dashed
+    :border-color     (colors/theme-colors colors/neutral-20 colors/neutral-80 theme)
+    :border-width     1
+    :border-radius    container-border-radius
+    :width            "100%"
+    :aspect-ratio     1
+    :align-items      :center
+    :justify-content  :center}])
 
 (def collectible-counter
   {:position :absolute
@@ -59,6 +63,15 @@
 (def card-detail-text
   {:flex 1})
 
+(defn card-loader
+  [opacity]
+  [{:opacity opacity}
+   {:position       :absolute
+    :opacity        default-opacity-for-loader
+    :left           8
+    :align-items    :center
+    :flex-direction :row}])
+
 (def image-view-container
   {:aspect-ratio  1
    :border-radius container-border-radius})
@@ -83,6 +96,7 @@
 (defn loading-image
   [theme]
   {:position         :absolute
+   :opacity          default-opacity-for-loader
    :top              0
    :bottom           0
    :left             0
@@ -91,8 +105,20 @@
    :background-color (colors/theme-colors colors/white-70-blur colors/neutral-95-opa-70-blur theme)
    :z-index          2})
 
+(defn loading-image-with-opacity
+  [theme opacity]
+  [{:opacity opacity}
+   (loading-image theme)])
+
 (defn avatar-container
-  [loaded?]
-  {:flex           1
-   :flex-direction :row
-   :opacity        (when-not loaded? 0)})
+  [opacity]
+  [{:opacity opacity}
+   {:flex           1
+    :flex-direction :row
+    :opacity        default-opacity-for-image}])
+
+(defn supported-file
+  [opacity]
+  [{:opacity opacity}
+   {:aspect-ratio 1
+    :opacity      default-opacity-for-image}])

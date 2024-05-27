@@ -12,7 +12,9 @@
     status-im.contexts.communities.actions.community-options.events
     status-im.contexts.communities.actions.leave.events
     [status-im.contexts.communities.utils :as utils]
+    [status-im.feature-flags :as ff]
     [status-im.navigation.events :as navigation]
+    [status-im.navigation.transitions :as transitions]
     [taoensso.timbre :as log]
     [utils.re-frame :as rf]))
 
@@ -241,6 +243,13 @@
 
 (rf/reg-event-fx :chat.ui/community-failed-to-fetch community-failed-to-fetch)
 
+(defn- failed-to-fetch-community
+  [community-id err]
+  (rf/dispatch [:chat.ui/community-failed-to-fetch community-id])
+  (log/error {:message
+              "Failed to request community info from mailserver"
+              :error err}))
+
 (defn fetch-community
   [{:keys [db]} [{:keys [community-id update-last-opened-at?]}]]
   (when (and community-id (not (get-in db [:communities/fetching-communities community-id])))
@@ -250,14 +259,16 @@
                                     :TryDatabase     true
                                     :WaitForResponse true}]
                       :on-success (fn [community]
-                                    (when update-last-opened-at?
-                                      (rf/dispatch [:communities/update-last-opened-at community-id]))
-                                    (rf/dispatch [:chat.ui/community-fetched community-id community]))
-                      :on-error   (fn [err]
-                                    (rf/dispatch [:chat.ui/community-failed-to-fetch community-id])
-                                    (log/error {:message
-                                                "Failed to request community info from mailserver"
-                                                :error err}))}]}))
+                                    (if community
+                                      (do (when update-last-opened-at?
+                                            (rf/dispatch [:communities/update-last-opened-at
+                                                          community-id]))
+                                          (rf/dispatch [:chat.ui/community-fetched community-id
+                                                        community]))
+                                      (failed-to-fetch-community
+                                       community-id
+                                       "community wasn't found at the store node")))
+                      :on-error   (partial failed-to-fetch-community community-id)}]}))
 
 (schema/=> fetch-community
   [:=>
@@ -361,7 +372,10 @@
                 :update-last-opened-at? true}]])
            (if pop-to-root?
              [:dispatch [:chat/pop-to-root-and-navigate-to-chat chat-id]]
-             [:dispatch [:chat/navigate-to-chat chat-id]])]}
+             [:dispatch
+              [:chat/navigate-to-chat chat-id
+               (when-not (ff/enabled? ::ff/shell.jump-to)
+                 transitions/stack-slide-transition)]])]}
      (when-not (get-in db [:chats chat-id :community-id])
        {:db (assoc-in db [:chats chat-id :community-id] community-id)}))))
 

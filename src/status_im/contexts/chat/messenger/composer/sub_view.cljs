@@ -4,6 +4,7 @@
     [react-native.core :as rn]
     [react-native.reanimated :as reanimated]
     [status-im.contexts.chat.messenger.composer.style :as style]
+    [status-im.feature-flags :as ff]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]
     [utils.worklets.chat.messenger.composer :as worklets]))
@@ -30,11 +31,12 @@
      [reanimated/view
       {:style (style/shell-button jump-to-button-position jump-to-button-opacity)}
       [quo/floating-shell-button
-       {:jump-to
-        {:on-press            #(rf/dispatch [:shell/navigate-to-jump-to])
-         :customization-color customization-color
-         :label               (i18n/label :t/jump-to)
-         :style               {:align-self :center}}}
+       (when (ff/enabled? ::ff/shell.jump-to)
+         {:jump-to
+          {:on-press            #(rf/dispatch [:shell/navigate-to-jump-to])
+           :customization-color customization-color
+           :label               (i18n/label :t/jump-to)
+           :style               {:align-self :center}}})
        {}]]
      [quo/floating-shell-button
       {:scroll-to-bottom {:on-press #(rf/dispatch [:chat.ui/scroll-to-bottom])}}

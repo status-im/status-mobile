@@ -38,8 +38,7 @@
                                :disabled?           (string/blank? @account-name)
                                :accessibility-label :confirm-button-label
                                :on-press            #(rf/dispatch [:wallet/add-account
-                                                                   {:sha3-pwd     nil
-                                                                    :type         :watch
+                                                                   {:type         :watch
                                                                     :account-name @account-name
                                                                     :emoji        @account-emoji
                                                                     :color        @account-color}

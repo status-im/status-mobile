@@ -50,18 +50,26 @@
                                messages.constants/top-bar-height
                                (if platform/ios?
                                  messages.constants/content-animation-start-position-ios
-                                 messages.constants/content-animation-start-position-android))]
+                                 messages.constants/content-animation-start-position-android))
+        community-channel?    (= chat-type constants/community-chat-type)]
     [reanimated/view
      {:style (style/header-content-container header-opacity header-position)}
-     (if group-chat
+     (cond
+       community-channel?
+       [quo/channel-avatar
+        {:size                :size-32
+         :full-name           chat-name
+         :customization-color color
+         :emoji               (when-not (string/blank? emoji)
+                                (string/trim emoji))}]
+       group-chat
        [quo/group-avatar
         {:customization-color color
          :size                :size-32
          :picture             photo-path
-         :override-theme      :dark
-         :emoji               (when-not (string/blank? emoji)
-                                (string/trim emoji))
          :chat-name           chat-name}]
+
+       :else
        [quo/user-avatar
         {:full-name       display-name
          :online?         online?

@@ -21,7 +21,7 @@
            :chain-id         4
            :layer            2}
           {:test?            true
-           :short-name       "opt"
+           :short-name       "oeth"
            :related-chain-id 10
            :chain-id         5
            :layer            2}]
@@ -34,7 +34,7 @@
            :chain-id   42161
            :layer      2}
           {:test?      false
-           :short-name "opt"
+           :short-name "oeth"
            :chain-id   10
            :layer      2}]})
 
@@ -54,8 +54,8 @@
           :chain-id         42161
           :layer            2}
          {:network-name     :optimism
-          :short-name       "opt"
-          :abbreviated-name "Opt."
+          :short-name       "oeth"
+          :abbreviated-name "Oeth."
           :chain-id         10
           :layer            2}]
         (map #(dissoc % :source :related-chain-id) (rf/sub [sub-name]))))))
@@ -77,8 +77,8 @@
                   :chain-id         42161
                   :layer            2}
        :optimism {:network-name     :optimism
-                  :short-name       "opt"
-                  :abbreviated-name "Opt."
+                  :short-name       "oeth"
+                  :abbreviated-name "Oeth."
                   :chain-id         10
                   :layer            2}}
       (rf/sub [sub-name])))))

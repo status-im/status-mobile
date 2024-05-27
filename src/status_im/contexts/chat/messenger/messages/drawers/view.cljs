@@ -94,7 +94,8 @@
                     (assoc message-data :pinned message-not-pinned?)]))))
 
 (defn get-actions
-  [{:keys [outgoing content pinned-by outgoing-status deleted? deleted-for-me? content-type]
+  [{:keys [outgoing content pinned-by outgoing-status deleted? deleted-for-me? content-type
+           bridge-message]
     :as   message-data}
    {:keys [able-to-send-message? community? can-delete-message-for-everyone?
            message-pin-enabled group-chat group-admin?]}]
@@ -139,7 +140,7 @@
        :accessibility-label (if pinned-by :unpin-message :pin-message)
        :icon                :i/pin
        :id                  (if pinned-by :unpin :pin)}])
-   (when-not (or deleted? deleted-for-me?)
+   (when-not (or deleted? deleted-for-me? bridge-message)
      [{:type                :danger
        :on-press            (fn []
                               (rf/dispatch
@@ -152,11 +153,12 @@
        :icon                :i/delete
        :id                  :delete-for-me}])
    (when (cond
-           deleted?   false
-           outgoing   true
-           community? can-delete-message-for-everyone?
-           group-chat group-admin?
-           :else      false)
+           deleted?       false
+           outgoing       true
+           community?     can-delete-message-for-everyone?
+           group-chat     group-admin?
+           bridge-message false
+           :else          false)
      [{:type                :danger
        :on-press            (fn []
                               (rf/dispatch [:hide-bottom-sheet])

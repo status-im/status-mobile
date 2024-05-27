@@ -16,3 +16,10 @@
 (def keypair-container-style
   {:margin-horizontal 20
    :margin-vertical   8})
+
+(def missing-keypairs-container-style
+  {:margin-horizontal 20
+   :margin-vertical   8})
+
+(def settings-keypairs-container
+  {:flex 1})

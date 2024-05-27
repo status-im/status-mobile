@@ -7,6 +7,7 @@
     [react-native.safe-area :as safe-area]
     [status-im.contexts.shell.jump-to.constants :as shell.constants]
     [status-im.contexts.shell.jump-to.state :as state]
+    [status-im.feature-flags :as ff]
     [utils.re-frame :as rf]))
 
 ;;;;  Helper Functions
@@ -118,7 +119,8 @@
 ;;; Navigation
 (defn shell-navigation?
   [view-id]
-  (some #{view-id} shell.constants/floating-screens))
+  (and (ff/enabled? ::ff/shell.jump-to)
+       (some #{view-id} shell.constants/floating-screens)))
 
 (defn calculate-view-id
   []

@@ -1,6 +1,9 @@
 (ns quo.core-spec
   (:require
     quo.components.avatars.account-avatar.component-spec
+    quo.components.avatars.community-avatar.component-spec
+    quo.components.avatars.dapp-avatar.component-spec
+    quo.components.avatars.token-avatar.component-spec
     quo.components.avatars.user-avatar.component-spec
     quo.components.banners.banner.component-spec
     quo.components.browser.browser-input.component-spec
@@ -9,6 +12,7 @@
     quo.components.buttons.logout-button.component-spec
     quo.components.buttons.predictive-keyboard.component-spec
     quo.components.buttons.slide-button.component-spec
+    quo.components.buttons.swap-order-button.component-spec
     quo.components.buttons.wallet-button.component-spec
     quo.components.buttons.wallet-ctas.component-spec
     quo.components.calendar.calendar-day.component-spec
@@ -95,6 +99,7 @@
     quo.components.wallet.account-overview.component-spec
     quo.components.wallet.account-permissions.component-spec
     quo.components.wallet.amount-input.component-spec
+    quo.components.wallet.approval-label.component-spec
     quo.components.wallet.confirmation-progress.component-spec
     quo.components.wallet.keypair.component-spec
     quo.components.wallet.network-amount.component-spec

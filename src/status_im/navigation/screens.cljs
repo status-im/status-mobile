@@ -57,6 +57,8 @@
     [status-im.contexts.profile.settings.screens.password.change-password.view :as change-password]
     [status-im.contexts.profile.settings.screens.password.view :as settings-password]
     [status-im.contexts.profile.settings.view :as settings]
+    [status-im.contexts.settings.wallet.keypairs-and-accounts.encrypted-qr.view :as
+     encrypted-key-pair-qr]
     [status-im.contexts.settings.wallet.keypairs-and-accounts.rename.view :as keypair-rename]
     [status-im.contexts.settings.wallet.keypairs-and-accounts.view :as keypairs-and-accounts]
     [status-im.contexts.settings.wallet.network-settings.view :as network-settings]
@@ -85,8 +87,8 @@
      wallet-key-pair-name]
     [status-im.contexts.wallet.add-account.create-account.new-keypair.backup-recovery-phrase.view :as
      wallet-backup-recovery-phrase]
-    [status-im.contexts.wallet.add-account.create-account.new-keypair.check-your-backup.view :as
-     wallet-check-your-backup]
+    [status-im.contexts.wallet.add-account.create-account.new-keypair.confirm-backup.view :as
+     wallet-confirm-backup]
     [status-im.contexts.wallet.add-account.create-account.select-keypair.view :as wallet-select-keypair]
     [status-im.contexts.wallet.add-account.create-account.view :as wallet-create-account]
     [status-im.contexts.wallet.bridge.bridge-to.view :as wallet-bridge-to]
@@ -127,8 +129,8 @@
      :component shell-qr-reader/view}
 
     {:name      :chat
-     :options   {:insets     {:top? true}
-                 :popGesture false}
+     :options   {:popGesture false
+                 :animations transitions/stack-transition-from-bottom}
      :component chat/chat}
 
     {:name      :start-a-new-chat
@@ -210,6 +212,7 @@
      :component communities.discover/view}
 
     {:name      :community-overview
+     :options   {:animations transitions/stack-transition-from-bottom}
      :component communities.overview/view}
 
     {:name      :settings
@@ -430,9 +433,9 @@
      :options   {:insets {:top? true :bottom? true}}
      :component wallet-backup-recovery-phrase/view}
 
-    {:name      :screen/wallet.check-your-backup
+    {:name      :screen/wallet.confirm-backup
      :options   {:insets {:top? true :bottom? true}}
-     :component wallet-check-your-backup/view}
+     :component wallet-confirm-backup/view}
 
     {:name      :screen/wallet.keypair-name
      :options   {:insets {:top? true}}
@@ -509,14 +512,16 @@
      :options   (assoc options/dark-screen :sheet? true)
      :component keypair-rename/view}
 
+    {:name      :screen/settings.encrypted-key-pair-qr
+     :options   options/transparent-screen-options
+     :component encrypted-key-pair-qr/view}
+
     {:name      :screen/settings.saved-addresses
      :options   options/transparent-modal-screen-options
      :component saved-addresses-settings/view}
 
     {:name      :screen/settings.keypairs-and-accounts
-     :options   (merge
-                 options/transparent-modal-screen-options
-                 options/dark-screen)
+     :options   options/transparent-modal-screen-options
      :component keypairs-and-accounts/view}
 
     {:name      :screen/settings.network-settings

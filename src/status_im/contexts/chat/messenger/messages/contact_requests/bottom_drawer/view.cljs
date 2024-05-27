@@ -5,6 +5,7 @@
     [status-im.constants :as constants]
     [status-im.contexts.chat.messenger.messages.contact-requests.bottom-drawer.style :as style]
     [status-im.contexts.shell.jump-to.constants :as jump-to.constants]
+    [status-im.feature-flags :as ff]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
@@ -49,10 +50,11 @@
 
                        contact-request-pending?
                        (i18n/label :t/contact-request-chat-pending))}]
-     [quo/floating-shell-button
-      {:jump-to
-       {:on-press            #(rf/dispatch [:shell/navigate-to-jump-to])
-        :customization-color customization-color
-        :label               (i18n/label :t/jump-to)}}
-      {:position :absolute
-       :top      (- jump-to.constants/floating-shell-button-height)}]]))
+     (when (ff/enabled? ::ff/shell.jump-to)
+       [quo/floating-shell-button
+        {:jump-to
+         {:on-press            #(rf/dispatch [:shell/navigate-to-jump-to])
+          :customization-color customization-color
+          :label               (i18n/label :t/jump-to)}}
+        {:position :absolute
+         :top      (- jump-to.constants/floating-shell-button-height)}])]))

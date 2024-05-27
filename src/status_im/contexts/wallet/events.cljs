@@ -16,17 +16,18 @@
     [utils.i18n :as i18n]
     [utils.number]
     [utils.re-frame :as rf]
+    [utils.security.core :as security]
     [utils.transforms :as transforms]))
 
 (rf/reg-event-fx :wallet/show-account-created-toast
  (fn [{:keys [db]} [address]]
-   (let [account (get-in db [:wallet :accounts address])]
+   (let [account-name (get-in db [:wallet :accounts address :name])]
      {:db (update db :wallet dissoc :navigate-to-account :new-account?)
       :fx [[:dispatch
             [:toasts/upsert
              {:id   :new-wallet-account-created
               :type :positive
-              :text (i18n/label :t/account-created {:name (:name account)})}]]]})))
+              :text (i18n/label :t/account-created {:name account-name})}]]]})))
 
 (rf/reg-event-fx :wallet/navigate-to-account
  (fn [{:keys [db]} [address]]
@@ -102,7 +103,8 @@
 (rf/reg-event-fx
  :wallet/remove-account-success
  (fn [_ [toast-message _]]
-   {:fx [[:dispatch [:wallet/get-accounts]]
+   {:fx [[:dispatch [:wallet/clean-current-viewing-account]]
+         [:dispatch [:wallet/get-accounts]]
          [:dispatch [:wallet/get-keypairs]]
          [:dispatch-later
           {:ms       100
@@ -172,30 +174,22 @@
   [{:keys [db]}]
   {:db (update-in db [:wallet :ui] dissoc :scanned-address)})
 
-(rf/reg-event-fx :wallet/create-derived-addresses
- (fn [{:keys [db]} [{:keys [sha3-pwd path]} on-success]]
-   (let [{:keys [address]} (:profile/profile db)]
-     {:fx [[:json-rpc/call
-            [{:method     "wallet_getDerivedAddresses"
-              :params     [sha3-pwd address [path]]
-              :on-success on-success
-              :on-error   #(log/info "failed to derive address " %)}]]]})))
-
 (rf/reg-event-fx :wallet/add-account-success
  (fn [{:keys [db]} [address]]
-   {:db (update db
-                :wallet              assoc
-                :navigate-to-account address
-                :new-account?        true)
+   {:db (-> db
+            (assoc-in [:wallet :navigate-to-account] address)
+            (assoc-in [:wallet :new-account?] true))
     :fx [[:dispatch [:wallet/get-accounts]]
          [:dispatch [:wallet/get-keypairs]]
-         [:dispatch [:wallet/clear-new-keypair]]]}))
+         [:dispatch [:wallet/clear-create-account]]]}))
 
 (rf/reg-event-fx :wallet/add-account
  (fn [{:keys [db]}
-      [{:keys [sha3-pwd emoji account-name color type] :or {type :generated}}
-       {:keys [public-key address path]}]]
-   (let [lowercase-address (if address (string/lower-case address) address)
+      [{:keys [password account-name emoji color type]
+        :or   {type :generated}}
+       {:keys [public-key address path] :as _derived-account}]]
+   (let [lowercase-address (some-> address
+                                   (string/lower-case))
          key-uid           (get-in db [:wallet :ui :create-account :selected-keypair-uid])
          account-config    {:key-uid    (when (= type :generated) key-uid)
                             :wallet     false
@@ -209,30 +203,11 @@
                             :colorID    color}]
      {:fx [[:json-rpc/call
             [{:method     "accounts_addAccount"
-              :params     [(when (= type :generated) sha3-pwd) account-config]
+              :params     [(when (= type :generated)
+                             (security/safe-unmask-data password))
+                           account-config]
               :on-success [:wallet/add-account-success lowercase-address]
-              :on-error   #(log/info "failed to create account " %)}]]]})))
-
-(rf/reg-event-fx
- :wallet/derive-address-and-add-account
- (fn [_ [account-details]]
-   (let [on-success (fn [derived-address-details]
-                      (rf/dispatch [:wallet/add-account account-details
-                                    (first derived-address-details)]))]
-     {:fx [[:dispatch [:wallet/create-derived-addresses account-details on-success]]]})))
-
-(defn add-keypair-and-create-account
-  [_ [{:keys [sha3-pwd new-keypair]}]]
-  (let [lowercase-address (if (:address new-keypair)
-                            (string/lower-case (:address new-keypair))
-                            (:address new-keypair))]
-    {:fx [[:json-rpc/call
-           [{:method     "accounts_addKeypair"
-             :params     [sha3-pwd new-keypair]
-             :on-success [:wallet/add-account-success lowercase-address]
-             :on-error   #(log/info "failed to create keypair " %)}]]]}))
-
-(rf/reg-event-fx :wallet/add-keypair-and-create-account add-keypair-and-create-account)
+              :on-error   #(log/info "failed to create account " % account-config)}]]]})))
 
 (defn get-keypairs
   [_]
@@ -250,7 +225,7 @@
      {:db (-> db
               (assoc-in [:wallet :ui :send :token] token)
               (assoc-in [:wallet :ui :send :to-address] to-address)
-              (assoc-in [:wallet :ui :send :tx-type] :bridge))
+              (assoc-in [:wallet :ui :send :tx-type] :tx/bridge))
       :fx [[:dispatch
             [:wallet/wizard-navigate-forward
              {:current-screen stack-id
@@ -259,7 +234,7 @@
 
 (rf/reg-event-fx :wallet/start-bridge
  (fn [{:keys [db]}]
-   {:db (assoc-in db [:wallet :ui :send :tx-type] :bridge)
+   {:db (assoc-in db [:wallet :ui :send :tx-type] :tx/bridge)
     :fx [[:dispatch [:open-modal :screen/wallet.bridge-select-asset]]]}))
 
 (rf/reg-event-fx :wallet/select-bridge-network
@@ -521,3 +496,20 @@
          activities           (cske/transform-keys transforms/->kebab-case-keyword activities)
          sorted-activities    (sort :timestamp activities)]
      {:db (assoc-in db [:wallet :activities] sorted-activities)})))
+
+(rf/reg-event-fx
+ :wallet/get-crypto-on-ramps-success
+ (fn [{:keys [db]} [data]]
+   {:db (assoc-in db
+         [:wallet :crypto-on-ramps]
+         (cske/transform-keys transforms/->kebab-case-keyword data))}))
+
+(rf/reg-event-fx
+ :wallet/get-crypto-on-ramps
+ (fn [_]
+   {:fx [[:json-rpc/call
+          [{:method     "wallet_getCryptoOnRamps"
+            :on-success [:wallet/get-crypto-on-ramps-success]
+            :on-error   #(log/info "failed to fetch crypto on ramps"
+                                   {:error %
+                                    :event :wallet/get-crypto-on-ramps})}]]]}))

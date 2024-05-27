@@ -128,15 +128,6 @@
    :user-picture-male4    (js/require "../resources/images/mock2/user_picture_male4.png")
    :user-picture-male5    (js/require "../resources/images/mock2/user_picture_male5.png")})
 
-(def services
-  {:latamex (js/require "../resources/images/services/Latamex.png")
-   :moonpay (js/require "../resources/images/services/Moonpay.png")
-   :ramp    (js/require "../resources/images/services/Ramp.png")})
-
-(defn get-service-image
-  [k]
-  (get services k))
-
 (defn get-mock-image
   [k]
   (get mock-images k))

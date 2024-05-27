@@ -1,11 +1,13 @@
-(ns status-im.contexts.wallet.send.flow-config)
+(ns status-im.contexts.wallet.send.flow-config
+  (:require
+    [status-im.contexts.wallet.send.utils :as send-utils]))
 
 (defn- collectible-selected?
   [db]
   (let [collectible-stored (-> db :wallet :ui :send :collectible)
         tx-type            (-> db :wallet :ui :send :tx-type)]
     (and (some? collectible-stored)
-         (= tx-type :collectible))))
+         (send-utils/tx-type-collectible? tx-type))))
 
 (defn- token-selected?
   [db]
@@ -19,7 +21,8 @@
    {:screen-id  :screen/wallet.select-asset
     :skip-step? (fn [db] (or (token-selected? db) (collectible-selected? db)))}
    {:screen-id  :screen/wallet.send-input-amount
-    :skip-step? (fn [db] (= (get-in db [:wallet :ui :send :tx-type]) :collectible))}
+    :skip-step? (fn [db]
+                  (send-utils/tx-type-collectible? (get-in db [:wallet :ui :send :tx-type])))}
    {:screen-id  :screen/wallet.select-collectible-amount
     :skip-step? (fn [db]
                   (or (not (collectible-selected? db))

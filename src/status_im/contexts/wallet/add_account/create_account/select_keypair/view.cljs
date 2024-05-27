@@ -23,11 +23,11 @@
       :add-divider?        true
       :on-press            #(rf/dispatch [:navigate-to :screen/wallet.enter-seed-phrase
                                           {:recovering-keypair? true}])}
-     {:icon                :i/key
-      :accessibility-label :import-private-key
-      :label               (i18n/label :t/import-private-key)
-      :on-press            (when (ff/enabled? ::wallet.import-private-key)
-                             #(rf/dispatch [:navigate-to :screen/wallet.import-private-key]))}]]])
+     (when (ff/enabled? ::wallet.import-private-key)
+       {:icon                :i/key
+        :accessibility-label :import-private-key
+        :label               (i18n/label :t/import-private-key)
+        :on-press            #(rf/dispatch [:navigate-to :screen/wallet.import-private-key])})]]])
 
 (defn- parse-accounts
   [given-accounts]
@@ -42,7 +42,7 @@
                                :name                name
                                :address             address}
                :networks      [{:network-name :ethereum :short-name "eth"}
-                               {:network-name :optimism :short-name "opt"}
+                               {:network-name :optimism :short-name "oeth"}
                                {:network-name :arbitrum :short-name "arb1"}]
                :state         :default
                :action        :none}))))

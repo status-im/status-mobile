@@ -6,6 +6,7 @@
     [react-native.safe-area :as safe-area]
     [status-im.common.resources :as resources]
     [status-im.contexts.onboarding.enable-notifications.style :as style]
+    [status-im.contexts.shell.jump-to.constants :as shell.constants]
     [status-im.contexts.shell.jump-to.utils :as shell.utils]
     [taoensso.timbre :as log]
     [utils.i18n :as i18n]
@@ -26,7 +27,10 @@
     [rn/view {:style (style/buttons insets)}
      [quo/button
       {:on-press            (fn []
-                              (shell.utils/change-selected-stack-id :communities-stack true nil)
+                              (shell.utils/change-selected-stack-id
+                               shell.constants/default-selected-stack
+                               true
+                               nil)
                               (rf/dispatch
                                [:request-permissions
                                 {:permissions [:post-notifications]
@@ -43,7 +47,10 @@
       (i18n/label :t/intro-wizard-title6)]
      [quo/button
       {:on-press            (fn []
-                              (shell.utils/change-selected-stack-id :communities-stack true nil)
+                              (shell.utils/change-selected-stack-id
+                               shell.constants/default-selected-stack
+                               true
+                               nil)
                               (rf/dispatch [:navigate-to-within-stack
                                             [:screen/onboarding.welcome
                                              :screen/onboarding.enable-notifications]]))

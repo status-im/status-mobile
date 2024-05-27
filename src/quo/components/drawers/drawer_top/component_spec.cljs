@@ -80,10 +80,10 @@
     (h/is-truthy (h/get-by-text "0x62b...0a5"))
     (h/is-truthy (h/get-by-label-text :account-avatar)))
 
-  (h/test "component renders in keypair type when keycard? is false"
+  (h/test "component renders keypair type with default label"
     (h/render-with-theme-provider [quo/drawer-top
                                    {:title       "Title"
-                                    :keycard?    false
+                                    :stored      nil
                                     :icon-avatar :i/placeholder
                                     :type        :keypair}]
                                   theme)
@@ -91,15 +91,37 @@
     (-> (h/expect (h/get-by-translation-text :t/on-device))
         (.toBeTruthy)))
 
-  (h/test "component renders in keypair type when keycard? is true"
+  (h/test "component renders keypair type when stored on device"
     (h/render-with-theme-provider [quo/drawer-top
                                    {:title       "Title"
-                                    :keycard?    true
+                                    :stored      :on-device
+                                    :icon-avatar :i/placeholder
+                                    :type        :keypair}]
+                                  theme)
+    (h/is-truthy (h/get-by-text "Title"))
+    (-> (h/expect (h/get-by-translation-text :t/on-device))
+        (.toBeTruthy)))
+
+  (h/test "component renders keypair type when stored on keycard"
+    (h/render-with-theme-provider [quo/drawer-top
+                                   {:title       "Title"
+                                    :stored      :on-keycard
                                     :icon-avatar :i/placeholder
                                     :type        :keypair}]
                                   theme)
     (h/is-truthy (h/get-by-text "Title"))
     (-> (h/expect (h/get-by-translation-text :t/on-keycard))
+        (.toBeTruthy)))
+
+  (h/test "component renders keypair type when considered missing"
+    (h/render-with-theme-provider [quo/drawer-top
+                                   {:title       "Title"
+                                    :stored      :missing
+                                    :icon-avatar :i/placeholder
+                                    :type        :keypair}]
+                                  theme)
+    (h/is-truthy (h/get-by-text "Title"))
+    (-> (h/expect (h/get-by-translation-text :t/import-to-use-derived-accounts))
         (.toBeTruthy)))
 
   (h/test "component renders in default-keypair type"

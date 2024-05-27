@@ -4,6 +4,7 @@
     [status-im.common.resources :as resources]
     [status-im.constants :as constants]
     [status-im.contexts.shell.jump-to.constants :as shell.constants]
+    [status-im.feature-flags :as ff]
     [utils.datetime :as datetime]
     [utils.i18n :as i18n]))
 
@@ -268,4 +269,5 @@
  :shell/chat-screen-loaded?
  :<- [:shell/loaded-screens]
  (fn [screens]
-   (get screens shell.constants/chat-screen)))
+   (or (not (ff/enabled? ::ff/shell.jump-to))
+       (get screens shell.constants/chat-screen))))

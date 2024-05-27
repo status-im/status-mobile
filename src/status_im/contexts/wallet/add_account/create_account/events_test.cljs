@@ -1,8 +1,10 @@
 (ns status-im.contexts.wallet.add-account.create-account.events-test
   (:require
     [cljs.test :refer-macros [deftest is]]
-    matcher-combinators.test
-    [status-im.contexts.wallet.add-account.create-account.events :as events]))
+    [matcher-combinators.test]
+    [status-im.constants :as constants]
+    [status-im.contexts.wallet.add-account.create-account.events :as events]
+    [utils.security.core :as security]))
 
 (deftest confirm-account-origin
   (let [db          {:wallet {:ui {:create-account {}}}}
@@ -15,32 +17,60 @@
 (deftest store-seed-phrase
   (let [db          {}
         props       [{:seed-phrase "test-secret" :random-phrase "random-test"}]
-        expected-db {:wallet {:ui {:create-account {:seed-phrase   "test-secret"
-                                                    :random-phrase "random-test"}}}}
-        effects     (events/store-seed-phrase {:db db} props)
+        expected-db {:wallet {:ui {:create-account {:new-keypair {:seed-phrase   "test-secret"
+                                                                  :random-phrase "random-test"}}}}}
+        effects     (events/store-new-seed-phrase {:db db} props)
         result-db   (:db effects)]
     (is (match? result-db expected-db))))
 
-(deftest new-keypair-created
-  (let [db          {}
-        props       [{:new-keypair "test-keypair"}]
-        expected-db {:wallet {:ui {:create-account {:new-keypair "test-keypair"}}}}
-        effects     (events/new-keypair-created {:db db} props)
-        result-db   (:db effects)]
-    (is (match? result-db expected-db))))
+(deftest store-account-generated
+  (let [db              {:wallet {:ui {:create-account
+                                       {:new-keypair {:seed-phrase   "test-secret"
+                                                      :random-phrase "random-test"}}}}}
+        mnemonic        "my mnemonic"
+        masked-mnemonic (security/mask-data mnemonic)
+        props           [{:new-account-data {"test"    "data"
+                                             :mnemonic mnemonic}
+                          :keypair-name     "new-keypair-name"}]
+        expected-db     {:wallet {:ui {:create-account
+                                       {:new-keypair
+                                        {:new-account-data {"test"    "data"
+                                                            :mnemonic masked-mnemonic}
+                                         :keypair-name     "new-keypair-name"}}}}}
+        effects         (events/store-account-generated {:db db} props)
+        result-db       (:db effects)
+        remove-mnemonic #(update-in %
+                                    [:wallet :ui :create-account :new-keypair :new-account-data]
+                                    dissoc
+                                    :mnemonic)
+        unmask-mnemonic #(-> %
+                             :wallet
+                             :ui
+                             :create-account
+                             :new-keypair
+                             :new-account-data
+                             :mnemonic
+                             security/safe-unmask-data)]
+    (is (= (remove-mnemonic result-db) (remove-mnemonic expected-db)))
+    (is (= (unmask-mnemonic result-db) (unmask-mnemonic expected-db)))))
 
-(deftest new-keypair-continue
-  (let [db               {:wallet {:ui {:create-account {:seed-phrase "test-secret"}}}}
+
+(deftest generate-account-for-keypair
+  (let [db               {:wallet {:ui {:create-account {:new-keypair {:seed-phrase "test-secret"}}}}}
         props            [{:keypair-name "test-keypair"}]
         expected-effects [[:effects.wallet/create-account-from-mnemonic
-                           {:seed-phrase "test-secret" :keypair-name "test-keypair"}]]
-        effects          (events/new-keypair-continue {:db db} props)]
-    (is (match? effects {:fx expected-effects}))))
+                           {:mnemonic-phrase "test-secret"
+                            :paths           [constants/path-default-wallet]}]]
+        effects          (events/generate-account-for-keypair {:db db} props)]
+    (is (match?
+         (update-in effects [:fx 0 1] dissoc :on-success)
+         {:fx expected-effects}))
+    (is (some? (get-in effects [:fx 0 1 :on-success])))))
 
-(deftest clear-new-keypair
+(deftest clear-create-account-data
   (let [db          {:wallet {:ui {:create-account {:new-keypair "test-keypair"}}}}
         expected-db {:wallet {:ui {:create-account {}}}}
-        effects     (events/clear-new-keypair {:db db})]
+        effects     (events/clear-create-account-data {:db db})]
     (is (match? (:db effects) expected-db))))
 
 (deftest get-derived-addresses-test

@@ -55,8 +55,8 @@
       :icon-color          (style/right-tag-icon-color blur? theme)}]))
 
 (defn view
-  [{:keys [title right accessibility-label] :as props}]
-  [rn/view {:style style/container}
+  [{:keys [title right accessibility-label container-style] :as props}]
+  [rn/view {:style (merge style/container container-style)}
    [text/text
     {:size                :heading-1
      :weight              :semi-bold

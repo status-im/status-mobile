@@ -52,8 +52,8 @@
                                                :import-private-key
                                                (not-implemented/alert)
 
-                                               :new-key-pair
-                                               (rf/dispatch [:wallet/new-keypair-continue
+                                               :new-keypair
+                                               (rf/dispatch [:wallet/generate-account-for-keypair
                                                              {:keypair-name key-pair-name}])
                                                (js/alert "Unknown workflow")))
                                            [workflow key-pair-name])

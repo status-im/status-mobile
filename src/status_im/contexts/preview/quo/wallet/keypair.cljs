@@ -13,7 +13,7 @@
                     :name                "Trip to Vegas"
                     :address             "0x0ah...71a"}
     :networks      [{:network-name :ethereum :short-name "eth"}
-                    {:network-name :optimism :short-name "opt"}]
+                    {:network-name :optimism :short-name "oeth"}]
     :state         :default
     :action        :none}
    {:account-props {:customization-color :purple
@@ -23,7 +23,7 @@
                     :name                "My savings"
                     :address             "0x0ah...72b"}
     :networks      [{:network-name :ethereum :short-name "eth"}
-                    {:network-name :optimism :short-name "opt"}]
+                    {:network-name :optimism :short-name "oeth"}]
     :state         :default
     :action        :none}
    {:account-props {:customization-color :army
@@ -33,7 +33,7 @@
                     :name                "Coin vault"
                     :address             "0x0ah...73c"}
     :networks      [{:network-name :ethereum :short-name "eth"}
-                    {:network-name :optimism :short-name "opt"}]
+                    {:network-name :optimism :short-name "oeth"}]
     :state         :default
     :action        :none}
    {:account-props {:customization-color :orange
@@ -43,7 +43,7 @@
                     :name                "Crypto fortress"
                     :address             "0x0ah...74e"}
     :networks      [{:network-name :ethereum :short-name "eth"}
-                    {:network-name :optimism :short-name "opt"}]
+                    {:network-name :optimism :short-name "oeth"}]
     :state         :default
     :action        :none}
    {:account-props {:customization-color :yellow
@@ -53,7 +53,7 @@
                     :name                "Block treasure"
                     :address             "0x0ah...75f"}
     :networks      [{:network-name :ethereum :short-name "eth"}
-                    {:network-name :optimism :short-name "opt"}]
+                    {:network-name :optimism :short-name "oeth"}]
     :state         :default
     :action        :none}])
 

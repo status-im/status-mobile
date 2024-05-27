@@ -10,8 +10,11 @@
     [status-im.contexts.preview.quo.avatars.account-avatar :as account-avatar]
     [status-im.contexts.preview.quo.avatars.channel-avatar :as channel-avatar]
     [status-im.contexts.preview.quo.avatars.collection-avatar :as collection-avatar]
+    [status-im.contexts.preview.quo.avatars.community-avatar :as community-avatar]
+    [status-im.contexts.preview.quo.avatars.dapp-avatar :as dapp-avatar]
     [status-im.contexts.preview.quo.avatars.group-avatar :as group-avatar]
     [status-im.contexts.preview.quo.avatars.icon-avatar :as icon-avatar]
+    [status-im.contexts.preview.quo.avatars.token-avatar :as token-avatar]
     [status-im.contexts.preview.quo.avatars.user-avatar :as user-avatar]
     [status-im.contexts.preview.quo.avatars.wallet-user-avatar :as
      wallet-user-avatar]
@@ -24,6 +27,7 @@
     [status-im.contexts.preview.quo.buttons.predictive-keyboard :as
      predictive-keyboard]
     [status-im.contexts.preview.quo.buttons.slide-button :as slide-button]
+    [status-im.contexts.preview.quo.buttons.swap-order-button :as swap-order-button]
     [status-im.contexts.preview.quo.buttons.wallet-button :as wallet-button]
     [status-im.contexts.preview.quo.buttons.wallet-ctas :as wallet-ctas]
     [status-im.contexts.preview.quo.calendar.calendar :as calendar]
@@ -102,6 +106,7 @@
     [status-im.contexts.preview.quo.list-items.address :as address]
     [status-im.contexts.preview.quo.list-items.channel :as channel]
     [status-im.contexts.preview.quo.list-items.dapp :as dapp]
+    [status-im.contexts.preview.quo.list-items.missing-keypair :as missing-keypair]
     [status-im.contexts.preview.quo.list-items.network-list :as network-list]
     [status-im.contexts.preview.quo.list-items.preview-lists :as preview-lists]
     [status-im.contexts.preview.quo.list-items.quiz-item :as quiz-item]
@@ -191,9 +196,11 @@
      account-overview]
     [status-im.contexts.preview.quo.wallet.account-permissions :as account-permissions]
     [status-im.contexts.preview.quo.wallet.amount-input :as amount-input]
+    [status-im.contexts.preview.quo.wallet.approval-label :as approval-label]
     [status-im.contexts.preview.quo.wallet.confirmation-progress :as
      confirmation-progress]
     [status-im.contexts.preview.quo.wallet.keypair :as keypair]
+    [status-im.contexts.preview.quo.wallet.missing-keypairs :as missing-keypairs]
     [status-im.contexts.preview.quo.wallet.network-amount :as network-amount]
     [status-im.contexts.preview.quo.wallet.network-bridge :as network-bridge]
     [status-im.contexts.preview.quo.wallet.network-link :as network-link]
@@ -216,10 +223,16 @@
                         :component shadows/view}]
    :animated-list     [{:name      :animated-header-list
                         :component animated-header-list/mock-screen}]
-   :avatar            [{:name      :group-avatar
+   :avatar            [{:name      :community-avatar
+                        :component community-avatar/view}
+                       {:name      :dapp-avatar
+                        :component dapp-avatar/view}
+                       {:name      :group-avatar
                         :component group-avatar/view}
                        {:name      :icon-avatar
                         :component icon-avatar/view}
+                       {:name      :token-avatar
+                        :component token-avatar/view}
                        {:name      :user-avatar
                         :component user-avatar/view}
                        {:name      :wallet-user-avatar
@@ -240,6 +253,8 @@
                         :component dynamic-button/view}
                        {:name      :slide-button
                         :component slide-button/view}
+                       {:name      :swap-order-button
+                        :component swap-order-button/view}
                        {:name      :predictive-keyboard
                         :component predictive-keyboard/view}
                        {:name      :wallet-button
@@ -376,6 +391,8 @@
                         :component community-list-item/view}
                        {:name      :dapp
                         :component dapp/preview}
+                       {:name      :missing-keypair
+                        :component missing-keypair/view}
                        {:name      :network-list
                         :component network-list/view}
                        {:name      :preview-lists
@@ -526,9 +543,13 @@
                         :component account-permissions/view}
                        {:name      :amount-input
                         :component amount-input/view}
+                       {:name      :approval-label
+                        :component approval-label/view}
                        {:name      :confirmation-progress
                         :component confirmation-progress/view}
                        {:name :keypair :component keypair/view}
+                       {:name      :missing-keypairs
+                        :component missing-keypairs/view}
                        {:name :network-amount :component network-amount/view}
                        {:name :network-bridge :component network-bridge/view}
                        {:name :network-link :component network-link/view}

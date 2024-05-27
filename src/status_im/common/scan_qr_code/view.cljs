@@ -20,7 +20,7 @@
 (defonce camera-permission-granted? (reagent/atom false))
 
 (defn- header
-  [{:keys [title subtitle]}]
+  [{:keys [title subtitle share-button?]}]
   [:<>
    [rn/view {:style style/header-container}
     [quo/button
@@ -31,16 +31,17 @@
       :accessibility-label :close-scan-qr-code
       :on-press            #(rf/dispatch [:navigate-back])}
      :i/close]
-    [quo/button
-     {:icon-only?          true
-      :type                :grey
-      :background          :blur
-      :size                32
-      :accessibility-label :show-qr-button
-      :on-press            (fn []
-                             (rf/dispatch [:navigate-back])
-                             (rf/dispatch [:open-modal :screen/share-shell]))}
-     :i/qr-code]]
+    (when share-button?
+      [quo/button
+       {:icon-only?          true
+        :type                :grey
+        :background          :blur
+        :size                32
+        :accessibility-label :show-qr-button
+        :on-press            (fn []
+                               (rf/dispatch [:navigate-back])
+                               (rf/dispatch [:open-modal :screen/share-shell]))}
+       :i/qr-code])]
    [quo/text
     {:size   :heading-1
      :weight :semi-bold
@@ -195,7 +196,7 @@
   true)
 
 (defn view
-  [{:keys [title subtitle validate-fn on-success-scan error-message]}]
+  [{:keys [title subtitle validate-fn on-success-scan error-message share-button?]}]
   (let [insets             (safe-area/get-insets)
         qr-code-succeed?   (reagent/atom false)
         qr-view-finder     (reagent/atom {})
@@ -237,8 +238,9 @@
              :set-rescan-timeout    set-rescan-timeout}])
          [rn/view {:style (style/root-container (:top insets))}
           [header
-           {:title    title
-            :subtitle subtitle}]
+           {:title         title
+            :subtitle      subtitle
+            :share-button? share-button?}]
           (when (empty? @qr-view-finder)
             [:<>
              [rn/view {:style style/scan-qr-code-container}]

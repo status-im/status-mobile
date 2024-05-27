@@ -48,6 +48,11 @@
  :-> :create-account)
 
 (rf/reg-sub
+ :wallet/create-account-new-keypair
+ :<- [:wallet/create-account]
+ :-> :new-keypair)
+
+(rf/reg-sub
  :wallet/network-filter
  :<- [:wallet/ui]
  :-> :network-filter)
@@ -101,7 +106,19 @@
 (rf/reg-sub
  :wallet/wallet-send-token
  :<- [:wallet/wallet-send]
- :-> :token)
+ :<- [:wallet/network-details]
+ :<- [:wallet/wallet-send-disabled-from-chain-ids]
+ (fn [[wallet-send networks disabled-from-chain-ids]]
+   (let [token                  (:token wallet-send)
+         enabled-from-chain-ids (->> networks
+                                     (filter #(not (contains? (set disabled-from-chain-ids)
+                                                              (:chain-id %))))
+                                     (map :chain-id)
+                                     set)]
+     (assoc token
+            :networks          (network-utils/network-list token networks)
+            :available-balance (utils/calculate-total-token-balance token)
+            :total-balance     (utils/calculate-total-token-balance token enabled-from-chain-ids)))))
 
 (rf/reg-sub
  :wallet/wallet-send-token-symbol
@@ -159,6 +176,25 @@
  :-> :selected-keypair-uid)
 
 (rf/reg-sub
+ :wallet/selected-keypair
+ :<- [:wallet/keypairs]
+ :<- [:wallet/selected-keypair-uid]
+ (fn [[keypairs selected-keypair-uid]]
+   (some #(when (= (:key-uid %) selected-keypair-uid)
+            %)
+         keypairs)))
+
+(rf/reg-sub
+ :wallet/selected-primary-keypair?
+ :<- [:wallet/keypairs]
+ :<- [:wallet/selected-keypair-uid]
+ (fn [[keypairs selected-keypair-uid]]
+   (let [primary-keypair-uid (->> keypairs
+                                  (some #(when (= (:type %) "profile") %))
+                                  (:key-uid))]
+     (= selected-keypair-uid primary-keypair-uid))))
+
+(rf/reg-sub
  :wallet/selected-networks->chain-ids
  :<- [:wallet/selected-networks]
  :<- [:profile/test-networks-enabled?]
@@ -188,17 +224,40 @@
                   :state         :default
                   :action        :none})))))
 
+(defn- format-settings-missing-keypair-accounts
+  [accounts]
+  (->> accounts
+       (map (fn [{:keys [customization-color emoji]}]
+              {:customization-color customization-color
+               :emoji               emoji
+               :type                :default}))))
+
 (rf/reg-sub
  :wallet/settings-keypairs-accounts
  :<- [:wallet/keypairs]
- (fn [keypairs [_ format-options]]
-   (->> keypairs
-        (map (fn [{:keys [accounts name type key-uid]}]
-               {:type     (keyword type)
-                :name     name
-                :key-uid  key-uid
-                :accounts (format-settings-keypair-accounts accounts format-options)})))))
-
+ :<- [:wallet/accounts]
+ (fn [[keypairs accounts] [_ format-options]]
+   (let [grouped-accounts      (->> accounts
+                                    (map #(select-keys % [:operable :key-uid]))
+                                    (group-by :operable))
+         operable-key-pair-ids (->> (map :key-uid (:fully grouped-accounts))
+                                    (into #{}))
+         missing-key-pair-ids  (->> (map :key-uid (:no grouped-accounts))
+                                    (into #{}))]
+     {:operable (->> keypairs
+                     (filter #(contains? operable-key-pair-ids (:key-uid %)))
+                     (map (fn [{:keys [accounts name type key-uid]}]
+                            {:type     (keyword type)
+                             :name     name
+                             :key-uid  key-uid
+                             :accounts (format-settings-keypair-accounts accounts format-options)})))
+      :missing  (->> keypairs
+                     (filter #(contains? missing-key-pair-ids (:key-uid %)))
+                     (map (fn [{:keys [accounts name type key-uid]}]
+                            {:type     (keyword type)
+                             :name     name
+                             :key-uid  key-uid
+                             :accounts (format-settings-missing-keypair-accounts accounts)})))})))
 (rf/reg-sub
  :wallet/derivation-path-state
  :<- [:wallet/create-account]
@@ -295,11 +354,13 @@
  :wallet/current-viewing-account-tokens-filtered
  :<- [:wallet/current-viewing-account]
  :<- [:wallet/network-details]
- (fn [[account networks] [_ query]]
+ (fn [[account networks] [_ query chain-ids]]
    (let [tokens        (map (fn [token]
                               (assoc token
-                                     :networks      (network-utils/network-list token networks)
-                                     :total-balance (utils/calculate-total-token-balance token)))
+                                     :networks          (network-utils/network-list token networks)
+                                     :available-balance (utils/calculate-total-token-balance token)
+                                     :total-balance     (utils/calculate-total-token-balance token
+                                                                                             chain-ids)))
                             (:tokens account))
          sorted-tokens (sort-by :name compare tokens)]
      (if query
@@ -313,11 +374,13 @@
  :wallet/token-by-symbol
  :<- [:wallet/current-viewing-account]
  :<- [:wallet/network-details]
- (fn [[account networks] [_ token-symbol]]
+ (fn [[account networks] [_ token-symbol chain-ids]]
    (let [tokens (map (fn [token]
                        (assoc token
-                              :networks      (network-utils/network-list token networks)
-                              :total-balance (utils/calculate-total-token-balance token)))
+                              :networks          (network-utils/network-list token networks)
+                              :available-balance (utils/calculate-total-token-balance token)
+                              :total-balance     (utils/calculate-total-token-balance token
+                                                                                      chain-ids)))
                      (:tokens account))
          token  (first (filter #(= (string/lower-case (:symbol %))
                                    (string/lower-case token-symbol))
@@ -411,6 +474,26 @@
         accounts)))
 
 (rf/reg-sub
+ :wallet/preferred-chains-for-address
+ :<- [:wallet/accounts]
+ :<- [:wallet/network-details]
+ :<- [:profile/test-networks-enabled?]
+ (fn [[accounts network-details test-networks-enabled?] [_ address]]
+   (let [preferred-chains-ids (some #(when (= (:address %) address)
+                                       (if test-networks-enabled?
+                                         (:test-preferred-chain-ids %)
+                                         (:prod-preferred-chain-ids %)))
+                                    accounts)]
+     (filter #(preferred-chains-ids (:chain-id %)) network-details))))
+
+(rf/reg-sub
+ :wallet/preferred-chain-names-for-address
+ (fn [[_ address]]
+   (rf/subscribe [:wallet/preferred-chains-for-address address]))
+ (fn [preferred-chains-for-address _]
+   (map :network-name preferred-chains-for-address)))
+
+(rf/reg-sub
  :wallet/transactions
  :<- [:wallet]
  :-> :transactions)
@@ -470,3 +553,19 @@
  :wallet/public-address
  :<- [:wallet/create-account]
  :-> :public-address)
+
+(rf/reg-sub
+ :wallet/wallet-send-enabled-networks
+ :<- [:wallet/wallet-send-token]
+ :<- [:wallet/wallet-send-disabled-from-chain-ids]
+ (fn [[{:keys [networks]} disabled-from-chain-ids]]
+   (->> networks
+        (filter #(not (contains? (set disabled-from-chain-ids)
+                                 (:chain-id %))))
+        set)))
+
+(rf/reg-sub
+ :wallet/wallet-send-enabled-from-chain-ids
+ :<- [:wallet/wallet-send-enabled-networks]
+ (fn [send-enabled-networks]
+   (map :chain-id send-enabled-networks)))

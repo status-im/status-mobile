@@ -6,7 +6,7 @@
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]))
 
-(def ^:private supported-networks #{:eth :arb1 :opt})
+(def ^:private supported-networks #{:eth :arb1 :oeth})
 
 (defn- contains-supported-address?
   [s]

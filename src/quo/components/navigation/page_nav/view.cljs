@@ -261,7 +261,10 @@
                                           {:opacity center-opacity}
                                           nil)
                                         (style/center-content-container
-                                         (and (= type :title) (= text-align :center))))
+                                         (case type
+                                           :title                       (= text-align :center)
+                                           (:dropdown :wallet-networks) true
+                                           false)))
         props-with-style               (assoc props
                                               :center-content-container-style
                                               center-content-container-style)]

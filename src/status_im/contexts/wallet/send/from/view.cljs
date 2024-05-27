@@ -10,10 +10,11 @@
     [utils.re-frame :as rf]))
 
 (defn- on-press
-  [address]
+  [address network-details]
   (rf/dispatch [:wallet/select-from-account
-                {:address  address
-                 :stack-id :screen/wallet.select-from}]))
+                {:address         address
+                 :network-details network-details
+                 :stack-id        :screen/wallet.select-from}]))
 
 (defn- on-close
   []
@@ -22,9 +23,10 @@
 
 (defn- render-fn
   [item]
-  [quo/account-item
-   {:on-press      #(on-press (:address item))
-    :account-props item}])
+  (let [network-details (rf/sub [:wallet/network-details])]
+    [quo/account-item
+     {:on-press      #(on-press (:address item) network-details)
+      :account-props item}]))
 
 (defn view
   []

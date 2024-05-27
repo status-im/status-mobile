@@ -9,18 +9,20 @@
     [status-im.contexts.shell.jump-to.components.jump-to-screen.view :as jump-to-screen]
     [status-im.contexts.shell.jump-to.shared-values :as shared-values]
     [status-im.contexts.shell.jump-to.utils :as utils]
+    [status-im.feature-flags :as ff]
     [status-im.navigation.state :as navigation.state]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
-(defn navigate-back-handler
+(defn- navigate-back-handler
   []
   (when (or (seq @navigation.state/modals)
-            (seq (utils/open-floating-screens)))
+            (seq (utils/open-floating-screens))
+            (> (count (navigation.state/get-navigation-state)) 1))
     (rf/dispatch [:navigate-back])
     true))
 
-(defn floating-button
+(defn- floating-button
   [shared-values]
   (let [current-screen-id (rf/sub [:view-id])]
     (when-not (= current-screen-id :settings)
@@ -32,7 +34,7 @@
         :bottom   (utils/bottom-tabs-container-height)}
        (:home-stack-opacity shared-values)])))
 
-(defn f-shell-stack
+(defn shell-stack
   []
   (let [alert-banners-top-margin (rf/sub [:alert-banners/top-margin])
         shared-values            (shared-values/calculate-and-set-shared-values
@@ -42,12 +44,11 @@
        (rn/hw-back-add-listener navigate-back-handler)
        #(rn/hw-back-remove-listener navigate-back-handler)))
     [:<>
-     [jump-to-screen/view]
+     (when (ff/enabled? ::ff/shell.jump-to)
+       [jump-to-screen/view])
      [:f> bottom-tabs/f-bottom-tabs]
      [:f> home-stack/f-home-stack]
-     [floating-button shared-values]
-     [floating-screens/view]]))
-
-(defn shell-stack
-  []
-  [:f> f-shell-stack])
+     (when (ff/enabled? ::ff/shell.jump-to)
+       [:<>
+        [floating-button shared-values]
+        [floating-screens/view]])]))

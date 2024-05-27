@@ -5,8 +5,11 @@
     quo.components.avatars.account-avatar.view
     quo.components.avatars.channel-avatar.view
     quo.components.avatars.collection-avatar.view
+    quo.components.avatars.community-avatar.view
+    quo.components.avatars.dapp-avatar.view
     quo.components.avatars.group-avatar.view
     quo.components.avatars.icon-avatar
+    quo.components.avatars.token-avatar.view
     quo.components.avatars.user-avatar.view
     quo.components.avatars.wallet-user-avatar.view
     quo.components.banners.banner.view
@@ -17,6 +20,7 @@
     quo.components.buttons.logout-button.view
     quo.components.buttons.predictive-keyboard.view
     quo.components.buttons.slide-button.view
+    quo.components.buttons.swap-order-button.view
     quo.components.buttons.wallet-button.view
     quo.components.buttons.wallet-ctas.view
     quo.components.calendar.calendar-day.view
@@ -84,6 +88,7 @@
     quo.components.list-items.community.view
     quo.components.list-items.dapp.view
     quo.components.list-items.menu-item
+    quo.components.list-items.missing-keypair.view
     quo.components.list-items.network-list.view
     quo.components.list-items.preview-list.view
     quo.components.list-items.quiz-item.view
@@ -165,8 +170,10 @@
     quo.components.wallet.account-permissions.view
     quo.components.wallet.address-text.view
     quo.components.wallet.amount-input.view
+    quo.components.wallet.approval-label.view
     quo.components.wallet.confirmation-progress.view
     quo.components.wallet.keypair.view
+    quo.components.wallet.missing-keypairs.view
     quo.components.wallet.network-amount.view
     quo.components.wallet.network-bridge.view
     quo.components.wallet.network-link.view
@@ -186,8 +193,11 @@
 (def account-avatar quo.components.avatars.account-avatar.view/view)
 (def channel-avatar quo.components.avatars.channel-avatar.view/view)
 (def collection-avatar quo.components.avatars.collection-avatar.view/view)
+(def community-avatar quo.components.avatars.community-avatar.view/view)
+(def dapp-avatar quo.components.avatars.dapp-avatar.view/view)
 (def group-avatar quo.components.avatars.group-avatar.view/view)
 (def icon-avatar quo.components.avatars.icon-avatar/icon-avatar)
+(def token-avatar quo.components.avatars.token-avatar.view/view)
 (def user-avatar quo.components.avatars.user-avatar.view/user-avatar)
 (def wallet-user-avatar quo.components.avatars.wallet-user-avatar.view/wallet-user-avatar)
 
@@ -201,6 +211,7 @@
 (def logout-button quo.components.buttons.logout-button.view/view)
 (def predictive-keyboard quo.components.buttons.predictive-keyboard.view/view)
 (def slide-button quo.components.buttons.slide-button.view/view)
+(def swap-order-button quo.components.buttons.swap-order-button.view/view)
 (def wallet-button quo.components.buttons.wallet-button.view/view)
 (def wallet-ctas quo.components.buttons.wallet-ctas.view/view)
 
@@ -317,6 +328,7 @@
 (def community-list quo.components.list-items.community.view/view)
 (def dapp quo.components.list-items.dapp.view/view)
 (def menu-item quo.components.list-items.menu-item/menu-item)
+(def missing-keypair quo.components.list-items.missing-keypair.view/view)
 (def network-list quo.components.list-items.network-list.view/view)
 (def preview-list quo.components.list-items.preview-list.view/view)
 (def quiz-item quo.components.list-items.quiz-item.view/view)
@@ -434,8 +446,10 @@
 (def account-permissions quo.components.wallet.account-permissions.view/view)
 (def address-text quo.components.wallet.address-text.view/view)
 (def amount-input quo.components.wallet.amount-input.view/view)
+(def approval-label quo.components.wallet.approval-label.view/view)
 (def confirmation-progress quo.components.wallet.confirmation-progress.view/view)
 (def keypair quo.components.wallet.keypair.view/view)
+(def missing-keypairs quo.components.wallet.missing-keypairs.view/view)
 (def network-amount quo.components.wallet.network-amount.view/view)
 (def network-bridge quo.components.wallet.network-bridge.view/view)
 (def network-routing quo.components.wallet.network-routing.view/view)

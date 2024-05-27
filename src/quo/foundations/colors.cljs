@@ -257,7 +257,7 @@
 
 (def ^:private get-network-full-name
   {:eth  :ethereum
-   :opt  :optimism
+   :oeth :optimism
    :arb1 :arbitrum})
 
 (def ^:private networks-short-name

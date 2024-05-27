@@ -2,6 +2,7 @@
   (:require
     [quo.core :as quo]
     [react-native.core :as rn]
+    [status-im.config :as config]
     [status-im.contexts.onboarding.common.background.view :as background]
     [status-im.contexts.onboarding.syncing.progress.style :as style]
     [utils.debounce :as debounce]
@@ -54,11 +55,13 @@
      (when-not in-onboarding? [background/view true])
      [quo/page-nav {:type :no-title :background :blur}]
      [page-title (pairing-progress pairing-status)]
-     (if (pairing-progress pairing-status)
-       [rn/view {:style style/page-illustration}
-        [quo/text "[Success here]"]]
-       [rn/view {:style style/page-illustration}
-        [quo/text "[Error here]"]])
+     (if config/show-not-implemented-features?
+       (if (pairing-progress pairing-status)
+         [rn/view {:style style/page-illustration}
+          [quo/text "[Success here]"]]
+         [rn/view {:style style/page-illustration}
+          [quo/text "[Error here]"]])
+       [rn/view {:flex 1}])
      (when-not (pairing-progress pairing-status)
        [try-again-button profile-color in-onboarding? logged-in?])]))
 
