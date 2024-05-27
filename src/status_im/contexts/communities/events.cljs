@@ -12,7 +12,9 @@
     status-im.contexts.communities.actions.community-options.events
     status-im.contexts.communities.actions.leave.events
     [status-im.contexts.communities.utils :as utils]
+    [status-im.feature-flags :as ff]
     [status-im.navigation.events :as navigation]
+    [status-im.navigation.transitions :as transitions]
     [taoensso.timbre :as log]
     [utils.re-frame :as rf]))
 
@@ -370,7 +372,10 @@
                 :update-last-opened-at? true}]])
            (if pop-to-root?
              [:dispatch [:chat/pop-to-root-and-navigate-to-chat chat-id]]
-             [:dispatch [:chat/navigate-to-chat chat-id]])]}
+             [:dispatch
+              [:chat/navigate-to-chat chat-id
+               (when-not (ff/enabled? ::ff/shell.jump-to)
+                 transitions/stack-slide-transition)]])]}
      (when-not (get-in db [:chats chat-id :community-id])
        {:db (assoc-in db [:chats chat-id :community-id] community-id)}))))
 

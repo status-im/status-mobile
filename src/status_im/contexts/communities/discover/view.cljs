@@ -10,6 +10,7 @@
     [status-im.common.scroll-page.view :as scroll-page]
     [status-im.contexts.communities.actions.community-options.view :as options]
     [status-im.contexts.communities.discover.style :as style]
+    [status-im.feature-flags :as ff]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
@@ -238,8 +239,9 @@
                                                colors/neutral-95
                                                theme))}
      [discover-screen-content featured-communities theme]
-     [quo/floating-shell-button
-      {:jump-to {:on-press            #(rf/dispatch [:shell/navigate-to-jump-to])
-                 :customization-color customization-color
-                 :label               (i18n/label :t/jump-to)}}
-      style/floating-shell-button]]))
+     (when (ff/enabled? ::ff/shell.jump-to)
+       [quo/floating-shell-button
+        {:jump-to {:on-press            #(rf/dispatch [:shell/navigate-to-jump-to])
+                   :customization-color customization-color
+                   :label               (i18n/label :t/jump-to)}}
+        style/floating-shell-button])]))

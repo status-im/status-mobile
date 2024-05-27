@@ -87,9 +87,10 @@
        :on-scroll                       on-scroll
        :bounces                         false
        :over-scroll-mode                :never}]
-     [quo/floating-shell-button
-      {:jump-to
-       {:on-press            #(rf/dispatch [:shell/navigate-to-jump-to])
-        :customization-color customization-color
-        :label               (i18n/label :t/jump-to)}}
-      (style/floating-shell-button-style insets)]]))
+     (when (ff/enabled? ::ff/shell.jump-to)
+       [quo/floating-shell-button
+        {:jump-to
+         {:on-press            #(rf/dispatch [:shell/navigate-to-jump-to])
+          :customization-color customization-color
+          :label               (i18n/label :t/jump-to)}}
+        (style/floating-shell-button-style insets)])]))

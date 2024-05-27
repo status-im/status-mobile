@@ -12,6 +12,7 @@
     [status-im.contexts.shell.jump-to.constants :as shell.constants]
     [status-im.contexts.shell.jump-to.state :as state]
     [status-im.contexts.shell.jump-to.utils :as utils]
+    [status-im.feature-flags :as ff]
     [utils.re-frame :as rf]))
 
 (defn blur-overlay-params
@@ -44,7 +45,8 @@
 (defn f-bottom-tabs
   []
   (let [notifications-data             (rf/sub [:shell/bottom-tabs-notifications-data])
-        pass-through?                  (rf/sub [:shell/shell-pass-through?])
+        pass-through?                  (and (ff/enabled? ::ff/shell.jump-to)
+                                            (rf/sub [:shell/shell-pass-through?]))
         shared-values                  @state/shared-values-atom
         communities-double-tab-gesture (-> (gesture/gesture-tap)
                                            (gesture/number-of-taps 2)
@@ -58,7 +60,9 @@
                                               (rf/dispatch [:messages-home/select-tab :tab/recent]))))
         bottom-tabs-blur-overlay-style (style/bottom-tabs-blur-overlay (:bottom-tabs-height
                                                                         shared-values))]
-    (utils/load-stack @state/selected-stack-id)
+    (utils/load-stack (if (ff/enabled? ::ff/shell.jump-to)
+                        @state/selected-stack-id
+                        shell.constants/default-selected-stack))
     (reanimated/set-shared-value (:pass-through? shared-values) pass-through?)
     [quo.theme/provider :dark
      [reanimated/view

@@ -148,12 +148,11 @@
   (when-let [chat-id (:current-chat-id db)]
     (chat.state/reset-visible-item)
     (rf/merge cofx
-              (merge
-               {:db                        (-> db
-                                               (dissoc :current-chat-id)
-                                               (assoc-in [:chat/inputs chat-id :focused?] false))
-                :effects.async-storage/set {:chat-id nil
-                                            :key-uid nil}})
+              {:db                        (-> db
+                                              (dissoc :current-chat-id)
+                                              (assoc-in [:chat/inputs chat-id :focused?] false))
+               :effects.async-storage/set {:chat-id nil
+                                           :key-uid nil}}
               (link-preview/reset-all)
               (delete-for-me/sync-all)
               (delete-message/send-all)
@@ -215,8 +214,9 @@
   [cofx chat-id animation]
   (rf/merge
    cofx
-   (navigation/pop-to-root :shell-stack)
-   (navigate-to-chat chat-id animation)))
+   {:dispatch-later {:ms       500
+                     :dispatch [:chat/navigate-to-chat chat-id animation]}}
+   (navigation/pop-to-root :shell-stack)))
 
 (rf/defn handle-clear-history-response
   {:events [:chat/history-cleared]}

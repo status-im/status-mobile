@@ -5,9 +5,11 @@
     [react-native.reanimated :as reanimated]
     [status-im.contexts.chat.messenger.messages.constants :as messages.constants]))
 
-(def keyboard-avoiding-container
-  {:flex    1
-   :z-index 2})
+(defn keyboard-avoiding-container
+  [theme]
+  {:flex             1
+   :background-color (colors/theme-colors colors/white colors/neutral-95 theme)
+   :z-index          2})
 
 (defn background-container
   [background-color background-opacity top-margin]

@@ -4,6 +4,8 @@
 (def ^:const switcher-card-size 160)
 (def ^:const floating-shell-button-height 44)
 
+(def ^:const default-selected-stack :communities-stack)
+
 ;; Bottom tabs
 (def ^:const bottom-tabs-container-height-android 57)
 (def ^:const bottom-tabs-container-height-ios 82)

@@ -20,6 +20,7 @@
     [status-im.contexts.chat.messenger.messages.list.state :as state]
     [status-im.contexts.chat.messenger.messages.list.style :as style]
     [status-im.contexts.shell.jump-to.constants :as jump-to.constants]
+    [status-im.feature-flags :as ff]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]
     [utils.worklets.chat.messenger.messages :as worklets]))
@@ -106,7 +107,9 @@
   (let [images (rf/sub [:chats/sending-image])
         height (if able-to-send-message?
                  (+ composer.constants/composer-default-height
-                    jump-to.constants/floating-shell-button-height
+                    (if (ff/enabled? ::ff/shell.jump-to)
+                      jump-to.constants/floating-shell-button-height
+                      0)
                     (if (seq images) composer.constants/images-container-height 0)
                     (:bottom insets))
                  (- 70 (:bottom insets)))]

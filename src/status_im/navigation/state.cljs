@@ -19,8 +19,10 @@
 
 (defn navigation-state-push
   [component]
-  (swap! navigation-state conj component)
-  (update-view-id))
+  (when-let [view-id (:id (last (get-navigation-state)))]
+    (when-not (= view-id (:id component))
+      (swap! navigation-state conj component)
+      (update-view-id))))
 
 (defn navigation-state-pop
   []
