@@ -10,6 +10,7 @@
     [status-im.contexts.shell.jump-to.constants :as jump-to.constants]
     [status-im.contexts.wallet.common.activity-tab.constants :as constants]
     [status-im.contexts.wallet.common.empty-tab.view :as empty-tab]
+    [status-im.feature-flags :as ff]
     [utils.datetime :as datetime]
     [utils.ethereum.chain :as chain]
     [utils.i18n :as i18n]
@@ -24,14 +25,14 @@
   (let [chain-id            (or (:chain-id token-in) (:chain-id token-out))
         amount-in-units     (native-module/hex-to-number
                              (utils.hex/normalize-hex amount-in))
-        amount-in-value     (money/with-precision
-                             (money/wei->ether amount-in-units)
-                             precision)
+        amount-in-value     (str (money/with-precision
+                                  (money/wei->ether amount-in-units)
+                                  precision))
         amount-out-units    (native-module/hex-to-number
                              (utils.hex/normalize-hex amount-out))
-        amount-out-value    (money/with-precision
-                             (money/wei->ether amount-out-units)
-                             precision)
+        amount-out-value    (str (money/with-precision
+                                  (money/wei->ether amount-out-units)
+                                  precision))
         relative-date       (datetime/timestamp->relative (* timestamp 1000))
         receiving-activity? (= activity-type constants/wallet-activity-type-receive)]
     [quo/wallet-activity
@@ -61,7 +62,7 @@
   []
   (let [theme         (quo.theme/use-theme)
         activity-list (rf/sub [:wallet/activities-for-current-viewing-account])]
-    (if (empty? activity-list)
+    (if (or (empty? activity-list) (not (ff/enabled? ::wallet.activities)))
       [empty-tab/view
        {:title       (i18n/label :t/no-activity)
         :description (i18n/label :t/empty-tab-description)
