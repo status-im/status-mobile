@@ -8,7 +8,7 @@
 (def from
   "0x0424a68f89ba5fcd5e0640c1e1f591d561fa4125ca4e2a43592bc4123eca10ce064e522c254bb83079ba404327f6eafc01ec90a1444331fe769d3f3a7f90b0dde1")
 
-(deftest message<-rpc
+(deftest message<-rpc-test
   (testing "message from RPC"
     (let [expected {:message-id                 message-id
                     :content                    {:chat-id     chat-id

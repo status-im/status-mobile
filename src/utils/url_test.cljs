@@ -3,7 +3,7 @@
     [cljs.test :refer-macros [deftest is testing]]
     [utils.url :as url]))
 
-(deftest url-sanitize-check
+(deftest url-sanitize-check-test
   (testing
     "https://storage.googleapis.com/ck-kitty-image/0x06012c8cf97bead5deae237070f9587f8e7a266d/818934.svg"
     (testing "it returns true"
@@ -59,7 +59,7 @@
         (url/url-sanitized?
          "https://www.etheremon.com/assets/images/mons'><script>\\\\x3Bjavascript:alert(1)</script>origin/025.png"))))))
 
-(deftest url-host-check
+(deftest url-host-check-test
   (testing "Extract host/domain from URL"
     (testing "Valid URL with endpoint"
       (is (= "status.im" (url/url-host "https://status.im/testing"))))

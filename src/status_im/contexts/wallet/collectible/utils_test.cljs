@@ -7,7 +7,7 @@
 (def token-id "0xT")
 (def contract-address "0xC")
 
-(deftest test-network->chain-id
+(deftest network->chain-id-test
   (testing "get-opensea-collectible-url mainnet"
     (is (= (utils/get-opensea-collectible-url {:chain-id         constants/ethereum-mainnet-chain-id
                                                :contract-address contract-address
@@ -66,5 +66,3 @@
                                                :test-networks-enabled? true
                                                :is-goerli-enabled?     true})
            "https://testnets.opensea.io/assets/optimism-goerli/0xC/0xT"))))
-
-

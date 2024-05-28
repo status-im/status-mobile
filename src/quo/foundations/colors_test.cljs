@@ -30,5 +30,5 @@
     "when using opacity theme is ignored and uses the light suffix resolver"
     (is (colors/resolve-color :blue :light 10) (colors/resolve-color :blue :dark 10))))
 
-(deftest test-account-colors-customization
+(deftest account-colors-customization-test
   (is (every? #(contains? colors/customization %) colors/account-colors)))

@@ -49,7 +49,7 @@
       (let [actual (chat/close-and-remove-chat cofx chat-id)]
         (is (= nil (get-in actual [:db :chats-home-list chat-id])))))))
 
-(deftest multi-user-chat?
+(deftest multi-user-chat?-test
   (let [chat-id "1"]
     (testing "it returns true if it's a group chat"
       (let [cofx {:db {:chats {chat-id {:group-chat true}}}}]
@@ -61,7 +61,7 @@
       (let [cofx {:db {:chats {chat-id {}}}}]
         (is (not (chat/multi-user-chat? cofx chat-id)))))))
 
-(deftest group-chat?
+(deftest group-chat?-test
   (let [chat-id "1"]
     (testing "it returns true if it's a group chat"
       (let [cofx {:db {:chats {chat-id {:group-chat true}}}}]
@@ -82,7 +82,7 @@
                      "opened" {}
                      "1-1"    {}}})
 
-(deftest navigate-to-chat
+(deftest navigate-to-chat-test
   (let [chat-id "test_chat"
         db      {:pagination-info {chat-id {:all-loaded? true}}}]
     (testing "Pagination info should be reset on navigation"

@@ -4,7 +4,7 @@
     [status-im.constants :as constants]
     [status-im.contexts.wallet.common.utils.networks :as utils]))
 
-(deftest test-network->chain-id
+(deftest network->chain-id-test
   (testing "network->chain-id function"
     (is (= (utils/network->chain-id {:network :mainnet :testnet-enabled? false :goerli-enabled? false})
            constants/ethereum-mainnet-chain-id))
@@ -21,15 +21,6 @@
     (is (= (utils/network->chain-id {:network :arbitrum :testnet-enabled? true :goerli-enabled? false})
            constants/arbitrum-sepolia-chain-id))))
 
-(deftest test-network-preference-prefix->network-names
-  (testing "network-preference-prefix->network-names function"
-    (is (= (utils/network-preference-prefix->network-names "eth")
-           (seq [:mainnet])))
-    (is (= (utils/network-preference-prefix->network-names "eth:oeth")
-           (seq [:mainnet :optimism])))
-    (is (= (utils/network-preference-prefix->network-names "eth:oeth:arb1")
-           (seq [:mainnet :optimism :arbitrum])))))
-
 (deftest short-names->network-preference-prefix-test
   (are [expected short-names]
    (= expected (utils/short-names->network-preference-prefix short-names))
@@ -44,7 +35,7 @@
    (seq [:mainnet :optimism])           "eth:oeth"
    (seq [:mainnet :optimism :arbitrum]) "eth:oeth:arb1"))
 
-(deftest test-network-ids->formatted-text
+(deftest network-ids->formatted-text-test
   (testing "Empty network-ids should return an empty string"
     (is (= "" (utils/network-ids->formatted-text []))))
 

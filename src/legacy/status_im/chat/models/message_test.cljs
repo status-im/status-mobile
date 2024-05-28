@@ -106,7 +106,7 @@
                      (get-in result [:db :pagination-info chat-id :cursor-clock-value])))
               (is (= cursor (get-in result [:db :pagination-info chat-id :cursor]))))))))))
 
-(deftest message-loaded?
+(deftest message-loaded?-test
   (testing "it returns false when it's not in loaded message"
     (is
      (not
@@ -117,7 +117,7 @@
          "a"
          "message-id"))))
 
-(deftest earlier-than-deleted-at?
+(deftest earlier-than-deleted-at?-test
   (testing "it returns true when the clock-value is the same as the deleted-clock-value in chat"
     (is (#'legacy.status-im.chat.models.message/earlier-than-deleted-at?
          {:chats {"a" {:deleted-at-clock-value 1}}}

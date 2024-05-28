@@ -7,7 +7,7 @@
 
 (def community-id "community-id")
 
-(deftest fetch-community
+(deftest fetch-community-test
   (testing "with community id"
     (testing "update fetching indicator in db"
       (is (match?
@@ -26,7 +26,7 @@
            nil
            (events/fetch-community {} [{}]))))))
 
-(deftest community-failed-to-fetch
+(deftest community-failed-to-fetch-test
   (testing "given a community id"
     (testing "remove community id from fetching indicator in db"
       (is (match?
@@ -36,7 +36,7 @@
                                                      [community-id])
                    [:db :communities/fetching-communities community-id]))))))
 
-(deftest community-fetched
+(deftest community-fetched-test
   (with-redefs [link-preview.events/community-link (fn [id] (str "community-link+" id))]
     (testing "given a community"
       (let [cofx {:db {:communities/fetching-communities {community-id true}}}
@@ -82,7 +82,7 @@
              nil
              (events/community-fetched {} [community-id nil])))))))
 
-(deftest spectate-community
+(deftest spectate-community-test
   (testing "given a joined community"
     (testing "do nothing"
       (is (match?
@@ -112,13 +112,13 @@
                              :params [community-id]}]}
            (events/spectate-community {:db {:communities {community-id {}}}} [community-id]))))))
 
-(deftest spectate-community-failed
+(deftest spectate-community-failed-test
   (testing "mark community spectating false"
     (is (match?
          {:db {:communities {community-id {:spectating false}}}}
          (events/spectate-community-failed {} [community-id])))))
 
-(deftest spectate-community-success
+(deftest spectate-community-success-test
   (testing "given communities"
     (testing "mark first community spectating false"
       (is (match?
@@ -144,7 +144,7 @@
            nil
            (events/spectate-community-success {} []))))))
 
-(deftest get-revealed-accounts
+(deftest get-revealed-accounts-test
   (let [community {:id community-id}]
     (testing "given a unjoined community"
       (is (match?
@@ -169,7 +169,7 @@
                      :params [community-id "profile-public-key"]}
                     (-> effects :json-rpc/call first (select-keys [:method :params]))))))))
 
-(deftest handle-community
+(deftest handle-community-test
   (let [community {:id community-id :clock 2}]
     (testing "given a unjoined community"
       (let [effects (events/handle-community {} [community])]

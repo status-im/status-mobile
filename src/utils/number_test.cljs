@@ -3,7 +3,7 @@
     [cljs.test :refer [deftest is testing]]
     [utils.number]))
 
-(deftest parse-int
+(deftest parse-int-test
   (testing "defaults to zero"
     (is (= 0 (utils.number/parse-int nil))))
 

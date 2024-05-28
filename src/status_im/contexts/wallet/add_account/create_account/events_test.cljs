@@ -6,7 +6,7 @@
     [status-im.contexts.wallet.add-account.create-account.events :as events]
     [utils.security.core :as security]))
 
-(deftest confirm-account-origin
+(deftest confirm-account-origin-test
   (let [db          {:wallet {:ui {:create-account {}}}}
         props       ["key-uid"]
         expected-db {:wallet {:ui {:create-account {:selected-keypair-uid "key-uid"}}}}
@@ -14,7 +14,7 @@
         result-db   (:db effects)]
     (is (match? result-db expected-db))))
 
-(deftest store-seed-phrase
+(deftest store-seed-phrase-test
   (let [db          {}
         props       [{:seed-phrase "test-secret" :random-phrase "random-test"}]
         expected-db {:wallet {:ui {:create-account {:new-keypair {:seed-phrase   "test-secret"
@@ -23,7 +23,7 @@
         result-db   (:db effects)]
     (is (match? result-db expected-db))))
 
-(deftest store-account-generated
+(deftest store-account-generated-test
   (let [db              {:wallet {:ui {:create-account
                                        {:new-keypair {:seed-phrase   "test-secret"
                                                       :random-phrase "random-test"}}}}}
@@ -55,7 +55,7 @@
     (is (= (unmask-mnemonic result-db) (unmask-mnemonic expected-db)))))
 
 
-(deftest generate-account-for-keypair
+(deftest generate-account-for-keypair-test
   (let [db               {:wallet {:ui {:create-account {:new-keypair {:seed-phrase "test-secret"}}}}}
         props            [{:keypair-name "test-keypair"}]
         expected-effects [[:effects.wallet/create-account-from-mnemonic
@@ -67,7 +67,7 @@
          {:fx expected-effects}))
     (is (some? (get-in effects [:fx 0 1 :on-success])))))
 
-(deftest clear-create-account-data
+(deftest clear-create-account-data-test
   (let [db          {:wallet {:ui {:create-account {:new-keypair "test-keypair"}}}}
         expected-db {:wallet {:ui {:create-account {}}}}
         effects     (events/clear-create-account-data {:db db})]

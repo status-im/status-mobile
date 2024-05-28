@@ -4,7 +4,7 @@
     matcher-combinators.test
     [status-im.common.alert-banner.events :as events]))
 
-(deftest add-alert-banner
+(deftest add-alert-banner-test
   (testing "Alert banner is added"
     (is (match? {:db                {:alert-banners
                                      {:alert {:text "Alert"
@@ -14,7 +14,7 @@
                                          [{:text "Alert"
                                            :type :alert}])))))
 
-(deftest remove-alert-banner
+(deftest remove-alert-banner-test
   (testing "Alert banner is removed"
     (is (match? {:db                {}
                  :hide-alert-banner [nil nil]}
@@ -31,7 +31,7 @@
                                                            :type :alert}}}}
                                             [:error])))))
 
-(deftest remove-all-alert-banners
+(deftest remove-all-alert-banners-test
   (testing "All Alert banners are removed"
     (is (match? {:db                {}
                  :hide-alert-banner [nil nil]}
