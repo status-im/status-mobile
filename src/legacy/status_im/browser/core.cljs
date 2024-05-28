@@ -315,7 +315,8 @@
                   (navigation/change-tab :browser-stack)
                   (update-browser browser)
                   (resolve-url nil))
-        (.openURL ^js react/linking (url/normalize-url url))))))
+        (do (.openURL ^js react/linking (url/normalize-url url))
+            nil)))))
 
 (rf/defn open-existing-browser
   "Opens an existing browser with it's history"
