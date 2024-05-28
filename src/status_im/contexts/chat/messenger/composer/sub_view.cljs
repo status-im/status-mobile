@@ -27,17 +27,17 @@
         jump-to-button-position    (worklets/jump-to-button-position
                                     scroll-down-button-opacity
                                     composer-focused?)]
-    [:<>
-     [reanimated/view
-      {:style (style/shell-button jump-to-button-position jump-to-button-opacity)}
-      [quo/floating-shell-button
-       (when (ff/enabled? ::ff/shell.jump-to)
+    [rn/view {:style (style/shell-button-container)}
+     (when (ff/enabled? ::ff/shell.jump-to)
+       [reanimated/view
+        {:style (style/shell-button jump-to-button-position jump-to-button-opacity)}
+        [quo/floating-shell-button
          {:jump-to
           {:on-press            #(rf/dispatch [:shell/navigate-to-jump-to])
            :customization-color customization-color
            :label               (i18n/label :t/jump-to)
-           :style               {:align-self :center}}})
-       {}]]
+           :style               {:align-self :center}}}
+         {}]])
      [quo/floating-shell-button
       {:scroll-to-bottom {:on-press #(rf/dispatch [:chat.ui/scroll-to-bottom])}}
       style/scroll-to-bottom-button
