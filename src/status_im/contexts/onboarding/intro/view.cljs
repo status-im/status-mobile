@@ -8,7 +8,8 @@
     [status-im.contexts.onboarding.intro.style :as style]
     [status-im.contexts.syncing.scan-sync-code.view :as scan-sync-code]
     [utils.debounce :as debounce]
-    [utils.i18n :as i18n]))
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]))
 
 (defn view
   []
@@ -19,19 +20,16 @@
                             (reset! scan-sync-code/dismiss-animations reset-top-animation-fn))
      :animations-duration constants/onboarding-modal-animation-duration
      :animations-delay    constants/onboarding-modal-animation-delay
-     :top-card            {:on-press            #(debounce/throttle-and-dispatch
-                                                  [:open-modal
-                                                   :screen/onboarding.sign-in-intro]
-                                                  2000)
+     :top-card            {:on-press            #(rf/dispatch [:open-modal
+                                                               :screen/onboarding.sign-in-intro])
                            :heading             (i18n/label :t/sign-in)
                            :animated-heading    (i18n/label :t/sign-in-by-syncing)
                            :accessibility-label :already-use-status-button}
      :bottom-card         {:on-press            (fn []
                                                   (when-let [blur-show-fn @overlay/blur-show-fn-atom]
                                                     (blur-show-fn))
-                                                  (debounce/throttle-and-dispatch
-                                                   [:open-modal :screen/onboarding.new-to-status]
-                                                   1000))
+                                                  (rf/dispatch
+                                                   [:open-modal :screen/onboarding.new-to-status]))
                            :heading             (i18n/label :t/new-to-status)
                            :accessibility-label :new-to-status-button}}
     [quo/text
