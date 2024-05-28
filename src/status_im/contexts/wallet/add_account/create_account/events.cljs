@@ -41,8 +41,8 @@
 
 (defn seed-phrase-validated
   [{:keys [db]} [seed-phrase]]
-  {:db (assoc-in db [:wallet :ui :create-account :seed-phrase] seed-phrase)
-   :fx [[:dispatch [:navigate-to :screen/wallet.keypair-name]]]})
+  {:db (assoc-in db [:wallet :ui :create-account :new-keypair :seed-phrase] seed-phrase)
+   :fx [[:dispatch [:navigate-to :screen/wallet.keypair-name {:workflow :recovery-phrase}]]]})
 
 (rf/reg-event-fx :wallet/seed-phrase-validated seed-phrase-validated)
 
