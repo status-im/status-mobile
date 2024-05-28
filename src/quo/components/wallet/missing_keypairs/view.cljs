@@ -11,7 +11,7 @@
     [utils.i18n :as i18n]))
 
 (defn title-view
-  [{:keys [keypairs blur? on-import-click]}]
+  [{:keys [keypairs blur? on-import-press]}]
   (let [theme (quo.theme/use-theme)]
     [rn/view
      {:accessibility-label :title
@@ -33,7 +33,7 @@
         {:type       :outline
          :background :blur
          :size       24
-         :on-press   on-import-click}
+         :on-press   on-import-press}
         (i18n/label :t/import)]]
       [text/text
        {:size  :paragraph-2

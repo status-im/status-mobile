@@ -60,7 +60,7 @@
     [status-im.contexts.settings.wallet.keypairs-and-accounts.encrypted-qr.view :as
      encrypted-key-pair-qr]
     [status-im.contexts.settings.wallet.keypairs-and-accounts.rename.view :as keypair-rename]
-    [status-im.contexts.settings.wallet.keypairs-and-accounts.scan-qr.view :as scan-key-pair-qr]
+    [status-im.contexts.settings.wallet.keypairs-and-accounts.scan-qr.view :as scan-keypair-qr]
     [status-im.contexts.settings.wallet.keypairs-and-accounts.view :as keypairs-and-accounts]
     [status-im.contexts.settings.wallet.network-settings.view :as network-settings]
     [status-im.contexts.settings.wallet.saved-addresses.view :as saved-addresses-settings]
@@ -525,9 +525,9 @@
      :options   options/transparent-modal-screen-options
      :component keypairs-and-accounts/view}
 
-    {:name      :screen/settings.scan-key-pair-qr
+    {:name      :screen/settings.scan-keypair-qr
      :options   options/transparent-modal-screen-options
-     :component scan-key-pair-qr/view}
+     :component scan-keypair-qr/view}
 
     {:name      :screen/settings.network-settings
      :options   options/transparent-modal-screen-options

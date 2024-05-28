@@ -94,9 +94,9 @@
         customization-color           (rf/sub [:profile/customization-color])
         {missing-keypairs  :missing
          operable-keypairs :operable} (rf/sub [:wallet/settings-keypairs-accounts])
-        on-import-click               (rn/use-callback #(rf/dispatch [:open-modal
-                                                                      :screen/settings.scan-key-pair-qr
-                                                                      missing-keypairs])
+        on-import-press               (rn/use-callback #(rf/dispatch [:open-modal
+                                                                      :screen/settings.scan-keypair-qr
+                                                                      (map :key-uid missing-keypairs)])
                                                        [missing-keypairs])]
     [quo/overlay
      {:type            :shell
@@ -116,7 +116,7 @@
         [quo/missing-keypairs
          {:blur?            true
           :keypairs         missing-keypairs
-          :on-import-click  on-import-click
+          :on-import-press  on-import-press
           :container-style  style/missing-keypairs-container-style
           :on-options-press on-missing-keypair-options-press}])
       [rn/flat-list
