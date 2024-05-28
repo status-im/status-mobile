@@ -4,5 +4,8 @@
    test-helpers.component/get-all-by-translation-text   utils.i18n/label
    test-helpers.component/get-by-translation-text       utils.i18n/label
    test-helpers.component/query-all-by-translation-text utils.i18n/label
-   test-helpers.component/query-by-translation-text     utils.i18n/label}}
- :linters {:status-im.linter/invalid-translation-keyword {:level :error}}}
+   test-helpers.component/query-by-translation-text     utils.i18n/label
+
+   cljs.test/deftest                                    cljs.test/deftest}}
+ :linters {:status-im.linter/invalid-translation-keyword {:level :error}
+           :status-im.linter/inconsistent-test-name      {:level :error}}}
