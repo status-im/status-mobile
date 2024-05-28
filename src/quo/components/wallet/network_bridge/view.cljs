@@ -18,7 +18,11 @@
                      (style/add-container theme)
                      container-style)
     :on-press on-press}
-   [icon/icon :i/add-circle {:size 12 :no-color true}]])
+   [icon/icon :i/edit
+    {:size  12
+     :color (colors/theme-colors colors/neutral-50
+                                 colors/neutral-60
+                                 theme)}]])
 
 (defn- network->text
   [network]
@@ -29,7 +33,7 @@
 (defn view-internal
   [{:keys [network status amount container-style on-press] :as args}]
   (let [theme (quo.theme/use-theme)]
-    (if (= status :add)
+    (if (= status :edit)
       [network-bridge-add (assoc args :theme theme)]
       [rn/pressable
        {:style               (merge (style/container network status theme) container-style)

@@ -269,20 +269,16 @@
 
 (deftest test-network-amounts
   (testing "Handles disabled and receiver networks correctly when receiver? is true"
-    (let [network-values     {1  (money/bignumber "100")
-                              10 (money/bignumber "200")}
+    (let [network-values     {10 (money/bignumber "200")}
           disabled-chain-ids [1]
           receiver-networks  [10]
           token-networks-ids [1 10 42161]
           receiver?          true
-          expected           [{:chain-id     1
-                               :total-amount (money/bignumber "100")
-                               :type         :default}
-                              {:chain-id     10
+          expected           [{:chain-id     10
                                :total-amount (money/bignumber "200")
                                :type         :default}
-                              {:type :add}]
-          tx-type            :send
+                              {:type :edit}]
+          tx-type            :tx/send
           result             (utils/network-amounts {:network-values     network-values
                                                      :disabled-chain-ids disabled-chain-ids
                                                      :receiver-networks  receiver-networks
@@ -303,7 +299,7 @@
                               {:chain-id     10
                                :total-amount (money/bignumber "0")
                                :type         :disabled}]
-          tx-type            :send
+          tx-type            :tx/send
           result             (utils/network-amounts {:network-values     network-values
                                                      :disabled-chain-ids disabled-chain-ids
                                                      :receiver-networks  receiver-networks
@@ -319,7 +315,7 @@
           token-networks-ids []
           receiver?          true
           expected           []
-          tx-type            :send
+          tx-type            :tx/send
           result             (utils/network-amounts {:network-values     network-values
                                                      :disabled-chain-ids disabled-chain-ids
                                                      :receiver-networks  receiver-networks
@@ -344,8 +340,9 @@
                                :type         :default}
                               {:chain-id     42161
                                :total-amount (money/bignumber "500")
-                               :type         :default}]
-          tx-type            :send
+                               :type         :default}
+                              {:type :edit}]
+          tx-type            :tx/send
           result             (utils/network-amounts {:network-values     network-values
                                                      :disabled-chain-ids disabled-chain-ids
                                                      :receiver-networks  receiver-networks
@@ -366,7 +363,7 @@
                               {:chain-id     10
                                :total-amount (money/bignumber "0")
                                :type         :disabled}]
-          tx-type            :send
+          tx-type            :tx/send
           result             (utils/network-amounts {:network-values     network-values
                                                      :disabled-chain-ids disabled-chain-ids
                                                      :receiver-networks  receiver-networks
@@ -388,7 +385,7 @@
                               {:chain-id     10
                                :total-amount nil
                                :type         :not-available}]
-          tx-type            :send
+          tx-type            :tx/send
           result             (utils/network-amounts {:network-values     network-values
                                                      :disabled-chain-ids disabled-chain-ids
                                                      :receiver-networks  receiver-networks
@@ -397,7 +394,8 @@
                                                      :receiver?          receiver?})]
       (is (every? identity (map #(map/deep-compare %1 %2) expected result)))))
 
-  (testing "Handles disabled and receiver networks correctly when to? is false and tx-type is :tx/bridge"
+  (testing
+    "Handles disabled and receiver networks correctly when receiver? is false and tx-type is :tx/bridge"
     (let [network-values     {10 (money/bignumber "200")}
           disabled-chain-ids [1]
           receiver-networks  [10]
@@ -418,7 +416,8 @@
                                                      :receiver?          receiver?})]
       (is (every? identity (map #(map/deep-compare %1 %2) expected result)))))
 
-  (testing "Handles disabled and receiver networks correctly when to? is true and tx-type is :tx/bridge"
+  (testing
+    "Handles disabled and receiver networks correctly when receiver? is true and tx-type is :tx/bridge"
     (let [network-values     {10 (money/bignumber "200")}
           disabled-chain-ids [1]
           receiver-networks  [10]
@@ -444,9 +443,8 @@
           token-networks-ids [1 10 42161]
           receiver?          true
           expected           [{:chain-id 1 :type :loading}
-                              {:chain-id 10 :type :loading}
-                              {:type :add}]
-          tx-type            :send
+                              {:chain-id 10 :type :loading}]
+          tx-type            :tx/send
           result             (utils/loading-network-amounts {:valid-networks     valid-networks
                                                              :disabled-chain-ids disabled-chain-ids
                                                              :receiver-networks  receiver-networks
@@ -467,7 +465,7 @@
           expected           [{:chain-id 1 :type :loading}
                               {:chain-id 10 :type :disabled :total-amount (money/bignumber "0")}
                               {:chain-id 42161 :type :disabled :total-amount (money/bignumber "0")}]
-          tx-type            :send
+          tx-type            :tx/send
           result             (utils/loading-network-amounts {:valid-networks     valid-networks
                                                              :disabled-chain-ids disabled-chain-ids
                                                              :receiver-networks  receiver-networks
@@ -487,7 +485,7 @@
           receiver?          true
           expected           [{:chain-id 1 :type :loading}
                               {:chain-id 42161 :type :loading}]
-          tx-type            :send
+          tx-type            :tx/send
           result             (utils/loading-network-amounts {:valid-networks     valid-networks
                                                              :disabled-chain-ids disabled-chain-ids
                                                              :receiver-networks  receiver-networks
@@ -500,15 +498,14 @@
       (is (every? identity comparisons))))
 
   (testing
-    "Appends :add type if receiver network count is less than available networks and receiver? is true"
+    "Appends :edit type if receiver network count is less than available networks and receiver? is true"
     (let [valid-networks     [1 10 42161]
           disabled-chain-ids [10]
           receiver-networks  [1]
           token-networks-ids [1 10 42161]
           receiver?          true
-          expected           [{:chain-id 1 :type :loading}
-                              {:type :add}]
-          tx-type            :send
+          expected           [{:chain-id 1 :type :loading}]
+          tx-type            :tx/send
           result             (utils/loading-network-amounts {:valid-networks     valid-networks
                                                              :disabled-chain-ids disabled-chain-ids
                                                              :receiver-networks  receiver-networks
@@ -528,7 +525,7 @@
           token-networks-ids [42161]
           receiver?          false
           expected           [{:chain-id 42161 :type :loading}]
-          tx-type            :send
+          tx-type            :tx/send
           result             (utils/loading-network-amounts {:valid-networks     valid-networks
                                                              :disabled-chain-ids disabled-chain-ids
                                                              :receiver-networks  receiver-networks
@@ -547,9 +544,8 @@
           receiver-networks  [1]
           token-networks-ids [42161]
           receiver?          true
-          expected           [{:chain-id 1 :type :not-available}
-                              {:type :add}]
-          tx-type            :send
+          expected           [{:chain-id 1 :type :not-available}]
+          tx-type            :tx/send
           result             (utils/loading-network-amounts {:valid-networks     valid-networks
                                                              :disabled-chain-ids disabled-chain-ids
                                                              :receiver-networks  receiver-networks
@@ -562,7 +558,7 @@
       (is (every? identity comparisons))))
 
   (testing
-    "Assigns :loading type to valid networks and :disabled for disabled ones when tx-type is :tx/bridge and to? false"
+    "Assigns :loading type to valid networks and :disabled for disabled ones when tx-type is :tx/bridge and receiver? false"
     (let [valid-networks     [1 10]
           disabled-chain-ids [10]
           receiver-networks  []
@@ -583,7 +579,7 @@
       (is (every? identity comparisons))))
 
   (testing
-    "Assigns :loading type to valid networks, ignore disabled ones and do not add {:type :add} when tx-type is :tx/bridge and to? true"
+    "Assigns :loading type to valid networks, ignore disabled ones and do not add {:type :edit} when tx-type is :tx/bridge and receiver? true"
     (let [valid-networks     [1]
           disabled-chain-ids [10]
           receiver-networks  []

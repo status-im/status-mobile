@@ -1,7 +1,7 @@
 (ns quo.components.wallet.network-bridge.schema)
 
 (def ^:private ?network-bridge-status
-  [:enum :add :loading :locked :disabled :default])
+  [:enum :edit :loading :locked :disabled :default])
 
 (def ?schema
   [:=>
