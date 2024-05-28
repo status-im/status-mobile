@@ -55,7 +55,7 @@
      [(seq suggestions)])
     [reanimated/view
      {:style (style/container opacity mentions-pos theme)}
-     [rn/view
+     [rn/flat-list
       {:keyboard-should-persist-taps :always
        :data                         (vals @suggestions-atom)
        :key-fn                       :key
