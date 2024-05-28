@@ -116,7 +116,7 @@ class TestWalletMultipleDevice(MultipleSharedDeviceTestCase):
 
     @marks.testrail_id(727230)
     def test_wallet_send_asset_from_drawer(self):
-        self.wallet_view.navigate_back_to_wallet_view()
+        self.wallet_1.navigate_back_to_wallet_view()
         sender_balance, receiver_balance, eth_amount_sender, eth_amount_receiver = self._get_balances_before_tx()
         self.wallet_2.close_account_button.click()
         self.wallet_2.chats_tab.click()
@@ -186,6 +186,7 @@ class TestWalletOneDevice(MultipleSharedDeviceTestCase):
         self.errors.verify_no_errors()
 
     @marks.testrail_id(727232)
+    @marks.xfail(reason="Missing networks in account address, https://github.com/status-im/status-mobile/issues/20166")
     def test_wallet_add_remove_watch_only_account(self):
         self.wallet_view.just_fyi("Adding new watch only account")
         new_account_name = "Account to watch"
