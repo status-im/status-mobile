@@ -416,13 +416,13 @@
        (log/info "[wallet] Test network enabled: " (boolean test-networks-enabled?))
        (log/info "[wallet] Goerli network enabled: " (boolean is-goerli-enabled?)))
      {:db (assoc-in db [:wallet :statuses :blockchains] chains)
-      :fx (when chains-down?
-            [[:dispatch
+      :fx [(when chains-down?
+             [:dispatch
               [:toasts/upsert
                {:id       :chains-down
                 :type     :negative
                 :text     (i18n/label :t/provider-is-down {:chains chain-names})
-                :duration 10000}]]])})))
+                :duration constants/toast-chain-down-duration}]])]})))
 
 (defn reset-selected-networks
   [{:keys [db]}]

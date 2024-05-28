@@ -45,7 +45,7 @@
       [:fiat-value :string]
       [:token-value :string]
       [:customization-color {:optional true} [:maybe :schema.common/customization-color]]
-      [:state {:optional true} [:enum :pressed :active :default]]
+      [:state {:optional true} [:enum :pressed :active :disabled :default]]
       [:on-press {:optional true} [:maybe fn?]]]]]
    :any])
 
@@ -60,9 +60,9 @@
         internal-state         (if pressed? :pressed state)]
     [rn/pressable
      {:style               (style/container internal-state customization-color theme)
-      :on-press-in         on-press-in
-      :on-press-out        on-press-out
-      :on-press            on-press
+      :on-press-in         (when-not (= state :disabled) on-press-in)
+      :on-press-out        (when-not (= state :disabled) on-press-out)
+      :on-press            (when-not (= state :disabled) on-press)
       :accessibility-label :network-list}
      [info props]
      [values props]]))

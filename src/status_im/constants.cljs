@@ -194,6 +194,8 @@
 
 (def ^:const community-id-length 68)
 
+(def ^:const toast-chain-down-duration 5000)
+
 ; BIP44 Wallet Root Key, the extended key from which any wallet can be derived
 (def ^:const path-wallet-root "m/44'/60'/0'/0")
 ; EIP1581 Root Key, the extended key from which any whisper key/encryption key can be derived

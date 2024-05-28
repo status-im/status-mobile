@@ -3,12 +3,14 @@
     [legacy.status-im.chat.models.message :as models.message]
     [legacy.status-im.mailserver.core :as mailserver]
     [legacy.status-im.visibility-status-updates.core :as visibility-status-updates]
+    [oops.core :as oops]
     [status-im.common.pairing.events :as pairing]
     [status-im.contexts.chat.messenger.messages.link-preview.events :as link-preview]
     [status-im.contexts.chat.messenger.messages.transport.events :as messages.transport]
     [status-im.contexts.communities.discover.events]
     [status-im.contexts.profile.push-notifications.local.events :as local-notifications]
     [taoensso.timbre :as log]
+    [utils.debounce :as debounce]
     [utils.re-frame :as rf]
     [utils.transforms :as transforms]))
 
@@ -22,9 +24,12 @@
                           :peers-count   peers-count)}
               (visibility-status-updates/peers-summary-change peers-count))))
 
-(rf/defn wakuv2-peer-stats
-  [{:keys [db]} peer-stats]
-  {:db (assoc db :peer-stats peer-stats :peers-count (count (:peers peer-stats)))})
+(rf/reg-event-fx :wakuv2-peer-stats
+ (fn [{:keys [db]} [^js peer-stats-js]]
+   (let [peer-stats (transforms/js->clj peer-stats-js)]
+     {:db (assoc db
+                 :peer-stats  peer-stats
+                 :peers-count (count (:peers peer-stats)))})))
 
 (rf/defn process
   {:events [:signals/signal-received]}
@@ -38,57 +43,71 @@
     (log/debug "Signal received" {:type type})
     (log/trace "Signal received" {:payload event-str})
     (case type
-      "node.login"                 {:fx [[:dispatch
-                                          [:profile.login/login-node-signal
-                                           (transforms/js->clj event-js)]]]}
-      "backup.performed"           {:db (assoc-in db
-                                         [:profile/profile :last-backup]
-                                         (.-lastBackup event-js))}
-      "envelope.sent"              (messages.transport/update-envelopes-status cofx
-                                                                               (:ids
-                                                                                (js->clj event-js
-                                                                                         :keywordize-keys
-                                                                                         true))
-                                                                               :sent)
-      "envelope.expired"           (messages.transport/update-envelopes-status cofx
-                                                                               (:ids
-                                                                                (js->clj event-js
-                                                                                         :keywordize-keys
-                                                                                         true))
-                                                                               :not-sent)
-      "message.delivered"          (let [{:keys [chatID messageID]} (js->clj event-js
-                                                                             :keywordize-keys
-                                                                             true)]
-                                     (models.message/update-message-status cofx
-                                                                           chatID
-                                                                           messageID
-                                                                           :delivered))
-      "mailserver.changed"         (mailserver/handle-mailserver-changed cofx (.-id event-js))
-      "mailserver.available"       (mailserver/handle-mailserver-available cofx (.-id event-js))
-      "mailserver.not.working"     (mailserver/handle-mailserver-not-working cofx)
-      "discovery.summary"          (summary cofx (js->clj event-js :keywordize-keys true))
-      "mediaserver.started"        {:db (assoc db :mediaserver/port (.-port event-js))}
-      "wakuv2.peerstats"           (wakuv2-peer-stats cofx (js->clj event-js :keywordize-keys true))
-      "messages.new"               (messages.transport/sanitize-messages-and-process-response cofx
-                                                                                              event-js
-                                                                                              true)
-      "wallet"                     (rf/dispatch [:wallet/signal-received event-js])
-      "local-notifications"        (local-notifications/process cofx
-                                                                (js->clj event-js :keywordize-keys true))
-      "community.found"            (link-preview/cache-community-preview-data (js->clj event-js
-                                                                                       :keywordize-keys
-                                                                                       true))
-      "status.updates.timedout"    (visibility-status-updates/handle-visibility-status-updates
-                                    cofx
-                                    (js->clj event-js :keywordize-keys true))
-      "localPairing"               (pairing/handle-local-pairing-signals
-                                    cofx
-                                    (js->clj event-js :keywordize-keys true))
-      "curated.communities.update" (rf/dispatch [:fetched-contract-communities
-                                                 (js->clj event-js :keywordize-keys true)])
-      "waku.backedup.profile"      (rf/dispatch [:profile/update-profile-from-backup
-                                                 (js->clj event-js :keywordize-keys true)])
-      "waku.backedup.settings"     (rf/dispatch [:profile/update-setting-from-backup
-                                                 (js->clj event-js :keywordize-keys true)])
+      "wallet"
+      (rf/dispatch [:wallet/signal-received event-js])
+
+      "wakuv2.peerstats"
+      (debounce/debounce-and-dispatch [:wakuv2-peer-stats event-js] 1000)
+
+      "envelope.sent"
+      (messages.transport/update-envelopes-status
+       cofx
+       (:ids (transforms/js->clj event-js))
+       :sent)
+
+      "envelope.expired"
+      (messages.transport/update-envelopes-status
+       cofx
+       (:ids (transforms/js->clj event-js))
+       :not-sent)
+
+      "message.delivered"
+      (let [{:keys [chatID messageID]} (transforms/js->clj event-js)]
+        (models.message/update-message-status cofx chatID messageID :delivered))
+
+      "messages.new"
+      (messages.transport/sanitize-messages-and-process-response cofx event-js true)
+
+      "mailserver.changed"
+      (mailserver/handle-mailserver-changed cofx (oops/oget event-js :id))
+
+      "mailserver.available"
+      (mailserver/handle-mailserver-available cofx (oops/oget event-js :id))
+
+      "mailserver.not.working"
+      (mailserver/handle-mailserver-not-working cofx)
+
+      "discovery.summary"
+      (summary cofx (transforms/js->clj event-js))
+
+      "local-notifications"
+      (local-notifications/process cofx (transforms/js->clj event-js))
+
+      "community.found"
+      (link-preview/cache-community-preview-data (transforms/js->clj event-js))
+
+      "status.updates.timedout"
+      (visibility-status-updates/handle-visibility-status-updates cofx (transforms/js->clj event-js))
+
+      "localPairing"
+      (pairing/handle-local-pairing-signals cofx (transforms/js->clj event-js))
+
+      "curated.communities.update"
+      (rf/dispatch [:fetched-contract-communities (transforms/js->clj event-js)])
+
+      "waku.backedup.profile"
+      (rf/dispatch [:profile/update-profile-from-backup (transforms/js->clj event-js)])
+
+      "waku.backedup.settings"
+      (rf/dispatch [:profile/update-setting-from-backup (transforms/js->clj event-js)])
+
+      "mediaserver.started"
+      {:db (assoc db :mediaserver/port (oops/oget event-js :port))}
+
+      "node.login"
+      {:fx [[:dispatch [:profile.login/login-node-signal (transforms/js->clj event-js)]]]}
+
+      "backup.performed"
+      {:db (assoc-in db [:profile/profile :last-backup] (oops/oget event-js :lastBackup))}
 
       (log/debug "Event " type " not handled"))))

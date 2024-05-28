@@ -8,22 +8,28 @@
     [utils.security.core :as security]
     [utils.transforms :as transforms]))
 
+(defn- update-keypair
+  [keypairs key-uid update-fn]
+  (mapcat (fn [keypair]
+            (if (= (keypair :key-uid) key-uid)
+              (if-let [updated (update-fn keypair)]
+                [updated]
+                [])
+              [keypair]))
+   keypairs))
+
 (rf/reg-event-fx
  :wallet/rename-keypair-success
  (fn [{:keys [db]} [key-uid name]]
    {:db (update-in db
                    [:wallet :keypairs]
-                   (fn [keypairs]
-                     (map (fn [keypair]
-                            (if (= (keypair :key-uid) key-uid)
-                              (assoc keypair :name name)
-                              keypair))
-                          keypairs)))
+                   #(update-keypair % key-uid (fn [keypair] (assoc keypair :name name))))
     :fx [[:dispatch [:navigate-back]]
          [:dispatch
           [:toasts/upsert
-           {:type :positive
-            :text (i18n/label :t/key-pair-name-updated)}]]]}))
+           {:type  :positive
+            :theme :dark
+            :text  (i18n/label :t/key-pair-name-updated)}]]]}))
 
 (defn rename-keypair
   [_ [{:keys [key-uid keypair-name]}]]
@@ -53,3 +59,26 @@
      handle-connection)))
 
 (rf/reg-event-fx :wallet/get-key-pair-export-connection get-key-pair-export-connection)
+
+(rf/reg-event-fx
+ :wallet/remove-keypair-success
+ (fn [{:keys [db]} [key-uid]]
+   {:db (update-in db
+                   [:wallet :keypairs]
+                   #(update-keypair % key-uid (fn [_] nil)))
+    :fx [[:dispatch [:hide-bottom-sheet]]
+         [:dispatch
+          [:toasts/upsert
+           {:type  :positive
+            :theme :dark
+            :text  (i18n/label :t/key-pair-removed)}]]]}))
+
+(defn remove-keypair
+  [_ [key-uid]]
+  {:fx [[:json-rpc/call
+         [{:method     "accounts_deleteKeypair"
+           :params     [key-uid]
+           :on-success [:wallet/remove-keypair-success key-uid]
+           :on-error   #(log/info "failed to remove keypair " %)}]]]})
+
+(rf/reg-event-fx :wallet/remove-keypair remove-keypair)

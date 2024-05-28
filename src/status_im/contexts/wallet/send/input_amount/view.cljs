@@ -161,7 +161,8 @@
         enabled-from-chain-ids                      (rf/sub
                                                      [:wallet/wallet-send-enabled-from-chain-ids])
         {token-balance     :total-balance
-         available-balance :available-balance}      (rf/sub [:wallet/token-by-symbol
+         available-balance :available-balance
+         :as               token-by-symbol}         (rf/sub [:wallet/token-by-symbol
                                                              (str token-symbol)
                                                              enabled-from-chain-ids])
         currency-symbol                             (rf/sub [:profile/currency-symbol])
@@ -251,9 +252,11 @@
                                                      [:wallet/wallet-send-sender-network-values])
         receiver-network-values                     (rf/sub
                                                      [:wallet/wallet-send-receiver-network-values])
-        token-not-supported-in-receiver-networks?   (every? #(= (:type %) :not-available)
-                                                            (filter #(not= (:type %) :add)
-                                                                    receiver-network-values))
+        tx-type                                     (rf/sub [:wallet/wallet-send-tx-type])
+        token-not-supported-in-receiver-networks?   (and (not= tx-type :tx/bridge)
+                                                         (->> receiver-network-values
+                                                              (remove #(= (:type %) :add))
+                                                              (every? #(= (:type %) :not-available))))
         suggested-routes                            (rf/sub [:wallet/wallet-send-suggested-routes])
         routes                                      (when suggested-routes
                                                       (or (:best suggested-routes) []))
@@ -335,7 +338,7 @@
                                 (number/remove-trailing-zeroes new-value))))))
        :on-token-press  show-select-asset-sheet}]
      [routes/view
-      {:token                                     token
+      {:token                                     token-by-symbol
        :input-value                               input-amount
        :value                                     amount
        :valid-input?                              valid-input?
@@ -371,7 +374,8 @@
                                                                                  conversion-rate)
                                                                               2))]
                                                  (rf/dispatch [:wallet/get-suggested-routes
-                                                               {:amount amount}]))
+                                                               {:amount        amount
+                                                                :updated-token token-by-symbol}]))
                                               sending-to-unpreferred-networks?
                                               #(show-unpreferred-networks-alert on-confirm)
                                               :else

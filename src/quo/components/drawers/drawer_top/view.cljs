@@ -78,7 +78,8 @@
    (str description " · " (i18n/label :t/on-device))])
 
 (defn- context-tag-subtitle
-  [{:keys [context-tag-type community-logo community-name account-name emoji customization-color
+  [{:keys [context-tag-type context icon community-logo community-name account-name emoji
+           customization-color
            full-name profile-picture]}]
   (let [tag-type (or context-tag-type :account)]
     [rn/view
@@ -94,7 +95,9 @@
        :size                24
        :customization-color customization-color
        :profile-picture     profile-picture
-       :full-name           full-name}]]))
+       :full-name           full-name
+       :context             context
+       :icon                icon}]]))
 
 (defn- description-subtitle
   [{:keys [theme blur? description]}]
@@ -106,7 +109,8 @@
 
 (defn- subtitle
   [{:keys [type theme blur? stored networks description community-name community-logo
-           context-tag-type account-name emoji customization-color full-name profile-picture]}]
+           context-tag-type account-name emoji customization-color full-name profile-picture context
+           icon]}]
   (cond
     (= :keypair type)
     [keypair-subtitle
@@ -136,7 +140,9 @@
       :emoji               emoji
       :customization-color customization-color
       :profile-picture     profile-picture
-      :full-name           full-name}]
+      :full-name           full-name
+      :context             context
+      :icon                icon}]
 
     (and (not= :label type) description)
     [description-subtitle
@@ -198,7 +204,8 @@
   [{:keys [title title-icon type description blur? community-name community-logo button-icon
            account-name emoji context-tag-type button-type container-style
            on-button-press on-button-long-press profile-picture stored networks label full-name
-           button-disabled? account-avatar-emoji account-avatar-type customization-color icon-avatar]}]
+           button-disabled? account-avatar-emoji account-avatar-type customization-color icon-avatar
+           context icon]}]
   (let [theme (quo.theme/use-theme)]
     [rn/view {:style (merge style/container container-style)}
      (when (left-image-supported-types type)
@@ -232,7 +239,9 @@
         :account-name        account-name
         :emoji               emoji
         :full-name           full-name
-        :profile-picture     profile-picture}]]
+        :profile-picture     profile-picture
+        :context             context
+        :icon                icon}]]
      [right-icon
       {:theme                theme
        :type                 type

@@ -70,9 +70,9 @@
 
    :type => :neutral/:negative/:positive
    "
-  [{:keys [type icon title text action undo-duration undo-on-press container-style user]
+  [{:keys [type icon title text action undo-duration undo-on-press container-style theme user]
     :or   {type :neutral icon :i/placeholder}}]
-  (let [theme     (quo.theme/use-theme)
+  (let [theme     (or theme (quo.theme/use-theme))
         icon-name (case type
                     :positive (if (= theme :light)
                                 :i/correct

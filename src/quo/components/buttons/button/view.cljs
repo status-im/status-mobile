@@ -117,7 +117,8 @@
            {:size            (when (#{56 24} size) :paragraph-2)
             :weight          :medium
             :number-of-lines 1
-            :style           {:color label-color}}
+            :style           {:color   label-color
+                              :opacity (when (and disabled? (= theme :dark)) 0.3)}}
            children]
 
           (vector? children)

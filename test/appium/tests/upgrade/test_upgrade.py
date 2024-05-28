@@ -1,5 +1,4 @@
-from tests import marks, pytest_config_global, test_dapp_name, staging_fleet, mailserver_hk, mailserver_ams, \
-    mailserver_gc
+from tests import marks, pytest_config_global, test_dapp_name
 from tests.base_test_case import SingleDeviceTestCase, MultipleDeviceTestCase
 from tests.users import upgrade_users, transaction_recipients, basic_user, ens_user, transaction_senders
 from views.sign_in_view import SignInView
@@ -478,95 +477,5 @@ class TestUpgradeMultipleApplication(MultipleDeviceTestCase):
                 self.errors.append("%s is not shown upon invite after upgrade" % text)
         if not chat_1.group_membership_request_button.is_element_displayed():
             self.errors.append("No pending membership requests are shown for Admin")
-
-        self.errors.verify_no_errors()
-
-    @marks.testrail_id(695812)
-    @marks.flaky
-    def test_devices_activity_centre_profile_settings_upgrade(self):
-        self.create_drivers(2)
-        user = ens_user
-        device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
-
-        device_1.just_fyi("Import db")
-        home_1 = device_1.import_db(seed_phrase=user['passphrase'], import_db_folder_name='group/admin')
-        home_2 = device_2.create_user()
-        profile_2 = home_2.profile_button.click()
-        public_key_2, username_2 = profile_2.get_public_key(e)
-
-        device_1.just_fyi("Activity centre: send message to 1-1 and invite member to group chat")
-        chat_1 = home_1.add_contact(public_key_2, add_in_contacts=False)
-        message = home_1.get_random_message()
-        chat_1.send_message(message)
-
-        device_2.just_fyi("Set profile photo")
-        profile_2.edit_profile_picture(image_index=2)
-        device_1.just_fyi('Upgrading apps')
-        for device in (device_1, device_2):
-            device.upgrade_app()
-            device.sign_in()
-
-        device_1.just_fyi("Check status")
-        timeline = home_1.status_button.click()
-        statuses = group.timeline
-        for element in timeline.element_by_text(
-                statuses['text']), timeline.image_message_in_chat, timeline.element_by_text(statuses['link']):
-            if not element.is_element_displayed():
-                self.errors.append("Status is not shown after upgrade!")
-        timeline.element_by_text(statuses['link']).click()
-        if not device_1.element_by_text(statuses['resolved_username']).is_element_displayed():
-            self.errors.append("Deep link with ahother user profile couldn't be opened")
-        device_1.click_system_back_button()
-
-        device_1.just_fyi("Check profile settings")
-        profile_1 = device_1.profile_button.click()
-        profile_1.element_by_translation_id("ens-your-your-name").click()
-        for ens in user['ens'], user['ens_another']:
-            if not profile_1.element_by_text(ens).is_element_displayed():
-                self.errors.append("ENS name %s is not shown after upgrade" % ens)
-        profile_1.profile_button.click()
-        profile_1.privacy_and_security_button.click()
-
-        if not profile_1.accept_new_chats_from_contacts_only.is_element_displayed():
-            self.errors.append("Accept contacts from setting is not preserved after upgrade!")
-        profile_1.profile_button.click()
-        profile_1.privacy_and_security_button.click()
-        profile_1.show_profile_pictures_of.scroll_to_element()
-        if not profile_1.show_profile_pictures_of.is_element_image_similar_to_template('block_dark.png'):
-            self.errors.append('Dark mode is not applied!')
-        if not profile_1.element_by_translation_id("everyone").is_element_displayed():
-            self.errors.append("Show profile picture setting is not preserved after upgrade!")
-        profile_1.profile_button.click()
-        profile_1.sync_settings_button.click()
-        profile_1.mail_server_button.click()
-        mailservers = ['%s.%s' % (i, staging_fleet) for i in (mailserver_gc, mailserver_ams, mailserver_hk)]
-        profile_1.swipe_up()
-        for node in mailservers:
-            if not profile_1.element_by_text(node).is_element_displayed():
-                self.errors.append("Seems auto selection is on after upgrade, as %s is shown" % node)
-        profile_1.profile_button.click()
-        profile_1.advanced_button.click()
-        if not profile_1.element_by_text(group.profile['log_level']).is_element_displayed():
-            self.errors.append("Log level setting is not preserved after upgrade!")
-        profile_1.home_button.click()
-
-        device_2.just_fyi("Check activity centre and profile photo")
-        home_2.profile_button.click()
-        if not profile_2.profile_picture.is_element_image_similar_to_template('sauce_logo_profile.png'):
-            self.errors.append('Profile picture was not shown after upgrade')
-        profile_2.home_button.click()
-        if not home_2.notifications_unread_badge.is_element_displayed():
-            self.errors.append("Notifications badge in Activity centre is gone after upgrade")
-
-        device_2.just_fyi("Send message after upgrade and check that profile photo is visible")
-        home_1.get_chat(username_2).click()
-        message = chat_1.get_random_message()
-        chat_1.add_to_contacts.click()
-        chat_1.send_message(message)
-        chat_1.home_button.click()
-        chat_2 = home_2.get_chat('@%s' % user['ens']).click()
-        chat_2.send_message(message)
-        if not home_1.get_chat(username_2).chat_image.is_element_image_similar_to_template('dark_sauce_logo.png'):
-            self.errors.append('User profile picture was not updated on Chats view')
 
         self.errors.verify_no_errors()
