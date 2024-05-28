@@ -28,13 +28,15 @@
         {:keys [name color formatted-balance watch-only?
                 address]}   (rf/sub [:wallet/current-viewing-account])
         customization-color (rf/sub [:profile/customization-color])]
+    (rn/use-unmount (fn []
+                      (rf/dispatch [:wallet/close-account-page])
+                      (rf/dispatch [:wallet/clean-send-data])))
     (rn/use-mount
      #(rf/dispatch [:wallet/fetch-activities-for-current-account address]))
     [rn/view {:style {:flex 1}}
      [account-switcher/view
       {:type     :wallet-networks
        :on-press (fn []
-                       (rf/dispatch [:wallet/clean-send-data])
                        (rf/dispatch [:wallet/close-account-page]))}]
      [quo/account-overview
       {:container-style     style/account-overview

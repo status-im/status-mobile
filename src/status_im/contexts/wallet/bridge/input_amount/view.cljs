@@ -8,6 +8,7 @@
 
 (defn view
   []
+  (rn/use-unmount #(rf/dispatch [:wallet/clean-routes-calculation]))
   [rn/view {:style style/bridge-send-wrapper}
    [input-amount/view
     {:current-screen-id :screen/wallet.bridge-input-amount
@@ -18,7 +19,6 @@
                                         {:amount   amount
                                          :stack-id :screen/wallet.bridge-input-amount}]))
      :on-navigate-back  (fn []
-                          (rf/dispatch [:wallet/clean-routes-calculation])
                           (rf/dispatch [:wallet/clean-disabled-from-networks])
                           (rf/dispatch [:wallet/clean-send-amount])
                           (rf/dispatch [:navigate-back]))}]])
