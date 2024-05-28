@@ -41,7 +41,8 @@
 
 (defn tab-content
   []
-  (let [selected-tab (reagent/atom :profile)]
+  (let [{:keys [initial-tab] :or {initial-tab :profile}} (rf/sub [:get-screen-params])
+        selected-tab                                     (reagent/atom initial-tab)]
     (fn []
       [rn/view {:style {:padding-top (safe-area/get-top)}}
        [header]
@@ -50,7 +51,7 @@
          {:size           28
           :blur?          true
           :on-change      #(reset! selected-tab %)
-          :default-active :profile
+          :default-active initial-tab
           :data           [{:id    :profile
                             :label (i18n/label :t/profile)}
                            {:id    :wallet

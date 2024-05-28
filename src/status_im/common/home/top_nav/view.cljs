@@ -30,12 +30,15 @@
                                            ; should be :notification TODO
                                            ; https://github.com/status-im/status-mobile/issues/17102
                                            :unread-indicator/new  :mention
-                                           nil)]
+                                           nil)
+        view-id                          (rf/sub [:view-id])
+        initial-share-tab                (if (= :wallet-stack view-id) :wallet :profile)]
     [quo/top-nav
      {:avatar-on-press          #(rf/dispatch [:open-modal :settings])
       :scan-on-press            #(rf/dispatch [:open-modal :shell-qr-reader])
       :activity-center-on-press #(rf/dispatch [:activity-center/open])
-      :qr-code-on-press         #(rf/dispatch [:open-modal :screen/share-shell])
+      :qr-code-on-press         #(rf/dispatch [:open-modal :screen/share-shell
+                                               {:initial-tab initial-share-tab}])
       :container-style          (merge style/top-nav-container container-style)
       :blur?                    blur?
       :jump-to?                 jump-to?
