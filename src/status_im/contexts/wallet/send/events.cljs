@@ -220,14 +220,15 @@
 (rf/reg-event-fx
  :wallet/edit-token-to-send
  (fn [{:keys [db]} [token]]
-   (let [{token-networks :networks}                token
+   (let [{token-networks :networks
+          token-symbol   :symbol}                  token
          receiver-networks                         (get-in db [:wallet :ui :send :receiver-networks])
          token-networks-ids                        (mapv #(:chain-id %) token-networks)
          token-not-supported-in-receiver-networks? (not (some (set receiver-networks)
                                                               token-networks-ids))]
      {:db (-> db
               (assoc-in [:wallet :ui :send :token] token)
-              (assoc-in [:wallet :ui :send :token-display-name] token)
+              (assoc-in [:wallet :ui :send :token-display-name] token-symbol)
               (assoc-in [:wallet :ui :send :token-not-supported-in-receiver-networks?]
                         token-not-supported-in-receiver-networks?))
       :fx [[:dispatch [:hide-bottom-sheet]]
