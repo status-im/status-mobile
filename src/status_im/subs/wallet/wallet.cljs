@@ -4,6 +4,7 @@
             [status-im.constants :as constants]
             [status-im.contexts.wallet.common.utils :as utils]
             [status-im.contexts.wallet.common.utils.networks :as network-utils]
+            [status-im.contexts.wallet.send.utils :as send-utils]
             [status-im.subs.wallet.add-account.address-to-watch]
             [utils.number]
             [utils.security.core :as security]))
@@ -574,3 +575,23 @@
  :<- [:wallet/wallet-send-enabled-networks]
  (fn [send-enabled-networks]
    (map :chain-id send-enabled-networks)))
+
+(rf/reg-sub
+ :wallet/wallet-send-fee-fiat-formatted
+ :<- [:wallet/wallet-send-route]
+ :<- [:profile/currency]
+ :<- [:profile/currency-symbol]
+ (fn [[route currency currency-symbol] [_ token-for-fees]]
+   (let [fee-in-native-token     (send-utils/calculate-full-route-gas-fee route)
+         fee-in-crypto-formatted (utils/get-standard-crypto-format
+                                  token-for-fees
+                                  fee-in-native-token)
+         fee-in-fiat             (utils/calculate-token-fiat-value
+                                  {:currency currency
+                                   :balance  fee-in-native-token
+                                   :token    token-for-fees})
+         fee-formatted           (utils/get-standard-fiat-format
+                                  fee-in-crypto-formatted
+                                  currency-symbol
+                                  fee-in-fiat)]
+     fee-formatted)))

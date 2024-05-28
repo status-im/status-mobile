@@ -187,6 +187,12 @@
            :chain-id   10
            :layer      2}]})
 
+(def route-data
+  [{:gas-amount "25000"
+    :gas-fees   {:max-fee-per-gas-medium "4"
+                 :eip-1559-enabled       true
+                 :l-1-gas-fee            "0"}}])
+
 (h/deftest-sub :wallet/balances-in-selected-networks
   [sub-name]
   (testing "a map: address->balance"
@@ -890,3 +896,19 @@
       (is (match? (get result constants/ethereum-mainnet-chain-id) "$1500.00"))
       (is (match? (get result constants/optimism-mainnet-chain-id) "$600.00"))
       (is (match? (get result constants/arbitrum-mainnet-chain-id) "$0.00")))))
+
+(h/deftest-sub :wallet/wallet-send-fee-fiat-formatted
+  [sub-name]
+  (testing "wallet send fee calculated and formatted in fiat"
+    (swap! rf-db/app-db
+      #(-> %
+           (assoc-in [:wallet :ui :send :route] route-data)
+           (assoc-in [:profile/profile :currency] :usd)
+           (assoc-in [:profile/profile :currency-symbol] "$")))
+
+    (let [token-for-fees {:decimals                   18
+                          :symbol                     "ETH"
+                          :name                       "Ether"
+                          :market-values-per-currency {:usd {:price 10000}}}
+          result         (rf/sub [sub-name token-for-fees])]
+      (is (match? result "$1.00")))))
