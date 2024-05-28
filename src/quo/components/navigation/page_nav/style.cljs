@@ -8,14 +8,13 @@
    :padding-horizontal 20
    :padding-vertical   12
    :height             56
-   :flex-grow          1
-   :flex-basis         1
    :flex-direction     :row
    :justify-content    :space-between
    :align-items        :center})
 
 (def icon-container
-  {:flex-grow 1 :flex-basis 1})
+  {:flex-grow  1
+   :flex-basis 1})
 
 (defn center-content-container
   [centered?]
