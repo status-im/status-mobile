@@ -108,6 +108,7 @@
     [status-im.contexts.wallet.send.send-amount.view :as wallet-send-input-amount]
     [status-im.contexts.wallet.send.transaction-confirmation.view :as wallet-transaction-confirmation]
     [status-im.contexts.wallet.send.transaction-progress.view :as wallet-transaction-progress]
+    [status-im.contexts.wallet.swap.select-asset-to-pay.view :as wallet-swap-select-asset-to-pay]
     [status-im.contexts.wallet.wallet-connect.sign-message.view :as wallet-connect-sign-message]
     [status-im.navigation.options :as options]
     [status-im.navigation.transitions :as transitions]))
@@ -487,6 +488,11 @@
                  options/dark-screen
                  {:modalPresentationStyle :overCurrentContext})
      :component wallet-scan-address/view}
+
+    {:name      :screen/wallet.swap-select-asset-to-pay
+     :options   {:modalPresentationStyle :overCurrentContext
+                 :insets                 {:top? true}}
+     :component wallet-swap-select-asset-to-pay/view}
 
     {:name      :scan-profile-qr-code
      :options   (merge

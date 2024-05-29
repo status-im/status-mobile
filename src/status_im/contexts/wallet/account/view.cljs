@@ -58,7 +58,7 @@
                                               {:start-flow? true
                                                :flow-id     :wallet-bridge-flow}]))
              :swap-action     (when (ff/enabled? ::ff/wallet.swap)
-                                #(rf/dispatch [:wallet/start-swap]))}])
+                                #(rf/dispatch [:wallet.swap/start]))}])
          [quo/tabs
           {:style            style/tabs
            :size             32
