@@ -7,10 +7,11 @@
    :border-radius   16})
 
 (defn image
-  [square? aspect-ratio]
-  {:width         "100%"
-   :aspect-ratio  (if square? 1 aspect-ratio)
-   :border-radius 16})
+  [square? aspect-ratio theme]
+  {:width            "100%"
+   :aspect-ratio     (if square? 1 aspect-ratio)
+   :border-radius    16
+   :background-color (colors/theme-colors colors/white colors/neutral-95 theme)})
 
 (defn fallback
   [{:keys [theme]}]

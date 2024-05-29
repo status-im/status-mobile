@@ -66,7 +66,7 @@
        (and (not image-error?) supported-file?)
        [rn/view
         [rn/image
-         {:style     (style/image square? (:aspect-ratio image-size))
+         {:style     (style/image square? (:aspect-ratio image-size) theme)
           :source    image-src
           :native-ID native-ID
           :on-error  #(set-image-error true)
