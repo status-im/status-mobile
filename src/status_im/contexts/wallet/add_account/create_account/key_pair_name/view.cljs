@@ -57,7 +57,7 @@
                                                (set-error :special-char)
 
                                                :else (set-error nil))))
-        on-continue                       (rn/use-callback
+        on-continue-fn                    (rn/use-callback
                                            #(on-continue workflow key-pair-name)
                                            [workflow key-pair-name])
         disabled?                         (or (some? error) (string/blank? key-pair-name))]
@@ -71,7 +71,7 @@
        :footer              [quo/button
                              {:customization-color customization-color
                               :disabled?           disabled?
-                              :on-press            on-continue}
+                              :on-press            on-continue-fn}
                              (i18n/label :t/continue)]}
       [quo/page-top
        {:title            (i18n/label :t/keypair-name)
