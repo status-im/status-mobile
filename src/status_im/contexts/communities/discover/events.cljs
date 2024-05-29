@@ -50,16 +50,38 @@
           {}
           m))
 
-(rf/defn handle-contract-communities
-  {:events [:fetched-contract-communities]}
-  [{:keys [db]} contract-communities]
+(defn maybe-found-unknown-contract-community
+  [{:keys [db]} [{:keys [id] :as community}]]
+  (let [{:keys [contract-communities]}           db
+        {:keys [unknown-featured unknown-other]} contract-communities]
+    {:db (cond-> db
+           ((set unknown-featured) id)
+           (assoc-in [:contract-communities :featured id] community)
+           ((set unknown-featured) id)
+           (assoc-in [:contract-communities :unknown-featured] (remove #{id} unknown-featured))
+
+           ((set unknown-other) id)
+           (assoc-in [:contract-communities :other id] community)
+           ((set unknown-other) id)
+           (assoc-in [:contract-communities :unknown-other] (remove #{id} unknown-other)))}))
+
+(rf/reg-event-fx :discover-community/maybe-found-unknown-contract-community
+ maybe-found-unknown-contract-community)
+
+(defn handle-contract-communities
+  [{:keys [db]} [contract-communities]]
   (let [cc       (rename-contract-community-keys contract-communities)
         featured (:contract-featured-communities cc)
+        unknown  (:unknown-communities cc)
         other    (remove (set featured) (:contract-communities cc))]
     {:db (assoc db
                 :contract-communities
-                {:featured (select-keys (:communities cc) featured)
-                 :other    (select-keys (:communities cc) other)})}))
+                {:featured         (select-keys (:communities cc) featured)
+                 :unknown-featured (filter (set unknown) featured)
+                 :unknown-other    (filter (set unknown) other)
+                 :other            (select-keys (:communities cc) other)})}))
+
+(rf/reg-event-fx :fetched-contract-communities handle-contract-communities)
 
 (rf/defn fetch-contract-communities
   {:events [:fetch-contract-communities]}

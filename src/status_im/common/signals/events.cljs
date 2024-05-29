@@ -84,7 +84,9 @@
       (local-notifications/process cofx (transforms/js->clj event-js))
 
       "community.found"
-      (link-preview/cache-community-preview-data (transforms/js->clj event-js))
+      (let [community (transforms/js->clj event-js)]
+        (link-preview/cache-community-preview-data community)
+        {:fx [[:dispatch [:discover-community/maybe-found-unknown-contract-community community]]]})
 
       "status.updates.timedout"
       (visibility-status-updates/handle-visibility-status-updates cofx (transforms/js->clj event-js))
