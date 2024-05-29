@@ -41,14 +41,18 @@
 
 (defn seed-phrase-validated
   [{:keys [db]} [seed-phrase key-uid on-error]]
-  (let [keypair-already-added? (->> db :wallet :keypairs (some #(= key-uid (:key-uid %))))]
+  (let [keypair-already-added? (->> db
+                                    :wallet
+                                    :keypairs
+                                    (some #(= key-uid (:key-uid %))))]
     (if keypair-already-added?
       (do
         (on-error)
-        {:fx [[:dispatch [:toasts/upsert
-                          {:id   :already-existing-keypair
-                           :type :negative
-                           :text "This keypair already exists in the device"}]]]})
+        {:fx [[:dispatch
+               [:toasts/upsert
+                {:id   :already-existing-keypair
+                 :type :negative
+                 :text "This keypair already exists in the device"}]]]})
       {:db (assoc-in db [:wallet :ui :create-account :new-keypair :seed-phrase] seed-phrase)
        :fx [[:dispatch [:navigate-to :screen/wallet.keypair-name {:workflow :recovery-phrase}]]]})))
 

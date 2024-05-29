@@ -21,7 +21,8 @@
   []
   (rf/dispatch [:navigate-back]))
 
-(defn- on-continue [workflow key-pair-name]
+(defn- on-continue
+  [workflow key-pair-name]
   (case workflow
     ;; TODO issue #19759. Implement creation account from private key
     :import-private-key
