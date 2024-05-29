@@ -1,4 +1,4 @@
-{ stdenv, meta, source, buildGoPackage }:
+{ lib, stdenv, meta, source, buildGoPackage }:
 
 buildGoPackage {
   pname = source.repo;
@@ -28,8 +28,8 @@ buildGoPackage {
     runHook preBuild
     go build \
       -buildmode='c-archive' \
-      -ldflags '-w -s -extldflags "-lresolv"' \
-      -tags='gowaku_skip_migrations gowaku_no_rln netgo' \
+      ${lib.optionalString stdenv.isDarwin "-ldflags=-extldflags=-lresolv"} \
+      -tags='gowaku_skip_migrations gowaku_no_rln ${lib.optionalString stdenv.isDarwin "netgo"}' \
       -o "$out/libstatus.a" \
       $NIX_BUILD_TOP/main.go
     runHook postBuild
