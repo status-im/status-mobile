@@ -1,17 +1,16 @@
 (ns quo.components.profile.expanded-collectible.view
   (:require
-    [promesa.core :as promesa]
-    [quo.components.counter.collectible-counter.view :as collectible-counter]
-    [quo.components.icon :as icon]
-    [quo.components.markdown.text :as text]
-    [quo.components.profile.expanded-collectible.style :as style]
-    [quo.foundations.colors :as colors]
-    [quo.theme]
-    [quo.theme]
-    [quo.theme]
-    [react-native.core :as rn]
-    [schema.core :as schema]
-    [utils.i18n :as i18n]))
+   [clojure.string :as string]
+   [promesa.core :as promesa]
+   [quo.components.counter.collectible-counter.view :as collectible-counter]
+   [quo.components.icon :as icon]
+   [quo.components.markdown.text :as text]
+   [quo.components.profile.expanded-collectible.style :as style]
+   [quo.foundations.colors :as colors]
+   [quo.theme]
+   [react-native.core :as rn]
+   [schema.core :as schema]
+   [utils.i18n :as i18n]))
 
 (defn- counter-view
   [counter]
@@ -38,7 +37,8 @@
            on-collectible-load]}]
   (let [theme                          (quo.theme/use-theme)
         [image-size set-image-size]    (rn/use-state {})
-        [image-error? set-image-error] (rn/use-state false)]
+        [image-error? set-image-error] (rn/use-state (or (nil? image-src)
+                                                         (string/blank? image-src)))]
     (rn/use-effect
      (fn []
        (promesa/let [[image-width image-height] (rn/image-get-size image-src)]
