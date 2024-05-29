@@ -37,13 +37,16 @@
        :label               name
        :customization-color customization-color}]]]])
 
+(defn data-block
+  []
+  (let [display-data (rf/sub [:wallet-connect/current-request-display-data])]
+    [raw-data-block/view {:data display-data}]))
+
 (defn view
   []
   (let [bottom                                   (safe-area/get-bottom)
-        address                                  (rf/sub [:wallet-connect/current-request-address])
-        {:keys [name emoji customization-color]} (rf/sub [:wallet-connect/account-details-by-address
-                                                          address])
-        display-data                             (rf/sub [:wallet-connect/current-request-display-data])]
+        {:keys [name emoji customization-color]} (rf/sub
+                                                  [:wallet-connect/current-request-account-details])]
     [rn/view {:style (style/container bottom)}
      [quo/gradient-cover {:customization-color customization-color}]
      [quo/page-nav
@@ -56,7 +59,7 @@
        {:emoji               emoji
         :customization-color customization-color
         :name                name}]
-      [raw-data-block/view {:data display-data}]
+      [data-block]
       [quo/data-item
        {:size            :small
         :status          :default

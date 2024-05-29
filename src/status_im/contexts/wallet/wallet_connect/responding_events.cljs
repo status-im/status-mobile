@@ -8,7 +8,7 @@
  :wallet-connect/respond-current-session
  (fn [{:keys [db]} [password]]
    (let [event  (get-in db [:wallet-connect/current-request :event])
-         method (wallet-connect-core/event->method event)]
+         method (wallet-connect-core/get-request-method event)]
      {:fx [(condp = method
              constants/wallet-connect-personal-sign-method
              [:dispatch [:wallet-connect/respond-personal-sign password]]
@@ -30,7 +30,7 @@
             {:password   password
              :address    address
              :data       raw-data
-             :on-fail    #(rf/dispatch [:wallet-connect/on-sign-failed %])
+             :on-error   #(rf/dispatch [:wallet-connect/on-sign-error %])
              :on-success #(rf/dispatch [:wallet-connect/send-response %])}]]})))
 
 
@@ -42,7 +42,7 @@
             {:password   password
              :address    address
              :data       raw-data
-             :on-fail    #(rf/dispatch [:wallet-connect/on-sign-failed %])
+             :on-error   #(rf/dispatch [:wallet-connect/on-sign-error %])
              :on-success #(rf/dispatch [:wallet-connect/send-response %])}]]})))
 
 (rf/reg-event-fx
@@ -54,22 +54,22 @@
              :address    address
              :data       raw-data
              :version    typed-data-version
-             :on-fail    #(rf/dispatch [:wallet-connect/on-sign-failed %])
+             :on-error   #(rf/dispatch [:wallet-connect/on-sign-error %])
              :on-success #(rf/dispatch [:wallet-connect/send-response %])}]]})))
 
 (rf/reg-event-fx
- :wallet-connect/on-sign-failed
+ :wallet-connect/on-sign-error
  (fn [{:keys [db]} [error]]
    (let [event                      (get-in db [:wallet-connect/current-request :event])
          {:keys [raw-data address]} (get db :wallet-connect/current-request)
-         method                     (wallet-connect-core/event->method event)]
+         method                     (wallet-connect-core/get-request-method event)]
      (log/error "Failed to sign Wallet Connect request"
                 {:error                error
                  :address              address
                  :sign-data            raw-data
                  :method               method
                  :wallet-connect-event event
-                 :event                :wallet-connect/on-sign-failed})
+                 :event                :wallet-connect/on-sign-error})
      {:fx [[:dispatch [:wallet-connect/close-session-request]]]})))
 
 
@@ -77,14 +77,14 @@
  :wallet-connect/send-response
  (fn [{:keys [db]} [result]]
    (let [{:keys [id topic] :as event} (get-in db [:wallet-connect/current-request :event])
-         method                       (wallet-connect-core/event->method event)
+         method                       (wallet-connect-core/get-request-method event)
          web3-wallet                  (get db :wallet-connect/web3-wallet)]
      {:fx [[:effects.wallet-connect/respond-session-request
             {:web3-wallet web3-wallet
              :topic       topic
              :id          id
              :result      result
-             :on-fail     (fn [error]
+             :on-error    (fn [error]
                             (log/error "Failed to send Wallet Connect response"
                                        {:error                error
                                         :method               method

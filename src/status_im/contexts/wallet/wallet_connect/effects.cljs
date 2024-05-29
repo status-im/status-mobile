@@ -57,7 +57,7 @@
 
 (rf/reg-fx
  :effects.wallet-connect/sign-message
- (fn [{:keys [password address data on-success on-fail]}]
+ (fn [{:keys [password address data on-success on-error]}]
    (-> (promesa/-> {:data     data
                     :account  address
                     :password (security/safe-unmask-data password)}
@@ -66,22 +66,22 @@
                    native-module/sign-message
                    wallet-connect-core/extract-native-call-signature)
        (promesa/then on-success)
-       (promesa/catch on-fail))))
+       (promesa/catch on-error))))
 
 (rf/reg-fx
  :effects.wallet-connect/sign-typed-data
- (fn [{:keys [password address data version on-success on-fail]}]
+ (fn [{:keys [password address data version on-success on-error]}]
    (-> (promesa/-> {:v1 native-module/sign-typed-data
                     :v4 native-module/sign-typed-data-v4}
                    (get version)
                    (apply [data address (security/safe-unmask-data password)])
                    wallet-connect-core/extract-native-call-signature)
        (promesa/then on-success)
-       (promesa/catch on-fail))))
+       (promesa/catch on-error))))
 
 (rf/reg-fx
  :effects.wallet-connect/respond-session-request
- (fn [{:keys [web3-wallet topic id result on-success on-fail]}]
+ (fn [{:keys [web3-wallet topic id result on-success on-error]}]
    (-> (promesa/->> {:topic    topic
                      :response {:id      id
                                 :jsonrpc "2.0"
@@ -89,4 +89,4 @@
                     clj->js
                     (.respondSessionRequest web3-wallet))
        (promesa/then on-success)
-       (promesa/catch on-fail))))
+       (promesa/catch on-error))))

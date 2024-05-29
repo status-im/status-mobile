@@ -1,6 +1,5 @@
 (ns status-im.contexts.wallet.wallet-connect.core
-  (:require [status-im.constants :as constants]
-            [utils.transforms :as transforms]))
+  (:require [utils.transforms :as transforms]))
 
 (defn extract-native-call-signature
   [data]
@@ -14,14 +13,15 @@
   [address chain-id]
   (str chain-id ":" address))
 
-(defn event->method
+(defn get-request-method
   [event]
   (get-in event [:params :request :method]))
 
-(defn method->screen
-  [method]
-  (-> {constants/wallet-connect-personal-sign-method     :screen/wallet-connect.sign-message
-       constants/wallet-connect-eth-sign-typed-method    :screen/wallet-connect.sign-message
-       constants/wallet-connect-eth-sign-method          :screen/wallet-connect.sign-message
-       constants/wallet-connect-eth-sign-typed-v4-method :screen/wallet-connect.sign-message}
-      (get method)))
+(defn get-request-params
+  [event]
+  (get-in event [:params :request :params]))
+
+(defn get-db-current-request-params
+  [db]
+  (-> (get-in db [:wallet-connect/current-request :event])
+      get-request-params))

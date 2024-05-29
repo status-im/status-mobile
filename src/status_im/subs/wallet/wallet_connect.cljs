@@ -20,3 +20,13 @@
      {:customization-color customization-color
       :name                name
       :emoji               emoji})))
+
+(rf/reg-sub
+ :wallet-connect/current-request-account-details
+ :<- [:wallet-connect/current-request-address]
+ :<- [:wallet/accounts-without-watched-accounts]
+ (fn [[address accounts]]
+   (let [{:keys [customization-color name emoji]} (wallet-utils/get-account-by-address accounts address)]
+     {:customization-color customization-color
+      :name                name
+      :emoji               emoji})))

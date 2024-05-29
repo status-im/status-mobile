@@ -3,14 +3,21 @@
             [re-frame.core :as rf]
             [status-im.constants :as constants]
             [status-im.contexts.wallet.wallet-connect.core :as wallet-connect-core]
+            [taoensso.timbre :as log]
             [utils.transforms :as transforms]))
+
+(def ^:private method-to-screen
+  {constants/wallet-connect-personal-sign-method     :screen/wallet-connect.sign-message
+   constants/wallet-connect-eth-sign-typed-method    :screen/wallet-connect.sign-message
+   constants/wallet-connect-eth-sign-method          :screen/wallet-connect.sign-message
+   constants/wallet-connect-eth-sign-typed-v4-method :screen/wallet-connect.sign-message})
 
 (rf/reg-event-fx
  :wallet-connect/process-session-request
  (fn [{:keys [db]} [event]]
-   (let [method (wallet-connect-core/event->method event)
-         screen (wallet-connect-core/method->screen method)]
-     (when screen
+   (let [method (wallet-connect-core/get-request-method event)
+         screen (method-to-screen method)]
+     (if screen
        {:db (assoc-in db [:wallet-connect/current-request :event] event)
         :fx [(condp = method
                constants/wallet-connect-personal-sign-method
@@ -24,16 +31,16 @@
 
                constants/wallet-connect-eth-sign-typed-v4-method
                [:dispatch [:wallet-connect/process-sign-typed]])
-             [:dispatch [:open-modal screen]]]}))))
+             [:dispatch [:open-modal screen]]]}
+       (log/error "Didn't find screen for Wallet Connect method"
+                  {:method method
+                   :event  :wallet-connect/process-session-request})))))
 
 (rf/reg-event-fx
  :wallet-connect/process-personal-sign
  (fn [{:keys [db]}]
-   (let [event          (get-in db [:wallet-connect/current-request :event])
-         request-params (get-in event [:params :request :params])
-         address        (second request-params)
-         raw-data       (first request-params)
-         parsed-data    (native-module/hex-to-utf8 raw-data)]
+   (let [[raw-data address] (wallet-connect-core/get-db-current-request-params db)
+         parsed-data        (native-module/hex-to-utf8 raw-data)]
      {:db (update-in db
                      [:wallet-connect/current-request]
                      assoc
@@ -44,11 +51,8 @@
 (rf/reg-event-fx
  :wallet-connect/process-eth-sign
  (fn [{:keys [db]}]
-   (let [event          (get-in db [:wallet-connect/current-request :event])
-         request-params (get-in event [:params :request :params])
-         address        (first request-params)
-         raw-data       (second request-params)
-         parsed-data    (native-module/hex-to-utf8 raw-data)]
+   (let [[address raw-data] (wallet-connect-core/get-db-current-request-params db)
+         parsed-data        (native-module/hex-to-utf8 raw-data)]
      {:db (update-in db
                      [:wallet-connect/current-request]
                      assoc
@@ -59,14 +63,11 @@
 (rf/reg-event-fx
  :wallet-connect/process-sign-typed
  (fn [{:keys [db]}]
-   (let [event          (get-in db [:wallet-connect/current-request :event])
-         request-params (get-in event [:params :request :params])
-         address        (first request-params)
-         raw-data       (second request-params)
-         parsed-data    (-> raw-data
-                            transforms/json->clj
-                            (dissoc :types :primaryType)
-                            (transforms/clj->pretty-json 2))]
+   (let [[address raw-data] (wallet-connect-core/get-db-current-request-params db)
+         parsed-data        (-> raw-data
+                                transforms/json->clj
+                                (dissoc :types :primaryType)
+                                (transforms/clj->pretty-json 2))]
      {:db (update-in db
                      [:wallet-connect/current-request]
                      assoc
