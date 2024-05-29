@@ -80,9 +80,9 @@
   (let [blur-amount   (header-animations/use-blur-amount scroll-amount)
         layer-opacity (header-animations/use-layer-opacity
                        scroll-amount
-                       "transparent"
+                       (colors/theme-colors colors/white-opa-0 colors/neutral-95-opa-0 theme)
                        (colors/theme-colors colors/white-opa-50 colors/neutral-95-opa-70-blur theme))]
-    [rn/view {:style style/animated-header}
+    [rn/view {:style (style/animated-header)}
      [reanimated/blur-view
       {:style         {:flex             1
                        :background-color (when platform/android?
@@ -113,8 +113,10 @@
 
 (defn on-scroll
   [e scroll-amount title-opacity title-bottom-coord]
+
   (let [scroll-y    (oops/oget e "nativeEvent.contentOffset.y")
         new-opacity (if (>= scroll-y @title-bottom-coord) 1 0)]
+    (println @title-bottom-coord scroll-y)
     (reanimated/set-shared-value scroll-amount scroll-y)
     (reanimated/set-shared-value title-opacity
                                  (reanimated/with-timing new-opacity #js {:duration 300}))))
@@ -175,7 +177,7 @@
           [gradient-layer preview-uri]
           [quo/expanded-collectible
            {:image-src           preview-uri
-            :container-style     style/preview-container
+            :container-style     (style/preview-container)
             :counter             (utils/collectible-owned-counter total-owned)
             :native-ID           (when (= animation-shared-element-id token-id) :shared-element)
             :supported-file?     (utils/supported-file? (:animation-media-type collectible-data))
@@ -199,7 +201,7 @@
                                    ;; navigation has an animation
                                    (js/setTimeout
                                     #(some-> @title-ref
-                                             (oops/ocall "measureInWindow" set-title-bottom))
+                                       (oops/ocall "measureInWindow" set-title-bottom))
                                     300))}]]
          [rn/view {:style (style/background-color theme)}
           [header collectible-name collection-name collection-image set-title-ref]
@@ -226,7 +228,8 @@
         set-title-bottom           (rn/use-callback
                                     (fn [_ y _ height]
                                       (reset! title-bottom-coord
-                                        (+ y height -100 (if platform/ios? (- top) top)))))
+                                              (+ y height -56 (when platform/ios?
+                                                                (* top -2))))))
         scroll-amount              (reanimated/use-shared-value 0)
         title-opacity              (reanimated/use-shared-value 0)
         collectible                (rf/sub [:wallet/last-collectible-details])
