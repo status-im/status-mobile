@@ -12,6 +12,7 @@
     quo.components.avatars.token-avatar.view
     quo.components.avatars.user-avatar.view
     quo.components.avatars.wallet-user-avatar.view
+    quo.components.banners.alert-banner.view
     quo.components.banners.banner.view
     quo.components.blur.view
     quo.components.browser.browser-input.view
@@ -204,6 +205,7 @@
 
 ;;;; Banner
 (def banner quo.components.banners.banner.view/view)
+(def alert-banner quo.components.banners.alert-banner.view/view)
 
 ;;;; Buttons
 (def button quo.components.buttons.button.view/button)
