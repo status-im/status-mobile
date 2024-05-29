@@ -82,6 +82,8 @@
 	<string>Photos access is required to give you the ability to save images.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Photos access is required to give you the ability to send images.</string>
+	<key>NSAppleMusicUsageDescription</key>
+	<string>Play audio messages</string>
 	<key>UIAppFonts</key>
 	<array>
 		<string>Inter-Bold.otf</string>
