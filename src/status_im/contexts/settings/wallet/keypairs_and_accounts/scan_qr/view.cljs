@@ -3,6 +3,7 @@
     [react-native.core :as rn]
     [status-im.common.scan-qr-code.view :as scan-qr-code]
     [status-im.contexts.communities.events]
+    [status-im.contexts.syncing.utils :as sync-utils]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
@@ -17,4 +18,6 @@
      {:title           (i18n/label :t/scan-key-pairs-qr-code)
       :subtitle        (i18n/label :t/find-it-in-setting)
       :share-button?   false
+      :validate-fn     sync-utils/valid-connection-string?
+      :error-message   (i18n/label :t/invalid-qr)
       :on-success-scan on-success-scan}]))

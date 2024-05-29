@@ -1,7 +1,6 @@
 (ns status-im.contexts.settings.wallet.events
   (:require
     [status-im.contexts.settings.wallet.data-store :as data-store]
-    [status-im.contexts.syncing.utils :as sync-utils]
     [taoensso.timbre :as log]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
@@ -96,30 +95,25 @@
             :connection-string connection-string
             :on-success        #(rf/dispatch [:wallet/make-keypairs-accounts-fully-operable %])
             :on-fail           #(rf/dispatch [:toasts/upsert
-                                              {:type :negative
-                                               :text %}])}]]}))
+                                              {:type  :negative
+                                               :theme :dark
+                                               :text  %}])}]]}))
 
 (rf/reg-event-fx :wallet/connection-string-for-import-keypair connection-string-for-import-keypair)
 
 (defn success-keypair-qr-scan
   [_ [connection-string keypairs-key-uids]]
-  {:fx [(if (sync-utils/valid-connection-string? connection-string)
-          [:dispatch
-           [:standard-auth/authorize-with-password
-            {:blur?             true
-             :theme             :dark
-             :auth-button-label (i18n/label :t/confirm)
-             :on-auth-success   (fn [password]
-                                  (rf/dispatch [:hide-bottom-sheet])
-                                  (rf/dispatch
-                                   [:wallet/connection-string-for-import-keypair
-                                    {:connection-string connection-string
-                                     :keypairs-key-uids keypairs-key-uids
-                                     :sha3-pwd          password}]))}]]
-          [:dispatch
-           [:toasts/upsert
-            {:type  :negative
-             :theme :dark
-             :text  (i18n/label :t/invalid-qr)}]])]})
+  {:fx [[:dispatch
+         [:standard-auth/authorize-with-password
+          {:blur?             true
+           :theme             :dark
+           :auth-button-label (i18n/label :t/confirm)
+           :on-auth-success   (fn [password]
+                                (rf/dispatch [:hide-bottom-sheet])
+                                (rf/dispatch
+                                 [:wallet/connection-string-for-import-keypair
+                                  {:connection-string connection-string
+                                   :keypairs-key-uids keypairs-key-uids
+                                   :sha3-pwd          password}]))}]]]})
 
 (rf/reg-event-fx :wallet/success-keypair-qr-scan success-keypair-qr-scan)
