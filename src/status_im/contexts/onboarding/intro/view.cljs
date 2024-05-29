@@ -6,8 +6,8 @@
     [status-im.contexts.onboarding.common.background.view :as background]
     [status-im.contexts.onboarding.common.overlay.view :as overlay]
     [status-im.contexts.onboarding.intro.style :as style]
+    [status-im.contexts.onboarding.terms.view :as terms]
     [status-im.contexts.syncing.scan-sync-code.view :as scan-sync-code]
-    [utils.debounce :as debounce]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
@@ -44,13 +44,9 @@
        :style  style/plain-text}
       (i18n/label :t/by-continuing-you-accept)]
      [quo/text
-      {:on-press
-       #(debounce/throttle-and-dispatch
-         [:browser.ui/open-url
-          "https://raw.githubusercontent.com/status-im/status-desktop/master/ui/imports/assets/docs/terms-of-use.mdwn"]
-         1000)
-       :size :paragraph-2
-       :weight :regular
-       :style style/highlighted-text}
+      {:on-press #(rf/dispatch [:show-bottom-sheet {:content (fn [] [terms/terms-of-use])}])
+       :size     :paragraph-2
+       :weight   :regular
+       :style    style/highlighted-text}
       (i18n/label :t/terms-of-service)]]]
    [overlay/view]])
