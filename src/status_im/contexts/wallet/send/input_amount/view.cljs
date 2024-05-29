@@ -12,7 +12,6 @@
     [status-im.contexts.wallet.common.utils :as utils]
     [status-im.contexts.wallet.send.input-amount.style :as style]
     [status-im.contexts.wallet.send.routes.view :as routes]
-    [status-im.contexts.wallet.send.utils :as send-utils]
     [status-im.contexts.wallet.sheets.unpreferred-networks-alert.view :as unpreferred-networks-alert]
     [utils.debounce :as debounce]
     [utils.i18n :as i18n]
@@ -227,22 +226,8 @@
         native-token                                (when native-currency-symbol
                                                       (rf/sub [:wallet/token-by-symbol
                                                                native-currency-symbol]))
-        fee-in-native-token                         (when-not confirm-disabled?
-                                                      (send-utils/calculate-full-route-gas-fee route))
-        fee-in-crypto-formatted                     (when fee-in-native-token
-                                                      (utils/get-standard-crypto-format
-                                                       native-token
-                                                       fee-in-native-token))
-        fee-in-fiat                                 (when-not confirm-disabled?
-                                                      (utils/calculate-token-fiat-value
-                                                       {:currency fiat-currency
-                                                        :balance  fee-in-native-token
-                                                        :token    native-token}))
-        fee-formatted                               (when fee-in-fiat
-                                                      (utils/get-standard-fiat-format
-                                                       fee-in-crypto-formatted
-                                                       currency-symbol
-                                                       fee-in-fiat))
+        fee-formatted                               (rf/sub [:wallet/wallet-send-fee-fiat-formatted
+                                                             native-token])
         show-select-asset-sheet                     #(rf/dispatch
                                                       [:show-bottom-sheet
                                                        {:content (fn []
@@ -349,7 +334,7 @@
                 sender-network-values
                 token-not-supported-in-receiver-networks?)
        [token-not-available token-symbol receiver-networks token-networks])
-     (when (or loading-routes? fee-formatted)
+     (when (or loading-routes? route)
        [estimated-fees
         {:loading-routes? loading-routes?
          :fees            fee-formatted

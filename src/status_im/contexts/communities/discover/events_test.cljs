@@ -87,3 +87,74 @@
         "0x0490d2bb47388504e4b615052566e5830662bf202eb179251e9118587ce628c6c76e1f4550f9cd52058cf9dbdb5b788eea10b7c765cd7565675daa5f822acab8f4"
         {}}}}
      :unknown-communities nil}))
+
+(deftest handle-contract-communities-test
+  (are [input-contract-communities
+        expected-contract-communities-in-db]
+   (match?
+    (get-in (events/handle-contract-communities {:db nil} [input-contract-communities])
+            [:db :contract-communities])
+    expected-contract-communities-in-db)
+
+   {:communities                 {}
+    :contractFeaturedCommunities []
+    :contractCommunities         []
+    :unknownCommunities          []}
+    {:featured         {}
+     :other            {}
+     :unknown-featured '()
+     :unknown-other    '()}
+
+   {:communities                 {"a" {:id "a"}}
+    :contractFeaturedCommunities ["a" "b"]
+    :contractCommunities         ["a" "b" "c"]
+    :unknownCommunities          ["b" "c"]}
+    {:featured         {"a" {:id "a"}}
+     :other            {}
+     :unknown-featured '("b")
+     :unknown-other    '("c")}))
+
+(deftest maybe-found-unknown-contract-community-test
+  (are [contract-communities-already-in-db
+        input-found-community
+        expected-contract-communities-in-db]
+   (match?
+    (get-in (events/maybe-found-unknown-contract-community
+             {:db {:contract-communities contract-communities-already-in-db}}
+             [input-found-community])
+            [:db :contract-communities])
+    expected-contract-communities-in-db)
+
+   nil {:id "community-a"} nil
+
+   {:featured         {"a" {:id "a"}}
+    :other            {"b" {:id "b"}}
+    :unknown-featured '("c")
+    :unknown-other    '("d")}
+    {:id "c"}
+    {:featured         {"a" {:id "a"}
+                        "c" {:id "c"}}
+     :other            {"b" {:id "b"}}
+     :unknown-featured '()
+     :unknown-other    '("d")}
+
+   {:featured         {"a" {:id "a"}}
+    :other            {"b" {:id "b"}}
+    :unknown-featured '("c")
+    :unknown-other    '("d")}
+    {:id "d"}
+    {:featured         {"a" {:id "a"}}
+     :other            {"b" {:id "b"}
+                        "d" {:id "d"}}
+     :unknown-featured '("c")
+     :unknown-other    '()}
+
+   {:featured         {"a" {:id "a"}}
+    :other            {"b" {:id "b"}}
+    :unknown-featured '("c")
+    :unknown-other    '("d")}
+    {:id "e"}
+    {:featured         {"a" {:id "a"}}
+     :other            {"b" {:id "b"}}
+     :unknown-featured '("c")
+     :unknown-other    '("d")}))

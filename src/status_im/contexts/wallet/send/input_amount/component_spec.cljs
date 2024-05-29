@@ -96,7 +96,8 @@
                                                      :layer            1}]
    :wallet/wallet-send-enabled-from-chain-ids      [1]
    :wallet/wallet-send-amount                      nil
-   :wallet/wallet-send-tx-type                     :tx/send})
+   :wallet/wallet-send-tx-type                     :tx/send
+   :wallet/wallet-send-fee-fiat-formatted          "$5,00"})
 
 (h/describe "Send > input amount screen"
   (h/setup-restorable-re-frame)

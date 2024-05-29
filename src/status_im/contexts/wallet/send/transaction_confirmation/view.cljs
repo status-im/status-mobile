@@ -166,46 +166,33 @@
 
 (defn- transaction-details
   [{:keys [estimated-time-min max-fees token-display-name amount to-network route
-           transaction-type
-           theme]}]
-  (let [currency-symbol           (rf/sub [:profile/currency-symbol])
-        route-loaded?             (and route (seq route))
+           transaction-type]}]
+  (let [route-loaded?             (and route (seq route))
         loading-suggested-routes? (rf/sub [:wallet/wallet-send-loading-suggested-routes?])]
     [rn/view
-     {:style style/details-title-container}
-     [quo/text
-      {:size                :paragraph-2
-       :weight              :medium
-       :style               (style/section-label theme)
-       :accessibility-label :summary-from-label}
-      (i18n/label :t/details)]
-     [rn/view
-      {:style (style/details-container
-               {:loading-suggested-routes? loading-suggested-routes?
-                :route-loaded?             route-loaded?
-                :theme                     theme})}
-      (cond
-        loading-suggested-routes?
-        [rn/activity-indicator {:style {:align-self :center}}]
-        route-loaded?
-        [:<>
-         [data-item
-          {:title    (i18n/label :t/est-time)
-           :subtitle (i18n/label :t/time-in-mins {:minutes (str estimated-time-min)})}]
-         [data-item
-          {:title    (i18n/label :t/max-fees)
-           :subtitle (i18n/label :t/amount-with-currency-symbol
-                                 {:amount (str max-fees)
-                                  :symbol currency-symbol})}]
-         [data-item
-          {:title    (if (= transaction-type :tx/bridge)
-                       (i18n/label :t/bridged-to
-                                   {:network (:abbreviated-name to-network)})
-                       (i18n/label :t/recipient-gets))
-           :subtitle (str amount " " token-display-name)}]]
-        :else
-        [quo/text {:style {:align-self :center}}
-         (i18n/label :t/no-routes-found-confirmation)])]]))
+     {:style (style/details-container
+              {:loading-suggested-routes? loading-suggested-routes?
+               :route-loaded?             route-loaded?})}
+     (cond
+       loading-suggested-routes?
+       [rn/activity-indicator {:style {:flex 1}}]
+       route-loaded?
+       [:<>
+        [data-item
+         {:title    (i18n/label :t/est-time)
+          :subtitle (i18n/label :t/time-in-mins {:minutes (str estimated-time-min)})}]
+        [data-item
+         {:title    (i18n/label :t/max-fees)
+          :subtitle max-fees}]
+        [data-item
+         {:title    (if (= transaction-type :tx/bridge)
+                      (i18n/label :t/bridged-to
+                                  {:network (:abbreviated-name to-network)})
+                      (i18n/label :t/recipient-gets))
+          :subtitle (str amount " " token-display-name)}]]
+       :else
+       [quo/text {:style {:align-self :center}}
+        (i18n/label :t/no-routes-found-confirmation)])]))
 
 (defn view
   [_]
@@ -222,12 +209,17 @@
                                            (get-in collectible [:preview-url :uri]))
             transaction-type             (:tx-type send-transaction-data)
             estimated-time-min           (reduce + (map :estimated-time route))
-            max-fees                     "-"
+            first-route                  (first route)
+            native-currency-symbol       (get-in first-route [:from :native-currency-symbol])
+            native-token                 (when native-currency-symbol
+                                           (rf/sub [:wallet/token-by-symbol native-currency-symbol]))
+            fee-formatted                (rf/sub [:wallet/wallet-send-fee-fiat-formatted native-token])
             account                      (rf/sub [:wallet/current-viewing-account])
             account-color                (:color account)
             bridge-to-network            (when bridge-to-chain-id
                                            (rf/sub [:wallet/network-details-by-chain-id
                                                     bridge-to-chain-id]))
+            loading-suggested-routes?    (rf/sub [:wallet/wallet-send-loading-suggested-routes?])
             from-account-props           {:customization-color account-color
                                           :size                32
                                           :emoji               (:emoji account)
@@ -246,19 +238,29 @@
                                        :margin-top          (safe-area/get-top)
                                        :background          :blur
                                        :accessibility-label :top-bar}]
-           :footer                   (when (and route (seq route))
-                                       [standard-auth/slide-button
-                                        {:size                :size-48
-                                         :track-text          (if (= transaction-type :tx/bridge)
-                                                                (i18n/label :t/slide-to-bridge)
-                                                                (i18n/label :t/slide-to-send))
-                                         :container-style     {:z-index 2}
-                                         :customization-color account-color
-                                         :on-auth-success     #(rf/dispatch
-                                                                [:wallet/send-transaction
-                                                                 (security/safe-unmask-data
-                                                                  %)])
-                                         :auth-button-label   (i18n/label :t/confirm)}])
+           :footer                   [:<>
+                                      [transaction-details
+                                       {:estimated-time-min estimated-time-min
+                                        :max-fees           fee-formatted
+                                        :token-display-name token-display-name
+                                        :amount             amount
+                                        :to-network         bridge-to-network
+                                        :theme              theme
+                                        :route              route
+                                        :transaction-type   transaction-type}]
+                                      (when (and (not loading-suggested-routes?) route (seq route))
+                                        [standard-auth/slide-button
+                                         {:size                :size-48
+                                          :track-text          (if (= transaction-type :tx/bridge)
+                                                                 (i18n/label :t/slide-to-bridge)
+                                                                 (i18n/label :t/slide-to-send))
+                                          :container-style     {:z-index 2}
+                                          :customization-color account-color
+                                          :on-auth-success     #(rf/dispatch
+                                                                 [:wallet/send-transaction
+                                                                  (security/safe-unmask-data
+                                                                   %)])
+                                          :auth-button-label   (i18n/label :t/confirm)}])]
            :gradient-cover?          true
            :customization-color      (:color account)}
           [rn/view
@@ -291,13 +293,4 @@
                                     from-account-props
                                     user-props)
              :network-values      to-values-by-chain
-             :theme               theme}]
-           [transaction-details
-            {:estimated-time-min estimated-time-min
-             :max-fees           max-fees
-             :token-display-name token-display-name
-             :amount             amount
-             :to-network         bridge-to-network
-             :theme              theme
-             :route              route
-             :transaction-type   transaction-type}]]]]))))
+             :theme               theme}]]]]))))

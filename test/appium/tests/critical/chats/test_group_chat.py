@@ -263,18 +263,18 @@ class TestGroupChatMultipleDeviceMergedNewUI(MultipleSharedDeviceTestCase):
         self.chats[2].navigate_back_to_chat_view()
 
         # workaround for app closed after navigating back from gallery
-        if not self.chats[2].chats_tab.is_element_displayed():
+        if not self.chats[2].chat_message_input.is_element_displayed():
             self.drivers[2].activate_app(app_package)
             SignInView(self.drivers[2]).sign_in()
-        self.homes[2].chats_tab.click()
-        self.homes[2].get_chat(self.chat_name).click()
+            self.homes[2].chats_tab.click()
+            self.homes[2].get_chat(self.chat_name).click()
 
         self.chats[2].just_fyi("Member_2 checks that image was saved in gallery")
         self.chats[2].show_images_button.click()
         self.chats[2].allow_all_button.click_if_shown()
         if not self.chats[2].get_image_by_index(0).is_element_image_similar_to_template("saucelabs_sauce_gallery.png"):
             self.errors.append("Image is not saved to gallery for member_2.")
-        self.chats[2].navigate_back_to_chat_view()
+        self.chats[2].navigate_back_to_home_view()
 
         # workaround for app closed after navigating back from gallery
         if not self.chats[2].chats_tab.is_element_displayed():

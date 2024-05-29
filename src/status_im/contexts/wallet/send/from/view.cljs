@@ -30,7 +30,7 @@
 
 (defn view
   []
-  (let [accounts (rf/sub [:wallet/accounts-without-watched-accounts])]
+  (let [accounts (rf/sub [:wallet/accounts-with-current-asset])]
     [floating-button-page/view
      {:footer-container-padding 0
       :header                   [account-switcher/view
