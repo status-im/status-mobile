@@ -21,9 +21,9 @@
       :value           counter}]))
 
 (defn- fallback-view
-  [{:keys [label theme counter]}]
-  [rn/view
-   {:style (style/fallback {:theme theme})}
+  [{:keys [label theme counter on-mount]}]
+  (rn/use-mount on-mount)
+  [rn/view {:style (style/fallback {:theme theme})}
    [counter-view counter]
    [rn/view
     [icon/icon :i/sad {:color (colors/theme-colors colors/neutral-40 colors/neutral-50 theme)}]]
@@ -53,15 +53,17 @@
      (cond
        (not supported-file?)
        [fallback-view
-        {:label   (i18n/label :t/unsupported-file)
-         :counter counter
-         :theme   theme}]
+        {:label    (i18n/label :t/unsupported-file)
+         :counter  counter
+         :theme    theme
+         :on-mount on-collectible-load}]
 
        image-error?
        [fallback-view
-        {:label   (i18n/label :t/cant-fetch-info)
-         :counter counter
-         :theme   theme}]
+        {:label    (i18n/label :t/cant-fetch-info)
+         :counter  counter
+         :theme    theme
+         :on-mount on-collectible-load}]
 
        (and (not image-error?) supported-file?)
        [rn/view
