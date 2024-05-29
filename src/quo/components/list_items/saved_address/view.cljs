@@ -4,10 +4,10 @@
     [quo.components.icon :as icon]
     [quo.components.list-items.saved-address.style :as style]
     [quo.components.markdown.text :as text]
+    [quo.components.wallet.address-text.view :as address-text]
     [quo.foundations.colors :as colors]
     [quo.theme :as quo.theme]
-    [react-native.core :as rn]
-    [utils.address :as address]))
+    [react-native.core :as rn]))
 
 (defn- left-container
   [{:keys [blur? name ens address customization-color]}]
@@ -23,15 +23,19 @@
         :size   :paragraph-1
         :style  style/name-text}
        name]
-      [text/text {:size :paragraph-2}
-       [text/text
-        {:size   :paragraph-2
-         :weight :monospace
-         :style  (style/account-address blur? theme)}
-        (or ens (address/get-shortened-key address))]]]]))
+      (if ens
+        [text/text
+         {:size   :paragraph-2
+          :weight :monospace
+          :style  (style/account-address blur? theme)} ens]
+        [address-text/view
+         {:address       address
+          :full-address? true
+          :format        :short
+          :blur?         blur?}])]]))
 
 (defn view
-  [{:keys [blur? user-props active-state? customization-color on-press on-options-press]
+  [{:keys [blur? user-props active-state? customization-color on-press on-options-press container-style]
     :or   {customization-color :blue
            blur?               false}}]
   (let [theme             (quo.theme/use-theme)
@@ -52,8 +56,9 @@
                                (set-state new-state)))
                            [active-state?])]
     [rn/pressable
-     {:style               (style/container
-                            {:state state :blur? blur? :customization-color customization-color})
+     {:style               (merge (style/container
+                                   {:state state :blur? blur? :customization-color customization-color})
+                                  container-style)
       :on-press-in         on-press-in
       :on-press-out        on-press-out
       :on-press            on-press

@@ -6,6 +6,7 @@
     [status-im.constants :as constants]
     [status-im.contexts.settings.wallet.effects]
     [status-im.contexts.settings.wallet.events]
+    [status-im.contexts.wallet.common.utils.external-links :as external-links]
     [status-im.contexts.wallet.common.utils.networks :as network-utils]
     [status-im.contexts.wallet.data-store :as data-store]
     [status-im.contexts.wallet.db :as db]
@@ -343,6 +344,14 @@
    {:fx [[:dispatch [:hide-bottom-sheet]]
          [:dispatch [:browser.ui/open-url (str explorer-link "/" address)]]]}))
 
+(rf/reg-event-fx
+ :wallet/navigate-to-chain-explorer
+ (fn [{:keys [db]} [{:keys [network chain-id address]}]]
+   (let [chain-id      (or chain-id (network-utils/network->chain-id db network))
+         explorer-link (external-links/get-explorer-url-by-chain-id chain-id)]
+     {:fx [[:dispatch [:hide-bottom-sheet]]
+           [:dispatch [:browser.ui/open-url (str explorer-link "/" address)]]]})))
+
 (rf/reg-event-fx :wallet/reload
  (fn [_]
    {:fx [[:dispatch-n [[:wallet/get-wallet-token]]]]}))
@@ -374,7 +383,8 @@
    {:fx [[:dispatch [:wallet/start-wallet]]
          [:dispatch [:wallet/get-ethereum-chains]]
          [:dispatch [:wallet/get-accounts]]
-         [:dispatch [:wallet/get-keypairs]]]}))
+         [:dispatch [:wallet/get-keypairs]]
+         [:dispatch [:wallet/get-saved-addresses]]]}))
 
 (rf/reg-event-fx :wallet/share-account
  (fn [_ [{:keys [content title]}]]
