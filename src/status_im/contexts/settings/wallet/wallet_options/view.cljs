@@ -75,5 +75,7 @@
      [quo/page-top
       {:title                     (i18n/label :t/wallet)
        :title-accessibility-label :wallet-settings-header}]
-     [basic-settings]
+     (when (or (ff/enabled? ::ff/settings.keypairs-and-accounts)
+               (ff/enabled? ::ff/settings.saved-addresses))
+       [basic-settings])
      [advanced-settings]]))
