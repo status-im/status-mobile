@@ -49,13 +49,12 @@
 
 (defn advanced-settings
   []
-  (when (ff/enabled? ::ff/settings.network-settings)
-    [quo/category
-     {:key       :advanced-wallet-settings
-      :label     (i18n/label :t/advanced)
-      :data      (advanced-settings-options)
-      :blur?     true
-      :list-type :settings}]))
+  [quo/category
+   {:key       :advanced-wallet-settings
+    :label     (i18n/label :t/advanced)
+    :data      (advanced-settings-options)
+    :blur?     true
+    :list-type :settings}])
 
 (defn navigate-back
   []
