@@ -22,11 +22,14 @@ buildGoPackage {
   '';
 
   # Build the Go library
+  # ld flags and netgo tag are necessary for integration tests to work on MacOS
+  # https://github.com/status-im/status-mobile/issues/20135
   buildPhase = ''
     runHook preBuild
     go build \
       -buildmode='c-archive' \
-      -tags='gowaku_skip_migrations gowaku_no_rln' \
+      -ldflags '-w -s -extldflags "-lresolv"' \
+      -tags='gowaku_skip_migrations gowaku_no_rln netgo' \
       -o "$out/libstatus.a" \
       $NIX_BUILD_TOP/main.go
     runHook postBuild
