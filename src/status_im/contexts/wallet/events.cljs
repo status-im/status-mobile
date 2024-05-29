@@ -57,6 +57,14 @@
    {:fx [[:dispatch [:wallet/clean-current-viewing-account]]
          [:dispatch [:pop-to-root :shell-stack]]]}))
 
+(defn log-rpc-error
+  [_ [{:keys [event params]} error]]
+  (log/warn (str "[wallet] Failed to " event)
+            {:params params
+             :error  error}))
+
+(rf/reg-event-fx :wallet/log-rpc-error log-rpc-error)
+
 (rf/reg-event-fx
  :wallet/get-accounts-success
  (fn [{:keys [db]} [accounts]]
@@ -79,17 +87,16 @@
    {:fx [[:json-rpc/call
           [{:method     "accounts_getAccounts"
             :on-success [:wallet/get-accounts-success]
-            :on-error   #(log/info "failed to get accounts "
-                                   {:error %
-                                    :event :wallet/get-accounts})}]]]}))
+            :on-error   [:wallet/log-rpc-error {:event :wallet/get-accounts}]}]]]}))
 
-(rf/reg-event-fx
- :wallet/process-account-from-signal
- (fn [{:keys [db]} [{:keys [address] :as account}]]
-   {:db (assoc-in db [:wallet :accounts address] (data-store/rpc->account account))
-    :fx [[:dispatch [:wallet/get-wallet-token-for-account address]]
-         [:dispatch [:wallet/request-new-collectibles-for-account-from-signal address]]
-         [:dispatch [:wallet/check-recent-history-for-account address]]]}))
+(defn process-account-from-signal
+  [{:keys [db]} [{:keys [address] :as account}]]
+  {:db (assoc-in db [:wallet :accounts address] (data-store/rpc->account account))
+   :fx [[:dispatch [:wallet/get-wallet-token-for-account address]]
+        [:dispatch [:wallet/request-new-collectibles-for-account-from-signal address]]
+        [:dispatch [:wallet/check-recent-history-for-account address]]]})
+
+(rf/reg-event-fx :wallet/process-account-from-signal process-account-from-signal)
 
 (rf/reg-event-fx
  :wallet/save-account
@@ -101,9 +108,7 @@
                           (rf/dispatch [:wallet/get-accounts])
                           (when (fn? on-success)
                             (on-success)))
-            :on-error   #(log/info "failed to save account "
-                                   {:error %
-                                    :event :wallet/save-account})}]]]}))
+            :on-error   [:wallet/log-rpc-error {:event :wallet/save-account}]}]]]}))
 
 (rf/reg-event-fx
  :wallet/show-account-deleted-toast
@@ -133,28 +138,28 @@
           [{:method     "accounts_deleteAccount"
             :params     [address]
             :on-success [:wallet/remove-account-success toast-message]
-            :on-error   #(log/info "failed to remove account "
-                                   {:error %
-                                    :event :wallet/remove-account})}]]]}))
+            :on-error   [:wallet/log-rpc-error {:event :wallet/remove-account}]}]]]}))
 
-(rf/reg-event-fx
- :wallet/get-wallet-token-for-all-accounts
- (fn [{:keys [db]}]
-   {:fx (->> (get-in db [:wallet :accounts])
-             vals
-             (mapv
-              (fn [{:keys [address]}]
-                [:dispatch [:wallet/get-wallet-token-for-account address]])))}))
+(defn get-wallet-token-for-all-accounts
+  [{:keys [db]}]
+  {:fx (->> (get-in db [:wallet :accounts])
+            vals
+            (mapv
+             (fn [{:keys [address]}]
+               [:dispatch [:wallet/get-wallet-token-for-account address]])))})
 
-(rf/reg-event-fx
- :wallet/get-wallet-token-for-account
- (fn [{:keys [db]} [address]]
-   {:db (assoc-in db [:wallet :ui :tokens-loading address] true)
-    :fx [[:json-rpc/call
-          [{:method     "wallet_getWalletToken"
-            :params     [[address]]
-            :on-success [:wallet/store-wallet-token address]
-            :on-error   [:wallet/get-wallet-token-for-account-failed address]}]]]}))
+(rf/reg-event-fx :wallet/get-wallet-token-for-all-accounts get-wallet-token-for-all-accounts)
+
+(defn get-wallet-token-for-account
+  [{:keys [db]} [address]]
+  {:db (assoc-in db [:wallet :ui :tokens-loading address] true)
+   :fx [[:json-rpc/call
+         [{:method     "wallet_getWalletToken"
+           :params     [[address]]
+           :on-success [:wallet/store-wallet-token address]
+           :on-error   [:wallet/get-wallet-token-for-account-failed address]}]]]})
+
+(rf/reg-event-fx :wallet/get-wallet-token-for-account get-wallet-token-for-account)
 
 (rf/reg-event-fx
  :wallet/get-wallet-token-for-account-failed
@@ -223,7 +228,9 @@
                              (security/safe-unmask-data password))
                            account-config]
               :on-success [:wallet/add-account-success lowercase-address]
-              :on-error   #(log/info "failed to create account " % account-config)}]]]})))
+              :on-error   [:wallet/log-rpc-error
+                           {:event  :wallet/add-account
+                            :params account-config}]}]]]})))
 
 (defn get-keypairs
   [_]
@@ -231,7 +238,7 @@
          [{:method     "accounts_getKeypairs"
            :params     []
            :on-success [:wallet/get-keypairs-success]
-           :on-error   #(log/info "failed to get keypairs " %)}]]]})
+           :on-error   [:wallet/log-rpc-error {:event :wallet/get-keypairs}]}]]]})
 
 (rf/reg-event-fx :wallet/get-keypairs get-keypairs)
 
@@ -268,7 +275,7 @@
     [{:method     "wallet_getEthereumChains"
       :params     []
       :on-success [:wallet/get-ethereum-chains-success]
-      :on-error   #(log/info "failed to get networks " %)}]}))
+      :on-error   [:wallet/log-rpc-error {:event :wallet/get-ethereum-chains}]}]}))
 
 (rf/reg-event-fx
  :wallet/get-ethereum-chains-success
@@ -374,17 +381,16 @@
  (fn [_]
    {:fx [[:json-rpc/call
           [{:method   "wallet_startWallet"
-            :on-error #(log/info "failed to start wallet"
-                                 {:error %
-                                  :event :wallet/start-wallet})}]]]}))
+            :on-error [:wallet/log-rpc-error {:event :wallet/start-wallet}]}]]]}))
 
-(rf/reg-event-fx
- :wallet/check-recent-history-for-all-accounts
- (fn [{:keys [db]}]
-   {:fx (->> (get-in db [:wallet :accounts])
-             vals
-             (mapv (fn [{:keys [address]}]
-                     [:dispatch [:wallet/check-recent-history-for-account address]])))}))
+(defn check-recent-history-for-all-accounts
+  [{:keys [db]}]
+  {:fx (->> (get-in db [:wallet :accounts])
+            vals
+            (mapv (fn [{:keys [address]}]
+                    [:dispatch [:wallet/check-recent-history-for-account address]])))})
+
+(rf/reg-event-fx :wallet/check-recent-history-for-all-accounts check-recent-history-for-all-accounts)
 
 (rf/reg-event-fx
  :wallet/check-recent-history-for-account
@@ -394,10 +400,9 @@
      {:fx [[:json-rpc/call
             [{:method   "wallet_checkRecentHistoryForChainIDs"
               :params   params
-              :on-error #(log/info "failed to check recent history"
-                                   {:error  %
-                                    :event  :wallet/check-recent-history-for-account
-                                    :params params})}]]]})))
+              :on-error [:wallet/log-rpc-error
+                         {:event  :wallet/check-recent-history-for-account
+                          :params params}]}]]]})))
 
 (rf/reg-event-fx :wallet/initialize
  (fn []
@@ -517,9 +522,9 @@
               ;; https://github.com/status-im/status-mobile/issues/19864
               :method   "wallet_filterActivityAsync"
               :params   request-params
-              :on-error #(log/info "failed to fetch activities"
-                                   {:error %
-                                    :event :wallet/fetch-activities})}]]]})))
+              :on-error [:wallet/log-rpc-error
+                         {:event  :wallet/fetch-activities
+                          :params request-params}]}]]]})))
 
 (rf/reg-event-fx
  :wallet/activity-filtering-done
@@ -544,9 +549,7 @@
    {:fx [[:json-rpc/call
           [{:method     "wallet_getCryptoOnRamps"
             :on-success [:wallet/get-crypto-on-ramps-success]
-            :on-error   #(log/info "failed to fetch crypto on ramps"
-                                   {:error %
-                                    :event :wallet/get-crypto-on-ramps})}]]]}))
+            :on-error   [:wallet/log-rpc-error {:event :wallet/get-crypto-on-ramps}]}]]]}))
 
 (rf/reg-event-fx
  :wallet/resolve-ens
