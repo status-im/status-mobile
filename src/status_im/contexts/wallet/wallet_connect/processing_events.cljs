@@ -64,13 +64,16 @@
  :wallet-connect/process-sign-typed
  (fn [{:keys [db]}]
    (let [[address raw-data] (wallet-connect-core/get-db-current-request-params db)
-         parsed-data        (-> raw-data
-                                transforms/json->clj
-                                (dissoc :types :primaryType)
-                                (transforms/clj->pretty-json 2))]
+         parsed-data        (try (-> raw-data
+                                     transforms/js-parse
+                                     (transforms/js-dissoc :types :primaryType)
+                                     (transforms/js-stringify 2))
+                                 (catch js/Error _ nil))]
+     ;; TODO: decide if we should proceed if the typed-data is invalid JSON or fail ahead of time
+     (when (nil? parsed-data) (log/error "Invalid typed data"))
      {:db (update-in db
                      [:wallet-connect/current-request]
                      assoc
                      :address      address
-                     :raw-data     raw-data
+                     :raw-data     (or parsed-data raw-data)
                      :display-data parsed-data)})))

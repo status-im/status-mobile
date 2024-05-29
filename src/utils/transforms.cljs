@@ -15,6 +15,21 @@
 
 (defn clj->json [data] (clj->pretty-json data 0))
 
+(defn js-stringify
+  [js-object spaces]
+  (.stringify js/JSON js-object nil spaces))
+
+(defn js-parse
+  [data]
+  (.parse js/JSON data))
+
+(defn js-dissoc
+  [js-object & ks]
+  (let [object-copy (.assign js/Object #js {} js-object)]
+    (doseq [js-key ks]
+      (js-delete object-copy (name js-key)))
+    object-copy))
+
 (defn json->clj
   [json]
   (when-not (= json "undefined")
