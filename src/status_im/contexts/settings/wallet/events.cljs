@@ -1,15 +1,10 @@
 (ns status-im.contexts.settings.wallet.events
   (:require
-    [native-module.core :as native-module]
-    [promesa.core :as promesa]
     [status-im.contexts.settings.wallet.data-store :as data-store]
-    [status-im.contexts.syncing.events :as syncing-events]
     [status-im.contexts.syncing.utils :as sync-utils]
     [taoensso.timbre :as log]
     [utils.i18n :as i18n]
-    [utils.re-frame :as rf]
-    [utils.security.core :as security]
-    [utils.transforms :as transforms]))
+    [utils.re-frame :as rf]))
 
 (rf/reg-event-fx
  :wallet/rename-keypair-success
@@ -34,22 +29,6 @@
 
 (rf/reg-event-fx :wallet/rename-keypair rename-keypair)
 
-(rf/reg-fx :effects.connection-string/export-keypair
- (fn [{:keys [key-uid sha3-pwd keypair-key-uid on-success on-fail]}]
-   (let [config-map (transforms/clj->json {:senderConfig {:loggedInKeyUid   key-uid
-                                                          :keystorePath     ""
-                                                          :keypairsToExport [keypair-key-uid]
-                                                          :password         (security/safe-unmask-data
-                                                                             sha3-pwd)}
-                                           :serverConfig {:timeout 0}})]
-     (-> (native-module/get-connection-string-for-exporting-keypairs-keystores
-          config-map)
-         (promesa/then (fn [response]
-                         (if (sync-utils/valid-connection-string? response)
-                           (on-success response)
-                           (on-fail "generic-error: failed to get connection string"))))
-         (promesa/catch on-fail)))))
-
 (defn get-keypair-export-connection
   [{:keys [db]} [{:keys [sha3-pwd keypair-key-uid callback]}]]
   (let [key-uid (get-in db [:profile/profile :key-uid])]
@@ -63,7 +42,7 @@
             :on-fail         (fn [error]
                                (rf/dispatch [:toasts/upsert
                                              {:type :negative
-                                              :text error}]))}]]}))
+                                              :text (.-message error)}]))}]]}))
 
 (rf/reg-event-fx :wallet/get-keypair-export-connection get-keypair-export-connection)
 
@@ -85,7 +64,7 @@
          [{:method     "accounts_deleteKeypair"
            :params     [key-uid]
            :on-success [:wallet/remove-keypair-success key-uid]
-           :on-error   #(log/info "failed to remove keypair " %)}]]]})
+           :on-error   #(log/error "failed to remove keypair " {:error %})}]]]})
 
 (rf/reg-event-fx :wallet/remove-keypair remove-keypair)
 
@@ -107,27 +86,6 @@
 
 (rf/reg-event-fx :wallet/make-keypairs-accounts-fully-operable make-keypairs-accounts-fully-operable)
 
-(rf/reg-fx :effects.connection-string/import-keypair
- (fn [{:keys [key-uid sha3-pwd keypairs-key-uids connection-string on-success on-fail]}]
-   (let [config-map (.stringify js/JSON
-                                (clj->js
-                                 {:receiverConfig
-                                  {:loggedInKeyUid   key-uid
-                                   :keystorePath     ""
-                                   :password         (security/safe-unmask-data
-                                                      sha3-pwd)
-                                   :keypairsToImport keypairs-key-uids}}))]
-     (-> (native-module/input-connection-string-for-importing-keypairs-keystores
-          connection-string
-          config-map)
-         (promesa/then (fn [res]
-                         (let [error (when (syncing-events/extract-error res)
-                                       (str "generic-error: " res))]
-                           (if-not (some? error)
-                             (on-success)
-                             (on-fail error)))))
-         (promesa/catch #(log/error "error import-keypair/connection-string " %))))))
-
 (defn connection-string-for-import-keypair
   [{:keys [db]} [{:keys [sha3-pwd keypairs-key-uids connection-string]}]]
   (let [key-uid (get-in db [:profile/profile :key-uid])]
@@ -136,8 +94,7 @@
             :sha3-pwd          sha3-pwd
             :keypairs-key-uids keypairs-key-uids
             :connection-string connection-string
-            :on-success        #(rf/dispatch [:wallet/make-keypairs-accounts-fully-operable
-                                              keypairs-key-uids])
+            :on-success        #(rf/dispatch [:wallet/make-keypairs-accounts-fully-operable %])
             :on-fail           #(rf/dispatch [:toasts/upsert
                                               {:type :negative
                                                :text %}])}]]}))

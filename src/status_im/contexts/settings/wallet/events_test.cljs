@@ -7,44 +7,54 @@
 (def mock-key-uid "key-1")
 (defn mock-db
   [keypairs accounts]
-  {:wallet  {:keypairs keypairs
-             :accounts accounts}
-   :profile {:profile {:key-uid "test-key-uid"}}})
+  {:wallet          {:keypairs keypairs
+                     :accounts accounts}
+   :profile/profile {:key-uid "test-key-uid"}})
 
-(deftest test-rename-keypair
+(deftest rename-keypair-test
   (let [new-keypair-name "key pair new"
-        cofx             {:db {}}
-        expected         {:fx [[:json-rpc/call
-                                [{:method     "accounts_updateKeypairName"
-                                  :params     [mock-key-uid new-keypair-name]
-                                  :on-success [:wallet/rename-keypair-success mock-key-uid
-                                               new-keypair-name]
-                                  :on-error   fn?}]]]}]
-    (is (match? expected
-                (sut/rename-keypair cofx
-                                    [{:key-uid      mock-key-uid
-                                      :keypair-name new-keypair-name}])))))
+        cofx             {:db {}}]
+    (testing "rename-keypair"
+      (let [expected {:fx [[:json-rpc/call
+                            [{:method     "accounts_updateKeypairName"
+                              :params     [mock-key-uid new-keypair-name]
+                              :on-success [:wallet/rename-keypair-success mock-key-uid
+                                           new-keypair-name]
+                              :on-error   fn?}]]]}]
+        (is (match? expected
+                    (sut/rename-keypair cofx
+                                        [{:key-uid      mock-key-uid
+                                          :keypair-name new-keypair-name}])))))))
 
-(deftest test-get-keypair-export-connection
-  (let [db              (mock-db [] {})
-        sha3-pwd        "test-password"
-        keypair-key-uid "test-keypair-uid"
-        callback        (fn [connect-string] (println "callback" connect-string))]
-    (testing "test-get-keypair-export-connection"
-      (let [effects (sut/get-keypair-export-connection
-                     {:db db}
-                     [{:sha3-pwd sha3-pwd :keypair-key-uid keypair-key-uid :callback callback}])
-            fx      (:fx effects)]
-        (is (some? fx))))))
+(deftest get-keypair-export-connection-test
+  (let [cofx         {:db (mock-db [] {})}
+        sha3-pwd     "test-password"
+        user-key-uid "test-key-uid"
+        callback     (fn [connect-string] (println "callback" connect-string))]
+    (testing "get-keypair-export-connection"
+      (let [expected {:fx [[:effects.connection-string/export-keypair
+                            {:key-uid         user-key-uid
+                             :sha3-pwd        sha3-pwd
+                             :keypair-key-uid mock-key-uid
+                             :on-success      fn?
+                             :on-fail         fn?}]]}]
+        (is (match? expected
+                    (sut/get-keypair-export-connection
+                     cofx
+                     [{:sha3-pwd sha3-pwd :keypair-key-uid mock-key-uid :callback callback}])))))))
 
-(deftest test-remove-keypair
-  (let [db (mock-db [{:key-uid mock-key-uid :name "Key 1"}] {})]
+(deftest remove-keypair-test
+  (let [cofx {:db {}}]
     (testing "remove-keypair"
-      (let [effects (sut/remove-keypair {:db db} [{:key-uid mock-key-uid}])
-            fx      (:fx effects)]
-        (is (some? fx))))))
+      (let [expected {:fx [[:json-rpc/call
+                            [{:method     "accounts_deleteKeypair"
+                              :params     [mock-key-uid]
+                              :on-success [:wallet/remove-keypair-success mock-key-uid]
+                              :on-error   fn?}]]]}]
+        (is (match? expected
+                    (sut/remove-keypair cofx [mock-key-uid])))))))
 
-(deftest test-make-keypairs-accounts-fully-operable
+(deftest make-keypairs-accounts-fully-operable-test
   (let [db                 (mock-db [{:key-uid  mock-key-uid
                                       :accounts [{:key-uid mock-key-uid :operable "no"}]}]
                                     {"0x1" {:key-uid mock-key-uid :operable "no"}})
@@ -58,21 +68,27 @@
         (is (= (keyword (-> updated-keypair :accounts first :operable)) :fully))
         (is (= (keyword (:operable updated-account)) :fully))))))
 
-(deftest test-connection-string-for-import-keypair
-  (let [db                (mock-db [] {})
+(deftest connection-string-for-import-keypair-test
+  (let [cofx              {:db (mock-db [] {})}
         sha3-pwd          "test-password"
-        keypairs-key-uids ["test-keypair-uid"]
+        user-key-uid      "test-key-uid"
         connection-string "test-connection-string"]
     (testing "connection-string-for-import-keypair"
-      (let [effects (sut/connection-string-for-import-keypair
-                     {:db db}
-                     [{:sha3-pwd          sha3-pwd
-                       :keypairs-key-uids keypairs-key-uids
-                       :connection-string connection-string}])
-            fx      (:fx effects)]
-        (is (some? fx))))))
+      (let [expected {:fx [[:effects.connection-string/import-keypair
+                            {:key-uid           user-key-uid
+                             :sha3-pwd          sha3-pwd
+                             :keypairs-key-uids [mock-key-uid]
+                             :connection-string connection-string
+                             :on-success        fn?
+                             :on-fail           fn?}]]}]
+        (is (match? expected
+                    (sut/connection-string-for-import-keypair cofx
+                                                              [{:sha3-pwd sha3-pwd
+                                                                :keypairs-key-uids [mock-key-uid]
+                                                                :connection-string
+                                                                connection-string}])))))))
 
-(deftest test-success-keypair-qr-scan
+(deftest success-keypair-qr-scan-test
   (let [connection-string "valid-connection-string"
         keypairs-key-uids ["keypair-uid"]]
     (testing "success-keypair-qr-scan"
