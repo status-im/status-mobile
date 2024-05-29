@@ -51,6 +51,13 @@
       (string/replace #"\s+" " ")
       (string/trim)))
 
+(defn- secure-clean-seed-phrase
+  [seed-phrase]
+  (-> seed-phrase
+      security/safe-unmask-data
+      clean-seed-phrase
+      security/mask-data))
+
 (defn- recovery-phrase-form
   [{:keys [title seed-phrase word-count on-change-seed-phrase on-input-ref]} & children]
   (->> children
@@ -102,8 +109,6 @@
                                                (when @invalid-seed-phrase?
                                                  (reset! invalid-seed-phrase? false))
                                                (reset! seed-phrase new-phrase))
-                     prepare-seed-phrase     (fn [seed-phrase]
-                                               (-> seed-phrase clean-seed-phrase security/mask-data))
                      on-submit               (fn []
                                                (swap! seed-phrase clean-seed-phrase)
                                                (if recovering-keypair?
@@ -157,9 +162,9 @@
           (render-controls {:submit-disabled?        button-disabled?
                             :keyboard-shown?         @keyboard-shown?
                             :container-style         (style/continue-button @keyboard-shown?)
-                            :prepare-seed-phrase     prepare-seed-phrase
+                            :prepare-seed-phrase     secure-clean-seed-phrase
                             :focus-input             focus-input
-                            :seed-phrase             @seed-phrase
+                            :seed-phrase             (security/mask-data @seed-phrase)
                             :set-invalid-seed-phrase set-invalid-seed-phrase})
           [quo/button
            {:container-style (style/continue-button @keyboard-shown?)
