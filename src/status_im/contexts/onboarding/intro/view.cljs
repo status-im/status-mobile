@@ -44,9 +44,13 @@
        :style  style/plain-text}
       (i18n/label :t/by-continuing-you-accept)]
      [quo/text
-      {:on-press #(debounce/throttle-and-dispatch [:open-modal :privacy-policy] 1000)
-       :size     :paragraph-2
-       :weight   :regular
-       :style    style/highlighted-text}
+      {:on-press
+       #(debounce/throttle-and-dispatch
+         [:browser.ui/open-url
+          "https://raw.githubusercontent.com/status-im/status-desktop/master/ui/imports/assets/docs/terms-of-use.mdwn"]
+         1000)
+       :size :paragraph-2
+       :weight :regular
+       :style style/highlighted-text}
       (i18n/label :t/terms-of-service)]]]
    [overlay/view]])
