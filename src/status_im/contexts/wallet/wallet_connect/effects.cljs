@@ -58,35 +58,35 @@
 (rf/reg-fx
  :effects.wallet-connect/sign-message
  (fn [{:keys [password address data on-success on-error]}]
-   (-> (promesa/-> {:data     data
-                    :account  address
-                    :password (security/safe-unmask-data password)}
-                   bean/->js
-                   transforms/clj->json
-                   native-module/sign-message
-                   wallet-connect-core/extract-native-call-signature)
+   (-> {:data     data
+        :account  address
+        :password (security/safe-unmask-data password)}
+       bean/->js
+       transforms/clj->json
+       native-module/sign-message
+       (promesa/then wallet-connect-core/extract-native-call-signature)
        (promesa/then on-success)
        (promesa/catch on-error))))
 
 (rf/reg-fx
  :effects.wallet-connect/sign-typed-data
  (fn [{:keys [password address data version on-success on-error]}]
-   (-> (promesa/-> {:v1 native-module/sign-typed-data
-                    :v4 native-module/sign-typed-data-v4}
-                   (get version)
-                   (apply [data address (security/safe-unmask-data password)])
-                   wallet-connect-core/extract-native-call-signature)
+   (-> {:v1 native-module/sign-typed-data
+        :v4 native-module/sign-typed-data-v4}
+       (get version)
+       (apply [data address (security/safe-unmask-data password)])
+       (promesa/then wallet-connect-core/extract-native-call-signature)
        (promesa/then on-success)
        (promesa/catch on-error))))
 
 (rf/reg-fx
  :effects.wallet-connect/respond-session-request
  (fn [{:keys [web3-wallet topic id result on-success on-error]}]
-   (-> (promesa/->> {:topic    topic
-                     :response {:id      id
-                                :jsonrpc "2.0"
-                                :result  result}}
-                    clj->js
-                    (.respondSessionRequest web3-wallet))
-       (promesa/then on-success)
-       (promesa/catch on-error))))
+   (->
+     (.respondSessionRequest web3-wallet
+                             (clj->js {:topic    topic
+                                       :response {:id      id
+                                                  :jsonrpc "2.0"
+                                                  :result  result}}))
+     (promesa/then on-success)
+     (promesa/catch on-error))))
