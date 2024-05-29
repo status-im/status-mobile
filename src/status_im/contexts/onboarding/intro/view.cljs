@@ -44,7 +44,9 @@
        :style  style/plain-text}
       (i18n/label :t/by-continuing-you-accept)]
      [quo/text
-      {:on-press #(rf/dispatch [:show-bottom-sheet {:content (fn [] [terms/terms-of-use])}])
+      {:on-press #(rf/dispatch [:show-bottom-sheet
+                                {:content (fn [] [terms/terms-of-use])
+                                 :shell?  true}])
        :size     :paragraph-2
        :weight   :regular
        :style    style/highlighted-text}
