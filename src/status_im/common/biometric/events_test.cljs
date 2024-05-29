@@ -18,7 +18,7 @@
     (let [cofx     {:db {}}
           expected {:fx [[:effects.utils/show-popup
                           {:title   (i18n/label :t/biometric-auth-login-error-title)
-                           :content (i18n/label :t/grant-face-id-permissions)}]]}]
+                           :content (i18n/label :t/grant-fingerprints-permissions)}]]}]
       (is (match? expected
                   (sut/show-message cofx
                                     [:biometrics/not-available-error])))))
