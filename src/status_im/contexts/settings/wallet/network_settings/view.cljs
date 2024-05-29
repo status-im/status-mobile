@@ -44,9 +44,7 @@
     :data      (map make-network-settings-item
                     [{:details       (:optimism networks)
                       :testnet-mode? testnet-mode?
-                      :testnet-label [quo/text
-                                      {:style style/testnet-not-available}
-                                      (i18n/label :t/testnet-not-available)]}
+                      :testnet-label (i18n/label :t/sepolia-active)}
                      {:details       (:arbitrum networks)
                       :testnet-mode? testnet-mode?
                       :testnet-label (i18n/label :t/sepolia-active)}])
