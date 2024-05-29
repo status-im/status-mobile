@@ -112,12 +112,16 @@
 (rf/defn show-bottom-sheet
   {:events [:show-bottom-sheet]}
   [{:keys [db] :as cofx} content]
-  (let [{:keys [sheets hide?]} (:bottom-sheet db)]
+  (let [theme                  (or (:theme content) (:theme db))
+        {:keys [sheets hide?]} (:bottom-sheet db)]
     (rf/merge cofx
-              {:db               (update-in db [:bottom-sheet :sheets] #(conj % content))
+              {:db               (update-in db [:bottom-sheet :sheets] conj content)
                :dismiss-keyboard nil}
-              #(when-not hide?
-                 (if (seq sheets) (hide-bottom-sheet %) {:show-bottom-sheet nil})))))
+              (fn [new-cofx]
+                (when-not hide?
+                  (if (seq sheets)
+                    (hide-bottom-sheet new-cofx)
+                    {:show-bottom-sheet {:theme theme}}))))))
 
 (rf/defn dismiss-all-overlays
   {:events [:dismiss-all-overlays]}
