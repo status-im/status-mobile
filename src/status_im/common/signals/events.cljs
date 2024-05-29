@@ -44,7 +44,7 @@
     (log/trace "Signal received" {:payload event-str})
     (case type
       "wallet"
-      (rf/dispatch [:wallet/signal-received event-js])
+      {:fx [[:dispatch [:wallet/signal-received event-js]]]}
 
       "wakuv2.peerstats"
       (debounce/debounce-and-dispatch [:wakuv2-peer-stats event-js] 1000)
@@ -85,8 +85,10 @@
 
       "community.found"
       (let [community (transforms/js->clj event-js)]
-        (link-preview/cache-community-preview-data community)
-        {:fx [[:dispatch [:discover-community/maybe-found-unknown-contract-community community]]]})
+        {:fx [[:dispatch
+               [:chat.ui/cache-link-preview-data (link-preview/community-link (:id community))
+                community]]
+              [:dispatch [:discover-community/maybe-found-unknown-contract-community community]]]})
 
       "status.updates.timedout"
       (visibility-status-updates/handle-visibility-status-updates cofx (transforms/js->clj event-js))
@@ -95,13 +97,13 @@
       (pairing/handle-local-pairing-signals cofx (transforms/js->clj event-js))
 
       "curated.communities.update"
-      (rf/dispatch [:fetched-contract-communities (transforms/js->clj event-js)])
+      {:fx [[:dispatch [:fetched-contract-communities (transforms/js->clj event-js)]]]}
 
       "waku.backedup.profile"
-      (rf/dispatch [:profile/update-profile-from-backup (transforms/js->clj event-js)])
+      {:fx [[:dispatch [:profile/update-profile-from-backup (transforms/js->clj event-js)]]]}
 
       "waku.backedup.settings"
-      (rf/dispatch [:profile/update-setting-from-backup (transforms/js->clj event-js)])
+      {:fx [[:dispatch [:profile/update-setting-from-backup (transforms/js->clj event-js)]]]}
 
       "mediaserver.started"
       {:db (assoc db :mediaserver/port (oops/oget event-js :port))}
