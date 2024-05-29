@@ -28,9 +28,7 @@
         {:keys [name color formatted-balance watch-only?
                 address]}   (rf/sub [:wallet/current-viewing-account])
         customization-color (rf/sub [:profile/customization-color])]
-    (rn/use-unmount (fn []
-                      (rf/dispatch [:wallet/close-account-page])
-                      (rf/dispatch [:wallet/clean-send-data])))
+    (rn/use-unmount #(rf/dispatch [:wallet/clean-send-data]))
     (rn/use-mount
      #(rf/dispatch [:wallet/fetch-activities-for-current-account address]))
     [rn/view {:style {:flex 1}}
