@@ -71,10 +71,7 @@
 (rf/reg-fx
  :effects.wallet-connect/sign-typed-data
  (fn [{:keys [password address data version on-success on-error]}]
-   (-> {:v1 native-module/sign-typed-data
-        :v4 native-module/sign-typed-data-v4}
-       (get version)
-       (apply [data address (security/safe-unmask-data password)])
+   (-> (wallet-connect-core/sign-typed-data version data address password)
        (promesa/then wallet-connect-core/extract-native-call-signature)
        (promesa/then on-success)
        (promesa/catch on-error))))

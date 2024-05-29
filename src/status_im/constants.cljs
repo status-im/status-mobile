@@ -267,17 +267,15 @@
 (def ^:const wallet-connect-personal-sign-method "personal_sign")
 (def ^:const wallet-connect-eth-sign-method "eth_sign")
 (def ^:const wallet-connect-eth-send-transaction-method "eth_sendTransaction")
-(def ^:const wallet-connect-eth-sign-transaction-method "eth_signTransaction")
 (def ^:const wallet-connect-eth-sign-typed-method "eth_signTypedData")
 (def ^:const wallet-connect-eth-sign-typed-v4-method "eth_signTypedData_v4")
 (def ^:const wallet-connect-supported-methods
-  [wallet-connect-personal-sign-method
-   wallet-connect-eth-sign-method
-   wallet-connect-eth-send-transaction-method
-   ;;wallet-connect-eth-sign-transaction-method
-   wallet-connect-eth-sign-typed-method
-   wallet-connect-eth-sign-typed-v4-method])
-(def ^:const wallet-connect-supported-events ["accountsChanged" "chainChanged"])
+  #{wallet-connect-personal-sign-method
+    wallet-connect-eth-sign-method
+    wallet-connect-eth-send-transaction-method
+    wallet-connect-eth-sign-typed-method
+    wallet-connect-eth-sign-typed-v4-method})
+(def ^:const wallet-connect-supported-events #{"accountsChanged" "chainChanged"})
 (def ^:const wallet-connect-session-proposal-event "session_proposal")
 (def ^:const wallet-connect-session-request-event "session_request")
 
