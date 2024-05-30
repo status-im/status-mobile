@@ -204,8 +204,8 @@
 (def wallet-user-avatar quo.components.avatars.wallet-user-avatar.view/wallet-user-avatar)
 
 ;;;; Banner
-(def banner quo.components.banners.banner.view/view)
 (def alert-banner quo.components.banners.alert-banner.view/view)
+(def banner quo.components.banners.banner.view/view)
 
 ;;;; Buttons
 (def button quo.components.buttons.button.view/button)

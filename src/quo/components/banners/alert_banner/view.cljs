@@ -5,7 +5,7 @@
             [quo.components.icon :as icon]
             [quo.components.markdown.text :as text]
             [quo.foundations.colors :as colors]
-            [quo.theme :as quo.theme]
+            [quo.theme]
             [react-native.core :as rn]
             [react-native.linear-gradient :as linear-gradient]
             [schema.core :as schema]))
