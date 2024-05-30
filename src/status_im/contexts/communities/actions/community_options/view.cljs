@@ -36,13 +36,14 @@
 
 (defn view-token-gating
   [id]
-  {:icon                :i/token
-   :right-icon          :i/chevron-right
-   :accessibility-label :view-token-gating
-   :on-press            #(rf/dispatch [:show-bottom-sheet
-                                       {:content                 (fn [] [permissions-sheet/view id])
-                                        :padding-bottom-override 16}])
-   :label               (i18n/label :t/view-token-gating)})
+  (when config/show-not-implemented-features?
+    {:icon                :i/token
+     :right-icon          :i/chevron-right
+     :accessibility-label :view-token-gating
+     :on-press            #(rf/dispatch [:show-bottom-sheet
+                                         {:content                 (fn [] [permissions-sheet/view id])
+                                          :padding-bottom-override 16}])
+     :label               (i18n/label :t/view-token-gating)}))
 
 (defn edit-shared-addresses
   [id]
