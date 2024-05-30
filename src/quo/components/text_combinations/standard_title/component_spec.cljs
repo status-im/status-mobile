@@ -1,5 +1,6 @@
 (ns quo.components.text-combinations.standard-title.component-spec
-  (:require [quo.components.text-combinations.standard-title.view :as standard-title]
+  (:require [quo.components.markdown.text :as text]
+            [quo.components.text-combinations.standard-title.view :as standard-title]
             [test-helpers.component :as h]))
 
 (h/describe "Text combinations - Standard title"
@@ -48,4 +49,12 @@
                     :right    :tag
                     :on-press on-press-fn}])
         (h/fire-event :on-press (h/get-by-label-text :standard-title-tag))
-        (h/was-called-times on-press-fn 1)))))
+        (h/was-called-times on-press-fn 1))))
+
+  (h/describe "Custom content variant"
+    (h/test "Default render"
+      (h/render [standard-title/view
+                 {:title "This is a title"
+                  :right [text/text "Right"]}])
+      (h/is-truthy (h/get-by-text "This is a title"))
+      (h/is-truthy (h/get-by-text "Right")))))

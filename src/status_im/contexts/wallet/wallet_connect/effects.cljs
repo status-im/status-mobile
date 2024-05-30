@@ -30,10 +30,33 @@
               handler)))))
 
 (rf/reg-fx
+ :effects.wallet-connect/fetch-pairings
+ (fn [{:keys [web3-wallet on-success on-fail]}]
+   (-> (.. web3-wallet -core -pairing)
+       (.getPairings)
+       (promesa/then on-success)
+       (promesa/catch on-fail))))
+
+(rf/reg-fx
  :effects.wallet-connect/pair
  (fn [{:keys [web3-wallet url on-success on-fail]}]
    (-> (.. web3-wallet -core -pairing)
        (.pair (clj->js {:uri url}))
+       (promesa/then on-success)
+       (promesa/catch on-fail))))
+
+(rf/reg-fx
+ :effects.wallet-connect/disconnect
+ (fn [{:keys [web3-wallet topic on-success on-fail]}]
+   (-> (.. web3-wallet -core -pairing)
+       (.disconnect (clj->js {:topic topic}))
+       (promesa/then on-success)
+       (promesa/catch on-fail))))
+
+(rf/reg-fx
+ :effects.wallet-connect/fetch-active-sessions
+ (fn [{:keys [web3-wallet on-success on-fail]}]
+   (-> (.getActiveSessions web3-wallet)
        (promesa/then on-success)
        (promesa/catch on-fail))))
 
