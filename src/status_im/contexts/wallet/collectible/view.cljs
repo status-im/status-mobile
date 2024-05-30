@@ -201,7 +201,7 @@
                                    ;; navigation has an animation
                                    (js/setTimeout
                                     #(some-> @title-ref
-                                       (oops/ocall "measureInWindow" set-title-bottom))
+                                             (oops/ocall "measureInWindow" set-title-bottom))
                                     300))}]]
          [rn/view {:style (style/background-color theme)}
           [header collectible-name collection-name collection-image set-title-ref]
@@ -228,8 +228,11 @@
         set-title-bottom           (rn/use-callback
                                     (fn [_ y _ height]
                                       (reset! title-bottom-coord
-                                              (+ y height -56 (when platform/ios?
-                                                                (* top -2))))))
+                                        (+ y
+                                           height
+                                           -56
+                                           (when platform/ios?
+                                             (* top -2))))))
         scroll-amount              (reanimated/use-shared-value 0)
         title-opacity              (reanimated/use-shared-value 0)
         collectible                (rf/sub [:wallet/last-collectible-details])

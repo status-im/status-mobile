@@ -6,10 +6,12 @@
 
 (def container {:margin-bottom 34})
 
-(defn- header-height []
+(defn- header-height
+  []
   (+ 56 (safe-area/get-top)))
 
-(defn preview-container []
+(defn preview-container
+  []
   {:margin-horizontal 8
    :margin-top        (+ (header-height) 12)})
 
@@ -44,7 +46,8 @@
   {:flex        1
    :margin-left 6})
 
-(defn animated-header []
+(defn animated-header
+  []
   {:position :absolute
    :top      0
    :left     0
@@ -82,5 +85,5 @@
 (defn background-color
   [theme]
   {:flex             1
-   :height 1500
+   :height           1500
    :background-color (colors/theme-colors colors/white colors/neutral-95 theme)})
