@@ -201,7 +201,7 @@
                                                                  input-state)
                                                                 available-limit)))
         input-num-value                             (controlled-input/numeric-value input-state)
-        input-amount                                (controlled-input/input-value input-state)
+        input-amount (controlled-input/input-value input-state)
         confirm-disabled?                           (or (nil? route)
                                                         (empty? route)
                                                         (string/blank? (controlled-input/input-value
@@ -265,6 +265,7 @@
                                                        current-limit)
         should-try-again?                           (and (not limit-insufficient?) no-routes-found?)
         current-address                             (rf/sub [:wallet/current-viewing-account-address])]
+    
     (rn/use-mount
      (fn []
        (let [dismiss-keyboard-fn   #(when (= % "active") (rn/dismiss-keyboard!))
@@ -320,6 +321,10 @@
                                                 (.toFixed (/ value conversion-rate)
                                                           crypto-decimals)
                                                 (.toFixed (* value conversion-rate) 12))]
+                                (tap> {:in "input_amount"
+                                       :swap-to-crypto-currency? swap-to-crypto-currency?
+                                       :crypto-decimals crypto-decimals
+                                       :new-value new-value})
                                 (number/remove-trailing-zeroes new-value))))))
        :on-token-press  show-select-asset-sheet}]
      [routes/view

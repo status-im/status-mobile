@@ -2650,5 +2650,8 @@
     "proceed-anyway": "Proceed anyway",
     "sending-to-unpreferred-networks": "Sending to unpreferred networks",
     "review-send": "Review send",
-    "review-bridge": "Review bridge"
+    "review-bridge": "Review bridge",
+    "send-from-network" : "Send from {{network}}",
+    "define-amount-sent-from-network" : "Define amount sent from {{network}} network",
+    "dont-auto-recalculate-network": "Don't auto recalculate {{network}}"
 }

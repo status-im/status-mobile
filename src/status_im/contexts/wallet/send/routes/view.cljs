@@ -1,14 +1,19 @@
 (ns status-im.contexts.wallet.send.routes.view
   (:require
-    [quo.core :as quo]
-    [react-native.core :as rn]
-    [status-im.contexts.wallet.common.utils.networks :as network-utils]
-    [status-im.contexts.wallet.send.routes.style :as style]
-    [status-im.contexts.wallet.send.utils :as send-utils]
-    [status-im.contexts.wallet.sheets.network-preferences.view :as network-preferences]
-    [utils.debounce :as debounce]
-    [utils.i18n :as i18n]
-    [utils.re-frame :as rf]))
+   [clojure.string :as string]
+   [quo.core :as quo]
+   [react-native.core :as rn]
+   [status-im.common.controlled-input.utils :as controlled-input]
+   [status-im.contexts.wallet.common.utils :as utils]
+   [status-im.contexts.wallet.common.utils.networks :as network-utils]
+   [status-im.contexts.wallet.send.routes.style :as style]
+   [status-im.contexts.wallet.send.utils :as send-utils]
+   [status-im.contexts.wallet.sheets.network-preferences.view :as network-preferences]
+   [taoensso.timbre :as log]
+   [utils.debounce :as debounce]
+   [utils.i18n :as i18n]
+   [utils.number :as number]
+   [utils.re-frame :as rf]))
 
 (def row-height 44)
 (def space-between-rows 11)
@@ -89,8 +94,130 @@
                                            (rf/dispatch [:wallet/update-receiver-networks
                                                          chain-ids]))}]))}]))
 
+(comment
+  (string/capitalize (name :mainnet)))
+
+(defn- make-limit-label-crypto
+  [amount currency]
+  (str amount
+       " "
+       (some-> currency
+               name
+               string/upper-case)))
+
+(defn- make-limit-label-fiat
+  [amount currency-symbol]
+  (str currency-symbol amount))
+
+(defn- edit-amount
+  [{:keys [chain-id token-symbol]}]
+  (rf/dispatch
+   [:show-bottom-sheet
+    {:content
+     (fn []
+       (let [{:keys [network-name] :as network-details}  (rf/sub [:wallet/network-details-by-chain-id chain-id])
+             {fiat-currency :currency}                   (rf/sub [:profile/profile])
+             {token-decimals :decimals
+              :as
+              token} (rf/sub [:wallet/wallet-send-token])
+             currency                                    (rf/sub [:profile/currency])
+             currency-symbol                             (rf/sub [:profile/currency-symbol])
+             network-name-str (string/capitalize (name network-name))
+             [input-state set-input-state]               (rn/use-state controlled-input/init-state)
+             [crypto-currency? set-crypto-currency]      (rn/use-state true)
+             conversion-rate                             (-> token
+                                                             :market-values-per-currency
+                                                             currency
+                                                             :price)
+             {token-balance     :total-balance
+              available-balance :available-balance}      (rf/sub [:wallet/token-by-symbol
+                                                                  (str token-symbol)
+                                                                  [chain-id]])
+             current-crypto-limit (utils/get-standard-crypto-format
+                                   token
+                                   token-balance)
+             current-fiat-limit                          (.toFixed (* token-balance conversion-rate) 2)
+             current-limit                               (if crypto-currency?
+                                                           current-crypto-limit
+                                                           current-fiat-limit)
+             crypto-decimals token-decimals
+             input-amount (controlled-input/input-value input-state)]
+         (rn/use-effect
+          (fn []
+            (set-input-state #(controlled-input/set-upper-limit % current-limit)))
+          [current-limit])
+         #_(tap> {:in `edit-amount
+                :crypto-currency? crypto-currency?
+                :network-details network-details
+                :current-limit current-limit
+                :current-fiat-limit current-fiat-limit
+                :current-crypto-limit current-crypto-limit
+                :token-balance token-balance
+                :available-balance available-balance
+                :conversion-rate conversion-rate})
+         [:<>
+          [quo/drawer-top
+           {:title       (i18n/label :t/send-from-network {:network network-name-str})
+            :description (i18n/label :t/define-amount-sent-from-network {:network network-name-str})}]
+          [quo/token-input
+           {;; :container-style style/input-container
+            :token           token-symbol
+            :currency        fiat-currency
+            :currency-symbol currency-symbol
+            :crypto-decimals (min token-decimals 6)
+            :error?          (controlled-input/input-error input-state)
+            :networks [network-details]
+            :title           (i18n/label
+                              :t/send-limit
+                              {:limit (if crypto-currency?
+                                        (make-limit-label-crypto current-limit token-symbol)
+                                        (make-limit-label-fiat current-limit currency-symbol))})
+            :conversion      conversion-rate
+            :show-keyboard?  false
+            :value           (controlled-input/input-value input-state)
+            :on-swap         (fn [swap-to-crypto-currency?]
+                               (set-crypto-currency swap-to-crypto-currency?)
+                               (set-input-state
+                                (fn [input-state]
+                                  (controlled-input/set-input-value
+                                   input-state
+                                   (let [value     (controlled-input/input-value input-state)
+                                         new-value (if swap-to-crypto-currency?
+                                                     (.toFixed (/ value conversion-rate)
+                                                               crypto-decimals)
+                                                     (.toFixed (* value conversion-rate) 12))]
+                                     (tap> {:in "edit_value"
+                                            :swap-to-crypto-currency? swap-to-crypto-currency?
+                                            :crypto-decimals crypto-decimals
+                                            :new-value new-value})
+                                     (number/remove-trailing-zeroes new-value))))))
+            ;; :on-token-press  show-select-asset-sheet
+            }]
+          [quo/disclaimer
+           {:on-change #()}
+           (i18n/label :t/dont-auto-recalculate-network {:network network-name-str})]
+          [quo/bottom-actions
+           {:actions          :one-action
+            :button-one-label (i18n/label :t/update)
+            :button-one-props {}}]
+          [quo/numbered-keyboard
+           {;; :container-style      (style/keyboard-container bottom)
+            :left-action          :dot
+            :delete-key?          true
+            :on-press             (fn [c]
+                               (let [new-text      (str input-amount c)
+                                     max-decimals  (if crypto-currency? crypto-decimals 2)
+                                     regex-pattern (str "^\\d*\\.?\\d{0," max-decimals "}$")
+                                     regex         (re-pattern regex-pattern)]
+                                 (when (re-matches regex new-text)
+                                   (set-input-state #(controlled-input/add-character % c)))))
+            :on-delete            (fn []
+                                    (set-input-state controlled-input/delete-last))
+            :on-long-press-delete (fn []
+                                    (set-input-state controlled-input/delete-all))}]]))}]))
+
 (defn render-network-values
-  [{:keys [network-values token-symbol on-press receiver? loading-routes?
+  [{:keys [network-values token-symbol on-press on-long-press receiver? loading-routes?
            token-not-supported-in-receiver-networks?]}]
   [rn/view
    (map-indexed (fn [index {:keys [chain-id total-amount type]}]
@@ -113,7 +240,12 @@
                                   (cond
                                     (= type :add)
                                     (open-preferences)
-                                    on-press (on-press chain-id total-amount)))}]])
+                                    on-press (on-press chain-id total-amount)))
+                     :on-long-press #(when (not loading-routes?)
+                                       (cond
+                                         (= type :add)
+                                         (open-preferences)
+                                         on-long-press (on-long-press chain-id)))}]])
                 network-values)])
 
 (defn render-network-links
@@ -155,6 +287,10 @@
 
 (defn disable-chain
   [chain-id disabled-from-chain-ids token-available-networks-for-suggested-routes]
+  (tap> {:in `disable-chain
+         :chain-id chain-id
+         :disabled-from-chain-ids disabled-from-chain-ids
+         :token-available-networks-for-suggested-routes token-available-networks-for-suggested-routes})
   (let [disabled-chain-ids
         (if (contains? (set
                         disabled-from-chain-ids)
@@ -234,6 +370,12 @@
                                                       chain-id-to-disable
                                                       disabled-from-chain-ids
                                                       token-available-networks-for-suggested-routes))
+
+        :on-long-press (fn [chain-id]
+                         
+                         (edit-amount {:chain-id chain-id
+                                       :token-symbol token-symbol
+                                        }))
         :receiver?                                 false
         :theme                                     theme
         :loading-routes?                           loading-routes?
