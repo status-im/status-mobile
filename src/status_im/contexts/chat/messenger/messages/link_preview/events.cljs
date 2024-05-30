@@ -46,10 +46,6 @@
                    :on-success [:chat.ui/link-preview-whitelist-received]
                    :on-error   #(log/error "Failed to get link preview whitelist")})))
 
-(defn cache-community-preview-data
-  [{:keys [id] :as community}]
-  (rf/dispatch [:chat.ui/cache-link-preview-data (community-link id) community]))
-
 (rf/reg-event-fx :chat.ui/enable-link-previews
  (fn [{{:profile/keys [profile]} :db} [site enabled?]]
    (let [enabled-sites (if enabled?

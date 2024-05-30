@@ -141,7 +141,6 @@
   (let [on-close       (fn []
                          (rf/dispatch [:wallet/clean-scanned-address])
                          (rf/dispatch [:wallet/clean-local-suggestions])
-                         (rf/dispatch [:wallet/clean-selected-token])
                          (rf/dispatch [:wallet/clean-selected-collectible])
                          (rf/dispatch [:wallet/clean-send-address])
                          (rf/dispatch [:wallet/clean-disabled-from-networks])

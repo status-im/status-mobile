@@ -476,7 +476,7 @@ class CommunityView(HomeView):
         if isinstance(user_names_to_invite, str):
             user_names_to_invite = [user_names_to_invite]
         self.driver.info("Share to  %s community" % ', '.join(map(str, user_names_to_invite)))
-        self.jump_to_communities_home()
+        self.navigate_back_to_home_view()
         home = self.get_home_view()
         home.communities_tab.click()
         community_element = home.get_chat(community_name, community=True)
@@ -1037,7 +1037,7 @@ class ChatView(BaseView):
 
     def quote_message(self, message: str):
         self.driver.info("Quoting '%s' message" % message)
-        self.chat_view_element_starts_with_text(message).long_press_until_element_is_shown(self.reply_message_button)
+        self.chat_element_by_text(message).long_press_until_element_is_shown(self.reply_message_button)
         self.reply_message_button.click()
 
     def set_reaction(self, message: str, emoji: str = 'thumbs-up', emoji_message=False):

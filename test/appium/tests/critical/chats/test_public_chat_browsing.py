@@ -392,6 +392,7 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
 
         self.channel_2.just_fyi("Check gallery on second device")
         self.channel_2.navigate_back_to_home_view()
+        self.home_2.communities_tab.click()
         self.home_2.get_to_community_channel_from_home(self.community_name)
         chat_element = self.channel_2.chat_element_by_text(image_description)
         try:
@@ -520,6 +521,10 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
             self.errors.append('Emoji message was not copied, text in clipboard is %s' % actual_copied_text)
 
         self.channel_1.just_fyi("Can reply to emojis")
+        if not self.channel_2.chat_message_input.is_element_displayed():
+            self.home_2.navigate_back_to_home_view()
+            self.home_2.communities_tab.click()
+            self.home_2.get_to_community_channel_from_home(self.community_name)
         self.channel_2.quote_message(emoji_unicode)
         message_text = 'test message'
         self.channel_2.chat_message_input.send_keys(message_text)
@@ -572,6 +577,7 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
         for home in self.home_1, self.home_2:
             if not home.chat_floating_screen.is_element_displayed():
                 home.navigate_back_to_home_view()
+                home.communities_tab.click()
                 home.get_to_community_channel_from_home(self.community_name)
 
         for key, data in preview_urls.items():
@@ -630,8 +636,8 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
         community_1 = community_element_1.click()
         channel_1_element = community_1.get_channel(self.channel_name)
 
-        self.home_1.just_fyi('Check new messages badge is shown for community')
-        if not community_element_1.new_messages_grey_dot.is_element_displayed():
+        self.home_1.just_fyi('Check new messages badge is shown for channel')
+        if not channel_1_element.new_messages_grey_dot.is_element_displayed():
             self.errors.append('New messages channel badge is not shown on channel')
         channel_1_element.click()
         self.errors.verify_no_errors()
@@ -673,7 +679,6 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
 
         self.chat_1.just_fyi('Check that new messages from blocked user are not delivered')
         self.chat_1.driver.set_network_connection(ConnectionType.ALL_NETWORK_ON)
-        # self.home_1.jump_to_card_by_text('# %s' % self.channel_name)
         self.home_1.communities_tab.click()
         self.home_1.get_chat(self.community_name, community=True).click()
         self.home_1.get_chat(self.channel_name, community_channel=True).click()
@@ -695,7 +700,6 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
 
         self.home_2.just_fyi("Check that can send message in community after unblock")
         self.chat_2.send_message(message_unblocked)
-        # self.home_1.jump_to_card_by_text('# %s' % self.channel_name)
         self.home_1.communities_tab.click()
         self.home_1.get_chat(self.community_name, community=True).click()
         self.home_1.get_chat(self.channel_name, community_channel=True).click()
@@ -942,7 +946,7 @@ class TestCommunityMultipleDeviceMergedTwo(MultipleSharedDeviceTestCase):
 
         for home in self.homes:
             home.navigate_back_to_home_view()
-            home.jump_to_communities_home()
+            home.communities_tab.click()
             community = home.get_chat(self.community_name, community=True).click()
             community.get_channel(self.channel_name).click()
 
@@ -983,7 +987,7 @@ class TestCommunityMultipleDeviceMergedTwo(MultipleSharedDeviceTestCase):
     @marks.testrail_id(702845)
     def test_community_leave(self):
         self.home_2.navigate_back_to_home_view()
-        self.home_2.jump_to_communities_home()
+        self.home_2.communities_tab.click()
         community = self.home_2.get_chat(self.community_name, community=True)
         community_to_leave = CommunityView(self.drivers[1])
         community.long_press_until_element_is_shown(community_to_leave.leave_community_button)
@@ -997,8 +1001,8 @@ class TestCommunityMultipleDeviceMergedTwo(MultipleSharedDeviceTestCase):
     def test_community_hashtag_links_to_community_channels(self):
         for home in self.homes:
             home.navigate_back_to_home_view()
-        self.home_2.jump_to_messages_home()
-        self.home_1.jump_to_communities_home()
+        self.home_2.chats_tab.click()
+        self.home_1.communities_tab.click()
 
         self.home_1.just_fyi("Device 1 creates a closed community")
         self.home_1.create_community(community_type="closed")
@@ -1029,11 +1033,13 @@ class TestCommunityMultipleDeviceMergedTwo(MultipleSharedDeviceTestCase):
             not_shown.append("general")
 
         self.home_2.just_fyi("Device 2 joins the community")
-        self.home_2.jump_to_card_by_text(self.username_1)
+        self.home_2.navigate_back_to_home_view()
+        self.home_2.chats_tab.click()
+        self.home_2.get_chat(self.username_1).click()
         self.community_2.join_community(open_community=False)
 
         self.home_1.just_fyi("Device 1 accepts the community request")
-        self.home_1.jump_to_communities_home()
+        self.home_1.navigate_back_to_home_view()
         try:
             self.home_1.notifications_unread_badge.wait_for_visibility_of_element(120)
         except TimeoutException:
@@ -1095,10 +1101,9 @@ class TestCommunityMultipleDeviceMergedTwo(MultipleSharedDeviceTestCase):
     def test_community_join_when_node_owner_offline(self):
         for home in self.homes:
             home.navigate_back_to_home_view()
-        self.home_2.jump_to_communities_home()
         if self.home_2.get_chat(self.community_name, community=True).is_element_displayed():
             CommunityView(self.home_2.driver).leave_community(self.community_name)
-        self.home_1.jump_to_communities_home()
+        self.home_1.communities_tab.click()
 
         self.home_1.just_fyi("Device 1 creates open community")
         self.home_1.create_community(community_type="open")
@@ -1120,7 +1125,7 @@ class TestCommunityMultipleDeviceMergedTwo(MultipleSharedDeviceTestCase):
         self.device_1.driver.terminate_app(app_package)
 
         self.home_2.just_fyi("Device 2 requests to join the community")
-        self.home_2.jump_to_messages_home()
+        self.home_2.chats_tab.click()
         self.home_2.get_chat(self.username_1).click()
         self.community_2.join_community(open_community=False)
         exp_text = "You requested to join “%s”" % community_name
@@ -1143,8 +1148,8 @@ class TestCommunityMultipleDeviceMergedTwo(MultipleSharedDeviceTestCase):
         else:
             self.errors.append("Community channel is not displayed for user before join")
         self.community_2.toast_content_element.wait_for_invisibility_of_element(30)
-        self.community_2.close_community_view_button.click_until_absense_of_element(
-            self.community_2.close_community_view_button)
+        self.home_2.navigate_back_to_home_view()
+        self.home_2.communities_tab.click()
         self.home_2.pending_communities_tab.click()
         if self.home_2.get_chat(community_name, community=True).is_element_displayed():
             self.home_2.get_chat(community_name, community=True).click()

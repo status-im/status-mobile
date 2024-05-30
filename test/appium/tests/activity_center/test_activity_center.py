@@ -257,14 +257,6 @@ class TestActivityMultipleDevicePR(MultipleSharedDeviceTestCase):
         self.home_1.add_contact(self.public_key_2)
         self.home_2.handle_contact_request(self.username_1)
         self.text_message = 'hello'
-        self.one_to_one_message = 'one-t-one message'
-
-        self.home_2.just_fyi("Send message to contact (need for jump to) test")
-        self.chat_1 = self.home_1.get_chat(self.username_2).click()
-        self.chat_1.send_message(self.one_to_one_message)
-        self.chat_2 = self.home_2.get_chat(self.username_1).click()
-        self.chat_2.send_message(self.text_message)
-        [home.navigate_back_to_home_view() for home in self.homes]
 
         self.home_1.just_fyi("Open community to message")
         self.home_1.communities_tab.click()
@@ -283,6 +275,7 @@ class TestActivityMultipleDevicePR(MultipleSharedDeviceTestCase):
         self.channel_2 = self.community_2.get_channel(self.channel_name).click()
 
     @marks.testrail_id(702936)
+    @marks.skip("The feature is disabled")
     def test_navigation_jump_to(self):
         self.community_1.just_fyi("Check Jump to screen and redirect on tap")
         self.community_1.click_on_floating_jump_to()
