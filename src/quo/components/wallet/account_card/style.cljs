@@ -14,7 +14,7 @@
   [{:keys [customization-color type theme pressed? metrics?]}]
   {:width              161
    :height             (if metrics? 88 68)
-   :background-color   (when (not= :watch-only type)
+   :background-color   (when (and (not= :missing-keypair type) (not= :watch-only type))
                          (colors/theme-colors
                           (colors/resolve-color customization-color
                                                 theme
@@ -24,6 +24,7 @@
                                                 (when (= :missing-keypair type) (if pressed? 30 20)))
                           theme))
    :border-radius      16
+   :border-style       (if (= type :missing-keypair) :dashed :solid)
    :border-width       1
    :border-color       (if (or (= :missing-keypair type)
                                (= :watch-only type))
@@ -100,10 +101,12 @@
    :line-height 20})
 
 (defn loader-view
-  [{:keys [width height watch-only? theme]}]
+  [{:keys [width height watch-only? theme missing-keypair?]}]
   {:width            width
    :height           height
-   :background-color (if (and watch-only? (= :light theme)) colors/neutral-80-opa-5 colors/white-opa-10)
+   :background-color (if (and (or missing-keypair? watch-only?) (= :light theme))
+                       colors/neutral-80-opa-5
+                       colors/white-opa-10)
    :border-radius    6})
 
 (def loader-container

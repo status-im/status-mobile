@@ -11,4 +11,4 @@
 
 (defn alert-icon-color
   [theme]
-  (colors/theme-colors colors/neutral-50 colors/white theme))
+  (colors/theme-colors colors/neutral-80-opa-60 colors/white-70-blur theme))
