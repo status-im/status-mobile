@@ -32,8 +32,16 @@
   [{:keys [db]}]
   {:db (dissoc db :alert-banners/hide?)})
 
+;; When push notifications are enabled and the app is closed then overlays get dismissed,
+;; we need to restore them once app is relaunched
+(defn restore-alert-banners
+  [{:keys [db]}]
+  (when-not (zero? (count (get db :alert-banners)))
+    {:show-alert-banner [(:view-id db) (:theme db)]}))
+
 (re-frame/reg-event-fx :alert-banners/add add-alert-banner)
 (re-frame/reg-event-fx :alert-banners/remove remove-alert-banner)
 (re-frame/reg-event-fx :alert-banners/remove-all remove-all-alert-banners)
 (re-frame/reg-event-fx :alert-banners/hide hide-alert-banners)
 (re-frame/reg-event-fx :alert-banners/unhide unhide-alert-banners)
+(re-frame/reg-event-fx :alert-banners/restore-alert-banners restore-alert-banners)
