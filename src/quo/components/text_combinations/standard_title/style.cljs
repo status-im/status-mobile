@@ -2,7 +2,8 @@
   (:require [quo.foundations.colors :as colors]))
 
 (def container
-  {:flex-direction  :row
+  {:flex            1
+   :flex-direction  :row
    :justify-content :space-between})
 
 (def right-counter
