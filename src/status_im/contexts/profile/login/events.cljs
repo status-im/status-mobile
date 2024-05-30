@@ -62,7 +62,13 @@
                  [:logs/set-level log-level]
                  [:activity-center.notifications/fetch-pending-contact-requests-fx]
                  [:activity-center/update-seen-state]
-                 [:activity-center.notifications/fetch-unread-count]]
+                 [:activity-center.notifications/fetch-unread-count]
+
+                 ;; Immediately try to open last chat. We can't wait until the
+                 ;; messenger has started and has processed all chats because
+                 ;; the whole process can take a handful of seconds.
+                 (when-not (:universal-links/handling db)
+                   [:effects.chat/open-last-chat (:key-uid profile-overview)])]
 
                 (cond
                   pairing-completed?
@@ -98,8 +104,6 @@
            [:switcher-cards/fetch]
            (when (ff/enabled? ::ff/wallet.wallet-connect)
              [:dispatch [:wallet-connect/init]])
-           (when-not (:universal-links/handling db)
-             [:effects.chat/open-last-chat key-uid])
            (when notifications-enabled?
              [:effects/push-notifications-enable])]})))
 
