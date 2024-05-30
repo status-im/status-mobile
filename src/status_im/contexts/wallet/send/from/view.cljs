@@ -45,6 +45,7 @@
 (defn view
   []
 <<<<<<< HEAD
+<<<<<<< HEAD
   (let [accounts        (rf/sub [:wallet/accounts-with-current-asset])
         network-details (rf/sub [:wallet/network-details])]
 =======
@@ -62,6 +63,10 @@
     (rn/use-unmount on-close)
 >>>>>>> 4bd61c92b (lint)
 >>>>>>> e51cdfdb9 (lint)
+=======
+  (let [accounts (rf/sub [:wallet/accounts-with-current-asset])]
+    (rn/use-unmount on-close)
+>>>>>>> c3f098e6c (lint)
     [floating-button-page/view
      {:footer-container-padding 0
       :header                   [account-switcher/view
