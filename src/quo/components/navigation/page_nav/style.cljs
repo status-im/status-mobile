@@ -12,6 +12,10 @@
    :justify-content    :space-between
    :align-items        :center})
 
+(def icon-container
+  {:flex-grow  1
+   :flex-basis 1})
+
 (defn center-content-container
   [centered?]
   {:flex              1
@@ -21,13 +25,19 @@
    :justify-content   (if centered? :center :flex-start)})
 
 (def right-actions-container
-  {:flex-direction :row})
+  {:flex-direction  :row
+   :justify-content :flex-end})
 
 (def right-actions-spacing
   {:width 12})
 
-(def right-content-min-size
-  {:min-width 32 :min-height 32})
+(defn right-content
+  [min-size?]
+  (merge
+   {:flex-grow  1
+    :flex-basis 1}
+   (when min-size?
+     {:min-height 32})))
 
 (def token-logo
   {:width 16 :height 16})
