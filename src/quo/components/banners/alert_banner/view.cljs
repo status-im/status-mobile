@@ -29,15 +29,15 @@
        {:color (colors/resolve-color :danger theme)
         :size  16}]
       [text/text
-       {:style (style/label theme)
+       {:style           (style/label theme)
         :number-of-lines 1}
        text]
       (when action?
         [button/button
          {:accessibility-label :button
-          :type :danger
-          :size 24 
-          :on-press on-button-press}
+          :type                :danger
+          :size                24
+          :on-press            on-button-press}
          [text/text {:style style/button-text}
           button-text]])]]))
 

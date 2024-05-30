@@ -1,7 +1,7 @@
 (ns quo.components.banners.alert-banner.component-spec
   (:require
-   [quo.components.banners.alert-banner.view :as alert-banner]
-   [test-helpers.component :as h]))
+    [quo.components.banners.alert-banner.view :as alert-banner]
+    [test-helpers.component :as h]))
 
 (h/describe "Alert Banner"
   (h/test "Render without props is not throwing any error"
