@@ -117,7 +117,7 @@
           result-fx   (:fx effects)]
       (is (match? result-fx expected-fx)))))
 
-(deftest get-wallet-token-for-all-accounts
+(deftest get-wallet-token-for-all-accounts-test
   (testing "get wallet token for all accounts"
     (let [address-1   "0x1"
           address-2   "0x2"
@@ -129,7 +129,7 @@
                        [:dispatch [:wallet/get-wallet-token-for-account address-2]]]]
       (is (match? expected-fx result-fx)))))
 
-(deftest get-wallet-token-for-account
+(deftest get-wallet-token-for-account-test
   (testing "get wallet token for account"
     (let [cofx             {:db {}}
           effects          (events/get-wallet-token-for-account cofx [address])
@@ -142,7 +142,7 @@
                                                  address]}]]]}]
       (is (match? expected-effects effects)))))
 
-(deftest check-recent-history-for-all-accounts
+(deftest check-recent-history-for-all-accounts-test
   (testing "check recent history for all accounts"
     (let [address-1   "0x1"
           address-2   "0x2"
@@ -154,7 +154,7 @@
                        [:dispatch [:wallet/check-recent-history-for-account address-2]]]]
       (is (match? expected-fx result-fx)))))
 
-(deftest process-account-from-signal
+(deftest process-account-from-signal-test
   (testing "process account from signal"
     (let [cofx             {:db {:wallet {:accounts {}}}}
           effects          (events/process-account-from-signal cofx [raw-account])

@@ -4,7 +4,7 @@
     matcher-combinators.test
     [status-im.contexts.wallet.collectible.events :as events]))
 
-(deftest store-collectibles
+(deftest store-collectibles-test
   (testing "flush-collectibles"
     (let [collectible-1 {:collectible-data {:image-url "https://..." :animation-url "https://..."}
                          :ownership        [{:address "0x1"
@@ -29,7 +29,7 @@
 
       (is (match? result-db expected-db)))))
 
-(deftest clear-stored-collectibles
+(deftest clear-stored-collectibles-test
   (let [db {:wallet {:accounts {"0x1" {:collectibles [{:id 1} {:id 2}]}
                                 "0x2" {"some other stuff" "with any value"
                                        :collectibles      [{:id 3}]}
@@ -43,7 +43,7 @@
 
         (is (match? result-db expected-db))))))
 
-(deftest store-last-collectible-details
+(deftest store-last-collectible-details-test
   (testing "store-last-collectible-details"
     (let [db               {:wallet {}}
           last-collectible {:description "Pandaria"
@@ -55,7 +55,7 @@
           result-db        (:db effects)]
       (is (match? result-db expected-db)))))
 
-(deftest request-new-collectibles-for-account-from-signal
+(deftest request-new-collectibles-for-account-from-signal-test
   (testing "request new collectibles for account from signal"
     (let [db       {:wallet {}}
           address  "0x1"
