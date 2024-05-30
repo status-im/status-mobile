@@ -777,6 +777,7 @@
     "joined-community": "You joined “{{community}}”",
     "join-decentralised-communities": "Join Decentralized Communities",
     "join-community-to-post": "Join community to post",
+    "no-permissions-to-post": "Sorry, you don't have permissions to post in this channel",
     "http-gateway-error": "Oops, request failed!",
     "sign-request-failed": "Could not sign message",
     "simple": "Simple",
