@@ -1,14 +1,16 @@
 (ns quo.components.banners.alert-banner.view
-  (:require [quo.components.banners.alert-banner.style :as style]
+  (:require [quo.components.banners.alert-banner.schema :as component-schema]
+            [quo.components.banners.alert-banner.style :as style]
             [quo.components.buttons.button.view :as button]
             [quo.components.icon :as icon]
             [quo.components.markdown.text :as text]
             [quo.foundations.colors :as colors]
             [quo.theme :as quo.theme]
             [react-native.core :as rn]
-            [react-native.linear-gradient :as linear-gradient]))
+            [react-native.linear-gradient :as linear-gradient]
+            [schema.core :as schema]))
 
-(defn view
+(defn- view-internal
   [{:keys [action? text button-text on-button-press]}]
   (let [theme (quo.theme/use-theme)]
     [rn/view
@@ -38,3 +40,5 @@
           :on-press on-button-press}
          [text/text {:style style/button-text}
           button-text]])]]))
+
+(def view (schema/instrument #'view-internal component-schema/?schema))
