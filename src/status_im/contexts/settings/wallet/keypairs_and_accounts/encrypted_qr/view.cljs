@@ -28,7 +28,7 @@
         cleanup-clock                 (rn/use-callback #(set-code nil))
         on-auth-success               (rn/use-callback (fn [entered-password]
                                                          (rf/dispatch
-                                                          [:wallet/get-key-pair-export-connection
+                                                          [:wallet/get-keypair-export-connection
                                                            {:sha3-pwd        entered-password
                                                             :keypair-key-uid key-uid
                                                             :callback        validate-and-set-code}]))

@@ -4,6 +4,7 @@
     [clojure.string :as string]
     [react-native.platform :as platform]
     [status-im.constants :as constants]
+    [status-im.contexts.settings.wallet.effects]
     [status-im.contexts.settings.wallet.events]
     [status-im.contexts.wallet.common.utils.networks :as network-utils]
     [status-im.contexts.wallet.data-store :as data-store]

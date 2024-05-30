@@ -41,19 +41,12 @@
                            :VerifyTransactionChainID config/verify-transaction-chain-id}}
            log-config)))
 
-(defn- extract-error
-  [json-str]
-  (-> json-str
-      transforms/json->clj
-      (get :error "")
-      not-empty))
-
 (defn- input-connection-string-callback
   [res]
   (log/info "[local-pairing] input-connection-string-for-bootstrapping callback"
             {:response res
              :event    :syncing/input-connection-string-for-bootstrapping})
-  (let [error (when (extract-error res)
+  (let [error (when (sync-utils/extract-error res)
                 (str "generic-error: " res))]
     (when (some? error)
       (rf/dispatch [:toasts/upsert
