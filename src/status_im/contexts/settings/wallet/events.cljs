@@ -31,7 +31,7 @@
 (defn get-keypair-export-connection
   [{:keys [db]} [{:keys [sha3-pwd keypair-key-uid callback]}]]
   (let [key-uid (get-in db [:profile/profile :key-uid])]
-    {:fx [[:effects.connection-string/export-keypair
+    {:fx [[:effects.syncing/export-keypairs-keystores
            {:key-uid         key-uid
             :sha3-pwd        sha3-pwd
             :keypair-key-uid keypair-key-uid
@@ -88,7 +88,7 @@
 (defn connection-string-for-import-keypair
   [{:keys [db]} [{:keys [sha3-pwd keypairs-key-uids connection-string]}]]
   (let [key-uid (get-in db [:profile/profile :key-uid])]
-    {:fx [[:effects.connection-string/import-keypair
+    {:fx [[:effects.syncing/import-keypairs-keystores
            {:key-uid           key-uid
             :sha3-pwd          sha3-pwd
             :keypairs-key-uids keypairs-key-uids
