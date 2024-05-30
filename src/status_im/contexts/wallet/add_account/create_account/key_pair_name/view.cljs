@@ -1,16 +1,16 @@
 (ns status-im.contexts.wallet.add-account.create-account.key-pair-name.view
   (:require
-   [clojure.string :as string]
-   [taoensso.timbre :as log]
-   [quo.core :as quo]
-   [react-native.core :as rn]
-   [status-im.common.floating-button-page.view :as floating-button-page]
-   [status-im.common.not-implemented :as not-implemented]
-   [status-im.common.validation.general :as validators]
-   [status-im.constants :as constants]
-   [status-im.contexts.wallet.add-account.create-account.key-pair-name.style :as style]
-   [utils.i18n :as i18n]
-   [utils.re-frame :as rf]))
+    [clojure.string :as string]
+    [quo.core :as quo]
+    [react-native.core :as rn]
+    [status-im.common.floating-button-page.view :as floating-button-page]
+    [status-im.common.not-implemented :as not-implemented]
+    [status-im.common.validation.general :as validators]
+    [status-im.constants :as constants]
+    [status-im.contexts.wallet.add-account.create-account.key-pair-name.style :as style]
+    [taoensso.timbre :as log]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]))
 
 (def error-messages
   {:too-long     (i18n/label :t/key-name-error-length)
