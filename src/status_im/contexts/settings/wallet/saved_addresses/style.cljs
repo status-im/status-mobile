@@ -2,7 +2,8 @@
 
 (def title-container
   {:padding-horizontal 20
-   :margin-top         12})
+   :margin-top         12
+   :margin-bottom      16})
 
 (defn page-wrapper
   [inset-top]

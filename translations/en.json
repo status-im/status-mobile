@@ -2658,5 +2658,13 @@
     "proceed-anyway": "Proceed anyway",
     "sending-to-unpreferred-networks": "Sending to unpreferred networks",
     "review-send": "Review send",
-    "review-bridge": "Review bridge"
+    "review-bridge": "Review bridge",
+    "send-to-user": "Send to {{user}}",
+    "view-address-on-etherscan": "View address on Etherscan",
+    "view-address-on-optimistic": "View address on Optimistic",
+    "view-address-on-arbiscan": "View address on Arbiscan",
+    "saved-address-removed": "Saved address removed",
+    "remove-address": "Remove address",
+    "remove-saved-address": "Remove saved address",
+    "remove-saved-address-description": "Transaction history relating to this address will no longer be labelled ‘{{name}}’."
 }

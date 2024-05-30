@@ -21,10 +21,11 @@
       :blur?    true
       :on-press open-keypairs-and-accounts-settings-modal
       :action   :arrow})
-   {:title    (i18n/label :t/saved-addresses)
-    :blur?    true
-    :on-press open-saved-addresses-settings-modal
-    :action   :arrow}])
+   (when (ff/enabled? ::ff/settings.saved-addresses)
+     {:title    (i18n/label :t/saved-addresses)
+      :blur?    true
+      :on-press open-saved-addresses-settings-modal
+      :action   :arrow})])
 
 (defn basic-settings
   []

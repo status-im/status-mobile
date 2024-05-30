@@ -6,7 +6,7 @@
    [:type {:optional true}
     [:maybe
      [:enum :default :multiuser :group :channel :community :token :network :multinetwork :account
-      :collectible :address :icon :audio]]]
+      :collectible :address :icon :audio :wallet-user]]]
    [:customization-color {:optional true} [:maybe :schema.common/customization-color]]
    [:container-style {:optional true} [:maybe :map]]
    [:blur? {:optional true} [:maybe :boolean]]
@@ -83,6 +83,10 @@
   [:map
    [:duration {:optional true} [:maybe :string]]])
 
+(def ^:private ?wallet-user
+  [:map
+   [:full-name {:optional true} [:maybe :string]]])
+
 (def ?schema
   [:=>
    [:catn
@@ -101,5 +105,6 @@
       [:collectible [:merge ?collectible ?size ?context-base]]
       [:address [:merge ?address ?size ?context-base]]
       [:icon [:merge ?icon ?size ?context-base]]
-      [:audio [:merge ?audio ?context-base]]]]]
+      [:audio [:merge ?audio ?context-base]]
+      [:wallet-user [:merge ?wallet-user ?size ?context-base]]]]]
    :any])
