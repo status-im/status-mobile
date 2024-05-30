@@ -5,13 +5,17 @@
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
+(defn- hide-bottom-sheet
+  []
+  (rf/dispatch [:hide-bottom-sheet]))
+
 (defn view
   [{:keys [name address customization-color]}]
   (let [on-press-remove (rn/use-callback
                          #(rf/dispatch [:wallet/delete-saved-address
                                         {:address       address
-                                         :toast-message (i18n/label :t/saved-address-removed)}]))
-        on-press-cancel (rn/use-callback #(rf/dispatch [:hide-bottom-sheet]))]
+                                         :toast-message (i18n/label :t/saved-address-removed)}])
+                         [address])]
     [:<>
      [quo/drawer-top
       {:title               (i18n/label :t/remove-saved-address)
@@ -31,5 +35,5 @@
        :button-one-props {:on-press on-press-remove
                           :type     :danger}
        :button-two-label (i18n/label :t/cancel)
-       :button-two-props {:on-press on-press-cancel
+       :button-two-props {:on-press hide-bottom-sheet
                           :type     :grey}}]]))

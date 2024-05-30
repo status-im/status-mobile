@@ -17,20 +17,23 @@
                                                        {:address     full-address
                                                         :recipient   full-address
                                                         :stack-id    :wallet-select-address
-                                                        :start-flow? true}]))
+                                                        :start-flow? true}])
+                                        [full-address])
         open-eth-chain-explorer        (rn/use-callback
                                         #(rf/dispatch [:wallet/navigate-to-chain-explorer
                                                        {:address address
-                                                        :network constants/mainnet-network-name}]))
+                                                        :network constants/mainnet-network-name}])
+                                        [address])
         open-arb-chain-explorer        (rn/use-callback
                                         #(rf/dispatch [:wallet/navigate-to-chain-explorer
                                                        {:address address
-                                                        :network constants/arbitrum-network-name}]))
+                                                        :network constants/arbitrum-network-name}])
+                                        [address])
         open-oeth-chain-explorer       (rn/use-callback
                                         #(rf/dispatch [:wallet/navigate-to-chain-explorer
                                                        {:address address
-                                                        :network constants/optimism-network-name}]))
-
+                                                        :network constants/optimism-network-name}])
+                                        [address])
         open-share                     (rn/use-callback
                                         #(rf/dispatch
                                           [:open-share
@@ -44,14 +47,16 @@
                                                           :linkMetadata    {:title full-address}}]}
                                                        {:title     full-address
                                                         :message   full-address
-                                                        :isNewTask true})}]))
+                                                        :isNewTask true})}])
+                                        [full-address])
         open-remove-confirmation-sheet (rn/use-callback
                                         #(rf/dispatch
                                           [:show-bottom-sheet
                                            {:theme   :dark
                                             :shell?  true
                                             :content (fn []
-                                                       [remove-address/view opts])}]))]
+                                                       [remove-address/view opts])}])
+                                        [opts])]
     [quo/action-drawer
      [[{:icon                :i/arrow-up
         :label               (i18n/label :t/send-to-user {:user name})

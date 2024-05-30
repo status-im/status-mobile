@@ -33,8 +33,8 @@
                                                  :chain-short-names   chain-short-names
                                                  :full-address        full-address
                                                  :name                name
-                                                 :customization-color customization-color}])}]))]
-
+                                                 :customization-color customization-color}])}])
+                                [address chain-short-names full-address name customization-color])]
     [quo/saved-address
      {:user-props      {:name                name
                         :address             full-address
@@ -55,12 +55,15 @@
   []
   [rn/view {:height 8}])
 
+(defn- navigate-back
+  []
+  (rf/dispatch [:navigate-back]))
+
 (defn view
   []
   (let [inset-top           (safe-area/get-top)
         customization-color (rf/sub [:profile/customization-color])
-        saved-addresses     (rf/sub [:wallet/grouped-saved-addresses])
-        on-press-back       (rn/use-callback #(rf/dispatch [:navigate-back]))]
+        saved-addresses     (rf/sub [:wallet/grouped-saved-addresses])]
     [quo/overlay
      {:type            :shell
       :container-style (style/page-wrapper inset-top)}
@@ -68,7 +71,7 @@
       {:key        :header
        :background :blur
        :icon-name  :i/arrow-left
-       :on-press   on-press-back}]
+       :on-press   navigate-back}]
      [rn/view {:style style/title-container}
       [quo/standard-title
        {:title               (i18n/label :t/saved-addresses)

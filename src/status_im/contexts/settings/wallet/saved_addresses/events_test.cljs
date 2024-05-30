@@ -4,7 +4,7 @@
     matcher-combinators.test
     [status-im.contexts.settings.wallet.saved-addresses.events :as events]))
 
-(deftest get-saved-addresses
+(deftest get-saved-addresses-test
   (testing "get saved addresses - dispatches RPC call"
     (let [cofx        {:db {}}
           effects     (events/get-saved-addresses cofx)
@@ -15,7 +15,7 @@
                           :on-error   [:wallet/saved-addresses-rpc-error :get-saved-addresses]}]]]]
       (is (match? expected-fx result-fx)))))
 
-(def sa-1
+(def saved-address-1
   {:isTest           false
    :address          "0x1"
    :mixedcaseAddress "0x1"
@@ -26,7 +26,7 @@
    :colorId          "purple"
    :removed          false})
 
-(def sa-2
+(def saved-address-2
   {:isTest           true
    :address          "0x2"
    :mixedcaseAddress "0x2"
@@ -37,7 +37,7 @@
    :colorId          "blue"
    :removed          false})
 
-(deftest get-saved-addresses-success
+(deftest get-saved-addresses-success-test
   (testing "no saved addresses"
     (let [cofx        {:db {}}
           effects     (events/get-saved-addresses-success cofx nil)
@@ -48,7 +48,7 @@
 
   (testing "one test saved address"
     (let [cofx        {:db {}}
-          effects     (events/get-saved-addresses-success cofx [[sa-2]])
+          effects     (events/get-saved-addresses-success cofx [[saved-address-2]])
           result-db   (:db effects)
           expected-db {:wallet {:saved-addresses
                                 {:test {"0x2" {:test?                     true
@@ -69,7 +69,7 @@
 
   (testing "two saved addresses (test and prod)"
     (let [cofx        {:db {}}
-          effects     (events/get-saved-addresses-success cofx [[sa-1 sa-2]])
+          effects     (events/get-saved-addresses-success cofx [[saved-address-1 saved-address-2]])
           result-db   (:db effects)
           expected-db {:wallet {:saved-addresses
                                 {:test {"0x2" {:test?                     true
@@ -100,7 +100,7 @@
                                                :removed?                  false}}}}}]
       (is (match? expected-db result-db)))))
 
-(deftest save-address
+(deftest save-address-test
   (testing "save address - dispatches RPC call"
     (let [test-networks-enabled? false
           cofx                   {:db {:profile/profile {:test-networks-enabled?
@@ -133,7 +133,7 @@
                                      :on-error   on-error}]]]]
       (is (match? expected-fx result-fx)))))
 
-(deftest delete-saved-addresses
+(deftest delete-saved-addresses-test
   (testing "delete saved addresses - dispatches RPC call"
     (let [test-networks-enabled? true
           cofx                   {:db {:profile/profile {:test-networks-enabled?
