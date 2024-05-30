@@ -16,6 +16,8 @@
                                                               contact-id])
         {:keys [contact-request-state community-id]} (rf/sub [:chats/current-chat-chat-view])
         chat-type                                    (rf/sub [:chats/chat-type])
+        joined                                       (rf/sub [:communities/community-joined
+                                                              community-id])
         contact-request-send?                        (or (not contact-request-state)
                                                          (= contact-request-state
                                                             constants/contact-request-state-none))
@@ -37,7 +39,9 @@
                        :else                         :i/add-user)
        :action-label (cond
                        (= chat-type :community-chat)
-                       (i18n/label :t/join-community-to-post)
+                       (if joined
+                         (i18n/label :t/no-permissions-to-post)
+                         (i18n/label :t/join-community-to-post))
 
                        (= chat-type :group-chat)
                        (i18n/label :t/group-chat-not-member)
