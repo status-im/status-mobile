@@ -224,7 +224,8 @@
 ;;;; Bottom sheet
 
 (rf/reg-fx :show-bottom-sheet
- (fn [] (show-overlay "bottom-sheet")))
+ (fn [options]
+   (show-overlay "bottom-sheet" options)))
 
 (rf/reg-fx :hide-bottom-sheet
  (fn [] (navigation/dissmiss-overlay "bottom-sheet")))
