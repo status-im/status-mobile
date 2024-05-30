@@ -311,7 +311,7 @@
                               {:browser-id (:browser-id browser)}
                               :browser/screen-id :browser)}
                   (navigation/pop-to-root :shell-stack)
-                  (chat.events/close-chat)
+                  (chat.events/close-chat (:current-chat-id db))
                   (navigation/change-tab :browser-stack)
                   (update-browser browser)
                   (resolve-url nil))

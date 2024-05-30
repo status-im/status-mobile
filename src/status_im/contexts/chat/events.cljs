@@ -144,19 +144,21 @@
 
 (rf/defn close-chat
   {:events [:chat/close]}
-  [{:keys [db] :as cofx}]
-  (when-let [chat-id (:current-chat-id db)]
-    (chat.state/reset-visible-item)
-    (rf/merge cofx
-              {:db                        (-> db
-                                              (dissoc :current-chat-id)
-                                              (assoc-in [:chat/inputs chat-id :focused?] false))
-               :effects.async-storage/set {:chat-id nil
-                                           :key-uid nil}}
-              (link-preview/reset-all)
-              (delete-for-me/sync-all)
-              (delete-message/send-all)
-              (offload-messages chat-id))))
+  [{:keys [db] :as cofx} chat-id]
+  (let [current-chat-id (:current-chat-id db)
+        chat-id         (or chat-id current-chat-id)]
+    (when (and current-chat-id (= chat-id current-chat-id))
+      (chat.state/reset-visible-item)
+      (rf/merge cofx
+                {:db                        (-> db
+                                                (dissoc :current-chat-id)
+                                                (assoc-in [:chat/inputs chat-id :focused?] false))
+                 :effects.async-storage/set {:chat-id nil
+                                             :key-uid nil}}
+                (link-preview/reset-all)
+                (delete-for-me/sync-all)
+                (delete-message/send-all)
+                (offload-messages chat-id)))))
 
 (rf/defn deactivate-chat
   "Deactivate chat in db, no side effects"
@@ -173,7 +175,7 @@
                      :on-error   #(log/error "failed to create public chat" chat-id %)}]}
    (clear-history chat-id true)
    (when (= chat-id (:current-chat-id db))
-     (close-chat))))
+     (close-chat chat-id))))
 
 (rf/defn force-close-chat
   [{:keys [db] :as cofx} chat-id]
@@ -201,7 +203,7 @@
   [{db :db :as cofx} chat-id animation]
   (rf/merge cofx
             {:dispatch [(if animation :shell/navigate-to :navigate-to) :chat chat-id animation]}
-            (close-chat)
+            (close-chat chat-id)
             (force-close-chat chat-id)
             (fn [{:keys [db]}]
               {:db (assoc db :current-chat-id chat-id)})
