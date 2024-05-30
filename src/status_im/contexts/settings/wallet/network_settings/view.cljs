@@ -114,10 +114,10 @@
        :background :blur
        :icon-name  :i/arrow-left
        :on-press   navigate-back}]
-     [rn/view {:style style/title-container}
-      [quo/standard-title
-       {:title               (i18n/label :t/network-settings)
-        :accessibility-label :network-settings-header}]]
+     [quo/standard-title
+      {:title               (i18n/label :t/network-settings)
+       :container-style     style/title-container
+       :accessibility-label :network-settings-header}]
      [rn/view {:style (style/settings-container (:bottom insets))}
       (when networks-by-name
         [rn/view {:style style/networks-container}

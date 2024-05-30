@@ -106,11 +106,11 @@
        :background :blur
        :icon-name  :i/arrow-left
        :on-press   navigate-back}]
-     [rn/view {:style style/title-container}
-      [quo/standard-title
-       {:title               (i18n/label :t/keypairs-and-accounts)
-        :accessibility-label :keypairs-and-accounts-header
-        :customization-color customization-color}]]
+     [quo/standard-title
+      {:title               (i18n/label :t/keypairs-and-accounts)
+       :container-style     style/title-container
+       :accessibility-label :keypairs-and-accounts-header
+       :customization-color customization-color}]
      [rn/view {:style style/settings-keypairs-container}
       (when (seq missing-keypairs)
         [quo/missing-keypairs

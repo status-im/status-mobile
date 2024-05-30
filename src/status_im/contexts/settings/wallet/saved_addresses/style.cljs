@@ -1,7 +1,8 @@
 (ns status-im.contexts.settings.wallet.saved-addresses.style)
 
 (def title-container
-  {:padding-horizontal 20
+  {:flex               0
+   :padding-horizontal 20
    :margin-top         12
    :margin-bottom      16})
 
