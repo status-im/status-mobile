@@ -20,7 +20,6 @@
            light-client-enabled?
            current-fleet
            test-networks-enabled?
-           is-goerli-enabled?
            peer-syncing-enabled?]}]
   (keep
    identity
@@ -86,14 +85,6 @@
      :accessory :switch
      :active test-networks-enabled?}
     {:size :small
-     :title "Enable Goerli as test network"
-     :accessibility-label :enable-sepolia-as-test-network
-     :container-margin-bottom 8
-     :on-press
-     #(re-frame/dispatch [:profile.settings/toggle-goerli-test-network])
-     :accessory :switch
-     :active is-goerli-enabled?}
-    {:size :small
      :title "Peer syncing"
      :accessibility-label :peer-syncing
      :container-margin-bottom 8
@@ -115,7 +106,6 @@
 (views/defview advanced-settings
   []
   (views/letsubs [test-networks-enabled? [:profile/test-networks-enabled?]
-                  is-goerli-enabled?     [:profile/is-goerli-enabled?]
                   light-client-enabled?  [:profile/light-client-enabled?]
                   telemetry-enabled?     [:profile/telemetry-enabled?]
                   current-log-level      [:log-level/current-log-level]
@@ -136,7 +126,6 @@
                     :current-fleet          current-fleet
                     :dev-mode?              false
                     :test-networks-enabled? test-networks-enabled?
-                    :is-goerli-enabled?     is-goerli-enabled?
                     :peer-syncing-enabled?  peer-syncing-enabled?})
        :key-fn    (fn [_ i] (str i))
        :render-fn render-item}]]))

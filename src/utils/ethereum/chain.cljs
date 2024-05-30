@@ -7,7 +7,6 @@
 (def chains
   {:mainnet     {:id 1 :name "Mainnet"}
    :xdai        {:id 100 :name "xDai"}
-   :goerli      {:id 5 :name "Goerli"}
    :bsc         {:id   BSC-mainnet-chain-id
                  :name "BSC"}
    :bsc-testnet {:id   BSC-testnet-chain-id
@@ -34,12 +33,6 @@
   (case k
     :mainnet :SNT
     :STT))
-
-(defn testnet?
-  [id]
-  (contains? #{(chain-keyword->chain-id :goerli)
-               (chain-keyword->chain-id :bsc-testnet)}
-             id))
 
 (defn network->chain-id
   [network]

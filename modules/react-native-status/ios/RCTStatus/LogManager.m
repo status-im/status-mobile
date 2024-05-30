@@ -41,18 +41,18 @@ RCT_EXPORT_METHOD(sendLogs:(NSString *)dbJson
 #endif
 
 #if DEBUG
-    NSString *goerliNetworkDirPath = @"ethereum/goerli_rpc_dev";
+    NSString *sepoliaNetworkDirPath = @"ethereum/sepolia_rpc_dev";
 #else
-    NSString *goerliNetworkDirPath = @"ethereum/goerli_rpc";
+    NSString *sepoliaNetworkDirPath = @"ethereum/sepolia_rpc";
 #endif
 
     NSURL *networkDir = [rootUrl URLByAppendingPathComponent:networkDirPath];
     NSURL *originalGethLogsFile = [networkDir URLByAppendingPathComponent:@"geth.log"];
     NSURL *gethLogsFile = [logsFolderName URLByAppendingPathComponent:@"mainnet_geth.log"];
 
-    NSURL *goerliNetworkDir = [rootUrl URLByAppendingPathComponent:goerliNetworkDirPath];
-    NSURL *goerliGethLogsFile = [goerliNetworkDir URLByAppendingPathComponent:@"geth.log"];
-    NSURL *goerliLogsFile = [logsFolderName URLByAppendingPathComponent:@"goerli_geth.log"];
+    NSURL *sepoliaNetworkDir = [rootUrl URLByAppendingPathComponent:sepoliaNetworkDirPath];
+    NSURL *sepoliaGethLogsFile = [sepoliaNetworkDir URLByAppendingPathComponent:@"geth.log"];
+    NSURL *sepoliaLogsFile = [logsFolderName URLByAppendingPathComponent:@"sepolia_geth.log"];
 
     NSURL *mainGethLogsFile = [rootUrl URLByAppendingPathComponent:@"geth.log"];
     NSURL *mainLogsFile = [logsFolderName URLByAppendingPathComponent:@"geth.log"];
@@ -63,7 +63,7 @@ RCT_EXPORT_METHOD(sendLogs:(NSString *)dbJson
     //NSString* gethLogs = StatusgoExportNodeLogs();
     //[gethLogs writeToFile:gethLogsFile.path atomically:YES encoding:NSUTF8StringEncoding error:nil];
     [fileManager copyItemAtPath:originalGethLogsFile.path toPath:gethLogsFile.path error:nil];
-    [fileManager copyItemAtPath:goerliGethLogsFile.path toPath:goerliLogsFile.path error:nil];
+    [fileManager copyItemAtPath:sepoliaGethLogsFile.path toPath:sepoliaLogsFile.path error:nil];
     [fileManager copyItemAtPath:mainGethLogsFile.path toPath:mainLogsFile.path error:nil];
 
     [SSZipArchive createZipFileAtPath:zipFile.path withContentsOfDirectory:logsFolderName.path];

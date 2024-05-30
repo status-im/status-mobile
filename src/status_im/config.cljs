@@ -16,26 +16,21 @@
 (goog-define RARIBLE_MAINNET_API_KEY "")
 (goog-define RARIBLE_TESTNET_API_KEY "")
 (goog-define ALCHEMY_ETHEREUM_MAINNET_TOKEN "")
-(goog-define ALCHEMY_ETHEREUM_GOERLI_TOKEN "")
 (goog-define ALCHEMY_ETHEREUM_SEPOLIA_TOKEN "")
 (goog-define ALCHEMY_ARBITRUM_MAINNET_TOKEN "")
-(goog-define ALCHEMY_ARBITRUM_GOERLI_TOKEN "")
 (goog-define ALCHEMY_ARBITRUM_SEPOLIA_TOKEN "")
 (goog-define ALCHEMY_OPTIMISM_MAINNET_TOKEN "")
-(goog-define ALCHEMY_OPTIMISM_GOERLI_TOKEN "")
 (goog-define ALCHEMY_OPTIMISM_SEPOLIA_TOKEN "")
 (goog-define WALLET_CONNECT_PROJECT_ID "87815d72a81d739d2a7ce15c2cfdefb3")
 
 (def mainnet-rpc-url (str "https://eth-archival.rpc.grove.city/v1/" POKT_TOKEN))
-(def goerli-rpc-url (str "https://goerli-archival.gateway.pokt.network/v1/lb/" POKT_TOKEN))
+(def sepolia-rpc-url (str "https://sepolia-archival.rpc.grove.city/v1/" POKT_TOKEN))
 (def mainnet-chain-explorer-link "https://etherscan.io/address/")
 (def optimism-mainnet-chain-explorer-link "https://optimistic.etherscan.io/address/")
 (def arbitrum-mainnet-chain-explorer-link "https://arbiscan.io/address/")
 (def sepolia-chain-explorer-link "https://sepolia.etherscan.io/address/")
 (def optimism-sepolia-chain-explorer-link "https://sepolia-optimistic.etherscan.io/address/")
 (def arbitrum-sepolia-chain-explorer-link "https://sepolia.arbiscan.io/address/")
-(def goerli-chain-explorer-link "https://goerli.etherscan.io/address/")
-(def optimism-goerli-chain-explorer-link "https://goerli-optimistic.etherscan.io/address/")
 (def opensea-link "https://opensea.io")
 (def opensea-tesnet-link "https://testnets.opensea.io")
 
@@ -70,7 +65,7 @@
 (def log-level (string/upper-case (get-config :LOG_LEVEL "")))
 (def fleet (get-config :FLEET "waku.sandbox"))
 (def apn-topic (get-config :APN_TOPIC "im.status.ethereum"))
-(def default-network (get-config :DEFAULT_NETWORK "goerli_rpc"))
+(def default-network (get-config :DEFAULT_NETWORK "sepolia_rpc"))
 (def max-installations 2)
 ; currently not supported in status-go
 (def enable-remove-profile-picture? false)
@@ -91,13 +86,13 @@
 (def verify-transaction-url
   (if (= :mainnet (chain/chain-id->chain-keyword verify-transaction-chain-id))
     mainnet-rpc-url
-    goerli-rpc-url))
+    sepolia-rpc-url))
 
 (def verify-ens-chain-id (js/parseInt (get-config :VERIFY_ENS_CHAIN_ID "1")))
 (def verify-ens-url
   (if (= :mainnet (chain/chain-id->chain-keyword verify-ens-chain-id))
     mainnet-rpc-url
-    goerli-rpc-url))
+    sepolia-rpc-url))
 (def verify-ens-contract-address
   (get-config :VERIFY_ENS_CONTRACT_ADDRESS
               ((chain/chain-id->chain-keyword verify-ens-chain-id) utils.ens/ens-registries)))

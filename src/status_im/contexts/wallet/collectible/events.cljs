@@ -241,5 +241,4 @@
             {:chain-id               chain-id
              :token-id               token-id
              :contract-address       contract-address
-             :test-networks-enabled? (get-in db [:profile/profile :test-networks-enabled?])
-             :is-goerli-enabled?     (get-in db [:profile/profile :is-goerli-enabled?])})]]]}))
+             :test-networks-enabled? (get-in db [:profile/profile :test-networks-enabled?])})]]]}))

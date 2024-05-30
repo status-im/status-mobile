@@ -14,12 +14,6 @@
     (= chain-id constants/optimism-mainnet-chain-id)
     config/optimism-mainnet-chain-explorer-link
 
-    (= chain-id constants/ethereum-goerli-chain-id)
-    config/goerli-chain-explorer-link
-
-    (= chain-id constants/optimism-goerli-chain-id)
-    config/optimism-goerli-chain-explorer-link
-
     (= chain-id constants/ethereum-sepolia-chain-id)
     config/sepolia-chain-explorer-link
 

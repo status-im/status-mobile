@@ -92,7 +92,7 @@ For particular example it was failed on `Recover access(password:qwerty, keycard
 Not all features of the app could be covered by e2e at the moment:
 
 - Colours or place of an element on UI.
-- Real ETH/token transactions. That’s the main reason we have separate .apk build for automation needs - it defaults to Goerli network. Also it has enabled keycard test menu, ENS names and chat commands are also on Goerli network (the same in PR builds, but not in nightlies / release)
+- Real ETH/token transactions. That’s the main reason we have separate .apk build for automation needs - it defaults to Sepolia network. Also it has enabled keycard test menu, ENS names and chat commands are also on Sepolia network (the same in PR builds, but not in nightlies / release)
 - Autologin/Biometric related actions (autologin available when device meets certain conditions like the it has set unlock password and device is not rooted: all emulators are rooted in SauceLabs)
 
 ## Brief flow for test to be automated

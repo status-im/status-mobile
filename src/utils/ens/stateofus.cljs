@@ -26,15 +26,6 @@
   (when (and name (string/ends-with? name domain))
     (first (string/split name "."))))
 
-(def old-registrars
-  (merge
-   {:mainnet "0xDB5ac1a559b02E12F29fC0eC0e37Be8E046DEF49"
-    :goerli  "0xD1f7416F91E7Eb93dD96A61F12FC092aD6B67B11"}))
-
-(defn get-cached-registrar
-  [chain]
-  (get old-registrars chain))
-
 (defn lower-case?
   [s]
   (when s
