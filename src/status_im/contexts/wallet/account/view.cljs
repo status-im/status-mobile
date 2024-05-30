@@ -18,7 +18,7 @@
            {:id :collectibles :label (i18n/label :t/collectibles) :accessibility-label :collectibles-tab}
            {:id :activity :label (i18n/label :t/activity) :accessibility-label :activity-tab}]
     (not watch-only?) (conj {:id :dapps :label (i18n/label :t/dapps) :accessibility-label :dapps})
-    true              (conj {:id :about :label (i18n/label :t/about) :accessibility-label :about})))
+    :always           (conj {:id :about :label (i18n/label :t/about) :accessibility-label :about})))
 
 (defn- change-tab [id] (rf/dispatch [:wallet/select-account-tab id]))
 
@@ -42,7 +42,8 @@
        :account-name        name
        :account             (if watch-only? :watched-address :default)
        :customization-color color}]
-     (when (ff/enabled? ::ff/wallet.graph) [quo/wallet-graph {:time-frame :empty}])
+     (when (ff/enabled? ::ff/wallet.graph)
+       [quo/wallet-graph {:time-frame :empty}])
      (when (not watch-only?)
        [quo/wallet-ctas
         {:container-style style/cta-buttons
