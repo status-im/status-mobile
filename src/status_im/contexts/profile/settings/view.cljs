@@ -70,7 +70,8 @@
         :icon-name  :i/close
         :on-press   #(rf/dispatch [:navigate-back])
         :right-side [{:icon-name :i/qr-code
-                      :on-press  #(debounce/throttle-and-dispatch [:open-modal :screen/share-shell]
+                      :on-press  #(debounce/throttle-and-dispatch [:open-modal :screen/share-shell
+                                                                   {:initial-tab :profile}]
                                                                   1000)}
                      {:icon-name :i/share
                       :on-press  #(rf/dispatch [:open-share

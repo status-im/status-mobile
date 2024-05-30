@@ -24,14 +24,14 @@
   (let [chain-id            (or (:chain-id token-in) (:chain-id token-out))
         amount-in-units     (native-module/hex-to-number
                              (utils.hex/normalize-hex amount-in))
-        amount-in-value     (money/with-precision
-                             (money/wei->ether amount-in-units)
-                             precision)
+        amount-in-value     (str (money/with-precision
+                                  (money/wei->ether amount-in-units)
+                                  precision))
         amount-out-units    (native-module/hex-to-number
                              (utils.hex/normalize-hex amount-out))
-        amount-out-value    (money/with-precision
-                             (money/wei->ether amount-out-units)
-                             precision)
+        amount-out-value    (str (money/with-precision
+                                  (money/wei->ether amount-out-units)
+                                  precision))
         relative-date       (datetime/timestamp->relative (* timestamp 1000))
         receiving-activity? (= activity-type constants/wallet-activity-type-receive)]
     [quo/wallet-activity
