@@ -6,8 +6,8 @@
     [status-im.contexts.onboarding.common.background.view :as background]
     [status-im.contexts.onboarding.common.overlay.view :as overlay]
     [status-im.contexts.onboarding.intro.style :as style]
+    [status-im.contexts.onboarding.terms.view :as terms]
     [status-im.contexts.syncing.scan-sync-code.view :as scan-sync-code]
-    [utils.debounce :as debounce]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
@@ -44,7 +44,9 @@
        :style  style/plain-text}
       (i18n/label :t/by-continuing-you-accept)]
      [quo/text
-      {:on-press #(debounce/throttle-and-dispatch [:open-modal :privacy-policy] 1000)
+      {:on-press #(rf/dispatch [:show-bottom-sheet
+                                {:content (fn [] [terms/terms-of-use])
+                                 :shell?  true}])
        :size     :paragraph-2
        :weight   :regular
        :style    style/highlighted-text}
