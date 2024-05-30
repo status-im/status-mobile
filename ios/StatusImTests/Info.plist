@@ -26,8 +26,6 @@
 		<string>A00000080400010301</string>
 		<string>A000000151000000</string>
 	</array>
-	<key>NSAppleMusicUsageDescription</key>
-	<string>Play audio messages</string>
 	<key>NFCReaderUsageDescription</key>
 	<string>Enable Keycard</string>
 </dict>
