@@ -9,6 +9,10 @@
     [utils.security.core :as security]
     [utils.transforms :as transforms]))
 
+(defn- error-message
+  [kw]
+  (-> kw symbol str))
+
 (rf/reg-fx
  :effects.wallet/create-account-from-mnemonic
  (fn [{:keys [mnemonic-phrase paths on-success]
@@ -28,10 +32,8 @@
       (security/safe-unmask-data)
       (native-module/validate-mnemonic)
       (promesa/then (fn [result]
-                      (let [{:keys [error keyUID]} (transforms/json->clj result)]
-                        (if (seq error)
-                          (promesa/rejected error)
-                          {:key-uid keyUID}))))))
+                      (let [{:keys [keyUID]} (transforms/json->clj result)]
+                        {:key-uid keyUID})))))
 
 (rf/reg-fx
  :multiaccount/validate-mnemonic
@@ -52,29 +54,27 @@
                      :params     [(security/safe-unmask-data mnemonic)
                                   (-> password security/safe-unmask-data native-module/sha3)]
                      :on-error   (fn [error]
-                                   (rejecter error))
+                                   (rejecter (ex-info (str error) {:error error})))
                      :on-success (fn [value]
                                    (resolver {:value value}))}))))
 
 (defn import-keypair-by-seed-phrase
   [keypair-key-uid seed-phrase password]
   (-> (validate-mnemonic seed-phrase)
-      (promesa/catch
-        (fn [error]
-          (promesa/rejected (ex-info (-> :import-keypair-by-seed-phrase/validation-error symbol str)
-                                     {:type  :error/unknown
-                                      :error error}))))
       (promesa/then
        (fn [{:keys [key-uid]}]
          (if (not= keypair-key-uid key-uid)
-           (promesa/rejected (ex-info (-> :import-keypair-by-seed-phrase/validation-error symbol str)
-                                      {:type :error/mismatched-keypairs}))
+           (promesa/rejected
+            (ex-info
+             (error-message :import-keypair-by-seed-phrase/import-error)
+             {:hint :incorrect-seed-phrase-for-keypair}))
            (make-seed-phrase-fully-operable seed-phrase password))))
       (promesa/catch
         (fn [error]
-          (promesa/rejected (ex-info (-> :import-keypair-by-seed-phrase/import-error)
-                                     {:type  :error/unknown
-                                      :error error}))))))
+          (promesa/rejected
+           (ex-info
+            (error-message :import-keypair-by-seed-phrase/import-error)
+            (ex-data error)))))))
 
 (rf/reg-fx
  :import-keypair-by-seed-phrase

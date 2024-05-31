@@ -148,7 +148,7 @@
                                (vector? on-success) (rf/dispatch on-success)
                                (fn? on-success)     (on-success)))
           :on-error        (fn [error]
-                             (rf/dispatch [:import-keypair-by-seed-phrase-failed error])
+                             (rf/dispatch [:wallet/import-keypair-by-seed-phrase-failed error])
                              (cond
                                (vector? on-error) (rf/dispatch (conj on-error error))
                                (fn? on-error)     (on-error error)))}]]})
@@ -157,12 +157,14 @@
 
 (defn import-keypair-by-seed-phrase-failed
   [_ [error]]
-  (let [error-message (-> error ex-message keyword)]
-    (when-not (= error-message :import-keypair-by-seed-phrase/validation-error)
-      {:fx [[:dispach
-             [[:toasts/upsert
-               {:type  :negative
-                :theme :dark
-                :text  (ex-message error)}]]]]})))
+  (let [error-type (-> error ex-message keyword)
+        error-data (ex-data error)]
+    (when-not (and (= error-type :import-keypair-by-seed-phrase/import-error)
+                   (= (:hint error-data) :incorrect-seed-phrase-for-keypair))
+      {:fx [[:dispatch
+             [:toasts/upsert
+              {:type  :negative
+               :theme :dark
+               :text  (:error error-data)}]]]})))
 
 (rf/reg-event-fx :wallet/import-keypair-by-seed-phrase-failed import-keypair-by-seed-phrase-failed)
