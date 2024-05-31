@@ -73,7 +73,9 @@
     :label               (i18n/label :t/about)
     :accessibility-label :about-tab}])
 
-(def navigate-back #(rf/dispatch [:navigate-back]))
+(defn navigate-back-and-clear-collectible []
+  (rf/dispatch [:navigate-back])
+  (rf/dispatch [:wallet/clear-last-collectible-details]))
 
 (defn animated-header
   [{:keys [scroll-amount title-opacity page-nav-type picture title description theme]}]
@@ -100,7 +102,7 @@
          :background          :blur
          :icon-name           :i/close
          :accessibility-label :back-button
-         :on-press            navigate-back
+         :on-press            navigate-back-and-clear-collectible
          :right-side          [{:icon-name :i/options
                                 :on-press  #(rf/dispatch
                                              [:show-bottom-sheet
@@ -242,9 +244,6 @@
         {preview-uri :uri}         preview-url
         {collectible-name :name}   collectible-data
         {collection-name :name}    collection-data]
-
-    (rn/use-unmount #(rf/dispatch [:wallet/clear-last-collectible-details]))
-
     [rn/view {:style (style/background-color theme)}
      [animated-header
       {:scroll-amount scroll-amount

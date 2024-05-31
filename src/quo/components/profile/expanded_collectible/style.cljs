@@ -11,7 +11,9 @@
   {:width            "100%"
    :aspect-ratio     (if square? 1 aspect-ratio)
    :border-radius    16
-   :background-color (colors/theme-colors colors/white colors/neutral-95 theme)})
+   :background-color (colors/theme-colors colors/white colors/neutral-95 theme)
+   :border-width     1
+   :border-color     (colors/theme-colors colors/neutral-80-opa-5 colors/white-opa-5 theme)})
 
 (defn fallback
   [{:keys [theme]}]
