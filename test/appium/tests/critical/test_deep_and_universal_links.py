@@ -64,8 +64,9 @@ class TestDeepLinksOneDevice(MultipleSharedDeviceTestCase):
                     or self.community_view.join_community_button.is_element_displayed(5)) \
                     or self.community_view.community_title.text != text:
                 self.errors.append("Community '%s' was not requested to join by the url %s" % (text, url))
-            if text != "open community":  # the last one
-                self.home.jump_to_card_by_text(self.community_name)
+            if text != "Closed community":  # the last one
+                self.home.navigate_back_to_home_view()
+                self.home.get_to_community_channel_from_home(self.community_name)
 
         self.errors.verify_no_errors()
 

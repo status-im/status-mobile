@@ -40,9 +40,21 @@
 (rf/reg-event-fx :wallet/store-new-seed-phrase store-new-seed-phrase)
 
 (defn seed-phrase-validated
-  [{:keys [db]} [seed-phrase]]
-  {:db (assoc-in db [:wallet :ui :create-account :seed-phrase] seed-phrase)
-   :fx [[:dispatch [:navigate-to :screen/wallet.keypair-name]]]})
+  [{:keys [db]} [seed-phrase key-uid on-error]]
+  (let [keypair-already-added? (->> db
+                                    :wallet
+                                    :keypairs
+                                    (some #(= key-uid (:key-uid %))))]
+    (if keypair-already-added?
+      (do
+        (on-error)
+        {:fx [[:dispatch
+               [:toasts/upsert
+                {:id   :already-existing-keypair
+                 :type :negative
+                 :text "This keypair already exists in the device"}]]]})
+      {:db (assoc-in db [:wallet :ui :create-account :new-keypair :seed-phrase] seed-phrase)
+       :fx [[:dispatch [:navigate-to :screen/wallet.keypair-name {:workflow :recovery-phrase}]]]})))
 
 (rf/reg-event-fx :wallet/seed-phrase-validated seed-phrase-validated)
 
@@ -51,7 +63,7 @@
   {:fx [[:multiaccount/validate-mnemonic
          [seed-phrase
           (fn [mnemonic key-uid]
-            (rf/dispatch [:wallet/seed-phrase-validated mnemonic key-uid]))
+            (rf/dispatch [:wallet/seed-phrase-validated mnemonic key-uid on-error]))
           on-error]]]})
 
 (rf/reg-event-fx :wallet/seed-phrase-entered seed-phrase-entered)

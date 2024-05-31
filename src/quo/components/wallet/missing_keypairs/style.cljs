@@ -13,7 +13,13 @@
   {:top 1})
 
 (def title-info-container
-  {:padding-left 8})
+  {:padding-left 8
+   :flex         1})
+
+(def title-row
+  {:display         :flex
+   :flex-direction  :row
+   :justify-content :space-between})
 
 (def title-container
   {:align-items    :flex-start

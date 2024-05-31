@@ -79,8 +79,7 @@
 
 (defn- context-tag-subtitle
   [{:keys [context-tag-type context icon community-logo community-name account-name emoji
-           customization-color
-           full-name profile-picture]}]
+           customization-color full-name profile-picture blur?]}]
   (let [tag-type (or context-tag-type :account)]
     [rn/view
      {:accessibility-label :context-tag-wrapper
@@ -97,7 +96,8 @@
        :profile-picture     profile-picture
        :full-name           full-name
        :context             context
-       :icon                icon}]]))
+       :icon                icon
+       :blur?               blur?}]]))
 
 (defn- description-subtitle
   [{:keys [theme blur? description]}]
@@ -142,7 +142,8 @@
       :profile-picture     profile-picture
       :full-name           full-name
       :context             context
-      :icon                icon}]
+      :icon                icon
+      :blur?               blur?}]
 
     (and (not= :label type) description)
     [description-subtitle

@@ -15,6 +15,10 @@
     :select-account  {:content select-account/view}
     nil))
 
+(defn- on-dapps-press
+  [switcher-type]
+  (rf/dispatch [:show-bottom-sheet (get-bottom-sheet-args switcher-type)]))
+
 (defn view
   [{:keys [type on-press accessibility-label icon-name switcher-type margin-top]
     :or   {icon-name           :i/close
@@ -39,7 +43,6 @@
 
                             {:content-type        :account-switcher
                              :customization-color color
-                             :on-press            #(rf/dispatch [:show-bottom-sheet
-                                                                 (get-bottom-sheet-args switcher-type)])
+                             :on-press            #(on-dapps-press switcher-type)
                              :emoji               emoji
                              :type                (when watch-only? :watch-only)}]}]))

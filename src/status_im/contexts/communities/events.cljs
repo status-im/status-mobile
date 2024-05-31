@@ -252,7 +252,9 @@
 
 (defn fetch-community
   [{:keys [db]} [{:keys [community-id update-last-opened-at?]}]]
-  (when (and community-id (not (get-in db [:communities/fetching-communities community-id])))
+  (when (and community-id
+             (not (get-in db [:communities community-id]))
+             (not (get-in db [:communities/fetching-communities community-id])))
     {:db            (assoc-in db [:communities/fetching-communities community-id] true)
      :json-rpc/call [{:method     "wakuext_fetchCommunity"
                       :params     [{:CommunityKey    community-id

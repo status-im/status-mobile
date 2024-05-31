@@ -5,6 +5,7 @@
     [clojure.set :as set]
     [clojure.string :as string]
     [status-im.constants :as constants]
+    [status-im.contexts.wallet.common.utils.networks :as network-utils]
     [utils.money :as money]
     [utils.number :as utils.number]
     [utils.transforms :as transforms]))
@@ -136,3 +137,33 @@
   [keypairs]
   (let [renamed-data (sort-and-rename-keypairs keypairs)]
     (cske/transform-keys csk/->kebab-case-keyword renamed-data)))
+
+(defn- network-short-names->full-names
+  [short-names-string]
+  (->> (string/split short-names-string constants/chain-id-separator)
+       (map network-utils/short-name->network)
+       (remove nil?)
+       set))
+
+(defn- add-keys-to-saved-address
+  [saved-address]
+  (-> saved-address
+      (assoc :network-preferences-names
+             (network-short-names->full-names (:chain-short-names saved-address)))
+      (assoc :has-ens? (not (string/blank? (:ens saved-address))))))
+
+(defn rpc->saved-address
+  [saved-address]
+  (-> saved-address
+      (set/rename-keys {:chainShortNames  :chain-short-names
+                        :isTest           :test?
+                        :createdAt        :created-at
+                        :colorId          :customization-color
+                        :mixedcaseAddress :mixedcase-address
+                        :removed          :removed?})
+      (update :customization-color keyword)
+      add-keys-to-saved-address))
+
+(defn rpc->saved-addresses
+  [saved-addresses]
+  (map rpc->saved-address saved-addresses))

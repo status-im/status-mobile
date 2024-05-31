@@ -59,10 +59,10 @@ in {
   xcodeWrapper = callPackage ./pkgs/xcodeenv/compose-xcodewrapper.nix { } {
     versions = ["15.1" "15.2" "15.3"];
   };
-  go = super.go_1_20;
+  go = super.go_1_21;
   clang = super.clang_15;
-  buildGoPackage = super.buildGo120Package;
-  buildGoModule = super.buildGo120Module;
+  buildGoPackage = super.buildGo121Package;
+  buildGoModule = super.buildGo121Module;
   gomobile = (super.gomobile.overrideAttrs (old: {
     patches = [
       (self.fetchurl { # https://github.com/golang/mobile/pull/84

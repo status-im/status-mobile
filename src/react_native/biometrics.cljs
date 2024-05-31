@@ -8,6 +8,8 @@
 
 (def ^:private ^:const android-not-available-error-message "Biometric hardware unavailable")
 (def ^:private ^:const android-not-enrolled-error-message "No fingerprints enrolled.")
+(def ^:private ^:const android-too-many-attempts-error-message
+  "Too many attempts. Use screen lock instead.")
 (def ^:private ^:const ios-not-enrolled-error-message "No identities are enrolled")
 
 (defn get-supported-type
@@ -39,8 +41,9 @@
   [message]
   (let [cause (if platform/android?
                 (condp = message
-                  android-not-enrolled-error-message  :biometrics/not-enrolled-error
-                  android-not-available-error-message :biometrics/not-available-error
+                  android-not-enrolled-error-message      :biometrics/not-enrolled-error
+                  android-not-available-error-message     :biometrics/not-available-error
+                  android-too-many-attempts-error-message :biometric/too-many-attempts
                   :biometrics/unknown-error)
 
                 (condp #(string/includes? %2 %1) message

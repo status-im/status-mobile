@@ -14,7 +14,8 @@
    :z-index                 1
    :max-height              max-height
    :border-top-left-radius  sheet-border-radius
-   :border-top-right-radius sheet-border-radius})
+   :border-top-right-radius sheet-border-radius
+   :overflow                :hidden})
 
 (def gradient-bg
   {:position :absolute

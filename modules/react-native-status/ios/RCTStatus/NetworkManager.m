@@ -124,4 +124,23 @@ RCT_EXPORT_METHOD(getConnectionStringForExportingKeypairsKeystores:(NSString *)c
     callback(@[result]);
 }
 
+RCT_EXPORT_METHOD(inputConnectionStringForImportingKeypairsKeystores:(NSString *)cs
+        configJSON:(NSString *)configJSON
+        callback:(RCTResponseSenderBlock)callback) {
+
+    NSData *configData = [configJSON dataUsingEncoding:NSUTF8StringEncoding];
+    NSError *error;
+    NSMutableDictionary *configDict = [NSJSONSerialization JSONObjectWithData:configData options:NSJSONReadingMutableContainers error:&error];
+    NSMutableDictionary *receiverConfig = configDict[@"receiverConfig"];
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    NSURL *rootUrl =[[fileManager URLsForDirectory:NSLibraryDirectory inDomains:NSUserDomainMask] lastObject];
+    NSURL *multiaccountKeystoreDir = [rootUrl URLByAppendingPathComponent:@"keystore"];
+    NSString *keystoreDir = multiaccountKeystoreDir.path;
+
+    [receiverConfig setValue:keystoreDir forKey:@"keystorePath"];
+    NSString *modifiedConfigJSON = [Utils jsonStringWithPrettyPrint:NO fromDictionary:configDict];
+    NSString *result = StatusgoInputConnectionStringForImportingKeypairsKeystores(cs, modifiedConfigJSON);
+    callback(@[result]);
+}
+
 @end

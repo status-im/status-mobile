@@ -3,7 +3,7 @@
     "_comment": "Instead use: scripts/update-status-go.sh <rev>",
     "owner": "status-im",
     "repo": "status-go",
-    "version": "ilmotta/partially-fix-slow-login",
-    "commit-sha1": "c2625f6bee0a495047a92baa9b6387f98c9fc29e",
-    "src-sha256": "1h6pzzrhnl08fnrrwdivqb231dyq2q0axv23rq6nqxn5wb9fbzhj"
+    "version": "v0.179.25",
+    "commit-sha1": "0061c563f2d50679d812c5dc2978a96c49a93314",
+    "src-sha256": "0glzz5af873ym4qfbya14l38mjc8brkinpc7i57bywzsgydjqdp2"
 }

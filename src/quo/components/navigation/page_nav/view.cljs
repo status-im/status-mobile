@@ -30,16 +30,17 @@
    & children]
   (into [rn/view {:style (style/container margin-top)}
          (when icon-name
-           [button/button
-            {:type                (button-type background)
-             :icon-only?          true
-             :size                32
-             :on-press            on-press
-             :background          (if behind-overlay?
-                                    :blur
-                                    (when (button-properties/backgrounds background) background))
-             :accessibility-label accessibility-label}
-            icon-name])]
+           [rn/view {:style style/icon-container}
+            [button/button
+             {:type                (button-type background)
+              :icon-only?          true
+              :size                32
+              :on-press            on-press
+              :background          (if behind-overlay?
+                                     :blur
+                                     (when (button-properties/backgrounds background) background))
+              :accessibility-label accessibility-label}
+             icon-name]])]
         children))
 
 (defn- right-section-spacing [] [rn/view {:style style/right-actions-spacing}])
@@ -88,7 +89,7 @@
   [{:keys [background content max-actions min-size? support-account-switcher?
            behind-overlay?]
     :or   {support-account-switcher? true}}]
-  [rn/view (when min-size? {:style style/right-content-min-size})
+  [rn/view (style/right-content min-size?)
    (when (coll? content)
      (into [rn/view {:style style/right-actions-container}]
            (add-right-buttons-xf max-actions background behind-overlay? support-account-switcher?)

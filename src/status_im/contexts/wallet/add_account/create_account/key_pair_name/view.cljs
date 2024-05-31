@@ -8,6 +8,7 @@
     [status-im.common.validation.general :as validators]
     [status-im.constants :as constants]
     [status-im.contexts.wallet.add-account.create-account.key-pair-name.style :as style]
+    [taoensso.timbre :as log]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
@@ -17,9 +18,24 @@
    :emoji        (i18n/label :t/key-name-error-emoji)
    :special-char (i18n/label :t/key-name-error-special-char)})
 
-(defn navigate-back
+(defn- navigate-back
   []
   (rf/dispatch [:navigate-back]))
+
+(defn- next-workflow-step
+  [workflow key-pair-name]
+  (case workflow
+    ;; TODO issue #19759. Implement creation account from private key
+    :import-private-key
+    (not-implemented/alert)
+
+    (:new-keypair :recovery-phrase)
+    (rf/dispatch [:wallet/generate-account-for-keypair
+                  {:keypair-name key-pair-name}])
+
+    (do
+      (log/error "Unknown workflow" workflow)
+      (js/alert "Unknown workflow"))))
 
 (defn view
   []
@@ -45,17 +61,7 @@
 
                                                :else (set-error nil))))
         on-continue                       (rn/use-callback
-                                           (fn [_]
-                                             (case workflow
-                                               ;; TODO issue #19759. Implement creation account from
-                                               ;; private key
-                                               :import-private-key
-                                               (not-implemented/alert)
-
-                                               :new-keypair
-                                               (rf/dispatch [:wallet/generate-account-for-keypair
-                                                             {:keypair-name key-pair-name}])
-                                               (js/alert "Unknown workflow")))
+                                           #(next-workflow-step workflow key-pair-name)
                                            [workflow key-pair-name])
         disabled?                         (or (some? error) (string/blank? key-pair-name))]
     [rn/view {:style {:flex 1}}

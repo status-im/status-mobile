@@ -7,8 +7,8 @@
   {:dapp                {:avatar nil
                          :name   "Coingecko"
                          :value  "coingecko.com"}
+   :accessibility-label "dapp-coingecko"
    :state               :default
-   :action              :icon
    :blur?               false
    :customization-color :blue})
 
@@ -20,6 +20,6 @@
     (h/is-truthy (h/get-by-text (:value (:dapp props)))))
   (h/test "on-press event"
     (let [mock-fn (h/mock-fn)]
-      (h/render [dapp/view (assoc props :on-press-icon mock-fn)])
-      (h/fire-event :press (h/get-by-test-id "dapp-component-icon"))
+      (h/render [dapp/view (assoc props :on-press mock-fn)])
+      (h/fire-event :press (h/get-by-label-text "dapp-coingecko"))
       (h/was-called mock-fn))))

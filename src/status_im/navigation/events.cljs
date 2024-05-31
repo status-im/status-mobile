@@ -4,6 +4,7 @@
     [status-im.contexts.shell.jump-to.events :as shell.events]
     [status-im.contexts.shell.jump-to.state :as shell.state]
     [status-im.contexts.shell.jump-to.utils :as shell.utils]
+    [status-im.feature-flags :as ff]
     [utils.re-frame :as rf]))
 
 (defn- all-screens-params
@@ -57,12 +58,16 @@
 (rf/defn pop-to-root
   {:events [:pop-to-root]}
   [{:keys [db]} tab]
-  {:pop-to-root-fx            tab
-   :db                        (-> db
-                                  (dissoc :shell/floating-screens)
-                                  (dissoc :shell/loaded-screens)
-                                  (assoc :view-id (or @shell.state/selected-stack-id :shell)))
-   :effects.shell/pop-to-root nil})
+  (cond->
+    {:pop-to-root-fx            tab
+     :db                        (-> db
+                                    (dissoc :shell/floating-screens)
+                                    (dissoc :shell/loaded-screens)
+                                    (assoc :view-id (or @shell.state/selected-stack-id :shell)))
+     :effects.shell/pop-to-root nil}
+
+    (and (:current-chat-id db) (not (ff/enabled? ::ff/shell.jump-to)))
+    (assoc :dispatch [:chat/close (:current-chat-id db)])))
 
 (rf/defn init-root
   {:events [:init-root]}
@@ -107,12 +112,16 @@
 (rf/defn show-bottom-sheet
   {:events [:show-bottom-sheet]}
   [{:keys [db] :as cofx} content]
-  (let [{:keys [sheets hide?]} (:bottom-sheet db)]
+  (let [theme                  (or (:theme content) (:theme db))
+        {:keys [sheets hide?]} (:bottom-sheet db)]
     (rf/merge cofx
-              {:db               (update-in db [:bottom-sheet :sheets] #(conj % content))
+              {:db               (update-in db [:bottom-sheet :sheets] conj content)
                :dismiss-keyboard nil}
-              #(when-not hide?
-                 (if (seq sheets) (hide-bottom-sheet %) {:show-bottom-sheet nil})))))
+              (fn [new-cofx]
+                (when-not hide?
+                  (if (seq sheets)
+                    (hide-bottom-sheet new-cofx)
+                    {:show-bottom-sheet {:theme theme}}))))))
 
 (rf/defn dismiss-all-overlays
   {:events [:dismiss-all-overlays]}

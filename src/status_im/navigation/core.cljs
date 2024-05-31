@@ -30,7 +30,8 @@
      (when @state/root-id
        (reset! theme/device-theme (rn/get-color-scheme))
        (re-frame/dispatch [:init-root @state/root-id])
-       (re-frame/dispatch [:chat/check-last-chat]))
+       (re-frame/dispatch [:chat/check-last-chat])
+       (re-frame/dispatch [:alert-banners/restore-alert-banners]))
      (rn/hide-splash-screen)))
 
   ;;;; Modal

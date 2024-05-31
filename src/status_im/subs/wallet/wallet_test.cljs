@@ -12,6 +12,14 @@
 (use-fixtures :each
               {:before #(reset! rf-db/app-db {})})
 
+(def ^:private accounts-with-tokens
+  {:0x1 {:tokens                    [{:symbol "ETH"} {:symbol "SNT"}]
+         :network-preferences-names #{}
+         :customization-color       nil}
+   :0x2 {:tokens                    [{:symbol "SNT"}]
+         :network-preferences-names #{}
+         :customization-color       nil}})
+
 (def tokens-0x1
   [{:decimals                   1
     :symbol                     "ETH"
@@ -178,6 +186,12 @@
            :short-name "oeth"
            :chain-id   10
            :layer      2}]})
+
+(def route-data
+  [{:gas-amount "25000"
+    :gas-fees   {:max-fee-per-gas-medium "4"
+                 :eip-1559-enabled       true
+                 :l-1-gas-fee            "0"}}])
 
 (h/deftest-sub :wallet/balances-in-selected-networks
   [sub-name]
@@ -455,6 +469,46 @@
         :removed                   false
         :tokens                    tokens-0x2})
       (rf/sub [sub-name])))))
+
+(h/deftest-sub :wallet/accounts-with-current-asset
+  [sub-name]
+  (testing "returns the accounts list with the current asset using token-symbol"
+    (swap! rf-db/app-db
+      #(-> %
+           (assoc-in [:wallet :accounts] accounts-with-tokens)
+           (assoc-in [:wallet :ui :send :token-symbol] "ETH")))
+    (let [result (rf/sub [sub-name])]
+      (is (match? result
+                  [{:tokens                    [{:symbol "ETH"} {:symbol "SNT"}]
+                    :network-preferences-names #{}
+                    :customization-color       nil}]))))
+
+  (testing "returns the accounts list with the current asset using token"
+    (swap! rf-db/app-db
+      #(-> %
+           (assoc-in [:wallet :accounts] accounts-with-tokens)
+           (assoc-in [:wallet :ui :send :token] {:symbol "ETH"})))
+    (let [result (rf/sub [sub-name])]
+      (is (match? result
+                  [{:tokens                    [{:symbol "ETH"} {:symbol "SNT"}]
+                    :network-preferences-names #{}
+                    :customization-color       nil}]))))
+
+  (testing
+    "returns the full accounts list with the current asset using token-symbol if each account has the asset"
+    (swap! rf-db/app-db
+      #(-> %
+           (assoc-in [:wallet :accounts] accounts-with-tokens)
+           (assoc-in [:wallet :ui :send :token-symbol] "SNT")))
+    (let [result (rf/sub [sub-name])]
+      (is (match? result (vals accounts-with-tokens)))))
+
+  (testing "returns the accounts list when there is no current asset"
+    (swap! rf-db/app-db
+      #(-> %
+           (assoc-in [:wallet :accounts] accounts-with-tokens)))
+    (let [result (rf/sub [sub-name])]
+      (is (match? result (vals accounts-with-tokens))))))
 
 (h/deftest-sub :wallet/network-preference-details
   [sub-name]
@@ -842,3 +896,19 @@
       (is (match? (get result constants/ethereum-mainnet-chain-id) "$1500.00"))
       (is (match? (get result constants/optimism-mainnet-chain-id) "$600.00"))
       (is (match? (get result constants/arbitrum-mainnet-chain-id) "$0.00")))))
+
+(h/deftest-sub :wallet/wallet-send-fee-fiat-formatted
+  [sub-name]
+  (testing "wallet send fee calculated and formatted in fiat"
+    (swap! rf-db/app-db
+      #(-> %
+           (assoc-in [:wallet :ui :send :route] route-data)
+           (assoc-in [:profile/profile :currency] :usd)
+           (assoc-in [:profile/profile :currency-symbol] "$")))
+
+    (let [token-for-fees {:decimals                   18
+                          :symbol                     "ETH"
+                          :name                       "Ether"
+                          :market-values-per-currency {:usd {:price 10000}}}
+          result         (rf/sub [sub-name token-for-fees])]
+      (is (match? result "$1.00")))))

@@ -181,7 +181,9 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
     @marks.testrail_id(702731)
     def test_1_1_chat_pin_messages(self):
         self.home_1.just_fyi("Check that Device1 can pin own message in 1-1 chat")
-        self.chat_2.jump_to_card_by_text(self.username_1)
+        self.chat_2.navigate_back_to_home_view()
+        self.home_2.chats_tab.click()
+        self.home_2.get_chat(self.username_1).click()
         self.chat_1.send_message(self.message_1)
         self.chat_1.send_message(self.message_2)
         self.chat_1.chat_element_by_text(self.message_1).wait_for_status_to_be("Delivered")
@@ -274,14 +276,14 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
         self.profile_1.edit_profile_picture(image_index=2)
 
         self.chat_2.just_fyi("Send messages with non-latin symbols")
-        # self.home_1.jump_to_card_by_text(self.username_2)
         self.home_1.click_system_back_button()
         self.home_1.chats_tab.click()
         self.home_1.get_chat(self.username_2).click()
         self.chat_1.send_message("just a text")  # Sending a message here so the next ones will be in a separate line
 
         self.home_2.navigate_back_to_home_view()
-        self.home_2.jump_to_card_by_text(self.username_1)
+        self.home_2.chats_tab.click()
+        self.home_2.get_chat(self.username_1).click()
         messages = ['hello', '¿Cómo estás tu año?', 'ё, доброго вечерочка', '®	æ ç ♥']
         for message in messages:
             self.chat_2.send_message(message)
@@ -371,10 +373,11 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
 
     @marks.testrail_id(702855)
     def test_1_1_chat_edit_message(self):
-        self.home_1.navigate_back_to_home_view()
-        self.home_2.navigate_back_to_home_view()
-        self.chat_2.jump_to_card_by_text(self.username_1)
-        self.chat_1.jump_to_card_by_text(self.username_2)
+        for home in self.homes:
+            home.navigate_back_to_home_view()
+            home.chats_tab.click()
+        self.home_2.get_chat(self.username_1).click()
+        self.home_1.get_chat(self.username_2).click()
 
         self.device_2.just_fyi(
             "Device 2 sends text message and edits it in 1-1 chat. Device 2 checks edited message is shown")
@@ -399,9 +402,13 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
     @marks.testrail_id(703391)
     def test_1_1_chat_send_image_save_and_share(self):
         if not self.chat_2.chat_message_input.is_element_displayed():
-            self.chat_2.jump_to_card_by_text(self.username_1)
+            self.chat_2.navigate_back_to_home_view()
+            self.home_2.chats_tab.click()
+            self.home_2.get_chat(self.username_1).click()
         if not self.chat_1.chat_message_input.is_element_displayed():
-            self.chat_1.jump_to_card_by_text(self.username_2)
+            self.chat_1.navigate_back_to_home_view()
+            self.home_1.chats_tab.click()
+            self.home_1.get_chat(self.username_2).click()
 
         self.chat_1.just_fyi("Device 1 sends an image")
         image_description = "test image"
@@ -460,9 +467,13 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
     @marks.testrail_id(702733)
     def test_1_1_chat_text_message_delete_push_disappear(self):
         if not self.chat_2.chat_message_input.is_element_displayed():
-            self.chat_2.jump_to_card_by_text(self.username_1)
+            self.chat_2.navigate_back_to_home_view()
+            self.home_2.chats_tab.click()
+            self.home_2.get_chat(self.username_1).click()
         if not self.chat_1.chat_message_input.is_element_displayed():
-            self.chat_1.jump_to_card_by_text(self.username_2)
+            self.chat_1.navigate_back_to_home_view()
+            self.home_1.chats_tab.click()
+            self.home_1.get_chat(self.username_2).click()
         app_package = self.chat_1.driver.current_package
 
         self.device_2.just_fyi("Verify Device1 can not edit and delete received message from Device2")
@@ -573,8 +584,6 @@ class TestOneToOneChatMultipleSharedDevicesNewUiTwo(MultipleSharedDeviceTestCase
 
     @marks.testrail_id(702783)
     def test_1_1_chat_is_shown_message_sent_delivered_from_offline(self):
-        # self.chat_2.jump_to_card_by_text(self.username_1)
-        # self.chat_1.jump_to_card_by_text(self.username_2)
         self.home_1.just_fyi('Turn on airplane mode and check that offline status is shown on home view')
         for home in self.homes:
             home.driver.set_network_connection(ConnectionType.AIRPLANE_MODE)

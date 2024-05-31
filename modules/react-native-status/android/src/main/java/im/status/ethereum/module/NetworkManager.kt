@@ -88,4 +88,16 @@ class NetworkManager(private val reactContext: ReactApplicationContext) : ReactC
                 callback)
     }
 
+    @ReactMethod
+    fun inputConnectionStringForImportingKeypairsKeystores(connectionString: String, configJSON: String, callback: Callback) {
+        val jsonConfig = JSONObject(configJSON)
+        val receiverConfig = jsonConfig.getJSONObject("receiverConfig")
+        val keyStorePath = utils.pathCombine(utils.getNoBackupDirectory(), "/keystore")
+        receiverConfig.put("keystorePath", keyStorePath)
+
+        utils.executeRunnableStatusGoMethod(
+                { Statusgo.inputConnectionStringForImportingKeypairsKeystores(connectionString, jsonConfig.toString()) },
+                callback
+        )
+    }
 }

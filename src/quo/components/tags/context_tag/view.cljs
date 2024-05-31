@@ -3,6 +3,7 @@
     [quo.components.avatars.account-avatar.view :as account-avatar]
     [quo.components.avatars.group-avatar.view :as group-avatar]
     [quo.components.avatars.user-avatar.view :as user-avatar]
+    [quo.components.avatars.wallet-user-avatar.view :as wallet-user-avatar]
     [quo.components.icon :as icons]
     [quo.components.list-items.preview-list.view :as preview-list]
     [quo.components.markdown.text :as text]
@@ -161,6 +162,13 @@
 
         :icon
         [icon-tag props]
+
+        :wallet-user
+        [tag-skeleton {:theme theme :size size :text full-name}
+         [wallet-user-avatar/wallet-user-avatar
+          {:full-name           full-name
+           :size                (if (= size 24) :size-20 :size-24)
+           :customization-color customization-color}]]
 
         nil)]]))
 

@@ -13,10 +13,14 @@
 
 (defn show-message
   [_ [code]]
-  (let [content (if (#{:biometrics/not-enrolled-error
-                       :biometrics/not-available-error}
-                     code)
+  (let [content (case code
+                  (:biometrics/not-enrolled-error
+                   :biometrics/not-available-error)
                   (i18n/label :t/grant-face-id-permissions)
+
+                  :biometric/too-many-attempts
+                  (i18n/label :t/biometric-too-many-attempts)
+
                   (i18n/label :t/biometric-auth-error {:code code}))]
     {:fx [[:effects.utils/show-popup
            {:title   (i18n/label :t/biometric-auth-login-error-title)

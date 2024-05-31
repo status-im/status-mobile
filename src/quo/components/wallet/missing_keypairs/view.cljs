@@ -1,5 +1,6 @@
 (ns quo.components.wallet.missing-keypairs.view
   (:require
+    [quo.components.buttons.button.view :as button]
     [quo.components.icon :as icon]
     [quo.components.list-items.missing-keypair.view :as missing-keypair]
     [quo.components.markdown.text :as text]
@@ -10,7 +11,7 @@
     [utils.i18n :as i18n]))
 
 (defn title-view
-  [{:keys [keypairs blur?]}]
+  [{:keys [keypairs blur? on-import-press]}]
   (let [theme (quo.theme/use-theme)]
     [rn/view
      {:accessibility-label :title
@@ -22,11 +23,18 @@
         :color colors/warning-60}]]
      [rn/view
       {:style style/title-info-container}
-      [text/text
-       {:weight :medium
-        :style  {:color colors/warning-60}}
-       (i18n/label :t/amount-missing-keypairs
-                   {:amount (str (count keypairs))})]
+      [rn/view {:style style/title-row}
+       [text/text
+        {:weight :medium
+         :style  {:color colors/warning-60}}
+        (i18n/label :t/amount-missing-keypairs
+                    {:amount (str (count keypairs))})]
+       [button/button
+        {:type       :outline
+         :background :blur
+         :size       24
+         :on-press   on-import-press}
+        (i18n/label :t/import)]]
       [text/text
        {:size  :paragraph-2
         :style (style/subtitle blur? theme)}

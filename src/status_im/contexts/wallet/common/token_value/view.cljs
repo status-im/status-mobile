@@ -26,11 +26,13 @@
                           (rf/dispatch [:wallet/set-token-to-send send-params]))})
 
 (defn- action-receive
-  []
+  [selected-account?]
   {:icon                :i/receive
    :accessibility-label :receive
    :label               (i18n/label :t/receive)
-   :on-press            #(rf/dispatch [:open-modal :screen/wallet.share-address {:status :receive}])})
+   :on-press            (if selected-account?
+                          #(rf/dispatch [:open-modal :screen/wallet.share-address {:status :receive}])
+                          #(rf/dispatch [:open-modal :screen/share-shell {:initial-tab :wallet}]))})
 
 (defn- action-bridge
   [token-data]
@@ -80,7 +82,7 @@
                   (action-hide))]
         (not watch-only?) (concat [(action-buy)
                                    (action-send send-params)
-                                   (action-receive)
+                                   (action-receive selected-account?)
                                    (when (ff/enabled? ::ff/wallet.swap) (action-swap))
                                    (action-bridge token-data)]))]]))
 

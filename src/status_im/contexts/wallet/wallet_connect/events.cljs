@@ -19,7 +19,13 @@
  :wallet-connect/on-init-success
  (fn [{:keys [db]} [web3-wallet]]
    {:db (assoc db :wallet-connect/web3-wallet web3-wallet)
-    :fx [[:dispatch [:wallet-connect/register-event-listeners]]]}))
+    :fx [[:dispatch [:wallet-connect/register-event-listeners]]
+         [:effects.wallet-connect/fetch-pairings
+          {:web3-wallet web3-wallet
+           :on-fail     #(log/error "Failed to get dApp pairings" {:error %})
+           :on-success  (fn [data]
+                          (rf/dispatch [:wallet-connect/set-pairings
+                                        (js->clj data :keywordize-keys true)]))}]]}))
 
 (rf/reg-event-fx
  :wallet-connect/register-event-listeners
@@ -64,6 +70,29 @@
    {:db (dissoc db :wallet-connect/current-request)}))
 
 (rf/reg-event-fx
+ :wallet-connect/set-pairings
+ (fn [{:keys [db]} [pairings]]
+   {:db (assoc db :wallet-connect/pairings pairings)}))
+
+(rf/reg-event-fx
+ :wallet-connect/remove-pairing-by-topic
+ (fn [{:keys [db]} [topic]]
+   {:db (update db
+                :wallet-connect/pairings
+                (fn [pairings]
+                  (remove #(= (:topic %) topic) pairings)))}))
+
+(rf/reg-event-fx
+ :wallet-connect/disconnect-dapp
+ (fn [{:keys [db]} [{:keys [topic on-success on-fail]}]]
+   (let [web3-wallet (get db :wallet-connect/web3-wallet)]
+     {:fx [[:effects.wallet-connect/disconnect
+            {:web3-wallet web3-wallet
+             :topic       topic
+             :on-fail     on-fail
+             :on-success  on-success}]]})))
+
+(rf/reg-event-fx
  :wallet-connect/pair
  (fn [{:keys [db]} [url]]
    (let [web3-wallet (get db :wallet-connect/web3-wallet)]
@@ -79,6 +108,14 @@
    {:fx [[:dispatch [:navigate-back]]
          [:dispatch [:wallet-connect/reset-current-session-request]]]}))
 
+(rf/reg-event-fx
+ :wallet-connect/fetch-active-sessions
+ (fn [{:keys [db]}]
+   (let [web3-wallet (get db :wallet-connect/web3-wallet)]
+     {:fx [[:effects.wallet-connect/fetch-active-sessions
+            {:web3-wallet web3-wallet
+             :on-fail     #(log/error "Failed to get active sessions" {:error %})
+             :on-success  #(log/info "Got active sessions successfully" {:sessions %})}]]})))
 
 (rf/reg-event-fx
  :wallet-connect/approve-session
