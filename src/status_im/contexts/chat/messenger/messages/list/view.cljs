@@ -407,9 +407,10 @@
                                              :distance-from-list-top distance-from-list-top})
         :on-end-reached                    #(list-on-end-reached distance-from-list-top)
         :on-scroll-to-index-failed         identity
-        :scroll-indicator-insets           {:top (if (:able-to-send-message? context)
-                                                   (- composer.constants/composer-default-height 16)
-                                                   0)}
+        :scroll-indicator-insets           {:top   (if (:able-to-send-message? context)
+                                                     (- composer.constants/composer-default-height 16)
+                                                     0)
+                                            :right 1}
         :keyboard-dismiss-mode             :interactive
         :keyboard-should-persist-taps      :always
         :on-scroll-begin-drag              #(do
