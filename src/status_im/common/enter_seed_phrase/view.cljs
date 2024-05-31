@@ -59,11 +59,19 @@
       security/mask-data))
 
 (defn- recovery-phrase-form
-  [{:keys [title seed-phrase word-count on-change-seed-phrase on-input-ref]} & children]
+  [{:keys [keypair title seed-phrase word-count on-change-seed-phrase on-input-ref]} & children]
   (->> children
        (into
         [rn/view {:style style/form-container}
          [header title word-count]
+         (when keypair
+           [quo/context-tag
+            {:type            :icon
+             :container-style {:padding-top 8}
+             :icon            :i/seed-phrase
+             :size            24
+             :blur?           true
+             :context         (:name keypair)}])
          [rn/view {:style style/input-container}
           [quo/recovery-phrase-input
            {:accessibility-label      :passphrase-input
@@ -87,7 +95,7 @@
        (take 7)))
 
 (defn recovery-phrase-screen
-  [{:keys [title recovering-keypair? render-controls]}]
+  [{:keys [keypair title recovering-keypair? render-controls]}]
   (reagent/with-let [keyboard-shown?         (reagent/atom false)
                      keyboard-show-listener  (.addListener rn/keyboard
                                                            "keyboardDidShow"
@@ -154,6 +162,7 @@
       [:<>
        [recovery-phrase-form
         {:title                 title
+         :keypair               keypair
          :seed-phrase           @seed-phrase
          :on-change-seed-phrase on-change-seed-phrase
          :word-count            word-count
@@ -185,7 +194,7 @@
      (.remove keyboard-hide-listener))))
 
 (defn screen
-  [{:keys [initial-insets title navigation-icon recovering-keypair? render-controls]}]
+  [{:keys [initial-insets title keypair navigation-icon recovering-keypair? render-controls]}]
   (let [{navigation-bar-top :top} initial-insets]
     [rn/view {:style style/full-layout}
      [rn/keyboard-avoiding-view {:style style/page-container}
@@ -197,6 +206,7 @@
         :on-press   #(rf/dispatch [:navigate-back])}]
       [recovery-phrase-screen
        {:title               title
+        :keypair             keypair
         :render-controls     render-controls
         :recovering-keypair? recovering-keypair?}]]]))
 

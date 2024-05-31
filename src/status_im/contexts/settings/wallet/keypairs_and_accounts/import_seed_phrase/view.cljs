@@ -55,9 +55,11 @@
 
 (defn view
   []
-  [quo/overlay {:type :shell}
-   [enter-seed-phrase/screen
-    {:navigation-icon :i/close
-     :render-controls import-seed-phrase-controls
-     :title           (i18n/label :t/enter-recovery-phrase)
-     :initial-insets  (safe-area/get-insets)}]])
+  (let [keypair (rf/sub [:get-screen-params])]
+    [quo/overlay {:type :shell}
+     [enter-seed-phrase/screen
+      {:keypair         keypair
+       :navigation-icon :i/close
+       :render-controls import-seed-phrase-controls
+       :title           (i18n/label :t/enter-recovery-phrase)
+       :initial-insets  (safe-area/get-insets)}]]))
