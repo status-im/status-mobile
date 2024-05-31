@@ -91,6 +91,7 @@
     "biometric-enable-button": "Enable {{bio-type-label}}",
     "biometric-fingerprint": "Fingerprint",
     "biometric-faceid": "Face ID",
+    "biometric-too-many-attempts": "Too many attempts. Enter the password manually or try again after some time",
     "biometric-touchid": "Touch ID",
     "blank-keycard-text": "You can proceed with your keycard once you've generated your keys and name",
     "blank-keycard-title": "Looks like you’ve tapped \na blank keycard",
