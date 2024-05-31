@@ -73,7 +73,8 @@
     :label               (i18n/label :t/about)
     :accessibility-label :about-tab}])
 
-(defn navigate-back-and-clear-collectible []
+(defn navigate-back-and-clear-collectible
+  []
   (rf/dispatch [:navigate-back])
   (rf/dispatch [:wallet/clear-last-collectible-details]))
 
