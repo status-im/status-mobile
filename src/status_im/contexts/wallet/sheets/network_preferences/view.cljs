@@ -169,7 +169,7 @@
          [quo/bottom-actions
           {:actions          :one-action
            :blur?            blur?
-           :button-one-label (or button-label (i18n/label :t/update))
+           :button-one-label (or button-label (i18n/label :t/confirm))
            :button-one-props {:disabled?           (= @state :default)
                               :on-press            (fn []
                                                      (let [chain-ids (map :chain-id current-networks)]
