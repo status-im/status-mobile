@@ -93,8 +93,6 @@
    :optimism 2
    :arbitrum 3})
 
-(def ^:private available-networks-count
-  (count (set (keys network-priority-score))))
 
 (defn reset-loading-network-amounts-to-zero
   [network-amounts]
@@ -114,7 +112,7 @@
            disabled?              (contains? disabled-chain-ids-set
                                              (:chain-id network-amount))]
        (cond-> network-amount
-         (and (not= (:type network-amount) :add)
+         (and (not= (:type network-amount) :edit)
               (not= (:type network-amount) :not-available))
          (assoc :total-amount (money/bignumber "0")
                 :type         (if disabled? :disabled :default)))))
@@ -136,9 +134,7 @@
                                                    (reduce
                                                     (fn [acc k]
                                                       (if (or (contains? network-values-keys k)
-                                                              (and receiver?
-                                                                   (not (contains? receiver-networks-set
-                                                                                   k))))
+                                                              receiver?)
                                                         acc
                                                         (assoc acc k (money/bignumber "0"))))
                                                     network-values
@@ -177,15 +173,13 @@
               (vec))
       (and receiver?
            routes-found?
-           (< (count network-values-with-not-available-chains) available-networks-count)
            (not= tx-type :tx/bridge))
-      (conj {:type :add}))))
+      (conj {:type :edit}))))
 
 (defn loading-network-amounts
   [{:keys [valid-networks disabled-chain-ids receiver-networks token-networks-ids tx-type receiver?]}]
   (let [disabled-set               (set disabled-chain-ids)
         receiver-networks-set      (set receiver-networks)
-        receiver-networks-count    (count receiver-networks)
         token-networks-ids-set     (set token-networks-ids)
         valid-networks-set         (set valid-networks)
         not-available-networks     (if receiver?
@@ -199,30 +193,28 @@
                                                  (filter #(not (valid-networks-set %))
                                                          not-available-networks)))
                                        (distinct))]
-    (cond-> (->> valid-networks
-                 (map
-                  (fn [chain-id]
-                    (cond->
-                      {:chain-id chain-id
-                       :type     (cond
-                                   (contains? not-available-networks-set chain-id)         :not-available
-                                   (or receiver?
-                                       (not (contains? disabled-set chain-id)))            :loading
-                                   (and (not receiver?) (contains? disabled-set chain-id)) :disabled)}
-                      (and (not receiver?) (contains? disabled-set chain-id))
-                      (assoc :total-amount (money/bignumber "0")))))
-                 (filter
-                  (fn [network-amount]
-                    (or (and receiver?
-                             (or (= tx-type :tx/bridge)
-                                 (contains? receiver-networks-set (:chain-id network-amount))))
-                        (not receiver?))))
-                 (sort-by (fn [network-amount]
-                            (get network-priority-score
-                                 (network-utils/id->network (:chain-id network-amount)))))
-                 (vec))
-      (and receiver? (< receiver-networks-count available-networks-count) (not= tx-type :tx/bridge))
-      (conj {:type :add}))))
+    (->> valid-networks
+         (map
+          (fn [chain-id]
+            (cond->
+              {:chain-id chain-id
+               :type     (cond
+                           (contains? not-available-networks-set chain-id)         :not-available
+                           (or receiver?
+                               (not (contains? disabled-set chain-id)))            :loading
+                           (and (not receiver?) (contains? disabled-set chain-id)) :disabled)}
+              (and (not receiver?) (contains? disabled-set chain-id))
+              (assoc :total-amount (money/bignumber "0")))))
+         (filter
+          (fn [network-amount]
+            (or (and receiver?
+                     (or (= tx-type :tx/bridge)
+                         (contains? receiver-networks-set (:chain-id network-amount))))
+                (not receiver?))))
+         (sort-by (fn [network-amount]
+                    (get network-priority-score
+                         (network-utils/id->network (:chain-id network-amount)))))
+         (vec))))
 
 (defn network-links
   [route from-values-by-chain to-values-by-chain]

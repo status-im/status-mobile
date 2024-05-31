@@ -17,7 +17,7 @@
               {:key :locked :value :locked}
               {:key :loading :value :loading}
               {:key :disabled :value :disabled}
-              {:key :add :value :add}]}])
+              {:key :edit :value :edit}]}])
 
 (defn view
   []
