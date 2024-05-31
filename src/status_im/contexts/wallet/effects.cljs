@@ -81,8 +81,10 @@
  (fn [{:keys [keypair-key-uid seed-phrase password on-success on-error]}]
    (-> (import-keypair-by-seed-phrase keypair-key-uid seed-phrase password)
        (promesa/then (fn [_result]
-                       (when (fn? on-success)
-                         (on-success))))
+                       (cond
+                         (vector? on-success) (rf/dispatch on-success)
+                         (fn? on-success)     (on-success))))
        (promesa/catch (fn [error]
-                        (when (and error (fn? on-error))
-                          (on-error error)))))))
+                        (cond
+                          (vector? on-error) (rf/dispatch (conj on-error error))
+                          (fn? on-error)     (on-error error)))))))

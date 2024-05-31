@@ -144,8 +144,10 @@
           :seed-phrase     seed-phrase
           :password        password
           :on-success      (fn []
+                             (rf/dispatch [:wallet/make-keypairs-accounts-fully-operable
+                                           #{keypair-key-uid}])
                              (cond
-                               (vector? on-success) (rf/dispatch on-success)
+                               (vector? on-success) (rf/dispatch (conj on-success))
                                (fn? on-success)     (on-success)))
           :on-error        (fn [error]
                              (rf/dispatch [:wallet/import-keypair-by-seed-phrase-failed error])
