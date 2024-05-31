@@ -57,5 +57,6 @@
      [quo/page-top
       {:title-accessibility-label :username
        :emoji-dash                emoji-hash
-       :description               bio
+       :description               :text
+       :description-text          bio
        :title                     full-name}]]))
