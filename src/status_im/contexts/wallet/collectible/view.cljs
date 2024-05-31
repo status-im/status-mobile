@@ -115,10 +115,8 @@
 
 (defn on-scroll
   [e scroll-amount title-opacity title-bottom-coord]
-
   (let [scroll-y    (oops/oget e "nativeEvent.contentOffset.y")
         new-opacity (if (>= scroll-y @title-bottom-coord) 1 0)]
-    (println @title-bottom-coord scroll-y)
     (reanimated/set-shared-value scroll-amount scroll-y)
     (reanimated/set-shared-value title-opacity
                                  (reanimated/with-timing new-opacity #js {:duration 300}))))
