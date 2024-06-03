@@ -22,17 +22,17 @@
   [{:keys [db]} [community-js]]
   (when community-js
     (let [{:keys [clock
-                  token-permissions-check joined id last-opened-at]
+                  token-permissions-check id last-opened-at]
            :as   community}       (data-store.communities/<-rpc community-js)
           previous-last-opened-at (get-in db [:communities id :last-opened-at])]
       (when (> clock (get-in db [:communities id :clock]))
         {:db (assoc-in db
               [:communities id]
               (assoc community :last-opened-at (max last-opened-at previous-last-opened-at)))
+         ;; NOTE(cammellos): these two looks suspicious, we should not check for permissions at
+         ;; every event signalled
          :fx [[:dispatch
                [:communities/check-permissions-to-join-community-with-all-addresses id]]
-              (when (not joined)
-                [:dispatch [:chat.ui/spectate-community id]])
               (when (nil? token-permissions-check)
                 [:dispatch [:communities/check-permissions-to-join-community id]])]}))))
 
@@ -348,7 +348,8 @@
       (navigate-to-serialized-community community-id)
       (rf/merge
        cofx
-       {:fx [[:dispatch
+       {:fx [[:dispatch [:chat.ui/spectate-community community-id]]
+             [:dispatch
               [:communities/fetch-community
                {:community-id           community-id
                 :update-last-opened-at? true}]]
