@@ -8,11 +8,11 @@
 
 (defn open-saved-addresses-settings-modal
   []
-  (rf/dispatch [:open-modal :screen/settings.saved-addresses]))
+  (rf/dispatch [:navigate-to-within-stack [:screen/settings.saved-addresses :screen/settings]]))
 
 (defn open-keypairs-and-accounts-settings-modal
   []
-  (rf/dispatch [:open-modal :screen/settings.keypairs-and-accounts]))
+  (rf/dispatch [:navigate-to-within-stack [:screen/settings.keypairs-and-accounts :screen/settings]]))
 
 (defn basic-settings-options
   []
@@ -38,7 +38,7 @@
 
 (defn open-network-settings-modal
   []
-  (rf/dispatch [:open-modal :screen/settings.network-settings]))
+  (rf/dispatch [:navigate-to-within-stack [:screen/settings.network-settings :screen/settings]]))
 
 (defn advanced-settings-options
   []
