@@ -329,7 +329,7 @@
                          (when (empty? receiver-network-values) :receiver-network-values)))})))
 
 (rf/reg-event-fx :wallet/get-suggested-routes
- (fn [{:keys [db now]} [{:keys [amount updated-token]}]]
+ (fn [{:keys [db now]} [{:keys [amount updated-token locked-limits]}]]
    (let [wallet-address (get-in db [:wallet :current-viewing-account-address])
          token (or updated-token (get-in db [:wallet :ui :send :token]))
          transaction-type (get-in db [:wallet :ui :send :tx-type])
@@ -347,7 +347,8 @@
          to-token-id ""
          network-preferences (if token [] [(get-in collectible [:id :contract-id :chain-id])])
          gas-rates constants/gas-rate-medium
-         amount-in (send-utils/amount-in-hex amount (if token token-decimal 0))
+         to-hex (fn [val] (send-utils/amount-in-hex val (if token token-decimal 0)))
+         amount-in (to-hex amount)
          from-address wallet-address
          disabled-from-chain-ids disabled-from-chain-ids
          disabled-to-chain-ids (if (= transaction-type :tx/bridge)
@@ -356,7 +357,10 @@
                                            (not (some #(= chain-id %)
                                                       receiver-networks)))
                                          network-chain-ids))
-         from-locked-amount {}
+         from-locked-amount (update-vals locked-limits to-hex)
+         _ (tap> {:in                 `get-suggested-routes
+                  :from-locked-amount from-locked-amount
+                  :amount-in          amount-in})
          transaction-type-param (case transaction-type
                                   :tx/collectible-erc-721  constants/send-type-erc-721-transfer
                                   :tx/collectible-erc-1155 constants/send-type-erc-1155-transfer

@@ -125,6 +125,23 @@
      :style {:margin-top 15}}
     (i18n/label :t/no-routes-found)]])
 
+
+(defn- fetch-routes
+  [{:keys [amount bounce-duration-ms token valid-input? locked-limits]}]
+  (tap>
+   {:in            `fetch-routes
+    :amount        amount
+    :token         token
+    :locked-limits locked-limits})
+  (if valid-input?
+    (debounce/debounce-and-dispatch
+     [:wallet/get-suggested-routes
+      {:amount        amount
+       :updated-token token
+       :locked-limits locked-limits}]
+     bounce-duration-ms)
+    (rf/dispatch [:wallet/clean-suggested-routes])))
+
 (defn view
   ;; crypto-decimals, limit-crypto and initial-crypto-currency? args are needed
   ;; for component tests only
@@ -143,6 +160,7 @@
         on-navigate-back                            on-navigate-back
         [input-state set-input-state]               (rn/use-state controlled-input/init-state)
         [just-toggled-mode? set-just-toggled-mode?] (rn/use-state false)
+        [locked-limits set-locked-limits]           (rn/use-state {})
         clear-input!                                #(set-input-state controlled-input/delete-all)
         handle-on-confirm                           (fn []
                                                       (rf/dispatch [:wallet/set-token-amount-to-send
@@ -201,7 +219,7 @@
                                                                  input-state)
                                                                 available-limit)))
         input-num-value                             (controlled-input/numeric-value input-state)
-        input-amount (controlled-input/input-value input-state)
+        input-amount                                (controlled-input/input-value input-state)
         confirm-disabled?                           (or (nil? route)
                                                         (empty? route)
                                                         (string/blank? (controlled-input/input-value
@@ -264,8 +282,15 @@
         limit-insufficient?                         (> (controlled-input/numeric-value input-state)
                                                        current-limit)
         should-try-again?                           (and (not limit-insufficient?) no-routes-found?)
-        current-address                             (rf/sub [:wallet/current-viewing-account-address])]
-    
+        current-address                             (rf/sub [:wallet/current-viewing-account-address])
+        request-fetch-routes                        (fn [bounce-duration-ms]
+                                                      (fetch-routes
+                                                       {:amount             amount
+                                                        :valid-input?       valid-input?
+                                                        :bounce-duration-ms bounce-duration-ms
+                                                        :token              token
+                                                        :locked-limits      locked-limits}))]
+
     (rn/use-mount
      (fn []
        (let [dismiss-keyboard-fn   #(when (= % "active") (rn/dismiss-keyboard!))
@@ -285,6 +310,12 @@
        (clear-input!)
        (rf/dispatch [:wallet/clean-suggested-routes]))
      [current-address])
+    (rn/use-effect
+     (fn []
+       (tap> {:in                   `use-effect
+              :request-fetch-routes request-fetch-routes})
+       (request-fetch-routes 0))
+     [locked-limits])
     [rn/view
      {:style               style/screen
       :accessibility-label (str "container"
@@ -321,10 +352,10 @@
                                                 (.toFixed (/ value conversion-rate)
                                                           crypto-decimals)
                                                 (.toFixed (* value conversion-rate) 12))]
-                                (tap> {:in "input_amount"
+                                (tap> {:in                       "input_amount"
                                        :swap-to-crypto-currency? swap-to-crypto-currency?
-                                       :crypto-decimals crypto-decimals
-                                       :new-value new-value})
+                                       :crypto-decimals          crypto-decimals
+                                       :new-value                new-value})
                                 (number/remove-trailing-zeroes new-value))))))
        :on-token-press  show-select-asset-sheet}]
      [routes/view
@@ -334,7 +365,10 @@
        :valid-input?                              valid-input?
        :token-not-supported-in-receiver-networks? token-not-supported-in-receiver-networks?
        :lock-fetch-routes?                        just-toggled-mode?
-       :current-screen-id                         current-screen-id}]
+       :current-screen-id                         current-screen-id
+       :request-fetch-routes                      request-fetch-routes
+       :set-locked-limits                         set-locked-limits}]
+     (tap> {:locked-limits locked-limits})
      (when (and (not loading-routes?)
                 sender-network-values
                 token-not-supported-in-receiver-networks?)
@@ -363,6 +397,7 @@
                                                                     (.toFixed (* token-balance
                                                                                  conversion-rate)
                                                                               2))]
+
                                                  (rf/dispatch [:wallet/get-suggested-routes
                                                                {:amount        amount
                                                                 :updated-token token-by-symbol}]))

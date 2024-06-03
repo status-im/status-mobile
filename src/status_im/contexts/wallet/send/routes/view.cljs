@@ -1,19 +1,17 @@
 (ns status-im.contexts.wallet.send.routes.view
   (:require
-   [clojure.string :as string]
-   [quo.core :as quo]
-   [react-native.core :as rn]
-   [status-im.common.controlled-input.utils :as controlled-input]
-   [status-im.contexts.wallet.common.utils :as utils]
-   [status-im.contexts.wallet.common.utils.networks :as network-utils]
-   [status-im.contexts.wallet.send.routes.style :as style]
-   [status-im.contexts.wallet.send.utils :as send-utils]
-   [status-im.contexts.wallet.sheets.network-preferences.view :as network-preferences]
-   [taoensso.timbre :as log]
-   [utils.debounce :as debounce]
-   [utils.i18n :as i18n]
-   [utils.number :as number]
-   [utils.re-frame :as rf]))
+    [clojure.string :as string]
+    [quo.core :as quo]
+    [react-native.core :as rn]
+    [status-im.common.controlled-input.utils :as controlled-input]
+    [status-im.contexts.wallet.common.utils :as utils]
+    [status-im.contexts.wallet.common.utils.networks :as network-utils]
+    [status-im.contexts.wallet.send.routes.style :as style]
+    [status-im.contexts.wallet.send.utils :as send-utils]
+    [status-im.contexts.wallet.sheets.network-preferences.view :as network-preferences]
+    [utils.i18n :as i18n]
+    [utils.number :as number]
+    [utils.re-frame :as rf]))
 
 (def row-height 44)
 (def space-between-rows 11)
@@ -21,15 +19,6 @@
 (def network-link-1x-height 56)
 (def network-link-2x-height 111)
 
-(defn- fetch-routes
-  [{:keys [amount bounce-duration-ms token valid-input?]}]
-  (if valid-input?
-    (debounce/debounce-and-dispatch
-     [:wallet/get-suggested-routes
-      {:amount        amount
-       :updated-token token}]
-     bounce-duration-ms)
-    (rf/dispatch [:wallet/clean-suggested-routes])))
 
 (defn- open-preferences
   []
@@ -110,51 +99,52 @@
   (str currency-symbol amount))
 
 (defn- edit-amount
-  [{:keys [chain-id token-symbol]}]
+  [{:keys [chain-id token-symbol on-update]}]
   (rf/dispatch
    [:show-bottom-sheet
     {:content
      (fn []
-       (let [{:keys [network-name] :as network-details}  (rf/sub [:wallet/network-details-by-chain-id chain-id])
-             {fiat-currency :currency}                   (rf/sub [:profile/profile])
+       (let [{:keys [network-name] :as network-details} (rf/sub [:wallet/network-details-by-chain-id
+                                                                 chain-id])
+             {fiat-currency :currency}                  (rf/sub [:profile/profile])
              {token-decimals :decimals
               :as
-              token} (rf/sub [:wallet/wallet-send-token])
-             currency                                    (rf/sub [:profile/currency])
-             currency-symbol                             (rf/sub [:profile/currency-symbol])
-             network-name-str (string/capitalize (name network-name))
-             [input-state set-input-state]               (rn/use-state controlled-input/init-state)
-             [crypto-currency? set-crypto-currency]      (rn/use-state true)
-             conversion-rate                             (-> token
-                                                             :market-values-per-currency
-                                                             currency
-                                                             :price)
+              token}                                    (rf/sub [:wallet/wallet-send-token])
+             currency                                   (rf/sub [:profile/currency])
+             currency-symbol                            (rf/sub [:profile/currency-symbol])
+             network-name-str                           (string/capitalize (name network-name))
+             [input-state set-input-state]              (rn/use-state controlled-input/init-state)
+             [crypto-currency? set-crypto-currency]     (rn/use-state true)
+             conversion-rate                            (-> token
+                                                            :market-values-per-currency
+                                                            currency
+                                                            :price)
              {token-balance     :total-balance
-              available-balance :available-balance}      (rf/sub [:wallet/token-by-symbol
-                                                                  (str token-symbol)
-                                                                  [chain-id]])
-             current-crypto-limit (utils/get-standard-crypto-format
-                                   token
-                                   token-balance)
-             current-fiat-limit                          (.toFixed (* token-balance conversion-rate) 2)
-             current-limit                               (if crypto-currency?
-                                                           current-crypto-limit
-                                                           current-fiat-limit)
-             crypto-decimals token-decimals
-             input-amount (controlled-input/input-value input-state)]
+              available-balance :available-balance}     (rf/sub [:wallet/token-by-symbol
+                                                                 (str token-symbol)
+                                                                 [chain-id]])
+             current-crypto-limit                       (utils/get-standard-crypto-format
+                                                         token
+                                                         token-balance)
+             current-fiat-limit                         (.toFixed (* token-balance conversion-rate) 2)
+             current-limit                              (if crypto-currency?
+                                                          current-crypto-limit
+                                                          current-fiat-limit)
+             crypto-decimals                            token-decimals
+             input-amount                               (controlled-input/input-value input-state)]
          (rn/use-effect
           (fn []
             (set-input-state #(controlled-input/set-upper-limit % current-limit)))
           [current-limit])
-         #_(tap> {:in `edit-amount
-                :crypto-currency? crypto-currency?
-                :network-details network-details
-                :current-limit current-limit
-                :current-fiat-limit current-fiat-limit
-                :current-crypto-limit current-crypto-limit
-                :token-balance token-balance
-                :available-balance available-balance
-                :conversion-rate conversion-rate})
+         #_(tap> {:in                   `edit-amount
+                  :crypto-currency?     crypto-currency?
+                  :network-details      network-details
+                  :current-limit        current-limit
+                  :current-fiat-limit   current-fiat-limit
+                  :current-crypto-limit current-crypto-limit
+                  :token-balance        token-balance
+                  :available-balance    available-balance
+                  :conversion-rate      conversion-rate})
          [:<>
           [quo/drawer-top
            {:title       (i18n/label :t/send-from-network {:network network-name-str})
@@ -166,7 +156,7 @@
             :currency-symbol currency-symbol
             :crypto-decimals (min token-decimals 6)
             :error?          (controlled-input/input-error input-state)
-            :networks [network-details]
+            :networks        [network-details]
             :title           (i18n/label
                               :t/send-limit
                               {:limit (if crypto-currency?
@@ -186,31 +176,40 @@
                                                      (.toFixed (/ value conversion-rate)
                                                                crypto-decimals)
                                                      (.toFixed (* value conversion-rate) 12))]
-                                     (tap> {:in "edit_value"
-                                            :swap-to-crypto-currency? swap-to-crypto-currency?
-                                            :crypto-decimals crypto-decimals
-                                            :new-value new-value})
+                                     #_(tap> {:in                       "edit_value"
+                                              :swap-to-crypto-currency? swap-to-crypto-currency?
+                                              :crypto-decimals          crypto-decimals
+                                              :new-value                new-value})
                                      (number/remove-trailing-zeroes new-value))))))
             ;; :on-token-press  show-select-asset-sheet
-            }]
+           }]
           [quo/disclaimer
            {:on-change #()}
            (i18n/label :t/dont-auto-recalculate-network {:network network-name-str})]
           [quo/bottom-actions
            {:actions          :one-action
             :button-one-label (i18n/label :t/update)
-            :button-one-props {}}]
+            :button-one-props {:on-press #(do
+                                            (let [limit-in-crypto (if crypto-currency?
+                                                                    input-amount
+                                                                    (number/remove-trailing-zeroes
+                                                                     (.toFixed (/ input-amount
+                                                                                  conversion-rate)
+                                                                               crypto-decimals)))]
+                                              (when on-update
+                                                (on-update chain-id limit-in-crypto)))
+                                            (rf/dispatch [:hide-bottom-sheet]))}}]
           [quo/numbered-keyboard
            {;; :container-style      (style/keyboard-container bottom)
             :left-action          :dot
             :delete-key?          true
             :on-press             (fn [c]
-                               (let [new-text      (str input-amount c)
-                                     max-decimals  (if crypto-currency? crypto-decimals 2)
-                                     regex-pattern (str "^\\d*\\.?\\d{0," max-decimals "}$")
-                                     regex         (re-pattern regex-pattern)]
-                                 (when (re-matches regex new-text)
-                                   (set-input-state #(controlled-input/add-character % c)))))
+                                    (let [new-text      (str input-amount c)
+                                          max-decimals  (if crypto-currency? crypto-decimals 2)
+                                          regex-pattern (str "^\\d*\\.?\\d{0," max-decimals "}$")
+                                          regex         (re-pattern regex-pattern)]
+                                      (when (re-matches regex new-text)
+                                        (set-input-state #(controlled-input/add-character % c)))))
             :on-delete            (fn []
                                     (set-input-state controlled-input/delete-last))
             :on-long-press-delete (fn []
@@ -225,22 +224,22 @@
                    {:key   (str (if receiver? "to" "from") "-" chain-id)
                     :style {:margin-top (if (pos? index) 11 7.5)}}
                    [quo/network-bridge
-                    {:amount   (if (= type :not-available)
-                                 (i18n/label :t/not-available)
-                                 (str total-amount " " token-symbol))
-                     :network  (network-utils/id->network chain-id)
-                     :status   (cond (and (= type :not-available)
-                                          loading-routes?
-                                          token-not-supported-in-receiver-networks?)
-                                     :loading
-                                     (= type :not-available)
-                                     :disabled
-                                     :else type)
-                     :on-press #(when (not loading-routes?)
-                                  (cond
-                                    (= type :add)
-                                    (open-preferences)
-                                    on-press (on-press chain-id total-amount)))
+                    {:amount        (if (= type :not-available)
+                                      (i18n/label :t/not-available)
+                                      (str total-amount " " token-symbol))
+                     :network       (network-utils/id->network chain-id)
+                     :status        (cond (and (= type :not-available)
+                                               loading-routes?
+                                               token-not-supported-in-receiver-networks?)
+                                          :loading
+                                          (= type :not-available)
+                                          :disabled
+                                          :else type)
+                     :on-press      #(when (not loading-routes?)
+                                       (cond
+                                         (= type :add)
+                                         (open-preferences)
+                                         on-press (on-press chain-id total-amount)))
                      :on-long-press #(when (not loading-routes?)
                                        (cond
                                          (= type :add)
@@ -287,10 +286,10 @@
 
 (defn disable-chain
   [chain-id disabled-from-chain-ids token-available-networks-for-suggested-routes]
-  (tap> {:in `disable-chain
-         :chain-id chain-id
-         :disabled-from-chain-ids disabled-from-chain-ids
-         :token-available-networks-for-suggested-routes token-available-networks-for-suggested-routes})
+  #_(tap> {:in                                            `disable-chain
+           :chain-id                                      chain-id
+           :disabled-from-chain-ids                       disabled-from-chain-ids
+           :token-available-networks-for-suggested-routes token-available-networks-for-suggested-routes})
   (let [disabled-chain-ids
         (if (contains? (set
                         disabled-from-chain-ids)
@@ -312,9 +311,9 @@
                      :text (i18n/label :t/at-least-one-network-must-be-activated)}]))))
 
 (defn view
-  [{:keys [token theme input-value value valid-input?
+  [{:keys [token theme input-value valid-input? request-fetch-routes
            lock-fetch-routes? on-press-to-network current-screen-id
-           token-not-supported-in-receiver-networks?]}]
+           token-not-supported-in-receiver-networks? set-locked-limits]}]
   (let [token-symbol (:symbol token)
         nav-current-screen-id (rf/sub [:view-id])
         active-screen? (= nav-current-screen-id current-screen-id)
@@ -338,19 +337,11 @@
        (when (and active-screen?
                   (> (count token-available-networks-for-suggested-routes) 0)
                   (not lock-fetch-routes?))
-         (fetch-routes
-          {:amount             value
-           :valid-input?       valid-input?
-           :bounce-duration-ms 2000
-           :token              token})))
+         (request-fetch-routes 2000)))
      [input-value valid-input?])
     (rn/use-effect
      #(when (and active-screen? (> (count token-available-networks-for-suggested-routes) 0))
-        (fetch-routes
-         {:amount             value
-          :valid-input?       valid-input?
-          :bounce-duration-ms 0
-          :token              token}))
+        (request-fetch-routes 0))
      [disabled-from-chain-ids])
     [rn/scroll-view {:content-container-style style/routes-container}
      (when show-routes?
@@ -371,11 +362,18 @@
                                                       disabled-from-chain-ids
                                                       token-available-networks-for-suggested-routes))
 
-        :on-long-press (fn [chain-id]
-                         
-                         (edit-amount {:chain-id chain-id
-                                       :token-symbol token-symbol
-                                        }))
+        :on-long-press                             (fn [chain-id]
+                                                     (edit-amount
+                                                      {:chain-id     chain-id
+                                                       :token-symbol token-symbol
+                                                       :on-update    (fn [chain-id limit-in-crypto]
+                                                                       #_(tap> {:chain-id chain-id
+                                                                                :limit-in-crypto
+                                                                                limit-in-crypto})
+                                                                       (set-locked-limits
+                                                                        #(assoc %
+                                                                                chain-id
+                                                                                limit-in-crypto)))}))
         :receiver?                                 false
         :theme                                     theme
         :loading-routes?                           loading-routes?
@@ -391,8 +389,5 @@
         :loading-routes?                           loading-routes?
         :theme                                     theme
         :token-not-supported-in-receiver-networks? token-not-supported-in-receiver-networks?
-        :on-save                                   #(fetch-routes
-                                                     {:amount             input-value
-                                                      :valid-input?       valid-input?
-                                                      :bounce-duration-ms 0})}]]]))
+        :on-save                                   #(request-fetch-routes 0)}]]]))
 

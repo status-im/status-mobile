@@ -36,7 +36,7 @@
         :accessible          true
         :accessibility-label :container
         :on-press            on-press
-        :on-long-press on-long-press}
+        :on-long-press       on-long-press}
        (if (= status :loading)
          [rn/view
           {:style               (style/loading-skeleton theme)
