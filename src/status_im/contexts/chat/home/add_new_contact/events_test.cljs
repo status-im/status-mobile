@@ -118,6 +118,7 @@
                              :state           :resolve-ens}))
                 :effects.contacts/resolve-public-key-from-ens
                 {:ens        ens-stateofus-eth
+                 :chain-id   1
                  :on-success [:contacts/set-new-identity-success ens]
                  :on-error   [:contacts/set-new-identity-error ens]}}
 

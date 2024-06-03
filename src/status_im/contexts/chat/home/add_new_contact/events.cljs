@@ -115,6 +115,7 @@
       :resolve-ens      {:db (assoc db :contacts/new-identity contact)
                          :effects.contacts/resolve-public-key-from-ens
                          {:ens ens
+                          :chain-id 1
                           :on-success
                           #(re-frame/dispatch [:contacts/set-new-identity-success
                                                {:input            input
