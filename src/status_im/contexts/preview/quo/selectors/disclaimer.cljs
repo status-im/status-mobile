@@ -8,15 +8,17 @@
 (def descriptor
   [{:key :checked? :type :boolean}
    {:key :blur? :type :boolean}
-   {:key :text :type :text}])
+   {:key :text :type :text}
+   {:key :icon :type :boolean}])
 
 (defn view
   []
   (let [state (reagent/atom {:checked? false
                              :blur?    true
-                             :text     "I agree with the community rules"})]
+                             :text     "I agree with the community rules"
+                             :icon     false})]
     (fn []
-      (let [{:keys [blur? checked? text]} @state]
+      (let [{:keys [blur? checked? text icon]} @state]
         [preview/preview-container
          {:state                     state
           :descriptor                descriptor
@@ -27,6 +29,10 @@
           [quo/disclaimer
            {:blur?     blur?
             :checked?  checked?
+            :icon      (when icon
+                         (if checked?
+                           :i/locked
+                           :i/unlocked))
             :on-change #(swap! state update :checked? not)}
            text]]
          [quo/button {:disabled? (not checked?)}
