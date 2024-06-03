@@ -4,7 +4,7 @@
     [status-im.contexts.chat.messenger.messages.list.events :as s]
     [taoensso.tufte :as tufte :refer-macros [defnp profile]]))
 
-(deftest message-stream-tests
+(deftest message-stream-tests-test
   (testing "building the list"
     (let [m1 {:from              "1"
               :clock-value       1
@@ -87,7 +87,7 @@
 (tufte/add-basic-println-handler! {:format-pstats-opts {:columns      [:n :mean :min :max :clock :sum]
                                                         :format-id-fn name}})
 
-(deftest ^:benchmark benchmark-list
+(deftest ^:benchmark benchmark-list-test
   (let [messages   (sort-by
                     :timestamp
                     (mapv (fn [i]
@@ -132,7 +132,7 @@
                    :whisper-timestamp 1000
                    :timestamp         1000}))))))
 
-(deftest message-list
+(deftest message-list-test
   (let [current-messages [{:clock-value       109
                            :message-id        "109"
                            :timestamp         9

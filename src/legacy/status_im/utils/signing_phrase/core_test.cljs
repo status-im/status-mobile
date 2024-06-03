@@ -4,7 +4,7 @@
     [clojure.string :as string]
     [legacy.status-im.utils.signing-phrase.core :refer [generate]]))
 
-(deftest test-generate
+(deftest generate-test
   (doseq [_ (range 30)]
     (let [result (generate)]
       (is (not (string/starts-with? result " ")))

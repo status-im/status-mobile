@@ -10,7 +10,7 @@
 (def chat-name-url "Test%20group%20chat")
 (def chat-name "Test group chat")
 
-(deftest parse-uris
+(deftest parse-uris-test
   (are [uri expected] (= (cond-> (router/match-uri uri)
                            (< (count expected) 3)
                            (assoc :query-params nil))
@@ -126,7 +126,7 @@
 
 (def error {:error :invalid-group-chat-data})
 
-(deftest match-group-chat-query
+(deftest match-group-chat-query-test
   (are [query-params expected] (= (router/match-group-chat {} query-params)
                                   expected)
    nil                                             error

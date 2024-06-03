@@ -7,7 +7,7 @@
 (def rtlo-link "‮http://google.com")
 (def rtlo-link-text "blah blah ‮  some other blah blah http://google.com blah bash")
 
-(deftest safe-link-test-happy-path
+(deftest safe-link-test-happy-path-test
   (testing "an http link"
     (is (security/safe-link? "http://test.com")))
   (testing "an https link"
@@ -15,7 +15,7 @@
   (testing "a link without a a protocol"
     (is (security/safe-link? "test.com"))))
 
-(deftest safe-link-test-exceptions
+(deftest safe-link-test-exceptions-test
   (testing "a javascript link"
     (is (not (security/safe-link? "javascript://anything"))))
   (testing "a javascript link mixed cases"
@@ -27,7 +27,7 @@
   (testing "rtlo links"
     (is (not (security/safe-link? rtlo-link)))))
 
-(deftest safe-link-text-test-exceptions
+(deftest safe-link-text-test-exceptions-test
   (testing "rtlo links"
     (is (not (security/safe-link-text? rtlo-link-text)))))
 

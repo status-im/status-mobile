@@ -3,7 +3,7 @@
     [cljs.test :refer-macros [deftest is]]
     [legacy.status-im.utils.random :as random]))
 
-(deftest test-seeded-rand-int
+(deftest seeded-rand-int-test
   ;try with one seed
   (let [seed 0
         gen  (random/rand-gen seed)]
@@ -40,7 +40,7 @@
     (is (= (random/seeded-rand-int gen 10) 7))
     (is (= (random/seeded-rand-int gen 10) 8))))
 
-(deftest test-seeded-rand-int-boundaries
+(deftest seeded-rand-int-boundaries-test
   (let [seed   "6ec565f4fec866a54761524f603cf037e20c2bfa"
         n      10
         gen    (random/rand-gen seed)
@@ -53,7 +53,7 @@
     ;calls got us the same number.
     (is (> (count sample) 1))))
 
-(deftest test-seeded-rand-nth
+(deftest seeded-rand-nth-test
   (let [seed "6ec565f4fec866a54761524f603cf037e20c2bfa"
         gen  (random/rand-gen seed)
         coll [:a :b :c :d :e :f :g]]

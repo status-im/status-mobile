@@ -18,7 +18,7 @@
     (update-in effects [:json-rpc/call 0] dissoc :on-success :on-error)
     effects))
 
-(deftest unfurl-urls
+(deftest unfurl-urls-test
   (testing "clear up state when text is empty"
     (let [cofx {:db {:chat/link-previews {:unfurled   {}
                                           :cache      {}

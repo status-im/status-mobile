@@ -24,7 +24,7 @@
   (rf/reg-fx :keychain/get-user-password
    (fn [[_ on-success]] (on-success))))
 
-(deftest standard-auth-biometric-authorize-success
+(deftest standard-auth-biometric-authorize-success-test
   (testing "calling success callback when completing biometric authentication"
     (h/log-headline :standard-auth-authorize-success)
     (rf-test/run-test-async
@@ -43,7 +43,7 @@
    (fn [_ [{:keys [on-cancel]}]] (on-cancel)))
   (rf/reg-event-fx :show-bottom-sheet identity))
 
-(deftest standard-auth-biometric-authorize-cancel
+(deftest standard-auth-biometric-authorize-cancel-test
   (testing "falling back to password authorization when biometrics canceled"
     (h/log-headline :standard-auth-authorize-cancel)
     (rf-test/run-test-async
@@ -60,7 +60,7 @@
    (fn [_ [{:keys [on-fail]}]] (on-fail (ex-info "error" {} expected-error-cause))))
   (rf/reg-event-fx :biometric/show-message identity))
 
-(deftest standard-auth-biometric-authorize-fail
+(deftest standard-auth-biometric-authorize-fail-test
   (testing "showing biometric error message when authorization failed"
     (h/log-headline :standard-auth-authorize-fail)
     (rf-test/run-test-async
@@ -84,7 +84,7 @@
    (fn [{:keys [on-fail]}] (on-fail)))
   (rf/reg-event-fx :show-bottom-sheet identity))
 
-(deftest standard-auth-password-authorize-fallback
+(deftest standard-auth-password-authorize-fallback-test
   (testing "falling back to password when biometrics is not available"
     (h/log-headline :standard-auth-password-authorize-fallback)
     (rf-test/run-test-async

@@ -4,12 +4,12 @@
     [status-im.contexts.wallet.common.utils :as utils]
     [utils.money :as money]))
 
-(deftest test-get-first-name
+(deftest get-first-name-test
   (testing "get-first-name function"
     (is (= (utils/get-first-name "John Doe") "John"))
     (is (= (utils/get-first-name "Jane Smith xyz") "Jane"))))
 
-(deftest test-prettify-balance
+(deftest prettify-balance-test
   (testing "prettify-balance function"
     (is (= (utils/prettify-balance "$" 100) "$100.00"))
     (is (= (utils/prettify-balance "$" 0.5) "$0.50"))
@@ -17,25 +17,25 @@
     (is (= (utils/prettify-balance "$" nil) "$0.00"))
     (is (= (utils/prettify-balance "$" "invalid input") "$0.00"))))
 
-(deftest test-get-derivation-path
+(deftest get-derivation-path-test
   (testing "get-derivation-path function"
     (is (= (utils/get-derivation-path 5) "m/44'/60'/0'/0/5"))
     (is (= (utils/get-derivation-path 0) "m/44'/60'/0'/0/0"))
     (is (= (utils/get-derivation-path 123) "m/44'/60'/0'/0/123"))))
 
-(deftest test-format-derivation-path
+(deftest format-derivation-path-test
   (testing "format-derivation-path function"
     (is (= (utils/format-derivation-path "m/44'/60'/0'/0/5") "m / 44' / 60' / 0' / 0 / 5"))
     (is (= (utils/format-derivation-path "m/44'/60'/0'/0/0") "m / 44' / 60' / 0' / 0 / 0"))
     (is (= (utils/format-derivation-path "m/44'/60'/0'/0/123") "m / 44' / 60' / 0' / 0 / 123"))))
 
-(deftest test-get-formatted-derivation-path
+(deftest get-formatted-derivation-path-test
   (testing "get-formatted-derivation-path function"
     (is (= (utils/get-formatted-derivation-path 5) "m / 44' / 60' / 0' / 0 / 5"))
     (is (= (utils/get-formatted-derivation-path 0) "m / 44' / 60' / 0' / 0 / 0"))
     (is (= (utils/get-formatted-derivation-path 123) "m / 44' / 60' / 0' / 0 / 123"))))
 
-(deftest test-total-raw-balance-in-all-chains
+(deftest total-raw-balance-in-all-chains-test
   (testing "total-raw-balance-in-all-chains function"
     (let [balances-per-chain {1     {:raw-balance (money/bignumber 100)}
                               10    {:raw-balance (money/bignumber 200)}
@@ -43,13 +43,13 @@
       (is (money/equal-to (utils/total-raw-balance-in-all-chains balances-per-chain)
                           (money/bignumber 600))))))
 
-(deftest test-extract-exponent
+(deftest extract-exponent-test
   (testing "extract-exponent function"
     (is (= (utils/extract-exponent "123.456") nil))
     (is (= (utils/extract-exponent "2.5e-2") "2"))
     (is (= (utils/extract-exponent "4.567e-10") "10"))))
 
-(deftest test-calc-max-crypto-decimals
+(deftest calc-max-crypto-decimals-test
   (testing "calc-max-crypto-decimals function"
     (is (= (utils/calc-max-crypto-decimals 0.00323) 2))
     (is (= (utils/calc-max-crypto-decimals 0.00123) 3))
@@ -57,7 +57,7 @@
     (is (= (utils/calc-max-crypto-decimals 2.23e-6) 5))
     (is (= (utils/calc-max-crypto-decimals 1.13e-6) 6))))
 
-(deftest test-get-standard-crypto-format
+(deftest get-standard-crypto-format-test
   (testing "get-standard-crypto-format function"
     (let [market-values-per-currency {:usd {:price 100}}
           token-units                (money/bignumber 0.005)]
@@ -70,7 +70,7 @@
                                                token-units)
              "<2")))))
 
-(deftest test-calculate-total-token-balance
+(deftest calculate-total-token-balance-test
   (testing "calculate-total-token-balance function"
     (let [token {:balances-per-chain {1     {:raw-balance (money/bignumber 100)}
                                       10    {:raw-balance (money/bignumber 200)}
@@ -78,7 +78,7 @@
                  :decimals           2}]
       (is (money/equal-to (utils/calculate-total-token-balance token) 6.0)))))
 
-(deftest test-get-account-by-address
+(deftest get-account-by-address-test
   (testing "get-account-by-address function"
     (let [accounts        [{:address "0x123"}
                            {:address "0x456"}
@@ -92,7 +92,7 @@
           address-to-find "0x999"]
       (is (= (utils/get-account-by-address accounts address-to-find) nil)))))
 
-(deftest test-get-wallet-qr
+(deftest get-wallet-qr-test
   (testing "Test get-wallet-qr function"
     (let [wallet-multichain  {:wallet-type       :multichain
                               :selected-networks [:ethereum :optimism]
@@ -107,7 +107,7 @@
       (is (= (utils/get-wallet-qr wallet-singlechain)
              "x000")))))
 
-(deftest test-prettify-percentage-change
+(deftest prettify-percentage-change-test
   (testing "prettify-percentage-change function"
     (is (= (utils/prettify-percentage-change nil) "0.00"))
     (is (= (utils/prettify-percentage-change "") "0.00"))

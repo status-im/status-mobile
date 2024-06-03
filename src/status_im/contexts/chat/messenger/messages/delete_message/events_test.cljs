@@ -7,7 +7,7 @@
 (def mid "message-id")
 (def cid "chat-id")
 
-(deftest delete
+(deftest delete-test
   (with-redefs [datetime/timestamp (constantly 1)]
     (let [db      {:messages {cid {mid {:id mid :whisper-timestamp 1}}}}
           message {:message-id mid :chat-id cid}]
@@ -57,7 +57,7 @@
         (testing "return nil if message not in db"
           (is (= (delete-message/delete {:db {:messages []}} message 1000) nil)))))))
 
-(deftest undo-delete
+(deftest undo-delete-test
   (let [db      {:messages {cid {mid {:id mid :whisper-timestamp 1}}}}
         message {:message-id mid :chat-id cid}]
     (testing "undo delete"
@@ -84,7 +84,7 @@
       (testing "return nil if message not in db"
         (is (= (delete-message/undo {:db {:messages []}} message) nil))))))
 
-(deftest delete-and-send
+(deftest delete-and-send-test
   (let [db      {:messages {cid {mid {:id mid :deleted? true :deleted-undoable-till 0}}}}
         message {:message-id mid :chat-id cid}]
     (testing "delete and send"

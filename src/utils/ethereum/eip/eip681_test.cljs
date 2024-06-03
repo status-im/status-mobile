@@ -4,7 +4,7 @@
     [utils.ethereum.eip.eip681 :as eip681]
     [utils.money :as money]))
 
-(deftest parse-uri
+(deftest parse-uri-test
   (is (= nil (eip681/parse-uri nil)))
   (is (= nil (eip681/parse-uri 5)))
   (is (= nil (eip681/parse-uri "random")))
@@ -118,7 +118,7 @@
               :symbol :STT
               :decimals 18}}})
 
-(deftest generate-uri
+(deftest generate-uri-test
   (is (= nil (eip681/generate-uri nil nil)))
   (is (= "ethereum:0x89205a3a3b2a69de6dbf7f01ed13b2108b2c43e7"
          (eip681/generate-uri "0x89205a3a3b2a69de6dbf7f01ed13b2108b2c43e7" nil)))
@@ -148,7 +148,7 @@
                           :function-arguments {:address "0x8e23ee67d1332ad560396262c48ffbb01f93d052"
                                                :uint256 1}}))))
 
-(deftest round-trip
+(deftest round-trip-test
   (let [uri "ethereum:0x89205a3a3b2a69de6dbf7f01ed13b2108b2c43e7@3?value=1&gas=100"
         {:keys [address] :as params} (eip681/parse-uri uri)]
     (is (= uri (eip681/generate-uri address (dissoc params :address)))))
