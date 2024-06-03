@@ -99,29 +99,20 @@
   },
 
   {
-    "path": "cider/cider-nrepl/0.44.0/cider-nrepl-0.44.0",
+    "path": "cider/cider-nrepl/0.31.0/cider-nrepl-0.31.0",
     "host": "https://repo.clojars.org",
     "jar": {
-      "sha1": "c3d3a729beaa728d0ee6a3678a48c880b6bc95f1",
-      "sha256": "0klcppvydxlx9ji376mvz40yv3s7awq6p9yd57wigpfy4m2yv0w6"
+      "sha1": "1f28a4a834a7a46cf24def971b1a705a6795c73a",
+      "sha256": "0h4pyzy8rzzh567khvimw2cs8jr640kqxgaxvbfx1s5yfp56fka2"
     }
   },
 
   {
-    "path": "cider/orchard/0.21.0/orchard-0.21.0",
+    "path": "cider/piggieback/0.4.1/piggieback-0.4.1",
     "host": "https://repo.clojars.org",
     "jar": {
-      "sha1": "073617f16a132c7f20608d971244753d4e704129",
-      "sha256": "1n2afbyhw9x9kvfna4m4x6n6pwjiqsqcayql644bw2932i1isrkj"
-    }
-  },
-
-  {
-    "path": "cider/piggieback/0.5.2/piggieback-0.5.2",
-    "host": "https://repo.clojars.org",
-    "jar": {
-      "sha1": "ecfd5c286a85db3f059e75c37fca5722d9e26f79",
-      "sha256": "1ps9yf3cxmlm447hqkidjb5xry90n0wl3jk0jn28fagq31lzylkl"
+      "sha1": "0a02a3e2ecd7a126ab60d8a44793342f20ced79b",
+      "sha256": "142vl5np33akcrnn6pksi0rjfsmmi528villxsj6cwcndvybiw4m"
     }
   },
 
@@ -684,15 +675,6 @@
   },
 
   {
-    "path": "mx/cider/logjam/0.1.1/logjam-0.1.1",
-    "host": "https://repo.clojars.org",
-    "jar": {
-      "sha1": "0e9a1c08d4e80e46be8ed8b8cb894bef5e56f39d",
-      "sha256": "1p6hnacyfjn365r0li639lf9fnqpgx1cs7jz7066cn566wjw46az"
-    }
-  },
-
-  {
     "path": "net/cgrand/macrovich/0.2.1/macrovich-0.2.1",
     "host": "https://repo.clojars.org",
     "jar": {
@@ -720,11 +702,11 @@
   },
 
   {
-    "path": "nrepl/nrepl/1.1.0/nrepl-1.1.0",
+    "path": "nrepl/nrepl/1.0.0/nrepl-1.0.0",
     "host": "https://repo.clojars.org",
     "jar": {
-      "sha1": "69f138d4a778c199e5d72446ca25998222ba0862",
-      "sha256": "0n29xczgwpqv98vz36sdic98mf07dmzhjawlxd63p2s2zafkp1ss"
+      "sha1": "f47774c43493efdc879d36b95ebd67ea0d9c890a",
+      "sha256": "1fx5ssmixgqmklliw0ng8fjz41kkhys56x8dbwv9yqrfzws9f2x3"
     }
   },
 

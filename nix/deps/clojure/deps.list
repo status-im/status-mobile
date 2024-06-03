@@ -9,9 +9,8 @@ borkdude/edamame/1.3.23/edamame-1.3.23.jar
 borkdude/sci.impl.reflector/0.0.1/sci.impl.reflector-0.0.1.jar
 camel-snake-kebab/camel-snake-kebab/0.4.3/camel-snake-kebab-0.4.3.jar
 cheshire/cheshire/5.11.0/cheshire-5.11.0.jar
-cider/cider-nrepl/0.44.0/cider-nrepl-0.44.0.jar
-cider/orchard/0.21.0/orchard-0.21.0.jar
-cider/piggieback/0.5.2/piggieback-0.5.2.jar
+cider/cider-nrepl/0.31.0/cider-nrepl-0.31.0.jar
+cider/piggieback/0.4.1/piggieback-0.4.1.jar
 clj-kondo/clj-kondo/2024.03.13/clj-kondo-2024.03.13.jar
 cljs-bean/cljs-bean/1.9.0/cljs-bean-1.9.0.jar
 clout/clout/2.1.2/clout-2.1.2.jar
@@ -74,11 +73,10 @@ javax/xml/bind/jaxb-api/2.3.0/jaxb-api-2.3.0.jar
 medley/medley/0.8.2/medley-0.8.2.jar
 metosin/malli/0.13.0/malli-0.13.0.jar
 mvxcvi/arrangement/2.1.0/arrangement-2.1.0.jar
-mx/cider/logjam/0.1.1/logjam-0.1.1.jar
 net/cgrand/macrovich/0.2.1/macrovich-0.2.1.jar
 net/java/dev/jna/jna/5.12.1/jna-5.12.1.jar
 nrepl/bencode/1.1.0/bencode-1.1.0.jar
-nrepl/nrepl/1.1.0/nrepl-1.1.0.jar
+nrepl/nrepl/1.0.0/nrepl-1.0.0.jar
 nubank/matcher-combinators/3.8.8/matcher-combinators-3.8.8.jar
 org/apache/ant/ant/1.10.11/ant-1.10.11.jar
 org/apache/ant/ant-launcher/1.10.11/ant-launcher-1.10.11.jar
