@@ -111,7 +111,7 @@
                                      :else type)
                      :on-press #(when (not loading-routes?)
                                   (cond
-                                    (= type :add)
+                                    (= type :edit)
                                     (open-preferences)
                                     on-press (on-press chain-id total-amount)))}]])
                 network-values)])
