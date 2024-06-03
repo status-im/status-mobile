@@ -2537,6 +2537,7 @@
     "import-using-phrase": "Import using recovery phrase",
     "import-from-keycard": "Import from Keycard",
     "import-private-key": "Import private key",
+    "import-by-scanning-encrypted-qr": "Import by scanning encrypted QR",
     "backup-recovery-phrase": "Backup recovery phrase",
     "backup-recovery-phrase-description": "Save in a secure place that only you control, these 12 words give access to all of your funds.",
     "how-to-backup": "How to backup your recovery phrase",

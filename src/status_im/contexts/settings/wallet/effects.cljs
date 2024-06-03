@@ -6,7 +6,7 @@
             [utils.security.core :as security]
             [utils.transforms :as transforms]))
 
-(rf/reg-fx :effects.connection-string/export-keypair
+(rf/reg-fx :effects.syncing/export-keypairs-keystores
  (fn [{:keys [key-uid sha3-pwd keypair-key-uid on-success on-fail]}]
    (let [config-map (transforms/clj->json {:senderConfig {:loggedInKeyUid   key-uid
                                                           :keystorePath     ""
@@ -23,7 +23,7 @@
                                      "generic-error: failed to get connection string")))))
          (promesa/catch on-fail)))))
 
-(rf/reg-fx :effects.connection-string/import-keypair
+(rf/reg-fx :effects.syncing/import-keypairs-keystores
  (fn [{:keys [key-uid sha3-pwd keypairs-key-uids connection-string on-success on-fail]}]
    (let [config-map (transforms/clj->json {:receiverConfig
                                            {:loggedInKeyUid   key-uid

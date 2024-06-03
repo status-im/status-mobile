@@ -32,7 +32,7 @@
         user-key-uid "test-key-uid"
         callback     (fn [connect-string] (println "callback" connect-string))]
     (testing "get-keypair-export-connection"
-      (let [expected {:fx [[:effects.connection-string/export-keypair
+      (let [expected {:fx [[:effects.syncing/export-keypairs-keystores
                             {:key-uid         user-key-uid
                              :sha3-pwd        sha3-pwd
                              :keypair-key-uid mock-key-uid
@@ -74,7 +74,7 @@
         user-key-uid      "test-key-uid"
         connection-string "test-connection-string"]
     (testing "connection-string-for-import-keypair"
-      (let [expected {:fx [[:effects.connection-string/import-keypair
+      (let [expected {:fx [[:effects.syncing/import-keypairs-keystores
                             {:key-uid           user-key-uid
                              :sha3-pwd          sha3-pwd
                              :keypairs-key-uids [mock-key-uid]
