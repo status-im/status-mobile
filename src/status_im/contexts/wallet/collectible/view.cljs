@@ -83,7 +83,9 @@
                        (colors/theme-colors colors/white-opa-50 colors/neutral-95-opa-70-blur theme))]
     [rn/view {:style style/animated-header}
      [reanimated/blur-view
-      {:style         {:flex 1}
+      {:style         {:flex             1
+                       :background-color (when platform/android?
+                                           (colors/theme-colors colors/white colors/neutral-80 theme))}
        :blur-type     :transparent
        :overlay-color :transparent
        :blur-amount   blur-amount

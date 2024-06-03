@@ -1,6 +1,7 @@
 (ns quo.components.drawers.permission-context.view
   (:require
     [clojure.string :as string]
+    [quo.components.blur.view :as blur]
     [quo.components.buttons.button.view :as button]
     [quo.components.drawers.permission-context.schema :as component-schema]
     [quo.components.drawers.permission-context.style :as style]
@@ -10,7 +11,6 @@
     [quo.components.tags.token-tag.view :as token-tag]
     [quo.foundations.colors :as colors]
     [quo.theme]
-    [react-native.blur :as blur]
     [react-native.core :as rn]
     [react-native.platform :as platform]
     [react-native.shadow :as shadow]

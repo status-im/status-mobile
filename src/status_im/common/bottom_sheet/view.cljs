@@ -4,7 +4,6 @@
     [quo.core :as quo]
     [quo.foundations.colors :as colors]
     [quo.theme :as quo.theme]
-    [react-native.blur :as blur]
     [react-native.core :as rn]
     [react-native.gesture :as gesture]
     [react-native.hooks :as hooks]
@@ -134,7 +133,7 @@
                 (style/sheet {:max-height sheet-max-height}))}
        (when shell?
          [rn/view {:style style/shell-bg-container}
-          [blur/ios-view
+          [quo/blur
            {:style         (style/shell-bg blur-background)
             :blur-radius   (or blur-radius 20)
             :blur-amount   32

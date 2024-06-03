@@ -1,7 +1,6 @@
 (ns status-im.contexts.preview.quo.gradient.gradient-cover
   (:require
     [quo.core :as quo]
-    [react-native.blur :as blur]
     [react-native.core :as rn]
     [reagent.core :as reagent]
     [status-im.common.resources :as resources]
@@ -63,7 +62,7 @@
            [rn/image
             {:style  {:height 332}
              :source (resources/get-mock-image :dark-blur-bg)}])
-         [(if @blur? blur/view rn/view)
+         [(if @blur? quo/blur rn/view)
           {:style     {:height           332
                        :padding-vertical 40}
            :blur-type :dark}
