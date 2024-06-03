@@ -56,6 +56,10 @@
                                             :shell?  true
                                             :content (fn []
                                                        [remove-address/view opts])}])
+                                        [opts])
+        open-show-address-qr           (rn/use-callback
+                                        #(rf/dispatch [:open-modal
+                                                       :screen/settings.share-saved-address opts])
                                         [opts])]
     [quo/action-drawer
      [[{:icon                :i/arrow-up
@@ -91,7 +95,7 @@
        {:icon                :i/qr-code
         :label               (i18n/label :t/show-address-qr)
         :blur?               true
-        :on-press            not-implemented/alert
+        :on-press            open-show-address-qr
         :accessibility-label :show-address-qr-code}
        {:icon                :i/edit
         :label               (i18n/label :t/edit-account)

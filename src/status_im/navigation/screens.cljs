@@ -66,6 +66,8 @@
     [status-im.contexts.settings.wallet.saved-addresses.add-address-to-save.view :as
      wallet-add-address-to-save]
     [status-im.contexts.settings.wallet.saved-addresses.save-address.view :as wallet-save-address]
+    [status-im.contexts.settings.wallet.saved-addresses.sheets.share-address.view :as
+     share-saved-address]
     [status-im.contexts.settings.wallet.saved-addresses.view :as saved-addresses-settings]
     [status-im.contexts.settings.wallet.wallet-options.view :as wallet-options]
     [status-im.contexts.shell.activity-center.view :as activity-center]
@@ -556,6 +558,10 @@
     {:name      :screen/settings.add-address-to-save
      :options   options/transparent-modal-screen-options
      :component wallet-add-address-to-save/view}
+
+    {:name      :screen/settings.share-saved-address
+     :options   options/transparent-screen-options
+     :component share-saved-address/view}
 
     {:name      :screen/settings-messages
      :options   options/transparent-modal-screen-options
