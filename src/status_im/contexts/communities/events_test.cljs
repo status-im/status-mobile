@@ -178,7 +178,6 @@
         (is (match?
              [[:dispatch
                [:communities/check-permissions-to-join-community-with-all-addresses community-id]]
-              [:dispatch [:chat.ui/spectate-community community-id]]
               [:dispatch [:communities/check-permissions-to-join-community community-id]]]
              (filter some? (:fx effects))))))
 
@@ -196,8 +195,7 @@
             effects   (events/handle-community {} [community])]
         (is (match?
              [[:dispatch
-               [:communities/check-permissions-to-join-community-with-all-addresses community-id]]
-              [:dispatch [:chat.ui/spectate-community community-id]]]
+               [:communities/check-permissions-to-join-community-with-all-addresses community-id]]]
              (filter some? (:fx effects))))))
     (testing "given a community with lower clock"
       (let [effects (events/handle-community {:db {:communities {community-id {:clock 3}}}} [community])]
