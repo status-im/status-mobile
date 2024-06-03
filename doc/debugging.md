@@ -20,6 +20,39 @@ A server will be started at http://localhost:4567. It might show "not connected"
 
 More details about re-frisk are on the [project page](https://github.com/flexsurfer/re-frisk).
 
+## Debugging with FlowStorm
+
+[FlowStorm](http://www.flow-storm.org/) is a free and open-source time-travel
+debugger for Clojure and ClojureScript. It is capable of recording almost any
+code execution path in the Status' mobile app.
+
+FlowStorm is independent of editor/IDE, but a tighter [integration with
+Emacs](https://github.com/jpmonettas/cider-storm) is available.
+
+If you are developing with Android, run `make android-ports` first. If you are
+behind a firewall, allow TCP traffic on port `7722`, then:
+
+```bash
+make run-flow-storm
+```
+
+You will know FlowStorm is correctly running if you see the status bar with
+green `REPL` and `RUNTIME` indicators.
+
+With FlowStorm running, you can now add `#trace` on any top-level form, reload
+the code, or evaluate the traced form in the REPL, and FlowStorm will start
+recording data. Avoid `#rtrace` (with `r`) because it can cause massive spikes
+in CPU which will make the app hang and you might need to forcefully kill
+processes.
+
+```clojure
+#trace ; => Add this line to tell FlowStorm to instrument the function.
+(defn say-hello []
+  (str "Hello world"))
+```
+
+There are other ways to debug, but this is a good start.
+
 ## Enabling debug logs
 Calls to `log/debug` will not be printed to the console by default. It can be enabled under "Advanced settings" in the app:
 

@@ -83,6 +83,9 @@ shim.js
 figwheel_server.log
 .nrepl-port
 
+# FlowStorm (Clojure debugger)
+repl-client-debug
+
 # Lein
 #
 .lein-failures
