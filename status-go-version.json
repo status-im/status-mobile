@@ -3,7 +3,7 @@
     "_comment": "Instead use: scripts/update-status-go.sh <rev>",
     "owner": "status-im",
     "repo": "status-go",
-    "version": "5186-cannot-login-on-windows",
-    "commit-sha1": "21acc5f4806b5029a6eca2618e20130bcd35d118",
-    "src-sha256": "0lvp0ks836y8blz6rcvpxsj8ij3f22wahgxcrrahnkw5g931fwwl"
+    "version": "fix/create-account-root-data-dir",
+    "commit-sha1": "22eec2cee2e30d9f1a1f9c20117bdd5109ba19ab",
+    "src-sha256": "10q7lk9g025djbm278m6i1i79c94gpjd6dkw2j5fnra3n0zbfr3b"
 }
