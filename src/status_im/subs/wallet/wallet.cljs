@@ -244,6 +244,7 @@
                                   :address             address}
                   :networks      networks
                   :state         :default
+                  :blur?         true
                   :action        :none})))))
 
 (defn- format-settings-missing-keypair-accounts
