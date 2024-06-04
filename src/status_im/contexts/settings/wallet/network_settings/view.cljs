@@ -55,9 +55,9 @@
 (defn testnet-mode-setting
   [{:keys [testnet-mode? on-enable on-disable]}]
   (let [on-change-testnet (rn/use-callback
-                           (fn [active?]
-                             (if active? (on-enable) (on-disable)))
-                           [on-enable on-disable])]
+                           (fn []
+                             (if-not testnet-mode? (on-enable) (on-disable)))
+                           [testnet-mode? on-enable on-disable])]
     {:blur?        true
      :title        (i18n/label :t/testnet-mode)
      :action       :selector
