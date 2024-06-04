@@ -59,7 +59,7 @@
       security/mask-data))
 
 (defn- recovery-phrase-form
-  [{:keys [keypair title seed-phrase word-count on-change-seed-phrase on-input-ref]} & children]
+  [{:keys [keypair title seed-phrase word-count on-change-seed-phrase ref]} & children]
   (->> children
        (into
         [rn/view {:style style/form-container}
@@ -75,7 +75,7 @@
          [rn/view {:style style/input-container}
           [quo/recovery-phrase-input
            {:accessibility-label      :passphrase-input
-            :on-input-ref             on-input-ref
+            :ref                      ref
             :placeholder              (i18n/label :t/seed-phrase-placeholder)
             :placeholder-text-color   colors/white-opa-30
             :auto-capitalize          :none
@@ -105,8 +105,6 @@
                                                            #(reset! keyboard-shown? false))
                      invalid-seed-phrase?    (reagent/atom false)
                      input-ref               (reagent/atom nil)
-                     on-input-ref            (fn [ref]
-                                               (reset! input-ref ref))
                      focus-input             (fn []
                                                (let [ref @input-ref]
                                                  (when ref
@@ -166,7 +164,7 @@
          :seed-phrase           @seed-phrase
          :on-change-seed-phrase on-change-seed-phrase
          :word-count            word-count
-         :on-input-ref          on-input-ref}
+         :ref                   #(reset! input-ref %)}
         (if (fn? render-controls)
           (render-controls {:submit-disabled?        button-disabled?
                             :keyboard-shown?         @keyboard-shown?
