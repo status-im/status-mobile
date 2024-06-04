@@ -2673,5 +2673,8 @@
     "saved-address-removed": "Saved address removed",
     "remove-address": "Remove address",
     "remove-saved-address": "Remove saved address",
-    "remove-saved-address-description": "Transaction history relating to this address will no longer be labelled ‘{{name}}’."
+    "remove-saved-address-description": "Transaction history relating to this address will no longer be labelled ‘{{name}}’.",
+    "dapp-will-be-able-to": "{{dapp-name}} will be able to:",
+    "check-your-account-balance-and-activity": "Check your account balance and activity",
+    "request-txns-and-message-signing": "Request transactions and message signing"
 }

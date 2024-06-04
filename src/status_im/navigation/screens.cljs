@@ -389,6 +389,10 @@
      :options   {:insets {:top? true}}
      :component wallet-connected-dapps/view}
 
+    {:name      :screen/wallet.wallet-connect-session-proposal
+     :options   {:sheet? true}
+     :component wallet-connect-session-proposal/view}
+
     {:name      :screen/wallet.edit-account
      :component wallet-edit-account/view}
 

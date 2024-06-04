@@ -51,7 +51,9 @@
  :wallet-connect/on-session-proposal
  (fn [{:keys [db]} [proposal]]
    (log/info "Received Wallet Connect session proposal: " {:id (:id proposal)})
-   {:db (assoc db :wallet-connect/current-proposal proposal)}))
+   {:db            (assoc db :wallet-connect/current-proposal proposal)
+    :open-modal-fx [:screen/wallet.wallet-connect-session-proposal
+                    (:theme db)]}))
 
 (rf/reg-event-fx
  :wallet-connect/on-session-request
