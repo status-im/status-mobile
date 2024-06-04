@@ -10,9 +10,6 @@
   {:padding-top inset-top
    :flex        1})
 
-(def mainnet-settings
-  {:padding-vertical 8})
-
 (defn settings-container
   [inset-bottom]
   {:flex           1

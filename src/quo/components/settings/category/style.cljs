@@ -7,13 +7,12 @@
   {:left               0
    :right              0
    :padding-horizontal 20
-   :padding-top        (when label 12)
+   :padding-top        (if label 12 8)
    :padding-bottom     8})
 
 (defn settings-items
-  [{:keys [label blur?]} theme]
-  {:margin-top       (if label 12 4)
-   :border-radius    16
+  [{:keys [blur?]} theme]
+  {:border-radius    16
    :background-color (if blur?
                        colors/white-opa-5
                        (colors/theme-colors colors/white colors/neutral-95 theme))
@@ -24,9 +23,10 @@
 
 (defn label
   [{:keys [blur?]} theme]
-  {:color (if blur?
-            colors/white-opa-40
-            (colors/theme-colors colors/neutral-50 colors/neutral-40 theme))})
+  {:margin-bottom 12
+   :color         (if blur?
+                    colors/white-opa-40
+                    (colors/theme-colors colors/neutral-50 colors/neutral-40 theme))})
 
 (def reorder-items
   {:margin-top 12})
