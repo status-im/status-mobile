@@ -47,23 +47,77 @@
          [rn/text label]])
       labels)]))
 
+(defn- accounts-data-item
+  []
+  ;; TODO. This account is currently hard coded in
+  ;; `status-im.contexts.wallet.wallet-connect.events`. Should be selectable and changeable
+  (let [accounts (rf/sub [:wallet/accounts-without-watched-accounts])
+        name     (-> accounts first :name)]
+    [quo/data-item
+     {:container-style style/detail-item
+      :blur?           false
+      :description     :default
+      :icon-right?     true
+      :right-icon      :i/chevron-right
+      :icon-color      colors/neutral-10
+      :card?           false
+      :label           :preview
+      ;; TODO. The quo component for data item doesn't support showing accounts yet
+      :status          :default
+      :size            :small
+      :title           (i18n/label :t/account-title)
+      :subtitle        name}]))
+
+(defn- networks-data-item
+  []
+  [quo/data-item
+   {:container-style style/detail-item
+    :blur?           false
+    :description     :default
+    :icon-right?     true
+    :card?           true
+    :label           :none
+    :status          :default
+    :size            :small
+    :title           (i18n/label :t/networks)
+    ;; TODO. The quo component for data-item does not support showing networks yet
+    :subtitle        "Networks will show up here"}])
+
+(defn- footer
+  []
+  (let [customization-color (rf/sub [:profile/customization-color])]
+    [quo/bottom-actions
+     {:actions          :two-actions
+      :button-two-label (i18n/label :t/decline)
+      :button-two-props {:type                :grey
+                         :accessibility-label :wc-deny-connection
+                         :on-press            #(do (rf/dispatch [:navigate-back])
+                                                   (rf/dispatch
+                                                    [:wallet-connect/reset-current-session]))}
+      :button-one-label (i18n/label :t/connect)
+      :button-one-props {:customization-color customization-color
+                         :type                :primary
+                         :accessibility-label :wc-connect
+                         :on-press            #(rf/dispatch [:wallet-connect/approve-session])}}]))
+
+(defn- header
+  []
+  [quo/page-nav
+   {:type                :no-title
+    :background          :blur
+    :icon-name           :i/close
+    :on-press            (rn/use-callback #(rf/dispatch [:navigate-back]))
+    :accessibility-label :wc-session-proposal-top-bar}])
+
 (defn view
   []
   [floating-button-page/view
    {:footer-container-padding 0
-    :header                   [quo/page-nav
-                               {:type                :no-title
-                                :background          :blur
-                                :icon-name           :i/close
-                                :on-press            (rn/use-callback #(rf/dispatch [:navigate-back]))
-                                :accessibility-label :save-address-top-bar}]
-    :footer                   [quo/button
-                               {:accessibility-label :save-address-button
-                                :type                :primary
-                                ;; :container-style     style/save-address-button
-                               }
-                               (i18n/label :t/save-address)]}
+    :header                   [header]
+    :footer                   [footer]}
    [rn/view
     {:style style/container}
     [dapp-metadata]
+    [accounts-data-item]
+    [networks-data-item]
     [approval-note]]])
