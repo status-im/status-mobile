@@ -78,25 +78,31 @@
     :list-type :settings}])
 
 (defn on-change-testnet
-  [{:keys [enable? theme]}]
+  [{:keys [enable? blur? theme]}]
   (rf/dispatch [:show-bottom-sheet
-                {:content (fn [] [testnet/view {:enable? enable?}])
-                 :theme   theme}]))
+                {:content (fn [] [testnet/view
+                                  {:enable? enable?
+                                   :blur?   blur?}])
+                 :theme   theme
+                 :shell?  blur?}]))
 
 (defn view
   []
-  (let [insets           (safe-area/get-insets)
+  (let [blur?            true
+        insets           (safe-area/get-insets)
         theme            (quo.theme/use-theme)
         networks-by-name (rf/sub [:wallet/network-details-by-network-name])
         testnet-mode?    (rf/sub [:profile/test-networks-enabled?])
         enable-testnet   (rn/use-callback
                           (fn []
                             (on-change-testnet {:theme   theme
+                                                :blur?   blur?
                                                 :enable? true}))
                           [theme])
         disable-testnet  (rn/use-callback
                           (fn []
                             (on-change-testnet {:theme   theme
+                                                :blur?   blur?
                                                 :enable? false}))
                           [theme])]
     [quo/overlay
