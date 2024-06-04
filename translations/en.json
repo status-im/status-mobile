@@ -2529,6 +2529,7 @@
     "address-copied": "Address copied",
     "no-dapps-description": "We want dApps!",
     "select-asset": "Select asset",
+    "select-asset-to-pay": "Select asset to pay",
     "send-limit": "Max: {{limit}}",
     "searching-for-activity": "Searching for activity...",
     "this-address-has-no-activity": "This address has no activity",
