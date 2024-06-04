@@ -1,17 +1,18 @@
 (ns status-im.contexts.shell.qr-reader.view
   (:require
-    [clojure.string :as string]
-    [react-native.core :as rn]
-    [react-native.hooks :as hooks]
-    [status-im.common.router :as router]
-    [status-im.common.scan-qr-code.view :as scan-qr-code]
-    [status-im.common.validation.general :as validators]
-    [status-im.contexts.communities.events]
-    [status-im.contexts.wallet.common.validation :as wallet-validation]
-    [utils.debounce :as debounce]
-    [utils.ethereum.eip.eip681 :as eip681]
-    [utils.i18n :as i18n]
-    [utils.url :as url]))
+   [clojure.string :as string]
+   [react-native.core :as rn]
+   [react-native.hooks :as hooks]
+   [status-im.common.router :as router]
+   [status-im.common.scan-qr-code.view :as scan-qr-code]
+   [status-im.common.validation.general :as validators]
+   [status-im.contexts.communities.events]
+   [status-im.contexts.wallet.common.validation :as wallet-validation]
+   [status-im.contexts.wallet.wallet-connect.utils :as wc-utils]
+   [utils.debounce :as debounce]
+   [utils.ethereum.eip.eip681 :as eip681]
+   [utils.i18n :as i18n]
+   [utils.url :as url]))
 
 (def invalid-qr-toast
   {:type  :negative
@@ -100,9 +101,10 @@
     ;; TODO: https://github.com/status-im/status-mobile/issues/18744
     nil
 
-    (wallet-connect-code? scanned-text)
-    ;; WalletConnect is not working yet, this flow should be updated once WalletConnect is ready
-    nil
+    ;; TODO: Handle expired WC uris here
+    (wc-utils/valid-uri? scanned-text)
+    (do
+      (debounce/debounce-and-dispatch [:wallet-connect/pair scanned-text] 300))
 
     (url? scanned-text)
     (debounce/debounce-and-dispatch [:browser.ui/open-url scanned-text] 300)
