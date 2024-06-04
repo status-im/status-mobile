@@ -1,5 +1,6 @@
 (ns status-im.contexts.settings.wallet.network-settings.view
   (:require [quo.core :as quo]
+            [quo.foundations.colors :as colors]
             [quo.foundations.resources :as resources]
             [quo.theme]
             [react-native.core :as rn]
@@ -80,11 +81,12 @@
 (defn on-change-testnet
   [{:keys [enable? blur? theme]}]
   (rf/dispatch [:show-bottom-sheet
-                {:content (fn [] [testnet/view
-                                  {:enable? enable?
-                                   :blur?   blur?}])
-                 :theme   theme
-                 :shell?  blur?}]))
+                {:content         (fn [] [testnet/view
+                                          {:enable? enable?
+                                           :blur?   blur?}])
+                 :theme           theme
+                 :shell?          blur?
+                 :blur-background colors/bottom-sheet-background-blur}]))
 
 (defn view
   []

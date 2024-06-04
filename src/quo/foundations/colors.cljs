@@ -141,6 +141,8 @@
 (def neutral-95-opa-70-blur neutral-95-opa-70)
 (def neutral-100-opa-70-blur (if platform/android? neutral-100-opa-70 "#0D1014B3"))
 
+(def bottom-sheet-background-blur (if platform/ios? "#ED9D1D0D" neutral-100-opa-90))
+
 ;;;;Black
 
 ;;Solid

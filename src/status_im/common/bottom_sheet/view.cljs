@@ -64,7 +64,7 @@
 (defn view
   [{:keys [hide? insets]}
    {:keys [content selected-item padding-bottom-override border-radius on-close shell?
-           gradient-cover? customization-color hide-handle? blur-radius]
+           gradient-cover? customization-color hide-handle? blur-radius blur-background]
     :or   {border-radius 12}}]
   (let [theme                             (quo.theme/use-theme)
         {window-height :height}           (rn/get-window)
@@ -134,7 +134,7 @@
                 (style/sheet {:max-height sheet-max-height}))}
        (when shell?
          [blur/ios-view
-          {:style         style/shell-bg
+          {:style         (style/shell-bg blur-background)
            :blur-radius   (or blur-radius 20)
            :blur-amount   32
            :blur-type     :transparent
