@@ -1,13 +1,13 @@
 (ns status-im.contexts.wallet.wallet-connect.session-proposal.view
   (:require
-   [quo.core :as quo]
-   [quo.foundations.colors :as colors]
-   [quo.theme]
-   [react-native.core :as rn]
-   [status-im.common.floating-button-page.view :as floating-button-page]
-   [status-im.contexts.wallet.wallet-connect.session-proposal.style :as style]
-   [utils.i18n :as i18n]
-   [utils.re-frame :as rf]))
+    [quo.core :as quo]
+    [quo.foundations.colors :as colors]
+    [quo.theme]
+    [react-native.core :as rn]
+    [status-im.common.floating-button-page.view :as floating-button-page]
+    [status-im.contexts.wallet.wallet-connect.session-proposal.style :as style]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]))
 
 (defn- dapp-metadata
   []
