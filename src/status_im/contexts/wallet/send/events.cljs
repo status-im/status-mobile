@@ -37,6 +37,7 @@
            sender-network-values         (get-in db [:wallet :ui :send :sender-network-values])
            tx-type                       (get-in db [:wallet :ui :send :tx-type])
            disabled-from-chain-ids       (or (get-in db [:wallet :ui :send :disabled-from-chain-ids]) [])
+           from-locked-amounts           (or (get-in db [:wallet :ui :send :from-locked-amounts]) {})
            token-decimals                (if collectible 0 (:decimals token))
            native-token?                 (and token (= token-display-name "ETH"))
            routes-available?             (pos? (count chosen-route))
@@ -141,8 +142,12 @@
    {:db (update-in db [:wallet :ui :send] dissoc :amount)}))
 
 (rf/reg-event-fx :wallet/clean-disabled-from-networks
- (fn [{:keys [db]}]
-   {:db (update-in db [:wallet :ui :send] dissoc :disabled-from-chain-ids)}))
+                 (fn [{:keys [db]}]
+                   {:db (update-in db [:wallet :ui :send] dissoc :disabled-from-chain-ids)}))
+
+(rf/reg-event-fx :wallet/clean-from-locked-amounts
+                 (fn [{:keys [db]}]
+                   {:db (update-in db [:wallet :ui :send] dissoc :from-locked-amounts)}))
 
 (rf/reg-event-fx
  :wallet/select-send-address
@@ -308,6 +313,10 @@
  (fn [{:keys [db]} [chain-ids]]
    {:db (assoc-in db [:wallet :ui :send :disabled-from-chain-ids] chain-ids)}))
 
+(rf/reg-event-fx :wallet/lock-from-amount
+                 (fn [{:keys [db]} [chain-id amount]]
+                   {:db (assoc-in db [:wallet :ui :send :from-locked-amounts chain-id] amount)}))
+
 (rf/reg-event-fx :wallet/reset-network-amounts-to-zero
  (fn [{:keys [db]}]
    (let [sender-network-values   (get-in db [:wallet :ui :send :sender-network-values])
@@ -337,6 +346,7 @@
          to-address (get-in db [:wallet :ui :send :to-address])
          receiver-networks (get-in db [:wallet :ui :send :receiver-networks])
          disabled-from-chain-ids (or (get-in db [:wallet :ui :send :disabled-from-chain-ids]) [])
+         from-locked-amounts (or (get-in db [:wallet :ui :send :from-locked-amounts]) {})
          test-networks-enabled? (get-in db [:profile/profile :test-networks-enabled?])
          networks ((if test-networks-enabled? :test :prod)
                    (get-in db [:wallet :networks]))
