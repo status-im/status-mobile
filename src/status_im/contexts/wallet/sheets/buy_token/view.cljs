@@ -3,7 +3,6 @@
             [quo.core :as quo]
             [react-native.core :as rn]
             [status-im.contexts.wallet.sheets.buy-token.style :as style]
-            [status-im.feature-flags :as ff]
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]))
 
@@ -46,15 +45,14 @@
                                            (oops/oget % :nativeEvent :layout :height)))]
     [:<>
      [quo/drawer-top {:title (i18n/label :t/buy-assets)}]
-     (when (ff/enabled? ::ff/wallet.buy-recurrent-assets)
-       [quo/segmented-control
-        {:size            32
-         :container-style style/tabs
-         :default-active  initial-tab
-         :on-change       set-selected-tab
-         :data            tabs}])
+     [quo/segmented-control
+      {:size            32
+       :container-style style/tabs
+       :default-active  initial-tab
+       :on-change       set-selected-tab
+       :data            tabs}]
      [rn/flat-list
-      {:data        (if (and (ff/enabled? ::ff/wallet.buy-recurrent-assets) (= selected-tab :recurrent))
+      {:data        (if (= selected-tab :recurrent)
                       (:recurrent crypto-on-ramps)
                       (:one-time crypto-on-ramps))
        :on-layout   on-layout
