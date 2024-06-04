@@ -86,6 +86,7 @@
     quo.components.list-items.account-list-card.view
     quo.components.list-items.account.view
     quo.components.list-items.address.view
+    quo.components.list-items.approval-info.view
     quo.components.list-items.channel.view
     quo.components.list-items.community.view
     quo.components.list-items.dapp.view
@@ -334,6 +335,7 @@
 (def account-item quo.components.list-items.account.view/view)
 (def account-list-card quo.components.list-items.account-list-card.view/view)
 (def address quo.components.list-items.address.view/view)
+(def approval-info quo.components.list-items.approval-info.view/view)
 (def channel quo.components.list-items.channel.view/view)
 (def community-list quo.components.list-items.community.view/view)
 (def dapp quo.components.list-items.dapp.view/view)
