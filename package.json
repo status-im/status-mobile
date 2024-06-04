@@ -99,7 +99,8 @@
     "prettier": "^2.8.8",
     "process": "0.11.10",
     "react-test-renderer": "18.1.0",
-    "shadow-cljs": "2.26.2"
+    "shadow-cljs": "2.26.2",
+    "websocket": "^1.0.35"
   },
   "binary": {
     "module_name": "status_nodejs_addon",

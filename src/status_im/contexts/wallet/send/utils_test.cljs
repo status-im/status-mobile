@@ -4,7 +4,7 @@
             [utils.map :as map]
             [utils.money :as money]))
 
-(deftest test-amount-in-hex
+(deftest amount-in-hex-test
   (testing "Test amount-in-hex function"
     (let [amount  1
           decimal 18]
@@ -16,7 +16,7 @@
    :hashes {:5   ["0x5"]
             :420 ["0x12" "0x11"]}})
 
-(deftest test-map-multitransaction-by-ids
+(deftest map-multitransaction-by-ids-test
   (testing "test map-multitransaction-by-ids formats to right data structure"
     (let [{:keys [id hashes]} multichain-transacation]
       (is (= (utils/map-multitransaction-by-ids id hashes)
@@ -30,7 +30,7 @@
                       :id       61
                       :chain-id :420}})))))
 
-(deftest test-network-amounts-by-chain
+(deftest network-amounts-by-chain-test
   (testing "Correctly calculates network amounts for transaction with native token"
     (let [route          [{:amount-in "0xde0b6b3a7640000"
                            :to        {:chain-id 1}}
@@ -82,7 +82,7 @@
       (doseq [[chain-id exp-value] expected]
         (is (money/equal-to (get result chain-id) exp-value))))))
 
-(deftest test-network-values-for-ui
+(deftest network-values-for-ui-test
   (testing "Sanitizes values correctly for display"
     (let [amounts  {1     (money/bignumber "0")
                     10    (money/bignumber "2.5")
@@ -95,7 +95,7 @@
         (is #(or (= (get result chain-id) exp-value)
                  (money/equal-to (get result chain-id) exp-value)))))))
 
-(deftest test-calculate-gas-fee
+(deftest calculate-gas-fee-test
   (testing "EIP-1559 transaction without L1 fee"
     (let [data            {:gas-amount "23487"
                            :gas-fees   {:max-fee-per-gas-medium "2.259274911"
@@ -125,7 +125,7 @@
       (is (money/equal-to (utils/calculate-gas-fee data)
                           expected-result)))))
 
-(deftest test-calculate-full-route-gas-fee
+(deftest calculate-full-route-gas-fee-test
   (testing "Route with a single EIP-1559 transaction, no L1 fees"
     (let [route           [{:gas-amount "23487"
                             :gas-fees   {:max-fee-per-gas-medium "2.259274911"
@@ -166,7 +166,7 @@
       (is (money/equal-to (utils/calculate-full-route-gas-fee route)
                           expected-result)))))
 
-(deftest test-token-available-networks-for-suggested-routes
+(deftest token-available-networks-for-suggested-routes-test
   (testing "Excludes disabled chain-ids correctly"
     (let [balances-per-chain {1     {:chain-id 1 :balance 100}
                               10    {:chain-id 10 :balance 200}
@@ -209,7 +209,7 @@
                                                                    :disabled-chain-ids
                                                                    disabled-chain-ids}))))))
 
-(deftest test-reset-loading-network-amounts-to-zero
+(deftest reset-loading-network-amounts-to-zero-test
   (testing "Correctly resets loading network amounts to zero and changes type to default"
     (let [network-amounts [{:chain-id 1 :total-amount (money/bignumber "100") :type :loading}
                            {:chain-id 10 :total-amount (money/bignumber "200") :type :default}]
@@ -267,7 +267,7 @@
                                result)]
       (is (every? identity comparisons)))))
 
-(deftest test-network-amounts
+(deftest network-amounts-test
   (testing "Handles disabled and receiver networks correctly when receiver? is true"
     (let [network-values     {10 (money/bignumber "200")}
           disabled-chain-ids [1]
@@ -435,7 +435,7 @@
                                                      :receiver?          receiver?})]
       (is (every? identity (map #(map/deep-compare %1 %2) expected result))))))
 
-(deftest test-loading-network-amounts
+(deftest loading-network-amounts-test
   (testing "Assigns :loading type to valid networks except for disabled ones"
     (let [valid-networks     [1 10 42161]
           disabled-chain-ids [42161]
@@ -598,7 +598,7 @@
                                   result)]
       (is (every? identity comparisons)))))
 
-(deftest test-network-links
+(deftest network-links-test
   (testing "Calculates position differences correctly"
     (let [route                [{:from {:chain-id 1} :to {:chain-id 42161}}
                                 {:from {:chain-id 10} :to {:chain-id 1}}

@@ -34,7 +34,7 @@
   (let [default-account (contract-utils/get-default-account accounts)]
     (is (= (:emoji default-account) test-emoji))))
 
-(deftest accounts-save-accounts-contract
+(deftest accounts-save-accounts-contract-test
   (h/test-async :contract/accounts-save-account
     (fn []
       (promesa/let [test-emoji      (emoji-picker.utils/random-emoji)
@@ -56,7 +56,7 @@
   (is (some #(= constants/arbitrum-sepolia-chain-id (get-in % [:Test :chainId])) response))
   (is (some #(= constants/optimism-sepolia-chain-id (get-in % [:Test :chainId])) response)))
 
-(deftest accounts-get-chains-contract
+(deftest accounts-get-chains-contract-test
   (h/test-async :contract/wallet_get-ethereum-chains
     (fn []
       (promesa/let [response (contract-utils/call-rpc "wallet_getEthereumChains")]

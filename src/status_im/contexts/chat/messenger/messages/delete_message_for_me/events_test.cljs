@@ -8,7 +8,7 @@
 (def mid "message-id")
 (def cid "chat-id")
 
-(deftest delete-for-me
+(deftest delete-for-me-test
   (with-redefs [datetime/timestamp (constantly 1)]
     (let [db      {:messages {cid {mid {:id mid :whisper-timestamp 1}}}}
           message {:message-id mid :chat-id cid}]
@@ -60,7 +60,7 @@
           (is (= (delete-message-for-me/delete {:db {:messages []}} message 1000)
                  nil)))))))
 
-(deftest undo-delete-for-me
+(deftest undo-delete-for-me-test
   (let [db      {:messages {cid {mid {:id mid :whisper-timestamp 1}}}}
         message {:message-id mid :chat-id cid}]
     (testing "undo delete for me"
@@ -93,7 +93,7 @@
         (is (= (delete-message-for-me/undo {:db {:messages []}} message)
                nil))))))
 
-(deftest delete-for-me-and-sync
+(deftest delete-for-me-and-sync-test
   (let [db      {:messages {cid {mid {:id mid :deleted-for-me? true :deleted-for-me-undoable-till 0}}}}
         message {:message-id mid :chat-id cid}]
     (testing "delete for me and sync"

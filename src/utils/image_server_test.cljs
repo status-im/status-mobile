@@ -4,7 +4,7 @@
     [quo.foundations.colors :as colors]
     [utils.image-server :as sut]))
 
-(t/deftest get-account-image-uri
+(t/deftest get-account-image-uri-test
   (with-redefs
     [sut/current-theme-index identity
      sut/timestamp           (constantly "timestamp")]
@@ -23,7 +23,7 @@
                                   :ring-width               2})
       "https://localhost:port/accountImages?publicKey=public-key&keyUid=key-uid&imageName=image-name&size=0&theme=:dark&clock=timestamp&indicatorColor=rgba(9%2C16%2C28%2C0.08)&indicatorSize=4&indicatorBorder=0&indicatorCenterToEdge=12&addRing=1&ringWidth=4"))))
 
-(t/deftest get-account-initials-uri
+(t/deftest get-account-initials-uri-test
   (with-redefs
     [sut/current-theme-index identity
      colors/resolve-color    str

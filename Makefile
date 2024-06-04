@@ -401,6 +401,17 @@ test-component: ##@test Run component tests once in NodeJS
 	yarn shadow-cljs compile component-test && \
 	jest --clearCache && jest --config=test/jest/jest.config.js --testEnvironment node
 
+# Reference: https://flow-storm.github.io/flow-storm-debugger/user_guide.html#_debugging_react_native_applications
+run-flow-storm: export SHADOW_CLJS_BUILD_ID := :mobile
+run-flow-storm: export TARGET := clojure
+run-flow-storm: export GDK_DPI_SCALE := 1.0
+run-flow-storm: ##@run Start FlowStorm debugger
+	clj -Sforce -Sdeps '{:deps {com.github.jpmonettas/flow-storm-dbg {:mvn/version "3.7.5"}}}' \
+		-X flow-storm.debugger.main/start-debugger \
+		:port 7888 \
+		:repl-type :shadow \
+		:build-id $(SHADOW_CLJS_BUILD_ID)
+
 #--------------
 # Other
 #--------------
@@ -423,11 +434,13 @@ android-clean: ##@prepare Clean Gradle state
 	rm -rf ~/.gradle
 
 
+android-ports: export FLOWSTORM_PORT := 7722
 android-ports: export TARGET := android-sdk
 android-ports: ##@other Add proxies to Android Device/Simulator
 	adb reverse tcp:8081 tcp:8081 && \
 	adb reverse tcp:3449 tcp:3449 && \
 	adb reverse tcp:4567 tcp:4567 && \
+	adb reverse tcp:$(FLOWSTORM_PORT) tcp:$(FLOWSTORM_PORT) && \
 	adb forward tcp:5561 tcp:5561
 
 android-devices: export TARGET := android-sdk

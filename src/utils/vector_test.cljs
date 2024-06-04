@@ -3,7 +3,7 @@
     [cljs.test :refer-macros [deftest is testing]]
     [utils.vector :as vector]))
 
-(deftest test-insert-element-at
+(deftest insert-element-at-test
   (testing "Inserting into an empty vector"
     (is (= [42] (vector/insert-element-at [] 42 0))))
 

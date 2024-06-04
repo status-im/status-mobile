@@ -27,11 +27,11 @@
     :timestamp-str "14:00"
     :content-type constants/content-type-album}])
 
-(deftest albumize-messages
+(deftest albumize-messages-test
   (testing "Finding albums in the messages list"
     (is (= (messages/albumize-messages messages-state) messages-albumized-state))))
 
-(deftest intersperse-datemarks
+(deftest intersperse-datemarks-test
   (testing "it mantains the order even when timestamps are across days"
     (let [message-1           {:datemark          "Dec 31, 1999"
                                :whisper-timestamp 946641600000} ; 1999}

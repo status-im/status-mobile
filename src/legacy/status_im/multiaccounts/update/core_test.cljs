@@ -3,7 +3,7 @@
     [clojure.test :refer-macros [deftest is testing]]
     [legacy.status-im.multiaccounts.update.core :as multiaccounts.update]))
 
-(deftest test-multiaccount-update
+(deftest multiaccount-update-test
   ;;TODO this test case actually shows that we are doing a needless rpc call when
   ;;there is no changes, but it is an edge case that shouldn't really happen
   (let [efx      (multiaccounts.update/multiaccount-update
@@ -15,7 +15,7 @@
     (is (json-rpc "settings_saveSetting"))
     (is (= (get-in efx [:db :profile/profile]) {:not-empty "would throw an error if was empty"}))))
 
-(deftest test-clean-seed-phrase
+(deftest clean-seed-phrase-test
   (let [efx      (multiaccounts.update/clean-seed-phrase
                   {:db {:profile/profile {:mnemonic "lalalala"}}}
                   {})
@@ -23,7 +23,7 @@
     (is (json-rpc "settings_saveSetting"))
     (is (nil? (get-in efx [:db :profile/profile :mnemonic])))))
 
-(deftest test-update-multiaccount-account-name
+(deftest update-multiaccount-account-name-test
   (let [cofx                             {:db {:profile/profile {:key-uid        1
                                                                  :name           "name"
                                                                  :preferred-name "preferred-name"

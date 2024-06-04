@@ -12,7 +12,7 @@
 
 (use-fixtures :each (h/fixture-session))
 
-(deftest profile-set-bio-contract
+(deftest profile-set-bio-contract-test
   (h/test-async :contract/wakuext_setBio
     (fn []
       (-> (contract-utils/call-rpc "wakuext_setBio" "new bio")

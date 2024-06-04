@@ -27,7 +27,7 @@
       :destination "https://foo.bar"}
      {:literal " , no worries"}]}])
 
-(t/deftest test-resolve-message
+(t/deftest resolve-message-test
   (with-redefs [rf/sub sub]
     (t/testing ""
       (let [text (resolver/resolve-message parsed-text)]

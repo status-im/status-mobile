@@ -3,7 +3,7 @@
     [cljs.test :refer [deftest is testing]]
     [utils.address]))
 
-(deftest get-shortened-compressed-key
+(deftest get-shortened-compressed-key-test
   (testing "Ensure the function correctly abbreviates a valid public key"
     (is (= "zQ3...sgt5N"
            (utils.address/get-shortened-compressed-key
@@ -20,7 +20,7 @@
     (is (nil? (utils.address/get-shortened-compressed-key "1234")))))
 
 
-(deftest test-get-abbreviated-profile-url
+(deftest get-abbreviated-profile-url-test
   (testing "Ensure the function correctly generates an abbreviated profile URL for a valid public key"
     (is (= "status.app/u/abcde...mrdYpzeFUa"
            (utils.address/get-abbreviated-profile-url

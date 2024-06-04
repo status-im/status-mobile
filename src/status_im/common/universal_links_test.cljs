@@ -25,7 +25,7 @@
                             [:router/handle-uri :uri])
                     "https://status.app/u#statuse2e"))))))
 
-(deftest url-event-listener
+(deftest url-event-listener-test
   (testing "the url is not nil"
     (testing "it dispatches the url"
       (let [actual (atom nil)]
@@ -39,7 +39,7 @@
           (links/url-event-listener #js {})
           (is (match? nil @actual)))))))
 
-(deftest generate-profile-url
+(deftest generate-profile-url-test
   (testing "user has ens name"
     (testing "it calls the ens rpc method with ens name as param"
       (let [db  {:profile/profile {:ens-name? true :public-key pubkey}}
@@ -70,7 +70,7 @@
          "wakuext_shareUserURLWithData" (-> rst :json-rpc/call first :method)
          pubkey                         (-> rst :json-rpc/call first :params first))))))
 
-(deftest save-profile-url
+(deftest save-profile-url-test
   (testing "given a contact public key and profile url"
     (testing "it updates the contact in db"
       (let [url "url"

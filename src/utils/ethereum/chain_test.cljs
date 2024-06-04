@@ -13,11 +13,11 @@
                                        {:chain-id 42161}
                                        {:chain-id 10}]}}})
 
-(deftest chain-id->chain-keyword
+(deftest chain-id->chain-keyword-test
   (is (= (chain/chain-id->chain-keyword 1) :mainnet))
   (is (= (chain/chain-id->chain-keyword 5) :goerli))
   (is (= (chain/chain-id->chain-keyword 5777) :custom)))
 
-(deftest chain-ids
+(deftest chain-ids-test
   (is (= (chain/chain-ids (chain-ids-db false)) [1 42161 10]))
   (is (= (chain/chain-ids (chain-ids-db true)) [3 4 5])))
