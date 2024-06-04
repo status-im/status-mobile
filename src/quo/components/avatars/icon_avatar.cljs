@@ -16,7 +16,7 @@
              :icon      12}})
 
 (defn icon-avatar
-  [{:keys [size icon color opacity border?]
+  [{:keys [size icon color opacity border? blur?]
     :or   {opacity 20
            size    :size-32}}]
   (let [theme                                       (quo.theme/use-theme)
@@ -29,7 +29,9 @@
                 :height           component-size
                 :border-radius    component-size
                 :border-width     (when border? 1)
-                :border-color     (colors/theme-colors colors/neutral-20 colors/neutral-80 theme)
+                :border-color     (if blur?
+                                    colors/white-opa-5
+                                    (colors/theme-colors colors/neutral-20 colors/neutral-80 theme))
                 :background-color circle-color
                 :justify-content  :center
                 :align-items      :center}}

@@ -22,15 +22,12 @@
      {:style               (style/container {:theme theme
                                              :blur? blur?})
       :accessibility-label :missing-keypair-item}
-     [rn/view
-      {:style               (style/icon-container {:theme theme
-                                                   :blur? blur?})
-       :accessibility-label :icon}
-      [icon-avatar/icon-avatar
-       {:size    :size-32
-        :icon    :i/seed
-        :color   :neutral
-        :border? false}]]
+     [icon-avatar/icon-avatar
+      {:size    :size-32
+       :icon    :i/seed
+       :color   :neutral
+       :blur?   true
+       :border? true}]
      [rn/view
       {:style               style/name-container
        :accessibility-label :name}
