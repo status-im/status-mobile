@@ -1,8 +1,7 @@
 (ns react-native.wallet-connect
   (:require
     ["@walletconnect/core" :refer [Core]]
-    ["@walletconnect/utils" :refer
-     [buildApprovedNamespaces getSdkError parseUri]]
+    ["@walletconnect/utils" :refer [buildApprovedNamespaces getSdkError]]
     ["@walletconnect/web3wallet" :refer [Web3Wallet]]))
 
 (defn- wallet-connect-core
@@ -25,9 +24,3 @@
 (defn get-sdk-error
   [error-key]
   (getSdkError error-key))
-
-(defn parse-uri
-  [uri]
-  (-> uri
-      parseUri
-      (js->clj :keywordize-keys true)))
