@@ -4,7 +4,7 @@
 (defn overlay-background
   [type]
   (let [background-color (case type
-                           :shell  colors/neutral-80-opa-80-blur
+                           :shell  colors/overlay-background-blur
                            :drawer colors/neutral-100-opa-70-blur
                            nil)]
     {:position         :absolute
