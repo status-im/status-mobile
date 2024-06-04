@@ -1,9 +1,6 @@
 (ns status-im.contexts.wallet.wallet-connect.session-proposal.style
   (:require [quo.foundations.colors :as colors]))
 
-(def container
-  {})
-
 (def dapp-avatar
   {:padding-horizontal 20
    :padding-top        12})

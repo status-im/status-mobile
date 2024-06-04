@@ -1,5 +1,5 @@
 (ns status-im.contexts.wallet.wallet-connect.utils
-  (:require [react-native.wallet-connect :refer [parse-uri]]))
+  (:require [react-native.wallet-connect :as wallet-connect]))
 
 (defn version-supported?
   [version]
@@ -25,5 +25,5 @@
   At this stage, the uri might be expired or from an unsupported version"
   [s]
   (-> s
-      parse-uri
+      wallet-connect/parse-uri
       valid-wc-uri?))
