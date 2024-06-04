@@ -8,6 +8,7 @@
             [status-im.contexts.communities.events]
             [status-im.contexts.wallet.common.validation :as wallet-validation]
             [status-im.contexts.wallet.wallet-connect.utils :as wc-utils]
+            [status-im.feature-flags :as ff]
             [utils.debounce :as debounce]
             [utils.ethereum.eip.eip681 :as eip681]
             [utils.i18n :as i18n]
@@ -102,7 +103,9 @@
     ;; TODO: https://github.com/status-im/status-mobile/issues/18744
     nil
 
-    (wc-utils/valid-uri? scanned-text)
+    (and
+     (wc-utils/valid-uri? scanned-text)
+     (ff/enabled? ::ff/wallet.wallet-connect))
     (handle-wallet-connect scanned-text)
 
     (url? scanned-text)
