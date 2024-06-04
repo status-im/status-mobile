@@ -36,7 +36,8 @@
                                                  :customization-color customization-color}])}])
                                 [address chain-short-names full-address name customization-color])]
     [quo/saved-address
-     {:user-props      {:name                name
+     {:blur?           true
+      :user-props      {:name                name
                         :address             full-address
                         :ens                 (when has-ens? ens)
                         :customization-color customization-color
@@ -59,6 +60,11 @@
   []
   (rf/dispatch [:navigate-back]))
 
+(defn- add-address-to-save
+  []
+  (rf/dispatch [:navigate-to-within-stack
+                [:screen/settings.add-address-to-save :screen/settings.saved-addresses]]))
+
 (defn view
   []
   (let [inset-top           (safe-area/get-top)
@@ -77,6 +83,7 @@
        {:title               (i18n/label :t/saved-addresses)
         :accessibility-label :saved-addresses-header
         :right               :action
+        :on-press            add-address-to-save
         :customization-color customization-color
         :icon                :i/add}]]
      [rn/section-list

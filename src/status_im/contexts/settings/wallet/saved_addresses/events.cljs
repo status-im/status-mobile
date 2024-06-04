@@ -1,20 +1,12 @@
 (ns status-im.contexts.settings.wallet.saved-addresses.events
   (:require
-    [status-im.constants :as constants]
     [status-im.contexts.wallet.data-store :as data-store]
     [taoensso.timbre :as log]
     [utils.re-frame :as rf]))
 
 (defn save-address
   [{:keys [db]}
-   [{:keys [address name customization-color on-success on-error chain-short-names ens]
-     :or   {on-success          (fn [])
-            on-error            (fn [])
-            name                ""
-            customization-color constants/account-default-customization-color
-            ens                 ""
-            ;; the chain short names should be a string like eth: or eth:arb:oeth:
-            chain-short-names   (str constants/mainnet-short-name ":")}}]]
+   [{:keys [address name customization-color on-success on-error chain-short-names ens]}]]
   (let [test-networks-enabled? (boolean (get-in db [:profile/profile :test-networks-enabled?]))
         address-to-save        {:address         address
                                 :name            name
@@ -93,3 +85,39 @@
              :on-error   [:wallet/delete-saved-address-failed]}]]]}))
 
 (rf/reg-event-fx :wallet/delete-saved-address delete-saved-address)
+
+(defn add-saved-address-success
+  [_ [toast-message]]
+  {:fx [[:dispatch [:wallet/get-saved-addresses]]
+        [:dispatch [:navigate-back-to :screen/settings.saved-addresses]]
+        [:dispatch-later
+         {:ms       100
+          :dispatch [:toasts/upsert
+                     {:type  :positive
+                      :theme :dark
+                      :text  toast-message}]}]]})
+
+(rf/reg-event-fx :wallet/add-saved-address-success add-saved-address-success)
+
+(defn add-saved-address-failed
+  [_ [error]]
+  {:fx [[:dispatch [:wallet/saved-addresses-rpc-error :add-save-address error]]
+        [:dispatch
+         [:toasts/upsert
+          {:type  :negative
+           :theme :dark
+           :text  error}]]]})
+
+(rf/reg-event-fx :wallet/add-saved-address-failed add-saved-address-failed)
+
+(defn set-address-to-save
+  [{:keys [db]} [args]]
+  {:db (assoc-in db [:wallet :ui :saved-address] args)})
+
+(rf/reg-event-fx :wallet/set-address-to-save set-address-to-save)
+
+(defn clear-address-to-save
+  [{:keys [db]}]
+  {:db (update-in db [:wallet :ui] dissoc :saved-address)})
+
+(rf/reg-event-fx :wallet/clear-address-to-save clear-address-to-save)

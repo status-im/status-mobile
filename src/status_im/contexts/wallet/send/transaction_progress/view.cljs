@@ -36,7 +36,9 @@
                          :icon-left           :i/contact-book
                          :accessibility-label :save-address
                          :on-press            (rn/use-callback
-                                               #(rf/dispatch [:open-modal :screen/wallet.save-address]))}
+                                               #(rf/dispatch [:open-modal
+                                                              :screen/settings.save-address
+                                                              {:address send-to-address}]))}
       :button-one-label (i18n/label :t/done)
       :button-one-props {:customization-color color
                          :type                :primary

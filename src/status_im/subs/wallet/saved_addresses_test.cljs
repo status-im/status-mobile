@@ -91,7 +91,17 @@
       #(-> %
            (assoc-in [:wallet :saved-addresses] saved-addresses-db)
            (assoc-in [:profile/profile :test-networks-enabled?] true)))
-    (is (= (vals (:test saved-addresses-db)) (rf/sub [sub-name])))))
+    (is (= (:test saved-addresses-db) (rf/sub [sub-name])))))
+
+(h/deftest-sub :wallet/address-saved?
+  [sub-name]
+  (testing "returns boolean if given address is saved"
+    (swap! rf-db/app-db
+      #(-> %
+           (assoc-in [:wallet :saved-addresses] saved-addresses-db)
+           (assoc-in [:profile/profile :test-networks-enabled?] false)))
+    (is (true? (rf/sub [sub-name "0x1"])))
+    (is (false? (rf/sub [sub-name "0x3"])))))
 
 (h/deftest-sub :wallet/grouped-saved-addresses
   [sub-name]
@@ -101,3 +111,22 @@
            (assoc-in [:wallet :saved-addresses] saved-addresses-db)
            (assoc-in [:profile/profile :test-networks-enabled?] false)))
     (is (= grouped-saved-addresses-data (rf/sub [sub-name])))))
+
+(h/deftest-sub :wallet/saved-addresses-addresses
+  [sub-name]
+  (testing "returns saved addresses addresses set"
+    (swap! rf-db/app-db
+      #(-> %
+           (assoc-in [:wallet :saved-addresses] saved-addresses-db)
+           (assoc-in [:profile/profile :test-networks-enabled?] true)))
+    (is (= (-> saved-addresses-db :test keys set) (rf/sub [sub-name])))))
+
+(h/deftest-sub :wallet/saved-address-by-address
+  [sub-name]
+  (testing "returns a saved address"
+    (let [address "0x1"]
+      (swap! rf-db/app-db
+        #(-> %
+             (assoc-in [:wallet :saved-addresses] saved-addresses-db)
+             (assoc-in [:profile/profile :test-networks-enabled?] false)))
+      (is (= (get-in saved-addresses-db [:prod address]) (rf/sub [sub-name address]))))))
