@@ -2,7 +2,8 @@
   (:require
     [quo.foundations.colors :as colors]
     [quo.theme]
-    [react-native.reanimated :as reanimated]))
+    [react-native.reanimated :as reanimated]
+    [status-im.constants :as constants]))
 
 (defn container
   [padding-top]
@@ -35,7 +36,7 @@
   {:left            0
    :right           0
    :top             0
-   :height          20
+   :height          constants/sheet-screen-handle-height
    :z-index         2
    :position        :absolute
    :justify-content :center

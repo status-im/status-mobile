@@ -359,9 +359,11 @@
 
 (defn sign-message
   "NOTE: beware, the password in rpcParams has to be sha3 hashed"
-  [rpcParams callback]
-  (log/debug "[native-module] sign-message")
-  (.signMessage ^js (encryption) rpcParams callback))
+  ([rpcParams]
+   (native-utils/promisify-native-module-call sign-message rpcParams))
+  ([rpcParams callback]
+   (log/debug "[native-module] sign-message")
+   (.signMessage ^js (encryption) rpcParams callback)))
 
 (defn recover-message
   [rpcParams callback]
@@ -376,15 +378,19 @@
 
 (defn sign-typed-data
   "NOTE: beware, the password has to be sha3 hashed"
-  [data account hashed-password callback]
-  (log/debug "[native-module] sign-typed-data")
-  (.signTypedData ^js (encryption) data account hashed-password callback))
+  ([data account hashed-password]
+   (native-utils/promisify-native-module-call sign-typed-data data account hashed-password))
+  ([data account hashed-password callback]
+   (log/debug "[native-module] sign-typed-data")
+   (.signTypedData ^js (encryption) data account hashed-password callback)))
 
 (defn sign-typed-data-v4
   "NOTE: beware, the password has to be sha3 hashed"
-  [data account hashed-password callback]
-  (log/debug "[native-module] sign-typed-data-v4")
-  (.signTypedDataV4 ^js (encryption) data account hashed-password callback))
+  ([data account hashed-password]
+   (native-utils/promisify-native-module-call sign-typed-data-v4 data account hashed-password))
+  ([data account hashed-password callback]
+   (log/debug "[native-module] sign-typed-data-v4")
+   (.signTypedDataV4 ^js (encryption) data account hashed-password callback)))
 
 (defn send-logs
   [dbJson js-logs callback]

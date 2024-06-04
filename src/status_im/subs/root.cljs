@@ -21,7 +21,8 @@
     status-im.subs.wallet.networks
     status-im.subs.wallet.saved-addresses
     status-im.subs.wallet.send
-    status-im.subs.wallet.wallet))
+    status-im.subs.wallet.wallet
+    status-im.subs.wallet.wallet-connect))
 
 (defn reg-root-key-sub
   [sub-name db-key]
@@ -169,6 +170,7 @@
 ;;wallet-connect
 (reg-root-key-sub :wallet-connect/web3-wallet :wallet-connect/web3-wallet)
 (reg-root-key-sub :wallet-connect/current-proposal :wallet-connect/current-proposal)
+(reg-root-key-sub :wallet-connect/current-request :wallet-connect/current-request)
 (reg-root-key-sub :wallet-connect/pairings :wallet-connect/pairings)
 
 ;;biometrics
