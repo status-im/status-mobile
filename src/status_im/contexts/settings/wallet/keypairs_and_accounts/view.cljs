@@ -19,7 +19,8 @@
                 {:content (fn [] [actions/view
                                   {:drawer-props drawer-props
                                    :keypair      keypair}])
-                 :theme   (:theme drawer-props)}]))
+                 :theme   (:theme drawer-props)
+                 :shell?  true}]))
 
 (defn options-drawer-props
   [{{:keys [name]} :keypair
