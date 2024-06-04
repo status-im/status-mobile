@@ -2,7 +2,6 @@
   (:require [clojure.string :as string]
             [react-native.core :as rn]
             [react-native.hooks :as hooks]
-            [react-native.wallet-connect :as wallet-connect]
             [status-im.common.router :as router]
             [status-im.common.scan-qr-code.view :as scan-qr-code]
             [status-im.common.validation.general :as validators]
