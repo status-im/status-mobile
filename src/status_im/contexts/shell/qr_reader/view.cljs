@@ -67,7 +67,7 @@
 (defn- handle-wallet-connect
   [scanned-text]
   (debounce/debounce-and-dispatch
-   [:wallet-connect/potential-connection-uri-scanned scanned-text]
+   [:wallet-connect/on-scan-connection scanned-text]
    300))
 
 (defn on-qr-code-scanned
