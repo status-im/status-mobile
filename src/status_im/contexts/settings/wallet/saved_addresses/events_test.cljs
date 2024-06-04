@@ -150,3 +150,20 @@
                                      :on-success [:wallet/delete-saved-address-success toast-message]
                                      :on-error   [:wallet/delete-saved-address-failed]}]]]]
       (is (match? expected-fx result-fx)))))
+
+(deftest add-saved-address-success-test
+  (testing "add saved address success test - gets saved addresses, dismiss modals and dispatch toast"
+    (let [cofx          {:db {}}
+          toast-message "Address saved"
+          effects       (events/add-saved-address-success cofx [toast-message])
+          result-fx     (:fx effects)
+          expected-fx   [[:dispatch [:wallet/get-saved-addresses]]
+                         [:dispatch [:navigate-back-to :screen/settings.saved-addresses]]
+                         [:dispatch-later
+                          {:ms       100
+                           :dispatch [:toasts/upsert
+                                      {:type  :positive
+                                       :theme :dark
+                                       :text  toast-message}]}]]]
+      (is (= (count result-fx) 3))
+      (is (match? expected-fx result-fx)))))

@@ -44,14 +44,14 @@
   :monospace? - boolean (default: false) - use monospace font
   :lowercase? - boolean (default: false) - lowercase text
   :neutral? - boolean (default: false) - use neutral colors variant"
-  [{:keys [full-name customization-color size monospace? lowercase? neutral?]
+  [{:keys [full-name customization-color size monospace? lowercase? neutral? container-style]
     :or   {size biggest-possible}}]
   (let [theme       (quo.theme/use-theme)
         circle-size (:size (size properties))
         small?      (check-if-size-small size)
         initials    (utils.string/get-initials full-name (if small? 1 2))]
     [rn/view
-     {:style (style/container circle-size customization-color neutral? theme)}
+     {:style (merge (style/container circle-size customization-color neutral? theme) container-style)}
      [text/text
       {:accessibility-label :wallet-user-avatar
        :size                (:font-size (size properties))

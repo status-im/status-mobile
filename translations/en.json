@@ -2423,8 +2423,8 @@
     "days": "Days",
     "add-account": "Add account",
     "add-account-description": "Create new or import existing account",
-    "add-address": "Add address to watch",
-    "add-address-description": "Watch a public address or ENS name",
+    "add-address-to-watch": "Add address to watch",
+    "add-address-to-watch-description": "Watch a public address or ENS name",
     "colour": "Colour",
     "origin": "Origin",
     "slide-to-sign": "Slide to sign",
@@ -2673,5 +2673,13 @@
     "saved-address-removed": "Saved address removed",
     "remove-address": "Remove address",
     "remove-saved-address": "Remove saved address",
-    "remove-saved-address-description": "Transaction history relating to this address will no longer be labelled ‘{{name}}’."
+    "remove-saved-address-description": "Transaction history relating to this address will no longer be labelled ‘{{name}}’.",
+    "add-address": "Add address",
+    "add-address-to-save-description": "Paste, scan or type ETH address or ENS name",
+    "existing-saved-address": "Existing saved address",
+    "this-is-not-an-eth-address-or-ens-name": "This is not an Ethereum address or ENS name",
+    "you-cannot-add-your-own-account-as-a-saved-address": "You cannot add your own account as a saved address",
+    "this-address-is-already-saved": "This address is already saved",
+    "this-ens-name-is-not-registered-yet": "This ENS name is not registered yet",
+    "address-saved": "Address saved"
 }

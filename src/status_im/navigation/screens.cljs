@@ -63,6 +63,9 @@
     [status-im.contexts.settings.wallet.keypairs-and-accounts.scan-qr.view :as scan-keypair-qr]
     [status-im.contexts.settings.wallet.keypairs-and-accounts.view :as keypairs-and-accounts]
     [status-im.contexts.settings.wallet.network-settings.view :as network-settings]
+    [status-im.contexts.settings.wallet.saved-addresses.add-address-to-save.view :as
+     wallet-add-address-to-save]
+    [status-im.contexts.settings.wallet.saved-addresses.save-address.view :as wallet-save-address]
     [status-im.contexts.settings.wallet.saved-addresses.view :as saved-addresses-settings]
     [status-im.contexts.settings.wallet.wallet-options.view :as wallet-options]
     [status-im.contexts.shell.activity-center.view :as activity-center]
@@ -98,7 +101,6 @@
     [status-im.contexts.wallet.collectible.view :as wallet-collectible]
     [status-im.contexts.wallet.common.scan-account.view :as wallet-scan-address]
     [status-im.contexts.wallet.connected-dapps.view :as wallet-connected-dapps]
-    [status-im.contexts.wallet.save-address.view :as wallet-save-address]
     [status-im.contexts.wallet.send.from.view :as wallet-select-from]
     [status-im.contexts.wallet.send.select-address.view :as wallet-select-address]
     [status-im.contexts.wallet.send.select-asset.view :as wallet-select-asset]
@@ -450,10 +452,6 @@
      :options   options/transparent-screen-options
      :component wallet-share-address/view}
 
-    {:name      :screen/wallet.save-address
-     :options   {:sheet? true}
-     :component wallet-save-address/view}
-
     {:name      :screen/wallet.send-input-amount
      :options   {:modalPresentationStyle :overCurrentContext
                  :insets                 {:top?    true
@@ -539,6 +537,14 @@
     {:name      :screen/settings.network-settings
      :options   options/transparent-modal-screen-options
      :component network-settings/view}
+
+    {:name      :screen/settings.save-address
+     :options   options/transparent-modal-screen-options
+     :component wallet-save-address/view}
+
+    {:name      :screen/settings.add-address-to-save
+     :options   options/transparent-modal-screen-options
+     :component wallet-add-address-to-save/view}
 
     {:name      :screen/settings-messages
      :options   options/transparent-modal-screen-options
