@@ -3,12 +3,15 @@
 
 (def title-container
   {:padding-horizontal 20
-   :margin-vertical    12})
+   :padding-vertical   12})
 
 (defn page-wrapper
   [inset-top]
   {:padding-top inset-top
    :flex        1})
+
+(def mainnet-settings
+  {:padding-vertical 8})
 
 (defn settings-container
   [inset-bottom]

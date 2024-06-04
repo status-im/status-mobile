@@ -28,13 +28,14 @@
 (defn mainnet-settings
   [{:keys [networks testnet-mode?]}]
   [quo/category
-   {:key       :mainnet-settings
-    :data      [(make-network-settings-item
-                 {:details       (:mainnet networks)
-                  :testnet-mode? testnet-mode?
-                  :testnet-label (i18n/label :t/sepolia-active)})]
-    :blur?     true
-    :list-type :settings}])
+   {:key             :mainnet-settings
+    :data            [(make-network-settings-item
+                       {:details       (:mainnet networks)
+                        :testnet-mode? testnet-mode?
+                        :testnet-label (i18n/label :t/sepolia-active)})]
+    :blur?           true
+    :list-type       :settings
+    :container-style style/mainnet-settings}])
 
 (defn layer-2-settings
   [{:keys [networks testnet-mode?]}]
