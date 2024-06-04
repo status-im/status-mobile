@@ -1,28 +1,25 @@
 (ns status-im.contexts.wallet.wallet-connect.session-proposal.view
   (:require
-    [quo.core :as quo]
-    [quo.foundations.colors :as colors]
-    [quo.theme]
-    [react-native.core :as rn]
-    [status-im.common.floating-button-page.view :as floating-button-page]
-    [status-im.contexts.wallet.wallet-connect.session-proposal.style :as style]
-    [utils.i18n :as i18n]
-    [utils.re-frame :as rf]))
+   [quo.core :as quo]
+   [quo.foundations.colors :as colors]
+   [quo.theme]
+   [react-native.core :as rn]
+   [status-im.common.floating-button-page.view :as floating-button-page]
+   [status-im.contexts.wallet.wallet-connect.session-proposal.style :as style]
+   [utils.i18n :as i18n]
+   [utils.re-frame :as rf]))
 
 (defn- dapp-metadata
   []
-  (let [proposer  (rf/sub [:wallet-connect/session-proposer])
-        metadata  (-> proposer :metadata)
-        icon      (-> metadata :icons first)
-        dapp-name (-> metadata :name)
-        url       (-> metadata :url)]
+  (let [proposer                 (rf/sub [:wallet-connect/session-proposer])
+        {:keys [icons name url]} (:metadata proposer)]
     [:<>
      [rn/view {:style style/dapp-avatar}
       [quo/user-avatar
-       {:profile-picture icon
+       {:profile-picture (first icons)
         :size            :big}]]
      [quo/page-top
-      {:title       dapp-name
+      {:title       name
        :description :context-tag
        :context-tag {:type    :icon
                      :size    32
@@ -35,7 +32,7 @@
         labels    [(i18n/label :t/check-your-account-balance-and-activity)
                    (i18n/label :t/request-txns-and-message-signing)]]
     [rn/view {:style style/approval-note-container}
-     [rn/text {:style style/approval-note-title}
+     [quo/text {:style style/approval-note-title}
       (i18n/label :t/dapp-will-be-able-to {:dapp-name dapp-name})]
      (map-indexed
       (fn [idx label]
@@ -44,7 +41,7 @@
          [quo/icon :i/bullet
           {:color colors/neutral-50}]
          [rn/view {:style style/approval-li-spacer}]
-         [rn/text label]])
+         [quo/text label]])
       labels)]))
 
 (defn- accounts-data-item
@@ -116,7 +113,6 @@
     :header                   [header]
     :footer                   [footer]}
    [rn/view
-    {:style style/container}
     [dapp-metadata]
     [accounts-data-item]
     [networks-data-item]

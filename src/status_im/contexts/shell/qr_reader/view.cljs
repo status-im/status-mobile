@@ -43,10 +43,6 @@
   [_]
   false)
 
-(defn wallet-connect-code?
-  [scanned-text]
-  (string/starts-with? scanned-text "wc:"))
-
 (defn url?
   [scanned-text]
   (url/url? scanned-text))
@@ -71,31 +67,9 @@
 
 (defn- handle-wallet-connect
   [scanned-text]
-  (let [parsed-uri         (wallet-connect/parse-uri scanned-text)
-        version            (-> parsed-uri :version)
-        expired?           (wc-utils/timestamp-expired? (-> parsed-uri :expiryTimestamp))
-        version-supported? (wc-utils/version-supported? version)]
-
-    (cond
-      expired?
-      (debounce/debounce-and-dispatch
-       [:toasts/upsert
-        {:type  :negative
-         :theme :dark
-         :text  (i18n/label :t/wallet-connect-qr-expired)}]
-       300)
-
-      (not version-supported?)
-      (debounce/debounce-and-dispatch
-       [:toasts/upsert
-        {:type  :negative
-         :theme :dark
-         :text  (i18n/label :t/wallet-connect-version-not-supported
-                            {:version version})}]
-       300)
-
-      :else
-      (debounce/debounce-and-dispatch [:wallet-connect/pair scanned-text] 300))))
+  (debounce/debounce-and-dispatch
+   [:wallet-connect/potential-connection-uri-scanned scanned-text]
+   300))
 
 (defn on-qr-code-scanned
   [scanned-text]
