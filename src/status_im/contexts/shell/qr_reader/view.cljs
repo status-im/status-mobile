@@ -1,18 +1,18 @@
 (ns status-im.contexts.shell.qr-reader.view
-  (:require
-    [clojure.string :as string]
-    [react-native.core :as rn]
-    [react-native.hooks :as hooks]
-    [status-im.common.router :as router]
-    [status-im.common.scan-qr-code.view :as scan-qr-code]
-    [status-im.common.validation.general :as validators]
-    [status-im.contexts.communities.events]
-    [status-im.contexts.wallet.common.validation :as wallet-validation]
-    [status-im.contexts.wallet.wallet-connect.utils :as wc-utils]
-    [utils.debounce :as debounce]
-    [utils.ethereum.eip.eip681 :as eip681]
-    [utils.i18n :as i18n]
-    [utils.url :as url]))
+  (:require [clojure.string :as string]
+            [react-native.core :as rn]
+            [react-native.hooks :as hooks]
+            [react-native.wallet-connect :as wallet-connect]
+            [status-im.common.router :as router]
+            [status-im.common.scan-qr-code.view :as scan-qr-code]
+            [status-im.common.validation.general :as validators]
+            [status-im.contexts.communities.events]
+            [status-im.contexts.wallet.common.validation :as wallet-validation]
+            [status-im.contexts.wallet.wallet-connect.utils :as wc-utils]
+            [utils.debounce :as debounce]
+            [utils.ethereum.eip.eip681 :as eip681]
+            [utils.i18n :as i18n]
+            [utils.url :as url]))
 
 (def invalid-qr-toast
   {:type  :negative
@@ -69,6 +69,34 @@
    [:toasts/upsert invalid-qr-toast]
    300))
 
+(defn- handle-wallet-connect
+  [scanned-text]
+  (let [parsed-uri         (wallet-connect/parse-uri scanned-text)
+        version            (-> parsed-uri :version)
+        expired?           (wc-utils/timestamp-expired? (-> parsed-uri :expiryTimestamp))
+        version-supported? (wc-utils/version-supported? version)]
+
+    (cond
+      expired?
+      (debounce/debounce-and-dispatch
+       [:toasts/upsert
+        {:type  :negative
+         :theme :dark
+         :text  (i18n/label :t/wallet-connect-qr-expired)}]
+       300)
+
+      (not version-supported?)
+      (debounce/debounce-and-dispatch
+       [:toasts/upsert
+        {:type  :negative
+         :theme :dark
+         :text  (i18n/label :t/wallet-connect-version-not-supported
+                            {:version version})}]
+       300)
+
+      :else
+      (debounce/debounce-and-dispatch [:wallet-connect/pair scanned-text] 300))))
+
 (defn on-qr-code-scanned
   [scanned-text]
   (cond
@@ -101,10 +129,8 @@
     ;; TODO: https://github.com/status-im/status-mobile/issues/18744
     nil
 
-    ;; TODO: Handle expired WC uris here
     (wc-utils/valid-uri? scanned-text)
-    (do
-      (debounce/debounce-and-dispatch [:wallet-connect/pair scanned-text] 300))
+    (handle-wallet-connect scanned-text)
 
     (url? scanned-text)
     (debounce/debounce-and-dispatch [:browser.ui/open-url scanned-text] 300)

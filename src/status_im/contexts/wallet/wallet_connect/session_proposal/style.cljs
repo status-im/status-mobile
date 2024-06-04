@@ -27,3 +27,8 @@
 
 (def approval-li-spacer
   {:width 8})
+
+(def detail-item
+  {:margin-bottom     20
+   :margin-horizontal 20
+   :padding           12})
