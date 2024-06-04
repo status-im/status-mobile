@@ -62,7 +62,7 @@ findByRegex() {
 
     # list of store entries to delete
     declare -a found
-    
+
     # for each entry find the source and derivation
     for mainPath in ${drvPaths}; do
         findRelated "${mainPath}"
@@ -87,7 +87,7 @@ nixResultPath="${1}"
 if [[ -n "${nixResultPath}" ]]; then
     # if provided we can narrow down what to clean based on result path
     toDelete=$(findByResult "${nixResultPath}")
-else 
+else
     # use regular expression that should match all status-mobile build artifacts
     toDelete=$(findByRegex '.*-status-(mobile|go)-(shell|source|build|patched-npm-gradle-modules).*')
 fi
