@@ -17,7 +17,7 @@
    :background-color  colors/neutral-2_5})
 
 (def approval-note-title
-  {:color colors/neutral-50
+  {:color         colors/neutral-50
    :margin-bottom 8})
 
 (def approval-note-li

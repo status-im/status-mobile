@@ -25,7 +25,8 @@
   [error-key]
   (getSdkError error-key))
 
-(defn parse-uri [uri]
+(defn parse-uri
+  [uri]
   (-> uri
       parseUri
       (js->clj :keywordize-keys true)))

@@ -15,11 +15,11 @@
  :effects.wallet-connect/init
  (fn [{:keys [on-success on-fail]}]
    (let
-    [project-id config/WALLET_CONNECT_PROJECT_ID
-     metadata   {:name        (i18n/label :t/status)
-                 :description (i18n/label :t/status-is-a-secure-messaging-app)
-                 :url         constants/wallet-connect-metadata-url
-                 :icons       [constants/wallet-connect-metadata-icon]}]
+     [project-id config/WALLET_CONNECT_PROJECT_ID
+      metadata   {:name        (i18n/label :t/status)
+                  :description (i18n/label :t/status-is-a-secure-messaging-app)
+                  :url         constants/wallet-connect-metadata-url
+                  :icons       [constants/wallet-connect-metadata-icon]}]
      (-> (wallet-connect/init project-id metadata)
          (promesa/then on-success)
          (promesa/catch on-fail)))))

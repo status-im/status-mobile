@@ -1,18 +1,18 @@
 (ns status-im.contexts.shell.qr-reader.view
   (:require
-   [clojure.string :as string]
-   [react-native.core :as rn]
-   [react-native.hooks :as hooks]
-   [status-im.common.router :as router]
-   [status-im.common.scan-qr-code.view :as scan-qr-code]
-   [status-im.common.validation.general :as validators]
-   [status-im.contexts.communities.events]
-   [status-im.contexts.wallet.common.validation :as wallet-validation]
-   [status-im.contexts.wallet.wallet-connect.utils :as wc-utils]
-   [utils.debounce :as debounce]
-   [utils.ethereum.eip.eip681 :as eip681]
-   [utils.i18n :as i18n]
-   [utils.url :as url]))
+    [clojure.string :as string]
+    [react-native.core :as rn]
+    [react-native.hooks :as hooks]
+    [status-im.common.router :as router]
+    [status-im.common.scan-qr-code.view :as scan-qr-code]
+    [status-im.common.validation.general :as validators]
+    [status-im.contexts.communities.events]
+    [status-im.contexts.wallet.common.validation :as wallet-validation]
+    [status-im.contexts.wallet.wallet-connect.utils :as wc-utils]
+    [utils.debounce :as debounce]
+    [utils.ethereum.eip.eip681 :as eip681]
+    [utils.i18n :as i18n]
+    [utils.url :as url]))
 
 (def invalid-qr-toast
   {:type  :negative
