@@ -106,6 +106,7 @@
     [status-im.contexts.wallet.send.send-amount.view :as wallet-send-input-amount]
     [status-im.contexts.wallet.send.transaction-confirmation.view :as wallet-transaction-confirmation]
     [status-im.contexts.wallet.send.transaction-progress.view :as wallet-transaction-progress]
+    [status-im.contexts.wallet.wallet-connect.session-proposal.view :as wallet-connect-session-proposal]
     [status-im.contexts.wallet.wallet-connect.sign-message.view :as wallet-connect-sign-message]
     [status-im.navigation.options :as options]
     [status-im.navigation.transitions :as transitions]))
@@ -388,6 +389,10 @@
     {:name      :screen/wallet.connected-dapps
      :options   {:insets {:top? true}}
      :component wallet-connected-dapps/view}
+
+    {:name      :screen/wallet.wallet-connect-session-proposal
+     :options   {:sheet? true}
+     :component wallet-connect-session-proposal/view}
 
     {:name      :screen/wallet.edit-account
      :component wallet-edit-account/view}

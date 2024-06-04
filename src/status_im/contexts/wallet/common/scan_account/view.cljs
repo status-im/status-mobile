@@ -1,10 +1,11 @@
 (ns status-im.contexts.wallet.common.scan-account.view
-  (:require [clojure.string :as string]
-            [status-im.common.scan-qr-code.view :as scan-qr-code]
-            [status-im.constants :as constants]
-            [utils.debounce :as debounce]
-            [utils.i18n :as i18n]
-            [utils.re-frame :as rf]))
+  (:require
+    [clojure.string :as string]
+    [status-im.common.scan-qr-code.view :as scan-qr-code]
+    [status-im.constants :as constants]
+    [utils.debounce :as debounce]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]))
 
 (def ^:private supported-networks #{:eth :arb1 :oeth})
 

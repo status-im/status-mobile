@@ -30,3 +30,15 @@
      {:customization-color customization-color
       :name                name
       :emoji               emoji})))
+
+(rf/reg-sub
+ :wallet-connect/session-proposer
+ :<- [:wallet-connect/current-proposal]
+ (fn [proposal]
+   (-> proposal :params :proposer)))
+
+(rf/reg-sub
+ :wallet-connect/session-proposer-name
+ :<- [:wallet-connect/session-proposer]
+ (fn [proposer]
+   (-> proposer :metadata :name)))

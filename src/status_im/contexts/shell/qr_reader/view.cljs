@@ -1,17 +1,17 @@
 (ns status-im.contexts.shell.qr-reader.view
-  (:require
-    [clojure.string :as string]
-    [react-native.core :as rn]
-    [react-native.hooks :as hooks]
-    [status-im.common.router :as router]
-    [status-im.common.scan-qr-code.view :as scan-qr-code]
-    [status-im.common.validation.general :as validators]
-    [status-im.contexts.communities.events]
-    [status-im.contexts.wallet.common.validation :as wallet-validation]
-    [utils.debounce :as debounce]
-    [utils.ethereum.eip.eip681 :as eip681]
-    [utils.i18n :as i18n]
-    [utils.url :as url]))
+  (:require [clojure.string :as string]
+            [react-native.core :as rn]
+            [react-native.hooks :as hooks]
+            [status-im.common.router :as router]
+            [status-im.common.scan-qr-code.view :as scan-qr-code]
+            [status-im.common.validation.general :as validators]
+            [status-im.contexts.communities.events]
+            [status-im.contexts.wallet.common.validation :as wallet-validation]
+            [status-im.contexts.wallet.wallet-connect.utils :as wc-utils]
+            [utils.debounce :as debounce]
+            [utils.ethereum.eip.eip681 :as eip681]
+            [utils.i18n :as i18n]
+            [utils.url :as url]))
 
 (def invalid-qr-toast
   {:type  :negative
@@ -42,10 +42,6 @@
   [_]
   false)
 
-(defn wallet-connect-code?
-  [scanned-text]
-  (string/starts-with? scanned-text "wc:"))
-
 (defn url?
   [scanned-text]
   (url/url? scanned-text))
@@ -66,6 +62,12 @@
   []
   (debounce/debounce-and-dispatch
    [:toasts/upsert invalid-qr-toast]
+   300))
+
+(defn- handle-wallet-connect
+  [scanned-text]
+  (debounce/debounce-and-dispatch
+   [:wallet-connect/on-scan-connection scanned-text]
    300))
 
 (defn on-qr-code-scanned
@@ -100,9 +102,8 @@
     ;; TODO: https://github.com/status-im/status-mobile/issues/18744
     nil
 
-    (wallet-connect-code? scanned-text)
-    ;; WalletConnect is not working yet, this flow should be updated once WalletConnect is ready
-    nil
+    (wc-utils/valid-uri? scanned-text)
+    (handle-wallet-connect scanned-text)
 
     (url? scanned-text)
     (debounce/debounce-and-dispatch [:browser.ui/open-url scanned-text] 300)
