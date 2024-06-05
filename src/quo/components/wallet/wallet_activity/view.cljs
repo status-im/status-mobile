@@ -78,7 +78,7 @@
               :width        12
               :height       12
               :borderRadius 6}]}
-    [icon/icon (transaction-icon transaction)
+    [icon/icon (transaction-icon transaction :i/placeholder)
      {:color (style/icon-color theme)}]]
    [rn/view {:style style/icon-status-container}
     [icon/icon (status-icon status)
