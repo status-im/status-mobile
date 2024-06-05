@@ -1,12 +1,15 @@
 (ns status-im.contexts.wallet.wallet-connect.events
   (:require [re-frame.core :as rf]
+            [react-native.wallet-connect :as wallet-connect]
             [status-im.constants :as constants]
             [status-im.contexts.wallet.wallet-connect.core :as wallet-connect-core]
             status-im.contexts.wallet.wallet-connect.effects
             status-im.contexts.wallet.wallet-connect.processing-events
             status-im.contexts.wallet.wallet-connect.responding-events
+            [status-im.contexts.wallet.wallet-connect.utils :as wc-utils]
             [taoensso.timbre :as log]
-            [utils.ethereum.chain :as chain]))
+            [utils.ethereum.chain :as chain]
+            [utils.i18n :as i18n]))
 
 (rf/reg-event-fx
  :wallet-connect/init
@@ -51,7 +54,9 @@
  :wallet-connect/on-session-proposal
  (fn [{:keys [db]} [proposal]]
    (log/info "Received Wallet Connect session proposal: " {:id (:id proposal)})
-   {:db (assoc db :wallet-connect/current-proposal proposal)}))
+   {:db (assoc db :wallet-connect/current-proposal proposal)
+    :fx [[:dispatch
+          [:open-modal :screen/wallet.wallet-connect-session-proposal]]]}))
 
 (rf/reg-event-fx
  :wallet-connect/on-session-request
@@ -153,3 +158,32 @@
                                                  :event :wallet-connect/approve-session})
                                      (rf/dispatch
                                       [:wallet-connect/reset-current-session-proposal]))}]]})))
+
+(rf/reg-event-fx
+ :wallet-connect/on-scan-connection
+ (fn [_ [scanned-text]]
+   (let [parsed-uri         (wallet-connect/parse-uri scanned-text)
+         version            (:version parsed-uri)
+         expired?           (-> parsed-uri
+                                :expiryTimestamp
+                                wc-utils/timestamp-expired?)
+         version-supported? (wc-utils/version-supported? version)]
+     (cond
+       expired?
+       {:fx [[:dispatch
+              [:toasts/upsert
+               {:type  :negative
+                :theme :dark
+                :text  (i18n/label :t/wallet-connect-qr-expired)}]]]}
+
+       (not version-supported?)
+       {:fx [[:dispatch
+              [:toasts/upsert
+               {:type  :negative
+                :theme :dark
+                :text  (i18n/label :t/wallet-connect-version-not-supported
+                                   {:version version})}]]]}
+
+       :else
+       {:fx [[:dispatch [:wallet-connect/pair scanned-text]]
+             [:dispatch [:dismiss-modal :screen/wallet.wallet-connect-session-proposal]]]}))))
