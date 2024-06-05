@@ -6,7 +6,6 @@
     [react-native.core :as rn]
     [react-native.safe-area :as safe-area]
     [status-im.common.floating-button-page.view :as floating-button-page]
-    [status-im.common.not-implemented :as not-implemented]
     [status-im.contexts.settings.wallet.saved-addresses.add-address-to-save.style :as style]
     [status-im.contexts.wallet.common.validation :as validation]
     [utils.i18n :as i18n]
@@ -35,7 +34,9 @@
 
 (defn- address-input
   [{:keys [input-value on-change-text paste-into-input clear-input]}]
-  (let [empty-input? (string/blank? input-value)]
+  (let [empty-input?    (string/blank? input-value)
+        on-scan-address (rn/use-callback #(rf/dispatch [:open-modal :screen/wallet.scan-address
+                                                        {:on-result on-change-text}]))]
     [rn/view {:style style/input-container}
      [quo/input
       {:accessibility-label :add-address-to-save
@@ -55,7 +56,7 @@
        :value               input-value}]
      [quo/button
       {:type            :outline
-       :on-press        not-implemented/alert
+       :on-press        on-scan-address
        :container-style style/scan-button
        :background      :blur
        :size            40
