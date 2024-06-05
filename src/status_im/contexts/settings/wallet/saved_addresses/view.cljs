@@ -20,7 +20,7 @@
       :container-style style/empty-container-style}]))
 
 (defn- saved-address
-  [{:keys [name address chain-short-names customization-color has-ens? ens]}]
+  [{:keys [name address chain-short-names customization-color has-ens? ens network-preferences-names]}]
   (let [full-address           (str chain-short-names address)
         on-press-saved-address (rn/use-callback
                                 #(rf/dispatch
@@ -29,11 +29,12 @@
                                     :shell?  true
                                     :content (fn []
                                                [address-options/view
-                                                {:address             address
-                                                 :chain-short-names   chain-short-names
-                                                 :full-address        full-address
-                                                 :name                name
-                                                 :customization-color customization-color}])}])
+                                                {:address                   address
+                                                 :chain-short-names         chain-short-names
+                                                 :full-address              full-address
+                                                 :name                      name
+                                                 :network-preferences-names network-preferences-names
+                                                 :customization-color       customization-color}])}])
                                 [address chain-short-names full-address name customization-color])]
     [quo/saved-address
      {:blur?           true
