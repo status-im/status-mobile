@@ -23,8 +23,8 @@
       :on-press            #(rf/dispatch [:navigate-to :screen/wallet.create-account])}
      {:icon                :i/reveal
       :accessibility-label :add-a-contact
-      :label               (i18n/label :t/add-address)
-      :sub-label           (i18n/label :t/add-address-description)
+      :label               (i18n/label :t/add-address-to-watch)
+      :sub-label           (i18n/label :t/add-address-to-watch-description)
       :on-press            #(rf/dispatch [:navigate-to :screen/wallet.add-address-to-watch])
       :add-divider?        true}]]])
 

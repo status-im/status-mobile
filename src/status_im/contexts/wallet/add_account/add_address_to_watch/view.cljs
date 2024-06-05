@@ -150,7 +150,7 @@
                     (i18n/label :t/continue)]}
           [quo/page-top
            {:container-style  style/header-container
-            :title            (i18n/label :t/add-address)
+            :title            (i18n/label :t/add-address-to-watch)
             :description      :text
             :description-text (i18n/label :t/enter-eth)}]
           [:f> address-input

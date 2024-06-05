@@ -63,6 +63,9 @@
     [status-im.contexts.settings.wallet.keypairs-and-accounts.scan-qr.view :as scan-keypair-qr]
     [status-im.contexts.settings.wallet.keypairs-and-accounts.view :as keypairs-and-accounts]
     [status-im.contexts.settings.wallet.network-settings.view :as network-settings]
+    [status-im.contexts.settings.wallet.saved-addresses.add-address-to-save.view :as
+     wallet-add-address-to-save]
+    [status-im.contexts.settings.wallet.saved-addresses.save-address.view :as wallet-save-address]
     [status-im.contexts.settings.wallet.saved-addresses.view :as saved-addresses-settings]
     [status-im.contexts.settings.wallet.wallet-options.view :as wallet-options]
     [status-im.contexts.shell.activity-center.view :as activity-center]
@@ -98,7 +101,6 @@
     [status-im.contexts.wallet.collectible.view :as wallet-collectible]
     [status-im.contexts.wallet.common.scan-account.view :as wallet-scan-address]
     [status-im.contexts.wallet.connected-dapps.view :as wallet-connected-dapps]
-    [status-im.contexts.wallet.save-address.view :as wallet-save-address]
     [status-im.contexts.wallet.send.from.view :as wallet-select-from]
     [status-im.contexts.wallet.send.select-address.view :as wallet-select-address]
     [status-im.contexts.wallet.send.select-asset.view :as wallet-select-asset]
@@ -106,6 +108,7 @@
     [status-im.contexts.wallet.send.send-amount.view :as wallet-send-input-amount]
     [status-im.contexts.wallet.send.transaction-confirmation.view :as wallet-transaction-confirmation]
     [status-im.contexts.wallet.send.transaction-progress.view :as wallet-transaction-progress]
+    [status-im.contexts.wallet.swap.select-asset-to-pay.view :as wallet-swap-select-asset-to-pay]
     [status-im.contexts.wallet.wallet-connect.sign-message.view :as wallet-connect-sign-message]
     [status-im.navigation.options :as options]
     [status-im.navigation.transitions :as transitions]))
@@ -450,10 +453,6 @@
      :options   options/transparent-screen-options
      :component wallet-share-address/view}
 
-    {:name      :screen/wallet.save-address
-     :options   {:sheet? true}
-     :component wallet-save-address/view}
-
     {:name      :screen/wallet.send-input-amount
      :options   {:modalPresentationStyle :overCurrentContext
                  :insets                 {:top?    true
@@ -489,6 +488,11 @@
                  options/dark-screen
                  {:modalPresentationStyle :overCurrentContext})
      :component wallet-scan-address/view}
+
+    {:name      :screen/wallet.swap-select-asset-to-pay
+     :options   {:modalPresentationStyle :overCurrentContext
+                 :insets                 {:top? true}}
+     :component wallet-swap-select-asset-to-pay/view}
 
     {:name      :scan-profile-qr-code
      :options   (merge
@@ -539,6 +543,14 @@
     {:name      :screen/settings.network-settings
      :options   options/transparent-modal-screen-options
      :component network-settings/view}
+
+    {:name      :screen/settings.save-address
+     :options   options/transparent-modal-screen-options
+     :component wallet-save-address/view}
+
+    {:name      :screen/settings.add-address-to-save
+     :options   options/transparent-modal-screen-options
+     :component wallet-add-address-to-save/view}
 
     {:name      :screen/settings-messages
      :options   options/transparent-modal-screen-options
