@@ -5,6 +5,7 @@
     [react-native.safe-area :as safe-area]
     [status-im.common.floating-button-page.view :as floating-button-page]
     [status-im.contexts.wallet.common.account-switcher.view :as account-switcher]
+    [status-im.contexts.wallet.common.utils.networks :as network-utils]
     [status-im.contexts.wallet.send.from.style :as style]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
@@ -23,10 +24,17 @@
 
 (defn- render-fn
   [item]
-  (let [network-details (rf/sub [:wallet/network-details])]
+  (let [network-details     (rf/sub [:wallet/network-details])
+        network-short-names (map #(network-utils/network->short-name %)
+                                 (:network-preferences-names item))
+        prefix              (when (< (count network-short-names) 3)
+                              (network-utils/short-names->network-preference-prefix network-short-names))
+        address             (str prefix (:address item))]
     [quo/account-item
-     {:on-press      #(on-press (:address item) network-details)
-      :account-props item}]))
+     {:on-press      #(on-press address network-details)
+      :account-props (assoc item
+                            :address       address
+                            :full-address? false)}]))
 
 (defn view
   []

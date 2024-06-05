@@ -31,9 +31,10 @@
          :container-style     style/title-icon-container
          :accessibility-label :title-icon}])]
     [address-text/view
-     {:networks (:networks account-props)
-      :address  (:address account-props)
-      :format   :short}]]])
+     {:networks      (:networks account-props)
+      :address       (:address account-props)
+      :full-address? (:full-address? account-props)
+      :format        :short}]]])
 
 (defn- balance-view
   [{:keys [balance-props type theme]}]
