@@ -44,10 +44,12 @@
              :on-press            on-scan-qr}]))
        (when (= (:type drawer-props) :keypair)
          [(when missing-keypair?
-            {:icon                :i/seed
-             :accessibility-label :import-seed-phrase
-             :label               (i18n/label :t/import-by-entering-recovery-phrase)
-             :on-press            #(on-import-seed-phrase keypair)})
+            (case (:type keypair)
+              :seed {:icon                :i/seed
+                     :accessibility-label :import-seed-phrase
+                     :label               (i18n/label :t/import-by-entering-recovery-phrase)
+                     :on-press            #(on-import-seed-phrase keypair)}
+              nil))
           {:icon                :i/edit
            :accessibility-label :rename-key-pair
            :label               (i18n/label :t/rename-key-pair)
