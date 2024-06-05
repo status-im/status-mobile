@@ -1,16 +1,20 @@
 (ns status-im.contexts.wallet.wallet-connect.utils
   (:require [react-native.wallet-connect :refer [parse-uri]]))
 
-(defn version-supported? [version]
+(defn version-supported?
+  [version]
   (= version 2))
 
-(defn- current-timestamp []
+(defn- current-timestamp
+  []
   (quot (.getTime (js/Date.)) 1000))
 
-(defn uri-expired? [expiry-timestamp]
+(defn uri-expired?
+  [expiry-timestamp]
   (> (current-timestamp) expiry-timestamp))
 
-(defn valid-connection? [parsed-uri]
+(defn valid-connection?
+  [parsed-uri]
   (let [{:keys [topic version expiryTimestamp]} parsed-uri]
     (and (seq topic)
          (not (uri-expired? expiryTimestamp))
