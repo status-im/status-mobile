@@ -53,7 +53,10 @@
                       (assoc-in [:activity-center :loading?] true))
             pairing-completed?
             (dissoc :syncing))
-      :fx (into [[:dispatch [:profile.login/start-messenger]]
+      :fx (into [[:json-rpc/call
+                  [{:method     "wakuext_startMessenger"
+                    :on-success [:profile.login/messenger-started]
+                    :on-error   #(log/error "failed to start messenger" %)}]]
                  [:dispatch [:universal-links/generate-profile-url]]
                  [:dispatch [:community/fetch]]
                  [:dispatch [:wallet/initialize]]
@@ -106,13 +109,6 @@
              [:dispatch [:wallet-connect/init]])
            (when notifications-enabled?
              [:effects/push-notifications-enable])]})))
-
-(rf/reg-event-fx :profile.login/start-messenger
- (fn []
-   {:fx [[:json-rpc/call
-          [{:method     "wakuext_startMessenger"
-            :on-success [:profile.login/messenger-started]
-            :on-error   #(log/error "failed to start messenger" %)}]]]}))
 
 (rf/reg-event-fx :profile.login/messenger-started
  (fn [{:keys [db]} [{:keys [mailservers]}]]
