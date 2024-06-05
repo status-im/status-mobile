@@ -202,7 +202,8 @@
   {:events [:chat/navigate-to-chat]}
   [{db :db :as cofx} chat-id animation]
   (rf/merge cofx
-            {:dispatch [(if animation :shell/navigate-to :navigate-to) :chat chat-id animation]}
+            (when-not (:current-chat-id db)
+              {:dispatch [(if animation :shell/navigate-to :navigate-to) :chat chat-id animation]})
             (close-chat chat-id)
             (force-close-chat chat-id)
             (fn [{:keys [db]}]
