@@ -1,8 +1,8 @@
 (ns status-im.subs.wallet.send
   (:require
-   [re-frame.core :as rf]
-   [status-im.contexts.wallet.common.activity-tab.constants :as constants]
-   [utils.number]))
+    [re-frame.core :as rf]
+    [status-im.contexts.wallet.common.activity-tab.constants :as constants]
+    [utils.number]))
 
 (rf/reg-sub
  :wallet/send-tab

@@ -1,13 +1,13 @@
 (ns status-im.subs.wallet.activities
   (:require
-   [legacy.status-im.utils.hex :as utils.hex]
-   [native-module.core :as native-module]
-   [quo.foundations.resources :as quo.resources]
-   [quo.foundations.resources]
-   [re-frame.core :as rf]
-   [status-im.contexts.wallet.common.activity-tab.constants :as constants]
-   [utils.datetime :as datetime]
-   [utils.money :as money]))
+    [legacy.status-im.utils.hex :as utils.hex]
+    [native-module.core :as native-module]
+    [quo.foundations.resources :as quo.resources]
+    [quo.foundations.resources]
+    [re-frame.core :as rf]
+    [status-im.contexts.wallet.common.activity-tab.constants :as constants]
+    [utils.datetime :as datetime]
+    [utils.money :as money]))
 
 (def precision 6)
 
@@ -16,7 +16,8 @@
  :<- [:wallet]
  :-> :activities)
 
-(defn- activity-amount [amount]
+(defn- activity-amount
+  [amount]
   (-> amount
       (utils.hex/normalize-hex)
       (native-module/hex-to-number)
@@ -28,21 +29,21 @@
   [{:keys [symbol-out chain-id-out amount-out]} activity chain-id->network-name]
   (let [network-name (chain-id->network-name chain-id-out)]
     (assoc activity
-      :transaction :send
-      :token symbol-out
-      :amount (activity-amount amount-out)
-      :network-name network-name
-      :network-logo (quo.resources/get-network network-name))))
+           :transaction  :send
+           :token        symbol-out
+           :amount       (activity-amount amount-out)
+           :network-name network-name
+           :network-logo (quo.resources/get-network network-name))))
 
 (defn- process-receive-activity
   [{:keys [symbol-in amount-in chain-id-in]} activity chain-id->network-name]
   (let [network-name (chain-id->network-name chain-id-in)]
     (assoc activity
-      :transaction :receive
-      :token symbol-in
-      :amount (activity-amount amount-in)
-      :network-name network-name
-      :network-logo (quo.resources/get-network network-name))))
+           :transaction  :receive
+           :token        symbol-in
+           :amount       (activity-amount amount-in)
+           :network-name network-name
+           :network-logo (quo.resources/get-network network-name))))
 
 (defn- process-activity-by-type
   [chain-id->network-name

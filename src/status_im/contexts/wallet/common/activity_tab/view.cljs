@@ -1,13 +1,13 @@
 (ns status-im.contexts.wallet.common.activity-tab.view
   (:require
-   [quo.core :as quo]
-   [quo.theme]
-   [react-native.core :as rn]
-   [status-im.common.resources :as resources]
-   [status-im.contexts.shell.jump-to.constants :as jump-to.constants]
-   [status-im.contexts.wallet.common.empty-tab.view :as empty-tab]
-   [utils.i18n :as i18n]
-   [utils.re-frame :as rf]))
+    [quo.core :as quo]
+    [quo.theme]
+    [react-native.core :as rn]
+    [status-im.common.resources :as resources]
+    [status-im.contexts.shell.jump-to.constants :as jump-to.constants]
+    [status-im.contexts.wallet.common.empty-tab.view :as empty-tab]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]))
 
 (defn send-and-receive-activity
   [{:keys [relative-date status sender recipient token amount network-name network-logo]}]

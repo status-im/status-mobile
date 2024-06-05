@@ -54,7 +54,8 @@
   {:margin-right 4
    :color        (colors/theme-colors colors/neutral-100 colors/white theme)})
 
-(defn icon-container [theme]
+(defn icon-container
+  [theme]
   {:width           33
    :height          33
    :padding         1
