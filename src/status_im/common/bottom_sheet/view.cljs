@@ -133,12 +133,13 @@
                 {:transform [{:translateY translate-y}]}
                 (style/sheet {:max-height sheet-max-height}))}
        (when shell?
-         [blur/ios-view
-          {:style         (style/shell-bg blur-background)
-           :blur-radius   (or blur-radius 20)
-           :blur-amount   32
-           :blur-type     :transparent
-           :overlay-color :transparent}])
+         [rn/view {:style style/shell-bg-container}
+          [blur/ios-view
+           {:style         (style/shell-bg blur-background)
+            :blur-radius   (or blur-radius 20)
+            :blur-amount   32
+            :blur-type     :transparent
+            :overlay-color :transparent}]])
        (when selected-item
          [rn/view
           {:on-layout handle-item-height

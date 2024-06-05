@@ -14,8 +14,7 @@
    :z-index                 1
    :max-height              max-height
    :border-top-left-radius  sheet-border-radius
-   :border-top-right-radius sheet-border-radius
-   :overflow                :hidden})
+   :border-top-right-radius sheet-border-radius})
 
 (def gradient-bg
   {:position :absolute
@@ -25,14 +24,20 @@
 
 (defn shell-bg
   [blur-background]
-  {:position         :absolute
-   :background-color (if blur-background
+  {:background-color (if blur-background
                        blur-background
                        (if platform/ios? colors/white-opa-5 colors/neutral-100-opa-90))
-   :left             0
-   :right            0
-   :top              0
-   :bottom           0})
+   :flex             1})
+
+(def shell-bg-container
+  {:border-top-left-radius  sheet-border-radius
+   :border-top-right-radius sheet-border-radius
+   :left                    0
+   :right                   0
+   :top                     0
+   :bottom                  0
+   :position                :absolute
+   :overflow                :hidden})
 
 (defn sheet-content
   [{:keys [theme padding-bottom shell?]}]
