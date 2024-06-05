@@ -15,8 +15,9 @@
 
 (defn- loading-view
   [{:keys [customization-color type theme metrics?]}]
-  (let [watch-only? (= :watch-only type)
-        empty-type? (= :empty type)]
+  (let [missing-keypair? (= :missing-keypair type)
+        watch-only?      (= :watch-only type)
+        empty-type?      (= :empty type)]
     [rn/view
      {:accessibility-label :loading
       :style               (style/card {:customization-color customization-color
@@ -26,33 +27,37 @@
                                         :metrics?            metrics?})}
      [rn/view {:style style/loader-container}
       [rn/view
-       {:style (assoc (style/loader-view {:width       16
-                                          :height      16
-                                          :watch-only? watch-only?
-                                          :theme       theme})
+       {:style (assoc (style/loader-view {:width            16
+                                          :height           16
+                                          :missing-keypair? missing-keypair?
+                                          :watch-only?      watch-only?
+                                          :theme            theme})
                       :margin-right 8
                       :margin-top   2)}]
       [rn/view {:style style/watch-only-container}
        [rn/view
-        {:style (style/loader-view {:width       57
-                                    :height      8
-                                    :watch-only? watch-only?
-                                    :theme       theme})}]
+        {:style (style/loader-view {:width            57
+                                    :height           8
+                                    :missing-keypair? missing-keypair?
+                                    :watch-only?      watch-only?
+                                    :theme            theme})}]
        (when watch-only? [icon/icon :i/reveal {:color colors/neutral-50 :size 12}])]]
      [rn/view
-      {:style (assoc (style/loader-view {:width       (if empty-type? 56 80)
-                                         :height      16
-                                         :watch-only? watch-only?
-                                         :theme       theme})
+      {:style (assoc (style/loader-view {:width            (if empty-type? 56 80)
+                                         :height           16
+                                         :missing-keypair? missing-keypair?
+                                         :watch-only?      watch-only?
+                                         :theme            theme})
                      :margin-top
                      13)}]
      (when metrics?
        [rn/view
         {:accessibility-label :metrics
-         :style               (assoc (style/loader-view {:width       (if empty-type? 37 96)
-                                                         :height      8
-                                                         :watch-only? watch-only?
-                                                         :theme       theme})
+         :style               (assoc (style/loader-view {:width            (if empty-type? 37 96)
+                                                         :height           8
+                                                         :missing-keypair? missing-keypair?
+                                                         :watch-only?      watch-only?
+                                                         :theme            theme})
                                      :margin-top
                                      10)}])]))
 
@@ -154,7 +159,7 @@
          [gradient-overview theme customization-color])])))
 
 (defn- add-account-view
-  [{:keys [on-press customization-color metrics?]}]
+  [{:keys [on-press metrics?]}]
   (let [theme                  (quo.theme/use-theme)
         [pressed? set-pressed] (rn/use-state false)
         on-press-in            (rn/use-callback #(set-pressed true))
@@ -168,13 +173,12 @@
                                                   :pressed? pressed?})}
      [button/button
       {:on-press            on-press
-       :type                :primary
-       :size                24
+       :type                :ghost
+       :size                32
        :icon                true
        :accessibility-label :add-account
        :pressed?            pressed?
-       :icon-only?          true
-       :customization-color customization-color}
+       :icon-only?          true}
       :i/add]]))
 
 (defn- view-internal
