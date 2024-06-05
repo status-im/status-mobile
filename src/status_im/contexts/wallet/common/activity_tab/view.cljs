@@ -10,9 +10,10 @@
     [utils.re-frame :as rf]))
 
 (defn send-and-receive-activity
-  [{:keys [relative-date status sender recipient token amount network-name network-logo]}]
+  [{:keys [transaction relative-date status sender recipient token amount network-name
+           network-logo]}]
   [quo/wallet-activity
-   {:transaction       :send
+   {:transaction       transaction
     :timestamp         relative-date
     :status            status
     :counter           1
