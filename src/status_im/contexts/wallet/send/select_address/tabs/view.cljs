@@ -20,7 +20,7 @@
         :container-style style/empty-container-style}]
       (into [rn/view {:style style/my-accounts-container}]
             (map (fn [{:keys [color address] :as account}]
-                   (let [network-short-names (map #(network-utils/network->short-name %)
+                   (let [network-short-names (map network-utils/network->short-name
                                                   (:network-preferences-names account))
                          prefix              (when (< (count network-short-names) 3)
                                                (network-utils/short-names->network-preference-prefix

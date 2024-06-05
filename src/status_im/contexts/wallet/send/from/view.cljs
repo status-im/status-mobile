@@ -25,7 +25,7 @@
 (defn- render-fn
   [item]
   (let [network-details     (rf/sub [:wallet/network-details])
-        network-short-names (map #(network-utils/network->short-name %)
+        network-short-names (map network-utils/network->short-name
                                  (:network-preferences-names item))
         prefix              (when (< (count network-short-names) 3)
                               (network-utils/short-names->network-preference-prefix network-short-names))
