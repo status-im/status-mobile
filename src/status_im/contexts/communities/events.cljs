@@ -293,33 +293,23 @@
   [{:keys [db]} [{:keys [communities]}]]
   (when-let [community (first communities)]
     {:db (-> db
-             (assoc-in [:communities (:id community) :spectated] true)
-             (assoc-in [:communities (:id community) :spectating] false))
+             (assoc-in [:communities (:id community) :spectated] true))
      :fx [[:dispatch [:communities/handle-community community]]
           [:dispatch [::mailserver/request-messages]]]}))
 
 (rf/reg-event-fx :chat.ui/spectate-community-success spectate-community-success)
 
-(defn spectate-community-failed
-  [{:keys [db]} [community-id]]
-  {:db (assoc-in db [:communities community-id :spectating] false)})
-
-(rf/reg-event-fx :chat.ui/spectate-community-failed spectate-community-failed)
-
 (defn spectate-community
   [{:keys [db]} [community-id]]
-  (let [{:keys [spectated spectating joined]} (get-in db [:communities community-id])]
-    (when (and (not joined) (not spectated) (not spectating))
-      {:db            (assoc-in db [:communities community-id :spectating] true)
-       :json-rpc/call [{:method     "wakuext_spectateCommunity"
+  (let [{:keys [spectated joined]} (get-in db [:communities community-id])]
+    (when (and (not joined) (not spectated))
+      {:json-rpc/call [{:method     "wakuext_spectateCommunity"
                         :params     [community-id]
                         :on-success [:chat.ui/spectate-community-success]
                         :on-error   (fn [err]
                                       (log/error {:message
                                                   "Failed to spectate community"
-                                                  :error err})
-                                      (rf/dispatch [:chat.ui/spectate-community-failed
-                                                    community-id]))}]})))
+                                                  :error err}))}]})))
 
 (schema/=> spectate-community
   [:=>
@@ -329,7 +319,6 @@
      [:schema [:catn [:community-id [:? :string]]]]]]
    [:maybe
     [:map
-     [:db map?]
      [:json-rpc/call :schema.common/rpc-call]]]])
 
 (rf/reg-event-fx :chat.ui/spectate-community spectate-community)
