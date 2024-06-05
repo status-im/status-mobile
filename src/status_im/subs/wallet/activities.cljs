@@ -52,7 +52,7 @@
                   :status        (constants/wallet-activity-status->name activity-status)
                   :sender        sender
                   :recipient     recipient}]
-    (case activity-type
+    (condp = activity-type
       constants/wallet-activity-type-send
       (process-send-activity data activity chain-id->network-name)
 

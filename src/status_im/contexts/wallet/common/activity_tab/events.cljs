@@ -1,8 +1,8 @@
 (ns status-im.contexts.wallet.common.activity-tab.events
   (:require [camel-snake-kebab.extras :as cske]
+            [taoensso.timbre :as log]
             [utils.ethereum.chain :as chain]
             [utils.re-frame :as rf]
-            [taoensso.timbre :as log]
             [utils.transforms :as transforms]))
 
 (rf/reg-event-fx
