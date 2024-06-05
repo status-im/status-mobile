@@ -78,14 +78,14 @@
        :background :blur
        :icon-name  :i/arrow-left
        :on-press   navigate-back}]
-     [rn/view {:style style/title-container}
-      [quo/standard-title
-       {:title               (i18n/label :t/saved-addresses)
-        :accessibility-label :saved-addresses-header
-        :right               :action
-        :on-press            add-address-to-save
-        :customization-color customization-color
-        :icon                :i/add}]]
+     [quo/standard-title
+      {:title               (i18n/label :t/saved-addresses)
+       :accessibility-label :saved-addresses-header
+       :right               :action
+       :on-press            add-address-to-save
+       :customization-color customization-color
+       :icon                :i/add
+       :container-style     style/title-container}]
      [rn/section-list
       {:key-fn                         :title
        :sticky-section-headers-enabled false

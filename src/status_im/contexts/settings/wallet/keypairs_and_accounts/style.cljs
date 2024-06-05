@@ -1,7 +1,8 @@
 (ns status-im.contexts.settings.wallet.keypairs-and-accounts.style)
 
 (def title-container
-  {:padding-horizontal 20
+  {:flex               0
+   :padding-horizontal 20
    :margin-vertical    12})
 
 (defn page-wrapper
