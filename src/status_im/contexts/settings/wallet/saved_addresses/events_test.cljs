@@ -56,9 +56,7 @@
                                                :mixedcase-address         "0x2"
                                                :chain-short-names         "eth:arb1:oeth:"
                                                :has-ens?                  false
-                                               :network-preferences-names #{:arbitrum
-                                                                            :optimism
-                                                                            :mainnet}
+                                               :network-preferences-names `(:mainnet :arbitrum :optimism)
                                                :name                      "Bob"
                                                :created-at                1716826714
                                                :ens                       ""
@@ -76,9 +74,7 @@
                                                :address                   "0x2"
                                                :mixedcase-address         "0x2"
                                                :chain-short-names         "eth:arb1:oeth:"
-                                               :network-preferences-names #{:arbitrum
-                                                                            :optimism
-                                                                            :mainnet}
+                                               :network-preferences-names `(:mainnet :arbitrum :optimism)
                                                :has-ens?                  false
                                                :name                      "Bob"
                                                :created-at                1716826714
@@ -89,9 +85,7 @@
                                                :address                   "0x1"
                                                :mixedcase-address         "0x1"
                                                :chain-short-names         "eth:arb1:oeth:"
-                                               :network-preferences-names #{:arbitrum
-                                                                            :optimism
-                                                                            :mainnet}
+                                               :network-preferences-names `(:mainnet :arbitrum :optimism)
                                                :has-ens?                  false
                                                :name                      "Amy"
                                                :created-at                1716826806

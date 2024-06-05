@@ -138,18 +138,11 @@
   (let [renamed-data (sort-and-rename-keypairs keypairs)]
     (cske/transform-keys csk/->kebab-case-keyword renamed-data)))
 
-(defn- network-short-names->full-names
-  [short-names-string]
-  (->> (string/split short-names-string constants/chain-id-separator)
-       (map network-utils/short-name->network)
-       (remove nil?)
-       set))
-
 (defn- add-keys-to-saved-address
   [saved-address]
   (-> saved-address
       (assoc :network-preferences-names
-             (network-short-names->full-names (:chain-short-names saved-address)))
+             (network-utils/network-preference-prefix->network-names (:chain-short-names saved-address)))
       (assoc :has-ens? (not (string/blank? (:ens saved-address))))))
 
 (defn rpc->saved-address
