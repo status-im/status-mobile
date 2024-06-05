@@ -95,35 +95,16 @@
            nil
            (events/spectate-community {:db {:communities {community-id {:spectated true}}}}
                                       [community-id])))))
-  (testing "given a spectating community"
-    (testing "do nothing"
-      (is (match?
-           nil
-           (events/spectate-community {:db {:communities {community-id {:spectating true}}}}
-                                      [community-id])))))
+
   (testing "given a community"
-    (testing "mark community spectating"
-      (is (match?
-           {:db {:communities {community-id {:spectating true}}}}
-           (events/spectate-community {:db {:communities {community-id {}}}} [community-id]))))
     (testing "call spectate community rpc with correct community id"
       (is (match?
            {:json-rpc/call [{:method "wakuext_spectateCommunity"
                              :params [community-id]}]}
            (events/spectate-community {:db {:communities {community-id {}}}} [community-id]))))))
 
-(deftest spectate-community-failed-test
-  (testing "mark community spectating false"
-    (is (match?
-         {:db {:communities {community-id {:spectating false}}}}
-         (events/spectate-community-failed {} [community-id])))))
-
 (deftest spectate-community-success-test
   (testing "given communities"
-    (testing "mark first community spectating false"
-      (is (match?
-           {:db {:communities {community-id {:spectating false}}}}
-           (events/spectate-community-success {} [{:communities [{:id community-id}]}]))))
     (testing "mark first community spectated true"
       (is (match?
            {:db {:communities {community-id {:spectated true}}}}
