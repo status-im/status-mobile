@@ -53,11 +53,11 @@
     :button-label    string
     :on-button-press function
     :on-close        function"
-  [{:keys [type closed? icon style button-label
+  [{:keys [type closed? blur? icon style button-label
            on-button-press on-close no-icon-color? icon-size]}
    message]
   (when-not closed?
-    (let [theme           (quo.theme/use-theme)
+    (let [theme           (if blur? :shell (quo.theme/use-theme))
           include-button? (not (string/blank? button-label))]
       [rn/view
        {:accessibility-label :information-box

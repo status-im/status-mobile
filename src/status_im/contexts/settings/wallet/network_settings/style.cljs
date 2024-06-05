@@ -2,8 +2,9 @@
   (:require [quo.foundations.colors :as colors]))
 
 (def title-container
-  {:padding-horizontal 20
-   :margin-vertical    12})
+  {:flex               0
+   :padding-horizontal 20
+   :padding-vertical   12})
 
 (defn page-wrapper
   [inset-top]
