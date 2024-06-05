@@ -2627,6 +2627,7 @@
     "derivation-path-header": "Derivation path",
     "derivation-path-desc": "Derivation paths are the routes your Status Wallet uses to generate addresses from your private key.",
     "select-networks": "Select networks",
+    "select-network": "Select network",
     "generating-keypair": "Generating key pair...",
     "keypair-name": "Key pair name",
     "keypair-name-description": "Name key pair for your own personal reference",
