@@ -72,8 +72,10 @@
         selected-account? (rf/sub [:wallet/current-viewing-account-address])
         send-params       (if selected-account?
                             {:token       token-data
+                             :stack-id    :screen/wallet.accounts
                              :start-flow? true}
                             {:token-symbol token-symbol
+                             :stack-id     :wallet-stack
                              :start-flow?  true})]
     [quo/action-drawer
      [(cond->> [(when (ff/enabled? ::ff/wallet.assets-modal-manage-tokens)

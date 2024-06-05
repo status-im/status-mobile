@@ -47,7 +47,7 @@
 
 (defn view
   []
-  (let [leave-page      #(rf/dispatch [:wallet/close-transaction-progress-page])
+  (let [leave-page      #(rf/dispatch [:wallet/end-transaction-flow])
         {:keys [color]} (rf/sub [:wallet/current-viewing-account])]
     (fn []
       (rn/use-effect

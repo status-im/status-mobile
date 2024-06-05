@@ -27,8 +27,8 @@
 
 (rf/defn navigate-to-within-stack
   {:events [:navigate-to-within-stack]}
-  [{:keys [db]} comp-id]
-  {:db (assoc db :view-id (first comp-id))
+  [{:keys [db]} comp-id screen-params]
+  {:db (all-screens-params db (first comp-id) screen-params)
    :fx [[:navigate-to-within-stack comp-id]]})
 
 (re-frame/reg-event-fx :open-modal
