@@ -4,7 +4,6 @@
     matcher-combinators.test
     [status-im.constants :as constants]
     [status-im.contexts.wallet.collectible.events :as collectible-events]
-    [status-im.contexts.wallet.db :as db]
     [status-im.contexts.wallet.events :as events]))
 
 (def address "0x2f88d65f3cb52605a54a833ae118fb1363acccd2")
@@ -80,7 +79,9 @@
 (deftest reset-selected-networks-test
   (testing "reset-selected-networks"
     (let [db          {:wallet {}}
-          expected-db {:wallet db/defaults}
+          expected-db {:wallet {:ui {:network-filter {:selector-state :default
+                                                      :selected-networks
+                                                      (set constants/default-network-names)}}}}
           effects     (events/reset-selected-networks {:db db})
           result-db   (:db effects)]
       (is (match? result-db expected-db)))))
@@ -101,7 +102,9 @@
       (is (match? result-db expected-db))))
 
   (testing "update-selected-networks > if all networks is already selected, update to incoming network"
-    (let [db           {:wallet db/defaults}
+    (let [db           {:wallet {:ui {:network-filter {:selector-state :default
+                                                       :selected-networks
+                                                       (set constants/default-network-names)}}}}
           network-name constants/arbitrum-network-name
           expected-db  {:wallet {:ui {:network-filter {:selected-networks #{network-name}
                                                        :selector-state    :changed}}}}
