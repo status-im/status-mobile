@@ -49,13 +49,12 @@
 
 (defn advanced-settings
   []
-  (when (ff/enabled? ::ff/settings.network-settings)
-    [quo/category
-     {:key       :advanced-wallet-settings
-      :label     (i18n/label :t/advanced)
-      :data      (advanced-settings-options)
-      :blur?     true
-      :list-type :settings}]))
+  [quo/category
+   {:key       :advanced-wallet-settings
+    :label     (i18n/label :t/advanced)
+    :data      (advanced-settings-options)
+    :blur?     true
+    :list-type :settings}])
 
 (defn navigate-back
   []
@@ -75,5 +74,7 @@
      [quo/page-top
       {:title                     (i18n/label :t/wallet)
        :title-accessibility-label :wallet-settings-header}]
-     [basic-settings]
+     (when (or (ff/enabled? ::ff/settings.keypairs-and-accounts)
+               (ff/enabled? ::ff/settings.saved-addresses))
+       [basic-settings])
      [advanced-settings]]))

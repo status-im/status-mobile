@@ -23,9 +23,12 @@
    :left     0
    :right    0})
 
-(def shell-bg
+(defn shell-bg
+  [blur-background]
   {:position         :absolute
-   :background-color (if platform/ios? colors/white-opa-5 colors/neutral-100-opa-90)
+   :background-color (if blur-background
+                       blur-background
+                       (if platform/ios? colors/white-opa-5 colors/neutral-100-opa-90))
    :left             0
    :right            0
    :top              0

@@ -28,6 +28,19 @@
                           :border colors/danger-50-opa-10
                           :icon   colors/danger-50
                           :text   colors/danger-50}
+           :close-button colors/white}
+   :shell {:default      {:bg     colors/white-opa-5
+                          :border colors/white-opa-10
+                          :icon   colors/white-opa-70
+                          :text   colors/white}
+           :informative  {:bg     colors/primary-50-opa-5
+                          :border colors/primary-50-opa-10
+                          :icon   colors/primary-50
+                          :text   colors/white}
+           :error        {:bg     colors/danger-50-opa-5
+                          :border colors/danger-50-opa-10
+                          :icon   colors/danger-50
+                          :text   colors/danger-50}
            :close-button colors/white}})
 
 (defn get-color

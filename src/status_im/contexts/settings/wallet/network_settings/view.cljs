@@ -1,5 +1,6 @@
 (ns status-im.contexts.settings.wallet.network-settings.view
   (:require [quo.core :as quo]
+            [quo.foundations.colors :as colors]
             [quo.foundations.resources :as resources]
             [quo.theme]
             [react-native.core :as rn]
@@ -44,9 +45,7 @@
     :data      (map make-network-settings-item
                     [{:details       (:optimism networks)
                       :testnet-mode? testnet-mode?
-                      :testnet-label [quo/text
-                                      {:style style/testnet-not-available}
-                                      (i18n/label :t/testnet-not-available)]}
+                      :testnet-label (i18n/label :t/sepolia-active)}
                      {:details       (:arbitrum networks)
                       :testnet-mode? testnet-mode?
                       :testnet-label (i18n/label :t/sepolia-active)}])
@@ -56,9 +55,9 @@
 (defn testnet-mode-setting
   [{:keys [testnet-mode? on-enable on-disable]}]
   (let [on-change-testnet (rn/use-callback
-                           (fn [active?]
-                             (if active? (on-enable) (on-disable)))
-                           [on-enable on-disable])]
+                           (fn []
+                             (if-not testnet-mode? (on-enable) (on-disable)))
+                           [testnet-mode? on-enable on-disable])]
     {:blur?        true
      :title        (i18n/label :t/testnet-mode)
      :action       :selector
@@ -79,25 +78,32 @@
     :list-type :settings}])
 
 (defn on-change-testnet
-  [{:keys [enable? theme]}]
+  [{:keys [enable? blur? theme]}]
   (rf/dispatch [:show-bottom-sheet
-                {:content (fn [] [testnet/view {:enable? enable?}])
-                 :theme   theme}]))
+                {:content         (fn [] [testnet/view
+                                          {:enable? enable?
+                                           :blur?   blur?}])
+                 :theme           theme
+                 :shell?          blur?
+                 :blur-background colors/bottom-sheet-background-blur}]))
 
 (defn view
   []
-  (let [insets           (safe-area/get-insets)
+  (let [blur?            true
+        insets           (safe-area/get-insets)
         theme            (quo.theme/use-theme)
         networks-by-name (rf/sub [:wallet/network-details-by-network-name])
         testnet-mode?    (rf/sub [:profile/test-networks-enabled?])
         enable-testnet   (rn/use-callback
                           (fn []
                             (on-change-testnet {:theme   theme
+                                                :blur?   blur?
                                                 :enable? true}))
                           [theme])
         disable-testnet  (rn/use-callback
                           (fn []
                             (on-change-testnet {:theme   theme
+                                                :blur?   blur?
                                                 :enable? false}))
                           [theme])]
     [quo/overlay
