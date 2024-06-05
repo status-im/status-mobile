@@ -69,7 +69,7 @@
     :or   {transaction :receive
            status      :pending}}
    theme]
-  [rn/view {:style style/icon-container}
+  [rn/view {:style (style/icon-container theme)}
    [hole-view/hole-view
     {:style (style/icon-hole-view theme blur?)
      :holes [{:x            20
@@ -116,11 +116,9 @@
       :on-press            on-press
       :on-press-in         on-press-in
       :on-press-out        on-press-out}
-     [rn/view
-      {:style {:flex-direction :row}}
+     [rn/view {:style {:flex-direction :row}}
       [transaction-icon-view props theme]
-      [rn/view
-       {:style style/content-container}
+      [rn/view {:style style/content-container}
        [transaction-header props theme]
        [rn/view {:style style/content-line}
         (when first-tag [prop-tag first-tag blur?])

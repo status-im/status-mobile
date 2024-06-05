@@ -54,10 +54,16 @@
   {:margin-right 4
    :color        (colors/theme-colors colors/neutral-100 colors/white theme)})
 
-(def icon-container
-  {:width      32
-   :height     32
-   :margin-top 8})
+(defn icon-container [theme]
+  {:width           33
+   :height          33
+   :padding         1
+   :border-width    1
+   :border-radius   16
+   :border-color    (colors/theme-colors colors/neutral-20 colors/neutral-80 theme)
+   :margin-top      8
+   :justify-content :center
+   :align-items     :center})
 
 (def content-container
   {:margin-left 8})
@@ -85,6 +91,6 @@
 
 (def icon-status-container
   {:position :absolute
-   :bottom   0
-   :right    0})
+   :bottom   -1
+   :right    -1})
 
