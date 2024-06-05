@@ -35,9 +35,8 @@
 (defn- address-input
   [{:keys [input-value on-change-text paste-into-input clear-input]}]
   (let [empty-input?    (string/blank? input-value)
-        on-scan-result  (rn/use-callback #(on-change-text %))
         on-scan-address (rn/use-callback #(rf/dispatch [:open-modal :screen/wallet.scan-address
-                                                        {:on-result on-scan-result}]))]
+                                                        {:on-result on-change-text}]))]
     [rn/view {:style style/input-container}
      [quo/input
       {:accessibility-label :add-address-to-save
