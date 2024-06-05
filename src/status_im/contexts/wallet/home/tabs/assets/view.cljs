@@ -10,7 +10,6 @@
   []
   (let [tokens-loading?  (rf/sub [:wallet/home-tokens-loading?])
         {:keys [tokens]} (rf/sub [:wallet/aggregated-token-values-and-balance])]
-    (println "ttt" tokens-loading?)
     (if tokens-loading?
       [quo/skeleton-list
        {:content       :assets
