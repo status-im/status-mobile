@@ -82,7 +82,6 @@
                 {:theme   :dark
                  :content (fn [] [actions/view
                                   {:keypair          keypair-data
-                                   :missing-keypair? true
                                    :drawer-props     (options-drawer-props
                                                       {:theme   :dark
                                                        :type    :keypair
