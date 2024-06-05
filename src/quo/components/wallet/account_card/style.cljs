@@ -12,30 +12,38 @@
 
 (defn card
   [{:keys [customization-color type theme pressed? metrics?]}]
-  {:width              161
-   :height             (if metrics? 88 68)
-   :background-color   (when (and (not= :missing-keypair type) (not= :watch-only type))
-                         (colors/theme-colors
-                          (colors/resolve-color customization-color
-                                                theme
-                                                (when (= :missing-keypair type) (if pressed? 20 10)))
-                          (colors/resolve-color customization-color
-                                                theme
-                                                (when (= :missing-keypair type) (if pressed? 30 20)))
-                          theme))
-   :border-radius      16
-   :border-style       (if (= type :missing-keypair) :dashed :solid)
-   :border-width       1
-   :border-color       (if (or (= :missing-keypair type)
-                               (= :watch-only type))
-                         (colors/theme-colors
-                          (if pressed? colors/neutral-80-opa-10 colors/neutral-80-opa-5)
-                          (if pressed? colors/white-opa-10 colors/white-opa-5)
-                          theme)
-                         colors/neutral-80-opa-10)
-   :padding-horizontal 12
-   :padding-top        6
-   :padding-bottom     9})
+  (let [missing-keypair? (= :missing-keypair type)
+        watch-only?      (= :watch-only type)]
+    {:width              161
+     :height             (if metrics? 88 68)
+     :background-color   (when (and (not missing-keypair?) (not watch-only?))
+                           (colors/theme-colors
+                            (colors/resolve-color customization-color
+                                                  theme
+                                                  (when missing-keypair? (if pressed? 20 10)))
+                            (colors/resolve-color customization-color
+                                                  theme
+                                                  (when missing-keypair? (if pressed? 30 20)))
+                            theme))
+     :border-radius      16
+     :border-style       (if missing-keypair? :dashed :solid)
+     :border-width       1
+     :border-color       (cond
+                           watch-only?
+                           (colors/theme-colors
+                            (if pressed? colors/neutral-80-opa-10 colors/neutral-80-opa-5)
+                            (if pressed? colors/white-opa-10 colors/white-opa-5)
+                            theme)
+                           missing-keypair?
+                           (colors/theme-colors
+                            (if pressed? colors/neutral-40 colors/neutral-30)
+                            (if pressed? colors/neutral-70 colors/neutral-80)
+                            theme)
+                           :else
+                           colors/neutral-80-opa-10)
+     :padding-horizontal 12
+     :padding-top        6
+     :padding-bottom     9}))
 
 (def profile-container
   {:margin-bottom  8

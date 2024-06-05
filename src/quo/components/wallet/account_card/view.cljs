@@ -159,7 +159,7 @@
          [gradient-overview theme customization-color])])))
 
 (defn- add-account-view
-  [{:keys [on-press customization-color metrics?]}]
+  [{:keys [on-press metrics?]}]
   (let [theme                  (quo.theme/use-theme)
         [pressed? set-pressed] (rn/use-state false)
         on-press-in            (rn/use-callback #(set-pressed true))
@@ -173,13 +173,12 @@
                                                   :pressed? pressed?})}
      [button/button
       {:on-press            on-press
-       :type                :primary
-       :size                24
+       :type                :ghost
+       :size                32
        :icon                true
        :accessibility-label :add-account
        :pressed?            pressed?
-       :icon-only?          true
-       :customization-color customization-color}
+       :icon-only?          true}
       :i/add]]))
 
 (defn- view-internal
