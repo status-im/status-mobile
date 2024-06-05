@@ -1,12 +1,12 @@
 (ns status-im.subs.wallet.send-test
   (:require
-   [cljs.test :refer [is testing]]
-   [re-frame.db :as rf-db]
-   [status-im.contexts.wallet.common.activity-tab.constants :as constants]
-   [status-im.subs.root]
-   [status-im.subs.wallet.send]
-   [test-helpers.unit :as h]
-   [utils.re-frame :as rf]))
+    [cljs.test :refer [is testing]]
+    [re-frame.db :as rf-db]
+    [status-im.contexts.wallet.common.activity-tab.constants :as constants]
+    [status-im.subs.root]
+    [status-im.subs.wallet.send]
+    [test-helpers.unit :as h]
+    [utils.re-frame :as rf]))
 
 (h/deftest-sub :wallet/send-tab
   [sub-name]
@@ -59,28 +59,28 @@
   [sub-name]
   (testing "returns recent tab for selecting address"
     (swap! rf-db/app-db
-           (fn [db]
-             (-> db
-                 (assoc-in [:wallet :activities]
-                           {"acc1" [{:activity-type constants/wallet-activity-type-send
-                                     :amount-out    "0x1"
-                                     :sender        "acc1"
-                                     :recipient     "acc2"
-                                     :timestamp     1588291200}
-                                    {:activity-type constants/wallet-activity-type-receive
-                                     :amount-in     "0x1"
-                                     :sender        "acc2"
-                                     :recipient     "acc1"
-                                     :timestamp     1588377600}
-                                    {:activity-type constants/wallet-activity-type-send
-                                     :amount-out    "0x1"
-                                     :sender        "acc1"
-                                     :recipient     "acc4"
-                                     :timestamp     1588464000}]
-                            "acc3" [{:activity-type constants/wallet-activity-type-receive
-                                     :amount-in     "0x1"
-                                     :sender        "acc4"
-                                     :recipient     "acc3"
-                                     :timestamp     1588464000}]})
-                 (assoc-in [:wallet :current-viewing-account-address] "acc1"))))
+      (fn [db]
+        (-> db
+            (assoc-in [:wallet :activities]
+                      {"acc1" [{:activity-type constants/wallet-activity-type-send
+                                :amount-out    "0x1"
+                                :sender        "acc1"
+                                :recipient     "acc2"
+                                :timestamp     1588291200}
+                               {:activity-type constants/wallet-activity-type-receive
+                                :amount-in     "0x1"
+                                :sender        "acc2"
+                                :recipient     "acc1"
+                                :timestamp     1588377600}
+                               {:activity-type constants/wallet-activity-type-send
+                                :amount-out    "0x1"
+                                :sender        "acc1"
+                                :recipient     "acc4"
+                                :timestamp     1588464000}]
+                       "acc3" [{:activity-type constants/wallet-activity-type-receive
+                                :amount-in     "0x1"
+                                :sender        "acc4"
+                                :recipient     "acc3"
+                                :timestamp     1588464000}]})
+            (assoc-in [:wallet :current-viewing-account-address] "acc1"))))
     (is (match? ["acc2" "acc4"] (rf/sub [sub-name])))))
