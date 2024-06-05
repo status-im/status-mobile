@@ -319,7 +319,6 @@
      [:schema [:catn [:community-id [:? :string]]]]]]
    [:maybe
     [:map
-     [:db map?]
      [:json-rpc/call :schema.common/rpc-call]]]])
 
 (rf/reg-event-fx :chat.ui/spectate-community spectate-community)
