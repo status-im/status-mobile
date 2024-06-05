@@ -34,7 +34,7 @@
      {:on-press      #(on-press address network-details)
       :account-props (assoc item
                             :address       address
-                            )}]))
+                            :full-address? true)}]))
 
 (defn view
   []
