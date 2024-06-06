@@ -1,9 +1,11 @@
 (ns status-im.contexts.settings.wallet.events
   (:require
+    [native-module.core :as native-module]
     [status-im.contexts.settings.wallet.data-store :as data-store]
     [taoensso.timbre :as log]
     [utils.i18n :as i18n]
-    [utils.re-frame :as rf]))
+    [utils.re-frame :as rf]
+    [utils.security.core :as security]))
 
 (rf/reg-event-fx
  :wallet/rename-keypair-success
@@ -117,3 +119,54 @@
                                    :sha3-pwd          password}]))}]]]})
 
 (rf/reg-event-fx :wallet/success-keypair-qr-scan success-keypair-qr-scan)
+
+(defn wallet-validate-seed-phrase
+  [_ [seed-phrase on-success on-error]]
+  {:fx [[:multiaccount/validate-mnemonic [seed-phrase on-success on-error]]]})
+
+(rf/reg-event-fx :wallet/validate-seed-phrase wallet-validate-seed-phrase)
+
+(defn make-seed-phrase-keypair-fully-operable
+  [_ [mnemonic password on-success on-error]]
+  {:fx [[:json-rpc/call
+         [{:method     "accounts_makeSeedPhraseKeypairFullyOperable"
+           :params     [(security/safe-unmask-data mnemonic)
+                        (-> password security/safe-unmask-data native-module/sha3)]
+           :on-success on-success
+           :on-error   on-error}]]]})
+
+(rf/reg-event-fx :wallet/make-seed-phrase-keypair-fully-operable make-seed-phrase-keypair-fully-operable)
+
+(defn import-keypair-by-seed-phrase
+  [_ [{:keys [keypair-key-uid seed-phrase password on-success on-error]}]]
+  {:fx [[:import-keypair-by-seed-phrase
+         {:keypair-key-uid keypair-key-uid
+          :seed-phrase     seed-phrase
+          :password        password
+          :on-success      (fn []
+                             (rf/dispatch [:wallet/make-keypairs-accounts-fully-operable
+                                           #{keypair-key-uid}])
+                             (cond
+                               (vector? on-success) (rf/dispatch (conj on-success))
+                               (fn? on-success)     (on-success)))
+          :on-error        (fn [error]
+                             (rf/dispatch [:wallet/import-keypair-by-seed-phrase-failed error])
+                             (cond
+                               (vector? on-error) (rf/dispatch (conj on-error error))
+                               (fn? on-error)     (on-error error)))}]]})
+
+(rf/reg-event-fx :wallet/import-keypair-by-seed-phrase import-keypair-by-seed-phrase)
+
+(defn import-keypair-by-seed-phrase-failed
+  [_ [error]]
+  (let [error-type (-> error ex-message keyword)
+        error-data (ex-data error)]
+    (when-not (and (= error-type :import-keypair-by-seed-phrase/import-error)
+                   (= (:hint error-data) :incorrect-seed-phrase-for-keypair))
+      {:fx [[:dispatch
+             [:toasts/upsert
+              {:type  :negative
+               :theme :dark
+               :text  (:error error-data)}]]]})))
+
+(rf/reg-event-fx :wallet/import-keypair-by-seed-phrase-failed import-keypair-by-seed-phrase-failed)

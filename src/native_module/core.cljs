@@ -527,9 +527,11 @@
 
 (defn validate-mnemonic
   "Validate that a mnemonic conforms to BIP39 dictionary/checksum standards"
-  [mnemonic callback]
-  (log/debug "[native-module] validate-mnemonic")
-  (.validateMnemonic ^js (utils) mnemonic callback))
+  ([mnemonic]
+   (native-utils/promisify-native-module-call validate-mnemonic mnemonic))
+  ([mnemonic callback]
+   (log/debug "[native-module] validate-mnemonic")
+   (.validateMnemonic ^js (utils) mnemonic callback)))
 
 (defn delete-multiaccount
   "Delete multiaccount from database, deletes multiaccount's database and

@@ -6,27 +6,31 @@
             [utils.re-frame :as rf]))
 
 (defn view
-  [props keypair]
-  (let [has-paired-device (rf/sub [:pairing/has-paired-devices])
-        missing-keypair?  (= (:stored props) :missing)
-        on-scan-qr        (rn/use-callback #(rf/dispatch [:open-modal :screen/settings.scan-keypair-qr
-                                                          [(:key-uid keypair)]])
-                                           [keypair])
-        on-show-qr        (rn/use-callback #(rf/dispatch [:open-modal
-                                                          :screen/settings.encrypted-key-pair-qr
-                                                          keypair])
-                                           [keypair])
-        on-remove-keypair (rn/use-callback #(rf/dispatch
-                                             [:show-bottom-sheet
-                                              {:theme   :dark
-                                               :content (fn []
-                                                          [remove-key-pair/view keypair])}])
-                                           [keypair])
-        on-rename-keypair (rn/use-callback #(rf/dispatch [:open-modal :screen/settings.rename-keypair
-                                                          keypair])
-                                           [keypair])]
+  [{:keys [drawer-props keypair]}]
+  (let [has-paired-device     (rf/sub [:pairing/has-paired-devices])
+        missing-keypair?      (= (:stored drawer-props) :missing)
+        on-scan-qr            (rn/use-callback #(rf/dispatch [:open-modal
+                                                              :screen/settings.scan-keypair-qr
+                                                              [(:key-uid keypair)]])
+                                               [keypair])
+        on-show-qr            (rn/use-callback #(rf/dispatch [:open-modal
+                                                              :screen/settings.encrypted-key-pair-qr
+                                                              keypair])
+                                               [keypair])
+        on-remove-keypair     (rn/use-callback #(rf/dispatch
+                                                 [:show-bottom-sheet
+                                                  {:theme   :dark
+                                                   :content (fn []
+                                                              [remove-key-pair/view keypair])}])
+                                               [keypair])
+        on-rename-keypair     (rn/use-callback #(rf/dispatch [:open-modal :screen/settings.rename-keypair
+                                                              keypair])
+                                               [keypair])
+        on-import-seed-phrase (rn/use-callback
+                               #(rf/dispatch [:open-modal :screen/settings.import-seed-phrase keypair])
+                               [keypair])]
     [:<>
-     [quo/drawer-top props]
+     [quo/drawer-top drawer-props]
      [quo/action-drawer
       [(when has-paired-device
          (if-not missing-keypair?
@@ -38,8 +42,15 @@
              :accessibility-label :import-by-scan-qr
              :label               (i18n/label :t/import-by-scanning-encrypted-qr)
              :on-press            on-scan-qr}]))
-       (when (= (:type props) :keypair)
-         [{:icon                :i/edit
+       (when (= (:type drawer-props) :keypair)
+         [(when missing-keypair?
+            (case (:type keypair)
+              :seed {:icon                :i/seed
+                     :accessibility-label :import-seed-phrase
+                     :label               (i18n/label :t/import-by-entering-recovery-phrase)
+                     :on-press            #(on-import-seed-phrase keypair)}
+              nil))
+          {:icon                :i/edit
            :accessibility-label :rename-key-pair
            :label               (i18n/label :t/rename-key-pair)
            :on-press            on-rename-keypair}

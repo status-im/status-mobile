@@ -2,7 +2,9 @@
   (:require
     [cljs.test :refer-macros [deftest is testing]]
     matcher-combinators.test
-    [status-im.contexts.settings.wallet.events :as sut]))
+    [native-module.core :as native-module]
+    [status-im.contexts.settings.wallet.events :as sut]
+    [utils.security.core :as security]))
 
 (def mock-key-uid "key-1")
 (defn mock-db
@@ -95,3 +97,33 @@
       (let [effects (sut/success-keypair-qr-scan nil [connection-string keypairs-key-uids])
             fx      (:fx effects)]
         (is (some? fx))))))
+
+(deftest wallet-validate-seed-phrase-test
+  (let [cofx               {:db {}}
+        seed-phrase-masked (security/mask-data "seed phrase")
+        on-success         #(prn "success")
+        on-error           #(prn "error")
+        expected           {:fx [[:multiaccount/validate-mnemonic
+                                  [seed-phrase-masked on-success on-error]]]}]
+    (is (= expected
+           (sut/wallet-validate-seed-phrase
+            cofx
+            [seed-phrase-masked on-success on-error])))))
+
+(deftest make-seed-phrase-keypair-fully-operable-test
+  (let [cofx            {:db {}}
+        mnemonic        "seed phrase"
+        password        "password"
+        mnemonic-masked (security/mask-data mnemonic)
+        password-masked (security/mask-data password)
+        on-success      #(prn "success")
+        on-error        #(prn "error")
+        expected        {:fx [[:json-rpc/call
+                               [{:method     "accounts_makeSeedPhraseKeypairFullyOperable"
+                                 :params     [mnemonic (native-module/sha3 password)]
+                                 :on-success fn?
+                                 :on-error   fn?}]]]}]
+    (is (match? expected
+                (sut/make-seed-phrase-keypair-fully-operable
+                 cofx
+                 [mnemonic-masked password-masked on-success on-error])))))

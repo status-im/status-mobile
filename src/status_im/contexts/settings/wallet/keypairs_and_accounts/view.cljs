@@ -14,11 +14,12 @@
   (rf/dispatch [:navigate-back]))
 
 (defn on-options-press
-  [{:keys [theme]
-    :as   props} keypair]
+  [{:keys [drawer-props keypair]}]
   (rf/dispatch [:show-bottom-sheet
-                {:content (fn [] [actions/view props keypair])
-                 :theme   theme}]))
+                {:content (fn [] [actions/view
+                                  {:drawer-props drawer-props
+                                   :keypair      keypair}])
+                 :theme   (:theme drawer-props)}]))
 
 (defn options-drawer-props
   [{{:keys [name]} :keypair
@@ -48,15 +49,17 @@
         on-press         (rn/use-callback
                           (fn []
                             (on-options-press
-                             (options-drawer-props
-                              {:theme               theme
-                               :keypair             item
-                               :type                (if default-keypair? :default-keypair :keypair)
-                               :stored              :on-device
-                               :shortened-key       shortened-key
-                               :customization-color customization-color
-                               :profile-picture     profile-picture})
-                             item))
+                             {:keypair      item
+                              :drawer-props (options-drawer-props
+                                             {:theme               theme
+                                              :keypair             item
+                                              :type                (if default-keypair?
+                                                                     :default-keypair
+                                                                     :keypair)
+                                              :stored              :on-device
+                                              :shortened-key       shortened-key
+                                              :customization-color customization-color
+                                              :profile-picture     profile-picture})}))
                           [customization-color default-keypair? item
                            profile-picture shortened-key theme])]
     [quo/keypair
@@ -78,13 +81,13 @@
   (rf/dispatch [:show-bottom-sheet
                 {:theme   :dark
                  :content (fn [] [actions/view
-                                  (options-drawer-props
-                                   {:theme   :dark
-                                    :type    :keypair
-                                    :stored  :missing
-                                    :blur?   true
-                                    :keypair keypair-data})
-                                  keypair-data])}]))
+                                  {:keypair      keypair-data
+                                   :drawer-props (options-drawer-props
+                                                  {:theme   :dark
+                                                   :type    :keypair
+                                                   :stored  :missing
+                                                   :blur?   true
+                                                   :keypair keypair-data})}])}]))
 
 (defn view
   []
@@ -112,16 +115,16 @@
        :accessibility-label :keypairs-and-accounts-header
        :customization-color customization-color}]
      [rn/view {:style style/settings-keypairs-container}
-      (when (seq missing-keypairs)
-        [quo/missing-keypairs
-         {:blur?            true
-          :keypairs         missing-keypairs
-          :on-import-press  on-import-press
-          :container-style  style/missing-keypairs-container-style
-          :on-options-press on-missing-keypair-options-press}])
       [rn/flat-list
        {:data                    operable-keypairs
         :render-fn               keypair
+        :header                  (when (seq missing-keypairs)
+                                   [quo/missing-keypairs
+                                    {:blur?            true
+                                     :keypairs         missing-keypairs
+                                     :on-import-press  on-import-press
+                                     :container-style  style/missing-keypairs-container-style
+                                     :on-options-press on-missing-keypair-options-press}])
         :render-data             {:profile-picture     profile-picture
                                   :compressed-key      compressed-key
                                   :customization-color customization-color}
