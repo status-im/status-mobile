@@ -127,18 +127,16 @@
 
 
 (defn- fetch-routes
-  [{:keys [amount bounce-duration-ms token valid-input? locked-limits]}]
+  [{:keys [amount bounce-duration-ms token valid-input? ]}]
   (tap>
    {:in            `fetch-routes
     :amount        amount
-    :token         token
-    :locked-limits locked-limits})
+    :token         token})
   (if valid-input?
     (debounce/debounce-and-dispatch
      [:wallet/get-suggested-routes
       {:amount        amount
-       :updated-token token
-       :locked-limits locked-limits}]
+       :updated-token token }]
      bounce-duration-ms)
     (rf/dispatch [:wallet/clean-suggested-routes])))
 
@@ -160,7 +158,6 @@
         on-navigate-back                            on-navigate-back
         [input-state set-input-state]               (rn/use-state controlled-input/init-state)
         [just-toggled-mode? set-just-toggled-mode?] (rn/use-state false)
-        [locked-limits set-locked-limits]           (rn/use-state {})
         clear-input!                                #(set-input-state controlled-input/delete-all)
         handle-on-confirm                           (fn []
                                                       (rf/dispatch [:wallet/set-token-amount-to-send
@@ -177,6 +174,7 @@
         send-enabled-networks                       (rf/sub [:wallet/wallet-send-enabled-networks])
         enabled-from-chain-ids                      (rf/sub
                                                      [:wallet/wallet-send-enabled-from-chain-ids])
+        send-from-locked-amounts                    (rf/sub [:wallet/wallet-send-from-locked-amounts])
         {token-balance     :total-balance
          available-balance :available-balance
          :as               token-by-symbol}         (rf/sub [:wallet/token-by-symbol
@@ -288,8 +286,7 @@
                                                        {:amount             amount
                                                         :valid-input?       valid-input?
                                                         :bounce-duration-ms bounce-duration-ms
-                                                        :token              token
-                                                        :locked-limits      locked-limits}))]
+                                                        :token              token}))]
 
     (rn/use-mount
      (fn []
@@ -315,7 +312,7 @@
        (tap> {:in                   `use-effect
               :request-fetch-routes request-fetch-routes})
        (request-fetch-routes 0))
-     [locked-limits])
+     [send-from-locked-amounts])
     [rn/view
      {:style               style/screen
       :accessibility-label (str "container"
@@ -366,9 +363,8 @@
        :token-not-supported-in-receiver-networks? token-not-supported-in-receiver-networks?
        :lock-fetch-routes?                        just-toggled-mode?
        :current-screen-id                         current-screen-id
-       :request-fetch-routes                      request-fetch-routes
-       :set-locked-limits                         set-locked-limits}]
-     (tap> {:locked-limits locked-limits})
+       :request-fetch-routes                      request-fetch-routes}]
+     (tap> {:send-from-locked-amounts send-from-locked-amounts})
      (when (and (not loading-routes?)
                 sender-network-values
                 token-not-supported-in-receiver-networks?)
@@ -378,7 +374,13 @@
         {:loading-routes? loading-routes?
          :fees            fee-formatted
          :amount          amount-text}])
+     (tap> {:in `no-routes-found?
+            :no-routes-found no-routes-found?
+            :limit-insufficient limit-insufficient?
+            :not-empty-network-values (not-empty sender-network-values)})
+
      (when (and (or no-routes-found? limit-insufficient?) (not-empty sender-network-values))
+       
        [no-routes-found])
      [quo/bottom-actions
       {:actions          :one-action

@@ -112,8 +112,12 @@
               token}                                    (rf/sub [:wallet/wallet-send-token])
              currency                                   (rf/sub [:profile/currency])
              currency-symbol                            (rf/sub [:profile/currency-symbol])
+             send-from-locked-amounts                   (rf/sub [:wallet/wallet-send-from-locked-amounts])
+             existing-locked-amount (when send-from-locked-amounts
+                                      (get send-from-locked-amounts chain-id))
              network-name-str                           (string/capitalize (name network-name))
-             [input-state set-input-state]              (rn/use-state controlled-input/init-state)
+             [input-state set-input-state]              (rn/use-state (cond-> controlled-input/init-state
+                                                                        existing-locked-amount (controlled-input/set-input-value existing-locked-amount)))
              [crypto-currency? set-crypto-currency]     (rn/use-state true)
              conversion-rate                            (-> token
                                                             :market-values-per-currency
@@ -182,9 +186,10 @@
                                               :new-value                new-value})
                                      (number/remove-trailing-zeroes new-value))))))
             ;; :on-token-press  show-select-asset-sheet
-           }]
+            }]
           [quo/disclaimer
-           {:on-change #()}
+           {:on-change #(tap> {:checked %})
+            :checked? existing-locked-amount}
            (i18n/label :t/dont-auto-recalculate-network {:network network-name-str})]
           [quo/bottom-actions
            {:actions          :one-action
@@ -198,7 +203,9 @@
                                                                                crypto-decimals)))]
                                               (when on-update
                                                 (on-update chain-id limit-in-crypto)))
-                                            (rf/dispatch [:hide-bottom-sheet]))}}]
+                                            (rf/dispatch [:hide-bottom-sheet]))
+                               :disabled? (or (controlled-input/empty-value? input-state)
+                                              (controlled-input/input-error input-state))}}]
           [quo/numbered-keyboard
            {;; :container-style      (style/keyboard-container bottom)
             :left-action          :dot
@@ -313,7 +320,7 @@
 (defn view
   [{:keys [token theme input-value valid-input? request-fetch-routes
            lock-fetch-routes? on-press-to-network current-screen-id
-           token-not-supported-in-receiver-networks? set-locked-limits]}]
+           token-not-supported-in-receiver-networks?]}]
   (let [token-symbol (:symbol token)
         nav-current-screen-id (rf/sub [:view-id])
         active-screen? (= nav-current-screen-id current-screen-id)
@@ -367,13 +374,7 @@
                                                       {:chain-id     chain-id
                                                        :token-symbol token-symbol
                                                        :on-update    (fn [chain-id limit-in-crypto]
-                                                                       #_(tap> {:chain-id chain-id
-                                                                                :limit-in-crypto
-                                                                                limit-in-crypto})
-                                                                       (set-locked-limits
-                                                                        #(assoc %
-                                                                                chain-id
-                                                                                limit-in-crypto)))}))
+                                                                       (rf/dispatch [:wallet/lock-from-amount chain-id limit-in-crypto]))}))
         :receiver?                                 false
         :theme                                     theme
         :loading-routes?                           loading-routes?

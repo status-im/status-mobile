@@ -69,6 +69,7 @@
                                              :disabled-chain-ids disabled-from-chain-ids
                                              :receiver-networks receiver-networks
                                              :token-networks-ids token-networks-ids
+                                             :from-locked-amounts from-locked-amounts
                                              :tx-type tx-type
                                              :receiver? false})
                                            (send-utils/reset-loading-network-amounts-to-zero
@@ -338,7 +339,7 @@
                          (when (empty? receiver-network-values) :receiver-network-values)))})))
 
 (rf/reg-event-fx :wallet/get-suggested-routes
- (fn [{:keys [db now]} [{:keys [amount updated-token locked-limits]}]]
+ (fn [{:keys [db now]} [{:keys [amount updated-token ]}]]
    (let [wallet-address (get-in db [:wallet :current-viewing-account-address])
          token (or updated-token (get-in db [:wallet :ui :send :token]))
          transaction-type (get-in db [:wallet :ui :send :tx-type])
@@ -367,7 +368,7 @@
                                            (not (some #(= chain-id %)
                                                       receiver-networks)))
                                          network-chain-ids))
-         from-locked-amount (update-vals locked-limits to-hex)
+         from-locked-amount (update-vals from-locked-amounts to-hex)
          _ (tap> {:in                 `get-suggested-routes
                   :from-locked-amount from-locked-amount
                   :amount-in          amount-in})
