@@ -71,7 +71,7 @@
                                         :address address-without-prefix
                                         :customization-color address-color
                                         :chain-short-names chain-short-names}]))
-                       [address selected-networks address-label
+                       [address-without-prefix chain-short-names address-label
                         address-color])]
     [quo/overlay {:type :shell}
      [floating-button-page/view
