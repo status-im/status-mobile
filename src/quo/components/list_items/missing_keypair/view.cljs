@@ -11,8 +11,8 @@
     [schema.core :as schema]))
 
 (defn- internal-view
-  [{{:keys [accounts name]} :keypair
-    :keys                   [keypair blur? on-options-press]}]
+  [{{:keys [accounts name type]} :keypair
+    :keys                        [keypair blur? on-options-press]}]
   (let [theme                    (quo.theme/use-theme)
         on-keypair-options-press (rn/use-callback
                                   (fn [event]
@@ -24,7 +24,10 @@
       :accessibility-label :missing-keypair-item}
      [icon-avatar/icon-avatar
       {:size    :size-32
-       :icon    :i/seed
+       :icon    (case type
+                  :seed :i/seed
+                  :key  :i/password
+                  nil)
        :color   :neutral
        :blur?   true
        :border? true}]
