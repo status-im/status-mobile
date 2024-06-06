@@ -5,7 +5,6 @@
     [react-native.safe-area :as safe-area]
     [status-im.common.floating-button-page.view :as floating-button-page]
     [status-im.contexts.wallet.common.account-switcher.view :as account-switcher]
-    [status-im.contexts.wallet.common.utils.networks :as network-utils]
     [status-im.contexts.wallet.send.from.style :as style]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
@@ -23,22 +22,18 @@
   (rf/dispatch [:navigate-back]))
 
 (defn- render-fn
-  [item]
-  (let [network-details     (rf/sub [:wallet/network-details])
-        network-short-names (map network-utils/network->short-name
-                                 (:network-preferences-names item))
-        prefix              (when (< (count network-short-names) 3)
-                              (network-utils/short-names->network-preference-prefix network-short-names))
-        address             (str prefix (:address item))]
+  [item network-details]
+  (let [transformed-address   (rf/sub [:wallet/account-address (:address item) (:network-preferences-names item)])]
     [quo/account-item
-     {:on-press      #(on-press address network-details)
+     {:on-press      #(on-press transformed-address network-details)
       :account-props (assoc item
-                            :address       address
+                            :address       transformed-address
                             :full-address? true)}]))
 
 (defn view
   []
-  (let [accounts (rf/sub [:wallet/accounts-with-current-asset])]
+  (let [accounts (rf/sub [:wallet/accounts-with-current-asset])
+        network-details     (rf/sub [:wallet/network-details])]
     [floating-button-page/view
      {:footer-container-padding 0
       :header                   [account-switcher/view
@@ -53,5 +48,5 @@
       {:style                             style/accounts-list
        :content-container-style           style/accounts-list-container
        :data                              accounts
-       :render-fn                         render-fn
+       :render-fn                         #(render-fn % network-details)
        :shows-horizontal-scroll-indicator false}]]))

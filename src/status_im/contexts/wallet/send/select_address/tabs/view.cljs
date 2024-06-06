@@ -4,7 +4,6 @@
     [quo.theme :as quo.theme]
     [react-native.core :as rn]
     [status-im.common.resources :as resources]
-    [status-im.contexts.wallet.common.utils.networks :as network-utils]
     [status-im.contexts.wallet.send.select-address.tabs.style :as style]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
@@ -20,19 +19,14 @@
         :container-style style/empty-container-style}]
       (into [rn/view {:style style/my-accounts-container}]
             (map (fn [{:keys [color address] :as account}]
-                   (let [network-short-names (map network-utils/network->short-name
-                                                  (:network-preferences-names account))
-                         prefix              (when (< (count network-short-names) 3)
-                                               (network-utils/short-names->network-preference-prefix
-                                                network-short-names))
-                         address             (str prefix address)]
+                   (let [transformed-address (rf/sub [:wallet/account-address address (:network-preferences-names account)])]
                      [quo/account-item
                       {:account-props (assoc account
                                              :customization-color color
-                                             :address             address
+                                             :address             transformed-address
                                              :full-address?       true)
                        :on-press      #(rf/dispatch [:wallet/select-send-address
-                                                     {:address   address
+                                                     {:address   transformed-address
                                                       :recipient account
                                                       :stack-id  :screen/wallet.select-address}])}])))
             other-accounts))))
