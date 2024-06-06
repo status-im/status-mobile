@@ -128,6 +128,13 @@
    :dispatch [:navigate-to-within-stack
               [:screen/onboarding.create-profile :screen/onboarding.new-to-status]]})
 
+(rf/reg-event-fx :onboarding/navigate-to-sign-in-by-syncing
+ (fn [{:keys [db]}]
+   ;; Restart the flow
+   {:db       (dissoc db :onboarding/profile)
+    :dispatch [:navigate-to-within-stack
+               [:screen/onboarding.sign-in-intro :screen/onboarding.sync-or-recover-profile]]}))
+
 (rf/reg-event-fx :onboarding/set-auth-method
  (fn [{:keys [db]} [auth-method]]
    {:db (assoc db :auth-method auth-method)}))
