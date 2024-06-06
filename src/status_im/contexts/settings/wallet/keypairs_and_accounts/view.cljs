@@ -81,13 +81,13 @@
   (rf/dispatch [:show-bottom-sheet
                 {:theme   :dark
                  :content (fn [] [actions/view
-                                  {:keypair          keypair-data
-                                   :drawer-props     (options-drawer-props
-                                                      {:theme   :dark
-                                                       :type    :keypair
-                                                       :stored  :missing
-                                                       :blur?   true
-                                                       :keypair keypair-data})}])}]))
+                                  {:keypair      keypair-data
+                                   :drawer-props (options-drawer-props
+                                                  {:theme   :dark
+                                                   :type    :keypair
+                                                   :stored  :missing
+                                                   :blur?   true
+                                                   :keypair keypair-data})}])}]))
 
 (defn view
   []
