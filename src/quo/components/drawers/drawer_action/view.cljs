@@ -85,6 +85,8 @@
 
      (when (and (= action :input) (= state :selected))
        [input/input
-        (assoc input-props :blur? blur?)])]))
+        (assoc input-props
+               :blur?               blur?
+               :accessibility-label :input)])]))
 
 (def view (schema/instrument #'view-internal component-schema/?schema))
