@@ -33,7 +33,18 @@
    (= expected (utils/network-preference-prefix->network-names short-names))
    (seq [:mainnet])                     "eth"
    (seq [:mainnet :optimism])           "eth:oeth"
-   (seq [:mainnet :optimism :arbitrum]) "eth:oeth:arb1"))
+   (seq [:mainnet :optimism :arbitrum]) "eth:oeth:arb1"
+   (seq [:mainnet :arbitrum])           "eth:sol:arb1"))
+
+(deftest network-names->network-preference-prefix-test
+  (are [expected network-names]
+   (= expected (utils/network-names->network-preference-prefix network-names))
+   "eth:"           [:mainnet]
+   "eth:oeth:"      [:mainnet :optimism]
+   "eth:oeth:arb1:" [:mainnet :optimism :arbitrum]
+   "eth:arb1:"      [:mainnet :polygon :arbitrum]
+   ""               []
+   ""               nil))
 
 (deftest network-ids->formatted-text-test
   (testing "Empty network-ids should return an empty string"

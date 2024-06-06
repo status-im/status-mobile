@@ -1,4 +1,4 @@
-(ns status-im.contexts.settings.wallet.saved-addresses.sheets.share-address.style)
+(ns status-im.contexts.settings.wallet.saved-addresses.share-address.style)
 
 (def screen-container
   {:flex 1})

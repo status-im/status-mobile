@@ -35,7 +35,7 @@
      :blur?       true
      :action      :arrow}
     {:title       (i18n/label :t/wallet)
-     :on-press    #(rf/dispatch [:navigate-to-within-stack [:screen/settings.wallet :screen/settings]])
+     :on-press    #(rf/dispatch [:navigate-to-within-stack [:screen/settings.wallet :settings]])
      :image-props :i/wallet
      :image       :icon
      :blur?       true

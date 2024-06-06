@@ -7,9 +7,10 @@
     [react-native.core :as rn]
     [react-native.safe-area :as safe-area]
     [status-im.common.floating-button-page.view :as floating-button-page]
-    [status-im.common.not-implemented :as not-implemented]
-    [status-im.constants :as constants]
     [status-im.contexts.settings.wallet.saved-addresses.save-address.style :as style]
+    [status-im.contexts.wallet.common.utils :as utils]
+    [status-im.contexts.wallet.common.utils.networks :as network-utils]
+    [status-im.contexts.wallet.sheets.network-preferences.view :as network-preferences]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
@@ -17,29 +18,61 @@
   []
   (rf/dispatch [:navigate-back]))
 
-(defn- extract-address
-  [address]
-  (re-find constants/regx-address-contains address))
+(defn- network-preferences-sheet
+  [{:keys [address color selected-networks set-selected-networks]}]
+  (fn []
+    [network-preferences/view
+     {:title             (i18n/label :t/add-network-preferences)
+      :description       (i18n/label :t/saved-address-network-preference-selection-description)
+      :button-label      (i18n/label :t/add-preferences)
+      :blur?             true
+      :selected-networks (set selected-networks)
+      :account           {:address address
+                          :color   color}
+      :on-save           (fn [chain-ids]
+                           (set-selected-networks (map network-utils/id->network chain-ids))
+                           (rf/dispatch [:hide-bottom-sheet]))}]))
 
 (defn view
   []
-  (let [{:keys [address]}                 (rf/sub [:wallet/saved-address])
+  (let [{:keys [address]} (rf/sub [:wallet/saved-address])
+        [network-prefixes address-without-prefix] (utils/split-prefix-and-address address)
         [address-label set-address-label] (rn/use-state "")
         [address-color set-address-color] (rn/use-state (rand-nth colors/account-colors))
-        placeholder                       (i18n/label :t/address-name)
-        on-press-save                     (rn/use-callback
-                                           (fn []
-                                             (let [address-without-prefix (extract-address address)]
-                                               (rf/dispatch [:wallet/save-address
-                                                             {:on-success
-                                                              [:wallet/add-saved-address-success
-                                                               (i18n/label :t/address-saved)]
-                                                              :on-error
-                                                              [:wallet/add-saved-address-failed]
-                                                              :name address-label
-                                                              :address address-without-prefix
-                                                              :customization-color address-color}])))
-                                           [address address-label address-color])]
+        [selected-networks set-selected-networks]
+        (rn/use-state (network-utils/network-preference-prefix->network-names network-prefixes))
+        chain-short-names (rn/use-memo
+                           #(network-utils/network-names->network-preference-prefix
+                             selected-networks)
+                           [selected-networks])
+        placeholder (i18n/label :t/address-name)
+        open-network-preferences (rn/use-callback
+                                  (fn []
+                                    (rf/dispatch
+                                     [:show-bottom-sheet
+                                      {:theme   :dark
+                                       :shell?  true
+                                       :content (network-preferences-sheet
+                                                 {:address address-without-prefix
+                                                  :color address-color
+                                                  :selected-networks selected-networks
+                                                  :set-selected-networks
+                                                  set-selected-networks})}]))
+                                  [address selected-networks address-color])
+        on-press-save (rn/use-callback
+                       (fn []
+                         (rf/dispatch [:wallet/save-address
+                                       {:on-success
+                                        [:wallet/add-saved-address-success
+                                         (i18n/label :t/address-saved)]
+                                        :on-error
+                                        [:wallet/add-saved-address-failed]
+                                        :name address-label
+                                        :address address-without-prefix
+                                        :customization-color address-color
+                                        :chain-short-names chain-short-names}]))
+                       [address-without-prefix chain-short-names address-label
+                        address-color])]
     [quo/overlay {:type :shell}
      [floating-button-page/view
       {:footer-container-padding 0
@@ -106,8 +139,8 @@
                           (fn []
                             [quo/address-text
                              {:full-address? true
-                              :address       address
+                              :address       (str chain-short-names address-without-prefix)
                               :format        :long}])
-                          [address])
-        :on-press        not-implemented/alert
+                          [selected-networks address])
+        :on-press        open-network-preferences
         :container-style style/data-item}]]]))
