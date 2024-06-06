@@ -9,7 +9,7 @@
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
-(defn- on-press
+(defn- on-account-press
   [address network-details]
   (rf/dispatch [:wallet/select-from-account
                 {:address         address
@@ -25,7 +25,7 @@
   [item network-details]
   (let [transformed-address   (rf/sub [:wallet/account-address (:address item) (:network-preferences-names item)])]
     [quo/account-item
-     {:on-press      #(on-press transformed-address network-details)
+     {:on-press      #(on-account-press transformed-address network-details)
       :account-props (assoc item
                             :address       transformed-address
                             :full-address? true)}]))
