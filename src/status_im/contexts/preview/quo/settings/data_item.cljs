@@ -6,15 +6,42 @@
     [status-im.common.resources :as resources]
     [status-im.contexts.preview.quo.preview :as preview]))
 
+(def communities-list
+  [{:source (resources/get-mock-image :coinbase)}
+   {:source (resources/get-mock-image :decentraland)}
+   {:source (resources/get-mock-image :rarible)}])
+
+(def networks-list
+  [{:source (quo.resources/get-network :ethereum)}
+   {:source (quo.resources/get-network :optimism)}
+   {:source (quo.resources/get-network :arbitrum)}])
+
 (def descriptor
   [{:key :blur? :type :boolean}
    {:key :card? :type :boolean}
-   {:key :icon-right? :type :boolean}
    {:type    :select
-    :key     :label
-    :options [{:key :none}
-              {:key :graph}
-              {:key :preview}]}
+    :key     :right-icon
+    :options [{:key :i/chevron-right}
+              {:key :i/copy}
+              {:key   nil
+               :value "None"}]}
+   {:type    :select
+    :key     :right-content
+    :options [{:key   nil
+               :value "None"}
+              {:key   {:type :communities
+                       :data communities-list}
+               :value "Communities"}
+              {:key   {:type :network
+                       :data networks-list}
+               :value "Networks"}
+              {:key   {:type :accounts
+                       :data [{:emoji "🔥" :customization-color :yellow}]}
+               :value "Account (size-24)"}
+              {:key   {:type :accounts
+                       :data [{:emoji "🔥" :customization-color :yellow}]
+                       :size :size-32}
+               :value "Account (size-32)"}]}
    {:type    :select
     :key     :subtitle-type
     :options [{:key :default}
@@ -30,29 +57,22 @@
     :options [{:key :default}
               {:key :small}]}])
 
-(def communities-list
-  [{:source (resources/get-mock-image :coinbase)}
-   {:source (resources/get-mock-image :decentraland)}
-   {:source (resources/get-mock-image :rarible)}])
-
 (defn view
   []
   (let [state (reagent/atom {:on-press            #(js/alert (str "pressed"))
                              :blur?               false
                              :subtitle-type       :account
-                             :icon-right?         false
                              :card?               true
-                             :label               :none
                              :status              :default
                              :size                :default
                              :title               "Label"
                              :subtitle            "Subtitle"
                              :icon                :i/placeholder
                              :right-icon          :i/chevron-right
+                             :right-content       nil
                              :emoji               "🎮"
                              :customization-color :yellow
-                             :network-image       (quo.resources/get-network :ethereum)
-                             :communities-list    communities-list})]
+                             :network-image       (quo.resources/get-network :ethereum)})]
     (fn []
       [preview/preview-container
        {:state                 state

@@ -49,7 +49,6 @@
            :custom-subtitle (fn []
                               [quo/text {:weight :medium}
                                formatted-path])
-           :icon-right?     true
            :right-icon      :i/copy
            :on-press        (fn []
                               (rf/dispatch [:toasts/upsert
