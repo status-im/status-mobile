@@ -93,7 +93,8 @@
        {:selected-tab :tab/contacts
         :tab->content (empty-state-content theme)}]
       [rn/section-list
-       {:ref                               set-scroll-ref
+       {:ref                               (when (not-empty items)
+                                             set-scroll-ref)
         :key-fn                            :public-key
         :get-item-layout                   get-item-layout
         :content-inset-adjustment-behavior :never
