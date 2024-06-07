@@ -23,7 +23,8 @@
 
 (defn- render-fn
   [item network-details]
-  (let [transformed-address   (rf/sub [:wallet/account-address (:address item) (:network-preferences-names item)])]
+  (let [transformed-address (rf/sub [:wallet/account-address (:address item)
+                                     (:network-preferences-names item)])]
     [quo/account-item
      {:on-press      #(on-account-press transformed-address network-details)
       :account-props (assoc item
@@ -32,8 +33,8 @@
 
 (defn view
   []
-  (let [accounts (rf/sub [:wallet/accounts-with-current-asset])
-        network-details     (rf/sub [:wallet/network-details])]
+  (let [accounts        (rf/sub [:wallet/accounts-with-current-asset])
+        network-details (rf/sub [:wallet/network-details])]
     [floating-button-page/view
      {:footer-container-padding 0
       :header                   [account-switcher/view

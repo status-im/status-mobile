@@ -95,9 +95,9 @@
 (re-frame/reg-sub
  :wallet/account-address
  (fn [_ [_ address network-preferences]]
-   (let [short-names (map network-utils/network->short-name network-preferences)
+   (let [short-names         (map network-utils/network->short-name network-preferences)
          prefix              (when (<= (count short-names) max-network-prefixes)
                                (network-utils/short-names->network-preference-prefix
                                 short-names))
-         transformed-address             (str prefix address)]
+         transformed-address (str prefix address)]
      transformed-address)))

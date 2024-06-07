@@ -20,7 +20,8 @@
       [rn/view {:style style/my-accounts-container}
        (for [{:keys [color address] :as account} other-accounts]
          ^{:key (str address)}
-         (let [transformed-address (rf/sub [:wallet/account-address address (:network-preferences-names account)])]
+         (let [transformed-address (rf/sub [:wallet/account-address address
+                                            (:network-preferences-names account)])]
            [quo/account-item
             {:account-props (assoc account
                                    :customization-color color

@@ -85,9 +85,11 @@
 
 (h/deftest-sub :wallet/account-address
   [sub-name]
-  (testing "returns the address with prefixes when an address and less than 3 network preferences are passed"
-    (is 
+  (testing
+    "returns the address with prefixes when an address and less than 3 network preferences are passed"
+    (is
      (match? "eth:0x01" (rf/sub [sub-name "0x01" [:ethereum]]))))
-  (testing "returns the address without the prefixes when an address and equal or more than 3 network preferences are passed"
+  (testing
+    "returns the address without the prefixes when an address and equal or more than 3 network preferences are passed"
     (is
      (match? "0x01" (rf/sub [sub-name "0x01" [:ethereum :optimism :arbitrum]])))))
