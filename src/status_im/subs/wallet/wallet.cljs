@@ -49,7 +49,8 @@
  (fn [tokens-loading]
    (->> tokens-loading
         vals
-        (some true?))))
+        (some true?)
+        boolean)))
 
 (rf/reg-sub
  :wallet/current-viewing-account-tokens-loading?
