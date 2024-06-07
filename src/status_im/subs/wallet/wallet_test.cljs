@@ -609,46 +609,46 @@
         (rf/sub [sub-name])))))
 
 (def chat-account
-  {:path                "m/43'/60'/1581'/0'/0"
-   :emoji               ""
-   :key-uid             "abc"
-   :address             "address-1"
-   :color-id            ""
-   :wallet              false
-   :name                "My Profile"
-   :type                "generated"
-   :chat                true
-   :customization-color :blue
-   :hidden              false
-   :removed             false})
+  {:path     "m/43'/60'/1581'/0'/0"
+   :emoji    ""
+   :key-uid  "abc"
+   :address  "address-1"
+   :color-id ""
+   :wallet   false
+   :name     "My Profile"
+   :type     "generated"
+   :chat     true
+   :color    :blue
+   :hidden   false
+   :removed  false})
 
 (def operable-wallet-account
-  {:path                "m/44'/60'/0'/0/0"
-   :emoji               "🤡"
-   :key-uid             "abc"
-   :address             "address-2"
-   :wallet              true
-   :name                "My Account"
-   :type                "generated"
-   :chat                false
-   :customization-color :primary
-   :hidden              false
-   :operable            :fully
-   :removed             false})
+  {:path     "m/44'/60'/0'/0/0"
+   :emoji    "🤡"
+   :key-uid  "abc"
+   :address  "address-2"
+   :wallet   true
+   :name     "My Account"
+   :type     "generated"
+   :chat     false
+   :color    :primary
+   :hidden   false
+   :operable :fully
+   :removed  false})
 
 (def inoperable-wallet-account
-  {:path                "m/44'/60'/0'/0/0"
-   :emoji               "🧠"
-   :key-uid             "def"
-   :address             "address-3"
-   :wallet              true
-   :name                "My Other Account"
-   :type                "generated"
-   :chat                false
-   :customization-color :primary
-   :hidden              false
-   :operable            :no
-   :removed             false})
+  {:path     "m/44'/60'/0'/0/0"
+   :emoji    "🧠"
+   :key-uid  "def"
+   :address  "address-3"
+   :wallet   true
+   :name     "My Other Account"
+   :type     "generated"
+   :chat     false
+   :color    :primary
+   :hidden   false
+   :operable :no
+   :removed  false})
 
 (def default-keypair-accounts
   {:key-uid  "abc"
@@ -686,14 +686,13 @@
       {:missing  [{:name     (:name seed-phrase-keypair-accounts)
                    :key-uid  (:key-uid seed-phrase-keypair-accounts)
                    :type     (keyword (:type seed-phrase-keypair-accounts))
-                   :accounts [{:customization-color (:customization-color inoperable-wallet-account)
+                   :accounts [{:customization-color (:color inoperable-wallet-account)
                                :emoji               (:emoji inoperable-wallet-account)
                                :type                :default}]}]
        :operable [{:name     (:name default-keypair-accounts)
                    :key-uid  (:key-uid default-keypair-accounts)
                    :type     (keyword (:type default-keypair-accounts))
-                   :accounts [{:account-props {:customization-color (:customization-color
-                                                                     operable-wallet-account)
+                   :accounts [{:account-props {:customization-color (:color operable-wallet-account)
                                                :size                32
                                                :emoji               (:emoji operable-wallet-account)
                                                :type                :default
@@ -717,7 +716,7 @@
              [:wallet :accounts]
              {(:address operable-wallet-account) operable-wallet-account}))))
 
-    (let [{:keys [customization-color
+    (let [{:keys [color
                   name
                   address
                   emoji]} operable-wallet-account
@@ -730,7 +729,7 @@
                 :operable [{:name     (:name default-keypair-accounts)
                             :key-uid  (:key-uid default-keypair-accounts)
                             :type     (keyword (:type default-keypair-accounts))
-                            :accounts [{:account-props {:customization-color customization-color
+                            :accounts [{:account-props {:customization-color color
                                                         :size                size-option
                                                         :emoji               emoji
                                                         :type                :default
@@ -763,8 +762,7 @@
        :operable [{:name     (:name default-keypair-accounts)
                    :key-uid  (:key-uid default-keypair-accounts)
                    :type     (keyword (:type default-keypair-accounts))
-                   :accounts [{:account-props {:customization-color (:customization-color
-                                                                     operable-wallet-account)
+                   :accounts [{:account-props {:customization-color (:color operable-wallet-account)
                                                :size                32
                                                :emoji               (:emoji operable-wallet-account)
                                                :type                :default

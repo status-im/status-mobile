@@ -105,6 +105,12 @@
       "waku.backedup.settings"
       {:fx [[:dispatch [:profile/update-setting-from-backup (transforms/js->clj event-js)]]]}
 
+      "waku.backedup.keypair"
+      {:fx [[:dispatch [:wallet/process-keypair-from-backup (transforms/js->clj event-js)]]]}
+
+      "waku.backedup.watch-only-account"
+      {:fx [[:dispatch [:wallet/process-watch-only-account-from-backup (transforms/js->clj event-js)]]]}
+
       "mediaserver.started"
       {:db (assoc db :mediaserver/port (oops/oget event-js :port))}
 

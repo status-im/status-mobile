@@ -3,10 +3,55 @@
     [cljs.test :refer-macros [deftest is testing]]
     matcher-combinators.test
     [status-im.constants :as constants]
-    [status-im.contexts.wallet.collectible.events :as collectible-events]
     [status-im.contexts.wallet.events :as events]))
 
-(def address "0x2f88d65f3cb52605a54a833ae118fb1363acccd2")
+(def address "0x2ee6138eb9344a8b76eca3cf7554a06c82a1e2d8")
+
+(def raw-account
+  {:path "m/44'/60'/0'/0/0"
+   :emoji "🛃"
+   :key-uid "0xf9b4dc40911638052ef9cbed6e8ac689198d8f11d2235c5d62e2457c1503dc4f"
+   :address address
+   :wallet true
+   :name "Ethereum account"
+   :createdAt 1716548742000
+   :type "generated"
+   :chat false
+   :prodPreferredChainIds "1:42161"
+   :hidden false
+   :position 0
+   :clock 1712315009484
+   :testPreferredChainIds "11155111:421614"
+   :colorId "purple"
+   :operable "fully"
+   :mixedcase-address "0x2Ee6138eb9344a8b76Eca3cf7554A06C82A1e2D8"
+   :public-key
+   "0x04ee7c47e4b68cc05dcd3377cbd5cde6be3c89fcf20a981e55e0285ed63a50f51f8b423465eee134c51bb0255e6041e9e5b006054b0fa72a7c76942a5a1a3f4e7e"
+   :removed false})
+
+(def account
+  {:path "m/44'/60'/0'/0/0"
+   :emoji "🛃"
+   :key-uid "0xf9b4dc40911638052ef9cbed6e8ac689198d8f11d2235c5d62e2457c1503dc4f"
+   :address address
+   :color :purple
+   :wallet true
+   :default-account? true
+   :name "Ethereum account"
+   :type :generated
+   :chat false
+   :test-preferred-chain-ids #{11155111 421614}
+   :watch-only? false
+   :hidden false
+   :prod-preferred-chain-ids #{1 42161}
+   :position 0
+   :clock 1712315009484
+   :created-at 1716548742000
+   :operable :fully
+   :mixedcase-address "0x2Ee6138eb9344a8b76Eca3cf7554A06C82A1e2D8"
+   :public-key
+   "0x04ee7c47e4b68cc05dcd3377cbd5cde6be3c89fcf20a981e55e0285ed63a50f51f8b423465eee134c51bb0255e6041e9e5b006054b0fa72a7c76942a5a1a3f4e7e"
+   :removed false})
 
 (deftest scan-address-success-test
   (let [db {}]
@@ -24,57 +69,6 @@
             effects     (events/clean-scanned-address {:db db})
             result-db   (:db effects)]
         (is (match? result-db expected-db))))))
-
-(deftest store-collectibles-test
-  (testing "flush-collectibles"
-    (let [collectible-1 {:collectible-data {:image-url "https://..." :animation-url "https://..."}
-                         :ownership        [{:address "0x1"
-                                             :balance "1"}]}
-          collectible-2 {:collectible-data {:image-url "" :animation-url "https://..."}
-                         :ownership        [{:address "0x1"
-                                             :balance "1"}]}
-          collectible-3 {:collectible-data {:image-url "" :animation-url nil}
-                         :ownership        [{:address "0x2"
-                                             :balance "1"}]}
-          db            {:wallet {:ui       {:collectibles {:pending-requests 0
-                                                            :fetched          {"0x1" [collectible-1
-                                                                                      collectible-2]
-                                                                               "0x2" [collectible-3]}}}
-                                  :accounts {"0x1" {}
-                                             "0x3" {}}}}
-          expected-db   {:wallet {:ui       {:collectibles {}}
-                                  :accounts {"0x1" {:collectibles (list collectible-1 collectible-2)}
-                                             "0x2" {:collectibles (list collectible-3)}
-                                             "0x3" {}}}}
-          result-db     (:db (collectible-events/flush-collectibles {:db db}))]
-
-      (is (match? result-db expected-db)))))
-
-(deftest clear-stored-collectibles-test
-  (let [db {:wallet {:accounts {"0x1" {:collectibles [{:id 1} {:id 2}]}
-                                "0x2" {"some other stuff" "with any value"
-                                       :collectibles      [{:id 3}]}
-                                "0x3" {}}}}]
-    (testing "clear-stored-collectibles"
-      (let [expected-db {:wallet {:accounts {"0x1" {}
-                                             "0x2" {"some other stuff" "with any value"}
-                                             "0x3" {}}}}
-            effects     (collectible-events/clear-stored-collectibles {:db db})
-            result-db   (:db effects)]
-
-        (is (match? result-db expected-db))))))
-
-(deftest store-last-collectible-details-test
-  (testing "store-last-collectible-details"
-    (let [db               {:wallet {}}
-          last-collectible {:description "Pandaria"
-                            :image-url   "https://..."}
-          expected-db      {:wallet {:last-collectible-details {:description "Pandaria"
-                                                                :image-url   "https://..."}}}
-          effects          (collectible-events/store-last-collectible-details {:db db}
-                                                                              [last-collectible])
-          result-db        (:db effects)]
-      (is (match? result-db expected-db)))))
 
 (deftest reset-selected-networks-test
   (testing "reset-selected-networks"
@@ -122,3 +116,51 @@
           effects     (events/update-selected-networks {:db db} props)
           result-fx   (:fx effects)]
       (is (match? result-fx expected-fx)))))
+
+(deftest get-wallet-token-for-all-accounts-test
+  (testing "get wallet token for all accounts"
+    (let [address-1   "0x1"
+          address-2   "0x2"
+          cofx        {:db {:wallet {:accounts {address-1 {:address address-1}
+                                                address-2 {:address address-2}}}}}
+          effects     (events/get-wallet-token-for-all-accounts cofx)
+          result-fx   (:fx effects)
+          expected-fx [[:dispatch [:wallet/get-wallet-token-for-account address-1]]
+                       [:dispatch [:wallet/get-wallet-token-for-account address-2]]]]
+      (is (match? expected-fx result-fx)))))
+
+(deftest get-wallet-token-for-account-test
+  (testing "get wallet token for account"
+    (let [cofx             {:db {}}
+          effects          (events/get-wallet-token-for-account cofx [address])
+          expected-effects {:db {:wallet {:ui {:tokens-loading {address true}}}}
+                            :fx [[:json-rpc/call
+                                  [{:method     "wallet_getWalletToken"
+                                    :params     [[address]]
+                                    :on-success [:wallet/store-wallet-token address]
+                                    :on-error   [:wallet/get-wallet-token-for-account-failed
+                                                 address]}]]]}]
+      (is (match? expected-effects effects)))))
+
+(deftest check-recent-history-for-all-accounts-test
+  (testing "check recent history for all accounts"
+    (let [address-1   "0x1"
+          address-2   "0x2"
+          cofx        {:db {:wallet {:accounts {address-1 {:address address-1}
+                                                address-2 {:address address-2}}}}}
+          effects     (events/check-recent-history-for-all-accounts cofx)
+          result-fx   (:fx effects)
+          expected-fx [[:dispatch [:wallet/check-recent-history-for-account address-1]]
+                       [:dispatch [:wallet/check-recent-history-for-account address-2]]]]
+      (is (match? expected-fx result-fx)))))
+
+(deftest process-account-from-signal-test
+  (testing "process account from signal"
+    (let [cofx             {:db {:wallet {:accounts {}}}}
+          effects          (events/process-account-from-signal cofx [raw-account])
+          expected-effects {:db {:wallet {:accounts {address account}}}
+                            :fx [[:dispatch [:wallet/get-wallet-token-for-account address]]
+                                 [:dispatch
+                                  [:wallet/request-new-collectibles-for-account-from-signal address]]
+                                 [:dispatch [:wallet/check-recent-history-for-account address]]]}]
+      (is (match? expected-effects effects)))))

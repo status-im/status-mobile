@@ -1,6 +1,5 @@
 (ns status-im.contexts.wallet.data-store
   (:require
-    [camel-snake-kebab.core :as csk]
     [camel-snake-kebab.extras :as cske]
     [clojure.set :as set]
     [clojure.string :as string]
@@ -22,7 +21,9 @@
 
 (defn add-keys-to-account
   [account]
-  (assoc account :watch-only? (= (:type account) :watch)))
+  (-> account
+      (assoc :watch-only? (= (:type account) :watch))
+      (assoc :default-account? (:wallet account))))
 
 (defn- sanitize-emoji
   "As Desktop uses Twemoji, the emoji received can be an img tag
@@ -44,9 +45,11 @@
       (update :test-preferred-chain-ids chain-ids-string->set)
       (update :type keyword)
       (update :operable keyword)
-      (update :color #(if (seq %) (keyword %) constants/account-default-customization-color))
+      (update :color
+              #(if (and (not (keyword? %)) (string/blank? %))
+                 constants/account-default-customization-color
+                 (keyword %)))
       (update :emoji sanitize-emoji)
-      (assoc :default-account? (:wallet account))
       add-keys-to-account))
 
 (defn rpc->accounts
@@ -107,36 +110,33 @@
         :nativeCurrencySymbol   :native-currency-symbol
         :nativeCurrencyName     :native-currency-symbol})))
 
-(defn sort-keypairs
-  [keypairs]
-  (sort-by #(if (some (fn [account]
-                        (string/starts-with? (:path account) constants/path-eip1581))
-                      (:accounts %))
-              0
-              1)
-           keypairs))
+(defn get-keypair-lowest-operability
+  [{:keys [accounts]}]
+  (cond
+    (some #(= (:operable %) :no) accounts)
+    :no
 
-(defn sort-and-rename-keypairs
-  [keypairs]
-  (let [sorted-keypairs (sort-keypairs keypairs)]
-    (map (fn [item]
-           (update item
-                   :accounts
-                   (fn [accounts]
-                     (map
-                      (fn [{:keys [colorId] :as account}]
-                        (assoc account
-                               :customization-color
-                               (if (seq colorId)
-                                 (keyword colorId)
-                                 :blue)))
-                      accounts))))
-         sorted-keypairs)))
+    (some #(= (:operable %) :partially) accounts)
+    :partially
 
-(defn parse-keypairs
+    :else
+    :fully))
+
+(defn- add-keys-to-keypair
+  [keypair]
+  (assoc keypair :lowest-operability (get-keypair-lowest-operability keypair)))
+
+(defn rpc->keypair
+  [keypair]
+  (-> keypair
+      (update :type keyword)
+      (update :accounts #(map rpc->account %))
+      add-keys-to-keypair))
+
+(defn rpc->keypairs
   [keypairs]
-  (let [renamed-data (sort-and-rename-keypairs keypairs)]
-    (cske/transform-keys csk/->kebab-case-keyword renamed-data)))
+  (->> (map rpc->keypair keypairs)
+       (sort-by #(if (= (:type %) :profile) 0 1))))
 
 (defn- add-keys-to-saved-address
   [saved-address]
