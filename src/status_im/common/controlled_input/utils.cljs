@@ -5,7 +5,8 @@
 (def init-state
   {:value       ""
    :error?      false
-   :upper-limit nil})
+   :upper-limit nil
+   :lower-limit nil})
 
 (defn input-value
   [state]
@@ -23,9 +24,13 @@
   [state error?]
   (assoc state :error? error?))
 
-(defn- upper-limit
+(defn upper-limit
   [state]
   (:upper-limit state))
+
+(defn lower-limit
+  [state]
+  (:lower-limit state))
 
 (defn upper-limit-exceeded?
   [state]
@@ -33,9 +38,17 @@
    (upper-limit state)
    (> (numeric-value state) (upper-limit state))))
 
+(defn lower-limit-exceeded?
+  [state]
+  (and
+   (lower-limit state)
+   (< (numeric-value state) (lower-limit state))))
+
 (defn- recheck-errorness
   [state]
-  (set-input-error state (upper-limit-exceeded? state)))
+  (set-input-error state
+                   (or (upper-limit-exceeded? state)
+                       (lower-limit-exceeded? state))))
 
 (defn set-input-value
   [state value]
@@ -43,11 +56,32 @@
       (assoc :value value)
       recheck-errorness))
 
+(defn set-numeric-value
+  [state value]
+  (set-input-value state (str value)))
+
 (defn set-upper-limit
   [state limit]
+  (when limit
+    (-> state
+        (assoc :upper-limit limit)
+        recheck-errorness)))
+
+(defn set-lower-limit
+  [state limit]
   (-> state
-      (assoc :upper-limit limit)
+      (assoc :lower-limit limit)
       recheck-errorness))
+
+(defn increase
+  [state]
+  (let [new-val (inc (numeric-value state))]
+    (set-input-value state (str new-val))))
+
+(defn decrease
+  [state]
+  (let [new-val (dec (numeric-value state))]
+    (set-input-value state (str new-val))))
 
 (def ^:private not-digits-or-dot-pattern
   #"[^0-9+\.]")

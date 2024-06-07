@@ -114,7 +114,17 @@
   [prefix]
   (as-> prefix $
     (string/split $ ":")
-    (map short-name->network $)))
+    (map short-name->network $)
+    (remove nil? $)))
+
+(defn network-names->network-preference-prefix
+  [network-names]
+  (if (empty? network-names)
+    ""
+    (->> network-names
+         (map network->short-name)
+         (remove nil?)
+         short-names->network-preference-prefix)))
 
 (defn network-ids->formatted-text
   [network-ids]
