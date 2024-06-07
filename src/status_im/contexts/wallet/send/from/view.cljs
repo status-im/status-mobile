@@ -22,11 +22,11 @@
   (rf/dispatch [:navigate-back]))
 
 (defn- render-fn
-  [item network-details]
+  [item _ _ {:keys [network-details]}]
   (let [transformed-address (rf/sub [:wallet/account-address (:address item)
                                      (:network-preferences-names item)])]
     [quo/account-item
-     {:on-press      #(on-account-press transformed-address network-details)
+     {:on-press      #(on-account-press (:address item) network-details)
       :account-props (assoc item
                             :address       transformed-address
                             :full-address? true)}]))
@@ -49,5 +49,6 @@
       {:style                             style/accounts-list
        :content-container-style           style/accounts-list-container
        :data                              accounts
-       :render-fn                         #(render-fn % network-details)
+       :render-data                       {:network-details network-details}
+       :render-fn                         render-fn
        :shows-horizontal-scroll-indicator false}]]))
