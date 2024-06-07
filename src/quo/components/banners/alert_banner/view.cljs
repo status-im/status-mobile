@@ -30,6 +30,7 @@
         :size  16}]
       [text/text
        {:style           (style/label theme)
+        :size            :paragraph-2
         :number-of-lines 1}
        text]
       (when action?
@@ -38,7 +39,10 @@
           :type                :danger
           :size                24
           :on-press            on-button-press}
-         [text/text {:style style/button-text}
+         [text/text
+          {:style  style/button-text
+           :size   :paragraph-2
+           :weight :medium}
           button-text]])]]))
 
 (def view (schema/instrument #'view-internal component-schema/?schema))
