@@ -9,7 +9,7 @@
                  :address                   "0x1"
                  :mixedcase-address         "0x1"
                  :chain-short-names         "eth:arb1:oeth:"
-                 :has-ens?                  false
+                 :ens?                      false
                  :network-preferences-names #{:arbitrum
                                               :optimism
                                               :mainnet}
@@ -22,7 +22,7 @@
                  :address                   "0x2"
                  :mixedcase-address         "0x2"
                  :chain-short-names         "eth:"
-                 :has-ens?                  false
+                 :ens?                      false
                  :network-preferences-names #{:mainnet}
                  :name                      "Bob"
                  :created-at                1716828825
@@ -33,7 +33,7 @@
                  :address                   "0x1"
                  :mixedcase-address         "0x1"
                  :chain-short-names         "eth:"
-                 :has-ens?                  false
+                 :ens?                      false
                  :network-preferences-names #{:mainnet}
                  :name                      "Alice"
                  :created-at                1716826745
@@ -44,7 +44,7 @@
                  :address                   "0x2"
                  :mixedcase-address         "0x2"
                  :chain-short-names         "eth:arb1:oeth:"
-                 :has-ens?                  false
+                 :ens?                      false
                  :network-preferences-names #{:arbitrum
                                               :optimism
                                               :mainnet}
@@ -61,7 +61,7 @@
       :address                   "0x1"
       :mixedcase-address         "0x1"
       :chain-short-names         "eth:"
-      :has-ens?                  false
+      :ens?                      false
       :network-preferences-names #{:mainnet}
       :name                      "Alice"
       :created-at                1716826745
@@ -74,7 +74,7 @@
       :address                   "0x2"
       :mixedcase-address         "0x2"
       :chain-short-names         "eth:arb1:oeth:"
-      :has-ens?                  false
+      :ens?                      false
       :network-preferences-names #{:arbitrum
                                    :optimism
                                    :mainnet}

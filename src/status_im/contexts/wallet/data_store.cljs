@@ -143,7 +143,7 @@
   (-> saved-address
       (assoc :network-preferences-names
              (network-utils/network-preference-prefix->network-names (:chain-short-names saved-address)))
-      (assoc :has-ens? (not (string/blank? (:ens saved-address))))))
+      (assoc :ens? (not (string/blank? (:ens saved-address))))))
 
 (defn rpc->saved-address
   [saved-address]

@@ -526,3 +526,13 @@
             :on-error   #(log/info "failed to fetch crypto on ramps"
                                    {:error %
                                     :event :wallet/get-crypto-on-ramps})}]]]}))
+
+(rf/reg-event-fx
+ :wallet/resolve-ens
+ (fn [{db :db} [{:keys [ens on-success on-error]}]]
+   (let [chain-id (network-utils/network->chain-id db constants/mainnet-network-name)]
+     {:fx [[:json-rpc/call
+            [{:method     "ens_addressOf"
+              :params     [chain-id ens]
+              :on-success on-success
+              :on-error   on-error}]]]})))
