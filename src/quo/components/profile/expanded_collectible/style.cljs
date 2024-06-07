@@ -4,7 +4,9 @@
 (def container
   {:align-items     :center
    :justify-content :center
-   :border-radius   16})
+   :border-radius   16
+   :width           "100%"
+   :aspect-ratio    1})
 
 (defn image
   [square? aspect-ratio theme]
@@ -40,3 +42,15 @@
   {:position :absolute
    :top      12
    :right    12})
+
+(defn loading-image-with-opacity
+  [theme opacity]
+  [{:opacity  opacity
+    :position :absolute
+    :z-index  100}
+   (fallback {:theme theme})])
+
+(defn supported-file
+  [opacity]
+  {:aspect-ratio 1
+   :opacity      opacity})
