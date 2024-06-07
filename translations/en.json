@@ -2692,5 +2692,8 @@
     "check-your-account-balance-and-activity": "Check your account balance and activity",
     "request-txns-and-message-signing": "Request transactions and message signing",
     "wallet-connect-qr-expired": "WalletConnect QR has expired",
-    "wallet-connect-version-not-supported": "WalletConnect version {{version}} is not supported"
+    "wallet-connect-version-not-supported": "WalletConnect version {{version}} is not supported",
+    "add-network-preferences": "Add network preferences",
+    "saved-address-network-preference-selection-description": "Only change if you know which networks the address owner is happy to to receive funds on",
+    "add-preferences": "Add preferences"
 }

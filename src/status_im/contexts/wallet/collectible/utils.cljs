@@ -17,7 +17,8 @@
     "image/gif"
     "image/bmp"
     "image/png"
-    "image/webp"})
+    "image/webp"
+    "image/avif"})
 
 (defn supported-file?
   [collectible-type]

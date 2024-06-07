@@ -1,9 +1,9 @@
-(ns status-im.contexts.settings.wallet.saved-addresses.sheets.share-address.view
+(ns status-im.contexts.settings.wallet.saved-addresses.share-address.view
   (:require
     [quo.core :as quo]
     [react-native.core :as rn]
     [react-native.platform :as platform]
-    [status-im.contexts.settings.wallet.saved-addresses.sheets.share-address.style :as style]
+    [status-im.contexts.settings.wallet.saved-addresses.share-address.style :as style]
     [status-im.contexts.wallet.common.utils :as utils]
     [status-im.contexts.wallet.common.utils.networks :as network-utils]
     [status-im.contexts.wallet.sheets.network-preferences.view :as network-preferences]
@@ -33,16 +33,20 @@
                              :isNewTask true})}]))
 
 (defn- open-preferences
-  [selected-networks set-selected-networks]
+  [{:keys [address color selected-networks set-selected-networks]}]
   (let [on-save       (fn [chain-ids]
                         (rf/dispatch [:hide-bottom-sheet])
                         (set-selected-networks (map network-utils/id->network chain-ids)))
         sheet-content (fn []
                         [network-preferences/view
-                         {:blur?             true
+                         {:description       (i18n/label
+                                              :t/saved-address-network-preference-selection-description)
+                          :button-label      (i18n/label :t/display)
+                          :blur?             true
                           :selected-networks (set selected-networks)
-                          :on-save           on-save
-                          :button-label      (i18n/label :t/display)}])]
+                          :account           {:address address
+                                              :color   color}
+                          :on-save           on-save}])]
     (rf/dispatch [:show-bottom-sheet
                   {:theme   :dark
                    :shell?  true
@@ -54,10 +58,13 @@
                 network-preferences-names]}       (rf/sub [:get-screen-params])
         [wallet-type set-wallet-type]             (rn/use-state :legacy)
         [selected-networks set-selected-networks] (rn/use-state network-preferences-names)
-        on-settings-press                         (rn/use-callback #(open-preferences
-                                                                     selected-networks
-                                                                     set-selected-networks)
-                                                                   [selected-networks])
+        on-settings-press                         (rn/use-callback
+                                                   #(open-preferences
+                                                     {:selected-networks     selected-networks
+                                                      :set-selected-networks set-selected-networks
+                                                      :address               address
+                                                      :color                 customization-color})
+                                                   [address customization-color selected-networks])
         on-legacy-press                           (rn/use-callback #(set-wallet-type :legacy))
         on-multichain-press                       (rn/use-callback #(set-wallet-type :multichain))
         share-title                               (str name " " (i18n/label :t/address))
