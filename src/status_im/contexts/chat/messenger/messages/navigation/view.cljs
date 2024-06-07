@@ -5,7 +5,6 @@
     [quo.foundations.colors :as colors]
     [quo.theme]
     [re-frame.db]
-    [react-native.blur :as blur]
     [react-native.core :as rn]
     [react-native.platform :as platform]
     [react-native.reanimated :as reanimated]
@@ -115,7 +114,7 @@
                                       messages.constants/pinned-banner-animation-start-position)))]
     [:<>
      [reanimated/view {:style (style/animated-background-view background-opacity navigation-view-height)}
-      [blur/view
+      [quo/blur
        {:style         {:flex 1}
         :blur-amount   20
         :blur-type     :transparent

@@ -1,6 +1,6 @@
 (ns status-im.contexts.onboarding.common.overlay.view
   (:require
-    [react-native.blur :as blur]
+    [quo.core :as quo]
     [react-native.core :as rn]
     [react-native.platform :as platform]
     [react-native.reanimated :as reanimated]
@@ -65,7 +65,7 @@
     [reanimated/view
      {:pointer-events :none
       :style          (style/blur-container opacity)}
-     [blur/view
+     [quo/blur
       {:blur-amount   @blur-amount
        :blur-radius   (if platform/android? 25 10)
        :blur-type     :transparent

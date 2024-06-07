@@ -6,7 +6,6 @@
     [quo.core :as quo]
     [quo.foundations.colors :as colors]
     [quo.theme :as quo.theme]
-    [react-native.blur :as blur]
     [react-native.clipboard :as clipboard]
     [react-native.core :as rn]
     [react-native.safe-area :as safe-area]
@@ -351,7 +350,7 @@
       [rn/image
        {:source (or image (resources/get-mock-image :dark-blur-bg))
         :style  {:height "100%" :width "100%"}}]
-      [blur/view
+      [quo/blur
        (merge {:style         {:position :absolute
                                :top      0
                                :bottom   0

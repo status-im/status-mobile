@@ -1,9 +1,9 @@
 (ns status-im.contexts.chat.messenger.composer.view
   (:require
     [clojure.string :as string]
+    [quo.core :as quo]
     [quo.foundations.colors :as colors]
     [quo.theme :as quo.theme]
-    [react-native.blur :as blur]
     [react-native.core :as rn]
     [react-native.gesture :as gesture]
     [react-native.hooks :as hooks]
@@ -168,7 +168,7 @@
     [rn/view (when platform/ios? {:style {:z-index 1}})
      [reanimated/view {:style (style/background opacity background-y window-height)}]
      [reanimated/view {:style (style/blur-container composer-default-height shared-values)}
-      [blur/view (style/blur-view theme)]]
+      [quo/blur (style/blur-view theme)]]
      [:f> sheet-component extra-params props state shared-values]]))
 
 (defn composer

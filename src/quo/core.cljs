@@ -13,6 +13,7 @@
     quo.components.avatars.user-avatar.view
     quo.components.avatars.wallet-user-avatar.view
     quo.components.banners.banner.view
+    quo.components.blur.view
     quo.components.browser.browser-input.view
     quo.components.buttons.button.view
     quo.components.buttons.composer-button.view
@@ -217,6 +218,9 @@
 
 ;;;; Browser
 (def browser-input quo.components.browser.browser-input.view/view)
+
+;;;; Blur
+(def blur quo.components.blur.view/view)
 
 ;;;; Calendar
 (def calendar quo.components.calendar.calendar.view/view)

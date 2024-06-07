@@ -4,7 +4,6 @@
     [native-module.core :as native-module]
     [quo.core :as quo]
     [quo.theme :as quo.theme]
-    [react-native.blur :as blur]
     [react-native.core :as rn]
     [reagent.core :as reagent]
     [status-im.contexts.wallet.add-account.create-account.new-keypair.backup-recovery-phrase.style :as
@@ -86,7 +85,7 @@
                :first-half? false}]])
           (when-not @revealed?
             [rn/view {:style style/blur-container}
-             [blur/view (style/blur theme)]])]
+             [quo/blur (style/blur theme)]])]
          (when-not @revealed?
            [rn/view
             {:style {:padding-horizontal 20
