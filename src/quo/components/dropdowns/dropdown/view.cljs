@@ -1,12 +1,12 @@
 (ns quo.components.dropdowns.dropdown.view
   (:require
+    [quo.components.blur.view :as blur]
     [quo.components.dropdowns.dropdown.properties :as properties]
     [quo.components.dropdowns.dropdown.style :as style]
     [quo.components.icon :as icon]
     [quo.components.markdown.text :as text]
     [quo.foundations.customization-colors :as customization-colors]
     [quo.theme]
-    [react-native.blur :as blur]
     [react-native.core :as rn]))
 
 (defn view

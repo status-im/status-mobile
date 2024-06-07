@@ -23,6 +23,7 @@
                      runOnJS)]
     ["react-native-redash" :refer (withPause)]
     [react-native.flat-list :as rn-flat-list]
+    [react-native.platform :as platform]
     [react-native.utils :as rn.utils]
     [reagent.core :as reagent]
     [utils.transforms :as transforms]
@@ -60,7 +61,7 @@
 (def touchable-opacity (create-animated-component (.-TouchableOpacity ^js rn)))
 (def linear-gradient (create-animated-component LinearGradient))
 (def fast-image (create-animated-component FastImage))
-(def blur-view (create-animated-component (.-BlurView blur)))
+(def blur-view (if platform/ios? (create-animated-component (.-BlurView blur)) view))
 
 ;; Hooks
 (def use-shared-value useSharedValue)

@@ -4,7 +4,6 @@
     [oops.core :as oops]
     [quo.core :as quo]
     [quo.foundations.colors :as colors]
-    [react-native.blur :as blur]
     [react-native.core :as rn]
     [react-native.hooks :as hooks]
     [react-native.platform :as platform]
@@ -43,7 +42,7 @@
     [rn/view {:style {:margin-top :auto}}
      (cond
        (and (> @height 0) show-background?)
-       [blur/ios-view
+       [quo/blur
         (when keyboard-shown
           {:blur-amount      34
            :blur-type        :transparent

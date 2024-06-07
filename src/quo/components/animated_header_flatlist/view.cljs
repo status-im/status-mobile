@@ -83,7 +83,7 @@
       {:blurAmount   32
        :blurType     :light
        :overlayColor (if platform/ios? colors/white-opa-70 :transparent)
-       :style        (style/blur-view opacity-animation)}
+       :style        (style/blur-view opacity-animation theme)}
       [reanimated/view {:style (style/header-comp translate-animation title-opacity-animation)}
        [header-comp]]]
      [reanimated/flat-list

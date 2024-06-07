@@ -5,7 +5,6 @@
     [quo.core :as quo]
     [quo.foundations.colors :as colors]
     [quo.theme :as quo.theme]
-    [react-native.blur :as blur]
     [react-native.core :as rn]
     [react-native.gesture :as gesture]
     [react-native.platform :as platform]
@@ -131,7 +130,7 @@
                      :scroll-ref      scroll-ref}))]
     (fn []
       [rn/view {:style style/category-container}
-       [blur/view
+       [quo/blur
         {:style         style/category-blur-container
          :blur-radius   (if platform/android? 20 10)
          :blur-amount   (if platform/ios? 20 10)

@@ -23,10 +23,7 @@
     :right            0
     :left             0
     :background-color (if platform/android?
-                        (colors/theme-colors
-                         colors/white-opa-70
-                         colors/neutral-95-opa-70
-                         theme)
+                        (colors/theme-colors colors/white colors/neutral-80 theme)
                         :transparent)}))
 
 (defn sticky-header-title

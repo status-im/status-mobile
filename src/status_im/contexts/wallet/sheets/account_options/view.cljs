@@ -3,7 +3,6 @@
             [quo.core :as quo]
             [quo.foundations.colors :as colors]
             quo.theme
-            [react-native.blur :as blur]
             [react-native.clipboard :as clipboard]
             [react-native.core :as rn]
             [react-native.gesture :as gesture]
@@ -43,7 +42,7 @@
      {:on-layout #(reset! options-height (oops/oget % "nativeEvent.layout.height"))
       :style     (when show-account-selector? style/options-container)}
      (when show-account-selector?
-       [blur/view
+       [quo/blur
         {:style         (style/blur-container @options-height)
          :blur-radius   (if platform/android? 20 10)
          :blur-amount   (if platform/ios? 20 10)

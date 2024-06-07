@@ -3,7 +3,6 @@
     [quo.core :as quo]
     [quo.foundations.colors :as colors]
     [quo.theme]
-    [react-native.blur :as blur]
     [react-native.core :as rn]
     [react-native.linear-gradient :as linear-gradient]
     [react-native.safe-area :as safe-area]
@@ -84,7 +83,7 @@
   (let [pass-through? (rf/sub [:shell/shell-pass-through?])]
     [rn/view {:style (style/top-nav-blur-overlay-container (+ 56 top) pass-through?)}
      (when pass-through?
-       [blur/view (bottom-tabs/blur-overlay-params style/top-nav-blur-overlay)])]))
+       [quo/blur (bottom-tabs/blur-overlay-params style/top-nav-blur-overlay)])]))
 
 (defn view
   []

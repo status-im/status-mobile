@@ -4,7 +4,6 @@
     [quo.core :as quo]
     [quo.foundations.colors :as colors]
     [quo.theme]
-    [react-native.blur :as blur]
     [react-native.core :as rn]
     [react-native.safe-area :as safe-area]
     [reagent.core :as reagent]
@@ -271,7 +270,7 @@
   [_]
   (fn [{:keys [enabled label]}]
     (when enabled
-      [blur/view
+      [quo/blur
        {:style         style/blur-channel-header
         :blur-amount   20
         :blur-type     :transparent
