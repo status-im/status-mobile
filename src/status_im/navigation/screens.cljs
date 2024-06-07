@@ -567,6 +567,10 @@
      :options   options/transparent-modal-screen-options
      :component wallet-save-address/view}
 
+    {:name      :screen/settings.edit-saved-address
+     :options   (assoc options/dark-screen :sheet? true)
+     :component wallet-save-address/view}
+
     {:name      :screen/settings.add-address-to-save
      :options   options/transparent-modal-screen-options
      :component wallet-add-address-to-save/view}
