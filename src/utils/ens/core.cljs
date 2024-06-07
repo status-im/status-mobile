@@ -22,5 +22,4 @@
   [ens-name]
   (and ens-name
        (string? ens-name)
-       (not (string/includes? ens-name " "))
        (string/ends-with? ens-name ".eth")))

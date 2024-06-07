@@ -9,7 +9,6 @@
     [status-im.contexts.settings.wallet.saved-addresses.add-address-to-save.style :as style]
     [status-im.contexts.wallet.common.validation :as validation]
     [utils.debounce :as debounce]
-    [utils.ens.core :as ens-utils]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
@@ -31,7 +30,7 @@
 
     (not
      (or (validation/eth-address? user-input)
-         (ens-utils/is-valid-eth-name? user-input)))
+         (validation/ens-name? user-input)))
     :invalid-address-or-ens))
 
 (defn- address-input
@@ -119,7 +118,7 @@
         [ens-address set-ens-address]       (rn/use-state "")
         [error set-error]                   (rn/use-state nil)
         error?                              (some? error)
-        ens-name?                           (ens-utils/is-valid-eth-name? address-or-ens)
+        ens-name?                           (validation/ens-name? address-or-ens)
         address                             (if ens-name? ens-address address-or-ens)
         button-disabled?                    (or (string/blank? address-or-ens)
                                                 (and ens-name? (string/blank? ens-address))
@@ -142,7 +141,7 @@
                                                  (set-error (validate (string/lower-case trimmed-value)))
                                                  (set-address-or-ens trimmed-value)
                                                  (set-ens-address "")
-                                                 (when (ens-utils/is-valid-eth-name? trimmed-value)
+                                                 (when (validation/ens-name? trimmed-value)
                                                    (debounce/debounce-and-dispatch
                                                     [:wallet/resolve-ens
                                                      {:ens        new-value
