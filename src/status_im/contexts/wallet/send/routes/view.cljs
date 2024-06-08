@@ -113,11 +113,10 @@
              currency                                   (rf/sub [:profile/currency])
              currency-symbol                            (rf/sub [:profile/currency-symbol])
              send-from-locked-amounts                   (rf/sub [:wallet/wallet-send-from-locked-amounts])
-             existing-locked-amount (when send-from-locked-amounts
-                                      (get send-from-locked-amounts chain-id))
+             locked-amount                              (get send-from-locked-amounts chain-id)
              network-name-str                           (string/capitalize (name network-name))
              [input-state set-input-state]              (rn/use-state (cond-> controlled-input/init-state
-                                                                        existing-locked-amount (controlled-input/set-input-value existing-locked-amount)))
+                                                                        locked-amount (controlled-input/set-input-value locked-amount)))
              [crypto-currency? set-crypto-currency]     (rn/use-state true)
              conversion-rate                            (-> token
                                                             :market-values-per-currency
@@ -135,7 +134,11 @@
                                                           current-crypto-limit
                                                           current-fiat-limit)
              crypto-decimals                            token-decimals
-             input-amount                               (controlled-input/input-value input-state)]
+             input-amount                               (controlled-input/input-value input-state)
+             [is-amount-locked? set-is-amount-locked] (rn/use-state (some? locked-amount))
+             unlock-amount (fn []
+                             (rf/dispatch [:wallet/unlock-from-amount chain-id]))]
+
          (rn/use-effect
           (fn []
             (set-input-state #(controlled-input/set-upper-limit % current-limit)))
@@ -188,22 +191,25 @@
             ;; :on-token-press  show-select-asset-sheet
             }]
           [quo/disclaimer
-           {:on-change #(tap> {:checked %})
-            :checked? existing-locked-amount}
+           {:on-change (fn [checked?]
+                         (tap> {:checked checked?})
+                         (set-is-amount-locked checked?))
+            :checked? is-amount-locked?}
            (i18n/label :t/dont-auto-recalculate-network {:network network-name-str})]
           [quo/bottom-actions
            {:actions          :one-action
             :button-one-label (i18n/label :t/update)
-            :button-one-props {:on-press #(do
-                                            (let [limit-in-crypto (if crypto-currency?
-                                                                    input-amount
-                                                                    (number/remove-trailing-zeroes
-                                                                     (.toFixed (/ input-amount
-                                                                                  conversion-rate)
-                                                                               crypto-decimals)))]
-                                              (when on-update
-                                                (on-update chain-id limit-in-crypto)))
-                                            (rf/dispatch [:hide-bottom-sheet]))
+            :button-one-props {:on-press (fn []
+                                           (if is-amount-locked?
+                                             (let [limit-in-crypto (if crypto-currency?
+                                                                     input-amount
+                                                                     (number/remove-trailing-zeroes
+                                                                      (.toFixed (/ input-amount
+                                                                                   conversion-rate)
+                                                                                crypto-decimals)))]
+                                               (rf/dispatch [:wallet/lock-from-amount chain-id limit-in-crypto]))
+                                             (rf/dispatch [:wallet/unlock-from-amount chain-id]))
+                                           (rf/dispatch [:hide-bottom-sheet]))
                                :disabled? (or (controlled-input/empty-value? input-state)
                                               (controlled-input/input-error input-state))}}]
           [quo/numbered-keyboard
@@ -216,6 +222,7 @@
                                           regex-pattern (str "^\\d*\\.?\\d{0," max-decimals "}$")
                                           regex         (re-pattern regex-pattern)]
                                       (when (re-matches regex new-text)
+                                        (set-is-amount-locked true)
                                         (set-input-state #(controlled-input/add-character % c)))))
             :on-delete            (fn []
                                     (set-input-state controlled-input/delete-last))
@@ -372,9 +379,7 @@
         :on-long-press                             (fn [chain-id]
                                                      (edit-amount
                                                       {:chain-id     chain-id
-                                                       :token-symbol token-symbol
-                                                       :on-update    (fn [chain-id limit-in-crypto]
-                                                                       (rf/dispatch [:wallet/lock-from-amount chain-id limit-in-crypto]))}))
+                                                       :token-symbol token-symbol}))
         :receiver?                                 false
         :theme                                     theme
         :loading-routes?                           loading-routes?
