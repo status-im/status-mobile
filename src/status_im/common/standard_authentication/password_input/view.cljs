@@ -52,6 +52,7 @@
 (defn view
   [{:keys [shell? on-press-biometrics blur?]}]
   (let [{:keys [error processing]} (rf/sub [:profile/login])
+        input-ref                  (atom nil)
         error-message              (rn/use-memo #(get-error-message error) [error])
         error?                     (boolean (seq error-message))
         default-value              (rn/use-ref-atom "") ;;bug on Android
@@ -74,7 +75,9 @@
         :default-value   @default-value
         :blur?           blur?
         :disabled?       processing
+        :on-layout       #(some-> ^js @input-ref (.focus))
         :placeholder     (i18n/label :t/type-your-password)
+        :ref             #(reset! input-ref %)
         :auto-focus      true
         :error?          error?
         :label           (i18n/label :t/profile-password)
