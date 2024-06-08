@@ -77,7 +77,7 @@
         :disabled?       processing
         :on-layout       #(js/setTimeout (fn []
                                            (print "------ later")
-                                           (some-> ^js @input-ref (.focus))) 2000)
+                                           (some-> ^js @input-ref (.focus))) 5000)
         :placeholder     (i18n/label :t/type-your-password)
         :ref             #(reset! input-ref %)
         :auto-focus      true
