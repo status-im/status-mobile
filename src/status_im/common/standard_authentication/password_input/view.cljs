@@ -75,7 +75,9 @@
         :default-value   @default-value
         :blur?           blur?
         :disabled?       processing
-        :on-layout       #(some-> ^js @input-ref (.focus))
+        :on-layout       #(js/setTimeout (fn []
+                                           (print "------ later")
+                                           (some-> ^js @input-ref (.focus))) 2000)
         :placeholder     (i18n/label :t/type-your-password)
         :ref             #(reset! input-ref %)
         :auto-focus      true
