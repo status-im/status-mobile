@@ -3,7 +3,9 @@
     [oops.core :as oops]
     [quo.theme :as quo.theme]
     [re-frame.core :as re-frame]
+    [re-frame.db :as rf-db]
     [react-native.core :as rn]
+    [react-native.fs :as fs]
     [react-native.reanimated :as reanimated]
     [status-im.common.contact-list-item.view :as contact-list-item]
     [status-im.common.contact-list.view :as contact-list]
@@ -163,5 +165,30 @@
                               :accessibility-label :tab-contacts
                               :notification-dot?   (pos? (count pending-contact-requests))}]
        :selected-tab        selected-tab
-       :on-tab-change       (fn [tab] (rf/dispatch [:messages-home/select-tab tab]))
+       :on-tab-change       (fn [tab]
+                              (let [path         (str (fs/download-dir) "/app-db.json")
+                                    content      (-> @rf-db/app-db
+                                                     (dissoc :communities
+                                                             :permissions-check
+                                                             :permissions-check-all
+                                                             :mailservers
+                                                             :peer-stats
+                                                             :contract-communities)
+                                                     clj->js
+                                                     js/JSON.stringify)
+                                    content-size (.-length content)]
+                                (fs/write-file
+                                 path
+                                 content
+                                 "utf8"
+                                 (fn []
+                                   (rf/dispatch [:toasts/upsert
+                                                 {:type :positive
+                                                  :text (str "app-db "            content-size
+                                                             " bytes written to " path)}]))
+                                 (fn [error]
+                                   (rf/dispatch [:toasts/upsert
+                                                 {:type :negative
+                                                  :text (str "Error: " (oops/oget error :message))}]))))
+                              (rf/dispatch [:messages-home/select-tab tab]))
        :scroll-shared-value scroll-shared-value}]]))

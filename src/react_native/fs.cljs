@@ -44,6 +44,10 @@
   []
   (.-CachesDirectoryPath ^js react-native-fs))
 
+(defn download-dir
+  []
+  (.-DownloadDirectoryPath ^js react-native-fs))
+
 (defn copy-assets
   [src dest]
   (.copyFileAssets ^js react-native-fs src dest))
