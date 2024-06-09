@@ -58,3 +58,16 @@
   {:margin-left   8
    :margin-right  12
    :padding-right 12})
+
+(def disclaimer
+  {:margin-horizontal 20
+   :margin-top 20
+   :margin-bottom 8})
+
+(def input-container
+  {:margin-top 8
+   :margin-bottom 12})
+
+(defn keyboard-container
+  [bottom]
+  {:padding-bottom bottom})

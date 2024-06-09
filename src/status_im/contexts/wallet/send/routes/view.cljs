@@ -1,17 +1,19 @@
 (ns status-im.contexts.wallet.send.routes.view
   (:require
-    [clojure.string :as string]
-    [quo.core :as quo]
-    [react-native.core :as rn]
-    [status-im.common.controlled-input.utils :as controlled-input]
-    [status-im.contexts.wallet.common.utils :as utils]
-    [status-im.contexts.wallet.common.utils.networks :as network-utils]
-    [status-im.contexts.wallet.send.routes.style :as style]
-    [status-im.contexts.wallet.send.utils :as send-utils]
-    [status-im.contexts.wallet.sheets.network-preferences.view :as network-preferences]
-    [utils.i18n :as i18n]
-    [utils.number :as number]
-    [utils.re-frame :as rf]))
+   [clojure.string :as string]
+   [quo.core :as quo]
+   [react-native.core :as rn]
+   [react-native.safe-area :as safe-area]
+   [status-im.common.controlled-input.utils :as controlled-input]
+   [status-im.contexts.wallet.common.utils :as utils]
+   [status-im.contexts.wallet.common.utils.networks :as network-utils]
+   [status-im.contexts.wallet.send.routes.style :as style]
+   [status-im.contexts.wallet.send.utils :as send-utils]
+   [status-im.contexts.wallet.sheets.network-preferences.view :as network-preferences]
+   [utils.i18n :as i18n]
+   [utils.number :as number]
+   [utils.re-frame :as rf]))
+
 
 (def row-height 44)
 (def space-between-rows 11)
@@ -99,7 +101,7 @@
   (str currency-symbol amount))
 
 (defn- edit-amount
-  [{:keys [chain-id token-symbol on-update]}]
+  [{:keys [chain-id token-symbol]}]
   (rf/dispatch
    [:show-bottom-sheet
     {:content
@@ -122,8 +124,7 @@
                                                             :market-values-per-currency
                                                             currency
                                                             :price)
-             {token-balance     :total-balance
-              available-balance :available-balance}     (rf/sub [:wallet/token-by-symbol
+             {token-balance :total-balance}             (rf/sub [:wallet/token-by-symbol
                                                                  (str token-symbol)
                                                                  [chain-id]])
              current-crypto-limit                       (utils/get-standard-crypto-format
@@ -136,28 +137,17 @@
              crypto-decimals                            token-decimals
              input-amount                               (controlled-input/input-value input-state)
              [is-amount-locked? set-is-amount-locked] (rn/use-state (some? locked-amount))
-             unlock-amount (fn []
-                             (rf/dispatch [:wallet/unlock-from-amount chain-id]))]
-
+             bottom                                      (safe-area/get-bottom)]
          (rn/use-effect
           (fn []
             (set-input-state #(controlled-input/set-upper-limit % current-limit)))
           [current-limit])
-         #_(tap> {:in                   `edit-amount
-                  :crypto-currency?     crypto-currency?
-                  :network-details      network-details
-                  :current-limit        current-limit
-                  :current-fiat-limit   current-fiat-limit
-                  :current-crypto-limit current-crypto-limit
-                  :token-balance        token-balance
-                  :available-balance    available-balance
-                  :conversion-rate      conversion-rate})
          [:<>
           [quo/drawer-top
            {:title       (i18n/label :t/send-from-network {:network network-name-str})
             :description (i18n/label :t/define-amount-sent-from-network {:network network-name-str})}]
           [quo/token-input
-           {;; :container-style style/input-container
+           {:container-style style/input-container
             :token           token-symbol
             :currency        fiat-currency
             :currency-symbol currency-symbol
@@ -183,18 +173,16 @@
                                                      (.toFixed (/ value conversion-rate)
                                                                crypto-decimals)
                                                      (.toFixed (* value conversion-rate) 12))]
-                                     #_(tap> {:in                       "edit_value"
-                                              :swap-to-crypto-currency? swap-to-crypto-currency?
-                                              :crypto-decimals          crypto-decimals
-                                              :new-value                new-value})
-                                     (number/remove-trailing-zeroes new-value))))))
-            ;; :on-token-press  show-select-asset-sheet
-            }]
+                                     (number/remove-trailing-zeroes new-value))))))}]
           [quo/disclaimer
            {:on-change (fn [checked?]
                          (tap> {:checked checked?})
                          (set-is-amount-locked checked?))
-            :checked? is-amount-locked?}
+            :checked? is-amount-locked?
+            :container-style style/disclaimer
+            :icon      (if is-amount-locked?
+                         :i/locked
+                         :i/unlocked)}
            (i18n/label :t/dont-auto-recalculate-network {:network network-name-str})]
           [quo/bottom-actions
            {:actions          :one-action
@@ -213,7 +201,7 @@
                                :disabled? (or (controlled-input/empty-value? input-state)
                                               (controlled-input/input-error input-state))}}]
           [quo/numbered-keyboard
-           {;; :container-style      (style/keyboard-container bottom)
+           {:container-style      (style/keyboard-container bottom)
             :left-action          :dot
             :delete-key?          true
             :on-press             (fn [c]

@@ -349,10 +349,6 @@
                                                 (.toFixed (/ value conversion-rate)
                                                           crypto-decimals)
                                                 (.toFixed (* value conversion-rate) 12))]
-                                (tap> {:in                       "input_amount"
-                                       :swap-to-crypto-currency? swap-to-crypto-currency?
-                                       :crypto-decimals          crypto-decimals
-                                       :new-value                new-value})
                                 (number/remove-trailing-zeroes new-value))))))
        :on-token-press  show-select-asset-sheet}]
      [routes/view
@@ -364,7 +360,6 @@
        :lock-fetch-routes?                        just-toggled-mode?
        :current-screen-id                         current-screen-id
        :request-fetch-routes                      request-fetch-routes}]
-     (tap> {:send-from-locked-amounts send-from-locked-amounts})
      (when (and (not loading-routes?)
                 sender-network-values
                 token-not-supported-in-receiver-networks?)
@@ -374,13 +369,7 @@
         {:loading-routes? loading-routes?
          :fees            fee-formatted
          :amount          amount-text}])
-     (tap> {:in `no-routes-found?
-            :no-routes-found no-routes-found?
-            :limit-insufficient limit-insufficient?
-            :not-empty-network-values (not-empty sender-network-values)})
-
      (when (and (or no-routes-found? limit-insufficient?) (not-empty sender-network-values))
-       
        [no-routes-found])
      [quo/bottom-actions
       {:actions          :one-action
@@ -399,7 +388,6 @@
                                                                     (.toFixed (* token-balance
                                                                                  conversion-rate)
                                                                               2))]
-
                                                  (rf/dispatch [:wallet/get-suggested-routes
                                                                {:amount        amount
                                                                 :updated-token token-by-symbol}]))
