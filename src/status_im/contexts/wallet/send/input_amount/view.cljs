@@ -134,6 +134,20 @@
     :on-button-press #(rf/dispatch [:show-bottom-sheet
                                     {:content buy-token/view}])}])
 
+(defn- fetch-routes
+  [{:keys [amount bounce-duration-ms token valid-input? ]}]
+  (tap>
+   {:in            `fetch-routes
+    :amount        amount
+    :token         token})
+  (if valid-input?
+    (debounce/debounce-and-dispatch
+     [:wallet/get-suggested-routes
+      {:amount        amount
+       :updated-token token }]
+     bounce-duration-ms)
+    (rf/dispatch [:wallet/clean-suggested-routes])))
+
 (defn view
   ;; crypto-decimals, limit-crypto and initial-crypto-currency? args are needed
   ;; for component tests only
@@ -168,6 +182,7 @@
         send-enabled-networks                       (rf/sub [:wallet/wallet-send-enabled-networks])
         enabled-from-chain-ids                      (rf/sub
                                                      [:wallet/wallet-send-enabled-from-chain-ids])
+        send-from-locked-amounts                    (rf/sub [:wallet/wallet-send-from-locked-amounts])
         {token-balance     :total-balance
          available-balance :available-balance
          :as               token-by-symbol}         (rf/sub [:wallet/token-by-symbol
@@ -291,7 +306,14 @@
         show-no-routes?                             (and
                                                      (or no-routes-found? limit-insufficient?)
                                                      (not-empty sender-network-values)
-                                                     (not not-enough-asset?))]
+                                                     (not not-enough-asset?))
+        request-fetch-routes                        (fn [bounce-duration-ms]
+                                                      (fetch-routes
+                                                       {:amount             amount
+                                                        :valid-input?       valid-input?
+                                                        :bounce-duration-ms bounce-duration-ms
+                                                        :token              token}))]
+
     (rn/use-mount
      (fn []
        (let [dismiss-keyboard-fn   #(when (= % "active") (rn/dismiss-keyboard!))
@@ -311,6 +333,12 @@
        (clear-input!)
        (rf/dispatch [:wallet/clean-suggested-routes]))
      [current-address])
+    (rn/use-effect
+     (fn []
+       (tap> {:in                   `use-effect
+              :request-fetch-routes request-fetch-routes})
+       (request-fetch-routes 0))
+     [send-from-locked-amounts])
     [rn/view
      {:style               style/screen
       :accessibility-label (str "container"
@@ -356,7 +384,8 @@
        :valid-input?                              valid-input?
        :token-not-supported-in-receiver-networks? token-not-supported-in-receiver-networks?
        :lock-fetch-routes?                        just-toggled-mode?
-       :current-screen-id                         current-screen-id}]
+       :current-screen-id                         current-screen-id
+       :request-fetch-routes                      request-fetch-routes}]
      (when (and (not loading-routes?)
                 sender-network-values
                 token-not-supported-in-receiver-networks?)

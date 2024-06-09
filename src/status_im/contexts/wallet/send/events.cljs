@@ -37,6 +37,7 @@
            sender-network-values         (get-in db [:wallet :ui :send :sender-network-values])
            tx-type                       (get-in db [:wallet :ui :send :tx-type])
            disabled-from-chain-ids       (or (get-in db [:wallet :ui :send :disabled-from-chain-ids]) [])
+           from-locked-amounts           (or (get-in db [:wallet :ui :send :from-locked-amounts]) {})
            token-decimals                (if collectible 0 (:decimals token))
            native-token?                 (and token (= token-display-name "ETH"))
            routes-available?             (pos? (count chosen-route))
@@ -68,6 +69,7 @@
                                              :disabled-chain-ids disabled-from-chain-ids
                                              :receiver-networks receiver-networks
                                              :token-networks-ids token-networks-ids
+                                             :from-locked-amounts from-locked-amounts
                                              :tx-type tx-type
                                              :receiver? false})
                                            (send-utils/reset-loading-network-amounts-to-zero
@@ -141,8 +143,12 @@
    {:db (update-in db [:wallet :ui :send] dissoc :amount)}))
 
 (rf/reg-event-fx :wallet/clean-disabled-from-networks
- (fn [{:keys [db]}]
-   {:db (update-in db [:wallet :ui :send] dissoc :disabled-from-chain-ids)}))
+                 (fn [{:keys [db]}]
+                   {:db (update-in db [:wallet :ui :send] dissoc :disabled-from-chain-ids)}))
+
+(rf/reg-event-fx :wallet/clean-from-locked-amounts
+                 (fn [{:keys [db]}]
+                   {:db (update-in db [:wallet :ui :send] dissoc :from-locked-amounts)}))
 
 (rf/reg-event-fx
  :wallet/select-send-address
@@ -332,28 +338,39 @@
  (fn [{:keys [db]} [chain-ids]]
    {:db (assoc-in db [:wallet :ui :send :disabled-from-chain-ids] chain-ids)}))
 
+(rf/reg-event-fx :wallet/lock-from-amount
+                 (fn [{:keys [db]} [chain-id amount]]
+                   {:db (assoc-in db [:wallet :ui :send :from-locked-amounts chain-id] amount)}))
+
+(rf/reg-event-fx :wallet/unlock-from-amount
+                 (fn [{:keys [db]} [chain-id]]
+                   (let [new-locked-amounts (-> db
+                                                (get-in [:wallet :ui :send :from-locked-amounts])
+                                                (dissoc chain-id))]
+                     {:db (assoc-in db [:wallet :ui :send :from-locked-amounts] new-locked-amounts)})))
+
 (rf/reg-event-fx :wallet/reset-network-amounts-to-zero
- (fn [{:keys [db]}]
-   (let [sender-network-values   (get-in db [:wallet :ui :send :sender-network-values])
-         receiver-network-values (get-in db [:wallet :ui :send :receiver-network-values])
-         disabled-from-chain-ids (get-in db [:wallet :ui :send :disabled-from-chain-ids])
-         sender-network-values   (send-utils/reset-network-amounts-to-zero
-                                  {:network-amounts    sender-network-values
-                                   :disabled-chain-ids disabled-from-chain-ids})
-         receiver-network-values (send-utils/reset-network-amounts-to-zero
-                                  {:network-amounts    receiver-network-values
-                                   :disabled-chain-ids []})]
-     {:db (-> db
-              (assoc-in [:wallet :ui :send :sender-network-values] sender-network-values)
-              (assoc-in [:wallet :ui :send :receiver-network-values] receiver-network-values)
-              (update-in [:wallet :ui :send]
-                         dissoc
-                         :network-links
-                         (when (empty? sender-network-values) :sender-network-values)
-                         (when (empty? receiver-network-values) :receiver-network-values)))})))
+                 (fn [{:keys [db]}]
+                   (let [sender-network-values   (get-in db [:wallet :ui :send :sender-network-values])
+                         receiver-network-values (get-in db [:wallet :ui :send :receiver-network-values])
+                         disabled-from-chain-ids (get-in db [:wallet :ui :send :disabled-from-chain-ids])
+                         sender-network-values   (send-utils/reset-network-amounts-to-zero
+                                                  {:network-amounts    sender-network-values
+                                                   :disabled-chain-ids disabled-from-chain-ids})
+                         receiver-network-values (send-utils/reset-network-amounts-to-zero
+                                                  {:network-amounts    receiver-network-values
+                                                   :disabled-chain-ids []})]
+                     {:db (-> db
+                              (assoc-in [:wallet :ui :send :sender-network-values] sender-network-values)
+                              (assoc-in [:wallet :ui :send :receiver-network-values] receiver-network-values)
+                              (update-in [:wallet :ui :send]
+                                         dissoc
+                                         :network-links
+                                         (when (empty? sender-network-values) :sender-network-values)
+                                         (when (empty? receiver-network-values) :receiver-network-values)))})))
 
 (rf/reg-event-fx :wallet/get-suggested-routes
- (fn [{:keys [db now]} [{:keys [amount updated-token]}]]
+ (fn [{:keys [db now]} [{:keys [amount updated-token ]}]]
    (let [wallet-address (get-in db [:wallet :current-viewing-account-address])
          token (or updated-token (get-in db [:wallet :ui :send :token]))
          transaction-type (get-in db [:wallet :ui :send :tx-type])
@@ -361,6 +378,7 @@
          to-address (get-in db [:wallet :ui :send :to-address])
          receiver-networks (get-in db [:wallet :ui :send :receiver-networks])
          disabled-from-chain-ids (or (get-in db [:wallet :ui :send :disabled-from-chain-ids]) [])
+         from-locked-amounts (or (get-in db [:wallet :ui :send :from-locked-amounts]) {})
          test-networks-enabled? (get-in db [:profile/profile :test-networks-enabled?])
          networks ((if test-networks-enabled? :test :prod)
                    (get-in db [:wallet :networks]))
@@ -371,7 +389,8 @@
          to-token-id ""
          network-preferences (if token [] [(get-in collectible [:id :contract-id :chain-id])])
          gas-rates constants/gas-rate-medium
-         amount-in (send-utils/amount-in-hex amount (if token token-decimal 0))
+         to-hex (fn [val] (send-utils/amount-in-hex val (if token token-decimal 0)))
+         amount-in (to-hex amount)
          from-address wallet-address
          disabled-from-chain-ids disabled-from-chain-ids
          disabled-to-chain-ids (if (= transaction-type :tx/bridge)
@@ -380,7 +399,10 @@
                                            (not (some #(= chain-id %)
                                                       receiver-networks)))
                                          network-chain-ids))
-         from-locked-amount {}
+         from-locked-amount (update-vals from-locked-amounts to-hex)
+         _ (tap> {:in                 `get-suggested-routes
+                  :from-locked-amount from-locked-amount
+                  :amount-in          amount-in})
          transaction-type-param (case transaction-type
                                   :tx/collectible-erc-721  constants/send-type-erc-721-transfer
                                   :tx/collectible-erc-1155 constants/send-type-erc-1155-transfer
