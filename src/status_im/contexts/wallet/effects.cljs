@@ -162,7 +162,7 @@
             (ex-data error)))))))
 
 (rf/reg-fx
- :import-keypair-by-private-key
+ :effects.wallet/import-missing-keypair-by-private-key
  (fn [{:keys [private-key password on-success on-error]}]
    (-> (import-keypair-by-private-key private-key password)
        (promesa/then (fn [_result]

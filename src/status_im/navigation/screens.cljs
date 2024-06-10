@@ -555,7 +555,7 @@
      :options   options/transparent-screen-options
      :component import-seed-phrase/view}
 
-    {:name      :screen/settings.import-private-key
+    {:name      :screen/settings.missing-keypair-import-private-key
      :options   options/transparent-screen-options
      :component import-private-key/view}
 

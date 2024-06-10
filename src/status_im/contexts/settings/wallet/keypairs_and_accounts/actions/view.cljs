@@ -30,7 +30,9 @@
                                #(rf/dispatch [:open-modal :screen/settings.import-seed-phrase keypair])
                                [keypair])
         on-import-private-key (rn/use-callback
-                               #(rf/dispatch [:open-modal :screen/settings.import-private-key keypair])
+                               #(rf/dispatch [:open-modal
+                                              :screen/settings.missing-keypair-import-private-key
+                                              keypair])
                                [keypair])]
     [:<>
      [quo/drawer-top drawer-props]

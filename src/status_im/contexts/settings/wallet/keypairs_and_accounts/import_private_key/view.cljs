@@ -76,7 +76,7 @@
                                        [])
         on-auth-success               (rn/use-callback
                                        (fn [password]
-                                         (rf/dispatch [:wallet/import-keypair-by-private-key
+                                         (rf/dispatch [:wallet/import-missing-keypair-by-private-key
                                                        {:keypair-key-uid (:key-uid keypair)
                                                         :private-key     (security/mask-data private-key)
                                                         :password        password

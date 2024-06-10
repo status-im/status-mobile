@@ -201,9 +201,9 @@
 
 (rf/reg-event-fx :wallet/import-keypair-by-seed-phrase-failed import-keypair-by-seed-phrase-failed)
 
-(defn import-keypair-by-private-key
+(defn import-missing-keypair-by-private-key
   [_ [{:keys [keypair-key-uid private-key password on-success on-error]}]]
-  {:fx [[:import-keypair-by-private-key
+  {:fx [[:effects.wallet/import-missing-keypair-by-private-key
          {:private-key private-key
           :password    password
           :on-success  (fn []
@@ -213,18 +213,18 @@
                            (vector? on-success) (rf/dispatch (conj on-success))
                            (fn? on-success)     (on-success)))
           :on-error    (fn [error]
-                         (rf/dispatch [:wallet/import-keypair-by-private-key-failed error])
+                         (rf/dispatch [:wallet/import-missing-keypair-by-private-key-failed error])
                          (cond
                            (vector? on-error) (rf/dispatch (conj on-error error))
                            (fn? on-error)     (on-error error)))}]]})
 
-(rf/reg-event-fx :wallet/import-keypair-by-private-key import-keypair-by-private-key)
+(rf/reg-event-fx :wallet/import-missing-keypair-by-private-key import-missing-keypair-by-private-key)
 
-(defn import-keypair-by-private-key-failed
+(defn import-missing-keypair-by-private-key-failed
   [_ [error]]
   (let [error-type (-> error ex-message keyword)
         error-data (ex-data error)]
-    (when-not (and (= error-type :import-keypair-by-private-key/import-error)
+    (when-not (and (= error-type :import-missing-keypair-by-private-key/import-error)
                    (= (:hint error-data) :incorrect-private-key-for-keypair))
       {:fx [[:dispatch
              [:toasts/upsert
@@ -232,4 +232,5 @@
                :theme :dark
                :text  (:error error-data)}]]]})))
 
-(rf/reg-event-fx :wallet/import-keypair-by-private-key-failed import-keypair-by-private-key-failed)
+(rf/reg-event-fx :wallet/import-missing-keypair-by-private-key-failed
+ import-missing-keypair-by-private-key-failed)
