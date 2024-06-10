@@ -85,9 +85,6 @@
                                            (rf/dispatch [:wallet/update-receiver-networks
                                                          chain-ids]))}]))}]))
 
-(comment
-  (string/capitalize (name :mainnet)))
-
 (defn- make-limit-label-crypto
   [amount currency]
   (str amount
