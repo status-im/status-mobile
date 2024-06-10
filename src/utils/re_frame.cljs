@@ -117,7 +117,12 @@
            (promesa/then (partial call-continuation on-success))
            (promesa/catch (partial call-continuation on-error)))))
    
-   (rf/dispatch [:my-event [:stuff] [:my-event-success] [:my-event-error]])"
+   (rf/dispatch [:my-event
+                  :arg
+                  [:my-event-success]
+                  (fn [error]
+                    (log/error error)
+                    (rf/dispatch [:my-event-error error]))])"
   [continuation & args]
   (cond
     (vector? continuation) (dispatch (into continuation args))
