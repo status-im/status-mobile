@@ -85,5 +85,4 @@
 (defn background-color
   [theme]
   {:flex             1
-   :height           1500
    :background-color (colors/theme-colors colors/white colors/neutral-95 theme)})
