@@ -12,6 +12,7 @@
     [status-im.contexts.wallet.common.utils :as utils]
     [status-im.contexts.wallet.send.input-amount.style :as style]
     [status-im.contexts.wallet.send.routes.view :as routes]
+    [status-im.contexts.wallet.sheets.buy-token.view :as buy-token]
     [status-im.contexts.wallet.sheets.unpreferred-networks-alert.view :as unpreferred-networks-alert]
     [utils.debounce :as debounce]
     [utils.i18n :as i18n]
@@ -131,7 +132,8 @@
    {:action?         true
     :text            (i18n/label :t/not-enough-assets)
     :button-text     (i18n/label :t/buy-eth)
-    :on-button-press #(js/alert "not implemented yet")}])
+    :on-button-press #(rf/dispatch [:show-bottom-sheet
+                                    {:content buy-token/view}])}])
 
 (defn view
   ;; crypto-decimals, limit-crypto and initial-crypto-currency? args are needed
