@@ -277,12 +277,15 @@
         should-try-again?                           (and (not limit-insufficient?) no-routes-found?)
         current-address                             (rf/sub [:wallet/current-viewing-account-address])
         owned-eth-token                             (rf/sub [:wallet/token-by-symbol
-                                                             (string/upper-case constants/mainnet-short-name)
+                                                             (string/upper-case
+                                                              constants/mainnet-short-name)
                                                              enabled-from-chain-ids])
         not-enough-asset?                           (and
                                                      (or no-routes-found? limit-insufficient?)
                                                      (not-empty sender-network-values)
-                                                     (if (= token-symbol (string/upper-case constants/mainnet-short-name))
+                                                     (if (= token-symbol
+                                                            (string/upper-case
+                                                             constants/mainnet-short-name))
                                                        (= available-limit amount)
                                                        (money/equal-to (:total-balance
                                                                         owned-eth-token)
