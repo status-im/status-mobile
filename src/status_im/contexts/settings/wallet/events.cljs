@@ -203,34 +203,28 @@
 
 (defn import-missing-keypair-by-private-key
   [_ [{:keys [keypair-key-uid private-key password on-success on-error]}]]
-  {:fx [[:effects.wallet/import-missing-keypair-by-private-key
-         {:private-key private-key
-          :password    password
-          :on-success  (fn []
-                         (rf/dispatch [:wallet/make-keypairs-accounts-fully-operable
-                                       #{keypair-key-uid}])
-                         (cond
-                           (vector? on-success) (rf/dispatch (conj on-success))
-                           (fn? on-success)     (on-success)))
-          :on-error    (fn [error]
-                         (rf/dispatch [:wallet/import-missing-keypair-by-private-key-failed error])
-                         (cond
-                           (vector? on-error) (rf/dispatch (conj on-error error))
-                           (fn? on-error)     (on-error error)))}]]})
+  {:fx [[:dispatch
+         [:wallet/make-private-key-keypair-fully-operable private-key password
+          (fn []
+            (rf/dispatch [:wallet/make-keypairs-accounts-fully-operable #{keypair-key-uid}])
+            (cond
+              (vector? on-success) (rf/dispatch on-success)
+              (fn? on-success)     (on-success)))
+          (fn [error]
+            (rf/dispatch [:wallet/import-missing-keypair-by-private-key-failed error])
+            (cond
+              (vector? on-error) (rf/dispatch (conj on-error error))
+              (fn? on-error)     (on-error error)))]]]})
 
 (rf/reg-event-fx :wallet/import-missing-keypair-by-private-key import-missing-keypair-by-private-key)
 
 (defn import-missing-keypair-by-private-key-failed
   [_ [error]]
-  (let [error-type (-> error ex-message keyword)
-        error-data (ex-data error)]
-    (when-not (and (= error-type :import-missing-keypair-by-private-key/import-error)
-                   (= (:hint error-data) :incorrect-private-key-for-keypair))
-      {:fx [[:dispatch
-             [:toasts/upsert
-              {:type  :negative
-               :theme :dark
-               :text  (:error error-data)}]]]})))
+  {:fx [[:dispatch
+         [:toasts/upsert
+          {:type  :negative
+           :theme :dark
+           :text  error}]]]})
 
 (rf/reg-event-fx :wallet/import-missing-keypair-by-private-key-failed
  import-missing-keypair-by-private-key-failed)
