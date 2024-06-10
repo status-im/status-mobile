@@ -383,8 +383,10 @@
        :on-delete            (fn []
                                (debounce/clear-all)
                                (set-just-toggled-mode? false)
-                               (set-input-state controlled-input/delete-last))
+                               (set-input-state controlled-input/delete-last)
+                               (rf/dispatch [:wallet/clean-suggested-routes]))
        :on-long-press-delete (fn []
                                (debounce/clear-all)
                                (set-just-toggled-mode? false)
-                               (set-input-state controlled-input/delete-all))}]]))
+                               (set-input-state controlled-input/delete-all)
+                               (rf/dispatch [:wallet/clean-suggested-routes]))}]]))
