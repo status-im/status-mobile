@@ -86,12 +86,8 @@
        (calc-bottom-content-height images link-previews?))))
 
 (defn empty-input?
-  [text images link-previews? reply? audio?]
-  (and (empty? text)
-       (empty? images)
-       (not link-previews?)
-       (not reply?)
-       (not audio?)))
+  [{:keys [input-text images link-previews? reply audio edit]}]
+  (not (or (not-empty input-text) images link-previews? reply audio edit)))
 
 (defn blur-input
   [input-ref]

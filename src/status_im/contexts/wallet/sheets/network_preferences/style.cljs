@@ -1,5 +1,6 @@
 (ns status-im.contexts.wallet.sheets.network-preferences.style
-  (:require [quo.foundations.colors :as colors]))
+  (:require [quo.foundations.colors :as colors]
+            [react-native.platform :as platform]))
 
 (def blur
   {:position      :absolute
@@ -7,7 +8,7 @@
    :left          0
    :right         0
    :bottom        0
-   :overlay-color colors/neutral-100-opa-70-blur})
+   :overlay-color (when platform/ios? colors/neutral-100-opa-70-blur)})
 
 (def data-item
   {:margin-horizontal 20

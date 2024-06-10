@@ -2,7 +2,6 @@
   (:require
     [quo.core :as quo]
     [quo.theme]
-    [react-native.blur :as blur]
     [react-native.platform :as platform]
     [react-native.reanimated :as reanimated]
     [status-im.contexts.chat.messenger.messages.pin.banner.style :as style]
@@ -12,7 +11,7 @@
   [{:keys [chat-id banner-opacity top-offset]} latest-pin-text pins-count]
   (let [theme (quo.theme/use-theme)]
     [reanimated/view {:style (style/container-animated-style top-offset banner-opacity)}
-     [blur/view
+     [quo/blur
       {:style       style/container
        :blur-radius (if platform/ios? 20 10)
        :blur-type   theme

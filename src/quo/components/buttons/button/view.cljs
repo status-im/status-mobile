@@ -1,12 +1,12 @@
 (ns quo.components.buttons.button.view
   (:require
+    [quo.components.blur.view :as blur]
     [quo.components.buttons.button.properties :as button-properties]
     [quo.components.buttons.button.style :as style]
     [quo.components.icon :as quo.icons]
     [quo.components.markdown.text :as text]
     [quo.foundations.customization-colors :as customization-colors]
     [quo.theme]
-    [react-native.blur :as blur]
     [react-native.core :as rn]))
 
 (defn button

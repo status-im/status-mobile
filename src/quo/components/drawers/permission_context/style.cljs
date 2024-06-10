@@ -1,12 +1,13 @@
 (ns quo.components.drawers.permission-context.style
   (:require
     [quo.foundations.colors :as colors]
+    [react-native.platform :as platform]
     [react-native.safe-area :as safe-area]))
 
 (def ^:private radius 20)
 
 (def blur-container
-  {:background-color :transparent
+  {:background-color (when platform/ios? :transparent)
    :position         :absolute
    :top              0
    :left             0

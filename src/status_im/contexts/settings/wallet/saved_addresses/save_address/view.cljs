@@ -35,7 +35,7 @@
 
 (defn view
   []
-  (let [{:keys [address]} (rf/sub [:wallet/saved-address])
+  (let [{:keys [address ens ens?]} (rf/sub [:wallet/saved-address])
         [network-prefixes address-without-prefix] (utils/split-prefix-and-address address)
         [address-label set-address-label] (rn/use-state "")
         [address-color set-address-color] (rn/use-state (rand-nth colors/account-colors))
@@ -46,6 +46,13 @@
                              selected-networks)
                            [selected-networks])
         placeholder (i18n/label :t/address-name)
+        address-text (rn/use-callback
+                      (fn []
+                        [quo/address-text
+                         {:full-address? true
+                          :address       (str chain-short-names address-without-prefix)
+                          :format        :long}])
+                      [address-without-prefix chain-short-names])
         open-network-preferences (rn/use-callback
                                   (fn []
                                     (rf/dispatch
@@ -68,11 +75,29 @@
                                         :on-error
                                         [:wallet/add-saved-address-failed]
                                         :name address-label
+                                        :ens ens
                                         :address address-without-prefix
                                         :customization-color address-color
                                         :chain-short-names chain-short-names}]))
                        [address-without-prefix chain-short-names address-label
-                        address-color])]
+                        address-color])
+        data-item-props (rn/use-memo
+                         #(cond-> {:status          :default
+                                   :size            :default
+                                   :subtitle-type   :default
+                                   :label           :none
+                                   :blur?           true
+                                   :icon-right?     true
+                                   :right-icon      :i/advanced
+                                   :card?           true
+                                   :title           (i18n/label :t/address)
+                                   :subtitle        ens
+                                   :custom-subtitle address-text
+                                   :on-press        open-network-preferences
+                                   :container-style style/data-item}
+                            ens?
+                            (dissoc :custom-subtitle))
+                         [ens ens? open-network-preferences address-text])]
     [quo/overlay {:type :shell}
      [floating-button-page/view
       {:footer-container-padding 0
@@ -125,22 +150,4 @@
       [quo/divider-line
        {:blur?           true
         :container-style style/color-picker-bottom-divider}]
-      [quo/data-item
-       {:status          :default
-        :size            :default
-        :subtitle-type   :default
-        :label           :none
-        :blur?           true
-        :icon-right?     true
-        :right-icon      :i/advanced
-        :card?           true
-        :title           (i18n/label :t/address)
-        :custom-subtitle (rn/use-callback
-                          (fn []
-                            [quo/address-text
-                             {:full-address? true
-                              :address       (str chain-short-names address-without-prefix)
-                              :format        :long}])
-                          [selected-networks address])
-        :on-press        open-network-preferences
-        :container-style style/data-item}]]]))
+      [quo/data-item data-item-props]]]))

@@ -1,6 +1,7 @@
 (ns status-im.contexts.shell.jump-to.components.jump-to-screen.style
   (:require
     [quo.foundations.colors :as colors]
+    [react-native.platform :as platform]
     [status-im.contexts.shell.jump-to.utils :as utils]))
 
 ;;;; Placeholder
@@ -63,4 +64,4 @@
    :left             0
    :right            0
    :top              0
-   :background-color colors/neutral-100-opa-70-blur})
+   :background-color (when platform/ios? colors/neutral-100-opa-70-blur)})

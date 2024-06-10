@@ -1,8 +1,8 @@
 (ns status-im.contexts.onboarding.common.background.view
   (:require
     [oops.core :refer [oget]]
+    [quo.core :as quo]
     [react-native.async-storage :as async-storage]
-    [react-native.blur :as blur]
     [react-native.core :as rn]
     [react-native.platform :as platform]
     [react-native.reanimated :as reanimated]
@@ -89,7 +89,7 @@
        :gesture           :swipeable
        :background        [background-image (* 4 window-width)]}]
      (when dark-overlay?
-       [blur/view
+       [quo/blur
         {:style         style/background-blur-overlay
          :blur-amount   (if platform/android? 30 20)
          :blur-radius   (if platform/android? 25 10)

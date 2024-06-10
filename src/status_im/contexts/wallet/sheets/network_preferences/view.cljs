@@ -1,15 +1,15 @@
 (ns status-im.contexts.wallet.sheets.network-preferences.view
-  (:require [quo.core :as quo]
-            [quo.foundations.colors :as colors]
-            [quo.theme :as quo.theme]
-            [react-native.blur :as blur]
-            [react-native.core :as rn]
-            [reagent.core :as reagent]
-            [status-im.constants :as constants]
-            [status-im.contexts.wallet.common.utils :as utils]
-            [status-im.contexts.wallet.sheets.network-preferences.style :as style]
-            [utils.i18n :as i18n]
-            [utils.re-frame :as rf]))
+  (:require
+    [quo.core :as quo]
+    [quo.foundations.colors :as colors]
+    [quo.theme :as quo.theme]
+    [react-native.core :as rn]
+    [reagent.core :as reagent]
+    [status-im.constants :as constants]
+    [status-im.contexts.wallet.common.utils :as utils]
+    [status-im.contexts.wallet.sheets.network-preferences.style :as style]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]))
 
 (defn view
   [{:keys [first-section-label second-section-label selected-networks
@@ -64,7 +64,7 @@
         [:<>
          ;; quo/overlay isn't compatible with sheets
          (when blur?
-           [blur/view
+           [quo/blur
             {:style       style/blur
              :blur-amount 20
              :blur-radius 25}])

@@ -1,10 +1,10 @@
 (ns quo.components.notifications.notification.view
   (:require
     [quo.components.avatars.user-avatar.view :as user-avatar]
+    [quo.components.blur.view :as blur]
     [quo.components.markdown.text :as text]
     [quo.components.notifications.notification.style :as style]
     [quo.theme]
-    [react-native.blur :as blur]
     [react-native.core :as rn]))
 
 (defn header-container

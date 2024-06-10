@@ -1,7 +1,8 @@
 (ns quo.components.notifications.notification.style
   (:require
     [quo.foundations.colors :as colors]
-    [quo.foundations.shadows :as shadows]))
+    [quo.foundations.shadows :as shadows]
+    [react-native.platform :as platform]))
 
 (def box-container
   {:margin-horizontal 8
@@ -15,7 +16,7 @@
    :padding-vertical 8
    :padding-left     10
    :padding-right    8
-   :background-color :transparent})
+   :background-color (when platform/ios? :transparent)})
 
 (defn content-container
   [theme]

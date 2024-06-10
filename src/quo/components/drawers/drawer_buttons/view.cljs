@@ -1,10 +1,10 @@
 (ns quo.components.drawers.drawer-buttons.view
   (:require
+    [quo.components.blur.view :as blur]
     [quo.components.drawers.drawer-buttons.style :as style]
     [quo.components.icon :as icon]
     [quo.components.markdown.text :as text]
     [quo.foundations.colors :as colors]
-    [react-native.blur :as blur]
     [react-native.core :as rn]
     [react-native.platform :as platform]
     [react-native.reanimated :as reanimated]

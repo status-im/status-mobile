@@ -115,12 +115,18 @@ class TestGroupChatMultipleDeviceMergedNewUI(MultipleSharedDeviceTestCase):
         self.chats[2].add_remove_same_reaction(message=message, emoji="thumbs-up")
         self.chats[2].set_reaction(message=message, emoji="laugh")
 
-        for i in range(3):
-            self.chats[i].just_fyi("Checking reactions count for each group member and admin")
-            message_element = self.chats[i].chat_element_by_text(message)
-            message_element.emojis_below_message(emoji="thumbs-up").wait_for_element_text(2)
-            message_element.emojis_below_message(emoji="love").wait_for_element_text(1)
-            message_element.emojis_below_message(emoji="laugh").wait_for_element_text(1)
+        def _check_reactions_count(chat_view_index):
+            self.chats[chat_view_index].just_fyi("Checking reactions count for each group member and admin")
+            chat_element = self.chats[chat_view_index].chat_element_by_text(message)
+            chat_element.emojis_below_message(emoji="thumbs-up").wait_for_element_text(2)
+            chat_element.emojis_below_message(emoji="love").wait_for_element_text(1)
+            chat_element.emojis_below_message(emoji="laugh").wait_for_element_text(1)
+
+        self.loop.run_until_complete(run_in_parallel((
+            (_check_reactions_count, {'chat_view_index': 0}),
+            (_check_reactions_count, {'chat_view_index': 1}),
+            (_check_reactions_count, {'chat_view_index': 2})
+        )))
 
         self.chats[0].just_fyi("Admin checks info about voted users")
         self.chats[0].chat_element_by_text(message).emojis_below_message(
@@ -163,15 +169,23 @@ class TestGroupChatMultipleDeviceMergedNewUI(MultipleSharedDeviceTestCase):
         self.chats[2].add_remove_same_reaction(message=message, emoji="laugh")
         self.chats[2].add_remove_same_reaction(message=message, emoji="sad")
 
-        for i in range(3):
-            self.chats[i].just_fyi("Checking reactions count for each group member and admin after they were changed")
-            message_element = self.chats[i].chat_element_by_text(message)
+        def _check_reactions_count_after_change(chat_view_index):
+            self.chats[chat_view_index].just_fyi(
+                "Checking reactions count for each group member and admin after they were changed")
+            chat_element = self.chats[chat_view_index].chat_element_by_text(message)
             try:
-                message_element.emojis_below_message(emoji="thumbs-up").wait_for_element_text(1)
-                message_element.emojis_below_message(emoji="love").wait_for_element_text(1)
-                message_element.emojis_below_message(emoji="sad").wait_for_element_text(2)
+                chat_element.emojis_below_message(emoji="thumbs-up").wait_for_element_text(1)
+                chat_element.emojis_below_message(emoji="love").wait_for_element_text(1)
+                chat_element.emojis_below_message(emoji="sad").wait_for_element_text(2)
             except (Failed, NoSuchElementException):
-                self.errors.append("Incorrect reactions count for %s after changing the reactions" % self.usernames[i])
+                self.errors.append(
+                    "Incorrect reactions count for %s after changing the reactions" % self.usernames[chat_view_index])
+
+        self.loop.run_until_complete(run_in_parallel((
+            (_check_reactions_count_after_change, {'chat_view_index': 0}),
+            (_check_reactions_count_after_change, {'chat_view_index': 1}),
+            (_check_reactions_count_after_change, {'chat_view_index': 2})
+        )))
 
         self.chats[0].just_fyi("Admin relogins")
         self.chats[0].reopen_app()
@@ -286,11 +300,16 @@ class TestGroupChatMultipleDeviceMergedNewUI(MultipleSharedDeviceTestCase):
 
     @marks.testrail_id(702808)
     def test_group_chat_offline_pn(self):
-        for i in range(1, 3):
-            self.homes[i].navigate_back_to_home_view()
-            self.homes[i].chats_tab.click()
-            self.homes[i].groups_tab.click()
-            self.homes[i].get_chat(self.chat_name).click()
+        def _proceed_to_chat(index):
+            self.homes[index].navigate_back_to_home_view()
+            self.homes[index].chats_tab.click()
+            self.homes[index].groups_tab.click()
+            self.homes[index].get_chat(self.chat_name).click()
+
+        self.loop.run_until_complete(run_in_parallel((
+            (_proceed_to_chat, {'index': 1}),
+            (_proceed_to_chat, {'index': 2})
+        )))
 
         message_1, message_2 = 'message from old member', 'message from new member'
 
@@ -318,11 +337,18 @@ class TestGroupChatMultipleDeviceMergedNewUI(MultipleSharedDeviceTestCase):
         self.homes[0].chats_tab.click()
         self.homes[0].get_chat(self.chat_name).click()
 
-        self.homes[0].just_fyi("check that messages are shown for every member")
-        for i in range(3):
-            for message in (message_1, message_2):
-                if not self.chats[i].chat_element_by_text(message).is_element_displayed(30):
-                    self.errors.append('%s if not shown for device %s' % (message, str(i)))
+        def _check_messages(index):
+            self.chats[index].just_fyi("Check that messages are shown for user %s" % self.usernames[index])
+            for message_text in (message_1, message_2):
+                if not self.chats[index].chat_element_by_text(message_text).is_element_displayed(30):
+                    self.errors.append('%s if not shown for device %s' % (message_text, index))
+
+        self.loop.run_until_complete(run_in_parallel((
+            (_check_messages, {'index': 0}),
+            (_check_messages, {'index': 1}),
+            (_check_messages, {'index': 2})
+        )))
+
         self.errors.verify_no_errors()
 
     @marks.testrail_id(702732)
@@ -381,27 +407,32 @@ class TestGroupChatMultipleDeviceMergedNewUI(MultipleSharedDeviceTestCase):
                 self.chats[1].chat_element_by_text(self.message_4).pinned_by_label.is_element_displayed(30)):
             self.errors.append("Message 4 is not pinned in group chat after unpinning previous one")
 
-        self.chats[0].just_fyi("Check pinned messages count and content")
-        for chat_number, group_chat in enumerate([self.chats[0], self.chats[1]]):
-            count = group_chat.pinned_messages_count.text
+        def _check_pinned_messages(index):
+            self.chats[index].just_fyi("Check pinned messages count and content for user %s" % self.usernames[index])
+            count = self.chats[index].pinned_messages_count.text
             if count != '3':
                 self.errors.append(
-                    "Pinned messages count %s doesn't match expected 3 for user %s" % (count, chat_number + 1))
-            group_chat.pinned_messages_count.click()
-            for message in self.message_1, self.message_3, self.message_4:
-                pinned_by = group_chat.pinned_messages_list.get_message_pinned_by_text(message)
+                    "Pinned messages count %s doesn't match expected 3 for user %s" % (count, self.usernames[index]))
+            self.chats[index].pinned_messages_count.click()
+            for message_text in self.message_1, self.message_3, self.message_4:
+                pinned_by = self.chats[index].pinned_messages_list.get_message_pinned_by_text(message_text)
                 if pinned_by.is_element_displayed():
                     text = pinned_by.text.strip()
-                    expected_text = "You" if chat_number == 0 else self.usernames[0]
+                    expected_text = "You" if index == 0 else self.usernames[0]
                     if text != expected_text:
                         self.errors.append(
                             "Pinned by '%s' doesn't match expected '%s' for user %s" % (
-                                text, expected_text, chat_number + 1)
+                                text, expected_text, self.usernames[index])
                         )
                 else:
                     self.errors.append(
-                        "Message '%s' is missed on Pinned messages list for user %s" % (message, chat_number + 1)
+                        "Message '%s' is missed on Pinned messages list for user %s" % (message, self.usernames[index])
                     )
+
+        self.loop.run_until_complete(run_in_parallel((
+            (_check_pinned_messages, {'index': 0}),
+            (_check_pinned_messages, {'index': 1})
+        )))
 
         self.errors.verify_no_errors()
 

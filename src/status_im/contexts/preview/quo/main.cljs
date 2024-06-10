@@ -18,6 +18,7 @@
     [status-im.contexts.preview.quo.avatars.user-avatar :as user-avatar]
     [status-im.contexts.preview.quo.avatars.wallet-user-avatar :as
      wallet-user-avatar]
+    [status-im.contexts.preview.quo.banners.alert-banner :as alert-banner]
     [status-im.contexts.preview.quo.banners.banner :as banner]
     [status-im.contexts.preview.quo.browser.browser-input :as browser-input]
     [status-im.contexts.preview.quo.buttons.button :as button]
@@ -243,7 +244,9 @@
                         :component collection-avatar/view}
                        {:name      :account-avatar
                         :component account-avatar/view}]
-   :banner            [{:name      :banner
+   :banner            [{:name      :alert-banners
+                        :component alert-banner/view}
+                       {:name      :banner
                         :component banner/view}]
    :buttons           [{:name      :button
                         :component button/view}

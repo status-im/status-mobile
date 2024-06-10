@@ -170,7 +170,7 @@ class TestActivityCenterContactRequestMultipleDevicePR(MultipleSharedDeviceTestC
             self.home_2.just_fyi("Device 2 sign in, user name is " + self.username_2)
             self.home_2.reopen_app(sign_in=False)
             self.device_2.show_profiles_button.wait_and_click()
-            self.device_2.get_user(username=self.username_2).click()
+            self.device_2.get_user_profile_by_name(username=self.username_2).click()
             self.device_2.sign_in()
 
         self.loop.run_until_complete(run_in_parallel(((_device_1_creates_user, {}),
