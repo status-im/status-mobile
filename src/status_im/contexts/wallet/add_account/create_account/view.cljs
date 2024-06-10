@@ -21,38 +21,40 @@
 
 (defn- get-keypair-data
   [{:keys [title primary-keypair? new-keypair? derivation-path customization-color]}]
-  (let [formatted-path  (string/replace derivation-path #"/" " / ")
-        on-auth-success (fn [password]
-                          (rf/dispatch [:navigate-to
-                                        :screen/wallet.edit-derivation-path
-                                        {:password                password
-                                         :current-derivation-path formatted-path}]))]
-    [{:title             title
-      :image             (if primary-keypair? :avatar :icon)
-      :image-props       (if primary-keypair?
-                           {:full-name           (utils.string/get-initials title 1)
-                            :size                :xxs
-                            :customization-color customization-color}
-                           :i/seed)
-      :action            (when-not new-keypair? :button)
-      :action-props      {:on-press    #(rf/dispatch [:navigate-to :screen/wallet.select-keypair])
-                          :button-text (i18n/label :t/edit)
-                          :alignment   :flex-start}
-      :description       :text
-      :description-props {:text (i18n/label :t/on-device)}}
-     {:title             (i18n/label :t/derivation-path)
-      :image             :icon
-      :image-props       :i/derivated-path
-      :action            (if (ff/enabled? ::ff/wallet.edit-derivation-path) :button :none)
-      :action-props      {:on-press    #(rf/dispatch [:standard-auth/authorize
-                                                      {:on-auth-success   on-auth-success
-                                                       :auth-button-label (i18n/label :t/continue)}])
+  [{:title             title
+    :image             (if primary-keypair? :avatar :icon)
+    :image-props       (if primary-keypair?
+                         {:full-name           (utils.string/get-initials title 1)
+                          :size                :xxs
+                          :customization-color customization-color}
+                         :i/seed)
+    :action            (when-not new-keypair? :button)
+    :action-props      {:on-press    #(rf/dispatch [:navigate-to :screen/wallet.select-keypair])
+                        :button-text (i18n/label :t/edit)
+                        :alignment   :flex-start}
+    :description       :text
+    :description-props {:text (i18n/label :t/on-device)}}
 
-                          :button-text (i18n/label :t/edit)
-                          :icon-left   :i/face-id
-                          :alignment   :flex-start}
-      :description       :text
-      :description-props {:text formatted-path}}]))
+   (when-not (string/blank? derivation-path)
+     (let [formatted-path  (string/replace derivation-path #"/" " / ")
+           on-auth-success (fn [password]
+                             (rf/dispatch [:navigate-to
+                                           :screen/wallet.edit-derivation-path
+                                           {:password                password
+                                            :current-derivation-path formatted-path}]))]
+       {:title             (i18n/label :t/derivation-path)
+        :image             :icon
+        :image-props       :i/derivated-path
+        :action            (if (ff/enabled? ::ff/wallet.edit-derivation-path) :button :none)
+        :action-props      {:on-press    #(rf/dispatch [:standard-auth/authorize
+                                                        {:on-auth-success   on-auth-success
+                                                         :auth-button-label (i18n/label :t/continue)}])
+
+                            :button-text (i18n/label :t/edit)
+                            :icon-left   :i/face-id
+                            :alignment   :flex-start}
+        :description       :text
+        :description-props {:text formatted-path}}))])
 
 (defn- avatar
   [{:keys [account-color emoji on-select-emoji]}]
@@ -157,15 +159,29 @@
   [{:keys [on-change-text set-account-color set-emoji]
     {:keys [account-name account-color emoji]}
     :state}]
-  (let [on-auth-success (fn [password]
-                          (rf/dispatch
-                           [:wallet/import-and-create-keypair-with-account
-                            {:password            password
-                             :account-preferences {:account-name @account-name
-                                                   :color        @account-color
-                                                   :emoji        @emoji}}]))]
-    (fn [{:keys [customization-color keypair-name]}]
-      (let [{:keys [new-account-data]} (rf/sub [:wallet/create-account-new-keypair])]
+  (let [on-auth-success-mnemonic
+        (fn [password]
+          (rf/dispatch
+           [:wallet/import-and-create-keypair-with-account
+            {:password            password
+             :account-preferences {:account-name @account-name
+                                   :color        @account-color
+                                   :emoji        @emoji}}]))
+        on-auth-success-import-private-key
+        (fn [password]
+          (rf/dispatch
+           [:wallet/import-private-key-and-create-keypair-with-account
+            {:password            password
+             :account-preferences {:account-name @account-name
+                                   :color        @account-color
+                                   :emoji        @emoji}}]))]
+    (fn [{:keys [customization-color keypair-name workflow]}]
+      (let [{:keys [new-account-data]} (rf/sub [:wallet/create-account-new-keypair])
+            derivation-path            (when (not= workflow :workflow-new-keypair/import-private-key)
+                                         constants/path-default-wallet)
+            on-auth-success            (if (= workflow :workflow-new-keypair/import-private-key)
+                                         on-auth-success-import-private-key
+                                         on-auth-success-mnemonic)]
         [floating-button
          {:account-color      @account-color
           :slide-button-props {:on-auth-success on-auth-success
@@ -183,7 +199,7 @@
           {:account-color     @account-color
            :set-account-color set-account-color}]
          [new-account-origin
-          {:derivation-path     constants/path-default-wallet
+          {:derivation-path     derivation-path
            :customization-color customization-color
            :keypair-title       keypair-name}]]))))
 
@@ -247,9 +263,9 @@
                            :account-color account-color
                            :emoji         emoji}]
     (fn []
-      (let [customization-color    (rf/sub [:profile/customization-color])
+      (let [customization-color             (rf/sub [:profile/customization-color])
             ;; Having a keypair means the user is importing it or creating it.
-            {:keys [keypair-name]} (rf/sub [:wallet/create-account-new-keypair])]
+            {:keys [keypair-name workflow]} (rf/sub [:wallet/create-account-new-keypair])]
 
         (rn/use-unmount #(rf/dispatch [:wallet/clear-create-account]))
 
@@ -260,7 +276,9 @@
             :set-account-color   set-account-color
             :set-emoji           set-emoji
             :state               state
-            :keypair-name        keypair-name}]
+            :keypair-name        keypair-name
+            :workflow            workflow}]
+
           [derive-account-variant
            {:customization-color customization-color
             :on-change-text      on-change-text

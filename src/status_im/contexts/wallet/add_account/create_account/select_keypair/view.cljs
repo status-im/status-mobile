@@ -23,7 +23,8 @@
       :add-divider?        true
       :on-press            #(rf/dispatch [:navigate-to :screen/wallet.enter-seed-phrase
                                           {:recovering-keypair? true}])}
-     (when (ff/enabled? ::wallet.import-private-key)
+     ;; TODO FIX before merge
+     (when (or true (ff/enabled? ::wallet.import-private-key))
        {:icon                :i/key
         :accessibility-label :import-private-key
         :label               (i18n/label :t/import-private-key)

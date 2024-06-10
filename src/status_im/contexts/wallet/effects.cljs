@@ -14,6 +14,11 @@
   (-> kw symbol str))
 
 (rf/reg-fx
+ :effects.wallet/get-random-mnemonic
+ (fn [{:keys [on-success]}]
+   (native-module/get-random-mnemonic on-success)))
+
+(rf/reg-fx
  :effects.wallet/create-account-from-mnemonic
  (fn [{:keys [mnemonic-phrase paths on-success]
        :or   {paths []}}]

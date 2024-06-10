@@ -90,7 +90,7 @@
               :style style/indicator)
        (i18n/label message)])))
 
-(defn on-unmount
+(defn on-mount
   []
   (rf/dispatch [:wallet/clear-private-key-data]))
 
@@ -112,7 +112,7 @@
         public-address              (rf/sub [:wallet/public-address])
         [flow-state set-flow-state] (rn/use-state nil)
         error?                      (= :invalid-private-key flow-state)]
-    (rn/use-unmount on-unmount)
+    (rn/use-mount on-mount)
     [rn/view {:flex 1}
      [floating-button-page/view
       {:customization-color customization-color

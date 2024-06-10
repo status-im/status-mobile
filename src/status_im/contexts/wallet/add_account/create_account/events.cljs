@@ -85,9 +85,10 @@
 (rf/reg-event-fx :wallet/store-account-generated store-account-generated)
 
 (defn generate-account-for-keypair
-  [{:keys [db]} [{:keys [keypair-name]}]]
+  [{:keys [db]} [{:keys [keypair-name workflow]}]]
   (let [seed-phrase (-> db :wallet :ui :create-account :new-keypair :seed-phrase)]
-    {:fx [[:effects.wallet/create-account-from-mnemonic
+    {:db (assoc-in db [:wallet :ui :create-account :new-keypair :workflow] workflow)
+     :fx [[:effects.wallet/create-account-from-mnemonic
            {:mnemonic-phrase (security/safe-unmask-data seed-phrase)
             :paths           [constants/path-default-wallet]
             :on-success      (fn [new-account-data]
@@ -99,7 +100,7 @@
 
 (defn clear-create-account-data
   [{:keys [db]}]
-  {:db (update-in db [:wallet :ui :create-account] dissoc :new-keypair)})
+  {:db (update-in db [:wallet :ui :create-account] dissoc :new-keypair :workflow)})
 
 (rf/reg-event-fx :wallet/clear-create-account clear-create-account-data)
 
@@ -202,3 +203,38 @@
                                    derived-from-address
                                    %)}]]]}))
 
+(rf/reg-event-fx
+ :wallet/set-seed-phrase
+ (fn [{:keys [db]} [{:keys [seed-phrase on-success]}]]
+   {:db (assoc-in db [:wallet :ui :create-account :new-keypair :seed-phrase] seed-phrase)
+    :fx [on-success]}))
+
+(defn import-private-key-and-create-keypair-with-account
+  [{:keys [db]} [{:keys [password account-preferences]}]]
+  (let [private-key          (get-in db [:wallet :ui :create-account :private-key])
+        unmasked-private-key (security/safe-unmask-data private-key)
+        unmasked-password    (security/safe-unmask-data password)]
+    {:json-rpc/call
+     [{:method     "accounts_importPrivateKey"
+       :params     [unmasked-private-key unmasked-password]
+       :on-success [:wallet/import-and-create-keypair-with-account
+                    {:passord             password
+                     :account-preferences account-preferences}]
+       :on-error   #(log/error "Failed to import private key" %)}]}))
+
+(rf/reg-event-fx
+ :wallet/import-private-key-and-create-keypair-with-account
+ import-private-key-and-create-keypair-with-account)
+
+(rf/reg-event-fx
+ :wallet/import-private-key-and-generate-account-for-keypair
+ (fn [_ [{:keys [keypair-name]}]]
+   {:effects.wallet/get-random-mnemonic
+    {:on-success
+     #(rf/dispatch
+       [:wallet/set-seed-phrase
+        {:seed-phrase %
+         :on-success  [:dispatch
+                       [:wallet/generate-account-for-keypair
+                        {:keypair-name keypair-name
+                         :workflow     :workflow-new-keypair/import-private-key}]]}])}}))
