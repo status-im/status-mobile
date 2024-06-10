@@ -10,7 +10,7 @@
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
-(def community-id "0x1")
+(def community-id "0x02b5bdaf5a25fcfe2ee14c501fab1836b8de57f61621080c3d52073d16de0d98d6")
 
 (h/deftest-sub :communities
   [sub-name]
@@ -461,32 +461,39 @@
   [sub-name]
   (testing "returns sorted community members per online status"
     (let [token-image-eth "data:image/jpeg;base64,/9j/2w"
+          channel-id-1    "89f98a1e-6776-4e5f-8626-8ab9f855253f"
+          channel-id-2    "a076358e-4638-470e-a3fb-584d0a542ce6"
+          chat-id-1       (str community-id channel-id-1)
+          chat-id-2       (str community-id channel-id-2)
           community       {:id                  community-id
                            :permissions         {:access 3}
                            :token-images        {"ETH" token-image-eth}
                            :name                "Community super name"
-                           :chats               {"89f98a1e-6776-4e5f-8626-8ab9f855253f"
+                           :chats               {channel-id-1
                                                  {:description "x"
                                                   :emoji       "🎲"
                                                   :permissions {:access 1}
                                                   :color       "#88B0FF"
                                                   :name        "random"
                                                   :categoryID  "0c3c64e7-d56e-439b-a3fb-a946d83cb056"
-                                                  :id          "89f98a1e-6776-4e5f-8626-8ab9f855253f"
+                                                  :id          channel-id-1
                                                   :position    4
                                                   :can-post?   false
-                                                  :members     {"0x04" {"roles" [1]}}}
-                                                 "a076358e-4638-470e-a3fb-584d0a542ce6"
-                                                 {:description "General channel for the community"
-                                                  :emoji       "🥔"
-                                                  :permissions {:access 1}
-                                                  :color       "#4360DF"
-                                                  :name        "general"
-                                                  :categoryID  "0c3c64e7-d56e-439b-a3fb-a946d83cb056"
-                                                  :id          "a076358e-4638-470e-a3fb-584d0a542ce6"
-                                                  :position    0
-                                                  :can-post?   false
-                                                  :members     {"0x04" {"roles" [1]}}}}
+                                                  :members     nil}
+                                                 channel-id-2
+                                                 {:description  "General channel for the community"
+                                                  :emoji        "🥔"
+                                                  :permissions  {:access 1}
+                                                  :color        "#4360DF"
+                                                  :name         "general"
+                                                  :categoryID   "0c3c64e7-d56e-439b-a3fb-a946d83cb056"
+                                                  :id           channel-id-2
+                                                  :position     0
+                                                  :token-gated? true
+                                                  :can-post?    false
+                                                  :members      {"0x01" {"roles" [1]}
+                                                                 "0x02" {"roles" [1]}
+                                                                 "0x05" {"roles" [1]}}}}
                            :members             {"0x01" {"roles" [1]}
                                                  "0x02" {"roles" [1]}
                                                  "0x03" {"roles" [1]}
@@ -500,8 +507,15 @@
         :visibility-status-updates
         {"0x01" {:status-type constants/visibility-status-always-online}
          "0x02" {:status-type constants/visibility-status-always-online}})
-      (is (= [{:title (i18n/label :t/online)
-               :data  ["0x01" "0x02"]}
-              {:title (i18n/label :t/offline)
-               :data  ["0x03" "0x04"]}]
-             (rf/sub [sub-name community-id]))))))
+      (testing "a non-token gated community should look at all members of a community"
+        (is (= [{:title (i18n/label :t/online)
+                 :data  ["0x01" "0x02"]}
+                {:title (i18n/label :t/offline)
+                 :data  ["0x03" "0x04"]}]
+               (rf/sub [sub-name community-id chat-id-1]))))
+      (testing "a token gated community should use the members option in the channel"
+        (is (= [{:title (i18n/label :t/online)
+                 :data  ["0x01" "0x02"]}
+                {:title (i18n/label :t/offline)
+                 :data  ["0x05"]}]
+               (rf/sub [sub-name community-id chat-id-2])))))))
