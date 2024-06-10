@@ -646,7 +646,8 @@
  (fn [[account-names current-viewing-account-address]]
    (disj account-names (:name current-viewing-account-address))))
 
-(defn- get-emoji-and-colors-from-accounts [accounts]
+(defn- get-emoji-and-colors-from-accounts
+  [accounts]
   (->> accounts
        (map (fn [{:keys [emoji color]}] [emoji color]))
        (set)))
