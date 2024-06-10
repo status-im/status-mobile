@@ -126,4 +126,7 @@
   [continuation & args]
   (cond
     (vector? continuation) (dispatch (into continuation args))
-    (fn? continuation)     (apply continuation args)))
+    (fn? continuation)     (apply continuation args)
+    :else                  (throw (ex-info
+                                   (str "Unsupported continuation: " (type->str continuation))
+                                   {:hint "Make sure to pass a vector or function"}))))
