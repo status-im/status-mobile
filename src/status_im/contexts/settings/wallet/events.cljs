@@ -176,14 +176,10 @@
           :on-success      (fn []
                              (rf/dispatch [:wallet/make-keypairs-accounts-fully-operable
                                            #{keypair-key-uid}])
-                             (cond
-                               (vector? on-success) (rf/dispatch (conj on-success))
-                               (fn? on-success)     (on-success)))
+                             (rf/call-continuation on-success))
           :on-error        (fn [error]
                              (rf/dispatch [:wallet/import-keypair-by-seed-phrase-failed error])
-                             (cond
-                               (vector? on-error) (rf/dispatch (conj on-error error))
-                               (fn? on-error)     (on-error error)))}]]})
+                             (rf/call-continuation on-error error))}]]})
 
 (rf/reg-event-fx :wallet/import-keypair-by-seed-phrase import-keypair-by-seed-phrase)
 
@@ -207,15 +203,11 @@
          [:wallet/make-private-key-keypair-fully-operable private-key password
           (fn []
             (rf/dispatch [:wallet/make-keypairs-accounts-fully-operable #{keypair-key-uid}])
-            (cond
-              (vector? on-success) (rf/dispatch on-success)
-              (fn? on-success)     (on-success)))
+            (rf/call-continuation on-success))
           (fn [error]
             (rf/dispatch [:wallet/import-missing-keypair-by-private-key-failed error])
             (log/error "failed to import missing keypair with private key" {:error error})
-            (cond
-              (vector? on-error) (rf/dispatch (conj on-error error))
-              (fn? on-error)     (on-error error)))]]]})
+            (rf/call-continuation on-error error))]]]})
 
 (rf/reg-event-fx :wallet/import-missing-keypair-by-private-key import-missing-keypair-by-private-key)
 

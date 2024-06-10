@@ -88,3 +88,9 @@
 (def dispatch-sync re-frame/dispatch-sync)
 
 (def reg-event-fx re-frame/reg-event-fx)
+
+(defn call-continuation
+  [continuation & args]
+  (cond
+    (vector? continuation) (dispatch (into continuation args))
+    (fn? continuation)     (apply continuation args)))
