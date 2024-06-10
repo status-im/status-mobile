@@ -39,9 +39,25 @@
  :-> :scanned-address)
 
 (rf/reg-sub
- :wallet/tokens-loading?
+ :wallet/tokens-loading
  :<- [:wallet/ui]
- :-> :tokens-loading?)
+ :-> :tokens-loading)
+
+(rf/reg-sub
+ :wallet/home-tokens-loading?
+ :<- [:wallet/tokens-loading]
+ (fn [tokens-loading]
+   (->> tokens-loading
+        vals
+        (some true?)
+        boolean)))
+
+(rf/reg-sub
+ :wallet/current-viewing-account-tokens-loading?
+ :<- [:wallet/tokens-loading]
+ :<- [:wallet/current-viewing-account-address]
+ (fn [[tokens-loading current-viewing-account-address]]
+   (get tokens-loading current-viewing-account-address)))
 
 (rf/reg-sub
  :wallet/create-account
@@ -218,9 +234,9 @@
     :or   {networks []
            size     32}}]
   (->> accounts
-       (keep (fn [{:keys [path customization-color emoji name address]}]
+       (keep (fn [{:keys [path color emoji name address]}]
                (when-not (string/starts-with? path constants/path-eip1581)
-                 {:account-props {:customization-color customization-color
+                 {:account-props {:customization-color color
                                   :size                size
                                   :emoji               emoji
                                   :type                :default
@@ -233,8 +249,8 @@
 (defn- format-settings-missing-keypair-accounts
   [accounts]
   (->> accounts
-       (map (fn [{:keys [customization-color emoji]}]
-              {:customization-color customization-color
+       (map (fn [{:keys [color emoji]}]
+              {:customization-color color
                :emoji               emoji
                :type                :default}))))
 
@@ -311,15 +327,15 @@
  :wallet/account-cards-data
  :<- [:wallet/accounts]
  :<- [:wallet/balances-in-selected-networks]
- :<- [:wallet/tokens-loading?]
+ :<- [:wallet/tokens-loading]
  :<- [:profile/currency-symbol]
- (fn [[accounts balances tokens-loading? currency-symbol]]
+ (fn [[accounts balances tokens-loading currency-symbol]]
    (mapv (fn [{:keys [color address watch-only?] :as account}]
            (assoc account
                   :customization-color color
                   :type                (if watch-only? :watch-only :empty)
                   :on-press            #(rf/dispatch [:wallet/navigate-to-account address])
-                  :loading?            tokens-loading?
+                  :loading?            (get tokens-loading address)
                   :balance             (utils/prettify-balance currency-symbol (get balances address))))
          accounts)))
 

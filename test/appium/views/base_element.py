@@ -367,6 +367,9 @@ class BaseElement(object):
     def exclude_emoji(value):
         return 'emoji' if value in emoji.UNICODE_EMOJI else value
 
+    def get_child_element_by_text(self, text: str):
+        return BaseElement(self.driver, prefix=self.locator, xpath="//*[@text='%s']" % text)
+
 
 class EditBox(BaseElement):
 

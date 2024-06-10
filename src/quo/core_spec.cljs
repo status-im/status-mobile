@@ -5,6 +5,7 @@
     quo.components.avatars.dapp-avatar.component-spec
     quo.components.avatars.token-avatar.component-spec
     quo.components.avatars.user-avatar.component-spec
+    quo.components.banners.alert-banner.component-spec
     quo.components.banners.banner.component-spec
     quo.components.browser.browser-input.component-spec
     quo.components.buttons.button.component-spec

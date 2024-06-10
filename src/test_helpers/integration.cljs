@@ -68,7 +68,7 @@
 
 (defn wallet-loaded?
   []
-  (not @(rf/subscribe [:wallet/tokens-loading?])))
+  (not @(rf/subscribe [:wallet/home-tokens-loading?])))
 
 (defn assert-messenger-started
   []

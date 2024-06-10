@@ -2,6 +2,7 @@
   (:require
     [clojure.string :as string]
     [quo.core :as quo]
+    [quo.foundations.colors :as colors]
     [react-native.core :as rn]
     [react-native.platform :as platform]
     [status-im.common.not-implemented :as not-implemented]
@@ -52,10 +53,11 @@
         open-remove-confirmation-sheet (rn/use-callback
                                         #(rf/dispatch
                                           [:show-bottom-sheet
-                                           {:theme   :dark
-                                            :shell?  true
-                                            :content (fn []
-                                                       [remove-address/view opts])}])
+                                           {:theme           :dark
+                                            :shell?          true
+                                            :blur-background colors/bottom-sheet-background-blur
+                                            :content         (fn []
+                                                               [remove-address/view opts])}])
                                         [opts])
         open-show-address-qr           (rn/use-callback
                                         #(rf/dispatch [:open-modal

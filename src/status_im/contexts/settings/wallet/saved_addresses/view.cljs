@@ -1,6 +1,7 @@
 (ns status-im.contexts.settings.wallet.saved-addresses.view
   (:require
     [quo.core :as quo]
+    [quo.foundations.colors :as colors]
     [quo.theme :as quo.theme]
     [react-native.core :as rn]
     [react-native.safe-area :as safe-area]
@@ -20,27 +21,29 @@
       :container-style style/empty-container-style}]))
 
 (defn- saved-address
-  [{:keys [name address chain-short-names customization-color has-ens? ens network-preferences-names]}]
+  [{:keys [name address chain-short-names customization-color ens? ens network-preferences-names]}]
   (let [full-address           (str chain-short-names address)
         on-press-saved-address (rn/use-callback
                                 #(rf/dispatch
                                   [:show-bottom-sheet
-                                   {:theme   :dark
-                                    :shell?  true
-                                    :content (fn []
-                                               [address-options/view
-                                                {:address                   address
-                                                 :chain-short-names         chain-short-names
-                                                 :full-address              full-address
-                                                 :name                      name
-                                                 :network-preferences-names network-preferences-names
-                                                 :customization-color       customization-color}])}])
+                                   {:theme           :dark
+                                    :shell?          true
+                                    :blur-background colors/bottom-sheet-background-blur
+                                    :content         (fn []
+                                                       [address-options/view
+                                                        {:address address
+                                                         :chain-short-names chain-short-names
+                                                         :full-address full-address
+                                                         :name name
+                                                         :network-preferences-names
+                                                         network-preferences-names
+                                                         :customization-color customization-color}])}])
                                 [address chain-short-names full-address name customization-color])]
     [quo/saved-address
      {:blur?           true
       :user-props      {:name                name
                         :address             full-address
-                        :ens                 (when has-ens? ens)
+                        :ens                 (when ens? ens)
                         :customization-color customization-color
                         :blur?               true}
       :container-style {:margin-horizontal 8}
@@ -88,12 +91,13 @@
        :icon                :i/add
        :container-style     style/title-container}]
      [rn/section-list
-      {:key-fn                         :title
-       :sticky-section-headers-enabled false
-       :render-section-header-fn       header
-       :render-section-footer-fn       footer
-       :sections                       saved-addresses
-       :render-fn                      saved-address
-       :separator                      [rn/view {:style {:height 4}}]
-       :content-container-style        {:flex-grow 1}
-       :empty-component                [empty-state]}]]))
+      {:key-fn                          :title
+       :shows-vertical-scroll-indicator false
+       :sticky-section-headers-enabled  false
+       :render-section-header-fn        header
+       :render-section-footer-fn        footer
+       :sections                        saved-addresses
+       :render-fn                       saved-address
+       :separator                       [rn/view {:style {:height 4}}]
+       :content-container-style         {:flex-grow 1}
+       :empty-component                 [empty-state]}]]))

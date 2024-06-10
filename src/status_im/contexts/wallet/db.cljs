@@ -6,5 +6,4 @@
    :selected-networks (set constants/default-network-names)})
 
 (def defaults
-  {:ui {:network-filter  network-filter-defaults
-        :tokens-loading? true}})
+  {:ui {:network-filter network-filter-defaults}})

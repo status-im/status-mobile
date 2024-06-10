@@ -76,11 +76,10 @@
     (reset! gesture-enabled? false)))
 
 (defn empty-effect
-  [{:keys [empty-input?]}
-   {:keys [input-text images link-previews? reply audio]}]
+  [{:keys [empty-input?]} subscriptions]
   (reanimated/set-shared-value
    empty-input?
-   (utils/empty-input? input-text images link-previews? reply audio)))
+   (utils/empty-input? subscriptions)))
 
 (defn component-will-unmount
   [{:keys [keyboard-show-listener keyboard-hide-listener keyboard-frame-listener]}]
@@ -90,7 +89,7 @@
 
 (defn initialize
   [props state animations {:keys [max-height] :as dimensions}
-   {:keys [chat-input audio input-text images link-previews? reply] :as subscriptions}]
+   {:keys [chat-input audio input-text images link-previews? reply edit] :as subscriptions}]
   (rn/use-effect
    (fn []
      (maximized-effect state animations dimensions chat-input)
@@ -105,7 +104,7 @@
   (rn/use-effect
    (fn []
      (empty-effect animations subscriptions))
-   [input-text images link-previews? reply])
+   [input-text images link-previews? reply edit audio])
   (rn/use-mount #(reenter-screen-effect state dimensions subscriptions animations)))
 
 (defn use-edit

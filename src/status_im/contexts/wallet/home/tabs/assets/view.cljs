@@ -8,7 +8,7 @@
 
 (defn view
   []
-  (let [tokens-loading?  (rf/sub [:wallet/tokens-loading?])
+  (let [tokens-loading?  (rf/sub [:wallet/home-tokens-loading?])
         {:keys [tokens]} (rf/sub [:wallet/aggregated-token-values-and-balance])]
     (if tokens-loading?
       [quo/skeleton-list

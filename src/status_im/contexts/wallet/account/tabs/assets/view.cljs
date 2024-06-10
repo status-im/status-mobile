@@ -8,7 +8,7 @@
 
 (defn view
   []
-  (let [tokens-loading?       (rf/sub [:wallet/tokens-loading?])
+  (let [tokens-loading?       (rf/sub [:wallet/current-viewing-account-tokens-loading?])
         tokens                (rf/sub [:wallet/current-viewing-account-token-values])
         {:keys [watch-only?]} (rf/sub [:wallet/current-viewing-account])]
     (if tokens-loading?
