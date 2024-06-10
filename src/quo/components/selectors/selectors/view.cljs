@@ -7,9 +7,9 @@
 
 (defn- base-selector
   [{:keys [default-checked? checked? disabled? blur? customization-color on-change container-style
-           label-prefix outer-style-fn inner-style-fn icon-style-fn]
-    :or   {customization-color :blue}}]
+           label-prefix outer-style-fn inner-style-fn icon-style-fn]}]
   (let [theme                   (quo.theme/use-theme)
+        customization-color     (if customization-color customization-color :blue)
         controlled-component?   (some? checked?)
         [internal-checked?
          set-internal-checked?] (rn/use-state (when-not controlled-component?

@@ -9,7 +9,7 @@
     [react-native.core :as rn]))
 
 (defn view
-  [{:keys [checked? blur? accessibility-label container-style on-change icon]} label]
+  [{:keys [checked? blur? accessibility-label container-style on-change icon customization-color]} label]
   (let [theme (quo.theme/use-theme)]
     [rn/touchable-without-feedback
      {:on-press            on-change
@@ -20,7 +20,8 @@
         :accessibility-label accessibility-label
         :blur?               blur?
         :checked?            checked?
-        :on-change           on-change}]
+        :on-change           on-change
+        :customization-color customization-color}]
       [text/text
        {:size  :paragraph-2
         :style style/text}
@@ -29,4 +30,8 @@
         [rn/view {:style style/icon-container}
          [icons/icon icon
           {:accessibility-label :disclaimer-icon
-           :color               (colors/theme-colors colors/neutral-50 colors/neutral-40 theme)}]])]]))
+           :color               (if blur?
+                                  (colors/white-opa-70)
+                                  (colors/theme-colors colors/neutral-50
+                                                       colors/neutral-40
+                                                       theme))}]])]]))
