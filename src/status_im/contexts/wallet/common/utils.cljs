@@ -4,7 +4,8 @@
             [status-im.common.qr-codes.view :as qr-codes]
             [status-im.constants :as constants]
             [utils.money :as money]
-            [utils.number :as number]))
+            [utils.number :as number]
+            [utils.string]))
 
 (defn get-first-name
   [full-name]
@@ -281,3 +282,10 @@
 (defn make-limit-label-fiat
   [amount currency-symbol]
   (str currency-symbol amount))
+
+(defn get-account-name-error
+  [s existing-account-names]
+  (cond
+    (utils.string/contains-emoji? s)             :emoji
+    (existing-account-names s)                   :existing-name
+    (utils.string/contains-special-character? s) :special-character))

@@ -1,6 +1,7 @@
 (ns utils.string
   (:require
-    [clojure.string :as string]))
+    [clojure.string :as string]
+    [oops.core :as oops]))
 
 (defn truncate-str-memo
   "Given string and max threshold, trims the string to threshold length with `...`
@@ -59,3 +60,12 @@
          (take n)
          (map (comp string/upper-case str first))
          string/join)))
+
+(defn contains-emoji?
+  [s]
+  (let [regex (js/RegExp. "(\\p{Emoji_Presentation}|\\p{Extended_Pictographic})" "gu")]
+    (oops/ocall regex "test" s)))
+
+(defn contains-special-character?
+  [s]
+  (re-find #"[^a-zA-Z0-9\s]" s))

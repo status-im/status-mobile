@@ -11,11 +11,9 @@
 
 (defn view
   [{:keys [page-nav-right-side placeholder account-name account-color account-emoji
-           on-change-name
-           on-change-color
-           on-change-emoji section-label
-           bottom-action-label bottom-action-props
-           custom-bottom-action watch-only?]} & children]
+           on-change-name on-change-color on-change-emoji section-label bottom-action-label
+           bottom-action-props custom-bottom-action watch-only? error]}
+   & children]
   (let [{window-width :width} (rn/get-window)
         footer                (if custom-bottom-action
                                 custom-bottom-action
@@ -52,14 +50,30 @@
           :on-press        #(rf/dispatch [:emoji-picker/open {:on-select on-change-emoji}])
           :container-style style/reaction-button-container}
          :i/reaction]]
-       [quo/title-input
-        {:placeholder     placeholder
-         :max-length      constants/wallet-account-name-max-length
-         :blur?           true
-         :default-value   account-name
-         :auto-focus      true
-         :on-change-text  on-change-name
-         :container-style style/title-input-container}]
+
+       [rn/view
+        [quo/title-input
+         {:placeholder     placeholder
+          :max-length      constants/wallet-account-name-max-length
+          :blur?           true
+          :default-value   account-name
+          :auto-focus      true
+          :on-change-text  on-change-name
+          :container-style (style/title-input-container error)}]
+        (when error
+          [quo/info-message
+           {:type            :error
+            :size            :default
+            :icon            :i/info
+            :container-style {:margin-left   20
+                              :margin-bottom 16}}
+           (case error
+             :emoji             (i18n/label :t/key-name-error-emoji)
+             :special-character (i18n/label :t/key-name-error-special-char)
+             :existing-name     (i18n/label :t/name-must-differ-error)
+             :emoji-and-color   (i18n/label :t/emoji-and-colors-unique-error)
+             nil)])]
+
        [quo/divider-line {:container-style style/divider-1}]
        [quo/section-label
         {:section         (i18n/label :t/colour)
