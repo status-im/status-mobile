@@ -151,20 +151,10 @@
                           (vector? on-error) (rf/dispatch (conj on-error error))
                           (fn? on-error)     (on-error error)))))))
 
-(defn import-keypair-by-private-key
-  [private-key password]
-  (-> (make-private-key-fully-operable private-key password)
-      (promesa/catch
-        (fn [error]
-          (promesa/rejected
-           (ex-info
-            (error-message :import-keypair-by-private-key/import-error)
-            (ex-data error)))))))
-
 (rf/reg-fx
  :effects.wallet/import-missing-keypair-by-private-key
  (fn [{:keys [private-key password on-success on-error]}]
-   (-> (import-keypair-by-private-key private-key password)
+   (-> (make-private-key-fully-operable private-key password)
        (promesa/then (fn [_result]
                        (cond
                          (vector? on-success) (rf/dispatch on-success)
