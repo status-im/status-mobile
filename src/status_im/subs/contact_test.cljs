@@ -174,3 +174,37 @@
                                                 (rf/sub [sub-name]))]
       (is (= expected-sorted-contacts-without-images
              (mapv remove-contact-images contact-list-without-identicons))))))
+
+(h/deftest-sub :contacts/contact-two-names-by-identity
+  [sub-name]
+  (testing "contact is current profile"
+    (let [profile-key "profile-key"]
+      (swap! rf-db/app-db assoc
+        :profile/profile
+        {:public-key     profile-key
+         :display-name   "Display Name"
+         :name           "Name"
+         :preferred-name "Preferred Name"}
+
+        :contacts/contacts
+        {profile-key   {:primary-name "Primary Name"}
+         "contact-key" {:secondary-name "Secondary Name"}})
+
+      (is (= ["Preferred Name" nil] (rf/sub [sub-name profile-key])))
+
+      (swap! rf-db/app-db update :profile/profile dissoc :preferred-name)
+      (is (= ["Display Name" nil] (rf/sub [sub-name profile-key])))
+
+      (swap! rf-db/app-db update :profile/profile dissoc :display-name)
+      (is (= ["Primary Name" nil] (rf/sub [sub-name profile-key])))
+
+      (swap! rf-db/app-db update-in [:contacts/contacts profile-key] dissoc :primary-name)
+      (is (= ["Name" nil] (rf/sub [sub-name profile-key])))))
+
+  (testing "contact is not current profile"
+    (swap! rf-db/app-db assoc
+      :profile/profile   {:public-key "profile-key"}
+      :contacts/contacts {"contact-key" {:preferred-name "Preferred Name"
+                                         :secondary-name "Secondary Name"}})
+
+    (is (= ["Preferred Name" "Secondary Name"] (rf/sub [sub-name "contact-key"])))))
