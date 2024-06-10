@@ -212,6 +212,7 @@
               (fn? on-success)     (on-success)))
           (fn [error]
             (rf/dispatch [:wallet/import-missing-keypair-by-private-key-failed error])
+            (log/error "failed to import missing keypair with private key" {:error error})
             (cond
               (vector? on-error) (rf/dispatch (conj on-error error))
               (fn? on-error)     (on-error error)))]]]})
