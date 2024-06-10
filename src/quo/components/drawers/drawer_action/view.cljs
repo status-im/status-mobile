@@ -40,13 +40,13 @@
       (when icon
         [icon/icon icon
          {:accessibility-label :left-icon
-          :container-style     (style/left-icon)
+          :container-style     style/left-icon
           :color               (style/icon-color {:theme theme
                                                   :type  action-type
                                                   :blur? blur?})}])
 
       [rn/view
-       {:style (style/text-container)}
+       {:style style/text-container}
        [text/text
         (style/text {:theme theme
                      :type  action-type

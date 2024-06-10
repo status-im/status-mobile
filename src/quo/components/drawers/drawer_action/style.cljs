@@ -26,8 +26,7 @@
    :gap                8
    :background-color   (background-color props)})
 
-(defn text-container
-  []
+(def text-container
   {:flex         1
    :margin-right 12})
 
@@ -54,8 +53,7 @@
     colors/white-70-blur
     (colors/theme-colors colors/neutral-50 colors/neutral-40 theme)))
 
-(defn left-icon
-  []
+(def left-icon
   {:align-self   :flex-start
    :margin-right 13
    :margin-top   1})
