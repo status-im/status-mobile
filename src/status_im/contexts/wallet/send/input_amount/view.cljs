@@ -135,16 +135,16 @@
                                     {:content buy-token/view}])}])
 
 (defn- fetch-routes
-  [{:keys [amount bounce-duration-ms token valid-input? ]}]
+  [{:keys [amount bounce-duration-ms token valid-input?]}]
   (tap>
-   {:in            `fetch-routes
-    :amount        amount
-    :token         token})
+   {:in     `fetch-routes
+    :amount amount
+    :token  token})
   (if valid-input?
     (debounce/debounce-and-dispatch
      [:wallet/get-suggested-routes
       {:amount        amount
-       :updated-token token }]
+       :updated-token token}]
      bounce-duration-ms)
     (rf/dispatch [:wallet/clean-suggested-routes])))
 

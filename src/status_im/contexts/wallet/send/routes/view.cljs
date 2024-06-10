@@ -1,18 +1,18 @@
 (ns status-im.contexts.wallet.send.routes.view
   (:require
-   [clojure.string :as string]
-   [quo.core :as quo]
-   [react-native.core :as rn]
-   [react-native.safe-area :as safe-area]
-   [status-im.common.controlled-input.utils :as controlled-input]
-   [status-im.contexts.wallet.common.utils :as utils]
-   [status-im.contexts.wallet.common.utils.networks :as network-utils]
-   [status-im.contexts.wallet.send.routes.style :as style]
-   [status-im.contexts.wallet.send.utils :as send-utils]
-   [status-im.contexts.wallet.sheets.network-preferences.view :as network-preferences]
-   [utils.i18n :as i18n]
-   [utils.number :as number]
-   [utils.re-frame :as rf]))
+    [clojure.string :as string]
+    [quo.core :as quo]
+    [react-native.core :as rn]
+    [react-native.safe-area :as safe-area]
+    [status-im.common.controlled-input.utils :as controlled-input]
+    [status-im.contexts.wallet.common.utils :as utils]
+    [status-im.contexts.wallet.common.utils.networks :as network-utils]
+    [status-im.contexts.wallet.send.routes.style :as style]
+    [status-im.contexts.wallet.send.utils :as send-utils]
+    [status-im.contexts.wallet.sheets.network-preferences.view :as network-preferences]
+    [utils.i18n :as i18n]
+    [utils.number :as number]
+    [utils.re-frame :as rf]))
 
 
 (def row-height 44)
@@ -114,11 +114,14 @@
               token}                                    (rf/sub [:wallet/wallet-send-token])
              currency                                   (rf/sub [:profile/currency])
              currency-symbol                            (rf/sub [:profile/currency-symbol])
-             send-from-locked-amounts                   (rf/sub [:wallet/wallet-send-from-locked-amounts])
+             send-from-locked-amounts                   (rf/sub
+                                                         [:wallet/wallet-send-from-locked-amounts])
              locked-amount                              (get send-from-locked-amounts chain-id)
              network-name-str                           (string/capitalize (name network-name))
              [input-state set-input-state]              (rn/use-state (cond-> controlled-input/init-state
-                                                                        locked-amount (controlled-input/set-input-value locked-amount)))
+                                                                        locked-amount
+                                                                        (controlled-input/set-input-value
+                                                                         locked-amount)))
              [crypto-currency? set-crypto-currency]     (rn/use-state true)
              conversion-rate                            (-> token
                                                             :market-values-per-currency
@@ -136,8 +139,8 @@
                                                           current-fiat-limit)
              crypto-decimals                            token-decimals
              input-amount                               (controlled-input/input-value input-state)
-             [is-amount-locked? set-is-amount-locked] (rn/use-state (some? locked-amount))
-             bottom                                      (safe-area/get-bottom)]
+             [is-amount-locked? set-is-amount-locked]   (rn/use-state (some? locked-amount))
+             bottom                                     (safe-area/get-bottom)]
          (rn/use-effect
           (fn []
             (set-input-state #(controlled-input/set-upper-limit % current-limit)))
@@ -175,29 +178,30 @@
                                                      (.toFixed (* value conversion-rate) 12))]
                                      (number/remove-trailing-zeroes new-value))))))}]
           [quo/disclaimer
-           {:on-change (fn [checked?]
-                         (tap> {:checked checked?})
-                         (set-is-amount-locked checked?))
-            :checked? is-amount-locked?
+           {:on-change       (fn [checked?]
+                               (tap> {:checked checked?})
+                               (set-is-amount-locked checked?))
+            :checked?        is-amount-locked?
             :container-style style/disclaimer
-            :icon      (if is-amount-locked?
-                         :i/locked
-                         :i/unlocked)}
+            :icon            (if is-amount-locked?
+                               :i/locked
+                               :i/unlocked)}
            (i18n/label :t/dont-auto-recalculate-network {:network network-name-str})]
           [quo/bottom-actions
            {:actions          :one-action
             :button-one-label (i18n/label :t/update)
-            :button-one-props {:on-press (fn []
-                                           (if is-amount-locked?
-                                             (let [limit-in-crypto (if crypto-currency?
-                                                                     input-amount
-                                                                     (number/remove-trailing-zeroes
-                                                                      (.toFixed (/ input-amount
-                                                                                   conversion-rate)
-                                                                                crypto-decimals)))]
-                                               (rf/dispatch [:wallet/lock-from-amount chain-id limit-in-crypto]))
-                                             (rf/dispatch [:wallet/unlock-from-amount chain-id]))
-                                           (rf/dispatch [:hide-bottom-sheet]))
+            :button-one-props {:on-press  (fn []
+                                            (if is-amount-locked?
+                                              (let [limit-in-crypto (if crypto-currency?
+                                                                      input-amount
+                                                                      (number/remove-trailing-zeroes
+                                                                       (.toFixed (/ input-amount
+                                                                                    conversion-rate)
+                                                                                 crypto-decimals)))]
+                                                (rf/dispatch [:wallet/lock-from-amount chain-id
+                                                              limit-in-crypto]))
+                                              (rf/dispatch [:wallet/unlock-from-amount chain-id]))
+                                            (rf/dispatch [:hide-bottom-sheet]))
                                :disabled? (or (controlled-input/empty-value? input-state)
                                               (controlled-input/input-error input-state))}}]
           [quo/numbered-keyboard
