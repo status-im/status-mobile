@@ -2,13 +2,19 @@
   (:require
     [quo.core :as quo]
     [react-native.core :as rn]
+<<<<<<< HEAD
+=======
+    [react-native.navigation :as navigation]
+    [reagent.core :as reagent]
+>>>>>>> 9caa503ec (lint)
     [status-im.contexts.wallet.account.style :as style]
     [status-im.contexts.wallet.account.tabs.view :as tabs]
     [status-im.contexts.wallet.common.account-switcher.view :as account-switcher]
     [status-im.contexts.wallet.sheets.buy-token.view :as buy-token]
     [status-im.feature-flags :as ff]
     [utils.i18n :as i18n]
-    [utils.re-frame :as rf]))
+    [utils.re-frame :as rf]
+    ["react-native-navigation" :refer (Navigation)]))
 
 (def first-tab-id :assets)
 
@@ -23,6 +29,7 @@
 (defn- change-tab [id] (rf/dispatch [:wallet/select-account-tab id]))
 
 (defn view
+<<<<<<< HEAD
   []
 <<<<<<< HEAD
   (let [selected-tab          (or (rf/sub [:wallet/account-tab]) first-tab-id)
@@ -81,12 +88,18 @@
           :label               (i18n/label :t/jump-to)}}
         style/shell-button])]))
 =======
+=======
+  [{:keys [component-id]}]
+>>>>>>> 9caa503ec (lint)
   (let [selected-tab (reagent/atom first-tab-id)]
     (fn []
       (let [{:keys [name color formatted-balance
                     watch-only?]} (rf/sub [:wallet/current-viewing-account])
             customization-color   (rf/sub [:profile/customization-color])]
-        (rn/use-unmount #(rf/dispatch [:wallet/close-account-page]))
+        (println "ddd" component-id)
+        ;(rn/use-mount (fn []
+        ;                (navigation/reg-component-did-disappear-listener (fn [param1] (println "ppp" param1)))))
+        ;(rn/use-unmount #(rf/dispatch [:wallet/close-account-page]))
         [rn/view {:style {:flex 1}}
          [account-switcher/view
           {:type     :wallet-networks
