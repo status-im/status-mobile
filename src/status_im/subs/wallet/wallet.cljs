@@ -646,18 +646,19 @@
  (fn [[account-names current-viewing-account-address]]
    (disj account-names (:name current-viewing-account-address))))
 
+(defn- get-emoji-and-colors-from-accounts [accounts]
+  (->> accounts
+       (map (fn [{:keys [emoji color]}] [emoji color]))
+       (set)))
+
 (rf/reg-sub
  :wallet/accounts-emojis-and-colors
  :<- [:wallet/accounts]
  (fn [accounts]
-   (let [emojis (map :emoji accounts)
-         colors (map :color accounts)]
-     (set (map vector emojis colors)))))
+   (get-emoji-and-colors-from-accounts accounts)))
 
 (rf/reg-sub
  :wallet/accounts-emojis-and-colors-without-current-account
  :<- [:wallet/accounts-without-current-viewing-account]
  (fn [accounts]
-   (let [emojis (map :emoji accounts)
-         colors (map :color accounts)]
-     (set (map vector emojis colors)))))
+   (get-emoji-and-colors-from-accounts accounts)))
