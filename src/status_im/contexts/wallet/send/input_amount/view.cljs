@@ -7,6 +7,7 @@
     [react-native.core :as rn]
     [react-native.safe-area :as safe-area]
     [status-im.common.controlled-input.utils :as controlled-input]
+    [status-im.constants :as constants]
     [status-im.contexts.wallet.common.account-switcher.view :as account-switcher]
     [status-im.contexts.wallet.common.asset-list.view :as asset-list]
     [status-im.contexts.wallet.common.utils :as utils]
@@ -276,12 +277,12 @@
         should-try-again?                           (and (not limit-insufficient?) no-routes-found?)
         current-address                             (rf/sub [:wallet/current-viewing-account-address])
         owned-eth-token                             (rf/sub [:wallet/token-by-symbol
-                                                             "ETH"
+                                                             (string/upper-case constants/mainnet-short-name)
                                                              enabled-from-chain-ids])
         not-enough-asset?                           (and
                                                      (or no-routes-found? limit-insufficient?)
                                                      (not-empty sender-network-values)
-                                                     (if (= token-symbol "ETH")
+                                                     (if (= token-symbol (string/upper-case constants/mainnet-short-name))
                                                        (= available-limit amount)
                                                        (money/equal-to (:total-balance
                                                                         owned-eth-token)
