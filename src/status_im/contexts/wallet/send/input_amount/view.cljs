@@ -275,6 +275,7 @@
                                                        current-limit)
         should-try-again?                           (and (not limit-insufficient?) no-routes-found?)
         current-address                             (rf/sub [:wallet/current-viewing-account-address])
+<<<<<<< HEAD
         owned-eth-token                             (rf/sub [:wallet/token-by-symbol
                                                              (string/upper-case
                                                               constants/mainnet-short-name)
@@ -292,6 +293,7 @@
         show-no-routes?                             (and
                                                      (or no-routes-found? limit-insufficient?)
                                                      (not-empty sender-network-values)
+<<<<<<< HEAD
                                                      (not not-enough-asset?))
         request-fetch-routes                        (fn [bounce-duration-ms]
                                                       (fetch-routes
@@ -317,12 +319,18 @@
                                                                                       12))]
                                                             (number/remove-trailing-zeroes
                                                              new-value))))))]
+=======
+                                                     (not not-enough-asset?))]
+=======
+        view-id                                     (rf/sub [:view-id])]
+>>>>>>> def673650 (navigation listener)
+>>>>>>> 5bf546c99 (navigation listener)
     (rn/use-mount
      (fn []
        (let [dismiss-keyboard-fn   #(when (= % "active") (rn/dismiss-keyboard!))
              app-keyboard-listener (.addEventListener rn/app-state "change" dismiss-keyboard-fn)]
          #(.remove app-keyboard-listener))))
-    (rn/use-unmount on-navigate-back)
+    (rn/use-nav-unmount on-navigate-back view-id)
     (rn/use-effect
      (fn []
        (set-input-state #(controlled-input/set-upper-limit % current-limit)))

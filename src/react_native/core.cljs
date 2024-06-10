@@ -5,6 +5,7 @@
     [oops.core :as oops]
     [promesa.core :as promesa]
     [react-native.flat-list :as flat-list]
+    [react-native.navigation :as navigation]
     [react-native.platform :as platform]
     [react-native.section-list :as section-list]
     [react-native.utils :as utils]
@@ -188,6 +189,15 @@
 (defn use-unmount
   [handler]
   (use-mount (fn [] handler)))
+
+(defn use-nav-unmount
+  [handler view-id]
+  (use-effect
+   (fn []
+     (let [listener    {:componentDidDisappear handler}
+           unsubscribe (navigation/reg-comp-listener listener view-id)]
+       #(.remove unsubscribe)))
+   []))
 
 (defn use-callback
   ([handler]

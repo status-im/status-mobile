@@ -46,6 +46,7 @@
   []
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
   (let [accounts        (rf/sub [:wallet/accounts-with-current-asset])
         network-details (rf/sub [:wallet/network-details])]
 =======
@@ -67,6 +68,11 @@
   (let [accounts (rf/sub [:wallet/accounts-with-current-asset])]
     (rn/use-unmount on-close)
 >>>>>>> c3f098e6c (lint)
+=======
+  (let [accounts (rf/sub [:wallet/accounts-with-current-asset])
+        view-id  (rf/sub [:view-id])]
+    (rn/use-nav-unmount on-close view-id)
+>>>>>>> def673650 (navigation listener)
     [floating-button-page/view
      {:footer-container-padding 0
       :header                   [account-switcher/view

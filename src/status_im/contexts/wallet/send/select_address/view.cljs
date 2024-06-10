@@ -192,6 +192,7 @@
       (let [selected-tab             (or (rf/sub [:wallet/send-tab]) (:id (first tabs-data)))
             valid-ens-or-address?    (boolean (rf/sub [:wallet/valid-ens-or-address?]))
             local-suggestion-address (rf/sub [:wallet/local-suggestions->full-address])
+<<<<<<< HEAD
             color                    (rf/sub [:wallet/current-viewing-account-color])]
 <<<<<<< HEAD
         (rn/use-unmount #(on-close true))
@@ -202,7 +203,15 @@
 =======
         (rn/use-unmount on-close)
 >>>>>>> e5ac6dc2d (lint)
+<<<<<<< HEAD
 >>>>>>> 1f13216998 (lint)
+=======
+=======
+            color                    (rf/sub [:wallet/current-viewing-account-color])
+            view-id                  (rf/sub [:view-id])]
+        (rn/use-nav-unmount on-close view-id)
+>>>>>>> 5bf546c99 (navigation listener)
+>>>>>>> 8673c96814 (navigation listener)
         [floating-button-page/view
          {:content-container-style      {:flex 1}
           :footer-container-padding     0

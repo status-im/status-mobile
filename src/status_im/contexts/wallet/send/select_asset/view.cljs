@@ -64,8 +64,9 @@
         on-change-tab                   #(set-selected-tab %)
         on-close                        (fn []
                                           (rf/dispatch [:wallet/clean-selected-token])
-                                          (rf/dispatch [:wallet/clean-selected-collectible]))]
-    (rn/use-unmount on-close)
+                                          (rf/dispatch [:wallet/clean-selected-collectible]))
+        view-id                         (rf/sub [:view-id])]
+    (rn/use-nav-unmount on-close view-id)
     [rn/safe-area-view {:style style/container}
      [account-switcher/view
       {:icon-name     :i/arrow-left
