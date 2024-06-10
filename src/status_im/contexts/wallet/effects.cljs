@@ -170,7 +170,6 @@
                          (vector? on-success) (rf/dispatch on-success)
                          (fn? on-success)     (on-success))))
        (promesa/catch (fn [error]
-                        (tap> error)
                         (cond
                           (vector? on-error) (rf/dispatch (conj on-error error))
                           (fn? on-error)     (on-error error)))))))
