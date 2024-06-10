@@ -5,6 +5,7 @@
     [react-native.clipboard :as clipboard]
     [react-native.core :as rn]
     [react-native.safe-area :as safe-area]
+    [status-im.common.floating-button-page.view :as floating-button-page]
     [status-im.common.standard-authentication.core :as standard-auth]
     [status-im.contexts.settings.wallet.keypairs-and-accounts.import-private-key.style :as style]
     [status-im.contexts.wallet.common.validation :as validation]
@@ -84,58 +85,54 @@
                                                         :on-error        on-import-error}]))
                                        [keypair private-key on-import-success on-import-error])]
     [quo/overlay {:type :shell}
-     [rn/view {:style style/full-layout}
-      [rn/keyboard-avoiding-view {:style (style/page-container insets)}
-       [quo/page-nav
-        {:margin-top (:top insets)
-         :background :blur
-         :icon-name  :i/close
-         :on-press   navigate-back}]
-       [quo/page-top
-        {:blur?           true
-         :container-style style/page-top
-         :title           (i18n/label :t/import-private-key)
-         :description     :context-tag
-         :context-tag     {:type    :icon
-                           :icon    :i/password
-                           :size    24
-                           :context (:name keypair)}}]
-       [rn/view {:style style/form-container}
-        [quo/input
-         {:accessibility-label :import-private-key
-          :placeholder         (i18n/label :t/enter-private-key-placeholder)
-          :label               (i18n/label :t/private-key)
-          :type                :password
-          :blur?               blur?
-          :error?              error?
-          :return-key-type     :done
-          :auto-focus          true
-          :on-change-text      on-change
-          :button              (when (empty? private-key)
-                                 {:on-press on-paste
-                                  :text     (i18n/label :t/paste)})
-          :default-value       private-key}]
-        (when flow-state
-          [quo/info-message
-           {:type (if (= flow-state :correct-private-key)
-                    :success
-                    :error)
-            :size :default
-            :icon :i/info}
-           (case flow-state
-             :correct-private-key   (i18n/label :t/correct-private-key)
-             :invalid-private-key   (i18n/label :t/invalid-private-key)
-             :incorrect-private-key (i18n/label :t/incorrect-private-key {:name (:name keypair)})
-             nil)])]
-
-       [rn/view {:style style/slide-container}
-        [standard-auth/slide-button
-         {:blur?                 true
-          :size                  :size-48
-          :customization-color   customization-color
-          :track-text            (i18n/label :t/slide-to-import)
-          :on-auth-success       on-auth-success
-          :auth-button-label     (i18n/label :t/import-key-pair)
-          :auth-button-icon-left :i/key
-          :disabled?             (or error? (string/blank? private-key))
-          :dependencies          [on-auth-success]}]]]]]))
+     [floating-button-page/view
+      {:footer-container-padding 0
+       :header                   [quo/page-nav
+                                  {:margin-top (:top insets)
+                                   :background :blur
+                                   :icon-name  :i/close
+                                   :on-press   navigate-back}]
+       :footer                   [rn/view {:style style/slide-container}
+                                  [standard-auth/slide-button
+                                   {:blur?                 true
+                                    :size                  :size-48
+                                    :customization-color   customization-color
+                                    :track-text            (i18n/label :t/slide-to-import)
+                                    :on-auth-success       on-auth-success
+                                    :auth-button-label     (i18n/label :t/import-key-pair)
+                                    :auth-button-icon-left :i/key
+                                    :disabled?             (or error? (string/blank? private-key))
+                                    :dependencies          [on-auth-success]}]]}
+      [quo/page-top
+       {:blur?       true
+        :title       (i18n/label :t/import-private-key)
+        :description :context-tag
+        :context-tag {:type    :icon
+                      :icon    :i/password
+                      :size    24
+                      :context (:name keypair)}}]
+      [rn/view {:style style/form-container}
+       [quo/input
+        {:accessibility-label :import-private-key
+         :placeholder         (i18n/label :t/enter-private-key-placeholder)
+         :label               (i18n/label :t/private-key)
+         :type                :password
+         :blur?               blur?
+         :error?              error?
+         :return-key-type     :done
+         :auto-focus          true
+         :on-change-text      on-change
+         :button              (when (empty? private-key)
+                                {:on-press on-paste
+                                 :text     (i18n/label :t/paste)})
+         :default-value       private-key}]
+       (when flow-state
+         [quo/info-message
+          {:type (if (= flow-state :correct-private-key) :success :error)
+           :size :default
+           :icon :i/info}
+          (case flow-state
+            :correct-private-key   (i18n/label :t/correct-private-key)
+            :invalid-private-key   (i18n/label :t/invalid-private-key)
+            :incorrect-private-key (i18n/label :t/incorrect-private-key {:name (:name keypair)})
+            nil)])]]]))
