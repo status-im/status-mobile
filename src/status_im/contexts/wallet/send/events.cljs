@@ -400,9 +400,6 @@
                                                       receiver-networks)))
                                          network-chain-ids))
          from-locked-amount (update-vals from-locked-amounts to-hex)
-         _ (tap> {:in                 `get-suggested-routes
-                  :from-locked-amount from-locked-amount
-                  :amount-in          amount-in})
          transaction-type-param (case transaction-type
                                   :tx/collectible-erc-721  constants/send-type-erc-721-transfer
                                   :tx/collectible-erc-1155 constants/send-type-erc-1155-transfer

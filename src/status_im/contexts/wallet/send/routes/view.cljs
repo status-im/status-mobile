@@ -179,7 +179,6 @@
                                      (number/remove-trailing-zeroes new-value))))))}]
           [quo/disclaimer
            {:on-change       (fn [checked?]
-                               (tap> {:checked checked?})
                                (set-is-amount-locked checked?))
             :checked?        is-amount-locked?
             :container-style style/disclaimer
@@ -292,10 +291,6 @@
 
 (defn disable-chain
   [chain-id disabled-from-chain-ids token-available-networks-for-suggested-routes]
-  #_(tap> {:in                                            `disable-chain
-           :chain-id                                      chain-id
-           :disabled-from-chain-ids                       disabled-from-chain-ids
-           :token-available-networks-for-suggested-routes token-available-networks-for-suggested-routes})
   (let [disabled-chain-ids
         (if (contains? (set
                         disabled-from-chain-ids)

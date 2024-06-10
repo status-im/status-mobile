@@ -136,10 +136,6 @@
 
 (defn- fetch-routes
   [{:keys [amount bounce-duration-ms token valid-input?]}]
-  (tap>
-   {:in     `fetch-routes
-    :amount amount
-    :token  token})
   (if valid-input?
     (debounce/debounce-and-dispatch
      [:wallet/get-suggested-routes
@@ -335,8 +331,6 @@
      [current-address])
     (rn/use-effect
      (fn []
-       (tap> {:in                   `use-effect
-              :request-fetch-routes request-fetch-routes})
        (request-fetch-routes 0))
      [send-from-locked-amounts])
     [rn/view
