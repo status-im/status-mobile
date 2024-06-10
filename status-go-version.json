@@ -3,7 +3,7 @@
     "_comment": "Instead use: scripts/update-status-go.sh <rev>",
     "owner": "status-im",
     "repo": "status-go",
-    "version": "ilmotta/init-messenger-filters-outside-login-flow",
-    "commit-sha1": "a7b9f8a907a77c4eee12a2b833ab722c42026c47",
-    "src-sha256": "00fwkzg1xnr1n6fgl9bvwsyll7c7f6pvrmgp95n6f7zz5qzsdjdz"
+    "version": "v0.180.29",
+    "commit-sha1": "a7de8f31bb645fe3f75a5c17621123462bb6705a",
+    "src-sha256": "09fnmfqz5cm8mljn6nplj8g3r3fc953xdn7maz9l9n8vw1f9f1nf"
 }
