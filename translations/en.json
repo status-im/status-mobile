@@ -2700,5 +2700,7 @@
     "wallet-connect-version-not-supported": "WalletConnect version {{version}} is not supported",
     "add-network-preferences": "Add network preferences",
     "saved-address-network-preference-selection-description": "Only change if you know which networks the address owner is happy to to receive funds on",
-    "add-preferences": "Add preferences"
+    "add-preferences": "Add preferences",
+    "buy-eth": "Buy ETH",
+    "not-enough-assets": "Not enough assets to pay gas fees"
 }
