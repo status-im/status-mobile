@@ -1,6 +1,5 @@
 (ns status-im.contexts.wallet.common.activity-tab.events
   (:require [camel-snake-kebab.extras :as cske]
-            [taoensso.timbre :as log]
             [utils.ethereum.chain :as chain]
             [utils.re-frame :as rf]
             [utils.transforms :as transforms]))
@@ -29,9 +28,9 @@
               ;; https://github.com/status-im/status-mobile/issues/19864
               :method   "wallet_filterActivityAsync"
               :params   request-params
-              :on-error #(log/info "failed to fetch activities"
-                                   {:error %
-                                    :event :wallet/fetch-activities-for-current-account})}]]]})))
+              :on-error [:wallet/log-rpc-error
+                         {:event  :wallet/fetch-activities-for-current-account
+                          :params request-params}]}]]]})))
 
 (rf/reg-event-fx
  :wallet/activity-filtering-for-current-account-done
