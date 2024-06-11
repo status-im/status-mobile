@@ -1154,7 +1154,7 @@ class TestChatManagement(SingleDeviceTestCase):
         browsing_view.element_by_text_part('XSS check').click()
         browsing_view.open_in_status_button.click()
         if browsing_view.element_by_text_part('simpledapp.status.im').is_element_displayed():
-            self.errors.append("XSS attemp succedded \n")
+            self.errors.append("XSS attemp succeeded \n")
             browsing_view.ok_button.click()
 
         browsing_view.cross_icon.click()
