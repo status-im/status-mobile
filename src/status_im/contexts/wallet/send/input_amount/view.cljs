@@ -376,18 +376,17 @@
                                      max-decimals  (if crypto-currency? crypto-decimals 2)
                                      regex-pattern (str "^\\d*\\.?\\d{0," max-decimals "}$")
                                      regex         (re-pattern regex-pattern)]
-                                 (when (and (not loading-routes?)
-                                            (re-matches regex new-text))
+                                 (when (re-matches regex new-text)
                                    (debounce/clear-all)
                                    (set-just-toggled-mode? false)
                                    (set-input-state #(controlled-input/add-character % c)))))
        :on-delete            (fn []
-                               (when-not loading-routes?
-                                 (debounce/clear-all)
-                                 (set-just-toggled-mode? false)
-                                 (set-input-state controlled-input/delete-last)))
+                               (debounce/clear-all)
+                               (set-just-toggled-mode? false)
+                               (set-input-state controlled-input/delete-last)
+                               (rf/dispatch [:wallet/clean-suggested-routes]))
        :on-long-press-delete (fn []
-                               (when-not loading-routes?
-                                 (debounce/clear-all)
-                                 (set-just-toggled-mode? false)
-                                 (set-input-state controlled-input/delete-all)))}]]))
+                               (debounce/clear-all)
+                               (set-just-toggled-mode? false)
+                               (set-input-state controlled-input/delete-all)
+                               (rf/dispatch [:wallet/clean-suggested-routes]))}]]))

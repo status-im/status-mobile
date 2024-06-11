@@ -34,8 +34,8 @@
   (->> given-accounts
        (filter (fn [{:keys [path]}]
                  (not (string/starts-with? path constants/path-eip1581))))
-       (map (fn [{:keys [customization-color emoji name address]}]
-              {:account-props {:customization-color customization-color
+       (map (fn [{:keys [color emoji name address]}]
+              {:account-props {:customization-color color
                                :size                32
                                :emoji               emoji
                                :type                :default
@@ -48,20 +48,21 @@
                :action        :none}))))
 
 (defn- keypair
-  [item index _
+  [item _ _
    {:keys [profile-picture compressed-key selected-key-uid set-selected-key-uid customization-color]}]
-  (let [accounts (parse-accounts (:accounts item))]
+  (let [profile-keypair? (= (:type item) :profile)
+        accounts         (parse-accounts (:accounts item))]
     [quo/keypair
      {:customization-color customization-color
-      :profile-picture     (when (zero? index) profile-picture)
+      :profile-picture     (when profile-keypair? profile-picture)
       :status-indicator    false
-      :type                (if (zero? index) :default-keypair :other)
+      :type                (if profile-keypair? :default-keypair :other)
       :stored              :on-device
       :on-options-press    #(js/alert "Options pressed")
       :action              :selector
       :blur?               false
       :details             {:full-name (:name item)
-                            :address   (when (zero? index)
+                            :address   (when profile-keypair?
                                          (utils/get-shortened-compressed-key compressed-key))}
       :on-press            #(set-selected-key-uid (:key-uid item))
       :accounts            accounts

@@ -1,12 +1,12 @@
 (ns quo.components.notifications.toast.view
   (:require
     [quo.components.avatars.user-avatar.view :as user-avatar]
+    [quo.components.blur.view :as blur]
     [quo.components.icon :as icon]
     [quo.components.markdown.text :as text]
     [quo.components.notifications.count-down-circle :as count-down-circle]
     [quo.components.notifications.toast.style :as style]
     [quo.theme :as quo.theme]
-    [react-native.blur :as blur]
     [react-native.core :as rn]
     [utils.i18n :as i18n]))
 

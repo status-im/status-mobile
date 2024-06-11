@@ -603,3 +603,10 @@ class HomeView(BaseView):
         address = self.copy_wallet_address()
         self.click_system_back_button()
         return address
+
+    def get_discover_community_card_by_name(self, community_name: str):
+        return BaseElement(
+            self.driver,
+            xpath="//*[@content-desc='%s'][descendant::*[@content-desc='chat-name-text'][@text='%s']]" % (
+                self.community_card_item.accessibility_id, community_name)
+        )

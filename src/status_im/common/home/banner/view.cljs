@@ -4,7 +4,6 @@
     [quo.core :as quo]
     [quo.foundations.colors :as colors]
     [quo.theme]
-    [react-native.blur :as blur]
     [react-native.core :as rn]
     [react-native.platform :as platform]
     [react-native.reanimated :as reanimated]
@@ -34,7 +33,7 @@
   (let [open-sheet? (-> (rf/sub [:bottom-sheet]) :sheets seq)
         theme       (quo.theme/use-theme)]
     [reanimated/view {:style (style/banner-card-blur-layer scroll-shared-value theme)}
-     [blur/view
+     [quo/blur
       {:style         style/fill-space
        :blur-amount   (if platform/ios? 20 10)
        :blur-type     (if (= theme :light) (if platform/ios? :light :xlight) :dark)

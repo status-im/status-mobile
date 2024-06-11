@@ -12,8 +12,9 @@ from views.base_view import BaseView
 class MultiAccountButton(Button):
     class Username(Text):
         def __init__(self, driver, locator_value):
-            super(MultiAccountButton.Username, self).__init__(driver,
-                                                              xpath="%s//android.widget.TextView[@content-desc='username']" % locator_value)
+            super(MultiAccountButton.Username, self).__init__(
+                driver,
+                xpath="%s//android.widget.TextView[@content-desc='username']" % locator_value)
 
     def __init__(self, driver, position=1):
         super(MultiAccountButton, self).__init__(driver,
@@ -123,10 +124,17 @@ class TermsOfUseLink(Button):
 
 
 class UserProfileElement(Button):
-    def __init__(self, driver, username):
+    def __init__(self, driver, username: str = None, index: int = None):
         self.username = username
-        super().__init__(driver,
-                         xpath="//*[@text='%s']//ancestor::android.view.ViewGroup[@content-desc='profile-card']" % username)
+        self.index = index
+        if username:
+            super().__init__(
+                driver,
+                xpath="//*[@text='%s']//ancestor::android.view.ViewGroup[@content-desc='profile-card']" % self.username)
+        elif index:
+            super().__init__(driver, xpath="(//*[@content-desc='profile-card'])[%s]" % self.index)
+        else:
+            raise AttributeError("Either username or profile index should be defined")
 
     def open_user_options(self):
         Button(self.driver, xpath='%s//*[@content-desc="profile-card-options"]' % self.locator).click()
@@ -154,8 +162,9 @@ class SignInView(BaseView):
         self.privacy_policy_link = PrivacyPolicyLink(self.driver)
         self.terms_of_use_link = TermsOfUseLink(self.driver)
         self.keycard_storage_button = KeycardKeyStorageButton(self.driver)
-        self.first_username_on_choose_chat_name = Text(self.driver,
-                                                       xpath="//*[@content-desc='select-account-button-0']//android.widget.TextView[1]")
+        self.first_username_on_choose_chat_name = Text(
+            self.driver,
+            xpath="//*[@content-desc='select-account-button-0']//android.widget.TextView[1]")
         self.get_keycard_banner = Button(self.driver, translation_id="get-a-keycard")
         self.accept_tos_checkbox = self.checkbox_button
 
@@ -348,7 +357,12 @@ class SignInView(BaseView):
             print(str(e))
         self.driver.info('## Exporting database is finished!', device=False)
 
-    def get_user(self, username):
+    def get_user_profile_by_name(self, username: str):
         self.driver.info("Getting username card by '%s'" % username)
-        expected_element = UserProfileElement(self.driver, username)
-        return expected_element if expected_element.is_element_displayed(10) else self.driver.fail("User is not found!")
+        expected_element = UserProfileElement(self.driver, username=username)
+        return expected_element if expected_element.is_element_displayed(10) else self.driver.fail(
+            "User %s is not found!" % username)
+
+    def get_user_profile_by_index(self, index: int):
+        self.driver.info("Getting username card by index %s" % index)
+        return UserProfileElement(self.driver, index=index)

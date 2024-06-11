@@ -11,8 +11,8 @@
 
 (defn get-keypairs-success
   [{:keys [db]} [keypairs]]
-  (let [parsed-keypairs (data-store/parse-keypairs keypairs)
-        default-key-uid (:key-uid (first parsed-keypairs))]
+  (let [parsed-keypairs (data-store/rpc->keypairs keypairs)
+        default-key-uid (:key-uid (some #(when (= (:type %) :profile) %) parsed-keypairs))]
     {:db (-> db
              (assoc-in [:wallet :keypairs] parsed-keypairs)
              (assoc-in [:wallet :ui :create-account :selected-keypair-uid] default-key-uid))}))

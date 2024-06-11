@@ -65,7 +65,7 @@
   []
   (let [[selected-tab set-selected-tab] (rn/use-state (:id (first tabs-data)))
         account-list-ref                (rn/use-ref-atom nil)
-        tokens-loading?                 (rf/sub [:wallet/tokens-loading?])
+        tokens-loading?                 (rf/sub [:wallet/home-tokens-loading?])
         networks                        (rf/sub [:wallet/selected-network-details])
         account-cards-data              (rf/sub [:wallet/account-cards-data])
         cards                           (conj account-cards-data (new-account-card-data))

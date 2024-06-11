@@ -1,7 +1,7 @@
 (ns quo.components.overlay.view
   (:require
+    [quo.components.blur.view :as blur]
     [quo.components.overlay.style :as style]
-    [react-native.blur :as blur]
     [react-native.core :as rn]
     [react-native.safe-area :as safe-area]))
 

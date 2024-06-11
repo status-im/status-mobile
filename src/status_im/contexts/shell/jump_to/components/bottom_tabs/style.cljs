@@ -8,7 +8,9 @@
 (defn bottom-tabs-container
   [pass-through? height]
   [{:height height}
-   {:background-color    (if pass-through? :transparent colors/neutral-100)
+   {:background-color    (if (and platform/ios? pass-through?)
+                           :transparent
+                           colors/neutral-100)
     :flex                1
     :align-items         :center
     :height              (utils/bottom-tabs-container-height)

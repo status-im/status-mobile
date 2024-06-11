@@ -61,7 +61,7 @@ class ENSusernames(Button):
 
 class AdvancedButton(Button):
     def __init__(self, driver):
-        super().__init__(driver, accessibility_id="advanced-button")
+        super().__init__(driver, accessibility_id="icon, Advanced, label-component, icon")
 
     def click(self):
         self.scroll_to_element().click()
@@ -363,6 +363,8 @@ class ProfileView(BaseView):
         self.profile_blocked_users_button = Button(self.driver, accessibility_id="Blocked users, label-component, icon")
         self.profile_legacy_button = Button(self.driver,
                                             accessibility_id="icon, Legacy settings, label-component, icon")
+        self.testnet_mode_toggle = Button(self.driver,
+                                          xpath="//*[@content-desc='test-networks-enabled']/android.widget.Switch")
 
     def switch_network(self, network='Mainnet with upstream RPC'):
         self.driver.info("## Switch network to '%s'" % network, device=False)

@@ -40,7 +40,7 @@
 (defn recovery-phrase-input
   [{:keys [customization-color blur? on-focus on-blur mark-errors?
            error-pred-current-word error-pred-written-words word-limit
-           container-style placeholder-text-color]
+           container-style placeholder-text-color on-input-ref]
     :or   {customization-color      :blue
            word-limit               ##Inf
            error-pred-current-word  (constantly false)
@@ -60,7 +60,8 @@
         extra-props       (apply dissoc props custom-props)]
     [rn/view {:style (style/container container-style)}
      [rn/text-input
-      (merge {:accessibility-label    :recovery-phrase-input
+      (merge {:ref                    on-input-ref
+              :accessibility-label    :recovery-phrase-input
               :style                  (style/input theme)
               :placeholder-text-color (or placeholder-text-color
                                           (style/placeholder-color state theme blur?))

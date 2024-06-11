@@ -1,18 +1,18 @@
 (ns status-im.contexts.wallet.sheets.network-preferences.view
-  (:require [quo.core :as quo]
-            [quo.foundations.colors :as colors]
-            [quo.theme :as quo.theme]
-            [react-native.blur :as blur]
-            [react-native.core :as rn]
-            [reagent.core :as reagent]
-            [status-im.constants :as constants]
-            [status-im.contexts.wallet.common.utils :as utils]
-            [status-im.contexts.wallet.sheets.network-preferences.style :as style]
-            [utils.i18n :as i18n]
-            [utils.re-frame :as rf]))
+  (:require
+    [quo.core :as quo]
+    [quo.foundations.colors :as colors]
+    [quo.theme :as quo.theme]
+    [react-native.core :as rn]
+    [reagent.core :as reagent]
+    [status-im.constants :as constants]
+    [status-im.contexts.wallet.common.utils :as utils]
+    [status-im.contexts.wallet.sheets.network-preferences.style :as style]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]))
 
 (defn view
-  [{:keys [title first-section-label second-section-label selected-networks
+  [{:keys [first-section-label second-section-label selected-networks
            receiver-preferred-networks account watch-only?]}]
   (let [state                               (reagent/atom :default)
         {:keys [color address
@@ -38,7 +38,7 @@
                                                 initial-network-preferences-names
                                                 @network-preferences-names-state))]
     (fn [{:keys [on-save on-change blur? button-label first-section-warning-label
-                 second-section-warning-label]}]
+                 second-section-warning-label title description]}]
       (let [theme                            (quo.theme/use-theme)
             network-details                  (rf/sub [:wallet/network-details])
             first-section-networks           (filter (fn [network]
@@ -64,16 +64,17 @@
         [:<>
          ;; quo/overlay isn't compatible with sheets
          (when blur?
-           [blur/view
+           [quo/blur
             {:style       style/blur
              :blur-amount 20
              :blur-radius 25}])
          [quo/drawer-top
           {:title       (or title (i18n/label :t/network-preferences))
            :description (when-not receiver?
-                          (if watch-only?
-                            (i18n/label :t/network-preferences-desc-1)
-                            (i18n/label :t/network-preferences-desc-2)))
+                          (or description
+                              (if watch-only?
+                                (i18n/label :t/network-preferences-desc-1)
+                                (i18n/label :t/network-preferences-desc-2))))
            :blur?       blur?}]
          (when-not receiver?
            [quo/data-item

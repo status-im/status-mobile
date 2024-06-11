@@ -8,6 +8,7 @@
     [status-im.common.floating-button-page.view :as floating-button-page]
     [status-im.contexts.settings.wallet.saved-addresses.add-address-to-save.style :as style]
     [status-im.contexts.wallet.common.validation :as validation]
+    [utils.debounce :as debounce]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
@@ -18,7 +19,7 @@
 (defn- validate-input
   [account-addresses saved-addresses user-input]
   (cond
-    (or (nil? user-input) (= user-input ""))
+    (string/blank? user-input)
     nil
 
     (contains? saved-addresses user-input)
@@ -89,7 +90,7 @@
 
 (defn- existing-saved-address
   [{:keys [address]}]
-  (let [{:keys [name customization-color chain-short-names ens has-ens?]}
+  (let [{:keys [name customization-color chain-short-names ens ens?]}
         (rf/sub [:wallet/saved-address-by-address
                  address])]
     [rn/view {:style style/existing-saved-address-container}
@@ -103,43 +104,65 @@
        :active-state?   true
        :user-props      {:name                name
                          :address             (str chain-short-names address)
-                         :ens                 (when has-ens? ens)
+                         :ens                 (when ens? ens)
                          :customization-color customization-color
                          :blur?               true}
        :container-style style/saved-address-item}]]))
 
 (defn view
   []
-  (let [profile-color                 (rf/sub [:profile/customization-color])
-        accounts-addresses            (rf/sub [:wallet/addresses])
-        saved-addresses-addresses     (rf/sub [:wallet/saved-addresses-addresses])
-        [input-value set-input-value] (rn/use-state nil)
-        [error set-error]             (rn/use-state nil)
-        error?                        (some? error)
-        validate                      #(validate-input accounts-addresses
-                                                       saved-addresses-addresses
-                                                       %)
-        clear-input                   (rn/use-callback
-                                       (fn []
-                                         (set-input-value nil)
-                                         (set-error nil)))
-        on-change-text                (rn/use-callback
-                                       (fn [new-value]
-                                         (let [lowercase-value (string/lower-case new-value)]
-                                           (set-error (validate lowercase-value))
-                                           (set-input-value lowercase-value))))
-        paste-into-input              (rn/use-callback #(clipboard/get-string
-                                                         (fn [clipboard-text]
-                                                           (on-change-text clipboard-text))))
-        on-press-continue             (rn/use-callback
-                                       (fn []
-                                         (rf/dispatch [:wallet/set-address-to-save
-                                                       {:address input-value}])
-                                         (rf/dispatch
-                                          [:navigate-to-within-stack
-                                           [:screen/settings.save-address
-                                            :screen/settings.add-address-to-save]]))
-                                       [input-value])]
+  (let [profile-color                       (rf/sub [:profile/customization-color])
+        accounts-addresses                  (rf/sub [:wallet/addresses])
+        saved-addresses-addresses           (rf/sub [:wallet/saved-addresses-addresses])
+        [address-or-ens set-address-or-ens] (rn/use-state "")
+        [ens-address set-ens-address]       (rn/use-state "")
+        [error set-error]                   (rn/use-state nil)
+        error?                              (some? error)
+        ens-name?                           (validation/ens-name? address-or-ens)
+        address                             (if ens-name? ens-address address-or-ens)
+        button-disabled?                    (or (string/blank? address-or-ens)
+                                                (and ens-name? (string/blank? ens-address))
+                                                error?)
+        validate                            #(validate-input accounts-addresses
+                                                             saved-addresses-addresses
+                                                             %)
+        clear-input                         (rn/use-callback
+                                             (fn []
+                                               (set-address-or-ens "")
+                                               (set-ens-address "")
+                                               (set-error nil)))
+        on-ens-resolve                      (rn/use-callback
+                                             (fn [resolved-address]
+                                               (set-error (validate resolved-address))
+                                               (set-ens-address resolved-address)))
+        on-change-text                      (rn/use-callback
+                                             (fn [new-value]
+                                               (let [trimmed-value (string/trim new-value)]
+                                                 (set-error (validate (string/lower-case trimmed-value)))
+                                                 (set-address-or-ens trimmed-value)
+                                                 (set-ens-address "")
+                                                 (when (validation/ens-name? trimmed-value)
+                                                   (debounce/debounce-and-dispatch
+                                                    [:wallet/resolve-ens
+                                                     {:ens        new-value
+                                                      :on-success on-ens-resolve
+                                                      :on-error   #(set-error :ens-not-registered)}]
+                                                    300)))))
+        paste-into-input                    (rn/use-callback #(clipboard/get-string
+                                                               (fn [clipboard-text]
+                                                                 (on-change-text clipboard-text))))
+        on-press-continue                   (rn/use-callback
+                                             (fn []
+                                               (rf/dispatch
+                                                [:wallet/set-address-to-save
+                                                 {:address address
+                                                  :ens     address-or-ens
+                                                  :ens?    ens-name?}])
+                                               (rf/dispatch
+                                                [:navigate-to-within-stack
+                                                 [:screen/settings.save-address
+                                                  :screen/settings.add-address-to-save]]))
+                                             [address ens-name? address-or-ens])]
     (rn/use-unmount #(rf/dispatch [:wallet/clear-address-to-save]))
     [quo/overlay {:type :shell}
      [floating-button-page/view
@@ -153,8 +176,7 @@
                                    :accessibility-label :add-address-to-save-page-nav}]
        :footer                   [quo/button
                                   {:customization-color profile-color
-                                   :disabled?           (or (string/blank? input-value)
-                                                            error?)
+                                   :disabled?           button-disabled?
                                    :on-press            on-press-continue}
                                   (i18n/label :t/continue)]}
       [quo/page-top
@@ -164,7 +186,7 @@
         :description      :text
         :description-text (i18n/label :t/add-address-to-save-description)}]
       [address-input
-       {:input-value      input-value
+       {:input-value      address-or-ens
         :on-change-text   on-change-text
         :paste-into-input paste-into-input
         :clear-input      clear-input}]
@@ -172,4 +194,4 @@
         [:<>
          [error-view {:error error}]
          (when (= error :existing-saved-address)
-           [existing-saved-address {:address input-value}])])]]))
+           [existing-saved-address {:address address}])])]]))

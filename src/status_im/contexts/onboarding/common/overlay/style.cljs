@@ -1,6 +1,7 @@
 (ns status-im.contexts.onboarding.common.overlay.style
   (:require
     [quo.foundations.colors :as colors]
+    [react-native.platform :as platform]
     [react-native.reanimated :as reanimated]))
 
 (defn blur-container
@@ -15,4 +16,4 @@
 
 (def blur-style
   {:flex             1
-   :background-color colors/neutral-80-opa-80-blur})
+   :background-color (when platform/ios? colors/neutral-80-opa-80-blur)})

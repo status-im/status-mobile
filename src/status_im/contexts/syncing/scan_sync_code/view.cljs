@@ -4,7 +4,6 @@
     [oops.core :as oops]
     [quo.core :as quo]
     [quo.foundations.colors :as colors]
-    [react-native.blur :as blur]
     [react-native.camera-kit :as camera-kit]
     [react-native.core :as rn]
     [react-native.hole-view :as hole-view]
@@ -254,7 +253,7 @@
    [hole-view/hole-view
     {:style style/hole
      :holes [(assoc qr-view-finder :borderRadius 16)]}
-    [blur/view
+    [quo/blur
      {:style            style/absolute-fill
       :blur-amount      10
       :blur-type        :transparent

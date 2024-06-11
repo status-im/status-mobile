@@ -59,6 +59,8 @@
     [status-im.contexts.profile.settings.view :as settings]
     [status-im.contexts.settings.wallet.keypairs-and-accounts.encrypted-qr.view :as
      encrypted-key-pair-qr]
+    [status-im.contexts.settings.wallet.keypairs-and-accounts.import-seed-phrase.view :as
+     import-seed-phrase]
     [status-im.contexts.settings.wallet.keypairs-and-accounts.rename.view :as keypair-rename]
     [status-im.contexts.settings.wallet.keypairs-and-accounts.scan-qr.view :as scan-keypair-qr]
     [status-im.contexts.settings.wallet.keypairs-and-accounts.view :as keypairs-and-accounts]
@@ -66,7 +68,7 @@
     [status-im.contexts.settings.wallet.saved-addresses.add-address-to-save.view :as
      wallet-add-address-to-save]
     [status-im.contexts.settings.wallet.saved-addresses.save-address.view :as wallet-save-address]
-    [status-im.contexts.settings.wallet.saved-addresses.sheets.share-address.view :as
+    [status-im.contexts.settings.wallet.saved-addresses.share-address.view :as
      share-saved-address]
     [status-im.contexts.settings.wallet.saved-addresses.view :as saved-addresses-settings]
     [status-im.contexts.settings.wallet.wallet-options.view :as wallet-options]
@@ -546,6 +548,10 @@
     {:name      :screen/settings.scan-keypair-qr
      :options   options/transparent-modal-screen-options
      :component scan-keypair-qr/view}
+
+    {:name      :screen/settings.import-seed-phrase
+     :options   options/transparent-screen-options
+     :component import-seed-phrase/view}
 
     {:name      :screen/settings.network-settings
      :options   options/transparent-modal-screen-options

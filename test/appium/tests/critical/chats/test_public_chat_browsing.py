@@ -33,43 +33,6 @@ class TestCommunityOneDeviceMerged(MultipleSharedDeviceTestCase):
         self.community_view = self.home.get_community_view()
         self.channel = self.community_view.get_channel(self.channel_name).click()
 
-    @marks.testrail_id(703503)
-    @marks.xfail(reason="Curated communities not loading, https://github.com/status-im/status-mobile/issues/17852",
-                 run=False)
-    def test_community_discovery(self):
-        self.home.navigate_back_to_home_view()
-        self.home.communities_tab.click()
-        self.home.discover_communities_button.click()
-        self.home.community_card_item.wait_for_visibility_of_element(30)
-
-        if len(self.home.community_card_item.find_elements()) > 1:
-            contributors_test_community_attributes = "Test Community", 'Open for anyone', 'Web3', 'Software dev'
-            for text in contributors_test_community_attributes:
-                if not self.home.element_by_text(text).is_element_displayed(10):
-                    self.errors.append("'%s' text is not in Discovery!" % text)
-            self.home.element_by_text(contributors_test_community_attributes[0]).click()
-            element_templates = {
-                self.community_view.join_button: 'discovery_join_button.png',
-                self.community_view.get_channel_avatar(): 'discovery_general_channel.png',
-            }
-            for element, template in element_templates.items():
-                if element.is_element_differs_from_template(template):
-                    element.save_new_screenshot_of_element('%s_different.png' % template.split('.')[0])
-                    self.errors.append(
-                        "Element %s is different from expected template %s!" % (element.locator, template))
-            self.community_view.navigate_back_to_home_view()
-            self.home.communities_tab.click()
-            self.home.discover_communities_button.click()
-            self.home.community_card_item.wait_for_visibility_of_element(30)
-            self.home.swipe_up()
-
-        status_ccs_community_attributes = '(old) Status CCs', 'Community for Status CCs', 'Ethereum', \
-            'Software dev', 'Web3'
-        for text in status_ccs_community_attributes:
-            if not self.community_view.element_by_text(text).is_element_displayed(10):
-                self.errors.append("'%s' text is not shown for (old) Status CCs!" % text)
-        self.errors.verify_no_errors()
-
     @marks.testrail_id(702846)
     def test_community_navigate_to_channel_when_relaunch(self):
         text_message = 'some_text'
@@ -261,7 +224,7 @@ class TestCommunityOneDeviceMerged(MultipleSharedDeviceTestCase):
         self.home.just_fyi("Check that can remove user from logged out state")
         self.home.reopen_app(sign_in=False)
         self.sign_in.show_profiles_button.wait_and_click()
-        user_card = self.sign_in.get_user(username=self.username)
+        user_card = self.sign_in.get_user_profile_by_name(username=self.username)
         user_card.open_user_options()
         self.sign_in.remove_profile_button.click()
         if not self.sign_in.element_by_translation_id("remove-profile-confirm-message").is_element_displayed(30):
@@ -275,6 +238,67 @@ class TestCommunityOneDeviceMerged(MultipleSharedDeviceTestCase):
             self.errors.append("Removed user is re-appeared after relogin!")
 
         self.errors.verify_no_errors()
+
+    @marks.testrail_id(703503)
+    def test_community_discovery(self):
+        try:
+            # workaround for case if a user is logged out in  the previous test
+            self.sign_in.get_user_profile_by_index(index=1).click()
+            self.sign_in.sign_in()
+        except NoSuchElementException:
+            pass
+        self.home.navigate_back_to_home_view()
+        self.home.just_fyi("Turn off testnet in the profile settings")
+        profile = self.home.profile_button.click()
+        profile.advanced_button.scroll_and_click()
+        profile.testnet_mode_toggle.click()
+        profile.ok_button.click()
+        self.sign_in.sign_in()
+
+        self.home.just_fyi("Check Discover Communities content")
+        self.home.communities_tab.click()
+        self.home.discover_communities_button.click()
+        self.home.community_card_item.wait_for_elements(seconds=120)
+
+        expected_communities = {
+            ' 0xUX': ['Design', 'Ethereum', 'Collaboration'],
+            'Status': ['Web3', 'Blockchain', 'Ethereum'],
+            'Status Inu': ['News', 'Social', 'Web3'],
+        }
+        for community_name, tags in expected_communities.items():
+            self.home.just_fyi("Check %s community tags in the Discover communities screen" % community_name)
+            card = self.home.get_discover_community_card_by_name(community_name=community_name)
+            try:
+                card.wait_for_visibility_of_element(30)
+                if community_name == 'Status':
+                    card.swipe_to_web_element()
+                missing_tags = list()
+                for text in tags:
+                    try:
+                        card.get_child_element_by_text(text=text).wait_for_element()
+                    except TimeoutException:
+                        missing_tags.append(text)
+                if missing_tags:
+                    self.errors.append("Community '%s' is missing tag(s) %s." % (community_name, ','.join(tags)))
+
+                if community_name == 'Status':
+                    self.home.just_fyi("Check Status community screen")
+                    card.click()
+                    if self.community_view.join_button.is_element_differs_from_template(
+                            'status_community_join_button.png'):
+                        self.errors.append("Status community Join button is different from expected template.")
+                    if self.community_view.community_logo.is_element_differs_from_template('status_community_logo.png'):
+                        self.errors.append("Status community logo is different from expected template.")
+
+                    self.community_view.close_community_view_button.click()
+                    self.home.discover_communities_button.click()
+                    self.home.swipe_up()
+
+            except TimeoutException:
+                self.errors.append("Community '%s' is not in the Discover Communities list." % community_name)
+
+        self.errors.verify_no_errors()
+        # Note: this test should always be the LAST ONE in the group because it turns on mainnet in the app!
 
 
 @pytest.mark.xdist_group(name="new_three_2")
@@ -998,6 +1022,8 @@ class TestCommunityMultipleDeviceMergedTwo(MultipleSharedDeviceTestCase):
         self.errors.verify_no_errors()
 
     @marks.testrail_id(702948)
+    @marks.xfail(reason="Can't enter channel after community is fetched for the first time, " \
+                        "https://github.com/status-im/status-mobile/issues/20395")
     def test_community_hashtag_links_to_community_channels(self):
         for home in self.homes:
             home.navigate_back_to_home_view()
@@ -1098,6 +1124,8 @@ class TestCommunityMultipleDeviceMergedTwo(MultipleSharedDeviceTestCase):
         self.errors.verify_no_errors()
 
     @marks.testrail_id(703629)
+    @marks.xfail(reason="Can't enter channel after community is fetched for the first time, " \
+                        "https://github.com/status-im/status-mobile/issues/20395")
     def test_community_join_when_node_owner_offline(self):
         for home in self.homes:
             home.navigate_back_to_home_view()
@@ -1143,8 +1171,8 @@ class TestCommunityMultipleDeviceMergedTwo(MultipleSharedDeviceTestCase):
             general_channel.click()
             if not self.channel_2.chat_element_by_text(control_message_general_chat).is_element_displayed(30):
                 self.errors.append(
-                    "Message in community channel is not visible for user before join, it was indicated as" \
-                    "%s sent for the sender before he went offline" % "" if message_sent else "not")
+                    "Message in community channel is not visible for user before join, it was indicated as " \
+                    "%s sent for the sender before he went offline" % ("" if message_sent else "not"))
         else:
             self.errors.append("Community channel is not displayed for user before join")
         self.community_2.toast_content_element.wait_for_invisibility_of_element(30)

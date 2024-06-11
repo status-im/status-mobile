@@ -1,6 +1,7 @@
 (ns quo.components.animated-header-flatlist.style
   (:require
     [quo.foundations.colors :as colors]
+    [react-native.platform :as platform]
     [react-native.reanimated :as reanimated]))
 
 (defn container-view
@@ -28,16 +29,18 @@
     :right            right}))
 
 (defn blur-view
-  [animation]
+  [animation theme]
   (reanimated/apply-animations-to-style
    {:opacity animation}
-   {:position :absolute
-    :top      0
-    :left     0
-    :right    0
-    :height   100
-    :z-index  2
-    :overflow :hidden}))
+   {:position         :absolute
+    :top              0
+    :left             0
+    :right            0
+    :height           100
+    :z-index          2
+    :overflow         :hidden
+    :background-color (when platform/android?
+                        (colors/theme-colors colors/white colors/neutral-80 theme))}))
 
 (defn entity-picture
   [animation theme]
