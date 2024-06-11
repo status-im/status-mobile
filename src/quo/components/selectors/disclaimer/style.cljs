@@ -16,3 +16,7 @@
 
 (def text
   {:margin-left 8})
+
+(def icon-container
+  {:align-items :flex-end
+   :flex        1})
