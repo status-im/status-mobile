@@ -40,8 +40,8 @@
   [keypairs key-uids-set]
   (map (fn [keypair]
          (if (contains? key-uids-set (:key-uid keypair))
-           (update keypair
-                   :accounts
-                   make-keypairs-accounts-fully-operable)
+           (-> keypair
+               (update :accounts make-keypairs-accounts-fully-operable)
+               (assoc :lowest-operability :fully))
            keypair))
        keypairs))

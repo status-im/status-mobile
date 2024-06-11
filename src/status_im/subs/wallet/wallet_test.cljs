@@ -651,16 +651,18 @@
    :removed  false})
 
 (def default-keypair-accounts
-  {:key-uid  "abc"
-   :name     "My Profile"
-   :type     "profile"
-   :accounts []})
+  {:key-uid            "abc"
+   :name               "My Profile"
+   :type               "profile"
+   :lowest-operability :fully
+   :accounts           []})
 
 (def seed-phrase-keypair-accounts
-  {:key-uid  "def"
-   :name     "My Key Pair"
-   :type     "seed"
-   :accounts []})
+  {:key-uid            "def"
+   :name               "My Key Pair"
+   :type               "seed"
+   :lowest-operability :no
+   :accounts           []})
 
 (h/deftest-sub :wallet/settings-keypairs-accounts
   [sub-name]

@@ -59,6 +59,8 @@
     [status-im.contexts.profile.settings.view :as settings]
     [status-im.contexts.settings.wallet.keypairs-and-accounts.encrypted-qr.view :as
      encrypted-key-pair-qr]
+    [status-im.contexts.settings.wallet.keypairs-and-accounts.import-private-key.view :as
+     import-private-key]
     [status-im.contexts.settings.wallet.keypairs-and-accounts.import-seed-phrase.view :as
      import-seed-phrase]
     [status-im.contexts.settings.wallet.keypairs-and-accounts.rename.view :as keypair-rename]
@@ -552,6 +554,10 @@
     {:name      :screen/settings.import-seed-phrase
      :options   options/transparent-screen-options
      :component import-seed-phrase/view}
+
+    {:name      :screen/settings.missing-keypair-import-private-key
+     :options   options/transparent-screen-options
+     :component import-private-key/view}
 
     {:name      :screen/settings.network-settings
      :options   options/transparent-modal-screen-options
