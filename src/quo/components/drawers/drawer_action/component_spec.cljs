@@ -47,6 +47,14 @@
     (h/has-style (h/query-by-label-text :container)
                  {:backgroundColor :transparent}))
 
+  (h/test "render :input action"
+    (h/render-with-theme-provider
+     [drawer-action/view
+      {:action      :input
+       :input-props {:placeholder "Type something"}
+       :state       :selected}])
+    (h/is-truthy (h/query-by-label-text "input")))
+
   (h/test "render default action with icon, title, description"
     (h/render-with-theme-provider [drawer-action/view
                                    {:icon        :i/contact
