@@ -70,6 +70,9 @@
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
+                <!-- Handles http and https URLs for status.app -->
+                <data android:scheme="http" android:host="status.app" />
+                <data android:scheme="https" android:host="status.app" />
                 <!-- Community paths -->
                 <data android:pathPattern="/c/.*" android:host="status.app" android:scheme="http" />
                 <data android:pathPattern="/c/.*" android:host="status.app" android:scheme="https" />
