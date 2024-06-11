@@ -636,3 +636,14 @@
                                                         connection-string
                                                         config-json
                                                         callback)))
+
+(defn create-account-from-private-key
+  "Validate that a mnemonic conforms to BIP39 dictionary/checksum standards"
+  ([private-key]
+   (native-utils/promisify-native-module-call create-account-from-private-key private-key))
+  ([private-key callback]
+   (log/debug "[native-module] create-account-from-private-key")
+
+   (.createAccountFromPrivateKey ^js (account-manager)
+                                 (types/clj->json {:privateKey private-key})
+                                 callback)))

@@ -80,7 +80,7 @@ in {
     androidPkgs = self.androidEnvCustom.compose;
   };
 
-  # Android environement
+  # Android environment
   androidEnvCustom = callPackage ./pkgs/android-sdk { };
   androidPkgs = self.androidEnvCustom.pkgs;
   androidShell = self.androidEnvCustom.shell;

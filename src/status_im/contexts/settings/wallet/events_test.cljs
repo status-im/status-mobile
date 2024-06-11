@@ -57,8 +57,9 @@
                     (sut/remove-keypair cofx [mock-key-uid])))))))
 
 (deftest make-keypairs-accounts-fully-operable-test
-  (let [db                 (mock-db [{:key-uid  mock-key-uid
-                                      :accounts [{:key-uid mock-key-uid :operable "no"}]}]
+  (let [db                 (mock-db [{:key-uid            mock-key-uid
+                                      :lowest-operability :no
+                                      :accounts           [{:key-uid mock-key-uid :operable "no"}]}]
                                     {"0x1" {:key-uid mock-key-uid :operable "no"}})
         key-uids-to-update [mock-key-uid]]
     (testing "make-keypairs-accounts-fully-operable"
@@ -68,7 +69,8 @@
                                   (get-in result-db [:wallet :keypairs]))
             updated-account (get-in result-db [:wallet :accounts "0x1"])]
         (is (= (keyword (-> updated-keypair :accounts first :operable)) :fully))
-        (is (= (keyword (:operable updated-account)) :fully))))))
+        (is (= (keyword (:operable updated-account)) :fully))
+        (is (= (:lowest-operability updated-keypair) :fully))))))
 
 (deftest connection-string-for-import-keypair-test
   (let [cofx              {:db (mock-db [] {})}

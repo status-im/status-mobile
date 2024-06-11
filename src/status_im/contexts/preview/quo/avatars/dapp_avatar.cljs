@@ -7,11 +7,16 @@
 
 (def descriptor
   [{:type :boolean
-    :key  :context?}])
+    :key  :context?}
+   {:type    :select
+    :key     :size
+    :options [{:key :size-32}
+              {:key :size-64}]}])
 
 (defn view
   []
-  (let [[state set-state] (rn/use-state {:context? false})]
+  (let [[state set-state] (rn/use-state {:context? false
+                                         :size     :size-32})]
     [preview/preview-container
      {:state      state
       :set-state  set-state

@@ -11,32 +11,30 @@
     [:props
      [:map {:closed true}
       [:context? {:optional true} [:maybe :boolean]]
+      [:size {:optional true} [:maybe [:enum :size-32 :size-64]]]
       [:image :schema.common/image-source]
       [:network-image {:optional true} [:maybe :schema.common/image-source]]
       [:container-style {:optional true} [:maybe :map]]]]]
    :any])
 
 (defn- view-internal
-  [{:keys [context? image network-image container-style]}]
+  [{:keys [context? size image network-image container-style]}]
   [rn/view
-   {:style               (merge style/container container-style)
+   {:style               (-> (style/container size)
+                             (merge container-style))
     :accessibility-label :dapp-avatar}
    [hole-view/hole-view
     (cond-> {:holes (if context?
-                      [{:x            19
-                        :y            19
-                        :width        18
-                        :height       18
-                        :borderRadius 9}]
+                      [(style/context-hole size)]
                       [])
-             :style style/hole-view}
+             :style (style/hole-view size)}
       platform/android? (assoc :key context?))
     [rn/image
      {:source image
-      :style  style/image}]]
+      :style  (style/image size)}]]
    (when context?
      [rn/image
       {:source network-image
-       :style  style/context}])])
+       :style  (style/context size)}])])
 
 (def view (schema/instrument #'view-internal ?schema))

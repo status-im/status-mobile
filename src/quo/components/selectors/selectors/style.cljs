@@ -6,18 +6,14 @@
   [customization-color theme]
   {:normal {:checked   (colors/resolve-color customization-color theme)
             :unchecked (colors/theme-colors colors/neutral-30 colors/neutral-80 theme)}
-   :blur   {:checked   (colors/theme-colors (colors/resolve-color customization-color theme)
-                                            colors/white-opa-70
-                                            theme)
+   :blur   {:checked   (colors/resolve-color customization-color :light)
             :unchecked (colors/theme-colors colors/neutral-80-opa-20 colors/white-opa-10 theme)}})
 
 (defn- radio-border-color
   [customization-color theme]
   {:normal {:checked   (colors/resolve-color customization-color theme)
             :unchecked (colors/theme-colors colors/neutral-30 colors/neutral-70 theme)}
-   :blur   {:checked   (colors/theme-colors (colors/resolve-color customization-color theme)
-                                            colors/white
-                                            theme)
+   :blur   {:checked   (colors/resolve-color customization-color :light)
             :unchecked (colors/theme-colors colors/neutral-80-opa-20 colors/white-opa-40 theme)}})
 
 (defn- radio-background-unchecked-color
@@ -28,11 +24,9 @@
 (defn- checkbox-background-color
   [customization-color theme]
   {:normal {:checked   (colors/resolve-color customization-color theme)
-            :unchecked (colors/theme-colors colors/white-opa-40 colors/neutral-80-opa-40 theme)}
-   :blur   {:checked   (colors/theme-colors (colors/resolve-color customization-color theme)
-                                            colors/white
-                                            theme)
-            :unchecked colors/white-opa-5}})
+            :unchecked nil}
+   :blur   {:checked   (colors/resolve-color customization-color :light)
+            :unchecked nil}})
 
 (defn- checkbox-border-unchecked-color
   [theme]
@@ -42,7 +36,7 @@
 (defn- filled-checkbox-background-color
   [theme]
   {:normal (colors/theme-colors colors/neutral-30 colors/neutral-80 theme)
-   :blur   (colors/theme-colors colors/neutral-80-opa-10 colors/white-opa-10 theme)})
+   :blur   (colors/theme-colors colors/neutral-80-opa-20 colors/white-opa-20 theme)})
 
 (defn- get-color
   [color-map & [blur? checked?]]
@@ -114,11 +108,9 @@
     {:height size :width size}))
 
 (defn checkbox-check
-  [_checked? blur? theme]
+  [_checked? _blur? _theme]
   {:size  20
-   :color (if blur?
-            (colors/theme-colors colors/white colors/neutral-100 theme)
-            colors/white)})
+   :color colors/white})
 
 (defn filled-checkbox
   [{:keys [disabled? blur? container-style theme]}]
