@@ -69,12 +69,13 @@
    :align-items    :center})
 
 (def icon-hole-view
-  {:width            32
-   :height           32
-   :align-items      :center
-   :justify-content  :center})
+  {:width           32
+   :height          32
+   :align-items     :center
+   :justify-content :center})
 
-(defn icon-circle-border [theme blur?]
+(defn icon-circle-border
+  [theme blur?]
   {:position      :absolute
    :top           0
    :left          0
