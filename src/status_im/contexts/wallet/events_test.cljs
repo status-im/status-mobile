@@ -5,7 +5,8 @@
     [re-frame.db :as rf-db]
     [status-im.constants :as constants]
     [status-im.contexts.wallet.events :as events]
-    [test-helpers.unit :as h]))
+    [test-helpers.unit :as h]
+    [utils.re-frame :as rf]))
 
 (def address "0x2ee6138eb9344a8b76eca3cf7554a06c82a1e2d8")
 
@@ -83,7 +84,7 @@
       (is (match? result-db expected-db)))))
 
 (h/deftest-event :wallet/update-selected-networks
-  [dispatcher]
+  [event-id]
   (testing "update-selected-networks"
     (let [network-name constants/arbitrum-network-name
           expected-db  {:wallet {:ui {:network-filter {:selected-networks
@@ -94,7 +95,7 @@
         {:wallet {:ui {:network-filter {:selected-networks
                                         #{constants/optimism-network-name}
                                         :selector-state :changed}}}})
-      (is (match? expected-db (:db (dispatcher network-name))))))
+      (is (match? expected-db (:db (rf/dispatch [event-id network-name]))))))
 
   (testing "update-selected-networks > if all networks is already selected, update to incoming network"
     (let [network-name constants/arbitrum-network-name
@@ -104,7 +105,7 @@
         {:wallet {:ui {:network-filter {:selector-state :default
                                         :selected-networks
                                         (set constants/default-network-names)}}}})
-      (is (match? expected-db (:db (dispatcher network-name))))))
+      (is (match? expected-db (:db (rf/dispatch [event-id network-name]))))))
 
   (testing "update-selected-networks > reset on removing last network"
     (let [expected-fx [[:dispatch [:wallet/reset-selected-networks]]]]
@@ -113,7 +114,7 @@
                                         #{constants/optimism-network-name}
                                         :selector-state :changed}}}})
       (is (match? expected-fx
-                  (:fx (dispatcher constants/optimism-network-name)))))))
+                  (:fx (rf/dispatch [event-id constants/optimism-network-name])))))))
 
 (deftest get-wallet-token-for-all-accounts-test
   (testing "get wallet token for all accounts"
@@ -128,7 +129,7 @@
       (is (match? expected-fx result-fx)))))
 
 (h/deftest-event :wallet/get-wallet-token-for-account
-  [dispatcher]
+  [event-id]
   (let [expected-effects {:db {:wallet {:ui {:tokens-loading {address true}}}}
                           :fx [[:json-rpc/call
                                 [{:method     "wallet_getWalletToken"
@@ -136,10 +137,10 @@
                                   :on-success [:wallet/store-wallet-token address]
                                   :on-error   [:wallet/get-wallet-token-for-account-failed
                                                address]}]]]}]
-    (is (match? expected-effects (dispatcher address)))))
+    (is (match? expected-effects (rf/dispatch [event-id address])))))
 
 (h/deftest-event :wallet/check-recent-history-for-all-accounts
-  [dispatcher]
+  [event-id]
   (testing "check recent history for all accounts"
     (let [address-1   "0x1"
           address-2   "0x2"
@@ -148,14 +149,14 @@
       (reset! rf-db/app-db
         {:wallet {:accounts {address-1 {:address address-1}
                              address-2 {:address address-2}}}})
-      (is (match? expected-fx (:fx (dispatcher)))))))
+      (is (match? expected-fx (:fx (rf/dispatch [event-id])))))))
 
 (h/deftest-event :wallet/process-account-from-signal
-  [dispatcher]
-  (let [expected-effects
-        {:db {:wallet {:accounts {address account}}}
-         :fx [[:dispatch [:wallet/get-wallet-token-for-account address]]
-              [:dispatch [:wallet/request-new-collectibles-for-account-from-signal address]]
-              [:dispatch [:wallet/check-recent-history-for-account address]]]}]
+  [event-id]
+  (let [expected-effects {:db {:wallet {:accounts {address account}}}
+                          :fx [[:dispatch [:wallet/get-wallet-token-for-account address]]
+                               [:dispatch
+                                [:wallet/request-new-collectibles-for-account-from-signal address]]
+                               [:dispatch [:wallet/check-recent-history-for-account address]]]}]
     (reset! rf-db/app-db {:wallet {:accounts {}}})
-    (is (match? expected-effects (dispatcher raw-account)))))
+    (is (match? expected-effects (rf/dispatch [event-id raw-account])))))

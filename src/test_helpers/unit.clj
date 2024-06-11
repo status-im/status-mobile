@@ -59,6 +59,16 @@
                   'testing           `testing-restorable-app-db}
                  body))))))))
 
+(defmacro ^:private custom-event-dispatcher
+  [event-v]
+  `(let [event-v#                 ~event-v
+         event-id#                (first event-v#)
+         all-interceptors#        (re-frame.registrar/get-handler :event event-id#)
+         interceptors-without-fx# (remove #(= :do-fx (:id %)) all-interceptors#)]
+     (assert (seq all-interceptors#)
+             (str "Failed to define test for event '" event-id# "'. Event does not exist"))
+     (:effects (re-frame.interceptor/execute event-v# interceptors-without-fx#))))
+
 (defmacro deftest-event
   "Defines a test var for an event `event-id`.
 
@@ -86,37 +96,32 @@
 
   ```clojure
   (ns events-test
-    (:require [test-helpers.unit :as h]))
+    (:require [test-helpers.unit :as h]
+              [utils.re-frame :as rf]))
 
   (h/deftest-event :wallet/dummy-event
-    [dispatcher]
+    [event-id]
     (let [expected {:db {:a false}}]
       ;; Arrange
       (swap! rf-db/app-db {:a true})
 
       ;; Act and Assert
-      (is (match? expected (dispatcher arg1 arg2)))))
+      (is (match? expected (rf/dispatch [event-id arg1 arg2])))))
   ```
   "
   [event-id bindings & body]
   `(let [event-id# ~event-id]
      (cljs.test/deftest ~(symbol (keyword->test-name event-id))
-       (let [all-interceptors#        (re-frame.registrar/get-handler :event event-id#)
-             interceptors-without-fx# (remove #(= :do-fx (:id %)) all-interceptors#)
-             dispatcher#              (fn [& event-args#]
-                                        (-> (into [event-id#] event-args#)
-                                            (re-frame.interceptor/execute interceptors-without-fx#)
-                                            :effects))
-             ~bindings                [dispatcher#]]
-         (assert (seq all-interceptors#)
-                 (str "Failed to define test for event '" event-id# "'. Event does not exist"))
+       (let [~bindings [event-id#]]
          (restore-app-db
           (fn []
             (with-redefs [re-frame.interop/debug-enabled? false]
               ~@(clojure.walk/postwalk-replace
                  {'cljs.test/testing `testing-restorable-app-db
                   'testing           `testing-restorable-app-db}
-                 body))))))))
+                 (clojure.walk/postwalk-replace
+                  {'rf/dispatch `custom-event-dispatcher}
+                  body)))))))))
 
 (defmacro use-log-fixture
   "Register log fixture which allows inspecting all calls to `taoensso.timbre/log`.
