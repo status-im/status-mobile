@@ -71,8 +71,7 @@
         cards                           (conj account-cards-data (new-account-card-data))
         [init-loaded? set-init-loaded]  (rn/use-state false)
         {:keys [formatted-balance]}     (rf/sub [:wallet/aggregated-token-values-and-balance])
-        theme                           (quo.theme/use-theme)
-        view-id                         (rf/sub [:view-id])]
+        theme                           (quo.theme/use-theme)]
     (rn/use-effect (fn []
                      (when (and @account-list-ref (pos? (count cards)))
                        (.scrollToOffset ^js @account-list-ref
@@ -80,7 +79,6 @@
                                          {:animated true
                                           :offset   0})))
                    [(count cards)])
-    (prn "view-id" view-id)
     (rn/use-effect
      #(when (and (boolean? tokens-loading?) (not tokens-loading?) (not init-loaded?))
         (set-init-loaded true))

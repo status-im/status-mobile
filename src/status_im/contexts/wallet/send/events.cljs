@@ -450,6 +450,15 @@
       :fx [[:dispatch
             [:wallet/end-transaction-flow]]]})))
 
+(rf/reg-event-fx :wallet/clean-up-transaction-flow
+ (fn [_]
+   {:fx [[:dispatch [:dismiss-modal :screen/wallet.transaction-confirmation]]
+         [:dispatch [:wallet/clean-scanned-address]]
+         [:dispatch [:wallet/clean-local-suggestions]]
+         [:dispatch [:wallet/clean-send-address]]
+         [:dispatch [:wallet/clean-disabled-from-networks]]
+         [:dispatch [:wallet/select-address-tab nil]]]}))
+
 (rf/reg-event-fx :wallet/end-transaction-flow
  (fn [{:keys [db]}]
    (let [address (get-in db [:wallet :current-viewing-account-address])]
@@ -458,22 +467,7 @@
            [:dispatch [:wallet/select-account-tab :activity]]
            [:dispatch-later
             [{:ms       20
-              :dispatch [:dismiss-modal :screen/wallet.transaction-confirmation]}]]
-           [:dispatch-later
-            {:ms       20
-             :dispatch [:wallet/clean-scanned-address]}]
-           [:dispatch-later
-            {:ms       20
-             :dispatch [:wallet/clean-local-suggestions]}]
-           [:dispatch-later
-            {:ms       20
-             :dispatch [:wallet/clean-send-address]}]
-           [:dispatch-later
-            {:ms       20
-             :dispatch [:wallet/clean-disabled-from-networks]}]
-           [:dispatch-later
-            {:ms       20
-             :dispatch [:wallet/select-address-tab nil]}]]})))
+              :dispatch [:wallet/clean-up-transaction-flow]}]]]})))
 
 (defn- transaction-data
   [{:keys [from-address to-address token-address route data eth-transfer?]}]
