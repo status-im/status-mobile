@@ -32,7 +32,7 @@ ifndef BUILD_TAG
 export BUILD_TAG := $(shell git rev-parse --short HEAD)
 endif
 
-# We don't want to use /run/user/$UID because it runs out of space too easilly.
+# We don't want to use /run/user/$UID because it runs out of space too easily.
 export TMPDIR = /tmp/tmp-status-mobile-$(BUILD_TAG)
 # This has to be specified for both the Node.JS server process and the Qt process.
 export REACT_SERVER_PORT ?= 5001

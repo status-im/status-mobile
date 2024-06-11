@@ -233,4 +233,12 @@ RCT_EXPORT_METHOD(createAccountFromMnemonicAndDeriveAccountsForPaths:(NSString *
     callback(@[result]);
 }
 
+RCT_EXPORT_METHOD(createAccountFromPrivateKey:(NSString *)configJSON callback:(RCTResponseSenderBlock)callback) {
+#if DEBUG
+    NSLog(@"createAccountFromPrivateKey() method called");
+#endif
+    NSString *result = StatusgoCreateAccountFromPrivateKey(configJSON);
+    callback(@[result]);
+}
+
 @end

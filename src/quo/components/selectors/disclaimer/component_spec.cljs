@@ -28,3 +28,9 @@
       (h/render [disclaimer/view {:checked? false} "test"])
       (h/is-null (h/query-by-label-text :checkbox-on))
       (h/is-truthy (h/query-by-label-text :checkbox-off)))))
+
+(h/test "Renders icon"
+  (let [text "I accept this disclaimer"]
+    (h/render [disclaimer/view {:icon :i/locked} text])
+    (h/is-truthy (h/query-by-label-text :disclaimer-icon))))
+

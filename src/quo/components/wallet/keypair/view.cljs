@@ -19,7 +19,8 @@
     (i18n/label :t/keypair-title {:name first-name})))
 
 (defn avatar
-  [{{:keys [full-name]} :details
+  [{:keys               [blur?]
+    {:keys [full-name]} :details
     avatar-type         :type
     customization-color :customization-color
     profile-picture     :profile-picture}]
@@ -34,6 +35,7 @@
     [icon-avatar/icon-avatar
      {:size    :size-32
       :icon    :i/seed
+      :blur?   blur?
       :border? true}]))
 
 (defn title-view

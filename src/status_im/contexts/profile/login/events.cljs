@@ -53,20 +53,25 @@
                       (assoc-in [:activity-center :loading?] true))
             pairing-completed?
             (dissoc :syncing))
-      :fx (into [[:dispatch [:universal-links/generate-profile-url]]
+      :fx (into [[:json-rpc/call
+                  [{:method     "wakuext_startMessenger"
+                    :on-success [:profile.login/messenger-started]
+                    :on-error   #(log/error "failed to start messenger" %)}]]
+                 [:dispatch [:universal-links/generate-profile-url]]
                  [:dispatch [:community/fetch]]
                  [:dispatch [:wallet/initialize]]
                  [:push-notifications/load-preferences]
-                 [:fetch-chats-preview
-                  {:on-success (fn [result]
-                                 (rf/dispatch [:chats-list/load-success result])
-                                 (rf/dispatch [:communities/get-user-requests-to-join])
-                                 (rf/dispatch [:profile.login/get-chats-callback]))}]
                  [:profile.config/get-node-config]
                  [:logs/set-level log-level]
                  [:activity-center.notifications/fetch-pending-contact-requests-fx]
                  [:activity-center/update-seen-state]
-                 [:activity-center.notifications/fetch-unread-count]]
+                 [:activity-center.notifications/fetch-unread-count]
+
+                 ;; Immediately try to open last chat. We can't wait until the
+                 ;; messenger has started and has processed all chats because
+                 ;; the whole process can take a handful of seconds.
+                 (when-not (:universal-links/handling db)
+                   [:effects.chat/open-last-chat (:key-uid profile-overview)])]
 
                 (cond
                   pairing-completed?
@@ -90,12 +95,7 @@
    (let [{:keys [notifications-enabled? key-uid
                  preview-privacy?]} (:profile/profile db)]
      {:db db
-      :fx [[:json-rpc/call
-            [{:method     "wakuext_startMessenger"
-              :on-success [:profile.login/messenger-started]
-              :on-error   #(log/error
-                            "failed to start messenger")}]]
-           [:effects.profile/enable-local-notifications]
+      :fx [[:effects.profile/enable-local-notifications]
            [:contacts/initialize-contacts]
            [:browser/initialize-browser]
            [:dispatch [:mobile-network/on-network-status-change]]
@@ -107,8 +107,6 @@
            [:switcher-cards/fetch]
            (when (ff/enabled? ::ff/wallet.wallet-connect)
              [:dispatch [:wallet-connect/init]])
-           (when-not (:universal-links/handling db)
-             [:effects.chat/open-last-chat key-uid])
            (when notifications-enabled?
              [:effects/push-notifications-enable])]})))
 
@@ -118,7 +116,12 @@
      {:db (-> db
               (assoc :messenger/started? true)
               (mailserver/add-mailservers mailservers))
-      :fx [[:json-rpc/call
+      :fx [[:fetch-chats-preview
+            {:on-success (fn [result]
+                           (rf/dispatch [:chats-list/load-success result])
+                           (rf/dispatch [:communities/get-user-requests-to-join])
+                           (rf/dispatch [:profile.login/get-chats-callback]))}]
+           [:json-rpc/call
             [{:method     "admin_nodeInfo"
               :on-success [:profile.login/node-info-fetched]
               :on-error   #(log/error "node-info: failed error" %)}]]
