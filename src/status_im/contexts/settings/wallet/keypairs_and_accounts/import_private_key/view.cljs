@@ -68,8 +68,7 @@
                                        [on-change])
         on-import-error               (rn/use-callback
                                        (fn [_error]
-                                         (rf/dispatch [:hide-bottom-sheet])
-                                         (show-invalid)))
+                                         (rf/dispatch [:hide-bottom-sheet])))
         on-import-success             (rn/use-callback
                                        (fn []
                                          (rf/dispatch [:hide-bottom-sheet])
@@ -134,5 +133,5 @@
           (case flow-state
             :correct-private-key   (i18n/label :t/correct-private-key)
             :invalid-private-key   (i18n/label :t/invalid-private-key)
-            :incorrect-private-key (i18n/label :t/incorrect-private-key {:name (:name keypair)})
+            :incorrect-private-key (i18n/label :t/incorrect-private-key)
             nil)])]]]))
