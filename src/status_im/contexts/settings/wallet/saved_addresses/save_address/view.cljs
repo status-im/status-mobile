@@ -36,13 +36,15 @@
 (defn view
   []
   (let [{:keys [edit?]} (rf/sub [:get-screen-params])
-        {:keys [address name customization-color ens ens?]} (rf/sub [:wallet/saved-address])
+        {:keys [address name customization-color ens ens? network-preferences-names]}
+        (rf/sub [:wallet/saved-address])
         [network-prefixes address-without-prefix] (utils/split-prefix-and-address address)
         [address-label set-address-label] (rn/use-state (or name ""))
         [address-color set-address-color] (rn/use-state (or customization-color
                                                             (rand-nth colors/account-colors)))
         [selected-networks set-selected-networks]
-        (rn/use-state (network-utils/network-preference-prefix->network-names network-prefixes))
+        (rn/use-state (or network-preferences-names
+                          (network-utils/network-preference-prefix->network-names network-prefixes)))
         chain-short-names (rn/use-memo
                            #(network-utils/network-names->network-preference-prefix
                              selected-networks)

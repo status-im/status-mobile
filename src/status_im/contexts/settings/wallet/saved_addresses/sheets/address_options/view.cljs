@@ -64,8 +64,7 @@
                                         [opts])
         open-edit-saved-address        (rn/use-callback
                                         (fn []
-                                          (rf/dispatch [:wallet/set-address-to-save
-                                                        (assoc opts :address full-address)])
+                                          (rf/dispatch [:wallet/set-address-to-save opts])
                                           (rf/dispatch [:open-modal
                                                         :screen/settings.edit-saved-address
                                                         {:edit? true}]))
