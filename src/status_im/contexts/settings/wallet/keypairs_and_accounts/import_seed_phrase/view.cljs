@@ -14,16 +14,17 @@
            container-style
            prepare-seed-phrase
            seed-phrase
-           set-invalid-seed-phrase
+           set-incorrect-seed-phrase
            focus-input]}]
   (let [keypair             (rf/sub [:get-screen-params])
         customization-color (rf/sub [:profile/customization-color])
         show-errors         (rn/use-callback
-                             #(js/setTimeout
-                               (fn []
-                                 (focus-input)
-                                 (reagent/next-tick set-invalid-seed-phrase))
-                               600))
+                             (fn [_error]
+                               (js/setTimeout
+                                (fn []
+                                  (focus-input)
+                                  (reagent/next-tick set-incorrect-seed-phrase))
+                                600)))
         on-import-error     (rn/use-callback
                              (fn [_error]
                                (rf/dispatch [:hide-bottom-sheet])

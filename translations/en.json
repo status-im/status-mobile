@@ -1587,6 +1587,7 @@
     "seed-phrase-words-uppercase": "Recovery phrase cannot contain uppercase characters",
     "seed-phrase-error": "Recovery phrase contains invalid words",
     "seed-phrase-invalid": "Invalid recovery phrase",
+    "seed-phrase-incorrect": "Recovery phrase does not match key pair",
     "seed-phrase-info": "Enter 12, 18 or 24 words separated by spaces",
     "word-count": "Word count",
     "word-n": "Word #{{number}}",
