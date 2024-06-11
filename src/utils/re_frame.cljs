@@ -88,3 +88,45 @@
 (def dispatch-sync re-frame/dispatch-sync)
 
 (def reg-event-fx re-frame/reg-event-fx)
+
+(defn call-continuation
+  "Choose how to call a continuation for a Re-Frame event or effect.
+   
+   When defining an event or effect, we can receive `on-success` and `on-error`
+   parameters for continuing the logic depending on if it succeeded or failed.
+   When we attempt to continue the logic, we can choose to either dispatch a Re-Frame event,
+   or we can call a callback function.
+
+   Code example:
+
+   (rf/reg-event-fx :my-event
+     (fn [_ [arg on-success on-error]]
+       {:fx [[:my-effect [arg on-success on-error]]]}))
+
+   (rf/reg-event-fx :my-event-success
+     (fn [db [result]]
+       {:db (assoc db :my-event-result result)}))
+   
+   (rf/reg-event-fx :my-event-error
+     (fn [db [error]]
+       {:db (assoc db :my-event-error error)}))
+   
+   (rf/reg-fx :my-effect
+     (fn [[arg on-success on-error]]
+       (-> (my-effect-impl arg)
+           (promesa/then (partial call-continuation on-success))
+           (promesa/catch (partial call-continuation on-error)))))
+   
+   (rf/dispatch [:my-event
+                  :arg
+                  [:my-event-success]
+                  (fn [error]
+                    (log/error error)
+                    (rf/dispatch [:my-event-error error]))])"
+  [continuation & args]
+  (cond
+    (vector? continuation) (dispatch (into continuation args))
+    (fn? continuation)     (apply continuation args)
+    :else                  (throw (ex-info
+                                   (str "Unsupported continuation: " (type->str continuation))
+                                   {:hint "Make sure to pass a vector or function"}))))

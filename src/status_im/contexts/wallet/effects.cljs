@@ -3,9 +3,9 @@
     [clojure.string :as string]
     [native-module.core :as native-module]
     [promesa.core :as promesa]
-    [re-frame.core :as rf]
     [status-im.common.json-rpc.events :as json-rpc]
     [taoensso.timbre :as log]
+    [utils.re-frame :as rf]
     [utils.security.core :as security]
     [utils.transforms :as transforms]))
 
@@ -46,6 +46,27 @@
                         (when (and error (fn? on-error))
                           (on-error error)))))))
 
+(defn create-account-from-private-key
+  [private-key]
+  (-> private-key
+      (security/safe-unmask-data)
+      (native-module/create-account-from-private-key)
+      (promesa/then (fn [result]
+                      (let [{:keys [address emojiHash keyUid
+                                    publicKey privateKey]} (transforms/json->clj result)]
+                        {:address     address
+                         :emoji-hash  emojiHash
+                         :key-uid     keyUid
+                         :public-key  publicKey
+                         :private-key privateKey})))))
+
+(rf/reg-fx
+ :effects.wallet/create-account-from-private-key
+ (fn [[private-key on-success on-error]]
+   (-> (create-account-from-private-key private-key)
+       (promesa/then (partial rf/call-continuation on-success))
+       (promesa/catch (partial rf/call-continuation on-error)))))
+
 (defn make-seed-phrase-fully-operable
   [mnemonic password]
   (promesa/create
@@ -80,11 +101,24 @@
  :import-keypair-by-seed-phrase
  (fn [{:keys [keypair-key-uid seed-phrase password on-success on-error]}]
    (-> (import-keypair-by-seed-phrase keypair-key-uid seed-phrase password)
-       (promesa/then (fn [_result]
-                       (cond
-                         (vector? on-success) (rf/dispatch on-success)
-                         (fn? on-success)     (on-success))))
-       (promesa/catch (fn [error]
-                        (cond
-                          (vector? on-error) (rf/dispatch (conj on-error error))
-                          (fn? on-error)     (on-error error)))))))
+       (promesa/then (partial rf/call-continuation on-success))
+       (promesa/catch (partial rf/call-continuation on-error)))))
+
+(defn verify-private-key-for-keypair
+  [keypair-key-uid private-key]
+  (-> (create-account-from-private-key private-key)
+      (promesa/then
+       (fn [{:keys [key-uid] :as result}]
+         (if (= keypair-key-uid key-uid)
+           result
+           (promesa/rejected
+            (ex-info
+             (error-message :verify-private-key-for-keypair/verification-error)
+             {:hint :incorrect-private-key-for-keypair})))))))
+
+(rf/reg-fx
+ :effects.wallet/verify-private-key-for-keypair
+ (fn [{:keys [keypair-key-uid private-key on-success on-error]}]
+   (-> (verify-private-key-for-keypair keypair-key-uid private-key)
+       (promesa/then (partial rf/call-continuation on-success))
+       (promesa/catch (partial rf/call-continuation on-error)))))

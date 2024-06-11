@@ -1,5 +1,6 @@
 (ns status-im.contexts.settings.wallet.keypairs-and-accounts.view
   (:require [quo.core :as quo]
+            [quo.foundations.colors :as colors]
             [quo.theme]
             [react-native.core :as rn]
             [react-native.safe-area :as safe-area]
@@ -16,10 +17,13 @@
 (defn on-options-press
   [{:keys [drawer-props keypair]}]
   (rf/dispatch [:show-bottom-sheet
-                {:content (fn [] [actions/view
-                                  {:drawer-props drawer-props
-                                   :keypair      keypair}])
-                 :theme   (:theme drawer-props)}]))
+                {:content         (fn [] [actions/view
+                                          {:drawer-props drawer-props
+                                           :keypair      keypair}])
+
+                 :blur-background colors/bottom-sheet-background-blur
+                 :theme           (:theme drawer-props)
+                 :shell?          true}]))
 
 (defn options-drawer-props
   [{{:keys [name]} :keypair
@@ -79,15 +83,17 @@
 (defn on-missing-keypair-options-press
   [_event keypair-data]
   (rf/dispatch [:show-bottom-sheet
-                {:theme   :dark
-                 :content (fn [] [actions/view
-                                  {:keypair      keypair-data
-                                   :drawer-props (options-drawer-props
-                                                  {:theme   :dark
-                                                   :type    :keypair
-                                                   :stored  :missing
-                                                   :blur?   true
-                                                   :keypair keypair-data})}])}]))
+                {:theme           :dark
+                 :shell?          true
+                 :blur-background colors/bottom-sheet-background-blur
+                 :content         (fn [] [actions/view
+                                          {:keypair      keypair-data
+                                           :drawer-props (options-drawer-props
+                                                          {:theme   :dark
+                                                           :type    :keypair
+                                                           :stored  :missing
+                                                           :blur?   true
+                                                           :keypair keypair-data})}])}]))
 
 (defn view
   []

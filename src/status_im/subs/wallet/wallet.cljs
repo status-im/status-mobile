@@ -244,6 +244,7 @@
                                   :address             address}
                   :networks      networks
                   :state         :default
+                  :blur?         true
                   :action        :none})))))
 
 (defn- format-settings-missing-keypair-accounts
@@ -257,14 +258,13 @@
 (rf/reg-sub
  :wallet/settings-keypairs-accounts
  :<- [:wallet/keypairs]
- :<- [:wallet/accounts]
- (fn [[keypairs accounts] [_ format-options]]
-   (let [grouped-accounts      (->> accounts
-                                    (map #(select-keys % [:operable :key-uid]))
-                                    (group-by :operable))
-         operable-key-pair-ids (->> (map :key-uid (:fully grouped-accounts))
+ (fn [keypairs [_ format-options]]
+   (let [grouped-keypairs      (group-by :lowest-operability keypairs)
+         operable-key-pair-ids (->> (concat (:fully grouped-keypairs)
+                                            (:partially grouped-keypairs))
+                                    (map :key-uid)
                                     (into #{}))
-         missing-key-pair-ids  (->> (map :key-uid (:no grouped-accounts))
+         missing-key-pair-ids  (->> (map :key-uid (:no grouped-keypairs))
                                     (into #{}))]
      {:operable (->> keypairs
                      (filter #(contains? operable-key-pair-ids (:key-uid %)))
