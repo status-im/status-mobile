@@ -389,7 +389,7 @@
          to-token-id ""
          network-preferences (if token [] [(get-in collectible [:id :contract-id :chain-id])])
          gas-rates constants/gas-rate-medium
-         to-hex (fn [val] (send-utils/amount-in-hex val (if token token-decimal 0)))
+         to-hex (fn [v] (send-utils/amount-in-hex v (if token token-decimal 0)))
          amount-in (to-hex amount)
          from-address wallet-address
          disabled-from-chain-ids disabled-from-chain-ids

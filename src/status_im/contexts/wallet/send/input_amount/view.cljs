@@ -21,18 +21,6 @@
     [utils.number :as number]
     [utils.re-frame :as rf]))
 
-(defn- make-limit-label-crypto
-  [amount currency]
-  (str amount
-       " "
-       (some-> currency
-               name
-               string/upper-case)))
-
-(defn- make-limit-label-fiat
-  [amount currency-symbol]
-  (str currency-symbol amount))
-
 (defn- estimated-fees
   [{:keys [loading-routes? fees amount]}]
   [rn/view {:style style/estimated-fees-container}
@@ -228,7 +216,7 @@
                                                                         input-state))
                                                         (<= input-num-value 0)
                                                         (> input-num-value current-limit))
-        amount                                      (if crypto-currency?
+        amount-in-crypto                            (if crypto-currency?
                                                       input-amount
                                                       (number/remove-trailing-zeroes
                                                        (.toFixed (/ input-amount conversion-rate)
@@ -305,10 +293,28 @@
                                                      (not not-enough-asset?))
         request-fetch-routes                        (fn [bounce-duration-ms]
                                                       (fetch-routes
-                                                       {:amount             amount
+                                                       {:amount             amount-in-crypto
                                                         :valid-input?       valid-input?
                                                         :bounce-duration-ms bounce-duration-ms
-                                                        :token              token}))]
+                                                        :token              token}))
+        swap-between-fiat-and-crypto                (fn [swap-to-crypto-currency?]
+                                                      (set-just-toggled-mode? true)
+                                                      (set-crypto-currency swap-to-crypto-currency?)
+                                                      (set-input-state
+                                                       (fn [input-state]
+                                                         (controlled-input/set-input-value
+                                                          input-state
+                                                          (let [value     (controlled-input/input-value
+                                                                           input-state)
+                                                                new-value (if swap-to-crypto-currency?
+                                                                            (.toFixed (/ value
+                                                                                         conversion-rate)
+                                                                                      crypto-decimals)
+                                                                            (.toFixed (* value
+                                                                                         conversion-rate)
+                                                                                      12))]
+                                                            (number/remove-trailing-zeroes
+                                                             new-value))))))]
 
     (rn/use-mount
      (fn []
@@ -352,29 +358,16 @@
        :title           (i18n/label
                          :t/send-limit
                          {:limit (if crypto-currency?
-                                   (make-limit-label-crypto current-limit token-symbol)
-                                   (make-limit-label-fiat current-limit currency-symbol))})
+                                   (utils/make-limit-label-crypto current-limit token-symbol)
+                                   (utils/make-limit-label-fiat current-limit currency-symbol))})
        :conversion      conversion-rate
        :show-keyboard?  false
        :value           input-amount
-       :on-swap         (fn [swap-to-crypto-currency?]
-                          (set-just-toggled-mode? true)
-                          (set-crypto-currency swap-to-crypto-currency?)
-                          (set-input-state
-                           (fn [input-state]
-                             (controlled-input/set-input-value
-                              input-state
-                              (let [value     (controlled-input/input-value input-state)
-                                    new-value (if swap-to-crypto-currency?
-                                                (.toFixed (/ value conversion-rate)
-                                                          crypto-decimals)
-                                                (.toFixed (* value conversion-rate) 12))]
-                                (number/remove-trailing-zeroes new-value))))))
+       :on-swap         swap-between-fiat-and-crypto
        :on-token-press  show-select-asset-sheet}]
      [routes/view
       {:token                                     token-by-symbol
        :input-value                               input-amount
-       :value                                     amount
        :valid-input?                              valid-input?
        :token-not-supported-in-receiver-networks? token-not-supported-in-receiver-networks?
        :lock-fetch-routes?                        just-toggled-mode?

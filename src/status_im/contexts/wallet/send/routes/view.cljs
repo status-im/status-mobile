@@ -85,18 +85,6 @@
                                            (rf/dispatch [:wallet/update-receiver-networks
                                                          chain-ids]))}]))}]))
 
-(defn- make-limit-label-crypto
-  [amount currency]
-  (str amount
-       " "
-       (some-> currency
-               name
-               string/upper-case)))
-
-(defn- make-limit-label-fiat
-  [amount currency-symbol]
-  (str currency-symbol amount))
-
 (defn- edit-amount
   [{:keys [chain-id token-symbol]}]
   (rf/dispatch
@@ -113,7 +101,7 @@
              currency-symbol                            (rf/sub [:profile/currency-symbol])
              send-from-locked-amounts                   (rf/sub
                                                          [:wallet/wallet-send-from-locked-amounts])
-             customization-color (rf/sub [:profile/customization-color])
+             {account-color :color}                     (rf/sub [:wallet/current-viewing-account])
              locked-amount                              (get send-from-locked-amounts chain-id)
              network-name-str                           (string/capitalize (name network-name))
              [input-state set-input-state]              (rn/use-state (cond-> controlled-input/init-state
@@ -138,7 +126,41 @@
              crypto-decimals                            token-decimals
              input-amount                               (controlled-input/input-value input-state)
              [is-amount-locked? set-is-amount-locked]   (rn/use-state (some? locked-amount))
-             bottom                                     (safe-area/get-bottom)]
+             bottom                                     (safe-area/get-bottom)
+             amount-in-crypto                           (if crypto-currency?
+                                                          input-amount
+                                                          (number/remove-trailing-zeroes
+                                                           (.toFixed (/ input-amount
+                                                                        conversion-rate)
+                                                                     crypto-decimals)))
+             swap-between-fiat-and-crypto               (fn [swap-to-crypto-currency?]
+                                                          (set-crypto-currency swap-to-crypto-currency?)
+                                                          (set-input-state
+                                                           (fn [input-state]
+                                                             (controlled-input/set-input-value
+                                                              input-state
+                                                              (let [value (controlled-input/input-value
+                                                                           input-state)
+                                                                    new-value (if
+                                                                                swap-to-crypto-currency?
+                                                                                (.toFixed
+                                                                                 (/ value
+                                                                                    conversion-rate)
+                                                                                 crypto-decimals)
+                                                                                (.toFixed
+                                                                                 (* value
+                                                                                    conversion-rate)
+                                                                                 12))]
+                                                                (number/remove-trailing-zeroes
+                                                                 new-value))))))
+             lock-or-unlock-amount                      (fn []
+                                                          (if is-amount-locked?
+                                                            (rf/dispatch [:wallet/lock-from-amount
+                                                                          chain-id
+                                                                          amount-in-crypto])
+                                                            (rf/dispatch [:wallet/unlock-from-amount
+                                                                          chain-id]))
+                                                          (rf/dispatch [:hide-bottom-sheet]))]
          (rn/use-effect
           (fn []
             (set-input-state #(controlled-input/set-upper-limit % current-limit)))
@@ -158,50 +180,29 @@
             :title           (i18n/label
                               :t/send-limit
                               {:limit (if crypto-currency?
-                                        (make-limit-label-crypto current-limit token-symbol)
-                                        (make-limit-label-fiat current-limit currency-symbol))})
+                                        (utils/make-limit-label-crypto current-limit token-symbol)
+                                        (utils/make-limit-label-fiat current-limit currency-symbol))})
             :conversion      conversion-rate
             :show-keyboard?  false
             :value           (controlled-input/input-value input-state)
-            :on-swap         (fn [swap-to-crypto-currency?]
-                               (set-crypto-currency swap-to-crypto-currency?)
-                               (set-input-state
-                                (fn [input-state]
-                                  (controlled-input/set-input-value
-                                   input-state
-                                   (let [value     (controlled-input/input-value input-state)
-                                         new-value (if swap-to-crypto-currency?
-                                                     (.toFixed (/ value conversion-rate)
-                                                               crypto-decimals)
-                                                     (.toFixed (* value conversion-rate) 12))]
-                                     (number/remove-trailing-zeroes new-value))))))}]
+            :on-swap         swap-between-fiat-and-crypto}]
           [quo/disclaimer
-           {:on-change       (fn [checked?]
-                               (set-is-amount-locked checked?))
-            :checked?        is-amount-locked?
-            :container-style style/disclaimer
-            :icon            (if is-amount-locked?
-                               :i/locked
-                               :i/unlocked)
-            :customization-color customization-color}
+           {:on-change           (fn [checked?]
+                                   (set-is-amount-locked checked?))
+            :checked?            is-amount-locked?
+            :container-style     style/disclaimer
+            :icon                (if is-amount-locked?
+                                   :i/locked
+                                   :i/unlocked)
+            :customization-color account-color}
            (i18n/label :t/dont-auto-recalculate-network {:network network-name-str})]
           [quo/bottom-actions
            {:actions          :one-action
             :button-one-label (i18n/label :t/update)
-            :button-one-props {:on-press  (fn []
-                                            (if is-amount-locked?
-                                              (let [limit-in-crypto (if crypto-currency?
-                                                                      input-amount
-                                                                      (number/remove-trailing-zeroes
-                                                                       (.toFixed (/ input-amount
-                                                                                    conversion-rate)
-                                                                                 crypto-decimals)))]
-                                                (rf/dispatch [:wallet/lock-from-amount chain-id
-                                                              limit-in-crypto]))
-                                              (rf/dispatch [:wallet/unlock-from-amount chain-id]))
-                                            (rf/dispatch [:hide-bottom-sheet]))
-                               :disabled? (or (controlled-input/empty-value? input-state)
-                                              (controlled-input/input-error input-state))}}]
+            :button-one-props {:on-press            lock-or-unlock-amount
+                               :customization-color account-color
+                               :disabled?           (or (controlled-input/empty-value? input-state)
+                                                        (controlled-input/input-error input-state))}}]
           [quo/numbered-keyboard
            {:container-style      (style/keyboard-container bottom)
             :left-action          :dot
