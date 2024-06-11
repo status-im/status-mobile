@@ -27,9 +27,8 @@
       (rf/dispatch [:deselect-member public-key true]))))
 
 (defn add-member-contact-item-render
-  [{:keys [public-key] :as item} _ _ {:keys [group admin?]}]
-  (let [current-pk         (rf/sub [:multiaccount/public-key])
-        {:keys [contacts]} group
+  [{:keys [public-key] :as item} _ _ {:keys [group admin? current-pk]}]
+  (let [{:keys [contacts]} group
         member?            (contains? contacts public-key)
         checked?           (reagent/atom member?)]
     (if (or (= current-pk public-key) (and (not admin?) member?))
@@ -52,12 +51,13 @@
 
 (defn add-manage-members
   [{:keys [scroll-enabled? on-scroll]}]
-  (let [selected-participants      (rf/sub [:group-chat/selected-participants])
+  (let [theme                      (quo.theme/use-theme)
+        selected-participants      (rf/sub [:group-chat/selected-participants])
         deselected-members         (rf/sub [:group-chat/deselected-members])
         chat-id                    (rf/sub [:get-screen-params :group-add-manage-members])
         {:keys [admins] :as group} (rf/sub [:chats/chat-by-id chat-id])
-        theme                      (quo.theme/use-theme)
-        admin?                     (get admins (rf/sub [:multiaccount/public-key]))]
+        current-pk                 (rf/sub [:multiaccount/public-key])
+        admin?                     (get admins current-pk)]
     [rn/view {:flex 1 :margin-top 20}
      [rn/touchable-opacity
       {:on-press            #(rf/dispatch [:navigate-back])
@@ -78,8 +78,9 @@
        :render-section-header-fn       contact-list/contacts-section-header
        :render-section-footer-fn       contact-list/contacts-section-footer
        :content-container-style        {:padding-bottom 20}
-       :render-data                    {:group  group
-                                        :admin? admin?}
+       :render-data                    {:group      group
+                                        :admin?     admin?
+                                        :current-pk current-pk}
        :render-fn                      add-member-contact-item-render}]
      [rn/view {:style (style/bottom-container 30 theme)}
       [quo/button
