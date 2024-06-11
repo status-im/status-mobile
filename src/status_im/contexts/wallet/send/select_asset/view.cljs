@@ -64,13 +64,15 @@
         on-change-tab                   #(set-selected-tab %)
         on-close                        (fn []
                                           (rf/dispatch [:wallet/clean-selected-token])
-                                          (rf/dispatch [:wallet/clean-selected-collectible]))
-        view-id                         (rf/sub [:view-id])]
-    (rn/use-nav-unmount on-close view-id)
+                                          (rf/dispatch [:wallet/clean-selected-collectible])
+                                          (rf/dispatch [:navigate-back]))]
+    (rn/use-unmount (fn []
+                      (rf/dispatch [:wallet/clean-selected-token])
+                      (rf/dispatch [:wallet/clean-selected-collectible])))
     [rn/safe-area-view {:style style/container}
      [account-switcher/view
       {:icon-name     :i/arrow-left
-       :on-press      #(rf/dispatch [:navigate-back])
+       :on-press      on-close
        :switcher-type :select-account}]
      [quo/page-top
       {:title                     (i18n/label :t/select-asset)

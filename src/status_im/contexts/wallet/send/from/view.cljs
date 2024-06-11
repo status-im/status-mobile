@@ -29,8 +29,13 @@
 >>>>>>> 399110fcf (lint)
 =======
   []
+<<<<<<< HEAD
   (rf/dispatch [:wallet/clean-current-viewing-account]))
 >>>>>>> e51cdfdb9 (lint)
+=======
+  (rf/dispatch [:wallet/clean-current-viewing-account])
+  (rf/dispatch [:navigate-back]))
+>>>>>>> 250a1ce5a (lint)
 
 (defn- render-fn
   [item _ _ {:keys [network-details]}]
@@ -44,6 +49,7 @@
 
 (defn view
   []
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -73,10 +79,13 @@
         view-id  (rf/sub [:view-id])]
     (rn/use-nav-unmount on-close view-id)
 >>>>>>> def673650 (navigation listener)
+=======
+  (let [accounts (rf/sub [:wallet/accounts-with-current-asset])]
+>>>>>>> 250a1ce5a (lint)
     [floating-button-page/view
      {:footer-container-padding 0
       :header                   [account-switcher/view
-                                 {:on-press      #(rf/dispatch [:navigate-back])
+                                 {:on-press      on-close
                                   :margin-top    (safe-area/get-top)
                                   :switcher-type :select-account}]}
 
