@@ -35,7 +35,7 @@
                                (rf/dispatch [:navigate-back])))
         on-auth-success     (rn/use-callback
                              (fn [password]
-                               (rf/dispatch [:wallet/import-keypair-by-seed-phrase
+                               (rf/dispatch [:wallet/import-missing-keypair-by-seed-phrase
                                              {:keypair-key-uid (:key-uid keypair)
                                               :seed-phrase     (prepare-seed-phrase seed-phrase)
                                               :password        password
