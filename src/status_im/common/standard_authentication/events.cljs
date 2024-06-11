@@ -66,9 +66,12 @@
 (defn- bottom-sheet-password-view
   [{:keys [on-press-biometric on-auth-success auth-button-icon-left auth-button-label]}]
   (fn []
-    (let [handle-password-success (fn [password]
-                                    (rf/dispatch [:standard-auth/reset-login-password])
-                                    (-> password security/hash-masked-password on-auth-success))]
+    (let [handle-password-success
+          (fn [password]
+            (let [sha3-pwd (security/hash-masked-password password)]
+              (rf/dispatch [:standard-auth/reset-login-password])
+              (rf/dispatch [:wallet/make-partially-operable-accounts-fully-operable sha3-pwd])
+              (on-auth-success sha3-pwd)))]
       [enter-password/view
        {:on-enter-password   handle-password-success
         :on-press-biometrics on-press-biometric

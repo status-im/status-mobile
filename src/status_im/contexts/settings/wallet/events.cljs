@@ -223,3 +223,29 @@
 
 (rf/reg-event-fx :wallet/import-missing-keypair-by-private-key-failed
  import-missing-keypair-by-private-key-failed)
+
+(defn make-partially-operable-accounts-fully-operable-success
+  [{:keys [db]} [addresses]]
+  (let [key-uids-to-update (data-store/map-addresses-to-key-uids db addresses)
+        key-uids-set       (set key-uids-to-update)]
+    {:db (-> db
+             (update-in [:wallet :accounts] #(data-store/make-accounts-fully-operable % key-uids-set))
+             (update-in [:wallet :keypairs]
+                        #(data-store/make-keypairs-fully-operable % key-uids-set)))}))
+
+(rf/reg-event-fx :wallet/make-partially-operable-accounts-fully-operable-success
+ make-partially-operable-accounts-fully-operable-success)
+
+(defn make-partially-operable-accounts-fully-operable
+  [_ [password]]
+  {:fx [[:json-rpc/call
+         [{:method     "accounts_makePartiallyOperableAccoutsFullyOperable"
+           :params     [(security/safe-unmask-data password)]
+           :on-success (fn [addresses]
+                         (when addresses
+                           (rf/dispatch [:wallet/make-partially-operable-accounts-fully-operable-success
+                                         addresses])))
+           :on-error   #(log/error "failed to make partially accounts fully operable" %)}]]]})
+
+(rf/reg-event-fx :wallet/make-partially-operable-accounts-fully-operable
+ make-partially-operable-accounts-fully-operable)

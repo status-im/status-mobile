@@ -23,8 +23,7 @@
   [accounts key-uids-set]
   (reduce-kv
    (fn [acc k account]
-     (if (and (contains? key-uids-set (:key-uid account))
-              (= (keyword (:operable account)) :no))
+     (if (contains? key-uids-set (:key-uid account))
        (assoc acc k (assoc account :operable :fully))
        (assoc acc k account)))
    {}
@@ -45,3 +44,12 @@
                (assoc :lowest-operability :fully))
            keypair))
        keypairs))
+
+(defn map-addresses-to-key-uids
+  [db addresses]
+  (reduce (fn [key-uid-set address]
+            (if-let [account (get-in db [:wallet :accounts address])]
+              (conj key-uid-set (:key-uid account))
+              key-uid-set))
+          #{}
+          addresses))
