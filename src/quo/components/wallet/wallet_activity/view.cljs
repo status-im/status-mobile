@@ -69,9 +69,13 @@
     :or   {transaction :receive
            status      :pending}}
    theme]
-  [rn/view {:style (style/icon-container theme)}
+  [rn/view {:style style/icon-container}
+   [rn/view {:style style/icon-status-container}
+    [icon/icon (status-icon status)
+     {:size     12
+      :no-color :true}]]
    [hole-view/hole-view
-    {:style (style/icon-hole-view theme blur?)
+    {:style style/icon-hole-view
      :holes [{:x            20
               :y            20
               :right        0
@@ -79,11 +83,8 @@
               :height       12
               :borderRadius 6}]}
     [icon/icon (transaction-icon transaction :i/placeholder)
-     {:color (style/icon-color theme)}]]
-   [rn/view {:style style/icon-status-container}
-    [icon/icon (status-icon status)
-     {:size     12
-      :no-color :true}]]])
+     {:color (style/icon-color theme)}]
+    [rn/view {:style (style/icon-circle-border theme blur?)}]]])
 
 (defn prop-text
   [label theme]
@@ -116,9 +117,9 @@
       :on-press            on-press
       :on-press-in         on-press-in
       :on-press-out        on-press-out}
-     [rn/view {:style {:flex-direction :row}}
+     [rn/view {:style style/container}
       [transaction-icon-view props theme]
-      [rn/view {:style style/content-container}
+      [rn/view
        [transaction-header props theme]
        [rn/view {:style style/content-line}
         (when first-tag [prop-tag first-tag blur?])
