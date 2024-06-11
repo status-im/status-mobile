@@ -73,7 +73,7 @@
                                   {:tight?          true
                                    :container-style (when (pos? index) {:margin-top 8})}
                                   title]))
-        empty-state-component (rn/use-callback
+        empty-state-component (rn/use-memo
                                (fn []
                                  [quo/empty-state
                                   {:title       (i18n/label :t/no-saved-addresses)
