@@ -113,6 +113,7 @@
              currency-symbol                            (rf/sub [:profile/currency-symbol])
              send-from-locked-amounts                   (rf/sub
                                                          [:wallet/wallet-send-from-locked-amounts])
+             customization-color (rf/sub [:profile/customization-color])
              locked-amount                              (get send-from-locked-amounts chain-id)
              network-name-str                           (string/capitalize (name network-name))
              [input-state set-input-state]              (rn/use-state (cond-> controlled-input/init-state
@@ -181,7 +182,8 @@
             :container-style style/disclaimer
             :icon            (if is-amount-locked?
                                :i/locked
-                               :i/unlocked)}
+                               :i/unlocked)
+            :customization-color customization-color}
            (i18n/label :t/dont-auto-recalculate-network {:network network-name-str})]
           [quo/bottom-actions
            {:actions          :one-action
