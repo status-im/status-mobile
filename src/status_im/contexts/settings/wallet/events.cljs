@@ -179,6 +179,8 @@
                              (rf/call-continuation on-success))
           :on-error        (fn [error]
                              (rf/dispatch [:wallet/import-missing-keypair-by-seed-phrase-failed error])
+                             (log/error "failed to import missing keypair with seed phrase"
+                                        {:error error})
                              (rf/call-continuation on-error error))}]]})
 
 (rf/reg-event-fx :wallet/import-missing-keypair-by-seed-phrase import-missing-keypair-by-seed-phrase)
@@ -187,8 +189,7 @@
   [_ [error]]
   (let [error-type (-> error ex-message keyword)
         error-data (ex-data error)]
-    (when-not (and (= error-type :import-keypair-by-seed-phrase/import-error)
-                   (= (:hint error-data) :incorrect-seed-phrase-for-keypair))
+    (when-not (= error-type :import-missing-keypair-by-seed-phrase/import-error)
       {:fx [[:dispatch
              [:toasts/upsert
               {:type  :negative
