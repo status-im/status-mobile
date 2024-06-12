@@ -2,6 +2,7 @@
   (:require
     [status-im.contexts.wallet.data-store :as data-store]
     [taoensso.timbre :as log]
+    [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
 (defn save-address
@@ -98,6 +99,19 @@
                       :text  toast-message}]}]]})
 
 (rf/reg-event-fx :wallet/add-saved-address-success add-saved-address-success)
+
+(defn edit-saved-address-success
+  [_]
+  {:fx [[:dispatch [:wallet/get-saved-addresses]]
+        [:dispatch [:navigate-back]]
+        [:dispatch-later
+         {:ms       100
+          :dispatch [:toasts/upsert
+                     {:type  :positive
+                      :theme :dark
+                      :text  (i18n/label :t/address-edited)}]}]]})
+
+(rf/reg-event-fx :wallet/edit-saved-address-success edit-saved-address-success)
 
 (defn add-saved-address-failed
   [_ [error]]
