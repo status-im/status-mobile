@@ -1,4 +1,4 @@
-(ns status-im.contexts.settings.wallet.keypairs-and-accounts.scan-qr.view
+(ns status-im.contexts.settings.wallet.keypairs-and-accounts.missing-keypairs.scan-qr.view
   (:require
     [react-native.core :as rn]
     [status-im.common.scan-qr-code.view :as scan-qr-code]

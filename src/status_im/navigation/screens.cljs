@@ -63,8 +63,9 @@
      :as missing-keypairs.import-private-key]
     [status-im.contexts.settings.wallet.keypairs-and-accounts.missing-keypairs.import-seed-phrase.view
      :as missing-keypairs.import-seed-phrase]
+    [status-im.contexts.settings.wallet.keypairs-and-accounts.missing-keypairs.scan-qr.view
+     :as scan-keypair-qr]
     [status-im.contexts.settings.wallet.keypairs-and-accounts.rename.view :as keypair-rename]
-    [status-im.contexts.settings.wallet.keypairs-and-accounts.scan-qr.view :as scan-keypair-qr]
     [status-im.contexts.settings.wallet.keypairs-and-accounts.view :as keypairs-and-accounts]
     [status-im.contexts.settings.wallet.network-settings.view :as network-settings]
     [status-im.contexts.settings.wallet.saved-addresses.add-address-to-save.view :as
