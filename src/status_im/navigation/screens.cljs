@@ -58,7 +58,7 @@
     [status-im.contexts.profile.settings.screens.password.view :as settings-password]
     [status-im.contexts.profile.settings.view :as settings]
     [status-im.contexts.settings.wallet.keypairs-and-accounts.missing-keypairs.encrypted-qr.view
-     :as encrypted-key-pair-qr]
+     :as encrypted-keypair-qr]
     [status-im.contexts.settings.wallet.keypairs-and-accounts.missing-keypairs.import-private-key.view
      :as missing-keypairs.import-private-key]
     [status-im.contexts.settings.wallet.keypairs-and-accounts.missing-keypairs.import-seed-phrase.view
@@ -536,9 +536,9 @@
      :options   (assoc options/dark-screen :sheet? true)
      :component keypair-rename/view}
 
-    {:name      :screen/settings.encrypted-key-pair-qr
+    {:name      :screen/settings.encrypted-keypair-qr
      :options   options/transparent-screen-options
-     :component encrypted-key-pair-qr/view}
+     :component encrypted-keypair-qr/view}
 
     {:name      :screen/settings.saved-addresses
      :options   options/transparent-modal-screen-options
