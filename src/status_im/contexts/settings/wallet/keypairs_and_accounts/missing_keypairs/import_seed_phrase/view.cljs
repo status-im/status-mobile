@@ -1,4 +1,4 @@
-(ns status-im.contexts.settings.wallet.keypairs-and-accounts.import-seed-phrase.view
+(ns status-im.contexts.settings.wallet.keypairs-and-accounts.missing-keypairs.import-seed-phrase.view
   (:require
     [quo.core :as quo]
     [react-native.core :as rn]

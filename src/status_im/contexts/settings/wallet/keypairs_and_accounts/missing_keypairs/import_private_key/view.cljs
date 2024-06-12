@@ -1,4 +1,4 @@
-(ns status-im.contexts.settings.wallet.keypairs-and-accounts.import-private-key.view
+(ns status-im.contexts.settings.wallet.keypairs-and-accounts.missing-keypairs.import-private-key.view
   (:require
     [clojure.string :as string]
     [quo.core :as quo]
@@ -7,7 +7,8 @@
     [react-native.safe-area :as safe-area]
     [status-im.common.floating-button-page.view :as floating-button-page]
     [status-im.common.standard-authentication.core :as standard-auth]
-    [status-im.contexts.settings.wallet.keypairs-and-accounts.import-private-key.style :as style]
+    [status-im.contexts.settings.wallet.keypairs-and-accounts.missing-keypairs.import-private-key.style
+     :as style]
     [status-im.contexts.wallet.common.validation :as validation]
     [utils.debounce :as debounce]
     [utils.i18n :as i18n]
