@@ -35,7 +35,7 @@
      [account-switcher/view
       {:type     :wallet-networks
        :on-press (fn []
-                       (rf/dispatch [:wallet/close-account-page]))}]
+                   (rf/dispatch [:wallet/close-account-page]))}]
      [quo/account-overview
       {:container-style     style/account-overview
        :current-value       formatted-balance

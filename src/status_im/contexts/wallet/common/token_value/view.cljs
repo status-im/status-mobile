@@ -68,7 +68,8 @@
 (defn token-value-drawer
   [token watch-only?]
   (let [token-symbol          (:token token)
-        token-data            (first (rf/sub [:wallet/current-viewing-account-tokens-filtered token-symbol]))
+        token-data            (first (rf/sub [:wallet/current-viewing-account-tokens-filtered
+                                              token-symbol]))
         selected-account?     (rf/sub [:wallet/current-viewing-account-address])
         send-or-bridge-params (if selected-account?
                                 {:token       token-data
