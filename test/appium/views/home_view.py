@@ -265,7 +265,6 @@ class HomeView(BaseView):
         # Notification centre
         self.notifications_button = Button(self.driver, accessibility_id="notifications-button")
         self.notifications_unread_badge = BaseElement(self.driver, accessibility_id="activity-center-unread-count")
-        self.show_qr_code_button = Button(self.driver, accessibility_id="show-qr-button")
         self.open_activity_center_button = Button(self.driver, accessibility_id="open-activity-center-button")
         self.close_activity_centre = Button(self.driver, accessibility_id="close-activity-center")
 

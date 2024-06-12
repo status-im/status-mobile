@@ -46,9 +46,10 @@
   [rn/view
    {:style style/transaction-header-container}
    [text/text
-    {:weight :semi-bold
-     :size   :paragraph-1
-     :style  (style/transaction-header theme)}
+    {:weight              :semi-bold
+     :size                :paragraph-1
+     :style               (style/transaction-header theme)
+     :accessibility-label :transaction-header}
     (transaction transaction-translation)]
    (when (> counter 1)
      [rn/view (style/transaction-counter-container theme blur?)
@@ -59,9 +60,10 @@
        (i18n/label :t/x-counter {:counter counter})]])
    [rn/view {:style style/timestamp-container}
     [text/text
-     {:weight :regular
-      :size   :label
-      :style  (style/timestamp theme blur?)}
+     {:weight              :regular
+      :size                :label
+      :style               (style/timestamp theme blur?)
+      :accessibility-label :transaction-timestamp}
      timestamp]]])
 
 (defn transaction-icon-view
