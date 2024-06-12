@@ -17,7 +17,7 @@
 
 (defn view
   []
-  (let [{:keys [top]}            (safe-area/get-insets)
+  (let [{:keys [top bottom]}     (safe-area/get-insets)
         alert-banners-top-margin (rf/sub [:alert-banners/top-margin])
         current-step             (rf/sub [:settings/change-password-current-step])]
     (rn/use-unmount #(rf/dispatch [:change-password/reset]))
@@ -33,8 +33,12 @@
         :icon-name  :i/arrow-left
         :on-press   navigate-back}]
       [rn/keyboard-avoiding-view
-       {:style                  {:flex 1}
-        :keyboardVerticalOffset (if platform/ios? alert-banners-top-margin 0)}
+       {:style                    {:flex 1}
+        :keyboard-vertical-offset (if platform/ios?
+                                    (-> 12
+                                        (+ alert-banners-top-margin)
+                                        (- bottom))
+                                    0)}
        (condp = current-step
          :old-password [old-password-form/view]
          :new-password [new-password-form/view])]]]))
