@@ -46,16 +46,56 @@
                                                :stack-id  :screen/wallet.select-address}])}]))
             recent-recipients))))
 
+(defn- saved-address
+  [{:keys [name address chain-short-names customization-color ens? ens]}]
+  (let [full-address           (str chain-short-names address)
+        on-press-saved-address (rn/use-callback
+                                #(rf/dispatch
+                                  [:wallet/select-send-address
+                                   {:address   full-address
+                                    :recipient full-address
+                                    :stack-id  :screen/wallet.select-address}])
+                                [full-address])]
+    [quo/saved-address
+     {:user-props      {:name                name
+                        :address             full-address
+                        :ens                 (when ens? ens)
+                        :customization-color customization-color}
+      :container-style {:margin-horizontal 8}
+      :on-press        on-press-saved-address}]))
+
+(defn- saved-addresses
+  [theme]
+  (let [group-saved-addresses (rf/sub [:wallet/grouped-saved-addresses])
+        section-header        (rn/use-callback
+                               (fn [{:keys [title index]}]
+                                 [quo/divider-label
+                                  {:tight?          true
+                                   :container-style (when (pos? index) {:margin-top 8})}
+                                  title]))
+        empty-state-component (rn/use-memo
+                               (fn []
+                                 [quo/empty-state
+                                  {:title       (i18n/label :t/no-saved-addresses)
+                                   :description (i18n/label
+                                                 :t/you-like-to-type-43-characters)
+                                   :image       (resources/get-themed-image :sweating-man
+                                                                            theme)}])
+                               [theme])]
+    [rn/section-list
+     {:key-fn                          :title
+      :shows-vertical-scroll-indicator false
+      :render-section-header-fn        section-header
+      :sections                        group-saved-addresses
+      :render-fn                       saved-address
+      :empty-component                 empty-state-component}]))
+
 (defn view
   [{:keys [selected-tab]}]
   (let [theme (quo.theme/use-theme)]
     (case selected-tab
       :tab/recent      [recent-transactions theme]
-      :tab/saved       [quo/empty-state
-                        {:title           (i18n/label :t/no-saved-addresses)
-                         :description     (i18n/label :t/you-like-to-type-43-characters)
-                         :image           (resources/get-themed-image :sweating-man theme)
-                         :container-style style/empty-container-style}]
+      :tab/saved       [saved-addresses theme]
       :tab/contacts    [quo/empty-state
                         {:title           (i18n/label :t/no-contacts)
                          :description     (i18n/label :t/no-contacts-description)
