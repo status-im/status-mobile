@@ -37,12 +37,26 @@
     :fx [[:dispatch [:navigate-to :screen/wallet.accounts address]]
          [:dispatch [:wallet/fetch-activities]]]}))
 
+(rf/reg-event-fx :wallet/navigate-to-account-within-stack
+ (fn [{:keys [db]} [address]]
+   {:db (assoc-in db [:wallet :current-viewing-account-address] address)
+    :fx [[:dispatch [:navigate-to-within-stack [:screen/wallet.accounts :shell-stack] address]]
+         [:dispatch [:wallet/fetch-activities]]]}))
+
 (rf/reg-event-fx :wallet/navigate-to-new-account
  (fn [{:keys [db]} [address]]
    {:db (assoc-in db [:wallet :current-viewing-account-address] address)
     :fx [[:dispatch [:hide-bottom-sheet]]
          [:dispatch [:navigate-to :screen/wallet.accounts address]]
          [:dispatch [:wallet/show-account-created-toast address]]]}))
+
+(rf/reg-event-fx :wallet/select-account-tab
+ (fn [{:keys [db]} [tab]]
+   {:db (assoc-in db [:wallet :ui :account-page :active-tab] tab)}))
+
+(rf/reg-event-fx :wallet/clear-account-tab
+ (fn [{:keys [db]}]
+   {:db (assoc-in db [:wallet :ui :account-page :active-tab] nil)}))
 
 (rf/reg-event-fx :wallet/switch-current-viewing-account
  (fn [{:keys [db]} [address]]
@@ -55,6 +69,7 @@
 (rf/reg-event-fx :wallet/close-account-page
  (fn [_]
    {:fx [[:dispatch [:wallet/clean-current-viewing-account]]
+         [:dispatch [:wallet/clear-account-tab]]
          [:dispatch [:pop-to-root :shell-stack]]]}))
 
 (defn log-rpc-error

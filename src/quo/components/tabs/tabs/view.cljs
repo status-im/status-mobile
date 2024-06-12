@@ -2,12 +2,14 @@
   (:require
     [oops.core :refer [oget]]
     [quo.components.tabs.tab.view :as tab]
+    [quo.components.tabs.tabs.schema :as component-schema]
     [quo.components.tabs.tabs.style :as style]
     [react-native.core :as rn]
     [react-native.gesture :as gesture]
     [react-native.linear-gradient :as linear-gradient]
     [react-native.masked-view :as masked-view]
     [reagent.core :as reagent]
+    [schema.core :as schema]
     [utils.collection :as utils.collection]
     [utils.number]))
 
@@ -84,36 +86,20 @@
      :on-press            #(on-press % index)}
     label]])
 
-(defn view
-  " Common options (for scrollable and non-scrollable tabs):
-
-  - `blur?` Boolean passed down to `quo.components.tabs.tab/tab`.
-  - `data` Vector of tab items.
-  - `on-change` Callback called after a tab is selected.
-  - `size` 32/24
-  - `style` Style map passed to View wrapping tabs or to the FlatList when tabs
-    are scrollable.
-
-  Options for scrollable tabs:
-  - `fade-end-percentage` Percentage where fading starts relative to the total
-    layout width of the `flat-list` data.
-  - `fade-end?` When non-nil, causes the end of the scrollable view to fade out.
-  - `on-scroll` Callback called on the on-scroll event of the FlatList. Only
-    used when `scrollable?` is non-nil.
-  - `scrollable?` When non-nil, use a scrollable flat-list to render tabs.
-  - `scroll-on-press?` When non-nil, clicking on a tag centers it the middle
-    (with animation enabled).
-  "
+(defn- view-internal
   [{:keys [default-active data fade-end-percentage fade-end? on-change on-scroll scroll-on-press?
-           scrollable? style container-style size blur? in-scroll-view? customization-color]
+           scrollable? style container-style size blur? in-scroll-view? customization-color
+           active-tab-id]
     :or   {fade-end-percentage 0.8
            fade-end?           false
            scrollable?         false
            scroll-on-press?    false
            size                default-tab-size}
     :as   props}]
-  (let [[active-tab-id
-         set-active-tab-id]          (rn/use-state default-active)
+  (let [[active-tab-internal-id
+         set-active-tab-internal-id] (rn/use-state default-active)
+        tab-id                       (or active-tab-id active-tab-internal-id)
+
         [fading set-fading]          (rn/use-state fade-end-percentage)
         flat-list-ref                (rn/use-ref-atom nil)
         tabs-data                    (rn/use-memo (fn [] (filterv some? data))
@@ -143,11 +129,11 @@
                                              {:animated false
                                               :index
                                               (utils.collection/first-index
-                                               #(= active-tab-id (:id %))
+                                               #(= tab-id (:id %))
                                                tabs-data)}))))
-                                      [active-tab-id tabs-data])
+                                      [tab-id tabs-data])
         on-tab-press                 (rn/use-callback (fn [id index]
-                                                        (set-active-tab-id id)
+                                                        (set-active-tab-internal-id id)
                                                         (when (and scroll-on-press? @flat-list-ref)
                                                           (.scrollToIndex ^js @flat-list-ref
                                                                           #js
@@ -156,7 +142,8 @@
                                                                             :viewPosition 0.5}))
                                                         (when on-change
                                                           (on-change id)))
-                                                      [set-active-tab-id scroll-on-press? on-change])]
+                                                      [set-active-tab-internal-id scroll-on-press?
+                                                       on-change])]
     (if scrollable?
       [rn/view {:style {:margin-top (- (dec unread-count-offset))}}
        [masked-view-wrapper
@@ -183,7 +170,7 @@
            :on-scroll on-scroll
            :on-layout set-initial-scroll-poisition
            :render-fn tab-view
-           :render-data {:active-tab-id       active-tab-id
+           :render-data {:active-tab-id       tab-id
                          :blur?               blur?
                          :customization-color customization-color
                          :number-of-items     (count tabs-data)
@@ -194,7 +181,7 @@
        (map-indexed (fn [index item]
                       ^{:key (:id item)}
                       [tab-view item index nil
-                       {:active-tab-id       active-tab-id
+                       {:active-tab-id       tab-id
                         :blur?               blur?
                         :customization-color customization-color
                         :number-of-items     (count tabs-data)
@@ -202,3 +189,5 @@
                         :on-press            on-tab-press
                         :style               style}])
                     tabs-data)])))
+
+(def view (schema/instrument #'view-internal component-schema/?schema))

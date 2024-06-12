@@ -436,6 +436,12 @@
        accounts))))
 
 (rf/reg-sub
+ :wallet/account-tab
+ :<- [:wallet/ui]
+ (fn [ui]
+   (get-in ui [:account-page :active-tab])))
+
+(rf/reg-sub
  :wallet/current-viewing-account-token-values
  :<- [:wallet/current-viewing-account]
  :<- [:wallet/current-viewing-account-tokens-in-selected-networks]
