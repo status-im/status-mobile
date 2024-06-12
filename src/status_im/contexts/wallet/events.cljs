@@ -1,6 +1,7 @@
 (ns status-im.contexts.wallet.events
   (:require
     [camel-snake-kebab.extras :as cske]
+    [clojure.set]
     [clojure.string :as string]
     [react-native.platform :as platform]
     [status-im.constants :as constants]
@@ -81,6 +82,11 @@
 
 (rf/reg-event-fx :wallet/log-rpc-error log-rpc-error)
 
+(def refresh-accounts-fx-dispatches
+  [[:dispatch [:wallet/get-wallet-token-for-all-accounts]]
+   [:dispatch [:wallet/request-collectibles-for-all-accounts {:new-request? true}]]
+   [:dispatch [:wallet/check-recent-history-for-all-accounts]]])
+
 (rf/reg-event-fx
  :wallet/get-accounts-success
  (fn [{:keys [db]} [accounts]]
@@ -91,11 +97,9 @@
      {:db (assoc-in db
            [:wallet :accounts]
            (utils.collection/index-by :address wallet-accounts))
-      :fx [[:dispatch [:wallet/get-wallet-token-for-all-accounts]]
-           [:dispatch [:wallet/request-collectibles-for-all-accounts {:new-request? true}]]
-           [:dispatch [:wallet/check-recent-history-for-all-accounts]]
-           (when new-account?
-             [:dispatch [:wallet/navigate-to-new-account navigate-to-account]])]})))
+      :fx (concat refresh-accounts-fx-dispatches
+                  [(when new-account?
+                     [:dispatch [:wallet/navigate-to-new-account navigate-to-account]])])})))
 
 (rf/reg-event-fx
  :wallet/get-accounts
@@ -545,3 +549,36 @@
  :wallet/process-watch-only-account-from-backup
  (fn [_ [{:keys [backedUpWatchOnlyAccount]}]]
    {:fx [[:dispatch [:wallet/process-account-from-signal backedUpWatchOnlyAccount]]]}))
+
+(defn process-keypairs
+  [{:keys [db]} [keypairs]]
+  (let [existing-keypairs-by-id               (get-in db [:wallet :keypairs])
+        existing-accounts-by-address          (get-in db [:wallet :accounts])
+        {:keys [removed-keypair-ids
+                removed-account-addresses
+                updated-keypairs-by-id
+                updated-accounts-by-address]} (data-store/process-keypairs keypairs)
+        updated-keypair-ids                   (set (keys updated-keypairs-by-id))
+        updated-account-addresses             (set (keys updated-accounts-by-address))
+        existing-account-addresses            (set (keys existing-accounts-by-address))
+        new-account-addresses                 (clojure.set/difference updated-account-addresses
+                                                                      existing-account-addresses)
+        old-account-addresses                 (->> (vals existing-accounts-by-address)
+                                                   (filter (fn [{:keys [address key-uid]}]
+                                                             (and (contains? updated-keypair-ids key-uid)
+                                                                  (nil? (get updated-accounts-by-address
+                                                                             address)))))
+                                                   (map :address))]
+    (cond-> {:db (-> db
+                     (assoc-in [:wallet :keypairs]
+                               (-> (partial dissoc existing-keypairs-by-id)
+                                   (apply removed-keypair-ids)
+                                   (merge updated-keypairs-by-id)))
+                     (assoc-in [:wallet :accounts]
+                               (-> (partial dissoc existing-accounts-by-address)
+                                   (apply (into removed-account-addresses old-account-addresses))
+                                   (merge updated-accounts-by-address))))}
+      (seq new-account-addresses)
+      (assoc :fx refresh-accounts-fx-dispatches))))
+
+(rf/reg-event-fx :wallet/process-keypairs process-keypairs)
