@@ -2691,6 +2691,7 @@
     "this-address-is-already-saved": "This address is already saved",
     "this-ens-name-is-not-registered-yet": "This ENS name is not registered yet",
     "address-saved": "Address saved",
+    "address-edited": "Address edited",
     "dapp-will-be-able-to": "{{dapp-name}} will be able to:",
     "check-your-account-balance-and-activity": "Check your account balance and activity",
     "request-txns-and-message-signing": "Request transactions and message signing",
