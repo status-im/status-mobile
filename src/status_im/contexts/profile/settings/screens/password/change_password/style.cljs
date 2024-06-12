@@ -1,6 +1,7 @@
 (ns status-im.contexts.profile.settings.screens.password.change-password.style
   (:require
     [quo.foundations.colors :as colors]
+    [react-native.platform :as platform]
     [react-native.safe-area :as safe-area]))
 
 (def form-container
@@ -48,7 +49,7 @@
    :justify-content   :space-between})
 
 (def bottom-part
-  {:margin-bottom   (- (safe-area/get-bottom) 12)
+  {:margin-bottom   (if platform/ios? (safe-area/get-bottom) 12)
    :justify-content :flex-end})
 
 (def disclaimer-container
