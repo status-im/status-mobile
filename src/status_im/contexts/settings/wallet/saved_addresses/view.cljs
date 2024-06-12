@@ -66,8 +66,7 @@
 
 (defn- add-address-to-save
   []
-  (rf/dispatch [:navigate-to-within-stack
-                [:screen/settings.add-address-to-save :screen/settings.saved-addresses]]))
+  (rf/dispatch [:open-modal :screen/settings.add-address-to-save]))
 
 (defn view
   []

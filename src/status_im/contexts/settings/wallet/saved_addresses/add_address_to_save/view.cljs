@@ -159,9 +159,7 @@
                                                   :ens     address-or-ens
                                                   :ens?    ens-name?}])
                                                (rf/dispatch
-                                                [:navigate-to-within-stack
-                                                 [:screen/settings.save-address
-                                                  :screen/settings.add-address-to-save]]))
+                                                [:open-modal :screen/settings.save-address]))
                                              [address ens-name? address-or-ens])]
     (rn/use-unmount #(rf/dispatch [:wallet/clear-address-to-save]))
     [quo/overlay {:type :shell}
