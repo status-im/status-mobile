@@ -13,8 +13,18 @@
              constants/wallet-connect-personal-sign-method
              [:dispatch [:wallet-connect/respond-personal-sign password]]
 
+             constants/wallet-connect-eth-send-transaction-method
+             [:dispatch
+              [:wallet-connect/respond-build-transaction
+               #(rf/dispatch [:wallet-connect/respond-sign-transaction-data password %])]]
+
              constants/wallet-connect-eth-sign-method
              [:dispatch [:wallet-connect/respond-eth-sign password]]
+
+             constants/wallet-connect-eth-sign-transaction-method
+             [:dispatch
+              [:wallet-connect/respond-build-transaction
+               #(rf/dispatch [:wallet-connect/respond-sign-transaction-data password %])]]
 
              constants/wallet-connect-eth-sign-typed-method
              [:dispatch [:wallet-connect/respond-sign-typed-data password :v1]]
@@ -54,6 +64,30 @@
              :address    address
              :data       raw-data
              :version    typed-data-version
+             :on-error   #(rf/dispatch [:wallet-connect/on-sign-error %])
+             :on-success #(rf/dispatch [:wallet-connect/send-response %])}]]})))
+
+(rf/reg-event-fx
+ :wallet-connect/respond-build-transaction
+ (fn [{:keys [db]} [on-success]]
+   (let [{:keys [raw-data]} (get db :wallet-connect/current-request)
+         chain-id           (-> raw-data
+                                (get-in [:params :chainId])
+                                (wallet-connect-core/eip155->chain-id))]
+     {:fx [[:json-rpc/call
+            [{:method     "wallet_buildTransaction"
+              :params     [chain-id (.stringify js/JSON raw-data)]
+              :on-success on-success
+              :on-error   [:wallet-connect/on-sign-error]}]]]})))
+
+(rf/reg-event-fx
+ :wallet-connect/respond-sign-transaction-data
+ (fn [_ [password data]]
+   (let [{:keys [address messageToSign]} data]
+     {:fx [[:effects.wallet-connect/sign-message
+            {:password   password
+             :address    address
+             :data       messageToSign
              :on-error   #(rf/dispatch [:wallet-connect/on-sign-error %])
              :on-success #(rf/dispatch [:wallet-connect/send-response %])}]]})))
 

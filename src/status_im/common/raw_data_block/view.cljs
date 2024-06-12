@@ -4,9 +4,9 @@
             [status-im.common.raw-data-block.style :as style]))
 
 (defn view
-  [{:keys [data]}]
+  [{:keys [data bottom-margin?] :or {bottom-margin? true}}]
   [rn/scroll-view
-   {:style                   style/container
+   {:style                   (style/container bottom-margin?)
     :content-container-style style/content}
    [quo/text
     {:size   :paragraph-2
