@@ -41,7 +41,7 @@
     text-input))
 
 (defn search-input
-  [{:keys [value tags disabled? blur? on-change-text customization-color
+  [{:keys [value tags disabled? blur? on-change-text customization-color show-clear-button?
            on-clear on-focus on-blur container-style]
     :or   {customization-color :blue}
     :as   props}
@@ -86,7 +86,7 @@
           use-value?        (assoc :value value)
           (seq clean-props) (merge clean-props))]
        (when-not use-value? children))]
-     (when (or (seq value) (seq children))
+     (when (or (seq value) (seq children) show-clear-button?)
        [clear-button
         {:on-press on-clear
          :blur?    blur?

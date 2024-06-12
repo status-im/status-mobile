@@ -1,6 +1,7 @@
 (ns status-im.contexts.settings.wallet.saved-addresses.view
   (:require
     [clojure.string :as string]
+    [oops.core :as oops]
     [quo.core :as quo]
     [quo.foundations.colors :as colors]
     [quo.theme :as quo.theme]
@@ -9,6 +10,7 @@
     [status-im.common.resources :as resources]
     [status-im.contexts.settings.wallet.saved-addresses.sheets.address-options.view :as address-options]
     [status-im.contexts.settings.wallet.saved-addresses.style :as style]
+    [utils.debounce :as debounce]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
@@ -78,13 +80,13 @@
     :empty-component                 [empty-result]}])
 
 (defn- unfiltered-list
-  []
+  [{:keys [grouped-saved-addresses]}]
   [rn/section-list
    {:key-fn                          :title
     :shows-vertical-scroll-indicator false
     :sticky-section-headers-enabled  false
     :render-section-header-fn        header
-    :sections                        (rf/sub [:wallet/grouped-saved-addresses])
+    :sections                        grouped-saved-addresses
     :render-fn                       saved-address
     :content-container-style         {:flex-grow 1}
     :empty-component                 [empty-list]}])
@@ -102,8 +104,19 @@
   (let [alert-banners-top-margin      (rf/sub [:alert-banners/top-margin])
         customization-color           (rf/sub [:profile/customization-color])
         has-saved-addresses?          (rf/sub [:wallet/has-saved-addresses?])
+        grouped-saved-addresses       (rf/sub [:wallet/grouped-saved-addresses])
+        input-ref                     (rn/use-ref-atom nil)
         [search-text set-search-text] (rn/use-state "")
-        on-clear-input                (rn/use-callback #(set-search-text ""))
+        set-input-ref                 (rn/use-callback #(reset! input-ref %))
+        on-clear-input                (rn/use-callback
+                                       (fn []
+                                         (some-> @input-ref
+                                                 (oops/ocall "clear"))
+                                         (set-search-text "")))
+        on-change-text                (rn/use-callback
+                                       (debounce/debounce
+                                        #(set-search-text %)
+                                        500))
         search-active?                (not (string/blank? search-text))
         page-top-props                (rn/use-memo
                                        #(cond-> {:title               (i18n/label :t/saved-addresses)
@@ -120,8 +133,9 @@
                                            :input       :search
                                            :input-props {:placeholder         (i18n/label
                                                                                :t/name-ens-or-address)
-                                                         :value               search-text
-                                                         :on-change-text      set-search-text
+                                                         :ref                 set-input-ref
+                                                         :on-change-text      on-change-text
+                                                         :show-clear-button?  search-active?
                                                          :on-clear            on-clear-input
                                                          :customization-color customization-color}))
                                        [has-saved-addresses? customization-color search-text])]
@@ -139,4 +153,4 @@
        :keyboardVerticalOffset (if platform/ios? alert-banners-top-margin 0)}
       (if search-active?
         [filtered-list {:search-text search-text}]
-        [unfiltered-list])]]))
+        [unfiltered-list {:grouped-saved-addresses grouped-saved-addresses}])]]))
