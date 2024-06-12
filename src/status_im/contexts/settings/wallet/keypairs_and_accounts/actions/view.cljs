@@ -28,6 +28,11 @@
                                                [keypair])
         on-import-seed-phrase (rn/use-callback
                                #(rf/dispatch [:open-modal :screen/settings.import-seed-phrase keypair])
+                               [keypair])
+        on-import-private-key (rn/use-callback
+                               #(rf/dispatch [:open-modal
+                                              :screen/settings.missing-keypair-import-private-key
+                                              keypair])
                                [keypair])]
     [:<>
      [quo/drawer-top drawer-props]
@@ -48,7 +53,11 @@
               :seed {:icon                :i/seed
                      :accessibility-label :import-seed-phrase
                      :label               (i18n/label :t/import-by-entering-recovery-phrase)
-                     :on-press            #(on-import-seed-phrase keypair)}
+                     :on-press            on-import-seed-phrase}
+              :key  {:icon                :i/key
+                     :accessibility-label :import-private-key
+                     :label               (i18n/label :t/import-by-entering-private-key)
+                     :on-press            on-import-private-key}
               nil))
           {:icon                :i/edit
            :accessibility-label :rename-key-pair

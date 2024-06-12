@@ -5,7 +5,6 @@
     [quo.foundations.colors :as colors]
     [react-native.core :as rn]
     [react-native.platform :as platform]
-    [status-im.common.not-implemented :as not-implemented]
     [status-im.constants :as constants]
     [status-im.contexts.settings.wallet.saved-addresses.sheets.remove-address.view :as remove-address]
     [utils.i18n :as i18n]
@@ -62,6 +61,13 @@
         open-show-address-qr           (rn/use-callback
                                         #(rf/dispatch [:open-modal
                                                        :screen/settings.share-saved-address opts])
+                                        [opts])
+        open-edit-saved-address        (rn/use-callback
+                                        (fn []
+                                          (rf/dispatch [:wallet/set-address-to-save opts])
+                                          (rf/dispatch [:open-modal
+                                                        :screen/settings.edit-saved-address
+                                                        {:edit? true}]))
                                         [opts])]
     [quo/action-drawer
      [[{:icon                :i/arrow-up
@@ -102,7 +108,7 @@
        {:icon                :i/edit
         :label               (i18n/label :t/edit-account)
         :blur?               true
-        :on-press            not-implemented/alert
+        :on-press            open-edit-saved-address
         :accessibility-label :edit-saved-address}
        {:icon                :i/delete
         :label               (i18n/label :t/remove-address)
