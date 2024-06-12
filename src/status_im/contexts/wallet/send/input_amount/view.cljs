@@ -286,7 +286,7 @@
                                                      (if (= token-symbol
                                                             (string/upper-case
                                                              constants/mainnet-short-name))
-                                                       (= available-limit amount)
+                                                       (= current-limit input-amount)
                                                        (money/equal-to (:total-balance
                                                                         owned-eth-token)
                                                                        0)))
