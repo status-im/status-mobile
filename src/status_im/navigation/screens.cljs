@@ -57,8 +57,8 @@
     [status-im.contexts.profile.settings.screens.password.change-password.view :as change-password]
     [status-im.contexts.profile.settings.screens.password.view :as settings-password]
     [status-im.contexts.profile.settings.view :as settings]
-    [status-im.contexts.settings.wallet.keypairs-and-accounts.encrypted-qr.view :as
-     encrypted-key-pair-qr]
+    [status-im.contexts.settings.wallet.keypairs-and-accounts.missing-keypairs.encrypted-qr.view
+     :as encrypted-key-pair-qr]
     [status-im.contexts.settings.wallet.keypairs-and-accounts.missing-keypairs.import-private-key.view
      :as missing-keypairs.import-private-key]
     [status-im.contexts.settings.wallet.keypairs-and-accounts.missing-keypairs.import-seed-phrase.view
