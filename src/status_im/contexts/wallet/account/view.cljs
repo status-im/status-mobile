@@ -24,11 +24,12 @@
 
 (defn view
   []
-  (let [selected-tab          (or (rf/sub [:wallet/account-tab]) first-tab-id)
-        {:keys [name color formatted-balance
-                watch-only?]} (rf/sub [:wallet/current-viewing-account])
-        customization-color   (rf/sub [:profile/customization-color])]
-    (rn/use-unmount #(rf/dispatch [:wallet/close-account-page]))
+  (let [selected-tab        (or (rf/sub [:wallet/account-tab]) first-tab-id)
+        {:keys [name color formatted-balance watch-only?
+                address]}   (rf/sub [:wallet/current-viewing-account])
+        customization-color (rf/sub [:profile/customization-color])]
+    (rn/use-mount
+     #(rf/dispatch [:wallet/fetch-activities-for-current-account address]))
     [rn/view {:style {:flex 1}}
      [account-switcher/view
       {:type     :wallet-networks
