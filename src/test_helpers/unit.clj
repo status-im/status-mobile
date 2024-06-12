@@ -59,15 +59,16 @@
                   'testing           `testing-restorable-app-db}
                  body))))))))
 
-(defmacro ^:private custom-event-dispatcher
-  [event-v]
-  `(let [event-v#                 ~event-v
-         event-id#                (first event-v#)
-         all-interceptors#        (re-frame.registrar/get-handler :event event-id#)
-         interceptors-without-fx# (remove #(= :do-fx (:id %)) all-interceptors#)]
-     (assert (seq all-interceptors#)
-             (str "Failed to define test for event '" event-id# "'. Event does not exist"))
-     (:effects (re-frame.interceptor/execute event-v# interceptors-without-fx#))))
+(defmacro ^:private event-dispatcher
+  "Returns an s-exp that can build an event dispatcher given an event vector."
+  []
+  `(fn [event-v#]
+     (let [event-id#                (first event-v#)
+           all-interceptors#        (re-frame.registrar/get-handler :event event-id#)
+           interceptors-without-fx# (remove #(= :do-fx (:id %)) all-interceptors#)]
+       (assert (seq all-interceptors#)
+               (str "Event does not exist '" event-id# "'"))
+       (:effects (re-frame.interceptor/execute event-v# interceptors-without-fx#)))))
 
 (defmacro deftest-event
   "Defines a test var for an event `event-id`.
@@ -86,42 +87,39 @@
   Any usage of the `cljs.test/testing` macro within `body` will be modified to
   ensure the app-db is restored.
 
-  Expressions in `body` will have access to `dispatcher`, a function similar to
-  the original event handler under test, but without executing effects. It
-  behaves like `re-frame.core/dispatch`, except it does not realize effects and
-  it returns the `:effects` value from the final context, which is the value we
-  want to assert on.
+  The macro offers two bindings, namely `event-id` and `dispatch`. The
+  `dispatch` function is similar to `re-frame.core/dispatch`, but without
+  executing effects. It returns the map of effects we can assert on and it's
+  synchronous.
 
   Example:
 
   ```clojure
   (ns events-test
-    (:require [test-helpers.unit :as h]
-              [utils.re-frame :as rf]))
+    (:require [test-helpers.unit :as h]))
 
   (h/deftest-event :wallet/dummy-event
-    [event-id]
+    [event-id dispatch]
     (let [expected {:db {:a false}}]
       ;; Arrange
       (swap! rf-db/app-db {:a true})
 
       ;; Act and Assert
-      (is (match? expected (rf/dispatch [event-id arg1 arg2])))))
+      (is (match? expected (dispatch [event-id arg1 arg2])))))
   ```
   "
   [event-id bindings & body]
   `(let [event-id# ~event-id]
      (cljs.test/deftest ~(symbol (keyword->test-name event-id))
-       (let [~bindings [event-id#]]
+       (let [dispatcher# (event-dispatcher)
+             ~bindings   [event-id# dispatcher#]]
          (restore-app-db
           (fn []
             (with-redefs [re-frame.interop/debug-enabled? false]
               ~@(clojure.walk/postwalk-replace
                  {'cljs.test/testing `testing-restorable-app-db
                   'testing           `testing-restorable-app-db}
-                 (clojure.walk/postwalk-replace
-                  {'rf/dispatch `custom-event-dispatcher}
-                  body)))))))))
+                 body))))))))
 
 (defmacro use-log-fixture
   "Register log fixture which allows inspecting all calls to `taoensso.timbre/log`.
