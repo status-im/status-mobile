@@ -552,7 +552,7 @@
      :options   options/transparent-modal-screen-options
      :component scan-keypair-qr/view}
 
-    {:name      :screen/settings.import-seed-phrase
+    {:name      :screen/settings.missing-keypair.import-seed-phrase
      :options   options/transparent-screen-options
      :component missing-keypairs.import-seed-phrase/view}
 
