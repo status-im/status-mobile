@@ -10,7 +10,7 @@
     (when (seq status-link-previews)
       [rn/view {:style {:margin-top (when link-previews? 8)}}
        (for [{:keys [url community]} status-link-previews]
-         (when community
+         (when (:display-name community)
            (let [{community-description :description
                   community-icon        :icon
                   community-banner      :banner

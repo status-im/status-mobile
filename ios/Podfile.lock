@@ -1,7 +1,5 @@
 PODS:
   - boost (1.83.0)
-  - BVLinearGradient (2.8.0):
-    - React-Core
   - CryptoSwift (1.5.1)
   - DoubleConversion (1.1.6)
   - FBLazyVector (0.73.5)
@@ -1161,6 +1159,10 @@ PODS:
     - TOCropViewController
   - RNKeychain (8.1.2):
     - React-Core
+  - RNLinearGradient (3.0.0-alpha.1):
+    - glog
+    - RCT-Folly (= 2022.05.16.00)
+    - React-Core
   - RNPermissions (4.1.5):
     - React-Core
   - RNReanimated (3.6.1):
@@ -1188,7 +1190,6 @@ PODS:
 
 DEPENDENCIES:
   - boost (from `../node_modules/react-native/third-party-podspecs/boost.podspec`)
-  - BVLinearGradient (from `../node_modules/react-native-linear-gradient`)
   - DoubleConversion (from `../node_modules/react-native/third-party-podspecs/DoubleConversion.podspec`)
   - FBLazyVector (from `../node_modules/react-native/Libraries/FBLazyVector`)
   - FBReactNativeSpec (from `../node_modules/react-native/React/FBReactNativeSpec`)
@@ -1269,6 +1270,7 @@ DEPENDENCIES:
   - RNGestureHandler (from `../node_modules/react-native-gesture-handler`)
   - RNImageCropPicker (from `../node_modules/react-native-image-crop-picker`)
   - RNKeychain (from `../node_modules/react-native-keychain`)
+  - RNLinearGradient (from `../node_modules/react-native-linear-gradient`)
   - RNPermissions (from `../node_modules/react-native-permissions`)
   - RNReanimated (from `../node_modules/react-native-reanimated`)
   - RNShare (from `../node_modules/react-native-share`)
@@ -1294,8 +1296,6 @@ SPEC REPOS:
 EXTERNAL SOURCES:
   boost:
     :podspec: "../node_modules/react-native/third-party-podspecs/boost.podspec"
-  BVLinearGradient:
-    :path: "../node_modules/react-native-linear-gradient"
   DoubleConversion:
     :podspec: "../node_modules/react-native/third-party-podspecs/DoubleConversion.podspec"
   FBLazyVector:
@@ -1451,6 +1451,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-image-crop-picker"
   RNKeychain:
     :path: "../node_modules/react-native-keychain"
+  RNLinearGradient:
+    :path: "../node_modules/react-native-linear-gradient"
   RNPermissions:
     :path: "../node_modules/react-native-permissions"
   RNReanimated:
@@ -1478,13 +1480,12 @@ CHECKOUT OPTIONS:
 
 SPEC CHECKSUMS:
   boost: d3f49c53809116a5d38da093a8aa78bf551aed09
-  BVLinearGradient: 612a04ff38e8480291f3379ee5b5a2c571f03fe0
   CryptoSwift: c4f2debceb38bf44c80659afe009f71e23e4a082
   DoubleConversion: fea03f2699887d960129cc54bba7e52542b6f953
   FBLazyVector: 56e0e498dbb513b96c40bac6284729ba4e62672d
   FBReactNativeSpec: 146c741a3f40361f6bc13a4ba284678cbedb5881
   fmt: ff9d55029c625d3757ed641535fd4a75fedc7ce9
-  glog: c5d68082e772fa1c511173d6b30a9de2c05a69a2
+  glog: 530710e7949eb12c82670bd09e946becf50a3c2a
   hermes-engine: 1d1835b2cc54c381909d94d1b3c8e0a2f1a94a0e
   HMSegmentedControl: 34c1f54d822d8308e7b24f5d901ec674dfa31352
   Keycard: ac6df4d91525c3c82635ac24d4ddd9a80aca5fc8
@@ -1561,6 +1562,7 @@ SPEC CHECKSUMS:
   RNGestureHandler: 15c6ef51acba34c49ff03003806cf5dd6098f383
   RNImageCropPicker: 486e2f7e2b0461ce24321f751410dce1b3b49e6d
   RNKeychain: a65256b6ca6ba6976132cc4124b238a5b13b3d9c
+  RNLinearGradient: ccaaebce083b54180da61d992e7fa56abfe000d6
   RNPermissions: 08e619529cced22695f4b6d0efcc0a233e278903
   RNReanimated: dee37576492f1a375017515f5c77e66e5eec696b
   RNShare: 859ff710211285676b0bcedd156c12437ea1d564

@@ -4,6 +4,7 @@
     [quo.components.drawers.bottom-actions.style :as style]
     [quo.components.icon :as icon]
     [quo.components.markdown.text :as text]
+    [quo.components.tags.context-tag.schema :as context-tag.schema]
     [quo.components.tags.context-tag.view :as context-tag]
     [quo.foundations.colors :as colors]
     [quo.theme :as quo.theme]
@@ -22,6 +23,7 @@
       [:description-top-text {:optional true} [:maybe :string]]
       [:error-message {:optional true} [:maybe :string]]
       [:role {:optional true} [:maybe [:enum :admin :member :token-master :owner]]]
+      [:context-tag-props {:optional true} [:maybe context-tag.schema/?schema]]
       [:button-one-label {:optional true} [:maybe :string]]
       [:button-two-label {:optional true} [:maybe :string]]
       [:button-one-props {:optional true} [:maybe :map]]
@@ -39,7 +41,8 @@
 
 (defn- view-internal
   [{:keys [actions description description-text description-top-text error-message role button-one-label
-           button-two-label blur? button-one-props button-two-props scroll? container-style]}]
+           button-two-label blur? button-one-props button-two-props scroll? container-style
+           context-tag-props]}]
   (let [theme (quo.theme/use-theme)]
     [rn/view
      {:style (merge (style/container scroll? blur? theme) container-style)}
@@ -54,18 +57,20 @@
           :style {:color (colors/theme-colors colors/danger-50 colors/danger-60 theme)}}
          error-message]])
 
-     (when (and (= description :top) role)
+     (when (and (= description :top) (or role context-tag-props))
        [rn/view {:style style/description-top}
         [text/text
          {:size  :paragraph-2
           :style (style/description-top-text scroll? blur? theme)}
          (or description-top-text (i18n/label :t/eligible-to-join-as))]
         [context-tag/view
-         {:type    :icon
-          :size    24
-          :icon    (role role-icon)
-          :blur?   blur?
-          :context (i18n/label (keyword "t" role))}]])
+         (if role
+           {:type    :icon
+            :size    24
+            :icon    (role role-icon)
+            :blur?   blur?
+            :context (i18n/label (keyword "t" role))}
+           context-tag-props)]])
 
      [rn/view {:style style/buttons-container}
       (when (= actions :two-actions)

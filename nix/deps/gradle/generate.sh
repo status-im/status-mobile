@@ -56,6 +56,8 @@ com.google.errorprone:error_prone_annotations:2.7.1
 com.android.tools.lint:lint-gradle:31.1.1
 org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.8.0
 com.android.tools.build:gradle:3.5.4
+androidx.annotation:annotation:1.6.0
+androidx.annotation:annotation-jvm:1.6.0
 com.facebook.react:hermes-android:0.73.5' \
         >> "${DEPS_LIST}"
 }
