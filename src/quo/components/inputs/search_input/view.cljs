@@ -4,6 +4,7 @@
     [quo.components.icon :as icon]
     [quo.components.inputs.search-input.style :as style]
     [quo.foundations.colors :as colors]
+    [quo.theme]
     [react-native.core :as rn]))
 
 (def ^:private tag-separator [rn/view {:style style/tag-separator}])
@@ -15,12 +16,12 @@
         tags-coll))
 
 (defn- clear-button
-  [{:keys [on-press blur? override-theme]}]
+  [{:keys [on-press blur? theme]}]
   [rn/touchable-opacity
    {:style    style/clear-icon-container
     :on-press on-press}
    [icon/icon :i/clear
-    {:color (style/clear-icon blur? override-theme)
+    {:color (style/clear-icon blur? theme)
      :size  20}]])
 
 (defn- handle-backspace
@@ -31,7 +32,7 @@
 
 (def ^:private props-to-remove
   [:cursor-color :placeholder-text-color :editable :on-change-text :on-focus
-   :on-blur :on-clear :value :tags :disabled? :blur? :customization-color :override-theme])
+   :on-blur :on-clear :value :tags :disabled? :blur? :customization-color])
 
 (defn- add-children
   [text-input children]
@@ -41,11 +42,12 @@
 
 (defn search-input
   [{:keys [value tags disabled? blur? on-change-text customization-color
-           on-clear on-focus on-blur override-theme container-style]
+           on-clear on-focus on-blur container-style]
     :or   {customization-color :blue}
     :as   props}
    & children]
-  (let [[state set-state]  (rn/use-state :default)
+  (let [theme              (quo.theme/use-theme)
+        [state set-state]  (rn/use-state :default)
         on-focus           (rn/use-callback
                             (fn []
                               (set-state :active)
@@ -72,12 +74,12 @@
         [inner-tags tags])
       (add-children
        [rn/text-input
-        (cond-> {:style                  (style/input-text disabled?)
-                 :cursor-color           (style/cursor customization-color override-theme)
-                 :placeholder-text-color (style/placeholder-color state blur? override-theme)
+        (cond-> {:style                  (style/input-text disabled? theme)
+                 :cursor-color           (style/cursor customization-color theme)
+                 :placeholder-text-color (style/placeholder-color state blur? theme)
                  :editable               (not disabled?)
                  :on-key-press           on-key-press
-                 :keyboard-appearance    (colors/theme-colors :light :dark override-theme)
+                 :keyboard-appearance    (colors/theme-colors :light :dark theme)
                  :on-change-text         on-change-text
                  :on-focus               on-focus
                  :on-blur                on-blur}
@@ -86,6 +88,6 @@
        (when-not use-value? children))]
      (when (or (seq value) (seq children))
        [clear-button
-        {:on-press       on-clear
-         :blur?          blur?
-         :override-theme override-theme}])]))
+        {:on-press on-clear
+         :blur?    blur?
+         :theme    theme}])]))

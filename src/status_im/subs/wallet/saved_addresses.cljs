@@ -27,6 +27,12 @@
    (contains? saved-addresses address)))
 
 (rf/reg-sub
+ :wallet/has-saved-addresses?
+ :<- [:wallet/saved-addresses-by-network-mode]
+ (fn [saved-addresses]
+   (-> saved-addresses vals boolean)))
+
+(rf/reg-sub
  :wallet/grouped-saved-addresses
  :<- [:wallet/saved-addresses-by-network-mode]
  (fn [saved-addresses]
@@ -49,3 +55,19 @@
  :<- [:wallet/saved-addresses-by-network-mode]
  (fn [saved-addresses [_ address]]
    (get saved-addresses address)))
+
+(rf/reg-sub
+ :wallet/filtered-saved-addresses
+ :<- [:wallet/saved-addresses-by-network-mode]
+ (fn [saved-addresses [_ query]]
+   (->> saved-addresses
+        vals
+        (sort-by :name)
+        (filter
+         (fn [{:keys [name address ens chain-short-names]}]
+           (let [lowercase-query (string/lower-case query)]
+             (or
+              (string/includes? (string/lower-case name) lowercase-query)
+              (string/includes? address lowercase-query)
+              (string/includes? ens lowercase-query)
+              (string/includes? chain-short-names lowercase-query))))))))
