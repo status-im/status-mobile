@@ -7,11 +7,13 @@
     [react-native.core :as rn]
     [react-native.safe-area :as safe-area]
     [status-im.common.controlled-input.utils :as controlled-input]
+    [status-im.constants :as constants]
     [status-im.contexts.wallet.common.account-switcher.view :as account-switcher]
     [status-im.contexts.wallet.common.asset-list.view :as asset-list]
     [status-im.contexts.wallet.common.utils :as utils]
     [status-im.contexts.wallet.send.input-amount.style :as style]
     [status-im.contexts.wallet.send.routes.view :as routes]
+    [status-im.contexts.wallet.sheets.buy-token.view :as buy-token]
     [status-im.contexts.wallet.sheets.unpreferred-networks-alert.view :as unpreferred-networks-alert]
     [utils.debounce :as debounce]
     [utils.i18n :as i18n]
@@ -124,6 +126,15 @@
      :size  :default
      :style {:margin-top 15}}
     (i18n/label :t/no-routes-found)]])
+
+(defn- not-enough-asset
+  []
+  [quo/alert-banner
+   {:action?         true
+    :text            (i18n/label :t/not-enough-assets)
+    :button-text     (i18n/label :t/buy-eth)
+    :on-button-press #(rf/dispatch [:show-bottom-sheet
+                                    {:content buy-token/view}])}])
 
 (defn view
   ;; crypto-decimals, limit-crypto and initial-crypto-currency? args are needed
@@ -264,7 +275,25 @@
         limit-insufficient?                         (> (controlled-input/numeric-value input-state)
                                                        current-limit)
         should-try-again?                           (and (not limit-insufficient?) no-routes-found?)
-        current-address                             (rf/sub [:wallet/current-viewing-account-address])]
+        current-address                             (rf/sub [:wallet/current-viewing-account-address])
+        owned-eth-token                             (rf/sub [:wallet/token-by-symbol
+                                                             (string/upper-case
+                                                              constants/mainnet-short-name)
+                                                             enabled-from-chain-ids])
+        not-enough-asset?                           (and
+                                                     (or no-routes-found? limit-insufficient?)
+                                                     (not-empty sender-network-values)
+                                                     (if (= token-symbol
+                                                            (string/upper-case
+                                                             constants/mainnet-short-name))
+                                                       (= current-limit input-amount)
+                                                       (money/equal-to (:total-balance
+                                                                        owned-eth-token)
+                                                                       0)))
+        show-no-routes?                             (and
+                                                     (or no-routes-found? limit-insufficient?)
+                                                     (not-empty sender-network-values)
+                                                     (not not-enough-asset?))]
     (rn/use-mount
      (fn []
        (let [dismiss-keyboard-fn   #(when (= % "active") (rn/dismiss-keyboard!))
@@ -339,8 +368,9 @@
         {:loading-routes? loading-routes?
          :fees            fee-formatted
          :amount          amount-text}])
-     (when (and (or no-routes-found? limit-insufficient?) (not-empty sender-network-values))
-       [no-routes-found])
+     (cond
+       show-no-routes?   [no-routes-found]
+       not-enough-asset? [not-enough-asset])
      [quo/bottom-actions
       {:actions          :one-action
        :button-one-label (if should-try-again?
