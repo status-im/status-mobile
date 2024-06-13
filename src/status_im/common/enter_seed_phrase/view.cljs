@@ -2,6 +2,7 @@
   (:require
     [clojure.string :as string]
     [legacy.status-im.ethereum.mnemonic :as mnemonic]
+    [oops.core :as oops]
     [quo.core :as quo]
     [quo.foundations.colors :as colors]
     [react-native.core :as rn]
@@ -106,10 +107,8 @@
                      invalid-seed-phrase?      (reagent/atom false)
                      incorrect-seed-phrase?    (reagent/atom false)
                      input-ref                 (reagent/atom nil)
-                     focus-input               (fn []
-                                                 (let [ref @input-ref]
-                                                   (when ref
-                                                     (.focus ref))))
+                     focus-input               #(some-> @input-ref
+                                                        (oops/ocall "focus"))
                      set-incorrect-seed-phrase #(reset! incorrect-seed-phrase? true)
                      set-invalid-seed-phrase   #(reset! invalid-seed-phrase? true)
                      seed-phrase               (reagent/atom "")
