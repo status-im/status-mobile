@@ -102,18 +102,43 @@
      ;; https://github.com/status-im/status-mobile/issues/17426
      [quo/skeleton-list (skeleton-list-props :messages parent-height platform/ios?)]]))
 
+(defn header-height
+  [{:keys [insets able-to-send-message? images reply edit link-previews? input-content-height]}]
+  (if able-to-send-message?
+    (cond-> composer.constants/composer-default-height
+      (ff/enabled? ::ff/shell.jump-to)
+      (+ jump-to.constants/floating-shell-button-height)
+
+      (seq images)
+      (+ composer.constants/images-container-height)
+
+      reply
+      (+ composer.constants/reply-container-height)
+
+      edit
+      (+ composer.constants/edit-container-height)
+
+      link-previews?
+      (+ composer.constants/links-container-height)
+
+      (and input-content-height (not= input-content-height composer.constants/input-height))
+      (+ composer.constants/input-height)
+
+      true
+      (+ (:bottom insets)))
+    (- 70 (:bottom insets))))
+
 (defn list-header
   [insets able-to-send-message?]
-  (let [images (rf/sub [:chats/sending-image])
-        height (if able-to-send-message?
-                 (+ composer.constants/composer-default-height
-                    (if (ff/enabled? ::ff/shell.jump-to)
-                      jump-to.constants/floating-shell-button-height
-                      0)
-                    (if (seq images) composer.constants/images-container-height 0)
-                    (:bottom insets))
-                 (- 70 (:bottom insets)))]
-    [rn/view {:style {:height height}}]))
+  (let [header-data {:insets                insets
+                     :able-to-send-message? able-to-send-message?
+                     :input-content-height  (:input-content-height (rf/sub [:chats/current-chat-input]))
+                     :images                (rf/sub [:chats/sending-image])
+                     :reply                 (rf/sub [:chats/reply-message])
+                     :edit                  (rf/sub [:chats/edit-message])
+                     :link-previews?        (or (rf/sub [:chats/link-previews?])
+                                                (rf/sub [:chats/status-link-previews?]))}]
+    [rn/view {:style {:height (header-height header-data)}}]))
 
 (defn list-footer-avatar
   [{:keys [distance-from-list-top display-name online? profile-picture theme group-chat color
