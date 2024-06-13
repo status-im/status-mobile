@@ -51,6 +51,9 @@
         account-token    (when account-token (assoc account-token :networks (:networks token)))
         bridge-to-title  (i18n/label :t/bridge-to
                                      {:name (string/upper-case (str token-symbol))})]
+
+    (rn/use-unmount #(rf/dispatch [:wallet/clean-bridge-to-selection]))
+
     [rn/view
      [account-switcher/view
       {:on-press            #(rf/dispatch [:navigate-back])

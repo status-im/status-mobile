@@ -394,7 +394,7 @@
                                               sending-to-unpreferred-networks?
                                               #(show-unpreferred-networks-alert on-confirm)
                                               :else
-                                              on-confirm)}
+                                              #(on-confirm amount))}
                                 (when should-try-again?
                                   {:type :grey}))}]
      [quo/numbered-keyboard

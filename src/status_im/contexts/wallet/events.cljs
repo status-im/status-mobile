@@ -42,7 +42,7 @@
  (fn [{:keys [db]} [address]]
    {:db (assoc-in db [:wallet :current-viewing-account-address] address)
     :fx [[:dispatch [:navigate-to-within-stack [:screen/wallet.accounts :shell-stack] address]]
-         [:dispatch [:wallet/fetch-activities]]]}))
+         [:dispatch [:wallet/fetch-activities-for-current-account]]]}))
 
 (rf/reg-event-fx :wallet/navigate-to-new-account
  (fn [{:keys [db]} [address]]
@@ -259,12 +259,14 @@
 (rf/reg-event-fx :wallet/get-keypairs get-keypairs)
 
 (rf/reg-event-fx :wallet/bridge-select-token
- (fn [{:keys [db]} [{:keys [token stack-id]}]]
-   (let [to-address (get-in db [:wallet :current-viewing-account-address])]
-     {:db (-> db
-              (assoc-in [:wallet :ui :send :token] token)
-              (assoc-in [:wallet :ui :send :to-address] to-address)
-              (assoc-in [:wallet :ui :send :tx-type] :tx/bridge))
+ (fn [{:keys [db]} [{:keys [token token-symbol stack-id]}]]
+   (let [missing-recipient? (-> db :wallet :ui :send :to-address nil?)
+         to-address         (-> db :wallet :current-viewing-account-address)]
+     {:db (cond-> db
+            :always            (assoc-in [:wallet :ui :send :tx-type] :tx/bridge)
+            token              (assoc-in [:wallet :ui :send :token] token)
+            token-symbol       (assoc-in [:wallet :ui :send :token-symbol] token-symbol)
+            missing-recipient? (assoc-in [:wallet :ui :send :to-address] to-address))
       :fx [[:dispatch
             [:wallet/wizard-navigate-forward
              {:current-screen stack-id

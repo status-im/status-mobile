@@ -15,7 +15,9 @@
     (fn []
       [rn/view {:style {:flex 1}}
        [account-switcher/view
-        {:on-press            #(rf/dispatch [:navigate-back])
+        {:on-press            (fn []
+                                (rf/dispatch [:navigate-back])
+                                (rf/dispatch [:wallet/clean-selected-token]))
          :accessibility-label :top-bar
          :switcher-type       :select-account}]
        [quo/page-top {:title (i18n/label :t/bridge)}]

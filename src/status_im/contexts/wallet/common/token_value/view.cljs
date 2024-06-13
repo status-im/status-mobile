@@ -35,13 +35,13 @@
                           #(rf/dispatch [:open-modal :screen/share-shell {:initial-tab :wallet}]))})
 
 (defn- action-bridge
-  [token-data]
+  [bridge-params]
   {:icon                :i/bridge
    :accessibility-label :bridge
    :label               (i18n/label :t/bridge)
    :on-press            (fn []
                           (rf/dispatch [:hide-bottom-sheet])
-                          (rf/dispatch [:wallet/bridge-select-token {:token token-data}]))})
+                          (rf/dispatch [:wallet/bridge-select-token bridge-params]))})
 
 (defn- action-swap
   []
@@ -67,26 +67,27 @@
 
 (defn token-value-drawer
   [token watch-only?]
-  (let [token-symbol      (:token token)
-        token-data        (first (rf/sub [:wallet/current-viewing-account-tokens-filtered token-symbol]))
-        selected-account? (rf/sub [:wallet/current-viewing-account-address])
-        send-params       (if selected-account?
-                            {:token       token-data
-                             :stack-id    :screen/wallet.accounts
-                             :start-flow? true}
-                            {:token-symbol token-symbol
-                             :stack-id     :wallet-stack
-                             :start-flow?  true})]
+  (let [token-symbol          (:token token)
+        token-data            (first (rf/sub [:wallet/current-viewing-account-tokens-filtered
+                                              token-symbol]))
+        selected-account?     (rf/sub [:wallet/current-viewing-account-address])
+        send-or-bridge-params (if selected-account?
+                                {:token       token-data
+                                 :stack-id    :screen/wallet.accounts
+                                 :start-flow? true}
+                                {:token-symbol token-symbol
+                                 :stack-id     :wallet-stack
+                                 :start-flow?  true})]
     [quo/action-drawer
      [(cond->> [(when (ff/enabled? ::ff/wallet.assets-modal-manage-tokens)
                   (action-manage-tokens watch-only?))
                 (when (ff/enabled? ::ff/wallet.assets-modal-hide)
                   (action-hide))]
         (not watch-only?) (concat [(action-buy)
-                                   (action-send send-params)
+                                   (action-send send-or-bridge-params)
                                    (action-receive selected-account?)
                                    (when (ff/enabled? ::ff/wallet.swap) (action-swap))
-                                   (action-bridge token-data)]))]]))
+                                   (action-bridge send-or-bridge-params)]))]]))
 
 (defn view
   [item _ _ {:keys [watch-only?]}]
