@@ -29,7 +29,7 @@
                   {:keypair-name key-pair-name}])
 
     (:new-keypair :recovery-phrase)
-    (rf/dispatch [:wallet/generate-account-for-keypair
+    (rf/dispatch [:wallet/generate-account-for-keypair-with-mnemonic
                   {:keypair-name key-pair-name}])
 
     (do

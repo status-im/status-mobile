@@ -159,15 +159,15 @@
   [{:keys [on-change-text set-account-color set-emoji]
     {:keys [account-name account-color emoji]}
     :state}]
-  (let [on-auth-success-mnemonic
+  (let [on-auth-success--mnemonic
         (fn [password]
           (rf/dispatch
-           [:wallet/import-and-create-keypair-with-account
+           [:wallet/import-mnemonic-and-create-keypair-with-account
             {:password            password
              :account-preferences {:account-name @account-name
                                    :color        @account-color
                                    :emoji        @emoji}}]))
-        on-auth-success-import-private-key
+        on-auth-success--import-private-key
         (fn [password]
           (rf/dispatch
            [:wallet/import-private-key-and-create-keypair-with-account
@@ -180,8 +180,8 @@
             derivation-path            (when (not= workflow :workflow-new-keypair/import-private-key)
                                          constants/path-default-wallet)
             on-auth-success            (if (= workflow :workflow-new-keypair/import-private-key)
-                                         on-auth-success-import-private-key
-                                         on-auth-success-mnemonic)]
+                                         on-auth-success--import-private-key
+                                         on-auth-success--mnemonic)]
         [floating-button
          {:account-color      @account-color
           :slide-button-props {:on-auth-success on-auth-success
