@@ -31,6 +31,26 @@
        :paths          paths}
       on-success))))
 
+(defn create-account-from-private-key
+  [private-key]
+  (-> private-key
+      (security/safe-unmask-data)
+      (native-module/create-account-from-private-key)
+      (promesa/then (fn [result]
+                      (update result :privateKey security/mask-data)))))
+
+(rf/reg-fx
+ :effects.wallet/create-account-from-private-key
+ (fn [{:keys [private-key on-success on-error]}]
+   (-> (create-account-from-private-key private-key)
+       ;; TODO: use `rf/call-continuation` to support event vectors
+       (promesa/then (fn [result]
+                       (when (fn? on-success)
+                         (on-success result))))
+       (promesa/catch (fn [error]
+                        (when (and error (fn? on-error))
+                          (on-error error)))))))
+
 (defn validate-mnemonic
   [mnemonic]
   (-> mnemonic
