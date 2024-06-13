@@ -3,6 +3,7 @@
     ["react-native" :as react-native]
     [clojure.string :as string]
     [native-module.utils :as native-utils]
+    [promesa.core :as promesa]
     [react-native.platform :as platform]
     [taoensso.timbre :as log]
     [utils.transforms :as types]))
@@ -609,6 +610,16 @@
   (.createAccountFromMnemonicAndDeriveAccountsForPaths ^js (account-manager)
                                                        (types/clj->json mnemonic)
                                                        #(callback (types/json->clj %))))
+
+(defn create-account-from-private-key
+  ([private-key]
+   (-> (native-utils/promisify-native-module-call create-account-from-private-key private-key)
+       (promesa/then types/json->clj)))
+  ([private-key callback]
+   (log/debug "[native-module] create-account-from-private-key")
+   (.createAccountFromPrivateKey ^js (account-manager)
+                                 (types/clj->json {:privateKey private-key})
+                                 callback)))
 
 (defn get-connection-string-for-exporting-keypairs-keystores
   "Generates connection string form status-go for the purpose of exporting keypairs and keystores on sender side"

@@ -314,6 +314,14 @@ class AccountManager(private val reactContext: ReactApplicationContext) : ReactC
         )
     }
 
+    @ReactMethod
+    fun createAccountFromPrivateKey(params: String, callback: Callback) {
+        utils.executeRunnableStatusGoMethod(
+            { Statusgo.createAccountFromPrivateKey(params) },
+            callback
+        )
+    }
+
     companion object {
         private const val TAG = "AccountManager"
         private const val gethLogFileName = "geth.log"
