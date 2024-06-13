@@ -35,6 +35,7 @@
       :on-press            on-press
       :accessibility-label accessibility-label
       :networks            networks
+      :align-center?       true
       :networks-on-press   #(rf/dispatch [:show-bottom-sheet {:content network-filter/view}])
       :right-side          [(when (and (ff/enabled? ::ff/wallet.wallet-connect)
                                        (not watch-only?))

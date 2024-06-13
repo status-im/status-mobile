@@ -6,6 +6,7 @@
     [status-im.constants :as constants]
     [status-im.contexts.settings.wallet.effects]
     [status-im.contexts.settings.wallet.events]
+    [status-im.contexts.wallet.common.activity-tab.events]
     [status-im.contexts.wallet.common.utils.external-links :as external-links]
     [status-im.contexts.wallet.common.utils.networks :as network-utils]
     [status-im.contexts.wallet.data-store :as data-store]
@@ -35,6 +36,12 @@
  (fn [{:keys [db]} [address]]
    {:db (assoc-in db [:wallet :current-viewing-account-address] address)
     :fx [[:dispatch [:navigate-to :screen/wallet.accounts address]]
+         [:dispatch [:wallet/fetch-activities-for-current-account]]]}))
+
+(rf/reg-event-fx :wallet/navigate-to-account-within-stack
+ (fn [{:keys [db]} [address]]
+   {:db (assoc-in db [:wallet :current-viewing-account-address] address)
+    :fx [[:dispatch [:navigate-to-within-stack [:screen/wallet.accounts :shell-stack] address]]
          [:dispatch [:wallet/fetch-activities]]]}))
 
 (rf/reg-event-fx :wallet/navigate-to-new-account
@@ -43,6 +50,14 @@
     :fx [[:dispatch [:hide-bottom-sheet]]
          [:dispatch [:navigate-to :screen/wallet.accounts address]]
          [:dispatch [:wallet/show-account-created-toast address]]]}))
+
+(rf/reg-event-fx :wallet/select-account-tab
+ (fn [{:keys [db]} [tab]]
+   {:db (assoc-in db [:wallet :ui :account-page :active-tab] tab)}))
+
+(rf/reg-event-fx :wallet/clear-account-tab
+ (fn [{:keys [db]}]
+   {:db (assoc-in db [:wallet :ui :account-page :active-tab] nil)}))
 
 (rf/reg-event-fx :wallet/switch-current-viewing-account
  (fn [{:keys [db]} [address]]
@@ -55,6 +70,7 @@
 (rf/reg-event-fx :wallet/close-account-page
  (fn [_]
    {:fx [[:dispatch [:wallet/clean-current-viewing-account]]
+         [:dispatch [:wallet/clear-account-tab]]
          [:dispatch [:pop-to-root :shell-stack]]]}))
 
 (defn log-rpc-error
@@ -490,49 +506,6 @@
           {:db (update-in db [:wallet :ui :network-filter :selected-networks] update-fn network-name)})))
 
 (rf/reg-event-fx :wallet/update-selected-networks update-selected-networks)
-
-(rf/reg-event-fx
- :wallet/fetch-activities
- (fn [{:keys [db]}]
-   (let [addresses      (->> (get-in db [:wallet :accounts])
-                             vals
-                             (map :address))
-         chain-ids      (chain/chain-ids db)
-         request-id     0
-         filters        {:period                {:startTimestamp 0
-                                                 :endTimestamp   0}
-                         :types                 []
-                         :statuses              []
-                         :counterpartyAddresses []
-                         :assets                []
-                         :collectibles          []
-                         :filterOutAssets       false
-                         :filterOutCollectibles false}
-         offset         0
-         limit          20
-         request-params [request-id
-                         addresses
-                         chain-ids
-                         filters
-                         offset
-                         limit]]
-     {:fx [[:json-rpc/call
-            [{;; This method is deprecated and will be replaced by
-              ;; "wallet_startActivityFilterSession"
-              ;; https://github.com/status-im/status-mobile/issues/19864
-              :method   "wallet_filterActivityAsync"
-              :params   request-params
-              :on-error [:wallet/log-rpc-error
-                         {:event  :wallet/fetch-activities
-                          :params request-params}]}]]]})))
-
-(rf/reg-event-fx
- :wallet/activity-filtering-done
- (fn [{:keys [db]} [{:keys [message]}]]
-   (let [{:keys [activities]} (transforms/json->clj message)
-         activities           (cske/transform-keys transforms/->kebab-case-keyword activities)
-         sorted-activities    (sort :timestamp activities)]
-     {:db (assoc-in db [:wallet :activities] sorted-activities)})))
 
 (rf/reg-event-fx
  :wallet/get-crypto-on-ramps-success

@@ -1587,6 +1587,7 @@
     "seed-phrase-words-uppercase": "Recovery phrase cannot contain uppercase characters",
     "seed-phrase-error": "Recovery phrase contains invalid words",
     "seed-phrase-invalid": "Invalid recovery phrase",
+    "seed-phrase-incorrect": "Recovery phrase does not match key pair",
     "seed-phrase-info": "Enter 12, 18 or 24 words separated by spaces",
     "word-count": "Word count",
     "word-n": "Word #{{number}}",
@@ -1629,6 +1630,7 @@
     "ok-save-pass": "OK, save password",
     "lock-app-with": "Lock app with",
     "grant-face-id-permissions": "To grant the required Face ID permission, please go to your system settings and make sure that Status > Face ID is selected",
+    "grant-fingerprints-permissions": "To grant the required fingerprints permission, please go to your system settings and make sure that Status > Fingerprints is selected",
     "request-feature": "Request a feature",
     "select-account-dapp": "Select the account you wish to use with Dapps",
     "apply": "Apply",
@@ -2658,7 +2660,7 @@
     "import-private-key-info": "New addresses cannot be derived from an account imported from a private key. Import using a seed phrase if you wish to derive addresses.",
     "invalid-private-key": "It’s not a valid private key",
     "correct-private-key": "Correct private key",
-    "incorrect-private-key": "This is not the private key for {{name}}",
+    "incorrect-private-key": "This is not the private key for this key pair",
     "private-key-public-address": "Public address of private key",
     "this-account-has-no-activity": "This account has no activity",
     "this-address-has-activity": "This address has activity",
@@ -2699,5 +2701,7 @@
     "wallet-connect-version-not-supported": "WalletConnect version {{version}} is not supported",
     "add-network-preferences": "Add network preferences",
     "saved-address-network-preference-selection-description": "Only change if you know which networks the address owner is happy to to receive funds on",
-    "add-preferences": "Add preferences"
+    "add-preferences": "Add preferences",
+    "buy-eth": "Buy ETH",
+    "not-enough-assets": "Not enough assets to pay gas fees"
 }

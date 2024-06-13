@@ -1,7 +1,10 @@
 (ns status-im.subs.wallet.networks
   (:require [quo.foundations.resources :as resources]
             [re-frame.core :as re-frame]
-            [status-im.constants :as constants]))
+            [status-im.constants :as constants]
+            [status-im.contexts.wallet.common.utils.networks :as network-utils]))
+
+(def max-network-prefixes 2)
 
 (re-frame/reg-sub
  :wallet/networks
@@ -88,3 +91,13 @@
    (filter
     #(contains? selected-networks (:network-name %))
     network-details)))
+
+(re-frame/reg-sub
+ :wallet/account-address
+ (fn [_ [_ address network-preferences]]
+   (let [short-names         (map network-utils/network->short-name network-preferences)
+         prefix              (when (<= (count short-names) max-network-prefixes)
+                               (network-utils/short-names->network-preference-prefix
+                                short-names))
+         transformed-address (str prefix address)]
+     transformed-address)))

@@ -14,8 +14,11 @@
 (defn show-message
   [_ [code]]
   (let [content (case code
-                  (:biometrics/not-enrolled-error
+                  (:biometrics/fingerprints-not-enrolled-error
                    :biometrics/not-available-error)
+                  (i18n/label :t/grant-fingerprints-permissions)
+
+                  :biometrics/ios-not-enrolled-error
                   (i18n/label :t/grant-face-id-permissions)
 
                   :biometric/too-many-attempts

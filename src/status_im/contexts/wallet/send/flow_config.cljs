@@ -27,5 +27,4 @@
     :skip-step? (fn [db]
                   (or (not (collectible-selected? db))
                       (some? (get-in db [:wallet :ui :send :amount]))))}
-   {:screen-id :screen/wallet.transaction-confirmation}
-   {:screen-id :screen/wallet.transaction-progress}])
+   {:screen-id :screen/wallet.transaction-confirmation}])

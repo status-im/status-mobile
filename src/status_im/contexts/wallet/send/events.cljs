@@ -253,7 +253,7 @@
 
 (rf/reg-event-fx
  :wallet/set-collectible-to-send
- (fn [{db :db} [{:keys [collectible current-screen]}]]
+ (fn [{db :db} [{:keys [collectible current-screen start-flow?]}]]
    (let [collection-data    (:collection-data collectible)
          collectible-data   (:collectible-data collectible)
          contract-type      (:contract-type collectible)
@@ -282,6 +282,7 @@
            [:dispatch
             [:wallet/wizard-navigate-forward
              {:current-screen current-screen
+              :start-flow?    start-flow?
               :flow-id        :wallet-send-flow}]]]})))
 
 (rf/reg-event-fx
@@ -447,18 +448,26 @@
               (assoc-in [:wallet :transactions] transaction-details)
               (assoc-in [:wallet :ui :send :transaction-ids] transaction-ids))
       :fx [[:dispatch
-            [:wallet/wizard-navigate-forward
-             {:current-screen :screen/wallet.transaction-confirmation
-              :flow-id        :wallet-send-flow}]]]})))
+            [:wallet/end-transaction-flow]]]})))
 
-(rf/reg-event-fx :wallet/close-transaction-progress-page
+(rf/reg-event-fx :wallet/clean-up-transaction-flow
  (fn [_]
-   {:fx [[:dispatch [:wallet/clean-scanned-address]]
+   {:fx [[:dispatch [:dismiss-modal :screen/wallet.transaction-confirmation]]
+         [:dispatch [:wallet/clean-scanned-address]]
          [:dispatch [:wallet/clean-local-suggestions]]
          [:dispatch [:wallet/clean-send-address]]
          [:dispatch [:wallet/clean-disabled-from-networks]]
-         [:dispatch [:wallet/select-address-tab nil]]
-         [:dispatch [:dismiss-modal :screen/wallet.transaction-progress]]]}))
+         [:dispatch [:wallet/select-address-tab nil]]]}))
+
+(rf/reg-event-fx :wallet/end-transaction-flow
+ (fn [{:keys [db]}]
+   (let [address (get-in db [:wallet :current-viewing-account-address])]
+     {:fx [[:dispatch [:wallet/navigate-to-account-within-stack address]]
+           [:dispatch [:wallet/fetch-activities]]
+           [:dispatch [:wallet/select-account-tab :activity]]
+           [:dispatch-later
+            [{:ms       20
+              :dispatch [:wallet/clean-up-transaction-flow]}]]]})))
 
 (defn- transaction-data
   [{:keys [from-address to-address token-address route data eth-transfer?]}]

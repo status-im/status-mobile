@@ -25,12 +25,12 @@
    :blur        :grey})
 
 (defn- page-nav-base
-  [{:keys [margin-top background on-press accessibility-label icon-name behind-overlay?]
+  [{:keys [margin-top background on-press accessibility-label icon-name behind-overlay? align-center?]
     :or   {background :white}}
    & children]
   (into [rn/view {:style (style/container margin-top)}
          (when icon-name
-           [rn/view {:style style/icon-container}
+           [rn/view (when align-center? {:style style/icon-container})
             [button/button
              {:type                (button-type background)
               :icon-only?          true

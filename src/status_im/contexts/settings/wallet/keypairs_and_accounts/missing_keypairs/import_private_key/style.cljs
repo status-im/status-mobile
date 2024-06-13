@@ -1,4 +1,4 @@
-(ns status-im.contexts.settings.wallet.keypairs-and-accounts.import-private-key.style)
+(ns status-im.contexts.settings.wallet.keypairs-and-accounts.missing-keypairs.import-private-key.style)
 
 (def form-container
   {:row-gap            8

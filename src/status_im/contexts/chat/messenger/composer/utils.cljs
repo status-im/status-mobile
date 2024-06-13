@@ -101,12 +101,16 @@
   (rf/dispatch [:chat.ui/cancel-message-reply]))
 
 (defn cancel-edit-message
-  [text-value input-ref]
+  [text-value input-ref input-height]
   (reset! text-value "")
   ;; NOTE: adding a timeout to assure the input is blurred on the next tick
   ;; after the `text-value` was cleared. Otherwise the height will be calculated
   ;; with the old `text-value`, leading to wrong composer height after blur.
-  (js/setTimeout #(blur-input input-ref) 100)
+  (js/setTimeout
+   (fn []
+     (blur-input input-ref)
+     (reanimated/set-shared-value input-height constants/input-height))
+   100)
   (.setNativeProps ^js @input-ref (clj->js {:text ""}))
   (rf/dispatch [:chat.ui/set-input-content-height constants/input-height])
   (rf/dispatch [:chat.ui/cancel-message-edit]))

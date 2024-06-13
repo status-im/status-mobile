@@ -2,6 +2,7 @@
   (:require
     [clojure.string :as string]
     [legacy.status-im.ethereum.mnemonic :as mnemonic]
+    [oops.core :as oops]
     [quo.core :as quo]
     [quo.foundations.colors :as colors]
     [react-native.core :as rn]
@@ -96,35 +97,36 @@
 
 (defn recovery-phrase-screen
   [{:keys [keypair title recovering-keypair? render-controls]}]
-  (reagent/with-let [keyboard-shown?         (reagent/atom false)
-                     keyboard-show-listener  (.addListener rn/keyboard
-                                                           "keyboardDidShow"
-                                                           #(reset! keyboard-shown? true))
-                     keyboard-hide-listener  (.addListener rn/keyboard
-                                                           "keyboardDidHide"
-                                                           #(reset! keyboard-shown? false))
-                     invalid-seed-phrase?    (reagent/atom false)
-                     input-ref               (reagent/atom nil)
-                     focus-input             (fn []
-                                               (let [ref @input-ref]
-                                                 (when ref
-                                                   (.focus ref))))
-                     set-invalid-seed-phrase #(reset! invalid-seed-phrase? true)
-                     seed-phrase             (reagent/atom "")
-                     on-change-seed-phrase   (fn [new-phrase]
-                                               (when @invalid-seed-phrase?
-                                                 (reset! invalid-seed-phrase? false))
-                                               (reset! seed-phrase new-phrase))
-                     on-submit               (fn []
-                                               (swap! seed-phrase clean-seed-phrase)
-                                               (if recovering-keypair?
-                                                 (rf/dispatch [:wallet/seed-phrase-entered
-                                                               (security/mask-data
-                                                                @seed-phrase)
-                                                               set-invalid-seed-phrase])
-                                                 (rf/dispatch [:onboarding/seed-phrase-entered
-                                                               (security/mask-data @seed-phrase)
-                                                               set-invalid-seed-phrase])))]
+  (reagent/with-let [keyboard-shown?           (reagent/atom false)
+                     keyboard-show-listener    (.addListener rn/keyboard
+                                                             "keyboardDidShow"
+                                                             #(reset! keyboard-shown? true))
+                     keyboard-hide-listener    (.addListener rn/keyboard
+                                                             "keyboardDidHide"
+                                                             #(reset! keyboard-shown? false))
+                     invalid-seed-phrase?      (reagent/atom false)
+                     incorrect-seed-phrase?    (reagent/atom false)
+                     input-ref                 (reagent/atom nil)
+                     focus-input               #(some-> @input-ref
+                                                        (oops/ocall "focus"))
+                     set-incorrect-seed-phrase #(reset! incorrect-seed-phrase? true)
+                     set-invalid-seed-phrase   #(reset! invalid-seed-phrase? true)
+                     seed-phrase               (reagent/atom "")
+                     on-change-seed-phrase     (fn [new-phrase]
+                                                 (when @invalid-seed-phrase?
+                                                   (reset! invalid-seed-phrase? false)
+                                                   (reset! incorrect-seed-phrase? false))
+                                                 (reset! seed-phrase new-phrase))
+                     on-submit                 (fn []
+                                                 (swap! seed-phrase clean-seed-phrase)
+                                                 (if recovering-keypair?
+                                                   (rf/dispatch [:wallet/seed-phrase-entered
+                                                                 (security/mask-data
+                                                                  @seed-phrase)
+                                                                 set-invalid-seed-phrase])
+                                                   (rf/dispatch [:onboarding/seed-phrase-entered
+                                                                 (security/mask-data @seed-phrase)
+                                                                 set-invalid-seed-phrase])))]
     (let [words-coll               (mnemonic/passphrase->words @seed-phrase)
           last-word                (peek words-coll)
           pick-suggested-word      (fn [pressed-word]
@@ -143,16 +145,18 @@
           suggestions-state        (cond
                                      (or error-in-words?
                                          words-exceeded?
-                                         @invalid-seed-phrase?)           :error
+                                         @invalid-seed-phrase?
+                                         @incorrect-seed-phrase?)         :error
                                      (string/blank? @seed-phrase)         :info
                                      (string/ends-with? @seed-phrase " ") :empty
                                      :else                                :words)
           suggestions-text         (cond
-                                     upper-case?           (i18n/label :t/seed-phrase-words-uppercase)
-                                     words-exceeded?       (i18n/label :t/seed-phrase-words-exceeded)
-                                     error-in-words?       (i18n/label :t/seed-phrase-error)
-                                     @invalid-seed-phrase? (i18n/label :t/seed-phrase-invalid)
-                                     :else                 (i18n/label :t/seed-phrase-info))
+                                     upper-case?             (i18n/label :t/seed-phrase-words-uppercase)
+                                     words-exceeded?         (i18n/label :t/seed-phrase-words-exceeded)
+                                     error-in-words?         (i18n/label :t/seed-phrase-error)
+                                     @invalid-seed-phrase?   (i18n/label :t/seed-phrase-invalid)
+                                     @incorrect-seed-phrase? (i18n/label :t/seed-phrase-incorrect)
+                                     :else                   (i18n/label :t/seed-phrase-info))
           error-state?             (= suggestions-state :error)
           button-disabled?         (or error-state?
                                        (not (constants/seed-phrase-valid-length word-count))
@@ -166,13 +170,13 @@
          :word-count            word-count
          :ref                   #(reset! input-ref %)}
         (if (fn? render-controls)
-          (render-controls {:submit-disabled?        button-disabled?
-                            :keyboard-shown?         @keyboard-shown?
-                            :container-style         (style/continue-button @keyboard-shown?)
-                            :prepare-seed-phrase     secure-clean-seed-phrase
-                            :focus-input             focus-input
-                            :seed-phrase             (security/mask-data @seed-phrase)
-                            :set-invalid-seed-phrase set-invalid-seed-phrase})
+          (render-controls {:submit-disabled?          button-disabled?
+                            :keyboard-shown?           @keyboard-shown?
+                            :container-style           (style/continue-button @keyboard-shown?)
+                            :prepare-seed-phrase       secure-clean-seed-phrase
+                            :focus-input               focus-input
+                            :seed-phrase               (security/mask-data @seed-phrase)
+                            :set-incorrect-seed-phrase set-incorrect-seed-phrase})
           [quo/button
            {:container-style (style/continue-button @keyboard-shown?)
             :type            :primary

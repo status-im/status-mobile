@@ -275,7 +275,7 @@
          (merge (when platform/ios? {:behavior :padding})
                 (if (:ignore-offset props)
                   props
-                  (update props :keyboardVerticalOffset + 44 (:status-bar-height @navigation-const))))]
+                  (update props :keyboard-vertical-offset + 44 (:status-bar-height @navigation-const))))]
         children))
 
 (defn keyboard-avoiding-view-new
@@ -284,7 +284,7 @@
          (merge (when platform/ios? {:behavior :padding})
                 (if (:ignore-offset props)
                   props
-                  (update props :keyboardVerticalOffset + 44)))]
+                  (update props :keyboard-vertical-offset + 44)))]
         children))
 
 (defn scroll-view

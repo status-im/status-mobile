@@ -195,8 +195,8 @@
         profile-picture               (rf/sub [:profile/login-profiles-picture key-uid])
         login-multiaccount            (rn/use-callback #(rf/dispatch [:profile.login/login]))]
     [rn/keyboard-avoiding-view
-     {:style                  style/login-container
-      :keyboardVerticalOffset (- (safe-area/get-bottom))}
+     {:style                    style/login-container
+      :keyboard-vertical-offset (- (safe-area/get-bottom))}
      [rn/view {:style style/multi-profile-button-container}
       (when config/quo-preview-enabled?
         [quo/button
