@@ -42,7 +42,7 @@
  (fn [{:keys [db]} [address]]
    {:db (assoc-in db [:wallet :current-viewing-account-address] address)
     :fx [[:dispatch [:navigate-to-within-stack [:screen/wallet.accounts :shell-stack] address]]
-         [:dispatch [:wallet/fetch-activities]]]}))
+         [:dispatch [:wallet/fetch-activities-for-current-account]]]}))
 
 (rf/reg-event-fx :wallet/navigate-to-new-account
  (fn [{:keys [db]} [address]]
