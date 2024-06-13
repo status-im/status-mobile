@@ -57,14 +57,15 @@
     [status-im.contexts.profile.settings.screens.password.change-password.view :as change-password]
     [status-im.contexts.profile.settings.screens.password.view :as settings-password]
     [status-im.contexts.profile.settings.view :as settings]
-    [status-im.contexts.settings.wallet.keypairs-and-accounts.encrypted-qr.view :as
-     encrypted-key-pair-qr]
-    [status-im.contexts.settings.wallet.keypairs-and-accounts.import-private-key.view :as
-     import-private-key]
-    [status-im.contexts.settings.wallet.keypairs-and-accounts.import-seed-phrase.view :as
-     import-seed-phrase]
+    [status-im.contexts.settings.wallet.keypairs-and-accounts.missing-keypairs.encrypted-qr.view
+     :as encrypted-keypair-qr]
+    [status-im.contexts.settings.wallet.keypairs-and-accounts.missing-keypairs.import-private-key.view
+     :as missing-keypairs.import-private-key]
+    [status-im.contexts.settings.wallet.keypairs-and-accounts.missing-keypairs.import-seed-phrase.view
+     :as missing-keypairs.import-seed-phrase]
+    [status-im.contexts.settings.wallet.keypairs-and-accounts.missing-keypairs.scan-qr.view
+     :as scan-keypair-qr]
     [status-im.contexts.settings.wallet.keypairs-and-accounts.rename.view :as keypair-rename]
-    [status-im.contexts.settings.wallet.keypairs-and-accounts.scan-qr.view :as scan-keypair-qr]
     [status-im.contexts.settings.wallet.keypairs-and-accounts.view :as keypairs-and-accounts]
     [status-im.contexts.settings.wallet.network-settings.view :as network-settings]
     [status-im.contexts.settings.wallet.saved-addresses.add-address-to-save.view :as
@@ -535,9 +536,9 @@
      :options   (assoc options/dark-screen :sheet? true)
      :component keypair-rename/view}
 
-    {:name      :screen/settings.encrypted-key-pair-qr
+    {:name      :screen/settings.encrypted-keypair-qr
      :options   options/transparent-screen-options
-     :component encrypted-key-pair-qr/view}
+     :component encrypted-keypair-qr/view}
 
     {:name      :screen/settings.saved-addresses
      :options   options/transparent-modal-screen-options
@@ -551,13 +552,13 @@
      :options   options/transparent-modal-screen-options
      :component scan-keypair-qr/view}
 
-    {:name      :screen/settings.import-seed-phrase
+    {:name      :screen/settings.missing-keypair.import-seed-phrase
      :options   options/transparent-screen-options
-     :component import-seed-phrase/view}
+     :component missing-keypairs.import-seed-phrase/view}
 
     {:name      :screen/settings.missing-keypair-import-private-key
      :options   options/transparent-screen-options
-     :component import-private-key/view}
+     :component missing-keypairs.import-private-key/view}
 
     {:name      :screen/settings.network-settings
      :options   options/transparent-modal-screen-options

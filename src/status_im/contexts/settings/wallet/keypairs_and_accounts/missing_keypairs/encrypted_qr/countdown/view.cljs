@@ -1,4 +1,4 @@
-(ns status-im.contexts.settings.wallet.keypairs-and-accounts.encrypted-qr.countdown.view
+(ns status-im.contexts.settings.wallet.keypairs-and-accounts.missing-keypairs.encrypted-qr.countdown.view
   (:require
     [quo.core :as quo]
     [quo.foundations.colors :as colors]

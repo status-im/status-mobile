@@ -1,7 +1,7 @@
 (ns status-im.contexts.settings.wallet.keypairs-and-accounts.actions.view
   (:require [quo.core :as quo]
             [react-native.core :as rn]
-            [status-im.contexts.settings.wallet.keypairs-and-accounts.remove.view :as remove-key-pair]
+            [status-im.contexts.settings.wallet.keypairs-and-accounts.remove.view :as remove-keypair]
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]))
 
@@ -14,20 +14,22 @@
                                                               [(:key-uid keypair)]])
                                                [keypair])
         on-show-qr            (rn/use-callback #(rf/dispatch [:open-modal
-                                                              :screen/settings.encrypted-key-pair-qr
+                                                              :screen/settings.encrypted-keypair-qr
                                                               keypair])
                                                [keypair])
         on-remove-keypair     (rn/use-callback #(rf/dispatch
                                                  [:show-bottom-sheet
                                                   {:theme   :dark
                                                    :content (fn []
-                                                              [remove-key-pair/view keypair])}])
+                                                              [remove-keypair/view keypair])}])
                                                [keypair])
         on-rename-keypair     (rn/use-callback #(rf/dispatch [:open-modal :screen/settings.rename-keypair
                                                               keypair])
                                                [keypair])
         on-import-seed-phrase (rn/use-callback
-                               #(rf/dispatch [:open-modal :screen/settings.import-seed-phrase keypair])
+                               #(rf/dispatch [:open-modal
+                                              :screen/settings.missing-keypair.import-seed-phrase
+                                              keypair])
                                [keypair])
         on-import-private-key (rn/use-callback
                                #(rf/dispatch [:open-modal
