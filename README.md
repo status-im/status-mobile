@@ -49,6 +49,8 @@ View our [API Docs](https://status.im/developer_tools/status_web_api.html) and l
 
 ## Give me Binaries!
 
+## Draft
+
 You can get our Beta builds for both Android and iOS on our [website](https://status.im), through our [nightly builds](https://status.im/nightly/) or by [building it yourself](https://status.im/technical/build_status/).
 
 ## Core Contributors
