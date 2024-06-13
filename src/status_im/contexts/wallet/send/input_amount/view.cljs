@@ -315,7 +315,6 @@
                                                                                       12))]
                                                             (number/remove-trailing-zeroes
                                                              new-value))))))]
-
     (rn/use-mount
      (fn []
        (let [dismiss-keyboard-fn   #(when (= % "active") (rn/dismiss-keyboard!))

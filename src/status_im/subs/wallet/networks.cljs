@@ -83,7 +83,6 @@
  (fn [networks [_ chain-id]]
    (some #(when (= chain-id (:chain-id %)) %) networks)))
 
-
 (re-frame/reg-sub
  :wallet/selected-network-details
  :<- [:wallet/network-details]

@@ -157,10 +157,7 @@
               (map
                (fn [[chain-id amount]]
                  {:chain-id     chain-id
-                  :total-amount (let [locked-amount (get from-locked-amounts chain-id)]
-                                  (if locked-amount
-                                    locked-amount
-                                    amount))
+                  :total-amount (get from-locked-amounts chain-id amount)
                   :type         (cond
                                   (contains? from-locked-amounts chain-id)                :locked
                                   (contains? not-available-networks-set chain-id)         :not-available

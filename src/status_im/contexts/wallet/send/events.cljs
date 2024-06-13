@@ -36,8 +36,8 @@
            receiver-network-values       (get-in db [:wallet :ui :send :receiver-network-values])
            sender-network-values         (get-in db [:wallet :ui :send :sender-network-values])
            tx-type                       (get-in db [:wallet :ui :send :tx-type])
-           disabled-from-chain-ids       (or (get-in db [:wallet :ui :send :disabled-from-chain-ids]) [])
-           from-locked-amounts           (or (get-in db [:wallet :ui :send :from-locked-amounts]) {})
+           disabled-from-chain-ids       (get-in db [:wallet :ui :send :disabled-from-chain-ids] [])
+           from-locked-amounts           (get-in db [:wallet :ui :send :from-locked-amounts] {})
            token-decimals                (if collectible 0 (:decimals token))
            native-token?                 (and token (= token-display-name "ETH"))
            routes-available?             (pos? (count chosen-route))
@@ -344,10 +344,7 @@
 
 (rf/reg-event-fx :wallet/unlock-from-amount
  (fn [{:keys [db]} [chain-id]]
-   (let [new-locked-amounts (-> db
-                                (get-in [:wallet :ui :send :from-locked-amounts])
-                                (dissoc chain-id))]
-     {:db (assoc-in db [:wallet :ui :send :from-locked-amounts] new-locked-amounts)})))
+   {:db (update-in db [:wallet :ui :send :from-locked-amounts] dissoc chain-id)}))
 
 (rf/reg-event-fx :wallet/reset-network-amounts-to-zero
  (fn [{:keys [db]}]
