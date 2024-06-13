@@ -47,10 +47,12 @@
  :wallet/home-tokens-loading?
  :<- [:wallet/tokens-loading]
  (fn [tokens-loading]
-   (->> tokens-loading
-        vals
-        (some true?)
-        boolean)))
+   (if (empty? tokens-loading)
+     true
+     (->> tokens-loading
+          vals
+          (some true?)
+          boolean))))
 
 (rf/reg-sub
  :wallet/current-viewing-account-tokens-loading?
@@ -335,7 +337,8 @@
                   :customization-color color
                   :type                (if watch-only? :watch-only :empty)
                   :on-press            #(rf/dispatch [:wallet/navigate-to-account address])
-                  :loading?            (get tokens-loading address)
+                  :loading?            (or (get tokens-loading address)
+                                           (not (contains? tokens-loading address)))
                   :balance             (utils/prettify-balance currency-symbol (get balances address))))
          accounts)))
 
