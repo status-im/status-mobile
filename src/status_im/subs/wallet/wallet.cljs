@@ -622,4 +622,6 @@
  :wallet/has-partially-operable-accounts?
  :<- [:wallet/accounts]
  (fn [accounts]
-   (pos? (count (filter #(= :partially (:operable %)) accounts)))))
+   (->> accounts
+        (some #(= :partially (:operable %)))
+        boolean)))
