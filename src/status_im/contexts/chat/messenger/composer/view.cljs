@@ -105,8 +105,9 @@
         [:<>
          [reply/view state (:input-ref props)]
          [edit/view
-          {:text-value (:text-value state)
-           :input-ref  (:input-ref props)}]]
+          {:text-value   (:text-value state)
+           :input-height (:height animations)
+           :input-ref    (:input-ref props)}]]
         [reanimated/touchable-opacity
          {:active-opacity      1
           :on-press            (fn []
