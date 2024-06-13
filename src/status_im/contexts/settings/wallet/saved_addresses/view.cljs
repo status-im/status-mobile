@@ -76,6 +76,7 @@
     :data                            (rf/sub [:wallet/filtered-saved-addresses search-text])
     :render-fn                       saved-address
     :shows-vertical-scroll-indicator false
+    :keyboard-should-persist-taps    :always
     :content-container-style         {:flex-grow 1}
     :empty-component                 [empty-result]}])
 
@@ -85,6 +86,7 @@
    {:key-fn                          :title
     :shows-vertical-scroll-indicator false
     :sticky-section-headers-enabled  false
+    :keyboard-should-persist-taps    :always
     :render-section-header-fn        header
     :sections                        grouped-saved-addresses
     :render-fn                       saved-address
@@ -149,8 +151,8 @@
        :on-press   navigate-back}]
      [quo/page-top page-top-props]
      [rn/keyboard-avoiding-view
-      {:style                  {:flex 1}
-       :keyboardVerticalOffset (if platform/ios? alert-banners-top-margin 0)}
+      {:style                    {:flex 1}
+       :keyboard-vertical-offset (if platform/ios? alert-banners-top-margin 0)}
       (if search-active?
         [filtered-list {:search-text search-text}]
         [unfiltered-list {:grouped-saved-addresses grouped-saved-addresses}])]]))
