@@ -1,5 +1,6 @@
 (ns status-im.contexts.chat.group-create.events
-  (:require [legacy.status-im.data-store.chats :as data-store.chats]
+  (:require [clojure.string :as string]
+            [legacy.status-im.data-store.chats :as data-store.chats]
             [oops.core :as oops]
             [re-frame.core :as rf]
             [status-im.common.avatar-picture-picker.view :as avatar-picture-picker]))
@@ -30,7 +31,7 @@
  (fn [_ [{:keys [chat-id group-name color image]}]]
    {:json-rpc/call [{:method      "chat_editChat"
                      :params      ["" chat-id group-name (name color)
-                                   {:imagePath image
+                                   {:imagePath (when image (string/replace-first image #"file://" ""))
                                     :x         0
                                     :y         0
                                     :width     avatar-picture-picker/crop-size
