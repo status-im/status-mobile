@@ -9,7 +9,7 @@
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
-(defn- on-press
+(defn- on-account-press
   [address network-details]
   (rf/dispatch [:wallet/select-from-account
                 {:address         address
@@ -22,15 +22,19 @@
   (rf/dispatch [:navigate-back]))
 
 (defn- render-fn
-  [item]
-  (let [network-details (rf/sub [:wallet/network-details])]
+  [item _ _ {:keys [network-details]}]
+  (let [transformed-address (rf/sub [:wallet/account-address (:address item)
+                                     (:network-preferences-names item)])]
     [quo/account-item
-     {:on-press      #(on-press (:address item) network-details)
-      :account-props item}]))
+     {:on-press      #(on-account-press (:address item) network-details)
+      :account-props (assoc item
+                            :address       transformed-address
+                            :full-address? true)}]))
 
 (defn view
   []
-  (let [accounts (rf/sub [:wallet/accounts-with-current-asset])]
+  (let [accounts        (rf/sub [:wallet/accounts-with-current-asset])
+        network-details (rf/sub [:wallet/network-details])]
     [floating-button-page/view
      {:footer-container-padding 0
       :header                   [account-switcher/view
@@ -45,5 +49,6 @@
       {:style                             style/accounts-list
        :content-container-style           style/accounts-list-container
        :data                              accounts
+       :render-data                       {:network-details network-details}
        :render-fn                         render-fn
        :shows-horizontal-scroll-indicator false}]]))
