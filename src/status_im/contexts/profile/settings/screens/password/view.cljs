@@ -30,18 +30,18 @@
         supported?     (boolean biometric-type)
         enabled?       (= auth-method constants/auth-method-biometric)
         biometric-on?  (and supported? enabled?)
-        press-handler  (if biometric-on?
-                         (fn [] (rf/dispatch [:biometric/disable]))
-                         (on-press-biometric-enable label theme))]
+        press-handler  (when supported?
+                         (if biometric-on?
+                           (fn [] (rf/dispatch [:biometric/disable]))
+                           (on-press-biometric-enable label theme)))]
     {:title        label
      :image-props  icon
      :image        :icon
      :blur?        true
      :action       :selector
-     :action-props {:disabled? (not supported?)
-                    :on-change press-handler
+     :action-props {:on-change press-handler
                     :checked?  biometric-on?}
-     :on-press     (when supported? press-handler)}))
+     :on-press     press-handler}))
 
 (defn- get-change-password-item
   []
