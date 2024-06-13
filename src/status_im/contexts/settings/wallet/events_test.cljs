@@ -133,6 +133,8 @@
 (deftest make-partly-operable-accounts-fully-operable-test
   (let [cofx            {:db {}}
         password-masked (security/mask-data "password")
+        on-success      #(prn "success")
+        on-error        #(prn "error")
         expected        {:fx [[:json-rpc/call
                                [{:method     "accounts_makePartiallyOperableAccoutsFullyOperable"
                                  :params     [(security/safe-unmask-data password-masked)]
@@ -141,4 +143,6 @@
     (is (match? expected
                 (sut/make-partially-operable-accounts-fully-operable
                  cofx
-                 [password-masked])))))
+                 [{:password   password-masked
+                   :on-success on-success
+                   :on-error   on-error}])))))
