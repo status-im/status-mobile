@@ -16,7 +16,8 @@
     [status-im.contexts.wallet.collectible.utils :as utils]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]
-    [utils.worklets.header-animations :as header-animations]))
+    [utils.worklets.header-animations :as header-animations]
+    [status-im.setup.hot-reload :as hot-reload]))
 
 (defn header
   [collectible-name collection-name collection-image-url set-title-ref]
@@ -236,9 +237,7 @@
         {preview-uri :uri}         preview-url
         {collectible-name :name}   collectible-data
         {collection-name :name}    collection-data]
-
-    (rn/use-unmount #(rf/dispatch [:wallet/clear-last-collectible-details]))
-
+    (hot-reload/use-safe-unmount #(rf/dispatch [:wallet/clear-last-collectible-details]))
     [rn/view {:style (style/background-color theme)}
      [animated-header
       {:scroll-amount scroll-amount
