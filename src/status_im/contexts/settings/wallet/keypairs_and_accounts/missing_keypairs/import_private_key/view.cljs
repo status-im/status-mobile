@@ -21,9 +21,9 @@
 
 (defn view
   []
-  (let [blur?                         true
+  (let [keypair                       (rf/sub [:get-screen-params])
+        blur?                         true
         insets                        (safe-area/get-insets)
-        keypair                       (rf/sub [:get-screen-params])
         customization-color           (rf/sub [:profile/customization-color])
         [private-key set-private-key] (rn/use-state "")
         [flow-state set-flow-state]   (rn/use-state nil)
