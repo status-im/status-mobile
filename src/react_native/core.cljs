@@ -5,7 +5,6 @@
     [oops.core :as oops]
     [promesa.core :as promesa]
     [react-native.flat-list :as flat-list]
-    [react-native.navigation :as navigation]
     [react-native.platform :as platform]
     [react-native.section-list :as section-list]
     [react-native.utils :as utils]
