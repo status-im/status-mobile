@@ -14,6 +14,7 @@
     [status-im.contexts.wallet.collectible.style :as style]
     [status-im.contexts.wallet.collectible.tabs.view :as tabs]
     [status-im.contexts.wallet.collectible.utils :as utils]
+    [status-im.setup.hot-reload :as hot-reload]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]
     [utils.worklets.header-animations :as header-animations]))
@@ -241,6 +242,7 @@
 
 (defn view
   [_]
+<<<<<<< HEAD
   (let [{:keys [top]}       (safe-area/get-insets)
         theme               (quo.theme/use-theme)
         title-bottom-coord  (rn/use-ref-atom 0)
@@ -254,6 +256,34 @@
                 collectible-data
                 preview-url]
          :as   collectible} (rf/sub [:wallet/collectible-details])]
+=======
+  (let [{:keys [top]}              (safe-area/get-insets)
+        theme                      (quo.theme/use-theme)
+        title-bottom-coord         (rn/use-ref-atom 0)
+        set-title-bottom           (rn/use-callback
+                                    (fn [_ y _ height]
+                                      (reset! title-bottom-coord
+                                        (+ y
+                                           height
+                                           -56
+                                           (when platform/ios?
+                                             (* top -2))))))
+        scroll-amount              (reanimated/use-shared-value 0)
+        title-opacity              (reanimated/use-shared-value 0)
+        collectible                (rf/sub [:wallet/last-collectible-details])
+        {:keys [preview-url
+                collection-data
+                collectible-data]} collectible
+        {preview-uri :uri}         preview-url
+        {collectible-name :name}   collectible-data
+        {collection-name :name}    collection-data]
+<<<<<<< HEAD
+=======
+
+    (hot-reload/use-safe-unmount #(rf/dispatch [:wallet/clear-last-collectible-details]))
+
+>>>>>>> d13c328e7 (safe unmount)
+>>>>>>> 9cd78dab66 (safe unmount)
     [rn/view {:style (style/background-color theme)}
      [animated-header
       {:id            (:id collectible)

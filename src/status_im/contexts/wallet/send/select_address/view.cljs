@@ -17,6 +17,7 @@
     [status-im.contexts.wallet.send.select-address.style :as style]
     [status-im.contexts.wallet.send.select-address.tabs.view :as tabs]
     [status-im.feature-flags :as ff]
+    [status-im.setup.hot-reload :as hot-reload]
     [utils.debounce :as debounce]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
@@ -197,6 +198,7 @@
 <<<<<<< HEAD
             color                    (rf/sub [:wallet/current-viewing-account-color])]
 <<<<<<< HEAD
+<<<<<<< HEAD
         (rn/use-unmount #(on-close true))
 >>>>>>> 8d6b99b3d (lint)
 <<<<<<< HEAD
@@ -219,13 +221,19 @@
 =======
             color                    (rf/sub [:wallet/current-viewing-account-color])]
 >>>>>>> 01ab1a81c (lint)
+<<<<<<< HEAD
 >>>>>>> 9a0177ad55 (lint)
+=======
+=======
+        (hot-reload/use-safe-unmount on-close)
+>>>>>>> d13c328e7 (safe unmount)
+>>>>>>> 9cd78dab66 (safe unmount)
         [floating-button-page/view
          {:content-container-style      {:flex 1}
           :footer-container-padding     0
           :keyboard-should-persist-taps true
           :header                       [account-switcher/view
-                                         {:on-press      on-close
+                                         {:on-press      #(rf/dispatch [:navigate-back])
                                           :margin-top    (safe-area/get-top)
                                           :switcher-type :select-account}]
           :footer                       (when-not (string/blank? @input-value)

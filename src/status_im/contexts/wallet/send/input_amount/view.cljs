@@ -15,7 +15,11 @@
     [status-im.contexts.wallet.send.routes.view :as routes]
     [status-im.contexts.wallet.sheets.buy-token.view :as buy-token]
     [status-im.contexts.wallet.sheets.unpreferred-networks-alert.view :as unpreferred-networks-alert]
+<<<<<<< HEAD
     [status-im.feature-flags :as ff]
+=======
+    [status-im.setup.hot-reload :as hot-reload]
+>>>>>>> d13c328e7 (safe unmount)
     [utils.debounce :as debounce]
     [utils.i18n :as i18n]
     [utils.money :as money]
@@ -274,9 +278,7 @@
         limit-insufficient?                         (> (controlled-input/numeric-value input-state)
                                                        current-limit)
         should-try-again?                           (and (not limit-insufficient?) no-routes-found?)
-<<<<<<< HEAD
         current-address                             (rf/sub [:wallet/current-viewing-account-address])
-<<<<<<< HEAD
         owned-eth-token                             (rf/sub [:wallet/token-by-symbol
                                                              (string/upper-case
                                                               constants/mainnet-short-name)
@@ -322,6 +324,7 @@
                                                              new-value))))))]
 =======
                                                      (not not-enough-asset?))]
+<<<<<<< HEAD
 =======
         view-id                                     (rf/sub [:view-id])]
 >>>>>>> def673650 (navigation listener)
@@ -332,6 +335,8 @@
         current-address                             (rf/sub [:wallet/current-viewing-account-address])]
 >>>>>>> 250a1ce5a (lint)
 >>>>>>> 01ab1a81c (lint)
+=======
+>>>>>>> d13c328e7 (safe unmount)
     (rn/use-mount
      (fn []
        (let [dismiss-keyboard-fn   #(when (= % "active") (rn/dismiss-keyboard!))
@@ -351,17 +356,21 @@
        (clear-input!)
        (rf/dispatch [:wallet/clean-suggested-routes]))
      [current-address])
+<<<<<<< HEAD
     (rn/use-effect
      (fn []
        (request-fetch-routes 0))
      [send-from-locked-amounts])
+=======
+    (hot-reload/use-safe-unmount on-navigate-back)
+>>>>>>> d13c328e7 (safe unmount)
     [rn/view
      {:style               style/screen
       :accessibility-label (str "container"
                                 (when (controlled-input/input-error input-state) "-error"))}
      [account-switcher/view
       {:icon-name     :i/arrow-left
-       :on-press      on-navigate-back
+       :on-press      #(rf/dispatch [:navigate-back])
        :switcher-type :select-account}]
      [quo/token-input
       {:container-style  style/input-container
