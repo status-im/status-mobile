@@ -11,8 +11,6 @@
 
 (def ^:private initial-flags
   {::community.edit-account-selection   (enabled-in-env? :FLAG_EDIT_ACCOUNT_SELECTION_ENABLED)
-   ::settings.keypairs-and-accounts     (enabled-in-env?
-                                         :FLAG_WALLET_SETTINGS_KEYPAIRS_AND_ACCOUNTS_ENABLED)
    ::settings.saved-addresses           (enabled-in-env?
                                          :FLAG_WALLET_SETTINGS_SAVED_ADDRESSES_ENABLED)
    ::shell.jump-to                      (enabled-in-env? :ENABLE_JUMP_TO)
