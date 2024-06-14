@@ -156,7 +156,7 @@
                                                (rf/dispatch
                                                 [:wallet/set-address-to-save
                                                  {:address address
-                                                  :ens     address-or-ens
+                                                  :ens     (when ens-name? address-or-ens)
                                                   :ens?    ens-name?}])
                                                (rf/dispatch
                                                 [:open-modal :screen/settings.save-address]))
