@@ -1,9 +1,11 @@
 (ns status-im.contexts.wallet.events-test
   (:require
-    [cljs.test :refer-macros [deftest is testing]]
+    [cljs.test :refer-macros [is testing]]
     matcher-combinators.test
+    [re-frame.db :as rf-db]
     [status-im.constants :as constants]
-    [status-im.contexts.wallet.events :as events]))
+    status-im.contexts.wallet.events
+    [test-helpers.unit :as h]))
 
 (def address "0x2ee6138eb9344a8b76eca3cf7554a06c82a1e2d8")
 
@@ -53,114 +55,98 @@
    "0x04ee7c47e4b68cc05dcd3377cbd5cde6be3c89fcf20a981e55e0285ed63a50f51f8b423465eee134c51bb0255e6041e9e5b006054b0fa72a7c76942a5a1a3f4e7e"
    :removed false})
 
-(deftest scan-address-success-test
-  (let [db {}]
-    (testing "scan-address-success"
-      (let [expected-db {:wallet {:ui {:scanned-address address}}}
-            effects     (events/scan-address-success {:db db} address)
-            result-db   (:db effects)]
-        (is (match? result-db expected-db))))))
+(h/deftest-event :wallet/scan-address-success
+  [event-id dispatch]
+  (is (match? {:wallet {:ui {:scanned-address address}}}
+              (:db (dispatch [event-id address])))))
 
-(deftest clean-scanned-address-test
-  (let [db {:wallet {:ui {:scanned-address address}}}]
-    (testing "clean-scanned-address"
-      (let [expected-db {:wallet {:ui {:send            nil
-                                       :scanned-address nil}}}
-            effects     (events/clean-scanned-address {:db db})
-            result-db   (:db effects)]
-        (is (match? result-db expected-db))))))
+(h/deftest-event :wallet/clean-scanned-address
+  [event-id dispatch]
+  (reset! rf-db/app-db {:wallet {:ui {:scanned-address address}}})
+  (is (match? {:wallet {:ui {}}}
+              (:db (dispatch [event-id])))))
 
-(deftest reset-selected-networks-test
-  (testing "reset-selected-networks"
-    (let [db          {:wallet {}}
-          expected-db {:wallet {:ui {:network-filter {:selector-state :default
-                                                      :selected-networks
-                                                      (set constants/default-network-names)}}}}
-          effects     (events/reset-selected-networks {:db db})
-          result-db   (:db effects)]
-      (is (match? result-db expected-db)))))
+(h/deftest-event :wallet/reset-selected-networks
+  [event-id dispatch]
+  (reset! rf-db/app-db {:wallet {}})
+  (is (match? {:wallet
+               {:ui {:network-filter {:selector-state :default
+                                      :selected-networks
+                                      (set constants/default-network-names)}}}}
+              (:db (dispatch [event-id])))))
 
-(deftest update-selected-networks-test
+(h/deftest-event :wallet/update-selected-networks
+  [event-id dispatch]
   (testing "update-selected-networks"
-    (let [db           {:wallet {:ui {:network-filter {:selected-networks
-                                                       #{constants/optimism-network-name}
-                                                       :selector-state :changed}}}}
-          network-name constants/arbitrum-network-name
+    (let [network-name constants/arbitrum-network-name
           expected-db  {:wallet {:ui {:network-filter {:selected-networks
                                                        #{constants/optimism-network-name
                                                          network-name}
-                                                       :selector-state :changed}}}}
-          props        [network-name]
-          effects      (events/update-selected-networks {:db db} props)
-          result-db    (:db effects)]
-      (is (match? result-db expected-db))))
+                                                       :selector-state :changed}}}}]
+      (reset! rf-db/app-db
+        {:wallet {:ui {:network-filter {:selected-networks
+                                        #{constants/optimism-network-name}
+                                        :selector-state :changed}}}})
+      (is (match? expected-db (:db (dispatch [event-id network-name]))))))
 
   (testing "update-selected-networks > if all networks is already selected, update to incoming network"
-    (let [db           {:wallet {:ui {:network-filter {:selector-state :default
-                                                       :selected-networks
-                                                       (set constants/default-network-names)}}}}
-          network-name constants/arbitrum-network-name
+    (let [network-name constants/arbitrum-network-name
           expected-db  {:wallet {:ui {:network-filter {:selected-networks #{network-name}
-                                                       :selector-state    :changed}}}}
-          props        [network-name]
-          effects      (events/update-selected-networks {:db db} props)
-          result-db    (:db effects)]
-      (is (match? result-db expected-db))))
+                                                       :selector-state    :changed}}}}]
+      (reset! rf-db/app-db
+        {:wallet {:ui {:network-filter {:selector-state :default
+                                        :selected-networks
+                                        (set constants/default-network-names)}}}})
+      (is (match? expected-db (:db (dispatch [event-id network-name]))))))
 
   (testing "update-selected-networks > reset on removing last network"
-    (let [db          {:wallet {:ui {:network-filter {:selected-networks
-                                                      #{constants/optimism-network-name}
-                                                      :selector-state :changed}}}}
-          expected-fx [[:dispatch [:wallet/reset-selected-networks]]]
-          props       [constants/optimism-network-name]
-          effects     (events/update-selected-networks {:db db} props)
-          result-fx   (:fx effects)]
-      (is (match? result-fx expected-fx)))))
+    (let [expected-fx [[:dispatch [:wallet/reset-selected-networks]]]]
+      (reset! rf-db/app-db
+        {:wallet {:ui {:network-filter {:selected-networks
+                                        #{constants/optimism-network-name}
+                                        :selector-state :changed}}}})
+      (is (match? expected-fx
+                  (:fx (dispatch [event-id constants/optimism-network-name])))))))
 
-(deftest get-wallet-token-for-all-accounts-test
-  (testing "get wallet token for all accounts"
-    (let [address-1   "0x1"
-          address-2   "0x2"
-          cofx        {:db {:wallet {:accounts {address-1 {:address address-1}
-                                                address-2 {:address address-2}}}}}
-          effects     (events/get-wallet-token-for-all-accounts cofx)
-          result-fx   (:fx effects)
-          expected-fx [[:dispatch [:wallet/get-wallet-token-for-account address-1]]
-                       [:dispatch [:wallet/get-wallet-token-for-account address-2]]]]
-      (is (match? expected-fx result-fx)))))
+(h/deftest-event :wallet/get-wallet-token-for-all-accounts
+  [event-id dispatch]
+  (let [address-1 "0x1"
+        address-2 "0x2"]
+    (reset! rf-db/app-db {:wallet {:accounts {address-1 {:address address-1}
+                                              address-2 {:address address-2}}}})
+    (is (match? [[:dispatch [:wallet/get-wallet-token-for-account address-1]]
+                 [:dispatch [:wallet/get-wallet-token-for-account address-2]]]
+                (:fx (dispatch [event-id]))))))
 
-(deftest get-wallet-token-for-account-test
-  (testing "get wallet token for account"
-    (let [cofx             {:db {}}
-          effects          (events/get-wallet-token-for-account cofx [address])
-          expected-effects {:db {:wallet {:ui {:tokens-loading {address true}}}}
-                            :fx [[:json-rpc/call
-                                  [{:method     "wallet_getWalletToken"
-                                    :params     [[address]]
-                                    :on-success [:wallet/store-wallet-token address]
-                                    :on-error   [:wallet/get-wallet-token-for-account-failed
-                                                 address]}]]]}]
-      (is (match? expected-effects effects)))))
+(h/deftest-event :wallet/get-wallet-token-for-account
+  [event-id dispatch]
+  (let [expected-effects {:db {:wallet {:ui {:tokens-loading {address true}}}}
+                          :fx [[:json-rpc/call
+                                [{:method     "wallet_getWalletToken"
+                                  :params     [[address]]
+                                  :on-success [:wallet/store-wallet-token address]
+                                  :on-error   [:wallet/get-wallet-token-for-account-failed
+                                               address]}]]]}]
+    (is (match? expected-effects (dispatch [event-id address])))))
 
-(deftest check-recent-history-for-all-accounts-test
+(h/deftest-event :wallet/check-recent-history-for-all-accounts
+  [event-id dispatch]
   (testing "check recent history for all accounts"
     (let [address-1   "0x1"
           address-2   "0x2"
-          cofx        {:db {:wallet {:accounts {address-1 {:address address-1}
-                                                address-2 {:address address-2}}}}}
-          effects     (events/check-recent-history-for-all-accounts cofx)
-          result-fx   (:fx effects)
           expected-fx [[:dispatch [:wallet/check-recent-history-for-account address-1]]
                        [:dispatch [:wallet/check-recent-history-for-account address-2]]]]
-      (is (match? expected-fx result-fx)))))
+      (reset! rf-db/app-db
+        {:wallet {:accounts {address-1 {:address address-1}
+                             address-2 {:address address-2}}}})
+      (is (match? expected-fx (:fx (dispatch [event-id])))))))
 
-(deftest process-account-from-signal-test
-  (testing "process account from signal"
-    (let [cofx             {:db {:wallet {:accounts {}}}}
-          effects          (events/process-account-from-signal cofx [raw-account])
-          expected-effects {:db {:wallet {:accounts {address account}}}
-                            :fx [[:dispatch [:wallet/get-wallet-token-for-account address]]
-                                 [:dispatch
-                                  [:wallet/request-new-collectibles-for-account-from-signal address]]
-                                 [:dispatch [:wallet/check-recent-history-for-account address]]]}]
-      (is (match? expected-effects effects)))))
+(h/deftest-event :wallet/process-account-from-signal
+  [event-id dispatch]
+  (let [expected-effects {:db {:wallet {:accounts {address account}}}
+                          :fx [[:dispatch [:wallet/get-wallet-token-for-account address]]
+                               [:dispatch
+                                [:wallet/request-new-collectibles-for-account-from-signal address]]
+                               [:dispatch [:wallet/check-recent-history-for-account address]]]}]
+    (reset! rf-db/app-db {:wallet {:accounts {}}})
+    (is (match? expected-effects (dispatch [event-id raw-account])))))
