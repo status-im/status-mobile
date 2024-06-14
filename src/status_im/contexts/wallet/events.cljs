@@ -529,10 +529,9 @@
  :wallet/process-keypair-from-backup
  (fn [{:keys [db]} [{:keys [backedUpKeypair]}]]
    (let [{:keys [key-uid accounts]} backedUpKeypair
-         keypairs-db                (get-in db [:wallet :keypairs])
-         updated-keypairs           (-> (filter #(not= (:key-uid %) key-uid) keypairs-db)
-                                        (conj backedUpKeypair)
-                                        data-store/rpc->keypairs)
+         updated-keypairs           (assoc-in db
+                                     [:wallet :keypairs key-uid]
+                                     (data-store/rpc->keypair backedUpKeypair))
          accounts-fx                (mapv (fn [{:keys [chat] :as account}]
                                             ;; We exclude the chat account from the profile keypair
                                             ;; for fetching the assets

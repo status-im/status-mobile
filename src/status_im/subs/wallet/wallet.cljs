@@ -200,6 +200,12 @@
  :-> :keypairs)
 
 (rf/reg-sub
+ :wallet/keypairs-list
+ :<- [:wallet]
+ (fn [{:keys [keypairs]}]
+   (vals keypairs)))
+
+(rf/reg-sub
  :wallet/selected-keypair-uid
  :<- [:wallet/create-account]
  :-> :selected-keypair-uid)
@@ -209,19 +215,15 @@
  :<- [:wallet/keypairs]
  :<- [:wallet/selected-keypair-uid]
  (fn [[keypairs selected-keypair-uid]]
-   (some #(when (= (:key-uid %) selected-keypair-uid)
-            %)
-         keypairs)))
+   (get keypairs selected-keypair-uid)))
 
 (rf/reg-sub
  :wallet/selected-primary-keypair?
  :<- [:wallet/keypairs]
  :<- [:wallet/selected-keypair-uid]
  (fn [[keypairs selected-keypair-uid]]
-   (let [primary-keypair-uid (->> keypairs
-                                  (some #(when (= (:type %) "profile") %))
-                                  (:key-uid))]
-     (= selected-keypair-uid primary-keypair-uid))))
+   (= (get-in keypairs [selected-keypair-uid :type])
+      :profile)))
 
 (rf/reg-sub
  :wallet/selected-networks->chain-ids
@@ -266,22 +268,22 @@
  :wallet/settings-keypairs-accounts
  :<- [:wallet/keypairs]
  (fn [keypairs [_ format-options]]
-   (let [grouped-keypairs     (group-by :lowest-operability keypairs)
+   (let [grouped-keypairs     (->> keypairs
+                                   vals
+                                   (group-by :lowest-operability))
          operable-keypair-ids (->> (concat (:fully grouped-keypairs)
                                            (:partially grouped-keypairs))
-                                   (map :key-uid)
-                                   (into #{}))
-         missing-keypair-ids  (->> (map :key-uid (:no grouped-keypairs))
-                                   (into #{}))]
-     {:operable (->> keypairs
-                     (filter #(contains? operable-keypair-ids (:key-uid %)))
+                                   (mapv :key-uid))
+         missing-keypair-ids  (mapv :key-uid (:no grouped-keypairs))]
+     {:operable (->> (select-keys keypairs operable-keypair-ids)
+                     vals
                      (map (fn [{:keys [accounts name type key-uid]}]
                             {:type     (keyword type)
                              :name     name
                              :key-uid  key-uid
                              :accounts (format-settings-keypair-accounts accounts format-options)})))
-      :missing  (->> keypairs
-                     (filter #(contains? missing-keypair-ids (:key-uid %)))
+      :missing  (->> (select-keys keypairs missing-keypair-ids)
+                     vals
                      (map (fn [{:keys [accounts name type key-uid]}]
                             {:type     (keyword type)
                              :name     name
@@ -387,7 +389,7 @@
  :<- [:wallet/current-viewing-account]
  :<- [:wallet/keypairs]
  (fn [[{:keys [key-uid]} keypairs]]
-   (first (filter #(= key-uid (:key-uid %)) keypairs))))
+   (get keypairs key-uid)))
 
 (rf/reg-sub
  :wallet/current-viewing-account-tokens-in-selected-networks

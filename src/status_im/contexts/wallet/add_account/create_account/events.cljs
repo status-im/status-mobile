@@ -5,6 +5,7 @@
             [status-im.contexts.wallet.add-account.create-account.utils :as create-account.utils]
             [status-im.contexts.wallet.data-store :as data-store]
             [taoensso.timbre :as log]
+            [utils.collection]
             [utils.re-frame :as rf]
             [utils.security.core :as security]
             [utils.transforms :as transforms]))
@@ -12,9 +13,11 @@
 (defn get-keypairs-success
   [{:keys [db]} [keypairs]]
   (let [parsed-keypairs (data-store/rpc->keypairs keypairs)
-        default-key-uid (:key-uid (some #(when (= (:type %) :profile) %) parsed-keypairs))]
+        default-key-uid (->> parsed-keypairs
+                             (some #(when (= (:type %) :profile) %))
+                             :key-uid)]
     {:db (-> db
-             (assoc-in [:wallet :keypairs] parsed-keypairs)
+             (assoc-in [:wallet :keypairs] (utils.collection/index-by :key-uid parsed-keypairs))
              (assoc-in [:wallet :ui :create-account :selected-keypair-uid] default-key-uid))}))
 
 (rf/reg-event-fx :wallet/get-keypairs-success get-keypairs-success)
@@ -41,10 +44,10 @@
 
 (defn seed-phrase-validated
   [{:keys [db]} [seed-phrase key-uid on-error]]
-  (let [keypair-already-added? (->> db
-                                    :wallet
-                                    :keypairs
-                                    (some #(= key-uid (:key-uid %))))]
+  (let [keypair-already-added? (-> db
+                                   :wallet
+                                   :keypairs
+                                   (contains? key-uid))]
     (if keypair-already-added?
       (do
         (on-error)

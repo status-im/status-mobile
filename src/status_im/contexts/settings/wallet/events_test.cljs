@@ -29,7 +29,7 @@
                                           :keypair-name new-keypair-name}])))))))
 
 (deftest get-keypair-export-connection-test
-  (let [cofx         {:db (mock-db [] {})}
+  (let [cofx         {:db (mock-db {} {})}
         sha3-pwd     "test-password"
         user-key-uid "test-key-uid"
         callback     (fn [connect-string] (println "callback" connect-string))]
@@ -57,23 +57,23 @@
                     (sut/remove-keypair cofx [mock-key-uid])))))))
 
 (deftest make-keypairs-accounts-fully-operable-test
-  (let [db                 (mock-db [{:key-uid            mock-key-uid
-                                      :lowest-operability :no
-                                      :accounts           [{:key-uid mock-key-uid :operable "no"}]}]
-                                    {"0x1" {:key-uid mock-key-uid :operable "no"}})
+  (let [db                 (mock-db {mock-key-uid {:key-uid            mock-key-uid
+                                                   :lowest-operability :no
+                                                   :accounts           [{:key-uid  mock-key-uid
+                                                                         :operable :no}]}}
+                                    {"0x1" {:key-uid mock-key-uid :operable :no}})
         key-uids-to-update [mock-key-uid]]
     (testing "make-keypairs-accounts-fully-operable"
       (let [effects         (sut/make-keypairs-accounts-fully-operable {:db db} [key-uids-to-update])
             result-db       (:db effects)
-            updated-keypair (some #(when (= (:key-uid %) mock-key-uid) %)
-                                  (get-in result-db [:wallet :keypairs]))
+            updated-keypair (get-in result-db [:wallet :keypairs mock-key-uid])
             updated-account (get-in result-db [:wallet :accounts "0x1"])]
-        (is (= (keyword (-> updated-keypair :accounts first :operable)) :fully))
-        (is (= (keyword (:operable updated-account)) :fully))
+        (is (= (-> updated-keypair :accounts first :operable) :fully))
+        (is (= (:operable updated-account) :fully))
         (is (= (:lowest-operability updated-keypair) :fully))))))
 
 (deftest connection-string-for-import-keypair-test
-  (let [cofx              {:db (mock-db [] {})}
+  (let [cofx              {:db (mock-db {} {})}
         sha3-pwd          "test-password"
         user-key-uid      "test-key-uid"
         connection-string "test-connection-string"]
