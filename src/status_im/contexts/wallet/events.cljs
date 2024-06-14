@@ -154,15 +154,13 @@
             :on-success [:wallet/remove-account-success toast-message]
             :on-error   [:wallet/log-rpc-error {:event :wallet/remove-account}]}]]]}))
 
-(defn get-wallet-token-for-all-accounts
-  [{:keys [db]}]
-  {:fx (->> (get-in db [:wallet :accounts])
-            vals
-            (mapv
-             (fn [{:keys [address]}]
-               [:dispatch [:wallet/get-wallet-token-for-account address]])))})
-
-(rf/reg-event-fx :wallet/get-wallet-token-for-all-accounts get-wallet-token-for-all-accounts)
+(rf/reg-event-fx :wallet/get-wallet-token-for-all-accounts
+ (fn [{:keys [db]}]
+   {:fx (->> (get-in db [:wallet :accounts])
+             vals
+             (mapv
+              (fn [{:keys [address]}]
+                [:dispatch [:wallet/get-wallet-token-for-account address]])))}))
 
 (rf/reg-event-fx :wallet/get-wallet-token-for-account
  (fn [{:keys [db]} [address]]
@@ -473,11 +471,9 @@
                 :text     (i18n/label :t/provider-is-down {:chains chain-names})
                 :duration constants/toast-chain-down-duration}]])]})))
 
-(defn reset-selected-networks
-  [{:keys [db]}]
-  {:db (assoc-in db [:wallet :ui :network-filter] db/network-filter-defaults)})
-
-(rf/reg-event-fx :wallet/reset-selected-networks reset-selected-networks)
+(rf/reg-event-fx :wallet/reset-selected-networks
+ (fn [{:keys [db]}]
+   {:db (assoc-in db [:wallet :ui :network-filter] db/network-filter-defaults)}))
 
 (rf/reg-event-fx :wallet/update-selected-networks
  (fn [{:keys [db]} [network-name]]
