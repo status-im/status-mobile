@@ -190,15 +190,6 @@
   [handler]
   (use-mount (fn [] handler)))
 
-(defn use-nav-unmount
-  [handler view-id]
-  (use-effect
-   (fn []
-     (let [listener    {:componentDidDisappear handler}
-           unsubscribe (navigation/reg-comp-listener listener view-id)]
-       #(.remove unsubscribe)))
-   []))
-
 (defn use-callback
   ([handler]
    (use-callback handler []))

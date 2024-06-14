@@ -79,17 +79,6 @@
    (fn [^js evn]
      (handler (.-componentName evn)))))
 
-(defn- view-id->comp-id
-  [view-id]
-  (subs (str view-id) 8))
-
-(defn reg-comp-listener
-  [listener view-id]
-  (.registerComponentListener
-   ^js (.events ^js Navigation)
-   (clj->js listener)
-   (view-id->comp-id view-id)))
-
 (defn merge-options
   [id opts]
   (.mergeOptions Navigation id (clj->js opts)))
