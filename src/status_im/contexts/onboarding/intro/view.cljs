@@ -17,18 +17,16 @@
     {:container-style  style/bottom-actions-container
      :actions          :two-vertical-actions
      :description      :bottom
-     :description-text [quo/text {:style style/text-container}
-                        [quo/text
-                         {:size   :paragraph-2
-                          :weight :regular
-                          :style  style/plain-text}
+     :description-text [quo/text
+                        {:style  style/text-container
+                         :size   :paragraph-2
+                         :weight :regular}
+                        [quo/text {:style style/plain-text}
                          (i18n/label :t/by-continuing-you-accept)]
                         [quo/text
                          {:on-press #(rf/dispatch [:show-bottom-sheet
                                                    {:content (fn [] [terms/terms-of-use])
                                                     :shell?  true}])
-                          :size     :paragraph-2
-                          :weight   :regular
                           :style    style/highlighted-text}
                          (i18n/label :t/terms-of-service)]]
      :button-one-label (i18n/label :t/sync-or-recover-profile)
