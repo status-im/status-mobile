@@ -152,14 +152,15 @@
           effects       (events/add-saved-address-success cofx [toast-message])
           result-fx     (:fx effects)
           expected-fx   [[:dispatch [:wallet/get-saved-addresses]]
-                         [:dispatch [:navigate-back-to :screen/settings.saved-addresses]]
+                         [:dispatch [:dismiss-modal :screen/settings.add-address-to-save]]
+                         [:dispatch [:dismiss-modal :screen/settings.save-address]]
                          [:dispatch-later
                           {:ms       100
                            :dispatch [:toasts/upsert
                                       {:type  :positive
                                        :theme :dark
                                        :text  toast-message}]}]]]
-      (is (= (count result-fx) 3))
+      (is (= (count result-fx) 4))
       (is (match? expected-fx result-fx)))))
 
 (deftest edit-saved-address-success-test
@@ -169,7 +170,7 @@
           effects       (events/edit-saved-address-success cofx)
           result-fx     (:fx effects)
           expected-fx   [[:dispatch [:wallet/get-saved-addresses]]
-                         [:dispatch [:navigate-back]]
+                         [:dispatch [:dismiss-modal :screen/settings.edit-saved-address]]
                          [:dispatch-later
                           {:ms       100
                            :dispatch [:toasts/upsert

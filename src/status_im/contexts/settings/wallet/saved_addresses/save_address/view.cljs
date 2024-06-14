@@ -81,7 +81,7 @@
                                         :on-error
                                         [:wallet/add-saved-address-failed]
                                         :name address-label
-                                        :ens ens
+                                        :ens (when ens? ens)
                                         :address address-without-prefix
                                         :customization-color address-color
                                         :chain-short-names chain-short-names}]))
@@ -93,7 +93,7 @@
                                    :subtitle-type   :default
                                    :label           :none
                                    :blur?           true
-                                   :icon-right?     true
+                                   :icon-right?     (not ens?)
                                    :right-icon      :i/advanced
                                    :card?           true
                                    :title           (i18n/label :t/address)
