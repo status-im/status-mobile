@@ -617,3 +617,11 @@
                                   currency-symbol
                                   fee-in-fiat)]
      fee-formatted)))
+
+(rf/reg-sub
+ :wallet/has-partially-operable-accounts?
+ :<- [:wallet/accounts]
+ (fn [accounts]
+   (->> accounts
+        (some #(= :partially (:operable %)))
+        boolean)))
