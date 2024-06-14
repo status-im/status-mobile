@@ -90,7 +90,8 @@
 (defn add-saved-address-success
   [_ [toast-message]]
   {:fx [[:dispatch [:wallet/get-saved-addresses]]
-        [:dispatch [:navigate-back-to :screen/settings.saved-addresses]]
+        [:dispatch [:dismiss-modal :screen/settings.add-address-to-save]]
+        [:dispatch [:dismiss-modal :screen/settings.save-address]]
         [:dispatch-later
          {:ms       100
           :dispatch [:toasts/upsert
@@ -103,7 +104,7 @@
 (defn edit-saved-address-success
   [_]
   {:fx [[:dispatch [:wallet/get-saved-addresses]]
-        [:dispatch [:navigate-back]]
+        [:dispatch [:dismiss-modal :screen/settings.edit-saved-address]]
         [:dispatch-later
          {:ms       100
           :dispatch [:toasts/upsert

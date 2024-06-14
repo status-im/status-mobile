@@ -46,6 +46,8 @@
                                                         {:address address
                                                          :chain-short-names chain-short-names
                                                          :full-address full-address
+                                                         :ens? ens?
+                                                         :ens ens
                                                          :name name
                                                          :network-preferences-names
                                                          network-preferences-names
