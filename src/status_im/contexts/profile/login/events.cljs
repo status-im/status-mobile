@@ -59,7 +59,6 @@
                     :on-error   #(log/error "failed to start messenger" %)}]]
                  [:dispatch [:universal-links/generate-profile-url]]
                  [:dispatch [:community/fetch]]
-                 [:dispatch [:wallet/initialize]]
                  [:push-notifications/load-preferences]
                  [:profile.config/get-node-config]
                  [:logs/set-level log-level]
@@ -145,6 +144,7 @@
            (when (and new-account? (not recovered-account?))
              [:dispatch [:wallet-legacy/set-initial-blocks-range]])
            [:dispatch [:ens/update-usernames ensUsernames]]
+           [:dispatch [:wallet/initialize]]
            [:dispatch [:profile.login/login-existing-profile settings account]]]})))
 
 (rf/reg-event-fx
