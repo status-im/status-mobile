@@ -90,10 +90,7 @@
                                   :address  address
                                   :blur?    blur?
                                   :format   :long}])
-             :container-style (merge style/data-item
-                                     {:background-color (colors/theme-colors colors/neutral-2_5
-                                                                             colors/neutral-90
-                                                                             theme)})}])
+             :container-style style/data-item}])
          [quo/category
           {:list-type :settings
            :blur?     blur?
