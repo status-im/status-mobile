@@ -1,7 +1,7 @@
 (ns utils.string
   (:require
     [clojure.string :as string]
-    [status-im.common.emoji-picker.data :as emoji-picker.data]))
+    [utils.transforms :as transforms]))
 
 (defn truncate-str-memo
   "Given string and max threshold, trims the string to threshold length with `...`
@@ -61,7 +61,8 @@
          (map (comp string/upper-case str first))
          string/join)))
 
-(def emoji-unicode-values (map :unicode emoji-picker.data/emoji-data))
+(def emoji-data (transforms/js->clj (js/require "../resources/data/emojis/en.json")))
+(def emoji-unicode-values (map :unicode emoji-data))
 
 (defn contains-emoji?
   [s]
