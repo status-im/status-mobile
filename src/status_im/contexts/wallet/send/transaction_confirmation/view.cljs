@@ -162,9 +162,7 @@
    {:container-style style/detail-item
     :blur?           false
     :description     :default
-    :icon-right?     false
     :card?           false
-    :label           :none
     :status          :default
     :size            :small
     :title           title

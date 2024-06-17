@@ -71,9 +71,8 @@
             (colors/theme-colors colors/neutral-100
                                  colors/white
                                  theme))})
-(defn right-icon
-  [label]
-  {:margin-left (if (or (= label :graph) (= label :none)) 12 8)})
+(def right-icon
+  {:margin-left 12})
 
 (def left-side
   {:flex 1})

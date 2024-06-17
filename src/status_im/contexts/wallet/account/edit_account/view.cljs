@@ -83,9 +83,7 @@
           {:status          :default
            :size            :default
            :subtitle-type   :default
-           :label           :none
            :blur?           false
-           :icon-right?     true
            :right-icon      :i/advanced
            :card?           true
            :title           (i18n/label :t/address)

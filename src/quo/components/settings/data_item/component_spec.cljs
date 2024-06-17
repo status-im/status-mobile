@@ -10,9 +10,7 @@
     (h/render [quo/data-item
                {:on-press            (h/mock-fn)
                 :blur?               false
-                :icon-right?         false
                 :card?               true
-                :label               :none
                 :status              :default
                 :size                :default
                 :title               "Label"
@@ -27,9 +25,7 @@
     (h/render [quo/data-item
                {:on-press            (h/mock-fn)
                 :blur?               false
-                :icon-right?         false
                 :card?               false
-                :label               :none
                 :status              :default
                 :size                :default
                 :title               "Label"
@@ -45,9 +41,7 @@
     (h/render [quo/data-item
                {:on-press            (h/mock-fn)
                 :blur?               false
-                :icon-right?         false
                 :card?               true
-                :label               :none
                 :status              :default
                 :size                :small
                 :title               "Label"
@@ -63,9 +57,7 @@
     (h/render [quo/data-item
                {:on-press            (h/mock-fn)
                 :blur?               false
-                :icon-right?         false
                 :card?               true
-                :label               :none
                 :status              :default
                 :size                :default
                 :title               "Label"
@@ -81,9 +73,7 @@
     (h/render [quo/data-item
                {:on-press            (h/mock-fn)
                 :blur?               false
-                :icon-right?         false
                 :card?               true
-                :label               :none
                 :status              :default
                 :size                :default
                 :title               "Label"
@@ -98,9 +88,7 @@
     (h/render [quo/data-item
                {:on-press            (h/mock-fn)
                 :blur?               false
-                :icon-right?         false
                 :card?               true
-                :label               :none
                 :status              :default
                 :size                :default
                 :title               "Label"
@@ -115,10 +103,8 @@
     (h/render [quo/data-item
                {:on-press            (h/mock-fn)
                 :blur?               false
-                :icon-right?         true
                 :right-icon          :i/chevron-right
                 :card?               true
-                :label               :none
                 :status              :default
                 :size                :default
                 :title               "Label"
@@ -133,10 +119,7 @@
     (h/render [quo/data-item
                {:on-press            (h/mock-fn)
                 :blur?               false
-                :icon-right?         true
-                :right-icon          :i/chevron-right
                 :card?               true
-                :label               :preview
                 :status              :default
                 :size                :default
                 :title               "Label"
@@ -151,10 +134,7 @@
     (h/render [quo/data-item
                {:on-press            (h/mock-fn)
                 :blur?               false
-                :icon-right?         true
-                :right-icon          :i/chevron-right
                 :card?               true
-                :label               :preview
                 :status              :default
                 :size                :default
                 :title               "Label"
@@ -170,10 +150,7 @@
     (h/render [quo/data-item
                {:on-press            (h/mock-fn)
                 :blur?               false
-                :icon-right?         true
-                :right-icon          :i/chevron-right
                 :card?               true
-                :label               :preview
                 :status              :default
                 :size                :default
                 :title               "Label"

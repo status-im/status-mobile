@@ -48,14 +48,12 @@
      :i/advanced]]
    [quo/data-item
     {:container-style style/fees-data-item
-     :label           :none
      :status          (if loading-routes? :loading :default)
      :size            :small
      :title           (i18n/label :t/fees)
      :subtitle        fees}]
    [quo/data-item
     {:container-style style/amount-data-item
-     :label           :none
      :status          (if loading-routes? :loading :default)
      :size            :small
      :title           (i18n/label :t/recipient-gets)
