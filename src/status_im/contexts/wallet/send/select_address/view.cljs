@@ -1,5 +1,6 @@
 (ns status-im.contexts.wallet.send.select-address.view
   (:require
+    [legacy.status-im.utils.utils :as utils]
     [quo.core :as quo]
     [quo.foundations.colors :as colors]
     [quo.theme]
@@ -164,15 +165,21 @@
           :footer                       (when (> (count @input-value) 0)
                                           [quo/button
                                            {:accessibility-label :continue-button
-                                            :type                :primary
-                                            :disabled?           (not valid-ens-or-address?)
-                                            :on-press            #(rf/dispatch
-                                                                   [:wallet/select-send-address
-                                                                    {:address (or
-                                                                               local-suggestion-address
-                                                                               @input-value)
-                                                                     :stack-id
-                                                                     :screen/wallet.select-address}])
+                                            :type :primary
+                                            :disabled? (not valid-ens-or-address?)
+                                            :on-press (fn []
+                                                        (let [address (or
+                                                                       local-suggestion-address
+                                                                       @input-value)]
+                                                          (rf/dispatch
+                                                           [:wallet/select-send-address
+                                                            {:address address
+                                                             :recipient {:label
+                                                                         (utils/get-shortened-address
+                                                                          address)
+                                                                         :type :address}
+                                                             :stack-id
+                                                             :screen/wallet.select-address}])))
                                             :customization-color color}
                                            (i18n/label :t/continue)])}
          [quo/page-top

@@ -1,6 +1,7 @@
 (ns status-im.contexts.settings.wallet.saved-addresses.sheets.address-options.view
   (:require
     [clojure.string :as string]
+    [legacy.status-im.utils.utils :as utils]
     [quo.core :as quo]
     [quo.foundations.colors :as colors]
     [react-native.core :as rn]
@@ -15,7 +16,9 @@
   (let [open-send-flow                 (rn/use-callback
                                         #(rf/dispatch [:wallet/select-send-address
                                                        {:address     full-address
-                                                        :recipient   full-address
+                                                        :recipient   {:label (utils/get-shortened-address
+                                                                              full-address)
+                                                                      :type  :saved-address}
                                                         :stack-id    :wallet-select-address
                                                         :start-flow? true}])
                                         [full-address])
