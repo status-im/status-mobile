@@ -42,24 +42,26 @@
 (defn- create-profile-option-card
   [window-height]
   [quo/small-option-card
-   {:variant      :main
-    :title        (i18n/label :t/generate-keys)
-    :subtitle     (i18n/label :t/generate-keys-subtitle)
-    :button-label (i18n/label :t/lets-go)
-    :image        (resources/get-image :generate-keys)
-    :max-height   (option-card-max-height window-height)
-    :on-press     navigate-to-create-profile}])
+   {:variant             :main
+    :title               (i18n/label :t/generate-keys)
+    :subtitle            (i18n/label :t/generate-keys-subtitle)
+    :button-label        (i18n/label :t/lets-go)
+    :accessibility-label :generate-key-option-card
+    :image               (resources/get-image :generate-keys)
+    :max-height          (option-card-max-height window-height)
+    :on-press            navigate-to-create-profile}])
 
 (defn- sync-profile-option-card
   [window-height]
   [quo/small-option-card
-   {:variant      :main
-    :title        (i18n/label :t/sign-in-by-syncing)
-    :subtitle     (i18n/label :t/if-you-have-status-on-another-device)
-    :button-label (i18n/label :t/scan-sync-code)
-    :image        (resources/get-image :generate-keys)
-    :max-height   (option-card-max-height window-height)
-    :on-press     navigate-to-sign-in-by-syncing}])
+   {:variant             :main
+    :title               (i18n/label :t/sign-in-by-syncing)
+    :subtitle            (i18n/label :t/if-you-have-status-on-another-device)
+    :button-label        (i18n/label :t/scan-sync-code)
+    :accessibility-label :scan-sync-code-option-card
+    :image               (resources/get-image :generate-keys)
+    :max-height          (option-card-max-height window-height)
+    :on-press            navigate-to-sign-in-by-syncing}])
 
 (defn sign-in-options
   [sign-in-type]
@@ -81,19 +83,21 @@
        (i18n/label (if create-profile? :t/experienced-web3 :t/dont-have-statatus-on-another-device))]]
      [rn/view
       [quo/small-option-card
-       {:variant  :icon
-        :title    (i18n/label :t/use-recovery-phrase)
-        :subtitle (i18n/label :t/use-recovery-phrase-subtitle)
-        :image    (resources/get-image :ethereum-address)
-        :on-press navigate-to-sign-in-by-seed-phrase}]
+       {:variant             :icon
+        :title               (i18n/label :t/use-recovery-phrase)
+        :subtitle            (i18n/label :t/use-recovery-phrase-subtitle)
+        :accessibility-label :use-recovery-phrase-option-card
+        :image               (resources/get-image :ethereum-address)
+        :on-press            navigate-to-sign-in-by-seed-phrase}]
       [rn/view {:style style/space-between-suboptions}]
       (when config/show-not-implemented-features?
         [quo/small-option-card
-         {:variant  :icon
-          :title    (i18n/label :t/use-keycard)
-          :subtitle (i18n/label :t/use-keycard-subtitle)
-          :image    (resources/get-image :use-keycard)
-          :on-press status-im.common.not-implemented/alert}])]]))
+         {:variant             :icon
+          :title               (i18n/label :t/use-keycard)
+          :subtitle            (i18n/label :t/use-keycard-subtitle)
+          :accessibility-label :use-keycard-option-card
+          :image               (resources/get-image :use-keycard)
+          :on-press            status-im.common.not-implemented/alert}])]]))
 
 (defn- navigate-back
   []

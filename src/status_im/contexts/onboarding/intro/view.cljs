@@ -30,14 +30,17 @@
                           :style    style/highlighted-text}
                          (i18n/label :t/terms-of-service)]]
      :button-one-label (i18n/label :t/sync-or-recover-profile)
-     :button-one-props {:type     :dark-grey
-                        :on-press (fn []
-                                    (when-let [blur-show-fn @overlay/blur-show-fn-atom]
-                                      (blur-show-fn))
-                                    (rf/dispatch
-                                     [:open-modal :screen/onboarding.sync-or-recover-profile]))}
+     :button-one-props {:type                :dark-grey
+                        :accessibility-label :already-use-status-button
+                        :on-press            (fn []
+                                               (when-let [blur-show-fn @overlay/blur-show-fn-atom]
+                                                 (blur-show-fn))
+                                               (rf/dispatch
+                                                [:open-modal
+                                                 :screen/onboarding.sync-or-recover-profile]))}
      :button-two-label (i18n/label :t/create-profile)
-     :button-two-props {:on-press
+     :button-two-props {:accessibility-label :new-to-status-button
+                        :on-press
                         (fn []
                           (when-let [blur-show-fn @overlay/blur-show-fn-atom]
                             (blur-show-fn))
