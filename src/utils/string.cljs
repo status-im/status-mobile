@@ -1,7 +1,7 @@
 (ns utils.string
   (:require
-   [clojure.string :as string]
-   [status-im.common.emoji-picker.data :as emoji-picker.data]))
+    [clojure.string :as string]
+    [status-im.common.emoji-picker.data :as emoji-picker.data]))
 
 (defn truncate-str-memo
   "Given string and max threshold, trims the string to threshold length with `...`
