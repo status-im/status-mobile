@@ -394,20 +394,13 @@
                                                 (and (not should-try-again?) confirm-disabled?))
                                  :on-press  (cond
                                               should-try-again?
-                                              #(let [input-amount (controlled-input/input-value
-                                                                   input-state)
-                                                     amount       (if crypto-currency?
-                                                                    input-amount
-                                                                    (.toFixed (* token-balance
-                                                                                 conversion-rate)
-                                                                              2))]
-                                                 (rf/dispatch [:wallet/get-suggested-routes
-                                                               {:amount        amount
-                                                                :updated-token token-by-symbol}]))
+                                              #(rf/dispatch [:wallet/get-suggested-routes
+                                                             {:amount        amount-in-crypto
+                                                              :updated-token token-by-symbol}])
                                               sending-to-unpreferred-networks?
                                               #(show-unpreferred-networks-alert on-confirm)
                                               :else
-                                              #(on-confirm amount))}
+                                              #(on-confirm amount-in-crypto))}
                                 (when should-try-again?
                                   {:type :grey}))}]
      [quo/numbered-keyboard
