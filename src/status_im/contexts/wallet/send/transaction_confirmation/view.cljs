@@ -126,7 +126,7 @@
 
 (defn- user-summary
   [{:keys [network-values token-display-name account-props theme label accessibility-label
-           summary-type recipient]}]
+           summary-type recipient account-to?]}]
   (let [network-values
         (reduce-kv
          (fn [acc chain-id amount]
@@ -153,12 +153,14 @@
       {:type          summary-info-type
        :networks?     true
        :values        network-values
-       :account-props (assoc account-props
-                             :size                32
-                             :name                (:label recipient)
-                             :full-name           (:label recipient)
-                             :emoji               (:emoji recipient)
-                             :customization-color (:customization-color recipient))}]]))
+       :account-props (cond-> account-props
+                        account-to?
+                        (assoc
+                         :size                32
+                         :name                (:label recipient)
+                         :full-name           (:label recipient)
+                         :emoji               (:emoji recipient)
+                         :customization-color (:customization-color recipient)))}]]))
 
 (defn- data-item
   [{:keys [title subtitle]}]
@@ -312,4 +314,5 @@
                                     user-props)
              :recipient           recipient
              :network-values      to-values-by-chain
+             :account-to?         true
              :theme               theme}]]]]))))
