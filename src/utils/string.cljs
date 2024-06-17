@@ -1,7 +1,7 @@
 (ns utils.string
   (:require
-    [clojure.string :as string]
-    [oops.core :as oops]))
+   [clojure.string :as string]
+   [status-im.common.emoji-picker.data :as emoji-picker.data]))
 
 (defn truncate-str-memo
   "Given string and max threshold, trims the string to threshold length with `...`
@@ -61,10 +61,13 @@
          (map (comp string/upper-case str first))
          string/join)))
 
+(def emoji-unicode-values (map :unicode emoji-picker.data/emoji-data))
+
 (defn contains-emoji?
   [s]
-  (let [regex (js/RegExp. "(\\p{Emoji_Presentation}|\\p{Extended_Pictographic})" "gu")]
-    (oops/ocall regex "test" s)))
+  (some (fn [emoji]
+          (string/includes? s emoji))
+        emoji-unicode-values))
 
 (defn contains-special-character?
   [s]
