@@ -57,14 +57,21 @@
         :accessory-text      (cond
                                (= default-sync-period constants/two-mins)
                                (i18n/label :t/two-minutes)
+
                                (or
                                 (nil? default-sync-period)
                                 (= default-sync-period constants/one-day))
                                (i18n/label :t/one-day)
+
                                (= default-sync-period constants/three-days)
                                (i18n/label :t/three-days)
+
+                               (= default-sync-period constants/nine-days)
+                               (i18n/label :t/nine-days)
+
                                (= default-sync-period constants/one-week)
                                (i18n/label :t/one-week)
+
                                (= default-sync-period constants/one-month)
                                (i18n/label :t/one-month))}]
       [list.item/list-item
