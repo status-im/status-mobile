@@ -13,6 +13,7 @@
    constants/one-day    (i18n/label :t/one-day)
    constants/three-days (i18n/label :t/three-days)
    constants/one-week   (i18n/label :t/one-week)
+   constants/nine-days  (i18n/label :t/nine-days)
    constants/one-month  (i18n/label :t/one-month)})
 
 (defn radio-item
@@ -34,4 +35,5 @@
      [radio-item constants/one-day default-sync-period]
      [radio-item constants/three-days default-sync-period]
      [radio-item constants/one-week default-sync-period]
+     [radio-item constants/nine-days default-sync-period]
      [radio-item constants/one-month default-sync-period]]))
