@@ -116,7 +116,8 @@
     [rn/view {:style (style/left-container (:image props))}
      [text/text
       {:weight :medium
-       :style  {:color (when blur? colors/white)}} title]
+       :style  {:color (when blur? colors/white)}}
+      title]
      [description-component props]
      [tag-component props]]]
    [rn/view {:style (style/sub-container (:alignment action-props))}
