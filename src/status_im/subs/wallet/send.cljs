@@ -1,6 +1,7 @@
 (ns status-im.subs.wallet.send
   (:require
     [re-frame.core :as rf]
+    [status-im.contexts.wallet.common.activity-tab.constants :as constants]
     [utils.number]))
 
 (rf/reg-sub
@@ -40,14 +41,15 @@
 
 (rf/reg-sub
  :wallet/recent-recipients
- :<- [:wallet/activities-for-current-viewing-account]
+ :<- [:wallet/all-activities]
  :<- [:wallet/current-viewing-account-address]
- (fn [[sections current-viewing-account-address]]
-   (let [all-transactions        (mapcat :data sections)
-         users-sent-transactions (filter (fn [{:keys [sender]}]
-                                           (= sender current-viewing-account-address))
-                                         all-transactions)]
-     (set (map :recipient users-sent-transactions)))))
+ (fn [[all-activities current-viewing-account-address]]
+   (let [address-activity (get all-activities current-viewing-account-address)]
+     (->> address-activity
+          (keep (fn [{:keys [activity-type recipient]}]
+                  (when (= constants/wallet-activity-type-send activity-type)
+                    recipient)))
+          (distinct)))))
 
 (rf/reg-sub
  :wallet/send-token-not-supported-in-receiver-networks?

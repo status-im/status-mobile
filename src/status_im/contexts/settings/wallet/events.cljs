@@ -73,9 +73,14 @@
   [{:keys [db]} [key-uids-to-update]]
   (let [key-uids-set (set key-uids-to-update)
         keypair-name (data-store/extract-keypair-name db key-uids-set)]
-    {:db (-> db
-             (update-in [:wallet :accounts] #(data-store/make-accounts-fully-operable % key-uids-set))
-             (update-in [:wallet :keypairs] #(data-store/make-keypairs-fully-operable % key-uids-set)))
+    {:db (->
+           db
+           (update-in [:wallet :accounts]
+                      #(data-store/make-accounts-fully-operable {:accounts     %
+                                                                 :key-uids-set key-uids-set}))
+           (update-in [:wallet :keypairs]
+                      #(data-store/make-keypairs-fully-operable {:keypairs     %
+                                                                 :key-uids-set key-uids-set})))
      :fx [[:dispatch
            [:toasts/upsert
             {:type  :positive
@@ -167,9 +172,9 @@
 
 (rf/reg-event-fx :wallet/verify-private-key-for-keypair verify-private-key-for-keypair)
 
-(defn import-keypair-by-seed-phrase
+(defn import-missing-keypair-by-seed-phrase
   [_ [{:keys [keypair-key-uid seed-phrase password on-success on-error]}]]
-  {:fx [[:import-keypair-by-seed-phrase
+  {:fx [[:effects.wallet/import-missing-keypair-by-seed-phrase
          {:keypair-key-uid keypair-key-uid
           :seed-phrase     seed-phrase
           :password        password
@@ -178,24 +183,26 @@
                                            #{keypair-key-uid}])
                              (rf/call-continuation on-success))
           :on-error        (fn [error]
-                             (rf/dispatch [:wallet/import-keypair-by-seed-phrase-failed error])
+                             (rf/dispatch [:wallet/import-missing-keypair-by-seed-phrase-failed error])
+                             (log/error "failed to import missing keypair with seed phrase"
+                                        {:error error})
                              (rf/call-continuation on-error error))}]]})
 
-(rf/reg-event-fx :wallet/import-keypair-by-seed-phrase import-keypair-by-seed-phrase)
+(rf/reg-event-fx :wallet/import-missing-keypair-by-seed-phrase import-missing-keypair-by-seed-phrase)
 
-(defn import-keypair-by-seed-phrase-failed
+(defn import-missing-keypair-by-seed-phrase-failed
   [_ [error]]
   (let [error-type (-> error ex-message keyword)
         error-data (ex-data error)]
-    (when-not (and (= error-type :import-keypair-by-seed-phrase/import-error)
-                   (= (:hint error-data) :incorrect-seed-phrase-for-keypair))
+    (when-not (= error-type :import-missing-keypair-by-seed-phrase/import-error)
       {:fx [[:dispatch
              [:toasts/upsert
               {:type  :negative
                :theme :dark
                :text  (:error error-data)}]]]})))
 
-(rf/reg-event-fx :wallet/import-keypair-by-seed-phrase-failed import-keypair-by-seed-phrase-failed)
+(rf/reg-event-fx :wallet/import-missing-keypair-by-seed-phrase-failed
+ import-missing-keypair-by-seed-phrase-failed)
 
 (defn import-missing-keypair-by-private-key
   [_ [{:keys [keypair-key-uid private-key password on-success on-error]}]]
@@ -221,3 +228,36 @@
 
 (rf/reg-event-fx :wallet/import-missing-keypair-by-private-key-failed
  import-missing-keypair-by-private-key-failed)
+
+(defn make-partially-operable-accounts-fully-operable-success
+  [{:keys [db]} [addresses]]
+  (let [key-uids-to-update (data-store/map-addresses-to-key-uids db addresses)]
+    {:db (-> db
+             (update-in [:wallet :accounts]
+                        #(data-store/make-accounts-fully-operable {:accounts           %
+                                                                   :key-uids-set       key-uids-to-update
+                                                                   :operable-condition :partially}))
+             (update-in [:wallet :keypairs]
+                        #(data-store/make-keypairs-fully-operable {:keypairs           %
+                                                                   :key-uids-set       key-uids-to-update
+                                                                   :operable-condition :partially})))}))
+
+(rf/reg-event-fx :wallet/make-partially-operable-accounts-fully-operable-success
+ make-partially-operable-accounts-fully-operable-success)
+
+(defn make-partially-operable-accounts-fully-operable
+  [_ [{:keys [password on-success on-error]}]]
+  {:fx [[:json-rpc/call
+         [{:method     "accounts_makePartiallyOperableAccoutsFullyOperable"
+           :params     [(security/safe-unmask-data password)]
+           :on-success (fn [addresses]
+                         (when addresses
+                           (rf/dispatch [:wallet/make-partially-operable-accounts-fully-operable-success
+                                         addresses]))
+                         (on-success))
+           :on-error   (fn [error]
+                         (log/error "failed to make partially accounts fully operable" {:error error})
+                         (on-error error))}]]]})
+
+(rf/reg-event-fx :wallet/make-partially-operable-accounts-fully-operable
+ make-partially-operable-accounts-fully-operable)

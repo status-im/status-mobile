@@ -1,4 +1,4 @@
-(ns status-im.contexts.settings.wallet.keypairs-and-accounts.encrypted-qr.style
+(ns status-im.contexts.settings.wallet.keypairs-and-accounts.missing-keypairs.encrypted-qr.style
   (:require
     [quo.foundations.colors :as colors]
     [react-native.safe-area :as safe-area]))

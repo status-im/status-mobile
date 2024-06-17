@@ -49,6 +49,7 @@
          :on-press        #(rf/dispatch
                             [:wallet/set-collectible-to-send
                              {:collectible    collectible
+                              :start-flow?    true
                               :current-screen :screen/wallet.collectible}])}
         (i18n/label :t/send)])
      [quo/button

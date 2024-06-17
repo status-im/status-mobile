@@ -912,3 +912,17 @@
                           :market-values-per-currency {:usd {:price 10000}}}
           result         (rf/sub [sub-name token-for-fees])]
       (is (match? result "$1.00")))))
+
+(h/deftest-sub :wallet/has-partially-operable-accounts?
+  [sub-name]
+  (testing "returns false if there are no partially operable accounts"
+    (swap! rf-db/app-db
+      #(assoc-in % [:wallet :accounts] accounts))
+    (is (false? (rf/sub [sub-name]))))
+
+  (testing "returns true if there are partially operable accounts"
+    (swap! rf-db/app-db
+      #(assoc-in %
+        [:wallet :accounts]
+        (update accounts "0x2" assoc :operable :partially)))
+    (is (true? (rf/sub [sub-name])))))

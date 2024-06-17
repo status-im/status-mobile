@@ -12,7 +12,7 @@
     [utils.re-frame :as rf]))
 
 (defn edit-message
-  [{:keys [text-value input-ref]}]
+  [{:keys [text-value input-ref input-height]}]
   (let [theme (quo.theme/use-theme)]
     [rn/view
      {:style               style/container
@@ -32,7 +32,7 @@
       {:size                24
        :icon-only?          true
        :accessibility-label :edit-cancel-button
-       :on-press            #(utils/cancel-edit-message text-value input-ref)
+       :on-press            #(utils/cancel-edit-message text-value input-ref input-height)
        :type                :outline}
       :i/close]]))
 

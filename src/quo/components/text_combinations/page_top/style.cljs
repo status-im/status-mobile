@@ -70,7 +70,8 @@
                             (colors/theme-colors colors/neutral-10 colors/neutral-80 theme))}))
 
 (def search-input-container
-  {:margin-top        8
+  {:flex              0
+   :margin-top        8
    :margin-bottom     12
    :margin-horizontal 20})
 

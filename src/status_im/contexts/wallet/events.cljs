@@ -6,6 +6,7 @@
     [status-im.constants :as constants]
     [status-im.contexts.settings.wallet.effects]
     [status-im.contexts.settings.wallet.events]
+    [status-im.contexts.wallet.common.activity-tab.events]
     [status-im.contexts.wallet.common.utils.external-links :as external-links]
     [status-im.contexts.wallet.common.utils.networks :as network-utils]
     [status-im.contexts.wallet.data-store :as data-store]
@@ -35,7 +36,13 @@
  (fn [{:keys [db]} [address]]
    {:db (assoc-in db [:wallet :current-viewing-account-address] address)
     :fx [[:dispatch [:navigate-to :screen/wallet.accounts address]]
-         [:dispatch [:wallet/fetch-activities]]]}))
+         [:dispatch [:wallet/fetch-activities-for-current-account]]]}))
+
+(rf/reg-event-fx :wallet/navigate-to-account-within-stack
+ (fn [{:keys [db]} [address]]
+   {:db (assoc-in db [:wallet :current-viewing-account-address] address)
+    :fx [[:dispatch [:navigate-to-within-stack [:screen/wallet.accounts :shell-stack] address]]
+         [:dispatch [:wallet/fetch-activities-for-current-account]]]}))
 
 (rf/reg-event-fx :wallet/navigate-to-new-account
  (fn [{:keys [db]} [address]]
@@ -43,6 +50,14 @@
     :fx [[:dispatch [:hide-bottom-sheet]]
          [:dispatch [:navigate-to :screen/wallet.accounts address]]
          [:dispatch [:wallet/show-account-created-toast address]]]}))
+
+(rf/reg-event-fx :wallet/select-account-tab
+ (fn [{:keys [db]} [tab]]
+   {:db (assoc-in db [:wallet :ui :account-page :active-tab] tab)}))
+
+(rf/reg-event-fx :wallet/clear-account-tab
+ (fn [{:keys [db]}]
+   {:db (assoc-in db [:wallet :ui :account-page :active-tab] nil)}))
 
 (rf/reg-event-fx :wallet/switch-current-viewing-account
  (fn [{:keys [db]} [address]]
@@ -55,6 +70,7 @@
 (rf/reg-event-fx :wallet/close-account-page
  (fn [_]
    {:fx [[:dispatch [:wallet/clean-current-viewing-account]]
+         [:dispatch [:wallet/clear-account-tab]]
          [:dispatch [:pop-to-root :shell-stack]]]}))
 
 (defn log-rpc-error
@@ -89,14 +105,12 @@
             :on-success [:wallet/get-accounts-success]
             :on-error   [:wallet/log-rpc-error {:event :wallet/get-accounts}]}]]]}))
 
-(defn process-account-from-signal
-  [{:keys [db]} [{:keys [address] :as account}]]
-  {:db (assoc-in db [:wallet :accounts address] (data-store/rpc->account account))
-   :fx [[:dispatch [:wallet/get-wallet-token-for-account address]]
-        [:dispatch [:wallet/request-new-collectibles-for-account-from-signal address]]
-        [:dispatch [:wallet/check-recent-history-for-account address]]]})
-
-(rf/reg-event-fx :wallet/process-account-from-signal process-account-from-signal)
+(rf/reg-event-fx :wallet/process-account-from-signal
+ (fn [{:keys [db]} [{:keys [address] :as account}]]
+   {:db (assoc-in db [:wallet :accounts address] (data-store/rpc->account account))
+    :fx [[:dispatch [:wallet/get-wallet-token-for-account address]]
+         [:dispatch [:wallet/request-new-collectibles-for-account-from-signal address]]
+         [:dispatch [:wallet/check-recent-history-for-account address]]]}))
 
 (rf/reg-event-fx
  :wallet/save-account
@@ -140,26 +154,22 @@
             :on-success [:wallet/remove-account-success toast-message]
             :on-error   [:wallet/log-rpc-error {:event :wallet/remove-account}]}]]]}))
 
-(defn get-wallet-token-for-all-accounts
-  [{:keys [db]}]
-  {:fx (->> (get-in db [:wallet :accounts])
-            vals
-            (mapv
-             (fn [{:keys [address]}]
-               [:dispatch [:wallet/get-wallet-token-for-account address]])))})
+(rf/reg-event-fx :wallet/get-wallet-token-for-all-accounts
+ (fn [{:keys [db]}]
+   {:fx (->> (get-in db [:wallet :accounts])
+             vals
+             (mapv
+              (fn [{:keys [address]}]
+                [:dispatch [:wallet/get-wallet-token-for-account address]])))}))
 
-(rf/reg-event-fx :wallet/get-wallet-token-for-all-accounts get-wallet-token-for-all-accounts)
-
-(defn get-wallet-token-for-account
-  [{:keys [db]} [address]]
-  {:db (assoc-in db [:wallet :ui :tokens-loading address] true)
-   :fx [[:json-rpc/call
-         [{:method     "wallet_getWalletToken"
-           :params     [[address]]
-           :on-success [:wallet/store-wallet-token address]
-           :on-error   [:wallet/get-wallet-token-for-account-failed address]}]]]})
-
-(rf/reg-event-fx :wallet/get-wallet-token-for-account get-wallet-token-for-account)
+(rf/reg-event-fx :wallet/get-wallet-token-for-account
+ (fn [{:keys [db]} [address]]
+   {:db (assoc-in db [:wallet :ui :tokens-loading address] true)
+    :fx [[:json-rpc/call
+          [{:method     "wallet_getWalletToken"
+            :params     [[address]]
+            :on-success [:wallet/store-wallet-token address]
+            :on-error   [:wallet/get-wallet-token-for-account-failed address]}]]]}))
 
 (rf/reg-event-fx
  :wallet/get-wallet-token-for-account-failed
@@ -243,12 +253,14 @@
 (rf/reg-event-fx :wallet/get-keypairs get-keypairs)
 
 (rf/reg-event-fx :wallet/bridge-select-token
- (fn [{:keys [db]} [{:keys [token stack-id]}]]
-   (let [to-address (get-in db [:wallet :current-viewing-account-address])]
-     {:db (-> db
-              (assoc-in [:wallet :ui :send :token] token)
-              (assoc-in [:wallet :ui :send :to-address] to-address)
-              (assoc-in [:wallet :ui :send :tx-type] :tx/bridge))
+ (fn [{:keys [db]} [{:keys [token token-symbol stack-id]}]]
+   (let [missing-recipient? (-> db :wallet :ui :send :to-address nil?)
+         to-address         (-> db :wallet :current-viewing-account-address)]
+     {:db (cond-> db
+            :always            (assoc-in [:wallet :ui :send :tx-type] :tx/bridge)
+            token              (assoc-in [:wallet :ui :send :token] token)
+            token-symbol       (assoc-in [:wallet :ui :send :token-symbol] token-symbol)
+            missing-recipient? (assoc-in [:wallet :ui :send :to-address] to-address))
       :fx [[:dispatch
             [:wallet/wizard-navigate-forward
              {:current-screen stack-id
@@ -383,14 +395,12 @@
           [{:method   "wallet_startWallet"
             :on-error [:wallet/log-rpc-error {:event :wallet/start-wallet}]}]]]}))
 
-(defn check-recent-history-for-all-accounts
-  [{:keys [db]}]
-  {:fx (->> (get-in db [:wallet :accounts])
-            vals
-            (mapv (fn [{:keys [address]}]
-                    [:dispatch [:wallet/check-recent-history-for-account address]])))})
-
-(rf/reg-event-fx :wallet/check-recent-history-for-all-accounts check-recent-history-for-all-accounts)
+(rf/reg-event-fx :wallet/check-recent-history-for-all-accounts
+ (fn [{:keys [db]}]
+   {:fx (->> (get-in db [:wallet :accounts])
+             vals
+             (mapv (fn [{:keys [address]}]
+                     [:dispatch [:wallet/check-recent-history-for-account address]])))}))
 
 (rf/reg-event-fx
  :wallet/check-recent-history-for-account
@@ -461,78 +471,32 @@
                 :text     (i18n/label :t/provider-is-down {:chains chain-names})
                 :duration constants/toast-chain-down-duration}]])]})))
 
-(defn reset-selected-networks
-  [{:keys [db]}]
-  {:db (assoc-in db [:wallet :ui :network-filter] db/network-filter-defaults)})
-
-(rf/reg-event-fx :wallet/reset-selected-networks reset-selected-networks)
-
-(defn update-selected-networks
-  [{:keys [db]} [network-name]]
-  (let [selected-networks (get-in db [:wallet :ui :network-filter :selected-networks])
-        selector-state    (get-in db [:wallet :ui :network-filter :selector-state])
-        contains-network? (contains? selected-networks network-name)
-        update-fn         (if contains-network? disj conj)
-        networks-count    (count selected-networks)]
-    (cond (= selector-state :default)
-          {:db (-> db
-                   (assoc-in [:wallet :ui :network-filter :selected-networks] #{network-name})
-                   (assoc-in [:wallet :ui :network-filter :selector-state] :changed))}
-
-          ;; reset the list
-          ;; - if user is removing the last network in the list
-          ;; - if all networks is selected
-          (or (and (= networks-count 1) contains-network?)
-              (and (= (inc networks-count) constants/default-network-count) (not contains-network?)))
-          {:fx [[:dispatch [:wallet/reset-selected-networks]]]}
-
-          :else
-          {:db (update-in db [:wallet :ui :network-filter :selected-networks] update-fn network-name)})))
-
-(rf/reg-event-fx :wallet/update-selected-networks update-selected-networks)
-
-(rf/reg-event-fx
- :wallet/fetch-activities
+(rf/reg-event-fx :wallet/reset-selected-networks
  (fn [{:keys [db]}]
-   (let [addresses      (->> (get-in db [:wallet :accounts])
-                             vals
-                             (map :address))
-         chain-ids      (chain/chain-ids db)
-         request-id     0
-         filters        {:period                {:startTimestamp 0
-                                                 :endTimestamp   0}
-                         :types                 []
-                         :statuses              []
-                         :counterpartyAddresses []
-                         :assets                []
-                         :collectibles          []
-                         :filterOutAssets       false
-                         :filterOutCollectibles false}
-         offset         0
-         limit          20
-         request-params [request-id
-                         addresses
-                         chain-ids
-                         filters
-                         offset
-                         limit]]
-     {:fx [[:json-rpc/call
-            [{;; This method is deprecated and will be replaced by
-              ;; "wallet_startActivityFilterSession"
-              ;; https://github.com/status-im/status-mobile/issues/19864
-              :method   "wallet_filterActivityAsync"
-              :params   request-params
-              :on-error [:wallet/log-rpc-error
-                         {:event  :wallet/fetch-activities
-                          :params request-params}]}]]]})))
+   {:db (assoc-in db [:wallet :ui :network-filter] db/network-filter-defaults)}))
 
-(rf/reg-event-fx
- :wallet/activity-filtering-done
- (fn [{:keys [db]} [{:keys [message]}]]
-   (let [{:keys [activities]} (transforms/json->clj message)
-         activities           (cske/transform-keys transforms/->kebab-case-keyword activities)
-         sorted-activities    (sort :timestamp activities)]
-     {:db (assoc-in db [:wallet :activities] sorted-activities)})))
+(rf/reg-event-fx :wallet/update-selected-networks
+ (fn [{:keys [db]} [network-name]]
+   (let [selected-networks (get-in db [:wallet :ui :network-filter :selected-networks])
+         selector-state    (get-in db [:wallet :ui :network-filter :selector-state])
+         contains-network? (contains? selected-networks network-name)
+         update-fn         (if contains-network? disj conj)
+         networks-count    (count selected-networks)]
+     (cond (= selector-state :default)
+           {:db (-> db
+                    (assoc-in [:wallet :ui :network-filter :selected-networks] #{network-name})
+                    (assoc-in [:wallet :ui :network-filter :selector-state] :changed))}
+
+           ;; reset the list
+           ;; - if user is removing the last network in the list
+           ;; - if all networks is selected
+           (or (and (= networks-count 1) contains-network?)
+               (and (= (inc networks-count) constants/default-network-count) (not contains-network?)))
+           {:fx [[:dispatch [:wallet/reset-selected-networks]]]}
+
+           :else
+           {:db
+            (update-in db [:wallet :ui :network-filter :selected-networks] update-fn network-name)}))))
 
 (rf/reg-event-fx
  :wallet/get-crypto-on-ramps-success

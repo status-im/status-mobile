@@ -325,7 +325,8 @@ class BaseView(object):
         self.next_button = Button(self.driver, accessibility_id="next-button")
 
         # share contact screen
-        self.show_qr_button = Button(self.driver, accessibility_id="show-qr-button")
+        self.show_qr_code_button = Button(self.driver, accessibility_id="show-qr-button")
+
         self.link_to_profile_button = Button(self.driver, accessibility_id="share-qr-code-info-text")
         self.sharing_text_native = Text(self.driver, xpath="//*[@resource-id='android:id/content_preview_text']")
 

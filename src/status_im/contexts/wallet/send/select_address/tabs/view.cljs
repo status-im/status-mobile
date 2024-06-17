@@ -17,15 +17,21 @@
         :description     (i18n/label :t/here-is-a-cat-in-a-box-instead)
         :image           (resources/get-themed-image :cat-in-box theme)
         :container-style style/empty-container-style}]
-      (into [rn/view {:style style/my-accounts-container}]
-            (map (fn [{:keys [color address] :as account}]
-                   [quo/account-item
-                    {:account-props (assoc account :customization-color color)
-                     :on-press      #(rf/dispatch [:wallet/select-send-address
-                                                   {:address   address
-                                                    :recipient account
-                                                    :stack-id  :screen/wallet.select-address}])}]))
-            other-accounts))))
+      [rn/view {:style style/my-accounts-container}
+       (doall
+        (for [{:keys [color address] :as account} other-accounts]
+          ^{:key (str address)}
+          (let [transformed-address (rf/sub [:wallet/account-address address
+                                             (:network-preferences-names account)])]
+            [quo/account-item
+             {:account-props (assoc account
+                                    :customization-color color
+                                    :address             transformed-address
+                                    :full-address?       true)
+              :on-press      #(rf/dispatch [:wallet/select-send-address
+                                            {:address   address
+                                             :recipient account
+                                             :stack-id  :screen/wallet.select-address}])}])))])))
 
 (defn- recent-transactions
   [theme]
