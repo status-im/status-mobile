@@ -119,7 +119,8 @@
    network-amounts))
 
 (defn network-amounts
-  [{:keys [network-values disabled-chain-ids receiver-networks token-networks-ids tx-type receiver?]}]
+  [{:keys [network-values disabled-chain-ids receiver-networks token-networks-ids tx-type receiver?
+           from-locked-amounts]}]
   (let [disabled-set                             (set disabled-chain-ids)
         receiver-networks-set                    (set receiver-networks)
         network-values-keys                      (set (keys network-values))
@@ -156,8 +157,9 @@
               (map
                (fn [[chain-id amount]]
                  {:chain-id     chain-id
-                  :total-amount amount
+                  :total-amount (get from-locked-amounts chain-id amount)
                   :type         (cond
+                                  (contains? from-locked-amounts chain-id)                :locked
                                   (contains? not-available-networks-set chain-id)         :not-available
                                   (or receiver? (not (contains? disabled-set chain-id)))  :default
                                   (and (not receiver?) (contains? disabled-set chain-id)) :disabled)}))

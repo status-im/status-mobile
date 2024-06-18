@@ -1,5 +1,4 @@
-(ns status-im.contexts.wallet.send.routes.style
-  (:require [quo.foundations.colors :as colors]))
+(ns status-im.contexts.wallet.send.routes.style)
 
 (def routes-container
   {:padding-horizontal 20
@@ -36,25 +35,15 @@
     inverted?
     (assoc :transform [{:scaleY -1}])))
 
-(def empty-container
-  {:flex-grow       1
-   :align-items     :center
-   :justify-content :center})
+(def disclaimer
+  {:margin-horizontal 20
+   :margin-top        20
+   :margin-bottom     8})
 
-(defn warning-container
-  [color theme]
-  {:flex-direction    :row
-   :border-width      1
-   :border-color      (colors/resolve-color color theme 10)
-   :background-color  (colors/resolve-color color theme 5)
-   :margin-horizontal 20
-   :margin-top        4
-   :margin-bottom     8
-   :padding-left      12
-   :padding-vertical  11
-   :border-radius     12})
+(def input-container
+  {:margin-top    8
+   :margin-bottom 12})
 
-(def warning-text
-  {:margin-left   8
-   :margin-right  12
-   :padding-right 12})
+(defn keyboard-container
+  [bottom]
+  {:padding-bottom bottom})

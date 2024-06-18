@@ -150,6 +150,11 @@
  :-> :disabled-from-chain-ids)
 
 (rf/reg-sub
+ :wallet/wallet-send-from-locked-amounts
+ :<- [:wallet/wallet-send]
+ :-> :from-locked-amounts)
+
+(rf/reg-sub
  :wallet/wallet-send-from-values-by-chain
  :<- [:wallet/wallet-send]
  :-> :from-values-by-chain)

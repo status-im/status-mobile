@@ -21,18 +21,6 @@
     [utils.number :as number]
     [utils.re-frame :as rf]))
 
-(defn- make-limit-label-crypto
-  [amount currency]
-  (str amount
-       " "
-       (some-> currency
-               name
-               string/upper-case)))
-
-(defn- make-limit-label-fiat
-  [amount currency-symbol]
-  (str currency-symbol amount))
-
 (defn- estimated-fees
   [{:keys [loading-routes? fees amount]}]
   [rn/view {:style style/estimated-fees-container}
@@ -134,6 +122,16 @@
     :on-button-press #(rf/dispatch [:show-bottom-sheet
                                     {:content buy-token/view}])}])
 
+(defn- fetch-routes
+  [{:keys [amount bounce-duration-ms token valid-input?]}]
+  (if valid-input?
+    (debounce/debounce-and-dispatch
+     [:wallet/get-suggested-routes
+      {:amount        amount
+       :updated-token token}]
+     bounce-duration-ms)
+    (rf/dispatch [:wallet/clean-suggested-routes])))
+
 (defn view
   ;; crypto-decimals, limit-crypto and initial-crypto-currency? args are needed
   ;; for component tests only
@@ -168,6 +166,7 @@
         send-enabled-networks                       (rf/sub [:wallet/wallet-send-enabled-networks])
         enabled-from-chain-ids                      (rf/sub
                                                      [:wallet/wallet-send-enabled-from-chain-ids])
+        send-from-locked-amounts                    (rf/sub [:wallet/wallet-send-from-locked-amounts])
         {token-balance     :total-balance
          available-balance :available-balance
          :as               token-by-symbol}         (rf/sub [:wallet/token-by-symbol
@@ -217,7 +216,7 @@
                                                                         input-state))
                                                         (<= input-num-value 0)
                                                         (> input-num-value current-limit))
-        amount                                      (if crypto-currency?
+        amount-in-crypto                            (if crypto-currency?
                                                       input-amount
                                                       (number/remove-trailing-zeroes
                                                        (.toFixed (/ input-amount conversion-rate)
@@ -291,7 +290,31 @@
         show-no-routes?                             (and
                                                      (or no-routes-found? limit-insufficient?)
                                                      (not-empty sender-network-values)
-                                                     (not not-enough-asset?))]
+                                                     (not not-enough-asset?))
+        request-fetch-routes                        (fn [bounce-duration-ms]
+                                                      (fetch-routes
+                                                       {:amount             amount-in-crypto
+                                                        :valid-input?       valid-input?
+                                                        :bounce-duration-ms bounce-duration-ms
+                                                        :token              token}))
+        swap-between-fiat-and-crypto                (fn [swap-to-crypto-currency?]
+                                                      (set-just-toggled-mode? true)
+                                                      (set-crypto-currency swap-to-crypto-currency?)
+                                                      (set-input-state
+                                                       (fn [input-state]
+                                                         (controlled-input/set-input-value
+                                                          input-state
+                                                          (let [value     (controlled-input/input-value
+                                                                           input-state)
+                                                                new-value (if swap-to-crypto-currency?
+                                                                            (.toFixed (/ value
+                                                                                         conversion-rate)
+                                                                                      crypto-decimals)
+                                                                            (.toFixed (* value
+                                                                                         conversion-rate)
+                                                                                      12))]
+                                                            (number/remove-trailing-zeroes
+                                                             new-value))))))]
     (rn/use-mount
      (fn []
        (let [dismiss-keyboard-fn   #(when (= % "active") (rn/dismiss-keyboard!))
@@ -311,6 +334,10 @@
        (clear-input!)
        (rf/dispatch [:wallet/clean-suggested-routes]))
      [current-address])
+    (rn/use-effect
+     (fn []
+       (request-fetch-routes 0))
+     [send-from-locked-amounts])
     [rn/view
      {:style               style/screen
       :accessibility-label (str "container"
@@ -330,33 +357,21 @@
        :title           (i18n/label
                          :t/send-limit
                          {:limit (if crypto-currency?
-                                   (make-limit-label-crypto current-limit token-symbol)
-                                   (make-limit-label-fiat current-limit currency-symbol))})
+                                   (utils/make-limit-label-crypto current-limit token-symbol)
+                                   (utils/make-limit-label-fiat current-limit currency-symbol))})
        :conversion      conversion-rate
        :show-keyboard?  false
        :value           input-amount
-       :on-swap         (fn [swap-to-crypto-currency?]
-                          (set-just-toggled-mode? true)
-                          (set-crypto-currency swap-to-crypto-currency?)
-                          (set-input-state
-                           (fn [input-state]
-                             (controlled-input/set-input-value
-                              input-state
-                              (let [value     (controlled-input/input-value input-state)
-                                    new-value (if swap-to-crypto-currency?
-                                                (.toFixed (/ value conversion-rate)
-                                                          crypto-decimals)
-                                                (.toFixed (* value conversion-rate) 12))]
-                                (number/remove-trailing-zeroes new-value))))))
+       :on-swap         swap-between-fiat-and-crypto
        :on-token-press  show-select-asset-sheet}]
      [routes/view
       {:token                                     token-by-symbol
        :input-value                               input-amount
-       :value                                     amount
        :valid-input?                              valid-input?
        :token-not-supported-in-receiver-networks? token-not-supported-in-receiver-networks?
        :lock-fetch-routes?                        just-toggled-mode?
-       :current-screen-id                         current-screen-id}]
+       :current-screen-id                         current-screen-id
+       :request-fetch-routes                      request-fetch-routes}]
      (when (and (not loading-routes?)
                 sender-network-values
                 token-not-supported-in-receiver-networks?)
@@ -379,20 +394,13 @@
                                                 (and (not should-try-again?) confirm-disabled?))
                                  :on-press  (cond
                                               should-try-again?
-                                              #(let [input-amount (controlled-input/input-value
-                                                                   input-state)
-                                                     amount       (if crypto-currency?
-                                                                    input-amount
-                                                                    (.toFixed (* token-balance
-                                                                                 conversion-rate)
-                                                                              2))]
-                                                 (rf/dispatch [:wallet/get-suggested-routes
-                                                               {:amount        amount
-                                                                :updated-token token-by-symbol}]))
+                                              #(rf/dispatch [:wallet/get-suggested-routes
+                                                             {:amount        amount-in-crypto
+                                                              :updated-token token-by-symbol}])
                                               sending-to-unpreferred-networks?
                                               #(show-unpreferred-networks-alert on-confirm)
                                               :else
-                                              #(on-confirm amount))}
+                                              #(on-confirm amount-in-crypto))}
                                 (when should-try-again?
                                   {:type :grey}))}]
      [quo/numbered-keyboard

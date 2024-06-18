@@ -276,3 +276,15 @@
   [address]
   (when address
     (str (subs address 0 6) "\u2026" (subs address (- (count address) 3) (count address)))))
+
+(defn make-limit-label-crypto
+  [amount currency]
+  (str amount
+       " "
+       (some-> currency
+               name
+               string/upper-case)))
+
+(defn make-limit-label-fiat
+  [amount currency-symbol]
+  (str currency-symbol amount))
