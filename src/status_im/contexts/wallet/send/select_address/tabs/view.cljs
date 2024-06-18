@@ -31,7 +31,7 @@
                                     :full-address?       true)
               :on-press      #(rf/dispatch [:wallet/select-send-address
                                             {:address   address
-                                             :recipient {:type                :account
+                                             :recipient {:recipient-type                :account
                                                          :label               (:name account)
                                                          :customization-color (:color account)
                                                          :emoji               (:emoji account)}
@@ -53,7 +53,7 @@
                      :on-press #(rf/dispatch [:wallet/select-send-address
                                               {:address   address
                                                :recipient {:label (utils/get-shortened-address address)
-                                                           :type  :address}
+                                                           :recipient-type  :address}
                                                :stack-id  :screen/wallet.select-address}])}]))
             recent-recipients))))
 
@@ -66,7 +66,7 @@
                                    {:address   full-address
                                     :recipient {:label               name
                                                 :customization-color customization-color
-                                                :type                :saved-address}
+                                                :recipient-type                :saved-address}
                                     :stack-id  :screen/wallet.select-address}])
                                 [full-address])]
     [quo/saved-address

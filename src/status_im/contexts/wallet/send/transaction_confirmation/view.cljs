@@ -107,7 +107,7 @@
           :image-source        (:source to-network)
           :label               (string/capitalize (name (:network-name to-network)))
           :customization-color to-network-color}]
-        [quo/summary-tag recipient])]
+        [quo/summary-tag (assoc recipient :type (:recipient-type recipient))])]
      (when (= transaction-type :tx/bridge)
        [rn/view
         {:style {:flex-direction :row
@@ -136,7 +136,7 @@
                     {:amount amount :token-symbol token-display-name})))
          {}
          network-values)
-        summary-info-type (case (:type recipient)
+        summary-info-type (case (:recipient-type recipient)
                             :saved-address :saved-account
                             :account       :status-account
                             summary-type)]

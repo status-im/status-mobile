@@ -18,7 +18,7 @@
                                                        {:address     full-address
                                                         :recipient   {:label (utils/get-shortened-address
                                                                               full-address)
-                                                                      :type  :saved-address}
+                                                                      :recipient-type  :saved-address}
                                                         :stack-id    :wallet-select-address
                                                         :start-flow? true}])
                                         [full-address])

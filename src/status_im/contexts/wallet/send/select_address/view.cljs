@@ -177,7 +177,7 @@
                                                              :recipient {:label
                                                                          (utils/get-shortened-address
                                                                           address)
-                                                                         :type :address}
+                                                                         :recipient-type :address}
                                                              :stack-id
                                                              :screen/wallet.select-address}])))
                                             :customization-color color}
