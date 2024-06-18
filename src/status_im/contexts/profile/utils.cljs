@@ -13,7 +13,7 @@
                            name)]
     (if (or preferred-name (and ens-verified name))
       ens-name
-      (or display-name primary-name alias))))
+      (or display-name primary-name alias name))))
 
 (defn photo
   [{:keys [images]}]

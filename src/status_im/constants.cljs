@@ -293,6 +293,7 @@
 (def ^:const two-mins (* 2 60))
 (def ^:const one-day (* 60 60 24))
 (def ^:const three-days (* one-day 3))
+(def ^:const nine-days (* one-day 9))
 (def ^:const one-week (* one-day 7))
 (def ^:const one-month (* one-day 31))
 
