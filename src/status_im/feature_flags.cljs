@@ -25,6 +25,7 @@
    ::wallet.graph                       (enabled-in-env? :FLAG_GRAPH_ENABLED)
    ::wallet.import-private-key          (enabled-in-env? :FLAG_IMPORT_PRIVATE_KEY_ENABLED)
    ::wallet.long-press-watch-only-asset (enabled-in-env? :FLAG_LONG_PRESS_WATCH_ONLY_ASSET_ENABLED)
+   ::wallet.saved-addresses             (enabled-in-env? :WALLET_SAVED_ADDRESSES)
    ::wallet.swap                        (enabled-in-env? :FLAG_SWAP_ENABLED)
    ::wallet.wallet-connect              (enabled-in-env? :FLAG_WALLET_CONNECT_ENABLED)})
 

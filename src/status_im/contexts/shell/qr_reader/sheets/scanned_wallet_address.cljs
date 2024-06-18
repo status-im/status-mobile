@@ -1,6 +1,7 @@
 (ns status-im.contexts.shell.qr-reader.sheets.scanned-wallet-address
   (:require
     [quo.core :as quo]
+    [status-im.feature-flags :as ff]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
@@ -20,7 +21,8 @@
                                              :recipient   address
                                              :stack-id    :wallet-select-address
                                              :start-flow? true}]))}
-      {:icon                :i/save
-       :accessibility-label :save-address
-       :label               (i18n/label :t/save-address)
-       :on-press            #(js/alert "feature not implemented")}]]]])
+      (when (ff/enabled? :ff/wallet.saved-addresses)
+        {:icon                :i/save
+         :accessibility-label :save-address
+         :label               (i18n/label :t/save-address)
+         :on-press            #(js/alert "feature not implemented")})]]]])

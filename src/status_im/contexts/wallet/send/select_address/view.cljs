@@ -136,7 +136,7 @@
        :keyboard-should-persist-taps :handled
        :render-fn                    suggestion-component}]]))
 
-(defn- view
+(defn view
   []
   (let [on-close       (fn []
                          (rf/dispatch [:wallet/clean-scanned-address])
