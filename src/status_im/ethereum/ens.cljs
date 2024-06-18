@@ -50,7 +50,8 @@
   [chain-id ens-name cb]
   (json-rpc/call {:method     "ens_ownerOf"
                   :params     [chain-id ens-name]
-                  :on-success cb
+                  :on-success #(do (log/info "getting owner of ENS name" {:chain-id chain-id :ens-name ens-name :owner %})
+                                   (cb %))
                   :on-error   #(do (log/error "Error getting owner of ENS name" {:chain-id chain-id :ens-name ens-name :error %})
                                    (cb "0x"))}))
 
