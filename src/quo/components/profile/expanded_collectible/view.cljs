@@ -65,7 +65,7 @@
          :theme    theme
          :on-mount on-collectible-load}]
 
-       (and (not image-error?) supported-file?)
+       :else
        [rn/view
         [rn/image
          {:style     (style/image square? (:aspect-ratio image-size) theme)

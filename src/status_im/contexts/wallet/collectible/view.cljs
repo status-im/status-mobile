@@ -76,7 +76,7 @@
 (defn navigate-back-and-clear-collectible
   []
   (rf/dispatch [:navigate-back])
-  (rf/dispatch [:wallet/clear-last-collectible-details]))
+  (js/setTimeout #(rf/dispatch [:wallet/clear-last-collectible-details]) 700))
 
 (defn animated-header
   [{:keys [scroll-amount title-opacity page-nav-type picture title description theme]}]
