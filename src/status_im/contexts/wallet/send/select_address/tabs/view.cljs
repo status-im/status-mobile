@@ -82,11 +82,12 @@
         empty-state-component (rn/use-memo
                                (fn []
                                  [quo/empty-state
-                                  {:title       (i18n/label :t/no-saved-addresses)
-                                   :description (i18n/label
-                                                 :t/you-like-to-type-43-characters)
-                                   :image       (resources/get-themed-image :sweating-man
-                                                                            theme)}])
+                                  {:title           (i18n/label :t/no-saved-addresses)
+                                   :description     (i18n/label
+                                                     :t/you-like-to-type-43-characters)
+                                   :container-style style/empty-container-style
+                                   :image           (resources/get-themed-image :sweating-man
+                                                                                theme)}])
                                [theme])]
     [rn/section-list
      {:key-fn                          :title
@@ -94,6 +95,7 @@
       :render-section-header-fn        section-header
       :sections                        group-saved-addresses
       :render-fn                       saved-address
+      :content-container-style         {:flex 1}
       :empty-component                 empty-state-component}]))
 
 (defn view
