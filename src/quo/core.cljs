@@ -120,6 +120,7 @@
     quo.components.overlay.view
     quo.components.password.password-tips.view
     quo.components.password.tips.view
+    quo.components.pin-input.view
     quo.components.profile.collectible-list-item.view
     quo.components.profile.collectible.view
     quo.components.profile.expanded-collectible.view
@@ -319,6 +320,9 @@
 ;;;; Numbered Keyboard
 (def keyboard-key quo.components.numbered-keyboard.keyboard-key.view/view)
 (def numbered-keyboard quo.components.numbered-keyboard.numbered-keyboard.view/view)
+
+;;;; PIN input
+(def pin-input quo.components.pin-input.view/view)
 
 ;;;; Links
 (def internal-link-card quo.components.links.internal-link-card.view/view)

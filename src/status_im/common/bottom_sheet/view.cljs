@@ -63,8 +63,10 @@
 (defn view
   [{:keys [hide? insets]}
    {:keys [content selected-item padding-bottom-override border-radius on-close shell?
-           gradient-cover? customization-color hide-handle? blur-radius]
-    :or   {border-radius 12}}]
+           gradient-cover? customization-color hide-handle? blur-radius
+           hide-on-background-press?]
+    :or   {border-radius             12
+           hide-on-background-press? true}}]
   (let [theme                             (quo.theme/use-theme)
         {window-height :height}           (rn/get-window)
         [sheet-height set-sheet-height]   (rn/use-state 0)
@@ -119,7 +121,7 @@
       :on-layout handle-layout-height}
      ;; backdrop
      [rn/pressable
-      {:on-press #(rf/dispatch [:hide-bottom-sheet])
+      {:on-press #(when hide-on-background-press? (rf/dispatch [:hide-bottom-sheet]))
        :style    {:flex 1}}
       [reanimated/view
        {:style (reanimated/apply-animations-to-style

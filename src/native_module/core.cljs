@@ -87,31 +87,6 @@
                               config
                               #(callback (types/json->clj %))))
 
-(defn save-multiaccount-and-login-with-keycard
-  "NOTE: chat-key is a whisper private key sent from keycard"
-  [key-uid multiaccount-data password settings config accounts-data chat-key]
-  (log/debug "[native-module] save-account-and-login-with-keycard")
-  (init-keystore
-   key-uid
-   #(.saveAccountAndLoginWithKeycard
-     ^js (account-manager)
-     multiaccount-data
-     password
-     settings
-     config
-     accounts-data
-     chat-key)))
-
-(defn login-with-config
-  "NOTE: beware, the password has to be sha3 hashed"
-  [key-uid account-data hashed-password config]
-  (log/debug "[native-module] loginWithConfig")
-  (clear-web-data)
-  (let [config (if config (types/clj->json config) "")]
-    (init-keystore
-     key-uid
-     #(.loginWithConfig ^js (account-manager) account-data hashed-password config))))
-
 (defn login-account
   "NOTE: beware, the password has to be sha3 hashed"
   [{:keys [keyUid] :as request}]
@@ -153,19 +128,6 @@
   (clear-web-data)
   (.logout ^js (account-manager)))
 
-(defn multiaccount-load-account
-  "NOTE: beware, the password has to be sha3 hashed
-
-   this function is used after storing an account when you still want to
-   derive accounts from it, because saving an account flushes the loaded keys
-   from memory"
-  [address hashed-password callback]
-  (log/debug "[native-module] multiaccount-load-account")
-  (.multiAccountLoadAccount ^js (account-manager)
-                            (types/clj->json {:address  address
-                                              :password hashed-password})
-                            callback))
-
 (defn multiaccount-derive-addresses
   "NOTE: this should be named derive-accounts
    this only derive addresses, they still need to be stored
@@ -178,38 +140,6 @@
                                   (types/clj->json {:accountID account-id
                                                     :paths     paths})
                                   callback)))
-
-(defn multiaccount-store-account
-  "NOTE: beware, the password has to be sha3 hashed
-
-   this stores the account and flush keys in memory so
-   in order to also store derived accounts like initial wallet
-   and chat accounts, you need to load the account again with
-   `multiaccount-load-account` before using `multiaccount-store-derived`
-   and the id of the account stored will have changed"
-  [account-id key-uid hashed-password callback]
-  (log/debug "[native-module] multiaccount-store-account")
-  (when (status)
-    (init-keystore
-     key-uid
-     #(.multiAccountStoreAccount ^js (account-manager)
-                                 (types/clj->json {:accountID account-id
-                                                   :password  hashed-password})
-                                 callback))))
-
-(defn multiaccount-store-derived
-  "NOTE: beware, the password has to be sha3 hashed"
-  [account-id key-uid paths hashed-password callback]
-  (log/debug "[native-module] multiaccount-store-derived"
-             "account-id"
-             account-id)
-  (init-keystore
-   key-uid
-   #(.multiAccountStoreDerived ^js (account-manager)
-                               (types/clj->json {:accountID account-id
-                                                 :paths     paths
-                                                 :password  hashed-password})
-                               callback)))
 
 (defn multiaccount-generate-and-derive-addresses
   "used to generate multiple multiaccounts for onboarding
@@ -234,36 +164,11 @@
                                                  :Bip39Passphrase password})
                                callback))
 
-(defn multiaccount-import-private-key
-  [private-key callback]
-  (log/debug "[native-module] multiaccount-import-private-key")
-  (.multiAccountImportPrivateKey ^js (account-manager)
-                                 (types/clj->json {:privateKey private-key})
-                                 callback))
-
 (defn verify
   "NOTE: beware, the password has to be sha3 hashed"
   [address hashed-password callback]
   (log/debug "[native-module] verify")
   (.verify ^js (account-manager) address hashed-password callback))
-
-(defn verify-database-password
-  "NOTE: beware, the password has to be sha3 hashed"
-  [key-uid hashed-password callback]
-  (log/debug "[native-module] verify-database-password")
-  (.verifyDatabasePassword ^js (account-manager) key-uid hashed-password callback))
-
-(defn login-with-keycard
-  [{:keys [key-uid multiaccount-data password chat-key node-config]}]
-  (log/debug "[native-module] login-with-keycard")
-  (clear-web-data)
-  (init-keystore
-   key-uid
-   #(.loginWithKeycard ^js (account-manager)
-                       multiaccount-data
-                       password
-                       chat-key
-                       (types/clj->json node-config))))
 
 (defn set-soft-input-mode
   [mode]

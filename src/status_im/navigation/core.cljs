@@ -81,14 +81,22 @@
    (fn [] views/bottom-sheet))
 
   ;;;; Alert Banner
+
   (navigation/register-component
    "alert-banner"
    (fn [] (gesture/gesture-handler-root-hoc views/alert-banner #js {:flex 0}))
    (fn [] views/alert-banner))
 
-  ;;;; LEGACY (should be removed in status 2.0)
+  ;;;; NFC sheet
 
   (navigation/register-component
-   "popover"
-   (fn [] (gesture/gesture-handler-root-hoc views/popover-comp))
-   (fn [] views/popover-comp)))
+   "nfc-sheet"
+   (fn [] (gesture/gesture-handler-root-hoc views/nfc-sheet-comp))
+   (fn [] views/nfc-sheet-comp)))
+
+;;;; LEGACY (should be removed in status 2.0)
+
+(navigation/register-component
+ "popover"
+ (fn [] (gesture/gesture-handler-root-hoc views/popover-comp))
+ (fn [] views/popover-comp))
