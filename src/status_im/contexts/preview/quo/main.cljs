@@ -170,6 +170,7 @@
     [status-im.contexts.preview.quo.settings.settings-item :as settings-item]
     [status-im.contexts.preview.quo.share.qr-code :as qr-code]
     [status-im.contexts.preview.quo.share.share-qr-code :as share-qr-code]
+    [status-im.contexts.preview.quo.slideshow.slider-bar :as slider-bar]
     [status-im.contexts.preview.quo.style :as style]
     [status-im.contexts.preview.quo.switcher.group-messaging-card :as
      group-messaging-card]
@@ -502,6 +503,8 @@
                         :component qr-code/view}
                        {:name      :share-qr-code
                         :component share-qr-code/view}]
+   :slideshow         [{:name      :slider-bar
+                        :component slider-bar/view}]
    :switchers         [{:name      :group-messaging-card
                         :component group-messaging-card/view}
                        {:name      :switcher-cards
