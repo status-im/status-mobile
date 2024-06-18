@@ -65,16 +65,16 @@
          :on-mount on-collectible-load}]
 
        :else
-      [rn/view
-       [rn/image
-        {:style     (style/image square? (:aspect-ratio image-size) theme)
-         :source    image-src
-         :native-ID native-ID
-         :on-error  #(set-image-error true)
-         :on-load   on-collectible-load}]
-       (when counter
-         [counter-view counter])
-       [rn/view {:style (style/collectible-border theme)}]])]))
+       [rn/view
+        [rn/image
+         {:style     (style/image square? (:aspect-ratio image-size) theme)
+          :source    image-src
+          :native-ID native-ID
+          :on-error  #(set-image-error true)
+          :on-load   on-collectible-load}]
+        (when counter
+          [counter-view counter])
+        [rn/view {:style (style/collectible-border theme)}]])]))
 
 (def ?schema
   [:=>

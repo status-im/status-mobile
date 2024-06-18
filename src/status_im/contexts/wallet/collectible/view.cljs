@@ -144,36 +144,36 @@
   (let [selected-tab  (reagent/atom :overview)
         on-tab-change #(reset! selected-tab %)]
     (fn [{:keys [collectible set-title-bottom theme]}]
-      (let [title-ref                   (rn/use-ref-atom nil)
-            set-title-ref               (rn/use-callback #(reset! title-ref %))
-            animation-shared-element-id (rf/sub [:animation-shared-element-id])
-            collectible-owner           (rf/sub [:wallet/last-collectible-details-owner])
+      (let [title-ref                      (rn/use-ref-atom nil)
+            set-title-ref                  (rn/use-callback #(reset! title-ref %))
+            animation-shared-element-id    (rf/sub [:animation-shared-element-id])
+            collectible-owner              (rf/sub [:wallet/last-collectible-details-owner])
             {:keys [id
                     preview-url
                     collection-data
-                    collectible-data]}  collectible
+                    collectible-data]}     collectible
             {svg?        :svg?
              preview-uri :uri
              :or         {preview-uri ""}} preview-url
-            token-id                    (:token-id id)
-            chain-id                    (get-in id [:contract-id :chain-id])
-            contract-address            (get-in id [:contract-id :address])
+            token-id                       (:token-id id)
+            chain-id                       (get-in id [:contract-id :chain-id])
+            contract-address               (get-in id [:contract-id :address])
             {collection-image :image-url
-             collection-name  :name}    collection-data
-            {collectible-name :name}    collectible-data
-            collectible-image           {:image        preview-uri
-                                         :image-width  300
-                                         ; collectibles don't have width/height
-                                         ; but we need to pass something
-                                         ; without it animation doesn't work smoothly
-                                         ; and :border-radius not  applied
-                                         :image-height 300
-                                         :id           token-id
-                                         :header       collectible-name
-                                         :description  collection-name}
-            total-owned                 (utils/total-owned-collectible
-                                         (:ownership collectible)
-                                         (:address collectible-owner))]
+             collection-name  :name}       collection-data
+            {collectible-name :name}       collectible-data
+            collectible-image              {:image        preview-uri
+                                            :image-width  300
+                                            ; collectibles don't have width/height
+                                            ; but we need to pass something
+                                            ; without it animation doesn't work smoothly
+                                            ; and :border-radius not  applied
+                                            :image-height 300
+                                            :id           token-id
+                                            :header       collectible-name
+                                            :description  collection-name}
+            total-owned                    (utils/total-owned-collectible
+                                            (:ownership collectible)
+                                            (:address collectible-owner))]
         [rn/view {:style style/container}
          [rn/view
           [gradient-layer preview-uri]

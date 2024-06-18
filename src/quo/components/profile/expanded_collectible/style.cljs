@@ -13,7 +13,8 @@
    :border-radius    16
    :background-color (colors/theme-colors colors/white colors/neutral-95 theme)})
 
-(defn collectible-border [theme]
+(defn collectible-border
+  [theme]
   {:position      :absolute
    :top           0
    :left          0
