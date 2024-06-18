@@ -2704,5 +2704,8 @@
     "saved-address-network-preference-selection-description": "Only change if you know which networks the address owner is happy to to receive funds on",
     "add-preferences": "Add preferences",
     "buy-eth": "Buy ETH",
-    "not-enough-assets": "Not enough assets to pay gas fees"
+    "not-enough-assets": "Not enough assets to pay gas fees",
+    "send-from-network" : "Send from {{network}}",
+    "define-amount-sent-from-network" : "Define amount sent from {{network}} network",
+    "dont-auto-recalculate-network": "Don't auto recalculate {{network}}"
 }

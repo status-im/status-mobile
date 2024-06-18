@@ -36,7 +36,8 @@
            receiver-network-values       (get-in db [:wallet :ui :send :receiver-network-values])
            sender-network-values         (get-in db [:wallet :ui :send :sender-network-values])
            tx-type                       (get-in db [:wallet :ui :send :tx-type])
-           disabled-from-chain-ids       (or (get-in db [:wallet :ui :send :disabled-from-chain-ids]) [])
+           disabled-from-chain-ids       (get-in db [:wallet :ui :send :disabled-from-chain-ids] [])
+           from-locked-amounts           (get-in db [:wallet :ui :send :from-locked-amounts] {})
            token-decimals                (if collectible 0 (:decimals token))
            native-token?                 (and token (= token-display-name "ETH"))
            routes-available?             (pos? (count chosen-route))
@@ -68,6 +69,7 @@
                                              :disabled-chain-ids disabled-from-chain-ids
                                              :receiver-networks receiver-networks
                                              :token-networks-ids token-networks-ids
+                                             :from-locked-amounts from-locked-amounts
                                              :tx-type tx-type
                                              :receiver? false})
                                            (send-utils/reset-loading-network-amounts-to-zero
@@ -143,6 +145,10 @@
 (rf/reg-event-fx :wallet/clean-disabled-from-networks
  (fn [{:keys [db]}]
    {:db (update-in db [:wallet :ui :send] dissoc :disabled-from-chain-ids)}))
+
+(rf/reg-event-fx :wallet/clean-from-locked-amounts
+ (fn [{:keys [db]}]
+   {:db (update-in db [:wallet :ui :send] dissoc :from-locked-amounts)}))
 
 (rf/reg-event-fx
  :wallet/select-send-address
@@ -332,6 +338,14 @@
  (fn [{:keys [db]} [chain-ids]]
    {:db (assoc-in db [:wallet :ui :send :disabled-from-chain-ids] chain-ids)}))
 
+(rf/reg-event-fx :wallet/lock-from-amount
+ (fn [{:keys [db]} [chain-id amount]]
+   {:db (assoc-in db [:wallet :ui :send :from-locked-amounts chain-id] amount)}))
+
+(rf/reg-event-fx :wallet/unlock-from-amount
+ (fn [{:keys [db]} [chain-id]]
+   {:db (update-in db [:wallet :ui :send :from-locked-amounts] dissoc chain-id)}))
+
 (rf/reg-event-fx :wallet/reset-network-amounts-to-zero
  (fn [{:keys [db]}]
    (let [sender-network-values   (get-in db [:wallet :ui :send :sender-network-values])
@@ -361,6 +375,7 @@
          to-address (get-in db [:wallet :ui :send :to-address])
          receiver-networks (get-in db [:wallet :ui :send :receiver-networks])
          disabled-from-chain-ids (or (get-in db [:wallet :ui :send :disabled-from-chain-ids]) [])
+         from-locked-amounts (or (get-in db [:wallet :ui :send :from-locked-amounts]) {})
          test-networks-enabled? (get-in db [:profile/profile :test-networks-enabled?])
          networks ((if test-networks-enabled? :test :prod)
                    (get-in db [:wallet :networks]))
@@ -371,7 +386,8 @@
          to-token-id ""
          network-preferences (if token [] [(get-in collectible [:id :contract-id :chain-id])])
          gas-rates constants/gas-rate-medium
-         amount-in (send-utils/amount-in-hex amount (if token token-decimal 0))
+         to-hex (fn [v] (send-utils/amount-in-hex v (if token token-decimal 0)))
+         amount-in (to-hex amount)
          from-address wallet-address
          disabled-from-chain-ids disabled-from-chain-ids
          disabled-to-chain-ids (if (= transaction-type :tx/bridge)
@@ -380,7 +396,7 @@
                                            (not (some #(= chain-id %)
                                                       receiver-networks)))
                                          network-chain-ids))
-         from-locked-amount {}
+         from-locked-amount (update-vals from-locked-amounts to-hex)
          transaction-type-param (case transaction-type
                                   :tx/collectible-erc-721  constants/send-type-erc-721-transfer
                                   :tx/collectible-erc-1155 constants/send-type-erc-1155-transfer
