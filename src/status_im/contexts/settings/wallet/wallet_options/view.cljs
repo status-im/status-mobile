@@ -73,6 +73,5 @@
      [quo/page-top
       {:title                     (i18n/label :t/wallet)
        :title-accessibility-label :wallet-settings-header}]
-     (when (ff/enabled? ::ff/settings.saved-addresses)
-       [basic-settings])
+     [basic-settings]
      [advanced-settings]]))
