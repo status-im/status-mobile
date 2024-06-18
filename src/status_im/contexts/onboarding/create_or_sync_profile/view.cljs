@@ -26,10 +26,10 @@
    1000))
 
 (defn- navigate-to-sign-in-by-seed-phrase
-  []
-  (rf/dispatch [:navigate-to-within-stack
-                [:screen/onboarding.enter-seed-phrase
-                 :screen/onboarding.new-to-status]]))
+  [current-screen]
+  #(rf/dispatch [:navigate-to-within-stack
+                 [:screen/onboarding.enter-seed-phrase
+                  current-screen]]))
 
 (defn- option-card-max-height
   [window-height]
@@ -88,7 +88,10 @@
         :subtitle            (i18n/label :t/use-recovery-phrase-subtitle)
         :accessibility-label :use-recovery-phrase-option-card
         :image               (resources/get-image :ethereum-address)
-        :on-press            navigate-to-sign-in-by-seed-phrase}]
+        :on-press            (navigate-to-sign-in-by-seed-phrase
+                              (if create-profile?
+                                :screen/onboarding.new-to-status
+                                :screen/onboarding.sync-or-recover-profile))}]
       [rn/view {:style style/space-between-suboptions}]
       (when config/show-not-implemented-features?
         [quo/small-option-card
