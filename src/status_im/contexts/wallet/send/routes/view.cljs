@@ -226,31 +226,32 @@
            token-not-supported-in-receiver-networks?]}]
   [rn/view
    (map-indexed (fn [index {:keys [chain-id total-amount type]}]
-                  [rn/view
-                   {:key   (str (if receiver? "to" "from") "-" chain-id)
-                    :style {:margin-top (if (pos? index) 11 7.5)}}
-                   [quo/network-bridge
-                    {:amount        (if (= type :not-available)
-                                      (i18n/label :t/not-available)
-                                      (str total-amount " " token-symbol))
-                     :network       (network-utils/id->network chain-id)
-                     :status        (cond (and (= type :not-available)
-                                               loading-routes?
-                                               token-not-supported-in-receiver-networks?)
-                                          :loading
-                                          (= type :not-available)
-                                          :disabled
-                                          :else type)
-                     :on-press      #(when (not loading-routes?)
-                                       (cond
-                                         (= type :edit)
-                                         (open-preferences)
-                                         on-press (on-press chain-id total-amount)))
-                     :on-long-press #(when (not loading-routes?)
-                                       (cond
-                                         (= type :add)
-                                         (open-preferences)
-                                         on-long-press (on-long-press chain-id)))}]])
+                  (let [status (cond (and (= type :not-available)
+                                          loading-routes?
+                                          token-not-supported-in-receiver-networks?)
+                                     :loading
+                                     (= type :not-available)
+                                     :disabled
+                                     :else type)]
+                    [rn/view
+                     {:key   (str (if receiver? "to" "from") "-" chain-id)
+                      :style {:margin-top (if (pos? index) 11 7.5)}}
+                     [quo/network-bridge
+                      {:amount        (if (= type :not-available)
+                                        (i18n/label :t/not-available)
+                                        (str total-amount " " token-symbol))
+                       :network       (network-utils/id->network chain-id)
+                       :status        status
+                       :on-press      #(when (not loading-routes?)
+                                         (cond
+                                           (= type :edit)
+                                           (open-preferences)
+                                           on-press (on-press chain-id total-amount)))
+                       :on-long-press #(when (and (not loading-routes?) (not= status :disabled))
+                                         (cond
+                                           (= type :add)
+                                           (open-preferences)
+                                           on-long-press (on-long-press chain-id)))}]]))
                 network-values)])
 
 (defn render-network-links
