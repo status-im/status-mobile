@@ -378,7 +378,7 @@
                 sender-network-values
                 token-not-supported-in-receiver-networks?)
        [token-not-available token-symbol receiver-networks token-networks])
-     (when (or loading-routes? route)
+     (when (and (not no-routes-found?) (or loading-routes? route))
        [estimated-fees
         {:loading-routes? loading-routes?
          :fees            fee-formatted
