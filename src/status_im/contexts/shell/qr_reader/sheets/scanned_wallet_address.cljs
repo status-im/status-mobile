@@ -1,7 +1,7 @@
 (ns status-im.contexts.shell.qr-reader.sheets.scanned-wallet-address
   (:require
     [quo.core :as quo]
-    [status-im.contexts.wallet.common.utils :as utils] 
+    [status-im.contexts.wallet.common.utils :as utils]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
@@ -19,8 +19,8 @@
                               (rf/dispatch [:wallet/select-send-address
                                             {:address     address
                                              :recipient   {:recipient-type :address
-                                                           :label (utils/get-shortened-address
-                                                                   address)}
+                                                           :label          (utils/get-shortened-address
+                                                                            address)}
                                              :stack-id    :wallet-select-address
                                              :start-flow? true}]))}
       {:icon                :i/save
