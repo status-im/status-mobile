@@ -1,13 +1,13 @@
 (ns status-im.contexts.settings.wallet.saved-addresses.sheets.address-options.view
   (:require
     [clojure.string :as string]
-    [legacy.status-im.utils.utils :as utils]
     [quo.core :as quo]
     [quo.foundations.colors :as colors]
     [react-native.core :as rn]
     [react-native.platform :as platform]
     [status-im.constants :as constants]
     [status-im.contexts.settings.wallet.saved-addresses.sheets.remove-address.view :as remove-address]
+    [status-im.contexts.wallet.common.utils :as utils]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 

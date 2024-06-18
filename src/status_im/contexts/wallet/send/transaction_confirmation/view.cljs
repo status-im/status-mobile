@@ -1,13 +1,13 @@
 (ns status-im.contexts.wallet.send.transaction-confirmation.view
   (:require
     [clojure.string :as string]
-    [legacy.status-im.utils.utils :as utils]
     [quo.core :as quo]
     [quo.theme :as quo.theme]
     [react-native.core :as rn]
     [react-native.safe-area :as safe-area]
     [status-im.common.floating-button-page.view :as floating-button-page]
     [status-im.common.standard-authentication.core :as standard-auth]
+    [status-im.contexts.wallet.common.utils :as utils]
     [status-im.contexts.wallet.common.utils.networks :as network-utils]
     [status-im.contexts.wallet.send.transaction-confirmation.style :as style]
     [utils.i18n :as i18n]

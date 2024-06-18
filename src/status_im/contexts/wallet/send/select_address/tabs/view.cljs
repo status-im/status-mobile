@@ -1,10 +1,10 @@
 (ns status-im.contexts.wallet.send.select-address.tabs.view
   (:require
-    [legacy.status-im.utils.utils :as utils]
     [quo.core :as quo]
     [quo.theme :as quo.theme]
     [react-native.core :as rn]
     [status-im.common.resources :as resources]
+    [status-im.contexts.wallet.common.utils :as utils]
     [status-im.contexts.wallet.send.select-address.tabs.style :as style]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))

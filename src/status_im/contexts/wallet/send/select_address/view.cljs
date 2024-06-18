@@ -1,6 +1,5 @@
 (ns status-im.contexts.wallet.send.select-address.view
   (:require
-    [legacy.status-im.utils.utils :as utils]
     [quo.core :as quo]
     [quo.foundations.colors :as colors]
     [quo.theme]
@@ -10,6 +9,7 @@
     [status-im.common.floating-button-page.view :as floating-button-page]
     [status-im.constants :as constants]
     [status-im.contexts.wallet.common.account-switcher.view :as account-switcher]
+    [status-im.contexts.wallet.common.utils :as utils]
     [status-im.contexts.wallet.common.validation :as validation]
     [status-im.contexts.wallet.item-types :as types]
     [status-im.contexts.wallet.send.select-address.style :as style]
