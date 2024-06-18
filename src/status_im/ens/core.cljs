@@ -11,7 +11,8 @@
             [status-im.utils.datetime :as datetime]
             [status-im.utils.fx :as fx]
             [status-im.utils.random :as random]
-            [status-im.bottom-sheet.core :as bottom-sheet]))
+            [status-im.bottom-sheet.core :as bottom-sheet]
+            [taoensso.timbre :as log]))
 
 (defn fullname [custom-domain? username]
   (if custom-domain?
@@ -144,7 +145,8 @@
                               :else :connected-with-different-key)
                             (eip55/address->checksum response)]))
       :else
-      (re-frame/dispatch [::name-resolved username :taken]))))
+      (do (log/info "on-resolve-owner response" response)
+          (re-frame/dispatch [::name-resolved username :taken])))))
 
 (defn registration-cost
   [chain-id]
