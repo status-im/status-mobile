@@ -153,7 +153,8 @@
                     collection-data
                     collectible-data]}  collectible
             {svg?        :svg?
-             preview-uri :uri}          preview-url
+             preview-uri :uri
+             :or         {preview-uri ""}} preview-url
             token-id                    (:token-id id)
             chain-id                    (get-in id [:contract-id :chain-id])
             contract-address            (get-in id [:contract-id :address])
