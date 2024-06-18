@@ -42,7 +42,7 @@ export KEYSTORE_PATH ?= $(HOME)/.gradle/status-im.keystore
 # Our custom config is located in nix/nix.conf
 export NIX_CONF_DIR = $(PWD)/nix
 # Location of symlinks to derivations that should not be garbage collected
-export _NIX_GCROOTS = /nix/var/nix/gcroots/per-user/$(USER)/status-mobile
+export _NIX_GCROOTS = ./.nix-gcroots
 # Defines which variables will be kept for Nix pure shell, use semicolon as divider
 export _NIX_KEEP ?= TMPDIR,BUILD_ENV,STATUS_GO_SRC_OVERRIDE
 
