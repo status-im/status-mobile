@@ -1,5 +1,6 @@
 (ns status-im.contexts.wallet.account.edit-account.view
-  (:require [quo.core :as quo]
+  (:require [clojure.string :as string]
+            [quo.core :as quo]
             [react-native.core :as rn]
             [reagent.core :as reagent]
             [status-im.contexts.wallet.account.edit-account.style :as style]
@@ -65,7 +66,7 @@
                                       :prod-preferred-chain-ids)
             account-name            (or @edited-account-name name)
             input-error             (or @emoji-color-error @name-error)
-            button-disabled?        (or (nil? @edited-account-name)
+            button-disabled?        (or (string/blank? @edited-account-name)
                                         (= name @edited-account-name)
                                         (some? input-error))]
         [create-or-edit-account/view
@@ -76,6 +77,7 @@
                                                               (fn []
                                                                 [remove-account/view])}])})]
           :account-name        account-name
+          :placeholder         (i18n/label :t/default-account-placeholder)
           :account-emoji       emoji
           :account-color       color
           :on-change-name      (fn [new-name]
