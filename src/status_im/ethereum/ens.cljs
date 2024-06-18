@@ -1,7 +1,8 @@
 (ns status-im.ethereum.ens
   (:require [clojure.string :as string]
             [status-im.ethereum.json-rpc :as json-rpc]
-            [status-im.ethereum.abi-spec :as abi-spec]))
+            [status-im.ethereum.abi-spec :as abi-spec]
+            [taoensso.timbre :as log]))
 
 ;; this is the addresses of ens registries for the different networks
 (def ens-registries
@@ -50,7 +51,8 @@
   (json-rpc/call {:method     "ens_ownerOf"
                   :params     [chain-id ens-name]
                   :on-success cb
-                  :on-error   #(cb "0x")}))
+                  :on-error   #(do (log/error "Error getting owner of ENS name" {:chain-id chain-id :ens-name ens-name :error %})
+                                   (cb "0x"))}))
 
 (defn resource-url
   [chain-id ens-name cb]
