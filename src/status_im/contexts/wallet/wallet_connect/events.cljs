@@ -110,7 +110,7 @@
 (rf/reg-event-fx
  :wallet-connect/close-session-request
  (fn [_ _]
-   {:fx [[:dispatch [:navigate-back]]
+   {:fx [[:dispatch [:dismiss-modal :screen/wallet.wallet-connect-session-proposal]]
          [:dispatch [:wallet-connect/reset-current-session-request]]]}))
 
 (rf/reg-event-fx
@@ -151,13 +151,20 @@
              :supported-namespaces supported-namespaces
              :on-success           (fn []
                                      (log/info "Wallet Connect session approved")
-                                     (rf/dispatch [:wallet-connect/reset-current-session-proposal]))
+                                     (let [metadata (-> current-proposal :params :proposer :metadata)]
+                                       (rf/dispatch [:wallet-connect/reset-current-session-proposal])
+                                       (rf/dispatch [:wallet-connect/persist-session
+                                                     {:id           (:id current-proposal)
+                                                      :dapp-name    (:name metadata)
+                                                      :dapp-url     (:url metadata)
+                                                      :session-info current-proposal}])))
              :on-fail              (fn [error]
                                      (log/error "Wallet Connect session approval failed"
                                                 {:error error
                                                  :event :wallet-connect/approve-session})
                                      (rf/dispatch
-                                      [:wallet-connect/reset-current-session-proposal]))}]]})))
+                                      [:wallet-connect/reset-current-session-proposal]))}]
+           [:dispatch [:dismiss-modal :screen/wallet.wallet-connect-session-proposal]]]})))
 
 (rf/reg-event-fx
  :wallet-connect/on-scan-connection
@@ -185,5 +192,31 @@
                                    {:version version})}]]]}
 
        :else
-       {:fx [[:dispatch [:wallet-connect/pair scanned-text]]
-             [:dispatch [:dismiss-modal :screen/wallet.wallet-connect-session-proposal]]]}))))
+       {:fx [[:dispatch [:wallet-connect/pair scanned-text]]]}))))
+
+(rf/reg-event-fx
+ :wallet-connect/persist-session
+ (fn [_ [{:keys [id dapp-name dapp-url session-info]}]]
+   {:fx [[:json-rpc/call
+          [{:method     "wakuext_addWalletConnectSession"
+            :params     [{:id       (str id)
+                          :dappName dapp-name
+                          :dappUrl  dapp-url
+                          :info     (-> session-info
+                                        clj->js
+                                        js/JSON.stringify)}]
+            :on-success #(log/info "Wallet Connect session persisted")
+            :on-error   #(log/info "Wallet Connect session persistence failed" %)}]]]}))
+
+(rf/reg-event-fx
+ :wallet-connect/fetch-persisted-sessions-success
+ (fn [{:keys [db]} [sessions]]
+   {:db (assoc db :wallet-connect/persisted-sessions sessions)}))
+
+(rf/reg-event-fx
+ :wallet-connect/fetch-persisted-sessions
+ (fn [_ _]
+   {:fx [[:json-rpc/call
+          [{:method     "wakuext_getWalletConnectSession"
+            :on-success [:wallet-connect/fetch-persisted-sessions-success]
+            :on-error   #(log/info "Wallet Connect fetch persisted sessions failed")}]]]}))

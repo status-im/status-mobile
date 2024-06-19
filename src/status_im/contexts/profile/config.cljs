@@ -30,7 +30,7 @@
   (let [log-enabled? (boolean (not-empty config/log-level))]
     (merge (login)
            {:deviceName               (native-module/get-installation-name)
-            :backupDisabledDataDir    (native-module/backup-disabled-data-dir)
+            :rootDataDir              (native-module/backup-disabled-data-dir)
             :rootKeystoreDir          (native-module/keystore-dir)
 
             :logLevel                 (when log-enabled? config/log-level)
