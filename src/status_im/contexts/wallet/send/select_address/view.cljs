@@ -1,5 +1,6 @@
 (ns status-im.contexts.wallet.send.select-address.view
   (:require
+    [clojure.string :as string]
     [quo.core :as quo]
     [quo.foundations.colors :as colors]
     [quo.theme]
@@ -137,6 +138,31 @@
        :keyboard-should-persist-taps :handled
        :render-fn                    suggestion-component}]]))
 
+(defn- footer
+  [input-value]
+  (let [local-suggestion-address (rf/sub [:wallet/local-suggestions->full-address])
+        color                    (rf/sub [:wallet/current-viewing-account-color])
+        valid-ens-or-address?    (boolean (rf/sub [:wallet/valid-ens-or-address?]))]
+    [quo/button
+     {:accessibility-label :continue-button
+      :type :primary
+      :disabled? (not valid-ens-or-address?)
+      :on-press (fn []
+                  (let [address (or
+                                 local-suggestion-address
+                                 input-value)]
+                    (rf/dispatch
+                     [:wallet/select-send-address
+                      {:address address
+                       :recipient {:label
+                                   (utils/get-shortened-address
+                                    address)
+                                   :recipient-type :address}
+                       :stack-id
+                       :screen/wallet.select-address}])))
+      :customization-color color}
+     (i18n/label :t/continue)]))
+
 (defn- f-view
   []
   (let [on-close       (fn []
@@ -152,9 +178,7 @@
         input-focused? (reagent/atom false)]
     (fn []
       (let [selected-tab             (or (rf/sub [:wallet/send-tab]) (:id (first tabs-data)))
-            valid-ens-or-address?    (boolean (rf/sub [:wallet/valid-ens-or-address?]))
-            local-suggestion-address (rf/sub [:wallet/local-suggestions->full-address])
-            color                    (rf/sub [:wallet/current-viewing-account-color])]
+            valid-ens-or-address?    (boolean (rf/sub [:wallet/valid-ens-or-address?]))]
         [floating-button-page/view
          {:footer-container-padding     0
           :keyboard-should-persist-taps true
@@ -162,26 +186,8 @@
                                          {:on-press      on-close
                                           :margin-top    (safe-area/get-top)
                                           :switcher-type :select-account}]
-          :footer                       (when (> (count @input-value) 0)
-                                          [quo/button
-                                           {:accessibility-label :continue-button
-                                            :type :primary
-                                            :disabled? (not valid-ens-or-address?)
-                                            :on-press (fn []
-                                                        (let [address (or
-                                                                       local-suggestion-address
-                                                                       @input-value)]
-                                                          (rf/dispatch
-                                                           [:wallet/select-send-address
-                                                            {:address address
-                                                             :recipient {:label
-                                                                         (utils/get-shortened-address
-                                                                          address)
-                                                                         :recipient-type :address}
-                                                             :stack-id
-                                                             :screen/wallet.select-address}])))
-                                            :customization-color color}
-                                           (i18n/label :t/continue)])}
+          :footer                       (when-not (string/blank? @input-value)
+                                          [footer @input-value])}
          [quo/page-top
           {:title                     (i18n/label :t/send-to)
            :title-accessibility-label :title-label}]

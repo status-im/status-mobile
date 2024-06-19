@@ -8,7 +8,6 @@
     [status-im.common.floating-button-page.view :as floating-button-page]
     [status-im.common.standard-authentication.core :as standard-auth]
     [status-im.contexts.wallet.common.utils :as utils]
-    [status-im.contexts.wallet.common.utils.networks :as network-utils]
     [status-im.contexts.wallet.send.transaction-confirmation.style :as style]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]
@@ -125,17 +124,8 @@
           :customization-color (:color account)}]])]))
 
 (defn- user-summary
-  [{:keys [network-values token-display-name account-props theme label accessibility-label
-           summary-type recipient account-to?]}]
-  (let [network-values
-        (reduce-kv
-         (fn [acc chain-id amount]
-           (let [network-name (network-utils/id->network chain-id)]
-             (assoc acc
-                    (if (= network-name :mainnet) :ethereum network-name)
-                    {:amount amount :token-symbol token-display-name})))
-         {}
-         network-values)
+  [{:keys [account-props theme label accessibility-label summary-type recipient account-to?]}]
+  (let [network-values    (rf/sub [:wallet/network-values account-to?])
         summary-info-type (case (:recipient-type recipient)
                             :saved-address :saved-account
                             :account       :status-account
@@ -211,9 +201,7 @@
       (let [theme                                       (quo.theme/use-theme)
             send-transaction-data                       (rf/sub [:wallet/wallet-send])
             {:keys [token-display-name collectible amount route
-                    to-address bridge-to-chain-id
-                    from-values-by-chain
-                    to-values-by-chain type recipient]} send-transaction-data
+                    to-address bridge-to-chain-id type recipient]} send-transaction-data
             collectible?                                (some? collectible)
             image-url                                   (when collectible
                                                           (get-in collectible [:preview-url :uri]))
@@ -295,16 +283,13 @@
              :transaction-type   transaction-type
              :collectible?       collectible?}]
            [user-summary
-            {:token-display-name  token-symbol
-             :summary-type        :status-account
+            {:summary-type        :status-account
              :accessibility-label :summary-from-label
              :label               (i18n/label :t/from-capitalized)
-             :network-values      from-values-by-chain
              :account-props       from-account-props
              :theme               theme}]
            [user-summary
-            {:token-display-name  token-symbol
-             :summary-type        (if (= transaction-type :tx/bridge)
+            {:summary-type        (if (= transaction-type :tx/bridge)
                                     :status-account
                                     :account)
              :accessibility-label :summary-to-label
@@ -313,6 +298,5 @@
                                     from-account-props
                                     user-props)
              :recipient           recipient
-             :network-values      to-values-by-chain
              :account-to?         true
              :theme               theme}]]]]))))

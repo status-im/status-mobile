@@ -275,7 +275,8 @@
   and adds unicode ellipsis in between"
   [address]
   (when address
-    (str (subs address 0 6) "\u2026" (subs address (- (count address) 3) (count address)))))
+    (let [counter (count address)]
+      (str (subs address 0 6) "\u2026" (subs address (- counter 3) counter)))))
 
 (defn make-limit-label-crypto
   [amount currency]
