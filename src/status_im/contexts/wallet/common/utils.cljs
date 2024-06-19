@@ -269,3 +269,15 @@
     (some #(when (= token-symbol (:symbol %))
              %)
           address-tokens)))
+
+(defn make-limit-label-crypto
+  [amount currency]
+  (str amount
+       " "
+       (some-> currency
+               name
+               string/upper-case)))
+
+(defn make-limit-label-fiat
+  [amount currency-symbol]
+  (str currency-symbol amount))

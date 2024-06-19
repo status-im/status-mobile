@@ -127,3 +127,6 @@
   [state]
   (set-input-value state ""))
 
+(defn empty-value?
+  [state]
+  (string/blank? (:value state)))

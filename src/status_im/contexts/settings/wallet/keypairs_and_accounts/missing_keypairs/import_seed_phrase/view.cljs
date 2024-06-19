@@ -1,4 +1,4 @@
-(ns status-im.contexts.settings.wallet.keypairs-and-accounts.import-seed-phrase.view
+(ns status-im.contexts.settings.wallet.keypairs-and-accounts.missing-keypairs.import-seed-phrase.view
   (:require
     [quo.core :as quo]
     [react-native.core :as rn]
@@ -14,16 +14,17 @@
            container-style
            prepare-seed-phrase
            seed-phrase
-           set-invalid-seed-phrase
+           set-incorrect-seed-phrase
            focus-input]}]
   (let [keypair             (rf/sub [:get-screen-params])
         customization-color (rf/sub [:profile/customization-color])
         show-errors         (rn/use-callback
-                             #(js/setTimeout
-                               (fn []
-                                 (focus-input)
-                                 (reagent/next-tick set-invalid-seed-phrase))
-                               600))
+                             (fn [_error]
+                               (js/setTimeout
+                                (fn []
+                                  (focus-input)
+                                  (reagent/next-tick set-incorrect-seed-phrase))
+                                600)))
         on-import-error     (rn/use-callback
                              (fn [_error]
                                (rf/dispatch [:hide-bottom-sheet])
@@ -34,7 +35,7 @@
                                (rf/dispatch [:navigate-back])))
         on-auth-success     (rn/use-callback
                              (fn [password]
-                               (rf/dispatch [:wallet/import-keypair-by-seed-phrase
+                               (rf/dispatch [:wallet/import-missing-keypair-by-seed-phrase
                                              {:keypair-key-uid (:key-uid keypair)
                                               :seed-phrase     (prepare-seed-phrase seed-phrase)
                                               :password        password

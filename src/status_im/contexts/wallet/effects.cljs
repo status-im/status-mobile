@@ -79,7 +79,7 @@
                      :on-success (fn [value]
                                    (resolver {:value value}))}))))
 
-(defn import-keypair-by-seed-phrase
+(defn import-missing-keypair-by-seed-phrase
   [keypair-key-uid seed-phrase password]
   (-> (validate-mnemonic seed-phrase)
       (promesa/then
@@ -87,20 +87,20 @@
          (if (not= keypair-key-uid key-uid)
            (promesa/rejected
             (ex-info
-             (error-message :import-keypair-by-seed-phrase/import-error)
+             (error-message :import-missing-keypair-by-seed-phrase/import-error)
              {:hint :incorrect-seed-phrase-for-keypair}))
            (make-seed-phrase-fully-operable seed-phrase password))))
       (promesa/catch
         (fn [error]
           (promesa/rejected
            (ex-info
-            (error-message :import-keypair-by-seed-phrase/import-error)
+            (error-message :import-missing-keypair-by-seed-phrase/import-error)
             (ex-data error)))))))
 
 (rf/reg-fx
- :import-keypair-by-seed-phrase
+ :effects.wallet/import-missing-keypair-by-seed-phrase
  (fn [{:keys [keypair-key-uid seed-phrase password on-success on-error]}]
-   (-> (import-keypair-by-seed-phrase keypair-key-uid seed-phrase password)
+   (-> (import-missing-keypair-by-seed-phrase keypair-key-uid seed-phrase password)
        (promesa/then (partial rf/call-continuation on-success))
        (promesa/catch (partial rf/call-continuation on-error)))))
 

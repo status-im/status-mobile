@@ -1,15 +1,13 @@
 (ns quo.components.settings.data-item.view
   (:require
     [quo.components.avatars.account-avatar.view :as account-avatar]
-    [quo.components.common.not-implemented.view :as not-implemented]
     [quo.components.icon :as icons]
     [quo.components.list-items.preview-list.view :as preview-list]
     [quo.components.markdown.text :as text]
     [quo.components.settings.data-item.style :as style]
     [quo.foundations.colors :as colors]
     [quo.theme :as quo.theme]
-    [react-native.core :as rn]
-    [utils.i18n :as i18n]))
+    [react-native.core :as rn]))
 
 (defn- left-loading
   [{:keys [size blur?]}]
@@ -45,32 +43,24 @@
       subtitle]]))
 
 (defn- left-title
-  [{:keys [title label size blur?]}]
+  [{:keys [title blur?]}]
   (let [theme (quo.theme/use-theme)]
     [rn/view {:style style/title-container}
      [text/text
       {:weight :regular
        :size   :paragraph-2
        :style  (style/title blur? theme)}
-      title]
-     (when (and (= :graph label) (not= :small size))
-       [text/text
-        {:weight :regular
-         :size   :label
-         :style  (style/title blur? theme)}
-        (i18n/label :t/days)])]))
+      title]]))
 
 (defn- left-side
   "The description can either be given as a string `subtitle-type` or a component `custom-subtitle`"
-  [{:keys [title status size blur? custom-subtitle icon subtitle subtitle-type label icon-color
+  [{:keys [title status size blur? custom-subtitle icon subtitle subtitle-type icon-color
            customization-color network-image emoji]
     :as   props}]
   (let [theme (quo.theme/use-theme)]
     [rn/view {:style style/left-side}
      [left-title
       {:title title
-       :label label
-       :size  size
        :blur? blur?
        :theme theme}]
      (if (= status :loading)
@@ -93,49 +83,43 @@
            :network-image       network-image}]))]))
 
 (defn- right-side
-  [{:keys [label icon-right? right-icon icon-color communities-list]}]
-  [rn/view {:style style/right-container}
-   (case label
-     :preview [preview-list/view
-               {:type   :communities
-                :number 3
-                :size   :size-24}
-               communities-list]
-     :graph   [text/text "graph"]
-     :none    nil
-     nil)
-   (when icon-right?
-     [rn/view {:style (style/right-icon label)}
-      [icons/icon right-icon
-       {:accessibility-label :icon-right
-        :color               icon-color
-        :size                20}]])])
+  [{:keys [right-icon right-content icon-color]}]
+  (let [{:keys [type data size]
+         :or   {size :size-24}} right-content]
+    [rn/view {:style style/right-container}
+     (when type
+       [preview-list/view
+        {:type   type
+         :number (count data)
+         :size   size}
+        data])
+     (when right-icon
+       [rn/view {:style style/right-icon}
+        [icons/icon right-icon
+         {:accessibility-label :icon-right
+          :color               icon-color
+          :size                20}]])]))
 
 (defn view
-  [{:keys [blur? card? icon-right? right-icon label status size on-press communities-list
-           container-style]
+  [{:keys [blur? card? right-icon right-content status size on-press container-style]
     :as   props}]
   (let [theme      (quo.theme/use-theme)
         icon-color (if (or blur? (= :dark theme))
                      colors/neutral-40
                      colors/neutral-50)]
-    (if (= :graph label)
-      [not-implemented/view {:blur? blur?}]
-      [rn/pressable
-       {:accessibility-label :data-item
-        :disabled            (not icon-right?)
-        :on-press            on-press
-        :style               (merge (style/container {:size        size
-                                                      :card?       card?
-                                                      :blur?       blur?
-                                                      :actionable? on-press
-                                                      :theme       theme})
-                                    container-style)}
-       [left-side props]
-       (when (and (= :default status) (not= :small size))
-         [right-side
-          {:label            label
-           :icon-right?      icon-right?
-           :right-icon       right-icon
-           :icon-color       icon-color
-           :communities-list communities-list}])])))
+    [rn/pressable
+     {:accessibility-label :data-item
+      :disabled            (not right-icon)
+      :on-press            on-press
+      :style               (merge (style/container {:size        size
+                                                    :card?       card?
+                                                    :blur?       blur?
+                                                    :actionable? on-press
+                                                    :theme       theme})
+                                  container-style)}
+     [left-side props]
+     (when (and (= :default status) (not= :small size))
+       [right-side
+        {:right-icon    right-icon
+         :right-content right-content
+         :icon-color    icon-color}])]))

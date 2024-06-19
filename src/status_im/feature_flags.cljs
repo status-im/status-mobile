@@ -19,7 +19,6 @@
    ::wallet.assets-modal-hide           (enabled-in-env? :FLAG_ASSETS_MODAL_HIDE)
    ::wallet.assets-modal-manage-tokens  (enabled-in-env? :FLAG_ASSETS_MODAL_MANAGE_TOKENS)
    ::wallet.bridge-token                (enabled-in-env? :FLAG_BRIDGE_TOKEN_ENABLED)
-   ::wallet.buy-recurrent-assets        (enabled-in-env? :FLAG_BUY_RECURRENT_ASSETS)
    ::wallet.contacts                    (enabled-in-env? :FLAG_CONTACTS_ENABLED)
    ::wallet.edit-derivation-path        (enabled-in-env? :FLAG_EDIT_DERIVATION_PATH)
    ::wallet.graph                       (enabled-in-env? :FLAG_GRAPH_ENABLED)

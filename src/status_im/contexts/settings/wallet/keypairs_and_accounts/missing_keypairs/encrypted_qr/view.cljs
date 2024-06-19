@@ -1,4 +1,4 @@
-(ns status-im.contexts.settings.wallet.keypairs-and-accounts.encrypted-qr.view
+(ns status-im.contexts.settings.wallet.keypairs-and-accounts.missing-keypairs.encrypted-qr.view
   (:require
     [quo.core :as quo]
     [quo.foundations.colors :as colors]
@@ -7,8 +7,10 @@
     [status-im.common.qr-codes.view :as qr-codes]
     [status-im.common.resources :as resources]
     [status-im.common.standard-authentication.core :as standard-auth]
-    [status-im.contexts.settings.wallet.keypairs-and-accounts.encrypted-qr.countdown.view :as countdown]
-    [status-im.contexts.settings.wallet.keypairs-and-accounts.encrypted-qr.style :as style]
+    [status-im.contexts.settings.wallet.keypairs-and-accounts.missing-keypairs.encrypted-qr.countdown.view
+     :as countdown]
+    [status-im.contexts.settings.wallet.keypairs-and-accounts.missing-keypairs.encrypted-qr.style
+     :as style]
     [status-im.contexts.syncing.utils :as sync-utils]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))

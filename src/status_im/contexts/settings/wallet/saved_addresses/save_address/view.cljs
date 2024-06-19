@@ -35,12 +35,16 @@
 
 (defn view
   []
-  (let [{:keys [address ens ens?]} (rf/sub [:wallet/saved-address])
+  (let [{:keys [edit?]} (rf/sub [:get-screen-params])
+        {:keys [address name customization-color ens ens? network-preferences-names]}
+        (rf/sub [:wallet/saved-address])
         [network-prefixes address-without-prefix] (utils/split-prefix-and-address address)
-        [address-label set-address-label] (rn/use-state "")
-        [address-color set-address-color] (rn/use-state (rand-nth colors/account-colors))
+        [address-label set-address-label] (rn/use-state (or name ""))
+        [address-color set-address-color] (rn/use-state (or customization-color
+                                                            (rand-nth colors/account-colors)))
         [selected-networks set-selected-networks]
-        (rn/use-state (network-utils/network-preference-prefix->network-names network-prefixes))
+        (rn/use-state (or network-preferences-names
+                          (network-utils/network-preference-prefix->network-names network-prefixes)))
         chain-short-names (rn/use-memo
                            #(network-utils/network-names->network-preference-prefix
                              selected-networks)
@@ -70,12 +74,14 @@
                        (fn []
                          (rf/dispatch [:wallet/save-address
                                        {:on-success
-                                        [:wallet/add-saved-address-success
-                                         (i18n/label :t/address-saved)]
+                                        (if edit?
+                                          [:wallet/edit-saved-address-success]
+                                          [:wallet/add-saved-address-success
+                                           (i18n/label :t/address-saved)])
                                         :on-error
                                         [:wallet/add-saved-address-failed]
                                         :name address-label
-                                        :ens ens
+                                        :ens (when ens? ens)
                                         :address address-without-prefix
                                         :customization-color address-color
                                         :chain-short-names chain-short-names}]))
@@ -87,7 +93,7 @@
                                    :subtitle-type   :default
                                    :label           :none
                                    :blur?           true
-                                   :icon-right?     true
+                                   :icon-right?     (not ens?)
                                    :right-icon      :i/advanced
                                    :card?           true
                                    :title           (i18n/label :t/address)
@@ -104,9 +110,9 @@
        :header                   [quo/page-nav
                                   {:type                :no-title
                                    :background          :blur
-                                   :icon-name           :i/arrow-left
+                                   :icon-name           (if edit? :i/close :i/arrow-left)
                                    :on-press            navigate-back
-                                   :margin-top          (safe-area/get-top)
+                                   :margin-top          (when-not edit? (safe-area/get-top))
                                    :accessibility-label :save-address-page-nav}]
        :footer                   [quo/button
                                   {:accessibility-label :save-address-button

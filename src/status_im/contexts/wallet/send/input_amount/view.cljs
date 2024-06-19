@@ -7,29 +7,19 @@
     [react-native.core :as rn]
     [react-native.safe-area :as safe-area]
     [status-im.common.controlled-input.utils :as controlled-input]
+    [status-im.constants :as constants]
     [status-im.contexts.wallet.common.account-switcher.view :as account-switcher]
     [status-im.contexts.wallet.common.asset-list.view :as asset-list]
     [status-im.contexts.wallet.common.utils :as utils]
     [status-im.contexts.wallet.send.input-amount.style :as style]
     [status-im.contexts.wallet.send.routes.view :as routes]
+    [status-im.contexts.wallet.sheets.buy-token.view :as buy-token]
     [status-im.contexts.wallet.sheets.unpreferred-networks-alert.view :as unpreferred-networks-alert]
     [utils.debounce :as debounce]
     [utils.i18n :as i18n]
     [utils.money :as money]
     [utils.number :as number]
     [utils.re-frame :as rf]))
-
-(defn- make-limit-label-crypto
-  [amount currency]
-  (str amount
-       " "
-       (some-> currency
-               name
-               string/upper-case)))
-
-(defn- make-limit-label-fiat
-  [amount currency-symbol]
-  (str currency-symbol amount))
 
 (defn- estimated-fees
   [{:keys [loading-routes? fees amount]}]
@@ -46,14 +36,12 @@
      :i/advanced]]
    [quo/data-item
     {:container-style style/fees-data-item
-     :label           :none
      :status          (if loading-routes? :loading :default)
      :size            :small
      :title           (i18n/label :t/fees)
      :subtitle        fees}]
    [quo/data-item
     {:container-style style/amount-data-item
-     :label           :none
      :status          (if loading-routes? :loading :default)
      :size            :small
      :title           (i18n/label :t/recipient-gets)
@@ -125,6 +113,25 @@
      :style {:margin-top 15}}
     (i18n/label :t/no-routes-found)]])
 
+(defn- not-enough-asset
+  []
+  [quo/alert-banner
+   {:action?         true
+    :text            (i18n/label :t/not-enough-assets)
+    :button-text     (i18n/label :t/buy-eth)
+    :on-button-press #(rf/dispatch [:show-bottom-sheet
+                                    {:content buy-token/view}])}])
+
+(defn- fetch-routes
+  [{:keys [amount bounce-duration-ms token valid-input?]}]
+  (if valid-input?
+    (debounce/debounce-and-dispatch
+     [:wallet/get-suggested-routes
+      {:amount        amount
+       :updated-token token}]
+     bounce-duration-ms)
+    (rf/dispatch [:wallet/clean-suggested-routes])))
+
 (defn view
   ;; crypto-decimals, limit-crypto and initial-crypto-currency? args are needed
   ;; for component tests only
@@ -159,6 +166,7 @@
         send-enabled-networks                       (rf/sub [:wallet/wallet-send-enabled-networks])
         enabled-from-chain-ids                      (rf/sub
                                                      [:wallet/wallet-send-enabled-from-chain-ids])
+        send-from-locked-amounts                    (rf/sub [:wallet/wallet-send-from-locked-amounts])
         {token-balance     :total-balance
          available-balance :available-balance
          :as               token-by-symbol}         (rf/sub [:wallet/token-by-symbol
@@ -208,7 +216,7 @@
                                                                         input-state))
                                                         (<= input-num-value 0)
                                                         (> input-num-value current-limit))
-        amount                                      (if crypto-currency?
+        amount-in-crypto                            (if crypto-currency?
                                                       input-amount
                                                       (number/remove-trailing-zeroes
                                                        (.toFixed (/ input-amount conversion-rate)
@@ -264,7 +272,49 @@
         limit-insufficient?                         (> (controlled-input/numeric-value input-state)
                                                        current-limit)
         should-try-again?                           (and (not limit-insufficient?) no-routes-found?)
-        current-address                             (rf/sub [:wallet/current-viewing-account-address])]
+        current-address                             (rf/sub [:wallet/current-viewing-account-address])
+        owned-eth-token                             (rf/sub [:wallet/token-by-symbol
+                                                             (string/upper-case
+                                                              constants/mainnet-short-name)
+                                                             enabled-from-chain-ids])
+        not-enough-asset?                           (and
+                                                     (or no-routes-found? limit-insufficient?)
+                                                     (not-empty sender-network-values)
+                                                     (if (= token-symbol
+                                                            (string/upper-case
+                                                             constants/mainnet-short-name))
+                                                       (= current-limit input-amount)
+                                                       (money/equal-to (:total-balance
+                                                                        owned-eth-token)
+                                                                       0)))
+        show-no-routes?                             (and
+                                                     (or no-routes-found? limit-insufficient?)
+                                                     (not-empty sender-network-values)
+                                                     (not not-enough-asset?))
+        request-fetch-routes                        (fn [bounce-duration-ms]
+                                                      (fetch-routes
+                                                       {:amount             amount-in-crypto
+                                                        :valid-input?       valid-input?
+                                                        :bounce-duration-ms bounce-duration-ms
+                                                        :token              token}))
+        swap-between-fiat-and-crypto                (fn [swap-to-crypto-currency?]
+                                                      (set-just-toggled-mode? true)
+                                                      (set-crypto-currency swap-to-crypto-currency?)
+                                                      (set-input-state
+                                                       (fn [input-state]
+                                                         (controlled-input/set-input-value
+                                                          input-state
+                                                          (let [value     (controlled-input/input-value
+                                                                           input-state)
+                                                                new-value (if swap-to-crypto-currency?
+                                                                            (.toFixed (/ value
+                                                                                         conversion-rate)
+                                                                                      crypto-decimals)
+                                                                            (.toFixed (* value
+                                                                                         conversion-rate)
+                                                                                      12))]
+                                                            (number/remove-trailing-zeroes
+                                                             new-value))))))]
     (rn/use-mount
      (fn []
        (let [dismiss-keyboard-fn   #(when (= % "active") (rn/dismiss-keyboard!))
@@ -284,6 +334,10 @@
        (clear-input!)
        (rf/dispatch [:wallet/clean-suggested-routes]))
      [current-address])
+    (rn/use-effect
+     (fn []
+       (request-fetch-routes 0))
+     [send-from-locked-amounts])
     [rn/view
      {:style               style/screen
       :accessibility-label (str "container"
@@ -303,33 +357,21 @@
        :title           (i18n/label
                          :t/send-limit
                          {:limit (if crypto-currency?
-                                   (make-limit-label-crypto current-limit token-symbol)
-                                   (make-limit-label-fiat current-limit currency-symbol))})
+                                   (utils/make-limit-label-crypto current-limit token-symbol)
+                                   (utils/make-limit-label-fiat current-limit currency-symbol))})
        :conversion      conversion-rate
        :show-keyboard?  false
        :value           input-amount
-       :on-swap         (fn [swap-to-crypto-currency?]
-                          (set-just-toggled-mode? true)
-                          (set-crypto-currency swap-to-crypto-currency?)
-                          (set-input-state
-                           (fn [input-state]
-                             (controlled-input/set-input-value
-                              input-state
-                              (let [value     (controlled-input/input-value input-state)
-                                    new-value (if swap-to-crypto-currency?
-                                                (.toFixed (/ value conversion-rate)
-                                                          crypto-decimals)
-                                                (.toFixed (* value conversion-rate) 12))]
-                                (number/remove-trailing-zeroes new-value))))))
+       :on-swap         swap-between-fiat-and-crypto
        :on-token-press  show-select-asset-sheet}]
      [routes/view
       {:token                                     token-by-symbol
        :input-value                               input-amount
-       :value                                     amount
        :valid-input?                              valid-input?
        :token-not-supported-in-receiver-networks? token-not-supported-in-receiver-networks?
        :lock-fetch-routes?                        just-toggled-mode?
-       :current-screen-id                         current-screen-id}]
+       :current-screen-id                         current-screen-id
+       :request-fetch-routes                      request-fetch-routes}]
      (when (and (not loading-routes?)
                 sender-network-values
                 token-not-supported-in-receiver-networks?)
@@ -339,8 +381,9 @@
         {:loading-routes? loading-routes?
          :fees            fee-formatted
          :amount          amount-text}])
-     (when (and (or no-routes-found? limit-insufficient?) (not-empty sender-network-values))
-       [no-routes-found])
+     (cond
+       show-no-routes?   [no-routes-found]
+       not-enough-asset? [not-enough-asset])
      [quo/bottom-actions
       {:actions          :one-action
        :button-one-label (if should-try-again?
@@ -351,20 +394,13 @@
                                                 (and (not should-try-again?) confirm-disabled?))
                                  :on-press  (cond
                                               should-try-again?
-                                              #(let [input-amount (controlled-input/input-value
-                                                                   input-state)
-                                                     amount       (if crypto-currency?
-                                                                    input-amount
-                                                                    (.toFixed (* token-balance
-                                                                                 conversion-rate)
-                                                                              2))]
-                                                 (rf/dispatch [:wallet/get-suggested-routes
-                                                               {:amount        amount
-                                                                :updated-token token-by-symbol}]))
+                                              #(rf/dispatch [:wallet/get-suggested-routes
+                                                             {:amount        amount-in-crypto
+                                                              :updated-token token-by-symbol}])
                                               sending-to-unpreferred-networks?
                                               #(show-unpreferred-networks-alert on-confirm)
                                               :else
-                                              on-confirm)}
+                                              #(on-confirm amount-in-crypto))}
                                 (when should-try-again?
                                   {:type :grey}))}]
      [quo/numbered-keyboard

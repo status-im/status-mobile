@@ -4,19 +4,19 @@
     [quo.foundations.colors :as colors]))
 
 (defn placeholder-color
-  [state blur? override-theme]
+  [state blur? theme]
   (cond
     (and blur? (= state :active))
-    (colors/theme-colors colors/neutral-80-opa-20 colors/white-opa-20 override-theme)
+    (colors/theme-colors colors/neutral-80-opa-20 colors/white-opa-20 theme)
 
     blur? ; state is default
-    (colors/theme-colors colors/neutral-80-opa-40 colors/white-opa-30 override-theme)
+    (colors/theme-colors colors/neutral-80-opa-40 colors/white-opa-30 theme)
 
     (= state :active)
-    (colors/theme-colors colors/neutral-30 colors/neutral-60 override-theme)
+    (colors/theme-colors colors/neutral-30 colors/neutral-60 theme)
 
     :else ; Not blur and state is default
-    (colors/theme-colors colors/neutral-40 colors/neutral-50 override-theme)))
+    (colors/theme-colors colors/neutral-40 colors/neutral-50 theme)))
 
 (def clear-icon-container
   {:justify-content :center
@@ -26,16 +26,14 @@
    :width           20})
 
 (defn clear-icon
-  [blur? override-theme]
+  [blur? theme]
   (if blur?
-    (colors/theme-colors colors/neutral-80-opa-30 colors/white-opa-10 override-theme)
-    (colors/theme-colors colors/neutral-40 colors/neutral-60 override-theme)))
+    (colors/theme-colors colors/neutral-80-opa-30 colors/white-opa-10 theme)
+    (colors/theme-colors colors/neutral-40 colors/neutral-60 theme)))
 
 (defn cursor
-  [customization-color override-theme]
-  (colors/theme-colors (colors/custom-color customization-color 50)
-                       (colors/custom-color customization-color 60)
-                       override-theme))
+  [customization-color theme]
+  (colors/resolve-color customization-color theme))
 
 (def tag-separator {:width 8})
 
@@ -61,10 +59,10 @@
    :justify-content :flex-start})
 
 (defn input-text
-  [disabled?]
+  [disabled? theme]
   (assoc (text/text-style {:size   :paragraph-1
                            :weight :regular}
-                          nil)
+                          theme)
          :flex             1
          :padding-vertical 5
          :min-width        120

@@ -1,7 +1,7 @@
 import pytest
 
 from tests import common_password
-from views.base_element import Button, EditBox, Text
+from views.base_element import Button, EditBox, Text, BaseElement
 from views.base_view import BaseView
 from views.home_view import HomeView
 from views.sign_in_view import SignInView
@@ -28,12 +28,41 @@ class AssetElement(Button):
             pytest.fail("Cannot get %s amount" % self.asset_name)
 
 
+class ActivityElement(BaseElement):
+    def __init__(self, driver, index: int):
+        self.locator = "(//*[@content-desc='wallet-activity'])[%s]" % index
+        super().__init__(driver=driver, xpath=self.locator)
+
+    @property
+    def header(self):
+        return Text(self.driver, prefix=self.locator, xpath="//*[@content-desc='transaction-header']").text
+
+    @property
+    def timestamp(self):
+        return Text(self.driver, prefix=self.locator, xpath="//*[@content-desc='transaction-timestamp']").text
+
+    @property
+    def amount(self):
+        return Text(self.driver, prefix=self.locator,
+                    xpath="//*[@content-desc='context-tag'][1]/android.widget.TextView").text
+
+    @property
+    def from_text(self):
+        return Text(self.driver, prefix=self.locator,
+                    xpath="//*[@content-desc='context-tag'][2]/android.widget.TextView").text
+
+    @property
+    def to_text(self):
+        return Text(self.driver, prefix=self.locator,
+                    xpath="//*[@content-desc='context-tag'][3]/android.widget.TextView").text
+
+
 class WalletView(BaseView):
     def __init__(self, driver):
         super().__init__(driver)
         # Wallet view
         self.network_drop_down = Button(self.driver, accessibility_id='network-dropdown')
-        self.collectibles_tab = Button(self.driver, accessibility_id='Collectibles')
+        self.collectibles_tab = Button(self.driver, accessibility_id='collectibles-tab')
         self.add_account_button = Button(self.driver, accessibility_id='add-account')
 
         # Account adding
@@ -57,6 +86,8 @@ class WalletView(BaseView):
         self.share_address_button = Button(self.driver, accessibility_id='share-account')
         self.remove_account_button = Button(self.driver, accessibility_id='remove-account')
         self.derivation_path_note_checkbox = Button(self.driver, accessibility_id='checkbox-off')
+
+        self.activity_tab = Button(self.driver, accessibility_id='activity-tab')
 
         # Sending transaction
         self.address_text_input = EditBox(self.driver, accessibility_id='address-text-input')
@@ -85,7 +116,6 @@ class WalletView(BaseView):
     def confirm_transaction(self):
         self.confirm_button.click_until_presence_of_element(self.slide_button_track)
         self.slide_and_confirm_with_password()
-        self.done_button.click()
 
     def set_amount(self, amount: float):
         for i in '{:f}'.format(amount).rstrip('0'):
@@ -94,7 +124,7 @@ class WalletView(BaseView):
     def send_asset(self, address: str, asset_name: str, amount: float):
         self.send_button.click()
         self.address_text_input.send_keys(address)
-        self.continue_button.click_until_presence_of_element(self.collectibles_tab)
+        self.continue_button.click()
         self.select_asset(asset_name).click()
         self.set_amount(amount)
         self.confirm_transaction()
@@ -104,7 +134,7 @@ class WalletView(BaseView):
         asset_element.long_press_element()
         self.send_from_drawer_button.click()
         self.address_text_input.send_keys(address)
-        self.continue_button.click_until_presence_of_element(self.confirm_button)
+        self.continue_button.click()
         self.set_amount(amount)
         self.confirm_transaction()
 
@@ -130,3 +160,6 @@ class WalletView(BaseView):
         if not watch_only:
             self.derivation_path_note_checkbox.click()
         self.confirm_button.click()
+
+    def get_activity_element(self, index=1):
+        return ActivityElement(self.driver, index=index)

@@ -116,7 +116,7 @@
 
 (defn- view-internal
   [props]
-  [rn/view {:style style/container-info}
+  [rn/view {:style (style/container-info props)}
    [view-info-top props]
    [view-info-bottom props]])
 

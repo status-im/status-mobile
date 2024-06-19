@@ -95,3 +95,10 @@
         [rn/activity-indicator {:animating true}]]
        [rn/text {:style {:margin-top 10 :color (if @warning? :red :black)}}
         @label]])))
+
+(defn use-safe-unmount
+  [handler]
+  (let [prev-cnt @cnt]
+    (if js/goog.DEBUG
+      (rn/use-unmount #(when (= prev-cnt @cnt) (handler)))
+      (rn/use-unmount handler))))

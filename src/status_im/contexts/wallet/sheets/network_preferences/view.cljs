@@ -81,7 +81,6 @@
             {:status          :default
              :size            :default
              :description     :default
-             :label           :none
              :blur?           blur?
              :card?           true
              :title           (i18n/label :t/address)

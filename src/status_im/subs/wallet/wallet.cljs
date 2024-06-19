@@ -47,10 +47,12 @@
  :wallet/home-tokens-loading?
  :<- [:wallet/tokens-loading]
  (fn [tokens-loading]
-   (->> tokens-loading
-        vals
-        (some true?)
-        boolean)))
+   (if (empty? tokens-loading)
+     true
+     (->> tokens-loading
+          vals
+          (some true?)
+          boolean))))
 
 (rf/reg-sub
  :wallet/current-viewing-account-tokens-loading?
@@ -146,6 +148,11 @@
  :wallet/wallet-send-disabled-from-chain-ids
  :<- [:wallet/wallet-send]
  :-> :disabled-from-chain-ids)
+
+(rf/reg-sub
+ :wallet/wallet-send-from-locked-amounts
+ :<- [:wallet/wallet-send]
+ :-> :from-locked-amounts)
 
 (rf/reg-sub
  :wallet/wallet-send-from-values-by-chain
@@ -259,22 +266,22 @@
  :wallet/settings-keypairs-accounts
  :<- [:wallet/keypairs]
  (fn [keypairs [_ format-options]]
-   (let [grouped-keypairs      (group-by :lowest-operability keypairs)
-         operable-key-pair-ids (->> (concat (:fully grouped-keypairs)
-                                            (:partially grouped-keypairs))
-                                    (map :key-uid)
-                                    (into #{}))
-         missing-key-pair-ids  (->> (map :key-uid (:no grouped-keypairs))
-                                    (into #{}))]
+   (let [grouped-keypairs     (group-by :lowest-operability keypairs)
+         operable-keypair-ids (->> (concat (:fully grouped-keypairs)
+                                           (:partially grouped-keypairs))
+                                   (map :key-uid)
+                                   (into #{}))
+         missing-keypair-ids  (->> (map :key-uid (:no grouped-keypairs))
+                                   (into #{}))]
      {:operable (->> keypairs
-                     (filter #(contains? operable-key-pair-ids (:key-uid %)))
+                     (filter #(contains? operable-keypair-ids (:key-uid %)))
                      (map (fn [{:keys [accounts name type key-uid]}]
                             {:type     (keyword type)
                              :name     name
                              :key-uid  key-uid
                              :accounts (format-settings-keypair-accounts accounts format-options)})))
       :missing  (->> keypairs
-                     (filter #(contains? missing-key-pair-ids (:key-uid %)))
+                     (filter #(contains? missing-keypair-ids (:key-uid %)))
                      (map (fn [{:keys [accounts name type key-uid]}]
                             {:type     (keyword type)
                              :name     name
@@ -335,7 +342,8 @@
                   :customization-color color
                   :type                (if watch-only? :watch-only :empty)
                   :on-press            #(rf/dispatch [:wallet/navigate-to-account address])
-                  :loading?            (get tokens-loading address)
+                  :loading?            (or (get tokens-loading address)
+                                           (not (contains? tokens-loading address)))
                   :balance             (utils/prettify-balance currency-symbol (get balances address))))
          accounts)))
 
@@ -434,6 +442,12 @@
                  (some #(= (:symbol %) asset-symbol) (:tokens account)))
                accounts)
        accounts))))
+
+(rf/reg-sub
+ :wallet/account-tab
+ :<- [:wallet/ui]
+ (fn [ui]
+   (get-in ui [:account-page :active-tab])))
 
 (rf/reg-sub
  :wallet/current-viewing-account-token-values
@@ -611,3 +625,11 @@
                                   currency-symbol
                                   fee-in-fiat)]
      fee-formatted)))
+
+(rf/reg-sub
+ :wallet/has-partially-operable-accounts?
+ :<- [:wallet/accounts]
+ (fn [accounts]
+   (->> accounts
+        (some #(= :partially (:operable %)))
+        boolean)))

@@ -59,25 +59,35 @@
    :height     32
    :margin-top 8})
 
-(def content-container
-  {:margin-left 8})
+(def container
+  {:flex-direction :row
+   :column-gap     8})
 
 (def content-line
   {:flex-direction :row
    :margin-top     2
    :align-items    :center})
 
-(defn icon-hole-view
-  [theme blur?]
+(def icon-hole-view
   {:width           32
    :height          32
-   :border-width    1
-   :border-color    (if-not blur?
-                      (colors/theme-colors colors/neutral-20 colors/neutral-80 theme)
-                      colors/white-opa-5)
-   :border-radius   16
    :align-items     :center
    :justify-content :center})
+
+(defn icon-circle-border
+  [theme blur?]
+  {:position      :absolute
+   :top           0
+   :left          0
+   :right         0
+   :bottom        0
+   :width         32
+   :height        32
+   :border-width  1
+   :border-radius 16
+   :border-color  (if-not blur?
+                    (colors/theme-colors colors/neutral-20 colors/neutral-80 theme)
+                    colors/white-opa-5)})
 
 (defn icon-color
   [theme]

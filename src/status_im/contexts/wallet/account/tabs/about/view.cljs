@@ -76,10 +76,8 @@
       :content-container-style {:padding-bottom (+ constants/floating-shell-button-height 8)}}
      [quo/data-item
       {:description     :default
-       :icon-right?     true
        :right-icon      :i/options
        :card?           true
-       :label           :none
        :status          :default
        :size            :default
        :title           (if watch-only? (i18n/label :t/watched-address) (i18n/label :t/address))

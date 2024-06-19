@@ -81,6 +81,7 @@
                                                                                     :has-error false}}
                                                     :market-values-per-currency {:usd {:price 10}}}
    :wallet/wallet-send-disabled-from-chain-ids     []
+   :wallet/wallet-send-from-locked-amounts         {}
    :wallet/wallet-send-from-values-by-chain        {1 (money/bignumber "250")}
    :wallet/wallet-send-to-values-by-chain          {1 (money/bignumber "250")}
    :wallet/wallet-send-sender-network-values       nil

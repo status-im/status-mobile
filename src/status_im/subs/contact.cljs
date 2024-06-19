@@ -258,13 +258,14 @@
    [(re-frame/subscribe [:contacts/contact-by-identity contact-identity])
     (re-frame/subscribe [:profile/profile])])
  (fn [[{:keys [primary-name] :as contact}
-       {:keys [public-key preferred-name display-name]}]
+       {:keys [public-key preferred-name display-name name]}]
       [_ contact-identity]]
    [(if (= public-key contact-identity)
       (cond
         (not (string/blank? preferred-name)) preferred-name
         (not (string/blank? display-name))   display-name
         (not (string/blank? primary-name))   primary-name
+        (not (string/blank? name))           name
         :else                                public-key)
       (profile.utils/displayed-name contact))
     (:secondary-name contact)]))

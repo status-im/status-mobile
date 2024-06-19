@@ -31,7 +31,7 @@
         :else                 (string/capitalize (name network))))
 
 (defn view-internal
-  [{:keys [network status amount container-style on-press] :as args}]
+  [{:keys [network status amount container-style on-press on-long-press] :as args}]
   (let [theme (quo.theme/use-theme)]
     (if (= status :edit)
       [network-bridge-add (assoc args :theme theme)]
@@ -39,7 +39,8 @@
        {:style               (merge (style/container network status theme) container-style)
         :accessible          true
         :accessibility-label :container
-        :on-press            on-press}
+        :on-press            on-press
+        :on-long-press       on-long-press}
        (if (= status :loading)
          [rn/view
           {:style               (style/loading-skeleton theme)

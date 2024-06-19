@@ -10,6 +10,8 @@
                 legacy.status-im.utils.styles/def    clojure.core/def
                 legacy.status-im.utils.styles/defn   clojure.core/defn
                 test-helpers.unit/deftest-sub        clojure.core/defn
+                test-helpers.unit/deftest-event      clojure.core/defn
+
                 taoensso.tufte/defnp                 clojure.core/defn}
  :linters      {:case-duplicate-test           {:level :error}
                 :case-quoted-test              {:level :error}

@@ -46,9 +46,10 @@
   [rn/view
    {:style style/transaction-header-container}
    [text/text
-    {:weight :semi-bold
-     :size   :paragraph-1
-     :style  (style/transaction-header theme)}
+    {:weight              :semi-bold
+     :size                :paragraph-1
+     :style               (style/transaction-header theme)
+     :accessibility-label :transaction-header}
     (transaction transaction-translation)]
    (when (> counter 1)
      [rn/view (style/transaction-counter-container theme blur?)
@@ -59,9 +60,10 @@
        (i18n/label :t/x-counter {:counter counter})]])
    [rn/view {:style style/timestamp-container}
     [text/text
-     {:weight :regular
-      :size   :label
-      :style  (style/timestamp theme blur?)}
+     {:weight              :regular
+      :size                :label
+      :style               (style/timestamp theme blur?)
+      :accessibility-label :transaction-timestamp}
      timestamp]]])
 
 (defn transaction-icon-view
@@ -70,20 +72,21 @@
            status      :pending}}
    theme]
   [rn/view {:style style/icon-container}
+   [rn/view {:style style/icon-status-container}
+    [icon/icon (status-icon status)
+     {:size     12
+      :no-color :true}]]
    [hole-view/hole-view
-    {:style (style/icon-hole-view theme blur?)
+    {:style style/icon-hole-view
      :holes [{:x            20
               :y            20
               :right        0
               :width        12
               :height       12
               :borderRadius 6}]}
-    [icon/icon (transaction-icon transaction)
-     {:color (style/icon-color theme)}]]
-   [rn/view {:style style/icon-status-container}
-    [icon/icon (status-icon status)
-     {:size     12
-      :no-color :true}]]])
+    [icon/icon (transaction-icon transaction :i/placeholder)
+     {:color (style/icon-color theme)}]
+    [rn/view {:style (style/icon-circle-border theme blur?)}]]])
 
 (defn prop-text
   [label theme]
@@ -116,11 +119,9 @@
       :on-press            on-press
       :on-press-in         on-press-in
       :on-press-out        on-press-out}
-     [rn/view
-      {:style {:flex-direction :row}}
+     [rn/view {:style style/container}
       [transaction-icon-view props theme]
       [rn/view
-       {:style style/content-container}
        [transaction-header props theme]
        [rn/view {:style style/content-line}
         (when first-tag [prop-tag first-tag blur?])

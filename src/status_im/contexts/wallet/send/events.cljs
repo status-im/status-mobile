@@ -36,7 +36,8 @@
            receiver-network-values       (get-in db [:wallet :ui :send :receiver-network-values])
            sender-network-values         (get-in db [:wallet :ui :send :sender-network-values])
            tx-type                       (get-in db [:wallet :ui :send :tx-type])
-           disabled-from-chain-ids       (or (get-in db [:wallet :ui :send :disabled-from-chain-ids]) [])
+           disabled-from-chain-ids       (get-in db [:wallet :ui :send :disabled-from-chain-ids] [])
+           from-locked-amounts           (get-in db [:wallet :ui :send :from-locked-amounts] {})
            token-decimals                (if collectible 0 (:decimals token))
            native-token?                 (and token (= token-display-name "ETH"))
            routes-available?             (pos? (count chosen-route))
@@ -68,6 +69,7 @@
                                              :disabled-chain-ids disabled-from-chain-ids
                                              :receiver-networks receiver-networks
                                              :token-networks-ids token-networks-ids
+                                             :from-locked-amounts from-locked-amounts
                                              :tx-type tx-type
                                              :receiver? false})
                                            (send-utils/reset-loading-network-amounts-to-zero
@@ -144,6 +146,10 @@
  (fn [{:keys [db]}]
    {:db (update-in db [:wallet :ui :send] dissoc :disabled-from-chain-ids)}))
 
+(rf/reg-event-fx :wallet/clean-from-locked-amounts
+ (fn [{:keys [db]}]
+   {:db (update-in db [:wallet :ui :send] dissoc :from-locked-amounts)}))
+
 (rf/reg-event-fx
  :wallet/select-send-address
  (fn [{:keys [db]} [{:keys [address recipient stack-id start-flow?]}]]
@@ -197,8 +203,8 @@
    (let [{token-networks :networks}                token
          receiver-networks                         (get-in db [:wallet :ui :send :receiver-networks])
          token-networks-ids                        (mapv #(:chain-id %) token-networks)
-         token-not-supported-in-receiver-networks? (not (some (set receiver-networks)
-                                                              token-networks-ids))]
+         token-not-supported-in-receiver-networks? (not-any? (set receiver-networks)
+                                                             token-networks-ids)]
      {:db (cond-> db
             :always      (update-in [:wallet :ui :send] dissoc :collectible)
             :always      (assoc-in [:wallet :ui :send :token-display-name]
@@ -253,7 +259,7 @@
 
 (rf/reg-event-fx
  :wallet/set-collectible-to-send
- (fn [{db :db} [{:keys [collectible current-screen]}]]
+ (fn [{db :db} [{:keys [collectible current-screen start-flow?]}]]
    (let [collection-data    (:collection-data collectible)
          collectible-data   (:collectible-data collectible)
          contract-type      (:contract-type collectible)
@@ -282,6 +288,7 @@
            [:dispatch
             [:wallet/wizard-navigate-forward
              {:current-screen current-screen
+              :start-flow?    start-flow?
               :flow-id        :wallet-send-flow}]]]})))
 
 (rf/reg-event-fx
@@ -304,9 +311,40 @@
             :start-flow?    start-flow?
             :flow-id        :wallet-send-flow}]]]}))
 
+(rf/reg-event-fx
+ :wallet/set-token-amount-to-bridge
+ (fn [{:keys [db]} [{:keys [amount stack-id start-flow?]}]]
+   {:db (assoc-in db [:wallet :ui :send :amount] amount)
+    :fx [[:dispatch
+          [:wallet/wizard-navigate-forward
+           {:current-screen stack-id
+            :start-flow?    start-flow?
+            :flow-id        :wallet-bridge-flow}]]]}))
+
+(rf/reg-event-fx
+ :wallet/clean-bridge-to-selection
+ (fn [{:keys [db]}]
+   {:db (update-in db [:wallet :ui :send] dissoc :bridge-to-chain-id)}))
+
+(rf/reg-event-fx
+ :wallet/clean-routes-calculation
+ (fn [{:keys [db]}]
+   (let [keys-to-remove [:to-values-by-chain :network-links :sender-network-values :route
+                         :receiver-network-values :suggested-routes :from-values-by-chain
+                         :loading-suggested-routes? :suggested-routes-call-timestamp]]
+     {:db (update-in db [:wallet :ui :send] #(apply dissoc % keys-to-remove))})))
+
 (rf/reg-event-fx :wallet/disable-from-networks
  (fn [{:keys [db]} [chain-ids]]
    {:db (assoc-in db [:wallet :ui :send :disabled-from-chain-ids] chain-ids)}))
+
+(rf/reg-event-fx :wallet/lock-from-amount
+ (fn [{:keys [db]} [chain-id amount]]
+   {:db (assoc-in db [:wallet :ui :send :from-locked-amounts chain-id] amount)}))
+
+(rf/reg-event-fx :wallet/unlock-from-amount
+ (fn [{:keys [db]} [chain-id]]
+   {:db (update-in db [:wallet :ui :send :from-locked-amounts] dissoc chain-id)}))
 
 (rf/reg-event-fx :wallet/reset-network-amounts-to-zero
  (fn [{:keys [db]}]
@@ -337,6 +375,7 @@
          to-address (get-in db [:wallet :ui :send :to-address])
          receiver-networks (get-in db [:wallet :ui :send :receiver-networks])
          disabled-from-chain-ids (or (get-in db [:wallet :ui :send :disabled-from-chain-ids]) [])
+         from-locked-amounts (or (get-in db [:wallet :ui :send :from-locked-amounts]) {})
          test-networks-enabled? (get-in db [:profile/profile :test-networks-enabled?])
          networks ((if test-networks-enabled? :test :prod)
                    (get-in db [:wallet :networks]))
@@ -347,7 +386,8 @@
          to-token-id ""
          network-preferences (if token [] [(get-in collectible [:id :contract-id :chain-id])])
          gas-rates constants/gas-rate-medium
-         amount-in (send-utils/amount-in-hex amount (if token token-decimal 0))
+         to-hex (fn [v] (send-utils/amount-in-hex v (if token token-decimal 0)))
+         amount-in (to-hex amount)
          from-address wallet-address
          disabled-from-chain-ids disabled-from-chain-ids
          disabled-to-chain-ids (if (= transaction-type :tx/bridge)
@@ -356,7 +396,7 @@
                                            (not (some #(= chain-id %)
                                                       receiver-networks)))
                                          network-chain-ids))
-         from-locked-amount {}
+         from-locked-amount (update-vals from-locked-amounts to-hex)
          transaction-type-param (case transaction-type
                                   :tx/collectible-erc-721  constants/send-type-erc-721-transfer
                                   :tx/collectible-erc-1155 constants/send-type-erc-1155-transfer
@@ -447,18 +487,26 @@
               (assoc-in [:wallet :transactions] transaction-details)
               (assoc-in [:wallet :ui :send :transaction-ids] transaction-ids))
       :fx [[:dispatch
-            [:wallet/wizard-navigate-forward
-             {:current-screen :screen/wallet.transaction-confirmation
-              :flow-id        :wallet-send-flow}]]]})))
+            [:wallet/end-transaction-flow]]]})))
 
-(rf/reg-event-fx :wallet/close-transaction-progress-page
+(rf/reg-event-fx :wallet/clean-up-transaction-flow
  (fn [_]
-   {:fx [[:dispatch [:wallet/clean-scanned-address]]
+   {:fx [[:dispatch [:dismiss-modal :screen/wallet.transaction-confirmation]]
+         [:dispatch [:wallet/clean-scanned-address]]
          [:dispatch [:wallet/clean-local-suggestions]]
          [:dispatch [:wallet/clean-send-address]]
          [:dispatch [:wallet/clean-disabled-from-networks]]
-         [:dispatch [:wallet/select-address-tab nil]]
-         [:dispatch [:dismiss-modal :screen/wallet.transaction-progress]]]}))
+         [:dispatch [:wallet/select-address-tab nil]]]}))
+
+(rf/reg-event-fx :wallet/end-transaction-flow
+ (fn [{:keys [db]}]
+   (let [address (get-in db [:wallet :current-viewing-account-address])]
+     {:fx [[:dispatch [:wallet/navigate-to-account-within-stack address]]
+           [:dispatch [:wallet/fetch-activities-for-current-account]]
+           [:dispatch [:wallet/select-account-tab :activity]]
+           [:dispatch-later
+            [{:ms       20
+              :dispatch [:wallet/clean-up-transaction-flow]}]]]})))
 
 (defn- transaction-data
   [{:keys [from-address to-address token-address route data eth-transfer?]}]
@@ -623,23 +671,26 @@
 (rf/reg-event-fx
  :wallet/select-from-account
  (fn [{db :db} [{:keys [address stack-id network-details start-flow?]}]]
-   (let [token-symbol (-> db :wallet :ui :send :token-symbol)
-         token        (when token-symbol
-                        ;; When this flow has started in the wallet home page, we know the
-                        ;; token or collectible to send, but we don't know from which
-                        ;; account, so we extract the token data from the picked account.
-                        (let [token (utils/get-token-from-account db token-symbol address)]
-                          (assoc token
-                                 :networks      (network-utils/network-list token network-details)
-                                 :total-balance (utils/calculate-total-token-balance token))))]
-     {:db (if token-symbol
-            (-> db
-                (assoc-in [:wallet :ui :send :token] token)
-                (update-in [:wallet :ui :send] dissoc :token-symbol))
-            db)
+   (let [{:keys [token-symbol
+                 tx-type]} (-> db :wallet :ui :send)
+         token             (when token-symbol
+                             ;; When this flow has started in the wallet home page, we know the
+                             ;; token or collectible to send, but we don't know from which
+                             ;; account, so we extract the token data from the picked account.
+                             (let [token (utils/get-token-from-account db token-symbol address)]
+                               (assoc token
+                                      :networks      (network-utils/network-list token network-details)
+                                      :total-balance (utils/calculate-total-token-balance token))))
+         bridge-tx?        (= tx-type :tx/bridge)
+         flow-id           (if bridge-tx?
+                             :wallet-bridge-flow
+                             :wallet-send-flow)]
+     {:db (cond-> db
+            token-symbol (assoc-in [:wallet :ui :send :token] token)
+            bridge-tx?   (assoc-in [:wallet :ui :send :to-address] address))
       :fx [[:dispatch [:wallet/switch-current-viewing-account address]]
            [:dispatch
             [:wallet/wizard-navigate-forward
              {:current-screen stack-id
               :start-flow?    start-flow?
-              :flow-id        :wallet-send-flow}]]]})))
+              :flow-id        flow-id}]]]})))
