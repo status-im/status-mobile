@@ -7,9 +7,11 @@
   (h/setup-restorable-re-frame)
 
   (h/test "Create Account button is disabled while no account name exists"
-    (h/setup-subs {:wallet/watch-only-accounts []
-                   :alert-banners/top-margin   0
-                   :get-screen-params          {:address "0xmock-address"}})
+    (h/setup-subs {:wallet/watch-only-accounts        []
+                   :alert-banners/top-margin          0
+                   :get-screen-params                 {:address "0xmock-address"}
+                   :wallet/accounts-names             #{"My account 1" "My account 2"}
+                   :wallet/accounts-emojis-and-colors #{["😊" :sky] ["😶" :army]}})
     (h/render [confirm-address/view])
     (h/is-truthy (h/get-by-text "0xmock-address"))
     (h/is-disabled (h/get-by-label-text :confirm-button-label))))

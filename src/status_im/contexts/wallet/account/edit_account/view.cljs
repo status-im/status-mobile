@@ -1,10 +1,12 @@
 (ns status-im.contexts.wallet.account.edit-account.view
-  (:require [quo.core :as quo]
+  (:require [clojure.string :as string]
+            [quo.core :as quo]
             [react-native.core :as rn]
             [reagent.core :as reagent]
             [status-im.contexts.wallet.account.edit-account.style :as style]
             [status-im.contexts.wallet.common.screen-base.create-or-edit-account.view
              :as create-or-edit-account]
+            [status-im.contexts.wallet.common.utils :as common.utils]
             [status-im.contexts.wallet.sheets.network-preferences.view
              :as network-preferences]
             [status-im.contexts.wallet.sheets.remove-account.view :as remove-account]
@@ -35,6 +37,8 @@
 (defn view
   []
   (let [edited-account-name (reagent/atom nil)
+        name-error          (reagent/atom nil)
+        emoji-color-error   (reagent/atom nil)
         on-change-color     (fn [edited-color {:keys [color] :as account}]
                               (when (not= edited-color color)
                                 (save-account {:account     account
@@ -55,12 +59,16 @@
              :as   account}         (rf/sub [:wallet/current-viewing-account])
             network-details         (rf/sub [:wallet/network-preference-details])
             test-networks-enabled?  (rf/sub [:profile/test-networks-enabled?])
+            other-account-names     (rf/sub [:wallet/accounts-names-without-current-account])
+            other-emojis-and-colors (rf/sub [:wallet/accounts-emojis-and-colors-without-current-account])
             network-preferences-key (if test-networks-enabled?
                                       :test-preferred-chain-ids
                                       :prod-preferred-chain-ids)
             account-name            (or @edited-account-name name)
-            button-disabled?        (or (nil? @edited-account-name)
-                                        (= name @edited-account-name))]
+            input-error             (or @emoji-color-error @name-error)
+            button-disabled?        (or (string/blank? @edited-account-name)
+                                        (= name @edited-account-name)
+                                        (some? input-error))]
         [create-or-edit-account/view
          {:page-nav-right-side [(when-not default-account?
                                   {:icon-name :i/delete
@@ -69,16 +77,32 @@
                                                               (fn []
                                                                 [remove-account/view])}])})]
           :account-name        account-name
+          :placeholder         (i18n/label :t/default-account-placeholder)
           :account-emoji       emoji
           :account-color       color
-          :on-change-name      #(reset! edited-account-name %)
-          :on-change-color     #(on-change-color % account)
-          :on-change-emoji     #(on-change-emoji % account)
+          :on-change-name      (fn [new-name]
+                                 (reset! edited-account-name new-name)
+                                 (reset! name-error (common.utils/get-account-name-error
+                                                     @edited-account-name
+                                                     other-account-names)))
+          :on-change-color     (fn [new-color]
+                                 (if (other-emojis-and-colors [emoji new-color])
+                                   (reset! emoji-color-error :emoji-and-color)
+                                   (do
+                                     (reset! emoji-color-error nil)
+                                     (on-change-color new-color account))))
+          :on-change-emoji     (fn [new-emoji]
+                                 (if (other-emojis-and-colors [new-emoji color])
+                                   (reset! emoji-color-error :emoji-and-color)
+                                   (do
+                                     (reset! emoji-color-error nil)
+                                     (on-change-emoji new-emoji account))))
           :section-label       :t/account-info
           :bottom-action-label :t/confirm
           :bottom-action-props {:customization-color color
                                 :disabled?           button-disabled?
-                                :on-press            #(on-confirm-name account)}}
+                                :on-press            #(on-confirm-name account)}
+          :error               input-error}
          [quo/data-item
           {:status          :default
            :size            :default

@@ -2639,6 +2639,8 @@
     "key-name-error-emoji": "Emojis are not allowed",
     "key-name-error-special-char": "Special characters are not allowed",
     "key-name-error-too-short": "Key pair name must be at least {{count}} characters",
+    "name-must-differ-error": "Name must differ from other accounts",
+    "emoji-and-colors-unique-error": "Emoji and colour combination must be unique",
     "display": "Display",
     "testnet-mode": "Testnet mode",
     "turn-on-testnet-mode": "Turn on testnet mode",

@@ -13,7 +13,7 @@
                {:value      ""
                 :max-length 24}])
     (h/fire-event :on-focus (h/query-by-label-text :profile-title-input))
-    (-> (h/wait-for #(h/get-by-text "00"))
+    (-> (h/wait-for #(h/get-by-text "0"))
         (.then #(h/is-truthy (h/query-by-text "/24")))))
 
   (h/test "renders with max length digits and character count"
@@ -22,7 +22,7 @@
                 :max-length    24}
                "abc"])
     (h/fire-event :on-focus (h/query-by-label-text :profile-title-input))
-    (-> (h/wait-for #(h/get-by-text "03"))
+    (-> (h/wait-for #(h/get-by-text "3"))
         (.then #(h/is-truthy (h/query-by-text "/24")))))
 
   (h/test "text updates on change"

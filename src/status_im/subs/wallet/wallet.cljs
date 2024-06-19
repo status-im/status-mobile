@@ -47,12 +47,11 @@
  :wallet/home-tokens-loading?
  :<- [:wallet/tokens-loading]
  (fn [tokens-loading]
-   (if (empty? tokens-loading)
-     true
-     (->> tokens-loading
-          vals
-          (some true?)
-          boolean))))
+   (or (empty? tokens-loading)
+       (->> tokens-loading
+            vals
+            (some true?)
+            boolean))))
 
 (rf/reg-sub
  :wallet/current-viewing-account-tokens-loading?
@@ -633,3 +632,34 @@
    (->> accounts
         (some #(= :partially (:operable %)))
         boolean)))
+
+(rf/reg-sub
+ :wallet/accounts-names
+ :<- [:wallet/accounts]
+ (fn [accounts]
+   (set (map :name accounts))))
+
+(rf/reg-sub
+ :wallet/accounts-names-without-current-account
+ :<- [:wallet/accounts-names]
+ :<- [:wallet/current-viewing-account]
+ (fn [[account-names current-viewing-account]]
+   (disj account-names (:name current-viewing-account))))
+
+(defn- get-emoji-and-colors-from-accounts
+  [accounts]
+  (->> accounts
+       (map (fn [{:keys [emoji color]}] [emoji color]))
+       (set)))
+
+(rf/reg-sub
+ :wallet/accounts-emojis-and-colors
+ :<- [:wallet/accounts]
+ (fn [accounts]
+   (get-emoji-and-colors-from-accounts accounts)))
+
+(rf/reg-sub
+ :wallet/accounts-emojis-and-colors-without-current-account
+ :<- [:wallet/accounts-without-current-viewing-account]
+ (fn [accounts]
+   (get-emoji-and-colors-from-accounts accounts)))
