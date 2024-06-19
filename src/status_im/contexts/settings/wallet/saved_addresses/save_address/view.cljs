@@ -93,13 +93,12 @@
                                    :subtitle-type   :default
                                    :label           :none
                                    :blur?           true
-                                   :icon-right?     (not ens?)
-                                   :right-icon      :i/advanced
+                                   :right-icon      (when-not ens? :i/advanced)
                                    :card?           true
                                    :title           (i18n/label :t/address)
                                    :subtitle        ens
                                    :custom-subtitle address-text
-                                   :on-press        open-network-preferences
+                                   :on-press        (when-not ens? open-network-preferences)
                                    :container-style style/data-item}
                             ens?
                             (dissoc :custom-subtitle))
