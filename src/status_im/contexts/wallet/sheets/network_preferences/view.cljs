@@ -103,6 +103,7 @@
                                 :normal-checkbox? receiver?
                                 :networks         (get-current-preferences-names)
                                 :type             :checkbox
+                                :blur?            blur?
                                 :on-change        (fn []
                                                     (toggle-network (:network-name
                                                                      network))
@@ -134,6 +135,7 @@
                                   :normal-checkbox? receiver?
                                   :networks         (get-current-preferences-names)
                                   :type             :checkbox
+                                  :blur?            blur?
                                   :on-change        (fn []
                                                       (toggle-network (:network-name
                                                                        network))
