@@ -542,7 +542,7 @@
      :component wallet-options/view}
 
     {:name      :screen/settings.rename-keypair
-     :options   (assoc options/dark-screen :sheet? true)
+     :options   options/transparent-screen-options
      :component keypair-rename/view}
 
     {:name      :screen/settings.encrypted-keypair-qr
