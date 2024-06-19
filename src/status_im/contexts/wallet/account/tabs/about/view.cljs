@@ -71,16 +71,14 @@
         {keypair-name :name
          keypair-type :type}                      (rf/sub [:wallet/current-viewing-account-keypair])
         networks                                  (rf/sub [:wallet/network-preference-details])
-        origin-type                               (rn/use-memo
-                                                   #(case keypair-type
-                                                      :seed
-                                                      :recovery-phrase
+        origin-type                               (case keypair-type
+                                                    :seed
+                                                    :recovery-phrase
 
-                                                      :key
-                                                      :private-key
+                                                    :key
+                                                    :private-key
 
-                                                      :default-keypair)
-                                                   [keypair-type])]
+                                                    :default-keypair)]
     [rn/scroll-view
      {:style                   style/about-tab
       :content-container-style {:padding-bottom (+ constants/floating-shell-button-height 8)}}

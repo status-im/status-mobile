@@ -266,29 +266,29 @@
 
 (rf/reg-sub
  :wallet/settings-keypairs-accounts
- :<- [:wallet/keypairs]
+ :<- [:wallet/keypairs-list]
  (fn [keypairs [_ format-options]]
-   (let [grouped-keypairs     (->> keypairs
-                                   vals
-                                   (group-by :lowest-operability))
-         operable-keypair-ids (->> (concat (:fully grouped-keypairs)
-                                           (:partially grouped-keypairs))
-                                   (mapv :key-uid))
-         missing-keypair-ids  (mapv :key-uid (:no grouped-keypairs))]
-     {:operable (->> (select-keys keypairs operable-keypair-ids)
-                     vals
-                     (map (fn [{:keys [accounts name type key-uid]}]
-                            {:type     (keyword type)
-                             :name     name
-                             :key-uid  key-uid
-                             :accounts (format-settings-keypair-accounts accounts format-options)})))
-      :missing  (->> (select-keys keypairs missing-keypair-ids)
-                     vals
-                     (map (fn [{:keys [accounts name type key-uid]}]
-                            {:type     (keyword type)
-                             :name     name
-                             :key-uid  key-uid
-                             :accounts (format-settings-missing-keypair-accounts accounts)})))})))
+   (reduce
+    (fn [acc {:keys [accounts name type key-uid lowest-operability]}]
+      (if (= lowest-operability :no)
+        (update acc
+                :missing
+                conj
+                {:type     type
+                 :name     name
+                 :key-uid  key-uid
+                 :accounts (format-settings-missing-keypair-accounts accounts)})
+        (update acc
+                :operable
+                conj
+                {:type     type
+                 :name     name
+                 :key-uid  key-uid
+                 :accounts (format-settings-keypair-accounts accounts format-options)})))
+    {:missing  []
+     :operable []}
+    keypairs)))
+
 (rf/reg-sub
  :wallet/derivation-path-state
  :<- [:wallet/create-account]

@@ -53,7 +53,7 @@
              {}
              keypairs))
 
-(defn map-addresses-to-key-uids
+(defn get-keypair-key-uids-set-from-addresses
   [db addresses]
   (reduce (fn [key-uid-set address]
             (if-let [account-key-uid (get-in db [:wallet :accounts address :key-uid])]

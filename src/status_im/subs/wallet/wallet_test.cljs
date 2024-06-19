@@ -662,22 +662,19 @@
 (h/deftest-sub :wallet/keypairs
   [sub-name]
   (testing "returns keypairs map"
-    (swap! rf-db/app-db #(assoc-in %
-                          [:wallet :keypairs]
-                          {profile-key-pair-key-uid profile-keypair}))
+    (swap! rf-db/app-db assoc-in [:wallet :keypairs] {profile-key-pair-key-uid profile-keypair})
     (is (match? {profile-key-pair-key-uid profile-keypair} (rf/sub [sub-name])))))
 
 (h/deftest-sub :wallet/keypairs-list
   [sub-name]
-  (testing "returns all keypairs"
-    (swap! rf-db/app-db #(assoc-in %
-                          [:wallet :keypairs]
-                          {profile-key-pair-key-uid     profile-keypair
-                           seed-phrase-key-pair-key-uid seed-phrase-keypair}))
-    (let [result   (rf/sub [sub-name])
-          expected (list profile-keypair seed-phrase-keypair)]
-      (is (match? 2 (count result)))
-      (is (match? expected result)))))
+  (swap! rf-db/app-db assoc-in
+    [:wallet :keypairs]
+    {profile-key-pair-key-uid     profile-keypair
+     seed-phrase-key-pair-key-uid seed-phrase-keypair})
+  (let [result   (rf/sub [sub-name])
+        expected (list profile-keypair seed-phrase-keypair)]
+    (is (= 2 (count result)))
+    (is (match? expected result))))
 
 (h/deftest-sub :wallet/settings-keypairs-accounts
   [sub-name]

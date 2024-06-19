@@ -230,7 +230,7 @@
 
 (defn make-partially-operable-accounts-fully-operable-success
   [{:keys [db]} [addresses]]
-  (let [key-uids-to-update (data-store/map-addresses-to-key-uids db addresses)]
+  (let [key-uids-to-update (data-store/get-keypair-key-uids-set-from-addresses db addresses)]
     {:db (-> db
              (update-in [:wallet :accounts]
                         #(data-store/make-accounts-fully-operable {:accounts           %
