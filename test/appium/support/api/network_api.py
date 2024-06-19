@@ -14,7 +14,7 @@ import tests
 
 class NetworkApi:
     def __init__(self):
-        self.network_url = 'http://api-sepolia.etherscan.io/api'
+        self.network_url = 'http://api-sepolia.arbiscan.io/api'
         self.api_key = environ.get('ETHERSCAN_API_KEY')
 
     def log(self, text: str):
@@ -50,7 +50,7 @@ class NetworkApi:
         balance = self.send_etherscan_request(params)
         if balance:
             self.log('Balance is %s Gwei' % balance)
-            return int(balance)
+            return int(balance) / 1000000000000000000
         else:
             self.log('Cannot extract balance!')
 
@@ -138,11 +138,12 @@ class NetworkApi:
 
     def wait_for_balance_to_be(self, address: str, expected_balance: int, less: bool = True):
         for _ in range(5):
-            balance = self.get_balance(address) / 1000000000000000000
-            if (less and balance < expected_balance) or (not less and balance > expected_balance):
+            balance = self.get_balance(address)
+            if balance == expected_balance:
                 return
             time.sleep(10)
-        raise TimeoutException('Balance is not updated on Etherscan')
+        raise TimeoutException(
+            'balance is not updated on Etherscan, it is %s but expected to be %s' % (balance, expected_balance))
 
     # Do not use until web3 update
     # def faucet(self, address):

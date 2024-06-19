@@ -8,7 +8,7 @@ from selenium.common import TimeoutException, NoSuchElementException
 from base_test_case import MultipleSharedDeviceTestCase, create_shared_drivers
 from support.api.network_api import NetworkApi
 from tests import marks, run_in_parallel
-from users import recovery_users
+from users import transaction_senders
 from views.sign_in_view import SignInView
 
 
@@ -21,9 +21,9 @@ class TestWalletMultipleDevice(MultipleSharedDeviceTestCase):
         self.network_api = NetworkApi()
         self.drivers, self.loop = create_shared_drivers(2)
         self.sign_in_1, self.sign_in_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
-        passphrases, addresses = list(recovery_users), list(recovery_users.values())
-        self.sender = {'passphrase': passphrases[0], 'address': addresses[0]}
-        self.receiver = {'passphrase': passphrases[1], 'address': addresses[1]}
+        self.sender, self.receiver = transaction_senders['ETH_1'], transaction_senders['ETH_2']
+        self.sender['wallet_address'] = '0x' + self.sender['address']
+        self.receiver['wallet_address'] = '0x' + self.receiver['address']
         self.sender_username, self.receiver_username = 'sender', 'receiver'
         self.loop.run_until_complete(
             run_in_parallel(((self.sign_in_1.recover_access, {'passphrase': self.sender['passphrase'],
@@ -34,8 +34,8 @@ class TestWalletMultipleDevice(MultipleSharedDeviceTestCase):
         self.wallet_1, self.wallet_2 = self.sign_in_1.get_wallet_view(), self.sign_in_2.get_wallet_view()
 
     def _get_balances_before_tx(self):
-        sender_balance = self.network_api.get_balance(self.sender['address'])
-        receiver_balance = self.network_api.get_balance(self.receiver['address'])
+        sender_balance = self.network_api.get_balance(self.sender['wallet_address'])
+        receiver_balance = self.network_api.get_balance(self.receiver['wallet_address'])
         self.wallet_1.just_fyi("Getting ETH amount in the wallet of the sender before transaction")
         self.wallet_1.wallet_tab.click()
         self.wallet_1.get_account_element().click()
@@ -49,15 +49,15 @@ class TestWalletMultipleDevice(MultipleSharedDeviceTestCase):
     def _check_balances_after_tx(self, amount_to_send, sender_balance, receiver_balance, eth_amount_sender,
                                  eth_amount_receiver):
         try:
-            self.network_api.wait_for_balance_to_be(address=self.sender['address'],
+            self.network_api.wait_for_balance_to_be(address=self.sender['wallet_address'],
                                                     expected_balance=sender_balance - amount_to_send)
-        except TimeoutException:
-            self.errors.append("Sender balance was not updated")
+        except TimeoutException as e:
+            self.errors.append("Sender " + e.msg)
         try:
-            self.network_api.wait_for_balance_to_be(address=self.receiver['address'],
+            self.network_api.wait_for_balance_to_be(address=self.receiver['wallet_address'],
                                                     expected_balance=receiver_balance + amount_to_send)
-        except TimeoutException:
-            self.errors.append("Receiver balance was not updated")
+        except TimeoutException as e:
+            self.errors.append("Receiver " + e.msg)
 
         def wait_for_wallet_balance_to_update(wallet_view, user_name, initial_eth_amount):
             wallet_view.just_fyi("Getting ETH amount in the wallet of the %s after transaction" % user_name)
@@ -102,8 +102,9 @@ class TestWalletMultipleDevice(MultipleSharedDeviceTestCase):
         expected_time = "Today %s" % current_time.strftime('%-I:%M %p')
         possible_times = [expected_time,
                           "Today %s" % (current_time + datetime.timedelta(minutes=1)).strftime('%-I:%M %p')]
-        sender_address_short = self.sender['address'].replace(self.sender['address'][5:-3], '...').lower()
-        receiver_address_short = self.receiver['address'].replace(self.receiver['address'][5:-3], '...').lower()
+        sender_address_short = self.sender['wallet_address'].replace(self.sender['wallet_address'][5:-3], '...').lower()
+        receiver_address_short = self.receiver['wallet_address'].replace(self.receiver['wallet_address'][5:-3],
+                                                                         '...').lower()
         activity_element = wallet_view.get_activity_element()
         try:
             if not all((activity_element.header == 'Send' if sender else 'Receive',
@@ -128,7 +129,7 @@ class TestWalletMultipleDevice(MultipleSharedDeviceTestCase):
 
         self.wallet_1.just_fyi("Sending funds from wallet")
         amount_to_send = 0.0001
-        self.wallet_1.send_asset(address=self.receiver['address'], asset_name='Ether', amount=amount_to_send)
+        self.wallet_1.send_asset(address=self.receiver['wallet_address'], asset_name='Ether', amount=amount_to_send)
 
         device_time = self.wallet_1.driver.device_time
 
@@ -154,7 +155,7 @@ class TestWalletMultipleDevice(MultipleSharedDeviceTestCase):
 
         self.wallet_1.just_fyi("Sending asset from drawer")
         amount_to_send = 0.0001
-        self.wallet_1.send_asset_from_drawer(address=self.receiver['address'], asset_name='Ether',
+        self.wallet_1.send_asset_from_drawer(address=self.receiver['wallet_address'], asset_name='Ether',
                                              amount=amount_to_send)
         device_time = self.wallet_1.driver.device_time
 
