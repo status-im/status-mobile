@@ -75,7 +75,8 @@
   [{:keys [search-text]}]
   [rn/flat-list
    {:key-fn                          :address
-    :data                            (rf/sub [:wallet/filtered-saved-addresses search-text])
+    :data                            (rf/sub [:wallet/filtered-saved-addresses
+                                              (string/trim search-text)])
     :render-fn                       saved-address
     :shows-vertical-scroll-indicator false
     :keyboard-should-persist-taps    :always
