@@ -145,21 +145,21 @@
         valid-ens-or-address?    (boolean (rf/sub [:wallet/valid-ens-or-address?]))]
     [quo/button
      {:accessibility-label :continue-button
-      :type :primary
-      :disabled? (not valid-ens-or-address?)
-      :on-press (fn []
-                  (let [address (or
-                                 local-suggestion-address
-                                 input-value)]
-                    (rf/dispatch
-                     [:wallet/select-send-address
-                      {:address address
-                       :recipient {:label
-                                   (utils/get-shortened-address
-                                    address)
-                                   :recipient-type :address}
-                       :stack-id
-                       :screen/wallet.select-address}])))
+      :type                :primary
+      :disabled?           (not valid-ens-or-address?)
+      :on-press            (fn []
+                             (let [address (or
+                                            local-suggestion-address
+                                            input-value)]
+                               (rf/dispatch
+                                [:wallet/select-send-address
+                                 {:address address
+                                  :recipient {:label
+                                              (utils/get-shortened-address
+                                               address)
+                                              :recipient-type :address}
+                                  :stack-id
+                                  :screen/wallet.select-address}])))
       :customization-color color}
      (i18n/label :t/continue)]))
 
@@ -177,8 +177,8 @@
         input-value    (reagent/atom "")
         input-focused? (reagent/atom false)]
     (fn []
-      (let [selected-tab             (or (rf/sub [:wallet/send-tab]) (:id (first tabs-data)))
-            valid-ens-or-address?    (boolean (rf/sub [:wallet/valid-ens-or-address?]))]
+      (let [selected-tab          (or (rf/sub [:wallet/send-tab]) (:id (first tabs-data)))
+            valid-ens-or-address? (boolean (rf/sub [:wallet/valid-ens-or-address?]))]
         [floating-button-page/view
          {:footer-container-padding     0
           :keyboard-should-persist-taps true

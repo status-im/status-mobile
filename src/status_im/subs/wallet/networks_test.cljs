@@ -1,11 +1,10 @@
 (ns status-im.subs.wallet.networks-test
   (:require
-    [cljs.test :refer [is testing run-tests]]
+    [cljs.test :refer [is run-tests testing]]
     [re-frame.db :as rf-db]
     status-im.subs.root
     status-im.subs.wallet.networks
     [test-helpers.unit :as h]
-    [utils.money :as money]
     [utils.re-frame :as rf]))
 
 (def network-data
@@ -98,19 +97,23 @@
 (h/deftest-sub :wallet/network-values
   [sub-name]
   (testing
-   "network values for the from account are returned correctly"
-    (swap! rf-db/app-db assoc-in [:wallet :ui :send] {:from-values-by-chain {1 100}
-                                                      :to-values-by-chain {42161 100}
-                                                      :token-display-name "ETH"})
+    "network values for the from account are returned correctly"
+    (swap! rf-db/app-db assoc-in
+      [:wallet :ui :send]
+      {:from-values-by-chain {1 100}
+       :to-values-by-chain   {42161 100}
+       :token-display-name   "ETH"})
     (is
-     (match? {:ethereum {:amount 100, :token-symbol "ETH"}} (rf/sub [sub-name false]))))
-  
+     (match? {:ethereum {:amount 100 :token-symbol "ETH"}} (rf/sub [sub-name false]))))
+
   (testing
-   "network values for the to account are returned correctly"
-    (swap! rf-db/app-db assoc-in [:wallet :ui :send] {:from-values-by-chain {1 100}
-                                                      :to-values-by-chain {42161 100}
-                                                      :token-display-name "ARB1"})
+    "network values for the to account are returned correctly"
+    (swap! rf-db/app-db assoc-in
+      [:wallet :ui :send]
+      {:from-values-by-chain {1 100}
+       :to-values-by-chain   {42161 100}
+       :token-display-name   "ARB1"})
     (is
-     (match? {:arbitrum {:amount 100, :token-symbol "ARB1"}} (rf/sub [sub-name true])))))
+     (match? {:arbitrum {:amount 100 :token-symbol "ARB1"}} (rf/sub [sub-name true])))))
 
 (run-tests)

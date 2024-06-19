@@ -198,43 +198,45 @@
   [_]
   (let [on-close #(rf/dispatch [:navigate-back])]
     (fn []
-      (let [theme                                       (quo.theme/use-theme)
-            send-transaction-data                       (rf/sub [:wallet/wallet-send])
-            {:keys [token-display-name collectible amount route
-                    to-address bridge-to-chain-id type recipient]} send-transaction-data
-            collectible?                                (some? collectible)
-            image-url                                   (when collectible
-                                                          (get-in collectible [:preview-url :uri]))
-            transaction-type                            (:tx-type send-transaction-data)
-            estimated-time-min                          (reduce + (map :estimated-time route))
-            token-symbol                                (or token-display-name
-                                                            (-> send-transaction-data :token :symbol))
-            first-route                                 (first route)
-            native-currency-symbol                      (get-in first-route
-                                                                [:from :native-currency-symbol])
-            native-token                                (when native-currency-symbol
-                                                          (rf/sub [:wallet/token-by-symbol
-                                                                   native-currency-symbol]))
-            fee-formatted                               (rf/sub [:wallet/wallet-send-fee-fiat-formatted
-                                                                 native-token])
-            account                                     (rf/sub [:wallet/current-viewing-account])
-            account-color                               (:color account)
-            bridge-to-network                           (when bridge-to-chain-id
-                                                          (rf/sub [:wallet/network-details-by-chain-id
-                                                                   bridge-to-chain-id]))
-            loading-suggested-routes?                   (rf/sub
-                                                         [:wallet/wallet-send-loading-suggested-routes?])
-            from-account-props                          {:customization-color account-color
-                                                         :size 32
-                                                         :emoji (:emoji account)
-                                                         :type :default
-                                                         :name (:name account)
-                                                         :address (utils/get-shortened-address
-                                                                   (:address
-                                                                    account))}
-            user-props                                  {:full-name to-address
-                                                         :address   (utils/get-shortened-address
-                                                                     to-address)}]
+      (let [theme                     (quo.theme/use-theme)
+            send-transaction-data     (rf/sub [:wallet/wallet-send])
+            {:keys [token-display-name collectible amount
+                    route
+                    to-address bridge-to-chain-id type
+                    recipient]}       send-transaction-data
+            collectible?              (some? collectible)
+            image-url                 (when collectible
+                                        (get-in collectible [:preview-url :uri]))
+            transaction-type          (:tx-type send-transaction-data)
+            estimated-time-min        (reduce + (map :estimated-time route))
+            token-symbol              (or token-display-name
+                                          (-> send-transaction-data :token :symbol))
+            first-route               (first route)
+            native-currency-symbol    (get-in first-route
+                                              [:from :native-currency-symbol])
+            native-token              (when native-currency-symbol
+                                        (rf/sub [:wallet/token-by-symbol
+                                                 native-currency-symbol]))
+            fee-formatted             (rf/sub [:wallet/wallet-send-fee-fiat-formatted
+                                               native-token])
+            account                   (rf/sub [:wallet/current-viewing-account])
+            account-color             (:color account)
+            bridge-to-network         (when bridge-to-chain-id
+                                        (rf/sub [:wallet/network-details-by-chain-id
+                                                 bridge-to-chain-id]))
+            loading-suggested-routes? (rf/sub
+                                       [:wallet/wallet-send-loading-suggested-routes?])
+            from-account-props        {:customization-color account-color
+                                       :size                32
+                                       :emoji               (:emoji account)
+                                       :type                :default
+                                       :name                (:name account)
+                                       :address             (utils/get-shortened-address
+                                                             (:address
+                                                              account))}
+            user-props                {:full-name to-address
+                                       :address   (utils/get-shortened-address
+                                                   to-address)}]
         [rn/view {:style {:flex 1}}
          [floating-button-page/view
           {:footer-container-padding 0
