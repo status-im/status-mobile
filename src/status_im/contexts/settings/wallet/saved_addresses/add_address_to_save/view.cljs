@@ -84,7 +84,7 @@
       [quo/info-message
        {:accessibility-label :error-message
         :size                :default
-        :icon                :i/info
+        :icon                :i/alert
         :type                :error
         :style               style/info-message}
        error-msg])))
@@ -93,7 +93,7 @@
   [{:keys [address]}]
   (let [{:keys [name customization-color chain-short-names ens ens?]}
         (rf/sub [:wallet/saved-address-by-address
-                 address])]
+                 (string/lower-case address)])]
     [rn/view {:style style/existing-saved-address-container}
      [quo/text
       {:size   :paragraph-1
