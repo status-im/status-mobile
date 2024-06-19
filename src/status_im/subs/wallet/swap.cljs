@@ -52,3 +52,7 @@
                                                             fiat-value)]
      {:crypto (str crypto-formatted " " token-symbol)
       :fiat   fiat-formatted})))
+(rf/reg-sub
+ :wallet/swap-max-slippage
+ :<- [:wallet/swap]
+ :-> :max-slippage)
