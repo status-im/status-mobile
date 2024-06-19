@@ -2639,6 +2639,7 @@
     "max": "Max: {{number}}",
     "your-key-pair-name-is-too-long": "Your key pair name is too long",
     "your-key-pair-name-is-too-short": "Your key pair name is too short",
+    "key-name-error-taken": "Key pair name already in use",
     "key-name-error-length": "Key name too long",
     "key-name-error-emoji": "Emojis are not allowed",
     "key-name-error-special-char": "Special characters are not allowed",

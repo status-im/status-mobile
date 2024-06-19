@@ -18,10 +18,11 @@
 
 (deftest validation-keypair-name-test
   (are [arg expected]
-   (= (keypair-validator/validation-keypair-name arg) expected)
+   (= (keypair-validator/validation-keypair-name arg #{"Collection"}) expected)
    nil                         nil
    ""                          nil
    "name !"                    (i18n/label :t/key-name-error-special-char)
    "Hello 😊"                  (i18n/label :t/key-name-error-emoji)
    "abc"                       (i18n/label :t/your-key-pair-name-is-too-short)
+   "Collection"                (i18n/label :t/key-name-error-taken)
    (apply str (repeat 25 "a")) (i18n/label :t/your-key-pair-name-is-too-long)))

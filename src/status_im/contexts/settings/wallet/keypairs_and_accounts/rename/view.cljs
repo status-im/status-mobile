@@ -16,19 +16,23 @@
 (defn view
   []
   (let [insets                                          (safe-area/get-insets)
-        {:keys [name key-uid]}                          (rf/sub [:get-screen-params])
+        {existing-keypair-name :name
+         :keys                 [key-uid]}               (rf/sub [:get-screen-params])
+        existing-keypair-names                          (rf/sub [:wallet/keypair-names])
         customization-color                             (rf/sub [:profile/customization-color])
-        [unsaved-keypair-name set-unsaved-keypair-name] (rn/use-state name)
+        [unsaved-keypair-name set-unsaved-keypair-name] (rn/use-state existing-keypair-name)
         [error-msg set-error-msg]                       (rn/use-state nil)
         [typing? set-typing?]                           (rn/use-state false)
         validate-keypair-name                           (rn/use-callback
                                                          (debounce/debounce
-                                                          (fn [name]
+                                                          (fn [input-name]
                                                             (set-error-msg
                                                              (keypair-validator/validation-keypair-name
-                                                              name))
+                                                              input-name
+                                                              existing-keypair-names))
                                                             (set-typing? false))
-                                                          300))
+                                                          300)
+                                                         [existing-keypair-names])
         on-change-text                                  (rn/use-callback (fn [text]
                                                                            (set-typing? true)
                                                                            (set-unsaved-keypair-name
@@ -58,6 +62,8 @@
                                    :button-one-label (i18n/label :t/save)
                                    :button-one-props {:blur?               true
                                                       :disabled?           (or typing?
+                                                                               (= existing-keypair-name
+                                                                                  unsaved-keypair-name)
                                                                                (string/blank?
                                                                                 unsaved-keypair-name)
                                                                                (not (string/blank?
@@ -72,7 +78,7 @@
         :blur?           true
         :context-tag     {:type    :icon
                           :size    24
-                          :context name
+                          :context existing-keypair-name
                           :icon    :i/seed-phrase}}]
       [quo/input
        {:blur?           true

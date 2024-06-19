@@ -206,6 +206,12 @@
    (vals keypairs)))
 
 (rf/reg-sub
+ :wallet/keypair-names
+ :<- [:wallet/keypairs-list]
+ (fn [keypairs]
+   (set (map :name keypairs))))
+
+(rf/reg-sub
  :wallet/selected-keypair-uid
  :<- [:wallet/create-account]
  :-> :selected-keypair-uid)
