@@ -62,4 +62,4 @@ fi
 
 nixOpts+=("--arg" "config" "{${config}}")
 
-"${GIT_ROOT}/nix/scripts/build.sh" targets.mobile.android.release "${nixOpts[@]}"
+"${GIT_ROOT}/nix/scripts/build.sh" targets.mobile.android.build "${nixOpts[@]}"

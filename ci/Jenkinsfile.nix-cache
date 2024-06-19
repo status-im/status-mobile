@@ -75,7 +75,7 @@ pipeline {
       steps { script {
         /* build/fetch things required to build jsbundle and android */
         nix.build(
-          attr: 'targets.mobile.android.release.buildInputs',
+          attr: 'targets.mobile.android.build.buildInputs',
           sandbox: false,
           pure: false,
           link: false

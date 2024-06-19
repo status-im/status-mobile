@@ -5,10 +5,10 @@ let
   # Import a jsbundle compiled out of clojure codebase
   jsbundle = callPackage ./jsbundle { };
 
-  release = callPackage ./release.nix { inherit jsbundle status-go; };
+  build = callPackage ./build.nix { inherit jsbundle status-go; };
 in {
   # TARGETS
-  inherit release jsbundle;
+  inherit build jsbundle;
 
   shell = mkShell {
     buildInputs = with pkgs; [
@@ -19,7 +19,7 @@ in {
     ];
 
     inputsFrom = [
-      release
+      build
       androidShell
     ];
 

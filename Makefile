@@ -268,7 +268,7 @@ run-re-frisk: ##@run Start re-frisk server
 # TODO: Migrate this to a Nix recipe, much the same way as nix/mobile/android/targets/release-android.nix
 run-android: export TARGET := android
 run-android: ##@run Build Android APK and start it on the device
-	npx react-native run-android --appIdSuffix debug
+	@scripts/run-android.sh
 
 SIMULATOR=
 run-ios: export TARGET := ios

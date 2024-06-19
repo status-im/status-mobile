@@ -28,7 +28,10 @@ let
     else ".env";
 
   # There are only two types of Gradle build targets: pr and release
-  gradleBuildType = if buildType == "pr" then "Pr" else "Release";
+  gradleBuildType =
+    if buildType == "pr" then "Pr"
+    else if buildType == "debug" then "Debug"
+    else "Release";
 
   apksPath = "./android/app/build/outputs/apk/${toLower gradleBuildType}";
 
@@ -138,7 +141,7 @@ in stdenv.mkDerivation rec {
       || exit 1
     popd > /dev/null
   '';
-  doCheck = true;
+  doCheck = buildType != debug;
   checkPhase = ''
     ls ${apksPath}/*.apk \
       | xargs -n1 ${pkgs.unzip}/bin/unzip -qql \
