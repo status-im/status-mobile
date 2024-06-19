@@ -643,8 +643,8 @@
  :wallet/accounts-names-without-current-account
  :<- [:wallet/accounts-names]
  :<- [:wallet/current-viewing-account]
- (fn [[account-names current-viewing-account-address]]
-   (disj account-names (:name current-viewing-account-address))))
+ (fn [[account-names current-viewing-account]]
+   (disj account-names (:name current-viewing-account))))
 
 (defn- get-emoji-and-colors-from-accounts
   [accounts]
