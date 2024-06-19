@@ -49,6 +49,7 @@
        :multiline?          true
        :on-clear            clear-input
        :return-key-type     :done
+       :auto-focus          true
        :clearable?          (not empty-input?)
        :on-change-text      on-change-text
        :button              (when empty-input?
