@@ -141,7 +141,7 @@ in stdenv.mkDerivation rec {
       || exit 1
     popd > /dev/null
   '';
-  doCheck = buildType != debug;
+  doCheck = buildType != "debug";
   checkPhase = ''
     ls ${apksPath}/*.apk \
       | xargs -n1 ${pkgs.unzip}/bin/unzip -qql \
