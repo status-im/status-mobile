@@ -464,7 +464,7 @@
 
 (rf/reg-sub
  :wallet/accounts-with-current-asset
- :<- [:wallet/accounts-without-watched-accounts]
+ :<- [:wallet/fully-or-partially-operable-accounts-without-watched-accounts]
  :<- [:wallet/wallet-send-token-symbol]
  :<- [:wallet/wallet-send-token]
  (fn [[accounts token-symbol token]]
