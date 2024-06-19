@@ -186,7 +186,7 @@
             :disabled?       button-disabled?
             :on-press        on-submit}
            (i18n/label :t/continue)])]
-       (when @keyboard-shown?
+       (when (or @keyboard-shown? error-state?)
          [rn/view {:style style/keyboard-container}
           [quo/predictive-keyboard
            {:type     suggestions-state
