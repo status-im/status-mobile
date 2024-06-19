@@ -80,7 +80,9 @@
     :shows-vertical-scroll-indicator false
     :keyboard-should-persist-taps    :always
     :content-container-style         {:flex-grow 1}
-    :empty-component                 [empty-result]}])
+    :empty-component                 [empty-result]
+    :bounces                         false
+    :over-scroll-mode                :never}])
 
 (defn- unfiltered-list
   [{:keys [grouped-saved-addresses]}]
@@ -92,6 +94,8 @@
     :render-section-header-fn        header
     :sections                        grouped-saved-addresses
     :render-fn                       saved-address
+    :bounces                         false
+    :over-scroll-mode                :never
     :content-container-style         {:flex-grow 1}
     :empty-component                 [empty-list]}])
 
