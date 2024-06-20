@@ -61,8 +61,12 @@
                                                                             reanimated/easings))))))
 
 (defn title
-  [insets generate-keys-opacity saving-keys-opacity keys-saved-opacity]
-  (let [top-insets (+ (if rn/small-screen? 62 112) (:insets insets))]
+  [insets]
+  (let [top-insets            (+ (if rn/small-screen? 62 112) (:insets insets))
+        generate-keys-opacity (reanimated/use-shared-value 1)
+        saving-keys-opacity   (reanimated/use-shared-value 0)
+        keys-saved-opacity    (reanimated/use-shared-value 0)]
+    (sequence-animation generate-keys-opacity saving-keys-opacity keys-saved-opacity)
     [rn/view
      {:position :absolute
       :top      top-insets}
@@ -83,44 +87,20 @@
       [keys-saved-title]]]))
 
 (defn content
-  [generate-keys-opacity saving-keys-opacity keys-saved-opacity]
+  []
   (let [width (:width (rn/get-window))]
     [rn/view
-     {:margin-top 156}
-     [reanimated/view
-      {:style (reanimated/apply-animations-to-style
-               {:opacity generate-keys-opacity}
-               {:position :absolute})}
-      [rn/image
-       {:resize-mode :contain
-        :style       (style/page-illustration width)
-        :source      (resources/get-image :generate-keys1)}]]
-
-     [reanimated/view
-      {:style (reanimated/apply-animations-to-style
-               {:opacity saving-keys-opacity}
-               {:position :absolute})}
-      [rn/image
-       {:resize-mode :contain
-        :style       (style/page-illustration width)
-        :source      (resources/get-image :generate-keys2)}]]
-     [reanimated/view
-      {:style (reanimated/apply-animations-to-style
-               {:opacity keys-saved-opacity}
-               {:position :absolute})}
-      [rn/image
-       {:resize-mode :contain
-        :style       (style/page-illustration width)
-        :source      (resources/get-image :generate-keys3)}]]]))
+     {:top      156
+      :position :absolute}
+     [rn/image
+      {:resize-mode :contain
+       :style       (style/page-illustration width)
+       :source      (resources/get-image :generate-keys1)}]]))
 
 (defn view
   []
-  (let [insets                (safe-area/get-insets)
-        generate-keys-opacity (reanimated/use-shared-value 1)
-        saving-keys-opacity   (reanimated/use-shared-value 0)
-        keys-saved-opacity    (reanimated/use-shared-value 0)]
+  (let [insets (safe-area/get-insets)]
     [rn/view {:style (style/page-container insets)}
-     (sequence-animation generate-keys-opacity saving-keys-opacity keys-saved-opacity)
      [:<>
-      [title insets generate-keys-opacity saving-keys-opacity keys-saved-opacity]
-      [content generate-keys-opacity saving-keys-opacity keys-saved-opacity]]]))
+      [title insets]
+      [content]]]))
