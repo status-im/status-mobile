@@ -210,12 +210,10 @@
             :always      (assoc-in [:wallet :ui :send :token-display-name]
                           (:symbol token))
             :always      (assoc-in
-                          [:wallet :ui :send
-                           :token-not-supported-in-receiver-networks?]
+                          [:wallet :ui :send :token-not-supported-in-receiver-networks?]
                           token-not-supported-in-receiver-networks?)
             token        (assoc-in [:wallet :ui :send :token] token)
-            token-symbol (assoc-in [:wallet :ui :send :token-symbol]
-                          token-symbol))
+            token-symbol (assoc-in [:wallet :ui :send :token-symbol] token-symbol))
       :fx [[:dispatch [:wallet/clean-suggested-routes]]
            [:dispatch
             [:wallet/wizard-navigate-forward
@@ -253,8 +251,7 @@
                      :collectible
                      :token-display-name
                      :amount
-                     (when (send-utils/tx-type-collectible?
-                            transaction-type)
+                     (when (send-utils/tx-type-collectible? transaction-type)
                        :tx-type))})))
 
 (rf/reg-event-fx
