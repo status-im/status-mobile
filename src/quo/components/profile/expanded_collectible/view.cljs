@@ -1,5 +1,6 @@
 (ns quo.components.profile.expanded-collectible.view
   (:require
+    [clojure.string :as string]
     [promesa.core :as promesa]
     [quo.components.counter.collectible-counter.view :as collectible-counter]
     [quo.components.icon :as icon]
@@ -7,23 +8,20 @@
     [quo.components.profile.expanded-collectible.style :as style]
     [quo.foundations.colors :as colors]
     [quo.theme]
-    [quo.theme]
-    [quo.theme]
     [react-native.core :as rn]
     [schema.core :as schema]
     [utils.i18n :as i18n]))
 
 (defn- counter-view
   [counter]
-  (when counter
-    [collectible-counter/view
-     {:container-style style/counter
-      :value           counter}]))
+  [collectible-counter/view
+   {:container-style style/counter
+    :value           counter}])
 
 (defn- fallback-view
-  [{:keys [label theme counter]}]
-  [rn/view
-   {:style (style/fallback {:theme theme})}
+  [{:keys [label theme counter on-mount]}]
+  (rn/use-mount on-mount)
+  [rn/view {:style (style/fallback {:theme theme})}
    [counter-view counter]
    [rn/view
     [icon/icon :i/sad {:color (colors/theme-colors colors/neutral-40 colors/neutral-50 theme)}]]
@@ -38,7 +36,8 @@
            on-collectible-load]}]
   (let [theme                          (quo.theme/use-theme)
         [image-size set-image-size]    (rn/use-state {})
-        [image-error? set-image-error] (rn/use-state false)]
+        [image-error? set-image-error] (rn/use-state (or (nil? image-src)
+                                                         (string/blank? image-src)))]
     (rn/use-effect
      (fn []
        (promesa/let [[image-width image-height] (rn/image-get-size image-src)]
@@ -53,25 +52,29 @@
      (cond
        (not supported-file?)
        [fallback-view
-        {:label   (i18n/label :t/unsupported-file)
-         :counter counter
-         :theme   theme}]
+        {:label    (i18n/label :t/unsupported-file)
+         :counter  counter
+         :theme    theme
+         :on-mount on-collectible-load}]
 
        image-error?
        [fallback-view
-        {:label   (i18n/label :t/cant-fetch-info)
-         :counter counter
-         :theme   theme}]
+        {:label    (i18n/label :t/cant-fetch-info)
+         :counter  counter
+         :theme    theme
+         :on-mount on-collectible-load}]
 
-       (and (not image-error?) supported-file?)
+       :else
        [rn/view
         [rn/image
-         {:style     (style/image square? (:aspect-ratio image-size))
+         {:style     (style/image square? (:aspect-ratio image-size) theme)
           :source    image-src
           :native-ID native-ID
           :on-error  #(set-image-error true)
           :on-load   on-collectible-load}]
-        [counter-view counter]])]))
+        (when counter
+          [counter-view counter])
+        [rn/view {:style (style/collectible-border theme)}]])]))
 
 (def ?schema
   [:=>

@@ -1,15 +1,19 @@
 (ns status-im.contexts.wallet.collectible.style
   (:require [quo.foundations.colors :as colors]
             [react-native.core :as rn]
-            [react-native.platform :as platform]))
+            [react-native.platform :as platform]
+            [react-native.safe-area :as safe-area]))
 
-(def container
-  {:margin-bottom 34})
+(def container {:margin-bottom 34})
 
-(def preview-container
+(defn- header-height
+  []
+  (+ 56 (safe-area/get-top)))
+
+(defn preview-container
+  []
   {:margin-horizontal 8
-   :margin-top        12
-   :padding-top       100})
+   :margin-top        (+ (header-height) 12)})
 
 (def header
   {:margin-horizontal 20
@@ -42,12 +46,13 @@
   {:flex        1
    :margin-left 6})
 
-(def animated-header
+(defn animated-header
+  []
   {:position :absolute
    :top      0
    :left     0
    :right    0
-   :height   100
+   :height   (header-height)
    :z-index  1
    :overflow :hidden})
 

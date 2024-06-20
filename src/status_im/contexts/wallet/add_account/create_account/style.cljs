@@ -11,10 +11,11 @@
    :bottom   0
    :left     80})
 
-(def title-input-container
+(defn title-input-container
+  [error?]
   {:padding-horizontal 20
    :padding-top        12
-   :padding-bottom     16})
+   :padding-bottom     (if error? 8 16)})
 
 (def color-picker-container
   {:padding-vertical 12})
