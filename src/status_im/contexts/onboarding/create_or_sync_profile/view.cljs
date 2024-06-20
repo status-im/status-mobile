@@ -26,10 +26,11 @@
    1000))
 
 (defn- navigate-to-sign-in-by-seed-phrase
-  [current-screen]
-  #(rf/dispatch [:navigate-to-within-stack
-                 [:screen/onboarding.enter-seed-phrase
-                  current-screen]]))
+  [create-profile?]
+  (rf/dispatch [:onboarding/navigate-to-sign-in-by-seed-phrase
+                (if create-profile?
+                  :screen/onboarding.new-to-status
+                  :screen/onboarding.sync-or-recover-profile)]))
 
 (defn- option-card-max-height
   [window-height]
@@ -65,9 +66,15 @@
 
 (defn sign-in-options
   [sign-in-type]
-  (let [window-height    (rf/sub [:dimensions/window-height])
-        create-profile?  (= sign-in-type :create-profile)
-        main-option-card (if create-profile? create-profile-option-card sync-profile-option-card)]
+  (let [window-height                      (rf/sub [:dimensions/window-height])
+        create-profile?                    (= sign-in-type :create-profile)
+        nav-to-seed-phrase-with-cur-screen (rn/use-callback
+                                            #(navigate-to-sign-in-by-seed-phrase
+                                              create-profile?)
+                                            [create-profile?])
+        main-option-card                   (if create-profile?
+                                             create-profile-option-card
+                                             sync-profile-option-card)]
     [rn/view {:style style/options-container}
      [quo/text
       {:style  style/title
@@ -88,10 +95,7 @@
         :subtitle            (i18n/label :t/use-recovery-phrase-subtitle)
         :accessibility-label :use-recovery-phrase-option-card
         :image               (resources/get-image :ethereum-address)
-        :on-press            (navigate-to-sign-in-by-seed-phrase
-                              (if create-profile?
-                                :screen/onboarding.new-to-status
-                                :screen/onboarding.sync-or-recover-profile))}]
+        :on-press            nav-to-seed-phrase-with-cur-screen}]
       [rn/view {:style style/space-between-suboptions}]
       (when config/show-not-implemented-features?
         [quo/small-option-card
