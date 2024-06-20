@@ -87,7 +87,7 @@
                                                          chain-ids]))}]))}]))
 
 (defn- edit-amount
-  [{:keys [chain-id token-symbol send-amount-in-crypto]}]
+  [{:keys [chain-id token-symbol send-amount-in-crypto init-amount]}]
   (rf/dispatch
    [:show-bottom-sheet
     {:content
@@ -106,6 +106,9 @@
              locked-amount                              (get send-from-locked-amounts chain-id)
              network-name-str                           (string/capitalize (name network-name))
              [input-state set-input-state]              (rn/use-state (cond-> controlled-input/init-state
+                                                                        init-amount
+                                                                        (controlled-input/set-input-value
+                                                                         (money/to-string init-amount))
                                                                         locked-amount
                                                                         (controlled-input/set-input-value
                                                                          locked-amount)))
@@ -267,7 +270,7 @@
                                          (cond
                                            (= type :add)
                                            (open-preferences)
-                                           on-long-press (on-long-press chain-id)))}]]))
+                                           on-long-press (on-long-press chain-id total-amount)))}]]))
                 network-values)])
 
 (defn render-network-links
@@ -380,12 +383,12 @@
                                                       chain-id-to-disable
                                                       disabled-from-chain-ids
                                                       token-available-networks-for-suggested-routes))
-
-        :on-long-press                             (fn [chain-id]
+        :on-long-press                             (fn [chain-id amount-calculated-for-chain]
                                                      (edit-amount
-                                                      {:chain-id              chain-id
-                                                       :token-symbol          token-symbol
-                                                       :send-amount-in-crypto send-amount-in-crypto}))
+                                                      {:chain-id chain-id
+                                                       :token-symbol token-symbol
+                                                       :send-amount-in-crypto send-amount-in-crypto
+                                                       :init-amount amount-calculated-for-chain}))
         :receiver?                                 false
         :theme                                     theme
         :loading-routes?                           loading-routes?
