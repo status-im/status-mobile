@@ -105,7 +105,7 @@
                          [ens ens? open-network-preferences address-text])]
     [quo/overlay {:type :shell}
      [floating-button-page/view
-      {:footer-container-padding 0
+      {:footer-container-padding (+ (safe-area/get-bottom) 12)
        :header                   [quo/page-nav
                                   {:type                :no-title
                                    :background          :blur
@@ -132,7 +132,7 @@
         :container-style     style/avatar}]
       [quo/title-input
        {:blur?               true
-        :auto-focus          true
+        :auto-focus          (not edit?)
         :max-length          24
         :size                :heading-1
         :placeholder         placeholder

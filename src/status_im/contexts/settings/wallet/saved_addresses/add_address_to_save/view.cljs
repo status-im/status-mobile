@@ -92,8 +92,7 @@
 (defn- existing-saved-address
   [{:keys [address]}]
   (let [{:keys [name customization-color chain-short-names ens ens?]}
-        (rf/sub [:wallet/saved-address-by-address
-                 (string/lower-case address)])]
+        (rf/sub [:wallet/saved-address-by-address address])]
     [rn/view {:style style/existing-saved-address-container}
      [quo/text
       {:size   :paragraph-1
