@@ -369,7 +369,7 @@
        :allow-selection? false}]
      [routes/view
       {:token                                     token-by-symbol
-       :input-value                               input-amount
+       :send-amount-in-crypto                     amount-in-crypto
        :valid-input?                              valid-input?
        :token-not-supported-in-receiver-networks? token-not-supported-in-receiver-networks?
        :lock-fetch-routes?                        just-toggled-mode?
