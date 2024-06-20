@@ -345,7 +345,7 @@
                                 (= operable :no) :missing-keypair
                                 watch-only?      :watch-only
                                 :else            :empty)
-                 keypair      (first (filter #(= key-uid (:key-uid %)) keypairs))]
+                 keypair      (get keypairs key-uid)]
              (assoc account
                     :customization-color color
                     :type                (cond
