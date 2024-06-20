@@ -4,12 +4,12 @@
   [:=>
    [:catn
     [:props
-     [:map {:closed true}
-      [:status {:optional true} [:maybe [:enum :default :error]]]
-      [:on-inc-press {:optional true} [:maybe fn?]]
-      [:on-dec-press {:optional true} [:maybe fn?]]
-      [:container-style {:optional true} [:maybe :map]]
-      [:min-value {:optional true} [:maybe :int]]
-      [:max-value {:optional true} [:maybe :int]]
-      [:value [:maybe :int]]]]]
+     [:schema.common/map {:closed true :optional true :maybe true}
+      [:status [:enum :default :error]]
+      [:on-inc-press fn?]
+      [:on-dec-press fn?]
+      [:container-style :map]
+      [:min-value :int]
+      [:max-value :int]
+      [:value {:no-optional true} :int]]]]
    :any])

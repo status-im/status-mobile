@@ -4,13 +4,13 @@
   [:=>
    [:catn
     [:props
-     [:map {:closed true}
-      [:type [:enum :token :collectible]]
-      [:amount {:optional true} [:maybe [:or :string :int]]]
-      [:token {:optional true} [:maybe :string]]
-      [:token-img-src {:optional true} [:maybe :schema.common/image-source]]
-      [:collectible-img-src {:optional true} [:maybe :schema.common/image-source]]
-      [:collectible-name {:optional true} [:maybe :string]]
-      [:divider? {:optional true} [:maybe :boolean]]
-      [:container-style {:optional true} [:maybe :map]]]]]
+     [:schema.common/map {:closed true :optional true :maybe true}
+      [:type {:no-maybe true} [:enum :token :collectible]]
+      [:amount [:or :string :int]]
+      [:token :string]
+      [:token-img-src :schema.common/image-source]
+      [:collectible-img-src :schema.common/image-source]
+      [:collectible-name :string]
+      [:divider? :boolean]
+      [:container-style :map]]]]
    :any])

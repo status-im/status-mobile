@@ -4,11 +4,13 @@
   [:=>
    [:catn
     [:props
-     [:map
-      [:options {:optional true} [:maybe [:enum :add :hold]]]
-      [:size {:optional true} [:maybe [:enum :size-24 :size-32]]]
-      [:blur? {:optional true} [:maybe :boolean]]
-      [:collectible-img-src :schema.common/image-source]
-      [:collectible-name :string]
-      [:collectible-id {:optional true} [:maybe :string]]]]]
+     [:schema.common/map {:optional true :maybe true}
+      [:options [:enum :add :hold]]
+      [:size [:enum :size-24 :size-32]]
+      [:blur? :boolean]
+      [:collectible-id :string]
+      [:collectible-img-src {:no-optional true :no-maybe true}
+       :schema.common/image-source]
+      [:collectible-name {:no-optional true :no-maybe true}
+       :string]]]]
    :any])

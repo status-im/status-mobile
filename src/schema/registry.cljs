@@ -17,7 +17,13 @@
   We normalize `?schema` by always registering it as a proper instance of
   `malli.core/Schema` to avoid inconsistencies down the road."
   [type ?schema]
-  (swap! registry assoc type (malli/schema ?schema))
+  (swap! registry assoc
+    type
+    ;; An into-schema instance should not be converted to schema. This will cause a
+    ;; :malli.core/invalid-schema. One such schema is `:schema.common/map`.
+    (if (malli/into-schema? ?schema)
+      ?schema
+      (malli/schema ?schema)))
   ?schema)
 
 (defn merge

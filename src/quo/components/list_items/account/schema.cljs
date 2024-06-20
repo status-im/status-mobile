@@ -20,15 +20,14 @@
    [:on-options-press {:optional true} [:maybe fn?]]])
 
 (def ^:private ?base
-  [:map
-   [:type {:optional true}
-    [:enum :default :tag :action :balance-neutral :balance-negative :balance-positive]]
-   [:state {:optional true} [:enum :default :selected :active]]
-   [:blur? {:optional true} [:maybe :boolean]]
-   [:customization-color {:optional true} [:maybe :schema.common/customization-color]]
-   [:on-press {:optional true} [:maybe fn?]]
-   [:title-icon {:optional true} [:maybe :keyword]]
-   [:account-props
+  [:schema.common/map {:optional true}
+   [:type [:enum :default :tag :action :balance-neutral :balance-negative :balance-positive]]
+   [:state [:enum :default :selected :active]]
+   [:blur? [:maybe :boolean]]
+   [:customization-color [:maybe :schema.common/customization-color]]
+   [:on-press [:maybe fn?]]
+   [:title-icon [:maybe :keyword]]
+   [:account-props {:no-optional true}
     [:map
      [:name :string]
      [:address :string]

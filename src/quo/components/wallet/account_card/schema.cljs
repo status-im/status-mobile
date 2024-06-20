@@ -1,23 +1,23 @@
 (ns quo.components.wallet.account-card.schema)
 
 (def ^:private ?base
-  [:map
-   [:type {:optional true} [:enum :default :watch-only :add-account :empty :missing-keypair]]
-   [:customization-color {:optional true} [:maybe :schema.common/customization-color]]
-   [:metrics? {:optional true} [:maybe :boolean]]
-   [:on-press {:optional true} [:maybe fn?]]])
+  [:schema.common/map {:optional true :maybe true}
+   [:type {:no-maybe true} [:enum :default :watch-only :add-account :empty :missing-keypair]]
+   [:customization-color :schema.common/customization-color]
+   [:metrics? :boolean]
+   [:on-press fn?]])
 
 (def ^:private ?amount
   [:map
    [:amount {:optional true} [:maybe :string]]])
 
 (def ^:private ?card
-  [:map
-   [:balance {:optional true} [:maybe :string]]
-   [:loading? {:optional true} [:maybe :boolean]]
-   [:name {:optional true} [:maybe :string]]
-   [:percentage-value {:optional true} [:maybe :string]]
-   [:emoji {:optional true} [:maybe :string]]])
+  [:schema.common/map {:optional true :maybe true}
+   [:balance :string]
+   [:loading? :boolean]
+   [:name :string]
+   [:percentage-value :string]
+   [:emoji :string]])
 
 (def ?schema
   [:=>

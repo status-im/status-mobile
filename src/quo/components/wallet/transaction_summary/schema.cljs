@@ -5,18 +5,18 @@
   [:=>
    [:catn
     [:props
-     [:map
-      [:transaction {:optional true} [:maybe [:enum :send :swap :bridge]]]
-      [:first-tag {:optional true} [:maybe context-tag-schema/?schema]]
-      [:second-tag {:optional true} [:maybe context-tag-schema/?schema]]
-      [:third-tag {:optional true} [:maybe context-tag-schema/?schema]]
-      [:fourth-tag {:optional true} [:maybe context-tag-schema/?schema]]
-      [:fifth-tag {:optional true} [:maybe context-tag-schema/?schema]]
-      [:second-tag-prefix {:optional true} [:maybe :keyword]]
-      [:third-tag-prefix {:optional true} [:maybe :keyword]]
-      [:fourth-tag-prefix {:optional true} [:maybe :keyword]]
-      [:max-fees {:optional true} [:maybe :string]]
-      [:nonce {:optional true} [:maybe :int]]
-      [:input-data {:optional true} [:maybe :string]]
-      [:on-press {:optional true} [:maybe fn?]]]]]
+     [:schema.common/map {:optional true :maybe true}
+      [:transaction [:enum :send :swap :bridge]]
+      [:first-tag context-tag-schema/?schema]
+      [:second-tag context-tag-schema/?schema]
+      [:third-tag context-tag-schema/?schema]
+      [:fourth-tag context-tag-schema/?schema]
+      [:fifth-tag context-tag-schema/?schema]
+      [:second-tag-prefix :keyword]
+      [:third-tag-prefix :keyword]
+      [:fourth-tag-prefix :keyword]
+      [:max-fees :string]
+      [:nonce :int]
+      [:input-data :string]
+      [:on-press fn?]]]]
    :any])

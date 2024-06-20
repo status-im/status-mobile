@@ -10,11 +10,11 @@
    [:keypair-name {:optional true} [:maybe :string]]])
 
 (def ^:private ?default-keypair
-  [:map
-   [:profile-picture {:optional true} [:maybe :schema.common/image-source]]
-   [:derivation-path {:optional true} [:maybe :string]]
-   [:on-press {:optional true} [:maybe fn?]]
-   [:customization-color {:optional true} [:maybe :schema.common/customization-color]]])
+  [:schema.common/map {:optional true :maybe true}
+   [:profile-picture :schema.common/image-source]
+   [:derivation-path :string]
+   [:on-press fn?]
+   [:customization-color :schema.common/customization-color]])
 
 (def ^:private ?recovery-phrase
   [:map
