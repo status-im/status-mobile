@@ -71,9 +71,7 @@
          [text/text
           {:style (style/char-count blur? theme)
            :size  :paragraph-2}
-          (pad-0
-           (str
-            (count value)))]
+          (str (count value))]
          [text/text
           {:style (style/char-count blur? theme)
            :size  :paragraph-2}

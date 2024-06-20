@@ -73,16 +73,19 @@
     :label               (i18n/label :t/about)
     :accessibility-label :about-tab}])
 
-(def navigate-back #(rf/dispatch [:navigate-back]))
+(defn navigate-back-and-clear-collectible
+  []
+  (rf/dispatch [:navigate-back])
+  (js/setTimeout #(rf/dispatch [:wallet/clear-last-collectible-details]) 700))
 
 (defn animated-header
   [{:keys [scroll-amount title-opacity page-nav-type picture title description theme]}]
   (let [blur-amount   (header-animations/use-blur-amount scroll-amount)
         layer-opacity (header-animations/use-layer-opacity
                        scroll-amount
-                       "transparent"
+                       (colors/theme-colors colors/white-opa-0 colors/neutral-95-opa-0 theme)
                        (colors/theme-colors colors/white-opa-50 colors/neutral-95-opa-70-blur theme))]
-    [rn/view {:style style/animated-header}
+    [rn/view {:style (style/animated-header)}
      [reanimated/blur-view
       {:style         {:flex             1
                        :background-color (when platform/android?
@@ -100,7 +103,7 @@
          :background          :blur
          :icon-name           :i/close
          :accessibility-label :back-button
-         :on-press            navigate-back
+         :on-press            navigate-back-and-clear-collectible
          :right-side          [{:icon-name :i/options
                                 :on-press  #(rf/dispatch
                                              [:show-bottom-sheet
@@ -141,41 +144,42 @@
   (let [selected-tab  (reagent/atom :overview)
         on-tab-change #(reset! selected-tab %)]
     (fn [{:keys [collectible set-title-bottom theme]}]
-      (let [title-ref                   (rn/use-ref-atom nil)
-            set-title-ref               (rn/use-callback #(reset! title-ref %))
-            animation-shared-element-id (rf/sub [:animation-shared-element-id])
-            collectible-owner           (rf/sub [:wallet/last-collectible-details-owner])
+      (let [title-ref                      (rn/use-ref-atom nil)
+            set-title-ref                  (rn/use-callback #(reset! title-ref %))
+            animation-shared-element-id    (rf/sub [:animation-shared-element-id])
+            collectible-owner              (rf/sub [:wallet/last-collectible-details-owner])
             {:keys [id
                     preview-url
                     collection-data
-                    collectible-data]}  collectible
+                    collectible-data]}     collectible
             {svg?        :svg?
-             preview-uri :uri}          preview-url
-            token-id                    (:token-id id)
-            chain-id                    (get-in id [:contract-id :chain-id])
-            contract-address            (get-in id [:contract-id :address])
+             preview-uri :uri
+             :or         {preview-uri ""}} preview-url
+            token-id                       (:token-id id)
+            chain-id                       (get-in id [:contract-id :chain-id])
+            contract-address               (get-in id [:contract-id :address])
             {collection-image :image-url
-             collection-name  :name}    collection-data
-            {collectible-name :name}    collectible-data
-            collectible-image           {:image        preview-uri
-                                         :image-width  300
-                                         ; collectibles don't have width/height
-                                         ; but we need to pass something
-                                         ; without it animation doesn't work smoothly
-                                         ; and :border-radius not  applied
-                                         :image-height 300
-                                         :id           token-id
-                                         :header       collectible-name
-                                         :description  collection-name}
-            total-owned                 (utils/total-owned-collectible
-                                         (:ownership collectible)
-                                         (:address collectible-owner))]
+             collection-name  :name}       collection-data
+            {collectible-name :name}       collectible-data
+            collectible-image              {:image        preview-uri
+                                            :image-width  300
+                                            ; collectibles don't have width/height
+                                            ; but we need to pass something
+                                            ; without it animation doesn't work smoothly
+                                            ; and :border-radius not  applied
+                                            :image-height 300
+                                            :id           token-id
+                                            :header       collectible-name
+                                            :description  collection-name}
+            total-owned                    (utils/total-owned-collectible
+                                            (:ownership collectible)
+                                            (:address collectible-owner))]
         [rn/view {:style style/container}
          [rn/view
           [gradient-layer preview-uri]
           [quo/expanded-collectible
            {:image-src           preview-uri
-            :container-style     style/preview-container
+            :container-style     (style/preview-container)
             :counter             (utils/collectible-owned-counter total-owned)
             :native-ID           (when (= animation-shared-element-id token-id) :shared-element)
             :supported-file?     (utils/supported-file? (:animation-media-type collectible-data))
@@ -226,7 +230,11 @@
         set-title-bottom           (rn/use-callback
                                     (fn [_ y _ height]
                                       (reset! title-bottom-coord
-                                        (+ y height -100 (if platform/ios? (- top) top)))))
+                                        (+ y
+                                           height
+                                           -56
+                                           (when platform/ios?
+                                             (* top -2))))))
         scroll-amount              (reanimated/use-shared-value 0)
         title-opacity              (reanimated/use-shared-value 0)
         collectible                (rf/sub [:wallet/last-collectible-details])
@@ -236,9 +244,6 @@
         {preview-uri :uri}         preview-url
         {collectible-name :name}   collectible-data
         {collection-name :name}    collection-data]
-
-    (rn/use-unmount #(rf/dispatch [:wallet/clear-last-collectible-details]))
-
     [rn/view {:style (style/background-color theme)}
      [animated-header
       {:scroll-amount scroll-amount
