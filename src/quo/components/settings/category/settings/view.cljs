@@ -9,7 +9,7 @@
 (defn settings-category
   [{:keys [label data blur? container-style]}]
   (let [theme          (quo.theme/use-theme)
-        settings-items (filter identity data)
+        settings-items (remove nil? data)
         last-index     (dec (count settings-items))]
     [rn/view {:style (merge (style/container label) container-style)}
      (when label
