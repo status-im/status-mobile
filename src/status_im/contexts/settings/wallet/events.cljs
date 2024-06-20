@@ -146,7 +146,7 @@
   {:fx [[:json-rpc/call
          [{:method     "accounts_makePrivateKeyKeypairFullyOperable"
            :params     [(security/safe-unmask-data private-key)
-                        (-> password security/safe-unmask-data native-module/sha3)]
+                        (security/safe-unmask-data password)]
            :on-success on-success
            :on-error   on-error}]]]})
 
