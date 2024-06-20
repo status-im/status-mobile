@@ -5,6 +5,7 @@
             [status-im.contexts.wallet.common.utils :as utils]
             [status-im.contexts.wallet.common.utils.networks :as network-utils]
             [status-im.contexts.wallet.send.utils :as send-utils]
+            [status-im.contexts.wallet.sheets.missing-keypair.view :as missing-keypair]
             [status-im.subs.wallet.add-account.address-to-watch]
             [utils.number]
             [utils.security.core :as security]))
@@ -335,15 +336,31 @@
  :<- [:wallet/balances-in-selected-networks]
  :<- [:wallet/tokens-loading]
  :<- [:profile/currency-symbol]
- (fn [[accounts balances tokens-loading currency-symbol]]
-   (mapv (fn [{:keys [color address watch-only?] :as account}]
-           (assoc account
-                  :customization-color color
-                  :type                (if watch-only? :watch-only :empty)
-                  :on-press            #(rf/dispatch [:wallet/navigate-to-account address])
-                  :loading?            (or (get tokens-loading address)
-                                           (not (contains? tokens-loading address)))
-                  :balance             (utils/prettify-balance currency-symbol (get balances address))))
+ :<- [:wallet/keypairs]
+ (fn [[accounts balances tokens-loading currency-symbol keypairs]]
+   (mapv (fn [{:keys [color address watch-only? key-uid operable] :as account}]
+           (let [account-type (cond
+                                (= operable :no) :missing-keypair
+                                watch-only?      :watch-only
+                                :else            :empty)
+                 keypair      (first (filter #(= key-uid (:key-uid %)) keypairs))]
+             (assoc account
+                    :customization-color color
+                    :type                (cond
+                                           (= operable :no) :missing-keypair
+                                           watch-only?      :watch-only
+                                           :else            :empty)
+                    :on-press            (if (= account-type :missing-keypair)
+                                           (fn []
+                                             (rf/dispatch [:show-bottom-sheet
+                                                           {:content #(missing-keypair/view
+                                                                       account
+                                                                       keypair)}]))
+                                           #(rf/dispatch [:wallet/navigate-to-account address]))
+                    :loading?            (or (get tokens-loading address)
+                                             (not (contains? tokens-loading address)))
+                    :balance             (utils/prettify-balance currency-symbol
+                                                                 (get balances address)))))
          accounts)))
 
 (rf/reg-sub
