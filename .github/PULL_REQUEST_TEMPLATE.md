@@ -70,3 +70,19 @@ Documentation change PR (review please): https://github.com/status-im/status.im/
 | Please embed Image/Video here of the before and after.  | Please embed Image/Video here of the before and after.  | Please embed Image/Video here of the before and after. |
 
 status: ready <!-- Can be ready or wip -->
+
+<!-- Uncomment this section for status-go upgrade/dogfooding pull requests
+
+- Specify potentially impacted user flows in _Areas that maybe impacted*.
+- Ensure that _Steps to test_ is filled in.
+
+### Risk
+
+Described potential risks and worst case scenarios.
+
+Tick **one**:
+- [ ] Low risk: 2 devs MUST perform testing as specified above and attach their results as comments to this PR **before** merging.
+- [ ] High risk: QA team MUST perform additional testing in the specified affected areas **before** merging.
+
+
+-->

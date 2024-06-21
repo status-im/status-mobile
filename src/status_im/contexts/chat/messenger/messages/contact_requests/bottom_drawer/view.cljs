@@ -16,8 +16,13 @@
                                                               contact-id])
         {:keys [contact-request-state community-id]} (rf/sub [:chats/current-chat-chat-view])
         chat-type                                    (rf/sub [:chats/chat-type])
-        joined                                       (rf/sub [:communities/community-joined
-                                                              community-id])
+        community-chat?                              (= chat-type :community-chat)
+        joined                                       (when community-chat?
+                                                       (rf/sub [:communities/community-joined
+                                                                community-id]))
+        pending?                                     (when community-chat?
+                                                       (rf/sub [:communities/my-pending-request-to-join
+                                                                community-id]))
         contact-request-send?                        (or (not contact-request-state)
                                                          (= contact-request-state
                                                             constants/contact-request-state-none))
@@ -28,19 +33,28 @@
     [rn/view {:style style/container}
      [quo/permission-context
       {:blur?        true
-       :on-press     (condp = chat-type
-                       :community-chat #(rf/dispatch [:open-modal :community-account-selection-sheet
-                                                      {:community-id community-id}])
+       :on-press     (cond
+                       (and community-chat? (not pending?) (not joined))
+                       #(rf/dispatch [:open-modal :community-account-selection-sheet
+                                      {:community-id community-id}])
+
+                       (not community-chat?)
                        #(rf/dispatch [:chat.ui/show-profile contact-id]))
        :type         :action
        :action-icon  (cond
-                       (= chat-type :community-chat) :i/communities
-                       contact-request-pending?      :i/pending-state
-                       :else                         :i/add-user)
+                       community-chat?          :i/communities
+                       contact-request-pending? :i/pending-state
+                       :else                    :i/add-user)
        :action-label (cond
-                       (= chat-type :community-chat)
-                       (if joined
+                       community-chat?
+                       (cond
+                         pending?
+                         (i18n/label :t/request-to-join-community-pending)
+
+                         joined
                          (i18n/label :t/no-permissions-to-post)
+
+                         :else
                          (i18n/label :t/join-community-to-post))
 
                        (= chat-type :group-chat)

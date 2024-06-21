@@ -15,8 +15,6 @@
    :podcasts                      (js/require "../resources/images/ui2/podcasts.png")
    :generate-keys                 (js/require "../resources/images/ui2/generate-keys.png")
    :generate-keys1                (js/require "../resources/images/ui2/generating-keys-1.png")
-   :generate-keys2                (js/require "../resources/images/ui2/generating-keys-2.png")
-   :generate-keys3                (js/require "../resources/images/ui2/generating-keys-3.png")
    :ethereum-address              (js/require "../resources/images/ui2/ethereum-address.png")
    :use-keycard                   (js/require "../resources/images/ui2/keycard.png")
    :onboarding-illustration       (js/require "../resources/images/ui2/onboarding_illustration.png")

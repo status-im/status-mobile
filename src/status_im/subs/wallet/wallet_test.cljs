@@ -15,10 +15,12 @@
 (def ^:private accounts-with-tokens
   {:0x1 {:tokens                    [{:symbol "ETH"} {:symbol "SNT"}]
          :network-preferences-names #{}
-         :customization-color       nil}
+         :customization-color       nil
+         :operable                  :fully}
    :0x2 {:tokens                    [{:symbol "SNT"}]
          :network-preferences-names #{}
-         :customization-color       nil}})
+         :customization-color       nil
+         :operable                  :partially}})
 
 (def tokens-0x1
   [{:decimals                   1
@@ -481,7 +483,8 @@
       (is (match? result
                   [{:tokens                    [{:symbol "ETH"} {:symbol "SNT"}]
                     :network-preferences-names #{}
-                    :customization-color       nil}]))))
+                    :customization-color       nil
+                    :operable                  :fully}]))))
 
   (testing "returns the accounts list with the current asset using token"
     (swap! rf-db/app-db
@@ -492,7 +495,8 @@
       (is (match? result
                   [{:tokens                    [{:symbol "ETH"} {:symbol "SNT"}]
                     :network-preferences-names #{}
-                    :customization-color       nil}]))))
+                    :customization-color       nil
+                    :operable                  :fully}]))))
 
   (testing
     "returns the full accounts list with the current asset using token-symbol if each account has the asset"

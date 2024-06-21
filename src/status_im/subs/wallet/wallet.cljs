@@ -446,9 +446,25 @@
  (fn [accounts]
    (remove :watch-only? accounts)))
 
+(defn- keep-fully-or-partially-operable-accounts
+  [accounts]
+  (filter (fn fully-or-partially-operable? [{:keys [operable]}]
+            (#{:fully :partially} operable))
+          accounts))
+
+(rf/reg-sub
+ :wallet/fully-or-partially-operable-accounts-without-current-viewing-account
+ :<- [:wallet/accounts-without-current-viewing-account]
+ keep-fully-or-partially-operable-accounts)
+
+(rf/reg-sub
+ :wallet/fully-or-partially-operable-accounts-without-watched-accounts
+ :<- [:wallet/accounts-without-watched-accounts]
+ keep-fully-or-partially-operable-accounts)
+
 (rf/reg-sub
  :wallet/accounts-with-current-asset
- :<- [:wallet/accounts-without-watched-accounts]
+ :<- [:wallet/fully-or-partially-operable-accounts-without-watched-accounts]
  :<- [:wallet/wallet-send-token-symbol]
  :<- [:wallet/wallet-send-token]
  (fn [[accounts token-symbol token]]
