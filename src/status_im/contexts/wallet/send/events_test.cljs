@@ -167,82 +167,82 @@
 (h/deftest-event :wallet/clean-send-data
   [event-id dispatch]
   (testing "clean send data"
-    (let [expected-db  {:wallet {:ui {:other-props :value}}}]
+    (let [expected-db {:wallet {:ui {:other-props :value}}}]
       (reset! rf-db/app-db
-              {:wallet {:ui {:send {:id 1}
-                             :other-props :value}}})
+        {:wallet {:ui {:send        {:id 1}
+                       :other-props :value}}})
       (is (match? expected-db (:db (dispatch [event-id])))))))
 
 (h/deftest-event :wallet/select-address-tab
   [event-id dispatch]
   (testing "select address tab"
-    (let [expected-db  {:wallet {:ui {:send {:select-address-tab "tab"}}}}]
+    (let [expected-db {:wallet {:ui {:send {:select-address-tab "tab"}}}}]
       (reset! rf-db/app-db
-              {:wallet {:ui {:send nil}}})
+        {:wallet {:ui {:send nil}}})
       (is (match? expected-db (:db (dispatch [event-id "tab"])))))))
 
 (h/deftest-event :wallet/clean-send-address
   [event-id dispatch]
   (testing "clean send address"
-    (let [expected-db  {:wallet {:ui {:send {:other-props :value}}}}]
+    (let [expected-db {:wallet {:ui {:send {:other-props :value}}}}]
       (reset! rf-db/app-db
-              {:wallet {:ui {:send {:address "0x01"
-                                    :recipient {:recipient-type :saved-address
-                                                :label "label"}
-                                    :other-props :value}}}})
+        {:wallet {:ui {:send {:address     "0x01"
+                              :recipient   {:recipient-type :saved-address
+                                            :label          "label"}
+                              :other-props :value}}}})
       (is (match? expected-db (:db (dispatch [event-id])))))))
 
 (h/deftest-event :wallet/clean-send-amount
   [event-id dispatch]
   (testing "clean send amount"
-    (let [expected-db  {:wallet {:ui {:send {:other-props :value}}}}]
+    (let [expected-db {:wallet {:ui {:send {:other-props :value}}}}]
       (reset! rf-db/app-db
-              {:wallet {:ui {:send {:amount 10
-                                    :other-props :value}}}})
+        {:wallet {:ui {:send {:amount      10
+                              :other-props :value}}}})
       (is (match? expected-db (:db (dispatch [event-id])))))))
 
 (h/deftest-event :wallet/clean-disabled-from-networks
   [event-id dispatch]
   (testing "clean disabled from networks"
-    (let [expected-db  {:wallet {:ui {:send {:other-props :value}}}}]
+    (let [expected-db {:wallet {:ui {:send {:other-props :value}}}}]
       (reset! rf-db/app-db
-              {:wallet {:ui {:send {:disabled-from-chain-ids "value"
-                                    :other-props :value}}}})
+        {:wallet {:ui {:send {:disabled-from-chain-ids "value"
+                              :other-props             :value}}}})
       (is (match? expected-db (:db (dispatch [event-id])))))))
 
 (h/deftest-event :wallet/clean-from-locked-amounts
   [event-id dispatch]
   (testing "clean from locked amounts"
-    (let [expected-db  {:wallet {:ui {:send {:other-props :value}}}}]
+    (let [expected-db {:wallet {:ui {:send {:other-props :value}}}}]
       (reset! rf-db/app-db
-              {:wallet {:ui {:send {:from-locked-amounts "value"
-                                    :other-props :value}}}})
+        {:wallet {:ui {:send {:from-locked-amounts "value"
+                              :other-props         :value}}}})
       (is (match? expected-db (:db (dispatch [event-id])))))))
 
 (h/deftest-event :wallet/disable-from-networks
   [event-id dispatch]
   (testing "disable from networks"
-    (let [expected-db  {:wallet {:ui {:send {:disabled-from-chain-ids [1]
-                                             :other-props :value}}}}]
+    (let [expected-db {:wallet {:ui {:send {:disabled-from-chain-ids [1]
+                                            :other-props             :value}}}}]
       (reset! rf-db/app-db
-              {:wallet {:ui {:send {:other-props :value}}}})
+        {:wallet {:ui {:send {:other-props :value}}}})
       (is (match? expected-db (:db (dispatch [event-id [1]])))))))
 
 (h/deftest-event :wallet/unlock-from-amount
   [event-id dispatch]
   (testing "unlock from amount"
-    (let [expected-db  {:wallet {:ui {:send {:other-props :value
-                                             :from-locked-amounts {}}}}}]
+    (let [expected-db {:wallet {:ui {:send {:other-props         :value
+                                            :from-locked-amounts {}}}}}]
       (reset! rf-db/app-db
-              {:wallet {:ui {:send {:other-props :value
-                                    :from-locked-amounts {:chain-id [1 10]}}}}})
+        {:wallet {:ui {:send {:other-props         :value
+                              :from-locked-amounts {:chain-id [1 10]}}}}})
       (is (match? expected-db (:db (dispatch [event-id [1]])))))))
 
 (h/deftest-event :wallet/lock-from-amount
   [event-id dispatch]
   (testing "lock from amount"
-    (let [expected-db  {:wallet {:ui {:send {:other-props :value
-                                             :from-locked-amounts {:10 "amount"}}}}}]
+    (let [expected-db {:wallet {:ui {:send {:other-props         :value
+                                            :from-locked-amounts {:10 "amount"}}}}}]
       (reset! rf-db/app-db
-              {:wallet {:ui {:send {:other-props :value}}}})
+        {:wallet {:ui {:send {:other-props :value}}}})
       (is (match? expected-db (:db (dispatch [event-id :10 "amount"])))))))
