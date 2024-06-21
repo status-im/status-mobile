@@ -164,7 +164,6 @@
                                     :event :wallet-connect/approve-session})
                         (rf/dispatch
                          [:wallet-connect/reset-current-session-proposal]))}]
-
            [:dispatch [:dismiss-modal :screen/wallet.wallet-connect-session-proposal]]]})))
 
 (rf/reg-event-fx
@@ -193,8 +192,7 @@
                                    {:version version})}]]]}
 
        :else
-       {:fx [[:dispatch [:wallet-connect/pair scanned-text]]
-             [:dispatch [:dismiss-modal :screen/wallet.wallet-connect-session-proposal]]]}))))
+       {:fx [[:dispatch [:wallet-connect/pair scanned-text]]]}))))
 
 (rf/reg-event-fx
  :wallet-connect/persist-session
