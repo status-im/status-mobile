@@ -114,7 +114,8 @@
                      seed-phrase               (reagent/atom "")
                      on-change-seed-phrase     (fn [new-phrase]
                                                  (when @invalid-seed-phrase?
-                                                   (reset! invalid-seed-phrase? false)
+                                                   (reset! invalid-seed-phrase? false))
+                                                 (when @incorrect-seed-phrase?
                                                    (reset! incorrect-seed-phrase? false))
                                                  (reset! seed-phrase new-phrase))
                      on-submit                 (fn []
