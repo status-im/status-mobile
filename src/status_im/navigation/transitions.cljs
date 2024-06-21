@@ -44,15 +44,15 @@
 (def stack-slide-transition
   {:push {:content {:translationX {:from     (:width (rn/get-window))
                                    :to       0
-                                   :duration 200}}}
+                                   :duration 250}}}
    :pop  {:content {:translationX {:from     0
                                    :to       (:width (rn/get-window))
-                                   :duration 200}}}})
+                                   :duration 250}}}})
 
 (def stack-transition-from-bottom
   {:push {:content {:translationY {:from     (:height (rn/get-window))
                                    :to       0
-                                   :duration 200}}}
+                                   :duration 250}}}
    :pop  {:content {:translationY {:from     0
                                    :to       (:height (rn/get-window))
-                                   :duration 200}}}})
+                                   :duration 250}}}})
