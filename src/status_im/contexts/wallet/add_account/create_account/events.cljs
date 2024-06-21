@@ -199,8 +199,9 @@
                          [derivation-path]]
             :on-success (fn [[derived-account]]
                           (rf/dispatch [:wallet/add-account
-                                        (assoc account-preferences :key-uid key-uid
-                                                                   :password password)
+                                        (assoc account-preferences
+                                               :key-uid  key-uid
+                                               :password password)
                                         derived-account]))
             :on-error   #(log/info "Failed to get derived addresses"
                                    derived-from-address

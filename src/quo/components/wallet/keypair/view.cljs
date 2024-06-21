@@ -98,9 +98,9 @@
   (let [theme (quo.theme/use-theme)]
     [rn/pressable
      {:style          (style/container (assoc props
-                                         :selected? selected?
-                                         :container-style container-style
-                                         :theme theme))
+                                              :selected?       selected?
+                                              :container-style container-style
+                                              :theme           theme))
       :on-press       #(when (= action :selector) (on-press))
       :pointer-events :box-only}
      [rn/view {:style style/header-container}

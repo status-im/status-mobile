@@ -10,9 +10,11 @@
           :padding-bottom 8
           :border-color   (cond
                             (and selected? blur?) colors/white
-                            selected? (colors/resolve-color customization-color theme)
-                            blur? colors/white-opa-5
-                            :else (colors/theme-colors colors/neutral-10 colors/neutral-80 theme))}
+                            selected?             (colors/resolve-color customization-color theme)
+                            blur?                 colors/white-opa-5
+                            :else                 (colors/theme-colors colors/neutral-10
+                                                                       colors/neutral-80
+                                                                       theme))}
          container-style))
 
 (def header-container
