@@ -230,7 +230,7 @@
          {:account-color      @account-color
           :slide-button-props {:on-auth-success on-auth-success
                                :disabled?       (or (empty? @account-name)
-                                                    (= "" @derivation-path)
+                                                    (string/blank? @derivation-path)
                                                     (some? error))}}
          [avatar
           {:account-color   @account-color
