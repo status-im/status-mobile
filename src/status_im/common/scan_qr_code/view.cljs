@@ -195,7 +195,7 @@
   true)
 
 (defn view
-  [{:keys [title subtitle validate-fn on-success-scan error-message share-button?]}]
+  [{:keys [title subtitle validate-fn on-success-scan error-message share-button? import-keypair?]}]
   (let [insets             (safe-area/get-insets)
         qr-code-succeed?   (reagent/atom false)
         qr-view-finder     (reagent/atom {})
@@ -233,7 +233,9 @@
              :set-qr-code-succeeded (fn [value]
                                       (when on-success-scan
                                         (on-success-scan value))
-                                      (rf/dispatch [:navigate-back]))
+                                      (if import-keypair?
+                                        (set-rescan-timeout)
+                                        (rf/dispatch [:navigate-back])))
              :set-rescan-timeout    set-rescan-timeout}])
          [rn/view {:style (style/root-container (:top insets))}
           [header
