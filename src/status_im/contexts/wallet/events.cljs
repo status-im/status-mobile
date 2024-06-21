@@ -215,10 +215,9 @@
          [:dispatch [:wallet/clear-create-account]]]}))
 
 (rf/reg-event-fx :wallet/add-account
- (fn [_
-      [{:keys [key-uid password account-name emoji color type]
-        :or   {type :generated}}
-       {:keys [public-key address path] :as _derived-account}]]
+ (fn [_ [{:keys [key-uid password account-name emoji color type]
+          :or   {type :generated}}
+         {:keys [public-key address path] :as _derived-account}]]
    (let [lowercase-address (some-> address string/lower-case)
          account-config    {:key-uid    (when (= type :generated) key-uid)
                             :wallet     false
