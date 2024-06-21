@@ -111,7 +111,12 @@
  :wallet-connect/close-session-request
  (fn [_ _]
    {:fx [[:dispatch [:dismiss-modal :screen/wallet.wallet-connect-session-proposal]]
-         [:dispatch [:wallet-connect/reset-current-session-request]]]}))
+         [:dispatch [:wallet-connect/reset-current-session-request]]
+         [:effects.wallet-connect/reject-session
+          {:web3-wallet
+           :proposal
+           :on-success
+           :on-fail}]]}))
 
 (rf/reg-event-fx
  :wallet-connect/fetch-active-sessions
@@ -146,24 +151,24 @@
                                          :events   constants/wallet-connect-supported-events
                                          :accounts accounts}})]
      {:fx [[:effects.wallet-connect/approve-session
-            {:web3-wallet web3-wallet
-             :proposal current-proposal
+            {:web3-wallet          web3-wallet
+             :proposal             current-proposal
              :supported-namespaces supported-namespaces
-             :on-success (fn []
-                           (log/info "Wallet Connect session approved")
-                           (let [metadata (-> current-proposal :params :proposer :metadata)]
-                             (rf/dispatch [:wallet-connect/reset-current-session-proposal])
-                             (rf/dispatch [:wallet-connect/persist-session
-                                           {:id           (:id current-proposal)
-                                            :dapp-name    (:name metadata)
-                                            :dapp-url     (:url metadata)
-                                            :session-info current-proposal}])))
-             :on-fail (fn [error]
-                        (log/error "Wallet Connect session approval failed"
-                                   {:error error
-                                    :event :wallet-connect/approve-session})
-                        (rf/dispatch
-                         [:wallet-connect/reset-current-session-proposal]))}]
+             :on-success           (fn []
+                                     (log/info "Wallet Connect session approved")
+                                     (let [metadata (-> current-proposal :params :proposer :metadata)]
+                                       (rf/dispatch [:wallet-connect/reset-current-session-proposal])
+                                       (rf/dispatch [:wallet-connect/persist-session
+                                                     {:id           (:id current-proposal)
+                                                      :dapp-name    (:name metadata)
+                                                      :dapp-url     (:url metadata)
+                                                      :session-info current-proposal}])))
+             :on-fail              (fn [error]
+                                     (log/error "Wallet Connect session approval failed"
+                                                {:error error
+                                                 :event :wallet-connect/approve-session})
+                                     (rf/dispatch
+                                      [:wallet-connect/reset-current-session-proposal]))}]
            [:dispatch [:dismiss-modal :screen/wallet.wallet-connect-session-proposal]]]})))
 
 (rf/reg-event-fx

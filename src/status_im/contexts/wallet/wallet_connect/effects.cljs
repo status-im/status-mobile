@@ -79,6 +79,18 @@
          (promesa/catch on-fail)))))
 
 (rf/reg-fx
+ :effects.wallet-connect/reject-session
+ (fn [{:keys [web3-wallet proposal on-success on-fail]}]
+   (let [{:keys [id]} proposal
+         reason       (wallet-connect/get-sdk-error
+                       constants/wallet-connect-user-rejected-session-proposal-error-type)]
+     (-> (.rejectSession web3-wallet
+                         (clj->js {:id     id
+                                   :reason reason}))
+         (promesa/then on-success)
+         (promesa/catch on-fail)))))
+
+(rf/reg-fx
  :effects.wallet-connect/sign-message
  (fn [{:keys [password address data on-success on-error]}]
    (-> {:data     data
