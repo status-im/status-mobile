@@ -134,7 +134,7 @@
        (when shell?
          [rn/view {:style style/shell-bg-container}
           [quo/blur
-           {:style         (style/shell-bg blur-background)
+           {:style         style/shell-bg
             :blur-radius   (or blur-radius 20)
             :blur-amount   32
             :blur-type     :transparent
