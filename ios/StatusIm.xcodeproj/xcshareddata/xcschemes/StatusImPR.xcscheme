@@ -29,7 +29,7 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "3AAD2AB924A3A60E0075D594"
-               BuildableName = "Status PR.app"
+               BuildableName = "StatusIm.app"
                BlueprintName = "StatusImPR"
                ReferencedContainer = "container:StatusIm.xcodeproj">
             </BuildableReference>
@@ -41,15 +41,6 @@
       selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB"
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
       shouldUseLaunchSchemeArgsEnv = "YES">
-      <MacroExpansion>
-         <BuildableReference
-            BuildableIdentifier = "primary"
-            BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-            BuildableName = "StatusIm.app"
-            BlueprintName = "StatusIm"
-            ReferencedContainer = "container:StatusIm.xcodeproj">
-         </BuildableReference>
-      </MacroExpansion>
       <Testables>
       </Testables>
    </TestAction>
