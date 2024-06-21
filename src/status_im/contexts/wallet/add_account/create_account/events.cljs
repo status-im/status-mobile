@@ -124,7 +124,7 @@
             :on-success on-success
             :on-error   (fn [error]
                           (log/error
-                           "Failed to resolve next path derivation path"
+                           "Failed to resolve next derivation path"
                            {:event  :wallet/next-derivation-path
                             :method "accounts_resolveSuggestedPathForKeypair"
                             :error  error
