@@ -216,6 +216,7 @@
                                     [:wallet/derive-address-and-add-account
                                      {:password             password
                                       :derived-from-address derived-from
+                                      :key-uid              key-uid
                                       :derivation-path      @derivation-path
                                       :account-preferences  preferences}])))
                                [derived-from])]

@@ -191,7 +191,7 @@
 
 (rf/reg-event-fx
  :wallet/derive-address-and-add-account
- (fn [_ [{:keys [password derived-from-address derivation-path account-preferences]}]]
+ (fn [_ [{:keys [password derived-from-address derivation-path account-preferences key-uid]}]]
    {:fx [[:json-rpc/call
           [{:method     "wallet_getDerivedAddresses"
             :params     [(security/safe-unmask-data password)
@@ -199,9 +199,9 @@
                          [derivation-path]]
             :on-success (fn [[derived-account]]
                           (rf/dispatch [:wallet/add-account
-                                        (assoc account-preferences :password password)
+                                        (assoc account-preferences :key-uid key-uid
+                                                                   :password password)
                                         derived-account]))
             :on-error   #(log/info "Failed to get derived addresses"
                                    derived-from-address
                                    %)}]]]}))
-
