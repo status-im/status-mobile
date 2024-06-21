@@ -1,9 +1,11 @@
 (ns status-im.contexts.wallet.send.events-test
   (:require
-    [cljs.test :refer-macros [is testing]]
+    [cljs.test :refer-macros [is testing run-tests]]
     [re-frame.db :as rf-db]
+    [status-im.contexts.wallet.send.utils :as send-utils]
     status-im.contexts.wallet.send.events
-    [test-helpers.unit :as h]))
+    [test-helpers.unit :as h]
+    [utils.money :as money]))
 
 (h/deftest-event :wallet/update-receiver-networks
   [event-id dispatch]
@@ -246,3 +248,26 @@
       (reset! rf-db/app-db
         {:wallet {:ui {:send {:other-props :value}}}})
       (is (match? expected-db (:db (dispatch [event-id :10 "amount"])))))))
+
+(h/deftest-event :wallet/suggested-routes-error
+  [event-id dispatch]
+  (let [sender-network-amounts [{:chain-id 1 :total-amount (money/bignumber "100") :type :loading}
+                                {:chain-id 10 :total-amount (money/bignumber "200") :type :default}]
+        receiver-network-amounts [{:chain-id 1 :total-amount (money/bignumber "100") :type :loading}] 
+        expected-result {:db {:wallet {:ui {:send {:sender-network-values (send-utils/reset-loading-network-amounts-to-zero sender-network-amounts)
+                                                   :receiver-network-values (send-utils/reset-loading-network-amounts-to-zero receiver-network-amounts)
+                                                   :loading-suggested-routes? false
+                                                   :suggested-routes {:best []}}}}}
+                         :fx [[:dispatch
+                               [:toasts/upsert
+                                {:id   :send-transaction-error
+                                 :type :negative
+                                 :text "error"}]]]}]
+    (reset! rf-db/app-db
+            {:wallet {:ui {:send {:sender-network-values sender-network-amounts
+                                  :receiver-network-values receiver-network-amounts
+                                  :route :values
+                                  :loading-suggested-routes? true}}}})
+    (is (match? expected-result (dispatch [event-id {:message "error"}])))))
+
+(run-tests)
