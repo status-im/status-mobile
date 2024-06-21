@@ -33,6 +33,7 @@
           :size                24}]]
        [password-input/view
         {:on-press-biometrics on-press-biometrics
+         :blur?               true
          :processing          processing
          :error               error
          :default-password    password
