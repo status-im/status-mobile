@@ -276,7 +276,6 @@
             {:token-display-name token-symbol
              :amount             amount
              :account            account
-             :to-address         to-address
              :type               type
              :recipient          recipient
              :route              route

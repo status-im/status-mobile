@@ -11,6 +11,7 @@
     [status-im.constants :as constants]
     [status-im.contexts.wallet.common.account-switcher.view :as account-switcher]
     [status-im.contexts.wallet.common.utils :as utils]
+    [status-im.contexts.wallet.common.utils.networks :as network-utils]
     [status-im.contexts.wallet.common.validation :as validation]
     [status-im.contexts.wallet.item-types :as types]
     [status-im.contexts.wallet.send.select-address.style :as style]
@@ -148,15 +149,17 @@
       :type                :primary
       :disabled?           (not valid-ens-or-address?)
       :on-press            (fn []
-                             (let [address (or
-                                            local-suggestion-address
-                                            input-value)]
+                             (let [address              (or
+                                                         local-suggestion-address
+                                                         input-value)
+                                   [_ splitted-address] (network-utils/split-network-full-address
+                                                         address)]
                                (rf/dispatch
                                 [:wallet/select-send-address
                                  {:address address
                                   :recipient {:label
                                               (utils/get-shortened-address
-                                               address)
+                                               splitted-address)
                                               :recipient-type :address}
                                   :stack-id
                                   :screen/wallet.select-address}])))

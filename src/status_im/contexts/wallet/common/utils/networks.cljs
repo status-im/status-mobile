@@ -141,3 +141,9 @@
   (let [token-networks-ids     (mapv #(:chain-id %) token-networks)
         token-networks-ids-set (set token-networks-ids)]
     (contains? token-networks-ids-set chain-id)))
+
+(defn split-network-full-address
+  [address]
+  (as-> address $
+    (string/split $ ":")
+    [(butlast $) (last $)]))
