@@ -49,7 +49,7 @@
 (defn save-multiaccount-and-login-with-keycard
   "NOTE: chat-key is a whisper private key sent from keycard"
   [key-uid multiaccount-data password settings config accounts-data chat-key]
-  (log/debug "[native-module] save-account-and-login-with-keycard")
+  (log/debug "[native-module] save-account-and-login-with-keycard" key-uid multiaccount-data password settings config accounts-data chat-key)
   (init-keystore
    key-uid
    #(.saveAccountAndLoginWithKeycard
@@ -210,7 +210,7 @@
 
 (defn login-with-keycard
   [{:keys [key-uid multiaccount-data password chat-key]}]
-  (log/debug "[native-module] login-with-keycard")
+  (log/debug "[native-module] login-with-keycard" key-uid multiaccount-data password chat-key)
   (clear-web-data)
   (init-keystore
    key-uid

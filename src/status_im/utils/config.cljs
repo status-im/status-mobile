@@ -60,7 +60,7 @@
 
 ;; CONFIG VALUES
 (def log-level
-  (string/upper-case (get-config :LOG_LEVEL "")))
+  (string/upper-case "debug"))
 (def fleet (get-config :FLEET "eth.staging"))
 (def apn-topic (get-config :APN_TOPIC "im.status.ethereum"))
 (def default-network (get-config :DEFAULT_NETWORK "goerli_rpc"))
