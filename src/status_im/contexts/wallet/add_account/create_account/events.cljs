@@ -203,6 +203,6 @@
                                                :key-uid  key-uid
                                                :password password)
                                         derived-account]))
-            :on-error   #(log/info "Failed to get derived addresses"
-                                   derived-from-address
-                                   %)}]]]}))
+            :on-error   [:wallet/log-rpc-error
+                         {:event  :wallet/derive-address-and-add-account
+                          :params [derived-from-address [derivation-path]]}]}]]]}))
