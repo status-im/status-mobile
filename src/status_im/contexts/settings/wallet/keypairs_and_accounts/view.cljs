@@ -5,6 +5,7 @@
             [react-native.safe-area :as safe-area]
             [status-im.contexts.settings.wallet.keypairs-and-accounts.actions.view :as actions]
             [status-im.contexts.settings.wallet.keypairs-and-accounts.style :as style]
+            [status-im.feature-flags :as ff]
             [utils.address :as utils]
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]))
@@ -124,6 +125,7 @@
         :header                  (when (seq missing-keypairs)
                                    [quo/missing-keypairs
                                     {:blur?            true
+                                     :show-import-all? (ff/enabled? ::ff/settings.import-all-keypairs)
                                      :keypairs         missing-keypairs
                                      :on-import-press  on-import-press
                                      :container-style  style/missing-keypairs-container-style
