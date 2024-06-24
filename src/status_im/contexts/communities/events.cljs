@@ -137,7 +137,7 @@
 
 (rf/reg-event-fx :community/fetch
  (fn [_]
-   {:json-rpc/call [{:method     "wakuext_communities"
+   {:json-rpc/call [{:method     "wakuext_serializedCommunities"
                      :params     []
                      :on-success #(rf/dispatch [:community/fetch-success %])
                      :on-error   #(log/error "failed to fetch communities" %)}
