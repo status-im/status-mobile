@@ -137,14 +137,14 @@
                                                            (.toFixed (/ input-amount
                                                                         conversion-rate)
                                                                      crypto-decimals)))
-             amount-in-crypto-bn                        (money/bignumber amount-in-crypto)
-             send-amount-in-crypto-bn                   (money/bignumber send-amount-in-crypto)
-             lock-higher-than-send-amount?              (if (and (money/bignumber? amount-in-crypto-bn)
-                                                                 (money/bignumber?
-                                                                  send-amount-in-crypto-bn))
-                                                          (money/greater-than amount-in-crypto-bn
-                                                                              send-amount-in-crypto-bn)
-                                                          false)
+             locked-greater-then-send-amount?           (let [amount      (money/bignumber
+                                                                           amount-in-crypto)
+                                                              send-amount (money/bignumber
+                                                                           send-amount-in-crypto)]
+                                                          (if (and (money/bignumber? amount)
+                                                                   (money/bignumber? send-amount))
+                                                            (money/greater-than amount send-amount)
+                                                            false))
              swap-between-fiat-and-crypto               (fn [swap-to-crypto-currency?]
                                                           (set-crypto-currency swap-to-crypto-currency?)
                                                           (set-input-state
@@ -199,7 +199,7 @@
             :value            (controlled-input/input-value input-state)
             :on-swap          swap-between-fiat-and-crypto
             :allow-selection? false}]
-          (when lock-higher-than-send-amount?
+          (when locked-greater-then-send-amount?
             [quo/information-box
              {:type  :error
               :icon  :i/info
@@ -222,7 +222,7 @@
                                :customization-color account-color
                                :disabled?           (or (controlled-input/empty-value? input-state)
                                                         (controlled-input/input-error input-state)
-                                                        lock-higher-than-send-amount?)}}]
+                                                        locked-greater-then-send-amount?)}}]
           [quo/numbered-keyboard
            {:container-style      (style/keyboard-container bottom)
             :left-action          :dot
