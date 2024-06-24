@@ -365,20 +365,10 @@
           :sub-label           nil
           :chevron?            false}))
 
-(defn add-members-entry
-  [chat-id]
+(defn add-manage-members-entry
+  [chat-id admin?]
   (entry {:icon                :i/add-user
-          :label               (i18n/label :t/add-members)
-          :on-press            #(rf/dispatch [:open-modal :group-add-manage-members chat-id])
-          :danger?             false
-          :accessibility-label :add-members
-          :sub-label           nil
-          :chevron?            false}))
-
-(defn manage-members-entry
-  [chat-id]
-  (entry {:icon                :i/add-user
-          :label               (i18n/label :t/manage-members)
+          :label               (i18n/label (if admin? :t/manage-members :t/add-members))
           :on-press            #(rf/dispatch [:open-modal :group-add-manage-members chat-id])
           :danger?             false
           :accessibility-label :manage-members
@@ -433,8 +423,7 @@
         admin?          (get admins current-pub-key)]
     [(group-details-entry chat-id)
      (when inside-chat?
-       (when admin?
-         (manage-members-entry chat-id)))
+       (add-manage-members-entry chat-id admin?))
      (when (and admin? inside-chat?)
        (when config/show-not-implemented-features?
          (edit-group-entry)))

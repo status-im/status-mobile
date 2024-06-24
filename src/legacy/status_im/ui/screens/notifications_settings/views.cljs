@@ -6,6 +6,7 @@
     [legacy.status-im.ui.components.react :as react]
     [quo.core :as quo]
     [react-native.platform :as platform]
+    [taoensso.timbre :as log]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
@@ -57,7 +58,15 @@
        :accessibility-label :local-notifications-settings-button
        :subtitle            (i18n/label :t/local-notifications-subtitle)
        :active              notifications-enabled?
-       :on-press            #(rf/dispatch [:push-notifications/switch (not notifications-enabled?)])
+       :on-press            (fn []
+                              (when-not notifications-enabled?
+                                (rf/dispatch
+                                 [:request-permissions
+                                  {:permissions [:post-notifications]
+                                   :on-allowed  #(log/info "push notification permissions were allowed")
+                                   :on-denied   #(log/error
+                                                  "user denied push notification permissions")}]))
+                              (rf/dispatch [:push-notifications/switch (not notifications-enabled?)]))
        :accessory           :switch}]]))
 
 (defn notifications-settings

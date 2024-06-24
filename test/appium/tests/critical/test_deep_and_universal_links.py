@@ -47,15 +47,15 @@ class TestDeepLinksOneDevice(MultipleSharedDeviceTestCase):
                 self.errors.append("Profile was not opened by the profile url %s" % url)
             self.profile_view.close_button.click()
 
-        closed_community_urls = {
-            "https://status.app/c/G0IAAGRy3S0pLm1NeQ91pwKgFaFGoIlkxXmDxITXXi3KdZ7vpb9-ERczhqwoFwMK6sCPnKwA#zQ3shtJ8A3rxUZWcfWDL3vKYQBt3jMPTuf44dJUGfjZjsek66":
-                "e2e community token-gated",
+        community_urls = {
+            "https://status.app/c/G0IAAGS9TbI9SrSPbDPplfBUeBBOIWhFRhGIKVlxntAg5CSvsJw4jurb636UKo7Lm2gTUS_M#zQ3shm7cS2MX6K1iinjNhiw88g1WH6fbE8rvnMHBq4RhznkWc":
+                "token-gated community e2e",
             "https://status.app/c/GzwAAGS9TbI9CiYaoZj0TRNelWAPwk8gSHIEmqgqb0ADPw5rnFvk6bp_n3BlZxVMshmxFyI=#zQ3shkrmSmwb66sw2EuUvC5iqiNqEeevTfjtks3p8ZaaCYoNj":
                 "Open community for e2e",
             "https://status.app/c/GzAAAORtwyW4xNWM4td0F7hOnYZ1apSqCCRUUR0qxD19n3Ec97fX_aIVIGFWbdUM#zQ3shk6dgK8dYWWSC4m8Jj5c91zyfhfj1fFkgypS8D9gsXkrK":
                 "Closed community"
         }
-        for url, text in closed_community_urls.items():
+        for url, text in community_urls.items():
             self.channel.just_fyi("Opening community '%s' by the url %s" % (text, url))
             self.channel.chat_message_input.clear()
             self.channel.send_message(url)
@@ -95,8 +95,8 @@ class TestDeepLinksOneDevice(MultipleSharedDeviceTestCase):
             self.browser_view.click_system_back_button()
 
         community_links = {
-            "status.app://c/G0IAAGRy3S0pLm1NeQ91pwKgFaFGoIlkxXmDxITXXi3KdZ7vpb9-ERczhqwoFwMK6sCPnKwA#zQ3shtJ8A3rxUZWcfWDL3vKYQBt3jMPTuf44dJUGfjZjsek66":
-                "e2e community token-gated",
+            "status.app://c/G0IAAGS9TbI9SrSPbDPplfBUeBBOIWhFRhGIKVlxntAg5CSvsJw4jurb636UKo7Lm2gTUS_M#zQ3shm7cS2MX6K1iinjNhiw88g1WH6fbE8rvnMHBq4RhznkWc":
+                "token-gated community e2e",
             "status.app://c/GzwAAGS9TbI9CiYaoZj0TRNelWAPwk8gSHIEmqgqb0ADPw5rnFvk6bp_n3BlZxVMshmxFyI=#zQ3shkrmSmwb66sw2EuUvC5iqiNqEeevTfjtks3p8ZaaCYoNj":
                 "Open community for e2e",
             "status.app://c/GzAAAORtwyW4xNWM4td0F7hOnYZ1apSqCCRUUR0qxD19n3Ec97fX_aIVIGFWbdUM#zQ3shk6dgK8dYWWSC4m8Jj5c91zyfhfj1fFkgypS8D9gsXkrK":
