@@ -250,7 +250,7 @@
            size     32}}]
   (->> accounts
        (keep (fn [{:keys [path color emoji name address]}]
-               (when-not (string/starts-with? path constants/path-eip1581)
+               (when-not (string/starts-with? (str path) constants/path-eip1581)
                  {:account-props {:customization-color color
                                   :size                size
                                   :emoji               emoji
