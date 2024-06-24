@@ -70,7 +70,7 @@
    {:db (dissoc db :wallet-connect/current-proposal)}))
 
 (rf/reg-event-fx
- :wallet-connect/reset-current-session-request
+ :wallet-connect/reset-current-request
  (fn [{:keys [db]}]
    {:db (dissoc db :wallet-connect/current-request)}))
 
@@ -106,12 +106,6 @@
              :url         url
              :on-fail     #(log/error "Failed to pair with dApp" {:error %})
              :on-success  #(log/info "dApp paired successfully")}]]})))
-
-(rf/reg-event-fx
- :wallet-connect/close-session-request
- (fn [_ _]
-   {:fx [[:dispatch [:dismiss-modal :screen/wallet.wallet-connect-session-proposal]]
-         [:dispatch [:wallet-connect/reset-current-session-request]]]}))
 
 (rf/reg-event-fx
  :wallet-connect/fetch-active-sessions

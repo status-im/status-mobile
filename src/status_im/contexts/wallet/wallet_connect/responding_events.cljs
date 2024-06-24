@@ -16,7 +16,8 @@
              constants/wallet-connect-eth-send-transaction-method
              [:dispatch
               [:wallet-connect/respond-build-transaction
-               #(rf/dispatch [:wallet-connect/respond-sign-transaction-data password %])]]
+               :screen/wallet-connect.send-transaction
+               #(rf/dispatch [:wallet-connect/respond-send-transaction-data password %])]]
 
              constants/wallet-connect-eth-sign-method
              [:dispatch [:wallet-connect/respond-eth-sign password]]
@@ -24,6 +25,7 @@
              constants/wallet-connect-eth-sign-transaction-method
              [:dispatch
               [:wallet-connect/respond-build-transaction
+               :screen/wallet-connect.sign-transaction
                #(rf/dispatch [:wallet-connect/respond-sign-transaction-data password %])]]
 
              constants/wallet-connect-eth-sign-typed-method
@@ -40,8 +42,10 @@
             {:password   password
              :address    address
              :data       raw-data
-             :on-error   #(rf/dispatch [:wallet-connect/on-sign-error %])
-             :on-success #(rf/dispatch [:wallet-connect/send-response %])}]]})))
+             :on-error   #(rf/dispatch [:wallet-connect/on-sign-error :screen/wallet-connect.sign-message
+                                        %])
+             :on-success #(rf/dispatch [:wallet-connect/send-response :screen/wallet-connect.sign-message
+                                        %])}]]})))
 
 
 (rf/reg-event-fx
@@ -52,8 +56,10 @@
             {:password   password
              :address    address
              :data       raw-data
-             :on-error   #(rf/dispatch [:wallet-connect/on-sign-error %])
-             :on-success #(rf/dispatch [:wallet-connect/send-response %])}]]})))
+             :on-error   #(rf/dispatch [:wallet-connect/on-sign-error :screen/wallet-connect.sign-message
+                                        %])
+             :on-success #(rf/dispatch [:wallet-connect/send-response :screen/wallet-connect.sign-message
+                                        %])}]]})))
 
 (rf/reg-event-fx
  :wallet-connect/respond-sign-typed-data
@@ -64,12 +70,14 @@
              :address    address
              :data       raw-data
              :version    typed-data-version
-             :on-error   #(rf/dispatch [:wallet-connect/on-sign-error %])
-             :on-success #(rf/dispatch [:wallet-connect/send-response %])}]]})))
+             :on-error   #(rf/dispatch [:wallet-connect/on-sign-error :screen/wallet-connect.sign-message
+                                        %])
+             :on-success #(rf/dispatch [:wallet-connect/send-response :screen/wallet-connect.sign-message
+                                        %])}]]})))
 
 (rf/reg-event-fx
  :wallet-connect/respond-build-transaction
- (fn [{:keys [db]} [on-success]]
+ (fn [{:keys [db]} [screen on-success]]
    (let [{:keys [raw-data]} (get db :wallet-connect/current-request)
          chain-id           (-> raw-data
                                 (get-in [:params :chainId])
@@ -78,22 +86,38 @@
             [{:method     "wallet_buildTransaction"
               :params     [chain-id (.stringify js/JSON raw-data)]
               :on-success on-success
-              :on-error   [:wallet-connect/on-sign-error]}]]]})))
+              :on-error   [:wallet-connect/on-sign-error screen]}]]]})))
 
 (rf/reg-event-fx
- :wallet-connect/respond-sign-transaction-data
+ :wallet-connect/respond-send-transaction-data
  (fn [_ [password data]]
    (let [{:keys [address messageToSign]} data]
      {:fx [[:effects.wallet-connect/sign-message
             {:password   password
              :address    address
              :data       messageToSign
-             :on-error   #(rf/dispatch [:wallet-connect/on-sign-error %])
-             :on-success #(rf/dispatch [:wallet-connect/send-response %])}]]})))
+             :on-error   #(rf/dispatch [:wallet-connect/on-sign-error
+                                        :screen/wallet-connect.send-transaction %])
+             :on-success #(rf/dispatch [:wallet-connect/send-response
+                                        :screen/wallet-connect.send-transaction %])}]]})))
+
+(rf/reg-event-fx
+ :wallet-connect/respond-sign-transaction-data
+ (fn [_ [password data]]
+   (let [_ (js/console.log "ALWX DATA" (clj->js data))
+         {:keys [address messageToSign]} data]
+     {:fx [[:effects.wallet-connect/sign-message
+            {:password   password
+             :address    address
+             :data       messageToSign
+             :on-error   #(rf/dispatch [:wallet-connect/on-sign-error
+                                        :screen/wallet-connect.sign-transaction %])
+             :on-success #(rf/dispatch [:wallet-connect/send-response
+                                        :screen/wallet-connect.sign-transaction %])}]]})))
 
 (rf/reg-event-fx
  :wallet-connect/on-sign-error
- (fn [{:keys [db]} [error]]
+ (fn [{:keys [db]} [screen error]]
    (let [event                      (get-in db [:wallet-connect/current-request :event])
          {:keys [raw-data address]} (get db :wallet-connect/current-request)
          method                     (wallet-connect-core/get-request-method event)]
@@ -104,12 +128,13 @@
                  :method               method
                  :wallet-connect-event event
                  :event                :wallet-connect/on-sign-error})
-     {:fx [[:dispatch [:wallet-connect/close-session-request]]]})))
+     {:fx [[:dispatch [:dismiss-modal screen]]
+           [:dispatch [:wallet-connect/reset-current-request]]]})))
 
 
 (rf/reg-event-fx
  :wallet-connect/send-response
- (fn [{:keys [db]} [result]]
+ (fn [{:keys [db]} [screen result]]
    (let [{:keys [id topic] :as event} (get-in db [:wallet-connect/current-request :event])
          method                       (wallet-connect-core/get-request-method event)
          web3-wallet                  (get db :wallet-connect/web3-wallet)]
@@ -124,7 +149,9 @@
                                         :method               method
                                         :event                :wallet-connect/send-response
                                         :wallet-connect-event event})
-                            (rf/dispatch [:wallet-connect/close-session-request]))
+                            (rf/dispatch [:dismiss-modal screen])
+                            (rf/dispatch [:wallet-connect/reset-current-request]))
              :on-success  (fn []
                             (log/info "Successfully sent Wallet Connect response to dApp")
-                            (rf/dispatch [:wallet-connect/close-session-request]))}]]})))
+                            (rf/dispatch [:dismiss-modal screen])
+                            (rf/dispatch [:wallet-connect/reset-current-request]))}]]})))
