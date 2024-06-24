@@ -1,4 +1,5 @@
-(ns status-im.common.enter-seed-phrase.style)
+(ns status-im.common.enter-seed-phrase.style
+  (:require [react-native.platform :as platform]))
 
 (def full-layout {:flex 1})
 
@@ -13,7 +14,7 @@
   [{:keys [banner-offset insets keyboard-shown?]}]
   {:flex           1
    :padding-bottom (if keyboard-shown?
-                     banner-offset
+                     (when platform/ios? banner-offset)
                      (:bottom insets))})
 
 (def form-container
