@@ -7,7 +7,7 @@
     [react-native.core :as rn]))
 
 (defn settings-category
-  [{:keys [label data container-style] :as props}]
+  [{:keys [label data container-style blur?]}]
   (let [theme         (quo.theme/use-theme)
         settings-item (filter identity data)]
     [rn/view {:style (merge (style/container label) container-style)}
@@ -15,12 +15,12 @@
        [text/text
         {:weight :medium
          :size   :paragraph-2
-         :style  (style/label props theme)}
+         :style  (style/label blur? theme)}
         label])
-     [rn/view {:style (style/settings-items props theme)}
+     [rn/view {:style (style/settings-items blur? theme)}
       (for [item settings-item]
         ^{:key item}
         [:<>
          [settings-item/view item]
          (when-not (= item (last settings-item))
-           [rn/view {:style (style/settings-separator props theme)}])])]]))
+           [rn/view {:style (style/settings-separator blur? theme)}])])]]))
