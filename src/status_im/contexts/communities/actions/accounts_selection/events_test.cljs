@@ -70,7 +70,7 @@
       (is
        (match?
         {:db (-> (:db cofx)
-                 (assoc-in [:communities/selected-share-all-addresses community-id] false)
+                 (assoc-in [:communities/selected-share-all-addresses community-id] true)
                  (assoc-in [:communities/all-addresses-to-reveal community-id] addresses-to-reveal)
                  (assoc-in [:communities/all-airdrop-addresses community-id] airdrop-address))
          :fx [[:dispatch
@@ -82,7 +82,7 @@
               [:dispatch
                [:communities/check-permissions-to-join-during-selection community-id
                 addresses-to-reveal]]]}
-        (sut/do-init-permission-addresses cofx [community-id revealed-accounts])))))
+        (sut/do-init-permission-addresses cofx [community-id revealed-accounts true])))))
 
   ;; Expect to mark all addresses to be revealed and first one to receive
   ;; airdrops when no addresses were previously revealed.
@@ -93,7 +93,7 @@
       (is
        (match?
         {:db (-> (:db cofx)
-                 (assoc-in [:communities/selected-share-all-addresses community-id] false)
+                 (assoc-in [:communities/selected-share-all-addresses community-id] true)
                  (assoc-in [:communities/all-addresses-to-reveal community-id] addresses-to-reveal))
          :fx [[:dispatch
                [:communities/check-permissions-to-join-community
@@ -101,7 +101,7 @@
               [:dispatch
                [:communities/check-permissions-to-join-during-selection community-id
                 addresses-to-reveal]]]}
-        (sut/do-init-permission-addresses cofx [community-id revealed-accounts]))))))
+        (sut/do-init-permission-addresses cofx [community-id revealed-accounts true]))))))
 
 (deftest edit-shared-addresses-test
   (testing
@@ -109,6 +109,7 @@
     fallback to all wallet addresses"
     (let [pub-key "abcdef"
           revealed-addresses #{"0xB" "0xC"}
+          share-future-addresses? true
           cofx {:db {:profile/profile                     {:public-key pub-key}
                      :communities/all-addresses-to-reveal {community-id revealed-addresses}}}
           airdrop-address "0xB"
@@ -116,22 +117,24 @@
           actual
           (sut/edit-shared-addresses
            cofx
-           [{:community-id    community-id
-             :password        password
-             :airdrop-address airdrop-address
-             :on-success      (fn [new-addresses-to-reveal]
-                                (is (match? revealed-addresses new-addresses-to-reveal)))}])
+           [{:community-id            community-id
+             :password                password
+             :airdrop-address         airdrop-address
+             :share-future-addresses? share-future-addresses?
+             :on-success              (fn [new-addresses-to-reveal]
+                                        (is (match? revealed-addresses new-addresses-to-reveal)))}])
 
           on-success-wrapper (-> actual :fx first second :on-success)]
       (is (match?
            {:fx [[:effects.community/edit-shared-addresses
-                  {:community-id        community-id
-                   :password            password
-                   :pub-key             pub-key
-                   :addresses-to-reveal revealed-addresses
-                   :airdrop-address     airdrop-address
-                   :on-success          fn?
-                   :on-error            [:communities/edit-shared-addresses-failure community-id]}]]}
+                  {:community-id            community-id
+                   :password                password
+                   :pub-key                 pub-key
+                   :addresses-to-reveal     revealed-addresses
+                   :share-future-addresses? share-future-addresses?
+                   :airdrop-address         airdrop-address
+                   :on-success              fn?
+                   :on-error                [:communities/edit-shared-addresses-failure community-id]}]]}
            actual))
 
       (on-success-wrapper)))

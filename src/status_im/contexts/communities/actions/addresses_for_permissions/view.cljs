@@ -203,7 +203,9 @@
                                                                        :addresses-for-permissions])
                                                          (rf/dispatch [:hide-bottom-sheet]))}]))}])
               (rf/dispatch [:communities/set-share-all-addresses id flag-share-all-addresses]))
-            (rf/dispatch [:communities/set-addresses-to-reveal id addresses-to-reveal])))
+            (do
+              (rf/dispatch [:communities/set-share-all-addresses id flag-share-all-addresses])
+              (rf/dispatch [:communities/set-addresses-to-reveal id addresses-to-reveal]))))
         highest-role (rf/sub [:communities/highest-role-for-selection id])
         [unmodified-role _] (rn/use-state highest-role)]
 
@@ -261,6 +263,7 @@
         can-edit-addresses? (rf/sub [:communities/can-edit-shared-addresses? id])
 
         wallet-accounts (rf/sub [:wallet/operable-accounts-without-watched-accounts])
+        joined (rf/sub [:communities/community-joined id])
         unmodified-addresses-to-reveal (rf/sub [:communities/addresses-to-reveal id])
         [addresses-to-reveal set-addresses-to-reveal] (rn/use-state unmodified-addresses-to-reveal)
 
@@ -285,7 +288,6 @@
             (set-flag-share-all-addresses new-value)
             (when new-value
               (set-addresses-to-reveal (set (map :address wallet-accounts))))))]
-
     (rn/use-mount
      (fn []
        (when-not flag-share-all-addresses
@@ -310,6 +312,7 @@
                                  flag-share-all-addresses]
        :header                  [quo/page-setting
                                  {:checked?            flag-share-all-addresses
+                                  :disabled?           joined
                                   :customization-color color
                                   :on-change           toggle-flag-share-all-addresses
                                   :setting-text        (i18n/label
