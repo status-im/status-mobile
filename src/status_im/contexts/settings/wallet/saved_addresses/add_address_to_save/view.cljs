@@ -85,8 +85,8 @@
        {:accessibility-label :error-message
         :size                :default
         :icon                :i/alert
-        :type                :error
-        :style               style/info-message}
+        :status              :error
+        :container-style     style/info-message}
        error-msg])))
 
 (defn- existing-saved-address

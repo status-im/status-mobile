@@ -94,9 +94,8 @@
         :error?          (not (string/blank? error-msg))}]
       (when-not (string/blank? error-msg)
         [quo/info-message
-         {:type            :error
+         {:status          :error
           :size            :default
           :icon            :i/info
           :container-style style/error-container}
          error-msg])]]))
-

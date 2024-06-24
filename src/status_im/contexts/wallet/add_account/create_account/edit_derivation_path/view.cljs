@@ -117,12 +117,12 @@
             {:weight :monospace}
             (:address derivation-path)]]
           [quo/info-message
-           {:type  (case state
-                     :has-activity :success
-                     :no-activity  :warning
-                     :default)
-            :icon  (if (= state :scanning) :i/scanning :i/done)
-            :style style/info}
+           {:status (case state
+                      :has-activity :success
+                      :no-activity  :warning
+                      :default)
+            :icon   (if (= state :scanning) :i/scanning :i/done)
+            :style  style/info}
            (i18n/label (case state
                          :has-activity :t/address-activity
                          :no-activity  :t/address-no-activity

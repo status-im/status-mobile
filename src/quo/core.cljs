@@ -68,7 +68,7 @@
     quo.components.graph.wallet-graph.view
     quo.components.header
     quo.components.icon
-    quo.components.info.info-message
+    quo.components.info.info-message.view
     quo.components.info.information-box.view
     quo.components.inputs.address-input.view
     quo.components.inputs.input.view
@@ -301,7 +301,7 @@
 (def icon quo.components.icon/icon)
 
 ;;;; Info
-(def info-message quo.components.info.info-message/info-message)
+(def info-message quo.components.info.info-message.view/view)
 (def information-box quo.components.info.information-box.view/view)
 
 ;;;; Inputs

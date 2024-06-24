@@ -128,9 +128,9 @@
          :default-value       private-key}]
        (when flow-state
          [quo/info-message
-          {:type (if (= flow-state :correct-private-key) :success :error)
-           :size :default
-           :icon :i/info}
+          {:status (if (= flow-state :correct-private-key) :success :error)
+           :size   :default
+           :icon   :i/info}
           (case flow-state
             :correct-private-key   (i18n/label :t/correct-private-key)
             :invalid-private-key   (i18n/label :t/invalid-private-key)
