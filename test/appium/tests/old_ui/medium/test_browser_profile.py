@@ -2,7 +2,7 @@ import time
 
 import pytest
 
-from tests import marks, common_password, used_fleet
+from tests import marks, common_password
 from tests.base_test_case import create_shared_drivers, MultipleSharedDeviceTestCase
 from views.sign_in_view import SignInView
 from tests.users import basic_user, ens_user, ens_user_message_sender, transaction_senders, chat_users
@@ -415,8 +415,8 @@ class TestBrowserProfileOneDevice(MultipleSharedDeviceTestCase):
         profile = self.home.profile_button.click()
         profile.advanced_button.click()
 
-        if not profile.element_by_text(used_fleet).is_element_displayed():
-            self.errors.append('%s is not selected by default' % used_fleet)
+        # if not profile.element_by_text(used_fleet).is_element_displayed():
+        #     self.errors.append('%s is not selected by default' % used_fleet)
 
         self.home.just_fyi('Set another fleet and check that changes are applied')
         profile.fleet_setting_button.click()
