@@ -118,3 +118,17 @@
  :<- [:wallet-connect/session-proposer]
  (fn [proposer]
    (-> proposer :metadata :name)))
+
+(rf/reg-sub
+ :wallet-connect/session-proposal-networks
+ :<- [:wallet-connect/current-proposal]
+ :<- [:wallet/network-details]
+ (fn [[proposal network-details]]
+   (let [required-chains (get-in proposal [:params :requiredNamespaces :eip155 :chains])
+         optional-chains (get-in proposal [:params :optionalNamespaces :eip155 :chains])
+         dapp-chain-ids  (into #{} (concat required-chains optional-chains))]
+     (->> network-details
+          (filterv #(contains? dapp-chain-ids
+                               (-> %
+                                   :chain-id
+                                   wallet-connect-core/chain-id->eip155)))))))

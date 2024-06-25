@@ -1,8 +1,8 @@
 (ns status-im.contexts.wallet.wallet-connect.session-proposal.view
   (:require
+    [clojure.string :as string]
     [quo.core :as quo]
     [quo.foundations.colors :as colors]
-    [quo.foundations.resources :as quo.resources]
     [quo.theme]
     [react-native.core :as rn]
     [status-im.common.floating-button-page.view :as floating-button-page]
@@ -45,16 +45,19 @@
          [quo/text label]])
       labels)]))
 
-(defn- get-placeholder-networks
-  []
-  [{:source (quo.resources/get-network :ethereum)}
-   {:source (quo.resources/get-network :optimism)}
-   {:source (quo.resources/get-network :arbitrum)}])
+(defn- format-network-name
+  [network]
+  (-> network :network-name name string/capitalize))
 
 (defn- connection-category
   []
   (let [{:keys [name emoji customization-color]} (first (rf/sub
                                                          [:wallet/accounts-without-watched-accounts]))
+        networks                                 (rf/sub [:wallet-connect/session-proposal-networks])
+        network-names                            (->> networks
+                                                      (map format-network-name)
+                                                      (string/join ", "))
+        network-images                           (mapv :source networks)
         data-item-common-props                   {:blur?       false
                                                   :description :default
                                                   :card?       false
@@ -75,12 +78,9 @@
                                                         :icon-color    colors/neutral-10)
         networks-data-item-props                 (assoc data-item-common-props
                                                         :right-content {:type :network
-                                                                        :data
-                                                                        (get-placeholder-networks)}
+                                                                        :data network-images}
                                                         :title         (i18n/label :t/networks)
-                                                        ;; TODO. The quo component for data-item
-                                                        ;; does not support showing networks yet
-                                                        :subtitle      "Networks placeholder")]
+                                                        :subtitle      network-names)]
     [quo/category
      {:blur?     false
       :list-type :data-item
