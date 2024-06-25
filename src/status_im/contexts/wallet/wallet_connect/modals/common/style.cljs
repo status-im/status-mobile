@@ -14,6 +14,10 @@
   {:flex               1
    :padding-horizontal 20})
 
+(def sign-message-content-container
+  (merge data-content-container
+         {:margin-bottom 10.5}))
+
 (def data-item
   {:flex             1
    :background-color :transparent})

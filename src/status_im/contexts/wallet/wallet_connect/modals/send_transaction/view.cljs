@@ -27,11 +27,11 @@
        :accessibility-label :wallet-connect-sign-message-close}]
      [rn/view {:flex 1}
       [rn/view {:style style/data-content-container}
-       [header/header
+       [header/view
         {:label   (i18n/label :t/wallet-connect-send-transaction-header)
          :dapp    dapp
          :account account}]
-       [data-block/data-block]]
+       [data-block/view]]
       (when error-state
         [quo/alert-banner
          {:action? false
@@ -41,7 +41,7 @@
 
                                  :not-enough-assets
                                  :t/not-enough-assets))}])
-      [footer/footer
+      [footer/view
        {:warning-label     (i18n/label :t/wallet-connect-send-transaction-warning)
         :slide-button-text (i18n/label :t/slide-to-send)
         :disabled?         error-state}

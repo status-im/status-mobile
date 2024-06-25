@@ -3,7 +3,7 @@
             [react-native.core :as rn]
             [status-im.contexts.wallet.wallet-connect.modals.common.header.style :as style]))
 
-(defn header
+(defn view
   [{:keys [label dapp account]}]
   [rn/view
    {:style style/header-container}

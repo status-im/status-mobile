@@ -12,13 +12,13 @@
   (rf/dispatch [:hide-bottom-sheet])
   (rf/dispatch [:wallet-connect/respond-current-session password]))
 
-(defn footer
-  [{:keys [warning-label slide-button-text disabed?]} children]
+(defn view
+  [{:keys [warning-label slide-button-text disabed?]} & children]
   (let [{:keys [customization-color]} (rf/sub [:wallet-connect/current-request-account-details])]
     [rn/view {:style style/content-container}
-     [rn/view
-      {:style style/data-items-container}
-      children]
+     (into [rn/view
+            {:style style/data-items-container}]
+           children)
      [rn/view {:style style/auth-container}
       [standard-authentication/slide-button
        {:size                :size-48

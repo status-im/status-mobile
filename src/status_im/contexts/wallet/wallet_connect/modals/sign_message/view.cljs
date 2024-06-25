@@ -23,13 +23,13 @@
        :on-press            #(rf/dispatch [:navigate-back])
        :accessibility-label :wallet-connect-sign-message-close}]
      [rn/view {:flex 1}
-      [rn/view {:style style/data-content-container}
-       [header/header
+      [rn/view {:style style/sign-message-content-container}
+       [header/view
         {:label   (i18n/label :t/wallet-connect-sign-message-header)
          :dapp    dapp
          :account account}]
-       [data-block/data-block]]
-      [footer/footer
+       [data-block/view]]
+      [footer/view
        {:warning-label     (i18n/label :t/wallet-connect-sign-message-warning)
         :slide-button-text (i18n/label :t/slide-to-sign)}
        [quo/data-item
