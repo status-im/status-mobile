@@ -14,7 +14,7 @@
 
 (defn view
   [{:keys [name full-address chain-short-names address] :as opts}]
-  (let [[_ splitted-address] (network-utils/split-network-full-address address)
+  (let [[_ splitted-address]           (network-utils/split-network-full-address address)
         open-send-flow                 (rn/use-callback
                                         #(rf/dispatch [:wallet/select-send-address
                                                        {:address     full-address
