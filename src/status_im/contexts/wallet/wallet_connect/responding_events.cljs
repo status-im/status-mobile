@@ -105,12 +105,12 @@
 (rf/reg-event-fx
  :wallet-connect/respond-sign-transaction-data
  (fn [_ [password data]]
-   (let [_ (js/console.log "ALWX DATA" (clj->js data))
-         {:keys [address messageToSign]} data]
+   (let [{:keys           [address]
+          message-to-sign :messageToSign} data]
      {:fx [[:effects.wallet-connect/sign-message
             {:password   password
              :address    address
-             :data       messageToSign
+             :data       message-to-sign
              :on-error   #(rf/dispatch [:wallet-connect/on-sign-error
                                         :screen/wallet-connect.sign-transaction %])
              :on-success #(rf/dispatch [:wallet-connect/send-response
