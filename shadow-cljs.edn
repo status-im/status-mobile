@@ -131,7 +131,8 @@
    :output-dir "target/test"
    :optimizations :simple
    :target :node-test
-   :dev {:devtools {:preloads [status-im.setup.schema-preload]}}
+   :dev {:devtools {:preloads [status-im.setup.schema-preload
+                               status-im.setup.test-preload]}}
    ;; Uncomment line below to `make test-watch` a specific file
    :ns-regexp #shadow/env "SHADOW_NS_REGEXP"
    :main legacy.status-im.test-runner/main

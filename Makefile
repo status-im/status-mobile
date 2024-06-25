@@ -447,6 +447,16 @@ android-devices: export TARGET := android-sdk
 android-devices: ##@other Invoke adb devices
 	adb devices
 
+android-pull-geth: export TARGET := android-sdk
+android-pull-geth: export VERSION ?= debug
+android-pull-geth:
+	adb pull "/storage/emulated/0/Android/data/im.status.ethereum$$( [ "$(VERSION)" = "release" ] || echo ".$(VERSION)" )/files/Download/geth.log"
+
+android-tail-geth: export TARGET := android-sdk
+android-tail-geth: export VERSION ?= debug
+android-tail-geth:
+	adb shell 'while true; do cat; sleep 1; done < /storage/emulated/0/Android/data/im.status.ethereum$$( [ "$(VERSION)" = "release" ] || echo ".$(VERSION)" )/files/Download/geth.log'
+
 android-logcat: export TARGET := android-sdk
 android-logcat: ##@other Read status-mobile logs from Android phone using adb
 	adb logcat | grep -e RNBootstrap -e ReactNativeJS -e ReactNative -e StatusModule -e StatusNativeLogs -e 'F DEBUG   :' -e 'Go      :' -e 'GoLog   :' -e 'libc    :'

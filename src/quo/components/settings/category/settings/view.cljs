@@ -7,9 +7,10 @@
     [react-native.core :as rn]))
 
 (defn settings-category
-  [{:keys [label data container-style blur?]}]
-  (let [theme         (quo.theme/use-theme)
-        settings-item (filter identity data)]
+  [{:keys [label data blur? container-style]}]
+  (let [theme          (quo.theme/use-theme)
+        settings-items (remove nil? data)
+        last-index     (dec (count settings-items))]
     [rn/view {:style (merge (style/container label) container-style)}
      (when label
        [text/text
@@ -18,9 +19,11 @@
          :style  (style/label blur? theme)}
         label])
      [rn/view {:style (style/settings-items blur? theme)}
-      (for [item settings-item]
-        ^{:key item}
-        [:<>
-         [settings-item/view item]
-         (when-not (= item (last settings-item))
-           [rn/view {:style (style/settings-separator blur? theme)}])])]]))
+      (map-indexed
+       (fn [index item]
+         ^{:key (str label (:title item))}
+         [:<>
+          [settings-item/view item]
+          (when-not (= last-index index)
+            [rn/view {:style (style/settings-separator blur? theme)}])])
+       settings-items)]]))

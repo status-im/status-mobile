@@ -3,6 +3,28 @@
     [cljs.test :refer-macros [deftest testing is are]]
     [utils.money :as money]))
 
+(deftest comparable-test
+  (is (= [(money/bignumber -4)
+          (money/bignumber 0)
+          (money/bignumber 1)
+          (money/bignumber 1.1)
+          (money/bignumber 2.1)]
+         (sort [(money/bignumber 0)
+                (money/bignumber 2.1)
+                (money/bignumber -4)
+                (money/bignumber 1.1)
+                (money/bignumber 1)]))))
+
+(deftest equivalence-test
+  (is (= (money/bignumber 0)
+         (money/bignumber 0)))
+  (is (= (money/bignumber -1)
+         (money/bignumber -1)))
+  (is (not (= (money/bignumber 10)
+              (money/bignumber -10))))
+  (is (match? {:a {:b {:c (money/bignumber 42)}}}
+              {:a {:b {:c (money/bignumber 42)}}})))
+
 (deftest wei->ether-test
   (testing "Numeric input, 15 significant digits"
     (is (= (str (money/wei->ether 111122223333444000))

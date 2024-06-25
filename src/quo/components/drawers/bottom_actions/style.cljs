@@ -20,8 +20,9 @@
   {:background-color (when-not (or scroll? blur?)
                        (colors/theme-colors colors/white colors/neutral-95 theme))})
 
-(def buttons-container
-  {:flex-direction     :row
+(defn buttons-container
+  [actions]
+  {:flex-direction     (if (= actions :two-vertical-actions) :column :row)
    :justify-content    :space-around
    :padding-vertical   12
    :gap                12

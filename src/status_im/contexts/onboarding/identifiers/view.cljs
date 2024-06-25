@@ -20,6 +20,10 @@
    {:text     (i18n/label :t/emojihash)
     :sub-text (i18n/label :t/emojihash-description)}])
 
+(defn- navigate-to-enable-notifications
+  []
+  (rf/dispatch [:onboarding/navigate-to-enable-notifications]))
+
 (defn f-view
   []
   (let [progress             (atom nil)
@@ -62,9 +66,7 @@
         {:accessibility-label :skip-identifiers
          :type                :grey
          :background          :blur
-         :on-press            #(rf/dispatch [:navigate-to-within-stack
-                                             [:screen/onboarding.enable-notifications
-                                              :screen/onboarding.new-to-status]])
+         :on-press            navigate-to-enable-notifications
          :container-style     style/button}
         (i18n/label :t/continue)]]]]))
 
