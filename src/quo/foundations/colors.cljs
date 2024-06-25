@@ -151,7 +151,7 @@
 (def black-opa-0 (alpha black 0))
 (def black-opa-30 (alpha black 0.3))
 (def black-opa-60 (alpha black 0.6))
-(def onboarding-header-black "#000716")
+(def onboarding-header-black neutral-100)
 (def border-avatar-light
   "Simulates a blurred, transparent border for avatars in light mode"
   "#475060")

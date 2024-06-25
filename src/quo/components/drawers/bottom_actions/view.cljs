@@ -17,9 +17,9 @@
    [:catn
     [:props
      [:map {:closed true}
-      [:actions [:maybe [:enum :one-action :two-actions]]]
+      [:actions [:maybe [:enum :one-action :two-actions :two-vertical-actions]]]
       [:description {:optional true} [:maybe [:enum :top :bottom :top-error]]]
-      [:description-text {:optional true} [:maybe :string]]
+      [:description-text {:optional true} [:maybe [:or :string :schema.common/hiccup]]]
       [:description-top-text {:optional true} [:maybe :string]]
       [:error-message {:optional true} [:maybe :string]]
       [:role {:optional true} [:maybe [:enum :admin :member :token-master :owner]]]
@@ -72,8 +72,9 @@
             :context (i18n/label (keyword "t" role))}
            context-tag-props)]])
 
-     [rn/view {:style style/buttons-container}
-      (when (= actions :two-actions)
+     [rn/view {:style (style/buttons-container actions)}
+      (when (or (= actions :two-actions)
+                (= actions :two-vertical-actions))
         [button/button
          (merge
           {:size                40
@@ -93,8 +94,10 @@
         button-one-props)
        button-one-label]]
      (when (= description :bottom)
-       [text/text
-        {:size  :paragraph-2
-         :style (style/description-bottom scroll? blur? theme)} description-text])]))
+       (if (string? description-text)
+         [text/text
+          {:size  :paragraph-2
+           :style (style/description-bottom scroll? blur? theme)} description-text]
+         description-text))]))
 
 (def view (schema/instrument #'view-internal ?schema))

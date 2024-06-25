@@ -33,6 +33,9 @@
   [:fn {:error/message "schema.common/exception should be of type ExceptionInfo"}
    (fn [v] (instance? ExceptionInfo v))])
 
+(def ^:private ?hiccup
+  vector?)
+
 (defn register-schemas
   []
   (registry/register ::theme ?theme)
@@ -40,4 +43,5 @@
   (registry/register ::public-key ?public-key)
   (registry/register ::image-source ?image-source)
   (registry/register ::rpc-call ?rpc-call)
-  (registry/register ::exception ?exception))
+  (registry/register ::exception ?exception)
+  (registry/register ::hiccup ?hiccup))

@@ -4,7 +4,6 @@
     [react-native.fs :as utils.fs]
     [react-native.platform :as platform]
     [schema.core :as schema]
-    [schema.quo]
     [utils.datetime :as datetime]))
 
 (def ^:const image-server-uri-prefix "https://localhost:")
