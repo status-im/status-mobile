@@ -50,9 +50,25 @@
   [bn1 bn2]
   (.greaterThan ^js bn1 bn2))
 
+(defn less-than
+  [bn1 bn2]
+  (.lessThan ^js bn1 bn2))
+
 (defn equal-to
   [bn1 bn2]
   (.eq ^js bn1 bn2))
+
+(extend-type BigNumber
+ IEquiv
+   (-equiv [this other]
+     (equal-to this other))
+
+ IComparable
+   (-compare [this other]
+     (cond
+       (less-than this other)    -1
+       (greater-than this other) 1
+       :else                     0)))
 
 (defn sub
   [bn1 bn2]
@@ -260,4 +276,3 @@
 (schema/=> format-amount
   [:=> [:cat [:maybe :int]]
    [:maybe :string]])
-

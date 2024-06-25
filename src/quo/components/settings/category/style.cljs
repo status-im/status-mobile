@@ -11,7 +11,7 @@
    :padding-bottom     8})
 
 (defn settings-items
-  [{:keys [blur?]} theme]
+  [blur? theme]
   {:border-radius    16
    :background-color (if blur?
                        colors/white-opa-5
@@ -22,7 +22,7 @@
                        (colors/theme-colors colors/neutral-10 colors/neutral-80 theme))})
 
 (defn label
-  [{:keys [blur?]} theme]
+  [blur? theme]
   {:margin-bottom 12
    :color         (if blur?
                     colors/white-opa-40
@@ -32,7 +32,7 @@
   {:margin-top 12})
 
 (defn settings-separator
-  [{:keys [blur?]} theme]
+  [blur? theme]
   {:height           1
    :background-color (if blur?
                        colors/white-opa-5
