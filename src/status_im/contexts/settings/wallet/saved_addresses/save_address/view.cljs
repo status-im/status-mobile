@@ -105,7 +105,7 @@
                          [ens ens? open-network-preferences address-text])]
     [quo/overlay {:type :shell}
      [floating-button-page/view
-      {:footer-container-padding (+ (safe-area/get-bottom) 12)
+      {:footer-container-padding (if edit? (+ (safe-area/get-bottom) 12) 0)
        :header                   [quo/page-nav
                                   {:type                :no-title
                                    :background          :blur
