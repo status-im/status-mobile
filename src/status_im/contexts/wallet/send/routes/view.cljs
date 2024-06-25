@@ -170,22 +170,23 @@
            {:title       (i18n/label :t/send-from-network {:network network-name-str})
             :description (i18n/label :t/define-amount-sent-from-network {:network network-name-str})}]
           [quo/token-input
-           {:container-style style/input-container
-            :token           token-symbol
-            :currency        fiat-currency
-            :currency-symbol currency-symbol
-            :crypto-decimals (min token-decimals 6)
-            :error?          (controlled-input/input-error input-state)
-            :networks        [network-details]
-            :title           (i18n/label
-                              :t/send-limit
-                              {:limit (if crypto-currency?
-                                        (utils/make-limit-label-crypto current-limit token-symbol)
-                                        (utils/make-limit-label-fiat current-limit currency-symbol))})
-            :conversion      conversion-rate
-            :show-keyboard?  false
-            :value           (controlled-input/input-value input-state)
-            :on-swap         swap-between-fiat-and-crypto}]
+           {:container-style  style/input-container
+            :token            token-symbol
+            :currency         fiat-currency
+            :currency-symbol  currency-symbol
+            :crypto-decimals  (min token-decimals 6)
+            :error?           (controlled-input/input-error input-state)
+            :networks         [network-details]
+            :title            (i18n/label
+                               :t/send-limit
+                               {:limit (if crypto-currency?
+                                         (utils/make-limit-label-crypto current-limit token-symbol)
+                                         (utils/make-limit-label-fiat current-limit currency-symbol))})
+            :conversion       conversion-rate
+            :show-keyboard?   false
+            :value            (controlled-input/input-value input-state)
+            :on-swap          swap-between-fiat-and-crypto
+            :allow-selection? false}]
           [quo/disclaimer
            {:on-change           (fn [checked?]
                                    (set-is-amount-locked checked?))

@@ -349,23 +349,24 @@
        :on-press      on-navigate-back
        :switcher-type :select-account}]
      [quo/token-input
-      {:container-style style/input-container
-       :token           token-symbol
-       :currency        fiat-currency
-       :currency-symbol currency-symbol
-       :crypto-decimals (min token-decimals 6)
-       :error?          (controlled-input/input-error input-state)
-       :networks        (seq send-enabled-networks)
-       :title           (i18n/label
-                         :t/send-limit
-                         {:limit (if crypto-currency?
-                                   (utils/make-limit-label-crypto current-limit token-symbol)
-                                   (utils/make-limit-label-fiat current-limit currency-symbol))})
-       :conversion      conversion-rate
-       :show-keyboard?  false
-       :value           input-amount
-       :on-swap         swap-between-fiat-and-crypto
-       :on-token-press  show-select-asset-sheet}]
+      {:container-style  style/input-container
+       :token            token-symbol
+       :currency         fiat-currency
+       :currency-symbol  currency-symbol
+       :crypto-decimals  (min token-decimals 6)
+       :error?           (controlled-input/input-error input-state)
+       :networks         (seq send-enabled-networks)
+       :title            (i18n/label
+                          :t/send-limit
+                          {:limit (if crypto-currency?
+                                    (utils/make-limit-label-crypto current-limit token-symbol)
+                                    (utils/make-limit-label-fiat current-limit currency-symbol))})
+       :conversion       conversion-rate
+       :show-keyboard?   false
+       :value            input-amount
+       :on-swap          swap-between-fiat-and-crypto
+       :on-token-press   show-select-asset-sheet
+       :allow-selection? false}]
      [routes/view
       {:token                                     token-by-symbol
        :input-value                               input-amount
