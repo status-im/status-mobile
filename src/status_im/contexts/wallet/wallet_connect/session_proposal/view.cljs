@@ -53,8 +53,8 @@
 
 (defn- connection-category
   []
-  (let [accounts                                 (rf/sub [:wallet/accounts-without-watched-accounts])
-        {:keys [name emoji customization-color]} (-> accounts first)
+  (let [{:keys [name emoji customization-color]} (first (rf/sub
+                                                         [:wallet/accounts-without-watched-accounts]))
         data-item-common-props                   {:blur?       false
                                                   :description :default
                                                   :card?       false
