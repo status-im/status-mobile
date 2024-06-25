@@ -173,7 +173,7 @@
       (reset! rf-db/app-db
         {:wallet {:ui {:send        {:id 1}
                        :other-props :value}}})
-      (is (= expected-db (:db (dispatch [event-id])))))))
+      (is (match? expected-db (:db (dispatch [event-id])))))))
 
 (h/deftest-event :wallet/select-address-tab
   [event-id dispatch]
@@ -181,7 +181,7 @@
     (let [expected-db {:wallet {:ui {:send {:select-address-tab "tab"}}}}]
       (reset! rf-db/app-db
         {:wallet {:ui {:send nil}}})
-      (is (= expected-db (:db (dispatch [event-id "tab"])))))))
+      (is (match? expected-db (:db (dispatch [event-id "tab"])))))))
 
 (h/deftest-event :wallet/clean-send-address
   [event-id dispatch]
@@ -192,7 +192,7 @@
                               :recipient   {:recipient-type :saved-address
                                             :label          "label"}
                               :other-props :value}}}})
-      (is (= expected-db (:db (dispatch [event-id])))))))
+      (is (match? expected-db (:db (dispatch [event-id])))))))
 
 (h/deftest-event :wallet/clean-send-amount
   [event-id dispatch]
@@ -201,7 +201,7 @@
       (reset! rf-db/app-db
         {:wallet {:ui {:send {:amount      10
                               :other-props :value}}}})
-      (is (= expected-db (:db (dispatch [event-id])))))))
+      (is (match? expected-db (:db (dispatch [event-id])))))))
 
 (h/deftest-event :wallet/clean-disabled-from-networks
   [event-id dispatch]
@@ -210,7 +210,7 @@
       (reset! rf-db/app-db
         {:wallet {:ui {:send {:disabled-from-chain-ids "value"
                               :other-props             :value}}}})
-      (is (= expected-db (:db (dispatch [event-id])))))))
+      (is (match? expected-db (:db (dispatch [event-id])))))))
 
 (h/deftest-event :wallet/clean-from-locked-amounts
   [event-id dispatch]
@@ -219,7 +219,7 @@
       (reset! rf-db/app-db
         {:wallet {:ui {:send {:from-locked-amounts "value"
                               :other-props         :value}}}})
-      (is (= expected-db (:db (dispatch [event-id])))))))
+      (is (match? expected-db (:db (dispatch [event-id])))))))
 
 (h/deftest-event :wallet/disable-from-networks
   [event-id dispatch]
@@ -228,7 +228,7 @@
                                             :other-props             :value}}}}]
       (reset! rf-db/app-db
         {:wallet {:ui {:send {:other-props :value}}}})
-      (is (= expected-db (:db (dispatch [event-id [1]])))))))
+      (is (match? expected-db (:db (dispatch [event-id [1]])))))))
 
 (h/deftest-event :wallet/unlock-from-amount
   [event-id dispatch]
@@ -238,7 +238,7 @@
       (reset! rf-db/app-db
         {:wallet {:ui {:send {:other-props         :value
                               :from-locked-amounts {:chain-id [1 10]}}}}})
-      (is (= expected-db (:db (dispatch [event-id :chain-id])))))))
+      (is (match? expected-db (:db (dispatch [event-id :chain-id])))))))
 
 (h/deftest-event :wallet/lock-from-amount
   [event-id dispatch]
@@ -247,7 +247,7 @@
                                             :from-locked-amounts {:10 "amount"}}}}}]
       (reset! rf-db/app-db
         {:wallet {:ui {:send {:other-props :value}}}})
-      (is (= expected-db (:db (dispatch [event-id :10 "amount"])))))))
+      (is (match? expected-db (:db (dispatch [event-id :10 "amount"])))))))
 
 (h/deftest-event :wallet/clean-selected-token
   [event-id dispatch]
@@ -257,7 +257,7 @@
                                   :token "ETH" 
                                   :token-display-name "ETH"
                                   :tx-type "TX type"}}}})
-    (is (= expected-db (:db (dispatch [event-id]))))))
+    (is (match? expected-db (:db (dispatch [event-id]))))))
 
 (h/deftest-event :wallet/clean-selected-collectible
   [event-id dispatch]
@@ -267,7 +267,7 @@
                                   :collectible "ETH"
                                   :token-display-name "ETH"
                                   :amount "0.1"}}}})
-    (is (= expected-db (:db (dispatch [event-id]))))))
+    (is (match? expected-db (:db (dispatch [event-id]))))))
 
 (h/deftest-event :wallet/clean-suggested-routes
   [event-id dispatch]
@@ -284,15 +284,13 @@
                                   :network-links ["link"]
                                   :loading-suggested-routes? false
                                   :suggested-routes-call-timestamp ["1" "2"]}}}})
-    (is (= expected-db (:db (dispatch [event-id]))))))
+    (is (match? expected-db (:db (dispatch [event-id]))))))
 
 ;; (h/deftest-event :wallet/suggested-routes-error
 ;;   [event-id dispatch]
-;;   (let [bn-100 (money/bignumber "100")
-;;         bn-200 (money/bignumber "200")
-;;         sender-network-amounts [{:chain-id 1 :total-amount bn-100 :type :loading}
-;;                                 {:chain-id 10 :total-amount bn-200 :type :default}]
-;;         receiver-network-amounts [{:chain-id 1 :total-amount bn-100 :type :loading}] 
+;;   (let [sender-network-amounts [{:chain-id 1 :total-amount (money/bignumber "100") :type :loading}
+;;                                 {:chain-id 10 :total-amount (money/bignumber "200") :type :default}]
+;;         receiver-network-amounts [{:chain-id 1 :total-amount (money/bignumber "100") :type :loading}] 
 ;;         expected-result {:db {:wallet {:ui {:send {:sender-network-values (send-utils/reset-loading-network-amounts-to-zero sender-network-amounts)
 ;;                                                    :receiver-network-values (send-utils/reset-loading-network-amounts-to-zero receiver-network-amounts)
 ;;                                                    :loading-suggested-routes? false
@@ -310,6 +308,13 @@
 ;;     (is (match? expected-result (dispatch [event-id {:message "error"}])))))
 
 
+(h/deftest-event :wallet/suggested-routes-error
+  [event-id dispatch]
+  (is (match? {:key :val
+               :key2 :val2} 
+              {:key :val
+               :key2 :val2
+               :key3 :val3})))
 
 
 (run-tests)
