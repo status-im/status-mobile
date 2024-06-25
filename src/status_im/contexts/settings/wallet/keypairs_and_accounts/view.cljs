@@ -69,7 +69,7 @@
      {:blur?               true
       :status-indicator    false
       :stored              :on-device
-      :action              :options
+      :action              (if default-keypair? :none :options)
       :accounts            accounts
       :customization-color customization-color
       :container-style     style/keypair-container-style
