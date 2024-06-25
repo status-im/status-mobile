@@ -141,10 +141,9 @@
                                                                            amount-in-crypto)
                                                               send-amount (money/bignumber
                                                                            send-amount-in-crypto)]
-                                                          (if (and (money/bignumber? amount)
-                                                                   (money/bignumber? send-amount))
-                                                            (money/greater-than amount send-amount)
-                                                            false))
+                                                          (and (money/bignumber? amount)
+                                                               (money/bignumber? send-amount)
+                                                               (money/greater-than amount send-amount)))
              swap-between-fiat-and-crypto               (fn [swap-to-crypto-currency?]
                                                           (set-crypto-currency swap-to-crypto-currency?)
                                                           (set-input-state
@@ -244,31 +243,34 @@
   [{:keys [network-values token-symbol on-press on-long-press receiver? loading-routes?
            token-not-supported-in-receiver-networks?]}]
   [rn/view
-   (map-indexed (fn [index {:keys [chain-id total-amount type]}]
-                  (let [status (cond (and (= type :not-available)
+   (map-indexed (fn [index
+                     {chain-id           :chain-id
+                      network-value-type :type
+                      total-amount       :total-amount}]
+                  (let [status (cond (and (= network-value-type :not-available)
                                           loading-routes?
                                           token-not-supported-in-receiver-networks?)
                                      :loading
-                                     (= type :not-available)
+                                     (= network-value-type :not-available)
                                      :disabled
-                                     :else type)]
+                                     :else network-value-type)]
                     [rn/view
                      {:key   (str (if receiver? "to" "from") "-" chain-id)
                       :style {:margin-top (if (pos? index) 11 7.5)}}
                      [quo/network-bridge
-                      {:amount        (if (= type :not-available)
+                      {:amount        (if (= network-value-type :not-available)
                                         (i18n/label :t/not-available)
                                         (str total-amount " " token-symbol))
                        :network       (network-utils/id->network chain-id)
                        :status        status
                        :on-press      #(when (not loading-routes?)
                                          (cond
-                                           (= type :edit)
+                                           (= network-value-type :edit)
                                            (open-preferences)
                                            on-press (on-press chain-id total-amount)))
                        :on-long-press #(when (and (not loading-routes?) (not= status :disabled))
                                          (cond
-                                           (= type :add)
+                                           (= network-value-type :add)
                                            (open-preferences)
                                            on-long-press (on-long-press chain-id total-amount)))}]]))
                 network-values)])
