@@ -63,7 +63,7 @@
                                                   :card?       false
                                                   :label       :preview
                                                   :status      :default
-                                                  :size        :default}
+                                                  :size        :large}
         account-data-item-props                  (assoc data-item-common-props
                                                         :right-content {:type :accounts
                                                                         :size :size-32
