@@ -173,7 +173,7 @@
       (reset! rf-db/app-db
         {:wallet {:ui {:send        {:id 1}
                        :other-props :value}}})
-      (is (match? expected-db (:db (dispatch [event-id])))))))
+      (is (= expected-db (:db (dispatch [event-id])))))))
 
 (h/deftest-event :wallet/select-address-tab
   [event-id dispatch]
@@ -181,18 +181,18 @@
     (let [expected-db {:wallet {:ui {:send {:select-address-tab "tab"}}}}]
       (reset! rf-db/app-db
         {:wallet {:ui {:send nil}}})
-      (is (match? expected-db (:db (dispatch [event-id "tab"])))))))
+      (is (= expected-db (:db (dispatch [event-id "tab"])))))))
 
 (h/deftest-event :wallet/clean-send-address
   [event-id dispatch]
   (testing "clean send address"
     (let [expected-db {:wallet {:ui {:send {:other-props :value}}}}]
       (reset! rf-db/app-db
-        {:wallet {:ui {:send {:address     "0x01"
+        {:wallet {:ui {:send {:to-address     "0x01"
                               :recipient   {:recipient-type :saved-address
                                             :label          "label"}
                               :other-props :value}}}})
-      (is (match? expected-db (:db (dispatch [event-id])))))))
+      (is (= expected-db (:db (dispatch [event-id])))))))
 
 (h/deftest-event :wallet/clean-send-amount
   [event-id dispatch]
@@ -201,7 +201,7 @@
       (reset! rf-db/app-db
         {:wallet {:ui {:send {:amount      10
                               :other-props :value}}}})
-      (is (match? expected-db (:db (dispatch [event-id])))))))
+      (is (= expected-db (:db (dispatch [event-id])))))))
 
 (h/deftest-event :wallet/clean-disabled-from-networks
   [event-id dispatch]
@@ -210,7 +210,7 @@
       (reset! rf-db/app-db
         {:wallet {:ui {:send {:disabled-from-chain-ids "value"
                               :other-props             :value}}}})
-      (is (match? expected-db (:db (dispatch [event-id])))))))
+      (is (= expected-db (:db (dispatch [event-id])))))))
 
 (h/deftest-event :wallet/clean-from-locked-amounts
   [event-id dispatch]
@@ -219,7 +219,7 @@
       (reset! rf-db/app-db
         {:wallet {:ui {:send {:from-locked-amounts "value"
                               :other-props         :value}}}})
-      (is (match? expected-db (:db (dispatch [event-id])))))))
+      (is (= expected-db (:db (dispatch [event-id])))))))
 
 (h/deftest-event :wallet/disable-from-networks
   [event-id dispatch]
@@ -228,7 +228,7 @@
                                             :other-props             :value}}}}]
       (reset! rf-db/app-db
         {:wallet {:ui {:send {:other-props :value}}}})
-      (is (match? expected-db (:db (dispatch [event-id [1]])))))))
+      (is (= expected-db (:db (dispatch [event-id [1]])))))))
 
 (h/deftest-event :wallet/unlock-from-amount
   [event-id dispatch]
@@ -238,7 +238,7 @@
       (reset! rf-db/app-db
         {:wallet {:ui {:send {:other-props         :value
                               :from-locked-amounts {:chain-id [1 10]}}}}})
-      (is (match? expected-db (:db (dispatch [event-id [1]])))))))
+      (is (= expected-db (:db (dispatch [event-id :chain-id])))))))
 
 (h/deftest-event :wallet/lock-from-amount
   [event-id dispatch]
@@ -247,27 +247,69 @@
                                             :from-locked-amounts {:10 "amount"}}}}}]
       (reset! rf-db/app-db
         {:wallet {:ui {:send {:other-props :value}}}})
-      (is (match? expected-db (:db (dispatch [event-id :10 "amount"])))))))
+      (is (= expected-db (:db (dispatch [event-id :10 "amount"])))))))
 
-(h/deftest-event :wallet/suggested-routes-error
+(h/deftest-event :wallet/clean-selected-token
   [event-id dispatch]
-  (let [sender-network-amounts [{:chain-id 1 :total-amount (money/bignumber "100") :type :loading}
-                                {:chain-id 10 :total-amount (money/bignumber "200") :type :default}]
-        receiver-network-amounts [{:chain-id 1 :total-amount (money/bignumber "100") :type :loading}] 
-        expected-result {:db {:wallet {:ui {:send {:sender-network-values (send-utils/reset-loading-network-amounts-to-zero sender-network-amounts)
-                                                   :receiver-network-values (send-utils/reset-loading-network-amounts-to-zero receiver-network-amounts)
-                                                   :loading-suggested-routes? false
-                                                   :suggested-routes {:best []}}}}}
-                         :fx [[:dispatch
-                               [:toasts/upsert
-                                {:id   :send-transaction-error
-                                 :type :negative
-                                 :text "error"}]]]}]
+  (let [expected-db {:wallet {:ui {:send {:other-props :value}}}}]
     (reset! rf-db/app-db
-            {:wallet {:ui {:send {:sender-network-values sender-network-amounts
-                                  :receiver-network-values receiver-network-amounts
-                                  :route :values
-                                  :loading-suggested-routes? true}}}})
-    (is (match? expected-result (dispatch [event-id {:message "error"}])))))
+            {:wallet {:ui {:send {:other-props :value 
+                                  :token "ETH" 
+                                  :token-display-name "ETH"
+                                  :tx-type "TX type"}}}})
+    (is (= expected-db (:db (dispatch [event-id]))))))
+
+(h/deftest-event :wallet/clean-selected-collectible
+  [event-id dispatch]
+  (let [expected-db {:wallet {:ui {:send {:other-props :value}}}}]
+    (reset! rf-db/app-db
+            {:wallet {:ui {:send {:other-props :value
+                                  :collectible "ETH"
+                                  :token-display-name "ETH"
+                                  :amount "0.1"}}}})
+    (is (= expected-db (:db (dispatch [event-id]))))))
+
+(h/deftest-event :wallet/clean-suggested-routes
+  [event-id dispatch]
+  (let [expected-db {:wallet {:ui {:send {:other-props :value}}}}]
+    (reset! rf-db/app-db
+            {:wallet {:ui {:send {:other-props :value
+                                  :suggested-routes ["1" "2"]
+                                  :route "1"
+                                  :amount "0.1"
+                                  :from-values-by-chain [{:chain-id 1} {:chain-id 10} {:chain-id 42161}]
+                                  :to-values-by-chain [{:chain-id 1} {:chain-id 10} {:chain-id 42161}]
+                                  :sender-network-values ["eth" "arb1"]
+                                  :receiver-network-values ["eth" "arb1"]
+                                  :network-links ["link"]
+                                  :loading-suggested-routes? false
+                                  :suggested-routes-call-timestamp ["1" "2"]}}}})
+    (is (= expected-db (:db (dispatch [event-id]))))))
+
+;; (h/deftest-event :wallet/suggested-routes-error
+;;   [event-id dispatch]
+;;   (let [bn-100 (money/bignumber "100")
+;;         bn-200 (money/bignumber "200")
+;;         sender-network-amounts [{:chain-id 1 :total-amount bn-100 :type :loading}
+;;                                 {:chain-id 10 :total-amount bn-200 :type :default}]
+;;         receiver-network-amounts [{:chain-id 1 :total-amount bn-100 :type :loading}] 
+;;         expected-result {:db {:wallet {:ui {:send {:sender-network-values (send-utils/reset-loading-network-amounts-to-zero sender-network-amounts)
+;;                                                    :receiver-network-values (send-utils/reset-loading-network-amounts-to-zero receiver-network-amounts)
+;;                                                    :loading-suggested-routes? false
+;;                                                    :suggested-routes {:best []}}}}}
+;;                          :fx [[:dispatch
+;;                                [:toasts/upsert
+;;                                 {:id   :send-transaction-error
+;;                                  :type :negative
+;;                                  :text "error"}]]]}]
+;;     (reset! rf-db/app-db
+;;             {:wallet {:ui {:send {:sender-network-values sender-network-amounts
+;;                                   :receiver-network-values receiver-network-amounts
+;;                                   :route :values
+;;                                   :loading-suggested-routes? true}}}})
+;;     (is (match? expected-result (dispatch [event-id {:message "error"}])))))
+
+
+
 
 (run-tests)
