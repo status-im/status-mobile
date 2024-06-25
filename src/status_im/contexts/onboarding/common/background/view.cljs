@@ -29,8 +29,8 @@
   [rn/image
    {:resize-mode   :stretch
     :resize-method :scale
-    :style         {:margin-top 32
-                    :width      content-width}
+    :style         {:top   138
+                    :width content-width}
     :source        (resources/get-image :onboarding-illustration)}])
 
 (defonce progress (atom nil))

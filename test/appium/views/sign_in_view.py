@@ -147,8 +147,10 @@ class SignInView(BaseView):
         self.driver = driver
 
         # intro screen
-        self.sign_in_intro_button = Button(self.driver, accessibility_id="already-use-status-button")
         self.i_m_new_in_status_button = Button(self.driver, accessibility_id="new-to-status-button")
+
+        self.create_profile_button = Button(self.driver, accessibility_id='new-to-status-button')
+        self.sync_or_recover_profile_button = Button(self.driver, accessibility_id='already-use-status-button')
 
         self.migration_password_input = EditBox(self.driver, accessibility_id="enter-password-input")
         self.access_key_button = AccessKeyButton(self.driver)
@@ -195,7 +197,7 @@ class SignInView(BaseView):
         self.cancel_custom_seed_phrase_button = Button(self.driver, accessibility_id="cancel-custom-seed-phrase")
 
         # New onboarding
-        self.generate_keys_button = Button(self.driver, translation_id="lets-go")
+        self.generate_keys_button = Button(self.driver, accessibility_id="generate-key-option-card")
         self.profile_title_input = EditBox(self.driver, accessibility_id="profile-title-input")
         self.profile_continue_button = Button(self.driver, accessibility_id="submit-create-profile-button")
         self.profile_password_edit_box = EditBox(self.driver, translation_id="password-creation-placeholder-1")
@@ -206,7 +208,7 @@ class SignInView(BaseView):
         self.enable_notifications_button = Button(self.driver, accessibility_id="enable-notifications-button")
         self.maybe_later_button = Button(self.driver, accessibility_id="enable-notifications-later-button")
         self.start_button = Button(self.driver, accessibility_id="welcome-button")
-        self.use_recovery_phrase_button = Button(self.driver, translation_id="use-recovery-phrase")
+        self.use_recovery_phrase_button = Button(self.driver, accessibility_id="use-recovery-phrase-option-card")
         self.passphrase_edit_box = EditBox(self.driver, accessibility_id="passphrase-input")
         self.show_profiles_button = Button(self.driver, accessibility_id="show-profiles")
         self.plus_profiles_button = Button(self.driver, accessibility_id="show-new-account-options")
@@ -232,10 +234,8 @@ class SignInView(BaseView):
                     username="test user", first_user=True):
         self.driver.info("## Creating new multiaccount (password:'%s', keycard:'%s', enable_notification: '%s')" %
                          (password, str(keycard), str(enable_notifications)), device=False)
-        if self.element_by_text('CONTINUE').is_element_displayed(5):
-            self.element_by_text('CONTINUE').click()
         if first_user:
-            self.i_m_new_in_status_button.click_until_presence_of_element(self.generate_keys_button)
+            self.create_profile_button.click_until_presence_of_element(self.generate_keys_button)
         else:
             if self.show_profiles_button.is_element_displayed(20):
                 self.show_profiles_button.click()
@@ -273,7 +273,7 @@ class SignInView(BaseView):
         self.driver.info("## Recover access(password:%s, keycard:%s)" % (password, str(keycard)), device=False)
 
         if not second_user:
-            self.i_m_new_in_status_button.click_until_presence_of_element(self.generate_keys_button)
+            self.sync_or_recover_profile_button.click_until_presence_of_element(self.generate_keys_button)
         else:
             self.show_profiles_button.wait_and_click(20)
             self.plus_profiles_button.click()

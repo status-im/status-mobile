@@ -448,7 +448,7 @@
       (destructive-actions item inside-chat?)])])
 
 (defn contact-actions
-  [{:keys [public-key] :as contact} {:keys [chat-id admin?] :as extra-data}]
+  [{:keys [public-key added?] :as contact} {:keys [chat-id admin?] :as extra-data}]
   (let [current-pub-key (rf/sub [:multiaccount/public-key])]
     [quo/action-drawer
      [[(view-profile-entry public-key)
@@ -459,7 +459,7 @@
       [(when-not (= current-pub-key public-key)
          (when config/show-not-implemented-features?
            (mark-untrustworthy-entry)))
-       (when-not (= current-pub-key public-key) (remove-from-contacts-entry contact))
+       (when added? (remove-from-contacts-entry contact))
        (when-not (= current-pub-key public-key) (block-user-entry contact))]
       (when (and admin? chat-id)
         [(if (= current-pub-key public-key)

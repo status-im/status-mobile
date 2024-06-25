@@ -26,6 +26,7 @@
     [status-im.contexts.communities.actions.share-community.view :as share-community]
     [status-im.contexts.communities.discover.view :as communities.discover]
     [status-im.contexts.communities.overview.view :as communities.overview]
+    [status-im.contexts.onboarding.create-or-sync-profile.view :as create-or-sync-profile]
     [status-im.contexts.onboarding.create-password.view :as create-password]
     [status-im.contexts.onboarding.create-profile.view :as create-profile]
     [status-im.contexts.onboarding.enable-biometrics.view :as enable-biometrics]
@@ -33,7 +34,6 @@
     [status-im.contexts.onboarding.generating-keys.view :as generating-keys]
     [status-im.contexts.onboarding.identifiers.view :as identifiers]
     [status-im.contexts.onboarding.intro.view :as intro]
-    [status-im.contexts.onboarding.new-to-status.view :as new-to-status]
     [status-im.contexts.onboarding.sign-in.view :as sign-in]
     [status-im.contexts.onboarding.syncing.progress.view :as syncing-devices]
     [status-im.contexts.onboarding.syncing.results.view :as syncing-results]
@@ -284,7 +284,16 @@
                                           transitions/push-animations-for-transparent-background)
                  :popGesture             false
                  :modalPresentationStyle :overCurrentContext}
-     :component new-to-status/new-to-status}
+     :component create-or-sync-profile/create-profile}
+    {:name      :screen/onboarding.sync-or-recover-profile
+     :options   {:theme                  :dark
+                 :layout                 options/onboarding-transparent-layout
+                 :animations             (merge
+                                          transitions/new-to-status-modal-animations
+                                          transitions/push-animations-for-transparent-background)
+                 :popGesture             false
+                 :modalPresentationStyle :overCurrentContext}
+     :component create-or-sync-profile/sync-or-recover-profile}
 
     {:name      :screen/onboarding.create-profile
      :options   {:theme      :dark

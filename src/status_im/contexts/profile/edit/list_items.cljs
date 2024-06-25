@@ -3,6 +3,7 @@
             [quo.foundations.colors :as colors]
             [status-im.common.not-implemented :as not-implemented]
             [status-im.config :as config]
+            [status-im.constants :as constants]
             [status-im.contexts.profile.edit.style :as style]
             [status-im.contexts.profile.utils :as profile.utils]
             [utils.i18n :as i18n]
@@ -19,7 +20,7 @@
                :on-press        #(rf/dispatch [:open-modal :edit-name])
                :blur?           true
                :label           :text
-               :label-props     full-name
+               :label-props     (utils/truncate-str full-name constants/profile-name-max-length)
                :action          :arrow
                :container-style style/item-container}
               {:title           (i18n/label :t/bio)
