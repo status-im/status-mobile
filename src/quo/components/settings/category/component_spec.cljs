@@ -51,3 +51,24 @@
                              :right-icon :i/globe
                              :chevron?   true}]}])
     (h/is-truthy (h/get-by-text "subtitle"))))
+
+(h/describe "Data Item Category tests"
+  (h/test "category renders"
+    (h/render [category/category
+               {:list-type :data-item
+                :label     "Label"
+                :data      [{:title      "Item 1"
+                             :subtitle   "subtitle"
+                             :right-icon :i/globe}]}])
+    (h/is-truthy (h/get-by-text "Label"))
+    (h/is-truthy (h/get-by-text "Item 1"))
+    (h/is-truthy (h/get-by-text "subtitle")))
+
+  (h/test "category renders without label"
+    (h/render [category/category
+               {:list-type :data-item
+                :data      [{:title      "Item 1"
+                             :subtitle   "subtitle"
+                             :right-icon :i/globe}]}])
+    (h/is-falsy (h/query-by-label-text "Label"))
+    (h/is-truthy (h/get-by-text "Item 1"))))
