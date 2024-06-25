@@ -17,8 +17,8 @@
   [chain-id-str]
   (-> chain-id-str
       (string/split #":")
-      (last)
-      (edn/read-string)))
+      last
+      edn/read-string))
 
 (defn format-eip155-address
   [address chain-id]

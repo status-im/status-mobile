@@ -73,7 +73,9 @@
  :wallet-connect/process-eth-send-transaction
  (fn [{:keys [db]}]
    (let [event        (wallet-connect-core/get-db-current-request-event db)
-         display-data (.stringify js/JSON (clj->js event) nil 2)
+         display-data (-> event
+                          clj->js
+                          (js/JSON.stringify nil 2))
          {:keys [to]} (-> event wallet-connect-core/get-request-params first)]
      {:db (update-in db
                      [:wallet-connect/current-request]

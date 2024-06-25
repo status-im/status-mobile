@@ -81,21 +81,22 @@
    (let [{:keys [raw-data]} (get db :wallet-connect/current-request)
          chain-id           (-> raw-data
                                 (get-in [:params :chainId])
-                                (wallet-connect-core/eip155->chain-id))]
+                                wallet-connect-core/eip155->chain-id)]
      {:fx [[:json-rpc/call
             [{:method     "wallet_buildTransaction"
-              :params     [chain-id (.stringify js/JSON raw-data)]
+              :params     [chain-id (js/JSON.stringify raw-data)]
               :on-success on-success
               :on-error   [:wallet-connect/on-sign-error screen]}]]]})))
 
 (rf/reg-event-fx
  :wallet-connect/respond-send-transaction-data
  (fn [_ [password data]]
-   (let [{:keys [address messageToSign]} data]
+   (let [{:keys           [address]
+          message-to-sign :messageToSign} data]
      {:fx [[:effects.wallet-connect/sign-message
             {:password   password
              :address    address
-             :data       messageToSign
+             :data       message-to-sign
              :on-error   #(rf/dispatch [:wallet-connect/on-sign-error
                                         :screen/wallet-connect.send-transaction %])
              :on-success #(rf/dispatch [:wallet-connect/send-response
