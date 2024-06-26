@@ -34,7 +34,7 @@
    (cond
      (<= (count address) 0)            [:wallet/address-validation-failed address]
      (validation/eth-address? address) [:wallet/address-validation-success address]
-     :else [:wallet/address-validation-failed address])
+     :else                             [:wallet/address-validation-failed address])
    300))
 
 (defn- address-input
@@ -61,9 +61,9 @@
         :on-detect-address     (fn [address]
                                  (when (or (= current-screen-id :screen/wallet.select-address)
                                            (= current-screen-id :screen/wallet.scan-address))
-                                   ; ^ this check is to prevent effect being triggered when screen is
-                                   ; loaded but not being shown to the user (deep in the navigation
-                                   ; stack) and avoid undesired behaviors
+                                   ; ^ this check is to prevent effect being triggered when screen
+                                   ; is loaded but not being shown to the user (deep in the
+                                   ; navigation stack) and avoid undesired behaviors
                                    (validate-address address)))
         :on-detect-ens         (fn [text cb]
                                  (when (or (= current-screen-id :screen/wallet.select-address)
@@ -114,10 +114,12 @@
       (cond
         (= type types/saved-address)
         [quo/saved-address
-         (assoc props :user-props {:name                primary-name
-                                   :address             public-key
-                                   :ens                 ens-name
-                                   :customization-color color})]
+         (assoc props
+                :user-props
+                {:name                primary-name
+                 :address             public-key
+                 :ens                 ens-name
+                 :customization-color color})]
         (= type types/saved-contact-address)
         [quo/saved-contact-address (merge props local-suggestion)]
         (and (not ens) (= type types/address))
