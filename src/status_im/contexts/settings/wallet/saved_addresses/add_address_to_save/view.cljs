@@ -49,6 +49,7 @@
        :multiline?          true
        :on-clear            clear-input
        :return-key-type     :done
+       :auto-focus          true
        :clearable?          (not empty-input?)
        :on-change-text      on-change-text
        :button              (when empty-input?
@@ -83,7 +84,7 @@
       [quo/info-message
        {:accessibility-label :error-message
         :size                :default
-        :icon                :i/info
+        :icon                :i/alert
         :type                :error
         :style               style/info-message}
        error-msg])))
@@ -91,8 +92,7 @@
 (defn- existing-saved-address
   [{:keys [address]}]
   (let [{:keys [name customization-color chain-short-names ens ens?]}
-        (rf/sub [:wallet/saved-address-by-address
-                 address])]
+        (rf/sub [:wallet/saved-address-by-address address])]
     [rn/view {:style style/existing-saved-address-container}
      [quo/text
       {:size   :paragraph-1
