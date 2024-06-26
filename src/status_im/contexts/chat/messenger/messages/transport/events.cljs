@@ -183,8 +183,8 @@
       (seq keypairs)
       (do
         (js-delete response-js "keypairs")
-        (rf/dispatch [:wallet/process-keypairs (types/js->clj keypairs)])
         (rf/merge cofx
+                  {:fx [[:dispatch [:wallet/process-keypairs (types/js->clj keypairs)]]]}
                   (process-next response-js sync-handler)))
 
       (seq settings)
