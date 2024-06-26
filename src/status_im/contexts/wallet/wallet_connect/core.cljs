@@ -45,6 +45,10 @@
   [db]
   (get-in db [:wallet-connect/current-request :event]))
 
+(defn get-session-dapp-metadata
+  [proposal]
+  (get-in proposal [:params :proposer :metadata]))
+
 (defn get-db-current-request-params
   [db]
   (-> db
@@ -61,3 +65,32 @@
     (->> password
          security/safe-unmask-data
          (f data address))))
+
+(defn get-proposal-networks
+  [proposal]
+  (let [required-namespaces (get-in proposal [:params :requiredNamespaces])
+        optional-namespaces (get-in proposal [:params :optionalNamespaces])]
+    (->> [required-namespaces optional-namespaces]
+         (map #(get-in % [:eip155 :chains]))
+         (apply concat)
+         (into #{}))))
+
+(defn proposal-networks-intersection
+  [proposal supported-networks]
+  (let [proposed-networks (get-proposal-networks proposal)]
+    (->> supported-networks
+         (filter #(->> %
+                       chain-id->eip155
+                       (contains? proposed-networks))))))
+
+(defn required-networks-supported?
+  [proposal supported-networks]
+  (let [required-networks (get-in proposal [:params :requiredNamespaces :eip155 :chains])
+        supported-eip155  (set (map chain-id->eip155 supported-networks))]
+    (every? #(contains? supported-eip155 %) required-networks)))
+
+(defn get-networks-by-mode
+  [db]
+  (let [test-mode? (get-in db [:profile/profile :test-networks-enabled?])
+        networks   (get-in db [:wallet :networks (if test-mode? :test :prod)])]
+    (mapv #(-> % :chain-id) networks)))

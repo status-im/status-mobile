@@ -108,8 +108,18 @@
                                      :else nil)})))))
 
 (rf/reg-sub
- :wallet-connect/session-proposer
+ :wallet-connect/session-proposal
  :<- [:wallet-connect/current-proposal]
+ :-> :session-proposal)
+
+(rf/reg-sub
+ :wallet-connect/session-proposal-networks
+ :<- [:wallet-connect/current-proposal]
+ :-> :session-networks)
+
+(rf/reg-sub
+ :wallet-connect/session-proposer
+ :<- [:wallet-connect/session-proposal]
  (fn [proposal]
    (-> proposal :params :proposer)))
 
@@ -120,15 +130,13 @@
    (-> proposer :metadata :name)))
 
 (rf/reg-sub
- :wallet-connect/session-proposal-networks
- :<- [:wallet-connect/current-proposal]
+ :wallet-connect/session-proposal-network-details
+ :<- [:wallet-connect/session-proposal-networks]
  :<- [:wallet/network-details]
- (fn [[proposal network-details]]
-   (let [required-chains (get-in proposal [:params :requiredNamespaces :eip155 :chains])
-         optional-chains (get-in proposal [:params :optionalNamespaces :eip155 :chains])
-         dapp-chain-ids  (into #{} (concat required-chains optional-chains))]
-     (->> network-details
-          (filterv #(contains? dapp-chain-ids
-                               (-> %
-                                   :chain-id
-                                   wallet-connect-core/chain-id->eip155)))))))
+ (fn [[session-networks network-details]]
+   (let [supported-networks       (map :chain-id network-details)
+         session-networks         (filterv #(contains? (set session-networks) (:chain-id %))
+                                           network-details)
+         all-networks-in-session? (= (count supported-networks) (count session-networks))]
+     {:session-networks         session-networks
+      :all-networks-in-session? all-networks-in-session?})))

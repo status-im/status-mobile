@@ -53,11 +53,13 @@
   []
   (let [{:keys [name emoji customization-color]} (first (rf/sub
                                                          [:wallet/accounts-without-watched-accounts]))
-        networks                                 (rf/sub [:wallet-connect/session-proposal-networks])
-        network-names                            (->> networks
+        {:keys [session-networks
+                all-networks-in-session?]}       (rf/sub
+                                                  [:wallet-connect/session-proposal-network-details])
+        network-names                            (->> session-networks
                                                       (map format-network-name)
                                                       (string/join ", "))
-        network-images                           (mapv :source networks)
+        network-images                           (mapv :source session-networks)
         data-item-common-props                   {:blur?       false
                                                   :description :default
                                                   :card?       false
@@ -80,7 +82,9 @@
                                                         :right-content {:type :network
                                                                         :data network-images}
                                                         :title         (i18n/label :t/networks)
-                                                        :subtitle      network-names)]
+                                                        :subtitle      (if all-networks-in-session?
+                                                                         (i18n/label :t/all-networks)
+                                                                         network-names))]
     [quo/category
      {:blur?     false
       :list-type :data-item
