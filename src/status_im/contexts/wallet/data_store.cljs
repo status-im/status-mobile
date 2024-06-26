@@ -171,15 +171,18 @@
          :or   {updated-keypairs []
                 removed-keypairs []}} (group-by (comp keypair-label :removed) received-keypairs)
         updated-keypairs-by-id        (utils.collection/index-by :key-uid updated-keypairs)
-        updated-accounts-by-address   (->> updated-keypairs
-                                           (mapcat :accounts)
-                                           (filter (comp not :chat))
-                                           (utils.collection/index-by :address))
+        updated-accounts-by-address   (transduce (comp (mapcat :accounts)
+                                                       (filter (comp not :chat))
+                                                       (map #(vector (:address %) %)))
+                                                 conj
+                                                 {}
+                                                 updated-keypairs)
         removed-keypairs-ids          (set (map :key-uid removed-keypairs))
-        removed-account-addresses     (->> removed-keypairs
-                                           (mapcat :accounts)
-                                           (map :address)
-                                           (set))]
+        removed-account-addresses     (transduce (comp (mapcat :accounts)
+                                                       (map :address))
+                                                 conj
+                                                 #{}
+                                                 removed-keypairs)]
     {:removed-keypair-ids         removed-keypairs-ids
      :removed-account-addresses   removed-account-addresses
      :updated-keypairs-by-id      updated-keypairs-by-id
