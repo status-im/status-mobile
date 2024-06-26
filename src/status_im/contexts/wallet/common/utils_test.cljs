@@ -115,3 +115,24 @@
     (is (= (utils/prettify-percentage-change 1.113454) "1.11"))
     (is (= (utils/prettify-percentage-change -0.35) "0.35"))
     (is (= (utils/prettify-percentage-change -0.78234) "0.78"))))
+
+(deftest accounts-with-customization-color-test
+  (testing "accounts-with-customization-color function"
+    (let [accounts [{:name "Alice" :color "red"}
+                    {:name "Bob" :color "blue"}
+                    {:name "Charlie" :color "green"}]]
+      (is (= (utils/accounts-with-customization-color accounts)
+             [{:name "Alice" :color "red" :customization-color "red"}
+              {:name "Bob" :color "blue" :customization-color "blue"}
+              {:name "Charlie" :color "green" :customization-color "green"}])))
+
+    (let [accounts [{:name "Alice"}
+                    {:name "Bob" :color "blue"}
+                    {:name "Charlie" :color nil}]]
+      (is (= (utils/accounts-with-customization-color accounts)
+             [{:name "Alice" :customization-color nil}
+              {:name "Bob" :color "blue" :customization-color "blue"}
+              {:name "Charlie" :color nil :customization-color nil}])))
+
+    (let [accounts []]
+      (is (= (utils/accounts-with-customization-color accounts) [])))))

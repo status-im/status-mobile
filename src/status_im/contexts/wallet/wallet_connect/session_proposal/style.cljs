@@ -24,3 +24,10 @@
 
 (def approval-li-spacer
   {:width 8})
+
+(def account-switcher-title
+  {:padding-horizontal 20})
+
+(def account-switcher-list
+  {:margin-top         8
+   :padding-horizontal 8})

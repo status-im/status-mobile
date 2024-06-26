@@ -51,10 +51,50 @@
    {:source (quo.resources/get-network :optimism)}
    {:source (quo.resources/get-network :arbitrum)}])
 
+(defn- set-current-proposal-account
+  [acc]
+  (fn []
+    (rf/dispatch [:wallet-connect/set-current-proposal-account acc])
+    (rf/dispatch [:hide-bottom-sheet])))
+
+(defn- accounts-list
+  []
+  (let [accounts (rf/sub [:wallet/accounts-without-watched-accounts])
+        selected (rf/sub [:wallet-connect/current-proposal-account])]
+    [rn/view {:style style/account-switcher-list}
+     (for [account accounts]
+       ^{:key (-> account :address str)}
+       [quo/account-item
+        {:type          :default
+         :state         (if (and selected
+                                 (= (account :address)
+                                    (selected :address)))
+                          :selected
+                          :default)
+         :account-props account
+         :on-press      (set-current-proposal-account account)}])]))
+
+(defn- account-switcher-sheet
+  []
+  [:<>
+   [rn/view {:style style/account-switcher-title}
+    [quo/text
+     {:size                :heading-2
+      :weight              :semi-bold
+      :accessibility-label "select-account-title"}
+     (i18n/label :t/select-account)]]
+   [accounts-list]])
+
+(defn- show-account-switcher-bottom-sheet
+  []
+  (rf/dispatch
+   [:show-bottom-sheet
+    {:content (fn []
+                [account-switcher-sheet])}]))
+
 (defn- connection-category
   []
-  (let [{:keys [name emoji customization-color]} (first (rf/sub
-                                                         [:wallet/accounts-without-watched-accounts]))
+  (let [{:keys [name emoji customization-color]} (rf/sub [:wallet-connect/current-proposal-account])
         data-item-common-props                   {:blur?       false
                                                   :description :default
                                                   :card?       false
@@ -67,7 +107,7 @@
                                                                         :data [{:emoji emoji
                                                                                 :customization-color
                                                                                 customization-color}]}
-                                                        :on-press      #(js/alert "Not yet implemented")
+                                                        :on-press      show-account-switcher-bottom-sheet
                                                         :title         (i18n/label :t/account-title)
                                                         :subtitle      name
                                                         :icon-right?   true
@@ -123,3 +163,8 @@
     [dapp-metadata]
     [connection-category]
     [approval-note]]])
+
+(comment
+  (rf/dispatch [:navigate-to :screen/wallet.wallet-connect-session-proposal])
+  ;;
+)

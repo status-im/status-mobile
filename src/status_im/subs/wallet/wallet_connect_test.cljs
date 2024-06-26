@@ -66,3 +66,18 @@
 
     (is (= (-> sample-session :params :proposer :metadata :name)
            (rf/sub [sub-name])))))
+
+(h/deftest-sub :wallet-connect/current-proposal-account
+  [sub-name]
+  (testing "Return the current proposal account"
+    (let [current-proposal-account {:account "0x1234567890abcdef"}]
+
+      (swap! rf-db/app-db assoc :wallet-connect/current-proposal-account current-proposal-account)
+
+      (is (= current-proposal-account
+             (rf/sub [sub-name]))))
+
+    (testing "Return nil when there is no current proposal account"
+      (swap! rf-db/app-db assoc :wallet-connect/current-proposal-account nil)
+
+      (is (nil? (rf/sub [sub-name]))))))

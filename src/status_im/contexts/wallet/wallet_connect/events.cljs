@@ -2,6 +2,7 @@
   (:require [re-frame.core :as rf]
             [react-native.wallet-connect :as wallet-connect]
             [status-im.constants :as constants]
+            [status-im.contexts.wallet.common.utils :as wallet-utils]
             [status-im.contexts.wallet.wallet-connect.core :as wallet-connect-core]
             status-im.contexts.wallet.wallet-connect.effects
             status-im.contexts.wallet.wallet-connect.processing-events
@@ -50,13 +51,28 @@
               {:error error
                :event :wallet-connect/on-init-fail})))
 
+(defn- accounts-without-watched-with-customization-color
+  [all-accounts]
+  (->> all-accounts
+       (remove :watch-only?)
+       wallet-utils/accounts-with-customization-color))
+
 (rf/reg-event-fx
  :wallet-connect/on-session-proposal
  (fn [{:keys [db]} [proposal]]
-   (log/info "Received Wallet Connect session proposal: " {:id (:id proposal)})
-   {:db (assoc db :wallet-connect/current-proposal proposal)
-    :fx [[:dispatch
-          [:open-modal :screen/wallet.wallet-connect-session-proposal]]]}))
+   (let [all-accounts (get-in db [:wallet :accounts])
+         accounts     (accounts-without-watched-with-customization-color all-accounts)]
+     (log/info "Received Wallet Connect session proposal: " {:id (:id proposal)})
+     {:db (assoc db
+                 :wallet-connect/current-proposal         proposal
+                 ;; NOTE: for now using the first account, but should be using the account selected
+                 ;; by the user on the connection screen. The default would depend on where the
+                 ;; connection started from:
+                 ;; - global scanner -> first account in list
+                 ;; - wallet account dapps -> account that is selected
+                 :wallet-connect/current-proposal-account (first accounts))
+      :fx [[:dispatch
+            [:open-modal :screen/wallet.wallet-connect-session-proposal]]]})))
 
 (rf/reg-event-fx
  :wallet-connect/on-session-request
@@ -67,7 +83,14 @@
 (rf/reg-event-fx
  :wallet-connect/reset-current-session-proposal
  (fn [{:keys [db]}]
-   {:db (dissoc db :wallet-connect/current-proposal)}))
+   {:db (dissoc db
+         :wallet-connect/current-proposal
+         :wallet-connect/current-proposal-account)}))
+
+(rf/reg-event-fx
+ :wallet-connect/set-current-proposal-account
+ (fn [{:keys [db]} [account]]
+   {:db (assoc db :wallet-connect/current-proposal-account account)}))
 
 (rf/reg-event-fx
  :wallet-connect/reset-current-request
@@ -121,17 +144,13 @@
  (fn [{:keys [db]}]
    (let [web3-wallet          (get db :wallet-connect/web3-wallet)
          current-proposal     (get db :wallet-connect/current-proposal)
-         accounts             (get-in db [:wallet :accounts])
          supported-chain-ids  (->> db
                                    chain/chain-ids
                                    (map wallet-connect-core/chain-id->eip155)
                                    vec)
-         ;; NOTE: for now using the first account, but should be using the account selected by the
-         ;; user on the connection screen. The default would depend on where the connection started
-         ;; from:
-         ;; - global scanner -> first account in list
-         ;; - wallet account dapps -> account that is selected
-         address              (-> accounts keys first)
+         address              (-> db
+                                  (get :wallet-connect/current-proposal-account)
+                                  :address)
          accounts             (-> (partial wallet-connect-core/format-eip155-address address)
                                   (map supported-chain-ids))
          supported-namespaces (clj->js {:eip155

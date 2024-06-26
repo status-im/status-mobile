@@ -118,3 +118,8 @@
  :<- [:wallet-connect/session-proposer]
  (fn [proposer]
    (-> proposer :metadata :name)))
+
+(rf/reg-sub
+ :wallet-connect/current-proposal-account
+ (fn [db]
+   (-> db :wallet-connect/current-proposal-account)))
