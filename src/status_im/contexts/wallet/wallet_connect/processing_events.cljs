@@ -6,19 +6,11 @@
             [taoensso.timbre :as log]
             [utils.transforms :as transforms]))
 
-(def ^:private method-to-screen
-  {constants/wallet-connect-personal-sign-method        :screen/wallet-connect.sign-message
-   constants/wallet-connect-eth-sign-typed-method       :screen/wallet-connect.sign-message
-   constants/wallet-connect-eth-sign-method             :screen/wallet-connect.sign-message
-   constants/wallet-connect-eth-sign-typed-v4-method    :screen/wallet-connect.sign-message
-   constants/wallet-connect-eth-send-transaction-method :screen/wallet-connect.send-transaction
-   constants/wallet-connect-eth-sign-transaction-method :screen/wallet-connect.sign-transaction})
-
 (rf/reg-event-fx
  :wallet-connect/process-session-request
  (fn [{:keys [db]} [event]]
    (let [method (wallet-connect-core/get-request-method event)
-         screen (method-to-screen method)]
+         screen (wallet-connect-core/method-to-screen method)]
      (if screen
        {:db (assoc-in db [:wallet-connect/current-request :event] event)
         :fx [(condp = method

@@ -2,8 +2,17 @@
   (:require [clojure.edn :as edn]
             [clojure.string :as string]
             [native-module.core :as native-module]
+            [status-im.constants :as constants]
             [utils.security.core :as security]
             [utils.transforms :as transforms]))
+
+(def method-to-screen
+  {constants/wallet-connect-personal-sign-method        :screen/wallet-connect.sign-message
+   constants/wallet-connect-eth-sign-typed-method       :screen/wallet-connect.sign-message
+   constants/wallet-connect-eth-sign-method             :screen/wallet-connect.sign-message
+   constants/wallet-connect-eth-sign-typed-v4-method    :screen/wallet-connect.sign-message
+   constants/wallet-connect-eth-send-transaction-method :screen/wallet-connect.send-transaction
+   constants/wallet-connect-eth-sign-transaction-method :screen/wallet-connect.sign-transaction})
 
 (defn extract-native-call-signature
   [data]
