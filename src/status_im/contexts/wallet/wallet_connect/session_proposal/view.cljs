@@ -89,8 +89,7 @@
   []
   (rf/dispatch
    [:show-bottom-sheet
-    {:content (fn []
-                [account-switcher-sheet])}]))
+    {:content account-switcher-sheet}]))
 
 (defn- connection-category
   []
@@ -163,8 +162,3 @@
     [dapp-metadata]
     [connection-category]
     [approval-note]]])
-
-(comment
-  (rf/dispatch [:navigate-to :screen/wallet.wallet-connect-session-proposal])
-  ;;
-)
