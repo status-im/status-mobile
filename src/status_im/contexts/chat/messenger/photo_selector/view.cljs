@@ -71,26 +71,27 @@
   (let [theme               (quo.theme/use-theme)
         customization-color (rf/sub [:profile/customization-color])
         item-selected?      (some #(= (:uri item) (:uri %)) @selected)]
-    [rn/touchable-opacity
-     {:on-press                (fn []
-                                 (if item-selected?
-                                   (swap! selected remove-selected item)
-                                   (if (>= (count @selected) constants/max-album-photos)
-                                     (show-photo-limit-toast)
-                                     (swap! selected conj item))))
-      :allow-multiple-presses? true
-      :accessibility-label     (str "image-" index)}
-     [rn/image
-      {:source {:uri (:uri item)}
-       :style  (style/image window-width index)}]
-     (when item-selected?
-       [:<>
-        [rn/view {:style (style/overlay window-width theme)}]
-        [quo/counter
-         {:container-style     style/image-count
-          :customization-color customization-color
-          :accessibility-label (str "count-" index)}
-         (inc (utils.collection/first-index #(= (:uri item) (:uri %)) @selected))]])]))
+    [rn/text {:style {:border-width 1 :border-color :red :padding 5}} (str index " ") (:extension item)]
+    #_[rn/touchable-opacity
+       {:on-press                (fn []
+                                   (if item-selected?
+                                     (swap! selected remove-selected item)
+                                     (if (>= (count @selected) constants/max-album-photos)
+                                       (show-photo-limit-toast)
+                                       (swap! selected conj item))))
+        :allow-multiple-presses? true
+        :accessibility-label     (str "image-" index)}
+       [rn/image
+        {:source {:uri (:uri item)}
+         :style  (style/image window-width index)}]
+       (when item-selected?
+         [:<>
+          [rn/view {:style (style/overlay window-width theme)}]
+          [quo/counter
+           {:container-style     style/image-count
+            :customization-color customization-color
+            :accessibility-label (str "count-" index)}
+           (inc (utils.collection/first-index #(= (:uri item) (:uri %)) @selected))]])]))
 
 (defn photo-selector
   [{:keys [scroll-enabled? on-scroll current-scroll close] :as sheet}]

@@ -24,7 +24,7 @@
                 :assetType  "Photos"
                 :groupTypes (if (= album (i18n/label :t/recent)) "All" "Albums")
                 :groupName  (if (not= album (i18n/label :t/recent)) album "")
-                :include    ["imageSize"]}
+                :include    ["imageSize" "fileExtension"]}
                (when end-cursor
                  {:after end-cursor}))
         #(rf/dispatch [:on-camera-roll-get-photos (:edges %) (:page_info %) end-cursor])))})))
