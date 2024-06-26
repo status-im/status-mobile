@@ -572,12 +572,12 @@
                                                    (map :address))]
     (cond-> {:db (-> db
                      (assoc-in [:wallet :keypairs]
-                               (-> (partial dissoc existing-keypairs-by-id)
-                                   (apply removed-keypair-ids)
+                               (-> (apply dissoc existing-keypairs-by-id removed-keypair-ids)
                                    (merge updated-keypairs-by-id)))
                      (assoc-in [:wallet :accounts]
-                               (-> (partial dissoc existing-accounts-by-address)
-                                   (apply (into removed-account-addresses old-account-addresses))
+                               (-> (apply dissoc
+                                          existing-accounts-by-address
+                                          (into removed-account-addresses old-account-addresses))
                                    (merge updated-accounts-by-address))))}
       (seq new-account-addresses)
       (assoc :fx refresh-accounts-fx-dispatches))))
