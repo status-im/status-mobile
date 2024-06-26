@@ -45,20 +45,19 @@
        {:warning-label     (i18n/label :t/wallet-connect-send-transaction-warning)
         :slide-button-text (i18n/label :t/slide-to-send)
         :disabled?         error-state}
-       [:<>
-        [quo/data-item
-         {:status          :default
-          :card?           false
-          :container-style style/data-item
-          :title           (i18n/label :t/network)
-          :subtitle-type   :network
-          :network-image   (:source network)
-          :subtitle        (:full-name network)}]
-        [quo/data-item
-         {:size            :small
-          :status          :default
-          :card?           false
-          :container-style style/data-item
-          :title           (i18n/label :t/max-fees)
-          :subtitle        (or max-fees-fiat-formatted (i18n/label :t/no-fees))}]]]]]))
+       [quo/data-item
+        {:status          :default
+         :card?           false
+         :container-style style/data-item
+         :title           (i18n/label :t/network)
+         :subtitle-type   :network
+         :network-image   (:source network)
+         :subtitle        (:full-name network)}]
+       [quo/data-item
+        {:size            :small
+         :status          :default
+         :card?           false
+         :container-style style/data-item
+         :title           (i18n/label :t/max-fees)
+         :subtitle        (or max-fees-fiat-formatted (i18n/label :t/no-fees))}]]]]))
 
