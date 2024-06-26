@@ -31,7 +31,8 @@
          :size   :paragraph-2}
         (:name account-props)]
        [address-text/view
-        {:networks networks
+        {:blur?    blur?
+         :networks networks
          :address  (:address account-props)
          :format   :short}]]]
      (when (= action :icon)

@@ -542,7 +542,7 @@
      :component wallet-options/view}
 
     {:name      :screen/settings.rename-keypair
-     :options   (assoc options/dark-screen :sheet? true)
+     :options   options/transparent-screen-options
      :component keypair-rename/view}
 
     {:name      :screen/settings.encrypted-keypair-qr
@@ -558,7 +558,7 @@
      :component keypairs-and-accounts/view}
 
     {:name      :screen/settings.scan-keypair-qr
-     :options   options/transparent-modal-screen-options
+     :options   options/transparent-screen-options
      :component scan-keypair-qr/view}
 
     {:name      :screen/settings.missing-keypair.import-seed-phrase

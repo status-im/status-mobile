@@ -41,31 +41,37 @@
      [quo/action-drawer
       [(when has-paired-device
          (if-not missing-keypair?
-           [{:icon                :i/qr-code
+           [{:blur?               true
+             :icon                :i/qr-code
              :accessibility-label :show-key-pr-qr
              :label               (i18n/label :t/show-encrypted-qr-of-key-pairs)
              :on-press            on-show-qr}]
-           [{:icon                :i/scan
+           [{:blur?               true
+             :icon                :i/scan
              :accessibility-label :import-by-scan-qr
              :label               (i18n/label :t/import-by-scanning-encrypted-qr)
              :on-press            on-scan-qr}]))
        (when (= (:type drawer-props) :keypair)
          [(when missing-keypair?
             (case (:type keypair)
-              :seed {:icon                :i/seed
+              :seed {:blur?               true
+                     :icon                :i/seed
                      :accessibility-label :import-seed-phrase
                      :label               (i18n/label :t/import-by-entering-recovery-phrase)
                      :on-press            on-import-seed-phrase}
-              :key  {:icon                :i/key
+              :key  {:blur?               true
+                     :icon                :i/key
                      :accessibility-label :import-private-key
                      :label               (i18n/label :t/import-by-entering-private-key)
                      :on-press            on-import-private-key}
               nil))
-          {:icon                :i/edit
+          {:blur?               true
+           :icon                :i/edit
            :accessibility-label :rename-key-pair
            :label               (i18n/label :t/rename-key-pair)
            :on-press            on-rename-keypair}
-          {:icon                :i/delete
+          {:blur?               true
+           :icon                :i/delete
            :accessibility-label :remove-key-pair
            :add-divider?        true
            :danger?             true
