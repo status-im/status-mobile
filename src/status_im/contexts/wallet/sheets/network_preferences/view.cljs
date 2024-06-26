@@ -90,10 +90,7 @@
                                   :address  address
                                   :blur?    blur?
                                   :format   :long}])
-             :container-style (merge style/data-item
-                                     {:background-color (colors/theme-colors colors/neutral-2_5
-                                                                             colors/neutral-90
-                                                                             theme)})}])
+             :container-style style/data-item}])
          [quo/category
           {:list-type :settings
            :blur?     blur?
@@ -106,6 +103,7 @@
                                 :normal-checkbox? receiver?
                                 :networks         (get-current-preferences-names)
                                 :type             :checkbox
+                                :blur?            blur?
                                 :on-change        (fn []
                                                     (toggle-network (:network-name
                                                                      network))
@@ -137,6 +135,7 @@
                                   :normal-checkbox? receiver?
                                   :networks         (get-current-preferences-names)
                                   :type             :checkbox
+                                  :blur?            blur?
                                   :on-change        (fn []
                                                       (toggle-network (:network-name
                                                                        network))

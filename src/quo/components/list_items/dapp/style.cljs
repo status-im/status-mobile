@@ -34,7 +34,8 @@
 
 (def container-info
   {:flex-direction :row
-   :align-items    :center})
+   :align-items    :center
+   :flex           1})
 
 (def user-info
   {:margin-left 8})

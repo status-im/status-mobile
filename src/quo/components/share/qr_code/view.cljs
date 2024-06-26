@@ -13,8 +13,9 @@
     :as         props}]
   [rn/view {:style style/avatar-overlay}
    [rn/view
-    {:style (if (= avatar-type :wallet-account)
-              style/avatar-container-rounded
+    {:style (case avatar-type
+              :wallet-account style/avatar-container-rounded
+              :saved-address  style/big-avatar-container-rounded
               style/avatar-container-circular)}
     (case avatar-type
       :profile
@@ -37,7 +38,7 @@
       [channel-avatar/view (assoc props :locked? nil :size :size-64)]
 
       :saved-address
-      [wallet-avatar/wallet-user-avatar (assoc props :size :size-64)]
+      [wallet-avatar/wallet-user-avatar (assoc props :size :size-80)]
 
       nil)]])
 

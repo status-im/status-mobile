@@ -526,18 +526,21 @@
      (match? [{:short-name       "eth"
                :network-name     :mainnet
                :abbreviated-name "Eth."
+               :full-name        "Mainnet"
                :chain-id         1
                :related-chain-id nil
                :layer            1}
               {:short-name       "arb1"
                :network-name     :arbitrum
                :abbreviated-name "Arb1."
+               :full-name        "Arbitrum"
                :chain-id         42161
                :related-chain-id nil
                :layer            2}
               {:short-name       "oeth"
                :network-name     :optimism
                :abbreviated-name "Oeth."
+               :full-name        "Optimism"
                :chain-id         10
                :related-chain-id nil
                :layer            2}]
@@ -643,18 +646,20 @@
    :removed  false})
 
 (def profile-key-pair-key-uid "abc")
+(def profile-key-pair-name "My Profile")
 (def seed-phrase-key-pair-key-uid "def")
+(def seed-phrase-key-pair-name "My Key Pair")
 
 (def profile-keypair
   {:key-uid            profile-key-pair-key-uid
-   :name               "My Profile"
+   :name               profile-key-pair-name
    :type               :profile
    :lowest-operability :fully
    :accounts           []})
 
 (def seed-phrase-keypair
   {:key-uid            seed-phrase-key-pair-key-uid
-   :name               "My Key Pair"
+   :name               seed-phrase-key-pair-name
    :type               :seed
    :lowest-operability :no
    :accounts           []})
@@ -675,6 +680,14 @@
         expected (list profile-keypair seed-phrase-keypair)]
     (is (= 2 (count result)))
     (is (match? expected result))))
+
+(h/deftest-sub :wallet/keypair-names
+  [sub-name]
+  (swap! rf-db/app-db assoc-in
+    [:wallet :keypairs]
+    {profile-key-pair-key-uid     profile-keypair
+     seed-phrase-key-pair-key-uid seed-phrase-keypair})
+  (is (match? #{seed-phrase-key-pair-name profile-key-pair-name} (rf/sub [sub-name]))))
 
 (h/deftest-sub :wallet/settings-keypairs-accounts
   [sub-name]

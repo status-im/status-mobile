@@ -18,7 +18,7 @@
 
 (defn- left-image
   [{:keys [type customization-color account-avatar-emoji account-avatar-type icon-avatar
-           profile-picture]}]
+           profile-picture blur?]}]
   (case type
     :account         [account-avatar/view
                       {:customization-color customization-color
@@ -28,6 +28,7 @@
     :keypair         [icon-avatar/icon-avatar
                       {:icon    icon-avatar
                        :border? true
+                       :blur?   blur?
                        :color   :neutral}]
 
     :default-keypair [user-avatar/user-avatar
@@ -213,6 +214,7 @@
        [rn/view {:style style/left-container}
         [left-image
          {:type                 type
+          :blur?                blur?
           :customization-color  customization-color
           :account-avatar-emoji account-avatar-emoji
           :account-avatar-type  account-avatar-type

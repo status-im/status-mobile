@@ -73,7 +73,7 @@
    (fn [resolver rejecter]
      (json-rpc/call {:method     "accounts_makeSeedPhraseKeypairFullyOperable"
                      :params     [(security/safe-unmask-data mnemonic)
-                                  (-> password security/safe-unmask-data native-module/sha3)]
+                                  (security/safe-unmask-data password)]
                      :on-error   (fn [error]
                                    (rejecter (ex-info (str error) {:error error})))
                      :on-success (fn [value]

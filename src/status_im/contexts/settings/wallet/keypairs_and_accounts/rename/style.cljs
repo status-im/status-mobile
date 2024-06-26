@@ -4,7 +4,8 @@
   {:margin-bottom 8})
 
 (def bottom-action
-  {:margin-horizontal -20})
+  {:margin-horizontal -20
+   :margin-vertical   -12})
 
 (def error-container
   {:margin-left     20

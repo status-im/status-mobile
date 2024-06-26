@@ -63,7 +63,7 @@
 (defn view
   [{:keys [hide? insets]}
    {:keys [content selected-item padding-bottom-override border-radius on-close shell?
-           gradient-cover? customization-color hide-handle? blur-radius blur-background]
+           gradient-cover? customization-color hide-handle? blur-radius]
     :or   {border-radius 12}}]
   (let [theme                             (quo.theme/use-theme)
         {window-height :height}           (rn/get-window)
@@ -134,7 +134,7 @@
        (when shell?
          [rn/view {:style style/shell-bg-container}
           [quo/blur
-           {:style         (style/shell-bg blur-background)
+           {:style         style/shell-bg
             :blur-radius   (or blur-radius 20)
             :blur-amount   32
             :blur-type     :transparent

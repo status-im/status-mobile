@@ -31,7 +31,7 @@
 (defn- checkbox-border-unchecked-color
   [theme]
   {:normal (colors/theme-colors colors/neutral-30 colors/neutral-70 theme)
-   :blur   (colors/theme-colors colors/neutral-80-opa-20 colors/white-opa-40 theme)})
+   :blur   (colors/theme-colors colors/neutral-80-opa-20 colors/white-opa-20 theme)})
 
 (defn- filled-checkbox-background-color
   [theme]

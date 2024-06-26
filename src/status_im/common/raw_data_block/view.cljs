@@ -4,7 +4,7 @@
             [status-im.common.raw-data-block.style :as style]))
 
 (defn view
-  [{:keys [data]}]
+  [data]
   [rn/scroll-view
    {:style                   style/container
     :content-container-style style/content}

@@ -51,7 +51,9 @@
               {:value "Saved address"
                :key   :saved-address}
               {:value "Account"
-               :key   :account}]}])
+               :key   :account}
+              {:value "Dapp"
+               :key   :dapp}]}])
 
 (defn view
   []

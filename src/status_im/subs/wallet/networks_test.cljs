@@ -12,6 +12,7 @@
            :short-name       "eth"
            :network-name     :mainnet
            :abbreviated-name "Eth."
+           :full-name        "Mainnet"
            :related-chain-id 1
            :chain-id         3
            :layer            1}
@@ -47,15 +48,18 @@
           :short-name       "eth"
           :chain-id         1
           :abbreviated-name "Eth."
+          :full-name        "Mainnet"
           :layer            1}
          {:network-name     :arbitrum
           :short-name       "arb1"
           :abbreviated-name "Arb1."
+          :full-name        "Arbitrum"
           :chain-id         42161
           :layer            2}
          {:network-name     :optimism
           :short-name       "oeth"
           :abbreviated-name "Oeth."
+          :full-name        "Optimism"
           :chain-id         10
           :layer            2}]
         (map #(dissoc % :source :related-chain-id) (rf/sub [sub-name]))))))
@@ -70,15 +74,18 @@
                   :short-name       "eth"
                   :chain-id         1
                   :abbreviated-name "Eth."
+                  :full-name        "Mainnet"
                   :layer            1}
        :arbitrum {:network-name     :arbitrum
                   :short-name       "arb1"
                   :abbreviated-name "Arb1."
+                  :full-name        "Arbitrum"
                   :chain-id         42161
                   :layer            2}
        :optimism {:network-name     :optimism
                   :short-name       "oeth"
                   :abbreviated-name "Oeth."
+                  :full-name        "Optimism"
                   :chain-id         10
                   :layer            2}}
       (rf/sub [sub-name])))))
