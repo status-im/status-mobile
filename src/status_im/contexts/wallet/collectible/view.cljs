@@ -79,7 +79,8 @@
   (js/setTimeout #(rf/dispatch [:wallet/clear-last-collectible-details]) 700))
 
 (defn animated-header
-  [{:keys [scroll-amount title-opacity page-nav-type picture title description theme]}]
+  [{:keys [scroll-amount title-opacity page-nav-type picture title description theme
+           id]}]
   (let [blur-amount   (header-animations/use-blur-amount scroll-amount)
         layer-opacity (header-animations/use-layer-opacity
                        scroll-amount
@@ -110,7 +111,8 @@
                                               {:content (fn []
                                                           [options-drawer/view
                                                            {:name  title
-                                                            :image picture}])
+                                                            :image picture
+                                                            :id    id}])
                                                :theme   theme}])}]
          :center-opacity      title-opacity}]]]]))
 
@@ -197,7 +199,8 @@
                                                                             [options-drawer/view
                                                                              {:name collectible-name
                                                                               :image
-                                                                              preview-uri}])}])}])))
+                                                                              preview-uri
+                                                                              :id id}])}])}])))
             :on-collectible-load (fn []
                                    ;; We need to delay the measurement because the
                                    ;; navigation has an animation
@@ -246,7 +249,8 @@
         {collection-name :name}    collection-data]
     [rn/view {:style (style/background-color theme)}
      [animated-header
-      {:scroll-amount scroll-amount
+      {:id            (:id collectible)
+       :scroll-amount scroll-amount
        :title-opacity title-opacity
        :page-nav-type :title-description
        :picture       preview-uri
