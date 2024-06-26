@@ -1,15 +1,15 @@
 (ns status-im.contexts.onboarding.enable-notifications.view
   (:require
-    [quo.core :as quo]
-    [react-native.core :as rn]
-    [react-native.safe-area :as safe-area]
-    [status-im.common.resources :as resources]
-    [status-im.contexts.onboarding.enable-notifications.style :as style]
-    [status-im.contexts.shell.jump-to.constants :as shell.constants]
-    [status-im.contexts.shell.jump-to.utils :as shell.utils]
-    [taoensso.timbre :as log]
-    [utils.i18n :as i18n]
-    [utils.re-frame :as rf]))
+   [quo.core :as quo]
+   [react-native.core :as rn]
+   [react-native.safe-area :as safe-area]
+   [status-im.common.resources :as resources]
+   [status-im.contexts.onboarding.enable-notifications.style :as style]
+   [status-im.contexts.shell.jump-to.constants :as shell.constants]
+   [status-im.contexts.shell.jump-to.utils :as shell.utils]
+   [taoensso.timbre :as log]
+   [utils.i18n :as i18n]
+   [utils.re-frame :as rf]))
 
 (defn page-title
   []
@@ -72,6 +72,7 @@
   (let [insets (safe-area/get-insets)]
     [rn/view {:style (style/page-container insets)}
      [rn/view {:style style/page-heading}
+      [quo/page-nav {:type :no-title :background :blur}]
       [page-title]]
      [enable-notifications-simple]
      [enable-notification-buttons {:insets insets}]]))
