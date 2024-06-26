@@ -566,8 +566,9 @@
         old-account-addresses                 (->> (vals existing-accounts-by-address)
                                                    (filter (fn [{:keys [address key-uid]}]
                                                              (and (contains? updated-keypair-ids key-uid)
-                                                                  (nil? (get updated-accounts-by-address
-                                                                             address)))))
+                                                                  (not (contains?
+                                                                        updated-accounts-by-address
+                                                                        address)))))
                                                    (map :address))]
     (cond-> {:db (-> db
                      (assoc-in [:wallet :keypairs]
