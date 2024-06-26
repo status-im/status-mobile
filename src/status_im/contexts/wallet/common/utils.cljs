@@ -220,7 +220,7 @@
 
 (defn make-network-item
   "This function generates props for quo/category component item"
-  [{:keys [network-name color on-change networks state label-props type]}]
+  [{:keys [network-name color on-change networks state label-props type blur?]}]
   (cond-> {:title        (string/capitalize (name network-name))
            :image        :icon-avatar
            :image-props  {:icon (resources/get-network network-name)
@@ -230,6 +230,7 @@
                                                    (if (= :default state)
                                                      :filled-checkbox
                                                      :checkbox))
+                          :blur?               blur?
                           :customization-color color
                           :checked?            (contains? networks network-name)
                           :on-change           on-change}}

@@ -27,4 +27,5 @@
   {:color colors/white-opa-40})
 
 (def saved-address-item
-  {:margin-top 4})
+  {:margin-top       4
+   :background-color colors/white-opa-5})

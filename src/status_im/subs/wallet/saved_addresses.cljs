@@ -54,7 +54,7 @@
  :wallet/saved-address-by-address
  :<- [:wallet/saved-addresses-by-network-mode]
  (fn [saved-addresses [_ address]]
-   (get saved-addresses address)))
+   (get saved-addresses (string/lower-case address))))
 
 (rf/reg-sub
  :wallet/filtered-saved-addresses
@@ -65,7 +65,7 @@
         (sort-by :name)
         (filter
          (fn [{:keys [name address ens chain-short-names]}]
-           (let [lowercase-query (string/lower-case query)]
+           (let [lowercase-query (string/lower-case (string/trim query))]
              (or
               (string/includes? (string/lower-case name) lowercase-query)
               (string/includes? address lowercase-query)

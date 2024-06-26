@@ -39,6 +39,12 @@
 (def avatar-container-rounded
   (assoc avatar-container-common :border-radius 16))
 
+(def big-avatar-container-rounded
+  (assoc avatar-container-common
+         :width         84
+         :height        84
+         :border-radius 42))
+
 (def community-logo-image
   {:width         64
    :height        64
