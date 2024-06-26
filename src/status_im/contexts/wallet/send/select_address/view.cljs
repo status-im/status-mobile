@@ -166,7 +166,7 @@
       :customization-color color}
      (i18n/label :t/continue)]))
 
-(defn- f-view
+(defn view
   []
   (let [on-close       (fn []
                          (rf/dispatch [:wallet/clean-scanned-address])
@@ -183,7 +183,8 @@
       (let [selected-tab          (or (rf/sub [:wallet/send-tab]) (:id (first tabs-data)))
             valid-ens-or-address? (boolean (rf/sub [:wallet/valid-ens-or-address?]))]
         [floating-button-page/view
-         {:footer-container-padding     0
+         {:content-container-style      {:flex 1}
+          :footer-container-padding     0
           :keyboard-should-persist-taps true
           :header                       [account-switcher/view
                                          {:on-press      on-close
@@ -221,7 +222,3 @@
               :scrollable?     true
               :on-change       on-change-tab}]
             [tabs/view {:selected-tab selected-tab}]])]))))
-
-(defn view
-  []
-  [:f> f-view])

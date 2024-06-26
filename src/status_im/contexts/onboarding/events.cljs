@@ -15,7 +15,10 @@
   [{:keys [db]} onboarding-data]
   {:db       (update db :onboarding/profile merge onboarding-data)
    :dispatch [:navigate-to-within-stack
-              [:screen/onboarding.create-profile-password :screen/onboarding.new-to-status]]})
+              [:screen/onboarding.create-profile-password
+               (get db
+                    :onboarding/navigated-to-enter-seed-phrase-from-screen
+                    :screen/onboarding.new-to-status)]]})
 
 (rf/defn enable-biometrics
   {:events [:onboarding/enable-biometrics]}
@@ -25,13 +28,24 @@
           {:on-success #(rf/dispatch [:onboarding/biometrics-done])
            :on-fail    #(rf/dispatch [:onboarding/biometrics-fail %])}]]]})
 
-(rf/defn navigate-to-enable-notifications
-  {:events [:onboarding/navigate-to-enable-notifications]}
-  [{:keys [db]}]
-  (let [key-uid (get-in db [:profile/profile :key-uid])]
-    {:db       (dissoc db :onboarding/profile)
-     :dispatch [:navigate-to-within-stack
-                [:screen/onboarding.enable-notifications :screen/onboarding.enable-biometrics]]}))
+(rf/reg-event-fx :onboarding/navigate-to-sign-in-by-seed-phrase
+ (fn [{:keys [db]} [from-screen]]
+   {:db (assoc db :onboarding/navigated-to-enter-seed-phrase-from-screen from-screen)
+    :fx [[:dispatch [:navigate-to-within-stack [:screen/onboarding.enter-seed-phrase from-screen]]]]}))
+
+(rf/reg-event-fx :onboarding/navigate-to-enable-notifications-from-syncing
+ (fn [{:keys [db]}]
+   {:db       (dissoc db :onboarding/profile)
+    :dispatch [:navigate-to-within-stack
+               [:screen/onboarding.enable-notifications :screen/onboarding.enable-biometrics]]}))
+
+(rf/reg-event-fx :onboarding/navigate-to-enable-notifications
+ (fn [{:keys [db]}]
+   {:dispatch [:navigate-to-within-stack
+               [:screen/onboarding.enable-notifications
+                (get db
+                     :onboarding/navigated-to-enter-seed-phrase-from-screen
+                     :screen/onboarding.new-to-status)]]}))
 
 (rf/defn biometrics-done
   {:events [:onboarding/biometrics-done]}
@@ -54,7 +68,10 @@
         (:onboarding/profile db)]
     (rf/merge cofx
               {:dispatch       [:navigate-to-within-stack
-                                [:screen/onboarding.generating-keys :screen/onboarding.new-to-status]]
+                                [:screen/onboarding.generating-keys
+                                 (get db
+                                      :onboarding/navigated-to-enter-seed-phrase-from-screen
+                                      :screen/onboarding.new-to-status)]]
                :dispatch-later [{:ms       constants/onboarding-generating-keys-animation-duration-ms
                                  :dispatch [:onboarding/navigate-to-identifiers]}]
                :db             (-> db
@@ -83,7 +100,10 @@
                    (assoc-in [:onboarding/profile :auth-method] constants/auth-method-password))
      :dispatch (if supported-type
                  [:navigate-to-within-stack
-                  [:screen/onboarding.enable-biometrics :screen/onboarding.new-to-status]]
+                  [:screen/onboarding.enable-biometrics
+                   (get db
+                        :onboarding/navigated-to-enter-seed-phrase-from-screen
+                        :screen/onboarding.new-to-status)]]
                  [:onboarding/create-account-and-login])}))
 
 (rf/defn navigate-to-enable-biometrics
@@ -118,7 +138,10 @@
       :on-cancel           #(re-frame/dispatch [:pop-to-root :multiaccounts])}}
     {:db       (assoc-in db [:onboarding/profile :seed-phrase] seed-phrase)
      :dispatch [:navigate-to-within-stack
-                [:screen/onboarding.create-profile :screen/onboarding.new-to-status]]}))
+                [:screen/onboarding.create-profile
+                 (get db
+                      :onboarding/navigated-to-enter-seed-phrase-from-screen
+                      :screen/onboarding.new-to-status)]]}))
 
 (rf/defn navigate-to-create-profile
   {:events [:onboarding/navigate-to-create-profile]}
@@ -127,6 +150,13 @@
   {:db       (dissoc db :onboarding/profile)
    :dispatch [:navigate-to-within-stack
               [:screen/onboarding.create-profile :screen/onboarding.new-to-status]]})
+
+(rf/reg-event-fx :onboarding/navigate-to-sign-in-by-syncing
+ (fn [{:keys [db]}]
+   ;; Restart the flow
+   {:db       (dissoc db :onboarding/profile)
+    :dispatch [:navigate-to-within-stack
+               [:screen/onboarding.sign-in-intro :screen/onboarding.sync-or-recover-profile]]}))
 
 (rf/reg-event-fx :onboarding/set-auth-method
  (fn [{:keys [db]} [auth-method]]
@@ -151,7 +181,8 @@
               :on-success      (fn []
                                  (rf/dispatch [:onboarding/set-auth-method auth-method])
                                  (when syncing?
-                                   (rf/dispatch [:onboarding/navigate-to-enable-notifications])))
+                                   (rf/dispatch
+                                    [:onboarding/navigate-to-enable-notifications-from-syncing])))
               :on-error        #(log/error "failed to save biometrics"
                                            {:key-uid key-uid
                                             :error   %})}))))
@@ -161,6 +192,9 @@
   [{:keys [db]}]
   (if (:onboarding/generated-keys? db)
     {:dispatch [:navigate-to-within-stack
-                [:screen/onboarding.identifiers :screen/onboarding.new-to-status]]}
+                [:screen/onboarding.identifiers
+                 (get db
+                      :onboarding/navigated-to-enter-seed-phrase-from-screen
+                      :screen/onboarding.new-to-status)]]}
     {:dispatch-later [{:ms       constants/onboarding-generating-keys-navigation-retry-ms
                        :dispatch [:onboarding/navigate-to-identifiers]}]}))

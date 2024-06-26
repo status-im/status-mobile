@@ -600,18 +600,6 @@
              (assoc :network-preferences-names #{}))]
         (rf/sub [sub-name])))))
 
-(def keypairs
-  [{:key-uid "abc"}])
-
-(h/deftest-sub :wallet/keypairs
-  [sub-name]
-  (testing "returns all keypairs"
-    (swap! rf-db/app-db
-      #(assoc-in % [:wallet :keypairs] keypairs))
-    (is
-     (= keypairs
-        (rf/sub [sub-name])))))
-
 (def chat-account
   {:path     "m/43'/60'/1581'/0'/0"
    :emoji    ""
@@ -654,19 +642,39 @@
    :operable :no
    :removed  false})
 
-(def default-keypair-accounts
-  {:key-uid            "abc"
+(def profile-key-pair-key-uid "abc")
+(def seed-phrase-key-pair-key-uid "def")
+
+(def profile-keypair
+  {:key-uid            profile-key-pair-key-uid
    :name               "My Profile"
-   :type               "profile"
+   :type               :profile
    :lowest-operability :fully
    :accounts           []})
 
-(def seed-phrase-keypair-accounts
-  {:key-uid            "def"
+(def seed-phrase-keypair
+  {:key-uid            seed-phrase-key-pair-key-uid
    :name               "My Key Pair"
-   :type               "seed"
+   :type               :seed
    :lowest-operability :no
    :accounts           []})
+
+(h/deftest-sub :wallet/keypairs
+  [sub-name]
+  (testing "returns keypairs map"
+    (swap! rf-db/app-db assoc-in [:wallet :keypairs] {profile-key-pair-key-uid profile-keypair})
+    (is (match? {profile-key-pair-key-uid profile-keypair} (rf/sub [sub-name])))))
+
+(h/deftest-sub :wallet/keypairs-list
+  [sub-name]
+  (swap! rf-db/app-db assoc-in
+    [:wallet :keypairs]
+    {profile-key-pair-key-uid     profile-keypair
+     seed-phrase-key-pair-key-uid seed-phrase-keypair})
+  (let [result   (rf/sub [sub-name])
+        expected (list profile-keypair seed-phrase-keypair)]
+    (is (= 2 (count result)))
+    (is (match? expected result))))
 
 (h/deftest-sub :wallet/settings-keypairs-accounts
   [sub-name]
@@ -676,12 +684,14 @@
         (-> db
             (assoc-in
              [:wallet :keypairs]
-             [(assoc default-keypair-accounts
-                     :accounts
-                     [operable-wallet-account])
-              (assoc seed-phrase-keypair-accounts
-                     :accounts
-                     [inoperable-wallet-account])])
+             {profile-key-pair-key-uid     (update profile-keypair
+                                                   :accounts
+                                                   conj
+                                                   operable-wallet-account)
+              seed-phrase-key-pair-key-uid (update seed-phrase-keypair
+                                                   :accounts
+                                                   conj
+                                                   inoperable-wallet-account)})
             (assoc-in
              [:wallet :accounts]
              {(:address operable-wallet-account)   operable-wallet-account
@@ -689,15 +699,15 @@
 
     (is
      (match?
-      {:missing  [{:name     (:name seed-phrase-keypair-accounts)
-                   :key-uid  (:key-uid seed-phrase-keypair-accounts)
-                   :type     (keyword (:type seed-phrase-keypair-accounts))
+      {:missing  [{:name     (:name seed-phrase-keypair)
+                   :key-uid  (:key-uid seed-phrase-keypair)
+                   :type     (:type seed-phrase-keypair)
                    :accounts [{:customization-color (:color inoperable-wallet-account)
                                :emoji               (:emoji inoperable-wallet-account)
                                :type                :default}]}]
-       :operable [{:name     (:name default-keypair-accounts)
-                   :key-uid  (:key-uid default-keypair-accounts)
-                   :type     (keyword (:type default-keypair-accounts))
+       :operable [{:name     (:name profile-keypair)
+                   :key-uid  (:key-uid profile-keypair)
+                   :type     (:type profile-keypair)
                    :accounts [{:account-props {:customization-color (:color operable-wallet-account)
                                                :size                32
                                                :emoji               (:emoji operable-wallet-account)
@@ -715,9 +725,10 @@
         (-> db
             (assoc-in
              [:wallet :keypairs]
-             [(assoc default-keypair-accounts
-                     :accounts
-                     [operable-wallet-account])])
+             {profile-key-pair-key-uid (update profile-keypair
+                                               :accounts
+                                               conj
+                                               operable-wallet-account)})
             (assoc-in
              [:wallet :accounts]
              {(:address operable-wallet-account) operable-wallet-account}))))
@@ -732,9 +743,9 @@
           size-option     20]
       (is
        (match? {:missing  []
-                :operable [{:name     (:name default-keypair-accounts)
-                            :key-uid  (:key-uid default-keypair-accounts)
-                            :type     (keyword (:type default-keypair-accounts))
+                :operable [{:name     (:name profile-keypair)
+                            :key-uid  (:key-uid profile-keypair)
+                            :type     (:type profile-keypair)
                             :accounts [{:account-props {:customization-color color
                                                         :size                size-option
                                                         :emoji               emoji
@@ -754,10 +765,11 @@
         (-> db
             (assoc-in
              [:wallet :keypairs]
-             [(assoc default-keypair-accounts
-                     :accounts
-                     [operable-wallet-account
-                      chat-account])])
+             {profile-key-pair-key-uid (update profile-keypair
+                                               :accounts
+                                               conj
+                                               operable-wallet-account
+                                               chat-account)})
             (assoc-in
              [:wallet :accounts]
              {(:address operable-wallet-account) operable-wallet-account
@@ -765,9 +777,9 @@
     (is
      (match?
       {:missing  []
-       :operable [{:name     (:name default-keypair-accounts)
-                   :key-uid  (:key-uid default-keypair-accounts)
-                   :type     (keyword (:type default-keypair-accounts))
+       :operable [{:name     (:name profile-keypair)
+                   :key-uid  (:key-uid profile-keypair)
+                   :type     (:type profile-keypair)
                    :accounts [{:account-props {:customization-color (:color operable-wallet-account)
                                                :size                32
                                                :emoji               (:emoji operable-wallet-account)

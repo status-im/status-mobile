@@ -2,7 +2,6 @@
   (:require
     [quo.core :as quo]
     [react-native.core :as rn]
-    [react-native.platform :as platform]
     [react-native.safe-area :as safe-area]
     [status-im.common.resources :as resources]
     [status-im.contexts.onboarding.enable-notifications.style :as style]
@@ -36,7 +35,7 @@
                                 {:permissions [:post-notifications]
                                  :on-allowed  #(log/info "push notification permissions were allowed")
                                  :on-denied   #(log/error "user denied push notification permissions")}])
-                              (rf/dispatch [:push-notifications/switch true platform/ios?])
+                              (rf/dispatch [:push-notifications/switch true])
                               (rf/dispatch [:navigate-to-within-stack
                                             [:screen/onboarding.welcome
                                              :screen/onboarding.enable-notifications]]))

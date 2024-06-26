@@ -70,7 +70,15 @@
         {:keys [address path watch-only?]}        (rf/sub [:wallet/current-viewing-account])
         {keypair-name :name
          keypair-type :type}                      (rf/sub [:wallet/current-viewing-account-keypair])
-        networks                                  (rf/sub [:wallet/network-preference-details])]
+        networks                                  (rf/sub [:wallet/network-preference-details])
+        origin-type                               (case keypair-type
+                                                    :seed
+                                                    :recovery-phrase
+
+                                                    :key
+                                                    :private-key
+
+                                                    :default-keypair)]
     [rn/scroll-view
      {:style                   style/about-tab
       :content-container-style {:padding-bottom (+ constants/floating-shell-button-height 8)}}
@@ -89,7 +97,7 @@
        :on-press        #(rf/dispatch [:show-bottom-sheet {:content about-options}])}]
      (when (not watch-only?)
        [quo/account-origin
-        {:type                (if (= keypair-type "seed") :recovery-phrase :default-keypair)
+        {:type                origin-type
          :stored              :on-device
          :profile-picture     (profile.utils/photo profile)
          :customization-color customization-color

@@ -10,9 +10,7 @@
 (rf/reg-event-fx
  :wallet/rename-keypair-success
  (fn [{:keys [db]} [key-uid name]]
-   {:db (update-in db
-                   [:wallet :keypairs]
-                   #(data-store/update-keypair % key-uid (fn [keypair] (assoc keypair :name name))))
+   {:db (update-in db [:wallet :keypairs key-uid] assoc :name name)
     :fx [[:dispatch [:navigate-back]]
          [:dispatch
           [:toasts/upsert
@@ -49,9 +47,7 @@
 
 (rf/reg-event-fx :wallet/remove-keypair-success
  (fn [{:keys [db]} [key-uid]]
-   {:db (update-in db
-                   [:wallet :keypairs]
-                   #(data-store/update-keypair % key-uid (fn [_] nil)))
+   {:db (update-in db [:wallet :keypairs] dissoc key-uid)
     :fx [[:dispatch [:hide-bottom-sheet]]
          [:dispatch
           [:toasts/upsert
@@ -71,8 +67,11 @@
 
 (defn make-keypairs-accounts-fully-operable
   [{:keys [db]} [key-uids-to-update]]
-  (let [key-uids-set (set key-uids-to-update)
-        keypair-name (data-store/extract-keypair-name db key-uids-set)]
+  (let [key-uids-set              (set key-uids-to-update)
+        single-keypair-to-update? (= (count key-uids-to-update) 1)
+        keypair-name              (when single-keypair-to-update?
+                                    (let [key-uid (first key-uids-set)]
+                                      (get-in db [:wallet :keypairs key-uid :name])))]
     {:db (->
            db
            (update-in [:wallet :accounts]
@@ -85,7 +84,7 @@
            [:toasts/upsert
             {:type  :positive
              :theme :dark
-             :text  (if (= (count key-uids-to-update) 1)
+             :text  (if single-keypair-to-update?
                       (i18n/label :t/key-pair-imported-successfully {:name keypair-name})
                       (i18n/label :t/key-pairs-successfully-imported
                                   {:count (count key-uids-to-update)}))}]]]}))
@@ -231,7 +230,7 @@
 
 (defn make-partially-operable-accounts-fully-operable-success
   [{:keys [db]} [addresses]]
-  (let [key-uids-to-update (data-store/map-addresses-to-key-uids db addresses)]
+  (let [key-uids-to-update (data-store/get-keypair-key-uids-set-from-addresses db addresses)]
     {:db (-> db
              (update-in [:wallet :accounts]
                         #(data-store/make-accounts-fully-operable {:accounts           %

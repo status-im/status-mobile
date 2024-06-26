@@ -1,5 +1,6 @@
 (ns status-im.contexts.wallet.collectible.events
   (:require [camel-snake-kebab.extras :as cske]
+            [react-native.platform :as platform]
             [status-im.contexts.wallet.collectible.utils :as collectible-utils]
             [taoensso.timbre :as log]
             [utils.ethereum.chain :as chain]
@@ -200,25 +201,35 @@
 
 (rf/reg-event-fx :wallet/trigger-share-collectible
  (fn [_ [{:keys [title uri]}]]
-   {:fx [[:effects.share/open
-          {:title   title
-           :message title
-           :url     uri}]]}))
+   {:fx [[:dispatch
+          [:open-share
+           {:options (if platform/ios?
+                       {:activityItemSources
+                        [{:placeholderItem {:type    :text
+                                            :content uri}
+                          :item            {:default {:type    :url
+                                                      :content uri}}
+                          :linkMetadata    {:title title}}]}
+                       {:title     title
+                        :subject   title
+                        :url       uri
+                        :isNewTask true})}]]]}))
 
 (rf/reg-event-fx :wallet/share-collectible
- (fn [_ [{:keys [title uri in-sheet?]}]]
-   (if in-sheet?
+ (fn [{:keys [db]} [{:keys [title token-id contract-address chain-id]}]]
+   (let [uri (collectible-utils/get-opensea-collectible-url
+              {:chain-id               chain-id
+               :token-id               token-id
+               :contract-address       contract-address
+               :test-networks-enabled? (get-in db [:profile/profile :test-networks-enabled?])
+               :is-goerli-enabled?     (get-in db [:profile/profile :is-goerli-enabled?])})]
      {:fx [[:dispatch
             [:hide-bottom-sheet]]
            [:dispatch-later
             {:ms       600
              :dispatch [:wallet/trigger-share-collectible
                         {:title title
-                         :uri   uri}]}]]}
-     {:fx [[:dispatch
-            [:wallet/trigger-share-collectible
-             {:title title
-              :uri   uri}]]]})))
+                         :uri   uri}]}]]})))
 
 (rf/reg-event-fx
  :wallet/navigate-to-opensea

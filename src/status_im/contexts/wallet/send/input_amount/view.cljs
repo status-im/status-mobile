@@ -15,6 +15,7 @@
     [status-im.contexts.wallet.send.routes.view :as routes]
     [status-im.contexts.wallet.sheets.buy-token.view :as buy-token]
     [status-im.contexts.wallet.sheets.unpreferred-networks-alert.view :as unpreferred-networks-alert]
+    [status-im.feature-flags :as ff]
     [utils.debounce :as debounce]
     [utils.i18n :as i18n]
     [utils.money :as money]
@@ -24,16 +25,17 @@
 (defn- estimated-fees
   [{:keys [loading-routes? fees amount]}]
   [rn/view {:style style/estimated-fees-container}
-   [rn/view {:style style/estimated-fees-content-container}
-    [quo/button
-     {:icon-only?          true
-      :type                :outline
-      :size                32
-      :inner-style         {:opacity 1}
-      :accessibility-label :advanced-button
-      :disabled?           loading-routes?
-      :on-press            #(js/alert "Not implemented yet")}
-     :i/advanced]]
+   (when (ff/enabled? ::ff/wallet.advanced-sending)
+     [rn/view {:style style/estimated-fees-content-container}
+      [quo/button
+       {:icon-only?          true
+        :type                :outline
+        :size                32
+        :inner-style         {:opacity 1}
+        :accessibility-label :advanced-button
+        :disabled?           loading-routes?
+        :on-press            #(js/alert "Not implemented yet")}
+       :i/advanced]])
    [quo/data-item
     {:container-style style/fees-data-item
      :status          (if loading-routes? :loading :default)
@@ -376,7 +378,7 @@
                 sender-network-values
                 token-not-supported-in-receiver-networks?)
        [token-not-available token-symbol receiver-networks token-networks])
-     (when (or loading-routes? route)
+     (when (and (not no-routes-found?) (or loading-routes? route))
        [estimated-fees
         {:loading-routes? loading-routes?
          :fees            fee-formatted

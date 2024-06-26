@@ -4,7 +4,7 @@
     [react-native.platform :as platform]))
 
 (def background-container
-  {:background-color colors/neutral-95
+  {:background-color colors/neutral-100
    :flex-direction   :row
    :position         :absolute
    :overflow         :hidden

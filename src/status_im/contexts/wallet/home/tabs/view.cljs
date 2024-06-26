@@ -9,16 +9,13 @@
     [utils.re-frame :as rf]))
 
 (defn- on-collectible-long-press
-  [{:keys [preview-url collectible-details id]}]
-  (let [chain-id (get-in id [:contract-id :chain-id])
-        address  (get-in id [:contract-id :address])]
-    (rf/dispatch [:show-bottom-sheet
-                  {:content (fn []
-                              [options-drawer/view
-                               {:chain-id chain-id
-                                :address  address
-                                :name     (:name collectible-details)
-                                :image    (:uri preview-url)}])}])))
+  [{:keys [preview-url :collectible-data id]}]
+  (rf/dispatch [:show-bottom-sheet
+                {:content (fn []
+                            [options-drawer/view
+                             {:id    id
+                              :name  (:name collectible-data)
+                              :image (:uri preview-url)}])}]))
 
 (defn- on-collectible-press
   [{:keys [id]}]

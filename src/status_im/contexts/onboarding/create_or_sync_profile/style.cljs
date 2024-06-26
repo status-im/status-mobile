@@ -1,4 +1,4 @@
-(ns status-im.contexts.onboarding.new-to-status.style
+(ns status-im.contexts.onboarding.create-or-sync-profile.style
   (:require
     [quo.foundations.colors :as colors]))
 
@@ -23,16 +23,5 @@
 
 (def subtitle-container
   {:margin-top 24})
-
-(def doc-main-content
-  {:color         colors/white
-   :margin-bottom 4})
-
-(def doc-subtitle
-  {:margin-top    20
-   :margin-bottom 4})
-
-(def doc-content
-  {:color colors/white-opa-70})
 
 (def space-between-suboptions {:height 12})

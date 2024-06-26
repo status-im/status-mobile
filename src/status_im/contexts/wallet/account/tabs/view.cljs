@@ -16,12 +16,13 @@
   (rf/dispatch [:wallet/get-collectible-details id]))
 
 (defn- on-collectible-long-press
-  [{:keys [preview-url collectible-details]}]
+  [{:keys [preview-url collectible-details id]}]
   (rf/dispatch [:show-bottom-sheet
                 {:content (fn []
                             [options-drawer/view
                              {:name  (:name collectible-details)
-                              :image (:uri preview-url)}])}]))
+                              :image (:uri preview-url)
+                              :id    id}])}]))
 
 (defn- on-end-reached
   []
