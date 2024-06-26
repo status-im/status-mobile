@@ -14,9 +14,7 @@
     [react-native.reanimated :as reanimated]))
 
 (defn drag-gesture
-  [x-pos disabled? track-width sliding-complete?
-   set-sliding-complete
-   on-complete reset-fn]
+  [x-pos disabled? track-width sliding-complete? set-sliding-complete on-complete reset-fn]
   (-> (gesture/gesture-pan)
       (gesture/with-test-ID :slide-button-gestures)
       (gesture/enabled (not disabled?))
@@ -71,14 +69,16 @@
                                                 (dimensions :thumb))
                                        [dimensions])
         custom-color                  (if (= type :danger) :danger customization-color)
-        gesture                       (rn/use-memo #(drag-gesture x-pos
-                                                                  disabled?
-                                                                  (dimensions :usable-track)
-                                                                  sliding-complete?
-                                                                  set-sliding-complete
-                                                                  on-complete
-                                                                  reset-fn)
-                                                   [sliding-complete? disabled?])]
+        gesture                       (rn/use-memo
+                                       (fn []
+                                         (drag-gesture x-pos
+                                                       disabled?
+                                                       (dimensions :usable-track)
+                                                       sliding-complete?
+                                                       set-sliding-complete
+                                                       on-complete
+                                                       reset-fn))
+                                       [sliding-complete? disabled? on-complete])]
     [gesture/gesture-detector
      {:gesture gesture}
      [reanimated/view

@@ -124,7 +124,7 @@
             :on-success on-success
             :on-error   (fn [error]
                           (log/error
-                           "Failed to resolve next path derivation path"
+                           "Failed to resolve next derivation path"
                            {:event  :wallet/next-derivation-path
                             :method "accounts_resolveSuggestedPathForKeypair"
                             :error  error
@@ -191,7 +191,7 @@
 
 (rf/reg-event-fx
  :wallet/derive-address-and-add-account
- (fn [_ [{:keys [password derived-from-address derivation-path account-preferences]}]]
+ (fn [_ [{:keys [password derived-from-address derivation-path account-preferences key-uid]}]]
    {:fx [[:json-rpc/call
           [{:method     "wallet_getDerivedAddresses"
             :params     [(security/safe-unmask-data password)
@@ -199,9 +199,10 @@
                          [derivation-path]]
             :on-success (fn [[derived-account]]
                           (rf/dispatch [:wallet/add-account
-                                        (assoc account-preferences :password password)
+                                        (assoc account-preferences
+                                               :key-uid  key-uid
+                                               :password password)
                                         derived-account]))
-            :on-error   #(log/info "Failed to get derived addresses"
-                                   derived-from-address
-                                   %)}]]]}))
-
+            :on-error   [:wallet/log-rpc-error
+                         {:event  :wallet/derive-address-and-add-account
+                          :params [derived-from-address [derivation-path]]}]}]]]}))
