@@ -205,21 +205,22 @@
          token-networks-ids                        (mapv #(:chain-id %) token-networks)
          token-not-supported-in-receiver-networks? (not-any? (set receiver-networks)
                                                              token-networks-ids)]
-     {:db (cond-> db
-            :always      (update-in [:wallet :ui :send] dissoc :collectible)
-            :always      (assoc-in [:wallet :ui :send :token-display-name]
-                          (:symbol token))
-            :always      (assoc-in
-                          [:wallet :ui :send :token-not-supported-in-receiver-networks?]
-                          token-not-supported-in-receiver-networks?)
-            token        (assoc-in [:wallet :ui :send :token] token)
-            token-symbol (assoc-in [:wallet :ui :send :token-symbol] token-symbol))
-      :fx [[:dispatch [:wallet/clean-suggested-routes]]
-           [:dispatch
-            [:wallet/wizard-navigate-forward
-             {:current-screen stack-id
-              :start-flow?    start-flow?
-              :flow-id        :wallet-send-flow}]]]})))
+     (when (or token token-symbol)
+       {:db (cond-> db
+              :always      (update-in [:wallet :ui :send] dissoc :collectible)
+              :always      (assoc-in
+                            [:wallet :ui :send :token-not-supported-in-receiver-networks?]
+                            token-not-supported-in-receiver-networks?)
+              token        (assoc-in [:wallet :ui :send :token] token)
+              token        (assoc-in [:wallet :ui :send :token-display-name]
+                            (:symbol token))
+              token-symbol (assoc-in [:wallet :ui :send :token-symbol] token-symbol))
+        :fx [[:dispatch [:wallet/clean-suggested-routes]]
+             [:dispatch
+              [:wallet/wizard-navigate-forward
+               {:current-screen stack-id
+                :start-flow?    start-flow?
+                :flow-id        :wallet-send-flow}]]]}))))
 
 (rf/reg-event-fx
  :wallet/edit-token-to-send
