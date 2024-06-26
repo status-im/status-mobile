@@ -47,6 +47,7 @@
                                                                                   :network-name :mainnet
                                                                                   :abbreviated-name
                                                                                   "Eth."
+                                                                                  :full-name "Mainnet"
                                                                                   :chain-id 1
                                                                                   :related-chain-id 1
                                                                                   :layer 1}]
@@ -92,6 +93,7 @@
                                                      :short-name       "eth"
                                                      :network-name     :mainnet
                                                      :abbreviated-name "Eth."
+                                                     :full-name        "Mainnet"
                                                      :chain-id         1
                                                      :related-chain-id 1
                                                      :layer            1}]
