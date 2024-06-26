@@ -2506,6 +2506,7 @@
     "select-another-account": "Select another account",
     "oops-this-qr-does-not-contain-an-address": "Oops! This QR does not contain an address",
     "scan-an-account-qr-code": "Scan an account QR code",
+    "scan-an-address-qr-code": "Scan an address QR code",
     "buy-assets": "Buy assets",
     "one-time": "One time",
     "recurrent": "Recurrent",
