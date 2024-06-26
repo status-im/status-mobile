@@ -92,6 +92,6 @@
   []
   (let [{:keys [type] :as account} (rf/sub [:wallet/current-viewing-account])]
     (case type
-      :generated [recovery-phase-flow account]
-      :watch     [watched-address-flow account]
+      (:generated :seed) [recovery-phase-flow account]
+      :watch             [watched-address-flow account]
       nil)))
