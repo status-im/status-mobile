@@ -58,7 +58,7 @@
 
 (defn view
   [{:keys [header footer customization-color footer-container-padding header-container-style
-           gradient-cover? keyboard-should-persist-taps]
+           content-container-style gradient-cover? keyboard-should-persist-taps]
     :or   {footer-container-padding (safe-area/get-top)}}
    & children]
   (reagent/with-let [scroll-view-ref              (atom nil)
@@ -110,7 +110,9 @@
           :always-bounce-vertical          @keyboard-did-show?
           :shows-vertical-scroll-indicator false
           :keyboard-should-persist-taps    keyboard-should-persist-taps}
-         (into [rn/view {:on-layout set-content-container-height}]
+         (into [rn/view
+                {:style     content-container-style
+                 :on-layout set-content-container-height}]
                children)]
         [rn/keyboard-avoiding-view
          {:style                    style/keyboard-avoiding-view

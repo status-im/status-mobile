@@ -49,7 +49,7 @@
           :icon-only?      true
           :on-press        #(rf/dispatch [:emoji-picker/open {:on-select on-change-emoji}])
           :container-style style/reaction-button-container}
-         :i/reaction]]
+         :i/edit]]
 
        [rn/view
         [quo/title-input

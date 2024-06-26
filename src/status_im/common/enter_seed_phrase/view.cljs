@@ -96,7 +96,7 @@
        (take 7)))
 
 (defn recovery-phrase-screen
-  [{:keys [keypair title recovering-keypair? render-controls]}]
+  [{:keys [banner-offset initial-insets keypair title recovering-keypair? render-controls]}]
   (reagent/with-let [keyboard-shown?           (reagent/atom false)
                      keyboard-show-listener    (.addListener rn/keyboard
                                                              "keyboardDidShow"
@@ -114,7 +114,8 @@
                      seed-phrase               (reagent/atom "")
                      on-change-seed-phrase     (fn [new-phrase]
                                                  (when @invalid-seed-phrase?
-                                                   (reset! invalid-seed-phrase? false)
+                                                   (reset! invalid-seed-phrase? false))
+                                                 (when @incorrect-seed-phrase?
                                                    (reset! incorrect-seed-phrase? false))
                                                  (reset! seed-phrase new-phrase))
                      on-submit                 (fn []
@@ -161,7 +162,10 @@
           button-disabled?         (or error-state?
                                        (not (constants/seed-phrase-valid-length word-count))
                                        (not all-words-valid?))]
-      [:<>
+      [rn/view
+       {:style (style/recovery-phrase-container {:insets          initial-insets
+                                                 :banner-offset   banner-offset
+                                                 :keyboard-shown? @keyboard-shown?})}
        [recovery-phrase-form
         {:title                 title
          :keypair               keypair
@@ -172,18 +176,18 @@
         (if (fn? render-controls)
           (render-controls {:submit-disabled?          button-disabled?
                             :keyboard-shown?           @keyboard-shown?
-                            :container-style           (style/continue-button @keyboard-shown?)
+                            :container-style           style/continue-button
                             :prepare-seed-phrase       secure-clean-seed-phrase
                             :focus-input               focus-input
                             :seed-phrase               (security/mask-data @seed-phrase)
                             :set-incorrect-seed-phrase set-incorrect-seed-phrase})
           [quo/button
-           {:container-style (style/continue-button @keyboard-shown?)
+           {:container-style style/continue-button
             :type            :primary
             :disabled?       button-disabled?
             :on-press        on-submit}
            (i18n/label :t/continue)])]
-       (when @keyboard-shown?
+       (when (or @keyboard-shown? error-state?)
          [rn/view {:style style/keyboard-container}
           [quo/predictive-keyboard
            {:type     suggestions-state
@@ -197,7 +201,8 @@
 
 (defn screen
   [{:keys [initial-insets title keypair navigation-icon recovering-keypair? render-controls]}]
-  (let [{navigation-bar-top :top} initial-insets]
+  (let [{navigation-bar-top :top} initial-insets
+        banner-offset             (rf/sub [:alert-banners/top-margin])]
     [rn/view {:style style/full-layout}
      [rn/keyboard-avoiding-view {:style style/page-container}
       [quo/page-nav
@@ -210,6 +215,8 @@
        {:title               title
         :keypair             keypair
         :render-controls     render-controls
+        :banner-offset       banner-offset
+        :initial-insets      initial-insets
         :recovering-keypair? recovering-keypair?}]]]))
 
 (defn view

@@ -70,7 +70,7 @@
      :icon-only?      true
      :on-press        #(rf/dispatch [:emoji-picker/open {:on-select on-select-emoji}])
      :container-style style/reaction-button-container}
-    :i/reaction]])
+    :i/edit]])
 
 (defn- input
   [_]

@@ -11,11 +11,12 @@
 
 (def ^:private initial-flags
   {::community.edit-account-selection   (enabled-in-env? :FLAG_EDIT_ACCOUNT_SELECTION_ENABLED)
-   ::settings.keypairs-and-accounts     (enabled-in-env?
-                                         :FLAG_WALLET_SETTINGS_KEYPAIRS_AND_ACCOUNTS_ENABLED)
    ::settings.saved-addresses           (enabled-in-env?
                                          :FLAG_WALLET_SETTINGS_SAVED_ADDRESSES_ENABLED)
+   ::settings.import-all-keypairs       (enabled-in-env?
+                                         :FLAG_WALLET_SETTINGS_IMPORT_ALL_KEYPAIRS)
    ::shell.jump-to                      (enabled-in-env? :ENABLE_JUMP_TO)
+   ::wallet.advanced-sending            (enabled-in-env? :FLAG_ADVANCED_SENDING)
    ::wallet.assets-modal-hide           (enabled-in-env? :FLAG_ASSETS_MODAL_HIDE)
    ::wallet.assets-modal-manage-tokens  (enabled-in-env? :FLAG_ASSETS_MODAL_MANAGE_TOKENS)
    ::wallet.bridge-token                (enabled-in-env? :FLAG_BRIDGE_TOKEN_ENABLED)
@@ -24,6 +25,7 @@
    ::wallet.graph                       (enabled-in-env? :FLAG_GRAPH_ENABLED)
    ::wallet.import-private-key          (enabled-in-env? :FLAG_IMPORT_PRIVATE_KEY_ENABLED)
    ::wallet.long-press-watch-only-asset (enabled-in-env? :FLAG_LONG_PRESS_WATCH_ONLY_ASSET_ENABLED)
+   ::wallet.saved-addresses             (enabled-in-env? :WALLET_SAVED_ADDRESSES)
    ::wallet.swap                        (enabled-in-env? :FLAG_SWAP_ENABLED)
    ::wallet.wallet-connect              (enabled-in-env? :FLAG_WALLET_CONNECT_ENABLED)})
 

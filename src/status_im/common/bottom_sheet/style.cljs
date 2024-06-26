@@ -1,7 +1,6 @@
 (ns status-im.common.bottom-sheet.style
   (:require
-    [quo.foundations.colors :as colors]
-    [react-native.platform :as platform]))
+    [quo.foundations.colors :as colors]))
 
 (def ^:private sheet-border-radius 20)
 
@@ -22,11 +21,8 @@
    :left     0
    :right    0})
 
-(defn shell-bg
-  [blur-background]
-  {:background-color (if blur-background
-                       blur-background
-                       (if platform/ios? colors/white-opa-5 colors/neutral-100-opa-90))
+(def shell-bg
+  {:background-color colors/bottom-sheet-background-blur
    :flex             1})
 
 (def shell-bg-container

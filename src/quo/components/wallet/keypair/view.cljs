@@ -47,12 +47,13 @@
       :accessibility-label :title}
      [text/text {:weight :semi-bold}
       (if (= type :default-keypair) (keypair-string full-name) full-name)]
-     (if (= action :selector)
-       [selectors/view
-        {:type                :radio
-         :checked?            selected?
-         :blur?               blur?
-         :customization-color customization-color}]
+     (case action
+       :none     nil
+       :selector [selectors/view
+                  {:type                :radio
+                   :checked?            selected?
+                   :blur?               blur?
+                   :customization-color customization-color}]
        [rn/pressable {:on-press on-options-press}
         [icon/icon :i/options
          {:color               (if blur?

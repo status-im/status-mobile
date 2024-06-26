@@ -8,10 +8,11 @@
     [react-native.core :as rn]))
 
 (defn- get-icon-color
-  [danger? theme]
-  (if danger?
-    (colors/theme-colors colors/danger-50 colors/danger-60 theme)
-    (colors/theme-colors colors/neutral-50 colors/neutral-40 theme)))
+  [blur? danger? theme]
+  (cond
+    danger? (colors/theme-colors colors/danger-50 colors/danger-60 theme)
+    blur?   colors/white-opa-70
+    :else   (colors/theme-colors colors/neutral-50 colors/neutral-40 theme)))
 
 (defn- divider
   [theme blur?]
@@ -51,7 +52,7 @@
            :accessible          true
            :style               (style/left-icon sub-label)}
           [icon/icon icon
-           {:color    (or icon-color (get-icon-color danger? theme))
+           {:color    (or icon-color (get-icon-color blur? danger? theme))
             :no-color no-icon-color?
             :size     20}]])
        [rn/view
@@ -84,7 +85,7 @@
               :accessible          true
               :accessibility-label :right-icon-for-action}
              [icon/icon right-icon
-              {:color (get-icon-color danger? theme)
+              {:color (get-icon-color blur? danger? theme)
                :size  20}]])
           (when (= state :selected)
             [rn/view {:style style/right-icon}
