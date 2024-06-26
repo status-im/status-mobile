@@ -346,12 +346,11 @@
      :component enter-seed-phrase/view}
 
     {:name      :screen/onboarding.enable-notifications
-     :options   {:theme                  :dark
-                 :layout                 options/onboarding-transparent-layout
-                 :animations             (merge
-                                          transitions/new-to-status-modal-animations
-                                          transitions/push-animations-for-transparent-background)
-                 :modalPresentationStyle :overCurrentContext}
+     :options   {:theme      :dark
+                 :layout     options/onboarding-layout
+                 :animations (merge
+                              transitions/new-to-status-modal-animations
+                              transitions/push-animations-for-transparent-background)}
      :component enable-notifications/view}
 
     {:name      :screen/onboarding.identifiers
@@ -400,7 +399,7 @@
 
     {:name      :screen/onboarding.welcome
      :options   {:theme      :dark
-                 :layout     options/onboarding-transparent-layout
+                 :layout     options/onboarding-layout
                  :animations transitions/push-animations-for-transparent-background}
      :component welcome/view}
 
