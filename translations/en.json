@@ -2612,7 +2612,7 @@
     "generating-keypair": "Generating key pair...",
     "keypair-name": "Key pair name",
     "keypair-name-description": "Name key pair for your own personal reference",
-    "keypair-name-input-placeholder": "Collectibles account, Old vault....",
+    "keypair-name-input-placeholder": "Collectibles key pair, Old vault....",
     "key-pair-name-updated": "Key pair name updated",
     "key-pair-removed": "Key pair and derived accounts has been removed",
     "goerli-testnet-toggle-confirmation": "Are you sure you want to toggle Goerli? This will log you out and you will have to login again.",
