@@ -6,31 +6,32 @@
             [taoensso.timbre :as log]
             [utils.transforms :as transforms]))
 
-(def ^:private method-to-screen
-  {constants/wallet-connect-personal-sign-method     :screen/wallet-connect.sign-message
-   constants/wallet-connect-eth-sign-typed-method    :screen/wallet-connect.sign-message
-   constants/wallet-connect-eth-sign-method          :screen/wallet-connect.sign-message
-   constants/wallet-connect-eth-sign-typed-v4-method :screen/wallet-connect.sign-message})
-
 (rf/reg-event-fx
  :wallet-connect/process-session-request
  (fn [{:keys [db]} [event]]
    (let [method (wallet-connect-core/get-request-method event)
-         screen (method-to-screen method)]
+         screen (wallet-connect-core/method-to-screen method)]
      (if screen
        {:db (assoc-in db [:wallet-connect/current-request :event] event)
         :fx [(condp = method
-               constants/wallet-connect-personal-sign-method
-               [:dispatch [:wallet-connect/process-personal-sign]]
+               constants/wallet-connect-eth-send-transaction-method
+               [:dispatch [:wallet-connect/process-eth-send-transaction]]
 
                constants/wallet-connect-eth-sign-method
                [:dispatch [:wallet-connect/process-eth-sign]]
+
+               constants/wallet-connect-eth-sign-transaction-method
+               [:dispatch [:wallet-connect/process-eth-sign-transaction]]
 
                constants/wallet-connect-eth-sign-typed-method
                [:dispatch [:wallet-connect/process-sign-typed]]
 
                constants/wallet-connect-eth-sign-typed-v4-method
-               [:dispatch [:wallet-connect/process-sign-typed]])
+               [:dispatch [:wallet-connect/process-sign-typed]]
+
+               constants/wallet-connect-personal-sign-method
+               [:dispatch [:wallet-connect/process-personal-sign]])
+
              [:dispatch [:open-modal screen]]]}
        (log/error "Didn't find screen for Wallet Connect method"
                   {:method method
@@ -59,6 +60,34 @@
                      :address      address
                      :raw-data     raw-data
                      :display-data (or parsed-data raw-data))})))
+
+(rf/reg-event-fx
+ :wallet-connect/process-eth-send-transaction
+ (fn [{:keys [db]}]
+   (let [event        (wallet-connect-core/get-db-current-request-event db)
+         display-data (-> event
+                          clj->js
+                          (js/JSON.stringify nil 2))
+         {:keys [to]} (-> event wallet-connect-core/get-request-params first)]
+     {:db (update-in db
+                     [:wallet-connect/current-request]
+                     assoc
+                     :address      to
+                     :raw-data     event
+                     :display-data display-data)})))
+
+(rf/reg-event-fx
+ :wallet-connect/process-eth-sign-transaction
+ (fn [{:keys [db]}]
+   (let [event        (wallet-connect-core/get-db-current-request-event db)
+         display-data (.stringify js/JSON (clj->js event) nil 2)
+         {:keys [to]} (-> event wallet-connect-core/get-request-params first)]
+     {:db (update-in db
+                     [:wallet-connect/current-request]
+                     assoc
+                     :address      to
+                     :raw-data     event
+                     :display-data display-data)})))
 
 (rf/reg-event-fx
  :wallet-connect/process-sign-typed

@@ -526,18 +526,21 @@
      (match? [{:short-name       "eth"
                :network-name     :mainnet
                :abbreviated-name "Eth."
+               :full-name        "Mainnet"
                :chain-id         1
                :related-chain-id nil
                :layer            1}
               {:short-name       "arb1"
                :network-name     :arbitrum
                :abbreviated-name "Arb1."
+               :full-name        "Arbitrum"
                :chain-id         42161
                :related-chain-id nil
                :layer            2}
               {:short-name       "oeth"
                :network-name     :optimism
                :abbreviated-name "Oeth."
+               :full-name        "Optimism"
                :chain-id         10
                :related-chain-id nil
                :layer            2}]

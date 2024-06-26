@@ -116,8 +116,12 @@
     [status-im.contexts.wallet.send.transaction-confirmation.view :as wallet-transaction-confirmation]
     [status-im.contexts.wallet.send.transaction-progress.view :as wallet-transaction-progress]
     [status-im.contexts.wallet.swap.select-asset-to-pay.view :as wallet-swap-select-asset-to-pay]
+    [status-im.contexts.wallet.wallet-connect.modals.send-transaction.view :as
+     wallet-connect-send-transaction]
+    [status-im.contexts.wallet.wallet-connect.modals.sign-message.view :as wallet-connect-sign-message]
+    [status-im.contexts.wallet.wallet-connect.modals.sign-transaction.view :as
+     wallet-connect-sign-transaction]
     [status-im.contexts.wallet.wallet-connect.session-proposal.view :as wallet-connect-session-proposal]
-    [status-im.contexts.wallet.wallet-connect.sign-message.view :as wallet-connect-sign-message]
     [status-im.navigation.options :as options]
     [status-im.navigation.transitions :as transitions]))
 
@@ -530,6 +534,14 @@
     {:name      :screen/wallet-connect.sign-message
      :options   {:sheet? true}
      :component wallet-connect-sign-message/view}
+
+    {:name      :screen/wallet-connect.sign-transaction
+     :options   {:sheet? true}
+     :component wallet-connect-sign-transaction/view}
+
+    {:name      :screen/wallet-connect.send-transaction
+     :options   {:sheet? true}
+     :component wallet-connect-send-transaction/view}
 
     ;; Settings
 

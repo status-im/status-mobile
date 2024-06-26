@@ -1,5 +1,6 @@
 (ns status-im.contexts.wallet.common.utils.networks
   (:require [clojure.string :as string]
+            [quo.foundations.resources :as resources]
             [status-im.constants :as constants]
             [utils.number]))
 
@@ -141,3 +142,41 @@
   (let [token-networks-ids     (mapv #(:chain-id %) token-networks)
         token-networks-ids-set (set token-networks-ids)]
     (contains? token-networks-ids-set chain-id)))
+
+(def mainnet-network-details
+  {:source           (resources/get-network constants/mainnet-network-name)
+   :short-name       constants/mainnet-short-name
+   :full-name        constants/mainnet-full-name
+   :network-name     constants/mainnet-network-name
+   :abbreviated-name constants/mainnet-abbreviated-name})
+
+(def arbitrum-network-details
+  {:source           (resources/get-network constants/arbitrum-network-name)
+   :short-name       constants/arbitrum-short-name
+   :full-name        constants/arbitrum-full-name
+   :network-name     constants/arbitrum-network-name
+   :abbreviated-name constants/arbitrum-abbreviated-name})
+
+(def optimism-network-details
+  {:source           (resources/get-network constants/optimism-network-name)
+   :short-name       constants/optimism-short-name
+   :full-name        constants/optimism-full-name
+   :network-name     constants/optimism-network-name
+   :abbreviated-name constants/optimism-abbreviated-name})
+
+(defn get-network-details
+  [chain-id]
+  (condp contains? chain-id
+    #{constants/ethereum-mainnet-chain-id constants/ethereum-goerli-chain-id
+      constants/ethereum-sepolia-chain-id}
+    mainnet-network-details
+
+    #{constants/arbitrum-mainnet-chain-id constants/arbitrum-goerli-chain-id
+      constants/arbitrum-sepolia-chain-id}
+    arbitrum-network-details
+
+    #{constants/optimism-mainnet-chain-id constants/optimism-goerli-chain-id
+      constants/optimism-sepolia-chain-id}
+    optimism-network-details
+
+    nil))
