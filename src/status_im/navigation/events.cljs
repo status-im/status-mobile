@@ -71,8 +71,8 @@
 
 (rf/defn init-root
   {:events [:init-root]}
-  [_ root-id]
-  {:set-root root-id})
+  [{:keys [db]} root-id]
+  {:set-root [root-id (:theme db)]})
 
 (rf/defn set-stack-root
   {:events [:set-stack-root]}
