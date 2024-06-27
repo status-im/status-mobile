@@ -23,6 +23,10 @@
     [rn/image
      {:source image-source
       :style  style/network}]
+    :dapp
+    [rn/image
+     {:source image-source
+      :style  style/dapp}]
     :saved-address
     [wallet-user-avatar/wallet-user-avatar
      {:full-name           label
@@ -50,7 +54,7 @@
     - :label - string - tag label
     - :customization-color - color - It will be passed down to components that
       should vary based on a custom color.
-    - :type - :token / :user / :collectible / :saved-address / :network / :account
+    - :type - :token / :user / :collectible / :saved-address / :network / :account / :dapp
     - :emoji - string - emoji used for displaying account avatar
     - :image-source - resource - image to display on :network, :collectible and :user
     - :theme - :light / :dark"

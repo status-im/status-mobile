@@ -28,5 +28,10 @@
    :height        24
    :border-radius 12})
 
+(def dapp
+  {:width         24
+   :height        24
+   :border-radius 12})
+
 (def token-image
   {:border-radius 12})

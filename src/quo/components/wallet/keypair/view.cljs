@@ -47,12 +47,13 @@
       :accessibility-label :title}
      [text/text {:weight :semi-bold}
       (if (= type :default-keypair) (keypair-string full-name) full-name)]
-     (if (= action :selector)
-       [selectors/view
-        {:type                :radio
-         :checked?            selected?
-         :blur?               blur?
-         :customization-color customization-color}]
+     (case action
+       :none     nil
+       :selector [selectors/view
+                  {:type                :radio
+                   :checked?            selected?
+                   :blur?               blur?
+                   :customization-color customization-color}]
        [rn/pressable {:on-press on-options-press}
         [icon/icon :i/options
          {:color               (if blur?
@@ -94,20 +95,23 @@
 
 (defn view
   [{:keys [accounts action container-style selected? on-press] :as props}]
-  [rn/pressable
-   {:style    (style/container (merge props
-                                      {:selected?       selected?
-                                       :container-style container-style}))
-    :on-press #(when (= action :selector) (on-press))}
-   [rn/view {:style style/header-container}
-    [avatar props]
-    [rn/view
-     {:style {:margin-left 8
-              :flex        1}}
-     [title-view (assoc props :selected? selected?)]
-     [details-view props]]]
-   [rn/flat-list
-    {:data      accounts
-     :render-fn acc-list-card
-     :separator [rn/view {:style {:height 8}}]
-     :style     {:padding-horizontal 8}}]])
+  (let [theme (quo.theme/use-theme)]
+    [rn/pressable
+     {:style          (style/container (assoc props
+                                              :selected?       selected?
+                                              :container-style container-style
+                                              :theme           theme))
+      :on-press       #(when (= action :selector) (on-press))
+      :pointer-events :box-only}
+     [rn/view {:style style/header-container}
+      [avatar props]
+      [rn/view
+       {:style {:margin-left 8
+                :flex        1}}
+       [title-view (assoc props :selected? selected?)]
+       [details-view props]]]
+     [rn/flat-list
+      {:data      accounts
+       :render-fn acc-list-card
+       :separator [rn/view {:style {:height 8}}]
+       :style     {:padding-horizontal 8}}]]))

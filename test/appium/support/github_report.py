@@ -160,10 +160,13 @@ class GithubHtmlReport(BaseTestReport):
             html += "Device %d:" % i
             html += "<ul>"
             if test_run.first_commands:
-                html += "<li><a href=\"%s\">Steps, video, logs</a></li>" % \
-                        self.get_sauce_job_url(job_id, test_run.first_commands[job_id])
+                try:
+                    first_command = test_run.first_commands[job_id]
+                except KeyError:
+                    first_command = 0
             else:
-                html += "<li><a href=\"%s\">Steps, video, logs</a></li>" % self.get_sauce_job_url(job_id)
+                first_command = 0
+            html += "<li><a href=\"%s\">Steps, video, logs</a></li>" % self.get_sauce_job_url(job_id, first_command)
             # if test_run.error:
             #     html += "<li><a href=\"%s\">Failure screenshot</a></li>" % self.get_sauce_final_screenshot_url(job_id)
             html += "</ul></p>"

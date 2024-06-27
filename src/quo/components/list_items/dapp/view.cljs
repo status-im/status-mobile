@@ -25,14 +25,16 @@
         :style  {:width 32 :height 32}}]
       [rn/view {:style style/user-info}
        [text/text
-        {:weight :semi-bold
-         :size   :paragraph-1
-         :style  (style/style-text-name theme)}
+        {:weight          :semi-bold
+         :size            :paragraph-1
+         :number-of-lines 1
+         :style           (style/style-text-name theme)}
         (:name dapp)]
        [text/text
-        {:weight :regular
-         :size   :paragraph-2
-         :style  (style/style-text-value theme)}
+        {:weight          :regular
+         :size            :paragraph-2
+         :number-of-lines 1
+         :style           (style/style-text-value theme)}
         (:value dapp)]]]
      (when right-component
        [right-component dapp])]))

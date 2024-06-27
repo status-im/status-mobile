@@ -92,23 +92,28 @@
 (rf/reg-event-fx :wallet/make-keypairs-accounts-fully-operable make-keypairs-accounts-fully-operable)
 
 (defn connection-string-for-import-keypair
-  [{:keys [db]} [{:keys [sha3-pwd keypairs-key-uids connection-string]}]]
+  [{:keys [db]} [{:keys [sha3-pwd keypairs-key-uids connection-string on-success]}]]
   (let [key-uid (get-in db [:profile/profile :key-uid])]
     {:fx [[:effects.syncing/import-keypairs-keystores
            {:key-uid           key-uid
             :sha3-pwd          sha3-pwd
             :keypairs-key-uids keypairs-key-uids
             :connection-string connection-string
-            :on-success        #(rf/dispatch [:wallet/make-keypairs-accounts-fully-operable %])
-            :on-fail           #(rf/dispatch [:toasts/upsert
-                                              {:type  :negative
-                                               :theme :dark
-                                               :text  %}])}]]}))
+            :on-success        (fn [key-uids]
+                                 (rf/call-continuation on-success)
+                                 (rf/dispatch [:wallet/make-keypairs-accounts-fully-operable key-uids]))
+            :on-fail           (fn [error]
+                                 (log/error "failed to import missing key pairs with connection string"
+                                            {:error error})
+                                 (rf/dispatch [:toasts/upsert
+                                               {:type  :negative
+                                                :theme :dark
+                                                :text  (i18n/label :t/incorrect-qr-code)}]))}]]}))
 
 (rf/reg-event-fx :wallet/connection-string-for-import-keypair connection-string-for-import-keypair)
 
 (defn success-keypair-qr-scan
-  [_ [connection-string keypairs-key-uids]]
+  [_ [connection-string keypairs-key-uids on-import-success]]
   {:fx [[:dispatch
          [:standard-auth/authorize-with-password
           {:blur?             true
@@ -120,7 +125,8 @@
                                  [:wallet/connection-string-for-import-keypair
                                   {:connection-string connection-string
                                    :keypairs-key-uids keypairs-key-uids
-                                   :sha3-pwd          password}]))}]]]})
+                                   :sha3-pwd          password
+                                   :on-success        on-import-success}]))}]]]})
 
 (rf/reg-event-fx :wallet/success-keypair-qr-scan success-keypair-qr-scan)
 
@@ -146,7 +152,7 @@
   {:fx [[:json-rpc/call
          [{:method     "accounts_makePrivateKeyKeypairFullyOperable"
            :params     [(security/safe-unmask-data private-key)
-                        (-> password security/safe-unmask-data native-module/sha3)]
+                        (security/safe-unmask-data password)]
            :on-success on-success
            :on-error   on-error}]]]})
 

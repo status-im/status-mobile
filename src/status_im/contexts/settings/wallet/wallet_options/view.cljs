@@ -2,7 +2,6 @@
   (:require [quo.core :as quo]
             [react-native.safe-area :as safe-area]
             [status-im.contexts.settings.wallet.wallet-options.style :as style]
-            [status-im.feature-flags :as ff]
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]))
 
@@ -16,16 +15,14 @@
 
 (defn basic-settings-options
   []
-  [(when (ff/enabled? ::ff/settings.keypairs-and-accounts)
-     {:title    (i18n/label :t/keypairs-and-accounts)
-      :blur?    true
-      :on-press open-keypairs-and-accounts-settings-modal
-      :action   :arrow})
-   (when (ff/enabled? ::ff/settings.saved-addresses)
-     {:title    (i18n/label :t/saved-addresses)
-      :blur?    true
-      :on-press open-saved-addresses-settings-modal
-      :action   :arrow})])
+  [{:title    (i18n/label :t/keypairs-and-accounts)
+    :blur?    true
+    :on-press open-keypairs-and-accounts-settings-modal
+    :action   :arrow}
+   {:title    (i18n/label :t/saved-addresses)
+    :blur?    true
+    :on-press open-saved-addresses-settings-modal
+    :action   :arrow}])
 
 (defn basic-settings
   []
@@ -74,7 +71,5 @@
      [quo/page-top
       {:title                     (i18n/label :t/wallet)
        :title-accessibility-label :wallet-settings-header}]
-     (when (or (ff/enabled? ::ff/settings.keypairs-and-accounts)
-               (ff/enabled? ::ff/settings.saved-addresses))
-       [basic-settings])
+     [basic-settings]
      [advanced-settings]]))

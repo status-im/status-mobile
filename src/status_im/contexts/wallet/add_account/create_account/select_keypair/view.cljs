@@ -105,8 +105,7 @@
      [quo/bottom-actions
       {:actions          :one-action
        :button-one-label (i18n/label :t/confirm-account-origin)
-       :button-one-props {:disabled?           (= selected-keypair selected-key-uid)
-                          :customization-color customization-color
+       :button-one-props {:customization-color customization-color
                           :on-press            #(rf/dispatch [:wallet/confirm-account-origin
                                                               selected-key-uid])}
        :container-style  style/bottom-action-container}]]))

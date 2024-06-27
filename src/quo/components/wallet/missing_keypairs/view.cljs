@@ -11,7 +11,7 @@
     [utils.i18n :as i18n]))
 
 (defn title-view
-  [{:keys [keypairs blur? on-import-press]}]
+  [{:keys [keypairs blur? on-import-press show-import-all?]}]
   (let [theme (quo.theme/use-theme)]
     [rn/view
      {:accessibility-label :title
@@ -29,12 +29,13 @@
          :style  {:color colors/warning-60}}
         (i18n/label :t/amount-missing-keypairs
                     {:amount (str (count keypairs))})]
-       [button/button
-        {:type       :outline
-         :background :blur
-         :size       24
-         :on-press   on-import-press}
-        (i18n/label :t/import)]]
+       (when show-import-all?
+         [button/button
+          {:type       :outline
+           :background :blur
+           :size       24
+           :on-press   on-import-press}
+          (i18n/label :t/import)])]
       [text/text
        {:size  :paragraph-2
         :style (style/subtitle blur? theme)}

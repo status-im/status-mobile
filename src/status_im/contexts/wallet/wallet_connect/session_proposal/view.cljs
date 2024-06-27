@@ -2,6 +2,7 @@
   (:require
     [quo.core :as quo]
     [quo.foundations.colors :as colors]
+    [quo.foundations.resources :as quo.resources]
     [quo.theme]
     [react-native.core :as rn]
     [status-im.common.floating-button-page.view :as floating-button-page]
@@ -44,41 +45,47 @@
          [quo/text label]])
       labels)]))
 
-(defn- accounts-data-item
+(defn- get-placeholder-networks
   []
-  ;; TODO. This account is currently hard coded in
-  ;; `status-im.contexts.wallet.wallet-connect.events`. Should be selectable and changeable
-  (let [accounts (rf/sub [:wallet/accounts-without-watched-accounts])
-        name     (-> accounts first :name)]
-    [quo/data-item
-     {:container-style style/detail-item
-      :blur?           false
-      :description     :default
-      :icon-right?     true
-      :right-icon      :i/chevron-right
-      :icon-color      colors/neutral-10
-      :card?           false
-      :label           :preview
-      ;; TODO. The quo component for data item doesn't support showing accounts yet
-      :status          :default
-      :size            :small
-      :title           (i18n/label :t/account-title)
-      :subtitle        name}]))
+  [{:source (quo.resources/get-network :ethereum)}
+   {:source (quo.resources/get-network :optimism)}
+   {:source (quo.resources/get-network :arbitrum)}])
 
-(defn- networks-data-item
+(defn- connection-category
   []
-  [quo/data-item
-   {:container-style style/detail-item
-    :blur?           false
-    :description     :default
-    :icon-right?     true
-    :card?           true
-    :label           :none
-    :status          :default
-    :size            :small
-    :title           (i18n/label :t/networks)
-    ;; TODO. The quo component for data-item does not support showing networks yet
-    :subtitle        "Networks will show up here"}])
+  (let [{:keys [name emoji customization-color]} (first (rf/sub
+                                                         [:wallet/accounts-without-watched-accounts]))
+        data-item-common-props                   {:blur?       false
+                                                  :description :default
+                                                  :card?       false
+                                                  :label       :preview
+                                                  :status      :default
+                                                  :size        :default}
+        account-data-item-props                  (assoc data-item-common-props
+                                                        :right-content {:type :accounts
+                                                                        :size :size-32
+                                                                        :data [{:emoji emoji
+                                                                                :customization-color
+                                                                                customization-color}]}
+                                                        :on-press      #(js/alert "Not yet implemented")
+                                                        :title         (i18n/label :t/account-title)
+                                                        :subtitle      name
+                                                        :icon-right?   true
+                                                        :right-icon    :i/chevron-right
+                                                        :icon-color    colors/neutral-10)
+        networks-data-item-props                 (assoc data-item-common-props
+                                                        :right-content {:type :network
+                                                                        :data
+                                                                        (get-placeholder-networks)}
+                                                        :title         (i18n/label :t/networks)
+                                                        ;; TODO. The quo component for data-item
+                                                        ;; does not support showing networks yet
+                                                        :subtitle      "Networks placeholder")]
+    [quo/category
+     {:blur?     false
+      :list-type :data-item
+      :data      [account-data-item-props
+                  networks-data-item-props]}]))
 
 (defn- footer
   []
@@ -114,6 +121,5 @@
     :footer                   [footer]}
    [rn/view
     [dapp-metadata]
-    [accounts-data-item]
-    [networks-data-item]
+    [connection-category]
     [approval-note]]])

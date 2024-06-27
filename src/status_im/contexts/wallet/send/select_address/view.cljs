@@ -136,7 +136,7 @@
        :keyboard-should-persist-taps :handled
        :render-fn                    suggestion-component}]]))
 
-(defn- f-view
+(defn view
   []
   (let [on-close       (fn []
                          (rf/dispatch [:wallet/clean-scanned-address])
@@ -155,7 +155,8 @@
             local-suggestion-address (rf/sub [:wallet/local-suggestions->full-address])
             color                    (rf/sub [:wallet/current-viewing-account-color])]
         [floating-button-page/view
-         {:footer-container-padding     0
+         {:content-container-style      {:flex 1}
+          :footer-container-padding     0
           :keyboard-should-persist-taps true
           :header                       [account-switcher/view
                                          {:on-press      on-close
@@ -205,7 +206,3 @@
               :scrollable?     true
               :on-change       on-change-tab}]
             [tabs/view {:selected-tab selected-tab}]])]))))
-
-(defn view
-  []
-  [:f> f-view])

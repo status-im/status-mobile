@@ -190,7 +190,10 @@ class TestrailReport(BaseTestReport):
                 test_steps += step + "\n"
             for i, device in enumerate(last_testrun.jobs):
                 if last_testrun.first_commands:
-                    first_command = last_testrun.first_commands[device]
+                    try:
+                        first_command = last_testrun.first_commands[device]
+                    except KeyError:
+                        first_command = 0
                 else:
                     first_command = 0
                 try:
@@ -233,7 +236,10 @@ class TestrailReport(BaseTestReport):
                     continue
                 for res in results:
                     if last_testrun.first_commands:
-                        pattern = r"%s\?auth=.*#%s" % (device, str(last_testrun.first_commands[device]))
+                        try:
+                            pattern = r"%s\?auth=.*#%s" % (device, str(last_testrun.first_commands[device]))
+                        except KeyError:
+                            pattern = device
                     else:
                         pattern = device
                     if re.findall(pattern, res['comment']):
@@ -285,10 +291,13 @@ class TestrailReport(BaseTestReport):
                         error = "```%s```\n **%s**  \n" % (code_error, no_code_error_str)
                     for job_id, f in last_testrun.jobs.items():
                         if last_testrun.first_commands:
-                            job_url = self.get_sauce_job_url(job_id=job_id,
-                                                             first_command=last_testrun.first_commands[job_id])
+                            try:
+                                first_command = last_testrun.first_commands[job_id]
+                            except KeyError:
+                                first_command = 0
                         else:
-                            job_url = self.get_sauce_job_url(job_id=job_id)
+                            first_command = 0
+                        job_url = self.get_sauce_job_url(job_id=job_id, first_command=first_command)
                         case_info = "Logs for device %d: [steps](%s), [failure screenshot](%s)" \
                                     % (f, job_url, self.get_sauce_final_screenshot_url(job_id))
 

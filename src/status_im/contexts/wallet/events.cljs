@@ -215,13 +215,12 @@
          [:dispatch [:wallet/clear-create-account]]]}))
 
 (rf/reg-event-fx :wallet/add-account
- (fn [{:keys [db]}
-      [{:keys [password account-name emoji color type]
+ (fn [_
+      [{:keys [key-uid password account-name emoji color type]
         :or   {type :generated}}
        {:keys [public-key address path] :as _derived-account}]]
    (let [lowercase-address (some-> address
-                                   (string/lower-case))
-         key-uid           (get-in db [:wallet :ui :create-account :selected-keypair-uid])
+                                   string/lower-case)
          account-config    {:key-uid    (when (= type :generated) key-uid)
                             :wallet     false
                             :chat       false
@@ -529,18 +528,17 @@
  :wallet/process-keypair-from-backup
  (fn [{:keys [db]} [{:keys [backedUpKeypair]}]]
    (let [{:keys [key-uid accounts]} backedUpKeypair
-         updated-keypairs           (assoc-in db
-                                     [:wallet :keypairs key-uid]
-                                     (data-store/rpc->keypair backedUpKeypair))
-         accounts-fx                (mapv (fn [{:keys [chat] :as account}]
-                                            ;; We exclude the chat account from the profile keypair
-                                            ;; for fetching the assets
-                                            (when-not chat
-                                              [:dispatch
-                                               [:wallet/process-account-from-signal
-                                                account]]))
-                                          accounts)]
-     {:db (assoc-in db [:wallet :keypairs] updated-keypairs)
+         accounts-fx
+         (mapv (fn [{:keys [chat] :as account}]
+                 ;; We exclude the chat account from the profile keypair for fetching the assets
+                 (when-not chat
+                   [:dispatch
+                    [:wallet/process-account-from-signal
+                     account]]))
+               accounts)]
+     {:db (assoc-in db
+           [:wallet :keypairs key-uid]
+           (data-store/rpc->keypair backedUpKeypair))
       :fx accounts-fx})))
 
 (rf/reg-event-fx

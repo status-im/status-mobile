@@ -20,7 +20,7 @@
 (rf/reg-event-fx :standard-auth/authorize authorize)
 
 (defn authorize-with-biometric
-  [_ [{:keys [on-auth-success on-auth-fail] :as args}]]
+  [_ [{:keys [on-auth-success on-auth-fail on-close] :as args}]]
   (let [args-with-biometric-btn
         (assoc args
                :on-press-biometric
@@ -31,7 +31,10 @@
             {:prompt-message (i18n/label :t/biometric-auth-confirm-message)
              :on-cancel      #(rf/dispatch [:standard-auth/authorize-with-password
                                             args-with-biometric-btn])
-             :on-success     #(rf/dispatch [:standard-auth/on-biometric-success on-auth-success])
+             :on-success     (fn []
+                               (when (fn? on-close)
+                                 (on-close))
+                               (rf/dispatch [:standard-auth/on-biometric-success on-auth-success]))
              :on-fail        (fn [err]
                                (rf/dispatch [:standard-auth/authorize-with-password
                                              args-with-biometric-btn])

@@ -1,7 +1,18 @@
 (ns status-im.contexts.wallet.wallet-connect.core
-  (:require [native-module.core :as native-module]
+  (:require [clojure.edn :as edn]
+            [clojure.string :as string]
+            [native-module.core :as native-module]
+            [status-im.constants :as constants]
             [utils.security.core :as security]
             [utils.transforms :as transforms]))
+
+(def method-to-screen
+  {constants/wallet-connect-personal-sign-method        :screen/wallet-connect.sign-message
+   constants/wallet-connect-eth-sign-typed-method       :screen/wallet-connect.sign-message
+   constants/wallet-connect-eth-sign-method             :screen/wallet-connect.sign-message
+   constants/wallet-connect-eth-sign-typed-v4-method    :screen/wallet-connect.sign-message
+   constants/wallet-connect-eth-send-transaction-method :screen/wallet-connect.send-transaction
+   constants/wallet-connect-eth-sign-transaction-method :screen/wallet-connect.sign-transaction})
 
 (defn extract-native-call-signature
   [data]
@@ -10,6 +21,13 @@
 (defn chain-id->eip155
   [chain-id]
   (str "eip155:" chain-id))
+
+(defn eip155->chain-id
+  [chain-id-str]
+  (-> chain-id-str
+      (string/split #":")
+      last
+      edn/read-string))
 
 (defn format-eip155-address
   [address chain-id]
@@ -23,9 +41,14 @@
   [event]
   (get-in event [:params :request :params]))
 
+(defn get-db-current-request-event
+  [db]
+  (get-in db [:wallet-connect/current-request :event]))
+
 (defn get-db-current-request-params
   [db]
-  (-> (get-in db [:wallet-connect/current-request :event])
+  (-> db
+      get-db-current-request-event
       get-request-params))
 
 (def ^:private sign-typed-data-by-version

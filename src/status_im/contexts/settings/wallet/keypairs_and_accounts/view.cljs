@@ -1,11 +1,11 @@
 (ns status-im.contexts.settings.wallet.keypairs-and-accounts.view
   (:require [quo.core :as quo]
-            [quo.foundations.colors :as colors]
             [quo.theme]
             [react-native.core :as rn]
             [react-native.safe-area :as safe-area]
             [status-im.contexts.settings.wallet.keypairs-and-accounts.actions.view :as actions]
             [status-im.contexts.settings.wallet.keypairs-and-accounts.style :as style]
+            [status-im.feature-flags :as ff]
             [utils.address :as utils]
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]))
@@ -17,13 +17,12 @@
 (defn on-options-press
   [{:keys [drawer-props keypair]}]
   (rf/dispatch [:show-bottom-sheet
-                {:content         (fn [] [actions/view
-                                          {:drawer-props drawer-props
-                                           :keypair      keypair}])
+                {:content (fn [] [actions/view
+                                  {:drawer-props drawer-props
+                                   :keypair      keypair}])
 
-                 :blur-background colors/bottom-sheet-background-blur
-                 :theme           (:theme drawer-props)
-                 :shell?          true}]))
+                 :theme   (:theme drawer-props)
+                 :shell?  true}]))
 
 (defn options-drawer-props
   [{{:keys [name]} :keypair
@@ -70,7 +69,7 @@
      {:blur?               true
       :status-indicator    false
       :stored              :on-device
-      :action              :options
+      :action              (if default-keypair? :none :options)
       :accounts            accounts
       :customization-color customization-color
       :container-style     style/keypair-container-style
@@ -83,17 +82,16 @@
 (defn on-missing-keypair-options-press
   [_event keypair-data]
   (rf/dispatch [:show-bottom-sheet
-                {:theme           :dark
-                 :shell?          true
-                 :blur-background colors/bottom-sheet-background-blur
-                 :content         (fn [] [actions/view
-                                          {:keypair      keypair-data
-                                           :drawer-props (options-drawer-props
-                                                          {:theme   :dark
-                                                           :type    :keypair
-                                                           :stored  :missing
-                                                           :blur?   true
-                                                           :keypair keypair-data})}])}]))
+                {:theme   :dark
+                 :shell?  true
+                 :content (fn [] [actions/view
+                                  {:keypair      keypair-data
+                                   :drawer-props (options-drawer-props
+                                                  {:theme   :dark
+                                                   :type    :keypair
+                                                   :stored  :missing
+                                                   :blur?   true
+                                                   :keypair keypair-data})}])}]))
 
 (defn view
   []
@@ -127,6 +125,7 @@
         :header                  (when (seq missing-keypairs)
                                    [quo/missing-keypairs
                                     {:blur?            true
+                                     :show-import-all? (ff/enabled? ::ff/settings.import-all-keypairs)
                                      :keypairs         missing-keypairs
                                      :on-import-press  on-import-press
                                      :container-style  style/missing-keypairs-container-style

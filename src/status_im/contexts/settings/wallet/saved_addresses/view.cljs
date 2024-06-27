@@ -73,27 +73,34 @@
 
 (defn- filtered-list
   [{:keys [search-text]}]
-  [rn/flat-list
-   {:key-fn                          :address
-    :data                            (rf/sub [:wallet/filtered-saved-addresses search-text])
-    :render-fn                       saved-address
-    :shows-vertical-scroll-indicator false
-    :keyboard-should-persist-taps    :always
-    :content-container-style         {:flex-grow 1}
-    :empty-component                 [empty-result]}])
+  (let [search-result (rf/sub [:wallet/filtered-saved-addresses search-text])]
+    (if (empty? search-result)
+      [empty-result]
+      [rn/flat-list
+       {:key-fn                          :address
+        :data                            search-result
+        :render-fn                       saved-address
+        :shows-vertical-scroll-indicator false
+        :keyboard-should-persist-taps    :always
+        :content-container-style         {:flex-grow 1}
+        :bounces                         false
+        :over-scroll-mode                :never}])))
 
 (defn- unfiltered-list
   [{:keys [grouped-saved-addresses]}]
-  [rn/section-list
-   {:key-fn                          :title
-    :shows-vertical-scroll-indicator false
-    :sticky-section-headers-enabled  false
-    :keyboard-should-persist-taps    :always
-    :render-section-header-fn        header
-    :sections                        grouped-saved-addresses
-    :render-fn                       saved-address
-    :content-container-style         {:flex-grow 1}
-    :empty-component                 [empty-list]}])
+  (if (empty? grouped-saved-addresses)
+    [empty-list]
+    [rn/section-list
+     {:key-fn                          :title
+      :shows-vertical-scroll-indicator false
+      :sticky-section-headers-enabled  false
+      :keyboard-should-persist-taps    :always
+      :render-section-header-fn        header
+      :sections                        grouped-saved-addresses
+      :render-fn                       saved-address
+      :bounces                         false
+      :over-scroll-mode                :never
+      :content-container-style         {:flex-grow 1}}]))
 
 (defn- navigate-back
   []

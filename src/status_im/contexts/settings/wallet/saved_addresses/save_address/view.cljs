@@ -93,20 +93,19 @@
                                    :subtitle-type   :default
                                    :label           :none
                                    :blur?           true
-                                   :icon-right?     (not ens?)
-                                   :right-icon      :i/advanced
+                                   :right-icon      (when-not ens? :i/advanced)
                                    :card?           true
                                    :title           (i18n/label :t/address)
                                    :subtitle        ens
                                    :custom-subtitle address-text
-                                   :on-press        open-network-preferences
+                                   :on-press        (when-not ens? open-network-preferences)
                                    :container-style style/data-item}
                             ens?
                             (dissoc :custom-subtitle))
                          [ens ens? open-network-preferences address-text])]
     [quo/overlay {:type :shell}
      [floating-button-page/view
-      {:footer-container-padding 0
+      {:footer-container-padding (if edit? (+ (safe-area/get-bottom) 12) 0)
        :header                   [quo/page-nav
                                   {:type                :no-title
                                    :background          :blur
@@ -133,7 +132,7 @@
         :container-style     style/avatar}]
       [quo/title-input
        {:blur?               true
-        :auto-focus          true
+        :auto-focus          (not edit?)
         :max-length          24
         :size                :heading-1
         :placeholder         placeholder
