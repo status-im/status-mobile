@@ -48,7 +48,6 @@
       :action-props      {:on-press    #(rf/dispatch [:standard-auth/authorize
                                                       {:on-auth-success   on-auth-success
                                                        :auth-button-label (i18n/label :t/continue)}])
-
                           :button-text (i18n/label :t/edit)
                           :icon-left   :i/face-id
                           :alignment   :flex-start}
@@ -217,6 +216,7 @@
                                     [:wallet/derive-address-and-add-account
                                      {:password             password
                                       :derived-from-address derived-from
+                                      :key-uid              key-uid
                                       :derivation-path      @derivation-path
                                       :account-preferences  preferences}])))
                                [derived-from])]
@@ -231,7 +231,7 @@
          {:account-color      @account-color
           :slide-button-props {:on-auth-success on-auth-success
                                :disabled?       (or (empty? @account-name)
-                                                    (= "" @derivation-path)
+                                                    (string/blank? @derivation-path)
                                                     (some? error))}}
          [avatar
           {:account-color   @account-color
