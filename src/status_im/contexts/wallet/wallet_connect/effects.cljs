@@ -1,15 +1,13 @@
 (ns status-im.contexts.wallet.wallet-connect.effects
-  (:require [cljs-bean.core :as bean]
-            [native-module.core :as native-module]
-            [promesa.core :as promesa]
-            [re-frame.core :as rf]
-            [react-native.wallet-connect :as wallet-connect]
-            [status-im.config :as config]
-            [status-im.constants :as constants]
-            [status-im.contexts.wallet.wallet-connect.core :as wallet-connect-core]
-            [utils.i18n :as i18n]
-            [utils.security.core :as security]
-            [utils.transforms :as transforms]))
+  (:require
+    [promesa.core :as promesa]
+    [re-frame.core :as rf]
+    [react-native.wallet-connect :as wallet-connect]
+    [status-im.config :as config]
+    [status-im.constants :as constants]
+    [status-im.contexts.wallet.wallet-connect.core :as wallet-connect-core]
+    [status-im.contexts.wallet.wallet-connect.signing :as wallet-connect-signing]
+    [utils.i18n :as i18n]))
 
 (rf/reg-fx
  :effects.wallet-connect/init
@@ -82,13 +80,21 @@
 (rf/reg-fx
  :effects.wallet-connect/sign-message
  (fn [{:keys [password address data on-success on-error]}]
-   (-> {:data     data
-        :account  address
-        :password (security/safe-unmask-data password)}
-       bean/->js
-       transforms/clj->json
-       native-module/sign-message
-       (promesa/then wallet-connect-core/extract-native-call-signature)
+   (-> (wallet-connect-signing/sign-message password address data)
+       (promesa/then on-success)
+       (promesa/catch on-error))))
+
+(rf/reg-fx
+ :effects.wallet-connect/sign-transaction
+ (fn [{:keys [password address chain-id tx on-success on-error]}]
+   (-> (wallet-connect-signing/sign-transaction password address tx chain-id)
+       (promesa/then on-success)
+       (promesa/catch on-error))))
+
+(rf/reg-fx
+ :effects.wallet-connect/send-transaction
+ (fn [{:keys [password address chain-id tx on-success on-error]}]
+   (-> (wallet-connect-signing/send-transaction password address tx chain-id)
        (promesa/then on-success)
        (promesa/catch on-error))))
 

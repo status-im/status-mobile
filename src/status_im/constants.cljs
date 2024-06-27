@@ -282,6 +282,8 @@
 (def ^:const wallet-connect-session-proposal-event "session_proposal")
 (def ^:const wallet-connect-session-request-event "session_request")
 
+(def ^:const transaction-pending-type-wallet-connect-transfer "WalletConnectTransfer")
+
 (def ^:const dapp-permission-contact-code "contact-code")
 (def ^:const dapp-permission-web3 "web3")
 (def ^:const dapp-permission-qr-code "qr-code")
