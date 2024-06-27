@@ -89,7 +89,7 @@
     (merge
      {:db (assoc db :profile/profiles-overview multiaccounts)}
      (when-not (seq multiaccounts)
-       {:set-root :screen/onboarding.intro}))))
+       {:dispatch [:init-root :screen/onboarding.intro]}))))
 
 (rf/defn password-set
   {:events [:onboarding/password-set]}
