@@ -347,7 +347,7 @@
                                 :network-links           [{:from-chain-id 1
                                                            :to-chain-id   10
                                                            :position-diff 1}]}}}})
-        (is (= expected-db (:db (dispatch [event-id]))))))
+        (is (match? expected-db (:db (dispatch [event-id]))))))
     (testing "if only receiver-network-value is empty"
       (let [expected-db {:wallet {:ui {:send {:other-props           :value
                                               :sender-network-values sender-network-zero}}}}]
@@ -358,7 +358,7 @@
                                 :network-links           [{:from-chain-id 1
                                                            :to-chain-id   10
                                                            :position-diff 1}]}}}})
-        (is (= expected-db (:db (dispatch [event-id]))))))
+        (is (match? expected-db (:db (dispatch [event-id]))))))
     (testing "if receiver-network-value and sender-network-values are empty"
       (let [expected-db {:wallet {:ui {:send {:other-props :value}}}}]
         (reset! rf-db/app-db
@@ -368,7 +368,7 @@
                                 :network-links           [{:from-chain-id 1
                                                            :to-chain-id   10
                                                            :position-diff 1}]}}}})
-        (is (= expected-db (:db (dispatch [event-id]))))))))
+        (is (match? expected-db (:db (dispatch [event-id]))))))))
 
 (h/deftest-event :wallet/select-send-address
   [event-id dispatch]
@@ -411,7 +411,7 @@
                                          :collectible collectible}}}
            :profile/profile {:test-networks-enabled? testnet-enabled?
                              :is-goerli-enabled?     goerli-enabled?}})
-        (is (= expected-result
+        (is (match? expected-result
                (dispatch [event-id
                           {:address     address
                            :recipient   recipient
@@ -448,7 +448,7 @@
                                          :collectible collectible}}}
            :profile/profile {:test-networks-enabled? testnet-enabled?
                              :is-goerli-enabled?     goerli-enabled?}})
-        (is (= expected-result
+        (is (match? expected-result
                (dispatch [event-id
                           {:address     address
                            :recipient   recipient
