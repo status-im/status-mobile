@@ -210,7 +210,10 @@
           expected-fx            [[:json-rpc/call
                                    [{:method     "wakuext_deleteSavedAddress"
                                      :params     [address test-networks-enabled?]
-                                     :on-success [:wallet/delete-saved-address-success toast-message]
+                                     :on-success [:wallet/delete-saved-address-success
+                                                  {:address                address
+                                                   :test-networks-enabled? test-networks-enabled?
+                                                   :toast-message          toast-message}]
                                      :on-error   [:wallet/delete-saved-address-failed]}]]]]
       (is (match? expected-fx result-fx)))))
 

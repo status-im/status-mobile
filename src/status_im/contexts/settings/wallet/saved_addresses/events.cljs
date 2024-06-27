@@ -66,15 +66,17 @@
 (rf/reg-event-fx :wallet/get-saved-addresses get-saved-addresses)
 
 (defn delete-saved-address-success
-  [_ [toast-message]]
-  {:fx [[:dispatch [:wallet/get-saved-addresses]]
-        [:dispatch [:hide-bottom-sheet]]
-        [:dispatch-later
-         {:ms       100
-          :dispatch [:toasts/upsert
-                     {:type  :positive
-                      :theme :dark
-                      :text  toast-message}]}]]})
+  [{:keys [db]} [{:keys [address test-networks-enabled? toast-message]}]]
+  (let [db-key        (if test-networks-enabled? :test :prod)
+        saved-address (get-in db [:wallet :saved-addresses db-key address])]
+    {:fx [[:dispatch [:wallet/reconcile-saved-addresses [(assoc saved-address :removed? true)]]]
+          [:dispatch [:hide-bottom-sheet]]
+          [:dispatch-later
+           {:ms       100
+            :dispatch [:toasts/upsert
+                       {:type  :positive
+                        :theme :dark
+                        :text  toast-message}]}]]}))
 
 (rf/reg-event-fx :wallet/delete-saved-address-success delete-saved-address-success)
 
@@ -96,7 +98,10 @@
     {:fx [[:json-rpc/call
            [{:method     "wakuext_deleteSavedAddress"
              :params     [address test-networks-enabled?]
-             :on-success [:wallet/delete-saved-address-success toast-message]
+             :on-success [:wallet/delete-saved-address-success
+                          {:address                address
+                           :test-networks-enabled? test-networks-enabled?
+                           :toast-message          toast-message}]
              :on-error   [:wallet/delete-saved-address-failed]}]]]}))
 
 (rf/reg-event-fx :wallet/delete-saved-address delete-saved-address)
