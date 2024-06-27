@@ -143,6 +143,12 @@
         token-networks-ids-set (set token-networks-ids)]
     (contains? token-networks-ids-set chain-id)))
 
+(defn split-network-full-address
+  [address]
+  (as-> address $
+    (string/split $ ":")
+    [(butlast $) (last $)]))
+
 (def mainnet-network-details
   {:source           (resources/get-network constants/mainnet-network-name)
    :short-name       constants/mainnet-short-name

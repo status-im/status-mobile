@@ -1,22 +1,21 @@
 (ns status-im.contexts.wallet.send.transaction-confirmation.view
   (:require
     [clojure.string :as string]
-    [legacy.status-im.utils.utils :as utils]
     [quo.core :as quo]
     [quo.theme :as quo.theme]
     [react-native.core :as rn]
     [react-native.safe-area :as safe-area]
     [status-im.common.floating-button-page.view :as floating-button-page]
     [status-im.common.standard-authentication.core :as standard-auth]
-    [status-im.contexts.wallet.common.utils.networks :as network-utils]
+    [status-im.contexts.wallet.common.utils :as utils]
     [status-im.contexts.wallet.send.transaction-confirmation.style :as style]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]
     [utils.security.core :as security]))
 
 (defn- transaction-title
-  [{:keys [token-display-name amount account to-address route to-network image-url
-           transaction-type collectible?]}]
+  [{:keys [token-display-name amount account route to-network image-url transaction-type
+           collectible? recipient]}]
   (let [to-network-name  (:network-name to-network)
         to-network-color (if (= to-network-name :mainnet) :ethereum to-network-name)]
     [rn/view {:style style/content-container}
@@ -107,9 +106,7 @@
           :image-source        (:source to-network)
           :label               (string/capitalize (name (:network-name to-network)))
           :customization-color to-network-color}]
-        [quo/summary-tag
-         {:type  :address
-          :label (utils/get-shortened-address to-address)}])]
+        [quo/summary-tag (assoc recipient :type (:recipient-type recipient))])]
      (when (= transaction-type :tx/bridge)
        [rn/view
         {:style {:flex-direction :row
@@ -127,20 +124,12 @@
           :customization-color (:color account)}]])]))
 
 (defn- user-summary
-  [{:keys [network-values token-display-name account-props theme label accessibility-label
-           summary-type]}]
-  (let [network-values (reduce-kv
-                        (fn [acc chain-id amount]
-                          (let [network-name    (network-utils/id->network chain-id)
-                                network-keyword (if (= network-name :mainnet)
-                                                  :ethereum
-                                                  network-name)]
-                            (assoc acc
-                                   network-keyword
-                                   {:amount       amount
-                                    :token-symbol token-display-name})))
-                        {}
-                        network-values)]
+  [{:keys [account-props theme label accessibility-label summary-type recipient account-to?]}]
+  (let [network-values    (rf/sub [:wallet/network-values account-to?])
+        summary-info-type (case (:recipient-type recipient)
+                            :saved-address :saved-account
+                            :account       :status-account
+                            summary-type)]
     [rn/view
      {:style {:padding-horizontal 20
               :padding-bottom     16}}
@@ -151,10 +140,17 @@
        :accessibility-label accessibility-label}
       label]
      [quo/summary-info
-      {:type          summary-type
+      {:type          summary-info-type
        :networks?     true
        :values        network-values
-       :account-props account-props}]]))
+       :account-props (cond-> account-props
+                        account-to?
+                        (assoc
+                         :size                32
+                         :name                (:label recipient)
+                         :full-name           (:label recipient)
+                         :emoji               (:emoji recipient)
+                         :customization-color (:customization-color recipient)))}]]))
 
 (defn- data-item
   [{:keys [title subtitle]}]
@@ -202,39 +198,45 @@
   [_]
   (let [on-close #(rf/dispatch [:navigate-back])]
     (fn []
-      (let [theme                        (quo.theme/use-theme)
-            send-transaction-data        (rf/sub [:wallet/wallet-send])
-            {:keys [token-display-name collectible amount route
-                    to-address bridge-to-chain-id
-                    from-values-by-chain
-                    to-values-by-chain]} send-transaction-data
-            collectible?                 (some? collectible)
-            image-url                    (when collectible
-                                           (get-in collectible [:preview-url :uri]))
-            transaction-type             (:tx-type send-transaction-data)
-            estimated-time-min           (reduce + (map :estimated-time route))
-            token-symbol                 (or token-display-name
-                                             (-> send-transaction-data :token :symbol))
-            first-route                  (first route)
-            native-currency-symbol       (get-in first-route [:from :native-currency-symbol])
-            native-token                 (when native-currency-symbol
-                                           (rf/sub [:wallet/token-by-symbol native-currency-symbol]))
-            fee-formatted                (rf/sub [:wallet/wallet-send-fee-fiat-formatted native-token])
-            account                      (rf/sub [:wallet/current-viewing-account])
-            account-color                (:color account)
-            bridge-to-network            (when bridge-to-chain-id
-                                           (rf/sub [:wallet/network-details-by-chain-id
-                                                    bridge-to-chain-id]))
-            loading-suggested-routes?    (rf/sub [:wallet/wallet-send-loading-suggested-routes?])
-            from-account-props           {:customization-color account-color
-                                          :size                32
-                                          :emoji               (:emoji account)
-                                          :type                :default
-                                          :name                (:name account)
-                                          :address             (utils/get-shortened-address (:address
-                                                                                             account))}
-            user-props                   {:full-name to-address
-                                          :address   (utils/get-shortened-address to-address)}]
+      (let [theme                     (quo.theme/use-theme)
+            send-transaction-data     (rf/sub [:wallet/wallet-send])
+            {:keys [token-display-name collectible amount
+                    route
+                    to-address bridge-to-chain-id type
+                    recipient]}       send-transaction-data
+            collectible?              (some? collectible)
+            image-url                 (when collectible
+                                        (get-in collectible [:preview-url :uri]))
+            transaction-type          (:tx-type send-transaction-data)
+            estimated-time-min        (reduce + (map :estimated-time route))
+            token-symbol              (or token-display-name
+                                          (-> send-transaction-data :token :symbol))
+            first-route               (first route)
+            native-currency-symbol    (get-in first-route
+                                              [:from :native-currency-symbol])
+            native-token              (when native-currency-symbol
+                                        (rf/sub [:wallet/token-by-symbol
+                                                 native-currency-symbol]))
+            fee-formatted             (rf/sub [:wallet/wallet-send-fee-fiat-formatted
+                                               native-token])
+            account                   (rf/sub [:wallet/current-viewing-account])
+            account-color             (:color account)
+            bridge-to-network         (when bridge-to-chain-id
+                                        (rf/sub [:wallet/network-details-by-chain-id
+                                                 bridge-to-chain-id]))
+            loading-suggested-routes? (rf/sub
+                                       [:wallet/wallet-send-loading-suggested-routes?])
+            from-account-props        {:customization-color account-color
+                                       :size                32
+                                       :emoji               (:emoji account)
+                                       :type                :default
+                                       :name                (:name account)
+                                       :address             (utils/get-shortened-address
+                                                             (:address
+                                                              account))}
+            user-props                {:full-name to-address
+                                       :address   (utils/get-shortened-address
+                                                   to-address)}]
         [rn/view {:style {:flex 1}}
          [floating-button-page/view
           {:footer-container-padding 0
@@ -274,23 +276,21 @@
             {:token-display-name token-symbol
              :amount             amount
              :account            account
-             :to-address         to-address
+             :type               type
+             :recipient          recipient
              :route              route
              :to-network         bridge-to-network
              :image-url          image-url
              :transaction-type   transaction-type
              :collectible?       collectible?}]
            [user-summary
-            {:token-display-name  token-symbol
-             :summary-type        :status-account
+            {:summary-type        :status-account
              :accessibility-label :summary-from-label
              :label               (i18n/label :t/from-capitalized)
-             :network-values      from-values-by-chain
              :account-props       from-account-props
              :theme               theme}]
            [user-summary
-            {:token-display-name  token-symbol
-             :summary-type        (if (= transaction-type :tx/bridge)
+            {:summary-type        (if (= transaction-type :tx/bridge)
                                     :status-account
                                     :account)
              :accessibility-label :summary-to-label
@@ -298,5 +298,6 @@
              :account-props       (if (= transaction-type :tx/bridge)
                                     from-account-props
                                     user-props)
-             :network-values      to-values-by-chain
+             :recipient           recipient
+             :account-to?         true
              :theme               theme}]]]]))))

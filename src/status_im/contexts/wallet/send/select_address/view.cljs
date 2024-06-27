@@ -1,5 +1,6 @@
 (ns status-im.contexts.wallet.send.select-address.view
   (:require
+    [clojure.string :as string]
     [quo.core :as quo]
     [quo.foundations.colors :as colors]
     [quo.theme]
@@ -9,6 +10,8 @@
     [status-im.common.floating-button-page.view :as floating-button-page]
     [status-im.constants :as constants]
     [status-im.contexts.wallet.common.account-switcher.view :as account-switcher]
+    [status-im.contexts.wallet.common.utils :as utils]
+    [status-im.contexts.wallet.common.utils.networks :as network-utils]
     [status-im.contexts.wallet.common.validation :as validation]
     [status-im.contexts.wallet.item-types :as types]
     [status-im.contexts.wallet.send.select-address.style :as style]
@@ -136,6 +139,33 @@
        :keyboard-should-persist-taps :handled
        :render-fn                    suggestion-component}]]))
 
+(defn- footer
+  [input-value]
+  (let [local-suggestion-address (rf/sub [:wallet/local-suggestions->full-address])
+        color                    (rf/sub [:wallet/current-viewing-account-color])
+        valid-ens-or-address?    (boolean (rf/sub [:wallet/valid-ens-or-address?]))]
+    [quo/button
+     {:accessibility-label :continue-button
+      :type                :primary
+      :disabled?           (not valid-ens-or-address?)
+      :on-press            (fn []
+                             (let [address              (or
+                                                         local-suggestion-address
+                                                         input-value)
+                                   [_ splitted-address] (network-utils/split-network-full-address
+                                                         address)]
+                               (rf/dispatch
+                                [:wallet/select-send-address
+                                 {:address address
+                                  :recipient {:label
+                                              (utils/get-shortened-address
+                                               splitted-address)
+                                              :recipient-type :address}
+                                  :stack-id
+                                  :screen/wallet.select-address}])))
+      :customization-color color}
+     (i18n/label :t/continue)]))
+
 (defn view
   []
   (let [on-close       (fn []
@@ -150,10 +180,8 @@
         input-value    (reagent/atom "")
         input-focused? (reagent/atom false)]
     (fn []
-      (let [selected-tab             (or (rf/sub [:wallet/send-tab]) (:id (first tabs-data)))
-            valid-ens-or-address?    (boolean (rf/sub [:wallet/valid-ens-or-address?]))
-            local-suggestion-address (rf/sub [:wallet/local-suggestions->full-address])
-            color                    (rf/sub [:wallet/current-viewing-account-color])]
+      (let [selected-tab          (or (rf/sub [:wallet/send-tab]) (:id (first tabs-data)))
+            valid-ens-or-address? (boolean (rf/sub [:wallet/valid-ens-or-address?]))]
         [floating-button-page/view
          {:content-container-style      {:flex 1}
           :footer-container-padding     0
@@ -162,20 +190,8 @@
                                          {:on-press      on-close
                                           :margin-top    (safe-area/get-top)
                                           :switcher-type :select-account}]
-          :footer                       (when (> (count @input-value) 0)
-                                          [quo/button
-                                           {:accessibility-label :continue-button
-                                            :type                :primary
-                                            :disabled?           (not valid-ens-or-address?)
-                                            :on-press            #(rf/dispatch
-                                                                   [:wallet/select-send-address
-                                                                    {:address (or
-                                                                               local-suggestion-address
-                                                                               @input-value)
-                                                                     :stack-id
-                                                                     :screen/wallet.select-address}])
-                                            :customization-color color}
-                                           (i18n/label :t/continue)])}
+          :footer                       (when-not (string/blank? @input-value)
+                                          [footer @input-value])}
          [quo/page-top
           {:title                     (i18n/label :t/send-to)
            :title-accessibility-label :title-label}]
