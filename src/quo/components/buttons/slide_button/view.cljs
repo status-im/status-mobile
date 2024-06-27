@@ -54,9 +54,10 @@
         on-track-layout               (rn/use-callback
                                        #(set-track-width (oops/oget % "nativeEvent.layout.width")))
         reset-fn                      (rn/use-callback
-                                       (fn []
+                                       (fn [reset-to-end-position?]
                                          (set-sliding-complete false)
-                                         (animations/reset-track-position x-pos)))
+                                         (animations/reset-track-position
+                                          (if reset-to-end-position? track-width x-pos))))
         dimensions                    (rn/use-callback
                                        (partial utils/get-dimensions
                                                 (or track-width constants/default-width)
