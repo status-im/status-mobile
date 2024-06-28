@@ -23,6 +23,8 @@
     :options [{:key :usd}
               {:key :eur}]}
    {:key  :error?
+    :type :boolean}
+   {:key  :allow-selection?
     :type :boolean}])
 
 (defn view
@@ -33,7 +35,8 @@
                                  :networks            networks
                                  :title               title
                                  :customization-color :blue
-                                 :show-keyboard?      false})
+                                 :show-keyboard?      false
+                                 :allow-selection?    true})
         value     (reagent/atom "")
         set-value (fn [v]
                     (swap! value str v))

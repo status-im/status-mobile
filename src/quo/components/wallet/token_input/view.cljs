@@ -81,8 +81,9 @@
                                         (js->clj :keywordize-keys true)
                                         (on-selection-change))))]
     (fn [{:keys [token customization-color show-keyboard? crypto? currency value error? selection
-                 handle-on-swap]
-          :or   {show-keyboard? true}}]
+                 handle-on-swap allow-selection?]
+          :or   {show-keyboard?   true
+                 allow-selection? true}}]
       (let [theme        (quo.theme/use-theme)
             window-width (:width (rn/get-window))]
         [rn/pressable
@@ -107,7 +108,8 @@
                      :selection-color          customization-color
                      :show-soft-input-on-focus show-keyboard?
                      :on-selection-change      handle-selection-change
-                     :selection                (clj->js selection)}
+                     :selection                (clj->js selection)
+                     :editable                 allow-selection?}
               controlled-input?       (assoc :value value)
               (not controlled-input?) (assoc :default-value value-internal))]
            [token-name-text theme (if crypto? token currency)]]]
