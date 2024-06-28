@@ -169,9 +169,9 @@
                                                     :type               :seed
                                                     :lowest-operability :fully
                                                     :accounts           [account]}}}}
-          :fx [[:dispatch [:wallet/get-wallet-token-for-all-accounts]]
-               [:dispatch [:wallet/request-collectibles-for-all-accounts {:new-request? true}]]
-               [:dispatch [:wallet/check-recent-history-for-all-accounts]]]})
+          :fx [[:dispatch [:wallet/get-wallet-token-for-account address]]
+               [:dispatch [:wallet/request-new-collectibles-for-account-from-signal address]]
+               [:dispatch [:wallet/check-recent-history-for-account address]]]})
         (dispatch [event-id
                    [{:key-uid  keypair-key-uid
                      :type     "seed"

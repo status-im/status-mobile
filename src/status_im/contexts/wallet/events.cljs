@@ -580,6 +580,12 @@
                                           (into removed-account-addresses old-account-addresses))
                                    (merge updated-accounts-by-address))))}
       (seq new-account-addresses)
-      (assoc :fx refresh-accounts-fx-dispatches))))
+      (assoc :fx
+             (->> new-account-addresses
+                  (mapcat (fn [address]
+                            [[:dispatch [:wallet/get-wallet-token-for-account address]]
+                             [:dispatch
+                              [:wallet/request-new-collectibles-for-account-from-signal address]]
+                             [:dispatch [:wallet/check-recent-history-for-account address]]])))))))
 
 (rf/reg-event-fx :wallet/process-keypairs process-keypairs)
