@@ -1,7 +1,6 @@
 (ns quo.components.profile.expanded-collectible.view
   (:require
     [clojure.string :as string]
-    [promesa.core :as promesa]
     [quo.components.counter.collectible-counter.view :as collectible-counter]
     [quo.components.icon :as icon]
     [quo.components.markdown.text :as text]
@@ -13,7 +12,8 @@
     [react-native.reanimated :as reanimated]
     [schema.core :as schema]
     [utils.datetime :as datetime]
-    [utils.i18n :as i18n]))
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]))
 
 (def timing-options-out 650)
 (def timing-options-in 1000)
@@ -41,12 +41,12 @@
                  error-wait-time))
 
 (defn- loading-image
-  [{:keys [theme gradient-color-index loader-opacity]}]
+  [{:keys [theme gradient-color-index loader-opacity aspect-ratio]}]
   [reanimated/view
    {:style (style/loading-image-with-opacity theme loader-opacity)}
    [gradients/view
     {:theme           theme
-     :container-style (style/fallback {:theme theme})
+     :container-style (style/fallback {:theme theme} aspect-ratio)
      :color-index     gradient-color-index}]])
 
 
@@ -57,9 +57,9 @@
     :value           counter}])
 
 (defn- fallback-view
-  [{:keys [label theme counter on-mount]}]
+  [{:keys [label theme counter on-mount aspect-ratio]}]
   (rn/use-mount on-mount)
-  [rn/view {:style (style/fallback {:theme theme})}
+  [rn/view {:style (style/fallback {:theme theme} aspect-ratio)}
    [counter-view counter]
    [rn/view
     [icon/icon :i/sad {:color (colors/theme-colors colors/neutral-40 colors/neutral-50 theme)}]]
@@ -72,50 +72,49 @@
 (defn view-internal
   [{:keys [container-style square? on-press counter image-src native-ID supported-file?
            on-collectible-load]}]
-  (let [theme                       (quo.theme/use-theme)
-        loader-opacity              (reanimated/use-shared-value (if supported-file? 1 0))
-        image-opacity               (reanimated/use-shared-value (if supported-file? 0 1))
-        [image-size set-image-size] (rn/use-state {})
-        [load-time set-load-time]   (rn/use-state (datetime/now))
-        [state set-state]           (rn/use-state {:image-loaded? false
-                                                   :image-error?  (or (nil? image-src)
-                                                                      (string/blank? image-src))})]
-
-    (rn/use-effect
-     (fn []
-       (promesa/let [[image-width image-height] (rn/image-get-size image-src)]
-         (set-image-size {:width        image-width
-                          :height       image-height
-                          :aspect-ratio (/ image-width image-height)})))
-     [image-src])
+  (let [theme                     (quo.theme/use-theme)
+        loader-opacity            (reanimated/use-shared-value
+                                   (if supported-file? 1 0))
+        image-opacity             (reanimated/use-shared-value
+                                   (if supported-file? 0 1))
+        aspect-ratio              (rf/sub [:wallet/last-collectible-aspect-ratio])
+        [load-time set-load-time] (rn/use-state (datetime/now))
+        [state set-state]         (rn/use-state {:image-loaded? false
+                                                 :image-error?  (or (nil? image-src)
+                                                                    (string/blank?
+                                                                     image-src))})]
     [rn/pressable
      {:on-press            (when (and (not (:image-error? state)) supported-file?) on-press)
       :accessibility-label :expanded-collectible
-      :style               (merge container-style style/container)}
+      :style               (merge container-style
+                                  (style/container aspect-ratio))}
      (cond
        (not supported-file?)
        [fallback-view
-        {:label    (i18n/label :t/unsupported-file)
-         :counter  counter
-         :theme    theme
-         :on-mount on-collectible-load}]
+        {:aspect-ratio aspect-ratio
+         :label        (i18n/label :t/unsupported-file)
+         :counter      counter
+         :theme        theme
+         :on-mount     on-collectible-load}]
 
        (:image-error? state)
        [fallback-view
-        {:label    (i18n/label :t/cant-fetch-info)
-         :counter  counter
-         :theme    theme
-         :on-mount on-collectible-load}]
+        {:aspect-ratio aspect-ratio
+         :label        (i18n/label :t/cant-fetch-info)
+         :counter      counter
+         :theme        theme
+         :on-mount     on-collectible-load}]
 
        (not (:image-loaded? state))
        [loading-image
-        {:loader-opacity       loader-opacity
+        {:aspect-ratio         aspect-ratio
+         :loader-opacity       loader-opacity
          :theme                theme
          :gradient-color-index :gradient-5}])
      (when supported-file?
        [reanimated/view {:style (style/supported-file image-opacity)}
         [rn/image
-         {:style         (style/image square? (:aspect-ratio image-size) theme)
+         {:style         (style/image square? aspect-ratio theme)
           :source        image-src
           :native-ID     native-ID
           :on-load-start #(set-load-time (fn [start-time] (- (datetime/now) start-time)))

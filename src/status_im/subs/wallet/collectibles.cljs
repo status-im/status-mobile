@@ -98,6 +98,12 @@
      (assoc last-collectible :preview-url (preview-url last-collectible)))))
 
 (re-frame/reg-sub
+ :wallet/last-collectible-aspect-ratio
+ :<- [:wallet]
+ (fn [wallet]
+   (:last-collectible-aspect-ratio wallet)))
+
+(re-frame/reg-sub
  :wallet/last-collectible-details-chain-id
  :<- [:wallet/last-collectible-details]
  (fn [collectible]

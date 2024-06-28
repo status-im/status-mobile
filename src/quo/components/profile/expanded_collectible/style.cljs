@@ -1,12 +1,13 @@
 (ns quo.components.profile.expanded-collectible.style
   (:require [quo.foundations.colors :as colors]))
 
-(def container
+(defn container
+  [aspect-ratio]
   {:align-items     :center
    :justify-content :center
    :border-radius   16
    :width           "100%"
-   :aspect-ratio    1})
+   :aspect-ratio    aspect-ratio})
 
 (defn image
   [square? aspect-ratio theme]
@@ -27,14 +28,14 @@
    :border-color  (colors/theme-colors colors/neutral-80-opa-5 colors/white-opa-5 theme)})
 
 (defn fallback
-  [{:keys [theme]}]
+  [{:keys [theme]} aspect-ratio]
   {:background-color (colors/theme-colors colors/neutral-2_5 colors/neutral-90 theme)
    :border-style     :dashed
    :border-color     (colors/theme-colors colors/neutral-20 colors/neutral-80 theme)
    :border-width     1
    :border-radius    16
    :width            "100%"
-   :aspect-ratio     1
+   :aspect-ratio     aspect-ratio
    :align-items      :center
    :justify-content  :center})
 
@@ -47,10 +48,9 @@
   [theme opacity]
   [{:opacity  opacity
     :position :absolute
-    :z-index  100}
-   (fallback {:theme theme})])
+    :z-index  1}
+   (fallback {:theme theme} 1)])
 
 (defn supported-file
   [opacity]
-  {:aspect-ratio 1
-   :opacity      opacity})
+  {:opacity opacity})
