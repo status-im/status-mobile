@@ -150,6 +150,7 @@
             set-title-ref                  (rn/use-callback #(reset! title-ref %))
             animation-shared-element-id    (rf/sub [:animation-shared-element-id])
             collectible-owner              (rf/sub [:wallet/last-collectible-details-owner])
+            aspect-ratio                   (rf/sub [:wallet/last-collectible-aspect-ratio])
             {:keys [id
                     preview-url
                     collection-data
@@ -180,7 +181,8 @@
          [rn/view
           [gradient-layer preview-uri]
           [quo/expanded-collectible
-           {:image-src           preview-uri
+           {:aspect-ratio        aspect-ratio
+            :image-src           preview-uri
             :container-style     (style/preview-container)
             :counter             (utils/collectible-owned-counter total-owned)
             :native-ID           (when (= animation-shared-element-id token-id) :shared-element)

@@ -12,8 +12,7 @@
     [react-native.reanimated :as reanimated]
     [schema.core :as schema]
     [utils.datetime :as datetime]
-    [utils.i18n :as i18n]
-    [utils.re-frame :as rf]))
+    [utils.i18n :as i18n]))
 
 (def timing-options-out 650)
 (def timing-options-in 1000)
@@ -71,13 +70,12 @@
 
 (defn view-internal
   [{:keys [container-style square? on-press counter image-src native-ID supported-file?
-           on-collectible-load]}]
+           on-collectible-load aspect-ratio]}]
   (let [theme                     (quo.theme/use-theme)
         loader-opacity            (reanimated/use-shared-value
                                    (if supported-file? 1 0))
         image-opacity             (reanimated/use-shared-value
                                    (if supported-file? 0 1))
-        aspect-ratio              (rf/sub [:wallet/last-collectible-aspect-ratio])
         [load-time set-load-time] (rn/use-state (datetime/now))
         [state set-state]         (rn/use-state {:image-loaded? false
                                                  :image-error?  (or (nil? image-src)
@@ -133,6 +131,7 @@
    [:catn
     [:props
      [:map {:closed true}
+      [:aspect-ratio {:optional true} [:maybe number?]]
       [:image-src {:optional true} [:maybe string?]]
       [:supported-file? {:optional true} [:maybe boolean?]]
       [:container-style {:optional true} [:maybe :map]]

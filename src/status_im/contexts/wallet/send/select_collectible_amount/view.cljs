@@ -35,7 +35,8 @@
        :on-press      on-close
        :switcher-type :select-account}]
      [quo/expanded-collectible
-      {:image-src       preview-uri
+      {:aspect-ratio    1
+       :image-src       preview-uri
        :square?         true
        :supported-file? (utils/supported-file? (get-in collectible
                                                        [:collectible-data :animation-media-type]))
