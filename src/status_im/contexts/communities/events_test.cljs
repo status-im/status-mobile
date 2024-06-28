@@ -49,7 +49,7 @@
         (testing "dispatch fxs"
           (is (match?
                {:fx [[:dispatch [:communities/handle-community {:id community-id}]]
-                     [:dispatch [:communities/update-last-opened-at community-id]]
+                     [:dispatch [:chat.ui/spectate-community community-id]]
                      [:dispatch
                       [:chat.ui/cache-link-preview-data "community-link+community-id"
                        {:id community-id}]]]}
@@ -60,7 +60,7 @@
         (testing "dispatch fxs, do not spectate community"
           (is (match?
                {:fx [[:dispatch [:communities/handle-community {:id community-id}]]
-                     [:dispatch [:communities/update-last-opened-at community-id]]
+                     [:dispatch [:chat.ui/spectate-community community-id]]
                      [:dispatch
                       [:chat.ui/cache-link-preview-data "community-link+community-id"
                        {:id community-id}]]]}
@@ -71,7 +71,7 @@
         (testing "dispatch fxs, do not spectate community"
           (is (match?
                {:fx [[:dispatch [:communities/handle-community {:id community-id}]]
-                     [:dispatch [:communities/update-last-opened-at community-id]]
+                     [:dispatch [:chat.ui/spectate-community community-id]]
                      [:dispatch
                       [:chat.ui/cache-link-preview-data "community-link+community-id"
                        {:id community-id}]]]}

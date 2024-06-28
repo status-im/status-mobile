@@ -230,7 +230,7 @@
   (when community
     {:db (update db :communities/fetching-communities dissoc community-id)
      :fx [[:dispatch [:communities/handle-community community]]
-          [:dispatch [:communities/update-last-opened-at community-id]]
+          [:dispatch [:chat.ui/spectate-community community-id]]
           [:dispatch
            [:chat.ui/cache-link-preview-data (link-preview.events/community-link community-id)
             community]]]}))
@@ -251,7 +251,7 @@
               :error err}))
 
 (defn fetch-community
-  [{:keys [db]} [{:keys [community-id update-last-opened-at?]}]]
+  [{:keys [db]} [{:keys [community-id]}]]
   (when (and community-id
              (not (get-in db [:communities community-id]))
              (not (get-in db [:communities/fetching-communities community-id])))
@@ -262,11 +262,8 @@
                                     :WaitForResponse true}]
                       :on-success (fn [community]
                                     (if community
-                                      (do (when update-last-opened-at?
-                                            (rf/dispatch [:communities/update-last-opened-at
-                                                          community-id]))
-                                          (rf/dispatch [:chat.ui/community-fetched community-id
-                                                        community]))
+                                      (rf/dispatch [:chat.ui/community-fetched community-id
+                                                    community])
                                       (failed-to-fetch-community
                                        community-id
                                        "community wasn't found at the store node")))
@@ -280,8 +277,7 @@
      [:schema
       [:vector
        [:map {:closed true}
-        [:community-id {:optional true} :string]
-        [:update-last-opened-at? {:optional true} [:maybe :boolean]]]]]]]
+        [:community-id {:optional true} :string]]]]]]
    [:maybe
     [:map
      [:db map?]
@@ -340,10 +336,9 @@
       (rf/merge
        cofx
        {:fx [[:dispatch [:chat.ui/spectate-community community-id]]
+             [:dispatch [:communities/update-last-opened-at community-id]]
              [:dispatch
-              [:communities/fetch-community
-               {:community-id           community-id
-                :update-last-opened-at? true}]]
+              [:communities/fetch-community {:community-id community-id}]]
              [:dispatch [:navigate-to :community-overview community-id]]
              (when (get-in db [:communities community-id :joined])
                [:dispatch
@@ -358,10 +353,7 @@
   (let [community-id (or community-id (get-in db [:chats chat-id :community-id]))]
     (merge
      {:fx [(when community-id
-             [:dispatch
-              [:communities/fetch-community
-               {:community-id           community-id
-                :update-last-opened-at? true}]])
+             [:dispatch [:communities/fetch-community {:community-id community-id}]])
            (if pop-to-root?
              [:dispatch [:chat/pop-to-root-and-navigate-to-chat chat-id]]
              [:dispatch
