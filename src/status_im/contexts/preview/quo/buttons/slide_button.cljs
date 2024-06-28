@@ -18,16 +18,20 @@
     :type :boolean}
    {:key  :blur?
     :type :boolean}
+   {:key  :reset-to-end-position?
+    :type :boolean}
    (preview/customization-color-option {:key :color})])
 
 (defn f-view
   []
-  (let [state     (reagent/atom {:disabled? false
-                                 :color     :blue
-                                 :size      :size-48})
-        color     (reagent/cursor state [:color])
-        blur?     (reagent/cursor state [:blur?])
-        complete? (reagent/atom false)]
+  (let [state                  (reagent/atom {:disabled?              false
+                                              :color                  :blue
+                                              :size                   :size-48
+                                              :reset-to-end-position? true})
+        color                  (reagent/cursor state [:color])
+        blur?                  (reagent/cursor state [:blur?])
+        reset-to-end-position? (reagent/cursor state [:reset-to-end-position?])
+        complete?              (reagent/atom false)]
     (fn []
       (rn/use-effect (fn []
                        (reset! complete? true)
@@ -48,10 +52,11 @@
            :disabled?           (:disabled? @state)
            :blur?               @blur?
            :type                (:type @state)
-           :on-complete         (fn [_]
+           :on-complete         (fn [reset-fn]
                                   (js/setTimeout (fn [] (reset! complete? true))
                                                  1000)
-                                  (js/alert "I don't wanna slide anymore"))}]
+                                  (js/alert "I don't wanna slide anymore")
+                                  (reset-fn @reset-to-end-position?))}]
          [quo/button {:on-press (fn [] (reset! complete? false))}
           "Try again"])])))
 
