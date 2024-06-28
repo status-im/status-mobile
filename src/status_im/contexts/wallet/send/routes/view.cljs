@@ -235,8 +235,10 @@
                                         (set-is-amount-locked true)
                                         (set-input-state #(controlled-input/add-character % c)))))
             :on-delete            (fn []
+                                    (set-is-amount-locked true)
                                     (set-input-state controlled-input/delete-last))
             :on-long-press-delete (fn []
+                                    (set-is-amount-locked true)
                                     (set-input-state controlled-input/delete-all))}]]))}]))
 
 (defn render-network-values
