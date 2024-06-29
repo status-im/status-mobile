@@ -3,6 +3,7 @@
 #import "React/RCTEventDispatcher.h"
 #import "Statusgo.h"
 #import "Utils.h"
+#import "UIHelper.h"
 
 @implementation EncryptionUtils
 
@@ -101,6 +102,13 @@ RCT_EXPORT_METHOD(setBlankPreviewFlag:(BOOL *)newValue)
     [userDefaults setBool:newValue forKey:@"BLANK_PREVIEW"];
 
     [userDefaults synchronize];
+    
+    if (newValue) {
+        [UIHelper addScreenshotBlock];
+    } else {
+        [UIHelper removeScreenshotBlock];
+    }
+    
 }
 
 RCT_EXPORT_METHOD(hashTransaction:(NSString *)txArgsJSON

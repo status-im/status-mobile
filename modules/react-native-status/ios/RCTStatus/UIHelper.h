@@ -5,4 +5,7 @@
 
 @interface UIHelper : NSObject <RCTBridgeModule>
 
++ (void)addScreenshotBlock;
++ (void)removeScreenshotBlock;
+
 @end
