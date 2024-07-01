@@ -48,7 +48,6 @@
      :container-style (style/fallback {:theme theme} aspect-ratio)
      :color-index     gradient-color-index}]])
 
-
 (defn- counter-view
   [counter]
   [collectible-counter/view
@@ -56,9 +55,9 @@
     :value           counter}])
 
 (defn- fallback-view
-  [{:keys [label theme counter on-mount aspect-ratio]}]
+  [{:keys [label theme counter on-mount]}]
   (rn/use-mount on-mount)
-  [rn/view {:style (style/fallback {:theme theme} aspect-ratio)}
+  [rn/view {:style (style/fallback {:theme theme})}
    [counter-view counter]
    [rn/view
     [icon/icon :i/sad {:color (colors/theme-colors colors/neutral-40 colors/neutral-50 theme)}]]
@@ -97,11 +96,10 @@
 
        (:image-error? state)
        [fallback-view
-        {:aspect-ratio aspect-ratio
-         :label        (i18n/label :t/cant-fetch-info)
-         :counter      counter
-         :theme        theme
-         :on-mount     on-collectible-load}]
+        {:label    (i18n/label :t/cant-fetch-info)
+         :counter  counter
+         :theme    theme
+         :on-mount on-collectible-load}]
 
        (not (:image-loaded? state))
        [loading-image

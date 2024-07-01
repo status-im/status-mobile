@@ -28,16 +28,18 @@
    :border-color  (colors/theme-colors colors/neutral-80-opa-5 colors/white-opa-5 theme)})
 
 (defn fallback
-  [{:keys [theme]} aspect-ratio]
-  {:background-color (colors/theme-colors colors/neutral-2_5 colors/neutral-90 theme)
-   :border-style     :dashed
-   :border-color     (colors/theme-colors colors/neutral-20 colors/neutral-80 theme)
-   :border-width     1
-   :border-radius    16
-   :width            "100%"
-   :aspect-ratio     aspect-ratio
-   :align-items      :center
-   :justify-content  :center})
+  ([{:keys [theme]}]
+   (fallback {:theme theme} 1))
+  ([{:keys [theme]} aspect-ratio]
+   {:background-color (colors/theme-colors colors/neutral-2_5 colors/neutral-90 theme)
+    :border-style     :dashed
+    :border-color     (colors/theme-colors colors/neutral-20 colors/neutral-80 theme)
+    :border-width     1
+    :border-radius    16
+    :width            "100%"
+    :aspect-ratio     aspect-ratio
+    :align-items      :center
+    :justify-content  :center}))
 
 (def counter
   {:position :absolute
