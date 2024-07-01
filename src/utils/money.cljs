@@ -61,7 +61,11 @@
 (extend-type BigNumber
  IEquiv
    (-equiv [this other]
-     (equal-to this other))
+     (if (or (number? other)
+             (string? other)
+             (instance? BigNumber other))
+       (equal-to this other)
+       false))
 
  IComparable
    (-compare [this other]
