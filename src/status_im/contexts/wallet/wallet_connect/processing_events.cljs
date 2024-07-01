@@ -65,29 +65,38 @@
 (rf/reg-event-fx
  :wallet-connect/process-eth-send-transaction
  (fn [{:keys [db]}]
-   (let [event          (wallet-connect-core/get-db-current-request-event db)
-         display-data   (-> event
-                            clj->js
-                            (js/JSON.stringify nil 2))
-         {:keys [from]} (-> event wallet-connect-core/get-request-params first)]
+   (let [event                 (wallet-connect-core/get-db-current-request-event db)
+         display-data          (-> event
+                                   clj->js
+                                   (js/JSON.stringify nil 2))
+
+         {:keys [from] :as tx} (-> event wallet-connect-core/get-request-params first)
+         chain-id              (-> event
+                                   (get-in [:params :chainId])
+                                   wallet-connect-core/eip155->chain-id)]
      {:db (update-in db
                      [:wallet-connect/current-request]
                      assoc
                      :address      (string/lower-case from)
-                     :raw-data     event
+                     :raw-data     tx
+                     :chain-id     chain-id
                      :display-data display-data)})))
 
 (rf/reg-event-fx
  :wallet-connect/process-eth-sign-transaction
  (fn [{:keys [db]}]
-   (let [event          (wallet-connect-core/get-db-current-request-event db)
-         display-data   (.stringify js/JSON (clj->js event) nil 2)
-         {:keys [from]} (-> event wallet-connect-core/get-request-params first)]
+   (let [event                 (wallet-connect-core/get-db-current-request-event db)
+         display-data          (.stringify js/JSON (clj->js event) nil 2)
+         {:keys [from] :as tx} (-> event wallet-connect-core/get-request-params first)
+         chain-id              (-> event
+                                   (get-in [:params :chainId])
+                                   wallet-connect-core/eip155->chain-id)]
      {:db (update-in db
                      [:wallet-connect/current-request]
                      assoc
                      :address      (string/lower-case from)
-                     :raw-data     event
+                     :raw-data     tx
+                     :chain-id     chain-id
                      :display-data display-data)})))
 
 (rf/reg-event-fx
@@ -105,5 +114,5 @@
                      [:wallet-connect/current-request]
                      assoc
                      :address      (string/lower-case address)
-                     :raw-data     (or parsed-data raw-data)
-                     :display-data parsed-data)})))
+                     :display-data (or parsed-data raw-data)
+                     :raw-data     raw-data)})))

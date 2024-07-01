@@ -66,11 +66,7 @@
 (rf/reg-event-fx
  :wallet-connect/respond-send-transaction-data
  (fn [{:keys [db]} [password]]
-   (let [{:keys [event address]} (get db :wallet-connect/current-request)
-         chain-id                (-> event
-                                     (get-in [:params :chainId])
-                                     wallet-connect-core/eip155->chain-id)
-         tx                      (first (wallet-connect-core/get-request-params event))]
+   (let [{:keys [chain-id tx address]} (get db :wallet-connect/current-request)]
      {:fx [[:effects.wallet-connect/send-transaction
             {:password   password
              :address    address
@@ -82,11 +78,7 @@
 (rf/reg-event-fx
  :wallet-connect/respond-sign-transaction-data
  (fn [{:keys [db]} [password]]
-   (let [{:keys [event address]} (get db :wallet-connect/current-request)
-         chain-id                (-> event
-                                     (get-in [:params :chainId])
-                                     wallet-connect-core/eip155->chain-id)
-         tx                      (first (wallet-connect-core/get-request-params event))]
+   (let [{:keys [chain-id tx address]} (get db :wallet-connect/current-request)]
      {:fx [[:effects.wallet-connect/sign-transaction
             {:password   password
              :address    address
