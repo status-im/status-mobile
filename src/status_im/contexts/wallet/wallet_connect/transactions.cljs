@@ -48,10 +48,12 @@
 
 (defn wallet-sign-message-rpc
   [password address data]
-  (call-rpc "wallet_signMessage"
-            data
-            address
-            password))
+  (-> (call-rpc "wallet_signMessage"
+                data
+                address
+                password)
+      ;; NOTE: removing `0x`, as status-go expects the signature without it.
+      (promesa/then #(subs % 2))))
 
 (defn- wallet-build-transaction-rpc
   [chain-id tx]
@@ -64,7 +66,7 @@
   (-> (call-rpc "wallet_buildRawTransaction"
                 chain-id
                 (transforms/js-stringify tx-args 0)
-                (subs signature 2))
+                signature)
       (promesa/then #(oops/oget % "rawTx"))))
 
 (defn- wallet-send-transaction-with-signature-rpc
@@ -73,7 +75,7 @@
             chain-id
             constants/transaction-pending-type-wallet-connect-transfer
             (transforms/js-stringify tx-args 0)
-            (subs signature 2)))
+            signature))
 
 (defn sign-transaction
   [password address tx chain-id]
