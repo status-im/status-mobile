@@ -111,7 +111,7 @@
  :wallet-connect/session-proposer
  :<- [:wallet-connect/current-proposal]
  (fn [proposal]
-   (-> proposal :params :proposer)))
+   (-> proposal :request :params :proposer)))
 
 (rf/reg-sub
  :wallet-connect/session-proposer-name
@@ -120,6 +120,6 @@
    (-> proposer :metadata :name)))
 
 (rf/reg-sub
- :wallet-connect/current-proposal-account
+ :wallet-connect/current-proposal-address
  (fn [db]
-   (-> db :wallet-connect/current-proposal-account)))
+   (get-in db [:wallet-connect/current-proposal :address])))

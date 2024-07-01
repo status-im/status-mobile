@@ -545,7 +545,9 @@
  :wallet/accounts-with-customization-color
  :<- [:wallet/accounts]
  (fn [accounts]
-   (utils/accounts-with-customization-color accounts)))
+   (map (fn [{:keys [color] :as account}]
+          (assoc account :customization-color color))
+        accounts)))
 
 (rf/reg-sub
  :wallet/preferred-chains-for-address
