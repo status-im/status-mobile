@@ -4,26 +4,45 @@
     [utils.money :as money]))
 
 (deftest comparable-test
-  (is (= [(money/bignumber -4)
-          (money/bignumber 0)
-          (money/bignumber 1)
-          (money/bignumber 1.1)
-          (money/bignumber 2.1)]
-         (sort [(money/bignumber 0)
-                (money/bignumber 2.1)
-                (money/bignumber -4)
-                (money/bignumber 1.1)
-                (money/bignumber 1)]))))
+  (testing "sorts bignumbers (and nils)"
+    (is (= [nil
+            nil
+            (money/bignumber -4)
+            (money/bignumber 0)
+            (money/bignumber 1)
+            (money/bignumber 1.1)
+            (money/bignumber 2.1)]
+           (sort [(money/bignumber 0)
+                  nil
+                  (money/bignumber 2.1)
+                  (money/bignumber -4)
+                  (money/bignumber 1.1)
+                  (money/bignumber nil)
+                  (money/bignumber 1)]))))
+
+  (testing "throws when comparing non-bignumbers with bignumbers"
+    (is (thrown? js/Error (sort [(money/bignumber 42) ""])))))
 
 (deftest equivalence-test
-  (is (= (money/bignumber 0)
-         (money/bignumber 0)))
-  (is (= (money/bignumber -1)
-         (money/bignumber -1)))
-  (is (not (= (money/bignumber 10)
-              (money/bignumber -10))))
-  (is (match? {:a {:b {:c (money/bignumber 42)}}}
-              {:a {:b {:c (money/bignumber 42)}}})))
+  (testing "equivalence with numbers and strings"
+    (is (= (money/bignumber 42) 42))
+    (is (= (money/bignumber 42) 42.0))
+    (is (= (money/bignumber 42) "42"))
+    (is (= (money/bignumber 42) "42.0"))
+    (is (not= (money/bignumber 42) :42))
+    (is (not= (money/bignumber 42) {:x 42})))
+
+  (testing "bignumbers are never equivalent to nil"
+    ;; The native `.eq` function throws with nil values, but we gracefully handle this.
+    (is (false? (= (money/bignumber 0) nil)))
+    (is (false? (= (money/bignumber 10) (money/bignumber nil)))))
+
+  (testing "equivalence of actual bignumbers"
+    (is (= (money/bignumber 0) (money/bignumber 0)))
+    (is (= (money/bignumber -1) (money/bignumber -1)))
+    (is (not= (money/bignumber 10) (money/bignumber -10)))
+    (is (match? {:a {:b {:c (money/bignumber 42)}}}
+                {:a {:b {:c (money/bignumber 42)}}}))))
 
 (deftest wei->ether-test
   (testing "Numeric input, 15 significant digits"
