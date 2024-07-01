@@ -42,10 +42,10 @@
 (defn- loading-image
   [{:keys [theme gradient-color-index loader-opacity aspect-ratio]}]
   [reanimated/view
-   {:style (style/loading-image-with-opacity theme loader-opacity)}
+   {:style (style/loading-image-with-opacity loader-opacity)}
    [gradients/view
     {:theme           theme
-     :container-style (style/fallback {:theme theme} aspect-ratio)
+     :container-style (style/gradient-view aspect-ratio)
      :color-index     gradient-color-index}]])
 
 (defn- counter-view
@@ -57,7 +57,7 @@
 (defn- fallback-view
   [{:keys [label theme counter on-mount]}]
   (rn/use-mount on-mount)
-  [rn/view {:style (style/fallback {:theme theme})}
+  [rn/view {:style (style/fallback theme)}
    [counter-view counter]
    [rn/view
     [icon/icon :i/sad {:color (colors/theme-colors colors/neutral-40 colors/neutral-50 theme)}]]

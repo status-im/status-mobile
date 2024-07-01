@@ -28,9 +28,9 @@
    :border-color  (colors/theme-colors colors/neutral-80-opa-5 colors/white-opa-5 theme)})
 
 (defn fallback
-  ([{:keys [theme]}]
-   (fallback {:theme theme} 1))
-  ([{:keys [theme]} aspect-ratio]
+  ([theme]
+   (fallback theme 1))
+  ([theme aspect-ratio]
    {:background-color (colors/theme-colors colors/neutral-2_5 colors/neutral-90 theme)
     :border-style     :dashed
     :border-color     (colors/theme-colors colors/neutral-20 colors/neutral-80 theme)
@@ -47,11 +47,23 @@
    :right    12})
 
 (defn loading-image-with-opacity
-  [theme opacity]
-  [{:opacity  opacity
-    :position :absolute
-    :z-index  1}
-   (fallback {:theme theme} 1)])
+  [opacity]
+  [{:align-items     :center
+    :aspect-ratio    1
+    :border-radius   16
+    :justify-content :center
+    :opacity         opacity
+    :position        :absolute
+    :width           "100%"
+    :z-index         1}])
+
+(defn gradient-view
+  [aspect-ratio]
+  {:border-radius   16
+   :width           "100%"
+   :aspect-ratio    aspect-ratio
+   :align-items     :center
+   :justify-content :center})
 
 (defn supported-file
   [opacity]
