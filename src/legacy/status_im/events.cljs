@@ -135,7 +135,8 @@
                                  (>= (- now app-in-background-since)
                                      constants/ms-in-bg-for-require-bioauth))]
     (rf/merge cofx
-              {:db (dissoc db :app-in-background-since)}
+              {:db                                   (dissoc db :app-in-background-since)
+               :effects.biometric/get-supported-type nil}
               (mailserver/process-next-messages-request)
               (when-not new-account?
                 (universal-links/process-stored-event))

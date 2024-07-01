@@ -70,6 +70,7 @@
     "bio-added": "Bio added",
     "bio-is-too-long": "Bio is too long",
     "bio-updated": "Bio updated",
+    "biometric": "Biometric",
     "biometric-auth-android-sensor-desc": "Touch sensor",
     "biometric-auth-android-sensor-error-desc": "Failed",
     "biometric-auth-android-title": "Authentication Required",
