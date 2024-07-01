@@ -53,7 +53,8 @@
   []
   [;;PROGRESS
    {:name      :progress
-    :options   {:insets {:top? true}}
+    :options   {:insets {:top? true}
+                :theme  :dark}
     :component progress/progress}
 
    ;;COMMUNITY

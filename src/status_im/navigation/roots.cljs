@@ -15,7 +15,7 @@
    :shell-stack             nil})
 
 (defn roots-internal
-  []
+  [status-bar-theme]
   {:screen/onboarding.intro
    {:root
     {:stack {:id       :screen/onboarding.intro
@@ -28,7 +28,8 @@
              :children [{:component {:name    :shell-stack
                                      :id      :shell-stack
                                      :options (options/root-options
-                                               {:nav-bar-color colors/neutral-100})}}]}}}
+                                               {:nav-bar-color    colors/neutral-100
+                                                :status-bar-theme status-bar-theme})}}]}}}
    :screen/profile.profiles
    {:root
     {:stack {:id       :screen/profile.profiles
@@ -51,17 +52,18 @@
                                            :options (options/dark-root-options)}}]}}}})
 
 (defn old-roots
-  []
+  [status-bar-theme]
   {:progress
    {:root {:stack {:children [{:component {:name    :progress
                                            :id      :progress
-                                           :options (options/root-options nil)}}]
+                                           :options (options/root-options {:status-bar-theme
+                                                                           status-bar-theme})}}]
                    :options  (assoc (options/root-options nil)
                                     :topBar
                                     {:visible false})}}}})
 
 (defn roots
-  []
+  [status-bar-theme]
   (merge
-   (old-roots)
-   (roots-internal)))
+   (old-roots status-bar-theme)
+   (roots-internal status-bar-theme)))

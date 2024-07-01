@@ -38,10 +38,12 @@
     :always
     (update :contacts conj (:id member))))
 
+(defn community-chat-id->channel-id [chat-id] (subs chat-id constants/community-id-length))
+
 (defn decode-chat-id
   [chat-id]
   (let [community-id (subs chat-id 0 constants/community-id-length)
-        channel-id   (subs chat-id constants/community-id-length)]
+        channel-id   (community-chat-id->channel-id chat-id)]
     {:community-id community-id
      :channel-id   channel-id}))
 

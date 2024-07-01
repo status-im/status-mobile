@@ -65,7 +65,7 @@
            :as   chat}                   (rf/sub [:chats/chat-by-id chat-id])
           pins-count                     (rf/sub [:chats/pin-messages-count chat-id])
           items                          (rf/sub [:communities/sorted-community-members-section-list
-                                                  community-id])
+                                                  community-id chat-id])
           theme                          (quo.theme/use-theme)]
       (rn/use-mount (fn []
                       (rf/dispatch [:pin-message/load-pin-messages chat-id])))

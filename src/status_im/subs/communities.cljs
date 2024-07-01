@@ -1,6 +1,7 @@
 (ns status-im.subs.communities
   (:require
     [clojure.string :as string]
+    [legacy.status-im.data-store.chats :as data-store.chats]
     [legacy.status-im.ui.screens.profile.visibility-status.utils :as visibility-status-utils]
     [re-frame.core :as re-frame]
     [status-im.constants :as constants]
@@ -49,6 +50,16 @@
  (fn [[{:keys [members]}] _]
    members))
 
+(re-frame/reg-sub
+ :communities/community-chat-members
+ (fn [[_ community-id]]
+   [(re-frame/subscribe [:communities/community community-id])])
+ (fn [[{:keys [members chats]}] [_ _ chat-id]]
+   (let [channel-id (data-store.chats/community-chat-id->channel-id chat-id)]
+     (if (get-in chats [channel-id :token-gated?])
+       (get-in chats [channel-id :members])
+       members))))
+
 (defn- keys->names
   [public-keys profile]
   (reduce (fn [acc contact-identity]
@@ -80,10 +91,10 @@
 
 (re-frame/reg-sub
  :communities/sorted-community-members-section-list
- (fn [[_ community-id]]
+ (fn [[_ community-id chat-id]]
    (let [profile                   (re-frame/subscribe [:profile/profile])
-         members                   (re-frame/subscribe [:communities/community-members
-                                                        community-id])
+         members                   (re-frame/subscribe [:communities/community-chat-members
+                                                        community-id chat-id])
          visibility-status-updates (re-frame/subscribe
                                     [:visibility-status-updates])
          my-status-update          (re-frame/subscribe

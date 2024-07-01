@@ -4,6 +4,7 @@
     [quo.theme :as quo.theme]
     [react-native.core :as rn]
     [status-im.common.resources :as resources]
+    [status-im.contexts.wallet.common.utils :as utils]
     [status-im.contexts.wallet.send.select-address.tabs.style :as style]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
@@ -30,7 +31,10 @@
                                     :full-address?       true)
               :on-press      #(rf/dispatch [:wallet/select-send-address
                                             {:address   address
-                                             :recipient account
+                                             :recipient {:recipient-type      :account
+                                                         :label               (:name account)
+                                                         :customization-color (:color account)
+                                                         :emoji               (:emoji account)}
                                              :stack-id  :screen/wallet.select-address}])}])))])))
 
 (defn- recent-transactions
@@ -48,7 +52,9 @@
                     {:address  address
                      :on-press #(rf/dispatch [:wallet/select-send-address
                                               {:address   address
-                                               :recipient address
+                                               :recipient {:label          (utils/get-shortened-address
+                                                                            address)
+                                                           :recipient-type :address}
                                                :stack-id  :screen/wallet.select-address}])}]))
             recent-recipients))))
 
@@ -59,7 +65,9 @@
                                 #(rf/dispatch
                                   [:wallet/select-send-address
                                    {:address   full-address
-                                    :recipient full-address
+                                    :recipient {:label               name
+                                                :customization-color customization-color
+                                                :recipient-type      :saved-address}
                                     :stack-id  :screen/wallet.select-address}])
                                 [full-address])]
     [quo/saved-address

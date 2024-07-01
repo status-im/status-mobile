@@ -272,6 +272,14 @@
              %)
           address-tokens)))
 
+(defn get-shortened-address
+  "Takes first and last 4 digits from address including leading 0x
+  and adds unicode ellipsis in between"
+  [address]
+  (when address
+    (let [counter (count address)]
+      (str (subs address 0 6) "\u2026" (subs address (- counter 3) counter)))))
+
 (defn make-limit-label-crypto
   [amount currency]
   (str amount

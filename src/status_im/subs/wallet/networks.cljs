@@ -64,3 +64,19 @@
                                 short-names))
          transformed-address (str prefix address)]
      transformed-address)))
+
+(re-frame/reg-sub
+ :wallet/network-values
+ :<- [:wallet/wallet-send]
+ (fn [{:keys [from-values-by-chain to-values-by-chain token-display-name] :as send-data} [_ to-values?]]
+   (let [network-values (if to-values? to-values-by-chain from-values-by-chain)
+         token-symbol   (or token-display-name
+                            (-> send-data :token :symbol))]
+     (reduce-kv
+      (fn [acc chain-id amount]
+        (let [network-name (network-utils/id->network chain-id)]
+          (assoc acc
+                 (if (= network-name :mainnet) :ethereum network-name)
+                 {:amount amount :token-symbol token-symbol})))
+      {}
+      network-values))))

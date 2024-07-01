@@ -100,3 +100,23 @@
     "returns the address without the prefixes when an address and equal or more than 3 network preferences are passed"
     (is
      (match? "0x01" (rf/sub [sub-name "0x01" [:ethereum :optimism :arbitrum]])))))
+
+(h/deftest-sub :wallet/network-values
+  [sub-name]
+  (testing "network values for the from account are returned correctly"
+    (swap! rf-db/app-db assoc-in
+      [:wallet :ui :send]
+      {:from-values-by-chain {1 100}
+       :to-values-by-chain   {42161 100}
+       :token-display-name   "ETH"})
+    (is
+     (match? {:ethereum {:amount 100 :token-symbol "ETH"}} (rf/sub [sub-name false]))))
+
+  (testing "network values for the to account are returned correctly"
+    (swap! rf-db/app-db assoc-in
+      [:wallet :ui :send]
+      {:from-values-by-chain {1 100}
+       :to-values-by-chain   {42161 100}
+       :token-display-name   "ARB1"})
+    (is
+     (match? {:arbitrum {:amount 100 :token-symbol "ARB1"}} (rf/sub [sub-name true])))))
