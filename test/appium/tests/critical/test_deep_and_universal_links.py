@@ -50,10 +50,10 @@ class TestDeepLinksOneDevice(MultipleSharedDeviceTestCase):
         community_urls = {
             "https://status.app/c/G0IAAGS9TbI9SrSPbDPplfBUeBBOIWhFRhGIKVlxntAg5CSvsJw4jurb636UKo7Lm2gTUS_M#zQ3shm7cS2MX6K1iinjNhiw88g1WH6fbE8rvnMHBq4RhznkWc":
                 "token-gated community e2e",
-            "https://status.app/c/GzwAAGS9TbI9CiYaoZj0TRNelWAPwk8gSHIEmqgqb0ADPw5rnFvk6bp_n3BlZxVMshmxFyI=#zQ3shkrmSmwb66sw2EuUvC5iqiNqEeevTfjtks3p8ZaaCYoNj":
-                "Open community for e2e",
-            "https://status.app/c/GzAAAORtwyW4xNWM4td0F7hOnYZ1apSqCCRUUR0qxD19n3Ec97fX_aIVIGFWbdUM#zQ3shk6dgK8dYWWSC4m8Jj5c91zyfhfj1fFkgypS8D9gsXkrK":
-                "Closed community"
+            "https://status.app/c/G0UAAMTyNsn2QZDEG0EXftOl8pOEfwEBOOSA_YTfIk85xmADDgINGmxpUHAXzK36bN0fK42Xf4YD2yjPk1z2pbFwFw==#zQ3shZU9PNP6QHwEmqoh5mQqjCMDsfZYnpY4BEC8hom7KoNEz":
+                "open community",
+            "https://status.app/c/G00AAGS9TbI9mSR-ZNmFrhRjNuEeXAAbcAIUaLLJyjMOG3ACJQ12oIHD78QhzO9s_T5bUeU7rnATWJg3mGgTUemrAg==#zQ3shTK1zXmLq2yZWMij65j1LNtmvuG6x71Nmg2fwtKs32wHj":
+                "closed community"
         }
         for url, text in community_urls.items():
             self.channel.just_fyi("Opening community '%s' by the url %s" % (text, url))
@@ -97,10 +97,10 @@ class TestDeepLinksOneDevice(MultipleSharedDeviceTestCase):
         community_links = {
             "status.app://c/G0IAAGS9TbI9SrSPbDPplfBUeBBOIWhFRhGIKVlxntAg5CSvsJw4jurb636UKo7Lm2gTUS_M#zQ3shm7cS2MX6K1iinjNhiw88g1WH6fbE8rvnMHBq4RhznkWc":
                 "token-gated community e2e",
-            "status.app://c/GzwAAGS9TbI9CiYaoZj0TRNelWAPwk8gSHIEmqgqb0ADPw5rnFvk6bp_n3BlZxVMshmxFyI=#zQ3shkrmSmwb66sw2EuUvC5iqiNqEeevTfjtks3p8ZaaCYoNj":
-                "Open community for e2e",
-            "status.app://c/GzAAAORtwyW4xNWM4td0F7hOnYZ1apSqCCRUUR0qxD19n3Ec97fX_aIVIGFWbdUM#zQ3shk6dgK8dYWWSC4m8Jj5c91zyfhfj1fFkgypS8D9gsXkrK":
-                "Closed community"
+            "status.app://c/G0UAAMTyNsn2QZDEG0EXftOl8pOEfwEBOOSA_YTfIk85xmADDgINGmxpUHAXzK36bN0fK42Xf4YD2yjPk1z2pbFwFw==#zQ3shZU9PNP6QHwEmqoh5mQqjCMDsfZYnpY4BEC8hom7KoNEz":
+                "open community",
+            "status.app://c/G00AAGS9TbI9mSR-ZNmFrhRjNuEeXAAbcAIUaLLJyjMOG3ACJQ12oIHD78QhzO9s_T5bUeU7rnATWJg3mGgTUemrAg==#zQ3shTK1zXmLq2yZWMij65j1LNtmvuG6x71Nmg2fwtKs32wHj":
+                "closed community"
         }
         for link, text in community_links.items():
             self.channel.just_fyi("Opening community '%s' by the link %s" % (text, link))
