@@ -1,8 +1,8 @@
 (ns status-im.contexts.wallet.common.utils-test
   (:require
-   [cljs.test :refer [deftest is testing]]
-   [status-im.contexts.wallet.common.utils :as utils]
-   [utils.money :as money]))
+    [cljs.test :refer [deftest is testing]]
+    [status-im.contexts.wallet.common.utils :as utils]
+    [utils.money :as money]))
 
 (deftest get-first-name-test
   (testing "get-first-name function"
