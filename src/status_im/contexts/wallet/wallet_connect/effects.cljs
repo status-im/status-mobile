@@ -15,15 +15,18 @@
 (rf/reg-fx
  :effects.wallet-connect/init
  (fn [{:keys [on-success on-fail]}]
-   (let
-     [project-id config/WALLET_CONNECT_PROJECT_ID
-      metadata   {:name        (i18n/label :t/status)
-                  :description (i18n/label :t/status-is-a-secure-messaging-app)
-                  :url         constants/wallet-connect-metadata-url
-                  :icons       [constants/wallet-connect-metadata-icon]}]
-     (-> (wallet-connect/init project-id metadata)
-         (promesa/then on-success)
-         (promesa/catch on-fail)))))
+   (try
+     (let
+       [project-id config/WALLET_CONNECT_PROJECT_ID
+        metadata   {:name        (i18n/label :t/status)
+                    :description (i18n/label :t/status-is-a-secure-messaging-app)
+                    :url         constants/wallet-connect-metadata-url
+                    :icons       [constants/wallet-connect-metadata-icon]}]
+       (-> (wallet-connect/init project-id metadata)
+           (promesa/then on-success)
+           (promesa/catch on-fail)))
+     (catch :default e
+       (log/error "WC Failed to init" e)))))
 
 (rf/reg-fx
  :effects.wallet-connect/register-event-listener
@@ -48,10 +51,13 @@
  (fn [{:keys [web3-wallet url on-success on-fail]}]
    (when web3-wallet
      (log/debug "WC Pairing" web3-wallet url)
-     (-> (.. web3-wallet -core -pairing)
-         (.pair (clj->js {:uri url}))
-         (promesa/then on-success)
-         (promesa/catch on-fail)))))
+     (try
+       (-> (.. web3-wallet -core -pairing)
+           (.pair (clj->js {:uri url}))
+           (promesa/then on-success)
+           (promesa/catch on-fail))
+       (catch :default e
+         (log/error "WC Failed to pair" e))))))
 
 (rf/reg-fx
  :effects.wallet-connect/disconnect
