@@ -58,9 +58,9 @@
          :on-change-text  on-change-text}]
        (when-not (string/blank? error-msg)
          [quo/info-message
-          {:type :error
-           :size :default
-           :icon :i/info}
+          {:status :error
+           :size   :default
+           :icon   :i/info}
           error-msg])]
       [rn/view {:style style/button-wrapper}
        [quo/button

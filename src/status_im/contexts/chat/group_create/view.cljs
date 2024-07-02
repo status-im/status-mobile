@@ -105,10 +105,10 @@
         :max-length      constants/max-group-chat-name-length}]
       (when error-message
         [quo/info-message
-         {:type  :error
-          :icon  :i/info
-          :size  :default
-          :style {:margin-top 8 :margin-left 20 :margin-bottom 16}}
+         {:status          :error
+          :icon            :i/info
+          :size            :default
+          :container-style {:margin-top 8 :margin-left 20 :margin-bottom 16}}
          error-message])
       [quo/divider-line]
       [rn/view

@@ -65,9 +65,9 @@
                :customization-color :blue}
     :header   [rn/view
                [quo/info-message
-                {:type :success
-                 :size :tiny
-                 :icon :i/placeholder}
+                {:status :success
+                 :size   :tiny
+                 :icon   :i/placeholder}
                 "info-message as title"]]
     :body     [quo/snippet {:language :clojure :max-lines 15 :syntax true}
                snippet-preview/clojure-example]

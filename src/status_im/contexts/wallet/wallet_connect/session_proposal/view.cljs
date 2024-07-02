@@ -49,13 +49,54 @@
   [network]
   (-> network :network-name name string/capitalize))
 
+(defn- set-current-proposal-address
+  [acc]
+  (fn []
+    (rf/dispatch [:wallet-connect/set-current-proposal-address (:address acc)])
+    (rf/dispatch [:hide-bottom-sheet])))
+
+(defn- accounts-list
+  []
+  (let [accounts         (rf/sub [:wallet/accounts-without-watched-accounts])
+        selected-address (rf/sub [:wallet-connect/current-proposal-address])]
+    [rn/view {:style style/account-switcher-list}
+     (for [account accounts]
+       ^{:key (-> account :address str)}
+       [quo/account-item
+        {:type          :default
+         :state         (if (and selected-address
+                                 (= (account :address)
+                                    selected-address))
+                          :selected
+                          :default)
+         :account-props account
+         :on-press      (set-current-proposal-address account)}])]))
+
+(defn- account-switcher-sheet
+  []
+  [:<>
+   [rn/view {:style style/account-switcher-title}
+    [quo/text
+     {:size                :heading-2
+      :weight              :semi-bold
+      :accessibility-label "select-account-title"}
+     (i18n/label :t/select-account)]]
+   [accounts-list]])
+
+(defn- show-account-switcher-bottom-sheet
+  []
+  (rf/dispatch
+   [:show-bottom-sheet
+    {:content account-switcher-sheet}]))
+
 (defn- connection-category
   []
-  (let [{:keys [name emoji customization-color]} (first (rf/sub
-                                                         [:wallet/accounts-without-watched-accounts]))
-        {:keys [session-networks
+  (let [{:keys [session-networks
                 all-networks-in-session?]}       (rf/sub
                                                   [:wallet-connect/session-proposal-network-details])
+        address                                  (rf/sub [:wallet-connect/current-proposal-address])
+        {:keys [name customization-color emoji]} (rf/sub [:wallet-connect/account-details-by-address
+                                                          address])
         network-names                            (->> session-networks
                                                       (map format-network-name)
                                                       (string/join ", "))
@@ -72,7 +113,7 @@
                                                                         :data [{:emoji emoji
                                                                                 :customization-color
                                                                                 customization-color}]}
-                                                        :on-press      #(js/alert "Not yet implemented")
+                                                        :on-press      show-account-switcher-bottom-sheet
                                                         :title         (i18n/label :t/account-title)
                                                         :subtitle      name
                                                         :icon-right?   true

@@ -6,7 +6,8 @@
 
 (defn contact-list-item
   [{:keys [on-press on-long-press accessory allow-multiple-presses? disabled?]}
-   {:keys [primary-name secondary-name public-key compressed-key ens-verified added?]}
+   {:keys [primary-name secondary-name public-key compressed-key ens-verified added?
+           container-style]}
    theme]
   (let [photo-path          (rf/sub [:chats/photo-path public-key])
         online?             (rf/sub [:visibility-status-updates/online? public-key])
@@ -25,4 +26,5 @@
       :on-press                on-press
       :on-long-press           on-long-press
       :accessory               accessory
+      :container-style         container-style
       :disabled?               disabled?}]))

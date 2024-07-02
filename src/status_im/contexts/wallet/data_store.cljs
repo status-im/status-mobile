@@ -154,7 +154,7 @@
                         :colorId          :customization-color
                         :mixedcaseAddress :mixedcase-address
                         :removed          :removed?})
-      (update :customization-color keyword)
+      (update :customization-color (comp keyword string/lower-case))
       add-keys-to-saved-address))
 
 (defn rpc->saved-addresses

@@ -87,7 +87,7 @@
          :container-style     (style/title-input-container error)}]
        (when error
          [quo/info-message
-          {:type            :error
+          {:status          :error
            :size            :default
            :icon            :i/info
            :container-style {:margin-left   20

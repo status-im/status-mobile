@@ -53,7 +53,9 @@
  :wallet-connect/on-session-proposal
  (fn [{:keys [db]} [proposal]]
    (log/info "Received Wallet Connect session proposal: " {:id (:id proposal)})
-   (let [networks                     (wallet-connect-core/get-networks-by-mode db)
+   (let [accounts                     (get-in db [:wallet :accounts])
+         without-watched              (remove :watch-only? (vals accounts))
+         networks                     (wallet-connect-core/get-networks-by-mode db)
          session-networks             (wallet-connect-core/proposal-networks-intersection proposal
                                                                                           networks)
          required-networks-supported? (wallet-connect-core/required-networks-supported? proposal
@@ -61,8 +63,12 @@
      (if required-networks-supported?
        {:db (update db
                     :wallet-connect/current-proposal assoc
-                    :session-proposal                proposal
-                    :session-networks                session-networks)
+                    :request                         proposal
+                    :session-networks                session-networks
+                    :address                         (-> without-watched
+                                                         first
+                                                         :address)
+            )
         :fx [[:dispatch
               [:open-modal :screen/wallet.wallet-connect-session-proposal]]]}
        {:fx [[:dispatch
@@ -88,6 +94,11 @@
  :wallet-connect/reset-current-session-proposal
  (fn [{:keys [db]}]
    {:db (dissoc db :wallet-connect/current-proposal)}))
+
+(rf/reg-event-fx
+ :wallet-connect/set-current-proposal-address
+ (fn [{:keys [db]} [address]]
+   {:db (assoc-in db [:wallet-connect/current-proposal :address] address)}))
 
 (rf/reg-event-fx
  :wallet-connect/reset-current-request
@@ -140,18 +151,12 @@
  :wallet-connect/approve-session
  (fn [{:keys [db]}]
    (let [web3-wallet          (get db :wallet-connect/web3-wallet)
-         current-proposal     (get-in db [:wallet-connect/current-proposal :session-proposal])
-         accounts             (get-in db [:wallet :accounts])
+         current-proposal     (get-in db [:wallet-connect/current-proposal :request])
          session-networks     (->> (get-in db [:wallet-connect/current-proposal :session-networks])
                                    (map wallet-connect-core/chain-id->eip155)
                                    vec)
-         ;; NOTE: for now using the first account, but should be using the account selected by the
-         ;; user on the connection screen. The default would depend on where the connection started
-         ;; from:
-         ;; - global scanner -> first account in list
-         ;; - wallet account dapps -> account that is selected
-         address              (-> accounts keys first)
-         accounts             (-> (partial wallet-connect-core/format-eip155-address address)
+         current-address      (get-in db [:wallet-connect/current-proposal :address])
+         accounts             (-> (partial wallet-connect-core/format-eip155-address current-address)
                                   (map session-networks))
          supported-namespaces (clj->js {:eip155
                                         {:chains   session-networks

@@ -45,10 +45,11 @@
 (rf/reg-fx
  :effects.wallet-connect/pair
  (fn [{:keys [web3-wallet url on-success on-fail]}]
-   (-> (.. web3-wallet -core -pairing)
-       (.pair (clj->js {:uri url}))
-       (promesa/then on-success)
-       (promesa/catch on-fail))))
+   (when web3-wallet
+     (-> (.. web3-wallet -core -pairing)
+         (.pair (clj->js {:uri url}))
+         (promesa/then on-success)
+         (promesa/catch on-fail)))))
 
 (rf/reg-fx
  :effects.wallet-connect/disconnect

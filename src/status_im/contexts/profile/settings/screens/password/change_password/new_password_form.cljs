@@ -24,12 +24,11 @@
    [rn/view {:style style/info-message}
     (when shown?
       [quo/info-message
-       (cond-> {:type status
-                :size :default}
+       (cond-> {:status status
+                :size   :default}
          (not= :success status) (assoc :icon :i/info)
          (= :success status)    (assoc :icon :i/positive-state)
-         (= :default status)    (assoc :text-color colors/white-70-blur
-                                       :icon-color colors/white-70-blur))
+         (= :default status)    (assoc :color colors/white-70-blur))
        text])]])
 
 (defn- calc-password-strength

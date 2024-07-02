@@ -34,9 +34,9 @@
                   [theme])]
     [rn/view {:style style/error-message}
      [quo/info-message
-      {:type :error
-       :size :default
-       :icon :i/info}
+      {:status :error
+       :size   :default
+       :icon   :i/info}
       error-message]
      [rn/pressable
       {:hit-slop {:top 6 :bottom 20 :left 0 :right 0}

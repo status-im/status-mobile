@@ -70,4 +70,9 @@
   (dev/setup)
   (log/info "hermesEnabled ->" (is-hermes))
 
-  (re-frame/dispatch-sync [:app-started]))
+  (re-frame/dispatch-sync [:app-started])
+
+  ;; Required for wallet-connect
+  ;; https://github.com/WalletConnect/walletconnect-monorepo/issues/3235#issuecomment-1645767800
+  (when-not (.-BigInt js/global)
+    (set! js/BigInt (js/require "big-integer"))))

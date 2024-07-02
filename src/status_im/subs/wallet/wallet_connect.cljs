@@ -108,9 +108,9 @@
                                      :else nil)})))))
 
 (rf/reg-sub
- :wallet-connect/session-proposal
+ :wallet-connect/current-proposal-request
  :<- [:wallet-connect/current-proposal]
- :-> :session-proposal)
+ :-> :request)
 
 (rf/reg-sub
  :wallet-connect/session-proposal-networks
@@ -119,7 +119,7 @@
 
 (rf/reg-sub
  :wallet-connect/session-proposer
- :<- [:wallet-connect/session-proposal]
+ :<- [:wallet-connect/current-proposal-request]
  (fn [proposal]
    (-> proposal :params :proposer)))
 
@@ -140,3 +140,8 @@
          all-networks-in-session? (= (count supported-networks) (count session-networks))]
      {:session-networks         session-networks
       :all-networks-in-session? all-networks-in-session?})))
+
+(rf/reg-sub
+ :wallet-connect/current-proposal-address
+ (fn [db]
+   (get-in db [:wallet-connect/current-proposal :address])))
