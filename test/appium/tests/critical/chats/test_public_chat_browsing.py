@@ -1022,8 +1022,6 @@ class TestCommunityMultipleDeviceMergedTwo(MultipleSharedDeviceTestCase):
         self.errors.verify_no_errors()
 
     @marks.testrail_id(702948)
-    @marks.xfail(reason="Can't enter channel after community is fetched for the first time, " \
-                        "https://github.com/status-im/status-mobile/issues/20395")
     def test_community_hashtag_links_to_community_channels(self):
         for home in self.homes:
             home.navigate_back_to_home_view()
@@ -1124,8 +1122,6 @@ class TestCommunityMultipleDeviceMergedTwo(MultipleSharedDeviceTestCase):
         self.errors.verify_no_errors()
 
     @marks.testrail_id(703629)
-    @marks.xfail(reason="Can't enter channel after community is fetched for the first time, " \
-                        "https://github.com/status-im/status-mobile/issues/20395")
     def test_community_join_when_node_owner_offline(self):
         for home in self.homes:
             home.navigate_back_to_home_view()

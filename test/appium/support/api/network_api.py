@@ -136,9 +136,10 @@ class NetworkApi:
                 self.log('Balance is updated!')
                 return
 
-    def wait_for_balance_to_be(self, address: str, expected_balance: int, less: bool = True):
+    def wait_for_balance_to_be(self, address: str, expected_balance: int):
+        expected_balance = round(expected_balance, 4)
         for _ in range(5):
-            balance = self.get_balance(address)
+            balance = round(self.get_balance(address), 4)
             if balance == expected_balance:
                 return
             time.sleep(10)

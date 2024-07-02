@@ -548,3 +548,5 @@
 (def ^:const community-joined-notification-type "communityJoined")
 
 (def ^:const default-telemetry-server-url "https://telemetry.status.im")
+
+(def ^:const contact-item-height 56)

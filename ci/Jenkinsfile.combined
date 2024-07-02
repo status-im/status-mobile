@@ -1,5 +1,5 @@
 #!/usr/bin/env groovy
-library 'status-jenkins-lib@v1.8.12'
+library 'status-jenkins-lib@v1.9.1'
 
 pipeline {
   agent { label 'linux' }
@@ -72,7 +72,7 @@ pipeline {
           iOS: utils.pkgUrl(ios),
           Diawi: utils.getEnv(ios, 'DIAWI_URL'),
           /* upload the sha256 checksums file too */
-          SHA: s3.uploadArtifact(sha),
+          SHA: s5cmd.upload(sha),
         ]
         /* add URLs to the build description */
         jenkins.setBuildDesc(urls)
@@ -83,7 +83,7 @@ pipeline {
       steps { script {
         switch (utils.getBuildType()) {
           case 'nightly': /* Create JSON file with newest build URLs */
-            s3.updateBucketJSON(urls, 'latest.json');
+            updateBucketJSON(urls, 'latest.json');
             break;
           case 'release':
             github.publishReleaseFiles(repo: 'status-mobile');
@@ -114,3 +114,22 @@ def Boolean getPublishDefault(Boolean previousValue) {
   if (previousValue != null) { return previousValue }
   return false
 }
+
+/* Helper for updating JSON with newest builds. */
+def updateBucketJSON(urls, fileName) {
+  /* latest.json has slightly different key names */
+  def content = [
+    DIAWI: urls.Diawi,
+    APK: urls.Apk, IOS: urls.iOS,
+    APP: urls.App, MAC: urls.Mac,
+    WIN: urls.Win, SHA: urls.SHA
+  ]
+  def filePath = "${pwd()}/pkg/${fileName}"
+  /* it might not exist */
+  sh "mkdir -p ${pwd()}/pkg"
+  def contentJson = new JsonBuilder(content).toPrettyString()
+  println "${filePath}:\n${contentJson}"
+  writeFile(file: filePath, text: contentJson)
+  return s5cmd.upload(filePath)
+}
+

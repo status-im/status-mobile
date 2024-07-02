@@ -8,7 +8,7 @@
     [quo.foundations.colors :as colors]
     [react-native.core :as rn]))
 
-(def container-style
+(def container
   {:margin-horizontal  8
    :padding-vertical   8
    :padding-horizontal 12
@@ -43,9 +43,9 @@
 (defn user
   [{:keys [short-chat-key primary-name secondary-name photo-path online? contact? verified?
            untrustworthy? on-press on-long-press accessory customization-color theme
-           allow-multiple-presses? disabled?]}]
+           allow-multiple-presses? disabled? container-style]}]
   [rn/touchable-highlight
-   {:style                   container-style
+   {:style                   (merge container container-style)
     :underlay-color          (colors/resolve-color customization-color theme 5)
     :allow-multiple-presses? allow-multiple-presses?
     :accessibility-label     :user-list
