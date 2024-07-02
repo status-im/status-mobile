@@ -8,7 +8,6 @@
             status-im.contexts.wallet.wallet-connect.responding-events
             [status-im.contexts.wallet.wallet-connect.utils :as wc-utils]
             [taoensso.timbre :as log]
-            [utils.ethereum.chain :as chain]
             [utils.i18n :as i18n]))
 
 (rf/reg-event-fx
@@ -53,22 +52,37 @@
 (rf/reg-event-fx
  :wallet-connect/on-session-proposal
  (fn [{:keys [db]} [proposal]]
-   (let [accounts        (get-in db [:wallet :accounts])
-         without-watched (remove :watch-only? (vals accounts))]
-     (log/info "Received Wallet Connect session proposal: " {:id (:id proposal)})
-     {:db (assoc db
-                 ;; NOTE: for now using the first account, but should be using the account selected
-                 ;; by the user on the connection screen. The default would depend on where the
-                 ;; connection started from:
-                 ;; - global scanner -> first account in list
-                 ;; - wallet account dapps -> account that is selected
-                 :wallet-connect/current-proposal
-                 {:request proposal
-                  :address (-> without-watched
-                               first
-                               :address)})
-      :fx [[:dispatch
-            [:open-modal :screen/wallet.wallet-connect-session-proposal]]]})))
+   (log/info "Received Wallet Connect session proposal: " {:id (:id proposal)})
+   (let [accounts                     (get-in db [:wallet :accounts])
+         without-watched              (remove :watch-only? (vals accounts))
+         networks                     (wallet-connect-core/get-networks-by-mode db)
+         session-networks             (wallet-connect-core/proposal-networks-intersection proposal
+                                                                                          networks)
+         required-networks-supported? (wallet-connect-core/required-networks-supported? proposal
+                                                                                        networks)]
+     (if required-networks-supported?
+       {:db (update db
+                    :wallet-connect/current-proposal assoc
+                    :request                         proposal
+                    :session-networks                session-networks
+                    :address                         (-> without-watched
+                                                         first
+                                                         :address)
+            )
+        :fx [[:dispatch
+              [:open-modal :screen/wallet.wallet-connect-session-proposal]]]}
+       {:fx [[:dispatch
+              [:wallet-connect/session-networks-unsupported proposal]]]}))))
+
+(rf/reg-event-fx
+ :wallet-connect/session-networks-unsupported
+ (fn [_ [proposal]]
+   (let [{:keys [name]} (wallet-connect-core/get-session-dapp-metadata proposal)]
+     {:fx [[:dispatch
+            [:toasts/upsert
+             {:type  :negative
+              :theme :dark
+              :text  (i18n/label :t/wallet-connect-networks-not-supported {:dapp name})}]]]})))
 
 (rf/reg-event-fx
  :wallet-connect/on-session-request
@@ -136,34 +150,33 @@
 (rf/reg-event-fx
  :wallet-connect/approve-session
  (fn [{:keys [db]}]
-   (let [web3-wallet              (get db :wallet-connect/web3-wallet)
-         current-proposal-request (get-in db [:wallet-connect/current-proposal :request])
-         supported-chain-ids      (->> db
-                                       chain/chain-ids
-                                       (map wallet-connect-core/chain-id->eip155)
-                                       vec)
-         current-address          (get-in db [:wallet-connect/current-proposal :address])
-         accounts                 (-> (partial wallet-connect-core/format-eip155-address current-address)
-                                      (map supported-chain-ids))
-         supported-namespaces     (clj->js {:eip155
-                                            {:chains   supported-chain-ids
-                                             :methods  constants/wallet-connect-supported-methods
-                                             :events   constants/wallet-connect-supported-events
-                                             :accounts accounts}})]
+   (let [web3-wallet          (get db :wallet-connect/web3-wallet)
+         current-proposal     (get-in db [:wallet-connect/current-proposal :request])
+         session-networks     (->> (get-in db [:wallet-connect/current-proposal :session-networks])
+                                   (map wallet-connect-core/chain-id->eip155)
+                                   vec)
+         current-address      (get-in db [:wallet-connect/current-proposal :address])
+         accounts             (-> (partial wallet-connect-core/format-eip155-address current-address)
+                                  (map session-networks))
+         supported-namespaces (clj->js {:eip155
+                                        {:chains   session-networks
+                                         :methods  constants/wallet-connect-supported-methods
+                                         :events   constants/wallet-connect-supported-events
+                                         :accounts accounts}})]
      {:fx [[:effects.wallet-connect/approve-session
             {:web3-wallet          web3-wallet
-             :proposal             current-proposal-request
+             :proposal             current-proposal
              :supported-namespaces supported-namespaces
              :on-success           (fn []
                                      (log/info "Wallet Connect session approved")
-                                     (let [metadata
-                                           (-> current-proposal-request :params :proposer :metadata)]
+                                     (let [metadata (wallet-connect-core/get-session-dapp-metadata
+                                                     current-proposal)]
                                        (rf/dispatch [:wallet-connect/reset-current-session-proposal])
                                        (rf/dispatch [:wallet-connect/persist-session
-                                                     {:id           (:id current-proposal-request)
+                                                     {:id           (:id current-proposal)
                                                       :dapp-name    (:name metadata)
                                                       :dapp-url     (:url metadata)
-                                                      :session-info current-proposal-request}])))
+                                                      :session-info current-proposal}])))
              :on-fail              (fn [error]
                                      (log/error "Wallet Connect session approval failed"
                                                 {:error error
