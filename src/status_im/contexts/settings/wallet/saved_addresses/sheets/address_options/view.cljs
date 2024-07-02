@@ -109,7 +109,7 @@
         :on-press            open-show-address-qr
         :accessibility-label :show-address-qr-code}
        {:icon                :i/edit
-        :label               (i18n/label :t/edit-account)
+        :label               (i18n/label :t/edit-details)
         :blur?               true
         :on-press            open-edit-saved-address
         :accessibility-label :edit-saved-address}

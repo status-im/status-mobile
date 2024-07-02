@@ -109,10 +109,10 @@
   []
   [rn/view {:style style/no-routes-found-container}
    [quo/info-message
-    {:type  :error
-     :icon  :i/alert
-     :size  :default
-     :style {:margin-top 15}}
+    {:status          :error
+     :icon            :i/alert
+     :size            :default
+     :container-style {:margin-top 15}}
     (i18n/label :t/no-routes-found)]])
 
 (defn- not-enough-asset

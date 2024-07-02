@@ -21,6 +21,7 @@
     [status-im.contexts.chat.messenger.messages.pin.events :as messages.pin]
     [status-im.contexts.communities.events :as communities]
     [status-im.contexts.shell.activity-center.events :as activity-center]
+    [status-im.contexts.wallet.data-store :as wallet.data-store]
     [taoensso.timbre :as log]
     [utils.re-frame :as rf]))
 
@@ -56,6 +57,7 @@
         ^js accounts                   (.-accounts response-js)
         ^js ens-username-details-js    (.-ensUsernameDetails response-js)
         ^js customization-color-js     (.-customizationColor response-js)
+        ^js saved-addresses-js         (.-savedAddresses response-js)
         sync-handler                   (when-not process-async process-response)]
     (cond
 
@@ -198,6 +200,13 @@
                   (process-next response-js sync-handler)
                   (models.visibility-status-updates/sync-visibility-status-update
                    current-visibility-status-clj)))
+
+      (seq saved-addresses-js)
+      (let [saved-addresses (-> saved-addresses-js types/js->clj wallet.data-store/rpc->saved-addresses)]
+        (js-delete response-js "savedAddresses")
+        (rf/merge cofx
+                  {:fx [[:dispatch [:wallet/reconcile-saved-addresses saved-addresses]]]}
+                  (process-next response-js sync-handler)))
 
       (seq ens-username-details-js)
       (let [ens-username-details-clj (types/js->clj ens-username-details-js)]
