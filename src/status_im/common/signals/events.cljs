@@ -10,7 +10,6 @@
     [status-im.contexts.communities.discover.events]
     [status-im.contexts.profile.push-notifications.local.events :as local-notifications]
     [taoensso.timbre :as log]
-    [utils.debounce :as debounce]
     [utils.re-frame :as rf]
     [utils.transforms :as transforms]))
 
@@ -20,16 +19,9 @@
         peers-count      (count peers-summary)]
     (rf/merge cofx
               {:db (assoc db
-                          :peers-summary peers-summary
-                          :peers-count   peers-count)}
+                          :peers-summary    peers-summary
+                          :peer-stats/count peers-count)}
               (visibility-status-updates/peers-summary-change peers-count))))
-
-(rf/reg-event-fx :wakuv2-peer-stats
- (fn [{:keys [db]} [^js peer-stats-js]]
-   (let [peer-stats (transforms/js->clj peer-stats-js)]
-     {:db (assoc db
-                 :peer-stats  peer-stats
-                 :peers-count (count (:peers peer-stats)))})))
 
 (rf/defn process
   {:events [:signals/signal-received]}
@@ -45,9 +37,6 @@
     (case type
       "wallet"
       {:fx [[:dispatch [:wallet/signal-received event-js]]]}
-
-      "wakuv2.peerstats"
-      (debounce/debounce-and-dispatch [:wakuv2-peer-stats event-js] 1000)
 
       "envelope.sent"
       (messages.transport/update-envelopes-status

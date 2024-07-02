@@ -3,7 +3,6 @@
     [clojure.string :as string]
     [legacy.status-im.multiaccounts.model :as multiaccounts.model]
     [legacy.status-im.utils.build :as build]
-    [legacy.status-im.utils.mobile-sync :as mobile-network-utils]
     [re-frame.core :as re-frame]
     [status-im.subs.chat.utils :as chat.utils]
     [utils.ethereum.chain :as chain]))
@@ -77,17 +76,6 @@
    (:name network)))
 
 (re-frame/reg-sub
- :disconnected?
- :<- [:peers-count]
- :<- [:waku/v2-flag]
- :<- [:waku/v2-peer-stats]
- (fn [[peers-count wakuv2-flag peer-stats]]
-   ;; If wakuv2 is enabled, then fetch connectivity status from
-   ;; peer-stats (populated from "wakuv2.peerstats" status-go signal)
-   ;; Otherwise use peers-count fetched from "discovery.summary" signal
-   (if wakuv2-flag (not (:isOnline peer-stats)) (zero? peers-count))))
-
-(re-frame/reg-sub
  :syncing?
  :<- [:sync-state]
  (fn [sync-state]
@@ -145,55 +133,6 @@
  (fn [selected-contacts [_ element]]
    (-> selected-contacts
        (contains? element))))
-
-(re-frame/reg-sub
- :is-participant-selected?
- :<- [:group-chat/selected-participants]
- (fn [selected-participants [_ element]]
-   (-> selected-participants
-       (contains? element))))
-
-(re-frame/reg-sub
- :ethereum/chain-keyword
- :<- [:current-network]
- (fn [network]
-   (chain/network->chain-keyword network)))
-
-(re-frame/reg-sub
- :connectivity/state
- :<- [:network-status]
- :<- [:disconnected?]
- :<- [:mailserver/connecting?]
- :<- [:mailserver/connection-error?]
- :<- [:mailserver/request-error?]
- :<- [:network/type]
- :<- [:profile/profile]
- (fn [[network-status disconnected? mailserver-connecting? mailserver-connection-error?
-       mailserver-request-error? network-type {:keys [syncing-on-mobile-network? use-mailservers?]}]]
-   (merge {:mobile (mobile-network-utils/cellular? network-type)
-           :sync   syncing-on-mobile-network?
-           :peers  :online}
-          (cond
-            (= network-status :offline)
-            {:peers :offline
-             :node  :offline}
-
-            (not use-mailservers?)
-            {:node :disabled}
-
-            (or mailserver-connection-error? mailserver-connecting?)
-            {:node :connecting}
-
-            mailserver-request-error?
-            {:node :error}
-
-            disconnected?
-            {:peers :offline
-             :node  :offline}
-
-            :else
-            {:peers :online
-             :node  :online}))))
 
 (re-frame/reg-sub
  :mnemonic
