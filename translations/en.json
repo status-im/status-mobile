@@ -2507,6 +2507,7 @@
     "disconnect-dapp-success": "{{dapp}} disconnected from {{account}}",
     "disconnect-dapp-fail": "Failed to disconnect {{dapp}} from {{account}}",
     "edit-account": "Edit account",
+    "edit-details": "Edit details",
     "share-account": "Share account",
     "remove-account": "Remove account",
     "select-another-account": "Select another account",
