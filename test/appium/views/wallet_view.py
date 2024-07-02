@@ -91,7 +91,6 @@ class WalletView(BaseView):
 
         # Sending transaction
         self.address_text_input = EditBox(self.driver, accessibility_id='address-text-input')
-        self.continue_button = Button(self.driver, accessibility_id='continue-button')
         self.amount_input = EditBox(self.driver, xpath="//android.widget.EditText")
         self.confirm_button = Button(self.driver, accessibility_id='button-one')
         self.done_button = Button(self.driver, accessibility_id='done')
