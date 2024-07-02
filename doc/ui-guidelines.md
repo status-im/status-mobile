@@ -31,7 +31,7 @@ NOW:
 (defn view
   [{:keys [on-press on-long-press icon]}]
   (let [[pressed? set-pressed] (rn/use-state false)
-        theme                  (theme/use-theme-value)
+        theme                  (theme/use-theme)
         on-press-in            (rn/use-callback #(set-pressed true))
         on-press-out           (rn/use-callback #(set-pressed nil))]
     [rn/pressable
@@ -47,7 +47,7 @@ NOW:
 - We no longer need to create an anonymous function for rendering. This removes unnecessary confusion and the need for specific knowledge on how it works and why it was needed.
 - `rn/use-state` is used instead of `reagent/atom`
 - State values no longer need to be dereferenced; they are accessible as regular symbols. This eliminates a common bug where the "@" symbol was inadvertently omitted.
-- `theme/with-theme` wrapper is not needed anymore, `(theme/use-theme-value)` hook can be used directly in the components
+- `theme/with-theme` wrapper is not needed anymore, `(theme/use-theme)` hook can be used directly in the components
 - `:f>` not needed anymore, all components are functional by default
 - `rn/use-callback` hook should be used for anon callback functions
 

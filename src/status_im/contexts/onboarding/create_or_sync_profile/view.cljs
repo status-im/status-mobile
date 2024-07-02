@@ -4,6 +4,7 @@
     re-frame.db
     [react-native.core :as rn]
     [react-native.safe-area :as safe-area]
+    [status-im.common.check-before-syncing.view :as check-before-syncing]
     [status-im.common.not-implemented :as not-implemented]
     [status-im.common.resources :as resources]
     [status-im.config :as config]
@@ -24,6 +25,14 @@
   (debounce/throttle-and-dispatch
    [:onboarding/navigate-to-sign-in-by-syncing]
    1000))
+
+(defn- show-check-before-syncing
+  []
+  (rf/dispatch
+   [:show-bottom-sheet
+    {:content (fn [] [check-before-syncing/view
+                      {:on-submit navigate-to-sign-in-by-syncing}])
+     :shell?  true}]))
 
 (defn- navigate-to-sign-in-by-seed-phrase
   [create-profile?]
@@ -62,7 +71,7 @@
     :accessibility-label :scan-sync-code-option-card
     :image               (resources/get-image :generate-keys)
     :max-height          (option-card-max-height window-height)
-    :on-press            navigate-to-sign-in-by-syncing}])
+    :on-press            show-check-before-syncing}])
 
 (defn sign-in-options
   [sign-in-type]
