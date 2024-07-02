@@ -45,8 +45,8 @@
   [sub-name]
   (testing "Return the session proposer public key and metadata"
     (swap! rf-db/app-db
-      assoc
-      :wallet-connect/current-proposal
+      assoc-in
+      [:wallet-connect/current-proposal :request]
       sample-session)
 
     (let [proposer (rf/sub [sub-name])]
@@ -60,9 +60,23 @@
   [sub-name]
   (testing "Return only the name of the session proposer"
     (swap! rf-db/app-db
-      assoc
-      :wallet-connect/current-proposal
+      assoc-in
+      [:wallet-connect/current-proposal :request]
       sample-session)
 
     (is (= (-> sample-session :params :proposer :metadata :name)
            (rf/sub [sub-name])))))
+
+(h/deftest-sub :wallet-connect/current-proposal-address
+  [sub-name]
+  (testing "Return the current proposal account address"
+    (let [address "0x1234567890abcdef"]
+
+      (swap! rf-db/app-db assoc-in [:wallet-connect/current-proposal :address] address)
+
+      (is (= address (rf/sub [sub-name]))))
+
+    (testing "Return nil when there is no current proposal account"
+      (swap! rf-db/app-db assoc-in [:wallet-connect/current-proposal :address] nil)
+
+      (is (nil? (rf/sub [sub-name]))))))
