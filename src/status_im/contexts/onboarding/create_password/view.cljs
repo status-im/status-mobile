@@ -38,14 +38,11 @@
    [rn/view {:style style/info-message}
     (when shown
       [quo/info-message
-       {:type       status
-        :size       :default
-        :icon       (if (= status :success) :i/positive-state :i/info)
-        :text-color (when (= status :default)
-                      colors/white-70-blur)
-        :icon-color (when (= status :default)
-                      colors/white-70-blur)
-        :style      {}}
+       {:status status
+        :size   :default
+        :icon   (if (= status :success) :i/positive-state :i/info)
+        :color  (when (= status :default)
+                  colors/white-70-blur)}
        text])]])
 
 (defn password-inputs

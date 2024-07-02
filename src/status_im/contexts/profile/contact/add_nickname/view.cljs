@@ -68,9 +68,9 @@
         :on-change-text    on-nickname-change
         :on-submit-editing on-nickname-submit}]
       [quo/info-message
-       {:icon :i/info
-        :size :default
-        :type (if-not (string/blank? error-msg) :error :default)}
+       {:icon   :i/info
+        :size   :default
+        :status (if-not (string/blank? error-msg) :error :default)}
        (if-not (string/blank? error-msg)
          error-msg
          (i18n/label :t/nickname-visible-to-you))]]

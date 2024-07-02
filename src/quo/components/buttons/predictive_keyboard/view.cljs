@@ -2,7 +2,7 @@
   (:require
     [quo.components.buttons.button.view :as button]
     [quo.components.buttons.predictive-keyboard.style :as style]
-    [quo.components.info.info-message :as info-message]
+    [quo.components.info.info-message.view :as info-message]
     [quo.foundations.colors :as colors]
     [quo.theme]
     [react-native.core :as rn]
@@ -57,17 +57,17 @@
           :key-fn                            str}]
 
         :error
-        [info-message/info-message
-         {:icon :i/info
-          :size :default
-          :type :error}
+        [info-message/view
+         {:icon   :i/info
+          :size   :default
+          :status :error}
          text]
 
         :info
-        [info-message/info-message
-         (merge {:icon :i/info
-                 :size :default
-                 :type (if (= type :error) :error :default)}
+        [info-message/view
+         (merge {:icon   :i/info
+                 :size   :default
+                 :status (if (= type :error) :error :default)}
                 (when blur?
                   {:text-color colors/white-opa-70
                    :icon-color colors/white-opa-40}))
