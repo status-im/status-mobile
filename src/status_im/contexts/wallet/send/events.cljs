@@ -492,6 +492,193 @@
                                                  :error  error
                                                  :params request-params}))}]})))
 
+(rf/reg-event-fx :wallet/get-suggested-routes-v2-async
+ (fn [{:keys [db now]} [{:keys [amount amount-out updated-token] :as args :or {amount-out "0"}}]]
+   (let [rest-keys
+         (-> args
+             (dissoc :amount :amount-out :updated-token)
+             (select-keys [:username :publicKey :packID]))
+         wallet-address (get-in db [:wallet :current-viewing-account-address])
+         token (or updated-token (get-in db [:wallet :ui :send :token]))
+         transaction-type (get-in db [:wallet :ui :send :tx-type])
+         collectible (get-in db [:wallet :ui :send :collectible])
+         to-address (get-in db [:wallet :ui :send :to-address])
+         receiver-networks (get-in db [:wallet :ui :send :receiver-networks])
+         disabled-from-chain-ids (or (get-in db [:wallet :ui :send :disabled-from-chain-ids]) [])
+         from-locked-amounts (or (get-in db [:wallet :ui :send :from-locked-amounts]) {})
+         test-networks-enabled? (get-in db [:profile/profile :test-networks-enabled?])
+         networks ((if test-networks-enabled? :test :prod)
+                   (get-in db [:wallet :networks]))
+         network-chain-ids (map :chain-id networks)
+         bridge-to-chain-id (get-in db [:wallet :ui :send :bridge-to-chain-id])
+         token-decimal (when token (:decimals token))
+         token-id (utils/format-token-id token collectible)
+         to-token-id ""
+         gas-rates constants/gas-rate-medium
+         to-hex (fn [v] (send-utils/amount-in-hex v (if token token-decimal 0)))
+         amount-in (to-hex amount)
+         amount-out (to-hex amount-out)
+         from-address wallet-address
+         disabled-to-chain-ids (if (= transaction-type :tx/bridge)
+                                 (filter #(not= % bridge-to-chain-id) network-chain-ids)
+                                 (filter (fn [chain-id]
+                                           (not (some #(= chain-id %)
+                                                      receiver-networks)))
+                                         network-chain-ids))
+         from-locked-amount (update-vals from-locked-amounts to-hex)
+         send-type (case transaction-type
+                     :tx/collectible-erc-721  constants/send-type-erc-721-transfer
+                     :tx/collectible-erc-1155 constants/send-type-erc-1155-transfer
+                     :tx/bridge               constants/send-type-bridge
+                     constants/send-type-transfer)
+         balances-per-chain (when token (:balances-per-chain token))
+         sender-token-available-networks-for-suggested-routes
+         (when token
+           (send-utils/token-available-networks-for-suggested-routes {:balances-per-chain
+                                                                      balances-per-chain
+                                                                      :disabled-chain-ids
+                                                                      disabled-from-chain-ids
+                                                                      :only-with-balance? true}))
+         receiver-token-available-networks-for-suggested-routes
+         (when token
+           (send-utils/token-available-networks-for-suggested-routes {:balances-per-chain
+                                                                      balances-per-chain
+                                                                      :disabled-chain-ids
+                                                                      disabled-from-chain-ids
+                                                                      :only-with-balance? false}))
+         token-networks-ids (when token (mapv #(:chain-id %) (:networks token)))
+         sender-network-values (when sender-token-available-networks-for-suggested-routes
+                                 (send-utils/loading-network-amounts
+                                  {:valid-networks
+                                   (if (= transaction-type :tx/bridge)
+                                     (remove #(= bridge-to-chain-id %)
+                                             sender-token-available-networks-for-suggested-routes)
+                                     sender-token-available-networks-for-suggested-routes)
+                                   :disabled-chain-ids disabled-from-chain-ids
+                                   :receiver-networks receiver-networks
+                                   :token-networks-ids token-networks-ids
+                                   :tx-type transaction-type
+                                   :receiver? false}))
+         receiver-network-values (when receiver-token-available-networks-for-suggested-routes
+                                   (send-utils/loading-network-amounts
+                                    {:valid-networks
+                                     (if (= transaction-type :tx/bridge)
+                                       (filter
+                                        #(= bridge-to-chain-id %)
+                                        receiver-token-available-networks-for-suggested-routes)
+                                       receiver-token-available-networks-for-suggested-routes)
+                                     :disabled-chain-ids disabled-from-chain-ids
+                                     :receiver-networks receiver-networks
+                                     :token-networks-ids token-networks-ids
+                                     :tx-type transaction-type
+                                     :receiver? true}))
+         params [(merge {:uuid                 (str (random-uuid))
+                         :sendType             send-type
+                         :addrFrom             from-address
+                         :addrTo               to-address
+                         :amountIn             amount-in
+                         :amountOut            amount-out
+                         :tokenID              token-id
+                         :toTokenID            to-token-id
+                         :disabledFromChainIDs disabled-from-chain-ids
+                         :disabledToChainIDs   disabled-to-chain-ids
+                         :gasFeeMode           gas-rates
+                         :fromLockedAmount     from-locked-amount}
+                        rest-keys)]]
+     {:db            (cond-> db
+                       :always (assoc-in [:wallet :ui :send :amount] amount)
+                       :always (assoc-in [:wallet :ui :send :loading-suggested-routes?] true)
+                       :always (assoc-in [:wallet :ui :send :sender-network-values]
+                                sender-network-values)
+                       :always (assoc-in [:wallet :ui :send :receiver-network-values]
+                                receiver-network-values)
+                       :always (assoc-in [:wallet :ui :send :suggested-routes-call-timestamp] now)
+                       :always (update-in [:wallet :ui :send] dissoc :network-links)
+                       token   (assoc-in [:wallet :ui :send :token] token))
+      :json-rpc/call [{:method   "wallet_getSuggestedRoutesV2Async"
+                       :params   params
+                       :on-error (fn [error]
+                                   (rf/dispatch [:wallet/suggested-routes-error error])
+                                   (log/error "failed to get suggested routes (async)"
+                                              {:event  :wallet/get-suggested-routes-v2-async
+                                               :error  error
+                                               :params params}))}]})))
+
+(rf/reg-event-fx :wallet/stop-suggested-routes-v2-async-calculation
+ (fn [{:keys [db]}]
+   {:db            (assoc-in db [:wallet :ui :send :loading-suggested-routes?] true)
+    :json-rpc/call [{:method   "wallet_stopSuggestedRoutesV2AsyncCalcualtion"
+                     :params   []
+                     :on-error (fn [error]
+                                 (log/error "failed to get suggested routes"
+                                            {:event :wallet/stop-suggested-routes-v2-async-calculation
+                                             :error error}))}]}))
+
+(defn- transform-new-to-old-path
+  [new-path]
+  (let [unit            (-> (get-in new-path [:from-token :symbol])
+                            clojure.string/lower-case
+                            keyword)
+        convert-to-gwei #(-> %
+                             money/wei->gwei
+                             (money/with-precision 6)
+                             (str))
+        bonder-fees     (:tx-bonder-fees new-path)
+        token-fees      (+ (money/wei-> unit bonder-fees)
+                           (money/wei-> unit
+                                        (:tx-token-fees new-path)))]
+    {:from                      (:from-chain new-path)
+     :amount-in-locked          (:amount-in-locked new-path)
+     :amount-in                 (:amount-in new-path)
+     :max-amount-in             "0x0"
+     :gas-fees                  {:gas-price                "0"
+                                 :base-fee                 (convert-to-gwei (:tx-base-fee new-path))
+                                 :max-priority-fee-per-gas (convert-to-gwei (:tx-priority-fee new-path))
+                                 :max-fee-per-gas-low      (convert-to-gwei
+                                                            (get-in
+                                                             new-path
+                                                             [:suggested-levels-for-max-fees-per-gas
+                                                              :low]))
+                                 :max-fee-per-gas-medium   (convert-to-gwei
+                                                            (get-in
+                                                             new-path
+                                                             [:suggested-levels-for-max-fees-per-gas
+                                                              :medium]))
+                                 :max-fee-per-gas-high     (convert-to-gwei
+                                                            (get-in
+                                                             new-path
+                                                             [:suggested-levels-for-max-fees-per-gas
+                                                              :high]))
+                                 :l-1-gas-fee              (convert-to-gwei (:tx-l-1-fee new-path))
+                                 :eip-1559-enabled         true}
+     :bridge-name               (:processor-name new-path)
+     :amount-out                (:amount-out new-path)
+     :approval-contract-address (:approval-contract-address new-path)
+     :approval-required         (:approval-required new-path)
+     :estimated-time            (:estimated-time new-path)
+     :approval-gas-fees         (* (money/wei->ether (get-in new-path
+                                                             [:suggested-levels-for-max-fees-per-gas
+                                                              :medium]))
+                                   (:approval-gas-amount new-path))
+     :to                        (:to-chain new-path)
+     :bonder-fees               bonder-fees
+     :approval-amount-required  (:approval-amount-required new-path)
+     ;;  :cost () ;; tbd not used on desktop
+     :token-fees                token-fees
+     :gas-amount                (:tx-gas-amount new-path)}))
+
+(rf/reg-event-fx :wallet/handle-suggested-routes
+ (fn [{:keys [now]} data]
+   (let [suggested-routes-new-data (cske/transform-keys transforms/->kebab-case-keyword
+                                                        data)
+         suggested-routes          (-> (first suggested-routes-new-data)
+                                       (update-in [:best] #(mapv transform-new-to-old-path %))
+                                       (update-in [:candidates] #(mapv transform-new-to-old-path %)))]
+     (log/info "gotten suggested-routes" suggested-routes)
+     {:fx [[:dispatch
+            [:wallet/suggested-routes-success suggested-routes
+             now]]]})))
+
 (rf/reg-event-fx :wallet/add-authorized-transaction
  (fn [{:keys [db]} [transaction]]
    (let [transaction-batch-id (:id transaction)
