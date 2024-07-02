@@ -2603,6 +2603,7 @@
     "remove-watched-address-desc": "The watched address will be removed from all of your synced devices.",
     "remove-account-title": "Remove account",
     "remove-account-desc": "The account will be removed from all of your synced devices. Make sure you have a backup of your key pair or recovery phrase and derivation path (if it’s not default).",
+    "remove-private-key-address-desc": "The account will be removed from all of your synced devices. Make sure you have a backup of your key pair or recovery phrase.",
     "derivation-path-copied": "Derivation path copied",
     "remove-account-confirmation": "I have taken note of the derivation path",
     "edit-receiver-networks": "Edit receiver networks",
