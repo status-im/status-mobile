@@ -32,6 +32,7 @@
 
 (defn parse-uri
   [uri]
+  (log/debug "WC Parsing URI")
   (-> uri
       parseUri
       (js->clj :keywordize-keys true)))

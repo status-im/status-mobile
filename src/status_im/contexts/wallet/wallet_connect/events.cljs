@@ -119,6 +119,7 @@
 (rf/reg-event-fx
  :wallet-connect/pair
  (fn [{:keys [db]} [url]]
+   (log/debug "Pairing with dapp: " url)
    (let [web3-wallet (get db :wallet-connect/web3-wallet)]
      {:fx [[:effects.wallet-connect/pair
             {:web3-wallet web3-wallet
@@ -177,6 +178,7 @@
 (rf/reg-event-fx
  :wallet-connect/on-scan-connection
  (fn [_ [scanned-text]]
+   (log/debug "On WalletConnect scan")
    (let [parsed-uri         (wallet-connect/parse-uri scanned-text)
          version            (:version parsed-uri)
          expired?           (-> parsed-uri

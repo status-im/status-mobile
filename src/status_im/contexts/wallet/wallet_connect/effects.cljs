@@ -9,7 +9,8 @@
             [status-im.contexts.wallet.wallet-connect.core :as wallet-connect-core]
             [utils.i18n :as i18n]
             [utils.security.core :as security]
-            [utils.transforms :as transforms]))
+            [utils.transforms :as transforms]
+            [taoensso.timbre :as log]))
 
 (rf/reg-fx
  :effects.wallet-connect/init
@@ -46,6 +47,7 @@
  :effects.wallet-connect/pair
  (fn [{:keys [web3-wallet url on-success on-fail]}]
    (when web3-wallet
+     (log/debug "WC Pairing" web3-wallet url)
      (-> (.. web3-wallet -core -pairing)
          (.pair (clj->js {:uri url}))
          (promesa/then on-success)
