@@ -14,6 +14,7 @@
 (rf/reg-event-fx
  :wallet-connect/init
  (fn []
+   (log/debug "Initialising WalletConnect SDK ...")
    {:fx [[:effects.wallet-connect/init
           {:on-success #(rf/dispatch [:wallet-connect/on-init-success %])
            :on-fail    #(rf/dispatch [:wallet-connect/on-init-fail %])}]]}))
@@ -21,6 +22,7 @@
 (rf/reg-event-fx
  :wallet-connect/on-init-success
  (fn [{:keys [db]} [web3-wallet]]
+   (log/info "WalletConnect SDK initialised successfully")
    {:db (assoc db :wallet-connect/web3-wallet web3-wallet)
     :fx [[:dispatch [:wallet-connect/register-event-listeners]]
          [:effects.wallet-connect/fetch-pairings

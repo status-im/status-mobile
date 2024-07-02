@@ -3,7 +3,8 @@
     ["@walletconnect/core" :refer [Core]]
     ["@walletconnect/utils" :refer
      [buildApprovedNamespaces getSdkError parseUri]]
-    ["@walletconnect/web3wallet" :refer [Web3Wallet]]))
+    ["@walletconnect/web3wallet" :refer [Web3Wallet] :as web3-wallet]
+    [taoensso.timbre :as log]))
 
 (defn- wallet-connect-core
   [project-id]
@@ -12,9 +13,12 @@
 (defn init
   [project-id metadata]
   (let [core (wallet-connect-core project-id)]
-    (Web3Wallet.init
-     (clj->js {:core     core
-               :metadata metadata}))))
+    (log/debug "Web3Wallet value" Web3Wallet)
+    (log/debug "web3wallet default import value" web3-wallet)
+    (log/debug "WalletConnect Core value" Core)
+    (.init Web3Wallet
+           (clj->js {:core     core
+                     :metadata metadata}))))
 
 (defn build-approved-namespaces
   [proposal supported-namespaces]
