@@ -46,7 +46,7 @@ def pytest_addoption(parser):
                      help='Android device platform version')
     parser.addoption('--log_steps',
                      action='store',
-                     default=False,
+                     default=True,
                      help='Display each test step in terminal as plain text: True/False')
     parser.addoption('--pr_number',
                      action='store',
@@ -74,6 +74,16 @@ def pytest_addoption(parser):
                      metavar="NAME",
                      default=None,
                      help='Url or local path to apk for upgrade')
+
+    # running on real devices
+    parser.addoption('--apk_real_device',
+                     action='store',
+                     default=None,
+                     help='Url or local path to apk to be run on real device')
+    parser.addoption('--real_device_name',
+                     action='store',
+                     default='Samsung Galaxy S.*',
+                     help='Real device name or name pattern')
 
     # chat bot
 

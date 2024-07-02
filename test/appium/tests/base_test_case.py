@@ -18,7 +18,7 @@ from selenium.webdriver.support.wait import WebDriverWait
 from urllib3.exceptions import MaxRetryError, ProtocolError
 
 from support.api.network_api import NetworkApi
-from tests import test_suite_data, start_threads, appium_container, pytest_config_global, transl
+from tests import test_suite_data, start_threads, appium_container, pytest_config_global, transl, run_in_parallel
 from tests.conftest import sauce_username, sauce_access_key, apibase, github_report, run_name
 
 executor_sauce_lab = 'https://%s:%s@ondemand.%s:443/wd/hub' % (sauce_username, sauce_access_key, apibase)
@@ -60,14 +60,11 @@ def add_local_devices_to_capabilities():
     return updated_capabilities
 
 
-def get_capabilities_sauce_lab():
+def get_common_capabilities():
     caps = dict()
     caps['platformName'] = 'Android'
     caps['idleTimeout'] = 1000
-    caps['appium:app'] = 'sauce-storage:' + test_suite_data.apk_name
-    caps['appium:deviceName'] = 'Android GoogleAPI Emulator'
     caps['appium:deviceOrientation'] = 'portrait'
-    caps['appium:platformVersion'] = '14.0'
     caps['appium:automationName'] = 'UiAutomator2'
     caps['appium:newCommandTimeout'] = 600
     caps['appium:idleTimeout'] = 1000
@@ -81,7 +78,6 @@ def get_capabilities_sauce_lab():
     caps['appium:enforceXPath1'] = True
     caps['enforceXPath1'] = True
     caps['sauce:options'] = dict()
-    caps['sauce:options']['appiumVersion'] = '2.0.0'
     caps['sauce:options']['username'] = sauce_username
     caps['sauce:options']['accessKey'] = sauce_access_key
     caps['sauce:options']['build'] = run_name
@@ -89,6 +85,15 @@ def get_capabilities_sauce_lab():
     caps['sauce:options']['maxDuration'] = 3600
     caps['sauce:options']['idleTimeout'] = 1000
     caps['sauce:options']['android.gpu.mode'] = 'hardware'
+    return caps
+
+
+def get_capabilities_sauce_lab():
+    caps = get_common_capabilities()
+    caps['appium:app'] = 'sauce-storage:' + test_suite_data.apk_name
+    caps['appium:deviceName'] = 'Android GoogleAPI Emulator'
+    caps['appium:platformVersion'] = '14.0'
+    caps['sauce:options']['appiumVersion'] = '2.0.0'
 
     options = AppiumOptions()
     options.load_capabilities(caps)
@@ -96,10 +101,17 @@ def get_capabilities_sauce_lab():
     return options
 
 
-# def update_capabilities_sauce_lab(new_capabilities: dict):
-#     caps = get_capabilities_sauce_lab().copy()
-#     caps.update(new_capabilities)
-#     return caps
+def get_capabilities_real_device():
+    caps = get_common_capabilities()
+    caps['appium:app'] = 'sauce-storage:' + pytest_config_global['apk_real_device']
+    caps['appium:deviceName'] = pytest_config_global['real_device_name']
+    caps['appium:platformVersion'] = '14'
+    caps['sauce:options']['appiumVersion'] = 'latest'
+
+    options = AppiumOptions()
+    options.load_capabilities(caps)
+
+    return options
 
 
 def get_app_path():
@@ -306,12 +318,23 @@ def create_shared_drivers(quantity):
         asyncio.set_event_loop(loop)
         print('SC Executor: %s' % executor_sauce_lab)
         try:
-            drivers = loop.run_until_complete(start_threads(test_suite_data.current_test.name,
-                                                            quantity,
-                                                            Driver,
-                                                            drivers,
-                                                            command_executor=executor_sauce_lab,
-                                                            options=get_capabilities_sauce_lab()))
+            if pytest_config_global['apk_real_device']:
+                commands = [
+                    (Driver, {'command_executor': executor_sauce_lab, 'options': get_capabilities_real_device()}),
+                ]
+                if quantity > 1:
+                    for i in range(quantity - 1):
+                        commands.append(
+                            (Driver, {'command_executor': executor_sauce_lab, 'options': get_capabilities_sauce_lab()})
+                        )
+                drivers = loop.run_until_complete(run_in_parallel((tuple(commands))))
+            else:
+                drivers = loop.run_until_complete(start_threads(test_suite_data.current_test.name,
+                                                                quantity,
+                                                                Driver,
+                                                                drivers,
+                                                                command_executor=executor_sauce_lab,
+                                                                options=get_capabilities_sauce_lab()))
             if len(drivers) < quantity:
                 test_suite_data.current_test.testruns[-1].error = "Not all %s drivers are created" % quantity
 

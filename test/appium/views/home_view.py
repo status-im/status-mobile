@@ -579,6 +579,7 @@ class HomeView(BaseView):
     def get_link_to_profile(self):
         self.show_qr_code_button.click()
         self.link_to_profile_button.click()
+        self.sharing_text_native.wait_for_visibility_of_element()
         link_to_profile = self.sharing_text_native.text
         self.click_system_back_button()
         return link_to_profile
