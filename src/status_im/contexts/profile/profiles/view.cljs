@@ -5,6 +5,7 @@
     [react-native.core :as rn]
     [react-native.reanimated :as reanimated]
     [react-native.safe-area :as safe-area]
+    [status-im.common.check-before-syncing.view :as check-before-syncing]
     [status-im.common.confirmation-drawer.view :as confirmation-drawer]
     [status-im.common.standard-authentication.core :as standard-authentication]
     [status-im.config :as config]
@@ -41,6 +42,17 @@
                                               :linear
                                               50))
 
+(defn- show-check-before-syncing
+  []
+  (rf/dispatch
+   [:show-bottom-sheet
+    {:content (fn [] [check-before-syncing/view
+                      {:on-submit
+                       #(debounce/throttle-and-dispatch
+                         [:open-modal :screen/onboarding.sign-in]
+                         1000)}])
+     :shell?  true}]))
+
 (defn new-account-options
   []
   [quo/action-drawer
@@ -55,9 +67,7 @@
       :accessibility-label :create-new-profile}
      {:icon                :i/multi-profile
       :label               (i18n/label :t/add-existing-status-profile)
-      :on-press            #(debounce/throttle-and-dispatch
-                             [:open-modal :screen/onboarding.sign-in]
-                             1000)
+      :on-press            show-check-before-syncing
       :accessibility-label :multi-profile}]]])
 
 (defn show-new-account-options
