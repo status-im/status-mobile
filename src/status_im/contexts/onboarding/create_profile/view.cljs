@@ -158,12 +158,11 @@
                                     :on-change-text on-change-text}}]]
 
            [quo/info-message
-            {:type       info-type
-             :size       :default
-             :icon       (if valid-name? :i/positive-state :i/info)
-             :text-color (when (= :default info-type) colors/white-70-blur)
-             :icon-color (when (= :default info-type) colors/white-70-blur)
-             :style      style/info-message}
+            {:status          info-type
+             :size            :default
+             :icon            (if valid-name? :i/positive-state :i/info)
+             :color           (when (= :default info-type) colors/white-70-blur)
+             :container-style style/info-message}
             info-message]
            [quo/text
             {:size   :paragraph-2

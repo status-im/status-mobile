@@ -200,9 +200,9 @@
          (when (and (not valid-ens-or-address?) (> (count @input-value) 0))
            [rn/view {:style {:padding 20}}
             [quo/info-message
-             {:type :error
-              :icon :i/info
-              :size :default}
+             {:status :error
+              :icon   :i/info
+              :size   :default}
              (i18n/label :t/invalid-address)]])
          (if (or @input-focused? (> (count @input-value) 0))
            [rn/keyboard-avoiding-view
