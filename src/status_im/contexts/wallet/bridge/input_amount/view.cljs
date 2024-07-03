@@ -9,7 +9,7 @@
 
 (defn view
   []
-  (hot-reload/use-safe-unmount #(rf/dispatch [:wallet/clean-routes-calculation]))
+  (hot-reload/use-safe-unmount #(rf/dispatch [:wallet/stop-get-suggested-routes]))
   [rn/view {:style style/bridge-send-wrapper}
    [input-amount/view
     {:current-screen-id      :screen/wallet.bridge-input-amount

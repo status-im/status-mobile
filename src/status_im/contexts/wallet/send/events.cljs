@@ -488,14 +488,15 @@
                                                :params params}))}]})))
 
 (rf/reg-event-fx :wallet/stop-get-suggested-routes
- (fn [{:keys [db]}]
-   {:db            (assoc-in db [:wallet :ui :send :loading-suggested-routes?] true)
-    :json-rpc/call [{:method   "wallet_stopSuggestedRoutesV2AsyncCalcualtion"
-                     :params   []
-                     :on-error (fn [error]
-                                 (log/error "failed to get suggested routes"
-                                            {:event :wallet/stop-get-suggested-routes
-                                             :error error}))}]}))
+ (fn []
+   {:json-rpc/call [{:method     "wallet_stopSuggestedRoutesV2AsyncCalcualtion"
+                     :params     []
+                     :on-success (fn []
+                                   (rf/dispatch [:wallet/clean-routes-calculation]))
+                     :on-error   (fn [error]
+                                   (log/error "failed to stop suggested routes calculation"
+                                              {:event :wallet/stop-get-suggested-routes
+                                               :error error}))}]}))
 
 (defn- transform-new-to-old-path
   [new-path]
