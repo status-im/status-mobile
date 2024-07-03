@@ -3,8 +3,7 @@
     [cljs.test :refer-macros [deftest is testing]]
     [matcher-combinators.matchers :as matchers]
     matcher-combinators.test
-    [status-im.contexts.wallet.data-store :as sut]
-    [utils.collection :as utils.collection]))
+    [status-im.contexts.wallet.data-store :as sut]))
 
 (def raw-account
   {:path                  "m/44'/60'/0'/0/0"
@@ -19,6 +18,22 @@
    :testPreferredChainIds "11155111:421614"
    :removed               false
    :operable              "fully"})
+
+(def account
+  {:path                     "m/44'/60'/0'/0/0"
+   :emoji                    "🍙"
+   :color                    :blue
+   :wallet                   true
+   :default-account?         true
+   :name                     "Account name"
+   :type                     :generated
+   :chat                     false
+   :test-preferred-chain-ids #{11155111 421614}
+   :watch-only?              false
+   :prod-preferred-chain-ids #{1 42161}
+   :created-at               1716548742000
+   :operable                 :fully
+   :removed                  false})
 
 (defn make-raw-account
   [overrides]
@@ -67,6 +82,7 @@
                                     :address                  "1x000"
                                     :path                     (:path raw-account)
                                     :name                     (:name raw-account)
+                                    :emoji                    (:emoji raw-account)
                                     :removed                  (:removed raw-account)
                                     :color                    (keyword (:colorId raw-account))
                                     :created-at               (:createdAt raw-account)
@@ -81,6 +97,7 @@
                                     :address                  "2x000"
                                     :path                     (:path raw-account)
                                     :name                     (:name raw-account)
+                                    :emoji                    (:emoji raw-account)
                                     :removed                  (:removed raw-account)
                                     :color                    (keyword (:colorId raw-account))
                                     :created-at               (:createdAt raw-account)
@@ -99,6 +116,7 @@
                                     :operable                 :fully
                                     :path                     (:path raw-account)
                                     :name                     (:name raw-account)
+                                    :emoji                    (:emoji raw-account)
                                     :wallet                   (:wallet raw-account)
                                     :removed                  (:removed raw-account)
                                     :color                    (keyword (:colorId raw-account))
@@ -118,6 +136,7 @@
                                     :operable                 :no
                                     :path                     (:path raw-account)
                                     :name                     (:name raw-account)
+                                    :emoji                    (:emoji raw-account)
                                     :wallet                   (:wallet raw-account)
                                     :removed                  (:removed raw-account)
                                     :color                    (keyword (:colorId raw-account))
@@ -148,33 +167,47 @@
         map? matchers/equals]
        {:removed-keypair-ids         #{}
         :removed-account-addresses   #{}
-        :updated-accounts-by-address (->>
-                                       [raw-keypair-seed-phrase
-                                        raw-keypair-private-key]
-                                       (sut/rpc->keypairs)
-                                       (mapcat :accounts)
-                                       (utils.collection/index-by :address))
-        :updated-keypairs-by-id      {(:key-uid raw-keypair-seed-phrase)
-                                      (sut/rpc->keypair raw-keypair-seed-phrase)
-                                      (:key-uid raw-keypair-private-key)
-                                      (sut/rpc->keypair raw-keypair-private-key)}})
+        :updated-accounts-by-address {"1x123" (merge account
+                                                     {:key-uid "0x123"
+                                                      :address "1x123"})
+                                      "1x456" (merge account
+                                                     {:key-uid  "0x456"
+                                                      :address  "1x456"
+                                                      :operable :no})}
+        :updated-keypairs-by-id      {"0x123" {:key-uid            "0x123"
+                                               :type               :seed
+                                               :lowest-operability :fully
+                                               :accounts           [(merge account
+                                                                           {:key-uid "0x123"
+                                                                            :address "1x123"})]}
+                                      "0x456" {:key-uid            "0x456"
+                                               :type               :key
+                                               :lowest-operability :no
+                                               :accounts           [(merge account
+                                                                           {:key-uid  "0x456"
+                                                                            :address  "1x456"
+                                                                            :operable :no})]}}})
       (sut/reconcile-keypairs [raw-keypair-seed-phrase
                                raw-keypair-private-key]))))
   (testing "reconcile-keypairs represents removed key pairs and accounts"
-    (is (match?
-         (matchers/match-with
-          [set? matchers/set-equals
-           map? matchers/equals]
-          {:removed-keypair-ids         #{"0x456"}
-           :removed-account-addresses   #{"1x456"}
-           :updated-accounts-by-address (->> [raw-keypair-seed-phrase]
-                                             (sut/rpc->keypairs)
-                                             (mapcat :accounts)
-                                             (utils.collection/index-by :address))
-           :updated-keypairs-by-id      {(:key-uid raw-keypair-seed-phrase)
-                                         (sut/rpc->keypair raw-keypair-seed-phrase)}})
-         (sut/reconcile-keypairs [raw-keypair-seed-phrase
-                                  (assoc raw-keypair-private-key :removed true)]))))
+    (is
+     (match?
+      (matchers/match-with
+       [set? matchers/set-equals
+        map? matchers/equals]
+       {:removed-keypair-ids         #{"0x456"}
+        :removed-account-addresses   #{"1x456"}
+        :updated-accounts-by-address {"1x123" (merge account
+                                                     {:key-uid "0x123"
+                                                      :address "1x123"})}
+        :updated-keypairs-by-id      {"0x123" {:key-uid            "0x123"
+                                               :type               :seed
+                                               :lowest-operability :fully
+                                               :accounts           [(merge account
+                                                                           {:key-uid "0x123"
+                                                                            :address "1x123"})]}}})
+      (sut/reconcile-keypairs [raw-keypair-seed-phrase
+                               (assoc raw-keypair-private-key :removed true)]))))
   (testing "reconcile-keypairs ignores chat accounts inside updated accounts"
     (is
      (match?
@@ -183,11 +216,25 @@
         map? matchers/equals]
        {:removed-keypair-ids         #{}
         :removed-account-addresses   #{}
-        :updated-accounts-by-address (->> [raw-keypair-profile]
-                                          (sut/rpc->keypairs)
-                                          (mapcat :accounts)
-                                          (filter (comp not :chat))
-                                          (utils.collection/index-by :address))
-        :updated-keypairs-by-id      {(:key-uid raw-keypair-profile)
-                                      (sut/rpc->keypair raw-keypair-profile)}})
+        :updated-accounts-by-address {"2x000" (merge account
+                                                     {:key-uid          "0x000"
+                                                      :address          "2x000"
+                                                      :chat             false
+                                                      :wallet           true
+                                                      :default-account? true})}
+        :updated-keypairs-by-id      {"0x000" {:key-uid            "0x000"
+                                               :type               :profile
+                                               :lowest-operability :fully
+                                               :accounts           [(merge account
+                                                                           {:key-uid          "0x000"
+                                                                            :address          "1x000"
+                                                                            :chat             true
+                                                                            :wallet           false
+                                                                            :default-account? false})
+                                                                    (merge account
+                                                                           {:key-uid          "0x000"
+                                                                            :address          "2x000"
+                                                                            :chat             false
+                                                                            :wallet           true
+                                                                            :default-account? true})]}}})
       (sut/reconcile-keypairs [raw-keypair-profile])))))
