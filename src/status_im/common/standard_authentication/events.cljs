@@ -32,9 +32,8 @@
              :on-cancel      #(rf/dispatch [:standard-auth/authorize-with-password
                                             args-with-biometric-btn])
              :on-success     (fn []
-                               (when (fn? on-close)
-                                 (on-close))
-                               (rf/dispatch [:standard-auth/on-biometric-success on-auth-success]))
+                               (rf/dispatch [:standard-auth/on-biometric-success on-auth-success])
+                               (rf/dispatch [:standard-auth/close on-close]))
              :on-fail        (fn [err]
                                (rf/dispatch [:standard-auth/authorize-with-password
                                              args-with-biometric-btn])
@@ -48,6 +47,7 @@
   [{:keys [db]} [on-auth-success]]
   (let [key-uid (get-in db [:profile/profile :key-uid])]
     {:fx [[:keychain/get-user-password [key-uid on-auth-success]]
+          [:dispatch [:standard-auth/set-success true]]
           [:dispatch [:standard-auth/reset-login-password]]]}))
 
 (schema/=> on-biometric-success events-schema/?on-biometric-success)
@@ -74,6 +74,7 @@
           (fn [password]
             (let [sha3-pwd                 (security/hash-masked-password password)
                   on-auth-success-callback #(on-auth-success sha3-pwd)]
+              (rf/dispatch [:standard-auth/set-success true])
               (rf/dispatch [:standard-auth/reset-login-password])
               (if has-partially-operable-accounts?
                 (rf/dispatch [:wallet/make-partially-operable-accounts-fully-operable
@@ -92,10 +93,7 @@
   {:fx [[:dispatch [:standard-auth/reset-login-password]]
         [:dispatch
          [:show-bottom-sheet
-          {:on-close (fn []
-                       (rf/dispatch [:standard-auth/reset-login-password])
-                       (when on-close
-                         (on-close)))
+          {:on-close #(rf/dispatch [:standard-auth/close on-close])
            :theme    theme
            :shell?   blur?
            :content  #(bottom-sheet-password-view args)}]]]})
@@ -107,3 +105,23 @@
  :standard-auth/reset-login-password
  (fn [{:keys [db]}]
    {:db (update db :profile/login dissoc :password :error)}))
+
+(rf/reg-fx
+ :standard-auth/on-close
+ (fn [{:keys [on-close success?]}]
+   (when on-close
+     (on-close success?))))
+
+(rf/reg-event-fx
+ :standard-auth/close
+ (fn [{:keys [db]} [on-close]]
+   {:db (assoc-in db [:profile/login :success?] false)
+    :fx [[:dispatch [:standard-auth/reset-login-password]]
+         [:standard-auth/on-close
+          {:on-close on-close
+           :success? (get-in db [:profile/login :success?])}]]}))
+
+(rf/reg-event-fx
+ :standard-auth/set-success
+ (fn [{:keys [db]} [success?]]
+   {:db (assoc-in db [:profile/login :success?] success?)}))

@@ -14,7 +14,7 @@
     :as   collectible}
    index]
   (let [on-press-fn      (rn/use-callback #(when on-press
-                                             (on-press collectible)))
+                                             (on-press collectible %)))
         on-long-press-fn (rn/use-callback #(when on-long-press
                                              (on-long-press collectible)))]
     [quo/collectible-list-item

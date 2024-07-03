@@ -237,7 +237,8 @@
               (assoc-in [:wallet :ui :send :token-not-supported-in-receiver-networks?]
                         token-not-supported-in-receiver-networks?))
       :fx [[:dispatch [:hide-bottom-sheet]]
-           [:dispatch [:wallet/clean-suggested-routes]]]})))
+           [:dispatch [:wallet/clean-suggested-routes]]
+           [:dispatch [:wallet/clean-from-locked-amounts]]]})))
 
 (rf/reg-event-fx :wallet/clean-selected-token
  (fn [{:keys [db]}]

@@ -34,6 +34,12 @@
     (set-state (fn [prev-state]
                  (assoc prev-state :image-loaded? true)))))
 
+(defn on-load
+  [evt set-state]
+  (let [source       (.. evt -nativeEvent -source)
+        aspect-ratio (/ (.-width source) (.-height source))]
+    (set-state (fn [prev-state] (assoc prev-state :image-aspect-ratio aspect-ratio)))))
+
 (defn on-load-error
   [set-state]
   (js/setTimeout (fn []
@@ -147,6 +153,7 @@
         [reanimated/view {:style (style/supported-file image-opacity)}
          [rn/image
           {:style         style/image
+           :on-load       #(on-load % set-state)
            :on-load-start #(set-load-time (fn [start-time] (- (datetime/now) start-time)))
            :on-load-end   #(on-load-end {:load-time      load-time
                                          :set-state      set-state
@@ -197,6 +204,7 @@
        [reanimated/view {:style (style/supported-file image-opacity)}
         [rn/image
          {:style         style/image
+          :on-load       #(on-load % set-state)
           :on-load-start #(set-load-time (fn [start-time] (- (datetime/now) start-time)))
           :on-load-end   #(on-load-end {:load-time      load-time
                                         :set-state      set-state
@@ -219,12 +227,13 @@
 (defn- view-internal
   [{:keys [container-style type on-press on-long-press supported-file?]
     :as   props}]
-  (let [[state set-state]  (rn/use-state {:image-loaded?  false
-                                          :image-error?   false
-                                          :avatar-loaded? false})
+  (let [[state set-state]  (rn/use-state {:image-loaded?      false
+                                          :image-aspect-ratio nil
+                                          :image-error?       false
+                                          :avatar-loaded?     false})
         collectible-ready? (or (:image-loaded? state) (not supported-file?))]
     [rn/pressable
-     {:on-press            (when collectible-ready? on-press)
+     {:on-press            (when collectible-ready? #(on-press (:image-aspect-ratio state)))
       :on-long-press       (when collectible-ready? on-long-press)
       :accessibility-label :collectible-list-item
       :style               container-style}

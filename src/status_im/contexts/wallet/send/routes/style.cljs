@@ -47,3 +47,6 @@
 (defn keyboard-container
   [bottom]
   {:padding-bottom bottom})
+
+(def error-box
+  {:margin-horizontal 20})

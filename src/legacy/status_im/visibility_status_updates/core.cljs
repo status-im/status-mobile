@@ -130,7 +130,7 @@
              status-type]}]
           (and
            (= status-type constants/visibility-status-inactive)
-           (> (:peers-count db) 0))
+           (pos? (:peer-stats/count db)))
           ;; Disable broadcasting further updates
           (conj {:ms 1000
                  :dispatch

@@ -14,17 +14,13 @@
              [:dispatch [:wallet-connect/respond-personal-sign password]]
 
              constants/wallet-connect-eth-send-transaction-method
-             [:dispatch
-              [:wallet-connect/respond-build-transaction
-               #(rf/dispatch [:wallet-connect/respond-send-transaction-data password %])]]
+             [:dispatch [:wallet-connect/respond-send-transaction-data password]]
 
              constants/wallet-connect-eth-sign-method
              [:dispatch [:wallet-connect/respond-eth-sign password]]
 
              constants/wallet-connect-eth-sign-transaction-method
-             [:dispatch
-              [:wallet-connect/respond-build-transaction
-               #(rf/dispatch [:wallet-connect/respond-sign-transaction-data password %])]]
+             [:dispatch [:wallet-connect/respond-sign-transaction-data password]]
 
              constants/wallet-connect-eth-sign-typed-method
              [:dispatch [:wallet-connect/respond-sign-typed-data password :v1]]
@@ -68,39 +64,26 @@
              :on-success #(rf/dispatch [:wallet-connect/send-response %])}]]})))
 
 (rf/reg-event-fx
- :wallet-connect/respond-build-transaction
- (fn [{:keys [db]} [on-success]]
-   (let [{:keys [raw-data]} (get db :wallet-connect/current-request)
-         chain-id           (-> raw-data
-                                (get-in [:params :chainId])
-                                wallet-connect-core/eip155->chain-id)]
-     {:fx [[:json-rpc/call
-            [{:method     "wallet_buildTransaction"
-              :params     [chain-id (js/JSON.stringify raw-data)]
-              :on-success on-success
-              :on-error   [:wallet-connect/on-sign-error]}]]]})))
-
-(rf/reg-event-fx
  :wallet-connect/respond-send-transaction-data
- (fn [_ [password data]]
-   (let [{:keys           [address]
-          message-to-sign :messageToSign} data]
-     {:fx [[:effects.wallet-connect/sign-message
+ (fn [{:keys [db]} [password]]
+   (let [{:keys [chain-id raw-data address]} (get db :wallet-connect/current-request)]
+     {:fx [[:effects.wallet-connect/send-transaction
             {:password   password
              :address    address
-             :data       message-to-sign
+             :chain-id   chain-id
+             :tx         raw-data
              :on-error   #(rf/dispatch [:wallet-connect/on-sign-error %])
              :on-success #(rf/dispatch [:wallet-connect/send-response %])}]]})))
 
 (rf/reg-event-fx
  :wallet-connect/respond-sign-transaction-data
- (fn [_ [password data]]
-   (let [{:keys           [address]
-          message-to-sign :messageToSign} data]
-     {:fx [[:effects.wallet-connect/sign-message
+ (fn [{:keys [db]} [password]]
+   (let [{:keys [chain-id raw-data address]} (get db :wallet-connect/current-request)]
+     {:fx [[:effects.wallet-connect/sign-transaction
             {:password   password
              :address    address
-             :data       message-to-sign
+             :chain-id   chain-id
+             :tx         raw-data
              :on-error   #(rf/dispatch [:wallet-connect/on-sign-error %])
              :on-success #(rf/dispatch [:wallet-connect/send-response %])}]]})))
 

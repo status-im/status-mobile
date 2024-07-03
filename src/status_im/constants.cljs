@@ -282,6 +282,8 @@
 (def ^:const wallet-connect-session-proposal-event "session_proposal")
 (def ^:const wallet-connect-session-request-event "session_request")
 
+(def ^:const transaction-pending-type-wallet-connect-transfer "WalletConnectTransfer")
+
 (def ^:const dapp-permission-contact-code "contact-code")
 (def ^:const dapp-permission-web3 "web3")
 (def ^:const dapp-permission-qr-code "qr-code")
@@ -502,6 +504,9 @@
 (def ^:const ethereum-network-name :ethereum)
 (def ^:const optimism-network-name :optimism)
 (def ^:const arbitrum-network-name :arbitrum)
+
+(def ^:const layer-1-network 1)
+(def ^:const layer-2-network 2)
 
 (def ^:const default-network-names [mainnet-network-name optimism-network-name arbitrum-network-name])
 

@@ -20,7 +20,7 @@
    :link-previews-whitelist            []
    :app-state                          "active"
    :wallet                             wallet/defaults
-   :peers-count                        0
+   :peer-stats/count                   0
    :node-info                          {}
    :peers-summary                      []
    :transport/message-envelopes        {}

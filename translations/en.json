@@ -2628,6 +2628,7 @@
     "derivation-path-header": "Derivation path",
     "derivation-path-desc": "Derivation paths are the routes your Status Wallet uses to generate addresses from your private key.",
     "select-networks": "Select networks",
+    "select-network": "Select network",
     "generating-keypair": "Generating key pair...",
     "keypair-name": "Key pair name",
     "keypair-name-description": "Name key pair for your own personal reference",
@@ -2736,5 +2737,6 @@
     "dont-auto-recalculate-network": "Don't auto recalculate {{network}}",
     "import-keypair-to-use-account": "Import key pair to use this account",
     "import-keypair-steps": "{{account-name}} was derived from your {{keypair-name}} key pair, which has not yet been imported to this device. To transact using this account, you will need to import the {{keypair-name}} key pair first.",
-    "not-now": "Not now"
+    "not-now": "Not now",
+    "value-higher-than-send-amount": "This value is higher than entered amount to send"
 }
