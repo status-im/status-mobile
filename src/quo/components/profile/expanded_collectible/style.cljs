@@ -3,11 +3,11 @@
 
 (defn container
   [aspect-ratio]
-  {:align-items     :center
-   :justify-content :center
-   :border-radius   16
-   :width           "100%"
-   :aspect-ratio    aspect-ratio})
+  (cond-> {:align-items     :center
+           :justify-content :center
+           :border-radius   16}
+    aspect-ratio (assoc :width        "100%"
+                        :aspect-ratio aspect-ratio)))
 
 (defn image
   [square? aspect-ratio theme]
