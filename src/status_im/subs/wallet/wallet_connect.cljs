@@ -39,7 +39,7 @@
  :<- [:wallet-connect/current-request]
  :<- [:wallet-connect/pairings]
  (fn [[request pairings]]
-   (let [dapp-url (get-in request [:raw-data :verifyContext :verified :origin])]
+   (let [dapp-url (get-in request [:event :verifyContext :verified :origin])]
      (->> pairings
           (filter (fn [pairing]
                     (= dapp-url (get-in pairing [:peerMetadata :url]))))
