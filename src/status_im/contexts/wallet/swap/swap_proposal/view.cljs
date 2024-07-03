@@ -12,4 +12,8 @@
      [quo/button
       {:on-press #(rf/dispatch [:show-bottom-sheet
                                 {:content slippage-settings/view}])}
-      (str "Edit Slippage: " max-slippage "%")]]))
+      (str "Edit Slippage: " max-slippage "%")]
+     [quo/button
+      {:on-press #(rf/dispatch [:navigate-to-within-stack
+                                [:screen/wallet.swap-confirmation :screen/wallet.swap-propasal]])}
+      "Swap confirmation"]]))
