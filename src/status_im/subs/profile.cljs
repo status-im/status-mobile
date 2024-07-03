@@ -167,12 +167,6 @@
    (get multiaccount :log-level)))
 
 (re-frame/reg-sub
- :waku/v2-flag
- :<- [:fleets/current-fleet]
- (fn [fleet]
-   (string/starts-with? (name fleet) "wakuv2")))
-
-(re-frame/reg-sub
  :dapps-address
  :<- [:profile/profile]
  (fn [acc]

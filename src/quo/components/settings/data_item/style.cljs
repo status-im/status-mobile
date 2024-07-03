@@ -6,8 +6,14 @@
   [{:keys [size card? blur? actionable? theme]}]
   {:flex-direction     :row
    :justify-content    :space-between
-   :padding-vertical   (when (= size :default) 8)
-   :padding-horizontal (when (= size :default) 12)
+   :padding-vertical   (case size
+                         :default 8
+                         :large   12
+                         nil)
+   :padding-horizontal (case size
+                         :default 12
+                         :large   16
+                         nil)
    :border-radius      16
    :border-width       (when (and card? (not= size :small)) 1)
    :background-color   (if blur?
@@ -24,15 +30,27 @@
 
 (defn loading-container
   [size blur? theme]
-  {:width            (if (= size :default) 132 72)
-   :height           (if (= size :default) 16 10)
+  {:width            (case size
+                       :large 132
+                       :small 72
+                       132)
+   :height           (case size
+                       :large 16
+                       :small 10
+                       16)
    :background-color (if blur?
                        colors/white-opa-5
                        (colors/theme-colors colors/neutral-5
                                             colors/neutral-90
                                             theme))
-   :border-radius    (if (= size :default) 6 3)
-   :margin-vertical  (if (= size :default) 4 3)})
+   :border-radius    (case size
+                       :large 6
+                       :small 3
+                       6)
+   :margin-vertical  (case size
+                       :large 4
+                       :small 3
+                       4)})
 
 (def subtitle-container
   {:flex-direction :row

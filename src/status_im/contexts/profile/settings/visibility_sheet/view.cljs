@@ -1,5 +1,6 @@
 (ns status-im.contexts.profile.settings.visibility-sheet.view
   (:require [quo.core :as quo]
+            [react-native.core :as rn]
             [status-im.constants :as constants]
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]))
@@ -17,6 +18,10 @@
                                [:visibility-status-updates/visibility-status-update
                                 public-key])
         customization-color   (rf/sub [:profile/customization-color])]
+    (rn/use-mount
+     (fn []
+       (rf/dispatch [:peer-stats/get-count])))
+
     [quo/action-drawer
      [[{:icon                :i/online
         :no-icon-color?      true

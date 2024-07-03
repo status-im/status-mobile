@@ -265,6 +265,7 @@ class BaseView(object):
         self.password_input = EditBox(self.driver, accessibility_id="password-input")
         from views.sign_in_view import LogInButton
         self.login_button = LogInButton(self.driver)
+        self.continue_button = Button(self.driver, accessibility_id='continue-button')
 
         # Old UI Tabs
         self.home_button = HomeButton(self.driver)

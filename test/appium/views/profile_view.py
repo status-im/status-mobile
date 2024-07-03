@@ -545,6 +545,11 @@ class ProfileView(BaseView):
     def get_sync_code(self):
         self.syncing_button.scroll_and_click()
         self.sync_plus_button.click()
+        for checkbox in Button(
+                self.driver,
+                xpath="//*[@content-desc='checkbox-off'][@resource-id='checkbox-component']").find_elements():
+            checkbox.click()
+        self.continue_button.click()
         self.slide_button_track.swipe_right_on_element(width_percentage=1.3)
         password_input = self.password_input.find_element()
         password_input.send_keys(common_password)

@@ -128,7 +128,6 @@
                                                  :current-chat-id
                                                  :network
                                                  :network-status
-                                                 :peers-count
                                                  :peers-summary
                                                  :sync-state
                                                  :view-id
