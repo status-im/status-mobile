@@ -40,6 +40,7 @@
    :color :purple
    :wallet true
    :default-account? true
+   :operable? true
    :name "Ethereum account"
    :type :generated
    :chat false

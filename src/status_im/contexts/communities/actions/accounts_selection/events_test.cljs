@@ -9,17 +9,25 @@
 (def wallet-accounts
   {"0xA" {:address     "0xA"
           :watch-only? true
+          :operable?   true
           :position    2
           :color       :red
           :emoji       "🦇"}
-   "0xB" {:address  "0xB"
-          :position 0
-          :color    :blue
-          :emoji    "🐈"}
-   "0xC" {:address  "0xC"
-          :position 1
-          :color    :orange
-          :emoji    "🛏️"}})
+   "0xB" {:address   "0xB"
+          :operable? true
+          :position  0
+          :color     :blue
+          :emoji     "🐈"}
+   "0xC" {:address   "0xC"
+          :operable? true
+          :position  1
+          :color     :orange
+          :emoji     "🛏️"}
+   "0xD" {:address   "0xD"
+          :operable? false
+          :position  3
+          :color     :flamingo
+          :emoji     "🦩"}})
 
 (def permissioned-accounts
   [{:address          "0xB"

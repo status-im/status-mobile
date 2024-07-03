@@ -16,10 +16,12 @@
   {:0x1 {:tokens                    [{:symbol "ETH"} {:symbol "SNT"}]
          :network-preferences-names #{}
          :customization-color       nil
+         :operable?                 true
          :operable                  :fully}
    :0x2 {:tokens                    [{:symbol "SNT"}]
          :network-preferences-names #{}
          :customization-color       nil
+         :operable?                 true
          :operable                  :partially}})
 
 (def tokens-0x1
@@ -106,6 +108,7 @@
           :name                     "Account One"
           :type                     :generated
           :watch-only?              false
+          :operable?                true
           :chat                     false
           :test-preferred-chain-ids #{5 420 421613}
           :color                    :blue
@@ -127,6 +130,7 @@
           :name                     "Account Two"
           :type                     :generated
           :watch-only?              false
+          :operable?                true
           :chat                     false
           :test-preferred-chain-ids #{5 420 421613}
           :color                    :purple
@@ -148,6 +152,7 @@
           :name                     "Watched Account 1"
           :type                     :watch
           :watch-only?              true
+          :operable?                true
           :chat                     false
           :test-preferred-chain-ids #{0}
           :color                    :magenta
@@ -228,6 +233,7 @@
              :name                      "Account One"
              :type                      :generated
              :watch-only?               false
+             :operable?                 true
              :chat                      false
              :test-preferred-chain-ids  #{5 420 421613}
              :color                     :blue
@@ -250,6 +256,7 @@
              :name                      "Account Two"
              :type                      :generated
              :watch-only?               false
+             :operable?                 true
              :chat                      false
              :test-preferred-chain-ids  #{5 420 421613}
              :color                     :purple
@@ -272,6 +279,7 @@
              :name                      "Watched Account 1"
              :type                      :watch
              :watch-only?               true
+             :operable?                 true
              :chat                      false
              :test-preferred-chain-ids  #{0}
              :color                     :magenta
@@ -315,6 +323,7 @@
            :name                      "Account One"
            :type                      :generated
            :watch-only?               false
+           :operable?                 true
            :chat                      false
            :test-preferred-chain-ids  #{5 420 421613}
            :color                     :blue
@@ -367,52 +376,55 @@
            (assoc-in [:wallet :current-viewing-account-address] "0x2")
            (assoc-in [:wallet :networks] network-data)))
     (is
-     (= (list
-         {:path                      "m/44'/60'/0'/0/0"
-          :emoji                     "😃"
-          :key-uid                   "0x2f5ea39"
-          :address                   "0x1"
-          :wallet                    false
-          :name                      "Account One"
-          :type                      :generated
-          :watch-only?               false
-          :chat                      false
-          :test-preferred-chain-ids  #{5 420 421613}
-          :color                     :blue
-          :hidden                    false
-          :prod-preferred-chain-ids  #{1 10 42161}
-          :network-preferences-names #{:mainnet :arbitrum :optimism}
-          :position                  0
-          :clock                     1698945829328
-          :created-at                1698928839000
-          :operable                  :fully
-          :mixedcase-address         "0x7bcDfc75c431"
-          :public-key                "0x04371e2d9d66b82f056bc128064"
-          :removed                   false
-          :tokens                    tokens-0x1}
-         {:path                      ""
-          :emoji                     "🎉"
-          :key-uid                   "0x2f5ea39"
-          :address                   "0x3"
-          :wallet                    false
-          :name                      "Watched Account 1"
-          :type                      :watch
-          :watch-only?               true
-          :chat                      false
-          :test-preferred-chain-ids  #{0}
-          :color                     :magenta
-          :hidden                    false
-          :prod-preferred-chain-ids  #{0}
-          :network-preferences-names #{}
-          :position                  2
-          :clock                     1698945829328
-          :created-at                1698928839000
-          :operable                  :fully
-          :mixedcase-address         "0x7bcDfc75c431"
-          :public-key                "0x"
-          :removed                   false
-          :tokens                    tokens-0x3})
-        (rf/sub [sub-name])))))
+     (=
+      (list
+       {:path                      "m/44'/60'/0'/0/0"
+        :emoji                     "😃"
+        :key-uid                   "0x2f5ea39"
+        :address                   "0x1"
+        :wallet                    false
+        :name                      "Account One"
+        :type                      :generated
+        :watch-only?               false
+        :operable?                 true
+        :chat                      false
+        :test-preferred-chain-ids  #{5 420 421613}
+        :color                     :blue
+        :hidden                    false
+        :prod-preferred-chain-ids  #{1 10 42161}
+        :network-preferences-names #{:mainnet :arbitrum :optimism}
+        :position                  0
+        :clock                     1698945829328
+        :created-at                1698928839000
+        :operable                  :fully
+        :mixedcase-address         "0x7bcDfc75c431"
+        :public-key                "0x04371e2d9d66b82f056bc128064"
+        :removed                   false
+        :tokens                    tokens-0x1}
+       {:path                      ""
+        :emoji                     "🎉"
+        :key-uid                   "0x2f5ea39"
+        :address                   "0x3"
+        :wallet                    false
+        :name                      "Watched Account 1"
+        :type                      :watch
+        :watch-only?               true
+        :operable?                 true
+        :chat                      false
+        :test-preferred-chain-ids  #{0}
+        :color                     :magenta
+        :hidden                    false
+        :prod-preferred-chain-ids  #{0}
+        :network-preferences-names #{}
+        :position                  2
+        :clock                     1698945829328
+        :created-at                1698928839000
+        :operable                  :fully
+        :mixedcase-address         "0x7bcDfc75c431"
+        :public-key                "0x"
+        :removed                   false
+        :tokens                    tokens-0x3})
+      (rf/sub [sub-name])))))
 
 (h/deftest-sub :wallet/accounts-without-watched-accounts
   [sub-name]
@@ -432,6 +444,7 @@
         :name                      "Account One"
         :type                      :generated
         :watch-only?               false
+        :operable?                 true
         :chat                      false
         :test-preferred-chain-ids  #{5 420 421613}
         :color                     :blue
@@ -455,6 +468,7 @@
         :name                      "Account Two"
         :type                      :generated
         :watch-only?               false
+        :operable?                 true
         :chat                      false
         :test-preferred-chain-ids  #{5 420 421613}
         :color                     :purple
@@ -484,6 +498,7 @@
                   [{:tokens                    [{:symbol "ETH"} {:symbol "SNT"}]
                     :network-preferences-names #{}
                     :customization-color       nil
+                    :operable?                 true
                     :operable                  :fully}]))))
 
   (testing "returns the accounts list with the current asset using token"
@@ -496,6 +511,7 @@
                   [{:tokens                    [{:symbol "ETH"} {:symbol "SNT"}]
                     :network-preferences-names #{}
                     :customization-color       nil
+                    :operable?                 true
                     :operable                  :fully}]))))
 
   (testing

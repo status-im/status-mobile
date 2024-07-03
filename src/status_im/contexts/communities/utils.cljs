@@ -17,4 +17,5 @@
   (->> (get-in db [:wallet :accounts])
        (vals)
        (remove :watch-only?)
+       (filter :operable?)
        (sort-by :position)))
