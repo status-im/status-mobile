@@ -98,9 +98,8 @@
                               window-height
                               loading-indicator-page-loading-height)]
     [rn/view {:padding-top top-spacing}
-     ;; Only use animated loading skeleton for ios
-     ;; https://github.com/status-im/status-mobile/issues/17426
-     [quo/skeleton-list (skeleton-list-props :messages parent-height platform/ios?)]]))
+     ;; Don't use animated loading skeleton https://github.com/status-im/status-mobile/issues/17426
+     [quo/skeleton-list (skeleton-list-props :messages parent-height false)]]))
 
 (defn header-height
   [{:keys [insets able-to-send-message? images reply edit link-previews? input-content-height]}]
