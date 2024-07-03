@@ -309,7 +309,7 @@
                   []
                   (filter #(string/starts-with? (or (:ens-name %) "") input) contacts))]
      (if (and input (empty? result))
-       (rf/dispatch [:wallet/search-ens input on-error-fn ".stateofus.eth"])
+       {:fx [[:dispatch [:wallet/search-ens input on-error-fn ".stateofus.eth"]]]}
        {:db (-> db
                 (assoc-in [:wallet :ui :search-address :local-suggestions]
                           (map #(assoc % :type item-types/saved-address) result))

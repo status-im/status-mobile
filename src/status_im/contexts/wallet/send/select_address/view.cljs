@@ -31,11 +31,10 @@
 (defn- validate-address
   [address]
   (debounce/debounce-and-dispatch
-   (if (and (> (count address) 0)
-            (not (or (validation/ens-name? address)
-                     (validation/eth-address? address))))
-     [:wallet/address-validation-failed address]
-     [:wallet/address-validation-success address])
+   (cond
+     (<= (count address) 0)            [:wallet/address-validation-failed address]
+     (validation/eth-address? address) [:wallet/address-validation-success address]
+     :else                             [:wallet/address-validation-failed address])
    300))
 
 (defn- address-input
@@ -59,12 +58,13 @@
         :ens-regex             constants/regx-ens
         :scanned-value         (or (when recipient-plain-address? send-address) scanned-address)
         :address-regex         constants/regx-multichain-address
-        :on-detect-address     #(when (or (= current-screen-id :screen/wallet.select-address)
-                                          (= current-screen-id :screen/wallet.scan-address))
-                                  ; ^ this check is to prevent effect being triggered when screen is
-                                  ; loaded but not being shown to the user (deep in the navigation
-                                  ; stack) and avoid undesired behaviors
-                                  (validate-address %))
+        :on-detect-address     (fn [address]
+                                 (when (or (= current-screen-id :screen/wallet.select-address)
+                                           (= current-screen-id :screen/wallet.scan-address))
+                                   ; ^ this check is to prevent effect being triggered when screen
+                                   ; is loaded but not being shown to the user (deep in the
+                                   ; navigation stack) and avoid undesired behaviors
+                                   (validate-address address)))
         :on-detect-ens         (fn [text cb]
                                  (when (or (= current-screen-id :screen/wallet.select-address)
                                            (= current-screen-id :screen/wallet.scan-address))
@@ -75,8 +75,7 @@
                                     [:wallet/find-ens text contacts cb]
                                     300)))
         :on-change-text        (fn [text]
-                                 (when (empty? text)
-                                   (rf/dispatch [:wallet/clean-local-suggestions]))
+                                 (rf/dispatch [:wallet/clean-local-suggestions])
                                  (validate-address text)
                                  (reset! input-value text))
         :valid-ens-or-address? valid-ens-or-address?}])))
@@ -101,8 +100,9 @@
 
 (defn- suggestion-component
   []
-  (fn [{:keys [type ens address accounts primary-name public-key ens-name color] :as local-suggestion} _
-       _ _]
+  (fn [{:keys [type ens address accounts primary-name public-key ens-name color]
+        :as   local-suggestion}
+       _ _ _]
     (let [props {:on-press      (fn []
                                   (let [address (if accounts (:address (first accounts)) address)]
                                     (when-not ens
@@ -114,11 +114,12 @@
       (cond
         (= type types/saved-address)
         [quo/saved-address
-         (merge props
-                {:user-props {:name                primary-name
-                              :address             public-key
-                              :ens                 ens-name
-                              :customization-color color}})]
+         (assoc props
+                :user-props
+                {:name                primary-name
+                 :address             public-key
+                 :ens                 ens-name
+                 :customization-color color})]
         (= type types/saved-contact-address)
         [quo/saved-contact-address (merge props local-suggestion)]
         (and (not ens) (= type types/address))
@@ -208,9 +209,7 @@
            [rn/keyboard-avoiding-view
             {:style                    {:flex 1}
              :keyboard-vertical-offset 26}
-            [rn/view
-             {:style {:flex    1
-                      :padding 8}}
+            [rn/view {:style {:flex 1 :padding 8}}
              [local-suggestions-list]]]
            [:<>
             [quo/tabs

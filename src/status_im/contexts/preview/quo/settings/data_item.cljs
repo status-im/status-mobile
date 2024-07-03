@@ -55,7 +55,8 @@
    {:type    :select
     :key     :size
     :options [{:key :default}
-              {:key :small}]}])
+              {:key :small}
+              {:key :large}]}])
 
 (defn view
   []
