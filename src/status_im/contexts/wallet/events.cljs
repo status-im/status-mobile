@@ -575,10 +575,12 @@
                                (-> (apply dissoc existing-keypairs-by-id removed-keypair-ids)
                                    (merge updated-keypairs-by-id)))
                      (assoc-in [:wallet :accounts]
-                               (-> (apply dissoc
-                                          existing-accounts-by-address
-                                          (into removed-account-addresses old-account-addresses))
-                                   (merge updated-accounts-by-address))))}
+                               (merge-with merge
+                                           (apply dissoc
+                                                  existing-accounts-by-address
+                                                  (into removed-account-addresses
+                                                        old-account-addresses))
+                                           updated-accounts-by-address)))}
       (seq new-account-addresses)
       (assoc :fx
              (mapcat (fn [address]
