@@ -292,3 +292,46 @@
                                 (assoc raw-account
                                        :address "1x001"
                                        :chat    true)]}]]))))))
+(h/deftest-event :wallet/reconcile-watch-only-accounts
+  [event-id dispatch]
+  (testing "event adds new watch-only accounts"
+    (reset! rf-db/app-db {:wallet {:accounts {}}})
+    (is
+     (match?
+      (matchers/match-with
+       [set? matchers/set-equals
+        vector? matchers/equals
+        map? matchers/equals]
+       {:db {:wallet {:accounts {(:address account) account}}}
+        :fx [[:dispatch [:wallet/get-wallet-token-for-account address]]
+             [:dispatch
+              [:wallet/request-new-collectibles-for-account-from-signal address]]
+             [:dispatch [:wallet/check-recent-history-for-account address]]]})
+      (dispatch [event-id [raw-account]]))))
+  (testing "event removes watch-only accounts that are marked as removed"
+    (reset! rf-db/app-db {:wallet {:accounts {(:address account) account}}})
+    (is
+     (match?
+      (matchers/match-with
+       [set? matchers/set-equals
+        vector? matchers/equals
+        map? matchers/equals]
+       {:db {:wallet {:accounts {}}}
+        :fx []})
+      (dispatch [event-id [(assoc raw-account :removed true)]]))))
+  (testing "event updates existing watch-only accounts"
+    (reset! rf-db/app-db {:wallet
+                          {:accounts {address account}}})
+    (is
+     (match?
+      (matchers/match-with
+       [set? matchers/set-equals
+        vector? matchers/equals
+        map? matchers/equals]
+       {:db {:wallet {:accounts {address (assoc account :name "Test")}}}
+        :fx []})
+      (dispatch [event-id
+                 [(assoc raw-account
+                         :address address
+                         :name    "Test")]])))))
+(cljs.test/run-tests)

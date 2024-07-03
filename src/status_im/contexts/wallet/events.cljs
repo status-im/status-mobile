@@ -550,6 +550,34 @@
  (fn [_ [{:keys [backedUpWatchOnlyAccount]}]]
    {:fx [[:dispatch [:wallet/process-account-from-signal backedUpWatchOnlyAccount]]]}))
 
+(defn reconcile-watch-only-accounts
+  [{:keys [db]} [watch-only-accounts]]
+  (let [existing-accounts-by-address (get-in db [:wallet :accounts])
+        group-label                  #(if % :removed-accounts :updated-accounts)
+        {:keys [removed-accounts
+                updated-accounts]}   (->> watch-only-accounts
+                                          (map data-store/rpc->account)
+                                          (group-by (comp group-label :removed)))
+        existing-account-addresses   (set (keys existing-accounts-by-address))
+        removed-account-addresses    (set (map :address removed-accounts))
+        updated-account-addresses    (set (map :address updated-accounts))
+        new-account-addresses        (clojure.set/difference updated-account-addresses
+                                                             existing-account-addresses)]
+    {:db (update-in db
+                    [:wallet :accounts]
+                    (fn [existing-accounts]
+                      (merge-with merge
+                                  (apply dissoc existing-accounts removed-account-addresses)
+                                  (utils.collection/index-by :address updated-accounts))))
+     :fx (mapcat (fn [address]
+                   [[:dispatch [:wallet/get-wallet-token-for-account address]]
+                    [:dispatch
+                     [:wallet/request-new-collectibles-for-account-from-signal address]]
+                    [:dispatch [:wallet/check-recent-history-for-account address]]])
+          new-account-addresses)}))
+
+(rf/reg-event-fx :wallet/reconcile-watch-only-accounts reconcile-watch-only-accounts)
+
 (defn reconcile-keypairs
   [{:keys [db]} [keypairs]]
   (let [existing-keypairs-by-id               (get-in db [:wallet :keypairs])
