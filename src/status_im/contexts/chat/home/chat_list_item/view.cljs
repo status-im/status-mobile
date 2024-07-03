@@ -173,20 +173,21 @@
 
 (defn avatar-view
   [{:keys [contact chat-id full-name color muted? image]}]
-  (if contact ; `contact` is passed when it's not a group chat
-    (let [online?    (rf/sub [:visibility-status-updates/online? chat-id])
-          photo-path (rf/sub [:chats/photo-path chat-id])]
-      [quo/user-avatar
-       (cond-> {:full-name       full-name
-                :size            :small
-                :online?         online?
-                :profile-picture photo-path}
-         muted?
-         (assoc :ring? false))])
-    [quo/group-avatar
-     {:customization-color color
-      :picture             (when image {:uri image})
-      :size                :size-32}]))
+  [rn/view {:style {:justify-content :center}}
+   (if contact ; `contact` is passed when it's not a group chat
+     (let [online?    (rf/sub [:visibility-status-updates/online? chat-id])
+           photo-path (rf/sub [:chats/photo-path chat-id])]
+       [quo/user-avatar
+        (cond-> {:full-name       full-name
+                 :size            :small
+                 :online?         online?
+                 :profile-picture photo-path}
+          muted?
+          (assoc :ring? false))])
+     [quo/group-avatar
+      {:customization-color color
+       :picture             (when image {:uri image})
+       :size                :size-32}])])
 
 (defn- notification-layout
   [child]

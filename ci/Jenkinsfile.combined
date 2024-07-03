@@ -1,6 +1,8 @@
 #!/usr/bin/env groovy
 library 'status-jenkins-lib@v1.9.1'
 
+import groovy.json.JsonBuilder
+
 pipeline {
   agent { label 'linux' }
 

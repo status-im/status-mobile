@@ -1,5 +1,6 @@
 (ns status-im.contexts.wallet.wallet-connect.processing-events
-  (:require [native-module.core :as native-module]
+  (:require [clojure.string :as string]
+            [native-module.core :as native-module]
             [re-frame.core :as rf]
             [status-im.constants :as constants]
             [status-im.contexts.wallet.wallet-connect.core :as wallet-connect-core]
@@ -45,7 +46,7 @@
      {:db (update-in db
                      [:wallet-connect/current-request]
                      assoc
-                     :address      address
+                     :address      (string/lower-case address)
                      :raw-data     raw-data
                      :display-data (or parsed-data raw-data))})))
 
@@ -57,36 +58,45 @@
      {:db (update-in db
                      [:wallet-connect/current-request]
                      assoc
-                     :address      address
+                     :address      (string/lower-case address)
                      :raw-data     raw-data
                      :display-data (or parsed-data raw-data))})))
 
 (rf/reg-event-fx
  :wallet-connect/process-eth-send-transaction
  (fn [{:keys [db]}]
-   (let [event        (wallet-connect-core/get-db-current-request-event db)
-         display-data (-> event
-                          clj->js
-                          (js/JSON.stringify nil 2))
-         {:keys [to]} (-> event wallet-connect-core/get-request-params first)]
+   (let [event                 (wallet-connect-core/get-db-current-request-event db)
+         display-data          (-> event
+                                   clj->js
+                                   (js/JSON.stringify nil 2))
+
+         {:keys [from] :as tx} (-> event wallet-connect-core/get-request-params first)
+         chain-id              (-> event
+                                   (get-in [:params :chainId])
+                                   wallet-connect-core/eip155->chain-id)]
      {:db (update-in db
                      [:wallet-connect/current-request]
                      assoc
-                     :address      to
-                     :raw-data     event
+                     :address      (string/lower-case from)
+                     :raw-data     tx
+                     :chain-id     chain-id
                      :display-data display-data)})))
 
 (rf/reg-event-fx
  :wallet-connect/process-eth-sign-transaction
  (fn [{:keys [db]}]
-   (let [event        (wallet-connect-core/get-db-current-request-event db)
-         display-data (.stringify js/JSON (clj->js event) nil 2)
-         {:keys [to]} (-> event wallet-connect-core/get-request-params first)]
+   (let [event                 (wallet-connect-core/get-db-current-request-event db)
+         display-data          (.stringify js/JSON (clj->js event) nil 2)
+         {:keys [from] :as tx} (-> event wallet-connect-core/get-request-params first)
+         chain-id              (-> event
+                                   (get-in [:params :chainId])
+                                   wallet-connect-core/eip155->chain-id)]
      {:db (update-in db
                      [:wallet-connect/current-request]
                      assoc
-                     :address      to
-                     :raw-data     event
+                     :address      (string/lower-case from)
+                     :raw-data     tx
+                     :chain-id     chain-id
                      :display-data display-data)})))
 
 (rf/reg-event-fx
@@ -103,6 +113,6 @@
      {:db (update-in db
                      [:wallet-connect/current-request]
                      assoc
-                     :address      address
-                     :raw-data     (or parsed-data raw-data)
-                     :display-data parsed-data)})))
+                     :address      (string/lower-case address)
+                     :display-data (or parsed-data raw-data)
+                     :raw-data     raw-data)})))
