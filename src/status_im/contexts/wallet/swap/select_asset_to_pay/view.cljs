@@ -21,9 +21,12 @@
 (defn- assets-view
   [search-text on-change-text]
   (let [on-token-press (fn [token]
-                         (rf/dispatch [:wallet.swap/select-asset-to-pay
-                                       {:token    token
-                                        :stack-id :screen/wallet.swap-select-asset-to-pay}]))]
+                         (let [token-networks (:networks token)]
+                           (rf/dispatch [:wallet.swap/select-asset-to-pay
+                                         {:token    token
+                                          :network  (when (= (count token-networks) 1)
+                                                      (first token-networks))
+                                          :stack-id :screen/wallet.swap-select-asset-to-pay}])))]
     [:<>
      [search-input search-text on-change-text]
      [asset-list/view

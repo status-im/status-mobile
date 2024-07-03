@@ -505,6 +505,9 @@
 (def ^:const optimism-network-name :optimism)
 (def ^:const arbitrum-network-name :arbitrum)
 
+(def ^:const layer-1-network 1)
+(def ^:const layer-2-network 2)
+
 (def ^:const default-network-names [mainnet-network-name optimism-network-name arbitrum-network-name])
 
 (def ^:const default-network-count (count default-network-names))
