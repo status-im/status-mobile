@@ -550,14 +550,14 @@
  (fn [_ [{:keys [backedUpWatchOnlyAccount]}]]
    {:fx [[:dispatch [:wallet/process-account-from-signal backedUpWatchOnlyAccount]]]}))
 
-(defn process-keypairs
+(defn reconcile-keypairs
   [{:keys [db]} [keypairs]]
   (let [existing-keypairs-by-id               (get-in db [:wallet :keypairs])
         existing-accounts-by-address          (get-in db [:wallet :accounts])
         {:keys [removed-keypair-ids
                 removed-account-addresses
                 updated-keypairs-by-id
-                updated-accounts-by-address]} (data-store/process-keypairs keypairs)
+                updated-accounts-by-address]} (data-store/reconcile-keypairs keypairs)
         updated-keypair-ids                   (set (keys updated-keypairs-by-id))
         updated-account-addresses             (set (keys updated-accounts-by-address))
         existing-account-addresses            (set (keys existing-accounts-by-address))
@@ -588,4 +588,4 @@
                         [:dispatch [:wallet/check-recent-history-for-account address]]])
               new-account-addresses)))))
 
-(rf/reg-event-fx :wallet/process-keypairs process-keypairs)
+(rf/reg-event-fx :wallet/reconcile-keypairs reconcile-keypairs)

@@ -139,8 +139,8 @@
                                  raw-keypair-private-key
                                  raw-keypair-profile])))))
 
-(deftest process-keypairs-test
-  (testing "process-keypairs represents updated key pairs and accounts"
+(deftest reconcile-keypairs-test
+  (testing "reconcile-keypairs represents updated key pairs and accounts"
     (is
      (match?
       (matchers/match-with
@@ -158,9 +158,9 @@
                                       (sut/rpc->keypair raw-keypair-seed-phrase)
                                       (:key-uid raw-keypair-private-key)
                                       (sut/rpc->keypair raw-keypair-private-key)}})
-      (sut/process-keypairs [raw-keypair-seed-phrase
-                             raw-keypair-private-key]))))
-  (testing "process-keypairs represents removed key pairs and accounts"
+      (sut/reconcile-keypairs [raw-keypair-seed-phrase
+                               raw-keypair-private-key]))))
+  (testing "reconcile-keypairs represents removed key pairs and accounts"
     (is (match?
          (matchers/match-with
           [set? matchers/set-equals
@@ -173,9 +173,9 @@
                                              (utils.collection/index-by :address))
            :updated-keypairs-by-id      {(:key-uid raw-keypair-seed-phrase)
                                          (sut/rpc->keypair raw-keypair-seed-phrase)}})
-         (sut/process-keypairs [raw-keypair-seed-phrase
-                                (assoc raw-keypair-private-key :removed true)]))))
-  (testing "process-keypairs ignores chat accounts inside updated accounts"
+         (sut/reconcile-keypairs [raw-keypair-seed-phrase
+                                  (assoc raw-keypair-private-key :removed true)]))))
+  (testing "reconcile-keypairs ignores chat accounts inside updated accounts"
     (is
      (match?
       (matchers/match-with
@@ -190,4 +190,4 @@
                                           (utils.collection/index-by :address))
         :updated-keypairs-by-id      {(:key-uid raw-keypair-profile)
                                       (sut/rpc->keypair raw-keypair-profile)}})
-      (sut/process-keypairs [raw-keypair-profile])))))
+      (sut/reconcile-keypairs [raw-keypair-profile])))))

@@ -152,7 +152,7 @@
     (reset! rf-db/app-db {:wallet {:accounts {}}})
     (is (match? expected-effects (dispatch [event-id raw-account])))))
 
-(h/deftest-event :wallet/process-keypairs
+(h/deftest-event :wallet/reconcile-keypairs
   [event-id dispatch]
   (let [keypair-key-uid (:key-uid raw-account)]
     (testing "event adds new key pairs"

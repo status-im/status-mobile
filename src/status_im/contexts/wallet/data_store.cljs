@@ -162,7 +162,7 @@
   [saved-addresses]
   (map rpc->saved-address saved-addresses))
 
-(defn process-keypairs
+(defn reconcile-keypairs
   [keypairs]
   (let [received-keypairs             (rpc->keypairs keypairs)
         keypair-label                 #(if % :removed-keypairs :updated-keypairs)
