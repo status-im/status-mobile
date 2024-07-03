@@ -2736,5 +2736,6 @@
     "dont-auto-recalculate-network": "Don't auto recalculate {{network}}",
     "import-keypair-to-use-account": "Import key pair to use this account",
     "import-keypair-steps": "{{account-name}} was derived from your {{keypair-name}} key pair, which has not yet been imported to this device. To transact using this account, you will need to import the {{keypair-name}} key pair first.",
-    "not-now": "Not now"
+    "not-now": "Not now",
+    "value-higher-than-send-amount": "This value is higher than entered amount to send"
 }
