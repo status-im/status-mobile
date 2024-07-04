@@ -1,6 +1,7 @@
 (ns status-im.contexts.wallet.events-test
   (:require
     [cljs.test :refer-macros [is testing]]
+    [matcher-combinators.matchers :as matchers]
     matcher-combinators.test
     [re-frame.db :as rf-db]
     [status-im.constants :as constants]
@@ -150,3 +151,187 @@
                                [:dispatch [:wallet/check-recent-history-for-account address]]]}]
     (reset! rf-db/app-db {:wallet {:accounts {}}})
     (is (match? expected-effects (dispatch [event-id raw-account])))))
+
+(h/deftest-event :wallet/reconcile-keypairs
+  [event-id dispatch]
+  (let [keypair-key-uid (:key-uid raw-account)]
+    (testing "event adds new key pairs"
+      (reset! rf-db/app-db {:wallet {:accounts {}
+                                     :keypairs {}}})
+      (is
+       (match?
+        (matchers/match-with
+         [set? matchers/set-equals
+          vector? matchers/equals
+          map? matchers/equals]
+         {:db {:wallet {:accounts {(:address account) account}
+                        :keypairs {keypair-key-uid {:key-uid            keypair-key-uid
+                                                    :type               :seed
+                                                    :lowest-operability :fully
+                                                    :accounts           [account]}}}}
+          :fx [[:dispatch [:wallet/get-wallet-token-for-account address]]
+               [:dispatch [:wallet/request-new-collectibles-for-account-from-signal address]]
+               [:dispatch [:wallet/check-recent-history-for-account address]]]})
+        (dispatch [event-id
+                   [{:key-uid  keypair-key-uid
+                     :type     "seed"
+                     :accounts [raw-account]}]]))))
+    (testing "event removes key pairs and accounts that are marked as removed"
+      (reset! rf-db/app-db {:wallet {:accounts {(:address account) account}
+                                     :keypairs {keypair-key-uid
+                                                {:key-uid            keypair-key-uid
+                                                 :type               :seed
+                                                 :lowest-operability :fully
+                                                 :accounts           [account]}}}})
+
+      (is
+       (match?
+        (matchers/match-with
+         [set? matchers/set-equals
+          vector? matchers/equals
+          map? matchers/equals]
+         {:db {:wallet {:accounts {}
+                        :keypairs {}}}})
+        (dispatch [event-id
+                   [{:key-uid  keypair-key-uid
+                     :type     "seed"
+                     :removed  true
+                     :accounts [raw-account]}]]))))
+    (testing "event removes accounts not present with key pair"
+      (reset! rf-db/app-db {:wallet {:accounts {(:address account) account
+                                                "1x001"            (assoc account
+                                                                          :address "1x001"
+                                                                          :key-uid "0x001")}
+                                     :keypairs {keypair-key-uid
+                                                {:key-uid            keypair-key-uid
+                                                 :type               :seed
+                                                 :lowest-operability :fully
+                                                 :accounts           [account]}
+                                                "0x001"
+                                                {:key-uid            "0x001"
+                                                 :type               :seed
+                                                 :lowest-operability :fully
+                                                 :accounts           [(assoc account
+                                                                             :address "1x001"
+                                                                             :key-uid "0x001")]}}}})
+      (is
+       (match?
+        (matchers/match-with
+         [set? matchers/set-equals
+          vector? matchers/equals
+          map? matchers/equals]
+         {:db {:wallet {:accounts {(:address account) account}
+                        :keypairs {keypair-key-uid
+                                   {:key-uid            keypair-key-uid
+                                    :type               :seed
+                                    :lowest-operability :fully
+                                    :accounts           [account]}
+                                   "0x001"
+                                   {:key-uid            "0x001"
+                                    :type               :seed
+                                    :lowest-operability :fully
+                                    :accounts           []}}}}})
+        (dispatch [event-id
+                   [{:key-uid  "0x001"
+                     :type     "seed"
+                     :accounts []}]]))))
+    (testing "event updates existing key pairs"
+      (reset! rf-db/app-db {:wallet
+                            {:accounts {(:address account)
+                                        (assoc account :operable :no)}
+                             :keypairs {keypair-key-uid
+                                        {:key-uid            keypair-key-uid
+                                         :type               :seed
+                                         :lowest-operability :no
+                                         :accounts           [(assoc account :operable :no)]}}}})
+      (is
+       (match?
+        (matchers/match-with
+         [set? matchers/set-equals
+          vector? matchers/equals
+          map? matchers/equals]
+         {:db {:wallet {:accounts {(:address account) account}
+                        :keypairs {keypair-key-uid
+                                   {:key-uid            keypair-key-uid
+                                    :type               :seed
+                                    :lowest-operability :fully
+                                    :accounts           [account]}}}}})
+        (dispatch [event-id
+                   [{:key-uid  keypair-key-uid
+                     :type     "seed"
+                     :accounts [raw-account]}]]))))
+    (testing "event ignores chat accounts for key pairs"
+      (reset! rf-db/app-db {:wallet {:accounts {(:address account) account}
+                                     :keypairs {keypair-key-uid
+                                                {:key-uid            keypair-key-uid
+                                                 :type               :profile
+                                                 :lowest-operability :fully
+                                                 :accounts           [account
+                                                                      (assoc account
+                                                                             :address "1x001"
+                                                                             :chat    true)]}}}})
+      (is
+       (match?
+        (matchers/match-with
+         [set? matchers/set-equals
+          vector? matchers/equals
+          map? matchers/equals]
+         {:db {:wallet {:accounts {(:address account) account}
+                        :keypairs {keypair-key-uid
+                                   {:key-uid            keypair-key-uid
+                                    :type               :profile
+                                    :lowest-operability :fully
+                                    :accounts           [account
+                                                         (assoc account
+                                                                :address "1x001"
+                                                                :chat    true)]}}}}})
+        (dispatch [event-id
+                   [{:key-uid  keypair-key-uid
+                     :type     "profile"
+                     :accounts [raw-account
+                                (assoc raw-account
+                                       :address "1x001"
+                                       :chat    true)]}]]))))))
+(h/deftest-event :wallet/reconcile-watch-only-accounts
+  [event-id dispatch]
+  (testing "event adds new watch-only accounts"
+    (reset! rf-db/app-db {:wallet {:accounts {}}})
+    (is
+     (match?
+      (matchers/match-with
+       [set? matchers/set-equals
+        vector? matchers/equals
+        map? matchers/equals]
+       {:db {:wallet {:accounts {(:address account) account}}}
+        :fx [[:dispatch [:wallet/get-wallet-token-for-account address]]
+             [:dispatch
+              [:wallet/request-new-collectibles-for-account-from-signal address]]
+             [:dispatch [:wallet/check-recent-history-for-account address]]]})
+      (dispatch [event-id [raw-account]]))))
+  (testing "event removes watch-only accounts that are marked as removed"
+    (reset! rf-db/app-db {:wallet {:accounts {(:address account) account}}})
+    (is
+     (match?
+      (matchers/match-with
+       [set? matchers/set-equals
+        vector? matchers/equals
+        map? matchers/equals]
+       {:db {:wallet {:accounts {}}}
+        :fx []})
+      (dispatch [event-id [(assoc raw-account :removed true)]]))))
+  (testing "event updates existing watch-only accounts"
+    (reset! rf-db/app-db {:wallet
+                          {:accounts {address account}}})
+    (is
+     (match?
+      (matchers/match-with
+       [set? matchers/set-equals
+        vector? matchers/equals
+        map? matchers/equals]
+       {:db {:wallet {:accounts {address (assoc account :name "Test")}}}
+        :fx []})
+      (dispatch [event-id
+                 [(assoc raw-account
+                         :address address
+                         :name    "Test")]])))))
+(cljs.test/run-tests)

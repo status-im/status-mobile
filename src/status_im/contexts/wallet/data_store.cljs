@@ -5,6 +5,7 @@
     [clojure.string :as string]
     [status-im.constants :as constants]
     [status-im.contexts.wallet.common.utils.networks :as network-utils]
+    [utils.collection :as utils.collection]
     [utils.money :as money]
     [utils.number :as utils.number]
     [utils.transforms :as transforms]))
@@ -160,3 +161,29 @@
 (defn rpc->saved-addresses
   [saved-addresses]
   (map rpc->saved-address saved-addresses))
+
+(defn reconcile-keypairs
+  [keypairs]
+  (let [received-keypairs             (rpc->keypairs keypairs)
+        keypair-label                 #(if % :removed-keypairs :updated-keypairs)
+        {:keys [removed-keypairs
+                updated-keypairs]
+         :or   {updated-keypairs []
+                removed-keypairs []}} (group-by (comp keypair-label :removed) received-keypairs)
+        updated-keypairs-by-id        (utils.collection/index-by :key-uid updated-keypairs)
+        updated-accounts-by-address   (transduce (comp (mapcat :accounts)
+                                                       (filter (comp not :chat))
+                                                       (map #(vector (:address %) %)))
+                                                 conj
+                                                 {}
+                                                 updated-keypairs)
+        removed-keypairs-ids          (set (map :key-uid removed-keypairs))
+        removed-account-addresses     (transduce (comp (mapcat :accounts)
+                                                       (map :address))
+                                                 conj
+                                                 #{}
+                                                 removed-keypairs)]
+    {:removed-keypair-ids         removed-keypairs-ids
+     :removed-account-addresses   removed-account-addresses
+     :updated-keypairs-by-id      updated-keypairs-by-id
+     :updated-accounts-by-address updated-accounts-by-address}))
