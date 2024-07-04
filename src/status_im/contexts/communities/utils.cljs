@@ -12,7 +12,7 @@
      constants/community-token-permission-become-member       :t/member
      fallback-to)))
 
-(defn sorted-non-watch-only-accounts
+(defn sorted-operable-non-watch-only-accounts
   [db]
   (->> (get-in db [:wallet :accounts])
        (vals)
