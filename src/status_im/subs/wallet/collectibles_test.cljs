@@ -26,21 +26,7 @@
    :accounts                 {"0x1" {:name  "account 1"
                                      :color "army"}}})
 
-(h/deftest-sub :wallet/last-collectible-details-chain-id
-  [sub-name]
-  (testing "correct chain-id of the last collectible should be returned"
-    (swap! rf-db/app-db assoc-in [:wallet :last-collectible-details :id :contract-id :chain-id] "1")
-    (let [result (rf/sub [sub-name])]
-      (is (= "1" result)))))
-
-(h/deftest-sub :wallet/last-collectible-details-traits
-  [sub-name]
-  (testing "correct traits of the last collectible should be returned"
-    (swap! rf-db/app-db assoc-in [:wallet :last-collectible-details :collectible-data :traits] traits)
-    (let [result (rf/sub [sub-name])]
-      (is (= traits result)))))
-
-(h/deftest-sub :wallet/last-collectible-details-owner
+(h/deftest-sub :wallet/collectible-details-owner
   [sub-name]
   (testing "correct owner of the last collectible should be returned"
     (swap! rf-db/app-db assoc-in [:wallet] collectible-owner-wallet)
