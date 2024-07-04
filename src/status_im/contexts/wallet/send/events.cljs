@@ -26,32 +26,32 @@
 (rf/reg-event-fx :wallet/suggested-routes-success
  (fn [{:keys [db]} [suggested-routes-data]]
    (let [chosen-route                  (:best suggested-routes-data)
-         token                         (get-in db [:wallet :ui :send :token])
-         collectible                   (get-in db [:wallet :ui :send :collectible])
-         token-display-name            (get-in db [:wallet :ui :send :token-display-name])
-         receiver-networks             (get-in db [:wallet :ui :send :receiver-networks])
-         receiver-network-values       (get-in db [:wallet :ui :send :receiver-network-values])
-         sender-network-values         (get-in db [:wallet :ui :send :sender-network-values])
-         tx-type                       (get-in db [:wallet :ui :send :tx-type])
-         disabled-from-chain-ids       (get-in db [:wallet :ui :send :disabled-from-chain-ids] [])
-         from-locked-amounts           (get-in db [:wallet :ui :send :from-locked-amounts] {})
+         {:keys [token collectible token-display-name
+                 receiver-networks
+                 receiver-network-values
+                 sender-network-values tx-type
+                 disabled-from-chain-ids
+                 from-locked-amounts]} (get-in db [:wallet :ui :send])
          token-decimals                (if collectible 0 (:decimals token))
          native-token?                 (and token (= token-display-name "ETH"))
          routes-available?             (pos? (count chosen-route))
          token-networks                (:networks token)
-         token-networks-ids            (when token-networks (map #(:chain-id %) token-networks))
+         token-networks-ids            (when token-networks
+                                         (map #(:chain-id %) token-networks))
          from-network-amounts-by-chain (send-utils/network-amounts-by-chain
                                         {:route          chosen-route
                                          :token-decimals token-decimals
                                          :native-token?  native-token?
                                          :receiver?      false})
-         from-network-values-for-ui    (send-utils/network-values-for-ui from-network-amounts-by-chain)
+         from-network-values-for-ui    (send-utils/network-values-for-ui
+                                        from-network-amounts-by-chain)
          to-network-amounts-by-chain   (send-utils/network-amounts-by-chain
                                         {:route          chosen-route
                                          :token-decimals token-decimals
                                          :native-token?  native-token?
                                          :receiver?      true})
-         to-network-values-for-ui      (send-utils/network-values-for-ui to-network-amounts-by-chain)
+         to-network-values-for-ui      (send-utils/network-values-for-ui
+                                        to-network-amounts-by-chain)
          sender-possible-chain-ids     (map :chain-id sender-network-values)
          sender-network-values         (if routes-available?
                                          (send-utils/network-amounts
@@ -86,15 +86,17 @@
                                          (send-utils/network-links chosen-route
                                                                    sender-network-values
                                                                    receiver-network-values))]
-     {:db (-> db
-              (assoc-in [:wallet :ui :send :suggested-routes] suggested-routes-data)
-              (assoc-in [:wallet :ui :send :route] chosen-route)
-              (assoc-in [:wallet :ui :send :from-values-by-chain] from-network-values-for-ui)
-              (assoc-in [:wallet :ui :send :to-values-by-chain] to-network-values-for-ui)
-              (assoc-in [:wallet :ui :send :sender-network-values] sender-network-values)
-              (assoc-in [:wallet :ui :send :receiver-network-values] receiver-network-values)
-              (assoc-in [:wallet :ui :send :network-links] network-links)
-              (assoc-in [:wallet :ui :send :loading-suggested-routes?] false))})))
+     {:db (update-in db
+                     [:wallet :ui :send]
+                     assoc
+                     :suggested-routes          suggested-routes-data
+                     :route                     chosen-route
+                     :from-values-by-chain      from-network-values-for-ui
+                     :to-values-by-chain        to-network-values-for-ui
+                     :sender-network-values     sender-network-values
+                     :receiver-network-values   receiver-network-values
+                     :network-links             network-links
+                     :loading-suggested-routes? false)})))
 
 (rf/reg-event-fx :wallet/suggested-routes-error
  (fn [{:keys [db]} [error]]
