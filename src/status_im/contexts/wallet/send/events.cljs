@@ -1,19 +1,18 @@
 (ns status-im.contexts.wallet.send.events
   (:require
-    [camel-snake-kebab.extras :as cske]
     [clojure.string :as string]
     [native-module.core :as native-module]
     [status-im.constants :as constants]
     [status-im.contexts.wallet.collectible.utils :as collectible.utils]
     [status-im.contexts.wallet.common.utils :as utils]
     [status-im.contexts.wallet.common.utils.networks :as network-utils]
+    [status-im.contexts.wallet.data-store :as data-store]
     [status-im.contexts.wallet.send.utils :as send-utils]
     [taoensso.timbre :as log]
     [utils.address :as address]
     [utils.money :as money]
     [utils.number]
-    [utils.re-frame :as rf]
-    [utils.transforms :as transforms]))
+    [utils.re-frame :as rf]))
 
 (rf/reg-event-fx :wallet/clean-send-data
  (fn [{:keys [db]}]
@@ -491,65 +490,12 @@
                                               {:event :wallet/stop-get-suggested-routes
                                                :error error}))}]}))
 
-(defn- transform-new-to-old-path
-  [new-path]
-  (let [unit        (-> (get-in new-path [:from-token :symbol])
-                        string/lower-case
-                        keyword)
-        bonder-fees (:tx-bonder-fees new-path)
-        token-fees  (+ (money/wei-> unit bonder-fees)
-                       (money/wei-> unit
-                                    (:tx-token-fees new-path)))]
-    {:from                      (:from-chain new-path)
-     :amount-in-locked          (:amount-in-locked new-path)
-     :amount-in                 (:amount-in new-path)
-     :max-amount-in             "0x0"
-     :gas-fees                  {:gas-price                "0"
-                                 :base-fee                 (send-utils/convert-to-gwei (:tx-base-fee
-                                                                                        new-path))
-                                 :max-priority-fee-per-gas (send-utils/convert-to-gwei (:tx-priority-fee
-                                                                                        new-path))
-                                 :max-fee-per-gas-low      (send-utils/convert-to-gwei
-                                                            (get-in
-                                                             new-path
-                                                             [:suggested-levels-for-max-fees-per-gas
-                                                              :low]))
-                                 :max-fee-per-gas-medium   (send-utils/convert-to-gwei
-                                                            (get-in
-                                                             new-path
-                                                             [:suggested-levels-for-max-fees-per-gas
-                                                              :medium]))
-                                 :max-fee-per-gas-high     (send-utils/convert-to-gwei
-                                                            (get-in
-                                                             new-path
-                                                             [:suggested-levels-for-max-fees-per-gas
-                                                              :high]))
-                                 :l-1-gas-fee              (send-utils/convert-to-gwei (:tx-l-1-fee
-                                                                                        new-path))
-                                 :eip-1559-enabled         true}
-     :bridge-name               (:processor-name new-path)
-     :amount-out                (:amount-out new-path)
-     :approval-contract-address (:approval-contract-address new-path)
-     :approval-required         (:approval-required new-path)
-     :estimated-time            (:estimated-time new-path)
-     :approval-gas-fees         (* (money/wei->ether (get-in new-path
-                                                             [:suggested-levels-for-max-fees-per-gas
-                                                              :medium]))
-                                   (:approval-gas-amount new-path))
-     :to                        (:to-chain new-path)
-     :bonder-fees               bonder-fees
-     :approval-amount-required  (:approval-amount-required new-path)
-     ;;  :cost () ;; tbd not used on desktop
-     :token-fees                token-fees
-     :gas-amount                (:tx-gas-amount new-path)}))
-
 (rf/reg-event-fx :wallet/handle-suggested-routes
  (fn [_ data]
-   (let [suggested-routes-new-data (cske/transform-keys transforms/->kebab-case-keyword
-                                                        data)
+   (let [suggested-routes-new-data (data-store/rpc->suggested-routes data)
          suggested-routes          (-> (first suggested-routes-new-data)
-                                       (update :best #(map transform-new-to-old-path %))
-                                       (update :candidates #(map transform-new-to-old-path %)))]
+                                       (update :best #(map data-store/new->old-route-path %))
+                                       (update :candidates #(map data-store/new->old-route-path %)))]
      {:fx [[:dispatch
             [:wallet/suggested-routes-success suggested-routes]]]})))
 
