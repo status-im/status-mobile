@@ -10,6 +10,7 @@
     [status-im.contexts.wallet.send.routes.style :as style]
     [status-im.contexts.wallet.send.utils :as send-utils]
     [status-im.contexts.wallet.sheets.network-preferences.view :as network-preferences]
+    [status-im.feature-flags :as ff]
     [utils.i18n :as i18n]
     [utils.money :as money]
     [utils.number :as number]
@@ -387,7 +388,8 @@
                                                       chain-id-to-disable
                                                       disabled-from-chain-ids
                                                       token-available-networks-for-suggested-routes))
-        :on-long-press                             (fn [chain-id amount-calculated-for-chain]
+        (when (ff/enabled? ::ff/wallet.custom-network-amounts)
+          :on-long-press)                          (fn [chain-id amount-calculated-for-chain]
                                                      (edit-amount
                                                       {:chain-id chain-id
                                                        :token-symbol token-symbol
