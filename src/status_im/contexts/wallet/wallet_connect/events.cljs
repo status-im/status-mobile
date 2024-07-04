@@ -67,8 +67,7 @@
                     :session-networks                session-networks
                     :address                         (-> without-watched
                                                          first
-                                                         :address)
-            )
+                                                         :address))
         :fx [[:dispatch
               [:open-modal :screen/wallet.wallet-connect-session-proposal]]]}
        {:fx [[:dispatch
@@ -190,27 +189,25 @@
  (fn [_ [scanned-text]]
    (let [parsed-uri         (wallet-connect/parse-uri scanned-text)
          version            (:version parsed-uri)
+         valid-wc-uri?      (wc-utils/valid-uri? parsed-uri)
          expired?           (-> parsed-uri
                                 :expiryTimestamp
                                 wc-utils/timestamp-expired?)
          version-supported? (wc-utils/version-supported? version)]
-     (cond
-       expired?
+     (if (or (not valid-wc-uri?) expired? (not version-supported?))
        {:fx [[:dispatch
               [:toasts/upsert
                {:type  :negative
                 :theme :dark
-                :text  (i18n/label :t/wallet-connect-qr-expired)}]]]}
+                :text  (cond (not valid-wc-uri?)
+                             (i18n/label :t/wallet-connect-wrong-qr)
 
-       (not version-supported?)
-       {:fx [[:dispatch
-              [:toasts/upsert
-               {:type  :negative
-                :theme :dark
-                :text  (i18n/label :t/wallet-connect-version-not-supported
-                                   {:version version})}]]]}
+                             expired?
+                             (i18n/label :t/wallet-connect-qr-expired)
 
-       :else
+                             (not version-supported?)
+                             (i18n/label :t/wallet-connect-version-not-supported
+                                         {:version version}))}]]]}
        {:fx [[:dispatch [:wallet-connect/pair scanned-text]]]}))))
 
 (rf/reg-event-fx

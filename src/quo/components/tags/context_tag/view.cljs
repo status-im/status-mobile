@@ -17,16 +17,18 @@
     [schema.core :as schema]))
 
 (defn- tag-skeleton
-  [{:keys [size text] :or {size 24}} logo-component]
-  (let [theme (quo.theme/use-theme)]
-    [rn/view {:style (style/tag-container size)}
-     logo-component
-     [rn/view {:style (style/tag-spacing size)}
-      [text/text
-       {:style  (style/text theme)
-        :weight :medium
-        :size   (if (= size 24) :paragraph-2 :paragraph-1)}
-       text]]]))
+  [{:keys [size text theme]
+    :or   {size  24
+           theme (quo.theme/use-theme)}}
+   logo-component]
+  [rn/view {:style (style/tag-container size)}
+   logo-component
+   [rn/view {:style (style/tag-spacing size)}
+    [text/text
+     {:style  (style/text theme)
+      :weight :medium
+      :size   (if (= size 24) :paragraph-2 :paragraph-1)}
+     text]]])
 
 (defn- communities-tag
   [{:keys [size community-logo community-name blur? channel? channel-name]}]
@@ -81,95 +83,100 @@
        context]]]))
 
 (defn- view-internal
-  [{:keys [type size state blur? customization-color profile-picture full-name users
+  [{:keys [type theme size state blur? customization-color profile-picture full-name users
            group-name amount token network-logo network-name networks
-           account-name emoji collectible collectible-name collectible-number duration container-style]
+           account-name emoji collectible collectible-name collectible-number
+           dapp-name dapp-logo duration container-style]
     :or   {customization-color :blue
            type                :default
-           state               :default}
+           state               :default
+           theme               (quo.theme/use-theme)}
     :as   props}]
-  (let [theme (quo.theme/use-theme)]
-    [rn/view {:style (merge {:align-items :flex-start} container-style)}
-     [rn/view
-      {:style               (style/container {:theme               theme
-                                              :type                type
-                                              :size                size
-                                              :state               state
-                                              :blur?               blur?
-                                              :customization-color customization-color})
-       :accessibility-label :context-tag}
-      (case type
-        :default
-        [tag-skeleton {:theme theme :size size :text full-name}
-         [user-avatar/user-avatar
-          {:full-name           full-name
-           :profile-picture     profile-picture
-           :size                (if (= size 24) :xxs 28)
-           :status-indicator?   false
-           :ring?               false
-           :customization-color customization-color}]]
+  [rn/view {:style (merge {:align-items :flex-start} container-style)}
+   [rn/view
+    {:style               (style/container {:theme               theme
+                                            :type                type
+                                            :size                size
+                                            :state               state
+                                            :blur?               blur?
+                                            :customization-color customization-color})
+     :accessibility-label :context-tag}
+    (case type
+      :default
+      [tag-skeleton {:theme theme :size size :text full-name}
+       [user-avatar/user-avatar
+        {:full-name           full-name
+         :profile-picture     profile-picture
+         :size                (if (= size 24) :xxs 28)
+         :status-indicator?   false
+         :ring?               false
+         :customization-color customization-color}]]
 
-        :multiuser
-        [preview-list/view {:type :user :size :size-20}
-         users]
+      :multiuser
+      [preview-list/view {:type :user :size :size-20}
+       users]
 
-        :multinetwork
-        [preview-list/view {:type :network :size :size-20}
-         networks]
+      :multinetwork
+      [preview-list/view {:type :network :size :size-20}
+       networks]
 
-        :audio
-        [tag-skeleton {:theme theme :text (str duration)}
-         [rn/view {:style (style/audio-tag-icon-container customization-color theme)}
-          [icons/icon :i/play {:color style/audio-tag-icon-color :size 12}]]]
+      :audio
+      [tag-skeleton {:theme theme :text (str duration)}
+       [rn/view {:style (style/audio-tag-icon-container customization-color theme)}
+        [icons/icon :i/play {:color style/audio-tag-icon-color :size 12}]]]
 
-        :group
-        [tag-skeleton {:theme theme :size size :text group-name}
-         [group-avatar/view
-          {:icon-name           :i/members
-           :size                (if (= size 24) :size-20 :size-28)
-           :customization-color (colors/custom-color customization-color 50)}]]
+      :group
+      [tag-skeleton {:theme theme :size size :text group-name}
+       [group-avatar/view
+        {:icon-name           :i/members
+         :size                (if (= size 24) :size-20 :size-28)
+         :customization-color (colors/custom-color customization-color 50)}]]
 
-        (:channel :community)
-        [communities-tag (assoc props :channel? (= type :channel))]
+      (:channel :community)
+      [communities-tag (assoc props :channel? (= type :channel))]
 
-        :token
-        [tag-skeleton {:theme theme :size size :text (str amount " " token)}
-         [token/view
-          {:style (style/token-logo size)
-           :token token
-           :size  (if (= size 24) :size-20 :size-28)}]]
+      :token
+      [tag-skeleton {:theme theme :size size :text (str amount " " token)}
+       [token/view
+        {:style (style/token-logo size)
+         :token token
+         :size  (if (= size 24) :size-20 :size-28)}]]
 
-        :network
-        [tag-skeleton {:theme theme :size size :text network-name}
-         [rn/image {:style (style/circle-logo size) :source network-logo}]]
+      :network
+      [tag-skeleton {:theme theme :size size :text network-name}
+       [rn/image {:style (style/circle-logo size) :source network-logo}]]
 
-        :collectible
-        [tag-skeleton
-         {:theme theme
-          :size  size
-          :text  (str collectible-name " #" collectible-number)}
-         [rn/image {:style (style/rounded-logo size) :source collectible}]]
+      :collectible
+      [tag-skeleton
+       {:theme theme
+        :size  size
+        :text  (str collectible-name " #" collectible-number)}
+       [rn/image {:style (style/rounded-logo size) :source collectible}]]
 
-        :account
-        [tag-skeleton {:theme theme :size size :text account-name}
-         [account-avatar/view
-          {:customization-color customization-color
-           :emoji               emoji
-           :size                (if (= size 24) 20 28)}]]
+      :account
+      [tag-skeleton {:theme theme :size size :text account-name}
+       [account-avatar/view
+        {:customization-color customization-color
+         :emoji               emoji
+         :size                (if (= size 24) 20 28)}]]
 
-        :address
-        [address-tag props]
+      :address
+      [address-tag props]
 
-        :icon
-        [icon-tag props]
+      :icon
+      [icon-tag props]
 
-        :wallet-user
-        [tag-skeleton {:theme theme :size size :text full-name}
-         [wallet-user-avatar/wallet-user-avatar
-          {:full-name           full-name
-           :size                (if (= size 24) :size-20 :size-24)
-           :customization-color customization-color}]]
+      :wallet-user
+      [tag-skeleton {:theme theme :size size :text full-name}
+       [wallet-user-avatar/wallet-user-avatar
+        {:full-name           full-name
+         :size                (if (= size 24) :size-20 :size-24)
+         :customization-color customization-color}]]
 
-        nil)]]))
+      :dapp
+      [tag-skeleton {:theme theme :size size :text dapp-name}
+       [rn/image {:style (style/circle-logo size) :source dapp-logo}]]
+
+      nil)]])
 
 (def view (schema/instrument #'view-internal component-schema/?schema))

@@ -37,7 +37,7 @@
       :networks            networks
       :align-center?       true
       :networks-on-press   #(rf/dispatch [:show-bottom-sheet {:content network-filter/view}])
-      :right-side          [(when (and (ff/enabled? ::wallet.wallet-connect)
+      :right-side          [(when (and (ff/enabled? ::ff/wallet.wallet-connect)
                                        (not watch-only?))
                               {:icon-name :i/dapps
                                :on-press  #(rf/dispatch [:navigate-to :screen/wallet.connected-dapps])})
