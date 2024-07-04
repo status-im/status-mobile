@@ -142,7 +142,7 @@
                          :accessibility-label :wc-deny-connection
                          :on-press            #(do (rf/dispatch [:navigate-back])
                                                    (rf/dispatch
-                                                    [:wallet-connect/reset-current-session]))}
+                                                    [:wallet-connect/reject-session-proposal]))}
       :button-one-label (i18n/label :t/connect)
       :button-one-props {:customization-color customization-color
                          :type                :primary

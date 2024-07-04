@@ -67,8 +67,7 @@
                     :session-networks                session-networks
                     :address                         (-> without-watched
                                                          first
-                                                         :address)
-            )
+                                                         :address))
         :fx [[:dispatch
               [:open-modal :screen/wallet.wallet-connect-session-proposal]]]}
        {:fx [[:dispatch
@@ -239,3 +238,14 @@
           [{:method     "wakuext_getWalletConnectSession"
             :on-success [:wallet-connect/fetch-persisted-sessions-success]
             :on-error   #(log/info "Wallet Connect fetch persisted sessions failed")}]]]}))
+
+(rf/reg-event-fx
+ :wallet-connect/reject-session-proposal
+ (fn [{:keys [db]} _]
+   (let [web3-wallet      (get db :wallet-connect/web3-wallet)
+         current-proposal (get-in db [:wallet-connect/current-proposal :request])]
+     {:fx [[:effects.wallet-connect/reject-session-proposal
+            {:web3-wallet web3-wallet
+             :proposal    current-proposal
+             :on-success  #(log/info "Wallet Connect session proposal rejected")
+             :on-error    #(log/error "Wallet Connect unable to reject session proposal")}]]})))
