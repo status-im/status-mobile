@@ -79,7 +79,7 @@
                                                                      profile)}}])}]}]]
      [rn/flat-list
       {:header                          [settings.header/view {:scroll-y scroll-y}]
-       :data                            (settings.items/items (boolean (:mnemonic profile)))
+       :data                            (settings.items/items (boolean (seq (:mnemonic profile))))
        :shows-vertical-scroll-indicator false
        :render-fn                       settings-category-view
        :get-item-layout                 get-item-layout

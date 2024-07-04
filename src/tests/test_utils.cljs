@@ -65,9 +65,9 @@
 
 (def account-manager
   (clj->js
-   {:openAccounts
-    (fn [callback]
-      (callback (.openAccounts native-status test-dir)))
+   {:initializeApplication
+    (fn [request callback]
+      (callback (.initializeApplication native-status request)))
     :createAccountAndLogin
     (fn [request] (.createAccountAndLogin native-status request))
     :restoreAccountAndLogin
@@ -130,6 +130,9 @@
   (clj->js
    {:getNodeConfig
     (fn [] (types/clj->json {:WakuV2Config ""}))
+    :addCentralizedMetric
+    (fn [_ callback]
+      (callback))
     :fleets
     (fn [] (.fleets native-status))
     :startLocalNotifications
