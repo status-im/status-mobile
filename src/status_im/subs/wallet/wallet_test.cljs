@@ -224,7 +224,7 @@
            (assoc-in [:wallet :accounts] accounts)
            (assoc-in [:wallet :networks] network-data)))
     (is
-     (=
+     (match?
       (list {:path                      "m/44'/60'/0'/0/0"
              :emoji                     "😃"
              :key-uid                   "0x2f5ea39"
@@ -315,30 +315,30 @@
 
     (let [result (rf/sub [sub-name])]
       (is
-       (= {:path                      "m/44'/60'/0'/0/0"
-           :emoji                     "😃"
-           :key-uid                   "0x2f5ea39"
-           :address                   "0x1"
-           :wallet                    false
-           :name                      "Account One"
-           :type                      :generated
-           :watch-only?               false
-           :operable?                 true
-           :chat                      false
-           :test-preferred-chain-ids  #{5 420 421613}
-           :color                     :blue
-           :hidden                    false
-           :prod-preferred-chain-ids  #{1 10 42161}
-           :network-preferences-names #{:mainnet :arbitrum :optimism}
-           :position                  0
-           :clock                     1698945829328
-           :created-at                1698928839000
-           :operable                  :fully
-           :mixedcase-address         "0x7bcDfc75c431"
-           :public-key                "0x04371e2d9d66b82f056bc128064"
-           :removed                   false
-           :tokens                    tokens-0x1}
-          (dissoc result :balance :formatted-balance)))
+       (match? {:path                      "m/44'/60'/0'/0/0"
+                :emoji                     "😃"
+                :key-uid                   "0x2f5ea39"
+                :address                   "0x1"
+                :wallet                    false
+                :name                      "Account One"
+                :type                      :generated
+                :watch-only?               false
+                :operable?                 true
+                :chat                      false
+                :test-preferred-chain-ids  #{5 420 421613}
+                :color                     :blue
+                :hidden                    false
+                :prod-preferred-chain-ids  #{1 10 42161}
+                :network-preferences-names #{:mainnet :arbitrum :optimism}
+                :position                  0
+                :clock                     1698945829328
+                :created-at                1698928839000
+                :operable                  :fully
+                :mixedcase-address         "0x7bcDfc75c431"
+                :public-key                "0x04371e2d9d66b82f056bc128064"
+                :removed                   false
+                :tokens                    tokens-0x1}
+               (dissoc result :balance :formatted-balance)))
 
       (is (money/equal-to (:balance result) (money/bignumber 3250)))
       (is (match? (:formatted-balance result) "$3250.00")))))
@@ -376,7 +376,7 @@
            (assoc-in [:wallet :current-viewing-account-address] "0x2")
            (assoc-in [:wallet :networks] network-data)))
     (is
-     (=
+     (match?
       (list
        {:path                      "m/44'/60'/0'/0/0"
         :emoji                     "😃"
@@ -434,7 +434,7 @@
            (assoc-in [:wallet :accounts] accounts)
            (assoc-in [:wallet :networks] network-data)))
     (is
-     (=
+     (match?
       (list
        {:path                      "m/44'/60'/0'/0/0"
         :emoji                     "😃"
@@ -592,19 +592,19 @@
            (assoc-in [:wallet :accounts] accounts)
            (assoc-in [:wallet :networks] network-data)))
     (is
-     (= [(-> accounts
-             (get "0x1")
-             (assoc :customization-color :blue)
-             (assoc :network-preferences-names #{:mainnet :arbitrum :optimism}))
-         (-> accounts
-             (get "0x2")
-             (assoc :customization-color :purple)
-             (assoc :network-preferences-names #{:mainnet :arbitrum :optimism}))
-         (-> accounts
-             (get "0x3")
-             (assoc :customization-color :magenta)
-             (assoc :network-preferences-names #{}))]
-        (rf/sub [sub-name])))))
+     (match? [(-> accounts
+                  (get "0x1")
+                  (assoc :customization-color :blue)
+                  (assoc :network-preferences-names #{:mainnet :arbitrum :optimism}))
+              (-> accounts
+                  (get "0x2")
+                  (assoc :customization-color :purple)
+                  (assoc :network-preferences-names #{:mainnet :arbitrum :optimism}))
+              (-> accounts
+                  (get "0x3")
+                  (assoc :customization-color :magenta)
+                  (assoc :network-preferences-names #{}))]
+             (rf/sub [sub-name])))))
 
 (h/deftest-sub :wallet/watch-only-accounts
   [sub-name]
@@ -614,10 +614,10 @@
            (assoc-in [:wallet :accounts] accounts)
            (assoc-in [:wallet :networks] network-data)))
     (is
-     (= [(-> accounts
-             (get "0x3")
-             (assoc :network-preferences-names #{}))]
-        (rf/sub [sub-name])))))
+     (match? [(-> accounts
+                  (get "0x3")
+                  (assoc :network-preferences-names #{}))]
+             (rf/sub [sub-name])))))
 
 (def chat-account
   {:path     "m/43'/60'/1581'/0'/0"
@@ -827,9 +827,7 @@
   (testing "returns local suggestions:"
     (swap! rf-db/app-db
       #(assoc-in % [:wallet :ui :search-address :local-suggestions] local-suggestions))
-    (is
-     (= local-suggestions
-        (rf/sub [sub-name])))))
+    (is (match? local-suggestions (rf/sub [sub-name])))))
 
 (h/deftest-sub :wallet/valid-ens-or-address?
   [sub-name]
