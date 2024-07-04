@@ -225,7 +225,9 @@
             :default-active @selected-tab
             :on-change      on-tab-change
             :data           tabs-data}]
-          [tabs/view {:selected-tab @selected-tab}]]]))))
+          [tabs/view
+           {:selected-tab @selected-tab
+            :collectible  collectible}]]]))))
 
 (defn view
   [_]
