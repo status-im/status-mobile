@@ -481,14 +481,13 @@
 
 (rf/reg-event-fx :wallet/stop-get-suggested-routes
  (fn []
-   {:json-rpc/call [{:method     "wallet_stopSuggestedRoutesV2AsyncCalcualtion"
-                     :params     []
-                     :on-success (fn []
-                                   (rf/dispatch [:wallet/clean-routes-calculation]))
-                     :on-error   (fn [error]
-                                   (log/error "failed to stop suggested routes calculation"
-                                              {:event :wallet/stop-get-suggested-routes
-                                               :error error}))}]}))
+   {:fx            [[:dispatch [:wallet/clean-routes-calculation]]]
+    :json-rpc/call [{:method   "wallet_stopSuggestedRoutesV2AsyncCalcualtion"
+                     :params   []
+                     :on-error (fn [error]
+                                 (log/error "failed to stop suggested routes calculation"
+                                            {:event :wallet/stop-get-suggested-routes
+                                             :error error}))}]}))
 
 (rf/reg-event-fx :wallet/handle-suggested-routes
  (fn [_ data]
