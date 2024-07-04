@@ -384,7 +384,7 @@
                        (select-keys [:username :publicKey :packID]))
          wallet-address (get-in db [:wallet :current-viewing-account-address])
          token (or updated-token (get-in db [:wallet :ui :send :token]))
-         transaction-type (get-in db [:wallet :ui :send :tx-type])
+         tx-type (get-in db [:wallet :ui :send :tx-type])
          collectible (get-in db [:wallet :ui :send :collectible])
          to-address (get-in db [:wallet :ui :send :to-address])
          receiver-networks (get-in db [:wallet :ui :send :receiver-networks])
@@ -403,18 +403,18 @@
          amount-in (to-hex amount)
          amount-out (to-hex amount-out)
          from-address wallet-address
-         disabled-to-chain-ids (if (= transaction-type :tx/bridge)
+         disabled-to-chain-ids (if (= tx-type :tx/bridge)
                                  (filter #(not= % bridge-to-chain-id) network-chain-ids)
                                  (filter (fn [chain-id]
                                            (not (some #(= chain-id %)
                                                       receiver-networks)))
                                          network-chain-ids))
          from-locked-amount (update-vals from-locked-amounts to-hex)
-         send-type (case transaction-type
-                     :tx/collectible-erc-721  constants/send-type-erc-721-transfer
-                     :tx/collectible-erc-1155 constants/send-type-erc-1155-transfer
-                     :tx/bridge               constants/send-type-bridge
-                     constants/send-type-transfer)
+         transaction-type (case tx-type
+                            :tx/collectible-erc-721  constants/send-type-erc-721-transfer
+                            :tx/collectible-erc-1155 constants/send-type-erc-1155-transfer
+                            :tx/bridge               constants/send-type-bridge
+                            constants/send-type-transfer)
          balances-per-chain (when token (:balances-per-chain token))
          sender-token-available-networks-for-suggested-routes
          (when token
@@ -434,19 +434,19 @@
          sender-network-values (when sender-token-available-networks-for-suggested-routes
                                  (send-utils/loading-network-amounts
                                   {:valid-networks
-                                   (if (= transaction-type :tx/bridge)
+                                   (if (= tx-type :tx/bridge)
                                      (remove #(= bridge-to-chain-id %)
                                              sender-token-available-networks-for-suggested-routes)
                                      sender-token-available-networks-for-suggested-routes)
                                    :disabled-chain-ids disabled-from-chain-ids
                                    :receiver-networks receiver-networks
                                    :token-networks-ids token-networks-ids
-                                   :tx-type transaction-type
+                                   :tx-type tx-type
                                    :receiver? false}))
          receiver-network-values (when receiver-token-available-networks-for-suggested-routes
                                    (send-utils/loading-network-amounts
                                     {:valid-networks
-                                     (if (= transaction-type :tx/bridge)
+                                     (if (= tx-type :tx/bridge)
                                        (filter
                                         #(= bridge-to-chain-id %)
                                         receiver-token-available-networks-for-suggested-routes)
@@ -454,10 +454,10 @@
                                      :disabled-chain-ids disabled-from-chain-ids
                                      :receiver-networks receiver-networks
                                      :token-networks-ids token-networks-ids
-                                     :tx-type transaction-type
+                                     :tx-type tx-type
                                      :receiver? true}))
          params [(merge {:uuid                 (str (random-uuid))
-                         :sendType             send-type
+                         :sendType             transaction-type
                          :addrFrom             from-address
                          :addrTo               to-address
                          :amountIn             amount-in
@@ -500,40 +500,39 @@
 
 (defn- transform-new-to-old-path
   [new-path]
-  (let [unit            (-> (get-in new-path [:from-token :symbol])
-                            clojure.string/lower-case
-                            keyword)
-        convert-to-gwei #(-> %
-                             money/wei->gwei
-                             (money/with-precision 6)
-                             (str))
-        bonder-fees     (:tx-bonder-fees new-path)
-        token-fees      (+ (money/wei-> unit bonder-fees)
-                           (money/wei-> unit
-                                        (:tx-token-fees new-path)))]
+  (let [unit        (-> (get-in new-path [:from-token :symbol])
+                        string/lower-case
+                        keyword)
+        bonder-fees (:tx-bonder-fees new-path)
+        token-fees  (+ (money/wei-> unit bonder-fees)
+                       (money/wei-> unit
+                                    (:tx-token-fees new-path)))]
     {:from                      (:from-chain new-path)
      :amount-in-locked          (:amount-in-locked new-path)
      :amount-in                 (:amount-in new-path)
      :max-amount-in             "0x0"
      :gas-fees                  {:gas-price                "0"
-                                 :base-fee                 (convert-to-gwei (:tx-base-fee new-path))
-                                 :max-priority-fee-per-gas (convert-to-gwei (:tx-priority-fee new-path))
-                                 :max-fee-per-gas-low      (convert-to-gwei
+                                 :base-fee                 (send-utils/convert-to-gwei (:tx-base-fee
+                                                                                        new-path))
+                                 :max-priority-fee-per-gas (send-utils/convert-to-gwei (:tx-priority-fee
+                                                                                        new-path))
+                                 :max-fee-per-gas-low      (send-utils/convert-to-gwei
                                                             (get-in
                                                              new-path
                                                              [:suggested-levels-for-max-fees-per-gas
                                                               :low]))
-                                 :max-fee-per-gas-medium   (convert-to-gwei
+                                 :max-fee-per-gas-medium   (send-utils/convert-to-gwei
                                                             (get-in
                                                              new-path
                                                              [:suggested-levels-for-max-fees-per-gas
                                                               :medium]))
-                                 :max-fee-per-gas-high     (convert-to-gwei
+                                 :max-fee-per-gas-high     (send-utils/convert-to-gwei
                                                             (get-in
                                                              new-path
                                                              [:suggested-levels-for-max-fees-per-gas
                                                               :high]))
-                                 :l-1-gas-fee              (convert-to-gwei (:tx-l-1-fee new-path))
+                                 :l-1-gas-fee              (send-utils/convert-to-gwei (:tx-l-1-fee
+                                                                                        new-path))
                                  :eip-1559-enabled         true}
      :bridge-name               (:processor-name new-path)
      :amount-out                (:amount-out new-path)
