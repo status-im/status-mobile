@@ -1,5 +1,6 @@
 (ns status-im.contexts.wallet.wallet-connect.responding-events
   (:require [re-frame.core :as rf]
+            [react-native.wallet-connect :as wallet-connect]
             [status-im.constants :as constants]
             [status-im.contexts.wallet.wallet-connect.core :as wallet-connect-core]
             [taoensso.timbre :as log]))
@@ -151,4 +152,5 @@
  (fn [_ _]
    {:fx [[:dispatch
           [:wallet-connect/send-response
-           {:error constants/wallet-connect-user-rejected-error-type}]]]}))
+           {:error (wallet-connect/get-sdk-error
+                    constants/wallet-connect-user-rejected-error-key)}]]]}))

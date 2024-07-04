@@ -136,7 +136,7 @@
  (fn [{:keys [web3-wallet proposal on-success on-error]}]
    (let [{:keys [id]} proposal
          reason       (wallet-connect/get-sdk-error
-                       constants/wallet-connect-user-rejected-error-type)]
+                       constants/wallet-connect-user-rejected-error-key)]
      (-> (.rejectSession web3-wallet
                          (clj->js {:id     id
                                    :reason reason}))
