@@ -40,19 +40,17 @@
          routes-available?             (pos? (count chosen-route))
          token-networks                (:networks token)
          token-networks-ids            (when token-networks (map #(:chain-id %) token-networks))
-         from-network-amounts-by-chain (send-utils/network-amounts-by-chain {:route chosen-route
-                                                                             :token-decimals
-                                                                             token-decimals
-                                                                             :native-token?
-                                                                             native-token?
-                                                                             :receiver? false})
+         from-network-amounts-by-chain (send-utils/network-amounts-by-chain
+                                        {:route          chosen-route
+                                         :token-decimals token-decimals
+                                         :native-token?  native-token?
+                                         :receiver?      false})
          from-network-values-for-ui    (send-utils/network-values-for-ui from-network-amounts-by-chain)
-         to-network-amounts-by-chain   (send-utils/network-amounts-by-chain {:route chosen-route
-                                                                             :token-decimals
-                                                                             token-decimals
-                                                                             :native-token?
-                                                                             native-token?
-                                                                             :receiver? true})
+         to-network-amounts-by-chain   (send-utils/network-amounts-by-chain
+                                        {:route          chosen-route
+                                         :token-decimals token-decimals
+                                         :native-token?  native-token?
+                                         :receiver?      true})
          to-network-values-for-ui      (send-utils/network-values-for-ui to-network-amounts-by-chain)
          sender-possible-chain-ids     (map :chain-id sender-network-values)
          sender-network-values         (if routes-available?
