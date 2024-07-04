@@ -20,8 +20,7 @@
 (defn- preview-url
   [{{collectible-image-url :image-url
      animation-url         :animation-url
-     animation-media-type  :animation-media-type} :collectible-data
-    {collection-image-url :image-url}             :collection-data}]
+     animation-media-type  :animation-media-type} :collectible-data}]
   (cond
     (svg-animation? animation-url animation-media-type)
     {:uri  animation-url
@@ -34,7 +33,7 @@
     {:uri collectible-image-url}
 
     :else
-    {:uri collection-image-url}))
+    {:uri nil}))
 
 (defn add-collectibles-preview-url
   [collectibles]
@@ -91,23 +90,29 @@
              current-account-collectibles))))
 
 (re-frame/reg-sub
- :wallet/last-collectible-details
- :<- [:wallet]
- (fn [wallet]
-   (let [last-collectible (:last-collectible-details wallet)]
-     (assoc last-collectible :preview-url (preview-url last-collectible)))))
+ :wallet/collectible
+ :<- [:wallet/ui]
+ :-> :collectible)
 
 (re-frame/reg-sub
- :wallet/last-collectible-aspect-ratio
- :<- [:wallet]
- (fn [wallet]
-   (:last-collectible-aspect-ratio wallet)))
-
-(re-frame/reg-sub
+ :wallet/collectible-details
+ :<- [:wallet/collectible]
  (fn [collectible]
+   (as-> collectible $
+     (:details $)
+     (assoc $ :preview-url (preview-url $)))))
 
 (re-frame/reg-sub
+ :wallet/collectible-aspect-ratio
+ :<- [:wallet/collectible]
  (fn [collectible]
+   (:aspect-ratio collectible 1)))
+
+(re-frame/reg-sub
+ :wallet/collectible-gradient-color
+ :<- [:wallet/collectible]
+ (fn [collectible]
+   (:gradient-color collectible :gradient-1)))
 
 (re-frame/reg-sub
  :wallet/collectible-details-owner
