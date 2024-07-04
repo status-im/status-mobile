@@ -82,8 +82,12 @@
                                              :token-networks-ids token-networks-ids
                                              :tx-type            tx-type
                                              :receiver?          true})
-                                           (send-utils/reset-loading-network-amounts-to-zero
-                                            receiver-network-values))
+                                           (->
+                                             (send-utils/reset-loading-network-amounts-to-zero
+                                              receiver-network-values)
+                                             vec
+                                             (conj {:type :edit})))
+
            network-links                 (when routes-available?
                                            (send-utils/network-links chosen-route
                                                                      sender-network-values
