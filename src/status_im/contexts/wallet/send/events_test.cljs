@@ -141,7 +141,7 @@
 (h/deftest-event :wallet/set-collectible-amount-to-send
   [event-id dispatch]
   (let [initial-db  {:wallet {:ui {:send nil}}}
-        expected-fx [[:dispatch [:wallet/get-suggested-routes {:amount 10}]]
+        expected-fx [[:dispatch [:wallet/start-get-suggested-routes {:amount 10}]]
                      [:dispatch
                       [:wallet/wizard-navigate-forward
                        {:current-screen nil :flow-id :wallet-send-flow}]]]

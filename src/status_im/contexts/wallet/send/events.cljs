@@ -172,7 +172,7 @@
               (assoc-in [:wallet :ui :send :receiver-preferred-networks] receiver-networks)
               (assoc-in [:wallet :ui :send :receiver-networks] receiver-networks))
       :fx [(when (and collectible-tx? one-collectible?)
-             [:dispatch [:wallet/get-suggested-routes {:amount 1}]])
+             [:dispatch [:wallet/start-get-suggested-routes {:amount 1}]])
            [:dispatch
             [:wallet/wizard-navigate-forward
              {:current-screen stack-id
@@ -184,7 +184,7 @@
  (fn [{:keys [db]} [selected-networks]]
    (let [amount (get-in db [:wallet :ui :send :amount])]
      {:db (assoc-in db [:wallet :ui :send :receiver-networks] selected-networks)
-      :fx [[:dispatch [:wallet/get-suggested-routes {:amount amount}]]]})))
+      :fx [[:dispatch [:wallet/start-get-suggested-routes {:amount amount}]]]})))
 
 (rf/reg-event-fx
  :wallet/set-token-to-send
@@ -295,7 +295,7 @@
             one-collectible?
             (assoc-in [:wallet :ui :send :amount] 1))
       :fx [(when (and one-collectible? recipient-set?)
-             [:dispatch [:wallet/get-suggested-routes {:amount 1}]])
+             [:dispatch [:wallet/start-get-suggested-routes {:amount 1}]])
            [:dispatch
             [:wallet/wizard-navigate-forward
              {:current-screen current-screen
@@ -306,7 +306,7 @@
  :wallet/set-collectible-amount-to-send
  (fn [{db :db} [{:keys [stack-id amount]}]]
    {:db (assoc-in db [:wallet :ui :send :amount] amount)
-    :fx [[:dispatch [:wallet/get-suggested-routes {:amount amount}]]
+    :fx [[:dispatch [:wallet/start-get-suggested-routes {:amount amount}]]
          [:dispatch
           [:wallet/wizard-navigate-forward
            {:current-screen stack-id
@@ -377,7 +377,7 @@
                          (when (empty? sender-network-values) :sender-network-values)
                          (when (empty? receiver-network-values) :receiver-network-values)))})))
 
-(rf/reg-event-fx :wallet/get-suggested-routes
+(rf/reg-event-fx :wallet/start-get-suggested-routes
  (fn [{:keys [db]} [{:keys [amount amount-out updated-token] :as args :or {amount-out "0"}}]]
    (let [rest-keys (-> args
                        (dissoc :amount :amount-out :updated-token)
@@ -483,7 +483,7 @@
                        :on-error (fn [error]
                                    (rf/dispatch [:wallet/suggested-routes-error error])
                                    (log/error "failed to get suggested routes (async)"
-                                              {:event  :wallet/get-suggested-routes
+                                              {:event  :wallet/start-get-suggested-routes
                                                :error  error
                                                :params params}))}]})))
 
