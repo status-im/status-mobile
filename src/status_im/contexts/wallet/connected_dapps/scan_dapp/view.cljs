@@ -10,7 +10,7 @@
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]))
 
-(defn- f-internal-view
+(defn view
   []
   (let [{:keys [keyboard-shown]}   (hooks/use-keyboard)
         {:keys [name emoji color]} (rf/sub [:wallet/current-viewing-account])]
@@ -41,7 +41,3 @@
                           (debounce/debounce-and-dispatch
                            [:wallet-connect/on-scan-connection scanned-text]
                            300))}]]))
-
-(defn view
-  []
-  [:f> f-internal-view])
