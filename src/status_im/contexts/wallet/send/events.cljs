@@ -39,7 +39,7 @@
          native-token?                 (and token (= token-display-name "ETH"))
          routes-available?             (pos? (count chosen-route))
          token-networks                (:networks token)
-         token-networks-ids            (when token-networks (mapv #(:chain-id %) token-networks))
+         token-networks-ids            (when token-networks (map #(:chain-id %) token-networks))
          from-network-amounts-by-chain (send-utils/network-amounts-by-chain {:route chosen-route
                                                                              :token-decimals
                                                                              token-decimals
@@ -54,7 +54,7 @@
                                                                              native-token?
                                                                              :receiver? true})
          to-network-values-for-ui      (send-utils/network-values-for-ui to-network-amounts-by-chain)
-         sender-possible-chain-ids     (mapv :chain-id sender-network-values)
+         sender-possible-chain-ids     (map :chain-id sender-network-values)
          sender-network-values         (if routes-available?
                                          (send-utils/network-amounts
                                           {:network-values
@@ -430,7 +430,7 @@
                                                                       :disabled-chain-ids
                                                                       disabled-from-chain-ids
                                                                       :only-with-balance? false}))
-         token-networks-ids (when token (mapv #(:chain-id %) (:networks token)))
+         token-networks-ids (when token (map #(:chain-id %) (:networks token)))
          sender-network-values (when sender-token-available-networks-for-suggested-routes
                                  (send-utils/loading-network-amounts
                                   {:valid-networks
@@ -555,8 +555,8 @@
    (let [suggested-routes-new-data (cske/transform-keys transforms/->kebab-case-keyword
                                                         data)
          suggested-routes          (-> (first suggested-routes-new-data)
-                                       (update-in [:best] #(mapv transform-new-to-old-path %))
-                                       (update-in [:candidates] #(mapv transform-new-to-old-path %)))]
+                                       (update :best #(map transform-new-to-old-path %))
+                                       (update :candidates #(map transform-new-to-old-path %)))]
      {:fx [[:dispatch
             [:wallet/suggested-routes-success suggested-routes]]]})))
 
