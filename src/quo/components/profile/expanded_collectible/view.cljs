@@ -81,7 +81,9 @@
 
 (defn view-internal
   [{:keys [container-style square? on-press counter image-src native-ID supported-file?
-           on-collectible-load aspect-ratio gradient-color-index]}]
+           on-collectible-load aspect-ratio gradient-color-index]
+    :or   {gradient-color-index :gradient-1
+           on-collectible-load  (fn [])}}]
   (let [theme              (quo.theme/use-theme)
         [error? set-error] (rn/use-state (or (nil? image-src)
                                              (string/blank? image-src)))]
