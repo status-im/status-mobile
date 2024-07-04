@@ -7,7 +7,8 @@
     [quo.components.settings.data-item.style :as style]
     [quo.foundations.colors :as colors]
     [quo.theme :as quo.theme]
-    [react-native.core :as rn]))
+    [react-native.core :as rn]
+    [schema.core :as schema]))
 
 (defn- left-loading
   [{:keys [size blur?]}]
@@ -40,7 +41,17 @@
       {:weight :medium
        :size   :paragraph-2
        :style  (style/description blur? theme)}
-      subtitle]]))
+      subtitle]
+     (when (= subtitle-type :editable)
+       [icons/icon :i/edit
+        {:accessibility-label :edit-icon
+         :size                12
+         :container-style     {:margin-left 2}
+         :color               (if blur?
+                                colors/neutral-40
+                                (colors/theme-colors colors/neutral-50
+                                                     colors/neutral-40
+                                                     theme))}])]))
 
 (defn- left-title
   [{:keys [title blur?]}]
@@ -100,7 +111,31 @@
           :color               icon-color
           :size                20}]])]))
 
-(defn view
+
+(def ?schema
+  [:=>
+   [:catn
+    [:props
+     [:map {:closed true}
+      [:blur? {:optional true} [:maybe :boolean]]
+      [:card? {:optional true} [:maybe :boolean]]
+      [:right-icon {:optional true} [:maybe :keyword]]
+      [:right-content {:optional true} [:maybe :map]]
+      [:status {:optional true} [:maybe [:enum :default :loading]]]
+      [:subtitle-type {:optional true} [:maybe [:enum :default :icon :network :account :editable]]]
+      [:size {:optional true} [:maybe [:enum :default :small :large]]]
+      [:title :string]
+      [:subtitle {:optional true} [:maybe :string]]
+      [:custom-subtitle {:optional true} [:maybe fn?]]
+      [:icon {:optional true} [:maybe :keyword]]
+      [:emoji {:optional true} [:maybe :string]]
+      [:customization-color {:optional true} [:maybe :schema.common/customization-color]]
+      [:network-image {:optional true} [:maybe :schema.common/image-source]]
+      [:on-press {:optional true} [:maybe fn?]]
+      [:container-style {:optional true} [:maybe :map]]]]]
+   :any])
+
+(defn view-internal
   [{:keys [blur? card? right-icon right-content status size on-press container-style]
     :as   props}]
   (let [theme      (quo.theme/use-theme)
@@ -123,3 +158,5 @@
         {:right-icon    right-icon
          :right-content right-content
          :icon-color    icon-color}])]))
+
+(def view (schema/instrument #'view-internal ?schema))
