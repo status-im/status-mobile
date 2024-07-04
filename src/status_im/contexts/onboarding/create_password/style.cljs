@@ -18,12 +18,21 @@
    :justify-content   :space-between
    :margin-horizontal 20})
 
+(defn password-form-container
+  [min-height]
+  {:min-height min-height
+   :flex       1})
+
 (def top-part
   {:margin-horizontal 20
+   :flex              0
    :margin-top        12})
 
+(def middle-part
+  {:flex 1})
+
 (def bottom-part
-  {:flex            1
+  {:flex            0
    :margin-top      12
    :justify-content :flex-end})
 
