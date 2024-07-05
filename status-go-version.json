@@ -3,7 +3,7 @@
     "_comment": "Instead use: scripts/update-status-go.sh <rev>",
     "owner": "status-im",
     "repo": "status-go",
-    "version": "v0.182.37",
-    "commit-sha1": "4a43b2b2bebe45df2100d1a5c5034105d93e50b8",
-    "src-sha256": "0f5mm7lx6s2qcy9xpa9v7piqb60yazi6p677fy105yz7hg731cw6"
+    "version": "feature/migrate-v1-keycard-account",
+    "commit-sha1": "aabf4fa1e179626422bfec84e649d5194121fa30",
+    "src-sha256": "0206jqgzx7l282kximz4qp26rs0hgdp4wnvwjwzx2d9j4mglkgwd"
 }

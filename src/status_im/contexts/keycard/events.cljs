@@ -3,6 +3,8 @@
             status-im.contexts.keycard.login.events
             status-im.contexts.keycard.pin.events
             status-im.contexts.keycard.sheet.events
+            status-im.contexts.keycard.sign.events
+            [status-im.contexts.keycard.utils :as keycard.utils]
             [taoensso.timbre :as log]))
 
 (rf/reg-event-fx :keycard/on-check-nfc-enabled-success
@@ -55,3 +57,19 @@
  (fn [{:keys [db]} [{:keys [on-cancel-event-vector]}]]
    (log/debug "[keycard] nfc started success")
    {:db (assoc-in db [:keycard :on-nfc-cancelled-event-vector] on-cancel-event-vector)}))
+
+(rf/reg-event-fx :keycard/on-action-with-pin-error
+ (fn [{:keys [db]} [error]]
+   (log/debug "[keycard] get keys error: " error)
+   (let [tag-was-lost?     (keycard.utils/tag-lost? (:error error))
+         pin-retries-count (keycard.utils/pin-retries (:error error))]
+     (if tag-was-lost?
+       {:db (assoc-in db [:keycard :pin :status] nil)}
+       (if (nil? pin-retries-count)
+         {:effects.utils/show-popup {:title "wrong-keycard"}}
+         {:db (-> db
+                  (assoc-in [:keycard :application-info :pin-retry-counter] pin-retries-count)
+                  (update-in [:keycard :pin] assoc :status :error))
+          :fx [[:dispatch [:keycard/hide-connection-sheet]]
+               (when (zero? pin-retries-count)
+                 [:effects.utils/show-popup {:title "frozen-keycard"}])]})))))

@@ -8,7 +8,7 @@
 
 (defn view
   [{:keys [track-text customization-color auth-button-label on-auth-success on-auth-fail
-           auth-button-icon-left size blur? container-style disabled? dependencies]
+           auth-button-icon-left size blur? container-style disabled? dependencies keycard-supported?]
     :or   {container-style {:flex 1}}}]
   (let [theme           (quo.theme/use-theme)
         auth-method     (rf/sub [:auth-method])
@@ -21,6 +21,7 @@
                                           :auth-button-icon-left auth-button-icon-left
                                           :theme                 theme
                                           :blur?                 blur?
+                                          :keycard-supported?    keycard-supported?
                                           :biometric-auth?       biometric-auth?
                                           :on-auth-success       on-auth-success
                                           :on-auth-fail          on-auth-fail
