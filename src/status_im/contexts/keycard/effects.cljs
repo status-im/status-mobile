@@ -109,3 +109,22 @@
   [pairings]
   (keycard/set-pairings pairings))
 (rf/reg-fx :effects.keycard/set-pairing-to-keycard set-pairing-to-keycard)
+
+(defn sign
+  [{:keys [on-success on-failure] :as args}]
+  (log/debug "[keycard] sign")
+  (keycard/sign
+   (assoc
+    args
+    :on-success
+    (fn [response]
+      (log/debug "[keycard response succ] sign")
+      (when on-success
+        (on-success (transforms/js->clj response))))
+    :on-failure
+    (fn [response]
+      (log/warn "[keycard response fail] sign"
+                (error-object->map response))
+      (when on-failure
+        (on-failure (error-object->map response)))))))
+(rf/reg-fx :effects.keycard/sign sign)

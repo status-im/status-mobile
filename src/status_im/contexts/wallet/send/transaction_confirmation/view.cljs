@@ -257,7 +257,8 @@
                                         :transaction-type   transaction-type}]
                                       (when (and (not loading-suggested-routes?) route (seq route))
                                         [standard-auth/slide-button
-                                         {:size                :size-48
+                                         {:keycard-supported?  true
+                                          :size                :size-48
                                           :track-text          (if (= transaction-type :tx/bridge)
                                                                  (i18n/label :t/slide-to-bridge)
                                                                  (i18n/label :t/slide-to-send))
@@ -265,8 +266,7 @@
                                           :customization-color account-color
                                           :on-auth-success     #(rf/dispatch
                                                                  [:wallet/send-transaction
-                                                                  (security/safe-unmask-data
-                                                                   %)])
+                                                                  (security/safe-unmask-data %)])
                                           :auth-button-label   (i18n/label :t/confirm)}])]
            :gradient-cover?          true
            :customization-color      (:color account)}

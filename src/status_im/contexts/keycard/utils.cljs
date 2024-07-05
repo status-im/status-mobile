@@ -16,8 +16,8 @@
    (re-matches #".*NFCError:100.*" error)))
 
 (defn validate-application-info
-  [profile {:keys [key-uid paired? pin-retry-counter puk-retry-counter] :as application-info}]
-  (let [profile-mismatch? (or (nil? profile) (not= (:key-uid profile) key-uid))]
+  [profile-key-uid {:keys [key-uid paired? pin-retry-counter puk-retry-counter] :as application-info}]
+  (let [profile-mismatch? (or (nil? profile-key-uid) (not= profile-key-uid key-uid))]
     (log/debug "[keycard] login-with-keycard"
                "empty application info" (empty? application-info)
                "no key-uid"             (empty? key-uid)
