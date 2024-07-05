@@ -3,7 +3,7 @@
     "_comment": "Instead use: scripts/update-status-go.sh <rev>",
     "owner": "status-im",
     "repo": "status-go",
-    "version": "v0.181.31",
-    "commit-sha1": "6e056348e6d28f962167118612826f1ef0e47b22",
-    "src-sha256": "1qvfwk28sg93basjzy8r55qz8pk9xg0h7kxv5ykxkbfh4q17a1ns"
+    "version": "milad/add-default-values-to-wallet-accounts",
+    "commit-sha1": "4985c9d9f88778c5ac5adae37b0aa2e28e0297ad",
+    "src-sha256": "00gdb9h91dz17pkhb1xaqjajqa3prc4b210zgi59h8z20fhky4rf"
 }
