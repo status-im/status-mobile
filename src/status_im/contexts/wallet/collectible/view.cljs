@@ -277,13 +277,13 @@
         {preview-uri :uri}         preview-url
         {collectible-name :name}   collectible-data
         {collection-name :name}    collection-data]
-<<<<<<< HEAD
-=======
-
     (hot-reload/use-safe-unmount #(rf/dispatch [:wallet/clear-last-collectible-details]))
+<<<<<<< HEAD
 
 >>>>>>> d13c328e7 (safe unmount)
 >>>>>>> 9cd78dab66 (safe unmount)
+=======
+>>>>>>> b13ec756d1 (lint)
     [rn/view {:style (style/background-color theme)}
      [animated-header
       {:id            (:id collectible)

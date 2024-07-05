@@ -15,11 +15,8 @@
     [status-im.contexts.wallet.send.routes.view :as routes]
     [status-im.contexts.wallet.sheets.buy-token.view :as buy-token]
     [status-im.contexts.wallet.sheets.unpreferred-networks-alert.view :as unpreferred-networks-alert]
-<<<<<<< HEAD
     [status-im.feature-flags :as ff]
-=======
     [status-im.setup.hot-reload :as hot-reload]
->>>>>>> d13c328e7 (safe unmount)
     [utils.debounce :as debounce]
     [utils.i18n :as i18n]
     [utils.money :as money]
@@ -296,7 +293,6 @@
         show-no-routes?                             (and
                                                      (or no-routes-found? limit-insufficient?)
                                                      (not-empty sender-network-values)
-<<<<<<< HEAD
                                                      (not not-enough-asset?))
         request-fetch-routes                        (fn [bounce-duration-ms]
                                                       (fetch-routes
@@ -322,26 +318,12 @@
                                                                                       12))]
                                                             (number/remove-trailing-zeroes
                                                              new-value))))))]
-=======
-                                                     (not not-enough-asset?))]
-<<<<<<< HEAD
-=======
-        view-id                                     (rf/sub [:view-id])]
->>>>>>> def673650 (navigation listener)
-<<<<<<< HEAD
->>>>>>> 5bf546c99 (navigation listener)
-=======
-=======
-        current-address                             (rf/sub [:wallet/current-viewing-account-address])]
->>>>>>> 250a1ce5a (lint)
->>>>>>> 01ab1a81c (lint)
-=======
->>>>>>> d13c328e7 (safe unmount)
     (rn/use-mount
      (fn []
        (let [dismiss-keyboard-fn   #(when (= % "active") (rn/dismiss-keyboard!))
              app-keyboard-listener (.addEventListener rn/app-state "change" dismiss-keyboard-fn)]
          #(.remove app-keyboard-listener))))
+    (hot-reload/use-safe-unmount on-navigate-back)
     (rn/use-effect
      (fn []
        (set-input-state #(controlled-input/set-upper-limit % current-limit)))
@@ -356,14 +338,10 @@
        (clear-input!)
        (rf/dispatch [:wallet/clean-suggested-routes]))
      [current-address])
-<<<<<<< HEAD
     (rn/use-effect
      (fn []
        (request-fetch-routes 0))
      [send-from-locked-amounts])
-=======
-    (hot-reload/use-safe-unmount on-navigate-back)
->>>>>>> d13c328e7 (safe unmount)
     [rn/view
      {:style               style/screen
       :accessibility-label (str "container"

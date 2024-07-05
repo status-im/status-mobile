@@ -12,16 +12,6 @@
     :button-one-label  (i18n/label :t/review-send)
     :on-navigate-back  (fn []
                          (rf/dispatch [:wallet/clean-disabled-from-networks])
-<<<<<<< HEAD
-<<<<<<< HEAD
                          (rf/dispatch [:wallet/clean-from-locked-amounts])
                          (rf/dispatch [:wallet/clean-send-amount])
-                         (when-not hardware?
-                           (rf/dispatch [:navigate-back])))}])
-=======
-                         (rf/dispatch [:wallet/clean-send-amount]))}])
->>>>>>> e5ac6dc2d (lint)
-=======
-                         (rf/dispatch [:wallet/clean-send-amount])
                          (rf/dispatch [:navigate-back]))}])
->>>>>>> 01ab1a81c (lint)

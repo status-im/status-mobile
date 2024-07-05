@@ -313,12 +313,8 @@
                                              [accounts-emojis-and-colors @account-color])
             error                           (or @account-name-error @emoji-and-color-error?)]
 
-<<<<<<< HEAD
         (rn/use-mount #(check-emoji-and-color-error @emoji @account-color))
-        (rn/use-unmount #(rf/dispatch [:wallet/clear-create-account]))
-=======
         (hot-reload/use-safe-unmount #(rf/dispatch [:wallet/clear-create-account]))
->>>>>>> d13c328e7 (safe unmount)
 
         (if keypair-name
           [add-new-keypair-variant
