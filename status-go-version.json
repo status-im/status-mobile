@@ -1,0 +1,9 @@
+{
+    "_comment": "THIS SHOULD NOT BE EDITED BY HAND.",
+    "_comment": "Instead use: scripts/update-status-go.sh <rev>",
+    "owner": "status-im",
+    "repo": "status-go",
+    "version": "milad/add-default-values-to-wallet-accounts",
+    "commit-sha1": "23323d9d470b3d227a4a9cbda17f78f97626f0f1",
+    "src-sha256": "1bcf8107nl3l2wwr45q37rd85v8ya716bjjjr3g4izj9y4xyhi54"
+}
