@@ -177,7 +177,7 @@
   "This function returns token values in the props of token-value (quo) component"
   [{:keys [token color currency currency-symbol]}]
   (let [balance                           (calculate-total-token-balance token)
-        fiat-value                        (calculate-token-fiat-value
+        fiat-unformatted-value                        (calculate-token-fiat-value
                                            {:currency currency
                                             :balance  balance
                                             :token    token})
@@ -191,7 +191,7 @@
         crypto-value                      (get-standard-crypto-format token balance)
         fiat-value                        (get-standard-fiat-format crypto-value
                                                                     currency-symbol
-                                                                    fiat-value)]
+                                                                    fiat-unformatted-value)]
     {:token               (:symbol token)
      :token-name          (:name token)
      :state               :default
@@ -203,6 +203,7 @@
      :customization-color color
      :values              {:crypto-value      crypto-value
                            :fiat-value        fiat-value
+                           :fiat-unformatted-value fiat-unformatted-value
                            :fiat-change       formatted-token-price
                            :percentage-change percentage-change}}))
 
