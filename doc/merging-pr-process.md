@@ -32,14 +32,16 @@ status-mobile code that makes it to the `develop` branch, should always point to
 In practice, this means that sometimes they need to be merged in lockstep.
 1) Create a PR in status-go and status-mobile. Update the status-go version to the PR revision `scripts/update-status-go.sh $git_revision`.
 2) Get both PRs reviewed and approved. Once status-mobile PR has been approved, go through manual QA testing if necessary. Don't merge status-mobile PR just yet.
-3) Now that you know the integration between client & server is working, bump the `VERSION` in status-go and merge it.
-4) Once merged, tag the version with the new version and push the tag:
+3) Now that you know the integration between client & server is working, merge the status-go PR first.
+4) Once merged, tag the merged commit with the new version and push the tag:
 ```
   git checkout develop
   git pull develop
-  git tag vx.y.z
+  make tag-version
   git push origin vx.y.z
 ```
+:warning: If a specific commit need to tagged in status-go, use `make tag-version TARGET_COMMIT={hash}`. More info about tagging in [status-go](https://github.com/status-im/status-go/blob/develop/RELEASING.md#tagging-versions).
+
 5) Update status-mobile with the new status-go version, using the new tag `scripts/update-status-go.sh "vx.y.z"`
 6) If you had to rebase status-go to include new changes, e2e test MUST be re-run. If there's any issue you will
    have to fix in status-go with another PR and follow the same process.

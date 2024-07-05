@@ -12,7 +12,8 @@
   [{:keys [checked? blur? accessibility-label container-style on-change icon customization-color]} label]
   (let [theme (quo.theme/use-theme)]
     [rn/touchable-without-feedback
-     {:on-press            on-change
+     {:on-press            (when on-change
+                             #(on-change (not checked?)))
       :accessibility-label :disclaimer-touchable-opacity}
      [rn/view {:style (merge container-style (style/container blur? theme))}
       [selectors/view
