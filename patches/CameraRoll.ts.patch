@@ -1,0 +1,22 @@
+--- /tmp/tmp-status-mobile-3907e6b2e/tmp.re8kHerusA/CameraRoll.ts	2024-04-16 15:17:12.942432000 +0200
++++ ./node_modules/@react-native-camera-roll/camera-roll/src/CameraRoll.ts	2024-04-16 15:17:42.455250986 +0200
+@@ -239,6 +239,19 @@
+   }
+ 
+   /**
++   * Returns total iOS image count
++   */
++  static getPhotosCountiOS(): Promise<number> {
++    return RNCCameraRoll.getPhotosCountiOS('');
++  }
++  /**
++   * Returns favorites and their count iOS
++   */
++  static getFavoritesiOS(): Promise<Album> {
++    return RNCCameraRoll.getFavoritesiOS('');
++  }
++
++  /**
+    * Saves the photo or video to the camera roll or photo library, and returns the URI of the newly created asset.
+    *
+    * @deprecated `save(...)` is deprecated - use `saveAsset(...)` instead.
