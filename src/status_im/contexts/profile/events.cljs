@@ -1,6 +1,7 @@
 (ns status-im.contexts.profile.events
   (:require
     [legacy.status-im.data-store.settings :as data-store.settings]
+    [legacy.status-im.multiaccounts.update.core :as multiaccounts.update]
     [native-module.core :as native-module]
     [status-im.config :as config]
     [status-im.contexts.profile.edit.accent-colour.events]
@@ -73,3 +74,11 @@
  :profile/update-profile-from-backup
  (fn [_ [{{:keys [ensUsernameDetails]} :backedUpProfile}]]
    {:fx [[:dispatch [:ens/update-usernames ensUsernameDetails]]]}))
+
+(rf/reg-event-fx :profile/update-messages-from-contacts-only
+ (fn [{:keys [db] :as cofx}]
+   (multiaccounts.update/multiaccount-update
+    cofx
+    :messages-from-contacts-only
+    (not (get-in db [:profile/profile :messages-from-contacts-only]))
+    {})))
