@@ -207,6 +207,8 @@
 
     :else suggested-routes))
 
+(def ^:private precision 6)
+
 (defn new->old-route-path
   [new-path]
   (let [unit        (-> (get-in new-path [:from-token :symbol])
@@ -222,26 +224,32 @@
      :max-amount-in             "0x0"
      :gas-fees                  {:gas-price                "0"
                                  :base-fee                 (send-utils/convert-to-gwei (:tx-base-fee
-                                                                                        new-path))
+                                                                                        new-path)
+                                                                                       precision)
                                  :max-priority-fee-per-gas (send-utils/convert-to-gwei (:tx-priority-fee
-                                                                                        new-path))
+                                                                                        new-path)
+                                                                                       precision)
                                  :max-fee-per-gas-low      (send-utils/convert-to-gwei
                                                             (get-in
                                                              new-path
                                                              [:suggested-levels-for-max-fees-per-gas
-                                                              :low]))
+                                                              :low])
+                                                            precision)
                                  :max-fee-per-gas-medium   (send-utils/convert-to-gwei
                                                             (get-in
                                                              new-path
                                                              [:suggested-levels-for-max-fees-per-gas
-                                                              :medium]))
+                                                              :medium])
+                                                            precision)
                                  :max-fee-per-gas-high     (send-utils/convert-to-gwei
                                                             (get-in
                                                              new-path
                                                              [:suggested-levels-for-max-fees-per-gas
-                                                              :high]))
+                                                              :high])
+                                                            precision)
                                  :l-1-gas-fee              (send-utils/convert-to-gwei (:tx-l-1-fee
-                                                                                        new-path))
+                                                                                        new-path)
+                                                                                       precision)
                                  :eip-1559-enabled         true}
      :bridge-name               (:processor-name new-path)
      :amount-out                (:amount-out new-path)

@@ -244,8 +244,8 @@
   (contains? collectible-tx-set tx-type))
 
 (defn convert-to-gwei
-  [n]
+  [n precision]
   (-> n
       money/wei->gwei
-      (money/with-precision 6)
+      (money/with-precision precision)
       (str)))
