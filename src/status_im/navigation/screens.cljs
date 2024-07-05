@@ -57,6 +57,7 @@
     [status-im.contexts.profile.settings.screens.password.change-password.view :as change-password]
     [status-im.contexts.profile.settings.screens.password.view :as settings-password]
     [status-im.contexts.profile.settings.view :as settings]
+    [status-im.contexts.settings.privacy-and-security.view :as settings.privacy-and-security]
     [status-im.contexts.settings.wallet.keypairs-and-accounts.missing-keypairs.encrypted-qr.view
      :as encrypted-keypair-qr]
     [status-im.contexts.settings.wallet.keypairs-and-accounts.missing-keypairs.import-private-key.view
@@ -613,6 +614,10 @@
     {:name      :screen/settings-blocked-users
      :options   options/transparent-modal-screen-options
      :component settings.blocked-users/view}
+
+    {:name      :screen/settings-privacy-and-security
+     :options   options/transparent-modal-screen-options
+     :component settings.privacy-and-security/view}
 
     {:name      :screen/change-password
      :options   (assoc options/transparent-modal-screen-options :theme :dark)
