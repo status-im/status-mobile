@@ -5,7 +5,6 @@
     [quo.theme :as quo.theme]
     [react-native.core :as rn]
     [reagent.core :as reagent]
-    [status-im.constants :as constants]
     [status-im.contexts.wallet.common.utils :as utils]
     [status-im.contexts.wallet.sheets.network-preferences.style :as style]
     [utils.i18n :as i18n]
@@ -19,20 +18,17 @@
                 network-preferences-names]} (or account (rf/sub [:wallet/current-viewing-account]))
         initial-network-preferences-names   (or selected-networks network-preferences-names)
         receiver?                           (boolean (not-empty receiver-preferred-networks))
-        network-preferences-names-state     (reagent/atom (if receiver? selected-networks #{}))
+        network-preferences-names-state     (reagent/atom (if receiver?
+                                                            selected-networks
+                                                            initial-network-preferences-names))
         toggle-network                      (fn [network-name]
                                               (reset! state :changed)
                                               (let [contains-network? (contains?
                                                                        @network-preferences-names-state
                                                                        network-name)
-                                                    update-fn         (if contains-network? disj conj)
-                                                    networks-count    (count
-                                                                       @network-preferences-names-state)]
-                                                (if (and (= networks-count 1) contains-network?)
-                                                  (reset! network-preferences-names-state
-                                                    (set constants/default-network-names))
-                                                  (swap! network-preferences-names-state update-fn
-                                                    network-name))))
+                                                    update-fn         (if contains-network? disj conj)]
+                                                (swap! network-preferences-names-state update-fn
+                                                  network-name)))
         get-current-preferences-names       (fn []
                                               (if (= @state :default)
                                                 initial-network-preferences-names
@@ -169,7 +165,8 @@
           {:actions          :one-action
            :blur?            blur?
            :button-one-label (or button-label (i18n/label :t/confirm))
-           :button-one-props {:disabled?           (= @state :default)
+           :button-one-props {:disabled?           (or (= @state :default)
+                                                       (empty? @network-preferences-names-state))
                               :on-press            (fn []
                                                      (let [chain-ids (map :chain-id current-networks)]
                                                        (on-save chain-ids)))
