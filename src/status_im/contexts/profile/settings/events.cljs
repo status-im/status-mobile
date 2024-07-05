@@ -95,14 +95,14 @@
 (rf/reg-event-fx :profile.settings/change-appearance
  (fn [_ [theme]]
    {:fx [[:dispatch [:profile.settings/profile-update :appearance theme]]
-         [:profile.settings/switch-theme-fx [theme :appearance true]]]}))
+         [:profile.settings/switch-theme-fx [theme :appearance]]]}))
 
 (rf/reg-event-fx :profile.settings/switch-theme
  (fn [{:keys [db]} [theme view-id]]
    (let [theme (or theme
                    (get-in db [:profile/profile :appearance])
                    constants/theme-type-dark)]
-     {:fx [[:profile.settings/switch-theme-fx [theme view-id false]]]})))
+     {:fx [[:profile.settings/switch-theme-fx [theme view-id]]]})))
 
 (rf/reg-fx :profile.settings/get-profile-picture
  (fn [key-uid]
