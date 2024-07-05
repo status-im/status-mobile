@@ -40,7 +40,7 @@
             :verifyENSURL             config/verify-ens-url
             :verifyENSContractAddress config/verify-ens-contract-address
             :verifyTransactionChainID config/verify-transaction-chain-id
-            :wakuV2LightClient        false
+            :wakuV2LightClient        true
             :previewPrivacy           config/blank-preview?
             :testNetworksEnabled      config/test-networks-enabled?})))
 
