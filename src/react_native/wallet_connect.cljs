@@ -11,6 +11,8 @@
 
 (defn init
   [project-id metadata]
+  (js/alert project-id)
+  (js/alert Web3Wallet)
   (let [core (wallet-connect-core project-id)]
     (Web3Wallet.init
      (clj->js {:core     core
