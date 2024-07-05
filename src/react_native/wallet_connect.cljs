@@ -1,9 +1,9 @@
 (ns react-native.wallet-connect
   (:require
-    ["@walletconnect/core" :refer [Core]]
-    ["@walletconnect/utils" :refer
-     [buildApprovedNamespaces getSdkError parseUri]]
-    ["@walletconnect/web3wallet" :refer [Web3Wallet]]))
+   ["@walletconnect/core" :refer [Core]]
+   ["@walletconnect/utils" :refer
+    [buildApprovedNamespaces getSdkError parseUri]]
+   ["@walletconnect/web3wallet" :refer [Web3Wallet]]))
 
 (defn- wallet-connect-core
   [project-id]
@@ -11,9 +11,12 @@
 
 (defn init
   [project-id metadata]
-  (js/alert project-id)
-  (js/alert Web3Wallet)
+  (js/alert "rn.wc/metadata" metadata)
+  (js/alert "rn.wc/wallet" Web3Wallet)
+  (js/alert "rn.wc/-init" Web3Wallet.-init)
+  (js/alert "rn.wc/init fn" Web3Wallet.init)
   (let [core (wallet-connect-core project-id)]
+    (js/alert "rn.wc/core" core)
     (Web3Wallet.init
      (clj->js {:core     core
                :metadata metadata}))))
