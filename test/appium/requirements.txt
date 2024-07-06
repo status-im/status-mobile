@@ -7,7 +7,7 @@ aiohttp==3.8.1
 allpairspy==2.5.0
 apipkg==1.5
 async-timeout==4.0.1
-certifi==2023.7.22
+certifi==2024.7.4
 chardet==3.0.4
 cycler==0.10.0
 cytoolz==0.12.0
