@@ -25,6 +25,16 @@
        maybe-int
        default))))
 
+(defn parse-float
+  "Parses `n` as a float. Defaults to zero or `default` instead of NaN."
+  ([n]
+   (parse-float n 0))
+  ([n default]
+   (let [maybe-float (js/parseFloat n 10)]
+     (if (js/Number.isNaN maybe-float)
+       default
+       maybe-float))))
+
 (defn value-in-range
   "Returns `num` if is in the range [`lower-bound` `upper-bound`]
   if `num` exceeds a given bound, then returns the bound exceeded."

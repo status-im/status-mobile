@@ -92,7 +92,7 @@
 (rf/reg-event-fx :wallet/make-keypairs-accounts-fully-operable make-keypairs-accounts-fully-operable)
 
 (defn connection-string-for-import-keypair
-  [{:keys [db]} [{:keys [sha3-pwd keypairs-key-uids connection-string on-success]}]]
+  [{:keys [db]} [{:keys [sha3-pwd keypairs-key-uids connection-string]}]]
   (let [key-uid (get-in db [:profile/profile :key-uid])]
     {:fx [[:effects.syncing/import-keypairs-keystores
            {:key-uid           key-uid
@@ -100,7 +100,6 @@
             :keypairs-key-uids keypairs-key-uids
             :connection-string connection-string
             :on-success        (fn [key-uids]
-                                 (rf/call-continuation on-success)
                                  (rf/dispatch [:wallet/make-keypairs-accounts-fully-operable key-uids]))
             :on-fail           (fn [error]
                                  (log/error "failed to import missing key pairs with connection string"
@@ -113,7 +112,7 @@
 (rf/reg-event-fx :wallet/connection-string-for-import-keypair connection-string-for-import-keypair)
 
 (defn success-keypair-qr-scan
-  [_ [connection-string keypairs-key-uids on-import-success]]
+  [_ [connection-string keypairs-key-uids]]
   {:fx [[:dispatch
          [:standard-auth/authorize-with-password
           {:blur?             true
@@ -125,8 +124,7 @@
                                  [:wallet/connection-string-for-import-keypair
                                   {:connection-string connection-string
                                    :keypairs-key-uids keypairs-key-uids
-                                   :sha3-pwd          password
-                                   :on-success        on-import-success}]))}]]]})
+                                   :sha3-pwd          password}]))}]]]})
 
 (rf/reg-event-fx :wallet/success-keypair-qr-scan success-keypair-qr-scan)
 
