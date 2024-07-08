@@ -58,7 +58,8 @@
 
 (defn view
   [{:keys [header footer customization-color footer-container-padding header-container-style
-           content-container-style gradient-cover? keyboard-should-persist-taps shell-overlay?]
+           content-container-style gradient-cover? keyboard-should-persist-taps shell-overlay?
+           blur-options content-avoid-keyboard?]
     :or   {footer-container-padding (safe-area/get-top)}}
    & children]
   (reagent/with-let [scroll-view-ref              (atom nil)
@@ -100,20 +101,23 @@
          {:on-layout set-header-height
           :style     header-container-style}
          header]
-        [gesture/scroll-view
-         {:ref                             set-scroll-ref
-          :on-scroll                       set-content-y-scroll
-          :scroll-event-throttle           64
-          :content-container-style         {:flex-grow      1
-                                            :padding-bottom (when @keyboard-did-show?
-                                                              @footer-container-height)}
-          :always-bounce-vertical          @keyboard-did-show?
-          :shows-vertical-scroll-indicator false
-          :keyboard-should-persist-taps    keyboard-should-persist-taps}
-         (into [rn/view
-                {:style     content-container-style
-                 :on-layout set-content-container-height}]
-               children)]
+        [(if content-avoid-keyboard? rn/keyboard-avoiding-view rn/view)
+         {:style style/scroll-view-container}
+         [gesture/scroll-view
+          {:ref                                  set-scroll-ref
+           :on-scroll                            set-content-y-scroll
+           :scroll-event-throttle                64
+           :content-container-style              {:flex-grow      1
+                                                  :padding-bottom (when @keyboard-did-show?
+                                                                    @footer-container-height)}
+           :always-bounce-vertical               @keyboard-did-show?
+           :automatically-adjust-keyboard-insets true
+           :shows-vertical-scroll-indicator      false
+           :keyboard-should-persist-taps         keyboard-should-persist-taps}
+          (into [rn/view
+                 {:style     content-container-style
+                  :on-layout set-content-container-height}]
+                children)]]
         [rn/keyboard-avoiding-view
          {:style                    style/keyboard-avoiding-view
           :keyboard-vertical-offset (if platform/ios? footer-container-padding 0)
@@ -121,8 +125,9 @@
          [floating-container/view
           {:on-layout       set-footer-container-height
            :keyboard-shown? keyboard-shown?
-           :blur?           show-background?
-           :shell-overlay?  shell-overlay?}
+           :blur-options    blur-options
+           :shell-overlay?  shell-overlay?
+           :blur?           show-background?}
           footer]]]])
     (finally
      (remove-listeners))))

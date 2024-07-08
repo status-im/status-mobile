@@ -13,3 +13,5 @@
    :bottom   0
    :left     0
    :right    0})
+
+(def scroll-view-container {:flex 1})

@@ -4,13 +4,20 @@
     [quo.core :as quo]
     [quo.foundations.colors :as colors]
     [react-native.core :as rn]
+    [react-native.hooks :as hooks]
+    [react-native.platform :as platform]
     [react-native.safe-area :as safe-area]
+    [status-im.common.floating-button-page.view :as floating-button]
     [status-im.constants :as constants]
     [status-im.contexts.onboarding.create-password.style :as style]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]
     [utils.security.core :as security]
     [utils.string :as utils.string]))
+
+(defn- get-height-from-layout
+  [laytout-event]
+  (oops/oget laytout-event :nativeEvent :layout :height))
 
 (defn header
   []
@@ -110,10 +117,6 @@
        (filter true?)
        count))
 
-(defn- get-height-from-layout
-  [laytout-event]
-  (oops/oget laytout-event :nativeEvent :layout :height))
-
 (defn- use-password-checks
   [password]
   (rn/use-memo
@@ -134,7 +137,38 @@
       :same-passwords?       (and (seq password) (= password repeat-password))})
    [password repeat-password]))
 
-(defn password-form
+(defn create-password-doc
+  []
+  [quo/documentation-drawers
+   {:title  (i18n/label :t/create-profile-password-info-box-title)
+    :shell? true}
+   [rn/view
+    [quo/text {:size :paragraph-2}
+     (i18n/label :t/create-profile-password-info-box-description)]]])
+
+(defn- on-press-info
+  []
+  (rn/dismiss-keyboard!)
+  (rf/dispatch [:show-bottom-sheet
+                {:content create-password-doc
+                 :shell?  true}]))
+
+(defn- navigate-back
+  []
+  (rf/dispatch [:navigate-back]))
+
+(defn- page-nav
+  []
+  (let [{:keys [top]} (safe-area/get-insets)]
+    [quo/page-nav
+     {:margin-top top
+      :background :blur
+      :icon-name  :i/arrow-left
+      :on-press   navigate-back
+      :right-side [{:icon-name :i/info
+                    :on-press  on-press-info}]}]))
+
+(defn create-password
   []
   (let [[password set-password]                         (rn/use-state "")
         [repeat-password set-repeat-password]           (rn/use-state "")
@@ -142,6 +176,9 @@
         [focused-input set-focused-input]               (rn/use-state nil)
         [show-password-validation?
          set-show-password-validation?]                 (rn/use-state false)
+        [footer-height set-footer-height]               (rn/use-state 0)
+        on-footer-layout-change                         (comp set-footer-height
+                                                              get-height-from-layout)
 
         {user-color :color}                             (rf/sub [:onboarding/profile])
 
@@ -161,107 +198,58 @@
                                                                accepts-disclaimer?)
                                                          [password repeat-password
                                                           accepts-disclaimer?])
+        {:keys [keyboard-shown]}                        (hooks/use-keyboard)]
 
-        [top-part-height set-top-part-height]           (rn/use-state 0)
-        [bottom-part-height set-bottom-part-height]     (rn/use-state 0)
-        on-top-part-layout                              (comp set-top-part-height
-                                                              get-height-from-layout)
-        on-bottom-part-layout                           (comp set-bottom-part-height
-                                                              get-height-from-layout)]
-
-    [rn/view
-     {:style (style/password-form-container (+ top-part-height bottom-part-height))}
-     [rn/view {:style style/top-part :on-layout on-top-part-layout}
-      [header]
-      [password-inputs
-       {:password-long-enough?     password-long-enough?
-        :passwords-match?          same-passwords?
-        :empty-password?           empty-password?
-        :show-password-validation? show-password-validation?
-        :on-input-focus            #(set-focused-input :password)
-        :on-change-password        (fn [new-value]
-                                     (set-password new-value)
-                                     (when same-password-length?
-                                       (set-show-password-validation? true)))
-
-        :on-change-repeat-password (fn [new-value]
-                                     (set-repeat-password new-value)
-                                     (when same-password-length?
-                                       (set-show-password-validation? true)))
-        :on-blur-repeat-password   #(if empty-password?
-                                      (set-show-password-validation? false)
-                                      (set-show-password-validation? true))}]]
-
-     ;; empty view shrink when keyboard shown
-     [rn/view {:style style/middle-part}]
-
-     [rn/view {:style style/bottom-part :on-layout on-bottom-part-layout}
-      (when same-passwords?
-        [rn/view {:style style/disclaimer-container}
-         [quo/disclaimer
-          {:blur?     true
-           :on-change (partial set-accepts-disclaimer? not)
-           :checked?  accepts-disclaimer?}
-          (i18n/label :t/password-creation-disclaimer)]])
-      (when (and (= focused-input :password) (not same-passwords?))
-        [help
-         {:validations       password-validations
-          :password-strength password-strength}])
-
-      [rn/view {:style style/button-container}
+    [floating-button/view
+     {:header [page-nav]
+      :content-avoid-keyboard? true
+      :content-container-style (style/container keyboard-shown footer-height)
+      :blur-options
+      {:blur-amount      34
+       :blur-type        :transparent
+       :overlay-color    :transparent
+       :background-color (if platform/android? colors/neutral-100 colors/neutral-80-opa-1-blur)}
+      :footer-container-padding 0
+      :footer
+      [rn/view {:on-layout on-footer-layout-change}
        [quo/button
         {:disabled?           (not meet-requirements?)
          :customization-color user-color
          :on-press            #(rf/dispatch
                                 [:onboarding/password-set
                                  (security/mask-data password)])}
-        (i18n/label :t/password-creation-confirm)]]]]))
+        (i18n/label :t/password-creation-confirm)]]}
 
-(defn create-password-doc
-  []
-  [quo/documentation-drawers
-   {:title  (i18n/label :t/create-profile-password-info-box-title)
-    :shell? true}
-   [rn/view
-    [quo/text {:size :paragraph-2}
-     (i18n/label :t/create-profile-password-info-box-description)]]])
+     [rn/view {:style style/form-container}
+      [rn/view {:style style/top-part}
+       [header]
+       [password-inputs
+        {:password-long-enough?     password-long-enough?
+         :passwords-match?          same-passwords?
+         :empty-password?           empty-password?
+         :show-password-validation? show-password-validation?
+         :on-input-focus            #(set-focused-input :password)
+         :on-change-password        (fn [new-value]
+                                      (set-password new-value)
+                                      (when same-password-length?
+                                        (set-show-password-validation? true)))
 
-(defn create-password
-  []
-  (let [[keyboard-shown? set-keyboard-shown?] (rn/use-state false)
-        {:keys [top bottom]}                  (safe-area/get-insets)
-        on-press-info                         (fn []
-                                                (rn/dismiss-keyboard!)
-                                                (rf/dispatch [:show-bottom-sheet
-                                                              {:content create-password-doc
-                                                               :shell?  true}]))]
-
-    (rn/use-mount
-     (fn []
-       (let [will-show-listener (oops/ocall rn/keyboard
-                                            "addListener"
-                                            "keyboardWillShow"
-                                            #(set-keyboard-shown? true))
-             will-hide-listener (oops/ocall rn/keyboard
-                                            "addListener"
-                                            "keyboardWillHide"
-                                            #(set-keyboard-shown? false))]
-         (fn []
-           (oops/ocall will-show-listener "remove")
-           (oops/ocall will-hide-listener "remove")))))
-
-    [rn/touchable-without-feedback
-     {:on-press   rn/dismiss-keyboard!
-      :accessible false}
-     [rn/keyboard-avoiding-view {:style style/flex-fill}
-      [quo/page-nav
-       {:margin-top top
-        :background :blur
-        :icon-name  :i/arrow-left
-        :on-press   #(rf/dispatch [:navigate-back])
-        :right-side [{:icon-name :i/info
-                      :on-press  on-press-info}]}]
-      [rn/scroll-view
-       {:content-container-style style/flex-fill}
-       [password-form]]
-      [rn/view {:style {:height (if-not keyboard-shown? bottom 0)}}]]]))
+         :on-change-repeat-password (fn [new-value]
+                                      (set-repeat-password new-value)
+                                      (when same-password-length?
+                                        (set-show-password-validation? true)))
+         :on-blur-repeat-password   #(if empty-password?
+                                       (set-show-password-validation? false)
+                                       (set-show-password-validation? true))}]]
+      [rn/view
+       (when same-passwords?
+         [rn/view {:style style/disclaimer-container}
+          [quo/disclaimer
+           {:blur?     true
+            :on-change (partial set-accepts-disclaimer? not)
+            :checked?  accepts-disclaimer?}
+           (i18n/label :t/password-creation-disclaimer)]])
+       (when (and (= focused-input :password) (not same-passwords?))
+         [help
+          {:validations       password-validations
+           :password-strength password-strength}])]]]))
