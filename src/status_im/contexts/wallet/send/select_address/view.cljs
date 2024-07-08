@@ -31,11 +31,11 @@
 (defn- validate-address
   [address]
   (debounce/debounce-and-dispatch
-   (cond
-     (<= (count address) 0)            [:wallet/address-validation-failed address]
-     (validation/eth-address? address) [:wallet/address-validation-success address]
-     :else                             [:wallet/address-validation-failed address])
-   300))
+    (cond
+      (<= (count address) 0)            [:wallet/address-validation-failed address]
+      (validation/eth-address? address) [:wallet/address-validation-success address]
+      :else                             [:wallet/address-validation-failed address])
+    300))
 
 (defn- address-input
   [input-value input-focused?]
@@ -72,10 +72,11 @@
                                    ; is loaded but not being shown to the user (deep in the
                                    ; navigation stack) and avoid undesired behaviors
                                    (debounce/debounce-and-dispatch
-                                    [:wallet/find-ens text contacts cb]
-                                    300)))
+                                     [:wallet/find-ens text contacts cb]
+                                     300)))
         :on-change-text        (fn [text]
                                  (rf/dispatch [:wallet/clean-local-suggestions])
+                                 (rf/dispatch [:wallet/searching-address])
                                  (validate-address text)
                                  (reset! input-value text))
         :valid-ens-or-address? valid-ens-or-address?}])))
@@ -115,11 +116,11 @@
         (= type types/saved-address)
         [quo/saved-address
          (assoc props
-                :user-props
-                {:name                primary-name
-                 :address             public-key
-                 :ens                 ens-name
-                 :customization-color color})]
+           :user-props
+           {:name                primary-name
+            :address             public-key
+            :ens                 ens-name
+            :customization-color color})]
         (= type types/saved-contact-address)
         [quo/saved-contact-address (merge props local-suggestion)]
         (and (not ens) (= type types/address))
@@ -151,19 +152,19 @@
       :disabled?           (not valid-ens-or-address?)
       :on-press            (fn []
                              (let [address              (or
-                                                         local-suggestion-address
-                                                         input-value)
+                                                          local-suggestion-address
+                                                          input-value)
                                    [_ splitted-address] (network-utils/split-network-full-address
-                                                         address)]
+                                                          address)]
                                (rf/dispatch
-                                [:wallet/select-send-address
-                                 {:address address
-                                  :recipient {:label
-                                              (utils/get-shortened-address
-                                               splitted-address)
-                                              :recipient-type :address}
-                                  :stack-id
-                                  :screen/wallet.select-address}])))
+                                 [:wallet/select-send-address
+                                  {:address address
+                                   :recipient {:label
+                                               (utils/get-shortened-address
+                                                 splitted-address)
+                                               :recipient-type :address}
+                                   :stack-id
+                                   :screen/wallet.select-address}])))
       :customization-color color}
      (i18n/label :t/continue)]))
 
@@ -182,7 +183,8 @@
         input-focused? (reagent/atom false)]
     (fn []
       (let [selected-tab          (or (rf/sub [:wallet/send-tab]) (:id (first tabs-data)))
-            valid-ens-or-address? (boolean (rf/sub [:wallet/valid-ens-or-address?]))]
+            valid-ens-or-address? (boolean (rf/sub [:wallet/valid-ens-or-address?]))
+            searching-address?    (rf/sub [:wallet/searching-address?])]
         [floating-button-page/view
          {:content-container-style      {:flex 1}
           :footer-container-padding     0
@@ -198,7 +200,7 @@
            :title-accessibility-label :title-label}]
          [address-input input-value input-focused?]
          [quo/divider-line]
-         (when (and (not valid-ens-or-address?) (> (count @input-value) 0))
+         (when (and (not valid-ens-or-address?) (> (count @input-value) 0) (not searching-address?))
            [rn/view {:style {:padding 20}}
             [quo/info-message
              {:status :error
