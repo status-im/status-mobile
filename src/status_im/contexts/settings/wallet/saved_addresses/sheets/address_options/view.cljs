@@ -21,7 +21,8 @@
                                                                               splitted-address)
                                                                       :recipient-type :saved-address}
                                                         :stack-id    :wallet-select-address
-                                                        :start-flow? true}])
+                                                        :start-flow? true
+                                                        :from-settings? true}])
                                         [full-address])
         open-eth-chain-explorer        (rn/use-callback
                                         #(rf/dispatch [:wallet/navigate-to-chain-explorer
