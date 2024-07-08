@@ -307,4 +307,5 @@
                                                         :currency        currency
                                                         :currency-symbol currency-symbol})
                                tokens)]
+    (println "cccxxx" calculated-tokens)
     (sort-by #(get-in % [:values :fiat-unformatted-value]) > calculated-tokens)))
