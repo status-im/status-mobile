@@ -104,14 +104,14 @@
 ;;;; Navigate to within stack
 
 (defn- navigate-to-within-stack
-  [[component comp-id]]
+  [[component comp-id theme]]
   (let [{:keys [options]} (get views/screens component)]
     (navigation/push
      (name comp-id)
      {:component {:id      component
                   :name    component
                   :options (merge
-                            (options/root-options {:theme (:theme options)})
+                            (options/root-options {:theme theme})
                             options)}})
     (state/navigation-state-push {:id     component
                                   :type   :stack

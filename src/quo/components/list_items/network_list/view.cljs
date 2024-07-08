@@ -44,13 +44,14 @@
       [:label :string]
       [:fiat-value :string]
       [:token-value :string]
+      [:container-style {:optional true} [:maybe :map]]
       [:customization-color {:optional true} [:maybe :schema.common/customization-color]]
       [:state {:optional true} [:enum :pressed :active :disabled :default]]
       [:on-press {:optional true} [:maybe fn?]]]]]
    :any])
 
 (defn- view-internal
-  [{:keys [on-press state customization-color]
+  [{:keys [on-press container-style state customization-color]
     :as   props
     :or   {customization-color :blue}}]
   (let [theme                  (quo.theme/use-theme)
@@ -59,7 +60,8 @@
         on-press-out           (rn/use-callback #(set-pressed false))
         internal-state         (if pressed? :pressed state)]
     [rn/pressable
-     {:style               (style/container internal-state customization-color theme)
+     {:style               (merge (style/container internal-state customization-color theme)
+                                  container-style)
       :on-press-in         (when-not (= state :disabled) on-press-in)
       :on-press-out        (when-not (= state :disabled) on-press-out)
       :on-press            (when-not (= state :disabled) on-press)

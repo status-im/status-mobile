@@ -261,11 +261,12 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
         #     self.errors.append("Message_4 is not unpinned!")
 
         for chat_number, chat in enumerate([self.chat_1, self.chat_2]):
-            count = chat.pinned_messages_count.text
-            if count != '2':
+            try:
+                chat.pinned_messages_count.wait_for_element_text(text='2', wait_time=20)
+            except Failed:
                 self.errors.append(
-                    "Pinned messages count is %s but should be 2 after unpinning the last pinned message for user %s" %
-                    (count, chat_number + 1)
+                    "Pinned messages count is not 2 after unpinning the last pinned message for user %s" % (
+                                chat_number + 1)
                 )
         self.errors.verify_no_errors()
 

@@ -29,7 +29,7 @@
   {:events [:navigate-to-within-stack]}
   [{:keys [db]} comp-id screen-params]
   {:db (all-screens-params db (first comp-id) screen-params)
-   :fx [[:navigate-to-within-stack comp-id]]})
+   :fx [[:navigate-to-within-stack (conj comp-id (:theme db))]]})
 
 (re-frame/reg-event-fx :open-modal
  (fn [{:keys [db]} [component screen-params]]

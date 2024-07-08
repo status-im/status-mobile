@@ -12,8 +12,8 @@
 
 (defn preview-container
   []
-  {:margin-horizontal 8
-   :margin-top        (+ (header-height) 12)})
+  {:padding-horizontal 8
+   :margin-top         (+ (header-height) 12)})
 
 (def header
   {:margin-horizontal 20

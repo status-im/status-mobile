@@ -88,10 +88,29 @@
      :address          address
      :toast-message    (i18n/label :t/watched-account-removed)}]])
 
+(defn- private-key-address-flow
+  [{:keys [address name emoji color] :as _account}]
+  [:<>
+   [quo/drawer-top
+    {:title               (i18n/label :t/remove-account-title)
+     :type                :context-tag
+     :context-tag-type    :account
+     :account-name        name
+     :emoji               emoji
+     :customization-color color}]
+   [rn/view {:style style/desc-container}
+    [quo/text {:weight :medium}
+     (i18n/label :t/remove-private-key-address-desc)]]
+   [footer
+    {:submit-disabled? false
+     :address          address
+     :toast-message    (i18n/label :t/account-removed)}]])
+
 (defn view
   []
-  (let [{:keys [type] :as account} (rf/sub [:wallet/current-viewing-account])]
-    (case type
-      :generated [recovery-phase-flow account]
-      :watch     [watched-address-flow account]
+  (let [{account-type :type :as account} (rf/sub [:wallet/current-viewing-account])]
+    (case account-type
+      (:generated :seed) [recovery-phase-flow account]
+      :watch             [watched-address-flow account]
+      :key               [private-key-address-flow account]
       nil)))

@@ -21,6 +21,7 @@
     status-im.subs.wallet.networks
     status-im.subs.wallet.saved-addresses
     status-im.subs.wallet.send
+    status-im.subs.wallet.swap
     status-im.subs.wallet.wallet
     status-im.subs.wallet.wallet-connect))
 
