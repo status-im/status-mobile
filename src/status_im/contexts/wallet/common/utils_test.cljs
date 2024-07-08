@@ -123,36 +123,82 @@
           mock-currency-symbol "$"]
 
       (testing "Standard case with different fiat-unformatted-values"
-        (let [mock-tokens     [{:token "TokenA" :values {:fiat-unformatted-value 5}}
-                               {:token "TokenB" :values {:fiat-unformatted-value 10}}
-                               {:token "TokenC" :values {:fiat-unformatted-value 1}}]
+        (let [mock-tokens     [{:symbol "ETH" :name "Ethereum" :values {:fiat-unformatted-value 5}}
+                               {:symbol "DAI" :name "Dai" :values {:fiat-unformatted-value 10}}
+                               {:symbol "SNT"
+                                :name   "Status Network Token"
+                                :values {:fiat-unformatted-value 1}}]
               mock-input      {:tokens          mock-tokens
                                :color           mock-color
                                :currency        mock-currency
                                :currency-symbol mock-currency-symbol}
-              expected-output [{:token "TokenB" :values {:fiat-unformatted-value 10}}
-                               {:token "TokenA" :values {:fiat-unformatted-value 5}}
-                               {:token "TokenC" :values {:fiat-unformatted-value 1}}]]
+              expected-output [{:token               "DAI"
+                                :token-name          "Dai"
+                                :state               :default
+                                :metrics?            true
+                                :status              :empty
+                                :customization-color "blue"
+                                :values              {:fiat-unformatted-value 10}}
+                               {:token               "ETH"
+                                :token-name          "Ethereum"
+                                :state               :default
+                                :metrics?            true
+                                :status              :empty
+                                :customization-color "blue"
+                                :values              {:fiat-unformatted-value 5}}
+                               {:token               "SNT"
+                                :token-name          "Status Network Token"
+                                :state               :default
+                                :metrics?            true
+                                :status              :empty
+                                :customization-color "blue"
+                                :values              {:fiat-unformatted-value 1}}]]
           (is (= expected-output (utils/calculate-and-sort-tokens mock-input)))))
 
       (testing "Case with all zero fiat-unformatted-values"
-        (let [mock-tokens     [{:token "TokenA" :values {:fiat-unformatted-value 0}}
-                               {:token "TokenB" :values {:fiat-unformatted-value 0}}
-                               {:token "TokenC" :values {:fiat-unformatted-value 0}}]
+        (let [mock-tokens     [{:symbol "ETH" :name "Ethereum" :values {:fiat-unformatted-value 0}}
+                               {:symbol "DAI" :name "Dai" :values {:fiat-unformatted-value 0}}
+                               {:symbol "SNT"
+                                :name   "Status Network Token"
+                                :values {:fiat-unformatted-value 0}}]
               mock-input      {:tokens          mock-tokens
                                :color           mock-color
                                :currency        mock-currency
                                :currency-symbol mock-currency-symbol}
-              expected-output [{:token "TokenA" :values {:fiat-unformatted-value 0}}
-                               {:token "TokenB" :values {:fiat-unformatted-value 0}}
-                               {:token "TokenC" :values {:fiat-unformatted-value 0}}]]
+              expected-output [{:token               "ETH"
+                                :token-name          "Ethereum"
+                                :state               :default
+                                :metrics?            true
+                                :status              :empty
+                                :customization-color "blue"
+                                :values              {:fiat-unformatted-value 0}}
+                               {:token               "DAI"
+                                :token-name          "Dai"
+                                :state               :default
+                                :metrics?            true
+                                :status              :empty
+                                :customization-color "blue"
+                                :values              {:fiat-unformatted-value 0}}
+                               {:token               "SNT"
+                                :token-name          "Status Network Token"
+                                :state               :default
+                                :metrics?            true
+                                :status              :empty
+                                :customization-color "blue"
+                                :values              {:fiat-unformatted-value 0}}]]
           (is (= expected-output (utils/calculate-and-sort-tokens mock-input)))))
 
       (testing "Case with only one token"
-        (let [mock-tokens     [{:token "TokenA" :values {:fiat-unformatted-value 5}}]
+        (let [mock-tokens     [{:symbol "ETH" :name "Ethereum" :values {:fiat-unformatted-value 5}}]
               mock-input      {:tokens          mock-tokens
                                :color           mock-color
                                :currency        mock-currency
                                :currency-symbol mock-currency-symbol}
-              expected-output [{:token "TokenA" :values {:fiat-unformatted-value 5}}]]
+              expected-output [{:token               "ETH"
+                                :token-name          "Ethereum"
+                                :state               :default
+                                :metrics?            true
+                                :status              :empty
+                                :customization-color "blue"
+                                :values              {:fiat-unformatted-value 5}}]]
           (is (= expected-output (utils/calculate-and-sort-tokens mock-input))))))))
