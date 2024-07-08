@@ -123,11 +123,18 @@
           mock-currency-symbol "$"]
 
       (testing "Standard case with different fiat-unformatted-values"
-        (let [mock-tokens     [{:symbol "ETH" :name "Ethereum" :values {:fiat-unformatted-value 5}}
-                               {:symbol "DAI" :name "Dai" :values {:fiat-unformatted-value 10}}
-                               {:symbol "SNT"
-                                :name   "Status Network Token"
-                                :values {:fiat-unformatted-value 1}}]
+        (let [mock-tokens     [{:symbol             "ETH"
+                                :name               "Ethereum"
+                                :balances-per-chain {:mock-chain 5}
+                                :decimals           18}
+                               {:symbol             "DAI"
+                                :name               "Dai"
+                                :balances-per-chain {:mock-chain 10}
+                                :decimals           18}
+                               {:symbol             "SNT"
+                                :name               "Status Network Token"
+                                :balances-per-chain {:mock-chain 1}
+                                :decimals           18}]
               mock-input      {:tokens          mock-tokens
                                :color           mock-color
                                :currency        mock-currency
@@ -139,7 +146,7 @@
                                 :status              :empty
                                 :customization-color "blue"
                                 :values              {:crypto-value           "mock"
-                                                      :fiat-value             "$10.00"
+                                                      :fiat-value             "$10"
                                                       :fiat-unformatted-value 10
                                                       :fiat-change            "$0.00"
                                                       :percentage-change      "0.00"}}
@@ -150,7 +157,7 @@
                                 :status              :empty
                                 :customization-color "blue"
                                 :values              {:crypto-value           "mock"
-                                                      :fiat-value             "$5.00"
+                                                      :fiat-value             "$5"
                                                       :fiat-unformatted-value 5
                                                       :fiat-change            "$0.00"
                                                       :percentage-change      "0.00"}}
@@ -161,18 +168,25 @@
                                 :status              :empty
                                 :customization-color "blue"
                                 :values              {:crypto-value           "mock"
-                                                      :fiat-value             "$1.00"
+                                                      :fiat-value             "$1"
                                                       :fiat-unformatted-value 1
                                                       :fiat-change            "$0.00"
                                                       :percentage-change      "0.00"}}]]
           (is (= expected-output (utils/calculate-and-sort-tokens mock-input)))))
 
       (testing "Case with all zero fiat-unformatted-values"
-        (let [mock-tokens     [{:symbol "ETH" :name "Ethereum" :values {:fiat-unformatted-value 0}}
-                               {:symbol "DAI" :name "Dai" :values {:fiat-unformatted-value 0}}
-                               {:symbol "SNT"
-                                :name   "Status Network Token"
-                                :values {:fiat-unformatted-value 0}}]
+        (let [mock-tokens     [{:symbol             "ETH"
+                                :name               "Ethereum"
+                                :balances-per-chain {:mock-chain 0}
+                                :decimals           18}
+                               {:symbol             "DAI"
+                                :name               "Dai"
+                                :balances-per-chain {:mock-chain 0}
+                                :decimals           18}
+                               {:symbol             "SNT"
+                                :name               "Status Network Token"
+                                :balances-per-chain {:mock-chain 0}
+                                :decimals           18}]
               mock-input      {:tokens          mock-tokens
                                :color           mock-color
                                :currency        mock-currency
@@ -184,7 +198,7 @@
                                 :status              :empty
                                 :customization-color "blue"
                                 :values              {:crypto-value           "mock"
-                                                      :fiat-value             "$0.00"
+                                                      :fiat-value             "$0"
                                                       :fiat-unformatted-value 0
                                                       :fiat-change            "$0.00"
                                                       :percentage-change      "0.00"}}
@@ -195,7 +209,7 @@
                                 :status              :empty
                                 :customization-color "blue"
                                 :values              {:crypto-value           "mock"
-                                                      :fiat-value             "$0.00"
+                                                      :fiat-value             "$0"
                                                       :fiat-unformatted-value 0
                                                       :fiat-change            "$0.00"
                                                       :percentage-change      "0.00"}}
@@ -206,14 +220,17 @@
                                 :status              :empty
                                 :customization-color "blue"
                                 :values              {:crypto-value           "mock"
-                                                      :fiat-value             "$0.00"
+                                                      :fiat-value             "$0"
                                                       :fiat-unformatted-value 0
                                                       :fiat-change            "$0.00"
                                                       :percentage-change      "0.00"}}]]
           (is (= expected-output (utils/calculate-and-sort-tokens mock-input)))))
 
       (testing "Case with only one token"
-        (let [mock-tokens     [{:symbol "ETH" :name "Ethereum" :values {:fiat-unformatted-value 5}}]
+        (let [mock-tokens     [{:symbol             "ETH"
+                                :name               "Ethereum"
+                                :balances-per-chain {:mock-chain 5}
+                                :decimals           18}]
               mock-input      {:tokens          mock-tokens
                                :color           mock-color
                                :currency        mock-currency
@@ -225,9 +242,10 @@
                                 :status              :empty
                                 :customization-color "blue"
                                 :values              {:crypto-value           "mock"
-                                                      :fiat-value             "$5.00"
+                                                      :fiat-value             "$5"
                                                       :fiat-unformatted-value 5
                                                       :fiat-change            "$0.00"
                                                       :percentage-change      "0.00"}}]]
           (is (= expected-output (utils/calculate-and-sort-tokens mock-input))))))))
+
 
