@@ -117,7 +117,7 @@
     (is (= (utils/prettify-percentage-change -0.78234) "0.78"))))
 
 (deftest calculate-and-sort-tokens-test
-  (testing "utils/calculate-and-sort-tokens function"
+  (testing "calculate-and-sort-tokens function"
     (let [mock-color           "blue"
           mock-currency        "USD"
           mock-currency-symbol "$"]
