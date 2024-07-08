@@ -138,21 +138,33 @@
                                 :metrics?            true
                                 :status              :empty
                                 :customization-color "blue"
-                                :values              {:fiat-unformatted-value 10}}
+                                :values              {:crypto-value           "mock"
+                                                      :fiat-value             "$10.00"
+                                                      :fiat-unformatted-value 10
+                                                      :fiat-change            "$0.00"
+                                                      :percentage-change      "0.00"}}
                                {:token               "ETH"
                                 :token-name          "Ethereum"
                                 :state               :default
                                 :metrics?            true
                                 :status              :empty
                                 :customization-color "blue"
-                                :values              {:fiat-unformatted-value 5}}
+                                :values              {:crypto-value           "mock"
+                                                      :fiat-value             "$5.00"
+                                                      :fiat-unformatted-value 5
+                                                      :fiat-change            "$0.00"
+                                                      :percentage-change      "0.00"}}
                                {:token               "SNT"
                                 :token-name          "Status Network Token"
                                 :state               :default
                                 :metrics?            true
                                 :status              :empty
                                 :customization-color "blue"
-                                :values              {:fiat-unformatted-value 1}}]]
+                                :values              {:crypto-value           "mock"
+                                                      :fiat-value             "$1.00"
+                                                      :fiat-unformatted-value 1
+                                                      :fiat-change            "$0.00"
+                                                      :percentage-change      "0.00"}}]]
           (is (= expected-output (utils/calculate-and-sort-tokens mock-input)))))
 
       (testing "Case with all zero fiat-unformatted-values"
@@ -171,21 +183,33 @@
                                 :metrics?            true
                                 :status              :empty
                                 :customization-color "blue"
-                                :values              {:fiat-unformatted-value 0}}
+                                :values              {:crypto-value           "mock"
+                                                      :fiat-value             "$0.00"
+                                                      :fiat-unformatted-value 0
+                                                      :fiat-change            "$0.00"
+                                                      :percentage-change      "0.00"}}
                                {:token               "DAI"
                                 :token-name          "Dai"
                                 :state               :default
                                 :metrics?            true
                                 :status              :empty
                                 :customization-color "blue"
-                                :values              {:fiat-unformatted-value 0}}
+                                :values              {:crypto-value           "mock"
+                                                      :fiat-value             "$0.00"
+                                                      :fiat-unformatted-value 0
+                                                      :fiat-change            "$0.00"
+                                                      :percentage-change      "0.00"}}
                                {:token               "SNT"
                                 :token-name          "Status Network Token"
                                 :state               :default
                                 :metrics?            true
                                 :status              :empty
                                 :customization-color "blue"
-                                :values              {:fiat-unformatted-value 0}}]]
+                                :values              {:crypto-value           "mock"
+                                                      :fiat-value             "$0.00"
+                                                      :fiat-unformatted-value 0
+                                                      :fiat-change            "$0.00"
+                                                      :percentage-change      "0.00"}}]]
           (is (= expected-output (utils/calculate-and-sort-tokens mock-input)))))
 
       (testing "Case with only one token"
@@ -200,5 +224,10 @@
                                 :metrics?            true
                                 :status              :empty
                                 :customization-color "blue"
-                                :values              {:fiat-unformatted-value 5}}]]
+                                :values              {:crypto-value           "mock"
+                                                      :fiat-value             "$5.00"
+                                                      :fiat-unformatted-value 5
+                                                      :fiat-change            "$0.00"
+                                                      :percentage-change      "0.00"}}]]
           (is (= expected-output (utils/calculate-and-sort-tokens mock-input))))))))
+
