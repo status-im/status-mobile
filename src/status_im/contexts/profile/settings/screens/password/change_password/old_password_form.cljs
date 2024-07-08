@@ -43,9 +43,9 @@
        {:style style/error-container}
        (when error
          [quo/info-message
-          {:type :error
-           :size :default
-           :icon :i/info}
+          {:status :error
+           :size   :default
+           :icon   :i/info}
           (i18n/label :t/oops-wrong-password)])]
       [quo/information-box
        {:type  :error

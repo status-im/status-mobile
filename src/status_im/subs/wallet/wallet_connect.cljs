@@ -39,7 +39,7 @@
  :<- [:wallet-connect/current-request]
  :<- [:wallet-connect/pairings]
  (fn [[request pairings]]
-   (let [dapp-url (get-in request [:raw-data :verifyContext :verified :origin])]
+   (let [dapp-url (get-in request [:event :verifyContext :verified :origin])]
      (->> pairings
           (filter (fn [pairing]
                     (= dapp-url (get-in pairing [:peerMetadata :url]))))
@@ -108,8 +108,18 @@
                                      :else nil)})))))
 
 (rf/reg-sub
- :wallet-connect/session-proposer
+ :wallet-connect/current-proposal-request
  :<- [:wallet-connect/current-proposal]
+ :-> :request)
+
+(rf/reg-sub
+ :wallet-connect/session-proposal-networks
+ :<- [:wallet-connect/current-proposal]
+ :-> :session-networks)
+
+(rf/reg-sub
+ :wallet-connect/session-proposer
+ :<- [:wallet-connect/current-proposal-request]
  (fn [proposal]
    (-> proposal :params :proposer)))
 
@@ -118,3 +128,20 @@
  :<- [:wallet-connect/session-proposer]
  (fn [proposer]
    (-> proposer :metadata :name)))
+
+(rf/reg-sub
+ :wallet-connect/session-proposal-network-details
+ :<- [:wallet-connect/session-proposal-networks]
+ :<- [:wallet/network-details]
+ (fn [[session-networks network-details]]
+   (let [supported-networks       (map :chain-id network-details)
+         session-networks         (filterv #(contains? (set session-networks) (:chain-id %))
+                                           network-details)
+         all-networks-in-session? (= (count supported-networks) (count session-networks))]
+     {:session-networks         session-networks
+      :all-networks-in-session? all-networks-in-session?})))
+
+(rf/reg-sub
+ :wallet-connect/current-proposal-address
+ (fn [db]
+   (get-in db [:wallet-connect/current-proposal :address])))

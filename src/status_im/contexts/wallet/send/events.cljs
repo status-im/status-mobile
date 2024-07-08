@@ -82,8 +82,12 @@
                                              :token-networks-ids token-networks-ids
                                              :tx-type            tx-type
                                              :receiver?          true})
-                                           (send-utils/reset-loading-network-amounts-to-zero
-                                            receiver-network-values))
+                                           (->
+                                             (send-utils/reset-loading-network-amounts-to-zero
+                                              receiver-network-values)
+                                             vec
+                                             (conj {:type :edit})))
+
            network-links                 (when routes-available?
                                            (send-utils/network-links chosen-route
                                                                      sender-network-values
@@ -237,7 +241,8 @@
               (assoc-in [:wallet :ui :send :token-not-supported-in-receiver-networks?]
                         token-not-supported-in-receiver-networks?))
       :fx [[:dispatch [:hide-bottom-sheet]]
-           [:dispatch [:wallet/clean-suggested-routes]]]})))
+           [:dispatch [:wallet/clean-suggested-routes]]
+           [:dispatch [:wallet/clean-from-locked-amounts]]]})))
 
 (rf/reg-event-fx :wallet/clean-selected-token
  (fn [{:keys [db]}]

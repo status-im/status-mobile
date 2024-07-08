@@ -18,8 +18,8 @@
                               :image (:uri preview-url)}])}]))
 
 (defn- on-collectible-press
-  [{:keys [id]}]
-  (rf/dispatch [:wallet/get-collectible-details id]))
+  [{:keys [id]} aspect-ratio]
+  (rf/dispatch [:wallet/get-collectible-details id aspect-ratio]))
 
 (defn view
   [{:keys [selected-tab]}]

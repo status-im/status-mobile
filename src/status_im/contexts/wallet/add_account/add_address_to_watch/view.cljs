@@ -103,8 +103,8 @@
     (when activity-state
       [quo/info-message
        (assoc props
-              :style style/info-message
-              :size  :default)
+              :container-style style/info-message
+              :size            :default)
        (i18n/label message)])))
 
 (defn view
@@ -163,7 +163,7 @@
              {:accessibility-label :error-message
               :size                :default
               :icon                :i/info
-              :type                :error
-              :style               style/info-message}
+              :status              :error
+              :container-style     style/info-message}
              @validation-msg]
-            [activity-indicator activity-state])]]))))
+            [activity-indicator])]]))))

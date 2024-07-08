@@ -66,7 +66,8 @@
                                              (chat-list-item/chat-list-item item theme))
         :scroll-event-throttle             8
         :content-container-style           {:padding-bottom
-                                            jump-to.constants/floating-shell-button-height}
+                                            jump-to.constants/floating-shell-button-height
+                                            :padding-top 8}
         :on-scroll                         #(common.banner/set-scroll-shared-value
                                              {:scroll-input (oops/oget % "nativeEvent.contentOffset.y")
                                               :shared-value scroll-shared-value})}])))

@@ -109,10 +109,10 @@
   []
   [rn/view {:style style/no-routes-found-container}
    [quo/info-message
-    {:type  :error
-     :icon  :i/alert
-     :size  :default
-     :style {:margin-top 15}}
+    {:status          :error
+     :icon            :i/alert
+     :size            :default
+     :container-style {:margin-top 15}}
     (i18n/label :t/no-routes-found)]])
 
 (defn- not-enough-asset
@@ -349,26 +349,27 @@
        :on-press      on-navigate-back
        :switcher-type :select-account}]
      [quo/token-input
-      {:container-style style/input-container
-       :token           token-symbol
-       :currency        fiat-currency
-       :currency-symbol currency-symbol
-       :crypto-decimals (min token-decimals 6)
-       :error?          (controlled-input/input-error input-state)
-       :networks        (seq send-enabled-networks)
-       :title           (i18n/label
-                         :t/send-limit
-                         {:limit (if crypto-currency?
-                                   (utils/make-limit-label-crypto current-limit token-symbol)
-                                   (utils/make-limit-label-fiat current-limit currency-symbol))})
-       :conversion      conversion-rate
-       :show-keyboard?  false
-       :value           input-amount
-       :on-swap         swap-between-fiat-and-crypto
-       :on-token-press  show-select-asset-sheet}]
+      {:container-style  style/input-container
+       :token            token-symbol
+       :currency         fiat-currency
+       :currency-symbol  currency-symbol
+       :crypto-decimals  (min token-decimals 6)
+       :error?           (controlled-input/input-error input-state)
+       :networks         (seq send-enabled-networks)
+       :title            (i18n/label
+                          :t/send-limit
+                          {:limit (if crypto-currency?
+                                    (utils/make-limit-label-crypto current-limit token-symbol)
+                                    (utils/make-limit-label-fiat current-limit currency-symbol))})
+       :conversion       conversion-rate
+       :show-keyboard?   false
+       :value            input-amount
+       :on-swap          swap-between-fiat-and-crypto
+       :on-token-press   show-select-asset-sheet
+       :allow-selection? false}]
      [routes/view
       {:token                                     token-by-symbol
-       :input-value                               input-amount
+       :send-amount-in-crypto                     amount-in-crypto
        :valid-input?                              valid-input?
        :token-not-supported-in-receiver-networks? token-not-supported-in-receiver-networks?
        :lock-fetch-routes?                        just-toggled-mode?

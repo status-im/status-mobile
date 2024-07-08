@@ -11,9 +11,10 @@
 (defn get-label-by-type
   [biometric-type]
   (condp = biometric-type
-    constants/biometrics-type-android (i18n/label :t/biometric-fingerprint)
-    constants/biometrics-type-face-id (i18n/label :t/biometric-faceid)
-    (i18n/label :t/biometric-touchid)))
+    constants/biometrics-type-android  (i18n/label :t/biometric-fingerprint)
+    constants/biometrics-type-face-id  (i18n/label :t/biometric-faceid)
+    constants/biometrics-type-touch-id (i18n/label :t/biometric-touchid)
+    (i18n/label :t/biometric)))
 
 (defn get-icon-by-type
   [biometric-type]

@@ -1,8 +1,8 @@
 (ns status-im.contexts.wallet.wallet-connect.session-proposal.view
   (:require
+    [clojure.string :as string]
     [quo.core :as quo]
     [quo.foundations.colors :as colors]
-    [quo.foundations.resources :as quo.resources]
     [quo.theme]
     [react-native.core :as rn]
     [status-im.common.floating-button-page.view :as floating-button-page]
@@ -45,29 +45,75 @@
          [quo/text label]])
       labels)]))
 
-(defn- get-placeholder-networks
+(defn- format-network-name
+  [network]
+  (-> network :network-name name string/capitalize))
+
+(defn- set-current-proposal-address
+  [acc]
+  (fn []
+    (rf/dispatch [:wallet-connect/set-current-proposal-address (:address acc)])
+    (rf/dispatch [:hide-bottom-sheet])))
+
+(defn- accounts-list
   []
-  [{:source (quo.resources/get-network :ethereum)}
-   {:source (quo.resources/get-network :optimism)}
-   {:source (quo.resources/get-network :arbitrum)}])
+  (let [accounts         (rf/sub [:wallet/accounts-without-watched-accounts])
+        selected-address (rf/sub [:wallet-connect/current-proposal-address])]
+    [rn/view {:style style/account-switcher-list}
+     (for [account accounts]
+       ^{:key (-> account :address str)}
+       [quo/account-item
+        {:type          :default
+         :state         (if (and selected-address
+                                 (= (account :address)
+                                    selected-address))
+                          :selected
+                          :default)
+         :account-props account
+         :on-press      (set-current-proposal-address account)}])]))
+
+(defn- account-switcher-sheet
+  []
+  [:<>
+   [rn/view {:style style/account-switcher-title}
+    [quo/text
+     {:size                :heading-2
+      :weight              :semi-bold
+      :accessibility-label "select-account-title"}
+     (i18n/label :t/select-account)]]
+   [accounts-list]])
+
+(defn- show-account-switcher-bottom-sheet
+  []
+  (rf/dispatch
+   [:show-bottom-sheet
+    {:content account-switcher-sheet}]))
 
 (defn- connection-category
   []
-  (let [{:keys [name emoji customization-color]} (first (rf/sub
-                                                         [:wallet/accounts-without-watched-accounts]))
+  (let [{:keys [session-networks
+                all-networks-in-session?]}       (rf/sub
+                                                  [:wallet-connect/session-proposal-network-details])
+        address                                  (rf/sub [:wallet-connect/current-proposal-address])
+        {:keys [name customization-color emoji]} (rf/sub [:wallet-connect/account-details-by-address
+                                                          address])
+        network-names                            (->> session-networks
+                                                      (map format-network-name)
+                                                      (string/join ", "))
+        network-images                           (mapv :source session-networks)
         data-item-common-props                   {:blur?       false
                                                   :description :default
                                                   :card?       false
                                                   :label       :preview
                                                   :status      :default
-                                                  :size        :default}
+                                                  :size        :large}
         account-data-item-props                  (assoc data-item-common-props
                                                         :right-content {:type :accounts
                                                                         :size :size-32
                                                                         :data [{:emoji emoji
                                                                                 :customization-color
                                                                                 customization-color}]}
-                                                        :on-press      #(js/alert "Not yet implemented")
+                                                        :on-press      show-account-switcher-bottom-sheet
                                                         :title         (i18n/label :t/account-title)
                                                         :subtitle      name
                                                         :icon-right?   true
@@ -75,12 +121,11 @@
                                                         :icon-color    colors/neutral-10)
         networks-data-item-props                 (assoc data-item-common-props
                                                         :right-content {:type :network
-                                                                        :data
-                                                                        (get-placeholder-networks)}
+                                                                        :data network-images}
                                                         :title         (i18n/label :t/networks)
-                                                        ;; TODO. The quo component for data-item
-                                                        ;; does not support showing networks yet
-                                                        :subtitle      "Networks placeholder")]
+                                                        :subtitle      (if all-networks-in-session?
+                                                                         (i18n/label :t/all-networks)
+                                                                         network-names))]
     [quo/category
      {:blur?     false
       :list-type :data-item

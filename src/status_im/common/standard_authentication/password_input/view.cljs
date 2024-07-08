@@ -16,8 +16,7 @@
   [error]
   (if (and (some? error)
            (or (= error "file is not a database")
-               (string/starts-with? error "failed to set ")
-               (string/starts-with? error "Failed")))
+               (string/starts-with? (string/lower-case error) "failed")))
     (i18n/label :t/oops-wrong-password)
     error))
 
@@ -34,9 +33,9 @@
                   [theme])]
     [rn/view {:style style/error-message}
      [quo/info-message
-      {:type :error
-       :size :default
-       :icon :i/info}
+      {:status :error
+       :size   :default
+       :icon   :i/info}
       error-message]
      [rn/pressable
       {:hit-slop {:top 6 :bottom 20 :left 0 :right 0}

@@ -16,7 +16,8 @@
         on-complete     (rn/use-callback
                          (fn [reset]
                            (rf/dispatch [:standard-auth/authorize
-                                         {:on-close              #(js/setTimeout reset 200)
+                                         {:on-close              (fn [success?]
+                                                                   (js/setTimeout #(reset success?) 200))
                                           :auth-button-icon-left auth-button-icon-left
                                           :theme                 theme
                                           :blur?                 blur?

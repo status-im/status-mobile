@@ -74,7 +74,7 @@
 
                 (cond
                   pairing-completed?
-                  [[:set-root :screen/onboarding.syncing-results]]
+                  [[:dispatch [:init-root :screen/onboarding.syncing-results]]]
 
                   (get db :onboarding/new-account?)
                   [[:dispatch [:onboarding/finalize-setup]]]
@@ -83,9 +83,8 @@
                   [[:profile.settings/switch-theme-fx
                     [(or (:appearance settings)
                          constants/theme-type-dark)
-                     :shell-stack
-                     false]]
-                   [:set-root :shell-stack]
+                     :shell-stack]]
+                   [:dispatch [:init-root :shell-stack]]
                    [:dispatch [:profile/show-testnet-mode-banner-if-enabled]]]))})))
 
 ;; login phase 2: we want to load and show chats faster, so we split login into 2 phases
@@ -179,7 +178,7 @@
      {:db (-> db
               (assoc-in [:profile/login :password] password)
               (assoc-in [:profile/login :processing] true))
-      :fx [[:set-root :progress]
+      :fx [[:dispatch [:init-root :progress]]
            [:effects.profile/login
             [(get-in db [:profile/login :key-uid])
              (security/safe-unmask-data password)]]]})))

@@ -282,6 +282,8 @@
 (def ^:const wallet-connect-session-proposal-event "session_proposal")
 (def ^:const wallet-connect-session-request-event "session_request")
 
+(def ^:const transaction-pending-type-wallet-connect-transfer "WalletConnectTransfer")
+
 (def ^:const dapp-permission-contact-code "contact-code")
 (def ^:const dapp-permission-web3 "web3")
 (def ^:const dapp-permission-qr-code "qr-code")
@@ -503,6 +505,9 @@
 (def ^:const optimism-network-name :optimism)
 (def ^:const arbitrum-network-name :arbitrum)
 
+(def ^:const layer-1-network 1)
+(def ^:const layer-2-network 2)
+
 (def ^:const default-network-names [mainnet-network-name optimism-network-name arbitrum-network-name])
 
 (def ^:const default-network-count (count default-network-names))
@@ -548,3 +553,10 @@
 (def ^:const community-joined-notification-type "communityJoined")
 
 (def ^:const default-telemetry-server-url "https://telemetry.status.im")
+
+(def ^:const contact-item-height 56)
+
+(def ^:const slippages [0.1 0.5 1])
+(def ^:const default-slippage 0.5)
+(def ^:const max-recommended-slippage 5)
+(def ^:const max-slippage-decimal-places 2)

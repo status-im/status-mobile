@@ -108,8 +108,7 @@
     (when (and (multiaccounts.model/logged-in? db)
                (= current-theme-type status-im.constants/theme-type-system))
       {:profile.settings/switch-theme-fx
-       [(get-in db [:profile/profile :appearance])
-        (:view-id db) true]})))
+       [(get-in db [:profile/profile :appearance]) (:view-id db)]})))
 
 (defn- on-biometric-auth-fail
   [{:keys [code]}]
@@ -135,7 +134,8 @@
                                  (>= (- now app-in-background-since)
                                      constants/ms-in-bg-for-require-bioauth))]
     (rf/merge cofx
-              {:db (dissoc db :app-in-background-since)}
+              {:db                                   (dissoc db :app-in-background-since)
+               :effects.biometric/get-supported-type nil}
               (mailserver/process-next-messages-request)
               (when-not new-account?
                 (universal-links/process-stored-event))

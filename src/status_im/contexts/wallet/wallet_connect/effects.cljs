@@ -1,15 +1,17 @@
 (ns status-im.contexts.wallet.wallet-connect.effects
-  (:require [cljs-bean.core :as bean]
-            [native-module.core :as native-module]
-            [promesa.core :as promesa]
-            [re-frame.core :as rf]
-            [react-native.wallet-connect :as wallet-connect]
-            [status-im.config :as config]
-            [status-im.constants :as constants]
-            [status-im.contexts.wallet.wallet-connect.core :as wallet-connect-core]
-            [utils.i18n :as i18n]
-            [utils.security.core :as security]
-            [utils.transforms :as transforms]))
+  (:require
+    [cljs-bean.core :as bean]
+    [native-module.core :as native-module]
+    [promesa.core :as promesa]
+    [re-frame.core :as rf]
+    [react-native.wallet-connect :as wallet-connect]
+    [status-im.config :as config]
+    [status-im.constants :as constants]
+    [status-im.contexts.wallet.wallet-connect.core :as wallet-connect-core]
+    [status-im.contexts.wallet.wallet-connect.transactions :as transactions]
+    [utils.i18n :as i18n]
+    [utils.security.core :as security]
+    [utils.transforms :as transforms]))
 
 (rf/reg-fx
  :effects.wallet-connect/init
@@ -45,10 +47,11 @@
 (rf/reg-fx
  :effects.wallet-connect/pair
  (fn [{:keys [web3-wallet url on-success on-fail]}]
-   (-> (.. web3-wallet -core -pairing)
-       (.pair (clj->js {:uri url}))
-       (promesa/then on-success)
-       (promesa/catch on-fail))))
+   (when web3-wallet
+     (-> (.. web3-wallet -core -pairing)
+         (.pair (clj->js {:uri url}))
+         (promesa/then on-success)
+         (promesa/catch on-fail)))))
 
 (rf/reg-fx
  :effects.wallet-connect/disconnect
@@ -92,9 +95,23 @@
        (promesa/catch on-error))))
 
 (rf/reg-fx
+ :effects.wallet-connect/sign-transaction
+ (fn [{:keys [password address chain-id tx on-success on-error]}]
+   (-> (transactions/sign-transaction (security/safe-unmask-data password) address tx chain-id)
+       (promesa/then on-success)
+       (promesa/catch on-error))))
+
+(rf/reg-fx
+ :effects.wallet-connect/send-transaction
+ (fn [{:keys [password address chain-id tx on-success on-error]}]
+   (-> (transactions/send-transaction (security/safe-unmask-data password) address tx chain-id)
+       (promesa/then on-success)
+       (promesa/catch on-error))))
+
+(rf/reg-fx
  :effects.wallet-connect/sign-typed-data
  (fn [{:keys [password address data version on-success on-error]}]
-   (-> (wallet-connect-core/sign-typed-data version data address password)
+   (-> (wallet-connect-core/sign-typed-data version data address (security/safe-unmask-data password))
        (promesa/then wallet-connect-core/extract-native-call-signature)
        (promesa/then on-success)
        (promesa/catch on-error))))

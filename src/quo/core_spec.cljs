@@ -41,6 +41,7 @@
     quo.components.dropdowns.network-dropdown.component-spec
     quo.components.gradient.gradient-cover.component-spec
     quo.components.graph.wallet-graph.component-spec
+    quo.components.info.info-message.component-spec
     quo.components.inputs.address-input.component-spec
     quo.components.inputs.input.component-spec
     quo.components.inputs.locked-input.component-spec

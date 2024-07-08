@@ -6,15 +6,20 @@
     [react-native.platform :as platform]
     [status-im.constants :as constants]
     [status-im.contexts.settings.wallet.saved-addresses.sheets.remove-address.view :as remove-address]
+    [status-im.contexts.wallet.common.utils :as utils]
+    [status-im.contexts.wallet.common.utils.networks :as network-utils]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
 (defn view
   [{:keys [name full-address chain-short-names address] :as opts}]
-  (let [open-send-flow                 (rn/use-callback
+  (let [[_ splitted-address]           (network-utils/split-network-full-address address)
+        open-send-flow                 (rn/use-callback
                                         #(rf/dispatch [:wallet/select-send-address
                                                        {:address     full-address
-                                                        :recipient   full-address
+                                                        :recipient   {:label (utils/get-shortened-address
+                                                                              splitted-address)
+                                                                      :recipient-type :saved-address}
                                                         :stack-id    :wallet-select-address
                                                         :start-flow? true}])
                                         [full-address])
@@ -104,7 +109,7 @@
         :on-press            open-show-address-qr
         :accessibility-label :show-address-qr-code}
        {:icon                :i/edit
-        :label               (i18n/label :t/edit-account)
+        :label               (i18n/label :t/edit-details)
         :blur?               true
         :on-press            open-edit-saved-address
         :accessibility-label :edit-saved-address}

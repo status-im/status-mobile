@@ -167,12 +167,13 @@
 
 (rf/reg-event-fx
  :wallet/get-collectible-details
- (fn [_ [collectible-id]]
+ (fn [{:keys [db]} [collectible-id aspect-ratio]]
    (let [request-id               0
          collectible-id-converted (cske/transform-keys transforms/->PascalCaseKeyword collectible-id)
          data-type                (collectible-data-types :details)
          request-params           [request-id [collectible-id-converted] data-type]]
-     {:fx [[:json-rpc/call
+     {:db (assoc-in db [:wallet :last-collectible-aspect-ratio] aspect-ratio)
+      :fx [[:json-rpc/call
             [{:method   "wallet_getCollectiblesByUniqueIDAsync"
               :params   request-params
               :on-error (fn [error]
@@ -197,7 +198,7 @@
 (rf/reg-event-fx
  :wallet/clear-last-collectible-details
  (fn [{:keys [db]}]
-   {:db (update-in db [:wallet] dissoc :last-collectible-details)}))
+   {:db (update-in db [:wallet] dissoc :last-collectible-details :last-collectible-aspect-ratio)}))
 
 (rf/reg-event-fx :wallet/trigger-share-collectible
  (fn [_ [{:keys [title uri]}]]

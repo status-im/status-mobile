@@ -21,6 +21,7 @@
     status-im.subs.wallet.networks
     status-im.subs.wallet.saved-addresses
     status-im.subs.wallet.send
+    status-im.subs.wallet.swap
     status-im.subs.wallet.wallet
     status-im.subs.wallet.wallet-connect))
 
@@ -64,7 +65,6 @@
 (reg-root-key-sub :tooltips :tooltips)
 (reg-root-key-sub :app-state :app-state)
 (reg-root-key-sub :home-items-show-number :home-items-show-number)
-(reg-root-key-sub :waku/v2-peer-stats :peer-stats)
 (reg-root-key-sub :password-authentication :password-authentication)
 (reg-root-key-sub :initials-avatar-font-file :initials-avatar-font-file)
 (reg-root-key-sub :alert-banners :alert-banners)
