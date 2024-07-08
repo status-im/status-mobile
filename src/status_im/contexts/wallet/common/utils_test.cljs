@@ -122,60 +122,66 @@
           mock-currency        "USD"
           mock-currency-symbol "$"]
 
-      (testing "Standard case with different fiat-unformatted-values"
-        (let [mock-tokens    [{:symbol             "ETH"
-                               :name               "Ethereum"
-                               :balances-per-chain {:mock-chain 5}
-                               :decimals           18}
-                              {:symbol             "DAI"
-                               :name               "Dai"
-                               :balances-per-chain {:mock-chain 10}
-                               :decimals           18}
-                              {:symbol             "SNT"
-                               :name               "Status Network Token"
-                               :balances-per-chain {:mock-chain 1}
-                               :decimals           18}]
-              mock-input     {:tokens          mock-tokens
-                              :color           mock-color
-                              :currency        mock-currency
-                              :currency-symbol mock-currency-symbol}
-              sorted-tokens  (map :token (utils/calculate-and-sort-tokens mock-input))
-              expected-order ["DAI" "ETH" "SNT"]]
-          (is (= expected-order sorted-tokens))))
+      (with-redefs [utils/calculate-token-value
+                    (fn [{:keys [token]}]
+                      (case (:symbol token)
+                        "ETH" {:token "ETH" :values {:fiat-unformatted-value 5}}
+                        "DAI" {:token "DAI" :values {:fiat-unformatted-value 10}}
+                        "SNT" {:token "SNT" :values {:fiat-unformatted-value 1}}))]
+        (testing "Standard case with different fiat-unformatted-values"
+          (let [mock-tokens    [{:symbol             "ETH"
+                                 :name               "Ethereum"
+                                 :balances-per-chain {:mock-chain 5}
+                                 :decimals           18}
+                                {:symbol             "DAI"
+                                 :name               "Dai"
+                                 :balances-per-chain {:mock-chain 10}
+                                 :decimals           18}
+                                {:symbol             "SNT"
+                                 :name               "Status Network Token"
+                                 :balances-per-chain {:mock-chain 1}
+                                 :decimals           18}]
+                mock-input     {:tokens          mock-tokens
+                                :color           mock-color
+                                :currency        mock-currency
+                                :currency-symbol mock-currency-symbol}
+                sorted-tokens  (map :token (utils/calculate-and-sort-tokens mock-input))
+                expected-order ["DAI" "ETH" "SNT"]]
+            (is (= expected-order sorted-tokens))))
 
-      (testing "Case with all zero fiat-unformatted-values"
-        (let [mock-tokens    [{:symbol             "ETH"
-                               :name               "Ethereum"
-                               :balances-per-chain {:mock-chain 0}
-                               :decimals           18}
-                              {:symbol             "DAI"
-                               :name               "Dai"
-                               :balances-per-chain {:mock-chain 0}
-                               :decimals           18}
-                              {:symbol             "SNT"
-                               :name               "Status Network Token"
-                               :balances-per-chain {:mock-chain 0}
-                               :decimals           18}]
-              mock-input     {:tokens          mock-tokens
-                              :color           mock-color
-                              :currency        mock-currency
-                              :currency-symbol mock-currency-symbol}
-              sorted-tokens  (map :token (utils/calculate-and-sort-tokens mock-input))
-              expected-order ["ETH" "DAI" "SNT"]]
-          (is (= expected-order sorted-tokens))))
+        (testing "Case with all zero fiat-unformatted-values"
+          (let [mock-tokens    [{:symbol             "ETH"
+                                 :name               "Ethereum"
+                                 :balances-per-chain {:mock-chain 0}
+                                 :decimals           18}
+                                {:symbol             "DAI"
+                                 :name               "Dai"
+                                 :balances-per-chain {:mock-chain 0}
+                                 :decimals           18}
+                                {:symbol             "SNT"
+                                 :name               "Status Network Token"
+                                 :balances-per-chain {:mock-chain 0}
+                                 :decimals           18}]
+                mock-input     {:tokens          mock-tokens
+                                :color           mock-color
+                                :currency        mock-currency
+                                :currency-symbol mock-currency-symbol}
+                sorted-tokens  (map :token (utils/calculate-and-sort-tokens mock-input))
+                expected-order ["ETH" "DAI" "SNT"]]
+            (is (= expected-order sorted-tokens))))
 
-      (testing "Case with only one token"
-        (let [mock-tokens    [{:symbol             "ETH"
-                               :name               "Ethereum"
-                               :balances-per-chain {:mock-chain 5}
-                               :decimals           18}]
-              mock-input     {:tokens          mock-tokens
-                              :color           mock-color
-                              :currency        mock-currency
-                              :currency-symbol mock-currency-symbol}
-              sorted-tokens  (map :token (utils/calculate-and-sort-tokens mock-input))
-              expected-order ["ETH"]]
-          (is (= expected-order sorted-tokens)))))))
+        (testing "Case with only one token"
+          (let [mock-tokens    [{:symbol             "ETH"
+                                 :name               "Ethereum"
+                                 :balances-per-chain {:mock-chain 5}
+                                 :decimals           18}]
+                mock-input     {:tokens          mock-tokens
+                                :color           mock-color
+                                :currency        mock-currency
+                                :currency-symbol mock-currency-symbol}
+                sorted-tokens  (map :token (utils/calculate-and-sort-tokens mock-input))
+                expected-order ["ETH"]]
+            (is (= expected-order sorted-tokens))))))))
 
 
 
