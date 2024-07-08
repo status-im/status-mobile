@@ -177,7 +177,7 @@
               (assoc-in [:wallet :ui :send :receiver-preferred-networks] receiver-networks)
               (assoc-in [:wallet :ui :send :receiver-networks] receiver-networks)
               (assoc-in [:wallet :ui :send :from-settings?] from-settings?)
-              )
+          )
       :fx [(when (and collectible-tx? one-collectible?)
              [:dispatch [:wallet/get-suggested-routes {:amount 1}]])
            [:dispatch
@@ -506,7 +506,7 @@
 
 (rf/reg-event-fx :wallet/end-transaction-flow
  (fn [{:keys [db]}]
-   (let [address (get-in db [:wallet :current-viewing-account-address])
+   (let [address        (get-in db [:wallet :current-viewing-account-address])
          from-settings? (get-in db [:wallet :ui :send :from-settings?])]
      {:fx [(when from-settings?
              [:dispatch [:pop-to-root :shell-stack]])

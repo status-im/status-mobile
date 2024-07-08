@@ -16,12 +16,13 @@
   (let [[_ splitted-address]           (network-utils/split-network-full-address address)
         open-send-flow                 (rn/use-callback
                                         #(rf/dispatch [:wallet/select-send-address
-                                                       {:address     full-address
-                                                        :recipient   {:label (utils/get-shortened-address
-                                                                              splitted-address)
-                                                                      :recipient-type :saved-address}
-                                                        :stack-id    :wallet-select-address
-                                                        :start-flow? true
+                                                       {:address        full-address
+                                                        :recipient      {:label
+                                                                         (utils/get-shortened-address
+                                                                          splitted-address)
+                                                                         :recipient-type :saved-address}
+                                                        :stack-id       :wallet-select-address
+                                                        :start-flow?    true
                                                         :from-settings? true}])
                                         [full-address])
         open-eth-chain-explorer        (rn/use-callback
