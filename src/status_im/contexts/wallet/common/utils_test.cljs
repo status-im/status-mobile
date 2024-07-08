@@ -115,3 +115,44 @@
     (is (= (utils/prettify-percentage-change 1.113454) "1.11"))
     (is (= (utils/prettify-percentage-change -0.35) "0.35"))
     (is (= (utils/prettify-percentage-change -0.78234) "0.78"))))
+
+(deftest utils/calculate-and-sort-tokens-test
+  (testing "utils/calculate-and-sort-tokens function"
+    (let [mock-color           "blue"
+          mock-currency        "USD"
+          mock-currency-symbol "$"]
+
+      (testing "Standard case with different fiat-unformatted-values"
+        (let [mock-tokens     [{:token "TokenA" :values {:fiat-unformatted-value 5}}
+                               {:token "TokenB" :values {:fiat-unformatted-value 10}}
+                               {:token "TokenC" :values {:fiat-unformatted-value 1}}]
+              mock-input      {:tokens          mock-tokens
+                               :color           mock-color
+                               :currency        mock-currency
+                               :currency-symbol mock-currency-symbol}
+              expected-output [{:token "TokenB" :values {:fiat-unformatted-value 10}}
+                               {:token "TokenA" :values {:fiat-unformatted-value 5}}
+                               {:token "TokenC" :values {:fiat-unformatted-value 1}}]]
+          (is (= expected-output (utils/calculate-and-sort-tokens mock-input)))))
+
+      (testing "Case with all zero fiat-unformatted-values"
+        (let [mock-tokens     [{:token "TokenA" :values {:fiat-unformatted-value 0}}
+                               {:token "TokenB" :values {:fiat-unformatted-value 0}}
+                               {:token "TokenC" :values {:fiat-unformatted-value 0}}]
+              mock-input      {:tokens          mock-tokens
+                               :color           mock-color
+                               :currency        mock-currency
+                               :currency-symbol mock-currency-symbol}
+              expected-output [{:token "TokenA" :values {:fiat-unformatted-value 0}}
+                               {:token "TokenB" :values {:fiat-unformatted-value 0}}
+                               {:token "TokenC" :values {:fiat-unformatted-value 0}}]]
+          (is (= expected-output (utils/calculate-and-sort-tokens mock-input)))))
+
+      (testing "Case with only one token"
+        (let [mock-tokens     [{:token "TokenA" :values {:fiat-unformatted-value 5}}]
+              mock-input      {:tokens          mock-tokens
+                               :color           mock-color
+                               :currency        mock-currency
+                               :currency-symbol mock-currency-symbol}
+              expected-output [{:token "TokenA" :values {:fiat-unformatted-value 5}}]]
+          (is (= expected-output (utils/calculate-and-sort-tokens mock-input))))))))

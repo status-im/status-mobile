@@ -299,3 +299,12 @@
     (utils.string/contains-emoji? s)             :emoji
     (existing-account-names s)                   :existing-name
     (utils.string/contains-special-character? s) :special-character))
+
+(defn calculate-and-sort-tokens
+  [{:keys [tokens color currency currency-symbol]}]
+  (let [calculated-tokens (map #(calculate-token-value {:token           %
+                                                        :color           color
+                                                        :currency        currency
+                                                        :currency-symbol currency-symbol})
+                               tokens)]
+    (sort-by #(get-in % [:values :fiat-unformatted-value]) > calculated-tokens)))
