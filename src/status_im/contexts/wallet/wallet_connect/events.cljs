@@ -212,7 +212,7 @@
    {:db (assoc db :wallet-connect/persisted-sessions sessions)}))
 
 (rf/reg-event-fx
- :wallet-connect/fetch-persisted-sessions-v2
+ :wallet-connect/fetch-persisted-sessions
  (fn [_ _]
    {:fx [[:json-rpc/call
           [{:method     "wallet_getWalletConnectActiveSessions"
@@ -230,8 +230,3 @@
             :params     [(js/JSON.stringify session-info)]
             :on-success #(log/info "Wallet Connect session persisted")
             :on-error   #(log/info "Wallet Connect session persistence failed" %)}]]]}))
-
-(comment
-  (rf/dispatch [:wallet-connect/fetch-persisted-sessions-v2])
-  ;;
-)
