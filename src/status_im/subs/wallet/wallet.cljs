@@ -496,12 +496,12 @@
  :<- [:profile/currency]
  :<- [:profile/currency-symbol]
  (fn [[{:keys [color]} tokens currency currency-symbol]]
-   (let [calculated-tokens (mapv #(utils/calculate-token-value {:token           %
-                                                                :color           color
-                                                                :currency        currency
-                                                                :currency-symbol currency-symbol})
-                                 tokens)]
-     (vec (sort-by #(get-in % [:values :fiat-unformatted-value]) > calculated-tokens)))))
+   (let [calculated-tokens (map #(utils/calculate-token-value {:token           %
+                                                               :color           color
+                                                               :currency        currency
+                                                               :currency-symbol currency-symbol})
+                                tokens)]
+     (sort-by #(get-in % [:values :fiat-unformatted-value]) > calculated-tokens))))
 
 
 (rf/reg-sub
@@ -527,11 +527,11 @@
    (let [balance             (utils/calculate-balance-from-tokens {:currency currency
                                                                    :tokens   aggregated-tokens})
          formatted-balance   (utils/prettify-balance currency-symbol balance)
-         token-values        (mapv #(utils/calculate-token-value {:token           %
-                                                                  :color           color
-                                                                  :currency        currency
-                                                                  :currency-symbol currency-symbol})
-                                   aggregated-tokens)
+         token-values        (map #(utils/calculate-token-value {:token           %
+                                                                 :color           color
+                                                                 :currency        currency
+                                                                 :currency-symbol currency-symbol})
+                                  aggregated-tokens)
          sorted-token-values (sort-by #(-> % :values :fiat-unformatted-value) > token-values)]
      {:balance           balance
       :formatted-balance formatted-balance
