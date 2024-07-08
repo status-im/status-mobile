@@ -76,11 +76,10 @@
 (defn navigate-back-and-clear-collectible
   []
   (rf/dispatch [:navigate-back])
-  (js/setTimeout #(rf/dispatch [:wallet/clear-last-collectible-details]) 700))
+  (rf/dispatch [:wallet/clear-collectible-details]))
 
 (defn animated-header
-  [{:keys [scroll-amount title-opacity page-nav-type picture title description theme
-           id]}]
+  [{:keys [scroll-amount title-opacity page-nav-type picture title description theme id]}]
   (let [blur-amount   (header-animations/use-blur-amount scroll-amount)
         layer-opacity (header-animations/use-layer-opacity
                        scroll-amount
@@ -149,8 +148,9 @@
       (let [title-ref                      (rn/use-ref-atom nil)
             set-title-ref                  (rn/use-callback #(reset! title-ref %))
             animation-shared-element-id    (rf/sub [:animation-shared-element-id])
-            collectible-owner              (rf/sub [:wallet/last-collectible-details-owner])
-            aspect-ratio                   (rf/sub [:wallet/last-collectible-aspect-ratio])
+            collectible-owner              (rf/sub [:wallet/collectible-details-owner collectible])
+            aspect-ratio                   (rf/sub [:wallet/collectible-aspect-ratio])
+            gradient-color                 (rf/sub [:wallet/collectible-gradient-color])
             {:keys [id
                     preview-url
                     collection-data
@@ -181,35 +181,36 @@
          [rn/view
           [gradient-layer preview-uri]
           [quo/expanded-collectible
-           {:aspect-ratio        aspect-ratio
-            :image-src           preview-uri
-            :container-style     (style/preview-container)
-            :counter             (utils/collectible-owned-counter total-owned)
-            :native-ID           (when (= animation-shared-element-id token-id) :shared-element)
-            :supported-file?     (utils/supported-file? (:animation-media-type collectible-data))
-            :on-press            (fn []
-                                   (if svg?
-                                     (js/alert "Can't visualize SVG images in lightbox")
-                                     (rf/dispatch
-                                      [:lightbox/navigate-to-lightbox
-                                       token-id
-                                       {:images           [collectible-image]
-                                        :index            0
-                                        :on-options-press #(rf/dispatch [:show-bottom-sheet
-                                                                         {:content
-                                                                          (fn []
-                                                                            [options-drawer/view
-                                                                             {:name collectible-name
-                                                                              :image
-                                                                              preview-uri
-                                                                              :id id}])}])}])))
-            :on-collectible-load (fn []
-                                   ;; We need to delay the measurement because the
-                                   ;; navigation has an animation
-                                   (js/setTimeout
-                                    #(some-> @title-ref
-                                             (oops/ocall "measureInWindow" set-title-bottom))
-                                    300))}]]
+           {:aspect-ratio         aspect-ratio
+            :image-src            preview-uri
+            :container-style      (style/preview-container)
+            :gradient-color-index gradient-color
+            :counter              (utils/collectible-owned-counter total-owned)
+            :native-ID            (when (= animation-shared-element-id token-id) :shared-element)
+            :supported-file?      (utils/supported-file? (:animation-media-type collectible-data))
+            :on-press             (fn []
+                                    (if svg?
+                                      (js/alert "Can't visualize SVG images in lightbox")
+                                      (rf/dispatch
+                                       [:lightbox/navigate-to-lightbox
+                                        token-id
+                                        {:images           [collectible-image]
+                                         :index            0
+                                         :on-options-press #(rf/dispatch [:show-bottom-sheet
+                                                                          {:content
+                                                                           (fn []
+                                                                             [options-drawer/view
+                                                                              {:name collectible-name
+                                                                               :image
+                                                                               preview-uri
+                                                                               :id id}])}])}])))
+            :on-collectible-load  (fn []
+                                    ;; We need to delay the measurement because the
+                                    ;; navigation has an animation
+                                    (js/setTimeout
+                                     #(some-> @title-ref
+                                              (oops/ocall "measureInWindow" set-title-bottom))
+                                     300))}]]
          [rn/view {:style (style/background-color theme)}
           [header collectible-name collection-name collection-image set-title-ref]
           [cta-buttons
@@ -225,39 +226,43 @@
             :default-active @selected-tab
             :on-change      on-tab-change
             :data           tabs-data}]
-          [tabs/view {:selected-tab @selected-tab}]]]))))
+          [tabs/view
+           {:selected-tab @selected-tab
+            :collectible  collectible}]]]))))
+
+(defn- get-title-bottom-y-position
+  [y-element-position element-height]
+  (let [{:keys [top]} (safe-area/get-insets)
+        title-height  -56]
+    (+ y-element-position
+       element-height
+       title-height
+       (when platform/ios? (* top -2)))))
 
 (defn view
   [_]
-  (let [{:keys [top]}              (safe-area/get-insets)
-        theme                      (quo.theme/use-theme)
-        title-bottom-coord         (rn/use-ref-atom 0)
-        set-title-bottom           (rn/use-callback
-                                    (fn [_ y _ height]
-                                      (reset! title-bottom-coord
-                                        (+ y
-                                           height
-                                           -56
-                                           (when platform/ios?
-                                             (* top -2))))))
-        scroll-amount              (reanimated/use-shared-value 0)
-        title-opacity              (reanimated/use-shared-value 0)
-        collectible                (rf/sub [:wallet/last-collectible-details])
-        {:keys [preview-url
-                collection-data
-                collectible-data]} collectible
-        {preview-uri :uri}         preview-url
-        {collectible-name :name}   collectible-data
-        {collection-name :name}    collection-data]
+  (let [{:keys [top]}       (safe-area/get-insets)
+        theme               (quo.theme/use-theme)
+        title-bottom-coord  (rn/use-ref-atom 0)
+        set-title-bottom    (rn/use-callback
+                             (fn [_ y _ height]
+                               (reset! title-bottom-coord
+                                 (get-title-bottom-y-position y height))))
+        scroll-amount       (reanimated/use-shared-value 0)
+        title-opacity       (reanimated/use-shared-value 0)
+        {:keys [collection-data
+                collectible-data
+                preview-url]
+         :as   collectible} (rf/sub [:wallet/collectible-details])]
     [rn/view {:style (style/background-color theme)}
      [animated-header
       {:id            (:id collectible)
        :scroll-amount scroll-amount
        :title-opacity title-opacity
        :page-nav-type :title-description
-       :picture       preview-uri
-       :title         collectible-name
-       :description   collection-name
+       :picture       (:uri preview-url)
+       :title         (:name collectible-data)
+       :description   (:name collection-data)
        :theme         theme}]
      [reanimated/scroll-view
       {:style     (style/scroll-view top)
