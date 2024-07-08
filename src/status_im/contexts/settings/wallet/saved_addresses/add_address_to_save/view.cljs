@@ -36,8 +36,10 @@
 (defn- address-input
   [{:keys [input-value on-change-text paste-into-input clear-input]}]
   (let [empty-input?    (string/blank? input-value)
-        on-scan-address (rn/use-callback #(rf/dispatch [:open-modal :screen/wallet.scan-address
-                                                        {:on-result on-change-text}]))]
+        on-scan-address (rn/use-callback (fn []
+                                           (rf/dispatch [:wallet/clean-scanned-address])
+                                           (rf/dispatch [:open-modal :screen/wallet.scan-address
+                                                         {:on-result on-change-text}])))]
     [rn/view {:style style/input-container}
      [quo/input
       {:accessibility-label :add-address-to-save
@@ -161,7 +163,9 @@
                                                (rf/dispatch
                                                 [:open-modal :screen/settings.save-address]))
                                              [address ens-name? address-or-ens])]
-    (rn/use-unmount #(rf/dispatch [:wallet/clear-address-to-save]))
+    (rn/use-mount (fn []
+                    (rf/dispatch [:wallet/clean-scanned-address])
+                    (rf/dispatch [:wallet/clear-address-to-save])))
     [quo/overlay {:type :shell}
      [floating-button-page/view
       {:footer-container-padding 0
