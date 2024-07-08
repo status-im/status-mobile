@@ -14,7 +14,6 @@
     [status-im.contexts.wallet.collectible.style :as style]
     [status-im.contexts.wallet.collectible.tabs.view :as tabs]
     [status-im.contexts.wallet.collectible.utils :as utils]
-    [status-im.setup.hot-reload :as hot-reload]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]
     [utils.worklets.header-animations :as header-animations]))
@@ -277,6 +276,7 @@
         {preview-uri :uri}         preview-url
         {collectible-name :name}   collectible-data
         {collection-name :name}    collection-data]
+<<<<<<< HEAD
     (hot-reload/use-safe-unmount #(rf/dispatch [:wallet/clear-last-collectible-details]))
 <<<<<<< HEAD
 
@@ -284,6 +284,8 @@
 >>>>>>> 9cd78dab66 (safe unmount)
 =======
 >>>>>>> b13ec756d1 (lint)
+=======
+>>>>>>> 88aeba37a6 (qa)
     [rn/view {:style (style/background-color theme)}
      [animated-header
       {:id            (:id collectible)
