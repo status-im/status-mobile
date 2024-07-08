@@ -123,16 +123,6 @@
                     (hide-bottom-sheet new-cofx)
                     {:show-bottom-sheet {:theme theme}}))))))
 
-(rf/defn dismiss-all-overlays
-  {:events [:dismiss-all-overlays]}
-  [_]
-  {:dispatch-n [[:hide-popover]
-                [:hide-visibility-status-popover]
-                [:hide-bottom-sheet]
-                [:bottom-sheet-hidden]
-                [:bottom-sheet/hide-old-navigation-overlay]
-                [:toasts/close-all-toasts]]})
-
 (rf/defn set-view-id
   {:events [:set-view-id]}
   [{:keys [db]} view-id]
