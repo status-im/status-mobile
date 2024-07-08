@@ -16,8 +16,7 @@
   [error]
   (if (and (some? error)
            (or (= error "file is not a database")
-               (string/starts-with? error "failed to set ")
-               (string/starts-with? error "Failed")))
+               (string/starts-with? (string/lower-case error) "failed")))
     (i18n/label :t/oops-wrong-password)
     error))
 

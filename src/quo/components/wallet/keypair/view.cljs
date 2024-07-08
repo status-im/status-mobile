@@ -102,7 +102,7 @@
                                               :container-style container-style
                                               :theme           theme))
       :on-press       #(when (= action :selector) (on-press))
-      :pointer-events :box-only}
+      :pointer-events (when (= action :selector) :box-only)}
      [rn/view {:style style/header-container}
       [avatar props]
       [rn/view

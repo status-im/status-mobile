@@ -57,6 +57,7 @@
     [status-im.contexts.profile.settings.screens.password.change-password.view :as change-password]
     [status-im.contexts.profile.settings.screens.password.view :as settings-password]
     [status-im.contexts.profile.settings.view :as settings]
+    [status-im.contexts.settings.privacy-and-security.view :as settings.privacy-and-security]
     [status-im.contexts.settings.wallet.keypairs-and-accounts.missing-keypairs.encrypted-qr.view
      :as encrypted-keypair-qr]
     [status-im.contexts.settings.wallet.keypairs-and-accounts.missing-keypairs.import-private-key.view
@@ -117,6 +118,7 @@
     [status-im.contexts.wallet.send.transaction-confirmation.view :as wallet-transaction-confirmation]
     [status-im.contexts.wallet.send.transaction-progress.view :as wallet-transaction-progress]
     [status-im.contexts.wallet.swap.select-asset-to-pay.view :as wallet-swap-select-asset-to-pay]
+    [status-im.contexts.wallet.swap.swap-proposal.view :as wallet-swap-propasal]
     [status-im.contexts.wallet.wallet-connect.modals.send-transaction.view :as
      wallet-connect-send-transaction]
     [status-im.contexts.wallet.wallet-connect.modals.sign-message.view :as wallet-connect-sign-message]
@@ -516,6 +518,10 @@
                  :insets                 {:top? true}}
      :component wallet-swap-select-asset-to-pay/view}
 
+    {:name      :screen/wallet.swap-propasal
+     :options   {:insets {:top? true}}
+     :component wallet-swap-propasal/view}
+
     {:name      :scan-profile-qr-code
      :options   (merge
                  options/dark-screen
@@ -615,6 +621,10 @@
     {:name      :screen/settings-blocked-users
      :options   options/transparent-modal-screen-options
      :component settings.blocked-users/view}
+
+    {:name      :screen/settings-privacy-and-security
+     :options   options/transparent-modal-screen-options
+     :component settings.privacy-and-security/view}
 
     {:name      :screen/change-password
      :options   (assoc options/transparent-modal-screen-options :theme :dark)

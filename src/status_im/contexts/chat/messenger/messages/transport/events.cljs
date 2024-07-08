@@ -55,9 +55,11 @@
         ^js cleared-histories          (.-clearedHistories response-js)
         ^js identity-images            (.-identityImages response-js)
         ^js accounts                   (.-accounts response-js)
+        ^js keypairs                   (.-keypairs response-js)
         ^js ens-username-details-js    (.-ensUsernameDetails response-js)
         ^js customization-color-js     (.-customizationColor response-js)
         ^js saved-addresses-js         (.-savedAddresses response-js)
+        ^js watch-only-accounts        (.-watchOnlyAccounts response-js)
         sync-handler                   (when-not process-async process-response)]
     (cond
 
@@ -177,6 +179,22 @@
       (do
         (js-delete response-js "accounts")
         (rf/merge cofx
+                  (process-next response-js sync-handler)))
+
+      (seq watch-only-accounts)
+      (do
+        (js-delete response-js "watchOnlyAccounts")
+        (rf/merge cofx
+                  {:fx [[:dispatch
+                         [:wallet/reconcile-watch-only-accounts
+                          (types/js->clj watch-only-accounts)]]]}
+                  (process-next response-js sync-handler)))
+
+      (seq keypairs)
+      (do
+        (js-delete response-js "keypairs")
+        (rf/merge cofx
+                  {:fx [[:dispatch [:wallet/reconcile-keypairs (types/js->clj keypairs)]]]}
                   (process-next response-js sync-handler)))
 
       (seq settings)

@@ -555,3 +555,8 @@
 (def ^:const default-telemetry-server-url "https://telemetry.status.im")
 
 (def ^:const contact-item-height 56)
+
+(def ^:const slippages [0.1 0.5 1])
+(def ^:const default-slippage 0.5)
+(def ^:const max-recommended-slippage 5)
+(def ^:const max-slippage-decimal-places 2)
