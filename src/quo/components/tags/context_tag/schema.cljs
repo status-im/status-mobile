@@ -6,7 +6,7 @@
    [:type {:optional true}
     [:maybe
      [:enum :default :multiuser :group :channel :community :token :network :multinetwork :account
-      :collectible :address :icon :audio :wallet-user]]]
+      :collectible :address :icon :audio :wallet-user :dapp]]]
    [:customization-color {:optional true} [:maybe :schema.common/customization-color]]
    [:container-style {:optional true} [:maybe :map]]
    [:blur? {:optional true} [:maybe :boolean]]
