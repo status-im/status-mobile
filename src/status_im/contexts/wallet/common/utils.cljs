@@ -302,10 +302,18 @@
 
 (defn calculate-and-sort-tokens
   [{:keys [tokens color currency currency-symbol]}]
-  (let [calculated-tokens (map #(calculate-token-value {:token           %
-                                                        :color           color
-                                                        :currency        currency
-                                                        :currency-symbol currency-symbol})
-                               tokens)]
-    (println "cccxxx" calculated-tokens)
-    (sort-by #(get-in % [:values :fiat-unformatted-value]) > calculated-tokens)))
+  (let [calculate-token   (fn [token]
+                            (calculate-token-value {:token           token
+                                                    :color           color
+                                                    :currency        currency
+                                                    :currency-symbol currency-symbol}))
+        calculated-tokens (map calculate-token tokens)
+        token-priority    {"SNT" 1 "ETH" 2 "DAI" 3}]
+    (sort-by (juxt #(get-in % [:values :fiat-unformatted-value])
+                   #(get token-priority (:token %)))
+             (fn [[val1 pri1] [val2 pri2]]
+               (if (= val1 val2)
+                 (< pri1 pri2)
+                 (> val1 val2)))
+             calculated-tokens)))
+
