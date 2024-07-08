@@ -76,6 +76,7 @@
                                     300)))
         :on-change-text        (fn [text]
                                  (rf/dispatch [:wallet/clean-local-suggestions])
+                                 (rf/dispatch [:wallet/searching-address])
                                  (validate-address text)
                                  (reset! input-value text))
         :valid-ens-or-address? valid-ens-or-address?}])))
@@ -182,7 +183,8 @@
         input-focused? (reagent/atom false)]
     (fn []
       (let [selected-tab          (or (rf/sub [:wallet/send-tab]) (:id (first tabs-data)))
-            valid-ens-or-address? (boolean (rf/sub [:wallet/valid-ens-or-address?]))]
+            valid-ens-or-address? (boolean (rf/sub [:wallet/valid-ens-or-address?]))
+            searching-address?    (rf/sub [:wallet/searching-address?])]
         [floating-button-page/view
          {:content-container-style      {:flex 1}
           :footer-container-padding     0
@@ -198,7 +200,7 @@
            :title-accessibility-label :title-label}]
          [address-input input-value input-focused?]
          [quo/divider-line]
-         (when (and (not valid-ens-or-address?) (> (count @input-value) 0))
+         (when (and (not valid-ens-or-address?) (> (count @input-value) 0) (not searching-address?))
            [rn/view {:style {:padding 20}}
             [quo/info-message
              {:status :error
