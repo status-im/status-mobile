@@ -316,4 +316,3 @@
                  (< pri1 pri2)
                  (> val1 val2)))
              calculated-tokens)))
-

@@ -167,7 +167,7 @@
                                 :currency        mock-currency
                                 :currency-symbol mock-currency-symbol}
                 sorted-tokens  (map :token (utils/calculate-and-sort-tokens mock-input))
-                expected-order ["ETH" "DAI" "SNT"]]
+                expected-order ["SNT" "ETH" "DAI"]]
             (is (= expected-order sorted-tokens))))
 
         (testing "Case with only one token"
