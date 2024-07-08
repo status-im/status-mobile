@@ -1037,7 +1037,9 @@ class ChatView(BaseView):
 
     def quote_message(self, message: str):
         self.driver.info("Quoting '%s' message" % message)
-        self.chat_element_by_text(message).long_press_until_element_is_shown(self.reply_message_button)
+        element = self.chat_element_by_text(message)
+        element.wait_for_sent_state()
+        element.long_press_until_element_is_shown(self.reply_message_button)
         self.reply_message_button.click()
 
     def set_reaction(self, message: str, emoji: str = 'thumbs-up', emoji_message=False):

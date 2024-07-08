@@ -13,14 +13,12 @@
         on-success-scan   (rn/use-callback (fn [scanned-text]
                                              (rf/dispatch [:wallet/success-keypair-qr-scan
                                                            scanned-text
-                                                           keypairs-key-uids
-                                                           [:navigate-back]])
+                                                           keypairs-key-uids])
                                              [keypairs-key-uids]))]
     [scan-qr-code/view
      {:title           (i18n/label :t/scan-key-pairs-qr-code)
       :subtitle        (i18n/label :t/find-it-in-setting)
       :share-button?   false
-      :import-keypair? true
       :validate-fn     sync-utils/valid-connection-string?
       :error-message   (i18n/label :t/invalid-key-pair-qr)
       :on-success-scan on-success-scan}]))
