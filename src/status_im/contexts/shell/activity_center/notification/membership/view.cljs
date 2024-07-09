@@ -1,6 +1,7 @@
 (ns status-im.contexts.shell.activity-center.notification.membership.view
   (:require
     [quo.core :as quo]
+    [react-native.core :as rn]
     [react-native.gesture :as gesture]
     [status-im.contexts.shell.activity-center.notification.common.style :as common-style]
     [status-im.contexts.shell.activity-center.notification.common.view :as common]
@@ -33,35 +34,50 @@
     :text  (i18n/label :t/decline)}])
 
 (defn- swipeable
-  [{:keys [active-swipeable notification extra-fn]} child]
-  (let [{:keys [accepted dismissed id]} notification]
+  [{:keys [notification extra-fn]} child]
+  (let [{:keys [accepted dismissed
+                id]} notification
+        accept       (rn/use-callback
+                      (fn [] (rf/dispatch [:activity-center.notifications/accept id]))
+                      [id])
+        dismiss      (rn/use-callback
+                      (fn [] (rf/dispatch [:activity-center.notifications/dismiss id]))
+                      [id])]
     (if (or accepted dismissed)
       [common/swipeable
-       {:left-button      common/swipe-button-read-or-unread
-        :left-on-press    common/swipe-on-press-toggle-read
-        :right-button     common/swipe-button-delete
-        :right-on-press   common/swipe-on-press-delete
-        :active-swipeable active-swipeable
-        :extra-fn         extra-fn}
+       {:left-button    common/swipe-button-read-or-unread
+        :left-on-press  common/swipe-on-press-toggle-read
+        :right-button   common/swipe-button-delete
+        :right-on-press common/swipe-on-press-delete
+        :extra-fn       extra-fn}
        child]
       [common/swipeable
-       {:left-button      swipe-button-accept
-        :left-on-press    #(rf/dispatch [:activity-center.notifications/accept id])
-        :right-button     swipe-button-decline
-        :right-on-press   #(rf/dispatch [:activity-center.notifications/dismiss id])
-        :active-swipeable active-swipeable
-        :extra-fn         extra-fn}
+       {:left-button    swipe-button-accept
+        :left-on-press  accept
+        :right-button   swipe-button-decline
+        :right-on-press dismiss
+        :extra-fn       extra-fn}
        child])))
 
 (defn view
-  [{:keys [notification set-swipeable-height customization-color] :as props}]
-  (let [{:keys [id accepted dismissed author read timestamp chat-name chat-id]} notification]
+  [{:keys [notification] :as props}]
+  (let [{:keys [id accepted dismissed author read
+                timestamp chat-name
+                chat-id]}   notification
+        customization-color (rf/sub [:profile/customization-color])
+        accept              (rn/use-callback
+                             (fn []
+                               (rf/dispatch [:activity-center.notifications/accept id]))
+                             [id])
+        dismiss             (rn/use-callback
+                             (fn []
+                               (rf/dispatch [:activity-center.notifications/dismiss id]))
+                             [id])]
     [swipeable props
      [pressable {:accepted accepted :chat-id chat-id}
       [quo/activity-log
        {:title               (i18n/label :t/added-to-group-chat)
         :customization-color customization-color
-        :on-layout           set-swipeable-height
         :icon                :i/add-user
         :timestamp           (datetime/timestamp->relative timestamp)
         :unread?             (not read)
@@ -78,13 +94,10 @@
                                  :key                 :button-accept
                                  :label               (i18n/label :t/accept)
                                  :accessibility-label :accept-group-chat-invitation
-                                 :on-press            #(rf/dispatch
-                                                        [:activity-center.notifications/accept id])}
+                                 :on-press            accept}
                                 {:type                :button
                                  :subtype             :danger
                                  :key                 :button-decline
                                  :label               (i18n/label :t/decline)
                                  :accessibility-label :decline-group-chat-invitation
-                                 :on-press            #(rf/dispatch
-                                                        [:activity-center.notifications/dismiss
-                                                         id])}])}]]]))
+                                 :on-press            dismiss}])}]]]))

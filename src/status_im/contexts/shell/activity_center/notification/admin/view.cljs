@@ -1,6 +1,7 @@
 (ns status-im.contexts.shell.activity-center.notification.admin.view
   (:require
     [quo.core :as quo]
+    [react-native.core :as rn]
     [status-im.constants :as constants]
     [status-im.contexts.shell.activity-center.notification.common.style :as common-style]
     [status-im.contexts.shell.activity-center.notification.common.view :as common]
@@ -23,42 +24,50 @@
     :text  (i18n/label :t/decline)}])
 
 (defn- swipeable
-  [{:keys [active-swipeable notification extra-fn]} child]
-  (let [{:keys [community-id id membership-status]} notification]
+  [{:keys [notification extra-fn]} child]
+  (let [{:keys [community-id id
+                membership-status]} notification
+        accept                      (rn/use-callback
+                                     (fn []
+                                       (rf/dispatch [:communities/accept-request-to-join-pressed
+                                                     community-id id]))
+                                     [community-id id])
+        decline                     (rn/use-callback
+                                     (fn []
+                                       (rf/dispatch [:communities/decline-request-to-join-pressed
+                                                     community-id id]))
+                                     [community-id id])]
     (cond
       (#{constants/activity-center-membership-status-accepted
          constants/activity-center-membership-status-declined}
        membership-status)
       [common/swipeable
-       {:left-button      common/swipe-button-read-or-unread
-        :left-on-press    common/swipe-on-press-toggle-read
-        :right-button     common/swipe-button-delete
-        :right-on-press   common/swipe-on-press-delete
-        :active-swipeable active-swipeable
-        :extra-fn         extra-fn}
+       {:left-button    common/swipe-button-read-or-unread
+        :left-on-press  common/swipe-on-press-toggle-read
+        :right-button   common/swipe-button-delete
+        :right-on-press common/swipe-on-press-delete
+        :extra-fn       extra-fn}
        child]
 
       (= membership-status constants/activity-center-membership-status-pending)
       [common/swipeable
-       {:left-button      swipe-button-accept
-        :left-on-press    #(rf/dispatch [:communities/accept-request-to-join-pressed community-id id])
-        :right-button     swipe-button-decline
-        :right-on-press   #(rf/dispatch [:communities/decline-request-to-join-pressed community-id
-                                         id])
-        :active-swipeable active-swipeable
-        :extra-fn         extra-fn}
+       {:left-button    swipe-button-accept
+        :left-on-press  accept
+        :right-button   swipe-button-decline
+        :right-on-press decline
+        :extra-fn       extra-fn}
        child]
 
       :else
       child)))
 
 (defn view
-  [{:keys [notification set-swipeable-height customization-color] :as props}]
+  [{:keys [notification] :as props}]
   (let [{:keys [author community-id id membership-status
                 read timestamp]} notification
-        community                (rf/sub [:communities/community community-id])
-        community-name           (:name community)
-        community-image          (get-in community [:images :thumbnail :uri])]
+        community-name           (rf/sub [:communities/name community-id])
+        community-logo           (rf/sub [:communities/logo community-id])
+        customization-color      (rf/sub [:profile/customization-color])]
     [swipeable props
      [quo/activity-log
       {:title               (i18n/label :t/join-request)
@@ -66,14 +75,13 @@
        :icon                :i/add-user
        :timestamp           (datetime/timestamp->relative timestamp)
        :unread?             (not read)
-       :on-layout           set-swipeable-height
        :context             [[common/user-avatar-tag author]
                              (i18n/label :t/wants-to-join)
                              [quo/context-tag
                               {:type           :community
                                :size           24
                                :blur?          true
-                               :community-logo community-image
+                               :community-logo community-logo
                                :community-name community-name}]]
        :items               (condp = membership-status
                               constants/activity-center-membership-status-accepted
