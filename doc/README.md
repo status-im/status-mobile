@@ -38,7 +38,7 @@
 
 [End-to-end tests (e2e) overview](how-to-launch-e2e.md)
 
-[Component tests (jest) overview](component-tests-overview.md)
+[Component tests (jest) overview](tests/component-tests-overview.md)
 
 
 ## Project details
