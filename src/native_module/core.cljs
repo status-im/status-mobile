@@ -543,6 +543,13 @@
    (log/debug "[native-module] validate-mnemonic")
    (.validateMnemonic ^js (utils) mnemonic callback)))
 
+(defn validate-connection-string
+  [connection-string]
+  (log/debug "[native-module] validate-connection-string")
+  (->> connection-string
+       (.validateConnectionString ^js (utils))
+       types/json->clj))
+
 (defn delete-multiaccount
   "Delete multiaccount from database, deletes multiaccount's database and
   key files."
@@ -653,7 +660,6 @@
    (native-utils/promisify-native-module-call create-account-from-private-key private-key))
   ([private-key callback]
    (log/debug "[native-module] create-account-from-private-key")
-
    (.createAccountFromPrivateKey ^js (account-manager)
                                  (types/clj->json {:privateKey private-key})
                                  callback)))

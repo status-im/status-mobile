@@ -83,11 +83,11 @@
                                   :on-success        fn?
                                   :on-fail           fn?}]]}]
     (is (match? expected
-                (sut/connection-string-for-import-keypair cofx
-                                                          [{:sha3-pwd sha3-pwd
-                                                            :keypairs-key-uids [test-keypair-key-uid]
-                                                            :connection-string
-                                                            connection-string}])))))
+                (sut/connection-string-for-import-keypairs cofx
+                                                           [{:sha3-pwd sha3-pwd
+                                                             :keypairs-key-uids [test-keypair-key-uid]
+                                                             :connection-string
+                                                             connection-string}])))))
 
 (deftest success-keypair-qr-scan-test
   (let [connection-string "valid-connection-string"
