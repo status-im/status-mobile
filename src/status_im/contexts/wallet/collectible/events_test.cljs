@@ -43,18 +43,6 @@
 
         (is (match? result-db expected-db))))))
 
-(deftest store-last-collectible-details-test
-  (testing "store-last-collectible-details"
-    (let [db               {:wallet {}}
-          last-collectible {:description "Pandaria"
-                            :image-url   "https://..."}
-          expected-db      {:wallet {:last-collectible-details {:description "Pandaria"
-                                                                :image-url   "https://..."}}}
-          effects          (events/store-last-collectible-details {:db db}
-                                                                  [last-collectible])
-          result-db        (:db effects)]
-      (is (match? result-db expected-db)))))
-
 (deftest request-new-collectibles-for-account-from-signal-test
   (testing "request new collectibles for account from signal"
     (let [db       {:wallet {}}

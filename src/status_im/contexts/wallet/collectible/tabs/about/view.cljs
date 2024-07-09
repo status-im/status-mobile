@@ -8,12 +8,11 @@
 (def ^:private link-card-space 28)
 
 (defn view
-  []
-  (let [window-width               (rf/sub [:dimensions/window-width])
-        item-width                 (- (/ window-width 2) link-card-space)
-        {:keys [collectible-data]} (rf/sub [:wallet/last-collectible-details])
-        link-card-container-style  (style/link-card item-width)
-        collectible-about          {:cards []}]
+  [{:keys [collectible-data]}]
+  (let [window-width              (rf/sub [:dimensions/window-width])
+        item-width                (- (/ window-width 2) link-card-space)
+        link-card-container-style (style/link-card item-width)
+        collectible-about         {:cards []}]
     [:<>
      [rn/view {:style style/title}
       [quo/text

@@ -90,7 +90,7 @@
       {:title          (i18n/label :t/connected-dapps)
        :wallet-account wallet-account
        :on-close       #(rf/dispatch [:navigate-back])
-       :on-add         #(js/alert "Feature not implemented")}]
+       :on-add         #(rf/dispatch [:navigate-to :screen/wallet.scan-dapp])}]
      (if (empty? pairings)
        [quo/empty-state
         {:title           (i18n/label :t/no-dapps)

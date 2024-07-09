@@ -11,9 +11,7 @@
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
-(defn- on-collectible-press
-  [{:keys [id]} aspect-ratio]
-  (rf/dispatch [:wallet/get-collectible-details id aspect-ratio]))
+(def on-collectible-press #(rf/dispatch [:wallet/navigate-to-collectible-details %]))
 
 (defn- on-collectible-long-press
   [{:keys [preview-url collectible-details id]}]
