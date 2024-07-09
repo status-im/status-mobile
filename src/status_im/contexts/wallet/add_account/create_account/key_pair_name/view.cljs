@@ -4,7 +4,6 @@
     [quo.core :as quo]
     [react-native.core :as rn]
     [status-im.common.floating-button-page.view :as floating-button-page]
-    [status-im.common.not-implemented :as not-implemented]
     [status-im.common.validation.general :as validators]
     [status-im.constants :as constants]
     [status-im.contexts.wallet.add-account.create-account.key-pair-name.style :as style]
@@ -25,12 +24,12 @@
 (defn- next-workflow-step
   [workflow key-pair-name]
   (case workflow
-    ;; TODO issue #19759. Implement creation account from private key
     :import-private-key
-    (not-implemented/alert)
+    (rf/dispatch [:wallet/import-private-key-and-generate-account-for-keypair
+                  {:keypair-name key-pair-name}])
 
     (:new-keypair :recovery-phrase)
-    (rf/dispatch [:wallet/generate-account-for-keypair
+    (rf/dispatch [:wallet/generate-account-for-keypair-with-mnemonic
                   {:keypair-name key-pair-name}])
 
     (do
