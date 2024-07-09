@@ -362,17 +362,29 @@
 
 (rf/reg-event-fx :wallet/address-validation-success
  (fn [{:keys [db]}]
-   {:db (assoc-in db [:wallet :ui :search-address :valid-ens-or-address?] true)}))
+   {:db (update-in db
+                   [:wallet :ui :search-address]
+                   assoc
+                   :valid-ens-or-address? true
+                   :loading?              false)}))
 
 (rf/reg-event-fx :wallet/address-validation-failed
  (fn [{:keys [db]}]
-   {:db (assoc-in db [:wallet :ui :search-address :valid-ens-or-address?] false)}))
+   {:db (update-in db
+                   [:wallet :ui :search-address]
+                   assoc
+                   :valid-ens-or-address? false
+                   :loading?              false)}))
 
 (rf/reg-event-fx :wallet/clean-local-suggestions
  (fn [{:keys [db]}]
    {:db (-> db
             (assoc-in [:wallet :ui :search-address :local-suggestions] [])
             (assoc-in [:wallet :ui :search-address :valid-ens-or-address?] false))}))
+
+(rf/reg-event-fx :wallet/searching-address
+ (fn [{:keys [db]}]
+   {:db (assoc-in db [:wallet :ui :search-address :loading?] true)}))
 
 (rf/reg-event-fx
  :wallet/navigate-to-chain-explorer-from-bottom-sheet
