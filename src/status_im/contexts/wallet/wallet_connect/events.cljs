@@ -67,8 +67,7 @@
                     :session-networks                session-networks
                     :address                         (-> without-watched
                                                          first
-                                                         :address)
-            )
+                                                         :address))
         :fx [[:dispatch
               [:open-modal :screen/wallet.wallet-connect-session-proposal]]]}
        {:fx [[:dispatch

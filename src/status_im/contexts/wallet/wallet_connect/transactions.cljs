@@ -1,22 +1,9 @@
 (ns status-im.contexts.wallet.wallet-connect.transactions
   (:require [cljs-bean.core :as bean]
             [clojure.string :as string]
-            [oops.core :as oops]
             [promesa.core :as promesa]
-            [status-im.common.json-rpc.events :as rpc-events]
-            [status-im.constants :as constants]
+            [status-im.contexts.wallet.wallet-connect.rpc :as rpc]
             [utils.transforms :as transforms]))
-
-(defn- call-rpc
-  "Helper to handle RPC calls to status-go as promises"
-  [method & args]
-  (promesa/create
-   (fn [p-resolve p-reject]
-     (rpc-events/call {:method      method
-                       :params      (vec args)
-                       :on-success  p-resolve
-                       :on-error    p-reject
-                       :js-response true}))))
 
 (defn- strip-hex-prefix
   "Strips the extra 0 in hex value if present"
@@ -46,53 +33,22 @@
       bean/->js
       (transforms/js-stringify 0)))
 
-(defn wallet-sign-message-rpc
-  [password address data]
-  (-> (call-rpc "wallet_signMessage"
-                data
-                address
-                password)
-      ;; NOTE: removing `0x`, as status-go expects the signature without it.
-      (promesa/then #(subs % 2))))
-
-(defn- wallet-build-transaction-rpc
-  [chain-id tx]
-  (-> (call-rpc "wallet_buildTransaction" chain-id tx)
-      (promesa/then #(hash-map :message-to-sign (oops/oget % "messageToSign")
-                               :tx-args         (oops/oget % "txArgs")))))
-
-(defn- wallet-build-raw-transaction-rpc
-  [chain-id tx-args signature]
-  (-> (call-rpc "wallet_buildRawTransaction"
-                chain-id
-                (transforms/js-stringify tx-args 0)
-                signature)
-      (promesa/then #(oops/oget % "rawTx"))))
-
-(defn- wallet-send-transaction-with-signature-rpc
-  [chain-id tx-args signature]
-  (call-rpc "wallet_sendTransactionWithSignature"
-            chain-id
-            constants/transaction-pending-type-wallet-connect-transfer
-            (transforms/js-stringify tx-args 0)
-            signature))
-
 (defn sign-transaction
   [password address tx chain-id]
   (promesa/let
     [formatted-tx                      (prepare-transaction-for-rpc tx)
-     {:keys [message-to-sign tx-args]} (wallet-build-transaction-rpc chain-id formatted-tx)
-     signature                         (wallet-sign-message-rpc password address message-to-sign)
-     raw-tx                            (wallet-build-raw-transaction-rpc chain-id tx-args signature)]
+     {:keys [message-to-sign tx-args]} (rpc/wallet-build-transaction chain-id formatted-tx)
+     signature                         (rpc/wallet-sign-message message-to-sign address password)
+     raw-tx                            (rpc/wallet-build-raw-transaction chain-id tx-args signature)]
     raw-tx))
 
 (defn send-transaction
   [password address tx chain-id]
   (promesa/let
     [formatted-tx                      (prepare-transaction-for-rpc tx)
-     {:keys [message-to-sign tx-args]} (wallet-build-transaction-rpc chain-id formatted-tx)
-     signature                         (wallet-sign-message-rpc password address message-to-sign)
-     tx                                (wallet-send-transaction-with-signature-rpc chain-id
+     {:keys [message-to-sign tx-args]} (rpc/wallet-build-transaction chain-id formatted-tx)
+     signature                         (rpc/wallet-sign-message message-to-sign address password)
+     tx                                (rpc/wallet-send-transaction-with-signature chain-id
                                                                                    tx-args
                                                                                    signature)]
     tx))
