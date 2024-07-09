@@ -1,4 +1,4 @@
-## Getting Started 
+## Getting Started
 
 [Starting Guide](starting-guide.md)
 
@@ -34,7 +34,7 @@
 
 ## Testing
 
-[How to run local tests](testing.md)
+[How to run local tests](tests/how-to-run-local-tests.md)
 
 [End-to-end tests (e2e) overview](how-to-launch-e2e.md)
 
@@ -64,4 +64,3 @@
 [Old guidelines](codebase-structure-and-guidelines.md)
 
 [Post mortem analysis](post-mortem.md)
-
