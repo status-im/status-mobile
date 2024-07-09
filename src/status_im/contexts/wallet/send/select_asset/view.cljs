@@ -32,7 +32,7 @@
      {:collectibles         collectibles
       :filtered?            search-performed?
       :on-end-reached       #(rf/dispatch [:wallet/request-collectibles-for-current-viewing-account])
-      :on-collectible-press (fn [collectible]
+      :on-collectible-press (fn [{:keys [collectible]}]
                               (rf/dispatch [:wallet/set-collectible-to-send
                                             {:collectible    collectible
                                              :current-screen :screen/wallet.select-asset}]))}]))

@@ -21,27 +21,25 @@
     :container-style style/traits-item}])
 
 (defn- traits-section
-  []
-  (let [traits (rf/sub [:wallet/last-collectible-details-traits])]
-    (when (pos? (count traits))
-      [rn/view
-       [quo/section-label
-        {:section         (i18n/label :t/traits)
-         :container-style style/traits-title-container}]
-       [rn/flat-list
-        {:render-fn               trait-item
-         :data                    traits
-         :key                     :collectibles-list
-         :key-fn                  :id
-         :num-columns             2
-         :content-container-style style/traits-container}]])))
+  [traits]
+  [rn/view
+   [quo/section-label
+    {:section         (i18n/label :t/traits)
+     :container-style style/traits-title-container}]
+   [rn/flat-list
+    {:render-fn               trait-item
+     :data                    traits
+     :key                     :collectibles-list
+     :key-fn                  :id
+     :num-columns             2
+     :content-container-style style/traits-container}]])
 
 (defn- info
-  []
-  (let [chain-id                   (rf/sub [:wallet/last-collectible-details-chain-id])
-        {:keys [network-name]}     (rf/sub [:wallet/network-details-by-chain-id chain-id])
-        subtitle                   (string/capitalize (name (or network-name "")))
-        {:keys [name emoji color]} (rf/sub [:wallet/last-collectible-details-owner])]
+  [{:keys [chain-id account]}]
+  (let [{:keys [network-name]} (rf/sub [:wallet/network-details-by-chain-id chain-id])
+        subtitle               (some-> network-name
+                                       name
+                                       string/capitalize)]
     [rn/view {:style style/info-container}
      [rn/view {:style style/account}
       [quo/data-item
@@ -49,10 +47,10 @@
         :status              :default
         :size                :default
         :title               (i18n/label :t/account-title)
-        :subtitle            name
-        :emoji               emoji
         :subtitle-type       :account
-        :customization-color color}]]
+        :subtitle            (:name account)
+        :emoji               (:emoji account)
+        :customization-color (:color account)}]]
      [rn/view {:style style/network}
       [quo/data-item
        {:subtitle-type :network
@@ -64,7 +62,12 @@
         :subtitle      subtitle}]]]))
 
 (defn view
-  []
-  [:<>
-   [info]
-   [traits-section]])
+  [collectible]
+  (let [owner-account (rf/sub [:wallet/collectible-details-owner collectible])
+        traits        (-> collectible :collectible-data :traits)]
+    [:<>
+     [info
+      {:chain-id (-> collectible :id :contract-id :chain-id)
+       :account  owner-account}]
+     (when (pos? (count traits))
+       [traits-section traits])]))
