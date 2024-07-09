@@ -42,7 +42,7 @@
                                  :not-enough-assets
                                  :t/not-enough-assets))}])
       [footer/view
-       {:warning-label     (i18n/label :t/wallet-connect-send-transaction-warning)
+       {:warning-label     (i18n/label :t/wallet-connect-sign-warning)
         :slide-button-text (i18n/label :t/slide-to-send)
         :disabled?         error-state}
        [quo/data-item

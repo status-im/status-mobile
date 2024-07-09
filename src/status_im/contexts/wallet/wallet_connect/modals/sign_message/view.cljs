@@ -30,7 +30,7 @@
          :account account}]
        [data-block/view]]
       [footer/view
-       {:warning-label     (i18n/label :t/wallet-connect-sign-message-warning)
+       {:warning-label     (i18n/label :t/wallet-connect-sign-warning)
         :slide-button-text (i18n/label :t/slide-to-sign)}
        [quo/data-item
         {:size            :small
