@@ -198,12 +198,16 @@
                                                                accepts-disclaimer?)
                                                          [password repeat-password
                                                           accepts-disclaimer?])
-        {:keys [keyboard-shown]}                        (hooks/use-keyboard)]
+        {:keys [keyboard-will-show? keyboard-shown]}    (hooks/use-keyboard)
+        keyboard-shown?                                 (if platform/ios?
+                                                          keyboard-will-show?
+                                                          keyboard-shown)]
 
     [floating-button/view
      {:header [page-nav]
+      :keyboard-should-persist-taps :handled
       :content-avoid-keyboard? true
-      :content-container-style (style/container keyboard-shown footer-height)
+      :content-container-style (style/container keyboard-shown? footer-height)
       :blur-options
       {:blur-amount      34
        :blur-type        :transparent

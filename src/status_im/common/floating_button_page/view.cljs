@@ -108,7 +108,7 @@
            :on-scroll                            set-content-y-scroll
            :scroll-event-throttle                64
            :content-container-style              {:flex-grow      1
-                                                  :padding-bottom (when @keyboard-did-show?
+                                                  :padding-bottom (when keyboard-shown?
                                                                     @footer-container-height)}
            :always-bounce-vertical               @keyboard-did-show?
            :automatically-adjust-keyboard-insets true
