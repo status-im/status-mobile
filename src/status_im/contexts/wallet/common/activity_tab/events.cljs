@@ -54,3 +54,17 @@
                                     activities)]
      {:db (assoc-in db [:wallet :activities address] activities-indexed)})))
 
+(def ^:private nested-merge (partial merge-with merge))
+
+(rf/reg-event-fx
+ :wallet/activities-filtering-entries-updated
+ (fn [{:keys [db]} [{:keys [message requestId]}]]
+   (let [address            (get-in db [:wallet :ui :activity-tab :request requestId])
+         activities         (->> message
+                                 (transforms/json->clj)
+                                 (cske/transform-keys transforms/->kebab-case-keyword))
+         activities-indexed (zipmap (map activity-transaction-id activities)
+                                    activities)]
+     {:db (-> db
+              (update-in [:wallet :ui :activity-tab :request] dissoc requestId)
+              (update-in [:wallet :activities address] nested-merge activities-indexed))})))
