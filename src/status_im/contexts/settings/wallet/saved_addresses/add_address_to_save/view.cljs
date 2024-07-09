@@ -163,9 +163,8 @@
                                                (rf/dispatch
                                                 [:open-modal :screen/settings.save-address]))
                                              [address ens-name? address-or-ens])]
-    (rn/use-mount (fn []
-                    (rf/dispatch [:wallet/clean-scanned-address])
-                    (rf/dispatch [:wallet/clear-address-to-save])))
+    (rn/use-unmount #(rf/dispatch [:wallet/clean-scanned-address]))
+    (rn/use-mount #(rf/dispatch [:wallet/clear-address-to-save]))
     [quo/overlay {:type :shell}
      [floating-button-page/view
       {:footer-container-padding 0
