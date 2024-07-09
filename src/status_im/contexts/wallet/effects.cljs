@@ -58,11 +58,11 @@
                          :emoji-hash  emojiHash
                          :key-uid     keyUid
                          :public-key  publicKey
-                         :private-key privateKey})))))
+                         :private-key (security/mask-data privateKey)})))))
 
 (rf/reg-fx
  :effects.wallet/create-account-from-private-key
- (fn [[private-key on-success on-error]]
+ (fn [{:keys [private-key on-success on-error]}]
    (-> (create-account-from-private-key private-key)
        (promesa/then (partial rf/call-continuation on-success))
        (promesa/catch (partial rf/call-continuation on-error)))))
