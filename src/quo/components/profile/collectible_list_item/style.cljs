@@ -11,7 +11,7 @@
 (defn fallback
   [{:keys [theme opacity]}]
   [{:opacity opacity}
-   {:opacity          default-opacity-for-image
+   {:opacity          1
     :background-color (colors/theme-colors colors/neutral-2_5 colors/neutral-90 theme)
     :border-style     :dashed
     :border-color     (colors/theme-colors colors/neutral-20 colors/neutral-80 theme)
@@ -60,8 +60,13 @@
    :padding-right  0
    :padding-top    4})
 
-(def card-detail-text
-  {:flex 1})
+(defn card-detail-text
+  [empty-name? theme]
+  {:flex         1
+   :margin-right 8
+   :color        (if empty-name?
+                   (colors/theme-colors colors/neutral-50 colors/neutral-40 theme)
+                   (colors/theme-colors colors/neutral-100 colors/white theme))})
 
 (defn card-loader
   [opacity]
@@ -115,6 +120,7 @@
   [{:opacity opacity}
    {:flex           1
     :flex-direction :row
+    :column-gap     8
     :opacity        default-opacity-for-image}])
 
 (defn supported-file

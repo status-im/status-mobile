@@ -17,9 +17,7 @@
                               :name  (:name collectible-data)
                               :image (:uri preview-url)}])}]))
 
-(defn- on-collectible-press
-  [{:keys [id]} aspect-ratio]
-  (rf/dispatch [:wallet/get-collectible-details id aspect-ratio]))
+(def on-collectible-press #(rf/dispatch [:wallet/navigate-to-collectible-details %]))
 
 (defn view
   [{:keys [selected-tab]}]
