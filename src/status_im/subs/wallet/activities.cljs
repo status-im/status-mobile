@@ -60,17 +60,16 @@
               :token symbol-in
               :amount (get-token-amount token-in amount-in)))
 
-(comment
- ;; WIP to add the mint activity.
- (defn- process-mint-activity
-   [{:keys [token-in symbol-in amount-in chain-id-in nft-name] :as data}
-    chain-id->network-name]
-   (-> data
-       (merge activity)
-       (assoc :transaction :mint
-              ;:token        symbol-in
-              ;:amount       (activity-amount amount-in)
-              :nft-name (normalize-nft-name token-id nft-name)))))
+;; WIP to add the mint activity.
+;(defn- process-mint-activity
+;  [{:keys [token-in symbol-in amount-in chain-id-in nft-name] :as data}
+;   chain-id->network-name]
+;  (-> data
+;      (merge activity)
+;      (assoc :transaction :mint
+;             ;:token        symbol-in
+;             ;:amount       (activity-amount amount-in)
+;             :nft-name (normalize-nft-name token-id nft-name))))
 
 (defn- process-activity-by-type
   [chain-id->network-name

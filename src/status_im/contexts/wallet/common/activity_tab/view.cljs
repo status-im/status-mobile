@@ -55,31 +55,30 @@
                           :network-logo network-logo}
       :blur?             false}]))
 
-(comment
- ;; WIP to add the mint activity.
- (defn mint-activity
-   [{:keys [transaction relative-date status recipient network-name
-            network-logo nft-name nft-url token-id]}]
-   [quo/wallet-activity
-    {:transaction       transaction
-     :timestamp         relative-date
-     :status            status
-     :counter           1
-     :first-tag         {:size               24
-                         :type               :collectible
-                         :collectible        nft-url
-                         :collectible-name   nft-name
-                         :collectible-number token-id}
-     :second-tag-prefix :t/at
-     :second-tag        {:type :address :address recipient}
-     :third-tag-prefix  :t/to
-     :third-tag         {:type :address :address recipient}
-     :fourth-tag-prefix :t/via
-     :fourth-tag        {:size         24
-                         :type         :network
-                         :network-name network-name
-                         :network-logo network-logo}
-     :blur?             false}]))
+;; WIP to add the mint activity.
+;(defn mint-activity
+;  [{:keys [transaction relative-date status recipient network-name
+;           network-logo nft-name nft-url token-id]}]
+;  [quo/wallet-activity
+;   {:transaction       transaction
+;    :timestamp         relative-date
+;    :status            status
+;    :counter           1
+;    :first-tag         {:size               24
+;                        :type               :collectible
+;                        :collectible        nft-url
+;                        :collectible-name   nft-name
+;                        :collectible-number token-id}
+;    :second-tag-prefix :t/at
+;    :second-tag        {:type :address :address recipient}
+;    :third-tag-prefix  :t/to
+;    :third-tag         {:type :address :address recipient}
+;    :fourth-tag-prefix :t/via
+;    :fourth-tag        {:size         24
+;                        :type         :network
+;                        :network-name network-name
+;                        :network-logo network-logo}
+;    :blur?             false}])
 
 (defn activity-item
   [{:keys [transaction] :as activity}]
