@@ -18,24 +18,22 @@
   (cond-> [{:id :assets :label (i18n/label :t/assets) :accessibility-label :assets-tab}
            {:id :collectibles :label (i18n/label :t/collectibles) :accessibility-label :collectibles-tab}
            {:id :activity :label (i18n/label :t/activity) :accessibility-label :activity-tab}]
-          (not watch-only?) (conj {:id :dapps :label (i18n/label :t/dapps) :accessibility-label :dapps})
-          :always (conj {:id :about :label (i18n/label :t/about) :accessibility-label :about})))
+    (not watch-only?) (conj {:id :dapps :label (i18n/label :t/dapps) :accessibility-label :dapps})
+    :always           (conj {:id :about :label (i18n/label :t/about) :accessibility-label :about})))
 
 (defn- change-tab [id] (rf/dispatch [:wallet/select-account-tab id]))
 
 (defn view
   []
-  (let [selected-tab        (or (rf/sub [:wallet/account-tab]) first-tab-id)
+  (let [selected-tab          (or (rf/sub [:wallet/account-tab]) first-tab-id)
         {:keys [name color formatted-balance
                 watch-only?]} (rf/sub [:wallet/current-viewing-account])
-        customization-color (rf/sub [:profile/customization-color])]
+        customization-color   (rf/sub [:profile/customization-color])]
     (hot-reload/use-safe-unmount (fn []
                                    (rf/dispatch [:wallet/close-account-page])
-                                   (rf/dispatch [:wallet/clean-current-viewing-account])
-                                   ;(rf/dispatch [:wallet/clean-send-data])
-                                   ))
+                                   (rf/dispatch [:wallet/clean-current-viewing-account])))
     (rn/use-mount
-      #(rf/dispatch [:wallet/fetch-activities-for-current-account]))
+     #(rf/dispatch [:wallet/fetch-activities-for-current-account]))
     [rn/view {:style {:flex 1}}
      [account-switcher/view
       {:type     :wallet-networks

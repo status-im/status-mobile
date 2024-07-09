@@ -492,12 +492,13 @@
               (assoc-in [:wallet :ui :send :transaction-ids] transaction-ids))
       :fx [[:dispatch
             [:wallet/end-transaction-flow]]
-           [:dispatch-later [{:ms 2000
-                              :dispatch [:wallet/clean-just-completed-transaction]}]]]})))
+           [:dispatch-later
+            [{:ms       2000
+              :dispatch [:wallet/clean-just-completed-transaction]}]]]})))
 
 (rf/reg-event-fx :wallet/clean-just-completed-transaction
-                 (fn [{:keys [db]}]
-                   {:db (update-in db [:wallet :ui :send] dissoc :just-completed-transaction?)}))
+ (fn [{:keys [db]}]
+   {:db (update-in db [:wallet :ui :send] dissoc :just-completed-transaction?)}))
 
 (rf/reg-event-fx :wallet/clean-up-transaction-flow
  (fn [_]
@@ -667,6 +668,7 @@
                        :params     request-params
                        :on-success (fn [result]
                                      (rf/dispatch [:wallet/add-authorized-transaction result])
+                                     (rf/dispatch [:pop-to-root :shell-stack])
                                      (rf/dispatch [:hide-bottom-sheet]))
                        :on-error   (fn [error]
                                      (log/error "failed to send transaction"

@@ -19,9 +19,7 @@
 
 (defn- on-close
   []
-  (rf/dispatch [:wallet/clean-current-viewing-account])
-  ;(rf/dispatch [:wallet/clean-send-data])
-  )
+  (rf/dispatch [:wallet/clean-current-viewing-account]))
 
 (defn- render-fn
   [item _ _ {:keys [network-details]}]

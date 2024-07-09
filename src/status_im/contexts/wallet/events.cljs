@@ -67,9 +67,8 @@
 (rf/reg-event-fx :wallet/clean-current-viewing-account
  (fn [{:keys [db]}]
    (let [just-completed-transaction? (get-in db [:wallet :ui :send :just-completed-transaction?])]
-     (println "qqqqq" just-completed-transaction?)
      (when-not just-completed-transaction?
-   {:db (update db :wallet dissoc :current-viewing-account-address)}))))
+       {:db (update db :wallet dissoc :current-viewing-account-address)}))))
 
 (rf/reg-event-fx :wallet/close-account-page
  (fn [_]
