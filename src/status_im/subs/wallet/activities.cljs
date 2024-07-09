@@ -69,9 +69,11 @@
  :<- [:wallet/network-details]
  (fn [[activities current-viewing-account-address network-details]]
    (let [chain-id->network-name (update-vals (group-by :chain-id network-details)
-                                             (comp :network-name first))]
-     (->> current-viewing-account-address
-          (get activities)
+                                             (comp :network-name first))
+         address-activities     (->> (get activities current-viewing-account-address)
+                                     (vals)
+                                     (sort :timestamp))]
+     (->> address-activities
           (keep #(process-activity-by-type chain-id->network-name %))
           (group-by (fn [{:keys [timestamp]}]
                       (datetime/timestamp->relative-short-date (* timestamp 1000))))
