@@ -37,7 +37,7 @@
                                         {:new-account-data {"test"    "data"
                                                             :mnemonic masked-mnemonic}
                                          :keypair-name     "new-keypair-name"}}}}}
-        effects         (events/store-account-generated {:db db} props)
+        effects         (events/store-account-generated-with-mnemonic {:db db} props)
         result-db       (:db effects)
         remove-mnemonic #(update-in %
                                     [:wallet :ui :create-account :new-keypair :new-account-data]
@@ -61,7 +61,7 @@
         expected-effects [[:effects.wallet/create-account-from-mnemonic
                            {:mnemonic-phrase "test-secret"
                             :paths           [constants/path-default-wallet]}]]
-        effects          (events/generate-account-for-keypair {:db db} props)]
+        effects          (events/generate-account-for-keypair-with-mnemonic {:db db} props)]
     (is (match?
          (update-in effects [:fx 0 1] dissoc :on-success)
          {:fx expected-effects}))
