@@ -98,8 +98,11 @@
 
 (defn prop-tag
   [props blur?]
-  [rn/view {:style {:margin-right 4}}
-   [context-tag/view (merge props {:size 24 :blur? blur?})]])
+  [context-tag/view
+   (assoc props
+          :size            24
+          :blur?           blur?
+          :container-style {:flex-shrink 1})])
 
 (defn- view-internal
   [{:keys [state blur? first-tag second-tag third-tag fourth-tag on-press
@@ -121,7 +124,7 @@
       :on-press-out        on-press-out}
      [rn/view {:style style/container}
       [transaction-icon-view props theme]
-      [rn/view
+      [rn/view {:style {:flex 1}}
        [transaction-header props theme]
        [rn/view {:style style/content-line}
         (when first-tag [prop-tag first-tag blur?])

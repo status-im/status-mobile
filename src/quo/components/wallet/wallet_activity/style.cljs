@@ -51,8 +51,7 @@
 
 (defn prop-text
   [theme]
-  {:margin-right 4
-   :color        (colors/theme-colors colors/neutral-100 colors/white theme)})
+  {:color (colors/theme-colors colors/neutral-100 colors/white theme)})
 
 (def icon-container
   {:width      32
@@ -61,12 +60,15 @@
 
 (def container
   {:flex-direction :row
+   :flex           1
    :column-gap     8})
 
 (def content-line
-  {:flex-direction :row
-   :margin-top     2
-   :align-items    :center})
+  {:flex-direction  :row
+   :margin-top      2
+   :align-items     :center
+   :column-gap      4
+   :justify-content :flex-start})
 
 (def icon-hole-view
   {:width           32
