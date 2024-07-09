@@ -34,12 +34,14 @@
       (native-module/hex-to-number)
       (str)))
 
-(defn- normalize-nft-name [token-id nft-name]
+(defn- normalize-nft-name
+  [token-id nft-name]
   (if (and (some? token-id) (string/blank? nft-name))
     "Unknown"
     nft-name))
 
-(defn- get-token-amount [token amount]
+(defn- get-token-amount
+  [token amount]
   (let [token-type (:token-type token)]
     (if (#{constants/wallet-activity-token-type-erc-721
            constants/wallet-activity-token-type-erc-1155}
@@ -50,15 +52,17 @@
 (defn- process-send-activity
   [{:keys [symbol-out amount-out token-out]
     :as   data}]
-  (assoc data :transaction :send
-              :token symbol-out
-              :amount (get-token-amount token-out amount-out)))
+  (assoc data
+         :transaction :send
+         :token       symbol-out
+         :amount      (get-token-amount token-out amount-out)))
 
 (defn- process-receive-activity
   [{:keys [symbol-in amount-in token-in] :as data}]
-  (assoc data :transaction :receive
-              :token symbol-in
-              :amount (get-token-amount token-in amount-in)))
+  (assoc data
+         :transaction :receive
+         :token       symbol-in
+         :amount      (get-token-amount token-in amount-in)))
 
 ;; WIP to add the mint activity.
 ;(defn- process-mint-activity
@@ -74,19 +78,22 @@
 (defn- process-activity-by-type
   [chain-id->network-name
    {:keys [activity-type activity-status timestamp sender recipient token-in token-out
-           chain-id-in chain-id-out nft-name] :as data}]
+           chain-id-in chain-id-out nft-name]
+    :as   data}]
   (let [network-name (chain-id->network-name (or chain-id-in chain-id-out))
-        token-id     (some-> (or token-in token-out) :token-id hex-string->number)
+        token-id     (some-> (or token-in token-out)
+                             :token-id
+                             hex-string->number)
         activity     (assoc data
-                       :relative-date (datetime/timestamp->relative (* timestamp 1000))
-                       :sender sender
-                       :recipient recipient
-                       :timestamp timestamp
-                       :network-name network-name
-                       :token-id token-id
-                       :status (constants/wallet-activity-status->name activity-status)
-                       :network-logo (quo.resources/get-network network-name)
-                       :nft-name (normalize-nft-name token-id nft-name))]
+                            :relative-date (datetime/timestamp->relative (* timestamp 1000))
+                            :sender        sender
+                            :recipient     recipient
+                            :timestamp     timestamp
+                            :network-name  network-name
+                            :token-id      token-id
+                            :status        (constants/wallet-activity-status->name activity-status)
+                            :network-logo  (quo.resources/get-network network-name)
+                            :nft-name      (normalize-nft-name token-id nft-name))]
     (condp = activity-type
       constants/wallet-activity-type-send
       (process-send-activity activity)
@@ -94,8 +101,7 @@
       constants/wallet-activity-type-receive
       (process-receive-activity activity)
 
-      ;; WIP to add the mint activity.
-      ;; constants/wallet-activity-type-mint
+      ;; WIP to add the mint activity. Constants/wallet-activity-type-mint
       ;; (process-mint-activity activity chain-id->network-name)
 
       nil)))
