@@ -2758,5 +2758,18 @@
     "swaps-powered-by": "Swaps powered by {{provider}}",
     "max-slippage": "Max slippage",
     "pay": "Pay",
-    "store-confirmations": "Store confirmations"
+    "store-confirmations": "Store confirmations",
+    "help-us-improve-status": "Help us improve Status",
+    "collecting-usage-data": "Collecting usage data helps us improve Status.",
+    "what-we-will-receive":"What we will receive:",
+    "ip-address":"IP address",
+    "universally-unique-identifiers-of-device":"Universally Unique Identifiers of device",
+    "logs-of-actions-withing-the-app":"Logs of actions within the app, including button presses and screen visits",
+    "what-we-not-receive":"What we not receive:",
+    "your-profile-information":"Your profile information",
+    "your-addresses":"Your addresses",
+    "information-you-input-and-send":"Information you input and send",
+    "sharing-usage-data-can-be-turned-off":"Sharing usage data can be turned off anytime in Settings / Privacy and Security.",
+    "share-usage-data":"Share usage data",
+    "do-not-share":"Do not share"
 }

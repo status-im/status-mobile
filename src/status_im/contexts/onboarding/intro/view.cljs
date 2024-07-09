@@ -2,6 +2,7 @@
   (:require
     [quo.core :as quo]
     [react-native.core :as rn]
+    [status-im.common.metrics-confirmation-modal.view :as metrics-modal]
     [status-im.contexts.onboarding.common.background.view :as background]
     [status-im.contexts.onboarding.common.overlay.view :as overlay]
     [status-im.contexts.onboarding.intro.style :as style]
@@ -11,6 +12,11 @@
 
 (defn view
   []
+  (rn/use-mount (fn []
+                  (rf/dispatch
+                   [:show-bottom-sheet
+                    {:content (fn [] [metrics-modal/view])
+                     :shell?  true}])))
   [rn/view {:style style/page-container}
    [background/view false]
    [quo/bottom-actions
