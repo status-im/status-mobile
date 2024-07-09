@@ -4,6 +4,7 @@
             [re-frame.core :as rf]
             [status-im.constants :as constants]
             [status-im.contexts.wallet.wallet-connect.core :as wallet-connect-core]
+            [status-im.contexts.wallet.wallet-connect.transactions :as transactions]
             [taoensso.timbre :as log]
             [utils.transforms :as transforms]))
 
@@ -66,11 +67,8 @@
  :wallet-connect/process-eth-send-transaction
  (fn [{:keys [db]}]
    (let [event                 (wallet-connect-core/get-db-current-request-event db)
-         display-data          (-> event
-                                   clj->js
-                                   (js/JSON.stringify nil 2))
-
          {:keys [from] :as tx} (-> event wallet-connect-core/get-request-params first)
+         display-data          (transactions/beautify-transaction tx)
          chain-id              (-> event
                                    (get-in [:params :chainId])
                                    wallet-connect-core/eip155->chain-id)]
@@ -86,8 +84,8 @@
  :wallet-connect/process-eth-sign-transaction
  (fn [{:keys [db]}]
    (let [event                 (wallet-connect-core/get-db-current-request-event db)
-         display-data          (.stringify js/JSON (clj->js event) nil 2)
          {:keys [from] :as tx} (-> event wallet-connect-core/get-request-params first)
+         display-data          (transactions/beautify-transaction tx)
          chain-id              (-> event
                                    (get-in [:params :chainId])
                                    wallet-connect-core/eip155->chain-id)]

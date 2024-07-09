@@ -1,6 +1,7 @@
 (ns status-im.contexts.wallet.wallet-connect.transactions
   (:require [cljs-bean.core :as bean]
             [clojure.string :as string]
+            [native-module.core :as native-module]
             [promesa.core :as promesa]
             [status-im.contexts.wallet.wallet-connect.rpc :as rpc]
             [utils.transforms :as transforms]))
@@ -15,12 +16,12 @@
 
 (defn- format-tx-hex-values
   "Due to how status-go expects hex values, we should remove the extra 0s in transaction hex values e.g. 0x0f -> 0xf"
-  [tx]
+  [tx f]
   (let [tx-keys [:gasLimit :gas :gasPrice :nonce :value :maxFeePerGas :maxPriorityFeePerGas]]
     (reduce (fn [acc tx-key]
               (if (and (contains? tx tx-key)
                        (not (nil? (get tx tx-key))))
-                (update acc tx-key strip-hex-prefix)
+                (update acc tx-key f)
                 acc))
             tx
             tx-keys)))
@@ -29,9 +30,17 @@
   "Formats the transaction and transforms it into a stringified JS object, ready to be passed to an RPC call."
   [tx]
   (-> tx
-      format-tx-hex-values
+      (format-tx-hex-values strip-hex-prefix)
       bean/->js
       (transforms/js-stringify 0)))
+
+(defn beautify-transaction
+  [tx]
+  (let [hex->number #(-> % (subs 2) native-module/hex-to-number)]
+    (-> tx
+        (format-tx-hex-values hex->number)
+        clj->js
+        (js/JSON.stringify nil 2))))
 
 (defn sign-transaction
   [password address tx chain-id]
