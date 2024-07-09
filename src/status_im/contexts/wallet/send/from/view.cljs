@@ -19,13 +19,9 @@
 
 (defn- on-close
   []
-  (let [view-id (rf/sub [:view-id])]
-    ;; when this screen unmounts after completing the transaction flow we don't want to clean the
-    ;; current address
-    (println "vvv" view-id)
-    (when (= view-id :wallet-stack)
-      (rf/dispatch [:wallet/clean-current-viewing-account])
-      (rf/dispatch [:wallet/clean-send-data]))))
+  (rf/dispatch [:wallet/clean-current-viewing-account])
+  ;(rf/dispatch [:wallet/clean-send-data])
+  )
 
 (defn- render-fn
   [item _ _ {:keys [network-details]}]
