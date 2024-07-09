@@ -108,6 +108,7 @@
     [status-im.contexts.wallet.bridge.select-asset.view :as wallet-bridge-select-asset]
     [status-im.contexts.wallet.collectible.view :as wallet-collectible]
     [status-im.contexts.wallet.common.scan-account.view :as wallet-scan-address]
+    [status-im.contexts.wallet.connected-dapps.scan-dapp.view :as wallet-scan-dapp]
     [status-im.contexts.wallet.connected-dapps.view :as wallet-connected-dapps]
     [status-im.contexts.wallet.send.from.view :as wallet-select-from]
     [status-im.contexts.wallet.send.select-address.view :as wallet-select-address]
@@ -411,10 +412,6 @@
      :options   {:insets {:top? true}}
      :component wallet-accounts/view}
 
-    {:name      :screen/wallet.connected-dapps
-     :options   {:insets {:top? true}}
-     :component wallet-connected-dapps/view}
-
     {:name      :screen/wallet.wallet-connect-session-proposal
      :options   {:sheet? true}
      :component wallet-connect-session-proposal/view}
@@ -548,6 +545,16 @@
     {:name      :screen/wallet-connect.send-transaction
      :options   {:sheet? true}
      :component wallet-connect-send-transaction/view}
+
+    {:name      :screen/wallet.connected-dapps
+     :options   {:insets {:top? true}}
+     :component wallet-connected-dapps/view}
+
+    {:name      :screen/wallet.scan-dapp
+     :options   (merge
+                 options/dark-screen
+                 {:modalPresentationStyle :overCurrentContext})
+     :component wallet-scan-dapp/view}
 
     ;; Settings
 

@@ -63,31 +63,31 @@
   (let [{:keys [message] :as props}
         (case state
           :scanning
-          {:type    :info
+          {:status  :default
            :icon    :i/scanning
            :message :t/scanning-for-activity}
 
           :inactive-address
-          {:type    :warning
+          {:status  :warning
            :icon    :i/info
            :message :t/this-account-has-no-activity}
 
           :active-address
-          {:type    :success
+          {:status  :success
            :icon    :i/done
            :message :t/this-address-has-activity}
 
           :invalid-private-key
-          {:type    :error
+          {:status  :error
            :icon    :i/info
            :message :t/invalid-private-key}
 
           nil)]
     (when props
       [quo/info-message
-       (assoc props
-              :size  :default
-              :style style/indicator)
+       (-> props
+           (assoc :size :default :container-style style/indicator)
+           (dissoc :message))
        (i18n/label message)])))
 
 (defn on-unmount

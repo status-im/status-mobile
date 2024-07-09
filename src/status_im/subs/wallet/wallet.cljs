@@ -596,6 +596,11 @@
  :-> :valid-ens-or-address?)
 
 (rf/reg-sub
+ :wallet/searching-address?
+ :<- [:wallet/search-address]
+ :-> :loading?)
+
+(rf/reg-sub
  :wallet/aggregated-fiat-balance-per-chain
  :<- [:wallet/aggregated-tokens]
  :<- [:profile/currency]

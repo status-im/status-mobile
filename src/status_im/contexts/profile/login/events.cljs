@@ -83,8 +83,7 @@
                   [[:profile.settings/switch-theme-fx
                     [(or (:appearance settings)
                          constants/theme-type-dark)
-                     :shell-stack
-                     false]]
+                     :shell-stack]]
                    [:dispatch [:init-root :shell-stack]]
                    [:dispatch [:profile/show-testnet-mode-banner-if-enabled]]]))})))
 

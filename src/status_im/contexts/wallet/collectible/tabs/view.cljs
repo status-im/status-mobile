@@ -5,9 +5,9 @@
             [status-im.contexts.wallet.collectible.tabs.overview.view :as overview]))
 
 (defn view
-  [{:keys [selected-tab]}]
+  [{:keys [selected-tab collectible]}]
   (case selected-tab
-    :overview [overview/view]
-    :about    [about/view]
+    :overview [overview/view collectible]
+    :about    [about/view collectible]
     :activity [activity/view]
     nil))

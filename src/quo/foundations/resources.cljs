@@ -24,12 +24,13 @@
   (get ui k))
 
 (def dapps
-  {:coingecko (js/require "../resources/images/dapps/CoinGecko.png")
-   :1inch     (js/require "../resources/images/dapps/1inch.png")
-   :aave      (js/require "../resources/images/dapps/Aave.png")
-   :uniswap   (js/require "../resources/images/dapps/Uniswap.png")
-   :zapper    (js/require "../resources/images/dapps/Zapper.png")
-   :zerion    (js/require "../resources/images/dapps/Zerion.png")})
+  {:coingecko      (js/require "../resources/images/dapps/CoinGecko.png")
+   :1inch          (js/require "../resources/images/dapps/1inch.png")
+   :aave           (js/require "../resources/images/dapps/Aave.png")
+   :uniswap        (js/require "../resources/images/dapps/Uniswap.png")
+   :zapper         (js/require "../resources/images/dapps/Zapper.png")
+   :zerion         (js/require "../resources/images/dapps/Zerion.png")
+   :wallet-connect (js/require "../resources/images/dapps/WalletConnect.png")})
 
 (defn get-dapp
   [k]

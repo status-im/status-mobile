@@ -108,8 +108,7 @@
     (when (and (multiaccounts.model/logged-in? db)
                (= current-theme-type status-im.constants/theme-type-system))
       {:profile.settings/switch-theme-fx
-       [(get-in db [:profile/profile :appearance])
-        (:view-id db) true]})))
+       [(get-in db [:profile/profile :appearance]) (:view-id db)]})))
 
 (defn- on-biometric-auth-fail
   [{:keys [code]}]
