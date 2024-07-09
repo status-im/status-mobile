@@ -36,7 +36,7 @@
 
 [How to run local tests](tests/how-to-run-local-tests.md)
 
-[End-to-end tests (e2e) overview](how-to-launch-e2e.md)
+[End-to-end tests (e2e) overview](tests/how-to-launch-e2e.md)
 
 [Component tests (jest) overview](tests/component-tests-overview.md)
 
