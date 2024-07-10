@@ -13,25 +13,34 @@
   [{:keys [preview-url collection-data collectible-data total-owned on-press on-long-press]
     :as   collectible}
    index]
-  (let [on-press-fn      (rn/use-callback #(when on-press
-                                             (on-press collectible %)))
-        on-long-press-fn (rn/use-callback #(when on-long-press
-                                             (on-long-press collectible)))]
+  (let [gradient-color   (keyword (str "gradient-" (inc (mod index 5))))
+        on-press-fn      (rn/use-callback
+                          (fn [aspect-ratio]
+                            (when (fn? on-press)
+                              (on-press {:collectible    (dissoc collectible :on-press :on-long-press)
+                                         :aspect-ratio   aspect-ratio
+                                         :gradient-color gradient-color}))))
+        on-long-press-fn (rn/use-callback
+                          (fn [aspect-ratio]
+                            (when on-long-press
+                              (on-long-press
+                               (dissoc collectible :on-press :on-long-press)
+                               aspect-ratio))))]
     [quo/collectible-list-item
      {:type                 :card
       :image-src            (:uri preview-url)
       :avatar-image-src     (:image-url collection-data)
-      :collectible-name     (:name collection-data)
+      :collectible-name     (:name collectible-data)
       :supported-file?      (utils/supported-file? (:animation-media-type collectible-data))
-      :gradient-color-index (keyword (str "gradient-" (inc (mod index 5))))
+      :gradient-color-index gradient-color
       :counter              (utils/collectible-owned-counter total-owned)
       :container-style      style/collectible-container
       :on-press             on-press-fn
       :on-long-press        on-long-press-fn}]))
 
 (defn view
-  [{:keys [collectibles filtered? on-end-reached
-           on-collectible-press current-account-address on-collectible-long-press]}]
+  [{:keys [collectibles filtered? on-end-reached on-collectible-press
+           current-account-address on-collectible-long-press]}]
   (let [theme                   (quo.theme/use-theme)
         no-results-match-query? (and filtered? (empty? collectibles))]
     (cond

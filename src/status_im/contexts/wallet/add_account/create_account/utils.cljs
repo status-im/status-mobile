@@ -2,28 +2,57 @@
   (:require [status-im.constants :as constants]))
 
 (defn first-derived-account
-  [account-data]
-  (-> account-data :derived first val))
+  [account-data keypair-type]
+  (if (= keypair-type :seed)
+    (some-> account-data
+            :derived
+            first
+            val)
+    account-data))
+
+(defn get-account-details
+  [keypair-type account account-to-create]
+  (if (= keypair-type :key)
+    {:key-uid         (:key-uid account)
+     :public-key      (:public-key account)
+     :account-address (:address account)}
+    {:key-uid         (:keyUid account)
+     :public-key      (:publicKey account-to-create)
+     :account-address (:address account-to-create)}))
+
+(defn get-account-config
+  [{:keys [account-address key-uid keypair-type public-key account-name emoji color]}]
+  {:address    account-address
+   :key-uid    key-uid
+   :wallet     false
+   :chat       false
+   :type       keypair-type
+   :path       constants/path-default-wallet
+   :public-key public-key
+   :name       account-name
+   :emoji      emoji
+   :colorID    color
+   :hidden     false})
 
 (defn prepare-new-account
-  [{keypair-name                         :keypair-name
-    {:keys [keyUid address] :as account} :account-data
-    {:keys [account-name color emoji]}   :account-preferences}]
-  (let [account-to-create (first-derived-account account)
-        account-config    {:address    (:address account-to-create)
-                           :key-uid    keyUid
-                           :wallet     false
-                           :chat       false
-                           :type       :seed
-                           :path       constants/path-default-wallet
-                           :public-key (:publicKey account-to-create)
-                           :name       account-name
-                           :emoji      emoji
-                           :colorID    color
-                           :hidden     false}]
-    {:key-uid                    keyUid
+  [{:keys                              [keypair-name keypair-type]
+    {:keys [address] :as account}      :account-data
+    {:keys [account-name color emoji]} :account-preferences}]
+  (let [account-to-create                            (first-derived-account account keypair-type)
+        {:keys [key-uid public-key account-address]} (get-account-details keypair-type
+                                                                          account
+                                                                          account-to-create)
+        account-config                               (get-account-config {:account-address
+                                                                          account-address
+                                                                          :key-uid key-uid
+                                                                          :keypair-type keypair-type
+                                                                          :public-key public-key
+                                                                          :account-name account-name
+                                                                          :emoji emoji
+                                                                          :color color})]
+    {:key-uid                    key-uid
      :name                       keypair-name
-     :type                       :seed
+     :type                       keypair-type
      :derived-from               address
      :last-used-derivation-index 0
      :accounts                   [account-config]}))

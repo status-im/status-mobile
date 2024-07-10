@@ -12,7 +12,7 @@
       :balance
       js/parseInt))
 
-(def ^:const supported-collectible-types
+(def supported-collectible-types
   #{"image/jpeg"
     "image/gif"
     "image/bmp"
