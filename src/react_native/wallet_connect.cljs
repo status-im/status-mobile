@@ -1,7 +1,7 @@
 (ns react-native.wallet-connect
   (:require
-    ["@walletconnect/react-native-compat"]
     ["@walletconnect/core" :refer [Core]]
+    ["@walletconnect/react-native-compat"]
     ["@walletconnect/utils" :refer
      [buildApprovedNamespaces getSdkError parseUri]]
     ["@walletconnect/web3wallet" :refer [Web3Wallet]]))
