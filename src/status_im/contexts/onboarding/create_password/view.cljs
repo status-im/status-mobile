@@ -201,13 +201,16 @@
         {:keys [keyboard-will-show? keyboard-shown]}    (hooks/use-keyboard)
         keyboard-shown?                                 (if platform/ios?
                                                           keyboard-will-show?
-                                                          keyboard-shown)]
+                                                          keyboard-shown)
+        safe-area-bottom                                (safe-area/get-bottom)]
 
     [floating-button/view
      {:header [page-nav]
       :keyboard-should-persist-taps :handled
       :content-avoid-keyboard? true
-      :content-container-style (style/container keyboard-shown? footer-height)
+      :content-container-style (style/container
+                                keyboard-shown?
+                                (+ safe-area-bottom footer-height))
       :blur-options
       {:blur-amount      34
        :blur-type        :transparent

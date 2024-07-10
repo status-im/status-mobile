@@ -10,9 +10,9 @@
   (let [theme (quo.theme/use-theme)]
     [quo/blur
      (or blur-options
-     {:blur-amount   20
-      :blur-type     :transparent
-      :overlay-color :transparent} )
+         {:blur-amount   20
+          :blur-type     :transparent
+          :overlay-color :transparent} )
      [rn/view {:style (style/blur-inner-container theme shell-overlay?)}
       child]]))
 
