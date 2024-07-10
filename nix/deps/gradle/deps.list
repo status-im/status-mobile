@@ -545,6 +545,7 @@ com.google.code.gson:gson:2.8.9
 com.google.crypto.tink:tink:1.3.0-rc2
 com.google.crypto.tink:tink:1.7.0
 com.google.dagger:dagger:2.28.3
+com.google.devtools.ksp:symbol-processing-gradle-plugin:1.9.0-1.0.13
 com.google.errorprone:error_prone_annotations:2.0.18
 com.google.errorprone:error_prone_annotations:2.2.0
 com.google.errorprone:error_prone_annotations:2.3.1
@@ -832,6 +833,7 @@ org.jetbrains.kotlin:kotlin-stdlib-common:1.3.72
 org.jetbrains.kotlin:kotlin-stdlib-common:1.4.32
 org.jetbrains.kotlin:kotlin-stdlib-common:1.5.31
 org.jetbrains.kotlin:kotlin-stdlib-common:1.6.20
+org.jetbrains.kotlin:kotlin-stdlib-common:1.8.0
 org.jetbrains.kotlin:kotlin-stdlib-common:1.8.20-RC2
 org.jetbrains.kotlin:kotlin-stdlib-common:1.8.21
 org.jetbrains.kotlin:kotlin-stdlib-common:1.9.0
@@ -841,6 +843,7 @@ org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.3.72
 org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.4.32
 org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.5.31
 org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.6.20
+org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.8.0
 org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.8.20-RC2
 org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.8.21
 org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.9.0
@@ -849,6 +852,7 @@ org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.3.50
 org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.3.72
 org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.4.32
 org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.5.31
+org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.8.0
 org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.8.20-RC2
 org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.8.21
 org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.9.0
@@ -859,6 +863,7 @@ org.jetbrains.kotlin:kotlin-stdlib:1.3.72
 org.jetbrains.kotlin:kotlin-stdlib:1.4.32
 org.jetbrains.kotlin:kotlin-stdlib:1.5.31
 org.jetbrains.kotlin:kotlin-stdlib:1.6.20
+org.jetbrains.kotlin:kotlin-stdlib:1.8.0
 org.jetbrains.kotlin:kotlin-stdlib:1.8.20-RC2
 org.jetbrains.kotlin:kotlin-stdlib:1.8.21
 org.jetbrains.kotlin:kotlin-stdlib:1.9.0
