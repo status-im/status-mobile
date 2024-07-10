@@ -79,12 +79,20 @@
   (rf/dispatch [:wallet/clear-collectible-details]))
 
 (defn animated-header
-  [{:keys [scroll-amount title-opacity page-nav-type picture title description theme id]}]
-  (let [blur-amount   (header-animations/use-blur-amount scroll-amount)
-        layer-opacity (header-animations/use-layer-opacity
-                       scroll-amount
-                       (colors/theme-colors colors/white-opa-0 colors/neutral-95-opa-0 theme)
-                       (colors/theme-colors colors/white-opa-50 colors/neutral-95-opa-70-blur theme))]
+  [{:keys [scroll-amount title-opacity page-nav-type theme]}]
+  (let [blur-amount               (header-animations/use-blur-amount scroll-amount)
+        layer-opacity             (header-animations/use-layer-opacity
+                                   scroll-amount
+                                   (colors/theme-colors colors/white-opa-0
+                                                        colors/neutral-95-opa-0
+                                                        theme)
+                                   (colors/theme-colors colors/white-opa-50
+                                                        colors/neutral-95-opa-70-blur
+                                                        theme))
+        {{preview-uri :uri}  :preview-url
+         {title :name}       :collectible-data
+         {description :name} :collection-data
+         id                  :id} (rf/sub [:wallet/collectible-details])]
     [rn/view {:style (style/animated-header)}
      [reanimated/blur-view
       {:style         {:flex             1
@@ -97,7 +105,7 @@
       [reanimated/view {:style layer-opacity}
        [quo/page-nav
         {:type                page-nav-type
-         :picture             picture
+         :picture             preview-uri
          :title               title
          :description         description
          :background          :blur
@@ -110,7 +118,7 @@
                                               {:content (fn []
                                                           [options-drawer/view
                                                            {:name  title
-                                                            :image picture
+                                                            :image preview-uri
                                                             :id    id}])
                                                :theme   theme}])}]
          :center-opacity      title-opacity}]]]]))
@@ -144,10 +152,11 @@
   [_]
   (let [selected-tab  (reagent/atom :overview)
         on-tab-change #(reset! selected-tab %)]
-    (fn [{:keys [collectible set-title-bottom theme]}]
+    (fn [{:keys [set-title-bottom theme]}]
       (let [title-ref                      (rn/use-ref-atom nil)
             set-title-ref                  (rn/use-callback #(reset! title-ref %))
             animation-shared-element-id    (rf/sub [:animation-shared-element-id])
+            collectible                    (rf/sub [:wallet/collectible-details])
             collectible-owner              (rf/sub [:wallet/collectible-details-owner collectible])
             aspect-ratio                   (rf/sub [:wallet/collectible-aspect-ratio])
             gradient-color                 (rf/sub [:wallet/collectible-gradient-color])
@@ -196,14 +205,14 @@
                                         token-id
                                         {:images           [collectible-image]
                                          :index            0
-                                         :on-options-press #(rf/dispatch [:show-bottom-sheet
-                                                                          {:content
-                                                                           (fn []
-                                                                             [options-drawer/view
-                                                                              {:name collectible-name
-                                                                               :image
-                                                                               preview-uri
-                                                                               :id id}])}])}])))
+                                         :on-options-press #(rf/dispatch
+                                                             [:show-bottom-sheet
+                                                              {:content
+                                                               (fn []
+                                                                 [options-drawer/view
+                                                                  {:name  collectible-name
+                                                                   :image preview-uri
+                                                                   :id    id}])}])}])))
             :on-collectible-load  (fn []
                                     ;; We need to delay the measurement because the
                                     ;; navigation has an animation
@@ -241,33 +250,24 @@
 
 (defn view
   [_]
-  (let [{:keys [top]}       (safe-area/get-insets)
-        theme               (quo.theme/use-theme)
-        title-bottom-coord  (rn/use-ref-atom 0)
-        set-title-bottom    (rn/use-callback
-                             (fn [_ y _ height]
-                               (reset! title-bottom-coord
-                                 (get-title-bottom-y-position y height))))
-        scroll-amount       (reanimated/use-shared-value 0)
-        title-opacity       (reanimated/use-shared-value 0)
-        {:keys [collection-data
-                collectible-data
-                preview-url]
-         :as   collectible} (rf/sub [:wallet/collectible-details])]
+  (let [{:keys [top]}      (safe-area/get-insets)
+        theme              (quo.theme/use-theme)
+        title-bottom-coord (rn/use-ref-atom 0)
+        set-title-bottom   (rn/use-callback
+                            (fn [_ y _ height]
+                              (reset! title-bottom-coord
+                                (get-title-bottom-y-position y height))))
+        scroll-amount      (reanimated/use-shared-value 0)
+        title-opacity      (reanimated/use-shared-value 0)]
     [rn/view {:style (style/background-color theme)}
      [animated-header
-      {:id            (:id collectible)
-       :scroll-amount scroll-amount
+      {:scroll-amount scroll-amount
        :title-opacity title-opacity
        :page-nav-type :title-description
-       :picture       (:uri preview-url)
-       :title         (:name collectible-data)
-       :description   (:name collection-data)
        :theme         theme}]
      [reanimated/scroll-view
       {:style     (style/scroll-view top)
        :on-scroll #(on-scroll % scroll-amount title-opacity title-bottom-coord)}
       [collectible-details
-       {:collectible      collectible
-        :set-title-bottom set-title-bottom
+       {:set-title-bottom set-title-bottom
         :theme            theme}]]]))
