@@ -156,7 +156,7 @@
 
 (rf/reg-event-fx
  :wallet/select-send-address
- (fn [{:keys [db]} [{:keys [address recipient stack-id start-flow? from-settings?]}]]
+ (fn [{:keys [db]} [{:keys [address recipient stack-id start-flow?]}]]
    (let [[prefix to-address] (utils/split-prefix-and-address address)
          testnet-enabled?    (get-in db [:profile/profile :test-networks-enabled?])
          goerli-enabled?     (get-in db [:profile/profile :is-goerli-enabled?])
@@ -175,13 +175,9 @@
               (assoc-in [:wallet :ui :send :to-address] to-address)
               (assoc-in [:wallet :ui :send :address-prefix] prefix)
               (assoc-in [:wallet :ui :send :receiver-preferred-networks] receiver-networks)
-              (assoc-in [:wallet :ui :send :receiver-networks] receiver-networks)
-              ;(assoc-in [:wallet :ui :send :from-settings?] from-settings?)
-          )
+              (assoc-in [:wallet :ui :send :receiver-networks] receiver-networks))
       :fx [(when (and collectible-tx? one-collectible?)
              [:dispatch [:wallet/get-suggested-routes {:amount 1}]])
-           (when from-settings?
-             [:dispatch [:pop-to-root :shell-stack]])
            [:dispatch
             [:wallet/wizard-navigate-forward
              {:current-screen stack-id
@@ -507,7 +503,7 @@
 
 (rf/reg-event-fx :wallet/end-transaction-flow
  (fn [{:keys [db]}]
-   (let [address        (get-in db [:wallet :current-viewing-account-address])]
+   (let [address (get-in db [:wallet :current-viewing-account-address])]
      {:fx [[:dispatch [:wallet/navigate-to-account-within-stack address]]
            [:dispatch [:wallet/fetch-activities-for-current-account]]
            [:dispatch [:wallet/select-account-tab :activity]]
