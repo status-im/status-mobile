@@ -88,6 +88,12 @@
    (get-in profile [:wakuv2-config :LightClient])))
 
 (re-frame/reg-sub
+ :profile/store-confirmations-enabled?
+ :<- [:profile/profile]
+ (fn [profile]
+   (get-in profile [:wakuv2-config :EnableStoreConfirmationForMessagesSent])))
+
+(re-frame/reg-sub
  :profile/telemetry-enabled?
  :<- [:profile/profile]
  (fn [profile]

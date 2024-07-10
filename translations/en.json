@@ -2757,5 +2757,6 @@
     "value-higher-than-send-amount": "This value is higher than entered amount to send",
     "swaps-powered-by": "Swaps powered by {{provider}}",
     "max-slippage": "Max slippage",
-    "pay": "Pay"
+    "pay": "Pay",
+    "store-confirmations": "Store confirmations"
 }
