@@ -85,12 +85,34 @@
 
 (defn required-networks-supported?
   [proposal supported-networks]
-  (let [required-networks (get-in proposal [:params :requiredNamespaces :eip155 :chains])
-        supported-eip155  (set (map chain-id->eip155 supported-networks))]
-    (every? #(contains? supported-eip155 %) required-networks)))
+  (let [supported-namespaces #{:eip155}
+        required-namespaces  (get-in proposal [:params :requiredNamespaces])]
+    (when (every? #(contains? supported-namespaces %)
+                  (keys required-namespaces))
+      (let [required-networks (get-in required-namespaces [:eip155 :chains])
+            supported-eip155  (set (map chain-id->eip155 supported-networks))]
+        (every? #(contains? supported-eip155 %)
+                required-networks)))))
 
 (defn get-networks-by-mode
   [db]
   (let [test-mode? (get-in db [:profile/profile :test-networks-enabled?])
         networks   (get-in db [:wallet :networks (if test-mode? :test :prod)])]
     (mapv #(-> % :chain-id) networks)))
+
+(defn event-should-be-handled?
+  [db {:keys [topic]}]
+  (some #(= topic %)
+        (map :topic (:wallet-connect/sessions db))))
+
+(defn sdk-session->db-session
+  [{:keys [topic expiry pairingTopic] :as session}]
+  {:topic        topic
+   :expiry       expiry
+   :sessionJson  (transforms/clj->json session)
+   :pairingTopic pairingTopic
+   :name         (get-in session [:peer :metadata :name])
+   :iconUrl      (get-in session [:peer :metadata :icons 0])
+   :url          (get-in session [:peer :metadata :url])
+   :accounts     (get-in session [:namespaces :eip155 :accounts])
+   :disconnected false})

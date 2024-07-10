@@ -30,7 +30,8 @@
       [:button-two-props {:optional true} [:maybe :map]]
       [:scroll? {:optional true} [:maybe :boolean]]
       [:blur? {:optional true} [:maybe :boolean]]
-      [:container-style {:optional true} [:maybe :map]]]]]
+      [:container-style {:optional true} [:maybe :map]]
+      [:buttons-container-style {:optional true} [:maybe :map]]]]]
    :any])
 
 (def ^:private role-icon
@@ -42,7 +43,7 @@
 (defn- view-internal
   [{:keys [actions description description-text description-top-text error-message role button-one-label
            button-two-label blur? button-one-props button-two-props scroll? container-style
-           context-tag-props]}]
+           buttons-container-style context-tag-props]}]
   (let [theme (quo.theme/use-theme)]
     [rn/view
      {:style (merge (style/container scroll? blur? theme) container-style)}
@@ -72,7 +73,7 @@
             :context (i18n/label (keyword "t" role))}
            context-tag-props)]])
 
-     [rn/view {:style (style/buttons-container actions)}
+     [rn/view {:style (style/buttons-container actions buttons-container-style)}
       (when (or (= actions :two-actions)
                 (= actions :two-vertical-actions))
         [button/button

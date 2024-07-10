@@ -32,13 +32,6 @@
      :handler     handler})))
 
 (rf/reg-fx
- :effects.wallet-connect/fetch-pairings
- (fn [{:keys [web3-wallet on-success on-fail]}]
-   (-> (wallet-connect/get-pairings web3-wallet)
-       (promesa/then on-success)
-       (promesa/catch on-fail))))
-
-(rf/reg-fx
  :effects.wallet-connect/pair
  (fn [{:keys [web3-wallet url on-success on-fail]}]
    (when web3-wallet
@@ -50,13 +43,6 @@
  :effects.wallet-connect/disconnect
  (fn [{:keys [web3-wallet topic on-success on-fail]}]
    (-> (wallet-connect/core-pairing-disconnnect web3-wallet topic)
-       (promesa/then on-success)
-       (promesa/catch on-fail))))
-
-(rf/reg-fx
- :effects.wallet-connect/fetch-active-sessions
- (fn [{:keys [web3-wallet on-success on-fail]}]
-   (-> (wallet-connect/get-active-sessions web3-wallet)
        (promesa/then on-success)
        (promesa/catch on-fail))))
 
@@ -73,6 +59,13 @@
            :approved-namespaces approved-namespaces})
          (promesa/then on-success)
          (promesa/catch on-fail)))))
+
+(rf/reg-fx
+ :effects.wallet-connect/fetch-active-sessions
+ (fn [{:keys [web3-wallet on-success on-fail]}]
+   (-> (wallet-connect/get-active-sessions web3-wallet)
+       (promesa/then on-success)
+       (promesa/catch on-fail))))
 
 (rf/reg-fx
  :effects.wallet-connect/sign-message

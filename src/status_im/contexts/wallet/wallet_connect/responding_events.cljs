@@ -132,7 +132,7 @@
              :proposal    current-proposal
              :on-success  #(log/info "Wallet Connect session proposal rejected")
              :on-error    #(log/error "Wallet Connect unable to reject session proposal")}]
-           [:dispatch [:wallet-connect/reset-current-session]]]})))
+           [:dispatch [:wallet-connect/reset-current-session-proposal]]]})))
 
 ;; NOTE: Currently we only reject a session if the user rejected it
 ;; But this needs to be solidified to ensure other cases:
