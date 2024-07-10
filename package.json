@@ -29,6 +29,7 @@
     "emojilib": "^2.4.0",
     "eth-phishing-detect": "^1.2.0",
     "ethers": "5.7.2",
+    "events": "3.3.0",
     "fast-text-encoding": "^1.0.6",
     "form-data": "^4.0.0",
     "functional-red-black-tree": "^1.0.1",
