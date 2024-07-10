@@ -10,7 +10,7 @@
 
 (defn enabled? [v] (= "1" v))
 
-(goog-define INFURA_TOKEN "c94344f1d05d4b179c8be88fd2872d07")
+(goog-define INFURA_TOKEN "")
 (goog-define POKT_TOKEN "3ef2018191814b7e1009b8d9")
 (goog-define OPENSEA_API_KEY "")
 (goog-define RARIBLE_MAINNET_API_KEY "")
