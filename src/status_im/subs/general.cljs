@@ -1,0 +1,153 @@
+(ns status-im.subs.general
+  (:require
+    [clojure.string :as string]
+    [legacy.status-im.multiaccounts.model :as multiaccounts.model]
+    [legacy.status-im.utils.build :as build]
+    [re-frame.core :as re-frame]
+    [status-im.subs.chat.utils :as chat.utils]
+    [utils.ethereum.chain :as chain]))
+
+(re-frame/reg-sub
+ :visibility-status-updates/visibility-status-update
+ :<- [:multiaccount/public-key]
+ :<- [:multiaccount/current-user-visibility-status]
+ :<- [:visibility-status-updates]
+ (fn [[my-public-key my-status-update status-updates] [_ public-key]]
+   (if (or (string/blank? public-key) (= public-key my-public-key))
+     my-status-update
+     (get status-updates public-key))))
+
+(re-frame/reg-sub
+ :visibility-status-updates/online?
+ (fn [[_ public-key]]
+   [(re-frame/subscribe [:visibility-status-updates/visibility-status-update public-key])])
+ (fn [[status-update]]
+   (let [visibility-status-type (:status-type status-update)]
+     (chat.utils/online? visibility-status-type))))
+
+(re-frame/reg-sub
+ :multiaccount/logged-in?
+ (fn [db]
+   (multiaccounts.model/logged-in? db)))
+
+(re-frame/reg-sub
+ :hide-screen?
+ :<- [:app-state]
+ :<- [:profile/profile]
+ (fn [[state multiaccount]]
+   (and (= state "inactive") (:preview-privacy? multiaccount))))
+
+(re-frame/reg-sub
+ :current-network
+ :<- [:networks/networks]
+ :<- [:networks/current-network]
+ (fn [[networks current-network]]
+   (when-let [network (get networks current-network)]
+     (assoc network :rpc-network? (get-in network [:config :UpstreamConfig :Enabled])))))
+
+(re-frame/reg-sub
+ :chain-keyword
+ :<- [:current-network]
+ (fn [network]
+   (chain/network->chain-keyword network)))
+
+(re-frame/reg-sub
+ :chain-name
+ :<- [:current-network]
+ (fn [network]
+   (chain/network->chain-name network)))
+
+(re-frame/reg-sub
+ :chain-id
+ :<- [:current-network]
+ (fn [network]
+   (chain/network->chain-id network)))
+
+(re-frame/reg-sub
+ :mainnet?
+ :<- [:chain-id]
+ (fn [chain-id]
+   (= 1 chain-id)))
+
+(re-frame/reg-sub
+ :network-name
+ :<- [:current-network]
+ (fn [network]
+   (:name network)))
+
+(re-frame/reg-sub
+ :syncing?
+ :<- [:sync-state]
+ (fn [sync-state]
+   (#{:pending :in-progress} sync-state)))
+
+(re-frame/reg-sub
+ :dimensions/window-width
+ :<- [:dimensions/window]
+ :-> :width)
+
+(re-frame/reg-sub
+ :dimensions/window-height
+ :<- [:dimensions/window]
+ :-> :height)
+
+(re-frame/reg-sub
+ :get-screen-params
+ :<- [:screen-params]
+ :<- [:view-id]
+ (fn [[params view-id-db] [_ view-id]]
+   (get params (or view-id view-id-db))))
+
+(re-frame/reg-sub
+ :wallet-legacy/search-recipient-filter
+ :<- [:ui/search]
+ (fn [search]
+   (get search :recipient-filter)))
+
+(defn- node-version
+  [web3-node-version]
+  (or web3-node-version "N/A"))
+
+(re-frame/reg-sub
+ :get-app-short-version
+ (fn [_] build/app-short-version))
+
+(re-frame/reg-sub
+ :get-commit-hash
+ (fn [_] build/commit-hash))
+
+(re-frame/reg-sub
+ :get-app-node-version
+ :<- [:web3-node-version]
+ node-version)
+
+(re-frame/reg-sub
+ :my-profile/recovery
+ :<- [:my-profile/seed]
+ (fn [seed]
+   (or seed {:step :intro})))
+
+(re-frame/reg-sub
+ :is-contact-selected?
+ :<- [:group/selected-contacts]
+ (fn [selected-contacts [_ element]]
+   (-> selected-contacts
+       (contains? element))))
+
+(re-frame/reg-sub
+ :mnemonic
+ :<- [:profile/profile]
+ (fn [{:keys [mnemonic]}]
+   mnemonic))
+
+(re-frame/reg-sub
+ :toasts/toast
+ :<- [:toasts]
+ (fn [toasts [_ toast-id]]
+   (get-in toasts [:toasts toast-id])))
+
+(re-frame/reg-sub
+ :toasts/toast-cursor
+ :<- [:toasts]
+ (fn [toasts [_ toast-id & cursor]]
+   (get-in toasts (into [:toasts toast-id] cursor))))
