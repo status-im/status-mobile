@@ -2765,7 +2765,7 @@
     "ip-address":"IP address",
     "universally-unique-identifiers-of-device":"Universally Unique Identifiers of device",
     "logs-of-actions-withing-the-app":"Logs of actions within the app, including button presses and screen visits",
-    "what-we-not-receive":"What we not receive:",
+    "what-we-wont-receive":"What we won't receive:",
     "your-profile-information":"Your profile information",
     "your-addresses":"Your addresses",
     "information-you-input-and-send":"Information you input and send",

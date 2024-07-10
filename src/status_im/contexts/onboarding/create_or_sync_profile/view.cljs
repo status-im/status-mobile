@@ -5,6 +5,7 @@
     [react-native.core :as rn]
     [react-native.safe-area :as safe-area]
     [status-im.common.check-before-syncing.view :as check-before-syncing]
+    [status-im.common.metrics-confirmation-modal.view :as metrics-modal]
     [status-im.common.not-implemented :as not-implemented]
     [status-im.common.resources :as resources]
     [status-im.config :as config]
@@ -126,6 +127,7 @@
 
 (defn- internal-view
   [sign-in-type]
+  (rn/use-mount #(rf/dispatch [:centralized-metrics/check-modal metrics-modal/view]))
   (let [{:keys [top]} (safe-area/get-insets)]
     [rn/view {:style style/content-container}
      [quo/page-nav
