@@ -177,59 +177,16 @@
                          (rf/dispatch [:wallet/clean-selected-collectible])
                          (rf/dispatch [:wallet/clean-send-address])
                          (rf/dispatch [:wallet/clean-disabled-from-networks])
-                         (rf/dispatch [:wallet/select-address-tab nil]))
+                         (rf/dispatch [:wallet/select-address-tab nil])
+                         (rf/dispatch [:navigate-back]))
         on-change-tab  #(rf/dispatch [:wallet/select-address-tab %])
         input-value    (reagent/atom "")
         input-focused? (reagent/atom false)]
     (fn []
       (let [selected-tab          (or (rf/sub [:wallet/send-tab]) (:id (first tabs-data)))
-<<<<<<< HEAD
             valid-ens-or-address? (boolean (rf/sub [:wallet/valid-ens-or-address?]))
             searching-address?    (rf/sub [:wallet/searching-address?])]
-=======
-            valid-ens-or-address? (boolean (rf/sub [:wallet/valid-ens-or-address?]))]
-<<<<<<< HEAD
-=======
-      (let [selected-tab             (or (rf/sub [:wallet/send-tab]) (:id (first tabs-data)))
-            valid-ens-or-address?    (boolean (rf/sub [:wallet/valid-ens-or-address?]))
-            local-suggestion-address (rf/sub [:wallet/local-suggestions->full-address])
-<<<<<<< HEAD
-<<<<<<< HEAD
-            color                    (rf/sub [:wallet/current-viewing-account-color])]
-<<<<<<< HEAD
-<<<<<<< HEAD
-        (rn/use-unmount #(on-close true))
->>>>>>> 8d6b99b3d (lint)
-<<<<<<< HEAD
->>>>>>> 5e9ffc7f62 (lint)
-=======
-=======
-        (rn/use-unmount on-close)
->>>>>>> e5ac6dc2d (lint)
-<<<<<<< HEAD
->>>>>>> 1f13216998 (lint)
-=======
-=======
-            color                    (rf/sub [:wallet/current-viewing-account-color])
-            view-id                  (rf/sub [:view-id])]
-        (rn/use-nav-unmount on-close view-id)
->>>>>>> 5bf546c99 (navigation listener)
-<<<<<<< HEAD
->>>>>>> 8673c96814 (navigation listener)
-=======
-=======
-            color                    (rf/sub [:wallet/current-viewing-account-color])]
->>>>>>> 01ab1a81c (lint)
-<<<<<<< HEAD
->>>>>>> 9a0177ad55 (lint)
-=======
-=======
         (hot-reload/use-safe-unmount on-close)
->>>>>>> d13c328e7 (safe unmount)
->>>>>>> 9cd78dab66 (safe unmount)
-=======
-        (hot-reload/use-safe-unmount on-close)
->>>>>>> b13ec756d1 (lint)
         [floating-button-page/view
          {:content-container-style      {:flex 1}
           :footer-container-padding     0
