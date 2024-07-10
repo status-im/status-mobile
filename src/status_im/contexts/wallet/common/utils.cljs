@@ -308,11 +308,9 @@
                                                     :currency        currency
                                                     :currency-symbol currency-symbol}))
         calculated-tokens (map calculate-token tokens)
-        token-priority    {"SNT" 1 "ETH" 2 "DAI" 3}]
-    (sort-by (juxt #(get-in % [:values :fiat-unformatted-value])
-                   #(get token-priority (:token %)))
-             (fn [[val1 pri1] [val2 pri2]]
-               (if (= val1 val2)
-                 (< pri1 pri2)
-                 (> val1 val2)))
+        token-priority    {"SNT" 1 "STT" 1 "ETH" 2 "DAI" 3}]
+    (sort-by (fn [token]
+               (let [fiat-value (get-in token [:values :fiat-unformatted-value])
+                     priority   (get token-priority (:token token) 999)]
+                 [(- fiat-value) priority]))
              calculated-tokens)))
