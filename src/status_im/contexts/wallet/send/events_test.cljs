@@ -183,14 +183,13 @@
                            :networks #{{:chain-id 421614}
                                        {:chain-id 11155420}
                                        {:chain-id 11155111}}}
-        receiver-networks [421614 11155420]
-        expected-db       {:wallet {:ui {:other-props :value}}}]
+        receiver-networks [421614 11155420]]
     (reset! rf-db/app-db
       {:wallet {:ui {:send        {:token-display-name token-symbol
                                    :token              token
                                    :receiver-networks  receiver-networks}
                      :other-props :value}}})
-    (is (match? expected-db (:db (dispatch [event-id]))))))
+    (is (not (contains? (get-in (dispatch [event-id]) [:db :wallet :ui]) :send)))))
 
 (h/deftest-event :wallet/select-address-tab
   [event-id dispatch]
@@ -201,37 +200,38 @@
 
 (h/deftest-event :wallet/clean-send-address
   [event-id dispatch]
-  (let [expected-db {:wallet {:ui {:send {:other-props :value}}}}]
-    (reset! rf-db/app-db
-      {:wallet {:ui {:send {:to-address  "0x01"
-                            :recipient   {:recipient-type :saved-address
-                                          :label          "label"}
-                            :other-props :value}}}})
-    (is (match? expected-db (:db (dispatch [event-id]))))))
+  (reset! rf-db/app-db
+    {:wallet {:ui {:send {:to-address  "0x01"
+                          :recipient   {:recipient-type :saved-address
+                                        :label          "label"}
+                          :other-props :value}}}})
+  (is (not (contains? (get-in (dispatch [event-id]) [:db :wallet :ui :send]) :to-address)))
+  (is (not (contains? (get-in (dispatch [event-id]) [:db :wallet :ui :send]) :recipient)))
+  (is (contains? (get-in (dispatch [event-id]) [:db :wallet :ui :send]) :other-props)))
 
 (h/deftest-event :wallet/clean-send-amount
   [event-id dispatch]
-  (let [expected-db {:wallet {:ui {:send {:other-props :value}}}}]
-    (reset! rf-db/app-db
-      {:wallet {:ui {:send {:amount      10
-                            :other-props :value}}}})
-    (is (match? expected-db (:db (dispatch [event-id]))))))
+  (reset! rf-db/app-db
+    {:wallet {:ui {:send {:amount      10
+                          :other-props :value}}}})
+  (is (not (contains? (get-in (dispatch [event-id]) [:db :wallet :ui :send]) :amount)))
+  (is (contains? (get-in (dispatch [event-id]) [:db :wallet :ui :send]) :other-props)))
 
 (h/deftest-event :wallet/clean-disabled-from-networks
   [event-id dispatch]
-  (let [expected-db {:wallet {:ui {:send {:other-props :value}}}}]
-    (reset! rf-db/app-db
-      {:wallet {:ui {:send {:disabled-from-chain-ids [:optimism]
-                            :other-props             :value}}}})
-    (is (match? expected-db (:db (dispatch [event-id]))))))
+  (reset! rf-db/app-db
+    {:wallet {:ui {:send {:disabled-from-chain-ids [:optimism]
+                          :other-props             :value}}}})
+  (is (not (contains? (get-in (dispatch [event-id]) [:db :wallet :ui :send]) :disabled-from-chain-ids)))
+  (is (contains? (get-in (dispatch [event-id]) [:db :wallet :ui :send]) :other-props)))
 
 (h/deftest-event :wallet/clean-from-locked-amounts
   [event-id dispatch]
-  (let [expected-db {:wallet {:ui {:send {:other-props :value}}}}]
-    (reset! rf-db/app-db
-      {:wallet {:ui {:send {:from-locked-amounts "value"
-                            :other-props         :value}}}})
-    (is (match? expected-db (:db (dispatch [event-id]))))))
+  (reset! rf-db/app-db
+    {:wallet {:ui {:send {:from-locked-amounts "value"
+                          :other-props         :value}}}})
+  (is (not (contains? (get-in (dispatch [event-id]) [:db :wallet :ui :send]) :from-locked-amounts)))
+  (is (contains? (get-in (dispatch [event-id]) [:db :wallet :ui :send]) :other-props)))
 
 (h/deftest-event :wallet/disable-from-networks
   [event-id dispatch]
@@ -260,43 +260,58 @@
 
 (h/deftest-event :wallet/clean-selected-token
   [event-id dispatch]
-  (let [expected-db {:wallet {:ui {:send {:other-props :value}}}}]
-    (reset! rf-db/app-db
-      {:wallet {:ui {:send {:other-props        :value
-                            :token              "ETH"
-                            :token-display-name "ETH"
-                            :tx-type            :tx/collectible-erc-721}}}})
-    (is (match? expected-db (:db (dispatch [event-id]))))))
+  (reset! rf-db/app-db
+    {:wallet {:ui {:send {:other-props        :value
+                          :token              "ETH"
+                          :token-display-name "ETH"
+                          :tx-type            :tx/collectible-erc-721}}}})
+  (is (not (contains? (get-in (dispatch [event-id]) [:db :wallet :ui :send]) :token)))
+  (is (not (contains? (get-in (dispatch [event-id]) [:db :wallet :ui :send]) :token-display-name)))
+  (is (not (contains? (get-in (dispatch [event-id]) [:db :wallet :ui :send]) :tx-type)))
+  (is (contains? (get-in (dispatch [event-id]) [:db :wallet :ui :send]) :other-props)))
 
 (h/deftest-event :wallet/clean-selected-collectible
   [event-id dispatch]
-  (let [expected-db {:wallet {:ui {:send {:other-props :value}}}}]
-    (reset! rf-db/app-db
-      {:wallet {:ui {:send {:other-props        :value
-                            :collectible        "ETH"
-                            :token-display-name "ETH"
-                            :amount             10}}}})
-    (is (match? expected-db (:db (dispatch [event-id]))))))
+  (reset! rf-db/app-db
+    {:wallet {:ui {:send {:other-props        :value
+                          :collectible        "ETH"
+                          :token-display-name "ETH"
+                          :amount             10}}}})
+  (is (not (contains? (get-in (dispatch [event-id]) [:db :wallet :ui :send]) :collectible)))
+  (is (not (contains? (get-in (dispatch [event-id]) [:db :wallet :ui :send]) :token-display-name)))
+  (is (not (contains? (get-in (dispatch [event-id]) [:db :wallet :ui :send]) :amount)))
+  (is (contains? (get-in (dispatch [event-id]) [:db :wallet :ui :send]) :other-props)))
 
 (h/deftest-event :wallet/clean-suggested-routes
   [event-id dispatch]
-  (let [expected-db {:wallet {:ui {:send {:other-props :value}}}}]
-    (reset! rf-db/app-db
-      {:wallet {:ui {:send
-                     {:other-props                     :value
-                      :suggested-routes                ["1" "2"]
-                      :route                           "1"
-                      :amount                          10
-                      :from-values-by-chain            [{:chain-id 1} {:chain-id 10} {:chain-id 42161}]
-                      :to-values-by-chain              [{:chain-id 1} {:chain-id 10} {:chain-id 42161}]
-                      :sender-network-values           [:eth :arb1]
-                      :receiver-network-values         [:eth :arb1]
-                      :network-links                   [{:from-chain-id 1
-                                                         :to-chain-id   10
-                                                         :position-diff 1}]
-                      :loading-suggested-routes?       false
-                      :suggested-routes-call-timestamp ["1" "2"]}}}})
-    (is (match? expected-db (:db (dispatch [event-id]))))))
+  (reset! rf-db/app-db
+    {:wallet {:ui {:send
+                   {:other-props                     :value
+                    :suggested-routes                ["1" "2"]
+                    :route                           "1"
+                    :amount                          10
+                    :from-values-by-chain            [{:chain-id 1} {:chain-id 10} {:chain-id 42161}]
+                    :to-values-by-chain              [{:chain-id 1} {:chain-id 10} {:chain-id 42161}]
+                    :sender-network-values           [:eth :arb1]
+                    :receiver-network-values         [:eth :arb1]
+                    :network-links                   [{:from-chain-id 1
+                                                       :to-chain-id   10
+                                                       :position-diff 1}]
+                    :loading-suggested-routes?       false
+                    :suggested-routes-call-timestamp ["1" "2"]}}}})
+  (is (not (contains? (get-in (dispatch [event-id]) [:db :wallet :ui :send]) :suggested-routes)))
+  (is (not (contains? (get-in (dispatch [event-id]) [:db :wallet :ui :send]) :route)))
+  (is (not (contains? (get-in (dispatch [event-id]) [:db :wallet :ui :send]) :amount)))
+  (is (not (contains? (get-in (dispatch [event-id]) [:db :wallet :ui :send]) :from-values-by-chain)))
+  (is (not (contains? (get-in (dispatch [event-id]) [:db :wallet :ui :send]) :to-values-by-chain)))
+  (is (not (contains? (get-in (dispatch [event-id]) [:db :wallet :ui :send]) :sender-network-values)))
+  (is (not (contains? (get-in (dispatch [event-id]) [:db :wallet :ui :send]) :receiver-network-values)))
+  (is (not (contains? (get-in (dispatch [event-id]) [:db :wallet :ui :send]) :network-links)))
+  (is (not (contains? (get-in (dispatch [event-id]) [:db :wallet :ui :send])
+                      :loading-suggested-routes?)))
+  (is (not (contains? (get-in (dispatch [event-id]) [:db :wallet :ui :send])
+                      :suggested-routes-call-timestamp)))
+  (is (contains? (get-in (dispatch [event-id]) [:db :wallet :ui :send]) :other-props)))
 
 (h/deftest-event :wallet/suggested-routes-error
   [event-id dispatch]
@@ -412,11 +427,11 @@
            :profile/profile {:test-networks-enabled? testnet-enabled?
                              :is-goerli-enabled?     goerli-enabled?}})
         (is (match? expected-result
-               (dispatch [event-id
-                          {:address     address
-                           :recipient   recipient
-                           :stack-id    stack-id
-                           :start-flow? start-flow?}])))))
+                    (dispatch [event-id
+                               {:address     address
+                                :recipient   recipient
+                                :stack-id    stack-id
+                                :start-flow? start-flow?}])))))
     (testing "testing when collectible balance is 1"
       (let [collectible       (collectible-with-balance 1)
             testnet-enabled?  false
@@ -449,8 +464,8 @@
            :profile/profile {:test-networks-enabled? testnet-enabled?
                              :is-goerli-enabled?     goerli-enabled?}})
         (is (match? expected-result
-               (dispatch [event-id
-                          {:address     address
-                           :recipient   recipient
-                           :stack-id    stack-id
-                           :start-flow? start-flow?}])))))))
+                    (dispatch [event-id
+                               {:address     address
+                                :recipient   recipient
+                                :stack-id    stack-id
+                                :start-flow? start-flow?}])))))))
