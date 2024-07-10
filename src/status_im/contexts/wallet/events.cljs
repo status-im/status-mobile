@@ -72,8 +72,7 @@
 
 (rf/reg-event-fx :wallet/close-account-page
  (fn [_]
-   {:fx [[:dispatch [:wallet/clear-account-tab]]
-         [:dispatch [:pop-to-root :shell-stack]]]}))
+   {:fx [[:dispatch [:wallet/clear-account-tab]]]}))
 
 (defn log-rpc-error
   [_ [{:keys [event params]} error]]
