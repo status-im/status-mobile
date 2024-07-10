@@ -490,19 +490,6 @@
    (get-in ui [:account-page :active-tab])))
 
 (rf/reg-sub
- :wallet/current-viewing-account-token-values
- :<- [:wallet/current-viewing-account]
- :<- [:wallet/current-viewing-account-tokens-in-selected-networks]
- :<- [:profile/currency]
- :<- [:profile/currency-symbol]
- (fn [[{:keys [color]} tokens currency currency-symbol]]
-   (mapv #(utils/calculate-token-value {:token           %
-                                        :color           color
-                                        :currency        currency
-                                        :currency-symbol currency-symbol})
-         tokens)))
-
-(rf/reg-sub
  :wallet/aggregated-tokens
  :<- [:wallet/accounts-without-watched-accounts]
  (fn [accounts]
@@ -516,22 +503,35 @@
    (utils/filter-tokens-in-chains aggregated-tokens chain-ids)))
 
 (rf/reg-sub
+ :wallet/current-viewing-account-token-values
+ :<- [:wallet/current-viewing-account]
+ :<- [:wallet/current-viewing-account-tokens-in-selected-networks]
+ :<- [:profile/currency]
+ :<- [:profile/currency-symbol]
+ (fn [[{:keys [color]} tokens currency currency-symbol]]
+   (utils/calculate-and-sort-tokens {:tokens          tokens
+                                     :color           color
+                                     :currency        currency
+                                     :currency-symbol currency-symbol})))
+
+(rf/reg-sub
  :wallet/aggregated-token-values-and-balance
  :<- [:wallet/aggregated-tokens-in-selected-networks]
  :<- [:profile/customization-color]
  :<- [:profile/currency]
  :<- [:profile/currency-symbol]
  (fn [[aggregated-tokens color currency currency-symbol]]
-   (let [balance           (utils/calculate-balance-from-tokens {:currency currency
-                                                                 :tokens   aggregated-tokens})
-         formatted-balance (utils/prettify-balance currency-symbol balance)]
+   (let [balance             (utils/calculate-balance-from-tokens {:currency currency
+                                                                   :tokens   aggregated-tokens})
+         formatted-balance   (utils/prettify-balance currency-symbol balance)
+         sorted-token-values (utils/calculate-and-sort-tokens {:tokens          aggregated-tokens
+                                                               :color           color
+                                                               :currency        currency
+                                                               :currency-symbol currency-symbol})]
      {:balance           balance
       :formatted-balance formatted-balance
-      :tokens            (mapv #(utils/calculate-token-value {:token           %
-                                                              :color           color
-                                                              :currency        currency
-                                                              :currency-symbol currency-symbol})
-                               aggregated-tokens)})))
+      :tokens            sorted-token-values})))
+
 
 (rf/reg-sub
  :wallet/network-preference-details
