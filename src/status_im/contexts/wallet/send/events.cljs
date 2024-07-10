@@ -176,10 +176,12 @@
               (assoc-in [:wallet :ui :send :address-prefix] prefix)
               (assoc-in [:wallet :ui :send :receiver-preferred-networks] receiver-networks)
               (assoc-in [:wallet :ui :send :receiver-networks] receiver-networks)
-              (assoc-in [:wallet :ui :send :from-settings?] from-settings?)
+              ;(assoc-in [:wallet :ui :send :from-settings?] from-settings?)
           )
       :fx [(when (and collectible-tx? one-collectible?)
              [:dispatch [:wallet/get-suggested-routes {:amount 1}]])
+           (when from-settings?
+             [:dispatch [:pop-to-root :shell-stack]])
            [:dispatch
             [:wallet/wizard-navigate-forward
              {:current-screen stack-id
@@ -495,9 +497,8 @@
             [:wallet/end-transaction-flow]]]})))
 
 (rf/reg-event-fx :wallet/clean-up-transaction-flow
- (fn [_ [from-settings?]]
-   {:fx [(when-not from-settings?
-           [:dispatch [:dismiss-modal :screen/wallet.transaction-confirmation]])
+ (fn [_]
+   {:fx [[:dispatch [:dismiss-modal :screen/wallet.transaction-confirmation]]
          [:dispatch [:wallet/clean-scanned-address]]
          [:dispatch [:wallet/clean-local-suggestions]]
          [:dispatch [:wallet/clean-send-address]]
@@ -506,18 +507,13 @@
 
 (rf/reg-event-fx :wallet/end-transaction-flow
  (fn [{:keys [db]}]
-   (let [address        (get-in db [:wallet :current-viewing-account-address])
-         from-settings? (get-in db [:wallet :ui :send :from-settings?])]
-     {:fx [(when from-settings?
-             [:dispatch [:pop-to-root :shell-stack]])
-           (if from-settings?
-             [:dispatch-later [{:ms 600 :dispatch [:wallet/navigate-to-account address]}]]
-             [:dispatch [:wallet/navigate-to-account-within-stack address]])
+   (let [address        (get-in db [:wallet :current-viewing-account-address])]
+     {:fx [[:dispatch [:wallet/navigate-to-account-within-stack address]]
            [:dispatch [:wallet/fetch-activities-for-current-account]]
            [:dispatch [:wallet/select-account-tab :activity]]
            [:dispatch-later
             [{:ms       20
-              :dispatch [:wallet/clean-up-transaction-flow from-settings?]}]]]})))
+              :dispatch [:wallet/clean-up-transaction-flow]}]]]})))
 
 (defn- transaction-data
   [{:keys [from-address to-address token-address route data eth-transfer?]}]
