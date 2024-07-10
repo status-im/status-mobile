@@ -105,6 +105,10 @@
     "shadow-cljs": "2.26.2",
     "websocket": "^1.0.35"
   },
+  "resolutions": {
+    "@walletconnect/utils": "2.13.3",
+    "@walletconnect/core": "2.13.3"
+  },
   "binary": {
     "module_name": "status_nodejs_addon",
     "module_path": "./lib/binding/",
