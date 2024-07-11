@@ -1,27 +1,28 @@
 (ns status-im.contexts.wallet.wallet-connect.effects
   (:require
-    [cljs-bean.core :as bean]
-    [native-module.core :as native-module]
-    [promesa.core :as promesa]
-    [re-frame.core :as rf]
-    [react-native.wallet-connect :as wallet-connect]
-    [status-im.config :as config]
-    [status-im.constants :as constants]
-    [status-im.contexts.wallet.wallet-connect.core :as wallet-connect-core]
-    [status-im.contexts.wallet.wallet-connect.transactions :as transactions]
-    [utils.i18n :as i18n]
-    [utils.security.core :as security]
-    [utils.transforms :as transforms]))
+   [cljs-bean.core :as bean]
+   [native-module.core :as native-module]
+   [oops.core :as oops]
+   [promesa.core :as promesa]
+   [re-frame.core :as rf]
+   [react-native.wallet-connect :as wallet-connect]
+   [status-im.config :as config]
+   [status-im.constants :as constants]
+   [status-im.contexts.wallet.wallet-connect.core :as wallet-connect-core]
+   [status-im.contexts.wallet.wallet-connect.transactions :as transactions]
+   [utils.i18n :as i18n]
+   [utils.security.core :as security]
+   [utils.transforms :as transforms]))
 
 (rf/reg-fx
  :effects.wallet-connect/init
  (fn [{:keys [on-success on-fail]}]
    (let
-     [project-id config/WALLET_CONNECT_PROJECT_ID
-      metadata   {:name        (i18n/label :t/status)
-                  :description (i18n/label :t/status-is-a-secure-messaging-app)
-                  :url         constants/wallet-connect-metadata-url
-                  :icons       [constants/wallet-connect-metadata-icon]}]
+    [project-id config/WALLET_CONNECT_PROJECT_ID
+     metadata   {:name        (i18n/label :t/status)
+                 :description (i18n/label :t/status-is-a-secure-messaging-app)
+                 :url         constants/wallet-connect-metadata-url
+                 :icons       [constants/wallet-connect-metadata-icon]}]
      (-> (wallet-connect/init project-id metadata)
          (promesa/then on-success)
          (promesa/catch on-fail)))))
@@ -29,18 +30,16 @@
 (rf/reg-fx
  :effects.wallet-connect/register-event-listener
  (fn [[web3-wallet wc-event handler]]
-   (.on ^js web3-wallet
-        wc-event
-        (fn [js-proposal]
-          (-> js-proposal
-              (js->clj :keywordize-keys true)
-              handler)))))
+   (oops/ocall web3-wallet
+               "on"
+               wc-event
+               #(-> (bean/->clj %)
+                    handler))))
 
 (rf/reg-fx
  :effects.wallet-connect/fetch-pairings
  (fn [{:keys [web3-wallet on-success on-fail]}]
-   (-> (.. ^js web3-wallet -core -pairing)
-       (.getPairings)
+   (-> (oops/ocall web3-wallet "core.pairing.getPairings")
        (promesa/then on-success)
        (promesa/catch on-fail))))
 
@@ -48,23 +47,25 @@
  :effects.wallet-connect/pair
  (fn [{:keys [web3-wallet url on-success on-fail]}]
    (when web3-wallet
-     (-> (.. ^js web3-wallet -core -pairing)
-         (.pair (clj->js {:uri url}))
+     (-> (oops/ocall web3-wallet
+                     "core.pairing.pair"
+                     (bean/->js {:uri url}))
          (promesa/then on-success)
          (promesa/catch on-fail)))))
 
 (rf/reg-fx
  :effects.wallet-connect/disconnect
  (fn [{:keys [web3-wallet topic on-success on-fail]}]
-   (-> (.. ^js web3-wallet -core -pairing)
-       (.disconnect (clj->js {:topic topic}))
+   (-> (oops/ocall web3-wallet
+                   "core.pairing.disconnect"
+                   (bean/->js {:topic topic}))
        (promesa/then on-success)
        (promesa/catch on-fail))))
 
 (rf/reg-fx
  :effects.wallet-connect/fetch-active-sessions
  (fn [{:keys [web3-wallet on-success on-fail]}]
-   (-> (.getActiveSessions ^js web3-wallet)
+   (-> (oops/ocall web3-wallet "getActiveSessions")
        (promesa/then on-success)
        (promesa/catch on-fail))))
 
@@ -75,9 +76,10 @@
          approved-namespaces (wallet-connect/build-approved-namespaces
                               params
                               supported-namespaces)]
-     (-> (.approveSession ^js web3-wallet
-                          (clj->js {:id         id
-                                    :namespaces approved-namespaces}))
+     (-> (oops/ocall web3-wallet
+                     "approveSession"
+                     (bean/->js {:id         id
+                                 :namespaces approved-namespaces}))
          (promesa/then on-success)
          (promesa/catch on-fail)))))
 
@@ -120,16 +122,18 @@
  :effects.wallet-connect/respond-session-request
  (fn [{:keys [web3-wallet topic id result error on-success on-error]}]
    (->
-     (.respondSessionRequest ^js web3-wallet
-                             (clj->js {:topic    topic
-                                       :response (merge {:id      id
-                                                         :jsonrpc "2.0"}
-                                                        (when result
-                                                          {:result result})
-                                                        (when error
-                                                          {:error error}))}))
-     (promesa/then on-success)
-     (promesa/catch on-error))))
+    (oops/ocall web3-wallet
+                "respondSessionRequest"
+                (bean/->js {:topic    topic
+                            :response
+                            (merge {:id      id
+                                    :jsonrpc "2.0"}
+                                   (when result
+                                     {:result result})
+                                   (when error
+                                     {:error error}))}))
+    (promesa/then on-success)
+    (promesa/catch on-error))))
 
 (rf/reg-fx
  :effects.wallet-connect/reject-session-proposal
