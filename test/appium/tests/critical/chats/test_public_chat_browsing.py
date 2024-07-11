@@ -291,7 +291,6 @@ class TestCommunityOneDeviceMerged(MultipleSharedDeviceTestCase):
                         self.errors.append("Status community logo is different from expected template.")
 
                     self.community_view.close_community_view_button.click()
-                    self.home.discover_communities_button.click()
                     self.home.swipe_up()
 
             except TimeoutException:

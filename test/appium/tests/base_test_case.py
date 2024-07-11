@@ -88,6 +88,7 @@ def get_capabilities_sauce_lab():
     caps['sauce:options']['name'] = test_suite_data.current_test.name
     caps['sauce:options']['maxDuration'] = 3600
     caps['sauce:options']['idleTimeout'] = 1000
+    caps['sauce:options']['android.gpu.mode'] = 'hardware'
 
     options = AppiumOptions()
     options.load_capabilities(caps)

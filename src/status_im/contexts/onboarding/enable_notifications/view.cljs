@@ -72,10 +72,7 @@
   (let [insets (safe-area/get-insets)]
     [rn/view {:style (style/page-container insets)}
      [rn/view {:style style/page-heading}
-      [quo/page-nav
-       {:background :blur
-        :icon-name  :i/arrow-left
-        :on-press   #(rf/dispatch [:navigate-back])}]
+      [quo/page-nav {:type :no-title :background :blur}]
       [page-title]]
      [enable-notifications-simple]
      [enable-notification-buttons {:insets insets}]]))
