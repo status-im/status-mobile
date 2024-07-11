@@ -42,7 +42,6 @@
                                  {:on-press      #(rf/dispatch [:navigate-back])
                                   :margin-top    (safe-area/get-top)
                                   :switcher-type :select-account}]}
-
      [quo/page-top
       {:title                     (i18n/label :t/from-label)
        :title-accessibility-label :title-label}]
