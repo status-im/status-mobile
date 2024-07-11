@@ -29,7 +29,7 @@
 (rf/reg-fx
  :effects.wallet-connect/register-event-listener
  (fn [[web3-wallet wc-event handler]]
-   (.on web3-wallet
+   (.on ^js web3-wallet
         wc-event
         (fn [js-proposal]
           (-> js-proposal
@@ -39,7 +39,7 @@
 (rf/reg-fx
  :effects.wallet-connect/fetch-pairings
  (fn [{:keys [web3-wallet on-success on-fail]}]
-   (-> (.. web3-wallet -core -pairing)
+   (-> (.. ^js web3-wallet -core -pairing)
        (.getPairings)
        (promesa/then on-success)
        (promesa/catch on-fail))))
@@ -48,7 +48,7 @@
  :effects.wallet-connect/pair
  (fn [{:keys [web3-wallet url on-success on-fail]}]
    (when web3-wallet
-     (-> (.. web3-wallet -core -pairing)
+     (-> (.. ^js web3-wallet -core -pairing)
          (.pair (clj->js {:uri url}))
          (promesa/then on-success)
          (promesa/catch on-fail)))))
@@ -56,7 +56,7 @@
 (rf/reg-fx
  :effects.wallet-connect/disconnect
  (fn [{:keys [web3-wallet topic on-success on-fail]}]
-   (-> (.. web3-wallet -core -pairing)
+   (-> (.. ^js web3-wallet -core -pairing)
        (.disconnect (clj->js {:topic topic}))
        (promesa/then on-success)
        (promesa/catch on-fail))))
@@ -64,7 +64,7 @@
 (rf/reg-fx
  :effects.wallet-connect/fetch-active-sessions
  (fn [{:keys [web3-wallet on-success on-fail]}]
-   (-> (.getActiveSessions web3-wallet)
+   (-> (.getActiveSessions ^js web3-wallet)
        (promesa/then on-success)
        (promesa/catch on-fail))))
 
@@ -75,7 +75,7 @@
          approved-namespaces (wallet-connect/build-approved-namespaces
                               params
                               supported-namespaces)]
-     (-> (.approveSession web3-wallet
+     (-> (.approveSession ^js web3-wallet
                           (clj->js {:id         id
                                     :namespaces approved-namespaces}))
          (promesa/then on-success)
@@ -120,7 +120,7 @@
  :effects.wallet-connect/respond-session-request
  (fn [{:keys [web3-wallet topic id result error on-success on-error]}]
    (->
-     (.respondSessionRequest web3-wallet
+     (.respondSessionRequest ^js web3-wallet
                              (clj->js {:topic    topic
                                        :response (merge {:id      id
                                                          :jsonrpc "2.0"}
