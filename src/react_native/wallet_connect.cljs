@@ -2,7 +2,7 @@
   (:require
    ["@walletconnect/core" :as wc-core]
    ["@walletconnect/utils" :as wc-utils]
-   ["@walletconnect/web3wallet" :as wc-wallet]))
+   ["@walletconnect/web3wallet$default" :as Web3Wallet]))
 
 (defn- wallet-connect-core
   [project-id]
@@ -11,7 +11,7 @@
 (defn init
   [project-id metadata]
   (let [core (wallet-connect-core project-id)]
-    (.init ^js wc-wallet/Web3Wallet
+    (.init ^js Web3Wallet
            (clj->js {:core     core
                      :metadata metadata}))))
 
