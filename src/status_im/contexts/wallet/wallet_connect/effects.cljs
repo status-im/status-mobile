@@ -118,12 +118,27 @@
 
 (rf/reg-fx
  :effects.wallet-connect/respond-session-request
- (fn [{:keys [web3-wallet topic id result on-success on-error]}]
+ (fn [{:keys [web3-wallet topic id result error on-success on-error]}]
    (->
      (.respondSessionRequest web3-wallet
                              (clj->js {:topic    topic
-                                       :response {:id      id
-                                                  :jsonrpc "2.0"
-                                                  :result  result}}))
+                                       :response (merge {:id      id
+                                                         :jsonrpc "2.0"}
+                                                        (when result
+                                                          {:result result})
+                                                        (when error
+                                                          {:error error}))}))
      (promesa/then on-success)
      (promesa/catch on-error))))
+
+(rf/reg-fx
+ :effects.wallet-connect/reject-session-proposal
+ (fn [{:keys [web3-wallet proposal on-success on-error]}]
+   (let [{:keys [id]} proposal
+         reason       (wallet-connect/get-sdk-error
+                       constants/wallet-connect-user-rejected-error-key)]
+     (-> (.rejectSession web3-wallet
+                         (clj->js {:id     id
+                                   :reason reason}))
+         (promesa/then on-success)
+         (promesa/catch on-error)))))

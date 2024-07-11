@@ -281,6 +281,7 @@
 (def ^:const wallet-connect-supported-events #{"accountsChanged" "chainChanged"})
 (def ^:const wallet-connect-session-proposal-event "session_proposal")
 (def ^:const wallet-connect-session-request-event "session_request")
+(def ^:const wallet-connect-user-rejected-error-key "USER_REJECTED")
 
 (def ^:const transaction-pending-type-wallet-connect-transfer "WalletConnectTransfer")
 
