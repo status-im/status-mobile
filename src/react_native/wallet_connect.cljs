@@ -35,3 +35,57 @@
   [uri]
   (-> (oops/ocall wc-utils "parseUri" uri)
       (bean/->clj)))
+
+(defn respond-session-request
+  [{:keys [web3-wallet topic id result error]}]
+  (oops/ocall web3-wallet
+              "respondSessionRequest"
+              (bean/->js {:topic topic
+                          :response
+                          (merge {:id      id
+                                  :jsonrpc "2.0"}
+                                 (when result
+                                   {:result result})
+                                 (when error
+                                   {:error error}))})))
+
+(defn reject-session
+  [{:keys [web3-wallet id reason]}]
+  (.rejectSession web3-wallet
+                  (clj->js {:id     id
+                            :reason reason})))
+
+(defn approve-session
+  [{:keys [web3-wallet id approved-namespaces]}]
+  (oops/ocall web3-wallet
+              "approveSession"
+              (bean/->js {:id         id
+                          :namespaces approved-namespaces})))
+
+(defn get-active-sessions
+  [web3-wallet]
+  (oops/ocall web3-wallet "getActiveSessions"))
+
+(defn core-pairing-disconnnect
+  [web3-wallet topic]
+  (oops/ocall web3-wallet
+              "core.pairing.disconnect"
+              (bean/->js {:topic topic})))
+
+(defn core-pairing-pair
+  [web3-wallet url]
+  (oops/ocall web3-wallet
+              "core.pairing.pair"
+              (bean/->js {:uri url})))
+
+(defn get-pairings
+  [web3-wallet]
+  (oops/ocall web3-wallet "core.pairing.getPairings"))
+
+(defn register-handler
+  [{:keys [web3-wallet event handler]}]
+  (oops/ocall web3-wallet
+              "on"
+              event
+              #(-> (bean/->clj %)
+                   handler)))
