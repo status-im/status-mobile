@@ -77,6 +77,16 @@ class StatusModule(private val reactContext: ReactApplicationContext, private va
     }
 
     @ReactMethod
+    fun addCentralizedMetric(request: String, callback: Callback) {
+        utils.executeRunnableStatusGoMethod({ Statusgo.addCentralizedMetric(request) }, callback)
+    }
+
+    @ReactMethod
+    fun toggleCentralizedMetrics(request: String, callback: Callback) {
+        utils.executeRunnableStatusGoMethod({ Statusgo.toggleCentralizedMetrics(request) }, callback)
+    }
+
+    @ReactMethod
     fun deleteImportedKey(keyUID: String, address: String, password: String, callback: Callback) {
         val keyStoreDir = utils.getKeyStorePath(keyUID)
         utils.executeRunnableStatusGoMethod({ Statusgo.deleteImportedKey(address, password, keyStoreDir) }, callback)

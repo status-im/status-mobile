@@ -72,10 +72,12 @@
   (log/debug "[native-module] init-keystore" key-uid)
   (.initKeystore ^js (encryption) key-uid callback))
 
-(defn open-accounts
-  [callback]
-  (log/debug "[native-module] open-accounts")
-  (.openAccounts ^js (account-manager) #(callback (types/json->clj %))))
+(defn initialize-application
+  [request callback]
+  (log/debug "[native-module] initialize-application")
+  (.initializeApplication ^js (account-manager)
+                          (types/clj->json request)
+                          #(callback (types/json->clj %))))
 
 (defn prepare-dir-and-update-config
   [key-uid config callback]
@@ -512,6 +514,14 @@
   (log/debug "[native-module] check-address-checksum")
   (let [result (.checkAddressChecksum ^js (utils) address)]
     (types/json->clj result)))
+
+(defn toggle-centralized-metrics
+  [enabled callback]
+  (.toggleCentralizedMetrics ^js (status) (types/clj->json {:enabled enabled}) callback))
+
+(defn add-centralized-metric
+  [metric]
+  (.addCentralizedMetric ^js (status) (types/clj->json metric) #(log/debug "pushed metric" % metric)))
 
 (defn address?
   [address]

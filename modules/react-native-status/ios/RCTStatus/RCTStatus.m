@@ -176,6 +176,24 @@ RCT_EXPORT_METHOD(appStateChange:(NSString *)type) {
     StatusgoAppStateChange(type);
 }
 
+RCT_EXPORT_METHOD(addCentralizedMetric:(NSString *)request
+                  callback:(RCTResponseSenderBlock)callback) {
+#if DEBUG
+    NSLog(@"addCentralizedMetric() method called");
+#endif
+    NSString *result = StatusgoAddCentralizedMetric(request);
+    callback(@[result]);
+}
+
+RCT_EXPORT_METHOD(toggleCentralizedMetrics:(NSString *)request
+                  callback:(RCTResponseSenderBlock)callback) {
+#if DEBUG
+    NSLog(@"toggleCentralizedMetrics() method called");
+#endif
+    NSString *result = StatusgoToggleCentralizedMetrics(request);
+    callback(@[result]);
+}
+
 RCT_EXPORT_METHOD(startLocalNotifications) {
 #if DEBUG
     NSLog(@"StartLocalNotifications() method called");
