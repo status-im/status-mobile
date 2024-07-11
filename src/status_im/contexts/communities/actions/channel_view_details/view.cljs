@@ -57,19 +57,21 @@
        :index  index})
 
 (defn- members
-  [items theme]
-  [rn/section-list
-   {:key-fn                            :public-key
-    :content-container-style           {:padding-bottom 20}
-    :get-item-layout                   get-item-layout
-    :content-inset-adjustment-behavior :never
-    :sections                          items
-    :sticky-section-headers-enabled    false
-    :render-section-header-fn          contact-list/contacts-section-header
-    :render-section-footer-fn          footer
-    :render-data                       {:theme theme}
-    :render-fn                         contact-item
-    :scroll-event-throttle             32}])
+  [community-id chat-id theme]
+  (let [items (rf/sub [:communities/sorted-community-members-section-list
+                       community-id chat-id])]
+    [rn/section-list
+     {:key-fn                            :public-key
+      :content-container-style           {:padding-bottom 20}
+      :get-item-layout                   get-item-layout
+      :content-inset-adjustment-behavior :never
+      :sections                          items
+      :sticky-section-headers-enabled    false
+      :render-section-header-fn          contact-list/contacts-section-header
+      :render-section-footer-fn          footer
+      :render-data                       {:theme theme}
+      :render-fn                         contact-item
+      :scroll-event-throttle             32}]))
 
 (defn view
   []
@@ -78,8 +80,6 @@
         {:keys [description chat-name emoji muted chat-type color]
          :as   chat}                   (rf/sub [:chats/chat-by-id chat-id])
         pins-count                     (rf/sub [:chats/pin-messages-count chat-id])
-        items                          (rf/sub [:communities/sorted-community-members-section-list
-                                                community-id chat-id])
         theme                          (quo.theme/use-theme)]
     (rn/use-mount (fn []
                     (rf/dispatch [:pin-message/load-pin-messages chat-id])))
@@ -133,4 +133,4 @@
                                   (if muted
                                     (home.actions/unmute-chat-action chat-id)
                                     (home.actions/mute-chat-action chat-id chat-type muted)))}]}]]]
-     [members items theme]]))
+     [members community-id chat-id theme]]))
