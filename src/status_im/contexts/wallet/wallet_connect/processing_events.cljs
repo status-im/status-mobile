@@ -1,5 +1,6 @@
 (ns status-im.contexts.wallet.wallet-connect.processing-events
-  (:require [clojure.string :as string]
+  (:require [cljs-bean.core :as bean]
+            [clojure.string :as string]
             [native-module.core :as native-module]
             [re-frame.core :as rf]
             [status-im.constants :as constants]
@@ -66,10 +67,10 @@
 (rf/reg-event-fx
  :wallet-connect/prepare-transaction-success
  (fn [{:keys [db]} [prepared-tx chain-id]]
-   (println prepared-tx)
    (let [{:keys [tx-args message-to-sign]} prepared-tx
-         address                           (-> tx-args transforms/js->clj :from string/lower-case)
-         display-data                      (transactions/beautify-transaction tx-args)]
+         tx                                (bean/->clj tx-args)
+         address                           (-> tx :from string/lower-case)
+         display-data                      (transactions/beautify-transaction tx)]
      {:db (update-in db
                      [:wallet-connect/current-request]
                      assoc

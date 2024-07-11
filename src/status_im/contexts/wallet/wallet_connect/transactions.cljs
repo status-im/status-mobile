@@ -49,9 +49,13 @@
                                        money/gwei->wei
                                        native-module/number-to-hex
                                        (str "0x"))
+        gas-price                (-> suggested-fees
+                                     :gasPrice
+                                     format-fee)
         max-fee-per-gas          (-> suggested-fees :maxFeePerGasHigh format-fee)
         max-priority-fee-per-gas (-> suggested-fees :maxPriorityFeePerGas format-fee)]
     (assoc tx
+           :gasPrice             gas-price
            :maxFeePerGas         max-fee-per-gas
            :maxPriorityFeePerGas max-priority-fee-per-gas)))
 
@@ -66,8 +70,7 @@
 (comment
   (-> {:from                 "0xb18ec1808bd8b84f244c6e34cbedee9b0cd7e1fb"
        :to                   "0xb18ec1808bd8b84f244c6e34cbedee9b0cd7e1fb"
-       :gas                  "0x5208"
-       :gasPrice             "0x3bf9965a7"
+       ;;:gas                  "0x3bf9965a7"
        :value                "0x0"
        :nonce                "0x8"
        :maxFeePerGas         nil
@@ -76,24 +79,21 @@
        :data                 "0x"
        :MultiTransactionID   0
        :Symbol               ""}
-      (prepare-transaction 1)
+      (prepare-transaction 11155111)
       (promesa/then #(println "prepared transaction" %))))
 
 (defn sign-transaction
-  [password address built-tx-data chain-id]
+  [password address tx-hash tx-args chain-id]
   (promesa/let
-    [{:keys [message-to-sign tx-args]} built-tx-data
-     signature                         (rpc/wallet-sign-message message-to-sign address password)
-     raw-tx                            (rpc/wallet-build-raw-transaction chain-id tx-args signature)]
+    [signature (rpc/wallet-sign-message tx-hash address password)
+     raw-tx    (rpc/wallet-build-raw-transaction chain-id tx-args signature)]
     raw-tx))
 
 (defn send-transaction
-  [password address built-tx-data chain-id]
-  (println built-tx-data)
+  [password address tx-hash tx-args chain-id]
   (promesa/let
-    [{:keys [message-to-sign tx-args]} built-tx-data
-     signature                         (rpc/wallet-sign-message message-to-sign address password)
-     tx                                (rpc/wallet-send-transaction-with-signature chain-id
-                                                                                   tx-args
-                                                                                   signature)]
+    [signature (rpc/wallet-sign-message tx-hash address password)
+     tx        (rpc/wallet-send-transaction-with-signature chain-id
+                                                           tx-args
+                                                           signature)]
     tx))

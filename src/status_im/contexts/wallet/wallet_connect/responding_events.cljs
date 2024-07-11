@@ -57,26 +57,30 @@
 (rf/reg-event-fx
  :wallet-connect/respond-send-transaction-data
  (fn [{:keys [db]} [password]]
-   (let [{:keys [chain-id raw-data address]} (get db :wallet-connect/current-request)]
+   (let [{:keys [chain-id raw-data address]} (get db :wallet-connect/current-request)
+         {:keys [tx-hash tx-args]}           raw-data]
      {:fx [[:effects.wallet-connect/send-transaction
-            {:password      password
-             :address       address
-             :chain-id      chain-id
-             :build-tx-data raw-data
-             :on-error      #(rf/dispatch [:wallet-connect/on-sign-error %])
-             :on-success    #(rf/dispatch [:wallet-connect/send-response %])}]]})))
+            {:password   password
+             :address    address
+             :chain-id   chain-id
+             :tx-hash    tx-hash
+             :tx-params  tx-args
+             :on-error   #(rf/dispatch [:wallet-connect/on-sign-error %])
+             :on-success #(rf/dispatch [:wallet-connect/send-response %])}]]})))
 
 (rf/reg-event-fx
  :wallet-connect/respond-sign-transaction-data
  (fn [{:keys [db]} [password]]
-   (let [{:keys [chain-id raw-data address]} (get db :wallet-connect/current-request)]
+   (let [{:keys [chain-id raw-data address]} (get db :wallet-connect/current-request)
+         {:keys [tx-hash tx-args]}           raw-data]
      {:fx [[:effects.wallet-connect/sign-transaction
-            {:password      password
-             :address       address
-             :chain-id      chain-id
-             :built-tx-data raw-data
-             :on-error      #(rf/dispatch [:wallet-connect/on-sign-error %])
-             :on-success    #(rf/dispatch [:wallet-connect/send-response %])}]]})))
+            {:password   password
+             :address    address
+             :chain-id   chain-id
+             :tx-hash    tx-hash
+             :tx-params  tx-args
+             :on-error   #(rf/dispatch [:wallet-connect/on-sign-error %])
+             :on-success #(rf/dispatch [:wallet-connect/send-response %])}]]})))
 
 ;; TODO: should reject if "signing" fails
 (rf/reg-event-fx

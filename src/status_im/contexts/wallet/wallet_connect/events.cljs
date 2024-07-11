@@ -53,6 +53,7 @@
  :wallet-connect/on-session-proposal
  (fn [{:keys [db]} [proposal]]
    (log/info "Received Wallet Connect session proposal: " {:id (:id proposal)})
+   (log/debug "Wallet Connect proposal\n" proposal)
    (let [accounts                     (get-in db [:wallet :accounts])
          without-watched              (remove :watch-only? (vals accounts))
          networks                     (wallet-connect-core/get-networks-by-mode db)
@@ -60,7 +61,7 @@
                                                                                           networks)
          required-networks-supported? (wallet-connect-core/required-networks-supported? proposal
                                                                                         networks)]
-     (if required-networks-supported?
+     (if (and (not-empty session-networks) required-networks-supported?)
        {:db (update db
                     :wallet-connect/current-proposal assoc
                     :request                         proposal
