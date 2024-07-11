@@ -7,7 +7,6 @@
     legacy.status-im.events
     legacy.status-im.subs.root
     [native-module.core :as native-module]
-    oops.config
     [re-frame.core :as re-frame]
     [re-frame.interop :as interop]
     [react-native.async-storage :as async-storage]
@@ -30,6 +29,7 @@
     [status-im.setup.dev :as dev]
     [status-im.setup.global-error :as global-error]
     [status-im.setup.interceptors :as interceptors]
+    [status-im.setup.oops :as setup.oops]
     status-im.subs.root
     [utils.i18n :as i18n]))
 
@@ -66,21 +66,7 @@
   (react-native-shake/add-shake-listener #(re-frame/dispatch [:shake-event]))
   (universal-links/initialize)
   (interceptors/register-global-interceptors)
-
-  ;; Change oops defaults to warn and print instead of throwing exceptions during development.
-  (oops.config/update-current-runtime-config!
-   merge
-   {:error-reporting              :console
-    :expected-function-value      :warn
-    :invalid-selector             :warn
-    :missing-object-key           :warn
-    :object-is-frozen             :warn
-    :object-is-sealed             :warn
-    :object-key-not-writable      :warn
-    :unexpected-empty-selector    :warn
-    :unexpected-object-value      :warn
-    :unexpected-punching-selector :warn
-    :unexpected-soft-selector     :warn})
+  (setup.oops/setup!)
 
   ;; Shell
   (async-storage/get-item :selected-stack-id #(shell.utils/change-selected-stack-id % nil nil))
