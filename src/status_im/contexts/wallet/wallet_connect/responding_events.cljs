@@ -59,32 +59,32 @@
  (fn [{:keys [db]} [password]]
    (let [{:keys [chain-id raw-data address]} (get db :wallet-connect/current-request)]
      {:fx [[:effects.wallet-connect/send-transaction
-            {:password   password
-             :address    address
-             :chain-id   chain-id
-             :tx         raw-data
-             :on-error   #(rf/dispatch [:wallet-connect/on-sign-error %])
-             :on-success #(rf/dispatch [:wallet-connect/send-response %])}]]})))
+            {:password      password
+             :address       address
+             :chain-id      chain-id
+             :build-tx-data raw-data
+             :on-error      #(rf/dispatch [:wallet-connect/on-sign-error %])
+             :on-success    #(rf/dispatch [:wallet-connect/send-response %])}]]})))
 
 (rf/reg-event-fx
  :wallet-connect/respond-sign-transaction-data
  (fn [{:keys [db]} [password]]
    (let [{:keys [chain-id raw-data address]} (get db :wallet-connect/current-request)]
      {:fx [[:effects.wallet-connect/sign-transaction
-            {:password   password
-             :address    address
-             :chain-id   chain-id
-             :tx         raw-data
-             :on-error   #(rf/dispatch [:wallet-connect/on-sign-error %])
-             :on-success #(rf/dispatch [:wallet-connect/send-response %])}]]})))
+            {:password      password
+             :address       address
+             :chain-id      chain-id
+             :built-tx-data raw-data
+             :on-error      #(rf/dispatch [:wallet-connect/on-sign-error %])
+             :on-success    #(rf/dispatch [:wallet-connect/send-response %])}]]})))
 
+;; TODO: should reject if "signing" fails
 (rf/reg-event-fx
  :wallet-connect/on-sign-error
  (fn [{:keys [db]} [error]]
-   (let [event                      (get-in db [:wallet-connect/current-request :event])
-         {:keys [raw-data address]} (get db :wallet-connect/current-request)
-         method                     (wallet-connect-core/get-request-method event)
-         screen                     (wallet-connect-core/method-to-screen method)]
+   (let [{:keys [raw-data address event]} (get db :wallet-connect/current-request)
+         method                           (wallet-connect-core/get-request-method event)
+         screen                           (wallet-connect-core/method-to-screen method)]
      (log/error "Failed to sign Wallet Connect request"
                 {:error                error
                  :address              address

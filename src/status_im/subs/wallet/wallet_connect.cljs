@@ -3,7 +3,8 @@
             [status-im.contexts.wallet.common.utils :as wallet-utils]
             [status-im.contexts.wallet.common.utils.networks :as networks]
             [status-im.contexts.wallet.wallet-connect.core :as wallet-connect-core]
-            [utils.money :as money]))
+            [utils.money :as money]
+            [utils.transforms :as transforms]))
 
 (rf/reg-sub
  :wallet-connect/current-request-address
@@ -61,22 +62,20 @@
  :<- [:profile/currency]
  :<- [:profile/currency-symbol]
  (fn [[request accounts currency currency-symbol]]
-   (let [chain-id                          (-> request
-                                               (get-in [:raw-data :params :chainId])
-                                               (wallet-connect-core/eip155->chain-id))
-         all-tokens                        (->> accounts
-                                                (filter #(= (:address %)
-                                                            (:address request)))
-                                                (first)
-                                                :tokens)
-         eth-token                         (->> all-tokens
-                                                (filter #(= (:symbol %) "ETH"))
-                                                (first))
-         {:keys [gasPrice gasLimit value]} (-> request
-                                               :raw-data
-                                               wallet-connect-core/get-request-params
-                                               first)
-         max-fees-wei                      (money/bignumber (* gasPrice gasLimit))]
+   (let [chain-id     (:chain-id request)
+         eth-token    (->> accounts
+                           (filter #(= (:address %)
+                                       (:address request)))
+                           first
+                           :tokens
+                           (filter #(= (:symbol %) "ETH"))
+                           first)
+         {:keys [gasPrice gasLimit value]
+          :as   tx}   (-> (get-in request [:raw-data :tx-args])
+                          (transforms/js->clj))
+         max-fees-wei (money/bignumber (* gasPrice gasLimit))]
+     ;; TODO calculate
+     (println "tx" tx)
      (when (and gasPrice gasLimit)
        (let [max-fees-ether          (money/wei->ether max-fees-wei)
              token-fiat-value        (wallet-utils/calculate-token-fiat-value {:currency currency

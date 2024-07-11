@@ -64,38 +64,48 @@
                      :display-data (or parsed-data raw-data))})))
 
 (rf/reg-event-fx
- :wallet-connect/process-eth-send-transaction
- (fn [{:keys [db]}]
-   (let [event                 (wallet-connect-core/get-db-current-request-event db)
-         {:keys [from] :as tx} (-> event wallet-connect-core/get-request-params first)
-         display-data          (transactions/beautify-transaction tx)
-         chain-id              (-> event
-                                   (get-in [:params :chainId])
-                                   wallet-connect-core/eip155->chain-id)]
+ :wallet-connect/prepare-transaction-success
+ (fn [{:keys [db]} [prepared-tx chain-id]]
+   (println prepared-tx)
+   (let [{:keys [tx-args message-to-sign]} prepared-tx
+         address                           (-> tx-args transforms/js->clj :from string/lower-case)
+         display-data                      (transactions/beautify-transaction tx-args)]
      {:db (update-in db
                      [:wallet-connect/current-request]
                      assoc
-                     :address      (string/lower-case from)
-                     :raw-data     tx
+                     :address      address
+                     :raw-data     {:tx-hash message-to-sign
+                                    :tx-args tx-args}
                      :chain-id     chain-id
                      :display-data display-data)})))
 
 (rf/reg-event-fx
+ :wallet-connect/process-eth-send-transaction
+ (fn [{:keys [db]}]
+   (let [event    (wallet-connect-core/get-db-current-request-event db)
+         tx       (-> event wallet-connect-core/get-request-params first)
+         chain-id (-> event
+                      (get-in [:params :chainId])
+                      wallet-connect-core/eip155->chain-id)]
+     {:fx [[:effects.wallet-connect/prepare-transaction
+            {:tx         tx
+             :chain-id   chain-id
+             :on-success #(rf/dispatch [:wallet-connect/prepare-transaction-success % chain-id])
+             :on-error   #(rf/dispatch [:wallet-connect/on-processing-error %])}]]})))
+
+(rf/reg-event-fx
  :wallet-connect/process-eth-sign-transaction
  (fn [{:keys [db]}]
-   (let [event                 (wallet-connect-core/get-db-current-request-event db)
-         {:keys [from] :as tx} (-> event wallet-connect-core/get-request-params first)
-         display-data          (transactions/beautify-transaction tx)
-         chain-id              (-> event
-                                   (get-in [:params :chainId])
-                                   wallet-connect-core/eip155->chain-id)]
-     {:db (update-in db
-                     [:wallet-connect/current-request]
-                     assoc
-                     :address      (string/lower-case from)
-                     :raw-data     tx
-                     :chain-id     chain-id
-                     :display-data display-data)})))
+   (let [event    (wallet-connect-core/get-db-current-request-event db)
+         tx       (-> event wallet-connect-core/get-request-params first)
+         chain-id (-> event
+                      (get-in [:params :chainId])
+                      wallet-connect-core/eip155->chain-id)]
+     {:fx [[:effects.wallet-connect/prepare-transaction
+            {:tx         tx
+             :chain-id   chain-id
+             :on-success #(rf/dispatch [:wallet-connect/prepare-transaction-success % chain-id])
+             :on-error   #(rf/dispatch [:wallet-connect/on-processing-error %])}]]})))
 
 (rf/reg-event-fx
  :wallet-connect/process-sign-typed
@@ -114,3 +124,20 @@
                      :address      (string/lower-case address)
                      :display-data (or parsed-data raw-data)
                      :raw-data     raw-data)})))
+
+;; TODO: we should reject a request if processing fails
+(rf/reg-event-fx
+ :wallet-connect/on-processing-error
+ (fn [{:keys [db]} [error]]
+   (let [{:keys [address event]} (get db :wallet-connect/current-request)
+         method                  (wallet-connect-core/get-request-method event)
+         screen                  (wallet-connect-core/method-to-screen method)]
+     (log/error "Failed to sign Wallet Connect request"
+                {:error                error
+                 :address              address
+                 :method               method
+                 :wallet-connect-event event
+                 :event                :wallet-connect/on-processing-error})
+
+     {:fx [[:dispatch [:dismiss-modal screen]]
+           [:dispatch [:wallet-connect/reset-current-request]]]})))
