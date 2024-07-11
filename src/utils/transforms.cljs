@@ -15,6 +15,34 @@
 
 (defn clj->json [data] (clj->pretty-json data 0))
 
+(defn <-js-map
+  "Shallowly transforms JS Object keys/values with `key-fn`/`val-fn`.
+
+  Returns nil if `m` is not an instance of `js/Object`.
+
+  Implementation taken from `js->clj`, but with the ability to customize how
+  keys and/or values are transformed in one loop.
+
+  This function is useful when you don't want to recursively apply the same
+  transformation to keys/values. For example, many maps in the app-db are
+  indexed by ID, like `community.members`. If we convert the entire community
+  with (js->clj m :keywordize-keys true), then IDs will be converted to
+  keywords, but we want them as strings. Instead of transforming to keywords and
+  then transforming back to strings, it's better to not transform them at all.
+  "
+  ([^js m]
+   (<-js-map m nil))
+  ([^js m {:keys [key-fn val-fn]}]
+   (when (identical? (type m) js/Object)
+     (persistent!
+      (reduce (fn [r k]
+                (let [v       (oops/oget+ m k)
+                      new-key (if key-fn (key-fn k v) k)
+                      new-val (if val-fn (val-fn k v) v)]
+                  (assoc! r new-key new-val)))
+              (transient {})
+              (js-keys m))))))
+
 (defn js-stringify
   [js-object spaces]
   (.stringify js/JSON js-object nil spaces))

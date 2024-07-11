@@ -103,11 +103,11 @@
       (models.contact/process-js-contacts cofx response-js)
 
       (seq communities)
-      (let [communities-clj (types/js->clj communities)]
+      (do
         (js-delete response-js "communities")
         (rf/merge cofx
                   (process-next response-js sync-handler)
-                  (communities/handle-communities communities-clj)))
+                  (communities/handle-communities communities)))
 
       (seq bookmarks)
       (let [bookmarks-clj (types/js->clj bookmarks)]
