@@ -142,6 +142,8 @@
 (rf/reg-fx
  :effects.wallet-connect/prepare-transaction
  (fn [{:keys [tx chain-id on-success on-error]}]
-   (-> (transactions/prepare-transaction tx chain-id)
+   (-> (transactions/prepare-transaction tx
+                                         chain-id
+                                         transactions/default-tx-priority)
        (promesa/then on-success)
        (promesa/catch on-error))))

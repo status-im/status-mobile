@@ -67,16 +67,17 @@
 (rf/reg-event-fx
  :wallet-connect/prepare-transaction-success
  (fn [{:keys [db]} [prepared-tx chain-id]]
-   (let [{:keys [tx-args message-to-sign]} prepared-tx
-         tx                                (bean/->clj tx-args)
-         address                           (-> tx :from string/lower-case)
-         display-data                      (transactions/beautify-transaction tx)]
+   (let [{:keys [tx-args tx-hash suggested-fees]} prepared-tx
+         tx                                       (bean/->clj tx-args)
+         address                                  (-> tx :from string/lower-case)
+         display-data                             (transactions/beautify-transaction tx)]
      {:db (update-in db
                      [:wallet-connect/current-request]
                      assoc
                      :address      address
-                     :raw-data     {:tx-hash message-to-sign
-                                    :tx-args tx-args}
+                     :raw-data     {:tx-hash        tx-hash
+                                    :tx-args        tx-args
+                                    :suggested-fees suggested-fees}
                      :chain-id     chain-id
                      :display-data display-data)})))
 

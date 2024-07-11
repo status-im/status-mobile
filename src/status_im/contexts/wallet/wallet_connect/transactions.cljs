@@ -7,6 +7,10 @@
             [utils.money :as money]
             [utils.transforms :as transforms]))
 
+;; NOTE: Currently we don't allow the user to configure the tx priority as we don't
+;; show the estimated time, but when we implement it, we should allow to change it
+(def ^:constant default-tx-priority :medium)
+
 (defn- strip-hex-prefix
   "Strips the extra 0 in hex value if present"
   [hex-value]
@@ -43,44 +47,58 @@
         clj->js
         (js/JSON.stringify nil 2))))
 
+(defn- gwei->hex
+  [gwei]
+  (->> gwei
+       money/gwei->wei
+       native-module/number-to-hex
+       (str "0x")))
+
+(defn- get-max-fee-per-gas-key
+  "Mapping transaction priority (which determines how quickly a tx is processed)
+  to the \"suggested-routes\" key that should be used for `:maxPriorityFeePerGas`.
+
+  `:high` | `:medium` | `:low`"
+  [tx-priority]
+  (get {:high   :maxFeePerGasHigh
+        :medium :maxFeePerGasMedium
+        :low    :maxFeePerGasLow}
+       tx-priority))
+
 (defn- tx->eip1559-tx
-  [tx suggested-fees]
-  (let [format-fee               #(->> %
-                                       money/gwei->wei
-                                       native-module/number-to-hex
-                                       (str "0x"))
-        gas-price                (-> suggested-fees
-                                     :gasPrice
-                                     format-fee)
-        max-fee-per-gas          (-> suggested-fees :maxFeePerGasHigh format-fee)
-        max-priority-fee-per-gas (-> suggested-fees :maxPriorityFeePerGas format-fee)]
-    (assoc tx
-           :gasPrice             gas-price
-           :maxFeePerGas         max-fee-per-gas
-           :maxPriorityFeePerGas max-priority-fee-per-gas)))
+  "Adds `:maxFeePerGas` and `:maxPriorityFeePerGas` for dynamic fee support (EIP1559), if the chain supports it"
+  [tx suggested-fees tx-priority]
+  (if (:eip1559Enabled suggested-fees)
+    (let [max-fee-per-gas-key      (get-max-fee-per-gas-key tx-priority)
+          max-fee-per-gas          (-> suggested-fees max-fee-per-gas-key gwei->hex)
+          max-priority-fee-per-gas (-> suggested-fees :maxPriorityFeePerGas gwei->hex)]
+      (assoc tx
+             :maxFeePerGas         max-fee-per-gas
+             :maxPriorityFeePerGas max-priority-fee-per-gas))
+    tx))
+
+(defn- prepare-transaction-fees
+  [tx tx-priority suggested-fees]
+  (let [gas-price (-> suggested-fees
+                      :gasPrice
+                      gwei->hex)]
+    (-> (assoc tx
+               :gas      (:gasLimit tx)
+               :gasPrice gas-price)
+        (tx->eip1559-tx suggested-fees tx-priority))))
 
 (defn prepare-transaction
-  [tx chain-id]
-  (promesa/->>
-    (rpc/wallet-get-suggested-fees chain-id)
-    (tx->eip1559-tx tx)
-    prepare-transaction-for-rpc
-    (rpc/wallet-build-transaction chain-id)))
-
-(comment
-  (-> {:from                 "0xb18ec1808bd8b84f244c6e34cbedee9b0cd7e1fb"
-       :to                   "0xb18ec1808bd8b84f244c6e34cbedee9b0cd7e1fb"
-       ;;:gas                  "0x3bf9965a7"
-       :value                "0x0"
-       :nonce                "0x8"
-       :maxFeePerGas         nil
-       :maxPriorityFeePerGas nil
-       :input                "0x"
-       :data                 "0x"
-       :MultiTransactionID   0
-       :Symbol               ""}
-      (prepare-transaction 11155111)
-      (promesa/then #(println "prepared transaction" %))))
+  [tx chain-id tx-priority]
+  (promesa/let [suggested-fees                    (rpc/wallet-get-suggested-fees chain-id)
+                {:keys [tx-args message-to-sign]} (->>
+                                                    (prepare-transaction-fees tx
+                                                                              tx-priority
+                                                                              suggested-fees)
+                                                    prepare-transaction-for-rpc
+                                                    (rpc/wallet-build-transaction chain-id))]
+    {:tx-args        tx-args
+     :tx-hash        message-to-sign
+     :suggested-fees suggested-fees}))
 
 (defn sign-transaction
   [password address tx-hash tx-args chain-id]

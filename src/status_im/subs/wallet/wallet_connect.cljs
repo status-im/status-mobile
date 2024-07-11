@@ -1,10 +1,10 @@
 (ns status-im.subs.wallet.wallet-connect
-  (:require [re-frame.core :as rf]
+  (:require [cljs-bean.core :as bean]
+            [re-frame.core :as rf]
             [status-im.contexts.wallet.common.utils :as wallet-utils]
             [status-im.contexts.wallet.common.utils.networks :as networks]
             [status-im.contexts.wallet.wallet-connect.core :as wallet-connect-core]
-            [utils.money :as money]
-            [utils.transforms :as transforms]))
+            [utils.money :as money]))
 
 (rf/reg-sub
  :wallet-connect/current-request-address
@@ -62,21 +62,22 @@
  :<- [:profile/currency]
  :<- [:profile/currency-symbol]
  (fn [[request accounts currency currency-symbol]]
-   (let [chain-id     (:chain-id request)
-         eth-token    (->> accounts
-                           (filter #(= (:address %)
-                                       (:address request)))
-                           first
-                           :tokens
-                           (filter #(= (:symbol %) "ETH"))
-                           first)
-         {:keys [gasPrice gasLimit value]
-          :as   tx}   (-> (get-in request [:raw-data :tx-args])
-                          (transforms/js->clj))
-         max-fees-wei (money/bignumber (* gasPrice gasLimit))]
-     ;; TODO calculate
-     (println "tx" tx)
-     (when (and gasPrice gasLimit)
+   (let [chain-id                     (:chain-id request)
+         eth-token                    (->> accounts
+                                           (filter #(= (:address %)
+                                                       (:address request)))
+                                           first
+                                           :tokens
+                                           (filter #(= (:symbol %) "ETH"))
+                                           first)
+         eip-1559-chain?              (get-in request [:raw-data :suggested-fees :eip1559Enabled])
+         {:keys [gasPrice gas gasLimit
+                 value maxFeePerGas]} (-> (get-in request [:raw-data :tx-args])
+                                          bean/->clj)
+         gas-limit                    (or gasLimit gas)
+         max-gas-fee                  (if eip-1559-chain? maxFeePerGas gasPrice)
+         max-fees-wei                 (money/bignumber (* max-gas-fee gas-limit))]
+     (when (and max-gas-fee gas-limit)
        (let [max-fees-ether          (money/wei->ether max-fees-wei)
              token-fiat-value        (wallet-utils/calculate-token-fiat-value {:currency currency
                                                                                :balance  max-fees-ether

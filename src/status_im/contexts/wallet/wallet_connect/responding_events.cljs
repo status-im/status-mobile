@@ -64,7 +64,7 @@
              :address    address
              :chain-id   chain-id
              :tx-hash    tx-hash
-             :tx-params  tx-args
+             :tx-args    tx-args
              :on-error   #(rf/dispatch [:wallet-connect/on-sign-error %])
              :on-success #(rf/dispatch [:wallet-connect/send-response %])}]]})))
 
