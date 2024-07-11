@@ -166,16 +166,10 @@
             {:web3-wallet          web3-wallet
              :proposal             current-proposal
              :supported-namespaces supported-namespaces
-             :on-success           (fn []
+             :on-success           (fn [approved-session]
                                      (log/info "Wallet Connect session approved")
-                                     (let [metadata (wallet-connect-core/get-session-dapp-metadata
-                                                     current-proposal)]
-                                       (rf/dispatch [:wallet-connect/reset-current-session-proposal])
-                                       (rf/dispatch [:wallet-connect/persist-session
-                                                     {:id           (:id current-proposal)
-                                                      :dapp-name    (:name metadata)
-                                                      :dapp-url     (:url metadata)
-                                                      :session-info current-proposal}])))
+                                     (rf/dispatch [:wallet-connect/reset-current-session-proposal])
+                                     (rf/dispatch [:wallet-connect/persist-session approved-session]))
              :on-fail              (fn [error]
                                      (log/error "Wallet Connect session approval failed"
                                                 {:error error
@@ -211,20 +205,6 @@
        {:fx [[:dispatch [:wallet-connect/pair scanned-text]]]}))))
 
 (rf/reg-event-fx
- :wallet-connect/persist-session
- (fn [_ [{:keys [id dapp-name dapp-url session-info]}]]
-   {:fx [[:json-rpc/call
-          [{:method     "wakuext_addWalletConnectSession"
-            :params     [{:id       (str id)
-                          :dappName dapp-name
-                          :dappUrl  dapp-url
-                          :info     (-> session-info
-                                        clj->js
-                                        js/JSON.stringify)}]
-            :on-success #(log/info "Wallet Connect session persisted")
-            :on-error   #(log/info "Wallet Connect session persistence failed" %)}]]]}))
-
-(rf/reg-event-fx
  :wallet-connect/fetch-persisted-sessions-success
  (fn [{:keys [db]} [sessions]]
    {:db (assoc db :wallet-connect/persisted-sessions sessions)}))
@@ -233,6 +213,18 @@
  :wallet-connect/fetch-persisted-sessions
  (fn [_ _]
    {:fx [[:json-rpc/call
-          [{:method     "wakuext_getWalletConnectSession"
+          [{:method     "wallet_getWalletConnectActiveSessions"
+            ;; This is the activeSince timestamp to avoid expired sessions
+            ;; 0 means, return everything
+            :params     [0]
             :on-success [:wallet-connect/fetch-persisted-sessions-success]
-            :on-error   #(log/info "Wallet Connect fetch persisted sessions failed")}]]]}))
+            :on-error   #(log/info "Wallet Connect fetch persisted sessions failed" %)}]]]}))
+
+(rf/reg-event-fx
+ :wallet-connect/persist-session
+ (fn [_ [session-info]]
+   {:fx [[:json-rpc/call
+          [{:method     "wallet_addWalletConnectSession"
+            :params     [(js/JSON.stringify session-info)]
+            :on-success #(log/info "Wallet Connect session persisted")
+            :on-error   #(log/info "Wallet Connect session persistence failed" %)}]]]}))
