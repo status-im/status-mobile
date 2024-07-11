@@ -5,10 +5,10 @@
     [legacy.status-im.ui.screens.profile.visibility-status.utils :as visibility-status-utils]
     [quo.theme]
     [re-frame.core :as re-frame]
-    [status-im.common.pixel-ratio :as pixel-ratio]
     [status-im.constants :as constants]
     [status-im.contexts.profile.utils :as profile.utils]
     [status-im.subs.chat.utils :as chat.utils]
+    [status-im.subs.contact.utils :as contact.utils]
     [utils.address :as address]
     [utils.collection]
     [utils.i18n :as i18n]))
@@ -37,50 +37,6 @@
  (fn [multiaccount]
    (get multiaccount :profile-pictures-visibility)))
 
-(defn- replace-contact-image-uri
-  [contact port public-key font-file theme]
-  (let [{:keys [images ens-name customization-color]} contact
-        images
-        (reduce (fn [acc image]
-                  (let [image-name (:type image)
-                        clock      (:clock image)
-                        options    {:port port
-                                    :ratio pixel-ratio/ratio
-                                    :public-key
-                                    public-key
-                                    :image-name
-                                    image-name
-                                    ; We pass the clock so that we reload the
-                                    ; image if the image is updated
-                                    :clock
-                                    clock
-                                    :theme
-                                    theme
-                                    :override-ring?
-                                    (when ens-name false)}]
-                    (assoc-in acc
-                     [(keyword image-name) :config]
-                     {:type    :contact
-                      :options options})))
-                images
-                (vals images))
-
-        images (if (seq images)
-                 images
-                 {:thumbnail
-                  {:config {:type    :initials
-                            :options {:port                port
-                                      :ratio               pixel-ratio/ratio
-                                      :public-key          public-key
-                                      :override-ring?      (when ens-name false)
-                                      :uppercase-ratio     (:uppercase-ratio
-                                                            constants/initials-avatar-font-conf)
-                                      :customization-color customization-color
-                                      :theme               theme
-                                      :font-file           font-file}}}})]
-
-    (assoc contact :images images)))
-
 (defn- enrich-contact
   ([contact] (enrich-contact contact nil nil))
   ([{:keys [public-key] :as contact} setting own-public-key]
@@ -103,7 +59,12 @@
 (defn- reduce-contacts-image-uri
   [contacts port font-file theme]
   (reduce-kv (fn [acc public-key contact]
-               (let [contact (replace-contact-image-uri contact port public-key font-file theme)]
+               (let [contact (contact.utils/replace-contact-image-uri
+                              {:contact    contact
+                               :port       port
+                               :public-key public-key
+                               :font-file  font-file
+                               :theme      theme})]
                  (assoc acc public-key contact)))
              {}
              contacts))
@@ -230,7 +191,12 @@
   [_ contact-identity ens-name port font-file theme]
   (let [contact (enrich-contact
                  (public-key-and-ens-name->new-contact contact-identity ens-name))]
-    (replace-contact-image-uri contact port contact-identity font-file theme)))
+    (contact.utils/replace-contact-image-uri
+     {:contact    contact
+      :port       port
+      :public-key contact-identity
+      :font-file  font-file
+      :theme      theme})))
 
 (re-frame/reg-sub
  :contacts/current-contact
@@ -250,7 +216,10 @@
  :contacts/contact-by-identity
  :<- [:contacts/contacts]
  (fn [contacts [_ contact-identity]]
-   (get contacts contact-identity {:public-key contact-identity})))
+   (get
+    contacts
+    contact-identity
+    (contact.utils/build-contact-from-public-key contact-identity))))
 
 (re-frame/reg-sub
  :contacts/contact-two-names-by-identity
@@ -288,7 +257,7 @@
                           (assoc public-key current-contact))]
     (->> members
          (map #(or (get all-contacts %)
-                   {:public-key %}))
+                   (contact.utils/build-contact-from-public-key %)))
          (sort-by (comp string/lower-case
                         (fn [{:keys [primary-name name alias public-key]}]
                           (or primary-name
