@@ -183,7 +183,7 @@
  (fn [_ [scanned-text]]
    (let [parsed-uri         (wallet-connect/parse-uri scanned-text)
          version            (:version parsed-uri)
-         valid-wc-uri?      (wc-utils/valid-uri? parsed-uri)
+         valid-wc-uri?      (wc-utils/valid-wc-uri? parsed-uri)
          expired?           (-> parsed-uri
                                 :expiryTimestamp
                                 wc-utils/timestamp-expired?)
