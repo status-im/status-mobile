@@ -302,6 +302,36 @@ void _MultiAccountStoreAccount(const FunctionCallbackInfo<Value>& args) {
 	delete c;
 }
 
+void _InitializeApplication(const FunctionCallbackInfo<Value>& args) {
+	Isolate* isolate = args.GetIsolate();
+        Local<Context> context = isolate->GetCurrentContext();
+
+	if (args.Length() != 1) {
+		// Throw an Error that is passed back to JavaScript
+		isolate->ThrowException(Exception::TypeError(
+			String::NewFromUtf8Literal(isolate, "Wrong number of arguments for InitializeApplication")));
+		return;
+	}
+
+	// Check the argument types
+
+	if (!args[0]->IsString()) {
+		isolate->ThrowException(Exception::TypeError(
+			String::NewFromUtf8Literal(isolate, "Wrong argument type for request")));
+		return;
+	}
+
+
+	String::Utf8Value arg0Obj(isolate, args[0]->ToString(context).ToLocalChecked());
+	char *arg0 = *arg0Obj;
+
+	// Call exported Go function, which returns a C string
+	char *c = InitializeApplication(arg0);
+
+	Local<String> ret = String::NewFromUtf8(isolate, c).ToLocalChecked();
+	args.GetReturnValue().Set(ret);
+	delete c;
+}
 
 void _InitKeystore(const FunctionCallbackInfo<Value>& args) {
 	Isolate* isolate = args.GetIsolate();
@@ -1935,6 +1965,7 @@ void init(Local<Object> exports) {
 	NODE_SET_METHOD(exports, "multiAccountStoreDerivedAccounts", _MultiAccountStoreDerivedAccounts);
 	NODE_SET_METHOD(exports, "multiAccountStoreAccount", _MultiAccountStoreAccount);
 	NODE_SET_METHOD(exports, "initKeystore", _InitKeystore);
+	NODE_SET_METHOD(exports, "initializeApplication", _InitializeApplication);
 	NODE_SET_METHOD(exports, "fleets", _Fleets);
 	NODE_SET_METHOD(exports, "stopCPUProfiling", _StopCPUProfiling);
 	NODE_SET_METHOD(exports, "encodeTransfer", _EncodeTransfer);
@@ -1972,7 +2003,7 @@ void init(Local<Object> exports) {
 	NODE_SET_METHOD(exports, "signTypedData", _SignTypedData);
 	NODE_SET_METHOD(exports, "sendTransaction", _SendTransaction);
 	NODE_SET_METHOD(exports, "appStateChange", _AppStateChange);
-    NODE_SET_METHOD(exports, "setSignalEventCallback", _SetSignalEventCallback);
+        NODE_SET_METHOD(exports, "setSignalEventCallback", _SetSignalEventCallback);
 	NODE_SET_METHOD(exports, "validateNodeConfig", _ValidateNodeConfig);
 	NODE_SET_METHOD(exports, "hashTypedData", _HashTypedData);
 	NODE_SET_METHOD(exports, "recover", _Recover);

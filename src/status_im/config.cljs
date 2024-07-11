@@ -25,6 +25,8 @@
 (goog-define ALCHEMY_OPTIMISM_GOERLI_TOKEN "")
 (goog-define ALCHEMY_OPTIMISM_SEPOLIA_TOKEN "")
 (goog-define WALLET_CONNECT_PROJECT_ID "87815d72a81d739d2a7ce15c2cfdefb3")
+(goog-define MIXPANEL_APP_ID "3350627")
+(goog-define MIXPANEL_TOKEN "5c73bda2d36a9f688a5ee45641fb6775")
 
 (def mainnet-rpc-url (str "https://eth-archival.rpc.grove.city/v1/" POKT_TOKEN))
 (def goerli-rpc-url (str "https://goerli-archival.gateway.pokt.network/v1/lb/" POKT_TOKEN))
@@ -38,6 +40,9 @@
 (def optimism-goerli-chain-explorer-link "https://goerli-optimistic.etherscan.io/address/")
 (def opensea-link "https://opensea.io")
 (def opensea-tesnet-link "https://testnets.opensea.io")
+
+(def mixpanel-app-id MIXPANEL_APP_ID)
+(def mixpanel-token MIXPANEL_TOKEN)
 
 (def opensea-api-key OPENSEA_API_KEY)
 (def bootnodes-settings-enabled? (enabled? (get-config :BOOTNODES_SETTINGS_ENABLED "1")))

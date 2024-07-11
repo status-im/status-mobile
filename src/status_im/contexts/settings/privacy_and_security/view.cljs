@@ -13,8 +13,9 @@
 
 (defn view
   []
-  (let [insets              (safe-area/get-insets)
-        customization-color (rf/sub [:profile/customization-color])]
+  (let [insets                       (safe-area/get-insets)
+        centralized-metrics-enabled? (rf/sub [:centralized-metrics/enabled?])
+        customization-color          (rf/sub [:profile/customization-color])]
     [quo/overlay
      {:type            :shell
       :container-style (style/page-wrapper (:top insets))}
@@ -30,13 +31,15 @@
        :customization-color customization-color}]
      [quo/category
       {:key       :category
-       :data      [{:title        "Dummy"
+       :data      [{:title        (i18n/label :t/share-usage-data)
                     :image-props  :i/placeholder
-                    :image        :icon
                     :blur?        true
                     :action       :selector
-                    :action-props {:on-change identity
-                                   :checked?  false}
+                    :action-props {:on-change #(rf/dispatch
+                                                [:centralized-metrics/toggle-centralized-metrics
+                                                 (not centralized-metrics-enabled?)])
+                                   :customization-color customization-color
+                                   :checked? centralized-metrics-enabled?}
                     :on-press     identity}]
        :blur?     true
        :list-type :settings}]]))
