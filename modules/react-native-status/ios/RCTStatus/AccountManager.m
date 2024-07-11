@@ -195,6 +195,15 @@ RCT_EXPORT_METHOD(verifyDatabasePassword:(NSString *)keyUID
     callback(@[result]);
 }
 
+RCT_EXPORT_METHOD(initializeApplication:(NSString *)request
+                  callback:(RCTResponseSenderBlock)callback) {
+#if DEBUG
+    NSLog(@"initializeApplication() method called");
+#endif
+    NSString *result = StatusgoInitializeApplication(request);
+    callback(@[result]);
+}
+
 RCT_EXPORT_METHOD(openAccounts:(RCTResponseSenderBlock)callback) {
 #if DEBUG
     NSLog(@"OpenAccounts() method called");

@@ -22,6 +22,8 @@
    (clj->js {:proposal            proposal
              :supportedNamespaces supported-namespaces})))
 
+;; Get an error from this list:
+;; https://github.com/WalletConnect/walletconnect-monorepo/blob/c6e9529418a0c81d4efcc6ac4e61f242a50b56c5/packages/utils/src/errors.ts
 (defn get-sdk-error
   [error-key]
   (getSdkError error-key))

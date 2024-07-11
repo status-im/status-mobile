@@ -1,5 +1,6 @@
 (ns status-im.contexts.settings.wallet.events
   (:require
+    [clojure.string :as string]
     [native-module.core :as native-module]
     [status-im.contexts.settings.wallet.data-store :as data-store]
     [taoensso.timbre :as log]
@@ -91,7 +92,37 @@
 
 (rf/reg-event-fx :wallet/make-keypairs-accounts-fully-operable make-keypairs-accounts-fully-operable)
 
-(defn connection-string-for-import-keypair
+
+(rf/reg-event-fx :wallet/connection-string-for-import-keypairs-failed
+ (fn [{:keys [db]} [keypairs-key-uids error]]
+   (let [error-message (-> error ex-data :error)
+         incorrect-keypair? (string/includes?
+                             error-message
+                             "one or more expected keystore files are not found among the sent files")
+         single-keypair-to-update? (= (count keypairs-key-uids) 1)
+         keypair-name (when single-keypair-to-update?
+                        (let [key-uid (first keypairs-key-uids)]
+                          (get-in db [:wallet :keypairs key-uid :name])))
+         toast-message (cond
+                         (and single-keypair-to-update? incorrect-keypair?)
+                         (i18n/label
+                          :t/this-qr-does-not-contain-key-pair
+                          {:name keypair-name})
+
+                         (and (not single-keypair-to-update?) incorrect-keypair?)
+                         (i18n/label
+                          :t/this-qr-does-not-contain-any-missing-key-pair)
+
+                         :else
+                         error-message)]
+     (log/error "failed to import missing key pairs with connection string"
+                {:error error-message})
+     (rf/dispatch [:toasts/upsert
+                   {:type  :negative
+                    :theme :dark
+                    :text  toast-message}]))))
+
+(defn connection-string-for-import-keypairs
   [{:keys [db]} [{:keys [sha3-pwd keypairs-key-uids connection-string]}]]
   (let [key-uid (get-in db [:profile/profile :key-uid])]
     {:fx [[:effects.syncing/import-keypairs-keystores
@@ -102,14 +133,11 @@
             :on-success        (fn [key-uids]
                                  (rf/dispatch [:wallet/make-keypairs-accounts-fully-operable key-uids]))
             :on-fail           (fn [error]
-                                 (log/error "failed to import missing key pairs with connection string"
-                                            {:error error})
-                                 (rf/dispatch [:toasts/upsert
-                                               {:type  :negative
-                                                :theme :dark
-                                                :text  (i18n/label :t/incorrect-qr-code)}]))}]]}))
+                                 (rf/dispatch [:wallet/connection-string-for-import-keypairs-failed
+                                               keypairs-key-uids
+                                               error]))}]]}))
 
-(rf/reg-event-fx :wallet/connection-string-for-import-keypair connection-string-for-import-keypair)
+(rf/reg-event-fx :wallet/connection-string-for-import-keypairs connection-string-for-import-keypairs)
 
 (defn success-keypair-qr-scan
   [_ [connection-string keypairs-key-uids]]
@@ -121,7 +149,7 @@
            :on-auth-success   (fn [password]
                                 (rf/dispatch [:hide-bottom-sheet])
                                 (rf/dispatch
-                                 [:wallet/connection-string-for-import-keypair
+                                 [:wallet/connection-string-for-import-keypairs
                                   {:connection-string connection-string
                                    :keypairs-key-uids keypairs-key-uids
                                    :sha3-pwd          password}]))}]]]})

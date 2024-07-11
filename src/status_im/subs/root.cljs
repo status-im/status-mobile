@@ -185,3 +185,7 @@
 
 ;;theme
 (reg-root-key-sub :theme :theme)
+
+;; centralized-metrics
+(reg-root-key-sub :centralized-metrics/enabled? :centralized-metrics/enabled?)
+(reg-root-key-sub :centralized-metrics/user-confirmed? :centralized-metrics/user-confirmed?)
