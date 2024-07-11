@@ -1,15 +1,19 @@
 (ns status-im.contexts.syncing.utils
   (:require
     [clojure.string :as string]
-    [status-im.constants :as constants]
+    [native-module.core :as native-module]
     [utils.transforms :as transforms]))
+
+(defn validate-connection-string
+  [connection-string]
+  (native-module/validate-connection-string
+   connection-string))
 
 (defn valid-connection-string?
   [connection-string]
-  (when connection-string
-    (string/starts-with?
-     connection-string
-     constants/local-pairing-connection-string-identifier)))
+  (some-> connection-string
+          validate-connection-string
+          string/blank?))
 
 (defn extract-error
   [json-str]
