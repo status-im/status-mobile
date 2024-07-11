@@ -37,7 +37,7 @@
     [rn/view {:style {:flex 1}}
      [account-switcher/view
       {:type     :wallet-networks
-       :on-press #(rf/dispatch [:navigate-back])}]
+       :on-press #(rf/dispatch [:pop-to-root :shell-stack])}]
      [quo/account-overview
       {:container-style     style/account-overview
        :current-value       formatted-balance

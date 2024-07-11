@@ -668,7 +668,6 @@
                        :params     request-params
                        :on-success (fn [result]
                                      (rf/dispatch [:wallet/add-authorized-transaction result])
-                                     (rf/dispatch [:pop-to-root :shell-stack])
                                      (rf/dispatch [:hide-bottom-sheet]))
                        :on-error   (fn [error]
                                      (log/error "failed to send transaction"
