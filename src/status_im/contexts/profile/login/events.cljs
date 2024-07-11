@@ -115,7 +115,6 @@
            [:logging/initialize-web3-client-version]
            [:group-chats/get-group-chat-invitations]
            [:profile.settings/blank-preview-flag-changed preview-privacy?]
-           [:chat.ui/request-link-preview-whitelist]
            (when (ff/enabled? ::ff/shell.jump-to)
              [:switcher-cards/fetch])
            [:visibility-status-updates/fetch]
