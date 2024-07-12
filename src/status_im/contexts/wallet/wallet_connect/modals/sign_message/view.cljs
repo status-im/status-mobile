@@ -5,6 +5,7 @@
             [status-im.contexts.wallet.wallet-connect.modals.common.data-block.view :as data-block]
             [status-im.contexts.wallet.wallet-connect.modals.common.footer.view :as footer]
             [status-im.contexts.wallet.wallet-connect.modals.common.header.view :as header]
+            [status-im.contexts.wallet.wallet-connect.modals.common.page-nav.view :as page-nav]
             [status-im.contexts.wallet.wallet-connect.modals.common.style :as style]
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]))
@@ -17,11 +18,8 @@
         dapp            (rf/sub [:wallet-connect/current-request-dapp])]
     [rn/view {:style (style/container bottom)}
      [quo/gradient-cover {:customization-color customization-color}]
-     [quo/page-nav
-      {:icon-name           :i/close
-       :background          :blur
-       :on-press            #(rf/dispatch [:navigate-back])
-       :accessibility-label :wallet-connect-sign-message-close}]
+     [page-nav/view
+      {:accessibility-label :wallet-connect-sign-message-close}]
      [rn/view {:flex 1}
       [rn/view {:style style/sign-message-content-container}
        [header/view

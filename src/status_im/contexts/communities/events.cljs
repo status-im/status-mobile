@@ -343,7 +343,7 @@
              (when (get-in db [:communities community-id :joined])
                [:dispatch
                 [:activity-center.notifications/dismiss-community-overview community-id]])]}
-       (when-not (or (= current-view-id :shell) (= current-view-id :communities-stack))
+       (when-not (#{:shell :communities-stack :discover-communities} current-view-id)
          (navigation/pop-to-root :shell-stack))))))
 
 (rf/reg-event-fx :communities/navigate-to-community-overview navigate-to-community-overview)

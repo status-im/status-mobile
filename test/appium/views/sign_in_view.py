@@ -244,8 +244,8 @@ class SignInView(BaseView):
         self.generate_keys_button.click_until_presence_of_element(self.profile_title_input)
         self.set_profile(username)
         self.set_password(password)
-        if self.enable_biometric_maybe_later_button.is_element_displayed(10):
-            self.enable_biometric_maybe_later_button.click()
+        # if self.enable_biometric_maybe_later_button.is_element_displayed(10):
+        #     self.enable_biometric_maybe_later_button.click()
         # self.next_button.click_until_absense_of_element(self.element_by_translation_id("intro-wizard-title2"))
         # if keycard:
         #     keycard_flow = self.keycard_storage_button.click()
@@ -256,7 +256,7 @@ class SignInView(BaseView):
         #     self.create_password_input.send_keys(password)
         #     self.confirm_your_password_input.send_keys(password)
         #     self.next_button.click()
-        self.identifiers_button.wait_and_click(30)
+        # self.identifiers_button.wait_and_click(30)
         if enable_notifications:
             self.enable_notifications_button.click_until_presence_of_element(self.start_button)
             if self.allow_button.is_element_displayed():
@@ -283,9 +283,9 @@ class SignInView(BaseView):
         self.continue_button.click_until_presence_of_element(self.profile_title_input)
         self.set_profile(username, set_image)
         self.set_password(password)
-        if self.enable_biometric_maybe_later_button.is_element_displayed(10):
-            self.enable_biometric_maybe_later_button.click()
-        self.identifiers_button.wait_and_click(30)
+        # if self.enable_biometric_maybe_later_button.is_element_displayed(10):
+        #     self.enable_biometric_maybe_later_button.click()
+        # self.identifiers_button.wait_and_click(30)
         if enable_notifications:
             self.enable_notifications_button.click_until_presence_of_element(self.start_button)
         else:

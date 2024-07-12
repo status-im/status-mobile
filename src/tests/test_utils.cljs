@@ -40,6 +40,8 @@
   (clj->js
    {:sha3
     (fn [s] (.sha3 native-status s))
+    :serializeLegacyKey
+    (fn [s] (.serializeLegacyKey native-status s))
     :setBlankPreviewFlag
     identity
     :encodeTransfer
@@ -65,9 +67,9 @@
 
 (def account-manager
   (clj->js
-   {:openAccounts
-    (fn [callback]
-      (callback (.openAccounts native-status test-dir)))
+   {:initializeApplication
+    (fn [request callback]
+      (callback (.initializeApplication native-status request)))
     :createAccountAndLogin
     (fn [request] (.createAccountAndLogin native-status request))
     :restoreAccountAndLogin
@@ -130,6 +132,9 @@
   (clj->js
    {:getNodeConfig
     (fn [] (types/clj->json {:WakuV2Config ""}))
+    :addCentralizedMetric
+    (fn [_ callback]
+      (callback))
     :fleets
     (fn [] (.fleets native-status))
     :startLocalNotifications

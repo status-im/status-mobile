@@ -44,7 +44,7 @@
            [{:blur?               true
              :icon                :i/qr-code
              :accessibility-label :show-key-pr-qr
-             :label               (i18n/label :t/show-encrypted-qr-of-key-pairs)
+             :label               (i18n/label :t/show-encrypted-qr-of-key-pair)
              :on-press            on-show-qr}]
            [{:blur?               true
              :icon                :i/scan

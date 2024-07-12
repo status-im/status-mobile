@@ -72,10 +72,12 @@
   (log/debug "[native-module] init-keystore" key-uid)
   (.initKeystore ^js (encryption) key-uid callback))
 
-(defn open-accounts
-  [callback]
-  (log/debug "[native-module] open-accounts")
-  (.openAccounts ^js (account-manager) #(callback (types/json->clj %))))
+(defn initialize-application
+  [request callback]
+  (log/debug "[native-module] initialize-application")
+  (.initializeApplication ^js (account-manager)
+                          (types/clj->json request)
+                          #(callback (types/json->clj %))))
 
 (defn prepare-dir-and-update-config
   [key-uid config callback]
@@ -331,6 +333,11 @@
              :key input-key})
   (.deserializeAndCompressKey ^js (encryption) input-key callback))
 
+(defn serialize-legacy-key
+  "Compresses an old format public key (0x04...) to the new one zQ..."
+  [public-key]
+  (.serializeLegacyKey ^js (encryption) public-key))
+
 (defn compressed-key->public-key
   "Provides compressed key to status-go and gets back the uncompressed public key via deserialization"
   [public-key deserialization-key callback]
@@ -513,6 +520,14 @@
   (let [result (.checkAddressChecksum ^js (utils) address)]
     (types/json->clj result)))
 
+(defn toggle-centralized-metrics
+  [enabled callback]
+  (.toggleCentralizedMetrics ^js (status) (types/clj->json {:enabled enabled}) callback))
+
+(defn add-centralized-metric
+  [metric]
+  (.addCentralizedMetric ^js (status) (types/clj->json metric) #(log/debug "pushed metric" % metric)))
+
 (defn address?
   [address]
   (log/debug "[native-module] address?")
@@ -532,6 +547,13 @@
   ([mnemonic callback]
    (log/debug "[native-module] validate-mnemonic")
    (.validateMnemonic ^js (utils) mnemonic callback)))
+
+(defn validate-connection-string
+  [connection-string]
+  (log/debug "[native-module] validate-connection-string")
+  (->> connection-string
+       (.validateConnectionString ^js (utils))
+       types/json->clj))
 
 (defn delete-multiaccount
   "Delete multiaccount from database, deletes multiaccount's database and
@@ -643,7 +665,6 @@
    (native-utils/promisify-native-module-call create-account-from-private-key private-key))
   ([private-key callback]
    (log/debug "[native-module] create-account-from-private-key")
-
    (.createAccountFromPrivateKey ^js (account-manager)
                                  (types/clj->json {:privateKey private-key})
                                  callback)))

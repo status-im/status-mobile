@@ -153,4 +153,9 @@ class Utils(private val reactContext: ReactApplicationContext) : ReactContextBas
 
         return strArray
     }
+
+    @ReactMethod(isBlockingSynchronousMethod = true)
+    fun validateConnectionString(connectionString: String): String {
+        return Statusgo.validateConnectionString(connectionString)
+    }
 }

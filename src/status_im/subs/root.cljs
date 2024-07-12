@@ -91,9 +91,6 @@
 (reg-root-key-sub :multiaccount/reset-password-form-vals :multiaccount/reset-password-form-vals)
 (reg-root-key-sub :multiaccount/reset-password-errors :multiaccount/reset-password-errors)
 (reg-root-key-sub :multiaccount/resetting-password? :multiaccount/resetting-password?)
-;;delete profile
-(reg-root-key-sub :delete-profile/error :delete-profile/error)
-(reg-root-key-sub :delete-profile/keep-keys-on-keycard? :delete-profile/keep-keys-on-keycard?)
 
 ;;chat
 (reg-root-key-sub :chats/cooldown-enabled? :chat/cooldown-enabled?)
@@ -185,3 +182,7 @@
 
 ;;theme
 (reg-root-key-sub :theme :theme)
+
+;; centralized-metrics
+(reg-root-key-sub :centralized-metrics/enabled? :centralized-metrics/enabled?)
+(reg-root-key-sub :centralized-metrics/user-confirmed? :centralized-metrics/user-confirmed?)

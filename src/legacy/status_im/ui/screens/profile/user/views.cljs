@@ -14,12 +14,6 @@
   [rn/scroll-view {:flex 1}
    [components/list-header "Legacy settings"]
    [list.item/list-item
-    {:icon                :main-icons/security
-     :title               (i18n/label :t/privacy-and-security)
-     :accessibility-label :privacy-and-security-settings-button
-     :chevron             true
-     :on-press            #(re-frame/dispatch [:open-modal :legacy-privacy-and-security])}]
-   [list.item/list-item
     {:icon                :main-icons/mobile
      :title               (i18n/label :t/sync-settings)
      :accessibility-label :sync-settings-button
