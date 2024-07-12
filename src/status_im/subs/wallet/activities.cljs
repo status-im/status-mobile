@@ -1,12 +1,12 @@
 (ns status-im.subs.wallet.activities
   (:require
-    [legacy.status-im.utils.hex :as utils.hex]
     [native-module.core :as native-module]
     [quo.foundations.resources :as quo.resources]
     [quo.foundations.resources]
     [re-frame.core :as rf]
     [status-im.contexts.wallet.common.activity-tab.constants :as constants]
     [utils.datetime :as datetime]
+    [utils.hex :as utils.hex]
     [utils.money :as money]))
 
 (def precision 6)

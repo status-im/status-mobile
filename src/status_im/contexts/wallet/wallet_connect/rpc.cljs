@@ -3,6 +3,7 @@
             [promesa.core :as promesa]
             [status-im.common.json-rpc.events :as rpc-events]
             [status-im.constants :as constants]
+            [utils.hex :as hex]
             [utils.transforms :as transforms]))
 
 (defn- call-rpc
@@ -11,16 +12,16 @@
   (promesa/create
    (fn [p-resolve p-reject]
      (rpc-events/call {:method      method
-                       :params      (vec args)
+                       :params      args
                        :on-success  p-resolve
                        :on-error    p-reject
                        :js-response true}))))
 
 (defn wallet-build-transaction
   [chain-id tx]
-  (-> (call-rpc "wallet_buildTransaction" chain-id tx)
-      (promesa/then #(hash-map :message-to-sign (oops/oget % "messageToSign")
-                               :tx-args         (oops/oget % "txArgs")))))
+  (promesa/let [res (call-rpc :wallet_buildTransaction chain-id tx)]
+    {:message-to-sign (oops/oget res :messageToSign)
+     :tx-args         (oops/oget res :txArgs)}))
 
 (defn wallet-build-raw-transaction
   [chain-id tx-args signature]
@@ -44,8 +45,7 @@
                 message
                 address
                 password)
-      ;; NOTE: removing `0x`, as status-go expects the signature without it.
-      (promesa/then #(subs % 2))))
+      (promesa/then hex/normalize-hex)))
 
 (defn wallet-hash-message-eip-191
   [message]
