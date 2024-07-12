@@ -40,6 +40,8 @@
   (clj->js
    {:sha3
     (fn [s] (.sha3 native-status s))
+    :serializeLegacyKey
+    (fn [s] (.serializeLegacyKey native-status s))
     :setBlankPreviewFlag
     identity
     :encodeTransfer
