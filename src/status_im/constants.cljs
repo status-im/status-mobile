@@ -500,6 +500,9 @@
 (def ^:const optimism-full-name "Optimism")
 (def ^:const arbitrum-full-name "Arbitrum")
 
+(def ^:const sepolia-full-name "Sepolia")
+(def ^:const goerli-full-name "Goerli")
+
 (def ^:const mainnet-network-name :mainnet)
 (def ^:const ethereum-network-name :ethereum)
 (def ^:const optimism-network-name :optimism)

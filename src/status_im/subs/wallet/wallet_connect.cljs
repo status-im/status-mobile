@@ -53,7 +53,8 @@
    (-> request
        (get-in [:event :params :chainId])
        (wallet-connect-core/eip155->chain-id)
-       (networks/get-network-details))))
+       (networks/get-network-details)
+       (wallet-connect-core/add-full-testnet-name))))
 
 ;; TODO: break this into smaller subs
 (rf/reg-sub
