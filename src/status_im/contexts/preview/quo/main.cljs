@@ -144,6 +144,7 @@
      small-option-card]
     [status-im.contexts.preview.quo.password.password-tips :as password-tips]
     [status-im.contexts.preview.quo.password.tips :as tips]
+    [status-im.contexts.preview.quo.pin-input.pin-input :as pin-input]
     [status-im.contexts.preview.quo.profile.collectible :as collectible]
     [status-im.contexts.preview.quo.profile.collectible-list-item :as collectible-list-item]
     [status-im.contexts.preview.quo.profile.expanded-collectible :as expanded-collectible]
@@ -369,6 +370,8 @@
                         :component keyboard-key/view}
                        {:name      :numbered-keyboard
                         :component numbered-keyboard/view}]
+   :pin-input         [{:name      :pin-input
+                        :component pin-input/view}]
    :links             [{:name      :internal-link-card
                         :options   {:insets {:top true}}
                         :component internal-link-card/view}
