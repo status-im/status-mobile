@@ -47,7 +47,7 @@
                              {:theme   :dark
                               :blur?   true
                               :content (fn []
-                                         [profile-picture.view/options-for-see-profile-pictures-from
+                                         [profile-picture.view/options-for-profile-pictures-visibility
                                           see-profile-pictures-from])}]))
                          [see-profile-pictures-from])
 
@@ -58,7 +58,7 @@
                              {:theme   :dark
                               :blur?   true
                               :content (fn []
-                                         [profile-picture.view/options-for-show-profile-picture-to
+                                         [profile-picture.view/options-for-profile-pictures-show-to
                                           show-profile-pictures-to])}]))
                          [show-profile-pictures-to])]
     [quo/overlay
@@ -77,11 +77,11 @@
      [quo/category
       {:key       :category
        :data      [(when (ff/enabled? ::ff/profile-pictures-visibility)
-                     (profile-picture.view/setting-see-profile-pictures-from
+                     (profile-picture.view/setting-profile-pictures-visibility
                       see-profile-pictures-from
                       open-see-profile-pictures-from-options))
                    (when (ff/enabled? ::ff/profile-pictures-visibility)
-                     (profile-picture.view/setting-show-your-profile-pictures-to
+                     (profile-picture.view/setting-profile-pictures-show-to
                       show-profile-pictures-to
                       open-show-profile-pictures-to-options))
                    (setting-preview-privacy preview-privacy? customization-color toggle-preview-privacy)
