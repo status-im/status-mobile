@@ -11,18 +11,6 @@
     [utils.collection]
     [utils.i18n :as i18n]))
 
-(defn query-chat-contacts
-  [{:keys [contacts]} all-contacts query-fn]
-  (let [participant-set (into #{} (filter identity) contacts)]
-    (query-fn (comp participant-set :public-key) (vals all-contacts))))
-
-(re-frame/reg-sub
- ::query-current-chat-contacts
- :<- [:chats/current-chat]
- :<- [:contacts/contacts]
- (fn [[chat contacts] [_ query-fn]]
-   (query-chat-contacts chat contacts query-fn)))
-
 (re-frame/reg-sub
  :multiaccount/profile-pictures-show-to
  :<- [:profile/profile]
@@ -140,12 +128,6 @@
                 :data  data})))))
 
 (re-frame/reg-sub
- :contacts/active-count
- :<- [:contacts/active]
- (fn [active-contacts]
-   (count active-contacts)))
-
-(re-frame/reg-sub
  :contacts/blocked
  :<- [:contacts/contacts]
  (fn [contacts]
@@ -159,12 +141,6 @@
  :<- [:contacts/blocked]
  (fn [contacts]
    (into #{} (map :public-key contacts))))
-
-(re-frame/reg-sub
- :contacts/blocked-count
- :<- [:contacts/blocked]
- (fn [blocked-contacts]
-   (count blocked-contacts)))
 
 (defn public-key-and-ens-name->new-contact
   [public-key ens-name]
@@ -217,12 +193,6 @@
     (re-frame/subscribe [:profile/profile])])
  (fn [[contact profile] [_ _]]
    (contact.utils/contact-two-names contact profile)))
-
-(re-frame/reg-sub
- :contacts/all-contacts-not-in-current-chat
- :<- [::query-current-chat-contacts remove]
- (fn [contacts]
-   (filter :added? contacts)))
 
 (defn get-all-contacts-in-group-chat
   [members admins contacts {:keys [public-key preferred-name name display-name] :as current-account}]
