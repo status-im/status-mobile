@@ -64,7 +64,7 @@
  :<- [:profile/currency]
  :<- [:profile/currency-symbol]
  (fn [[request accounts currency currency-symbol]]
-   (let [chain-id                     (:chain-id request)
+   (let [chain-id                     (-> request :chain-id wallet-connect-core/eip155->chain-id)
          eth-token                    (->> accounts
                                            (filter #(= (:address %)
                                                        (:address request)))
@@ -90,7 +90,7 @@
                                                                             token-fiat-value)
              balance                 (-> eth-token
                                          (get-in [:balances-per-chain chain-id :raw-balance])
-                                         (money/bignumber))
+                                         money/bignumber)
              value                   (money/bignumber value)
              total-transaction-value (money/add max-fees-wei value)]
          {:total-transaction-value total-transaction-value
@@ -99,13 +99,12 @@
           :max-fees-fiat-value     token-fiat-value
           :max-fees-fiat-formatted fiat-formatted
           :error-state             (cond
-                                     (and
-                                      (money/sufficient-funds? value balance)
-                                      (not (money/sufficient-funds? total-transaction-value balance)))
-                                     :not-enough-assets-to-pay-gas-fees
-
                                      (not (money/sufficient-funds? value balance))
                                      :not-enough-assets
+
+                                     (not (money/sufficient-funds? total-transaction-value
+                                                                   balance))
+                                     :not-enough-assets-to-pay-gas-fees
 
                                      :else nil)})))))
 
