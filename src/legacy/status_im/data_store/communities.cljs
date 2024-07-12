@@ -1,7 +1,6 @@
 (ns legacy.status-im.data-store.communities
   (:require
     [clojure.set :as set]
-    [oops.core :as oops]
     [status-im.constants :as constants]
     [utils.transforms :as transforms]))
 
@@ -29,10 +28,7 @@
   We can't pay the high cost to recursively convert IDs to keywords
   using :keywordize-keys true and then have to transform them back into
   strings (otherwise we get exceptions because keys are treated like strings in
-  the rest of the code).
-
-  This optimization lowered the cost to process the Status community on Jul 2024
-  from 500ms to 15ms in dev builds, a ~33x reduction."
+  the rest of the code)."
   [chats-js]
   (let [chat-key-fn (fn [k]
                       (case k
@@ -64,49 +60,48 @@
 
 (defn <-rpc
   [c-js]
-  (let [;; Before recursively keywordizing keys, extract members and chats so
-        ;; that we don't need to transform thousands of keys back to strings.
-        members-js (oops/oget c-js :members)
-        chats-js   (oops/oget c-js :chats)
-        c          (do (js-delete c-js "members")
-                       (js-delete c-js "chats")
-                       (transforms/js->clj c-js))]
-    (-> c
-        (set/rename-keys
-         {:canRequestAccess            :can-request-access?
-          :canManageUsers              :can-manage-users?
-          :canDeleteMessageForEveryone :can-delete-message-for-everyone?
-          ;; This flag is misleading based on its name alone
-          ;; because it should not be used to decide if the user
-          ;; is *allowed* to join. Allowance is based on token
-          ;; permissions. Still, the flag can be used to know
-          ;; whether or not the user will have to wait until an
-          ;; admin approves a join request.
-          :canJoin                     :can-join?
-          :requestedToJoinAt           :requested-to-join-at
-          :isMember                    :is-member?
-          :outroMessage                :outro-message
-          :adminSettings               :admin-settings
-          :tokenPermissions            :token-permissions
-          :communityTokensMetadata     :tokens-metadata
-          :introMessage                :intro-message
-          :muteTill                    :muted-till
-          :lastOpenedAt                :last-opened-at
-          :joinedAt                    :joined-at})
+  (let [key-fn    (fn [k]
+                    (case k
+                      "canRequestAccess"            :can-request-access?
+                      "canManageUsers"              :can-manage-users?
+                      "canDeleteMessageForEveryone" :can-delete-message-for-everyone?
+                      ;; This flag is misleading based on its name alone
+                      ;; because it should not be used to decide if the user
+                      ;; is *allowed* to join. Allowance is based on token
+                      ;; permissions. Still, the flag can be used to know
+                      ;; whether or not the user will have to wait until an
+                      ;; admin approves a join request.
+                      "canJoin"                     :can-join?
+                      "requestedToJoinAt"           :requested-to-join-at
+                      "isMember"                    :is-member?
+                      "outroMessage"                :outro-message
+                      "adminSettings"               :admin-settings
+                      "tokenPermissions"            :token-permissions
+                      "communityTokensMetadata"     :tokens-metadata
+                      "introMessage"                :intro-message
+                      "muteTill"                    :muted-till
+                      "lastOpenedAt"                :last-opened-at
+                      "joinedAt"                    :joined-at
+                      (keyword k)))
+        val-fn    (fn [k v]
+                    (case k
+                      "members" (js->clj v)
+                      "chats"   (<-chats-rpc v)
+                      (transforms/js->clj v)))
+        community (transforms/<-js-map c-js {:key-fn key-fn :val-fn val-fn})]
+    (-> community
         (update :admin-settings
                 set/rename-keys
                 {:pinMessageAllMembersEnabled :pin-message-all-members-enabled?})
-        (assoc :members (js->clj members-js))
-        (assoc :chats (<-chats-rpc chats-js))
         (update :token-permissions seq)
         (update :categories <-categories-rpc)
         (assoc :role-permissions?
-               (->> c
+               (->> community
                     :tokenPermissions
                     vals
                     (some role-permission?)))
         (assoc :membership-permissions?
-               (->> c
+               (->> community
                     :tokenPermissions
                     vals
                     (some membership-permission?)))
@@ -114,4 +109,4 @@
                (reduce (fn [acc {sym :symbol image :image}]
                          (assoc acc sym image))
                        {}
-                       (:communityTokensMetadata c))))))
+                       (:communityTokensMetadata community))))))
