@@ -105,6 +105,7 @@
     [status-im.contexts.preview.quo.list-items.account-list-card :as
      account-list-card]
     [status-im.contexts.preview.quo.list-items.address :as address]
+    [status-im.contexts.preview.quo.list-items.approval-info :as approval-info]
     [status-im.contexts.preview.quo.list-items.channel :as channel]
     [status-im.contexts.preview.quo.list-items.dapp :as dapp]
     [status-im.contexts.preview.quo.list-items.missing-keypair :as missing-keypair]
@@ -390,6 +391,8 @@
                         :component account-list-card/view}
                        {:name      :address
                         :component address/view}
+                       {:name      :approval-info
+                        :component approval-info/view}
                        {:name      :channel
                         :component channel/view}
                        {:name      :community-list

@@ -51,7 +51,7 @@
 
 (rf/reg-event-fx :communities/check-permissions-to-join-community-with-all-addresses
  (fn [{:keys [db]} [community-id]]
-   (let [accounts  (utils/sorted-non-watch-only-accounts db)
+   (let [accounts  (utils/sorted-operable-non-watch-only-accounts db)
          addresses (set (map :address accounts))]
      {:db            (assoc-in db [:communities/permissions-check community-id :checking?] true)
       :json-rpc/call [{:method "wakuext_checkPermissionsToJoinCommunity"

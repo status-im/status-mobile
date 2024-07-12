@@ -15,13 +15,19 @@
   [{:keys [name full-address chain-short-names address] :as opts}]
   (let [[_ splitted-address]           (network-utils/split-network-full-address address)
         open-send-flow                 (rn/use-callback
-                                        #(rf/dispatch [:wallet/select-send-address
-                                                       {:address     full-address
-                                                        :recipient   {:label (utils/get-shortened-address
-                                                                              splitted-address)
-                                                                      :recipient-type :saved-address}
-                                                        :stack-id    :wallet-select-address
-                                                        :start-flow? true}])
+                                        (fn []
+                                          (rf/dispatch [:hide-bottom-sheet])
+                                          (rf/dispatch [:pop-to-root :shell-stack])
+                                          (js/setTimeout #(rf/dispatch [:wallet/select-send-address
+                                                                        {:address full-address
+                                                                         :recipient
+                                                                         {:label
+                                                                          (utils/get-shortened-address
+                                                                           splitted-address)
+                                                                          :recipient-type :saved-address}
+                                                                         :stack-id :wallet-select-address
+                                                                         :start-flow? true}])
+                                                         400))
                                         [full-address])
         open-eth-chain-explorer        (rn/use-callback
                                         #(rf/dispatch [:wallet/navigate-to-chain-explorer

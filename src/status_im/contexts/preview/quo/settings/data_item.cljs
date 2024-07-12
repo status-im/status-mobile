@@ -47,7 +47,8 @@
     :options [{:key :default}
               {:key :icon}
               {:key :network}
-              {:key :account}]}
+              {:key :account}
+              {:key :editable}]}
    {:type    :select
     :key     :status
     :options [{:key :default}
