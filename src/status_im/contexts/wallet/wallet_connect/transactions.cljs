@@ -3,9 +3,17 @@
             [clojure.string :as string]
             [native-module.core :as native-module]
             [promesa.core :as promesa]
+            [status-im.constants :as constants]
+            [status-im.contexts.wallet.wallet-connect.core :as core]
             [status-im.contexts.wallet.wallet-connect.rpc :as rpc]
             [utils.money :as money]
             [utils.transforms :as transforms]))
+
+(defn transaction-request?
+  [event]
+  (->> (core/get-request-method event)
+       (contains? #{constants/wallet-connect-eth-send-transaction-method
+                    constants/wallet-connect-eth-sign-transaction-method})))
 
 ;; NOTE: Currently we don't allow the user to configure the tx priority as we don't
 ;; show the estimated time, but when we implement it, we should allow to change it
