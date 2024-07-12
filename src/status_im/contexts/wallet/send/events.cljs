@@ -487,10 +487,18 @@
          transaction-details  (send-utils/map-multitransaction-by-ids transaction-batch-id
                                                                       transaction-hashes)]
      {:db (-> db
+              (assoc-in [:wallet :ui :send :just-completed-transaction?] true)
               (assoc-in [:wallet :transactions] transaction-details)
               (assoc-in [:wallet :ui :send :transaction-ids] transaction-ids))
       :fx [[:dispatch
-            [:wallet/end-transaction-flow]]]})))
+            [:wallet/end-transaction-flow]]
+           [:dispatch-later
+            [{:ms       2000
+              :dispatch [:wallet/clean-just-completed-transaction]}]]]})))
+
+(rf/reg-event-fx :wallet/clean-just-completed-transaction
+ (fn [{:keys [db]}]
+   {:db (update-in db [:wallet :ui :send] dissoc :just-completed-transaction?)}))
 
 (rf/reg-event-fx :wallet/clean-up-transaction-flow
  (fn [_]
@@ -659,8 +667,8 @@
      {:json-rpc/call [{:method     "wallet_createMultiTransaction"
                        :params     request-params
                        :on-success (fn [result]
-                                     (rf/dispatch [:hide-bottom-sheet])
-                                     (rf/dispatch [:wallet/add-authorized-transaction result]))
+                                     (rf/dispatch [:wallet/add-authorized-transaction result])
+                                     (rf/dispatch [:hide-bottom-sheet]))
                        :on-error   (fn [error]
                                      (log/error "failed to send transaction"
                                                 {:event  :wallet/send-transaction

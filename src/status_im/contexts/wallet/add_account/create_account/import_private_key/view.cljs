@@ -8,6 +8,7 @@
     [status-im.common.floating-button-page.view :as floating-button-page]
     [status-im.contexts.wallet.add-account.create-account.import-private-key.style :as style]
     [status-im.contexts.wallet.common.validation :as v]
+    [status-im.setup.hot-reload :as hot-reload]
     [utils.debounce :as debounce]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
@@ -112,7 +113,7 @@
         public-address              (rf/sub [:wallet/public-address])
         [flow-state set-flow-state] (rn/use-state nil)
         error?                      (= :invalid-private-key flow-state)]
-    (rn/use-unmount on-unmount)
+    (hot-reload/use-safe-unmount on-unmount)
     [rn/view {:flex 1}
      [floating-button-page/view
       {:customization-color customization-color
