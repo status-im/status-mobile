@@ -86,14 +86,12 @@
                       open-show-profile-pictures-to-options))
                    (setting-preview-privacy preview-privacy? customization-color toggle-preview-privacy)
                    {:title        (i18n/label :t/share-usage-data)
-                    :image-props  :i/placeholder
                     :blur?        true
                     :action       :selector
                     :action-props {:on-change #(rf/dispatch
                                                 [:centralized-metrics/toggle-centralized-metrics
                                                  (not centralized-metrics-enabled?)])
                                    :customization-color customization-color
-                                   :checked? centralized-metrics-enabled?}
-                    :on-press     identity}]
+                                   :checked? centralized-metrics-enabled?}}]
        :blur?     true
        :list-type :settings}]]))
