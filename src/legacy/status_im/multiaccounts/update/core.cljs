@@ -120,12 +120,3 @@
   {:events [:multiaccounts.ui/switch-backup-enabled]}
   [cofx enabled?]
   (multiaccount-update cofx :backup-enabled? enabled? {}))
-
-(rf/defn toggle-opensea-nfts-visibility
-  {:events [::toggle-opensea-nfts-visiblity]}
-  [cofx visible?]
-  (rf/merge cofx
-            {:db       (assoc-in (:db cofx) [:profile/profile :opensea-enabled?] visible?)
-             ;; need to add fully qualified namespace to counter circular deps
-             :dispatch [:legacy.status-im.wallet.core/fetch-collectibles-collection]}
-            (multiaccount-update :opensea-enabled? visible? {})))

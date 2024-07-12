@@ -8,12 +8,10 @@
     [legacy.status-im.ui.screens.bug-report :as bug-report]
     [legacy.status-im.ui.screens.communities.invite :as communities.invite]
     [legacy.status-im.ui.screens.communities.members :as members]
-    [legacy.status-im.ui.screens.dapps-permissions.views :as dapps-permissions]
     [legacy.status-im.ui.screens.default-sync-period-settings.view :as default-sync-period-settings]
     [legacy.status-im.ui.screens.fleet-settings.views :as fleet-settings]
     [legacy.status-im.ui.screens.glossary.view :as glossary]
     [legacy.status-im.ui.screens.help-center.views :as help-center]
-    [legacy.status-im.ui.screens.link-previews-settings.views :as link-previews-settings]
     [legacy.status-im.ui.screens.log-level-settings.views :as log-level-settings]
     [legacy.status-im.ui.screens.mobile-network-settings.view :as mobile-network-settings]
     [legacy.status-im.ui.screens.notifications-settings.views :as notifications-settings]
@@ -21,10 +19,6 @@
     [legacy.status-im.ui.screens.offline-messaging-settings.views :as offline-messaging-settings]
     [legacy.status-im.ui.screens.pairing.views :as pairing]
     [legacy.status-im.ui.screens.peers-stats :as peers-stats]
-    [legacy.status-im.ui.screens.privacy-and-security-settings.delete-profile :as delete-profile]
-    [legacy.status-im.ui.screens.privacy-and-security-settings.messages-from-contacts-only :as
-     messages-from-contacts-only]
-    [legacy.status-im.ui.screens.privacy-and-security-settings.views :as privacy-and-security]
     [legacy.status-im.ui.screens.profile.seed.views :as profile.seed]
     [legacy.status-im.ui.screens.profile.user.views :as profile.user]
     [legacy.status-im.ui.screens.progress.views :as progress]
@@ -94,17 +88,6 @@
                 :insets {:top? platform/android?}}
     :component profile.user/legacy-settings}
 
-   ;; PRIVACY AND SECURITY
-   {:name      :legacy-privacy-and-security
-    :options   {:topBar {:visible false}
-                :insets {:top? platform/android?}}
-    :component privacy-and-security/privacy-and-security}
-
-   {:name      :legacy-link-previews-settings
-    :options   {:topBar {:visible false}
-                :insets {:top? platform/android?}}
-    :component link-previews-settings/link-previews-settings}
-
    ;; SYNC
    {:name      :legacy-sync-settings
     :options   {:topBar {:visible false}
@@ -150,25 +133,6 @@
    {:name      :edit-mailserver
     :options   {:insets {:top? true}}
     :component edit-mailserver/edit-mailserver}
-   {:name      :dapps-permissions
-    :options   {:topBar (topbar-options :t/dapps-permissions)
-                :insets {:top? true}}
-    :component dapps-permissions/dapps-permissions}
-   {:name      :messages-from-contacts-only
-    :options   {:topBar (topbar-options :t/accept-new-chats-from)
-                :insets {:top? true}}
-    :component messages-from-contacts-only/messages-from-contacts-only-view}
-   {:name      :privacy-and-security-profile-pic-show-to
-    :options   {:topbar (topbar-options :t/show-profile-pictures-to)
-                :insets {:top? true}}
-    :component privacy-and-security/profile-pic-show-to}
-   {:name      :privacy-and-security-profile-pic
-    :options   {:topBar (topbar-options :t/show-profile-pictures)
-                :insets {:top? true}}
-    :component privacy-and-security/profile-pic}
-   {:name      :manage-dapps-permissions
-    :options   {:insets {:top? true}}
-    :component dapps-permissions/manage}
    {:name      :rpc-usage-info
     :options   {:topBar (topbar-options :t/rpc-usage-info)
                 :insets {:top? true}}
@@ -196,9 +160,6 @@
     :options   {:topBar (topbar-options :t/reset-password)
                 :insets {:top? true}}
     :component reset-password/reset-password}
-   {:name      :delete-profile
-    :insets    {:bottom? true}
-    :component delete-profile/delete-profile}
    {:name      :default-sync-period-settings
     :options   {:topBar (topbar-options :t/default-sync-period)
                 :insets {:top? true}}
