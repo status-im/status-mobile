@@ -18,7 +18,7 @@
 
 (defn do-init-permission-addresses
   [{:keys [db]} [community-id revealed-accounts]]
-  (let [wallet-accounts     (utils/sorted-non-watch-only-accounts db)
+  (let [wallet-accounts     (utils/sorted-operable-non-watch-only-accounts db)
         addresses-to-reveal (if (seq revealed-accounts)
                               (set (keys revealed-accounts))
                               ;; Reveal all addresses as fallback.
@@ -62,7 +62,7 @@
   status-go will default to all available."
   [{:keys [db]} [{:keys [community-id password on-success addresses airdrop-address]}]]
   (let [pub-key             (get-in db [:profile/profile :public-key])
-        wallet-accounts     (utils/sorted-non-watch-only-accounts db)
+        wallet-accounts     (utils/sorted-operable-non-watch-only-accounts db)
         addresses-to-reveal (if (seq addresses)
                               (set addresses)
                               (get-in db [:communities/all-addresses-to-reveal community-id]))
