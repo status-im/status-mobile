@@ -22,13 +22,10 @@
   (reduce #(assoc %1 (key-fn %2) (<-request-to-join-community-rpc %2)) {} requests))
 
 (defn <-chats-rpc
-  "This conversion is optimized because `chats-js` is indexed by ID and each chat
-  may contain an unbounded number of members, which are also indexed by ID.
-
-  We can't pay the high cost to recursively convert IDs to keywords
-  using :keywordize-keys true and then have to transform them back into
-  strings (otherwise we get exceptions because keys are treated like strings in
-  the rest of the code)."
+  "This transformation from RPC is optimized differently because there can be
+  thousands of members in all chats and we don't want to transform them from JS
+  to CLJS because they will only be used to list community members or community
+  chat members."
   [chats-js]
   (let [chat-key-fn (fn [k]
                       (case k
@@ -39,7 +36,7 @@
                         (keyword k)))
         chat-val-fn (fn [k v]
                       (if (= "members" k)
-                        (js->clj v)
+                        v
                         (transforms/js->clj v)))]
     (transforms/<-js-map
      chats-js
@@ -58,37 +55,41 @@
   [token-permission]
   (= (:type token-permission) constants/community-token-permission-become-member))
 
+(defn- rename-community-key
+  [k]
+  (case k
+    "canRequestAccess"            :can-request-access?
+    "canManageUsers"              :can-manage-users?
+    "canDeleteMessageForEveryone" :can-delete-message-for-everyone?
+    ;; This flag is misleading based on its name alone
+    ;; because it should not be used to decide if the user
+    ;; is *allowed* to join. Allowance is based on token
+    ;; permissions. Still, the flag can be used to know
+    ;; whether or not the user will have to wait until an
+    ;; admin approves a join request.
+    "canJoin"                     :can-join?
+    "requestedToJoinAt"           :requested-to-join-at
+    "isMember"                    :is-member?
+    "outroMessage"                :outro-message
+    "adminSettings"               :admin-settings
+    "tokenPermissions"            :token-permissions
+    "communityTokensMetadata"     :tokens-metadata
+    "introMessage"                :intro-message
+    "muteTill"                    :muted-till
+    "lastOpenedAt"                :last-opened-at
+    "joinedAt"                    :joined-at
+    (keyword k)))
+
 (defn <-rpc
   [c-js]
-  (let [key-fn    (fn [k]
-                    (case k
-                      "canRequestAccess"            :can-request-access?
-                      "canManageUsers"              :can-manage-users?
-                      "canDeleteMessageForEveryone" :can-delete-message-for-everyone?
-                      ;; This flag is misleading based on its name alone
-                      ;; because it should not be used to decide if the user
-                      ;; is *allowed* to join. Allowance is based on token
-                      ;; permissions. Still, the flag can be used to know
-                      ;; whether or not the user will have to wait until an
-                      ;; admin approves a join request.
-                      "canJoin"                     :can-join?
-                      "requestedToJoinAt"           :requested-to-join-at
-                      "isMember"                    :is-member?
-                      "outroMessage"                :outro-message
-                      "adminSettings"               :admin-settings
-                      "tokenPermissions"            :token-permissions
-                      "communityTokensMetadata"     :tokens-metadata
-                      "introMessage"                :intro-message
-                      "muteTill"                    :muted-till
-                      "lastOpenedAt"                :last-opened-at
-                      "joinedAt"                    :joined-at
-                      (keyword k)))
-        val-fn    (fn [k v]
-                    (case k
-                      "members" (js->clj v)
-                      "chats"   (<-chats-rpc v)
-                      (transforms/js->clj v)))
-        community (transforms/<-js-map c-js {:key-fn key-fn :val-fn val-fn})]
+  (let [community (transforms/<-js-map
+                   c-js
+                   {:key-fn rename-community-key
+                    :val-fn (fn [k v]
+                              (case k
+                                "members" v
+                                "chats"   (<-chats-rpc v)
+                                (transforms/js->clj v)))})]
     (-> community
         (update :admin-settings
                 set/rename-keys

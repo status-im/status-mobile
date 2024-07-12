@@ -2,11 +2,9 @@
   (:require
     [clojure.set :as set]
     [clojure.string :as string]
-    [legacy.status-im.ui.screens.profile.visibility-status.utils :as visibility-status-utils]
     [quo.theme]
     [re-frame.core :as re-frame]
     [status-im.constants :as constants]
-    [status-im.contexts.profile.utils :as profile.utils]
     [status-im.subs.chat.utils :as chat.utils]
     [status-im.subs.contact.utils :as contact.utils]
     [utils.address :as address]
@@ -125,15 +123,6 @@
        vals)))
 
 (re-frame/reg-sub
- :contacts/sorted-contacts
- :<- [:contacts/active]
- (fn [active-contacts]
-   (->> active-contacts
-        (sort-by :primary-name)
-        (sort-by
-         #(visibility-status-utils/visibility-status-order (:public-key %))))))
-
-(re-frame/reg-sub
  :contacts/sorted-and-grouped-by-first-letter
  :<- [:contacts/active]
  :<- [:selected-contacts-count]
@@ -226,18 +215,8 @@
  (fn [[_ contact-identity] _]
    [(re-frame/subscribe [:contacts/contact-by-identity contact-identity])
     (re-frame/subscribe [:profile/profile])])
- (fn [[{:keys [primary-name] :as contact}
-       {:keys [public-key preferred-name display-name name]}]
-      [_ contact-identity]]
-   [(if (= public-key contact-identity)
-      (cond
-        (not (string/blank? preferred-name)) preferred-name
-        (not (string/blank? display-name))   display-name
-        (not (string/blank? primary-name))   primary-name
-        (not (string/blank? name))           name
-        :else                                public-key)
-      (profile.utils/displayed-name contact))
-    (:secondary-name contact)]))
+ (fn [[contact profile] [_ _]]
+   (contact.utils/contact-two-names contact profile)))
 
 (re-frame/reg-sub
  :contacts/all-contacts-not-in-current-chat
@@ -300,8 +279,10 @@
  :<- [:multiaccount/contact]
  (fn [[contacts multiaccount] [_ address]]
    (if (address/address= address (:public-key multiaccount))
-     multiaccount
-     (find-contact-by-address contacts address))))
+     (merge (contact.utils/build-contact-from-public-key address)
+            multiaccount)
+     (or (find-contact-by-address contacts address)
+         (contact.utils/build-contact-from-public-key address)))))
 
 (re-frame/reg-sub
  :contacts/contact-customization-color-by-address

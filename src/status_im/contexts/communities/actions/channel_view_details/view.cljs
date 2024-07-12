@@ -58,14 +58,17 @@
 
 (defn- members
   [community-id chat-id theme]
-  (let [items (rf/sub [:communities/sorted-community-members-section-list
-                       community-id chat-id])]
+  (let [online-members  (rf/sub [:communities/chat-members-sorted community-id chat-id :online])
+        offline-members (rf/sub [:communities/chat-members-sorted community-id chat-id :offline])]
     [rn/section-list
      {:key-fn                            :public-key
       :content-container-style           {:padding-bottom 20}
       :get-item-layout                   get-item-layout
       :content-inset-adjustment-behavior :never
-      :sections                          items
+      :sections                          [{:title (i18n/label :t/online)
+                                           :data  online-members}
+                                          {:title (i18n/label :t/offline)
+                                           :data  offline-members}]
       :sticky-section-headers-enabled    false
       :render-section-header-fn          contact-list/contacts-section-header
       :render-section-footer-fn          footer

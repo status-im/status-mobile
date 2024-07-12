@@ -457,65 +457,64 @@
        (match? []
                (rf/sub [sub-name community-id]))))))
 
-(h/deftest-sub :communities/sorted-community-members-section-list
+(h/deftest-sub :communities/chat-members-sorted
   [sub-name]
-  (testing "returns sorted community members per online status"
-    (let [token-image-eth "data:image/jpeg;base64,/9j/2w"
-          channel-id-1    "89f98a1e-6776-4e5f-8626-8ab9f855253f"
-          channel-id-2    "a076358e-4638-470e-a3fb-584d0a542ce6"
-          chat-id-1       (str community-id channel-id-1)
-          chat-id-2       (str community-id channel-id-2)
-          community       {:id                  community-id
-                           :permissions         {:access 3}
-                           :token-images        {"ETH" token-image-eth}
-                           :name                "Community super name"
-                           :chats               {channel-id-1
-                                                 {:description "x"
-                                                  :emoji       "🎲"
-                                                  :permissions {:access 1}
-                                                  :color       "#88B0FF"
-                                                  :name        "random"
-                                                  :categoryID  "0c3c64e7-d56e-439b-a3fb-a946d83cb056"
-                                                  :id          channel-id-1
-                                                  :position    4
-                                                  :can-post?   false
-                                                  :members     nil}
-                                                 channel-id-2
-                                                 {:description  "General channel for the community"
-                                                  :emoji        "🥔"
-                                                  :permissions  {:access 1}
-                                                  :color        "#4360DF"
-                                                  :name         "general"
-                                                  :categoryID   "0c3c64e7-d56e-439b-a3fb-a946d83cb056"
-                                                  :id           channel-id-2
-                                                  :position     0
-                                                  :token-gated? true
-                                                  :can-post?    false
-                                                  :members      {"0x01" {"roles" [1]}
-                                                                 "0x02" {"roles" [1]}
-                                                                 "0x05" {"roles" [1]}}}}
-                           :members             {"0x01" {"roles" [1]}
-                                                 "0x02" {"roles" [1]}
-                                                 "0x03" {"roles" [1]}
-                                                 "0x04" {"roles" [1]}}
-                           :can-request-access? false
-                           :outroMessage        "bla"
-                           :verified            false}]
+  (let [token-image-eth "data:image/jpeg;base64,/9j/2w"
+        channel-id-1    "89f98a1e-6776-4e5f-8626-8ab9f855253f"
+        channel-id-2    "a076358e-4638-470e-a3fb-584d0a542ce6"
+        chat-id-2       (str community-id channel-id-2)
+        community       {:id                  community-id
+                         :permissions         {:access 3}
+                         :token-images        {"ETH" token-image-eth}
+                         :name                "Community super name"
+                         :chats               {channel-id-1
+                                               {:description "x"
+                                                :emoji       "🎲"
+                                                :permissions {:access 1}
+                                                :color       "#88B0FF"
+                                                :name        "random"
+                                                :categoryID  "0c3c64e7-d56e-439b-a3fb-a946d83cb056"
+                                                :id          channel-id-1
+                                                :position    4
+                                                :can-post?   false
+                                                :members     nil}
+                                               channel-id-2
+                                               {:description  "General channel for the community"
+                                                :emoji        "🥔"
+                                                :permissions  {:access 1}
+                                                :color        "#4360DF"
+                                                :name         "general"
+                                                :categoryID   "0c3c64e7-d56e-439b-a3fb-a946d83cb056"
+                                                :id           channel-id-2
+                                                :position     0
+                                                :token-gated? true
+                                                :can-post?    false
+                                                :members      (clj->js {"0x01" {"roles" [1]}
+                                                                        "0x02" {"roles" [1]}
+                                                                        "0x05" {"roles" [1]}})}}
+                         :members             (js->clj {"0x01" {"roles" [1]}
+                                                        "0x02" {"roles" [1]}
+                                                        "0x03" {"roles" [1]}
+                                                        "0x04" {"roles" [1]}})
+                         :can-request-access? false
+                         :outroMessage        "bla"
+                         :verified            false}]
+    (testing "returns sorted community members per online status"
       (swap! rf-db/app-db assoc-in [:communities community-id] community)
       (swap! rf-db/app-db assoc :profile/profile profile-test/sample-profile)
       (swap! rf-db/app-db assoc
         :visibility-status-updates
         {"0x01" {:status-type constants/visibility-status-always-online}
          "0x02" {:status-type constants/visibility-status-always-online}})
-      (testing "a non-token gated community should look at all members of a community"
-        (is (= [{:title (i18n/label :t/online)
-                 :data  ["0x01" "0x02"]}
-                {:title (i18n/label :t/offline)
-                 :data  ["0x03" "0x04"]}]
-               (rf/sub [sub-name community-id chat-id-1]))))
-      (testing "a token gated community should use the members option in the channel"
-        (is (= [{:title (i18n/label :t/online)
-                 :data  ["0x01" "0x02"]}
-                {:title (i18n/label :t/offline)
-                 :data  ["0x05"]}]
-               (rf/sub [sub-name community-id chat-id-2])))))))
+      (is (= ["0x01" "0x02"]
+             (rf/sub [sub-name community-id chat-id-2 :online]))))
+
+    (testing "returns sorted community members per offline status"
+      (swap! rf-db/app-db assoc-in [:communities community-id] community)
+      (swap! rf-db/app-db assoc :profile/profile profile-test/sample-profile)
+      (swap! rf-db/app-db assoc
+        :visibility-status-updates
+        {"0x01" {:status-type constants/visibility-status-always-online}
+         "0x02" {:status-type constants/visibility-status-always-online}})
+      (is (= ["0x05"]
+             (rf/sub [sub-name community-id chat-id-2 :offline]))))))
