@@ -5,6 +5,7 @@
 (defn- get-dimensions
   [size]
   (case size
+    :size-32 32
     :size-24 24
     :size-20 20
     nil))
