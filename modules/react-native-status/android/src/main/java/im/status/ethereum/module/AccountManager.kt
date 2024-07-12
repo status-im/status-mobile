@@ -247,6 +247,14 @@ class AccountManager(private val reactContext: ReactApplicationContext) : ReactC
     }
 
     @ReactMethod
+    private fun initializeApplication(request: String, callback: Callback) {
+        Log.d(TAG, "initializeApplication")
+        Log.d(TAG, "[Initializing application $request")
+        utils.executeRunnableStatusGoMethod({ Statusgo.initializeApplication(request) }, callback)
+    }
+
+
+    @ReactMethod
     fun logout() {
         Log.d(TAG, "logout")
         val runnable = Runnable {

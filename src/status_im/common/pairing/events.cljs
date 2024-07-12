@@ -35,7 +35,9 @@
         user-in-syncing-devices-screen? (or (= (:view-id db) :screen/onboarding.syncing-progress)
                                             (= (:view-id db) :screen/profile.profiles)
                                             (= (:view-id db) :screen/onboarding.syncing-progress-intro))
-        user-in-sign-in-intro-screen?   (= (:view-id db) :screen/onboarding.sign-in-intro)]
+        user-in-sign-in-intro-screen?   (= (:view-id db) :screen/onboarding.sign-in-intro)
+        keystore-files-transfer-action? (= action
+                                           constants/local-pairing-action-keystore-files-transfer)]
     (merge {:db (cond-> db
                   connection-success?
                   (assoc-in [:syncing :pairing-status] :connected)
@@ -61,7 +63,7 @@
              (and completed-pairing? receiver?)
              {:dispatch [:profile.login/local-paired-user]}
 
-             (and error-on-pairing? (some? error))
+             (and error-on-pairing? (some? error) (not keystore-files-transfer-action?))
              {:dispatch [:toasts/upsert
                          {:type :negative
                           :text error}]}))))

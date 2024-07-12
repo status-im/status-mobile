@@ -186,9 +186,13 @@
 (rf/reg-event-fx
  :profile.login/biometric-success
  (fn [{:keys [db]}]
-   (let [key-uid (get-in db [:profile/login :key-uid])]
-     {:keychain/get-user-password [key-uid
-                                   #(rf/dispatch [:profile.login/get-user-password-success %])]})))
+   (let [key-uid  (get-in db [:profile/login :key-uid])
+         keycard? (get-in db [:profile/profiles-overview key-uid :keycard-pairing])]
+     (if keycard?
+       {:keychain/get-keycard-keys
+        [key-uid #(rf/dispatch [:keycard.login/on-get-keys-from-keychain-success key-uid %])]}
+       {:keychain/get-user-password
+        [key-uid #(rf/dispatch [:profile.login/get-user-password-success %])]}))))
 
 (rf/reg-event-fx
  :profile.login/biometric-auth-fail

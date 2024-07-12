@@ -11,6 +11,7 @@
     [status-im.common.bottom-sheet-screen.view :as bottom-sheet-screen]
     [status-im.common.bottom-sheet.view :as bottom-sheet]
     [status-im.common.toasts.view :as toasts]
+    [status-im.contexts.keycard.sheet.view :as keycard.sheet]
     [status-im.navigation.screens :as screens]
     [status-im.setup.hot-reload :as reloader]
     [utils.re-frame :as rf]))
@@ -119,6 +120,17 @@
      ^{:key (str "alert-banner" @reloader/cnt)}
      [quo.theme/provider :dark
       [alert-banner/view]])
+   functional-compiler))
+
+(def nfc-sheet-comp
+  (reagent/reactify-component
+   (fn []
+     (let [app-theme (rf/sub [:theme])]
+       ^{:key (str "nfc-sheet-" @reloader/cnt)}
+       [quo.theme/provider app-theme
+        [rn/keyboard-avoiding-view
+         {:style {:position :relative :flex 1}}
+         [keycard.sheet/connect-keycard]]]))
    functional-compiler))
 
 ;; LEGACY (should be removed in status 2.0)

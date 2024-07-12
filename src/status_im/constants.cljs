@@ -126,6 +126,7 @@
 (def ^:const profile-pictures-visibility-none 3)
 
 (def ^:const min-password-length 6)
+(def ^:const pincode-length 6)
 (def ^:const new-password-min-length 10)
 (def ^:const max-group-chat-participants 20)
 (def ^:const max-group-chat-name-length 24)
@@ -281,6 +282,7 @@
 (def ^:const wallet-connect-supported-events #{"accountsChanged" "chainChanged"})
 (def ^:const wallet-connect-session-proposal-event "session_proposal")
 (def ^:const wallet-connect-session-request-event "session_request")
+(def ^:const wallet-connect-user-rejected-error-key "USER_REJECTED")
 
 (def ^:const transaction-pending-type-wallet-connect-transfer "WalletConnectTransfer")
 
@@ -369,16 +371,18 @@
 (def ^:const local-pairing-role-receiver "receiver")
 
 ;; sender and receiver events
+(def ^:const local-pairing-event-peer-discovered "peer-discovered")
 (def ^:const local-pairing-event-connection-success "connection-success")
 (def ^:const local-pairing-event-connection-error "connection-error")
 (def ^:const local-pairing-event-transfer-success "transfer-success")
 (def ^:const local-pairing-event-transfer-error "transfer-error")
+(def ^:const local-pairing-event-received-installation "received-installation")
 
 ;; receiver events
 (def ^:const local-pairing-event-received-account "received-account")
 (def ^:const local-pairing-event-process-success "process-success")
 (def ^:const local-pairing-event-process-error "process-error")
-(def ^:const local-pairing-event-received-installation "received-installation")
+(def ^:const local-pairing-event-received-keystore-files "received-keystore-files")
 
 (def ^:const local-pairing-event-errors
   #{local-pairing-event-connection-error
@@ -389,6 +393,8 @@
 (def ^:const local-pairing-action-pairing-account 2)
 (def ^:const local-pairing-action-sync-device 3)
 (def ^:const local-pairing-action-pairing-installation 4)
+(def ^:const local-pairing-action-peer-discovery 5)
+(def ^:const local-pairing-action-keystore-files-transfer 6)
 
 (def ^:const serialization-key
   "We pass this serialization key as a parameter to MultiformatSerializePublicKey

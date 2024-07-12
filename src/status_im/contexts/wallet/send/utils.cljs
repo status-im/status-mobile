@@ -1,8 +1,8 @@
 (ns status-im.contexts.wallet.send.utils
   (:require
-    [legacy.status-im.utils.hex :as utils.hex]
     [native-module.core :as native-module]
     [status-im.contexts.wallet.common.utils.networks :as network-utils]
+    [utils.hex :as utils.hex]
     [utils.money :as money]))
 
 (defn amount-in-hex

@@ -457,6 +457,12 @@ android-tail-geth: export VERSION ?= debug
 android-tail-geth:
 	adb shell 'while true; do cat; sleep 1; done < /storage/emulated/0/Android/data/im.status.ethereum$$( [ "$(VERSION)" = "release" ] || echo ".$(VERSION)" )/files/Download/geth.log'
 
+android-clean-geth: export TARGET := android-sdk
+android-clean-geth: export VERSION ?= debug
+android-clean-geth:
+	adb shell 'rm /storage/emulated/0/Android/data/im.status.ethereum$$( [ "$(VERSION)" = "release" ] || echo ".$(VERSION)" )/files/Download/geth.log'
+
+
 android-logcat: export TARGET := android-sdk
 android-logcat: ##@other Read status-mobile logs from Android phone using adb
 	adb logcat | grep -e RNBootstrap -e ReactNativeJS -e ReactNative -e StatusModule -e StatusNativeLogs -e 'F DEBUG   :' -e 'Go      :' -e 'GoLog   :' -e 'libc    :'

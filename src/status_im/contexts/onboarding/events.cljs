@@ -73,7 +73,7 @@
                                       :onboarding/navigated-to-enter-seed-phrase-from-screen
                                       :screen/onboarding.new-to-status)]]
                :dispatch-later [{:ms       constants/onboarding-generating-keys-animation-duration-ms
-                                 :dispatch [:onboarding/navigate-to-identifiers]}]
+                                 :dispatch [:init-root :screen/onboarding.enable-notifications]}]
                :db             (-> db
                                    (dissoc :profile/login)
                                    (dissoc :auth-method)
