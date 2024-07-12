@@ -11,6 +11,14 @@
 ;; show the estimated time, but when we implement it, we should allow to change it
 (def ^:constant default-tx-priority :medium)
 
+;; NOTE: Currently the `wallet_buildTransaction` RPC doesn't estimate the `gas` for dynamic
+;; transactions, if `gas` is not present in the original transaction. Temporarily setting the
+;; default `gas` till the issue is fixed on status-go
+(def ^:constant default-gas
+  (->> 21000
+       native-module/number-to-hex
+       (str "0x")))
+
 (defn- strip-hex-prefix
   "Strips the extra 0 in hex value if present"
   [hex-value]
@@ -31,6 +39,11 @@
             tx
             tx-keys)))
 
+;; QUESTION: should we remove the nonce from the original tx so it's always set by status-go, so that
+;; we maintain the order of tx?
+;;
+;; Metamask seems to do so:
+;; https://docs.metamask.io/wallet/how-to/send-transactions#nonce
 (defn- prepare-transaction-for-rpc
   "Formats the transaction and transforms it into a stringified JS object, ready to be passed to an RPC call."
   [tx]
@@ -78,16 +91,23 @@
     tx))
 
 (defn- prepare-transaction-fees
+  "Makes sure the transaction has the correct gas and fees properties"
   [tx tx-priority suggested-fees]
   (let [gas-price (-> suggested-fees
                       :gasPrice
                       gwei->hex)]
     (-> (assoc tx
-               :gas      (:gasLimit tx)
+               ;; NOTE: `gasLimit` is ignored on status-go when building a transaction
+               ;; (`wallet_buildTransaction`), so we're setting it as the `gas` property
+               :gas      (or (:gasLimit tx)
+                             (:gas tx)
+                             default-gas)
                :gasPrice gas-price)
         (tx->eip1559-tx suggested-fees tx-priority))))
 
 (defn prepare-transaction
+  "Formats and builds the incoming transaction, adding the missing properties and returning the final
+  transaction, along with the transaction hash and the suggested fees"
   [tx chain-id tx-priority]
   (promesa/let [suggested-fees                    (rpc/wallet-get-suggested-fees chain-id)
                 {:keys [tx-args message-to-sign]} (->>

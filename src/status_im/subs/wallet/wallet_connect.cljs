@@ -55,6 +55,7 @@
        (wallet-connect-core/eip155->chain-id)
        (networks/get-network-details))))
 
+;; TODO: break this into smaller subs
 (rf/reg-sub
  :wallet-connect/current-request-transaction-information
  :<- [:wallet-connect/current-request]
