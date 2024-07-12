@@ -92,6 +92,11 @@ public class EncryptionUtils extends ReactContextBaseJavaModule {
         return Statusgo.hexToUtf8(str);
     }
 
+    @ReactMethod(isBlockingSynchronousMethod = true)
+    public String serializeLegacyKey(final String publicKey) {
+	return Statusgo.serializeLegacyKey(publicKey);
+    }
+
     @ReactMethod
     public void setBlankPreviewFlag(final Boolean blankPreview) {
         final SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this.reactContext);

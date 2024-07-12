@@ -333,6 +333,11 @@
              :key input-key})
   (.deserializeAndCompressKey ^js (encryption) input-key callback))
 
+(defn serialize-legacy-key
+  "Compresses an old format public key (0x04...) to the new one zQ..."
+  [public-key]
+  (.serializeLegacyKey ^js (encryption) public-key))
+
 (defn compressed-key->public-key
   "Provides compressed key to status-go and gets back the uncompressed public key via deserialization"
   [public-key deserialization-key callback]

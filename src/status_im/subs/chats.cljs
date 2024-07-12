@@ -5,7 +5,8 @@
     [re-frame.core :as re-frame]
     [status-im.constants :as constants]
     [status-im.contexts.chat.events :as chat.events]
-    [status-im.contexts.profile.utils :as profile.utils]))
+    [status-im.contexts.profile.utils :as profile.utils]
+    [status-im.subs.contact.utils :as contact.utils]))
 
 (def memo-chats-stack-items (atom nil))
 
@@ -259,8 +260,19 @@
  :chats/photo-path
  :<- [:contacts/contacts]
  :<- [:profile/profile-with-image]
- (fn [[contacts {:keys [public-key] :as multiaccount}] [_ id]]
-   (let [contact (or (when (= id public-key) multiaccount) (get contacts id))]
+ :<- [:mediaserver/port]
+ :<- [:initials-avatar-font-file]
+ :<- [:theme]
+ (fn [[contacts {:keys [public-key] :as multiaccount} port font-file theme] [_ id]]
+   (let [contact (or (when (= id public-key) multiaccount)
+                     (get contacts id)
+                     (contact.utils/replace-contact-image-uri
+                      {:contact    {:public-key          id
+                                    :customization-color constants/profile-default-color}
+                       :port       port
+                       :public-key id
+                       :font-file  font-file
+                       :theme      theme}))]
      (profile.utils/photo contact))))
 
 (re-frame/reg-sub
