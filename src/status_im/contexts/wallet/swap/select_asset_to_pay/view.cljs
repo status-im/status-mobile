@@ -5,6 +5,7 @@
     [status-im.contexts.wallet.common.account-switcher.view :as account-switcher]
     [status-im.contexts.wallet.common.asset-list.view :as asset-list]
     [status-im.contexts.wallet.swap.select-asset-to-pay.style :as style]
+    [status-im.setup.hot-reload :as hot-reload]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
@@ -40,8 +41,8 @@
         on-close                      (fn []
                                         (rf/dispatch [:wallet.swap/clean-asset-to-pay])
                                         (rf/dispatch [:navigate-back]))]
-    (rn/use-unmount (fn []
-                      (rf/dispatch [:wallet.swap/clean-asset-to-pay])))
+    (hot-reload/use-safe-unmount (fn []
+                                   (rf/dispatch [:wallet.swap/clean-asset-to-pay])))
     [rn/safe-area-view {:style style/container}
      [account-switcher/view
       {:on-press      on-close

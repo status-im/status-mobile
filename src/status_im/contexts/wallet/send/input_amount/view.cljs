@@ -16,6 +16,7 @@
     [status-im.contexts.wallet.sheets.buy-token.view :as buy-token]
     [status-im.contexts.wallet.sheets.unpreferred-networks-alert.view :as unpreferred-networks-alert]
     [status-im.feature-flags :as ff]
+    [status-im.setup.hot-reload :as hot-reload]
     [utils.debounce :as debounce]
     [utils.i18n :as i18n]
     [utils.money :as money]
@@ -322,6 +323,7 @@
        (let [dismiss-keyboard-fn   #(when (= % "active") (rn/dismiss-keyboard!))
              app-keyboard-listener (.addEventListener rn/app-state "change" dismiss-keyboard-fn)]
          #(.remove app-keyboard-listener))))
+    (hot-reload/use-safe-unmount on-navigate-back)
     (rn/use-effect
      (fn []
        (set-input-state #(controlled-input/set-upper-limit % current-limit)))
@@ -346,7 +348,7 @@
                                 (when (controlled-input/input-error input-state) "-error"))}
      [account-switcher/view
       {:icon-name     :i/arrow-left
-       :on-press      on-navigate-back
+       :on-press      #(rf/dispatch [:navigate-back])
        :switcher-type :select-account}]
      [quo/token-input
       {:container-style  style/input-container
