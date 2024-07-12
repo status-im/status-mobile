@@ -2,6 +2,7 @@
   (:require [quo.core :as quo]
             [react-native.core :as rn]
             [status-im.contexts.wallet.sheets.slippage-settings.view :as slippage-settings]
+            [status-im.contexts.wallet.sheets.select-asset.view :as select-asset]
             [status-im.contexts.wallet.swap.swap-proposal.style :as style]
             [utils.re-frame :as rf]))
 
@@ -9,6 +10,14 @@
   []
   (let [max-slippage (rf/sub [:wallet/swap-max-slippage])]
     [rn/view {:style style/container}
+     [quo/button
+      {:on-press #(rf/dispatch [:show-bottom-sheet
+                                {:content select-asset/view}])}
+      (str "Select Asset to Recieve")]
+     [quo/button
+      {:on-press #(rf/dispatch [:show-bottom-sheet
+                                {:content select-asset/view}])}
+      (str "Select Asset to Pay")]
      [quo/button
       {:on-press #(rf/dispatch [:show-bottom-sheet
                                 {:content slippage-settings/view}])}
