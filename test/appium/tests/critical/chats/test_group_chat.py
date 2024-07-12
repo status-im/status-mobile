@@ -12,7 +12,7 @@ from views.sign_in_view import SignInView
 
 
 @pytest.mark.xdist_group(name="new_one_3")
-@marks.new_ui_critical
+@marks.nightly
 class TestGroupChatMultipleDeviceMergedNewUI(MultipleSharedDeviceTestCase):
 
     def prepare_devices(self):
