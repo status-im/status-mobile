@@ -25,6 +25,8 @@
     status-im.contexts.communities.overview.events
     status-im.contexts.communities.sharing.events
     status-im.contexts.contact.blocking.events
+    status-im.contexts.keycard.effects
+    status-im.contexts.keycard.events
     status-im.contexts.onboarding.common.overlay.events
     status-im.contexts.onboarding.events
     status-im.contexts.profile.events
@@ -57,6 +59,9 @@
     :theme/init-theme nil
     :network/listen-to-network-info nil
     :effects.biometric/get-supported-type nil
+    :effects.keycard/register-card-events nil
+    :effects.keycard/check-nfc-enabled nil
+    :effects.keycard/retrieve-pairings nil
     ;;app starting flow continues in get-profiles-overview
     :profile/get-profiles-overview #(rf/dispatch [:profile/get-profiles-overview-success %])
     :effects.font/get-font-file-for-initials-avatar

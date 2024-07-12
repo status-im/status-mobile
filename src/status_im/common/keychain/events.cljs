@@ -144,6 +144,10 @@
  (fn [_ [opts]]
    {:keychain/save-password-and-auth-method opts}))
 
+(defn- whisper-key-name
+  [address]
+  (str address "-whisper"))
+
 ;; NOTE: migrating the plaintext password in the keychain
 ;; with the hashed one. Added due to the sync onboarding
 ;; flow, where the password arrives already hashed.
@@ -151,17 +155,38 @@
  :keychain/password-hash-migration
  (fn [{:keys [key-uid callback]
        :or   {callback identity}}]
-   (-> (get-password-migration! key-uid identity)
-       (.then (fn [migrated?]
-                (if migrated?
-                  (callback)
-                  (-> (get-user-password! key-uid identity)
-                      (.then security/hash-masked-password)
-                      (.then #(save-user-password! key-uid %))
-                      (.then #(save-password-migration! key-uid))
-                      (.then callback)))))
-       (.catch (fn [err]
-                 (log/error "Failed to migrate the keychain password"
-                            {:error   err
-                             :key-uid key-uid
-                             :event   :keychain/password-hash-migration}))))))
+   (keychain/get-credentials
+    (whisper-key-name key-uid)
+    (fn [whisper-key-data]
+      (if whisper-key-data
+        (callback) ;; we don't need to migrate keycard password
+        (-> (get-password-migration! key-uid identity)
+            (.then (fn [migrated?]
+                     (if migrated?
+                       (callback)
+                       (-> (get-user-password! key-uid identity)
+                           (.then security/hash-masked-password)
+                           (.then #(save-user-password! key-uid %))
+                           (.then #(save-password-migration! key-uid))
+                           (.then callback)))))
+            (.catch (fn [err]
+                      (log/error "Failed to migrate the keychain password"
+                                 {:error   err
+                                  :key-uid key-uid
+                                  :event   :keychain/password-hash-migration})))))))))
+
+(re-frame/reg-fx
+ :keychain/get-keycard-keys
+ (fn [[key-uid callback]]
+   (keychain/get-credentials
+    key-uid
+    (fn [encryption-key-data]
+      (if encryption-key-data
+        (keychain/get-credentials
+         (whisper-key-name key-uid)
+         (fn [whisper-key-data]
+           (if whisper-key-data
+             (callback [(oops/oget encryption-key-data "password")
+                        (oops/oget whisper-key-data "password")])
+             (callback nil))))
+        (callback nil))))))

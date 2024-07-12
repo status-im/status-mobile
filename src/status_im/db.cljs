@@ -41,10 +41,5 @@
    :visibility-status-updates          {}
    :stickers/packs-pending             #{}
    :settings/change-password           {}
-   :keycard                            {:nfc-enabled? false
-                                        :pin          {:original     []
-                                                       :confirmation []
-                                                       :current      []
-                                                       :puk          []
-                                                       :enter-step   :original}}
+   :keycard                            {}
    :theme                              :light})

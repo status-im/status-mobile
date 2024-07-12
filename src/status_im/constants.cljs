@@ -126,6 +126,7 @@
 (def ^:const profile-pictures-visibility-none 3)
 
 (def ^:const min-password-length 6)
+(def ^:const pincode-length 6)
 (def ^:const new-password-min-length 10)
 (def ^:const max-group-chat-participants 20)
 (def ^:const max-group-chat-name-length 24)

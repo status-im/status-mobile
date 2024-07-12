@@ -10,11 +10,14 @@
 
 (defn authorize
   [{:keys [db]} [args]]
-  (let [key-uid (get-in db [:profile/profile :key-uid])]
+  (let [key-uid  (get-in db [:profile/profile :key-uid])
+        keycard? (get-in db [:profile/profile :keycard-pairing])]
     {:fx [[:effects.biometric/check-if-available
            {:key-uid    key-uid
             :on-success #(rf/dispatch [:standard-auth/authorize-with-biometric args])
-            :on-fail    #(rf/dispatch [:standard-auth/authorize-with-password args])}]]}))
+            :on-fail    (if keycard?
+                          #(rf/dispatch [:standard-auth/authorize-with-keycard args])
+                          #(rf/dispatch [:standard-auth/authorize-with-password args]))}]]}))
 
 (schema/=> authorize events-schema/?authorize)
 (rf/reg-event-fx :standard-auth/authorize authorize)
@@ -45,8 +48,11 @@
 
 (defn on-biometric-success
   [{:keys [db]} [on-auth-success]]
-  (let [key-uid (get-in db [:profile/profile :key-uid])]
-    {:fx [[:keychain/get-user-password [key-uid on-auth-success]]
+  (let [key-uid  (get-in db [:profile/profile :key-uid])
+        keycard? (get-in db [:profile/profile :keycard-pairing])]
+    {:fx [(if keycard?
+            [:keychain/get-keycard-keys [key-uid on-auth-success]]
+            [:keychain/get-user-password [key-uid on-auth-success]])
           [:dispatch [:standard-auth/set-success true]]
           [:dispatch [:standard-auth/reset-login-password]]]}))
 

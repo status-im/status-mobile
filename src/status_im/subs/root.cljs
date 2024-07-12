@@ -9,6 +9,7 @@
     status-im.subs.community.account-selection
     status-im.subs.contact
     status-im.subs.general
+    status-im.subs.keycard
     status-im.subs.messages
     status-im.subs.onboarding
     status-im.subs.pairing
@@ -186,3 +187,6 @@
 ;; centralized-metrics
 (reg-root-key-sub :centralized-metrics/enabled? :centralized-metrics/enabled?)
 (reg-root-key-sub :centralized-metrics/user-confirmed? :centralized-metrics/user-confirmed?)
+
+;;keycard
+(reg-root-key-sub :keycard :keycard)
