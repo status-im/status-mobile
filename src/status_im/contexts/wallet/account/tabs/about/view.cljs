@@ -83,7 +83,7 @@
      {:style                   style/about-tab
       :content-container-style {:padding-bottom (+ constants/floating-shell-button-height 8)}}
      [quo/data-item
-      {:description     :default
+      {:subtitle-type   :default
        :right-icon      :i/options
        :card?           true
        :status          :default

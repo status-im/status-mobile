@@ -105,6 +105,7 @@
     [status-im.contexts.preview.quo.list-items.account-list-card :as
      account-list-card]
     [status-im.contexts.preview.quo.list-items.address :as address]
+    [status-im.contexts.preview.quo.list-items.approval-info :as approval-info]
     [status-im.contexts.preview.quo.list-items.channel :as channel]
     [status-im.contexts.preview.quo.list-items.dapp :as dapp]
     [status-im.contexts.preview.quo.list-items.missing-keypair :as missing-keypair]
@@ -144,6 +145,7 @@
      small-option-card]
     [status-im.contexts.preview.quo.password.password-tips :as password-tips]
     [status-im.contexts.preview.quo.password.tips :as tips]
+    [status-im.contexts.preview.quo.pin-input.pin-input :as pin-input]
     [status-im.contexts.preview.quo.profile.collectible :as collectible]
     [status-im.contexts.preview.quo.profile.collectible-list-item :as collectible-list-item]
     [status-im.contexts.preview.quo.profile.expanded-collectible :as expanded-collectible]
@@ -369,6 +371,8 @@
                         :component keyboard-key/view}
                        {:name      :numbered-keyboard
                         :component numbered-keyboard/view}]
+   :pin-input         [{:name      :pin-input
+                        :component pin-input/view}]
    :links             [{:name      :internal-link-card
                         :options   {:insets {:top true}}
                         :component internal-link-card/view}
@@ -387,6 +391,8 @@
                         :component account-list-card/view}
                        {:name      :address
                         :component address/view}
+                       {:name      :approval-info
+                        :component approval-info/view}
                        {:name      :channel
                         :component channel/view}
                        {:name      :community-list

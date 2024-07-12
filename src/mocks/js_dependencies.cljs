@@ -110,8 +110,11 @@
 (def status-keycard
   #js
    {:default #js
-              {:nfcIsSupported (fn [] #js {:then identity})
-               :nfcIsEnabled   (fn [] #js {:then identity})}})
+              {:nfcIsSupported     (fn [] #js {:then identity})
+               :nfcIsEnabled       (fn [] #js {:then identity})
+               :getApplicationInfo (fn [] #js {:then identity})
+               :getKeys            (fn [] #js {:then identity})
+               :setPairings        (fn [] #js {:then identity})}})
 
 (def snoopy #js {:default #js {}})
 (def snoopy-filter #js {:default #js {}})

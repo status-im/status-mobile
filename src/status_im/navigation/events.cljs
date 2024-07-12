@@ -74,11 +74,6 @@
   [{:keys [db]} root-id]
   {:set-root [root-id (:theme db)]})
 
-(rf/defn set-stack-root
-  {:events [:set-stack-root]}
-  [_ stack root]
-  {:set-stack-root-fx [stack root]})
-
 (rf/defn change-tab
   {:events [:navigate-change-tab]}
   [{:keys [db]} stack-id]

@@ -54,6 +54,7 @@
 
 (def subtitle-container
   {:flex-direction :row
+   :align-items    :center
    :margin-bottom  1})
 
 (def right-container
@@ -62,7 +63,7 @@
 
 (defn subtitle-icon-container
   [subtitle-type]
-  {:margin-right    (when (not= :default subtitle-type) 4)
+  {:margin-right    (when-not (contains? #{:editable :default} subtitle-type) 4)
    :justify-content :center})
 
 (defn title

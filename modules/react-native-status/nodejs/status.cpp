@@ -672,6 +672,38 @@ void _Sha3(const FunctionCallbackInfo<Value>& args) {
 
 }
 
+void _SerializeLegacyKey(const FunctionCallbackInfo<Value>& args) {
+	Isolate* isolate = args.GetIsolate();
+        Local<Context> context = isolate->GetCurrentContext();
+
+	if (args.Length() != 1) {
+		// Throw an Error that is passed back to JavaScript
+		isolate->ThrowException(Exception::TypeError(
+			String::NewFromUtf8Literal(isolate, "Wrong number of arguments for SerializeLegacyKey")));
+		return;
+	}
+
+	// Check the argument types
+
+	if (!args[0]->IsString()) {
+		isolate->ThrowException(Exception::TypeError(
+			String::NewFromUtf8Literal(isolate, "Wrong argument type for 'str'")));
+		return;
+	}
+
+
+	String::Utf8Value arg0Obj(isolate, args[0]->ToString(context).ToLocalChecked());
+	char *arg0 = *arg0Obj;
+
+	// Call exported Go function, which returns a C string
+	char *c = SerializeLegacyKey(arg0);
+
+	Local<String> ret = String::NewFromUtf8(isolate, c).ToLocalChecked();
+	args.GetReturnValue().Set(ret);
+	delete c;
+
+}
+
 void _ToChecksumAddress(const FunctionCallbackInfo<Value>& args) {
 	Isolate* isolate = args.GetIsolate();
         Local<Context> context = isolate->GetCurrentContext();
@@ -1976,6 +2008,7 @@ void init(Local<Object> exports) {
 	NODE_SET_METHOD(exports, "checkAddressChecksum", _CheckAddressChecksum);
 	NODE_SET_METHOD(exports, "isAddress", _IsAddress);
 	NODE_SET_METHOD(exports, "sha3", _Sha3);
+	NODE_SET_METHOD(exports, "serializeLegacyKey", _SerializeLegacyKey);
 	NODE_SET_METHOD(exports, "toChecksumAddress", _ToChecksumAddress);
 	NODE_SET_METHOD(exports, "logout", _Logout);
 	NODE_SET_METHOD(exports, "hashMessage", _HashMessage);

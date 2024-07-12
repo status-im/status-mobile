@@ -55,6 +55,7 @@
     quo.components.links.url-preview.component-spec
     quo.components.list-items.account.component-spec
     quo.components.list-items.address.component-spec
+    quo.components.list-items.approval-info.component-spec
     quo.components.list-items.channel.component-spec
     quo.components.list-items.community.component-spec
     quo.components.list-items.dapp.component-spec

@@ -40,6 +40,7 @@
    :color :purple
    :wallet true
    :default-account? true
+   :operable? true
    :name "Ethereum account"
    :type :generated
    :chat false
@@ -145,10 +146,7 @@
 (h/deftest-event :wallet/process-account-from-signal
   [event-id dispatch]
   (let [expected-effects {:db {:wallet {:accounts {address account}}}
-                          :fx [[:dispatch [:wallet/get-wallet-token-for-account address]]
-                               [:dispatch
-                                [:wallet/request-new-collectibles-for-account-from-signal address]]
-                               [:dispatch [:wallet/check-recent-history-for-account address]]]}]
+                          :fx [[:dispatch [:wallet/fetch-assets-for-address address]]]}]
     (reset! rf-db/app-db {:wallet {:accounts {}}})
     (is (match? expected-effects (dispatch [event-id raw-account])))))
 
@@ -169,9 +167,7 @@
                                                     :type               :seed
                                                     :lowest-operability :fully
                                                     :accounts           [account]}}}}
-          :fx [[:dispatch [:wallet/get-wallet-token-for-account address]]
-               [:dispatch [:wallet/request-new-collectibles-for-account-from-signal address]]
-               [:dispatch [:wallet/check-recent-history-for-account address]]]})
+          :fx [[:dispatch [:wallet/fetch-assets-for-address address]]]})
         (dispatch [event-id
                    [{:key-uid  keypair-key-uid
                      :type     "seed"
@@ -292,6 +288,7 @@
                                 (assoc raw-account
                                        :address "1x001"
                                        :chat    true)]}]]))))))
+
 (h/deftest-event :wallet/reconcile-watch-only-accounts
   [event-id dispatch]
   (testing "event adds new watch-only accounts"
@@ -303,10 +300,7 @@
         vector? matchers/equals
         map? matchers/equals]
        {:db {:wallet {:accounts {(:address account) account}}}
-        :fx [[:dispatch [:wallet/get-wallet-token-for-account address]]
-             [:dispatch
-              [:wallet/request-new-collectibles-for-account-from-signal address]]
-             [:dispatch [:wallet/check-recent-history-for-account address]]]})
+        :fx [[:dispatch [:wallet/fetch-assets-for-address address]]]})
       (dispatch [event-id [raw-account]]))))
   (testing "event removes watch-only accounts that are marked as removed"
     (reset! rf-db/app-db {:wallet {:accounts {(:address account) account}}})
@@ -316,8 +310,7 @@
        [set? matchers/set-equals
         vector? matchers/equals
         map? matchers/equals]
-       {:db {:wallet {:accounts {}}}
-        :fx []})
+       {:db {:wallet {:accounts {}}}})
       (dispatch [event-id [(assoc raw-account :removed true)]]))))
   (testing "event updates existing watch-only accounts"
     (reset! rf-db/app-db {:wallet
@@ -328,10 +321,8 @@
        [set? matchers/set-equals
         vector? matchers/equals
         map? matchers/equals]
-       {:db {:wallet {:accounts {address (assoc account :name "Test")}}}
-        :fx []})
+       {:db {:wallet {:accounts {address (assoc account :name "Test")}}}})
       (dispatch [event-id
                  [(assoc raw-account
                          :address address
                          :name    "Test")]])))))
-(cljs.test/run-tests)

@@ -159,4 +159,19 @@
                 :icon                :i/placeholder
                 :emoji               "🎮"
                 :customization-color :yellow}])
-    (h/is-truthy (h/query-by-label-text :account-emoji))))
+    (h/is-truthy (h/query-by-label-text :account-emoji)))
+
+  (h/test "edit icon is visible when subtitle type is editable"
+    (h/render [quo/data-item
+               {:on-press            (h/mock-fn)
+                :blur?               false
+                :card?               true
+                :status              :default
+                :size                :default
+                :title               "Label"
+                :subtitle            "Subtitle"
+                :subtitle-type       :editable
+                :icon                :i/placeholder
+                :emoji               "🎮"
+                :customization-color :yellow}])
+    (h/is-truthy (h/query-by-label-text :edit-icon))))

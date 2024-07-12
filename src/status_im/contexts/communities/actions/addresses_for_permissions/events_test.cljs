@@ -33,9 +33,15 @@
     (let [cofx
           {:db {:communities/all-addresses-to-reveal {community-id #{"0xA" "0xB" "0xC"}}
                 :communities/all-airdrop-addresses   {community-id "0xB"}
-                :wallet                              {:accounts {"0xB" {:address "0xB" :position 0}
-                                                                 "0xA" {:address "0xA" :position 1}
-                                                                 "0xC" {:address "0xC" :position 2}}}}}
+                :wallet                              {:accounts {"0xB" {:address   "0xB"
+                                                                        :operable? true
+                                                                        :position  0}
+                                                                 "0xA" {:address   "0xA"
+                                                                        :operable? true
+                                                                        :position  1}
+                                                                 "0xC" {:address   "0xC"
+                                                                        :operable? true
+                                                                        :position  2}}}}}
           addresses-to-reveal ["0xA" "0xC"]]
       (is (match?
            {:db {:communities/all-addresses-to-reveal
@@ -52,9 +58,9 @@
   (testing "sets flag from false -> true will mark all addresses to be revealed"
     (let [cofx                {:db
                                {:wallet
-                                {:accounts {"0xB" {:address "0xB" :position 0}
-                                            "0xA" {:address "0xA" :position 1}
-                                            "0xC" {:address "0xC" :position 2}}}
+                                {:accounts {"0xB" {:address "0xB" :operable? true :position 0}
+                                            "0xA" {:address "0xA" :operable? true :position 1}
+                                            "0xC" {:address "0xC" :operable? true :position 2}}}
                                 :communities/all-addresses-to-reveal {community-id #{"0xA"}}
                                 :communities/selected-share-all-addresses {community-id false}}}
           addresses-to-reveal #{"0xA" "0xB" "0xC"}]
