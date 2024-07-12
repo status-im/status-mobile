@@ -231,6 +231,20 @@
  (fn [multiaccount]
    (pos? (count (get multiaccount :images)))))
 
+(re-frame/reg-sub :profile/pictures-visibility
+ :<- [:profile/profile]
+ :-> :profile-pictures-visibility)
+
+(re-frame/reg-sub :profile/allow-new-contact-requests?
+ :<- [:profile/profile]
+ (fn [{:keys [messages-from-contacts-only]}]
+   (not messages-from-contacts-only)))
+
+(re-frame/reg-sub :profile/preview-privacy?
+ :<- [:profile/profile]
+ (fn [{:keys [preview-privacy?]}]
+   (boolean preview-privacy?)))
+
 (defn- replace-multiaccount-image-uri
   [profile ens-names port font-file avatar-opts theme]
   (let [{:keys [key-uid ens-name? images
