@@ -40,6 +40,7 @@
            :verifyENSContractAddress                     config/verify-ens-contract-address
            :verifyTransactionChainID                     config/verify-transaction-chain-id
            :wakuV2LightClient                            true
+           :wakuV2Fleet                                  config/fleet
            :wakuV2EnableStoreConfirmationForMessagesSent false
            :previewPrivacy                               config/blank-preview?
            :testNetworksEnabled                          config/test-networks-enabled?)))
