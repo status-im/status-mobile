@@ -8,16 +8,15 @@
 
 (defn page-container
   [insets]
-  {:flex            1
-   :justify-content :space-between
-   :padding-top     (+ (:top insets) 56)})
+  {:flex        1
+   :padding-top (+ (:top insets) 56)})
 
 (defn page-illustration
   [width]
-  {:flex           1
-   :padding-top    12
-   :padding-bottom 10
-   :width          width})
+  {:flex          1
+   :margin-top    12
+   :margin-bottom 10
+   :width         width})
 
 (defn buttons
   [insets]

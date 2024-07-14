@@ -51,7 +51,7 @@
   []
   (let [width (:width (rn/get-window))]
     [rn/image
-     {:resize-mode :contain
+     {:resize-mode :stretch
       :style       (style/page-illustration width)
       :source      (resources/get-image :biometrics)}]))
 

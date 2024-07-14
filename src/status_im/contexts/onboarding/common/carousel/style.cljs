@@ -5,12 +5,9 @@
 
 (defn header-container
   [status-bar-height content-width index header-background]
-  {:position         :absolute
-   :top              0
-   :left             (* content-width index)
+  {:margin-left      (* content-width index)
    :padding-top      (+ 30 status-bar-height)
    :width            content-width
-   :height           (+ 96 status-bar-height)
    :flex-direction   :row
    :background-color (when header-background colors/onboarding-header-black)})
 
@@ -62,9 +59,9 @@
    :top         (+ 12 status-bar-height)})
 
 (defn carousel-container
-  [left animate?]
-  (cond->> {:position       :absolute
-            :top            0
-            :flex-direction :row
-            :left           left}
-    animate? (reanimated/apply-animations-to-style {:left left})))
+  [left animate? width]
+  (cond->> {:flex-direction :row
+            :flex           1
+            :width          width
+            :margin-left    left}
+    animate? (reanimated/apply-animations-to-style {:margin-left left})))
