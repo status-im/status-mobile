@@ -86,7 +86,7 @@
 
 (def refresh-accounts-fx-dispatches
   [[:dispatch [:wallet/get-wallet-token-for-all-accounts]]
-   [:dispatch [:wallet/request-collectibles-for-all-accounts {:new-request? true}]]
+   [:dispatch [:wallet/request-collectibles-for-owned-accounts {:new-request? true}]]
    [:dispatch [:wallet/check-recent-history-for-all-accounts]]])
 
 (rf/reg-event-fx
