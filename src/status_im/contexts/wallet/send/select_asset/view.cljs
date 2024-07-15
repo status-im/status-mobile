@@ -30,13 +30,13 @@
   [search-text]
   (let [collectibles      (rf/sub [:wallet/current-viewing-account-collectibles-filtered search-text])
         search-performed? (not (string/blank? search-text))
-        address-prefix (rf/sub [:wallet/wallet-send-address-prefix])]
+        address-prefix    (rf/sub [:wallet/wallet-send-address-prefix])]
     [collectibles-tab/view
      {:collectibles         collectibles
       :filtered?            search-performed?
       :on-end-reached       #(rf/dispatch [:wallet/request-collectibles-for-current-viewing-account])
       :on-collectible-press (fn [{:keys [collectible]}]
-                              (utils/handle-collectible-confirm {:collectible collectible
+                              (utils/handle-collectible-confirm {:collectible    collectible
                                                                  :address-prefix address-prefix}))}]))
 
 (defn- tab-view

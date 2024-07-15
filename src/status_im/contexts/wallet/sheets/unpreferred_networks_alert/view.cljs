@@ -16,7 +16,8 @@
    [quo/text
     {:style style/sending-to-unpreferred-networks-text
      :size  :paragraph-1}
-    (i18n/label :t/sending-to-networks-the-receiver-does-not-prefer {:item (if collectible-tx? (i18n/label :t/collectible) (i18n/label :t/tokens))})]
+    (i18n/label :t/sending-to-networks-the-receiver-does-not-prefer
+                {:item (if collectible-tx? (i18n/label :t/collectible) (i18n/label :t/tokens))})]
    [quo/bottom-actions
     {:actions          :two-actions
      :button-two-label (i18n/label :t/cancel)
