@@ -1,0 +1,95 @@
+#!/usr/bin/env groovy
+library 'status-jenkins-lib@v1.9.1'
+
+/* Options section can't access functions in objects. */
+def isPRBuild = utils.isPRBuild()
+
+pipeline {
+  agent { label 'linux && x86_64 && nix-2.19' }
+
+  options {
+    timestamps()
+    /* Prevent Jenkins jobs from running forever */
+    timeout(time: 20, unit: 'MINUTES')
+    /* Limit builds retained */
+    buildDiscarder(logRotator(
+      numToKeepStr: '10',
+      daysToKeepStr: '20',
+      artifactNumToKeepStr: '1',
+    ))
+    /* Abort old PR builds. */
+    disableConcurrentBuilds(
+      abortPrevious: isPRBuild
+    )
+  }
+
+  parameters {
+    string(
+      name: 'BUILD_TYPE',
+      description: 'Specify build type. Values: pr / e2e / nightly / release',
+      defaultValue: 'pr',
+    )
+    booleanParam(
+      name: 'RUN_CONTRACT_TESTS',
+      description: 'Whether to run optional and slow contract tests.',
+      defaultValue: false,
+    )
+  }
+
+  environment {
+    LANG     = 'en_US.UTF-8'
+    LC_ALL   = 'en_US.UTF-8'
+    LANGUAGE = 'en_US.UTF-8'
+    PLATFORM = 'tests'
+    BUILD_ENV = 'prod'
+    NIX_CONF_DIR = "${env.WORKSPACE}/nix"
+    LOG_FILE = utils.pkgFilename(ext: 'log', arch: 'tests')
+    CLJ_LINTER_PRINT_WARNINGS = 'true'
+  }
+
+  stages {
+    stage('Test') {
+      parallel {
+        stage('Lint') {
+          steps { make('lint') }
+        }
+        stage('Unit') {
+          steps { make('test-unit') }
+        }
+        stage('Component') {
+          steps { make('test-component') }
+        }
+      }
+    }
+    stage('Heavy Test') {
+      parallel {
+        stage('Contract') {
+          when { expression { params.RUN_CONTRACT_TESTS } }
+          steps { make('test-contract') }
+        }
+        stage('Integration') {
+          steps { make('test-integration') }
+        }
+      }
+    }
+    stage('Upload') {
+      steps {
+        script {
+          env.PKG_URL = s5cmd.upload(LOG_FILE)
+        }
+      }
+    }
+  }
+  post {
+    success { script { github.notifyPR(true) } }
+    failure { script { github.notifyPR(false) } }
+    always  { sh 'make purge' }
+  }
+}
+
+def make(target) {
+  sh """#!/bin/bash
+    set -eo pipefail
+    make ${target} 2>&1 | tee -a ${LOG_FILE}
+  """
+}
