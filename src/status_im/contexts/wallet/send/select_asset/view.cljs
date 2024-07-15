@@ -37,7 +37,7 @@
       :on-end-reached       #(rf/dispatch [:wallet/request-collectibles-for-current-viewing-account])
       :on-collectible-press (fn [{:keys [collectible]}]
                               (utils/on-asset-or-address-confirm {:collectible    collectible
-                                                                 :address-prefix address-prefix}))}]))
+                                                                  :address-prefix address-prefix}))}]))
 
 (defn- tab-view
   [search-text selected-tab on-change-text]
