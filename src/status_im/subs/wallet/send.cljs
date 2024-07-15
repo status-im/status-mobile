@@ -26,6 +26,11 @@
  :-> :transaction-ids)
 
 (rf/reg-sub
+ :wallet/just-completed-transaction
+ :<- [:wallet/wallet-send]
+ :-> :just-completed-transaction?)
+
+(rf/reg-sub
  :wallet/wallet-send-amount
  :<- [:wallet/wallet-send]
  :-> :amount)

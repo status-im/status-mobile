@@ -15,6 +15,7 @@
     [status-im.contexts.wallet.common.utils :as common.utils]
     [status-im.contexts.wallet.sheets.account-origin.view :as account-origin]
     [status-im.feature-flags :as ff]
+    [status-im.setup.hot-reload :as hot-reload]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]
     [utils.responsiveness :as responsiveness]
@@ -313,7 +314,7 @@
             error                           (or @account-name-error @emoji-and-color-error?)]
 
         (rn/use-mount #(check-emoji-and-color-error @emoji @account-color))
-        (rn/use-unmount #(rf/dispatch [:wallet/clear-create-account]))
+        (hot-reload/use-safe-unmount #(rf/dispatch [:wallet/clear-create-account]))
 
         (if keypair-name
           [add-new-keypair-variant

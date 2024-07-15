@@ -566,3 +566,6 @@
 (def ^:const default-slippage 0.5)
 (def ^:const max-recommended-slippage 5)
 (def ^:const max-slippage-decimal-places 2)
+(def ^:const swap-default-provider
+  {:name                     "Paraswap"
+   :terms-and-conditions-url "https://files.paraswap.io/tos_v4.pdf"})

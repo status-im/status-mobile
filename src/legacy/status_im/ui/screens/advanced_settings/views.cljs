@@ -18,6 +18,7 @@
   [{:keys [current-log-level
            telemetry-enabled?
            light-client-enabled?
+           store-confirmations-enabled?
            current-fleet
            test-networks-enabled?
            is-goerli-enabled?
@@ -78,6 +79,15 @@
      :accessory :switch
      :active light-client-enabled?}
     {:size :small
+     :title (i18n/label :t/store-confirmations)
+     :accessibility-label :store-confirmations
+     :container-margin-bottom 8
+     :on-press
+     #(re-frame/dispatch
+       [:wakuv2.ui/toggle-store-confirmations (not store-confirmations-enabled?)])
+     :accessory :switch
+     :active store-confirmations-enabled?}
+    {:size :small
      :title "Testnet mode"
      :accessibility-label :test-networks-enabled
      :container-margin-bottom 8
@@ -114,13 +124,14 @@
 
 (views/defview advanced-settings
   []
-  (views/letsubs [test-networks-enabled? [:profile/test-networks-enabled?]
-                  is-goerli-enabled?     [:profile/is-goerli-enabled?]
-                  light-client-enabled?  [:profile/light-client-enabled?]
-                  telemetry-enabled?     [:profile/telemetry-enabled?]
-                  current-log-level      [:log-level/current-log-level]
-                  current-fleet          [:fleets/current-fleet]
-                  peer-syncing-enabled?  [:profile/peer-syncing-enabled?]]
+  (views/letsubs [test-networks-enabled?       [:profile/test-networks-enabled?]
+                  is-goerli-enabled?           [:profile/is-goerli-enabled?]
+                  light-client-enabled?        [:profile/light-client-enabled?]
+                  store-confirmations-enabled? [:profile/store-confirmations-enabled?]
+                  telemetry-enabled?           [:profile/telemetry-enabled?]
+                  current-log-level            [:log-level/current-log-level]
+                  current-fleet                [:fleets/current-fleet]
+                  peer-syncing-enabled?        [:profile/peer-syncing-enabled?]]
     [:<>
      [quo/page-nav
       {:type       :title
@@ -130,13 +141,14 @@
        :on-press   #(rf/dispatch [:navigate-back])}]
      [list/flat-list
       {:data      (flat-list-data
-                   {:current-log-level      current-log-level
-                    :telemetry-enabled?     telemetry-enabled?
-                    :light-client-enabled?  light-client-enabled?
-                    :current-fleet          current-fleet
-                    :dev-mode?              false
-                    :test-networks-enabled? test-networks-enabled?
-                    :is-goerli-enabled?     is-goerli-enabled?
-                    :peer-syncing-enabled?  peer-syncing-enabled?})
+                   {:current-log-level            current-log-level
+                    :telemetry-enabled?           telemetry-enabled?
+                    :light-client-enabled?        light-client-enabled?
+                    :store-confirmations-enabled? store-confirmations-enabled?
+                    :current-fleet                current-fleet
+                    :dev-mode?                    false
+                    :test-networks-enabled?       test-networks-enabled?
+                    :is-goerli-enabled?           is-goerli-enabled?
+                    :peer-syncing-enabled?        peer-syncing-enabled?})
        :key-fn    (fn [_ i] (str i))
        :render-fn render-item}]]))

@@ -35,13 +35,11 @@ pipeline {
       description: 'OBSOLETE ARGUMENT TO BE REMOVED',
       defaultValue: 'DUMMY',
     )
-    /* Commented to use TEST_MARKERS values from job params
     string(
       name: 'TEST_MARKERS',
       description: 'Marker expression for matching tests to run.',
-      defaultValue: 'new_ui_critical',
+      defaultValue: 'smoke',
     )
-    */
   }
 
   options {

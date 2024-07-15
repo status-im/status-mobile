@@ -9,6 +9,7 @@
     [status-im.contexts.wallet.common.account-switcher.view :as account-switcher]
     [status-im.contexts.wallet.common.utils :as utils]
     [status-im.contexts.wallet.common.utils.networks :as network-utils]
+    [status-im.setup.hot-reload :as hot-reload]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
@@ -52,7 +53,7 @@
         bridge-to-title  (i18n/label :t/bridge-to
                                      {:name (string/upper-case (str token-symbol))})]
 
-    (rn/use-unmount #(rf/dispatch [:wallet/clean-bridge-to-selection]))
+    (hot-reload/use-safe-unmount #(rf/dispatch [:wallet/clean-bridge-to-selection]))
 
     [rn/view
      [account-switcher/view
