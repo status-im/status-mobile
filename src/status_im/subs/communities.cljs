@@ -210,6 +210,13 @@
    (if (or (empty? @memo-communities-stack-items) (= view-id :communities-stack))
      (let [grouped-communities (->> communities
                                     vals
+                                    ;; Remove data that can grow fast or is
+                                    ;; reliably not needed to list communities.
+                                    ;; We could use an allowlist of keys for
+                                    ;; optimal performance of this sub, but
+                                    ;; that's harder to maintain in case we miss
+                                    ;; any key.
+                                    (map #(dissoc % :members :chats :token-permissions :tokens-metadata))
                                     (group-by #(group-communities-by-status requests %))
                                     merge-opened-communities
                                     (map (fn [[k v]]
