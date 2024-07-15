@@ -6,6 +6,7 @@
     [status-im.contexts.wallet.common.account-switcher.view :as account-switcher]
     [status-im.contexts.wallet.common.asset-list.view :as asset-list]
     [status-im.contexts.wallet.common.collectibles-tab.view :as collectibles-tab]
+    [status-im.contexts.wallet.common.utils :as utils]
     [status-im.contexts.wallet.send.select-asset.style :as style]
     [status-im.setup.hot-reload :as hot-reload]
     [utils.i18n :as i18n]
@@ -28,15 +29,15 @@
 (defn collectibles-grid
   [search-text]
   (let [collectibles      (rf/sub [:wallet/current-viewing-account-collectibles-filtered search-text])
-        search-performed? (not (string/blank? search-text))]
+        search-performed? (not (string/blank? search-text))
+        address-prefix (rf/sub [:wallet/wallet-send-address-prefix])]
     [collectibles-tab/view
      {:collectibles         collectibles
       :filtered?            search-performed?
       :on-end-reached       #(rf/dispatch [:wallet/request-collectibles-for-current-viewing-account])
       :on-collectible-press (fn [{:keys [collectible]}]
-                              (rf/dispatch [:wallet/set-collectible-to-send
-                                            {:collectible    collectible
-                                             :current-screen :screen/wallet.select-asset}]))}]))
+                              (utils/handle-collectible-confirm {:collectible collectible
+                                                                 :address-prefix address-prefix}))}]))
 
 (defn- tab-view
   [search-text selected-tab on-change-text]

@@ -9,6 +9,7 @@
     [reagent.core :as reagent]
     [status-im.common.floating-button-page.view :as floating-button-page]
     [status-im.constants :as constants]
+    [status-im.contexts.wallet.collectible.utils :as collectible.utils]
     [status-im.contexts.wallet.common.account-switcher.view :as account-switcher]
     [status-im.contexts.wallet.common.utils :as utils]
     [status-im.contexts.wallet.common.utils.networks :as network-utils]
@@ -16,11 +17,13 @@
     [status-im.contexts.wallet.item-types :as types]
     [status-im.contexts.wallet.send.select-address.style :as style]
     [status-im.contexts.wallet.send.select-address.tabs.view :as tabs]
+    [status-im.contexts.wallet.send.utils :as send-utils]
     [status-im.feature-flags :as ff]
     [status-im.setup.hot-reload :as hot-reload]
     [utils.debounce :as debounce]
     [utils.i18n :as i18n]
-    [utils.re-frame :as rf]))
+    [utils.re-frame :as rf]
+    [status-im.contexts.wallet.sheets.unpreferred-networks-alert.view :as unpreferred-networks-alert]))
 
 (def ^:private tabs-data
   [{:id :tab/recent :label (i18n/label :t/recent) :accessibility-label :recent-tab}
@@ -108,10 +111,7 @@
     (let [props {:on-press      (fn []
                                   (let [address (if accounts (:address (first accounts)) address)]
                                     (when-not ens
-                                      (rf/dispatch [:wallet/select-send-address
-                                                    {:address   address
-                                                     :recipient local-suggestion
-                                                     :stack-id  :screen/wallet.select-address}]))))
+                                      (utils/handle-collectible-confirm {:address address :recipient local-suggestion}))))
                  :active-state? false}]
       (cond
         (= type types/saved-address)
@@ -152,20 +152,16 @@
       :type                :primary
       :disabled?           (not valid-ens-or-address?)
       :on-press            (fn []
-                             (let [address              (or
-                                                         local-suggestion-address
-                                                         input-value)
+                             (let [address                     (or
+                                                                 local-suggestion-address
+                                                                 input-value)
                                    [_ splitted-address] (network-utils/split-network-full-address
-                                                         address)]
-                               (rf/dispatch
-                                [:wallet/select-send-address
-                                 {:address address
-                                  :recipient {:label
-                                              (utils/get-shortened-address
-                                               splitted-address)
-                                              :recipient-type :address}
-                                  :stack-id
-                                  :screen/wallet.select-address}])))
+                                                          address)
+                                   recipient {:label
+                                               (utils/get-shortened-address
+                                                 splitted-address)
+                                               :recipient-type :address}]
+                               (utils/handle-collectible-confirm {:address address :recipient recipient})))
       :customization-color color}
      (i18n/label :t/continue)]))
 

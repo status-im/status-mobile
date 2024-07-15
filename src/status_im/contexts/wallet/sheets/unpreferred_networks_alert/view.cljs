@@ -5,7 +5,8 @@
             [utils.i18n :as i18n]))
 
 (defn view
-  [{:keys [on-confirm]}]
+  [{:keys [on-confirm collectible-tx?]}]
+  (println "qqqq" collectible-tx?)
   [:<>
    [quo/text
     {:style  style/sending-to-unpreferred-networks-title
@@ -15,7 +16,7 @@
    [quo/text
     {:style style/sending-to-unpreferred-networks-text
      :size  :paragraph-1}
-    (i18n/label :t/sending-to-networks-the-receiver-does-not-prefer)]
+    (i18n/label :t/sending-to-networks-the-receiver-does-not-prefer {:item (if collectible-tx? (i18n/label :t/collectible) (i18n/label :t/tokens))})]
    [quo/bottom-actions
     {:actions          :two-actions
      :button-two-label (i18n/label :t/cancel)

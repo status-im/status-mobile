@@ -2712,7 +2712,7 @@
     "add-networks-token-can-be-sent-to": "Add networks {{token-symbol}} can be sent to",
     "not-available": "Not available",
     "token-not-available-on-networks": "{{token-symbol}} is not available on {{networks}}.",
-    "sending-to-networks-the-receiver-does-not-prefer": "Sending to networks the receiver does not prefer may result in recipient having difficulty accessing the sent tokens.",
+    "sending-to-networks-the-receiver-does-not-prefer": "Sending to networks the receiver does not prefer may result in recipient having difficulty accessing the sent {{item}}.",
     "proceed-anyway": "Proceed anyway",
     "sending-to-unpreferred-networks": "Sending to unpreferred networks",
     "review-send": "Review send",
@@ -2758,5 +2758,10 @@
     "swaps-powered-by": "Swaps powered by {{provider}}",
     "max-slippage": "Max slippage",
     "pay": "Pay",
+<<<<<<< HEAD
     "store-confirmations": "Store confirmations"
+=======
+    "tokens": "tokens",
+    "collectible": "collectible"
+>>>>>>> c6c9400408 (collectible unpreferred alert)
 }

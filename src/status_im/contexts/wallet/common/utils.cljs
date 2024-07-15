@@ -3,8 +3,12 @@
             [quo.foundations.resources :as resources]
             [status-im.common.qr-codes.view :as qr-codes]
             [status-im.constants :as constants]
+            [status-im.contexts.wallet.common.utils.networks :as network-utils]
+            [status-im.contexts.wallet.send.utils :as send-utils]
+            [status-im.contexts.wallet.sheets.unpreferred-networks-alert.view :as unpreferred-networks-alert]
             [utils.money :as money]
             [utils.number :as number]
+            [utils.re-frame :as rf]
             [utils.string]))
 
 (defn get-first-name
@@ -314,3 +318,34 @@
                      priority   (get token-priority (:token token) 999)]
                  [(- fiat-value) priority]))
              calculated-tokens)))
+
+(defn handle-collectible-confirm
+  [{:keys [address address-prefix recipient collectible]}]
+  (let [[prefix] (when address (split-prefix-and-address address))
+        receiver-networks           (network-utils/resolve-receiver-networks
+                                      {:prefix           (or address-prefix prefix)
+                                       :testnet-enabled? (rf/sub [:profile/test-networks-enabled?])
+                                       :goerli-enabled?  (rf/sub [:profile/is-goerli-enabled?])})
+        collectible-tx?           (or (some? collectible) (send-utils/tx-type-collectible? (rf/sub [:wallet/wallet-send-tx-type])))
+        send-transaction-data     (rf/sub [:wallet/wallet-send])
+        collectible-network         (-> (or collectible (:collectible send-transaction-data)) :id :contract-id :chain-id)
+        collectible-to-unpreferred? (when collectible-tx?
+                                      (not (some #(= collectible-network %) receiver-networks)))
+        on-confirm                  (fn []
+                                      (if collectible
+                                        (rf/dispatch [:wallet/set-collectible-to-send
+                                                      {:collectible    collectible
+                                                       :current-screen :screen/wallet.select-asset}])
+                                        (rf/dispatch
+                                          [:wallet/select-send-address
+                                           {:address   address
+                                            :recipient recipient
+                                            :stack-id
+                                            :screen/wallet.select-address}])))]
+    (if collectible-to-unpreferred?
+      (rf/dispatch [:show-bottom-sheet
+                    {:content
+                     (fn []
+                       [unpreferred-networks-alert/view {:on-confirm      on-confirm
+                                                         :collectible-tx? collectible-tx?}])}])
+      (on-confirm))))
