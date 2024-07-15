@@ -1,0 +1,9 @@
+{
+    "_comment": "THIS SHOULD NOT BE EDITED BY HAND.",
+    "_comment": "Instead use: scripts/update-status-go.sh <rev>",
+    "owner": "status-im",
+    "repo": "status-go",
+    "version": "v0.182.35",
+    "commit-sha1": "484b8aca1a12718c9b3940f8a398e60ee4419600",
+    "src-sha256": "1xnpx86k54lnsw93xw6la0sggd9y0nm7hn70cm0qgmq2qg8pzb3a"
+}
