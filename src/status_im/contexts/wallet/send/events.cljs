@@ -187,15 +187,8 @@
 (rf/reg-event-fx
  :wallet/update-receiver-networks
  (fn [{:keys [db]} [selected-networks]]
-   (let [amount                           (get-in db [:wallet :ui :send :amount])
-         disabled-from-chain-ids          (get-in db [:wallet :ui :send :disabled-from-chain-ids])
-         filtered-disabled-from-chain-ids (filter (fn [chain-id]
-                                                    (some #(= chain-id %)
-                                                          selected-networks))
-                                                  disabled-from-chain-ids)]
-     {:db (-> db
-              (assoc-in [:wallet :ui :send :receiver-networks] selected-networks)
-              (assoc-in [:wallet :ui :send :disabled-from-chain-ids] filtered-disabled-from-chain-ids))
+   (let [amount (get-in db [:wallet :ui :send :amount])]
+     {:db (assoc-in db [:wallet :ui :send :receiver-networks] selected-networks)
       :fx [[:dispatch [:wallet/get-suggested-routes {:amount amount}]]]})))
 
 (rf/reg-event-fx
