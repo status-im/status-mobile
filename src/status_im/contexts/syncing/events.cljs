@@ -46,12 +46,28 @@
   (log/info "[local-pairing] input-connection-string-for-bootstrapping callback"
             {:response res
              :event    :syncing/input-connection-string-for-bootstrapping})
-  (let [error (when (sync-utils/extract-error res)
-                (str "generic-error: " res))]
-    (when (some? error)
+  (let [response        (transforms/json->clj res)
+        installation-id (:installationId response)
+        key-uid         (:keyUID response)
+        error           (:error response)]
+    (when (seq installation-id)
+      (rf/dispatch [:syncing/set-syncing-installation-id installation-id key-uid]))
+    (when (seq error)
       (rf/dispatch [:toasts/upsert
                     {:type :negative
                      :text error}]))))
+
+(rf/defn initiate-pairing-process
+  {:events [:syncing/initiate-pairing-process]}
+  [{:keys [db]}]
+  {:db (assoc db :syncing/pairing-process-initiated? true)})
+
+(rf/defn set-syncing-installation-id
+  {:events [:syncing/set-syncing-installation-id]}
+  [{:keys [db]} installation-id key-uid]
+  {:db (assoc db
+              :syncing/key-uid key-uid
+              :syncing/installation-id installation-id)})
 
 (rf/defn preflight-outbound-check-for-local-pairing
   {:events [:syncing/preflight-outbound-check]}
@@ -96,6 +112,7 @@
                             (when (sync-utils/valid-connection-string? response)
                               (on-valid-connection-string response)
                               (rf/dispatch [:syncing/update-role constants/local-pairing-role-sender])
+                              (rf/dispatch [:syncing/initiate-pairing-process])
                               (rf/dispatch [:hide-bottom-sheet])))]
     (when-not (and error (string/blank? error))
       (let [key-uid    (get-in db [:profile/profile :key-uid])

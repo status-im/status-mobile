@@ -124,6 +124,8 @@
               :on-success [:profile.login/node-info-fetched]
               :on-error   #(log/error "node-info: failed error" %)}]]
            [:pairing/get-our-installations]
+           (when (:syncing/installation-id db)
+             [:dispatch [:pairing/finish-seed-phrase-fallback-syncing]])
            (when-not new-account?
              [:dispatch [:universal-links/process-stored-event]])]})))
 

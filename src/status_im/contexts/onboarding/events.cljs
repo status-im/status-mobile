@@ -125,25 +125,31 @@
                                                           mnemonic key-uid]))
                                     on-error]})
 
+;; TODO: clear syncing data if key-uid does not match
 (rf/defn seed-phrase-validated
   {:events [:onboarding/seed-phrase-validated]}
   [{:keys [db]} seed-phrase key-uid]
-  (if (contains? (:profile/profiles-overview db) key-uid)
-    {:effects.utils/show-confirmation
-     {:title               (i18n/label :t/multiaccount-exists-title)
-      :content             (i18n/label :t/multiaccount-exists-content)
-      :confirm-button-text (i18n/label :t/unlock)
-      :on-accept           (fn []
-                             (re-frame/dispatch [:pop-to-root :screen/profile.profiles])
-                             (re-frame/dispatch
-                              [:profile/profile-selected key-uid]))
-      :on-cancel           #(re-frame/dispatch [:pop-to-root :multiaccounts])}}
-    {:db       (assoc-in db [:onboarding/profile :seed-phrase] seed-phrase)
-     :dispatch [:navigate-to-within-stack
-                [:screen/onboarding.create-profile
-                 (get db
-                      :onboarding/navigated-to-enter-seed-phrase-from-screen
-                      :screen/onboarding.new-to-status)]]}))
+  (let [next-screen (if (and (seq (:syncing/key-uid db))
+                             (= (:syncing/key-uid db) key-uid))
+                      :screen/onboarding.create-profile-password
+                      :screen/onboarding.create-profile)]
+
+    (if (contains? (:profile/profiles-overview db) key-uid)
+      {:effects.utils/show-confirmation
+       {:title               (i18n/label :t/multiaccount-exists-title)
+        :content             (i18n/label :t/multiaccount-exists-content)
+        :confirm-button-text (i18n/label :t/unlock)
+        :on-accept           (fn []
+                               (re-frame/dispatch [:pop-to-root :screen/profile.profiles])
+                               (re-frame/dispatch
+                                [:profile/profile-selected key-uid]))
+        :on-cancel           #(re-frame/dispatch [:pop-to-root :multiaccounts])}}
+      {:db       (assoc-in db [:onboarding/profile :seed-phrase] seed-phrase)
+       :dispatch [:navigate-to-within-stack
+                  [next-screen
+                   (get db
+                        :onboarding/navigated-to-enter-seed-phrase-from-screen
+                        :screen/onboarding.new-to-status)]]})))
 
 (rf/defn navigate-to-create-profile
   {:events [:onboarding/navigate-to-create-profile]}

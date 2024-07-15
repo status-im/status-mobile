@@ -4,6 +4,7 @@
     [re-frame.core :as re-frame]
     [react-native.platform :as utils.platform]
     [status-im.common.json-rpc.events :as json-rpc]
+    [status-im.common.new-device-sheet.view :as new-device-sheet]
     [status-im.config :as config]
     [status-im.navigation.events :as navigation]
     [taoensso.timbre :as log]
@@ -220,6 +221,11 @@
                   :name            (:name metadata)
                   :device-type     (:deviceType metadata))})
 
+
+(defn should-show-syncing-pop-up? [db installations]
+  (and (:syncing/pairing-process-initiated? db)
+       (first (filter #(not (get-in db [:pairing/installations (:id %)])) installations))))
+
 (rf/defn handle-installations
   [{:keys [db]} installations]
   {:db (update db
@@ -228,7 +234,9 @@
                  (fn [acc {:keys [id] :as i}]
                    (update acc id merge (installation<-rpc i)))
                  %
-                 installations))})
+                 installations))
+   :fx [(when-let [new-installation (should-show-syncing-pop-up? db installations)]
+          [:dispatch [:show-bottom-sheet {:content (fn [] [new-device-sheet/view (:id new-installation)])}]])]})
 
 (rf/defn load-installations
   {:events [:pairing.callback/get-our-installations-success]}
@@ -242,6 +250,22 @@
                         (installation<-rpc i)))
                {}
                installations))})
+
+(rf/defn finish-seed-phrase-fallback-syncing
+  {:events [:pairing/finish-seed-phrase-fallback-syncing]}
+  [{:keys [db]}]
+  {:fx [[:dispatch [:show-bottom-sheet {:content (fn [] [new-device-sheet/view-2])}]]
+        [:json-rpc/call [{:method     "wakuext_finishPairingThroughSeedPhraseProcess"
+                          :params     [{:installationId (:syncing/installation-id db)}]
+                          :js-response true
+                          :on-success  #(rf/dispatch [:sanitize-messages-and-process-response %])}]]]})
+
+(rf/defn pair-and-sync
+  {:events [:pairing/pair-and-sync]}
+  [cofx installation-id]
+  {:fx [[:json-rpc/call [{:method     "wakuext_enableAndSyncInstallation"
+                          :params     [{:installationId installation-id}]
+                          :on-success #(log/debug "successfully synced devices")}]]]})
 
 (rf/defn enable-installation-success
   {:events [:pairing.callback/enable-installation-success]}

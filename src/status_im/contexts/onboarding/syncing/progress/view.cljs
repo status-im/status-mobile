@@ -26,31 +26,58 @@
     :title-accessibility-label       :progress-screen-title
     :description-accessibility-label :progress-screen-sub-title}])
 
+(defn navigate-to-enter-seed-phrase
+  [view-id]
+  (if (= view-id :screen/onboarding.syncing-progress-intro)
+    (do
+      (rf/dispatch [:navigate-back-to :screen/onboarding.sync-or-recover-profile])
+      (debounce/debounce-and-dispatch
+       [:onboarding/navigate-to-sign-in-by-seed-phrase :screen/onboarding.sync-or-recover-profile]
+       300))
+    (do
+      (rf/dispatch [:navigate-back])
+      (debounce/debounce-and-dispatch [:onboarding/overlay-show] 100)
+      (debounce/debounce-and-dispatch [:open-modal :screen/onboarding.new-to-status] 200)
+      (debounce/debounce-and-dispatch
+       [:onboarding/navigate-to-sign-in-by-seed-phrase :screen/onboarding.new-to-status]
+       300))))
+
 (defn try-again-button
-  [profile-color in-onboarding? logged-in?]
-  [quo/button
-   {:on-press            (fn []
-                           (rf/dispatch [:syncing/clear-states])
-                           (cond
+  [profile-color in-onboarding? logged-in? view-id]
+  [rn/view
+   (when-not logged-in?
+     [quo/button
+      {:on-press #(navigate-to-enter-seed-phrase view-id)
+       :accessibility-label :try-seed-phrase-button
+       :customization-color profile-color
+       :container-style     style/try-again-button}
+      (i18n/label :t/enter-seed-phrase)])
+
+
+   [quo/button
+    {:on-press            (fn []
+                            (rf/dispatch [:syncing/clear-states])
+                            (cond
                              logged-in?     (rf/dispatch [:navigate-back])
                              in-onboarding? (rf/dispatch [:navigate-back-to
                                                           :screen/onboarding.sign-in-intro])
                              :else          (do
-                                              (rf/dispatch [:navigate-back])
-                                              (debounce/throttle-and-dispatch
-                                               [:open-modal
-                                                :screen/onboarding.sign-in]
-                                               1000))))
-    :accessibility-label :try-again-later-button
-    :customization-color profile-color
-    :container-style     style/try-again-button}
-   (i18n/label :t/try-again)])
+                                             (rf/dispatch [:navigate-back])
+                                             (debounce/throttle-and-dispatch
+                                              [:open-modal
+                                               :screen/onboarding.sign-in]
+                                              1000))))
+     :accessibility-label :try-again-later-button
+     :customization-color profile-color
+     :container-style     style/try-again-button}
+    (i18n/label :t/try-again)]])
 
 (defn view
   [in-onboarding?]
   (let [pairing-status (rf/sub [:pairing/pairing-status])
         profile-color  (:color (rf/sub [:onboarding/profile]))
-        logged-in?     (rf/sub [:multiaccount/logged-in?])]
+        logged-in?     (rf/sub [:multiaccount/logged-in?])
+        view-id        (rf/sub [:view-id])]
     [rn/view {:style (style/page-container in-onboarding?)}
      (when-not in-onboarding? [background/view true])
      [quo/page-nav {:type :no-title :background :blur}]
@@ -63,7 +90,7 @@
           [quo/text "[Error here]"]])
        [rn/view {:flex 1}])
      (when-not (pairing-progress pairing-status)
-       [try-again-button profile-color in-onboarding? logged-in?])]))
+       [try-again-button profile-color in-onboarding? logged-in? view-id])]))
 
 (defn view-onboarding
   []
