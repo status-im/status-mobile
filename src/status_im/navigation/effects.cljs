@@ -12,7 +12,16 @@
     [status-im.navigation.state :as state]
     [status-im.navigation.view :as views]
     [taoensso.timbre :as log]
-    [utils.re-frame :as rf]))
+    [utils.re-frame :as rf]
+    [clojure.string :as string]
+    [react-native.core :as react]
+    [utils.url :as url]))
+
+(rf/reg-fx
+ :open-url
+ (fn [url]
+   (when (not (string/blank? url))
+     (.openURL ^js react/linking (url/normalize-url url)))))
 
 (defn get-status-nav-color
   [view-id theme]
