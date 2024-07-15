@@ -37,7 +37,6 @@
     [status-im.contexts.onboarding.sign-in.view :as sign-in]
     [status-im.contexts.onboarding.syncing.progress.view :as syncing-devices]
     [status-im.contexts.onboarding.syncing.results.view :as syncing-results]
-    [status-im.contexts.onboarding.welcome.view :as welcome]
     [status-im.contexts.preview.feature-flags.view :as feature-flags]
     [status-im.contexts.preview.quo.component-preview.view :as component-preview]
     [status-im.contexts.preview.quo.main :as quo.preview]

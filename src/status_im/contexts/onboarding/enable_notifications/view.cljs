@@ -4,6 +4,7 @@
     [react-native.core :as rn]
     [react-native.safe-area :as safe-area]
     [status-im.common.resources :as resources]
+    [status-im.constants :as constants]
     [status-im.contexts.onboarding.enable-notifications.style :as style]
     [status-im.contexts.shell.jump-to.constants :as shell.constants]
     [status-im.contexts.shell.jump-to.utils :as shell.utils]
@@ -57,6 +58,11 @@
        :container-style     {:margin-top 12}}
       (i18n/label :t/maybe-later)]]))
 
+(defn dispatch-visibility-status-update
+  [status-type]
+  (rf/dispatch
+   [:visibility-status-updates/delayed-visibility-status-update status-type]))
+
 (defn enable-notifications-simple
   []
   (let [width (:width (rn/get-window))]
@@ -67,7 +73,10 @@
 
 (defn view
   []
-  (let [insets (safe-area/get-insets)]
+  (let [insets                (safe-area/get-insets)
+        {:keys [status-type]} (rf/sub [:multiaccount/current-user-visibility-status])]
+    (when (nil? status-type)
+      (dispatch-visibility-status-update constants/visibility-status-automatic))
     [rn/view {:style (style/page-container insets)}
      [rn/view {:style style/page-heading}
       [quo/page-nav {:type :no-title :background :blur}]
