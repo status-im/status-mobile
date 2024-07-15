@@ -4,6 +4,7 @@
     [quo.components.avatars.user-avatar.view :as user-avatar]
     [quo.components.avatars.wallet-user-avatar.view :as wallet-user-avatar]
     [quo.components.markdown.text :as text]
+    [quo.components.utilities.token.view :as token]
     [quo.components.wallet.summary-info.schema :as summary-info-schema]
     [quo.components.wallet.summary-info.style :as style]
     [quo.foundations.colors :as colors]
@@ -58,13 +59,14 @@
          :theme   theme}])]))
 
 (defn- view-internal
-  [{:keys [type account-props networks? values]}]
+  [{:keys [type account-props token-props networks? values]}]
   (let [theme (quo.theme/use-theme)]
     [rn/view
      {:style (style/container networks? theme)}
      [rn/view
       {:style style/info-container}
       (case type
+        :token          [token/view (select-keys token-props #{:token :size})]
         :status-account [account-avatar/view account-props]
         :saved-account  [wallet-user-avatar/wallet-user-avatar (assoc account-props :size :size-32)]
         :account        [wallet-user-avatar/wallet-user-avatar
@@ -73,7 +75,8 @@
                                 :neutral? true)]
         [user-avatar/user-avatar account-props])
       [rn/view {:style {:margin-left 8}}
-       (when (not= type :account) [text/text {:weight :semi-bold} (:name account-props)])
+       (when (not= type :account)
+         [text/text {:weight :semi-bold} (or (:name account-props) (:label token-props))])
        [rn/view
         {:style {:flex-direction :row
                  :align-items    :center}}
@@ -91,7 +94,7 @@
           :weight (when (= type :account) :semi-bold)
           :style  {:color (when (not= type :account)
                             (colors/theme-colors colors/neutral-50 colors/neutral-40 theme))}}
-         (:address account-props)]]]]
+         (or (:address account-props) (:address token-props))]]]]
      (when networks?
        [:<>
         [rn/view

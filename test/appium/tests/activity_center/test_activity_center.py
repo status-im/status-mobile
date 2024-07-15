@@ -11,7 +11,7 @@ from views.sign_in_view import SignInView
 
 
 @pytest.mark.xdist_group(name="new_two_2")
-@marks.new_ui_critical
+@marks.nightly
 class TestActivityCenterContactRequestMultipleDevicePR(MultipleSharedDeviceTestCase):
 
     def prepare_devices(self):
@@ -238,7 +238,7 @@ class TestActivityCenterContactRequestMultipleDevicePR(MultipleSharedDeviceTestC
 
 
 @pytest.mark.xdist_group(name="new_four_2")
-@marks.new_ui_critical
+@marks.nightly
 class TestActivityMultipleDevicePR(MultipleSharedDeviceTestCase):
 
     def prepare_devices(self):
@@ -378,7 +378,7 @@ class TestActivityMultipleDevicePR(MultipleSharedDeviceTestCase):
 
 
 @pytest.mark.xdist_group(name="new_six_2")
-@marks.new_ui_critical
+@marks.nightly
 class TestActivityMultipleDevicePRTwo(MultipleSharedDeviceTestCase):
 
     def prepare_devices(self):

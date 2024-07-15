@@ -13,7 +13,7 @@ from views.sign_in_view import SignInView
 
 
 @pytest.mark.xdist_group(name="new_one_2")
-@marks.new_ui_critical
+@marks.nightly
 class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
 
     def prepare_devices(self):
@@ -271,6 +271,7 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
         self.errors.verify_no_errors()
 
     @marks.testrail_id(702745)
+    @marks.smoke
     def test_1_1_chat_non_latin_messages_stack_update_profile_photo(self):
         self.home_1.navigate_back_to_home_view()
         self.home_1.profile_button.click()
@@ -533,7 +534,7 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
 
 
 @pytest.mark.xdist_group(name="new_six_2")
-@marks.new_ui_critical
+@marks.nightly
 class TestOneToOneChatMultipleSharedDevicesNewUiTwo(MultipleSharedDeviceTestCase):
 
     def prepare_devices(self):
