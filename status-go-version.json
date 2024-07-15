@@ -3,7 +3,7 @@
     "_comment": "Instead use: scripts/update-status-go.sh <rev>",
     "owner": "status-im",
     "repo": "status-go",
-    "version": "b2e5e7a81c73a67af1f7447c56a47bd2e63fcc40",
-    "commit-sha1": "b2e5e7a81c73a67af1f7447c56a47bd2e63fcc40",
-    "src-sha256": "1dl8934kfs6x8vl61lqfah717vnfiaw323pwmcxjq4b390yfhfax"
+    "version": "cl/gas-estimation-for-dynamic-tx",
+    "commit-sha1": "5389f281d4645b99fbdf870634d1e959ff0cae23",
+    "src-sha256": "1928ppcygca0b2hzl5l08lf0rwy76a6j9pysp7kl4mmgvp2zab8f"
 }

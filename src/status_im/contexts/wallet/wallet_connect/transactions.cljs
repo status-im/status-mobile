@@ -87,31 +87,31 @@
        tx-priority))
 
 (defn- tx->eip1559-tx
-  "Adds `:maxFeePerGas` and `:maxPriorityFeePerGas` for dynamic fee support (EIP1559), if the chain supports it"
+  "Adds `:maxFeePerGas` and `:maxPriorityFeePerGas` for dynamic fee support (EIP1559) and
+  removes `:gasPrice`, if the chain supports EIP1559"
   [tx suggested-fees tx-priority]
   (if (:eip1559Enabled suggested-fees)
     (let [max-fee-per-gas-key      (get-max-fee-per-gas-key tx-priority)
           max-fee-per-gas          (-> suggested-fees max-fee-per-gas-key gwei->hex)
           max-priority-fee-per-gas (-> suggested-fees :maxPriorityFeePerGas gwei->hex)]
-      (assoc tx
-             :maxFeePerGas         max-fee-per-gas
-             :maxPriorityFeePerGas max-priority-fee-per-gas))
+      (-> tx
+          (assoc
+           :maxFeePerGas         max-fee-per-gas
+           :maxPriorityFeePerGas max-priority-fee-per-gas)
+          ;; NOTE: `:gasPrice` is used only for legacy TX, so we discard it in favor of dynamic fees
+          (dissoc :gasPrice)))
     tx))
 
 (defn- prepare-transaction-fees
   "Makes sure the transaction has the correct gas and fees properties"
   [tx tx-priority suggested-fees]
-  (let [gas-price (-> suggested-fees
-                      :gasPrice
-                      gwei->hex)]
-    (-> (assoc tx
-               ;; NOTE: `gasLimit` is ignored on status-go when building a transaction
-               ;; (`wallet_buildTransaction`), so we're setting it as the `gas` property
-               :gas      (or (:gasLimit tx)
-                             (:gas tx)
-                             default-gas)
-               :gasPrice gas-price)
-        (tx->eip1559-tx suggested-fees tx-priority))))
+  (-> (assoc tx
+             ;; NOTE: `gasLimit` is ignored on status-go when building a transaction
+             ;; (`wallet_buildTransaction`), so we're setting it as the `gas` property
+             :gas
+             (or (:gasLimit tx)
+                 (:gas tx)))
+      (tx->eip1559-tx suggested-fees tx-priority)))
 
 (defn prepare-transaction
   "Formats and builds the incoming transaction, adding the missing properties and returning the final
