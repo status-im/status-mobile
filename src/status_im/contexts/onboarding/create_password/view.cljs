@@ -212,15 +212,31 @@
                                 keyboard-shown?
                                 (+ safe-area-bottom footer-height))
       :blur-options
-      {:blur-amount      34
-       :blur-type        :transparent
-       :overlay-color    :transparent
-       :background-color (if platform/android? colors/neutral-100 colors/neutral-80-opa-1-blur)}
+      {:blur-amount        34
+       :blur-type          :transparent
+       :overlay-color      :transparent
+       :background-color   (if platform/android? colors/neutral-100 colors/neutral-80-opa-1-blur)
+       :padding-vertical   0
+       :padding-horizontal 0}
       :footer-container-padding 0
       :footer
-      [rn/view {:on-layout on-footer-layout-change}
+      [rn/view
+       {:on-layout on-footer-layout-change
+        :style     style/footer-container}
+       (when same-passwords?
+         [rn/view {:style style/disclaimer-container}
+          [quo/disclaimer
+           {:blur?     true
+            :on-change (partial set-accepts-disclaimer? not)
+            :checked?  accepts-disclaimer?}
+           (i18n/label :t/password-creation-disclaimer)]])
+       (when (and (= focused-input :password) (not same-passwords?))
+         [help
+          {:validations       password-validations
+           :password-strength password-strength}])
        [quo/button
-        {:disabled?           (not meet-requirements?)
+        {:container-style     style/footer-button-container
+         :disabled?           (not meet-requirements?)
          :customization-color user-color
          :on-press            #(rf/dispatch
                                 [:onboarding/password-set
@@ -247,16 +263,4 @@
                                         (set-show-password-validation? true)))
          :on-blur-repeat-password   #(if empty-password?
                                        (set-show-password-validation? false)
-                                       (set-show-password-validation? true))}]]
-      [rn/view
-       (when same-passwords?
-         [rn/view {:style style/disclaimer-container}
-          [quo/disclaimer
-           {:blur?     true
-            :on-change (partial set-accepts-disclaimer? not)
-            :checked?  accepts-disclaimer?}
-           (i18n/label :t/password-creation-disclaimer)]])
-       (when (and (= focused-input :password) (not same-passwords?))
-         [help
-          {:validations       password-validations
-           :password-strength password-strength}])]]]))
+                                       (set-show-password-validation? true))}]]]]))

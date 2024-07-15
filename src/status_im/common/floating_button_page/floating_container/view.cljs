@@ -12,14 +12,17 @@
      (or blur-options
          {:blur-amount   20
           :blur-type     :transparent
-          :overlay-color :transparent} )
-     [rn/view {:style (style/blur-inner-container theme shell-overlay?)}
+          :overlay-color :transparent})
+     [rn/view {:style (style/blur-inner-container (assoc
+                                                   blur-options
+                                                   :theme theme
+                                                   :shell-overlay? shell-overlay?))}
       child]]))
 
 (defn view
   [{:keys [on-layout keyboard-shown? blur? shell-overlay? blur-options]} child]
   [rn/view
-   {:style     (style/content-container blur? keyboard-shown?)
+   {:style     (style/content-container blur? keyboard-shown? blur-options)
     :on-layout on-layout}
    (if blur?
      [blur-container shell-overlay? blur-options child]

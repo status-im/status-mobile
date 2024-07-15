@@ -86,13 +86,14 @@
                                                       (oops/oget event "nativeEvent.contentOffset.y")))]
     (let [keyboard-shown?          (if platform/ios? @keyboard-will-show? @keyboard-did-show?)
           footer-container-padding (+ footer-container-padding (rf/sub [:alert-banners/top-margin]))
-          show-background?         (show-background {:window-height            window-height
-                                                     :footer-container-height  @footer-container-height
-                                                     :keyboard-height          @keyboard-height
-                                                     :content-scroll-y         @content-scroll-y
-                                                     :content-container-height @content-container-height
-                                                     :header-height            @header-height
-                                                     :keyboard-shown?          keyboard-shown?})]
+          show-background?         (show-background
+                                    {:window-height            window-height
+                                     :footer-container-height  @footer-container-height
+                                     :keyboard-height          @keyboard-height
+                                     :content-scroll-y         @content-scroll-y
+                                     :content-container-height @content-container-height
+                                     :header-height            @header-height
+                                     :keyboard-shown?          keyboard-shown?})]
       [:<>
        (when gradient-cover?
          [quo/gradient-cover {:customization-color customization-color}])

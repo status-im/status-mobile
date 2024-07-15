@@ -30,4 +30,8 @@
 
 (def disclaimer-container
   {:padding-horizontal 20
+   :padding-top        12
    :margin-vertical    4})
+
+(def footer-container {:padding-bottom 12})
+(def footer-button-container {:margin-top 20 :padding-horizontal 20})
