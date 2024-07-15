@@ -102,7 +102,6 @@
   (if (= :mainnet (chain/chain-id->chain-keyword verify-ens-chain-id))
     mainnet-rpc-url
     goerli-rpc-url))
-
 (def verify-ens-contract-address
   (get-config :VERIFY_ENS_CONTRACT_ADDRESS
               ((chain/chain-id->chain-keyword verify-ens-chain-id) utils.ens/ens-registries)))

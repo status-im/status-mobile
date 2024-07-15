@@ -320,7 +320,7 @@
                  [(- fiat-value) priority]))
              calculated-tokens)))
 
-(defn handle-collectible-confirm
+(defn on-asset-or-address-confirm
   [{:keys [address address-prefix recipient collectible]}]
   (let [[prefix]                    (when address (split-prefix-and-address address))
         receiver-networks           (network-utils/resolve-receiver-networks

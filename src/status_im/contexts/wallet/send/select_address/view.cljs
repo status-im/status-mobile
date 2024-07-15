@@ -108,7 +108,7 @@
     (let [props {:on-press      (fn []
                                   (let [address (if accounts (:address (first accounts)) address)]
                                     (when-not ens
-                                      (utils/handle-collectible-confirm {:address   address
+                                      (utils/on-asset-or-address-confirm {:address   address
                                                                          :recipient local-suggestion}))))
                  :active-state? false}]
       (cond
@@ -159,7 +159,7 @@
                                                          (utils/get-shortened-address
                                                           splitted-address)
                                                          :recipient-type :address}]
-                               (utils/handle-collectible-confirm {:address   address
+                               (utils/on-asset-or-address-confirm {:address   address
                                                                   :recipient recipient})))
       :customization-color color}
      (i18n/label :t/continue)]))

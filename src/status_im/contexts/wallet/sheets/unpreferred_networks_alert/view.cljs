@@ -6,7 +6,6 @@
 
 (defn view
   [{:keys [on-confirm collectible-tx?]}]
-  (println "qqqq" collectible-tx?)
   [:<>
    [quo/text
     {:style  style/sending-to-unpreferred-networks-title
