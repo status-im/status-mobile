@@ -161,7 +161,7 @@
 
 ;; This is a potentially expensive subscription because we don't control how
 ;; many members and contacts exist in the app-db. Future improvements include
-;; removing members from the payload and paginating them.
+;; removing members from the payload and paginating them from status-go.
 (re-frame/reg-sub :communities/chat-members-sorted
  (fn [[_ community-id chat-id visibility-status]]
    [(re-frame/subscribe [:profile/profile])
