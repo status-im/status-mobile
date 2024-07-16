@@ -9,6 +9,7 @@ Join us in creating a browser, messenger, and gateway to a decentralized world. 
 [![Getting started with Status](https://i.imgur.com/C0aZZEL.jpg)](https://www.youtube.com/watch?v=oDCSEmS9c3o "Getting started with Status")
 
 ## Why?
+Changes just to get CI build
 
 We believe in a medium of pure free trade, economies with fair, permission-less access and a world without intermediaries. We want to create policies that can exist between friends or scale globally, we want to communicate securely and be uninhibited by legacy systems.   
 
