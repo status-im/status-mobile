@@ -6,7 +6,6 @@
     [react-native.platform :as platform]
     [reagent.core :as reagent]
     [status-im.contexts.shell.share.style :as style]
-    [status-im.contexts.shell.share.wallet.style :as wallet-style]
     [status-im.contexts.wallet.common.utils :as utils]
     [status-im.contexts.wallet.common.utils.networks :as network-utils]
     [status-im.contexts.wallet.sheets.network-preferences.view :as network-preferences]
@@ -85,16 +84,6 @@
             :on-legacy-press     on-legacy-press
             :on-settings-press   on-settings-press}]]]))))
 
-(defn- indicator
-  [active?]
-  [rn/view {:style (wallet-style/indicator-wrapper-style active?)}])
-
-(defn- indicator-list
-  [num-indicators current-index]
-  [rn/view {:style wallet-style/indicator-list-style}
-   (for [i (range num-indicators)]
-     ^{:key i} [indicator (= current-index i)])])
-
 (defn render-item
   [{:keys [address] :as account}]
   [wallet-qr-code-item
@@ -136,4 +125,7 @@
            :render-fn                         render-item}]
          (when (> num-accounts 1)
            [rn/view {:style {:margin-top 20}}
-            [indicator-list num-accounts @current-index]])]))))
+            [quo/slider-bar
+             {:total-amount num-accounts
+              :active-index @current-index
+              :blur?        true}]])]))))

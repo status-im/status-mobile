@@ -147,6 +147,7 @@
     quo.components.settings.settings-item.view
     quo.components.share.qr-code.view
     quo.components.share.share-qr-code.view
+    quo.components.slideshow.slider-bar.view
     quo.components.switchers.group-messaging-card.view
     quo.components.tabs.account-selector
     quo.components.tabs.segmented-tab
@@ -417,6 +418,9 @@
 ;;;; Share
 (def qr-code quo.components.share.qr-code.view/view)
 (def share-qr-code quo.components.share.share-qr-code.view/view)
+
+;;;; Slideshow
+(def slider-bar quo.components.slideshow.slider-bar.view/view)
 
 ;;;; SWITCHER
 (def group-messaging-card quo.components.switchers.group-messaging-card.view/view)
