@@ -139,6 +139,7 @@
 ;; - Unsupported WC version
 ;; - Invalid params from dapps
 ;; - Unsupported method
+;; - Unsupported chain
 (rf/reg-event-fx
  :wallet-connect/reject-session-request
  (fn [_ _]
