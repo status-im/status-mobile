@@ -1,6 +1,7 @@
 (ns legacy.status-im.data-store.settings
   (:require
     [clojure.set :as set]
+    [clojure.string :as string]
     [legacy.status-im.data-store.visibility-status-updates :as visibility-status-updates]
     [utils.ethereum.eip.eip55 :as eip55]))
 
@@ -18,6 +19,13 @@
              {}
              pinned-mailservers))
 
+(defn rpc->currency
+  [currency]
+  (-> currency
+      (name)
+      (string/lower-case)
+      (keyword)))
+
 (defn rpc->settings
   [settings]
   (-> settings
@@ -26,7 +34,7 @@
       (update :wallet-legacy/visible-tokens rpc->visible-tokens)
       (update :pinned-mailservers rpc->pinned-mailservers)
       (update :link-previews-enabled-sites set)
-      (update :currency keyword)
+      (update :currency rpc->currency)
       (visibility-status-updates/<-rpc-settings)
       (set/rename-keys {:compressedKey :compressed-key
                         :emojiHash     :emoji-hash})))
@@ -34,5 +42,5 @@
 (defn rpc->setting-value
   [{:keys [name] :as setting}]
   (condp = name
-    :currency (update setting :value keyword)
+    :currency (update setting :value rpc->currency)
     setting))

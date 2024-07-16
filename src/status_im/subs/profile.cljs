@@ -38,6 +38,13 @@
        :symbol)))
 
 (re-frame/reg-sub
+ :profile/currency-info
+ :<- [:currencies]
+ :<- [:profile/currency]
+ (fn [[currencies currency-id]]
+   (get currencies currency-id)))
+
+(re-frame/reg-sub
  :profile/login-profiles-picture
  :<- [:profile/profiles-overview]
  :<- [:mediaserver/port]

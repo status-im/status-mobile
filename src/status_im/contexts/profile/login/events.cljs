@@ -151,6 +151,7 @@
       :fx [(when (and new-account? (not recovered-account?))
              [:dispatch-later [{:ms 1000 :dispatch [:wallet-legacy/set-initial-blocks-range]}]])
            [:dispatch-later [{:ms 2000 :dispatch [:ens/update-usernames ensUsernames]}]]
+           [:dispatch [:settings/get-currencies]]
            [:dispatch [:profile.login/login-existing-profile settings account]]]})))
 
 (rf/reg-event-fx

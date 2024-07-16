@@ -85,13 +85,12 @@
      :image       :icon
      :blur?       true
      :action      :arrow}
-    (when config/show-not-implemented-features?
-      {:title       (i18n/label :t/language-and-currency)
-       :on-press    not-implemented/alert
-       :image-props :i/globe
-       :image       :icon
-       :blur?       true
-       :action      :arrow})]
+    {:title       (i18n/label :t/language-and-currency)
+     :on-press    #(rf/dispatch [:open-modal :screen/settings.language-and-currency])
+     :image-props :i/globe
+     :image       :icon
+     :blur?       true
+     :action      :arrow}]
    [(when config/show-not-implemented-features?
       {:title       (i18n/label :t/data-usage)
        :on-press    not-implemented/alert

@@ -10,6 +10,7 @@
     [quo.components.settings.settings-item.style :as style]
     [quo.components.tags.context-tag.view :as context-tag]
     [quo.components.tags.status-tags :as status-tags]
+    [quo.components.utilities.token.view :as token]
     [quo.foundations.colors :as colors]
     [quo.theme :as quo.theme]
     [react-native.core :as rn]
@@ -59,6 +60,7 @@
        :icon        [icon/icon image-props (style/color blur? theme)]
        :avatar      [user-avatar/user-avatar image-props]
        :icon-avatar [icon-avatar/icon-avatar image-props]
+       :token       [token/view image-props]
        nil)]))
 
 (defn tag-component
