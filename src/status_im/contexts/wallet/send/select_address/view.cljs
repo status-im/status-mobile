@@ -108,9 +108,10 @@
     (let [props {:on-press      (fn []
                                   (let [address (if accounts (:address (first accounts)) address)]
                                     (when-not ens
-                                      (utils/on-asset-or-address-confirm {:address address
-                                                                          :recipient
-                                                                          local-suggestion}))))
+                                      (rf/dispatch [:wallet/on-asset-or-address-confirm
+                                                    {:address address
+                                                     :recipient
+                                                     local-suggestion}]))))
                  :active-state? false}]
       (cond
         (= type types/saved-address)
@@ -156,12 +157,13 @@
                                                          input-value)
                                    [_ splitted-address] (network-utils/split-network-full-address
                                                          address)
-                                   recipient            {:label
-                                                         (utils/get-shortened-address
-                                                          splitted-address)
+                                   shortened-address    (utils/get-shortened-address
+                                                         splitted-address)
+                                   recipient            {:label          shortened-address
                                                          :recipient-type :address}]
-                               (utils/on-asset-or-address-confirm {:address   address
-                                                                   :recipient recipient})))
+                               (rf/dispatch [:wallet/on-asset-or-address-confirm
+                                             {:address   address
+                                              :recipient recipient}])))
       :customization-color color}
      (i18n/label :t/continue)]))
 
