@@ -49,3 +49,7 @@
   [comp-id]
   (when-let [index (first (indices-of-predicate-match #(= comp-id (:id %)) @navigation-state))]
     (navigation-state-reset (vec (take (inc index) @navigation-state)))))
+
+(defn modal-open?
+  [comp-id]
+  (contains? (set @modals) comp-id))

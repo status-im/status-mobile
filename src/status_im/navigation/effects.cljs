@@ -122,9 +122,11 @@
 (defn dismiss-modal
   ([] (dismiss-modal nil))
   ([comp-id]
-   (reset! state/dissmissing true)
-   (navigation/dismiss-modal (name (or comp-id (last @state/modals))))
-   (state/navigation-pop-from comp-id)))
+   (when (or (not comp-id)
+             (state/modal-open? comp-id))
+     (reset! state/dissmissing true)
+     (navigation/dismiss-modal (name (or comp-id (last @state/modals))))
+     (state/navigation-pop-from comp-id))))
 
 (defn navigate-back
   []
