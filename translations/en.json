@@ -2758,10 +2758,7 @@
     "swaps-powered-by": "Swaps powered by {{provider}}",
     "max-slippage": "Max slippage",
     "pay": "Pay",
-<<<<<<< HEAD
-    "store-confirmations": "Store confirmations"
-=======
+    "store-confirmations": "Store confirmations",
     "tokens": "tokens",
     "collectible": "collectible"
->>>>>>> c6c9400408 (collectible unpreferred alert)
 }
