@@ -87,6 +87,7 @@
     quo.components.settings.reorder-item.component-spec
     quo.components.settings.settings-item.component-spec
     quo.components.share.share-qr-code.component-spec
+    quo.components.slideshow.slider-bar.component-spec
     quo.components.switchers.base-card.component-spec
     quo.components.switchers.group-messaging-card.component-spec
     quo.components.tags.collectible-tag.component-spec
