@@ -42,3 +42,23 @@
 (rf/reg-event-fx :wallet.swap/set-max-slippage
  (fn [{:keys [db]} [max-slippage]]
    {:db (assoc-in db [:wallet :ui :swap :max-slippage] (utils.number/parse-float max-slippage))}))
+
+(rf/reg-event-fx :wallet.swap/select-asset-to-receive
+ (fn [{:keys [db]} [{:keys [token]}]]
+   {:db (assoc-in db [:wallet :ui :swap :asset-to-receive] token)}))
+
+(rf/reg-event-fx :wallet.swap/set-pay-amount
+ (fn [{:keys [db]} [amount]]
+   {:db (assoc-in db [:wallet :ui :swap :pay-amount] amount)}))
+
+(rf/reg-event-fx :wallet.swap/set-swap-proposal
+ (fn [{:keys [db]} [swap-proposal]]
+   {:db (assoc-in db [:wallet :ui :swap :swap-proposal] swap-proposal)}))
+
+(rf/reg-event-fx :wallet.swap/set-provider
+ (fn [{:keys [db]}]
+   {:db (assoc-in db [:wallet :ui :swap :providers] [constants/swap-default-provider])}))
+
+(rf/reg-event-fx :wallet.swap/recalculate-fees
+ (fn [{:keys [db]} [loading-fees?]]
+   {:db (assoc-in db [:wallet :ui :swap :loading-fees?] loading-fees?)}))

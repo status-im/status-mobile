@@ -24,10 +24,10 @@
 
 (h/deftest-sub :communities/airdrop-account
   [sub-name]
-  (let [airdrop-account {:address "0xA" :position 1}]
+  (let [airdrop-account {:address "0xA" :operable? true :position 1}]
     (reset! rf-db/app-db
       {:communities/all-airdrop-addresses {community-id "0xA"}
-       :wallet                            {:accounts {"0xB" {:address "0xB" :position 0}
+       :wallet                            {:accounts {"0xB" {:address "0xB" :operable? true :position 0}
                                                       "0xA" airdrop-account}}})
 
     (is (match? airdrop-account (rf/sub [sub-name community-id])))))
@@ -36,9 +36,11 @@
   [sub-name]
   (reset! rf-db/app-db
     {:communities/all-addresses-to-reveal {community-id #{"0xC" "0xB"}}
-     :wallet                              {:accounts {"0xB" {:address "0xB" :position 0}
-                                                      "0xA" {:address "0xA" :position 1}
-                                                      "0xC" {:address "0xC" :position 2}}}})
+     :wallet                              {:accounts {"0xB" {:address "0xB" :operable? true :position 0}
+                                                      "0xA" {:address "0xA" :operable? true :position 1}
+                                                      "0xC" {:address   "0xC"
+                                                             :operable? true
+                                                             :position  2}}}})
 
   (is (match? [{:address "0xB" :position 0}
                {:address "0xC" :position 2}]

@@ -13,8 +13,9 @@ from views.sign_in_view import SignInView
 
 
 @pytest.mark.xdist_group(name="new_four_2")
-@marks.new_ui_critical
+@marks.nightly
 @marks.secured
+@marks.smoke
 class TestWalletMultipleDevice(MultipleSharedDeviceTestCase):
 
     def prepare_devices(self):
@@ -174,7 +175,8 @@ class TestWalletMultipleDevice(MultipleSharedDeviceTestCase):
 
 
 @pytest.mark.xdist_group(name="new_one_2")
-@marks.new_ui_critical
+@marks.nightly
+@marks.smoke
 class TestWalletOneDevice(MultipleSharedDeviceTestCase):
 
     def prepare_devices(self):

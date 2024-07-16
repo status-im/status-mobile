@@ -32,6 +32,7 @@
    :watch-only?              false
    :prod-preferred-chain-ids #{1 42161}
    :created-at               1716548742000
+   :operable?                true
    :operable                 :fully
    :removed                  false})
 
@@ -171,9 +172,10 @@
                                                      {:key-uid "0x123"
                                                       :address "1x123"})
                                       "1x456" (merge account
-                                                     {:key-uid  "0x456"
-                                                      :address  "1x456"
-                                                      :operable :no})}
+                                                     {:key-uid   "0x456"
+                                                      :address   "1x456"
+                                                      :operable? false
+                                                      :operable  :no})}
         :updated-keypairs-by-id      {"0x123" {:key-uid            "0x123"
                                                :type               :seed
                                                :lowest-operability :fully
@@ -184,9 +186,10 @@
                                                :type               :key
                                                :lowest-operability :no
                                                :accounts           [(merge account
-                                                                           {:key-uid  "0x456"
-                                                                            :address  "1x456"
-                                                                            :operable :no})]}}})
+                                                                           {:key-uid   "0x456"
+                                                                            :address   "1x456"
+                                                                            :operable? false
+                                                                            :operable  :no})]}}})
       (sut/reconcile-keypairs [raw-keypair-seed-phrase
                                raw-keypair-private-key]))))
   (testing "reconcile-keypairs represents removed key pairs and accounts"

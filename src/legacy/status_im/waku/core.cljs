@@ -137,3 +137,19 @@
                     :on-error   #(log/error "failed to set light client"
                                             {:error    %
                                              :enabled? enabled?})}]})
+
+(rf/defn toggle-store-confirmations
+  {:events [:wakuv2.ui/toggle-store-confirmations]}
+  [{:keys [db]} enabled?]
+  {:db            (assoc-in db
+                   [:profile/profile :wakuv2-config :EnableStoreConfirmationForMessagesSent]
+                   enabled?)
+
+   :json-rpc/call [{:method     "wakuext_setStoreConfirmationForMessagesSent"
+                    :params     [{:enabled enabled?}]
+                    :on-success (fn []
+                                  (log/info "store confirmation set successfully" enabled?)
+                                  (re-frame/dispatch [:logout]))
+                    :on-error   #(log/error "failed to set store confirmation"
+                                            {:error    %
+                                             :enabled? enabled?})}]})

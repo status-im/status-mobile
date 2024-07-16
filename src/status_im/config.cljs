@@ -72,7 +72,7 @@
 
 ;; CONFIG VALUES
 (def log-level (string/upper-case (get-config :LOG_LEVEL "")))
-(def fleet (get-config :FLEET "waku.sandbox"))
+(def fleet (get-config :FLEET ""))
 (def apn-topic (get-config :APN_TOPIC "im.status.ethereum"))
 (def default-network (get-config :DEFAULT_NETWORK "goerli_rpc"))
 (def max-installations 2)

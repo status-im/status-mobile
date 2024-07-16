@@ -105,6 +105,7 @@
     [status-im.contexts.preview.quo.list-items.account-list-card :as
      account-list-card]
     [status-im.contexts.preview.quo.list-items.address :as address]
+    [status-im.contexts.preview.quo.list-items.approval-info :as approval-info]
     [status-im.contexts.preview.quo.list-items.channel :as channel]
     [status-im.contexts.preview.quo.list-items.dapp :as dapp]
     [status-im.contexts.preview.quo.list-items.missing-keypair :as missing-keypair]
@@ -169,6 +170,7 @@
     [status-im.contexts.preview.quo.settings.settings-item :as settings-item]
     [status-im.contexts.preview.quo.share.qr-code :as qr-code]
     [status-im.contexts.preview.quo.share.share-qr-code :as share-qr-code]
+    [status-im.contexts.preview.quo.slideshow.slider-bar :as slider-bar]
     [status-im.contexts.preview.quo.style :as style]
     [status-im.contexts.preview.quo.switcher.group-messaging-card :as
      group-messaging-card]
@@ -390,6 +392,8 @@
                         :component account-list-card/view}
                        {:name      :address
                         :component address/view}
+                       {:name      :approval-info
+                        :component approval-info/view}
                        {:name      :channel
                         :component channel/view}
                        {:name      :community-list
@@ -499,6 +503,8 @@
                         :component qr-code/view}
                        {:name      :share-qr-code
                         :component share-qr-code/view}]
+   :slideshow         [{:name      :slider-bar
+                        :component slider-bar/view}]
    :switchers         [{:name      :group-messaging-card
                         :component group-messaging-card/view}
                        {:name      :switcher-cards

@@ -120,7 +120,7 @@
 (defn set-permissioned-accounts
   [{:keys [db]} [community-id addresses-to-reveal]]
   (let [addresses-to-reveal     (set addresses-to-reveal)
-        wallet-accounts         (utils/sorted-non-watch-only-accounts db)
+        wallet-accounts         (utils/sorted-operable-non-watch-only-accounts db)
         current-airdrop-address (get-in db [:communities/all-airdrop-addresses community-id])
         new-airdrop-address     (if (contains? addresses-to-reveal current-airdrop-address)
                                   current-airdrop-address
@@ -142,7 +142,7 @@
   [{:keys [db]} [community-id new-value]]
   (let [current-addresses   (get-in db [:communities/all-addresses-to-reveal community-id])
         addresses-to-reveal (if new-value
-                              (->> (utils/sorted-non-watch-only-accounts db)
+                              (->> (utils/sorted-operable-non-watch-only-accounts db)
                                    (map :address)
                                    set)
                               current-addresses)]

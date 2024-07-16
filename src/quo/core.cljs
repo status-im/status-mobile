@@ -86,6 +86,7 @@
     quo.components.list-items.account-list-card.view
     quo.components.list-items.account.view
     quo.components.list-items.address.view
+    quo.components.list-items.approval-info.view
     quo.components.list-items.channel.view
     quo.components.list-items.community.view
     quo.components.list-items.dapp.view
@@ -146,6 +147,7 @@
     quo.components.settings.settings-item.view
     quo.components.share.qr-code.view
     quo.components.share.share-qr-code.view
+    quo.components.slideshow.slider-bar.view
     quo.components.switchers.group-messaging-card.view
     quo.components.tabs.account-selector
     quo.components.tabs.segmented-tab
@@ -334,6 +336,7 @@
 (def account-item quo.components.list-items.account.view/view)
 (def account-list-card quo.components.list-items.account-list-card.view/view)
 (def address quo.components.list-items.address.view/view)
+(def approval-info quo.components.list-items.approval-info.view/view)
 (def channel quo.components.list-items.channel.view/view)
 (def community-list quo.components.list-items.community.view/view)
 (def dapp quo.components.list-items.dapp.view/view)
@@ -415,6 +418,9 @@
 ;;;; Share
 (def qr-code quo.components.share.qr-code.view/view)
 (def share-qr-code quo.components.share.share-qr-code.view/view)
+
+;;;; Slideshow
+(def slider-bar quo.components.slideshow.slider-bar.view/view)
 
 ;;;; SWITCHER
 (def group-messaging-card quo.components.switchers.group-messaging-card.view/view)

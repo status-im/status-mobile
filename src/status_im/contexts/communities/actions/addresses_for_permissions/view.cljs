@@ -260,7 +260,7 @@
 
         can-edit-addresses? (rf/sub [:communities/can-edit-shared-addresses? id])
 
-        wallet-accounts (rf/sub [:wallet/accounts-without-watched-accounts])
+        wallet-accounts (rf/sub [:wallet/operable-accounts-without-watched-accounts])
         unmodified-addresses-to-reveal (rf/sub [:communities/addresses-to-reveal id])
         [addresses-to-reveal set-addresses-to-reveal] (rn/use-state unmodified-addresses-to-reveal)
 

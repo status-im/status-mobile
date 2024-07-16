@@ -185,7 +185,7 @@
            ;; We delay the navigation because we need re-frame to update the DB on time.
            ;; By doing it, we skip a blink while visiting the collectible detail page.
            [:dispatch-later
-            {:ms       1
+            {:ms       17
              :dispatch [:navigate-to :screen/wallet.collectible]}]]})))
 
 (defn- keep-not-empty-value

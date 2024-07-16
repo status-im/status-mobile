@@ -79,14 +79,20 @@
         [counter-view counter])
       [rn/view {:style (style/collectible-border theme)}]]]))
 
+(defn invalid-image?
+  [image-src]
+  (or (nil? image-src)
+      (string/blank? image-src)))
+
 (defn view-internal
   [{:keys [container-style square? on-press counter image-src native-ID supported-file?
            on-collectible-load aspect-ratio gradient-color-index]
     :or   {gradient-color-index :gradient-1
            on-collectible-load  (fn [])}}]
   (let [theme              (quo.theme/use-theme)
-        [error? set-error] (rn/use-state (or (nil? image-src)
-                                             (string/blank? image-src)))]
+        [error? set-error] (rn/use-state (invalid-image? image-src))]
+    (rn/use-effect #(set-error (invalid-image? image-src))
+                   [image-src])
     [rn/pressable
      {:style               (merge container-style (style/container aspect-ratio))
       :accessibility-label :expanded-collectible

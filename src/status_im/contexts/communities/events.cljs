@@ -154,7 +154,7 @@
 (defn update-previous-permission-addresses
   [{:keys [db]} [community-id]]
   (when community-id
-    (let [accounts                      (utils/sorted-non-watch-only-accounts db)
+    (let [accounts                      (utils/sorted-operable-non-watch-only-accounts db)
           selected-permission-addresses (get-in db
                                                 [:communities community-id
                                                  :selected-permission-addresses])
@@ -198,7 +198,7 @@
   [{:keys [db]} [community-id]]
   (let [share-all-addresses?      (get-in db [:communities community-id :share-all-addresses?])
         next-share-all-addresses? (not share-all-addresses?)
-        accounts                  (utils/sorted-non-watch-only-accounts db)
+        accounts                  (utils/sorted-operable-non-watch-only-accounts db)
         addresses                 (set (map :address accounts))]
     {:db (update-in db
                     [:communities community-id]
