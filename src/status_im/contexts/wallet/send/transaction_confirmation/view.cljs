@@ -157,7 +157,6 @@
   [quo/data-item
    {:container-style style/detail-item
     :blur?           false
-    :description     :default
     :card?           false
     :status          :default
     :size            :small
