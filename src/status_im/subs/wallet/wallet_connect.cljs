@@ -50,7 +50,7 @@
  :<- [:wallet-connect/current-request]
  (fn [request]
    (-> request
-       (get-in [:raw-data :params :chainId])
+       (get-in [:event :params :chainId])
        (wallet-connect-core/eip155->chain-id)
        (networks/get-network-details))))
 
