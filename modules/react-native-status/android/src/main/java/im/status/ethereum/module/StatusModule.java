@@ -135,7 +135,7 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
     }
 
     public String getNoBackupDirectory() {
-        return this.getReactApplicationContext().getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS);
+        return this.getReactApplicationContext().getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath();
     }
 
     public void handleSignal(final String jsonEventString) {
