@@ -26,7 +26,7 @@ class Utils(private val reactContext: ReactApplicationContext) : ReactContextBas
     }
 
     fun getNoBackupDirectory(): String {
-        return reactContext.noBackupFilesDir.absolutePath
+        return reactContext.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS).absolutePath
     }
 
     @ReactMethod(isBlockingSynchronousMethod = true)
