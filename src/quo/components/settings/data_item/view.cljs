@@ -121,6 +121,7 @@
       [:card? {:optional true} [:maybe :boolean]]
       [:right-icon {:optional true} [:maybe :keyword]]
       [:right-content {:optional true} [:maybe :map]]
+      [:icon-color {:optional true} [:maybe :schema.common/customization-color]]
       [:status {:optional true} [:maybe [:enum :default :loading]]]
       [:subtitle-type {:optional true} [:maybe [:enum :default :icon :network :account :editable]]]
       [:size {:optional true} [:maybe [:enum :default :small :large]]]

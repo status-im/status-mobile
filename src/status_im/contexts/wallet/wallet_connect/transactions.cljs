@@ -69,9 +69,9 @@
 
 (defn- get-max-fee-per-gas-key
   "Mapping transaction priority (which determines how quickly a tx is processed)
-  to the \"suggested-routes\" key that should be used for `:maxPriorityFeePerGas`.
+  to the `suggested-routes` key that should be used for `:maxPriorityFeePerGas`.
 
-  `:high` | `:medium` | `:low`"
+  Returns `:high` | `:medium` | `:low`"
   [tx-priority]
   (get {:high   :maxFeePerGasHigh
         :medium :maxFeePerGasMedium

@@ -101,12 +101,10 @@
                                                       (map format-network-name)
                                                       (string/join ", "))
         network-images                           (mapv :source session-networks)
-        data-item-common-props                   {:blur?       false
-                                                  :description :default
-                                                  :card?       false
-                                                  :label       :preview
-                                                  :status      :default
-                                                  :size        :large}
+        data-item-common-props                   {:blur?  false
+                                                  :card?  false
+                                                  :status :default
+                                                  :size   :large}
         account-data-item-props                  (assoc data-item-common-props
                                                         :right-content {:type :accounts
                                                                         :size :size-32
@@ -116,7 +114,6 @@
                                                         :on-press      show-account-switcher-bottom-sheet
                                                         :title         (i18n/label :t/account-title)
                                                         :subtitle      name
-                                                        :icon-right?   true
                                                         :right-icon    :i/chevron-right
                                                         :icon-color    colors/neutral-10)
         networks-data-item-props                 (assoc data-item-common-props
