@@ -4,7 +4,8 @@
 
 (def title-container
   {:margin-horizontal 20
-   :padding-vertical  12})
+   :padding-bottom    20
+   :padding-top       12})
 
 (defn page-container
   [insets]
