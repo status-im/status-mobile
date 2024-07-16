@@ -19,14 +19,6 @@
 ;; show the estimated time, but when we implement it, we should allow to change it
 (def ^:constant default-tx-priority :medium)
 
-;; NOTE: Currently the `wallet_buildTransaction` RPC doesn't estimate the `gas` for dynamic
-;; transactions, if `gas` is not present in the original transaction. Temporarily setting the
-;; default `gas` till the issue is fixed on status-go
-(def ^:constant default-gas
-  (->> 21000
-       native-module/number-to-hex
-       (str "0x")))
-
 (defn- strip-hex-prefix
   "Strips the extra 0 in hex value if present"
   [hex-value]
@@ -86,11 +78,18 @@
         :low    :maxFeePerGasLow}
        tx-priority))
 
+(defn- dynamic-fee-tx?
+  "Checks if a transaction has dynamic fees (EIP1559)"
+  [tx]
+  (every? tx [:maxFeePerGas :maxPriorityFeePerGas]))
+
 (defn- tx->eip1559-tx
   "Adds `:maxFeePerGas` and `:maxPriorityFeePerGas` for dynamic fee support (EIP1559) and
-  removes `:gasPrice`, if the chain supports EIP1559"
+  removes `:gasPrice`, if the chain supports EIP1559 and the transaction doesn't already
+  have dynamic fees."
   [tx suggested-fees tx-priority]
-  (if (:eip1559Enabled suggested-fees)
+  (if (and (:eip1559Enabled suggested-fees)
+           (not (dynamic-fee-tx? tx)))
     (let [max-fee-per-gas-key      (get-max-fee-per-gas-key tx-priority)
           max-fee-per-gas          (-> suggested-fees max-fee-per-gas-key gwei->hex)
           max-priority-fee-per-gas (-> suggested-fees :maxPriorityFeePerGas gwei->hex)]
@@ -98,7 +97,7 @@
           (assoc
            :maxFeePerGas         max-fee-per-gas
            :maxPriorityFeePerGas max-priority-fee-per-gas)
-          ;; NOTE: `:gasPrice` is used only for legacy TX, so we discard it in favor of dynamic fees
+          ;; NOTE: `:gasPrice` is used only for legacy Tx, so we discard it in favor of dynamic fees
           (dissoc :gasPrice)))
     tx))
 
