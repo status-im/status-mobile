@@ -2,6 +2,7 @@
   (:require
     [quo.core :as quo]
     [react-native.core :as rn]
+    [react-native.safe-area :as safe-area]
     [status-im.contexts.onboarding.common.background.view :as background]
     [status-im.contexts.onboarding.common.overlay.view :as overlay]
     [status-im.contexts.onboarding.intro.style :as style]
@@ -14,7 +15,7 @@
   [rn/view {:style style/page-container}
    [background/view false]
    [quo/bottom-actions
-    {:container-style  style/bottom-actions-container
+    {:container-style  (style/bottom-actions-container (safe-area/get-bottom))
      :actions          :two-vertical-actions
      :description      :bottom
      :description-text [quo/text

@@ -28,9 +28,6 @@
    :gap                12
    :padding-horizontal 20})
 
-(def button-container
-  {:flex 1})
-
 (def description-top
   {:flex-direction  :row
    :align-items     :center
