@@ -17,17 +17,19 @@
     [schema.core :as schema]))
 
 (defn- tag-skeleton
-  [{:keys [size text theme]
+  [{:keys [size text theme shrinkable?]
     :or   {size  24
            theme (quo.theme/use-theme)}}
    logo-component]
   [rn/view {:style (style/tag-container size)}
    logo-component
-   [rn/view {:style (style/tag-spacing size)}
+   [rn/view {:style (style/tag-spacing size shrinkable?)}
     [text/text
-     {:style  (style/text theme)
-      :weight :medium
-      :size   (if (= size 24) :paragraph-2 :paragraph-1)}
+     {:style           (style/text theme)
+      :weight          :medium
+      :size            (if (= size 24) :paragraph-2 :paragraph-1)
+      :number-of-lines 1
+      :ellipsize-mode  :middle}
      text]]])
 
 (defn- communities-tag
@@ -37,7 +39,7 @@
         icon-size (if (= size 24) 16 20)]
     [rn/view {:style (style/tag-container size)}
      [fast-image/fast-image {:style (style/circle-logo size) :source community-logo}]
-     [rn/view {:style (style/tag-spacing size)}
+     [rn/view {:style (style/tag-spacing size false)}
       [text/text
        {:style  (style/text theme)
         :weight :medium
@@ -148,9 +150,10 @@
 
       :collectible
       [tag-skeleton
-       {:theme theme
-        :size  size
-        :text  (str collectible-name " #" collectible-number)}
+       {:theme       theme
+        :size        size
+        :text        (str collectible-name " #" collectible-number)
+        :shrinkable? true}
        [rn/image {:style (style/rounded-logo size) :source collectible}]]
 
       :account

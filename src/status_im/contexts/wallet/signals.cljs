@@ -23,22 +23,39 @@
                  :block-number blockNumber
                  :accounts     accounts})
      (case event-type
-       "pending-transaction-status-changed"       {:fx
-                                                   [[:dispatch
-                                                     [:wallet/pending-transaction-status-changed-received
-                                                      (transforms/js->clj event-js)]]]}
-       "wallet-owned-collectibles-filtering-done" {:fx [[:dispatch
-                                                         [:wallet/owned-collectibles-filtering-done
-                                                          (transforms/js->clj event-js)]]]}
-       "wallet-get-collectibles-details-done"     {:fx [[:dispatch
-                                                         [:wallet/get-collectible-details-done
-                                                          (transforms/js->clj event-js)]]]}
-       "wallet-tick-reload"                       {:fx [[:dispatch [:wallet/reload]]]}
-       "wallet-blockchain-status-changed"         {:fx [[:dispatch
-                                                         [:wallet/blockchain-status-changed
-                                                          (transforms/js->clj event-js)]]]}
-       "wallet-activity-filtering-done"           {:fx
-                                                   [[:dispatch
-                                                     [:wallet/activity-filtering-for-current-account-done
-                                                      (transforms/js->clj event-js)]]]}
+       "pending-transaction-status-changed"
+       {:fx
+        [[:dispatch
+          [:wallet/pending-transaction-status-changed-received
+           (transforms/js->clj event-js)]]]}
+
+       "wallet-owned-collectibles-filtering-done"
+       {:fx [[:dispatch
+              [:wallet/owned-collectibles-filtering-done
+               (transforms/js->clj event-js)]]]}
+
+       "wallet-get-collectibles-details-done"
+       {:fx [[:dispatch
+              [:wallet/get-collectible-details-done
+               (transforms/js->clj event-js)]]]}
+
+       "wallet-tick-reload"
+       {:fx [[:dispatch [:wallet/reload]]]}
+
+       "wallet-blockchain-status-changed"
+       {:fx [[:dispatch
+              [:wallet/blockchain-status-changed
+               (transforms/js->clj event-js)]]]}
+
+       "wallet-activity-filtering-done"
+       {:fx
+        [[:dispatch
+          [:wallet/activity-filtering-for-current-account-done
+           (transforms/js->clj event-js)]]]}
+
+       "wallet-activity-filtering-entries-updated"
+       {:fx [[:dispatch
+              [:wallet/activities-filtering-entries-updated
+               (transforms/js->clj event-js)]]]}
+
        (log/debug ::unknown-wallet-event :type event-type)))))
