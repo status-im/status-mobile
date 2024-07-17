@@ -58,7 +58,7 @@
 
 (defn view
   [{:keys [header footer customization-color footer-container-padding header-container-style
-           content-container-style gradient-cover? keyboard-should-persist-taps]
+           content-container-style gradient-cover? keyboard-should-persist-taps shell-overlay?]
     :or   {footer-container-padding (safe-area/get-top)}}
    & children]
   (reagent/with-let [scroll-view-ref              (atom nil)
@@ -121,7 +121,8 @@
          [floating-container/view
           {:on-layout       set-footer-container-height
            :keyboard-shown? keyboard-shown?
-           :blur?           show-background?}
+           :blur?           show-background?
+           :shell-overlay?  shell-overlay?}
           footer]]]])
     (finally
      (remove-listeners))))

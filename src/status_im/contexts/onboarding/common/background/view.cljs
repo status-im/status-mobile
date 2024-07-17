@@ -25,13 +25,12 @@
     :sub-text (i18n/label :t/explore-the-decentralized-web)}])
 
 (defn background-image
-  [content-width]
+  [image-view-width]
   [rn/image
-   {:resize-mode   :stretch
-    :resize-method :scale
-    :style         {:top   138
-                    :width content-width}
-    :source        (resources/get-image :onboarding-illustration)}])
+   {:resize-mode :stretch
+    :style       {:flex  1
+                  :width image-view-width}
+    :source      (resources/get-image :onboarding-illustration)}])
 
 (defonce progress (atom nil))
 (defonce paused? (atom nil))

@@ -53,7 +53,7 @@
 (def ^:private ?network
   [:map
    [:network-logo {:optional true} [:maybe :schema.common/image-source]]
-   [:network-name {:optional true} [:maybe :string]]])
+   [:network-name {:optional true} [:maybe [:or :string :keyword]]]])
 
 (def ^:private ?multinetwork
   [:map

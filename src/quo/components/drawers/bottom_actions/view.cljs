@@ -79,7 +79,6 @@
          (merge
           {:size                40
            :background          (when (or blur? scroll?) :blur)
-           :container-style     style/button-container
            :theme               theme
            :accessibility-label :button-two}
           button-two-props)
@@ -87,7 +86,6 @@
       [button/button
        (merge
         {:size                40
-         :container-style     style/button-container
          :background          (when (or blur? scroll?) :blur)
          :theme               theme
          :accessibility-label :button-one}

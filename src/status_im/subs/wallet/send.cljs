@@ -49,8 +49,9 @@
  :<- [:wallet/all-activities]
  :<- [:wallet/current-viewing-account-address]
  (fn [[all-activities current-viewing-account-address]]
-   (let [address-activity (get all-activities current-viewing-account-address)]
+   (let [address-activity (vals (get all-activities current-viewing-account-address))]
      (->> address-activity
+          (sort :timestamp)
           (keep (fn [{:keys [activity-type recipient]}]
                   (when (= constants/wallet-activity-type-send activity-type)
                     recipient)))
