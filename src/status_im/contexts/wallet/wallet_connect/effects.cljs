@@ -145,35 +145,3 @@
            :reason      reason})
          (promesa/then on-success)
          (promesa/catch on-error)))))
-
-(rf/reg-fx
- :effects.wallet-connect/should-session-request-handled
- (fn [{:keys [db event on-handle on-do-not-handle]}]
-   (let [{:keys [topic]} event
-         should-handle?  (some #(= topic %)
-                               (map :topic (:wallet-connect/sessions db)))]
-     (if should-handle?
-       (on-handle)
-       (do
-         (rf/dispatch [:wallet-connect/send-response
-                       {:error (wallet-connect/get-sdk-error
-                                constants/wallet-connect-user-rejected-chains-error-key)}])
-         (on-do-not-handle))))))
-
-;; (rf/reg-event-fx
-;;  :wallet-connect/on-session-delete
-;;  (fn [{:keys [db]} [{:keys [topic] :as event}]]
-;;    (log/info "Received Wallet Connect session delete: " event)
-;;    {:fx [[:effects.wallet-connect/should-session-request-be-handled?
-;;           {:db        db
-;;            :event     event
-;;            :on-handle #(rf/dispatch [:wallet-connect/disconnect-session topic])}]]}))
-
-;; (rf/reg-event-fx
-;;  :wallet-connect/on-session-request
-;;  (fn [{:keys [db]} [event]]
-;;    {:fx [[:effects.wallet-connect/should-session-request-be-handled?
-;;           {:db        db
-;;            :event     event
-;;            :on-handle #(rf/dispatch
-;;                         [:wallet-connect/process-session-request event])}]]}))

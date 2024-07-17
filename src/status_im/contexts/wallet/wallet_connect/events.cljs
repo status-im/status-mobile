@@ -228,3 +228,33 @@
             :params     [(js/JSON.stringify session-info)]
             :on-success #(log/info "Wallet Connect session persisted")
             :on-error   #(log/info "Wallet Connect session persistence failed" %)}]]]}))
+
+(rf/reg-event-fx
+ :wallet-connect/if-need-to-handle-session-request
+ (fn [{:keys [db]} [event on-handle on-do-not-handle]]
+   (let [{:keys [topic]} event
+         should-handle?  (some #(= topic %)
+                               (map :topic (:wallet-connect/sessions db)))]
+     (if should-handle?
+       {:fx [[:dispatch on-handle]]}
+       {:fx [[:dispatch on-do-not-handle]
+             [:dispatch
+              [:wallet-connect/send-response
+               {:error (wallet-connect/get-sdk-error
+                        constants/wallet-connect-user-rejected-chains-error-key)}]]]}))))
+
+;; (rf/reg-event-fx
+;;  :wallet-connect/on-session-delete
+;;  (fn [_ [{:keys [topic] :as event}]]
+;;    (log/info "Received Wallet Connect session delete: " event)
+;;    {:fx [:dispatch
+;;          [:wallet-connect/if-need-to-handle-session-request
+;;           event
+;;           [:wallet-connect/disconnect-session topic]]]}))
+
+;; (rf/reg-event-fx
+;;  :wallet-connect/on-session-request
+;;  (fn [_ [event]]
+;;    {:fx [:dispatch
+;;          [:wallet-connect/if-need-to-handle-session-request
+;;           event [:wallet-connect/process-session-request event]]]}))
