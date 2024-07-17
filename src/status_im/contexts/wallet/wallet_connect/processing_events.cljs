@@ -10,9 +10,10 @@
 (rf/reg-event-fx
  :wallet-connect/process-session-request
  (fn [{:keys [db]} [event]]
-   (let [method (wallet-connect-core/get-request-method event)
-         screen (wallet-connect-core/method-to-screen method)]
-     (if screen
+   (let [method                (wallet-connect-core/get-request-method event)
+         screen                (wallet-connect-core/method-to-screen method)
+         current-request-event (get-in db [:wallet-connect/current-request :event])]
+     (if (and screen (not current-request-event))
        {:db (assoc-in db [:wallet-connect/current-request :event] event)
         :fx [(condp = method
                constants/wallet-connect-eth-send-transaction-method

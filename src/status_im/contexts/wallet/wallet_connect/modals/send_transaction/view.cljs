@@ -19,6 +19,7 @@
         network               (rf/sub [:wallet-connect/current-request-network])
         {:keys [max-fees-fiat-formatted
                 error-state]} (rf/sub [:wallet-connect/current-request-transaction-information])]
+    (rn/use-unmount #(rf/dispatch [:wallet-connect/reject-session-request]))
     [rn/view {:style (style/container bottom)}
      [quo/gradient-cover {:customization-color customization-color}]
      [page-nav/view
