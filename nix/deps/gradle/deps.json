@@ -4060,132 +4060,6 @@
   },
 
   {
-    "path": "com/facebook/fresco/drawee/2.3.0/drawee-2.3.0",
-    "host": "https://plugins.gradle.org/m2",
-    "type": "aar",
-    "pom": {
-      "sha1": "e8748b720366d85dcd58ceb0c698c1b7a36674a2",
-      "sha256": "0rk86yr5i9qm4qrjkas6ncl6c9ra4cqfijkv0ws8xglcbyw7a9sl"
-    },
-    "jar": {
-      "sha1": "07d461727cf24956ca7e579e266d5ac88762c0a0",
-      "sha256": "1qnavxnh4xgybw8v9g344v3vzzmy1q7f8wn3i89icd44gmiba6wr"
-    }
-  },
-
-  {
-    "path": "com/facebook/fresco/fbcore/2.2.0/fbcore-2.2.0",
-    "host": "https://plugins.gradle.org/m2",
-    "type": "aar",
-    "pom": {
-      "sha1": "d9e14f467d0b22d767a20bef4f6fd721987ce367",
-      "sha256": "1j68icbcf9pqpja4baw8k39mk4a93i11qwnpswv0kkq3pb1czgib"
-    },
-    "jar": {
-      "sha1": "c827447f13d268ee8c67035cf197cec04d49cfe3",
-      "sha256": "0rrlkgwg3zmhzkrlycq85bmn7w3f6c5lfgabcvy2hfmi08s5zfsp"
-    }
-  },
-
-  {
-    "path": "com/facebook/fresco/fresco/2.2.0/fresco-2.2.0",
-    "host": "https://plugins.gradle.org/m2",
-    "type": "aar",
-    "pom": {
-      "sha1": "5026c7cd65322f9e1a426c3aaa14d46280239dbe",
-      "sha256": "13hbk3nv6djzl49429in59j8pjw4g9a8dcrpw3b07qvvh0qhg1kf"
-    },
-    "jar": {
-      "sha1": "a7504c680c2582757ca5eb01cf98cbb8503e73b1",
-      "sha256": "1554s3z3bfglb34kaj2pmmsni2c8mmdziplgpcl5mb59kxnlnjzg"
-    }
-  },
-
-  {
-    "path": "com/facebook/fresco/imagepipeline-native/2.2.0/imagepipeline-native-2.2.0",
-    "host": "https://plugins.gradle.org/m2",
-    "type": "aar",
-    "pom": {
-      "sha1": "720451ef7183730cc6e41e90fc2aebf082c2cd19",
-      "sha256": "0w64rgap40sbdz8nvrmgv37szh5ac9sq76cp0s40iy2pqiz2i064"
-    },
-    "jar": {
-      "sha1": "d67236389cdf4ac92b4bb754641b7aa854f5ba7a",
-      "sha256": "0b9hjbxzy73arvmzx8kfgzp9wpvxznvar5ikxibbzfmf2zzrrw31"
-    }
-  },
-
-  {
-    "path": "com/facebook/fresco/imagepipeline/2.2.0/imagepipeline-2.2.0",
-    "host": "https://plugins.gradle.org/m2",
-    "type": "aar",
-    "pom": {
-      "sha1": "626e49897e7b63b9ccc0f94ae4c244029aa82aec",
-      "sha256": "0ya5qc8y00w41nxdc7s8sx8rfx94jv44yfyfzgk984pnc780kg91"
-    },
-    "jar": {
-      "sha1": "d48b1ff6e6c4ebb8f0cfeb12db702dfad10ba04f",
-      "sha256": "10gavf6db3y8i2a1nhjq5apd6940hqz6dmg7rad882j17h6az91f"
-    }
-  },
-
-  {
-    "path": "com/facebook/fresco/memory-type-java/2.2.0/memory-type-java-2.2.0",
-    "host": "https://plugins.gradle.org/m2",
-    "type": "aar",
-    "pom": {
-      "sha1": "309f508be8421f790d2109bfa870f275048e4b9f",
-      "sha256": "04y6bnxq7qzzp7v65mbyx83al6sl3g8xfnq4y75rrpmzpmd1jhd2"
-    },
-    "jar": {
-      "sha1": "af16daca2b0af42730eca0ed02b85dfa6b100602",
-      "sha256": "1w7x5v79abxkcznj9qb11fb036qii4yyp0vp8ivg3n14b7xws83i"
-    }
-  },
-
-  {
-    "path": "com/facebook/fresco/memory-type-native/2.2.0/memory-type-native-2.2.0",
-    "host": "https://plugins.gradle.org/m2",
-    "type": "aar",
-    "pom": {
-      "sha1": "a4ca6c3169ccf3db11121b806c571c779c596d19",
-      "sha256": "0jbhgwqlf83fhyd2rf4w29aw72z20pwpiwab79i4qv9qn3bqmzz7"
-    },
-    "jar": {
-      "sha1": "63e9739053ada471f72af7bf2bc642f4a9a7d43b",
-      "sha256": "16qsxh2zi1vylnj3waz743zm5kvbwzrb61qngcincjzysz3jzn6x"
-    }
-  },
-
-  {
-    "path": "com/facebook/fresco/nativeimagefilters/2.2.0/nativeimagefilters-2.2.0",
-    "host": "https://plugins.gradle.org/m2",
-    "type": "aar",
-    "pom": {
-      "sha1": "79bb9b688df382eeb4f76b878f960eb7ee806275",
-      "sha256": "0c535nxpakg86yhf91ysppnnmjfcwrhf88jgqzn0g7nyz3fwvmv7"
-    },
-    "jar": {
-      "sha1": "6a0b2c43c7a757f23b0c670b2a3995bdc3e5b713",
-      "sha256": "0jm4jk6gb5j6b94ilkla5jpamjwxjv7pljnka337yh0b0hbq34ba"
-    }
-  },
-
-  {
-    "path": "com/facebook/fresco/stetho/2.2.0/stetho-2.2.0",
-    "host": "https://plugins.gradle.org/m2",
-    "type": "aar",
-    "pom": {
-      "sha1": "c98731a6a9b6d7ae4f4516c3515c817931f95c46",
-      "sha256": "1jm22xa58vgrgl4pzy4bcbz9bm1nkhg7xf6x0dz915asqfcpgzsg"
-    },
-    "jar": {
-      "sha1": "4c4ee688f80216c4dca4c67afa130b283a8bf5a5",
-      "sha256": "06k888gr75z9lbx4dwjfr8fpbjwcjh9ikff9nv3yar8r24f8fszb"
-    }
-  },
-
-  {
     "path": "antlr/antlr/2.7.1/antlr-2.7.1",
     "host": "https://repo.maven.apache.org/maven2",
     "type": "jar",
@@ -4210,20 +4084,6 @@
     "jar": {
       "sha1": "83cd2cd674a217ade95a4bb83a8a14f351f48bd0",
       "sha256": "0k6wav7w33z1sgfwyvkpa7xsqjwmrj0fa4lfdvsvk5i5j55xmyw8"
-    }
-  },
-
-  {
-    "path": "commons-cli/commons-cli/1.2/commons-cli-1.2",
-    "host": "https://repo.maven.apache.org/maven2",
-    "type": "jar",
-    "pom": {
-      "sha1": "e1b71e4b511c3c63f8b19d0302fe1d1c6e79035a",
-      "sha256": "0qa51rbqvrnpy91yn4k9bylalswziq4jaw1i93g2z370fqhfkwqq"
-    },
-    "jar": {
-      "sha1": "2bf96b7aa8b611c177d329452af1dc933e14501c",
-      "sha256": "1nar28vxmzsjiw12phv77q8qr6jjnbsx9kvwidb9nd3djm8qkkg7"
     }
   },
 
@@ -4284,16 +4144,16 @@
   },
 
   {
-    "path": "commons-codec/commons-codec/1.17.0/commons-codec-1.17.0",
+    "path": "commons-codec/commons-codec/1.17.1/commons-codec-1.17.1",
     "host": "https://repo.maven.apache.org/maven2",
     "type": "jar",
     "pom": {
-      "sha1": "00df1652d86779f44021a4c52a928d0792217eec",
-      "sha256": "1z0l2ay8ciwh1ygs9arqccdq0lygf2hs1r433pnl33s0bvd4q760"
+      "sha1": "d187e2d50ab520895df0dcb9d88980ffea50bfa3",
+      "sha256": "180j2l9zqy2jaggaa5i3iv8v9ar4xs4ym2lbjlrgknjhh56xp83z"
     },
     "jar": {
-      "sha1": "0dbe8eef6e14460e73da07f7b11bf994d6626355",
-      "sha256": "0ngwriky0blzc71k30v4big8174b3lh6hx7azm206397mj0dw07p"
+      "sha1": "973638b7149d333563584137ebf13a691bb60579",
+      "sha256": "08zzwsj1sg83fb5zrgyn3w8qa1mzwwmdl2nqm6ckrp1d7w8cpxpr"
     }
   },
 
@@ -4340,16 +4200,16 @@
   },
 
   {
-    "path": "commons-logging/commons-logging/1.3.1/commons-logging-1.3.1",
+    "path": "commons-logging/commons-logging/1.3.3/commons-logging-1.3.3",
     "host": "https://repo.maven.apache.org/maven2",
     "type": "jar",
     "pom": {
-      "sha1": "4bfde82c8e291f8e31227a91e0c5e428ee113e2d",
-      "sha256": "1f5kzxzj0vniiqdka5z3941vrx8dg2n5885j5h311qc8s2wqpqcd"
+      "sha1": "c5b1495adcb6d090cc4d333bb20e0583e716dd3d",
+      "sha256": "1fmk0rqvgb4n2khjlw8h5p2riq7r51gw00m71d279xy3x9162p8j"
     },
     "jar": {
-      "sha1": "8cff7dc1e492911f3dd7640ebfb60d6206a1dd40",
-      "sha256": "1z5qj33hzzni2y9vgdpk1r9b3691jmzs8iz6na7npbbv6fs7nh4m"
+      "sha1": "580ad1a4f34876c4f964c083361de31b3d60be68",
+      "sha256": "1fd9gsvchyhkymj72l9lhpngrx3wn827hg4rl2qzk1nq15ngja2q"
     }
   },
 
@@ -5222,86 +5082,44 @@
   },
 
   {
-    "path": "com/facebook/fbjni/fbjni/0.0.2/fbjni-0.0.2",
+    "path": "com/facebook/fresco/animated-base/2.3.0/animated-base-2.3.0",
     "host": "https://repo.maven.apache.org/maven2",
     "type": "aar",
     "pom": {
-      "sha1": "eb474889a1c485e1902b10ef0383fac4d74a7130",
-      "sha256": "0xl0i6jp308s1n0jpj6rg7k8v0a1acvjvk556gxg7bfh5knzngii"
+      "sha1": "55b209ec7ba94c93d7d2474f0182b9d42a8fa287",
+      "sha256": "0z209493dz56y1i33nkxkg3knrhwyz9im8mb6nfg0csm9r5jf8g4"
     },
     "jar": {
-      "sha1": "d9e1b6ebbe55fe25f6ee6257ef64588e0f8a8db0",
-      "sha256": "0pjfj4p14wq8ya40awnlm389ynavbnx9l890vj0i917fzbc8i7h3"
+      "sha1": "31c53407e646564703629836b090ccca7bb23ea3",
+      "sha256": "02rh2ygdq871mww4izfg2gwldkmqzgf6pha4n1ra8jfdsdv9zyhq"
     }
   },
 
   {
-    "path": "com/facebook/flipper/flipper-fresco-plugin/0.54.0/flipper-fresco-plugin-0.54.0",
+    "path": "com/facebook/fresco/animated-drawable/2.3.0/animated-drawable-2.3.0",
     "host": "https://repo.maven.apache.org/maven2",
     "type": "aar",
     "pom": {
-      "sha1": "78b6dd76ca355a13262d1b6fe97ea225d5b8c445",
-      "sha256": "0p5j7nix6q86xa3fiq0i2bnnb6qaszdl2yyq0w5c8yva86drvfrw"
+      "sha1": "b2f6d5f48c3ba9f1b5fc455ba18da07b1ec2fbd8",
+      "sha256": "0kn6srghzdirhidmp4nbbsacc0p3l3mwhfvk4s9z8vkz32hdzj27"
     },
     "jar": {
-      "sha1": "36a4f4a3f4173cd4bdfe9a7f078e56fc93b63e64",
-      "sha256": "0kbv37kcj3lr3bikjfyfk48a0cq06n8jadbcyl7i6w7pr9lh7hlc"
+      "sha1": "e6a96fdc6e9e1c830e0b1675b6c928fac16d1a33",
+      "sha256": "18lz12phl1xbi9hl8rwwfrs6cmz2gi7vi18s1s0acd8vmpv55x84"
     }
   },
 
   {
-    "path": "com/facebook/flipper/flipper/0.54.0/flipper-0.54.0",
+    "path": "com/facebook/fresco/animated-gif/2.3.0/animated-gif-2.3.0",
     "host": "https://repo.maven.apache.org/maven2",
     "type": "aar",
     "pom": {
-      "sha1": "f1e963be185c5c5d5a8416faf16af29fddeaf1ab",
-      "sha256": "023hmlkczyswy2bdl559rasw7w3fi8210qkspl2wdh70axq8qvjq"
+      "sha1": "84de0173f1126cac855dddb21ca2ffbc01375c09",
+      "sha256": "1bk64jh7fgh03gvahidf8pwzchi6gl5f07rgw7marcbhc9kslx1z"
     },
     "jar": {
-      "sha1": "55d7417b5db25a08ac19048a6d03a44770ef1f68",
-      "sha256": "0aifn1d43f9b2xvww0r3xn59hv4np3s84m737xd2rkhvl38hcr5p"
-    }
-  },
-
-  {
-    "path": "com/facebook/fresco/animated-base/2.2.0/animated-base-2.2.0",
-    "host": "https://repo.maven.apache.org/maven2",
-    "type": "aar",
-    "pom": {
-      "sha1": "3c9efabd53423f457b58dcb07c7dc4baf7437fd6",
-      "sha256": "00am7zv5sa9wl6fyvbq2qh82f5575bi3zv9jvhisy139fbrgqsp2"
-    },
-    "jar": {
-      "sha1": "f20b31b8209c8a1739b2359da8b5f7eab1d96816",
-      "sha256": "04h9pfzkbk40jfhnj5bs6771l8ixhw1xhq83fxg0vcad60zyzvjd"
-    }
-  },
-
-  {
-    "path": "com/facebook/fresco/animated-drawable/2.2.0/animated-drawable-2.2.0",
-    "host": "https://repo.maven.apache.org/maven2",
-    "type": "aar",
-    "pom": {
-      "sha1": "37d0119be3f63d25b518d5d960f84b67b4ffc945",
-      "sha256": "05mlhh321m2a42a9j0lrhi2i4v5z3j2wy01xjqjw772akc9mpvmn"
-    },
-    "jar": {
-      "sha1": "1190da6ea5f992a2fece1868d3a094bea171165e",
-      "sha256": "1m28dhwnyrjhdhm2383jx166x89y6c50p8rhrdplrhr0ajycd68d"
-    }
-  },
-
-  {
-    "path": "com/facebook/fresco/animated-gif/2.2.0/animated-gif-2.2.0",
-    "host": "https://repo.maven.apache.org/maven2",
-    "type": "aar",
-    "pom": {
-      "sha1": "d90a3a13962a01927c72e9cc70dbd5a663673047",
-      "sha256": "10h3r457jmw94wy6rwy01r7g8djhcnqc719ngl5y4mj014n2pns6"
-    },
-    "jar": {
-      "sha1": "9015b920983f40af3de068f49baf1b8a24f8e073",
-      "sha256": "1am1wgarlk1qa0dwlmrb40vbd9jpl6cga39ahibrcn8w0l5yjzbp"
+      "sha1": "9a55f0d2beff78ea4bfa91de03e20897e0b44943",
+      "sha256": "0wqqh1h05xf33mvsf8sf28pv6haqvcwdp8kf17bdpn0hsmza8rr5"
     }
   },
 
@@ -5320,6 +5138,20 @@
   },
 
   {
+    "path": "com/facebook/fresco/drawee/2.3.0/drawee-2.3.0",
+    "host": "https://repo.maven.apache.org/maven2",
+    "type": "aar",
+    "pom": {
+      "sha1": "1f9f14c9a376878e38e20f22e67b1b61a1102f2b",
+      "sha256": "0x8b3nxsm9qjx1dqca1kdq52c4yz6cm4bgqwrfng38w2rf8ah86v"
+    },
+    "jar": {
+      "sha1": "1cff917b6f19efe7a21ca542c8b8bed18d0d9779",
+      "sha256": "0naabd9a63nw47fy3hv2z2hndyn22zymxhpbjdbfc4bgspnmr4mz"
+    }
+  },
+
+  {
     "path": "com/facebook/fresco/fbcore/2.0.0/fbcore-2.0.0",
     "host": "https://repo.maven.apache.org/maven2",
     "type": "aar",
@@ -5334,16 +5166,16 @@
   },
 
   {
-    "path": "com/facebook/fresco/flipper/2.2.0/flipper-2.2.0",
+    "path": "com/facebook/fresco/fbcore/2.3.0/fbcore-2.3.0",
     "host": "https://repo.maven.apache.org/maven2",
     "type": "aar",
     "pom": {
-      "sha1": "ab86f244b9a4aa60328cc079e0450f7194020b78",
-      "sha256": "0iy8b0p4q30l1b0bnfpxmaqdhp8zfqxgbij2chnbyzralyxfa453"
+      "sha1": "4df1685de6511deb9864381bc97c0ae4cb9c34c4",
+      "sha256": "1vx0cx199frcnar6jbyqfkmqksnsrdzl3rpvm1xakc8xzd60apbq"
     },
     "jar": {
-      "sha1": "f231a02b695bae83f7a985d3b16a160245e40e62",
-      "sha256": "1crvr3nmrn3xz7qb4srp88plzixcv050542qlihkbzp5w13my51p"
+      "sha1": "6d568ce3e1a5377c390dbde6f150884fecd61bd0",
+      "sha256": "0jjz687n6fnpzlzy7b9nw5y1khgjm86kcghxwhkz0323k0d8av5c"
     }
   },
 
@@ -5362,6 +5194,20 @@
   },
 
   {
+    "path": "com/facebook/fresco/fresco/2.3.0/fresco-2.3.0",
+    "host": "https://repo.maven.apache.org/maven2",
+    "type": "aar",
+    "pom": {
+      "sha1": "6f2327f2f92675b38f05532ae5a2fe6f312644fc",
+      "sha256": "0rcis6mkix7f0irpz7cja2dmral3rvikfjk7lb59an33hbdp4x5n"
+    },
+    "jar": {
+      "sha1": "fbc98413bb32eefe882a07cc556c7a1224dc9f24",
+      "sha256": "0nhw4w1lpjp6bib1z8lclad4859f96dhsf3s074ynhnvx9mmm5al"
+    }
+  },
+
+  {
     "path": "com/facebook/fresco/imagepipeline-base/2.0.0/imagepipeline-base-2.0.0",
     "host": "https://repo.maven.apache.org/maven2",
     "type": "aar",
@@ -5376,16 +5222,30 @@
   },
 
   {
-    "path": "com/facebook/fresco/imagepipeline-base/2.2.0/imagepipeline-base-2.2.0",
+    "path": "com/facebook/fresco/imagepipeline-base/2.3.0/imagepipeline-base-2.3.0",
     "host": "https://repo.maven.apache.org/maven2",
     "type": "aar",
     "pom": {
-      "sha1": "e37d0acfeea73cbac29477c79b24d667e260eb18",
-      "sha256": "0z8nsdi191cc96xh5khspdqfr9rmpf2bd5hdylq1winndkmjqqx6"
+      "sha1": "286c806853568a786dec021f5cbb469243aa6bf5",
+      "sha256": "1p3hj0439hbmf707p50nii8rj87w2ni2kx0yxcb07yfy22v13bsm"
     },
     "jar": {
-      "sha1": "9f9be2d9ccf4d96fb341f0fedcb47b9c800653a6",
-      "sha256": "13xmlnblbrax12q18l4dvhsal3rmfj7sigmkgk6ixry5k6xisr9g"
+      "sha1": "ed3c290961f4c20fffa0ce35c098714c1934523d",
+      "sha256": "16pniin5kbkqh6x845sv5f8af4kapqi4475vwrhia46hyh7kvsgf"
+    }
+  },
+
+  {
+    "path": "com/facebook/fresco/imagepipeline-native/2.3.0/imagepipeline-native-2.3.0",
+    "host": "https://repo.maven.apache.org/maven2",
+    "type": "aar",
+    "pom": {
+      "sha1": "9fd9b643310d480a21d3bbf1d26df4fd9daa5a7b",
+      "sha256": "0il2p0a7bakcvlplm7k3bfghqiijf5jrlg38sn740x7fxmzwv4sr"
+    },
+    "jar": {
+      "sha1": "705a3629cfba16ab8c9b2765058380276514342c",
+      "sha256": "01mk1xjfhjvryx51qg4h2icc4w61dmfnjqcxbw69fqh0rpkn98cd"
     }
   },
 
@@ -5418,16 +5278,72 @@
   },
 
   {
-    "path": "com/facebook/fresco/memory-type-ashmem/2.2.0/memory-type-ashmem-2.2.0",
+    "path": "com/facebook/fresco/imagepipeline/2.3.0/imagepipeline-2.3.0",
     "host": "https://repo.maven.apache.org/maven2",
     "type": "aar",
     "pom": {
-      "sha1": "5e1b2193074370248aeb1bdff1b5cc80072d5fa9",
-      "sha256": "0lh5hnbp9irq277drmzv06cb74fbaqf47zlap5nybqcmygdm58dp"
+      "sha1": "e7e70812f3332bb993b8959aec4b30ff40b837e7",
+      "sha256": "0h2llim7zwciwr8jrm1s2v39ap8gsrkw04wp0i1fzapqxgzfngkv"
     },
     "jar": {
-      "sha1": "7ae95af772c88b0e112fc7dc3b80b26fa42ed3c2",
-      "sha256": "0lahv1sr176hpfiq3ilyg5nhmr8myjkbwi01x3715b2zd111xplv"
+      "sha1": "579954628c8e1da96e1585741f5dae08f282ce3e",
+      "sha256": "1q0ki5w7wnn3smfhp8rqyg4a1axmil0fkmzn6nf6myq2hk4n99w3"
+    }
+  },
+
+  {
+    "path": "com/facebook/fresco/memory-type-ashmem/2.3.0/memory-type-ashmem-2.3.0",
+    "host": "https://repo.maven.apache.org/maven2",
+    "type": "aar",
+    "pom": {
+      "sha1": "fe467e336e1b7402a91b246d2bfee44bec10601c",
+      "sha256": "05xxscqp3hgxp454xbhp2ahzxamaqcyf302332msld8bwi14ppsy"
+    },
+    "jar": {
+      "sha1": "d0e2ab70d5d35d08de81d3917b0f5d7bbf4fa82c",
+      "sha256": "157z51w0yln99a72izfkb20b89g0ilch7wz2kzxd9np1blpvv6m2"
+    }
+  },
+
+  {
+    "path": "com/facebook/fresco/memory-type-java/2.3.0/memory-type-java-2.3.0",
+    "host": "https://repo.maven.apache.org/maven2",
+    "type": "aar",
+    "pom": {
+      "sha1": "2e31b1406bdc5c31adcf2939dd59ea611da8fdf4",
+      "sha256": "06m6q49lv2r789xirni7g1g1n8x0z5191127d826ycqh8b6ds3ab"
+    },
+    "jar": {
+      "sha1": "5e8adc594bc9d8f4e8d794dff23c70882fb98e65",
+      "sha256": "0fwcbfnkbbc1s525cnzz4n9jzyl6yjzvlfsvkvlrwp425qhphhhz"
+    }
+  },
+
+  {
+    "path": "com/facebook/fresco/memory-type-native/2.3.0/memory-type-native-2.3.0",
+    "host": "https://repo.maven.apache.org/maven2",
+    "type": "aar",
+    "pom": {
+      "sha1": "5cd6798c315f330596ef147b32b29db39e8f809a",
+      "sha256": "0rq3zw9bcsvkx5jy16hcj25i8il5zma07p3mkw9l8f4868y1a2w4"
+    },
+    "jar": {
+      "sha1": "72bb5626d508587cb9d96beb0e2b61ac36a2c63d",
+      "sha256": "19sg4l284h5iim54ciwsxpjvczjazwd8zkadrgflqn0kjx7amsh3"
+    }
+  },
+
+  {
+    "path": "com/facebook/fresco/middleware/2.3.0/middleware-2.3.0",
+    "host": "https://repo.maven.apache.org/maven2",
+    "type": "aar",
+    "pom": {
+      "sha1": "d811113c93c79eec69eb4bac25133dc0e82a9617",
+      "sha256": "17nlk1nhqqbzrd4j69iai8hxnjvbaqj18ys7ifywcfpbbilddghn"
+    },
+    "jar": {
+      "sha1": "20d20bbf7e39b9c6f2ff94e1aaa677d836676944",
+      "sha256": "0nxxh76j10rhwvxmsqvmcw5xlsxpj0dnz7864lld7hb2wg41rq4a"
     }
   },
 
@@ -5446,6 +5362,20 @@
   },
 
   {
+    "path": "com/facebook/fresco/nativeimagefilters/2.3.0/nativeimagefilters-2.3.0",
+    "host": "https://repo.maven.apache.org/maven2",
+    "type": "aar",
+    "pom": {
+      "sha1": "3c2a9b63760c8854746153d4d4b110bf8485f012",
+      "sha256": "02mhjwqcbfdrn3qhgpzhlbllpvq1g8kis2z1x891c40r8sp2sz4r"
+    },
+    "jar": {
+      "sha1": "1f4d81f8f6e2706ae848124d454c99cadd85496c",
+      "sha256": "00l0ry06p3fsk1a1c47s750rxdb7f0hznqm1zkpcj3ylw9mc9i7m"
+    }
+  },
+
+  {
     "path": "com/facebook/fresco/nativeimagetranscoder/2.0.0/nativeimagetranscoder-2.0.0",
     "host": "https://repo.maven.apache.org/maven2",
     "type": "aar",
@@ -5460,44 +5390,44 @@
   },
 
   {
-    "path": "com/facebook/fresco/nativeimagetranscoder/2.2.0/nativeimagetranscoder-2.2.0",
+    "path": "com/facebook/fresco/nativeimagetranscoder/2.3.0/nativeimagetranscoder-2.3.0",
     "host": "https://repo.maven.apache.org/maven2",
     "type": "aar",
     "pom": {
-      "sha1": "58f11fa92efadc1c59bbdc8cf9e9234f8f8a3ac1",
-      "sha256": "0ppwqs3ii232zfj5iisg1pkzr7qdz41xf75xjqrp6hxcbmnld3zm"
+      "sha1": "00bce6fb9db5bbafd05f85176c6c148203b2f562",
+      "sha256": "046sarbpp79swfa0j81w8b5yrbp51p627cb0r3k0h5zgx9l9dly0"
     },
     "jar": {
-      "sha1": "47f9472de0b3eda631d95cd927ff4bd0dd98816b",
-      "sha256": "0p7awfkagb15iqv37g5fdhjhnn22dqahqhav0ypcvwikvn30fs26"
+      "sha1": "1b74432d16db744719dfe1d03d4d93850e061d08",
+      "sha256": "0h65azfkrmjn4g39klzqadbd1i5yhawyk2rlvgp88visyjkabs2a"
     }
   },
 
   {
-    "path": "com/facebook/fresco/soloader/2.2.0/soloader-2.2.0",
+    "path": "com/facebook/fresco/soloader/2.3.0/soloader-2.3.0",
     "host": "https://repo.maven.apache.org/maven2",
     "type": "aar",
     "pom": {
-      "sha1": "300e6a8991ac9f84c5195faf80f61ce8ef63e27f",
-      "sha256": "0qcs2k95k19w4drff5cw109s3bz8mwghv4ydbp1r99d0gv5dsn0w"
+      "sha1": "15f45b3871ab2aacedc7254c0997bf54b4c22b6e",
+      "sha256": "0wp9a5cs5mngv55a7aacg8z59p41c2isp8fz89p1xms7cnmxkylg"
     },
     "jar": {
-      "sha1": "b67d3ff3c1da2858a075286c6c458c36ccf295b7",
-      "sha256": "00dv4dm037xlirrq6rqfvplgbn467mkwpsgwia38yngj31jvjp9p"
+      "sha1": "2fa58340312a3c97518b14c6d4c3f3d458a25fe1",
+      "sha256": "0g9i2smjvcz1xhzrgbk1g0f2xiiwfrj336wgjin3irh3gza70ziy"
     }
   },
 
   {
-    "path": "com/facebook/fresco/ui-common/2.2.0/ui-common-2.2.0",
+    "path": "com/facebook/fresco/ui-common/2.3.0/ui-common-2.3.0",
     "host": "https://repo.maven.apache.org/maven2",
     "type": "aar",
     "pom": {
-      "sha1": "1f5e47e876212694aebcc24e1389ddce54258381",
-      "sha256": "1iqfzl9l2wkbhyh8km9yzldny6j52y059v6vyxywjpp5gk1gigzs"
+      "sha1": "86f396e523962bc1a6a83fdc7afdb7977d42f71a",
+      "sha256": "16bhs8vpcpzrh1pbnwrxyp37aysgg4m8vl2p2nv7xc20k24x1zw9"
     },
     "jar": {
-      "sha1": "d053182f7cdce15a81861d665abca337708bc660",
-      "sha256": "0zdi3wnj142bidhnz5yl1rm6zprd4x1hz0514yq54q2yyb22mwfy"
+      "sha1": "0ce37a495f0f37165e3ede1c4cb927b0b55856be",
+      "sha256": "0fhjshaicnhzcnw7s41m2d3w2cj06p30mcfj08wrvz80bpdsm3ad"
     }
   },
 
@@ -5512,20 +5442,6 @@
     "jar": {
       "sha1": "f514ff4ca022a579d9cf7524846988b646ae4491",
       "sha256": "02fm111rcqqcp7avlvcv53n438g0nb5paxk75c15g90k1bx34y79"
-    }
-  },
-
-  {
-    "path": "com/facebook/soloader/annotation/0.8.2/annotation-0.8.2",
-    "host": "https://repo.maven.apache.org/maven2",
-    "type": "aar",
-    "pom": {
-      "sha1": "f6ca5f3e78b1e68d3c8a2f5c8df24c01385ee4bb",
-      "sha256": "06x2bf6yfgi21m127wvk48sm1pjips3jw8c5gpjssswlsq3ql8qd"
-    },
-    "jar": {
-      "sha1": "ae6d46195467467fae746c6225f79ac41e7039e8",
-      "sha256": "0sbzgvkmx351gavaxw4ij27cghhvhhdjxpcsqlbmca2q8qcwwa3s"
     }
   },
 
@@ -5558,20 +5474,6 @@
   },
 
   {
-    "path": "com/facebook/soloader/nativeloader/0.8.2/nativeloader-0.8.2",
-    "host": "https://repo.maven.apache.org/maven2",
-    "type": "jar",
-    "pom": {
-      "sha1": "7209961d42aa840eb60b5c00ca623553b267b5ba",
-      "sha256": "01mkkys2xcmglksl0cb5vf87rx8bkiywi01amm38rd15dl6pgx5g"
-    },
-    "jar": {
-      "sha1": "86cb3da9384707034355ac1e84e9a8cf6de80f7c",
-      "sha256": "1kd6ipfaph30qn54mbkmjcaqicnp6r2ixpyncqy8p6yqvy6qyzr8"
-    }
-  },
-
-  {
     "path": "com/facebook/soloader/nativeloader/0.9.0/nativeloader-0.9.0",
     "host": "https://repo.maven.apache.org/maven2",
     "type": "jar",
@@ -5600,20 +5502,6 @@
   },
 
   {
-    "path": "com/facebook/soloader/soloader/0.8.2/soloader-0.8.2",
-    "host": "https://repo.maven.apache.org/maven2",
-    "type": "aar",
-    "pom": {
-      "sha1": "ed92ecd4b7f4ba68e2042694d2e1c44eb71b8cf2",
-      "sha256": "03mlzkiy7dm0f50dpvm1sz7px7iivjkbm74r56mks34hhy3m5wh1"
-    },
-    "jar": {
-      "sha1": "8575dbdec464207a19273bd3c09d758a08fa655c",
-      "sha256": "05vv6fqngfgq2sppn86csyfrx93igjf444n0nbhx2lkhcvxpv4wn"
-    }
-  },
-
-  {
     "path": "com/facebook/soloader/soloader/0.9.0/soloader-0.9.0",
     "host": "https://repo.maven.apache.org/maven2",
     "type": "aar",
@@ -5624,20 +5512,6 @@
     "jar": {
       "sha1": "6e138af1dd29ceabf5bace2d24dc4333f304d104",
       "sha256": "0sdpgjfnfa5gxbbx4ak8rml0f5d623gx8jknzkkj03iaj0c7b9ig"
-    }
-  },
-
-  {
-    "path": "com/facebook/stetho/stetho/1.3.1/stetho-1.3.1",
-    "host": "https://repo.maven.apache.org/maven2",
-    "type": "jar",
-    "pom": {
-      "sha1": "e16906589a3ad314809946a37d838dbe53b7d936",
-      "sha256": "0djvpxdsn36dmzqpgibl567ghxvd2kp2m5k10rx5ci5c7nbpiwj4"
-    },
-    "jar": {
-      "sha1": "2c4076b466a0eb4d6ddf5721edd35cd1adc1f317",
-      "sha256": "003s99d4a1xk7i9nqy717yici09q533pwyw59ss3p2407s4j53ml"
     }
   },
 
@@ -5806,26 +5680,26 @@
   },
 
   {
-    "path": "com/google/auto/value/auto-value-annotations/1.10.4/auto-value-annotations-1.10.4",
+    "path": "com/google/auto/value/auto-value-annotations/1.11.0/auto-value-annotations-1.11.0",
     "host": "https://repo.maven.apache.org/maven2",
     "type": "jar",
     "pom": {
-      "sha1": "1625b4e3671cc5ef044f7e0ed98c15bbfeba13bb",
-      "sha256": "1xr5ildglg5ia28gm4xbzn0s958prm1lmzzpi508ry45bx8vi9bk"
+      "sha1": "a6b3d6cd083f5e03aad810d4bc2b08755cf91753",
+      "sha256": "08mi0zm8jvlpf1ajnijlpf4gk6wgdzrz88h339i13q539viidv1a"
     },
     "jar": {
-      "sha1": "9679de8286eb0a151db6538ba297a8951c4a1224",
-      "sha256": "09bqi2im6a2qhlph2cl6rmhx06k28mdgv6hdrfbrgvysx9mmxi71"
+      "sha1": "f0d047931d07cfbc6fa4079854f181ff62891d6f",
+      "sha256": "1p8iw6mj9mhj2z9xqvr86aah9zzqbgd071qsdqsb6csk4pj5q1as"
     }
   },
 
   {
-    "path": "com/google/auto/value/auto-value-parent/1.10.4/auto-value-parent-1.10.4",
+    "path": "com/google/auto/value/auto-value-parent/1.11.0/auto-value-parent-1.11.0",
     "host": "https://repo.maven.apache.org/maven2",
     "type": "pom",
     "pom": {
-      "sha1": "08d4397fc90a6bd37db513aee267d40b7639db13",
-      "sha256": "0c4dd0fnxfv990ql5clbanrvc34ybd8cqcr3cw3692yw9nga3hxy"
+      "sha1": "4d1249846df8ae67b8ad313bc9a6174516fa49b3",
+      "sha256": "17djihhaffr3adbj9kc23abzl8wndcdqs4p0rifs9s2jhmqis3as"
     }
   },
 
@@ -5854,20 +5728,6 @@
     "jar": {
       "sha1": "40719ea6961c0cb6afaeb6a921eaa1f6afd4cfdf",
       "sha256": "1vf98qdxy0l4v1f0mvqxz92ydrd29vpyczmv999q22m9xsh22mwh"
-    }
-  },
-
-  {
-    "path": "com/google/code/findbugs/jsr305/2.0.1/jsr305-2.0.1",
-    "host": "https://repo.maven.apache.org/maven2",
-    "type": "jar",
-    "pom": {
-      "sha1": "95efa8cea662452bb74b34abe09a93ff47625c8f",
-      "sha256": "1c7vvi1nvgwm28c4lndw8hgs57jd5b493xlz45sx8bg158y2rh82"
-    },
-    "jar": {
-      "sha1": "516c03b21d50a644d538de0f0369c620989cd8f0",
-      "sha256": "0s74pv8qjc42c7q8nbc0c3b1hgx0bmk3b8vbk1z80p4bbgx56zqy"
     }
   },
 
@@ -6080,16 +5940,16 @@
   },
 
   {
-    "path": "com/google/errorprone/error_prone_annotations/2.27.1/error_prone_annotations-2.27.1",
+    "path": "com/google/errorprone/error_prone_annotations/2.29.0/error_prone_annotations-2.29.0",
     "host": "https://repo.maven.apache.org/maven2",
     "type": "jar",
     "pom": {
-      "sha1": "432107569fdae073842841c566ea1eea3b2f0a96",
-      "sha256": "0dw5ramkrazj98jcjdnh8nhgzda5y90lmjs4lyfg6fms56ypl8sc"
+      "sha1": "47cb34f2a372140639ea435efb9bbe07e3fea676",
+      "sha256": "0q9h7iy84nkwgp1ip1s32fv232nqvyvk5vadja95ck5gbgdp17wc"
     },
     "jar": {
-      "sha1": "a87dac4f79a6e5b1e55c629f16c754c53cbd50ec",
-      "sha256": "01kmgrg1xxgcqf77sn1i3v00jjb263wcd8p21kci8di4n1fmp2d4"
+      "sha1": "6eedb01b78b776f08eb8f91da701cc7cb738a467",
+      "sha256": "1iqgi8lkpai3mjpbgpz1xn9rhf417zx00ycb8c0wyy1qaskpx6mj"
     }
   },
 
@@ -6134,12 +5994,12 @@
   },
 
   {
-    "path": "com/google/errorprone/error_prone_parent/2.27.1/error_prone_parent-2.27.1",
+    "path": "com/google/errorprone/error_prone_parent/2.29.0/error_prone_parent-2.29.0",
     "host": "https://repo.maven.apache.org/maven2",
     "type": "pom",
     "pom": {
-      "sha1": "b00504c9994e0c16dc77d661b19421f1ffd179b4",
-      "sha256": "0di233kqqjsp6ldn3ljhn5r75lr0gx0gqkq1jpwylz1wd0z4my80"
+      "sha1": "e382458805bb0139780e97ce8faa0ed978146268",
+      "sha256": "129s68yjz7vym5208nmbyrxhl523mqbkaivb9x5gc02f8iksxvh6"
     }
   },
 
@@ -6242,26 +6102,26 @@
   },
 
   {
-    "path": "com/google/guava/guava-parent/33.2.0-jre/guava-parent-33.2.0-jre",
+    "path": "com/google/guava/guava-parent/33.2.1-jre/guava-parent-33.2.1-jre",
     "host": "https://repo.maven.apache.org/maven2",
     "type": "pom",
     "pom": {
-      "sha1": "f5bfac48964350d7ad36aa378acff0ed379f816b",
-      "sha256": "11argg9zmh9krd2rhh439vszzpq24pirdn5dlkxdifsv6kn663in"
+      "sha1": "fc55955fab23e86fad230acc81bf570deb5660bd",
+      "sha256": "052whva405zykjlmz4b721w0wa621j1qa1si0w19ar9pxvcgd5ch"
     }
   },
 
   {
-    "path": "com/google/guava/guava-testlib/33.2.0-jre/guava-testlib-33.2.0-jre",
+    "path": "com/google/guava/guava-testlib/33.2.1-jre/guava-testlib-33.2.1-jre",
     "host": "https://repo.maven.apache.org/maven2",
     "type": "jar",
     "pom": {
-      "sha1": "1d0c542e891776dcb545a86de861afb18bc79540",
-      "sha256": "12mfr0mqr7jvxch3shv2rchn3s9y17ypk2ikw1x4mgryavd4n08x"
+      "sha1": "3b95376190925f23c89d9f2f990f2eb0bab9d2b2",
+      "sha256": "1r2flzxanb1ph86gc9jpj5r3b91yvlgkqgdwc1asgfz5ak49l234"
     },
     "jar": {
-      "sha1": "4678a8fd0e7fba71a4283154fd4979f51ba294d5",
-      "sha256": "0nj21kka3myh0v46l07d73c97ymgib3v0fqrl6g3zdxcxz1adb8w"
+      "sha1": "ba7d569795211c283c4576d17528534a618a5d59",
+      "sha256": "0jnqsbgyymkjvwkwj7mr2zkc0qyfymki9f9hrm04yhjq4q3l3hay"
     }
   },
 
@@ -6336,16 +6196,16 @@
   },
 
   {
-    "path": "com/google/guava/guava/33.2.0-jre/guava-33.2.0-jre",
+    "path": "com/google/guava/guava/33.2.1-jre/guava-33.2.1-jre",
     "host": "https://repo.maven.apache.org/maven2",
     "type": "jar",
     "pom": {
-      "sha1": "e78e6bc096ac140596ce47c2cd6e90f12a417779",
-      "sha256": "040rqka50spkszbmv1dcdhpw2p87pxq4fpqvzkdh9raq3d4130zd"
+      "sha1": "5f72123f1bb7d99af8b4a67745fb8309b73a6294",
+      "sha256": "1dfs0s528l08zlbb0yg8f79ffsa7m3sgl721ddyp730c3kf7p0a2"
     },
     "jar": {
-      "sha1": "e264781dadc4967e5292f3c4d05f1d153631f7b4",
-      "sha256": "1p8854cw6x242p1lfm2hm6b4dnxcfw7x909m7g8kikk2cbl93x4r"
+      "sha1": "818e780da2c66c63bbb6480fef1f3855eeafa3e4",
+      "sha256": "0cczdnvvpfq3vacab9zzbv844ia080f9mvgmikx6dlxphybjsas5"
     }
   },
 
@@ -6416,12 +6276,12 @@
   },
 
   {
-    "path": "com/google/protobuf/protobuf-bom/4.27.0-RC1/protobuf-bom-4.27.0-RC1",
+    "path": "com/google/protobuf/protobuf-bom/4.28.0-RC1/protobuf-bom-4.28.0-RC1",
     "host": "https://repo.maven.apache.org/maven2",
     "type": "pom",
     "pom": {
-      "sha1": "27a037f37e7e95b5e28ec5cd410ed99d34eb0a29",
-      "sha256": "0bkz87gxn3ylzmmsqqw65jfpa6s021zx40j2xrrz841967rd8nca"
+      "sha1": "4dd88f5b489f6b1bb9a8db169ea31d66464d68a0",
+      "sha256": "15di442lcd1idmblzkxj81jacrvpihm38x16imk5i307xf2mcccq"
     }
   },
 
@@ -6468,16 +6328,16 @@
   },
 
   {
-    "path": "com/google/protobuf/protobuf-java/4.27.0-RC1/protobuf-java-4.27.0-RC1",
+    "path": "com/google/protobuf/protobuf-java/4.28.0-RC1/protobuf-java-4.28.0-RC1",
     "host": "https://repo.maven.apache.org/maven2",
     "type": "jar",
     "pom": {
-      "sha1": "8c2f747548d2fafc3e9b057cee34c343dc47e78e",
-      "sha256": "1g7kyil9m4k6khxxk21i176zbgqmayhnrfa9w72hyqj4i8wkml4z"
+      "sha1": "abb2a5ec826f29096389ee99365dba30c588c1d0",
+      "sha256": "0y8xrbrhgj26ysvd06f7kri5k5jxaca0xb74sz9ii5n4bqwhix6x"
     },
     "jar": {
-      "sha1": "f37d7fb8ab06eee5ae3dd11c121f63a8b209e74f",
-      "sha256": "0abkq1k8n0128r9s9zmfr35b7alnnhzq23ryv9wafyq45w79nvii"
+      "sha1": "a7155c9ba741e2fbe3bfcd1ee5f01c2b220ee52b",
+      "sha256": "0qjwd0ym2lsmqqn63ksckn23r5cmlv7qc6hf439szvh7aszwz43l"
     }
   },
 
@@ -6502,36 +6362,36 @@
   },
 
   {
-    "path": "com/google/protobuf/protobuf-parent/4.27.0-RC1/protobuf-parent-4.27.0-RC1",
+    "path": "com/google/protobuf/protobuf-parent/4.28.0-RC1/protobuf-parent-4.28.0-RC1",
     "host": "https://repo.maven.apache.org/maven2",
     "type": "pom",
     "pom": {
-      "sha1": "59b00c8642d1166a189ebdcc529d3de170c8c56c",
-      "sha256": "1qfzzdbzygywb5am2nd3wvbsb06wjwd84f9p9y637p0w15b01ncr"
+      "sha1": "f026cdea76c72c34f2a7d2f8fb8874659bc6f18a",
+      "sha256": "1g7rgc0h84zj7xvs9kph31hxw6km2f6w6ihzi6ghcvn3vswmvwzg"
     }
   },
 
   {
-    "path": "com/google/truth/truth-parent/1.4.2/truth-parent-1.4.2",
+    "path": "com/google/truth/truth-parent/1.4.4/truth-parent-1.4.4",
     "host": "https://repo.maven.apache.org/maven2",
     "type": "pom",
     "pom": {
-      "sha1": "eb9b825748f4f83b13271d8d21b9c5c6cdd65c53",
-      "sha256": "05qd2dxhxq8m07mgwc9b9qs1m475qd9kpi3zqclg5adahim64r8h"
+      "sha1": "9367b3ee84de3d245ab3ad7ee34061d9cbe0b84c",
+      "sha256": "17dlxdpbd9by8yg66088zbqa2znwzgi9nz5w30djn5z3zkq77j99"
     }
   },
 
   {
-    "path": "com/google/truth/truth/1.4.2/truth-1.4.2",
+    "path": "com/google/truth/truth/1.4.4/truth-1.4.4",
     "host": "https://repo.maven.apache.org/maven2",
     "type": "jar",
     "pom": {
-      "sha1": "67f91458d18b28d9c0a90866f0c827ef9b6bdc42",
-      "sha256": "0020b1b3kjshinqy18rna468fhhwjjr0xwsyr068k5fgd1ajmj4f"
+      "sha1": "c7b43cfaf8861dcd0ec37c7f36f08440253a861b",
+      "sha256": "09pf311hig793b8xdpv9apyi9jlakcqbfpb96gf4fjm3pz3dvxfy"
     },
     "jar": {
-      "sha1": "2322d861290bd84f84cbb178e43539725a4588fd",
-      "sha256": "021m24qv81z92birfiv2j7n64ibyc9hg2rxgdddw32yacjy9ghhl"
+      "sha1": "33810058273a2a3b6ce6d1f8c8621bfc85493f67",
+      "sha256": "134z91nmapbr9fsxi0rarsbjwpmpqsgnh58ygi2wh6y3mpfnrj2j"
     }
   },
 
@@ -6570,20 +6430,6 @@
     "jar": {
       "sha1": "bbcf6448f6d40abe506e2c83b70a3e8bfd2b4539",
       "sha256": "0vgdfmihsggnbmcmrspf9ldll3knk5ayb43zc4pzx0709fqi7azq"
-    }
-  },
-
-  {
-    "path": "com/parse/bolts/bolts-applinks/1.4.0/bolts-applinks-1.4.0",
-    "host": "https://repo.maven.apache.org/maven2",
-    "type": "jar",
-    "pom": {
-      "sha1": "9a7b6fa518be36c41eeb71e9ccb960da962a161f",
-      "sha256": "0i5wx80zk3wf9bh5myl7853dny286gjw6six4bwyfv66i07d5cg5"
-    },
-    "jar": {
-      "sha1": "8ad21bf21784dacce5f2043afb97218cc377e835",
-      "sha256": "19al8dpq7qqwbkmhi76axwd0vml6m65rh5cpj37vdpzfgkv40mxy"
     }
   },
 
@@ -6758,16 +6604,6 @@
   },
 
   {
-    "path": "com/squareup/okio/okio-parent/1.13.0/okio-parent-1.13.0",
-    "host": "https://repo.maven.apache.org/maven2",
-    "type": "pom",
-    "pom": {
-      "sha1": "12f0b61c240e84ad8c54b906fd53361a347b3a0f",
-      "sha256": "1pz05yqjanhapfb5ninidp0asp0lca3zg4di0zn6fh771rbnn05b"
-    }
-  },
-
-  {
     "path": "com/squareup/okio/okio-parent/1.15.0/okio-parent-1.15.0",
     "host": "https://repo.maven.apache.org/maven2",
     "type": "pom",
@@ -6784,20 +6620,6 @@
     "pom": {
       "sha1": "18eae90824681bf12cb8359b0a1ecef9149de1e3",
       "sha256": "04g6gdc2549iq98pc7fmfh0qypqxpr7pzjx0sfy8pkrspkdkj3mb"
-    }
-  },
-
-  {
-    "path": "com/squareup/okio/okio/1.13.0/okio-1.13.0",
-    "host": "https://repo.maven.apache.org/maven2",
-    "type": "jar",
-    "pom": {
-      "sha1": "7d0cd3135da2c2cc8058fd99ade5cf55cb06587e",
-      "sha256": "0axa3bs2ixxzlq47qyg13mzd8v8ny3l4q1c3zmx1q19yrm5zi8nx"
-    },
-    "jar": {
-      "sha1": "a9283170b7305c8d92d25aff02a6ab7e45d06cbe",
-      "sha256": "0l5qicbfrf3ns7armivpf81b9w11yicbavan4cxhw2f5xg1njhkk"
     }
   },
 
@@ -7336,6 +7158,30 @@
     "jar": {
       "sha1": "6bd6cd6e9107e22a5d3b4d3d3713a6864aae854e",
       "sha256": "1l18l8sddwj1gfrf71pbkhlr9356j7rqjn829zi4l9wsf4zinn7p"
+    }
+  },
+
+  {
+    "path": "net/bytebuddy/byte-buddy-parent/1.14.17/byte-buddy-parent-1.14.17",
+    "host": "https://repo.maven.apache.org/maven2",
+    "type": "pom",
+    "pom": {
+      "sha1": "c4c18b6ee78934ded11c060ca0dcbfffafa76105",
+      "sha256": "10pm0r839m38ip0bn4yhs8rby8qbg5hkdlpzi8vfzx7xk5g7pr86"
+    }
+  },
+
+  {
+    "path": "net/bytebuddy/byte-buddy/1.14.17/byte-buddy-1.14.17",
+    "host": "https://repo.maven.apache.org/maven2",
+    "type": "jar",
+    "pom": {
+      "sha1": "0ec01a78f3832e5116bdb7b702cc30239df9832c",
+      "sha256": "0gni5fida2fw8k9sk4p8a3922qychran28wsgl8yl18q3rcw5cpd"
+    },
+    "jar": {
+      "sha1": "a8d08f3c1e75ecc7f38a8cfd7e9fa47919096373",
+      "sha256": "0qcak9g2hqhhsi9r2pdhhfjnamkmp929j3ffmaa3dzvvw3wgis6d"
     }
   },
 
@@ -7882,12 +7728,12 @@
   },
 
   {
-    "path": "org/apache/apache/31/apache-31",
+    "path": "org/apache/apache/32/apache-32",
     "host": "https://repo.maven.apache.org/maven2",
     "type": "pom",
     "pom": {
-      "sha1": "9009cbdad2b69835f2df9265794c8ab50cf4dce1",
-      "sha256": "1k4ic8p4a92j8jnywmfk6r0igy78h69pp4i4z6pl5h39mag0qpam"
+      "sha1": "2e08f841a6fbc946452701faaf5e39a17ac97ef3",
+      "sha256": "0bz75js0gr4hsgxkm9br61vxv2pdrpzc1ns3izk3mx97xk075n6g"
     }
   },
 
@@ -8048,22 +7894,12 @@
   },
 
   {
-    "path": "org/apache/commons/commons-parent/67/commons-parent-67",
+    "path": "org/apache/commons/commons-parent/71/commons-parent-71",
     "host": "https://repo.maven.apache.org/maven2",
     "type": "pom",
     "pom": {
-      "sha1": "761d110d7313f09bfc20ec1fb1f420da3314958e",
-      "sha256": "0mk7a1cv1kw5cyy0rcr6mc1amynsqrj96cj1lcibzr6n5iwdjyjh"
-    }
-  },
-
-  {
-    "path": "org/apache/commons/commons-parent/69/commons-parent-69",
-    "host": "https://repo.maven.apache.org/maven2",
-    "type": "pom",
-    "pom": {
-      "sha1": "6ebeacd37818d945d96c06b44af10e050d2ef7c4",
-      "sha256": "1fx9j8sn5j17lw6zs5l6rdzlk5pifcxs1d6i33b27a6wkg1sj3fm"
+      "sha1": "91d35791f5037779fb320d054ed09cb14925dc32",
+      "sha256": "18w2g9s6lf6kqgkhsraahz6qfbhqwa6x1gbg5yi4rbhnydqbxdwm"
     }
   },
 
@@ -8546,16 +8382,16 @@
   },
 
   {
-    "path": "org/checkerframework/checker-qual/3.43.0/checker-qual-3.43.0",
+    "path": "org/checkerframework/checker-qual/3.45.0/checker-qual-3.45.0",
     "host": "https://repo.maven.apache.org/maven2",
     "type": "jar",
     "pom": {
-      "sha1": "48ad8955d64547b84ef581361c29c030e56430cb",
-      "sha256": "0hzdxfx9yc82dz610rdiq1jnp5q7wfb8pskf4v5amn7gnd9vy4wk"
+      "sha1": "90e7617dce895b07c6fe15397cca094f7d35a715",
+      "sha256": "0x0m6rr1zqgd72cmgy3q018834rab0ywn5cr56dcpg2sxqnzdyga"
     },
     "jar": {
-      "sha1": "9425eee39e56b116d2b998b7c2cebcbd11a3c98b",
-      "sha256": "1xph1rj28r7d10r64cxcxjria6xranlvm6nz2vgw6m2qy2c2xg1z"
+      "sha1": "f59fc9e26caad509272d2e2ffbaf275cbc0dd9eb",
+      "sha256": "0hxlsm1yqvmjakgjv9kchz453pi5nizvm22gr14wa4n47vax6gih"
     }
   },
 
@@ -8612,16 +8448,16 @@
   },
 
   {
-    "path": "org/codehaus/mojo/animal-sniffer-annotations/1.23/animal-sniffer-annotations-1.23",
+    "path": "org/codehaus/mojo/animal-sniffer-annotations/1.24/animal-sniffer-annotations-1.24",
     "host": "https://repo.maven.apache.org/maven2",
     "type": "jar",
     "pom": {
-      "sha1": "f09f8a453e1b883f9876fbd5f3280d367ff90f2a",
-      "sha256": "09rxd97znyldgj63y15dgdidns80qj08mi50qz5ilr1knw3dn42n"
+      "sha1": "a671a0325694922bebf4cf062dde813827c82b4b",
+      "sha256": "0vl3iaiz9gzdlc2hl64gicbqrq796frz5b7bgylkhhmdlrh4yj48"
     },
     "jar": {
-      "sha1": "3c0daebd5f0e1ce72cc50c818321ac957aeb5d70",
-      "sha256": "1l3lx4yjdnky009mj1fgs3pgb9w0ypb9qfxkv3llhqrsyimm5zlz"
+      "sha1": "aa9ba58d30e0aad7f1808fce9c541ea3760678d8",
+      "sha256": "14pdi4yjwd8d5q830hyig7gfwqxprny4fnnpvr42ysxypkjyc867"
     }
   },
 
@@ -8646,12 +8482,12 @@
   },
 
   {
-    "path": "org/codehaus/mojo/animal-sniffer-parent/1.23/animal-sniffer-parent-1.23",
+    "path": "org/codehaus/mojo/animal-sniffer-parent/1.24/animal-sniffer-parent-1.24",
     "host": "https://repo.maven.apache.org/maven2",
     "type": "pom",
     "pom": {
-      "sha1": "1b4cb41a44448b41c20c9c2de022a0ad40bf195c",
-      "sha256": "015lli02dl8w0a43kcfans32x4l9165q0dczb7igi1vap150azvb"
+      "sha1": "3c8a9968c0b8ccdc8fe7dc77a97e54e406cd0c56",
+      "sha256": "016dy6hiip0jslk2xxmr59q32wpsj2spry0z1kpw479nr11sppa9"
     }
   },
 
@@ -8676,12 +8512,12 @@
   },
 
   {
-    "path": "org/codehaus/mojo/mojo-parent/74/mojo-parent-74",
+    "path": "org/codehaus/mojo/mojo-parent/84/mojo-parent-84",
     "host": "https://repo.maven.apache.org/maven2",
     "type": "pom",
     "pom": {
-      "sha1": "2ef0a93fea172659305d787e51dfd4af9247334c",
-      "sha256": "1czjak3fsn903dlf4k1921398r196wwliyi1xnmvvcgh2rd34whl"
+      "sha1": "f7511e802abf301d927dd6085f2ee1826692b08f",
+      "sha256": "0c5cx2g851nbkxqvwc2gsx440d1c5i5vr0pvybazqq1gidhi1r9g"
     }
   },
 
@@ -8724,26 +8560,26 @@
   },
 
   {
-    "path": "org/easymock/easymock-parent/5.2.0/easymock-parent-5.2.0",
+    "path": "org/easymock/easymock-parent/5.3.0/easymock-parent-5.3.0",
     "host": "https://repo.maven.apache.org/maven2",
     "type": "pom",
     "pom": {
-      "sha1": "f942e2bc1c32f566e68ea181ce2ec131ace7ec91",
-      "sha256": "1k6v1dmw6qpp405icql0h626wpjnxmy3f2as5zan5r3klmva2749"
+      "sha1": "cb3dbc3dde07db5aed51fe830d3286337d1617d0",
+      "sha256": "116di3z5m1cva0rpdij79bpgf7kaf5qcbdp1dv3i5nx462509f5d"
     }
   },
 
   {
-    "path": "org/easymock/easymock/5.2.0/easymock-5.2.0",
+    "path": "org/easymock/easymock/5.3.0/easymock-5.3.0",
     "host": "https://repo.maven.apache.org/maven2",
     "type": "jar",
     "pom": {
-      "sha1": "45a5fc0d7e21023c4848871317a3c829048fe959",
-      "sha256": "0ccjh1hjndc66c3zx1lc300nwxk20lyq7ipz6wfwxmzx0kb37ziq"
+      "sha1": "425f58fb29b86ca6412e9a698e9d82ef32d84c57",
+      "sha256": "118sj2afy6dlaz8gzi2c80yhs08c3r7j9psqbnp6sp8hk8g20azc"
     },
     "jar": {
-      "sha1": "ceb40330d6ecc2da3cdac41663f193e300497238",
-      "sha256": "1db32x56i9m6afy6w3a1ahc83gdb7prba4yyvz8cnlv5p6a68fp6"
+      "sha1": "7bac0b4bbd84f49f9bcd8485281b5e52da081fa4",
+      "sha256": "0gvzga0vj5r76lff2h1f5svfzj40fk3c9ckr378qg7bxv8kqfmfz"
     }
   },
 
@@ -10200,12 +10036,26 @@
   },
 
   {
-    "path": "org/junit/junit-bom/5.11.0-M1/junit-bom-5.11.0-M1",
+    "path": "org/jspecify/jspecify/1.0.0/jspecify-1.0.0",
+    "host": "https://repo.maven.apache.org/maven2",
+    "type": "jar",
+    "pom": {
+      "sha1": "fae4a252aeee8a649653b2f239067bcead8f80cb",
+      "sha256": "19ik8hran7c46lmw72rp1sb6b17y1lnmw309s91iy8cm7fd95ayd"
+    },
+    "jar": {
+      "sha1": "7425a601c1c7ec76645a78d22b8c6a627edee507",
+      "sha256": "1azvzpm53qwcqq6bnxz4dzdgvj6dw6dd8a9psgj82xsmwxmnxb8z"
+    }
+  },
+
+  {
+    "path": "org/junit/junit-bom/5.11.0-M2/junit-bom-5.11.0-M2",
     "host": "https://repo.maven.apache.org/maven2",
     "type": "pom",
     "pom": {
-      "sha1": "afec72e7b7df3cd97c3fe53164c3f5dfc6a0ff94",
-      "sha256": "118dfin9z4bbvmw99xhyw8igw6grg84nzk9xvamh8qm8rgspa2dm"
+      "sha1": "6c517cddae7893aba5bf9f051c44860a4fc18211",
+      "sha256": "1j3ww7j77nnzakw3j6apk0bic1wld9q256b1bp5w5znw9r5gqgsa"
     }
   },
 
@@ -10238,26 +10088,26 @@
   },
 
   {
-    "path": "org/objenesis/objenesis-parent/3.3/objenesis-parent-3.3",
+    "path": "org/objenesis/objenesis-parent/3.4/objenesis-parent-3.4",
     "host": "https://repo.maven.apache.org/maven2",
     "type": "pom",
     "pom": {
-      "sha1": "60b46fea1dc4cb9c3123f8c366f8b33d0c774fa3",
-      "sha256": "1zz41g0qr0bryyl293a2gnwl6ln37qfa8vd9agzcgqgil953hp1h"
+      "sha1": "840b7af780a7f577e2132a7b60f38c691cb7beff",
+      "sha256": "19jlcby774q31y0xm0lrc3398jnv2w036gcrbfslp1fck39467yb"
     }
   },
 
   {
-    "path": "org/objenesis/objenesis/3.3/objenesis-3.3",
+    "path": "org/objenesis/objenesis/3.4/objenesis-3.4",
     "host": "https://repo.maven.apache.org/maven2",
     "type": "jar",
     "pom": {
-      "sha1": "8da1208285232e541d0bbb869bbe66af6ec6abb4",
-      "sha256": "1lsac7xdv93chlz6m7jhrjzvq3qz8xm0dxsfwav4i8394vd4035s"
+      "sha1": "14fd7183376cab8cec3d9980101d37269f864663",
+      "sha256": "0n4a7l0jy3j0xca3fn89hxg0gk93531hkz7b2ad3vxw13q6fq5v0"
     },
     "jar": {
-      "sha1": "1049c09f1de4331e8193e579448d0916d75b7631",
-      "sha256": "1sxzd7py9f2rx4vldxxbaf7r9c2f8zsx53khbgir2mcs8fqd1pq2"
+      "sha1": "675cbe121a68019235d27f6c34b4f0ac30e07418",
+      "sha256": "0lfj7j76ymf5s676y04lab0wdnkp6qsrkcpnmmc2hbmgzq182j4m"
     }
   },
 
