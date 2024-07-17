@@ -81,7 +81,7 @@
     (range initial-id last-id)))
 
 (rf/reg-event-fx
- :wallet/request-collectibles-for-owned-accounts
+ :wallet/request-collectibles-for-all-accounts
  (fn [{:keys [db]} [{:keys [new-request?]}]]
    (let [accounts                 (->> (get-in db [:wallet :accounts])
                                        (filter (fn [[_ {:keys [has-more-collectibles?]}]]

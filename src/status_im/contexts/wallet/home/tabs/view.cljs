@@ -23,7 +23,7 @@
   [{:keys [selected-tab]}]
   (let [collectible-list     (rf/sub [:wallet/owned-collectibles-list-in-selected-networks])
         request-collectibles #(rf/dispatch
-                               [:wallet/request-collectibles-for-owned-accounts {}])]
+                               [:wallet/request-collectibles-for-all-accounts {}])]
     [rn/view {:style style/container}
      (case selected-tab
        :assets       [assets/view]
