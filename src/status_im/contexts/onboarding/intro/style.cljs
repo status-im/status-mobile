@@ -7,9 +7,8 @@
    :justify-content :flex-end})
 
 (def text-container
-  {:flex       1
-   :text-align :center
-   :margin-top 16
+  {:text-align :center
+   :margin-top 4
    :flex-wrap  :wrap})
 
 (def plain-text
@@ -19,9 +18,8 @@
   {:flex  1
    :color colors/white})
 
-(def bottom-actions-container
-  {:position         :absolute
-   :background-color colors/onboarding-header-black
-   :left             0
-   :right            0
-   :padding-bottom   40})
+(defn bottom-actions-container
+  [bottom-insets]
+  {:background-color colors/onboarding-header-black
+   :flex-shrink      1
+   :padding-bottom   (+ 20 bottom-insets)})

@@ -17,19 +17,22 @@
 (defn generate-keys-title
   []
   [quo/text-combinations
-   {:container-style {:margin-horizontal 20}
+   {:container-style {:margin-horizontal 20
+                      :margin-vertical   12}
     :title           (i18n/label :t/generating-keys)}])
 
 (defn saving-keys-title
   []
   [quo/text-combinations
-   {:container-style {:margin-horizontal 20}
+   {:container-style {:margin-horizontal 20
+                      :margin-vertical   12}
     :title           (i18n/label :t/saving-keys-to-device)}])
 
 (defn keys-saved-title
   []
   [quo/text-combinations
-   {:container-style {:margin-horizontal 20}
+   {:container-style {:margin-horizontal 20
+                      :margin-vertical   12}
     :title           (i18n/label :t/keys-saved)}])
 
 (defn sequence-animation
@@ -61,46 +64,42 @@
                                                                             reanimated/easings))))))
 
 (defn title
-  [insets]
-  (let [top-insets            (+ (if rn/small-screen? 62 112) (:insets insets))
-        generate-keys-opacity (reanimated/use-shared-value 1)
+  []
+  (let [generate-keys-opacity (reanimated/use-shared-value 1)
         saving-keys-opacity   (reanimated/use-shared-value 0)
         keys-saved-opacity    (reanimated/use-shared-value 0)]
     (sequence-animation generate-keys-opacity saving-keys-opacity keys-saved-opacity)
     [rn/view
-     {:position :absolute
-      :top      top-insets}
+     {:style {:margin-top 56
+              :height     56}}
      [reanimated/view
       {:style (reanimated/apply-animations-to-style
                {:opacity generate-keys-opacity}
-               {:position :absolute})}
+               style/title-style)}
       [generate-keys-title]]
      [reanimated/view
       {:style (reanimated/apply-animations-to-style
                {:opacity saving-keys-opacity}
-               {:position :absolute})}
+               style/title-style)}
       [saving-keys-title]]
      [reanimated/view
       {:style (reanimated/apply-animations-to-style
                {:opacity keys-saved-opacity}
-               {:position :absolute})}
+               style/title-style)}
       [keys-saved-title]]]))
 
 (defn content
   []
   (let [width (:width (rn/get-window))]
-    [rn/view
-     {:top      156
-      :position :absolute}
-     [rn/image
-      {:resize-mode :contain
-       :style       (style/page-illustration width)
-       :source      (resources/get-image :generate-keys1)}]]))
+    [rn/image
+     {:resize-mode :contain
+      :style       (style/page-illustration width)
+      :source      (resources/get-image :generate-keys1)}]))
 
 (defn view
   []
   (let [insets (safe-area/get-insets)]
     [rn/view {:style (style/page-container insets)}
      [:<>
-      [title insets]
+      [title]
       [content]]]))
