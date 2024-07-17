@@ -1,10 +1,15 @@
-*
+/*
+
+# Format top-level js files.
 !*.js
-!*/
-*.clj-kondo
-*.shadow-cljs
-modules
-result
-target
-component-spec
-/app
+
+# Ignore all except src/js/**/*.js
+!/src/
+/src/*
+!/src/js
+!/src/js/**/*.js
+
+# Ignore all except translations/en.json
+!/translations/
+/translations/*
+!/translations/en.json
