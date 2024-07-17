@@ -51,7 +51,7 @@
                                                :transform [{:scale (:switcher-container-scale shared-values)}]}
                                               switcher-container-original-style)]
        [reanimated/view {:style switcher-screen-animated-style}
-        [react/blur-view (styles/switcher-blur-background)]
+        [react/view (styles/switcher-blur-background)]
         [reanimated/view {:style switcher-container-animated-style}
          [switcher-container/tabs toggle-switcher-screen-fn]]]))])
 

@@ -121,9 +121,9 @@
          (i18n/label :t/close)]]
        (when managed-session
          (if platform/ios?
-           [react/blur-view {:style (styles/blur-view)
-                             :blurAmount 2
-                             :blurType (if (colors/dark?) :dark :light)}]
+           [react/view {:style (styles/blur-view)
+                        :blurAmount 2
+                        :blurType (if (colors/dark?) :dark :light)}]
            [react/view (styles/blur-view)]))])))
 
 (defview app-management-sheet-view [{:keys [wc-version] :as session}]

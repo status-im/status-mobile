@@ -4060,20 +4060,6 @@
   },
 
   {
-    "path": "com/eightbitlab/blurview/1.6.6/blurview-1.6.6",
-    "host": "https://plugins.gradle.org/m2",
-    "type": "aar",
-    "pom": {
-      "sha1": "489f224c45b0b1de96491381bdaa181ccae964a2",
-      "sha256": "0xjrxz13zkw789npq0d96bxsi5w6f6mjnh9cbnlk3i8gc4c4906q"
-    },
-    "jar": {
-      "sha1": "6457c0c2928b4580764fafa88ae67a9b451ff0ef",
-      "sha256": "03y7j7vjyjhqw9imk5wzqghanqh8q541dlhzrmpbdk2sp8hy3cnq"
-    }
-  },
-
-  {
     "path": "com/facebook/fresco/drawee/2.2.0/drawee-2.2.0",
     "host": "https://plugins.gradle.org/m2",
     "type": "aar",
