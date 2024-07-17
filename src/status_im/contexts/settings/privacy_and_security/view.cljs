@@ -95,7 +95,7 @@
                       show-profile-pictures-to
                       open-show-profile-pictures-to-options))
                    (setting-preview-privacy preview-privacy? customization-color toggle-preview-privacy)
-                   {:title             (i18n/label :t/share-usage-data)
+                   {:title             (i18n/label :t/share-usage-data-with-status)
                     :description       :text
                     :description-props {:text (i18n/label :t/from-all-profiles-on-device)}
                     :blur?             true
