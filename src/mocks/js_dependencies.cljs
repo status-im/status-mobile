@@ -297,7 +297,6 @@
     "react-native-blob-util" react-native-blob-util
     "react-native-navigation" react-native-navigation
     "@react-native-community/push-notification-ios" push-notification-ios
-    "@react-native-community/blur" react-native-blur
     "@react-native-community/cameraroll" react-native-camera-roll
     "react-native-camera-kit" react-native-camera-kit
     "react-native-permissions" react-native-permissions
