@@ -253,9 +253,6 @@
 (def react-native-blob-util
   #js {:default #js {}})
 
-(def react-native-blur
-  (clj->js {:BlurView {}}))
-
 (def react-native-camera-roll
   (clj->js {:default #js {}}))
 
