@@ -4060,7 +4060,7 @@
   },
 
   {
-    "path": "com/facebook/fresco/drawee/2.2.0/drawee-2.2.0",
+    "path": "com/facebook/fresco/drawee/2.3.0/drawee-2.3.0",
     "host": "https://plugins.gradle.org/m2",
     "type": "aar",
     "pom": {
