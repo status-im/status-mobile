@@ -219,6 +219,7 @@ class TestCommunityOneDeviceMerged(MultipleSharedDeviceTestCase):
         self.sign_in.show_profiles_button.wait_and_click()
         self.sign_in.element_by_text(self.username).click()
         self.sign_in.sign_in()
+        self.home.navigate_back_to_home_view()
         self.home.communities_tab.click()
         if self.home.element_by_text(waku_user.communities['admin_open']).is_element_displayed(30):
             self.errors.append("Community of previous user is shown!")

@@ -92,8 +92,15 @@ class WalletView(BaseView):
         # Sending transaction
         self.address_text_input = EditBox(self.driver, accessibility_id='address-text-input')
         self.amount_input = EditBox(self.driver, xpath="//android.widget.EditText")
+        self.from_network_text = Text(
+            self.driver, xpath="(//*[@content-desc='loading']/following-sibling::android.widget.TextView)[1]")
         self.confirm_button = Button(self.driver, accessibility_id='button-one')
         self.done_button = Button(self.driver, accessibility_id='done')
+
+    def select_network(self, network_name: str):
+        self.network_drop_down.click()
+        Button(self.driver, accessibility_id="%s, label-component" % network_name.capitalize()).click()
+        self.network_drop_down.click()
 
     def get_account_element(self, account_name: str = 'Account 1'):
         return Button(self.driver, xpath="//android.view.ViewGroup[contains(@content-desc,'%s')]" % account_name)
@@ -120,12 +127,17 @@ class WalletView(BaseView):
         for i in '{:f}'.format(amount).rstrip('0'):
             Button(self.driver, accessibility_id='keyboard-key-%s' % i).click()
 
+    def disable_mainnet_in_from_network(self):
+        if self.from_network_text.text == 'Mainnet':
+            self.from_network_text.click()
+
     def send_asset(self, address: str, asset_name: str, amount: float):
         self.send_button.click()
         self.address_text_input.send_keys(address)
         self.continue_button.click()
         self.select_asset(asset_name).click()
         self.set_amount(amount)
+        self.disable_mainnet_in_from_network()
         self.confirm_transaction()
 
     def send_asset_from_drawer(self, address: str, asset_name: str, amount: float):
@@ -135,6 +147,7 @@ class WalletView(BaseView):
         self.address_text_input.send_keys(address)
         self.continue_button.click()
         self.set_amount(amount)
+        self.disable_mainnet_in_from_network()
         self.confirm_transaction()
 
     def add_regular_account(self, account_name: str):
