@@ -136,9 +136,7 @@
 
                                    (not (money/sufficient-funds? total-transaction-value
                                                                  balance))
-                                   :not-enough-assets-to-pay-gas-fees
-
-                                   :else nil)}))))
+                                   :not-enough-assets-to-pay-gas-fees)}))))
 
 (rf/reg-sub
  :wallet-connect/current-proposal-request

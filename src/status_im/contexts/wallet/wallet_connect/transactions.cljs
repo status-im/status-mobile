@@ -48,6 +48,8 @@
   "Formats the transaction and transforms it into a stringified JS object, ready to be passed to an RPC call."
   [tx]
   (-> tx
+      ;; NOTE: removing `:nonce` to compute it when building the transaction on status-go
+      (dissoc :nonce)
       (format-tx-hex-values strip-hex-prefix)
       bean/->js
       (transforms/js-stringify 0)))
@@ -110,6 +112,7 @@
              :gas
              (or (:gasLimit tx)
                  (:gas tx)))
+      (dissoc :gasLimit)
       (tx->eip1559-tx suggested-fees tx-priority)))
 
 (defn prepare-transaction
