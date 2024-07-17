@@ -84,10 +84,9 @@
  :wallet/request-collectibles-for-owned-accounts
  (fn [{:keys [db]} [{:keys [new-request?]}]]
    (let [accounts                 (->> (get-in db [:wallet :accounts])
-                                       (filter (fn [[_ {:keys [has-more-collectibles? watch-only?]}]]
-                                                 (and (or (nil? has-more-collectibles?)
-                                                          (true? has-more-collectibles?))
-                                                      (not watch-only?))))
+                                       (filter (fn [[_ {:keys [has-more-collectibles?]}]]
+                                                 (or (nil? has-more-collectibles?)
+                                                     (true? has-more-collectibles?))))
                                        (keys))
          num-accounts             (count accounts)
          collectibles-per-account (quot collectibles-request-batch-size num-accounts)
