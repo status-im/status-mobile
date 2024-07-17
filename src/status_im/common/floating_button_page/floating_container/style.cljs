@@ -1,5 +1,6 @@
 (ns status-im.common.floating-button-page.floating-container.style
-  (:require [react-native.safe-area :as safe-area]))
+  (:require [quo.foundations.colors :as colors]
+            [react-native.safe-area :as safe-area]))
 
 (defn content-container
   [blur? keyboard-shown?]
@@ -11,7 +12,12 @@
              :padding-horizontal 20}
       blur? (dissoc :padding-vertical :padding-horizontal))))
 
-(def blur-inner-container
-  {:background-color   :transparent ; required, otherwise blur-view will shrink
+(defn blur-inner-container
+  [theme shell-overlay?]
+  {:background-color   (colors/theme-colors colors/white-70-blur
+                                            (if shell-overlay?
+                                              colors/neutral-80-opa-80-blur
+                                              colors/neutral-95-opa-70-blur)
+                                            theme)
    :padding-vertical   12
    :padding-horizontal 20})

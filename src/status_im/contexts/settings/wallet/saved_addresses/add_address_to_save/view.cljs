@@ -113,7 +113,8 @@
 
 (defn view
   []
-  (let [profile-color                       (rf/sub [:profile/customization-color])
+  (let [view-id                             (rf/sub [:view-id])
+        profile-color                       (rf/sub [:profile/customization-color])
         accounts-addresses                  (rf/sub [:wallet/addresses])
         saved-addresses-addresses           (rf/sub [:wallet/saved-addresses-addresses])
         [address-or-ens set-address-or-ens] (rn/use-state "")
@@ -175,11 +176,12 @@
                                    :on-press            navigate-back
                                    :margin-top          (safe-area/get-top)
                                    :accessibility-label :add-address-to-save-page-nav}]
-       :footer                   [quo/button
-                                  {:customization-color profile-color
-                                   :disabled?           button-disabled?
-                                   :on-press            on-press-continue}
-                                  (i18n/label :t/continue)]}
+       :footer                   (when (= view-id :screen/settings.add-address-to-save)
+                                   [quo/button
+                                    {:customization-color profile-color
+                                     :disabled?           button-disabled?
+                                     :on-press            on-press-continue}
+                                    (i18n/label :t/continue)])}
       [quo/page-top
        {:container-style  style/header-container
         :blur?            true
