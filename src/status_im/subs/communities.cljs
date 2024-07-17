@@ -16,11 +16,32 @@
  (fn [info [_ id]]
    (get info id)))
 
+;; Do not use this subscription directly in views. There is a significant risk
+;; of re-rendering views too frequently because an active community can change
+;; for numerous reasons.
 (re-frame/reg-sub
  :communities/community
  :<- [:communities]
  (fn [communities [_ id]]
    (get communities id)))
+
+(re-frame/reg-sub :communities/logo
+ (fn [[_ community-id]]
+   [(re-frame/subscribe [:communities/community community-id])])
+ (fn [[community]]
+   (get-in community [:images :thumbnail :uri])))
+
+(re-frame/reg-sub :communities/name
+ (fn [[_ community-id]]
+   [(re-frame/subscribe [:communities/community community-id])])
+ (fn [[{:keys [name]}]]
+   name))
+
+(re-frame/reg-sub :communities/permissions
+ (fn [[_ community-id]]
+   [(re-frame/subscribe [:communities/community community-id])])
+ (fn [[{:keys [permissions]}]]
+   permissions))
 
 (re-frame/reg-sub
  :communities/community-color

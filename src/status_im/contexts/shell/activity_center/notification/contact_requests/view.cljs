@@ -1,6 +1,7 @@
 (ns status-im.contexts.shell.activity-center.notification.contact-requests.view
   (:require
     [quo.core :as quo]
+    quo.theme
     [react-native.core :as rn]
     [status-im.constants :as constants]
     [status-im.contexts.shell.activity-center.notification.common.style :as common-style]
@@ -24,48 +25,52 @@
     :text  (i18n/label :t/decline)}])
 
 (defn- swipeable
-  [{:keys [active-swipeable extra-fn notification]} child]
+  [{:keys [extra-fn notification]} child]
   (let [{:keys [id author message]}     notification
         {:keys [contact-request-state]} message
         {:keys [public-key]}            (rf/sub [:multiaccount/contact])
-        outgoing?                       (= public-key author)]
+        outgoing?                       (= public-key author)
+        accept                          (rn/use-callback
+                                         #(rf/dispatch [:activity-center.contact-requests/accept id])
+                                         [id])
+        decline                         (rn/use-callback
+                                         #(rf/dispatch [:activity-center.contact-requests/decline id])
+                                         [id])]
     (cond
       (or (#{constants/contact-request-message-state-accepted
              constants/contact-request-message-state-declined}
            contact-request-state)
           (and outgoing? (= contact-request-state constants/contact-request-message-state-pending)))
       [common/swipeable
-       {:left-button      common/swipe-button-read-or-unread
-        :left-on-press    common/swipe-on-press-toggle-read
-        :right-button     common/swipe-button-delete
-        :right-on-press   common/swipe-on-press-delete
-        :active-swipeable active-swipeable
-        :extra-fn         extra-fn}
+       {:left-button    common/swipe-button-read-or-unread
+        :left-on-press  common/swipe-on-press-toggle-read
+        :right-button   common/swipe-button-delete
+        :right-on-press common/swipe-on-press-delete
+        :extra-fn       extra-fn}
        child]
 
       (and (= contact-request-state constants/contact-request-message-state-pending)
            (not outgoing?))
       [common/swipeable
-       {:left-button      swipe-button-accept
-        :left-on-press    #(rf/dispatch [:activity-center.contact-requests/accept id])
-        :right-button     swipe-button-decline
-        :right-on-press   #(rf/dispatch [:activity-center.contact-requests/decline id])
-        :active-swipeable active-swipeable
-        :extra-fn         extra-fn}
+       {:left-button    swipe-button-accept
+        :left-on-press  accept
+        :right-button   swipe-button-decline
+        :right-on-press decline
+        :extra-fn       extra-fn}
        child]
 
       :else
       child)))
 
 (defn- outgoing-contact-request-view
-  [{:keys [notification set-swipeable-height customization-color]} theme]
+  [{:keys [notification]} theme]
   (let [{:keys [chat-id message last-message accepted]} notification
-        {:keys [contact-request-state] :as message}     (or message last-message)]
+        {:keys [contact-request-state] :as message}     (or message last-message)
+        customization-color                             (rf/sub [:profile/customization-color])]
     (if accepted
       [quo/activity-log
        {:title               (i18n/label :t/contact-request-was-accepted)
         :customization-color customization-color
-        :on-layout           set-swipeable-height
         :icon                :i/add-user
         :timestamp           (datetime/timestamp->relative (:timestamp notification))
         :unread?             (not (:read notification))
@@ -76,7 +81,6 @@
       [quo/activity-log
        {:title               (i18n/label :t/contact-request)
         :customization-color customization-color
-        :on-layout           set-swipeable-height
         :icon                :i/add-user
         :timestamp           (datetime/timestamp->relative (:timestamp notification))
         :unread?             (not (:read notification))
@@ -102,13 +106,22 @@
                                nil)}])))
 
 (defn- incoming-contact-request-view
-  [{:keys [notification set-swipeable-height customization-color]} theme]
-  (let [{:keys [id author message last-message]} notification
-        message                                  (or message last-message)]
+  [{:keys [notification]} theme]
+  (let [{:keys [id author message
+                last-message]} notification
+        customization-color    (rf/sub [:profile/customization-color])
+        message                (or message last-message)
+        accept                 (rn/use-callback
+                                (fn []
+                                  (rf/dispatch [:activity-center.contact-requests/accept id]))
+                                [id])
+        decline                (rn/use-callback
+                                (fn []
+                                  (rf/dispatch [:activity-center.contact-requests/decline id]))
+                                [id])]
     [quo/activity-log
      {:title (i18n/label :t/contact-request)
       :customization-color customization-color
-      :on-layout set-swipeable-height
       :icon :i/add-user
       :timestamp (datetime/timestamp->relative (:timestamp notification))
       :unread? (not (:read notification))
@@ -140,13 +153,13 @@
           :key                 :button-decline
           :label               (i18n/label :t/decline)
           :accessibility-label :decline-contact-request
-          :on-press            #(rf/dispatch [:activity-center.contact-requests/decline id])}
+          :on-press            decline}
          {:type                :button
           :subtype             :positive
           :key                 :button-accept
           :label               (i18n/label :t/accept)
           :accessibility-label :accept-contact-request
-          :on-press            #(rf/dispatch [:activity-center.contact-requests/accept id])}]
+          :on-press            accept}]
 
         nil)}]))
 
@@ -155,16 +168,16 @@
   (let [{:keys [author message last-message]} notification
         {:keys [public-key]}                  (rf/sub [:multiaccount/contact])
         {:keys [contact-request-state]}       (or message last-message)
-        app-theme                             (rf/sub [:theme])]
+        theme                                 (quo.theme/use-theme)]
     [swipeable props
      (cond
        (= public-key author)
-       [outgoing-contact-request-view props app-theme]
+       [outgoing-contact-request-view props theme]
 
        (= contact-request-state constants/contact-request-message-state-accepted)
        [rn/pressable
         {:on-press #(rf/dispatch [:chat.ui/start-chat author])}
-        [incoming-contact-request-view props app-theme]]
+        [incoming-contact-request-view props theme]]
 
        :else
-       [incoming-contact-request-view props app-theme])]))
+       [incoming-contact-request-view props theme])]))
