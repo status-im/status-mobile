@@ -39,11 +39,6 @@
             tx
             tx-keys)))
 
-;; QUESTION: should we remove the nonce from the original tx so it's always set by status-go, so that
-;; we maintain the order of tx?
-;;
-;; Metamask seems to do so:
-;; https://docs.metamask.io/wallet/how-to/send-transactions#nonce
 (defn- prepare-transaction-for-rpc
   "Formats the transaction and transforms it into a stringified JS object, ready to be passed to an RPC call."
   [tx]

@@ -82,6 +82,7 @@
                      assoc
                      :address      address
                      :raw-data     prepared-tx
+                     :transaction  tx
                      :chain-id     chain-id
                      :display-data display-data)
       :fx [[:dispatch [:wallet-connect/show-request-modal]]]})))

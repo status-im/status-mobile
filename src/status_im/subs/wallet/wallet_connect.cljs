@@ -66,9 +66,9 @@
 (rf/reg-sub
  :wallet-connect/transaction-args
  :<- [:wallet-connect/current-request]
- (fn [{:keys [event raw-data]}]
+ (fn [{:keys [event transaction]}]
    (when (transactions/transaction-request? event)
-     (-> raw-data :tx-args bean/->clj))))
+     transaction)))
 
 (rf/reg-sub
  :wallet-connect/transaction-suggested-fees
