@@ -1,6 +1,5 @@
 (ns status-im.subs.wallet.wallet-connect
-  (:require [cljs-bean.core :as bean]
-            [re-frame.core :as rf]
+  (:require [re-frame.core :as rf]
             [status-im.contexts.wallet.common.utils :as wallet-utils]
             [status-im.contexts.wallet.common.utils.networks :as networks]
             [status-im.contexts.wallet.wallet-connect.core :as wallet-connect-core]
