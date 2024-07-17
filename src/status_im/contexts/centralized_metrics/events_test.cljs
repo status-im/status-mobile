@@ -6,6 +6,11 @@
     [status-im.contexts.centralized-metrics.tracking :as tracking]
     [test-helpers.unit :as h]))
 
+(deftest show-confirmation-modal-test
+  (testing "returns true if the user confirmed"
+    (is (false? (events/show-confirmation-modal? {events/user-confirmed-key true})))
+    (is (true? (events/show-confirmation-modal? {})))))
+
 (deftest push-event-test
   (testing "returns correct boolean value"
     (is (true? (events/push-event? {:centralized-metrics/user-confirmed? false})))

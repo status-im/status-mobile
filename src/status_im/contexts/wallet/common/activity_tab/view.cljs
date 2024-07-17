@@ -11,31 +11,81 @@
 
 (defn send-and-receive-activity
   [{:keys [transaction relative-date status sender recipient token amount network-name
-           network-logo]}]
-  [quo/wallet-activity
-   {:transaction       transaction
-    :timestamp         relative-date
-    :status            status
-    :counter           1
-    :first-tag         {:size   24
-                        :type   :token
-                        :token  token
-                        :amount amount}
-    :second-tag-prefix :t/from
-    :second-tag        {:type :address :address sender}
-    :third-tag-prefix  :t/to
-    :third-tag         {:type :address :address recipient}
-    :fourth-tag-prefix :t/via
-    :fourth-tag        {:size         24
-                        :type         :network
-                        :network-name network-name
-                        :network-logo network-logo}
-    :blur?             false}])
+           network-logo token-id nft-url nft-name]}]
+  (if token-id
+    [quo/wallet-activity
+     {:transaction       transaction
+      :timestamp         relative-date
+      :status            status
+      :counter           1
+      :first-tag         {:size               24
+                          :type               :collectible
+                          :collectible        nft-url
+                          :collectible-name   (if (> amount 1)
+                                                (str amount " " nft-name)
+                                                nft-name)
+                          :collectible-number token-id}
+      :second-tag-prefix :t/from
+      :second-tag        {:type :address :address sender}
+      :third-tag-prefix  :t/to
+      :third-tag         {:type :address :address recipient}
+      :fourth-tag-prefix :t/via
+      :fourth-tag        {:size         24
+                          :type         :network
+                          :network-name network-name
+                          :network-logo network-logo}
+      :blur?             false}]
+    [quo/wallet-activity
+     {:transaction       transaction
+      :timestamp         relative-date
+      :status            status
+      :counter           1
+      :first-tag         {:size   24
+                          :type   :token
+                          :token  token
+                          :amount amount}
+      :second-tag-prefix :t/from
+      :second-tag        {:type :address :address sender}
+      :third-tag-prefix  :t/to
+      :third-tag         {:type :address :address recipient}
+      :fourth-tag-prefix :t/via
+      :fourth-tag        {:size         24
+                          :type         :network
+                          :network-name network-name
+                          :network-logo network-logo}
+      :blur?             false}]))
+
+;; WIP to add the mint activity.
+;(defn mint-activity
+;  [{:keys [transaction relative-date status recipient network-name
+;           network-logo nft-name nft-url token-id]}]
+;  [quo/wallet-activity
+;   {:transaction       transaction
+;    :timestamp         relative-date
+;    :status            status
+;    :counter           1
+;    :first-tag         {:size               24
+;                        :type               :collectible
+;                        :collectible        nft-url
+;                        :collectible-name   nft-name
+;                        :collectible-number token-id}
+;    :second-tag-prefix :t/at
+;    :second-tag        {:type :address :address recipient}
+;    :third-tag-prefix  :t/to
+;    :third-tag         {:type :address :address recipient}
+;    :fourth-tag-prefix :t/via
+;    :fourth-tag        {:size         24
+;                        :type         :network
+;                        :network-name network-name
+;                        :network-logo network-logo}
+;    :blur?             false}])
 
 (defn activity-item
   [{:keys [transaction] :as activity}]
   (case transaction
     (:send :receive) [send-and-receive-activity activity]
+    ;; WIP to add the mint activity.
+    ;; :mint            [mint-activity activity]
     nil))
 
 (defn view

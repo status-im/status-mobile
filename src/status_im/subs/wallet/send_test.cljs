@@ -62,25 +62,25 @@
       (fn [db]
         (-> db
             (assoc-in [:wallet :activities]
-                      {"acc1" [{:activity-type constants/wallet-activity-type-send
-                                :amount-out    "0x1"
-                                :sender        "acc1"
-                                :recipient     "acc2"
-                                :timestamp     1588291200}
-                               {:activity-type constants/wallet-activity-type-receive
-                                :amount-in     "0x1"
-                                :sender        "acc2"
-                                :recipient     "acc1"
-                                :timestamp     1588377600}
-                               {:activity-type constants/wallet-activity-type-send
-                                :amount-out    "0x1"
-                                :sender        "acc1"
-                                :recipient     "acc4"
-                                :timestamp     1588464000}]
-                       "acc3" [{:activity-type constants/wallet-activity-type-receive
-                                :amount-in     "0x1"
-                                :sender        "acc4"
-                                :recipient     "acc3"
-                                :timestamp     1588464000}]})
+                      {"acc1" {1 {:activity-type constants/wallet-activity-type-send
+                                  :amount-out    "0x1"
+                                  :sender        "acc1"
+                                  :recipient     "acc2"
+                                  :timestamp     1588291200}
+                               2 {:activity-type constants/wallet-activity-type-receive
+                                  :amount-in     "0x1"
+                                  :sender        "acc2"
+                                  :recipient     "acc1"
+                                  :timestamp     1588377600}
+                               3 {:activity-type constants/wallet-activity-type-send
+                                  :amount-out    "0x1"
+                                  :sender        "acc1"
+                                  :recipient     "acc4"
+                                  :timestamp     1588464000}}
+                       "acc3" {4 {:activity-type constants/wallet-activity-type-receive
+                                  :amount-in     "0x1"
+                                  :sender        "acc4"
+                                  :recipient     "acc3"
+                                  :timestamp     1588464000}}})
             (assoc-in [:wallet :current-viewing-account-address] "acc1"))))
     (is (match? ["acc2" "acc4"] (rf/sub [sub-name])))))

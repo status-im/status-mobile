@@ -41,7 +41,8 @@
              :align-items      :center
              :height           size
              :background-color background-color
-             :border-radius    border-radius}
+             :border-radius    border-radius
+             :flex-shrink      1}
       (= state :selected) (assoc :height       (+ size 2)
                                  :border-color border-color
                                  :border-width 1))))
@@ -50,11 +51,13 @@
   [size]
   {:margin-right   (if (= size 24) 6 10)
    :flex-direction :row
+   :flex-shrink    1
    :align-items    :center})
 
 (defn tag-spacing
-  [size]
-  {:margin-left (if (= size 24) 4 8)})
+  [size shrinkable?]
+  (cond-> {:margin-left (if (= size 24) 4 8)}
+    shrinkable? (assoc :flex-shrink 1)))
 
 (defn text
   [theme]

@@ -154,11 +154,9 @@
         [input-state set-input-state]               (rn/use-state controlled-input/init-state)
         [just-toggled-mode? set-just-toggled-mode?] (rn/use-state false)
         clear-input!                                #(set-input-state controlled-input/delete-all)
-        handle-on-confirm                           (fn []
+        handle-on-confirm                           (fn [amount]
                                                       (rf/dispatch [:wallet/set-token-amount-to-send
-                                                                    {:amount
-                                                                     (controlled-input/input-value
-                                                                      input-state)
+                                                                    {:amount   amount
                                                                      :stack-id current-screen-id}]))
         {fiat-currency :currency}                   (rf/sub [:profile/profile])
         {token-symbol :symbol
