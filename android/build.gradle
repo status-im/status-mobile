@@ -62,5 +62,9 @@ allprojects {
         jcenter() // Required for @react-native-community/blur:3.6.1, can be removed after updating to 3.6.1+
         mavenCentral()
         maven { url "https://www.jitpack.io" }
+        maven {
+            name 'SciJava'
+            url "https://maven.scijava.org/content/repositories/public"
+        }
     }
 }
