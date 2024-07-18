@@ -12,7 +12,10 @@
     [re-frame.events :as rf-events]
     [re-frame.registrar :as rf-registrar]
     [re-frame.subs :as rf-subs]
-    [taoensso.timbre :as log]))
+    [taoensso.timbre :as log]
+
+    ;; We must require this namespace to register the custom cljs.test directive `match-strict?`.
+    test-helpers.matchers))
 
 (defn db
   "A simple wrapper to get the latest value from the app db."
