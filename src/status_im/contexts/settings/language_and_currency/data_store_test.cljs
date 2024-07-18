@@ -5,7 +5,8 @@
     [status-im.contexts.settings.language-and-currency.data-store :as sut]))
 
 (def raw-currency-popular
-  {:shortName   "USD"
+  {:id          "usd"
+   :shortName   "USD"
    :name        "US Dollar"
    :emoji       "🇰🇷"
    :isPopular   true
@@ -13,7 +14,8 @@
    :imageSource "https://example.com/image.png"})
 
 (def raw-currency-token
-  {:shortName   "BTC"
+  {:id          "btc"
+   :shortName   "BTC"
    :name        "Bitcoin"
    :emoji       ""
    :isPopular   false
@@ -26,6 +28,7 @@
      (match? {:id           :usd
               :code         "USD"
               :display-name "US Dollar"
+              :emoji        "🇰🇷"
               :popular?     true
               :token?       false}
              (sut/rpc->currency raw-currency-popular)))))

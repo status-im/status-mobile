@@ -12,7 +12,7 @@
         :name      :display-name
         :isPopular :popular?
         :isToken   :token?})
-      (assoc :id (keyword (string/lower-case (:shortName currency))))
+      (update :id keyword)
       (dissoc :imageSource)))
 
 (defn rpc->currencies
