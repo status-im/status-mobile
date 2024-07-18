@@ -5,6 +5,7 @@
             [status-im.contexts.settings.language-and-currency.currency.style :as style]
             [status-im.contexts.settings.language-and-currency.currency.utils :as utils]
             [status-im.contexts.settings.language-and-currency.data-store :as data-store]
+            [utils.debounce :as debounce]
             [utils.i18n :as i18n]
             [utils.navigation :as navigation]
             [utils.re-frame :as rf]))
@@ -34,6 +35,10 @@
                                                                       %]))
         selected-currency             (rf/sub [:profile/currency])
         currencies                    (rf/sub [:currencies/categorized search-text])
+        on-change-text                (rn/use-callback
+                                       (debounce/debounce
+                                        #(set-search-text %)
+                                        300))
         formatted-data                (rn/use-memo
                                        #(data-store/get-formatted-currency-data currencies)
                                        [search-text])]
@@ -52,9 +57,8 @@
        :container-style style/input-container
        :placeholder     (i18n/label :t/search-currencies)
        :icon-name       :i/search
-       :value           search-text
-       :on-change-text  set-search-text}]
-     (when (empty? (:all currencies))
+       :on-change-text  on-change-text}]
+     (when (zero? (:total currencies))
        [quo/empty-state
         {:title           (i18n/label :t/no-result)
          :image           (resources/get-themed-image :no-assets :dark)
@@ -67,7 +71,7 @@
        :render-fn                       settings-category-view
        :get-item-layout                 get-item-layout
        :initial-num-to-render           14
-       :max-to-render-per-batch         10
+       :max-to-render-per-batch         20
        :scroll-event-throttle           16
        :shows-vertical-scroll-indicator false
        :bounces                         false

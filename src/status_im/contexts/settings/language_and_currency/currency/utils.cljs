@@ -12,7 +12,7 @@
            :image-props       {:token (:id currency)
                                :size  :size-20}
            :action            :selector
-           :action-props      {:type      :checkbox
+           :action-props      {:type      :radio
                                :blur?     true
                                :checked?  (= selected-currency (:id currency))
                                :on-change #(on-change (:id currency))}}))

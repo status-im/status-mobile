@@ -175,11 +175,11 @@
                                                               (string/includes? (string/lower-case code)
                                                                                 search-lc))]
           (cond-> acc
-            matches-query?                                   (update :all conj currency)
+            matches-query?                                   (update :total inc)
             (and popular? matches-query?)                    (update :popular conj currency)
             (and token? matches-query?)                      (update :crypto conj currency)
             (and matches-query? (not popular?) (not token?)) (update :other conj currency))))
-      {:all     []
+      {:total   0
        :popular []
        :crypto  []
        :other   []}

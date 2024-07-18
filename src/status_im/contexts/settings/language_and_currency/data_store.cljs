@@ -17,7 +17,7 @@
 
 (defn rpc->currencies
   [currencies]
-  (->> (map rpc->currency currencies)))
+  (map rpc->currency currencies))
 
 (defn get-formatted-currency-data
   [{:keys [popular crypto other]}]

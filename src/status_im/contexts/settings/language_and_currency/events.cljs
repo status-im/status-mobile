@@ -6,15 +6,13 @@
 (rf/reg-event-fx :settings/get-currencies-success
  (fn [{:keys [db]} [currencies]]
    (let [all-currencies (data-store/rpc->currencies currencies)]
-     {:db (assoc-in db
-           [:currencies]
-           (utils.collection/index-by :id all-currencies))})))
+     {:db (assoc db
+                 :currencies
+                 (utils.collection/index-by :id all-currencies))})))
 
-(defn get-currencies
-  [_]
-  {:fx [[:json-rpc/call
-         [{:method     "wakuext_getCurrencies"
-           :on-success [:settings/get-currencies-success]
-           :on-error   [:log-rpc-error {:event :settings/get-currencies}]}]]]})
-
-(rf/reg-event-fx :settings/get-currencies get-currencies)
+(rf/reg-event-fx :settings/get-currencies
+ (fn [_]
+   {:fx [[:json-rpc/call
+          [{:method     "wakuext_getCurrencies"
+            :on-success [:settings/get-currencies-success]
+            :on-error   [:log-rpc-error {:event :settings/get-currencies}]}]]]}))

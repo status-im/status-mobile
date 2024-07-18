@@ -95,6 +95,7 @@
            [:dispatch-later [{:ms 1500 :dispatch [:profile.login/non-critical-initialization]}]]
            [:dispatch [:network/check-expensive-connection]]
            [:profile.settings/get-profile-picture key-uid]
+           [:dispatch [:settings/get-currencies]]
            (when (ff/enabled? ::ff/wallet.wallet-connect)
              [:dispatch [:wallet-connect/init]])
            (when notifications-enabled?
@@ -151,7 +152,6 @@
       :fx [(when (and new-account? (not recovered-account?))
              [:dispatch-later [{:ms 1000 :dispatch [:wallet-legacy/set-initial-blocks-range]}]])
            [:dispatch-later [{:ms 2000 :dispatch [:ens/update-usernames ensUsernames]}]]
-           [:dispatch [:settings/get-currencies]]
            [:dispatch [:profile.login/login-existing-profile settings account]]]})))
 
 (rf/reg-event-fx

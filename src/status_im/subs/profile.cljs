@@ -4,7 +4,6 @@
     [clojure.string :as string]
     [legacy.status-im.fleet.core :as fleet]
     [legacy.status-im.multiaccounts.db :as multiaccounts.db]
-    [legacy.status-im.utils.currency :as currency]
     [quo.theme]
     [re-frame.core :as re-frame]
     [status-im.common.pixel-ratio :as pixel-ratio]
@@ -32,10 +31,13 @@
 
 (re-frame/reg-sub
  :profile/currency-symbol
+ :<- [:currencies]
  :<- [:profile/currency]
- (fn [currency-id]
-   (-> (get currency/currencies currency-id)
-       :symbol)))
+ (fn [[currencies currency-id]]
+   (let [currency (get currencies currency-id)]
+     (if (:token? currency)
+       (:code currency)
+       (:symbol currency)))))
 
 (re-frame/reg-sub
  :profile/currency-info

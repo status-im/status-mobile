@@ -1,13 +1,14 @@
 (ns status-im.contexts.settings.language-and-currency.events-test
   (:require
-    [cljs.test :refer-macros [deftest is]]
+    [cljs.test :refer-macros [is]]
     matcher-combinators.test
-    [status-im.contexts.settings.language-and-currency.events :as sut]))
+    status-im.contexts.settings.language-and-currency.events
+    [test-helpers.unit :as h]))
 
-(deftest get-currencies-test
-  (let [cofx     {:db {}}
-        expected {:fx [[:json-rpc/call
-                        [{:method     "wakuext_getCurrencies"
-                          :on-success [:settings/get-currencies-success]
-                          :on-error   [:log-rpc-error {:event :settings/get-currencies}]}]]]}]
-    (is (match? expected (sut/get-currencies cofx)))))
+(h/deftest-event :settings/get-currencies
+  [event-id dispatch]
+  (let [expected-effects {:fx [[:json-rpc/call
+                                [{:method     "wakuext_getCurrencies"
+                                  :on-success [:settings/get-currencies-success]
+                                  :on-error   [:log-rpc-error {:event :settings/get-currencies}]}]]]}]
+    (is (match? expected-effects (dispatch [event-id])))))
