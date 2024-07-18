@@ -20,7 +20,7 @@
 ;; flags stay up to date and are removed once behavior introduced is stable.
 
 (goog-define INFURA_TOKEN "800c641949d64d768a5070a1b0511938")
-(goog-define POKT_TOKEN "")
+(goog-define POKT_TOKEN "849214fd2f85acead08f5184")
 (goog-define OPENSEA_API_KEY "")
 
 (def infura-key INFURA_TOKEN)
