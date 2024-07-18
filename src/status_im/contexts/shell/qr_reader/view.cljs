@@ -92,8 +92,8 @@
       (debounce/debounce-and-dispatch [:generic-scanner/scan-success scanned-text] 300)
       (debounce/debounce-and-dispatch [:navigate-change-tab :wallet-stack] 300))
 
-    (eip681-address? scanned-text)
-    (do
+    #_(eip681-address? scanned-text)
+    #_(do
       (debounce/debounce-and-dispatch [:wallet-legacy/request-uri-parsed
                                        (eip681/parse-uri scanned-text)]
                                       300)
