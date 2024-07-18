@@ -195,6 +195,7 @@ release: release-android release-ios ##@build Build release for Android and iOS
 
 build-fdroid: export BUILD_ENV = prod
 build-fdroid: export BUILD_TYPE = release
+build-fdroid: export BUILD_NUMBER ?= $(TMP_BUILD_NUMBER)
 build-fdroid: export ANDROID_ABI_SPLIT = false
 build-fdroid: export ANDROID_ABI_INCLUDE = armeabi-v7a;arm64-v8a;x86;x86_64
 build-fdroid: ##@build Build release for F-Droid
