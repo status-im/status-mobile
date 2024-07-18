@@ -21,12 +21,14 @@
                        (colors/theme-colors colors/white colors/neutral-95 theme))})
 
 (defn buttons-container
-  [actions]
-  {:flex-direction     (if (= actions :two-vertical-actions) :column :row)
-   :justify-content    :space-around
-   :padding-vertical   12
-   :gap                12
-   :padding-horizontal 20})
+  [actions container-style]
+  (merge
+   {:flex-direction     (if (= actions :two-vertical-actions) :column :row)
+    :justify-content    :space-around
+    :padding-vertical   12
+    :gap                12
+    :padding-horizontal 20}
+   container-style))
 
 (def description-top
   {:flex-direction  :row

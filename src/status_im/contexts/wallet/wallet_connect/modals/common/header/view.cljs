@@ -10,12 +10,12 @@
    [quo/text
     {:size   :heading-1
      :weight :semi-bold}
-    (let [{:keys [name icons]} (:peerMetadata dapp)]
+    (let [{:keys [name iconUrl]} dapp]
       [rn/view {:style style/header-dapp-name}
        [quo/summary-tag
         {:type         :dapp
          :label        name
-         :image-source (first icons)}]])
+         :image-source iconUrl}]])
     (str " " label " ")
     (let [{:keys [emoji customization-color name]} account]
       [rn/view {:style style/header-account-name}

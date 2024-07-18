@@ -1,5 +1,6 @@
 (ns status-im.subs.wallet.wallet-connect
-  (:require [re-frame.core :as rf]
+  (:require [clojure.string :as string]
+            [re-frame.core :as rf]
             [status-im.contexts.wallet.common.utils :as wallet-utils]
             [status-im.contexts.wallet.common.utils.networks :as networks]
             [status-im.contexts.wallet.wallet-connect.core :as wallet-connect-core]
@@ -37,13 +38,23 @@
 (rf/reg-sub
  :wallet-connect/current-request-dapp
  :<- [:wallet-connect/current-request]
- :<- [:wallet-connect/pairings]
- (fn [[request pairings]]
+ :<- [:wallet-connect/sessions]
+ (fn [[request sessions]]
    (let [dapp-url (get-in request [:event :verifyContext :verified :origin])]
-     (->> pairings
-          (filter (fn [pairing]
-                    (= dapp-url (get-in pairing [:peerMetadata :url]))))
+     (->> sessions
+          (filter (fn [session]
+                    (= dapp-url (get session :url))))
           (first)))))
+
+(rf/reg-sub
+ :wallet-connect/sessions-for-current-account
+ :<- [:wallet-connect/sessions]
+ :<- [:wallet/current-viewing-account-address]
+ (fn [[sessions address]]
+   (filter
+    (fn [{:keys [accounts]}]
+      (some #(string/includes? % address) accounts))
+    sessions)))
 
 (rf/reg-sub
  :wallet-connect/current-request-network

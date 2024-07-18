@@ -117,13 +117,14 @@
 (defn- f-internal-view
   []
   (let [{:keys [keyboard-shown]} (hooks/use-keyboard)]
-    [:<>
-     (when keyboard-shown
-       (rn/dismiss-keyboard!))
-     [scan-qr-code/view
-      {:title           (i18n/label :t/scan-qr)
-       :share-button?   true
-       :on-success-scan on-qr-code-scanned}]]))
+    (rn/use-mount
+     (fn []
+       (when keyboard-shown
+         (rn/dismiss-keyboard!))))
+    [scan-qr-code/view
+     {:title           (i18n/label :t/scan-qr)
+      :share-button?   true
+      :on-success-scan on-qr-code-scanned}]))
 
 (defn view
   []

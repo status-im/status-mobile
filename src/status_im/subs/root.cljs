@@ -169,7 +169,7 @@
 (reg-root-key-sub :wallet-connect/web3-wallet :wallet-connect/web3-wallet)
 (reg-root-key-sub :wallet-connect/current-proposal :wallet-connect/current-proposal)
 (reg-root-key-sub :wallet-connect/current-request :wallet-connect/current-request)
-(reg-root-key-sub :wallet-connect/pairings :wallet-connect/pairings)
+(reg-root-key-sub :wallet-connect/sessions :wallet-connect/sessions)
 
 ;;biometrics
 (reg-root-key-sub :biometrics :biometrics)
