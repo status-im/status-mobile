@@ -1,6 +1,7 @@
 (ns status-im.contexts.wallet.wallet-connect.modals.common.footer.view
   (:require [quo.core :as quo]
             [quo.foundations.colors :as colors]
+            [quo.theme]
             [react-native.core :as rn]
             [status-im.common.standard-authentication.core :as standard-authentication]
             [status-im.contexts.wallet.wallet-connect.modals.common.footer.style :as style]
@@ -14,7 +15,8 @@
 
 (defn view
   [{:keys [warning-label slide-button-text disabled?]} & children]
-  (let [{:keys [customization-color]} (rf/sub [:wallet-connect/current-request-account-details])]
+  (let [{:keys [customization-color]} (rf/sub [:wallet-connect/current-request-account-details])
+        theme                         (quo.theme/use-theme)]
     [rn/view {:style style/content-container}
      (into [rn/view
             {:style style/data-items-container}]
@@ -30,6 +32,8 @@
      [rn/view {:style style/warning-container}
       [quo/text
        {:size   :paragraph-2
-        :style  {:color colors/neutral-80-opa-70}
+        :style  {:color (if (= theme :dark)
+                          colors/white-opa-70
+                          colors/neutral-80-opa-70)}
         :weight :medium}
        warning-label]]]))
