@@ -45,6 +45,11 @@
 (def ^:const activity-center-membership-status-accepted 2)
 (def ^:const activity-center-membership-status-declined 3)
 
+;; Choose the maximum number of notifications that *usually/safely* fit on
+;; most screens, so that the UI doesn't have to needlessly render
+;; notifications.
+(def ^:const notifications-per-page 7)
+
 (def ^:const mute-for-15-mins-type 1)
 (def ^:const mute-for-1-hour-type 2)
 (def ^:const mute-for-8-hours-type 3)

@@ -146,8 +146,8 @@
             effects   (events/get-revealed-accounts {:db db} [community-id])]
         (is (match? (assoc-in db [:communities community-id :fetching-revealed-accounts] true)
                     (:db effects)))
-        (is (match? {:method "wakuext_getRevealedAccounts"
-                     :params [community-id "profile-public-key"]}
+        (is (match? {:method "wakuext_latestRequestToJoinForCommunity"
+                     :params [community-id]}
                     (-> effects :json-rpc/call first (select-keys [:method :params]))))))))
 
 (deftest handle-community-test

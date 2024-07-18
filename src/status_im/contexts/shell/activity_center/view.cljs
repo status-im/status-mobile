@@ -1,9 +1,10 @@
 (ns status-im.contexts.shell.activity-center.view
   (:require
-    [oops.core :as oops]
     [quo.core :as quo]
     [react-native.core :as rn]
     [react-native.navigation :as navigation]
+    [status-im.constants :as constants]
+    [status-im.contexts.shell.activity-center.context :as ac.context]
     [status-im.contexts.shell.activity-center.header.view :as header]
     [status-im.contexts.shell.activity-center.notification-types :as types]
     [status-im.contexts.shell.activity-center.notification.admin.view :as admin]
@@ -23,61 +24,68 @@
     [utils.re-frame :as rf]))
 
 (defn notification-component
+  [{:keys [type] :as notification} index]
+  (let [extra-fn (rn/use-callback
+                  (fn []
+                    {:notification notification})
+                  [notification])
+        props    {:notification notification
+                  :extra-fn     extra-fn}]
+    ;; Notifications are expensive to render. Without `delay-render` the opening
+    ;; animation of the Activity Center can be clunky and the time to open the
+    ;; AC after pressing the bell icon can be high.
+    [rn/view {:style (style/notification-container index)}
+     (cond
+       (= type types/contact-verification)
+       [contact-verification/view props]
+
+       (= type types/contact-request)
+       [contact-requests/view props]
+
+       (= type types/mention)
+       [mentions/view props]
+
+       (= type types/reply)
+       [reply/view props]
+
+       (= type types/admin)
+       [admin/view props]
+
+       (some types/membership [type])
+       (condp = type
+         types/private-group-chat [membership/view props]
+         types/community-request  [community-request/view props]
+         types/community-kicked   [community-kicked/view props]
+         nil))]))
+
+(defn- fetch-next-page
   []
-  (let [height               (atom 0)
-        set-swipeable-height #(reset! height (oops/oget % "nativeEvent.layout.height"))]
-    (fn [{:keys [type] :as notification} index _ {:keys [active-swipeable customization-color]}]
-      (let [props {:height               height
-                   :customization-color  customization-color
-                   :active-swipeable     active-swipeable
-                   :set-swipeable-height set-swipeable-height
-                   :notification         notification
-                   :extra-fn             (fn [] {:height @height :notification notification})}]
-        [rn/view {:style (style/notification-container index)}
-         (cond
-           (= type types/contact-verification)
-           [contact-verification/view props]
-
-           (= type types/contact-request)
-           [contact-requests/view props]
-
-           (= type types/mention)
-           [mentions/view props]
-
-           (= type types/reply)
-           [reply/view props]
-
-           (= type types/admin)
-           [admin/view props]
-
-           (some types/membership [type])
-           (condp = type
-             types/private-group-chat [membership/view props]
-             types/community-request  [community-request/view props]
-             types/community-kicked   [community-kicked/view props]
-             nil)
-
-           :else
-           nil)]))))
+  (rf/dispatch [:activity-center.notifications/fetch-next-page]))
 
 (defn view
   []
-  (let [active-swipeable (atom nil)]
-    (rf/dispatch [:activity-center.notifications/fetch-first-page])
-    (fn []
-      (let [notifications       (rf/sub [:activity-center/notifications])
-            customization-color (rf/sub [:profile/customization-color])]
-        [quo/overlay {:type :shell}
-         [rn/view {:flex 1 :padding-top (navigation/status-bar-height)}
-          [header/header]
-          [rn/flat-list
-           {:data                      notifications
-            :render-data               {:active-swipeable    active-swipeable
-                                        :customization-color customization-color}
-            :content-container-style   {:flex-grow 1}
-            :empty-component           [empty-tab/empty-tab]
-            :key-fn                    :id
-            :on-scroll-to-index-failed identity
-            :on-end-reached            #(rf/dispatch [:activity-center.notifications/fetch-next-page])
-            :render-fn                 notification-component}]]
-        ]))))
+  (let [notifications    (rf/sub [:activity-center/notifications])
+
+        ;; We globally control the active swipeable for all notifications
+        ;; because when a swipe left/right gesture initiates, the previously
+        ;; active swiped notification (if any) must be removed & closed with
+        ;; animation.
+        active-swipeable (rn/use-ref-atom nil)]
+    (rn/use-mount
+     (fn []
+       (rf/dispatch [:activity-center.notifications/fetch-first-page])))
+
+    [ac.context/provider {:active-swipeable active-swipeable}
+     [quo/overlay {:type :shell}
+      [rn/view {:style {:flex 1 :padding-top (navigation/status-bar-height)}}
+       [header/header]
+       (rn/delay-render
+        [rn/flat-list
+         {:data                      notifications
+          :initial-num-to-render     constants/notifications-per-page
+          :content-container-style   {:flex-grow 1}
+          :empty-component           [empty-tab/empty-tab]
+          :key-fn                    :id
+          :on-scroll-to-index-failed identity
+          :on-end-reached            fetch-next-page
+          :render-fn                 notification-component}])]]]))

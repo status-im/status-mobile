@@ -1,10 +1,12 @@
 (ns status-im.contexts.shell.activity-center.notification.common.view
   (:require
+    [oops.core :as oops]
     [quo.core :as quo]
     [quo.foundations.colors :as colors]
     [react-native.core :as rn]
     [react-native.gesture :as gesture]
     [status-im.contexts.profile.utils :as profile.utils]
+    [status-im.contexts.shell.activity-center.context :as ac.context]
     [status-im.contexts.shell.activity-center.notification.common.style :as style]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
@@ -14,7 +16,7 @@
   (let [profile (rf/sub [:contacts/contact-by-identity user-id])]
     [rn/view
      {:on-start-should-set-responder
-      (fn [_event]
+      (fn []
         (rf/dispatch [:navigate-back])
         (rf/dispatch [:chat.ui/show-profile user-id])
         true)}
@@ -33,35 +35,27 @@
            swipe-button
            swipeable-ref
            style]}]
-  (fn [_ ^js drag-x]
-    (let [{:keys [height] :as extra} (extra-fn)
-          opacity                    (.interpolate drag-x interpolation-opacity)
-          translate-x                (.interpolate drag-x interpolation-translate-x)]
+  (fn [_ drag-x]
+    (let [extra       (extra-fn)
+          opacity     (oops/ocall drag-x :interpolate interpolation-opacity)
+          translate-x (oops/ocall drag-x :interpolate interpolation-translate-x)]
       [gesture/rect-button
        {:style               (merge {:border-radius style/swipe-button-border-radius} style)
         :accessibility-label :notification-swipe-action-button
         :on-press            (fn []
                                (when @swipeable-ref
-                                 (.close ^js @swipeable-ref)
+                                 (oops/ocall @swipeable-ref :close)
                                  (reset! active-swipeable nil))
                                (on-press extra))}
        [swipe-button
         {:style {:opacity   opacity
                  :transform [{:translateX translate-x}]
-                 :height    height
+                 :flex      1
                  :width     style/swipe-action-width}}
         extra]])))
 
-(defn- close-active-swipeable
-  [active-swipeable swipeable]
-  (fn [_]
-    (when (and @active-swipeable
-               (not= @active-swipeable @swipeable))
-      (.close ^js @active-swipeable))
-    (reset! active-swipeable @swipeable)))
-
 (defn swipe-button-container
-  [{:keys [style icon text]} _]
+  [{:keys [style icon text]}]
   [rn/animated-view
    {:accessibility-label :notification-swipe
     :style               style}
@@ -103,47 +97,54 @@
   (rf/dispatch [:activity-center.notifications/delete (:id notification)]))
 
 (defn swipeable
-  [_]
-  (let [swipeable-ref (atom nil)]
-    (fn [{:keys [active-swipeable
-                 extra-fn
-                 left-button
-                 left-on-press
-                 right-button
-                 right-on-press]}
-         & children]
-      (into
-       [gesture/swipeable
-        (merge
-         {:ref                      #(reset! swipeable-ref %)
-          :accessibility-label      :notification-swipeable
-          :friction                 2
-          :on-swipeable-will-open   (close-active-swipeable active-swipeable swipeable-ref)
-          :children-container-style {:padding-horizontal 20}}
-         (when left-button
-           {:overshoot-left      false
-            :left-threshold      style/swipe-action-width
-            :render-left-actions (render-swipe-action
-                                  {:active-swipeable active-swipeable
-                                   :extra-fn extra-fn
-                                   :interpolation-opacity style/left-swipe-opacity-interpolation-js
-                                   :interpolation-translate-x
-                                   style/left-swipe-translate-x-interpolation-js
-                                   :on-press left-on-press
-                                   :swipe-button left-button
-                                   :swipeable-ref swipeable-ref
-                                   :style {:left 8}})})
-         (when right-button
-           {:overshoot-right      false
-            :right-threshold      style/swipe-action-width
-            :render-right-actions (render-swipe-action
-                                   {:active-swipeable active-swipeable
-                                    :extra-fn extra-fn
-                                    :interpolation-opacity style/right-swipe-opacity-interpolation-js
-                                    :interpolation-translate-x
-                                    style/right-swipe-translate-x-interpolation-js
-                                    :on-press right-on-press
-                                    :swipe-button right-button
-                                    :swipeable-ref swipeable-ref
-                                    :style {:right -8}})}))]
-       children))))
+  [{:keys [extra-fn
+           left-button
+           left-on-press
+           right-button
+           right-on-press]}
+   child]
+  (let [{:keys [active-swipeable]} (ac.context/use-context)
+        this-swipeable             (rn/use-ref-atom nil)
+        set-this-swipeable         (rn/use-callback #(reset! this-swipeable %)
+                                                    [this-swipeable])
+        on-swipeable-will-open     (rn/use-callback
+                                    (fn []
+                                      (when (and @active-swipeable
+                                                 (not= @active-swipeable @this-swipeable))
+                                        (oops/ocall @active-swipeable :close))
+                                      (reset! active-swipeable @this-swipeable))
+                                    [@active-swipeable @this-swipeable])]
+    [gesture/swipeable
+     (cond-> {:ref                      set-this-swipeable
+              :accessibility-label      :notification-swipeable
+              :friction                 2
+              :on-swipeable-will-open   on-swipeable-will-open
+              :children-container-style {:padding-horizontal 20}}
+       left-button
+       (assoc :overshoot-left      false
+              :left-threshold      style/swipe-action-width
+              :render-left-actions (render-swipe-action
+                                    {:active-swipeable active-swipeable
+                                     :extra-fn extra-fn
+                                     :interpolation-opacity style/left-swipe-opacity-interpolation-js
+                                     :interpolation-translate-x
+                                     style/left-swipe-translate-x-interpolation-js
+                                     :on-press left-on-press
+                                     :swipe-button left-button
+                                     :swipeable-ref this-swipeable
+                                     :style {:left style/swipe-button-margin}}))
+
+       right-button
+       (assoc :overshoot-right      false
+              :right-threshold      style/swipe-action-width
+              :render-right-actions (render-swipe-action
+                                     {:active-swipeable active-swipeable
+                                      :extra-fn extra-fn
+                                      :interpolation-opacity style/right-swipe-opacity-interpolation-js
+                                      :interpolation-translate-x
+                                      style/right-swipe-translate-x-interpolation-js
+                                      :on-press right-on-press
+                                      :swipe-button right-button
+                                      :swipeable-ref this-swipeable
+                                      :style {:right (- style/swipe-button-margin)}})))
+     child]))

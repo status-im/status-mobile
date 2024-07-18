@@ -37,19 +37,22 @@
                 (sut/sign-data cofx [community-id password sign-params])))))
 
 (deftest request-to-join-with-signatures-test
-  (let [cofx                {:db {}}
-        addresses-to-reveal [account-pub-key "0x2"]
-        signatures          ["11111" "222222"]
-        expected            {:fx [[:json-rpc/call
-                                   [{:method      "wakuext_requestToJoinCommunity"
-                                     :params      [{:communityId       community-id
-                                                    :signatures        signatures
-                                                    :addressesToReveal addresses-to-reveal
-                                                    :airdropAddress    "0x1"}]
-                                     :js-response true
-                                     :on-success  [:communities/requested-to-join]
-                                     :on-error    [:communities/requested-to-join-error
-                                                   community-id]}]]]}]
+  (let [cofx                    {:db {}}
+        addresses-to-reveal     [account-pub-key "0x2"]
+        share-future-addresses? true
+        signatures              ["11111" "222222"]
+        expected                {:fx [[:json-rpc/call
+                                       [{:method      "wakuext_requestToJoinCommunity"
+                                         :params      [{:communityId          community-id
+                                                        :signatures           signatures
+                                                        :addressesToReveal    addresses-to-reveal
+                                                        :shareFutureAddresses share-future-addresses?
+                                                        :airdropAddress       "0x1"}]
+                                         :js-response true
+                                         :on-success  [:communities/requested-to-join]
+                                         :on-error    [:communities/requested-to-join-error
+                                                       community-id]}]]]}]
     (is (match? expected
                 (sut/request-to-join-with-signatures cofx
-                                                     [community-id addresses-to-reveal signatures])))))
+                                                     [community-id addresses-to-reveal signatures
+                                                      share-future-addresses?])))))

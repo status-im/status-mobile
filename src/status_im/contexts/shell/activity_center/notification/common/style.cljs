@@ -4,6 +4,7 @@
 
 (def swipe-action-width 80)
 (def swipe-button-border-radius 16)
+(def swipe-button-margin 8)
 
 (def user-avatar-tag
   {:background-color colors/white-opa-10})
