@@ -79,6 +79,7 @@
         [button/button
          (merge
           {:size                40
+           :container-style     style/button-container
            :background          (when (or blur? scroll?) :blur)
            :theme               theme
            :accessibility-label :button-two}
@@ -87,6 +88,7 @@
       [button/button
        (merge
         {:size                40
+         :container-style     style/button-container
          :background          (when (or blur? scroll?) :blur)
          :theme               theme
          :accessibility-label :button-one}
