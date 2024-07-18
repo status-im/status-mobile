@@ -103,6 +103,8 @@
 (def sample-currency
   {:usd {:id           :usd
          :code         "USD"
+         :symbol       "$"
+         :emoji        "🇺🇸"
          :display-name "US Dollar"
          :popular?     true
          :token?       false}})

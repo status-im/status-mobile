@@ -1,7 +1,6 @@
 
 (ns status-im.contexts.settings.language-and-currency.data-store
   (:require [clojure.set :as set]
-            [clojure.string :as string]
             [utils.i18n :as i18n]))
 
 (defn rpc->currency

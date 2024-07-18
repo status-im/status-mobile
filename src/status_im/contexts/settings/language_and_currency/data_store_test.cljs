@@ -8,7 +8,8 @@
   {:id          "usd"
    :shortName   "USD"
    :name        "US Dollar"
-   :emoji       "🇰🇷"
+   :symbol      "$"
+   :emoji       "🇺🇸"
    :isPopular   true
    :isToken     false
    :imageSource "https://example.com/image.png"})
@@ -17,6 +18,7 @@
   {:id          "btc"
    :shortName   "BTC"
    :name        "Bitcoin"
+   :symbol      ""
    :emoji       ""
    :isPopular   false
    :isToken     true
@@ -27,8 +29,9 @@
     (is
      (match? {:id           :usd
               :code         "USD"
+              :symbol       "$"
+              :emoji        "🇺🇸"
               :display-name "US Dollar"
-              :emoji        "🇰🇷"
               :popular?     true
               :token?       false}
              (sut/rpc->currency raw-currency-popular)))))
