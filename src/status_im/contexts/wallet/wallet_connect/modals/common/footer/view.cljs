@@ -13,7 +13,7 @@
   (rf/dispatch [:wallet-connect/respond-current-session password]))
 
 (defn view
-  [{:keys [warning-label slide-button-text disabed?]} & children]
+  [{:keys [warning-label slide-button-text disabled?]} & children]
   (let [{:keys [customization-color]} (rf/sub [:wallet-connect/current-request-account-details])]
     [rn/view {:style style/content-container}
      (into [rn/view
@@ -23,7 +23,7 @@
       [standard-authentication/slide-button
        {:size                :size-48
         :track-text          slide-button-text
-        :disabled?           disabed?
+        :disabled?           disabled?
         :customization-color customization-color
         :on-auth-success     on-auth-success
         :auth-button-label   (i18n/label :t/confirm)}]]
