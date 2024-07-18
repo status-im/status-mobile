@@ -213,6 +213,7 @@
                                 (+ safe-area-bottom footer-height))
       :blur-options
       {:blur-amount        34
+       :blur-radius        20
        :blur-type          :transparent
        :overlay-color      :transparent
        :background-color   (if platform/android? colors/neutral-100 colors/neutral-80-opa-1-blur)
