@@ -195,16 +195,11 @@
  :<- [:wallet-connect/persisted-sessions]
  (fn [[pairings testnet-mode? persisted-sessions]]
    (if persisted-sessions
-     (->> pairings
-          ;; Map and inject testChains boolean
-          (map
-           (fn [pairing]
-             (let [persisted (some #(when (= (:pairingTopic %) (:topic pairing)) %)
-                                   persisted-sessions)]
-               (assoc pairing
-                      :testChains
-                      (:testChains persisted)))))
-          (filter
-           (fn [pairing]
-             (= (:testChains pairing) (boolean testnet-mode?)))))
+     (filter
+      (fn [pairing]
+        (let [persisted              (some #(when (= (:pairingTopic %) (:topic pairing)) %)
+                                           persisted-sessions)
+              pairing-is-test-chain? (:testChains persisted)]
+          (= pairing-is-test-chain? (boolean testnet-mode?))))
+      pairings)
      pairings)))
