@@ -1,8 +1,11 @@
 (ns status-im.contexts.wallet.wallet-connect.modals.send-transaction.view
   (:require [quo.core :as quo]
+            [quo.theme]
             [react-native.core :as rn]
             [react-native.safe-area :as safe-area]
             [status-im.contexts.wallet.wallet-connect.modals.common.data-block.view :as data-block]
+            [status-im.contexts.wallet.wallet-connect.modals.common.fees-data-item.view :as
+             fees-data-item]
             [status-im.contexts.wallet.wallet-connect.modals.common.footer.view :as footer]
             [status-im.contexts.wallet.wallet-connect.modals.common.header.view :as header]
             [status-im.contexts.wallet.wallet-connect.modals.common.page-nav.view :as page-nav]
@@ -40,7 +43,7 @@
                                  :not-enough-assets
                                  :t/not-enough-assets))}])
       [footer/view
-       {:warning-label     (i18n/label :t/wallet-connect-send-transaction-warning)
+       {:warning-label     (i18n/label :t/wallet-connect-sign-warning)
         :slide-button-text (i18n/label :t/slide-to-send)
         :disabled?         error-state}
        [quo/data-item
@@ -51,11 +54,7 @@
          :subtitle-type   :network
          :network-image   (:source network)
          :subtitle        (:full-name network)}]
-       [quo/data-item
-        {:size            :small
-         :status          :default
-         :card?           false
-         :container-style style/data-item
-         :title           (i18n/label :t/max-fees)
-         :subtitle        (or max-fees-fiat-formatted (i18n/label :t/no-fees))}]]]]))
+       [fees-data-item/view
+        {:fees       max-fees-fiat-formatted
+         :fees-error error-state}]]]]))
 

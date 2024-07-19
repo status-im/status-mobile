@@ -100,6 +100,17 @@
         networks   (get-in db [:wallet :networks (if test-mode? :test :prod)])]
     (mapv #(-> % :chain-id) networks)))
 
+(defn add-full-testnet-name
+  "Updates the `:full-name` key with the full testnet name if using testnet `:chain-id`.\n
+  e.g. `{:full-name \"Mainnet\"}` -> `{:full-name \"Mainnet Sepolia\"`}`"
+  [network]
+  (let [add-testnet-name (fn [testnet-name]
+                           (update network :full-name #(str % " " testnet-name)))]
+    (condp #(contains? %1 %2) (:chain-id network)
+      constants/sepolia-chain-ids (add-testnet-name constants/sepolia-full-name)
+      constants/goerli-chain-ids  (add-testnet-name constants/goerli-full-name)
+      network)))
+
 (defn event-should-be-handled?
   [db {:keys [topic]}]
   (some #(= topic %)
