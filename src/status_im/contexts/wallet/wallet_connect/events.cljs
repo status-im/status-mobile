@@ -30,8 +30,9 @@
 (rf/reg-event-fx
  :wallet-connect/reload-on-network-change
  (fn [{:keys [db]} [is-connected?]]
-   (let [logged-in? (-> db :profile/profile boolean)]
-     (when (and is-connected? logged-in?)
+   (let [logged-in?           (-> db :profile/profile boolean)
+         web3-wallet-missing? (-> db :wallet-connect/web3-wallet boolean not)]
+     (when (and is-connected? logged-in? web3-wallet-missing?)
        {:fx [[:dispatch [:wallet-connect/init]]]}))))
 
 (rf/reg-event-fx
@@ -125,17 +126,20 @@
 (rf/reg-event-fx
  :wallet-connect/disconnect-dapp
  (fn [{:keys [db]} [{:keys [topic on-success on-fail]}]]
-   (let [web3-wallet (get db :wallet-connect/web3-wallet)]
-     {:fx [[:effects.wallet-connect/disconnect
-            {:web3-wallet web3-wallet
-             :topic       topic
-             :reason      (wallet-connect/get-sdk-error
-                           constants/wallet-connect-user-disconnected-reason-key)
-             :on-fail     on-fail
-             :on-success  (fn []
-                            (rf/dispatch [:wallet-connect/disconnect-session topic])
-                            (when on-success
-                              (on-success)))}]]})))
+   (let [web3-wallet    (get db :wallet-connect/web3-wallet)
+         network-status (:network-status db)]
+     (if (= network-status :online)
+       {:fx [[:effects.wallet-connect/disconnect
+              {:web3-wallet web3-wallet
+               :topic       topic
+               :reason      (wallet-connect/get-sdk-error
+                             constants/wallet-connect-user-disconnected-reason-key)
+               :on-fail     on-fail
+               :on-success  (fn []
+                              (rf/dispatch [:wallet-connect/disconnect-session pairing-topic])
+                              (when on-success
+                                (on-success)))}]]}
+       {:fx [[:dispatch [:wallet-connect/no-internet-toast]]]}))))
 
 (rf/reg-event-fx
  :wallet-connect/pair
@@ -164,10 +168,8 @@
                                          :events   constants/wallet-connect-supported-events
                                          :accounts accounts}})
          network-status       (:network-status db)]
-
-     (if (= network-status :offline)
-       {:fx [
-             [:effects.wallet-connect/approve-session
+     (if (= network-status :online)
+       {:fx [[:effects.wallet-connect/approve-session
               {:web3-wallet          web3-wallet
                :proposal             current-proposal
                :supported-namespaces supported-namespaces
@@ -182,11 +184,7 @@
                                        (rf/dispatch
                                         [:wallet-connect/reset-current-session-proposal]))}]
              [:dispatch [:dismiss-modal :screen/wallet.wallet-connect-session-proposal]]]}
-       {:fx [[:dispatch
-              [:toasts/upsert
-               {:type  :negative
-                :theme :dark
-                :text  (i18n/label :t/wallet-connect-no-internet-warning)}]]]}))))
+       {:fx [[:dispatch [:wallet-connect/no-internet-toast]]]}))))
 
 (rf/reg-event-fx
  :wallet-connect/on-scan-connection
@@ -315,3 +313,12 @@
             :params     [topic]
             :on-success #(log/info "Wallet Connect session disconnected")
             :on-error   #(log/info "Wallet Connect session persistence failed" %)}]]]}))
+
+(rf/reg-event-fx
+ :wallet-connect/no-internet-toast
+ (fn []
+   {:fx [[:dispatch
+          [:toasts/upsert
+           {:type  :negative
+            :theme :dark
+            :text  (i18n/label :t/wallet-connect-no-internet-warning)}]]]}))
