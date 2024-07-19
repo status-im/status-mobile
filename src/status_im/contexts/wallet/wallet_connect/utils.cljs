@@ -11,14 +11,14 @@
 
 (defn timestamp-expired?
   [expiry-timestamp]
-  (> (current-timestamp) expiry-timestamp))
+  (when expiry-timestamp
+    (> (current-timestamp) expiry-timestamp)))
 
 (defn valid-wc-uri?
   [parsed-uri]
-  (let [{:keys [topic version expiryTimestamp]} parsed-uri]
+  (let [{:keys [topic version]} parsed-uri]
     (and (seq topic)
-         (number? version)
-         (number? expiryTimestamp))))
+         (number? version))))
 
 (defn valid-uri?
   "Check if the uri is in the wallet-connect format.

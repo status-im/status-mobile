@@ -8,7 +8,8 @@
             status-im.contexts.wallet.wallet-connect.responding-events
             [status-im.contexts.wallet.wallet-connect.utils :as wc-utils]
             [taoensso.timbre :as log]
-            [utils.i18n :as i18n]))
+            [utils.i18n :as i18n]
+            [utils.transforms :as types]))
 
 (rf/reg-event-fx
  :wallet-connect/init
@@ -22,12 +23,7 @@
  (fn [{:keys [db]} [web3-wallet]]
    {:db (assoc db :wallet-connect/web3-wallet web3-wallet)
     :fx [[:dispatch [:wallet-connect/register-event-listeners]]
-         [:effects.wallet-connect/fetch-pairings
-          {:web3-wallet web3-wallet
-           :on-fail     #(log/error "Failed to get dApp pairings" {:error %})
-           :on-success  (fn [data]
-                          (rf/dispatch [:wallet-connect/set-pairings
-                                        (js->clj data :keywordize-keys true)]))}]]}))
+         [:dispatch [:wallet-connect/fetch-persisted-sessions]]]}))
 
 (rf/reg-event-fx
  :wallet-connect/register-event-listeners
@@ -40,7 +36,11 @@
            [:effects.wallet-connect/register-event-listener
             [web3-wallet
              constants/wallet-connect-session-request-event
-             #(rf/dispatch [:wallet-connect/on-session-request %])]]]})))
+             #(rf/dispatch [:wallet-connect/on-session-request %])]]
+           [:effects.wallet-connect/register-event-listener
+            [web3-wallet
+             constants/wallet-connect-session-delete-event
+             #(rf/dispatch [:wallet-connect/on-session-delete %])]]]})))
 
 (rf/reg-event-fx
  :wallet-connect/on-init-fail
@@ -54,7 +54,10 @@
  (fn [{:keys [db]} [proposal]]
    (log/info "Received Wallet Connect session proposal: " {:id (:id proposal)})
    (let [accounts                     (get-in db [:wallet :accounts])
-         without-watched              (remove :watch-only? (vals accounts))
+         current-viewing-address      (get-in db [:wallet :current-viewing-account-address])
+         available-accounts           (filter #(and (:operable? %)
+                                                    (not (:watch-only? %)))
+                                              (vals accounts))
          networks                     (wallet-connect-core/get-networks-by-mode db)
          session-networks             (wallet-connect-core/proposal-networks-intersection proposal
                                                                                           networks)
@@ -65,9 +68,10 @@
                     :wallet-connect/current-proposal assoc
                     :request                         proposal
                     :session-networks                session-networks
-                    :address                         (-> without-watched
-                                                         first
-                                                         :address))
+                    :address                         (or current-viewing-address
+                                                         (-> available-accounts
+                                                             first
+                                                             :address)))
         :fx [[:dispatch
               [:open-modal :screen/wallet.wallet-connect-session-proposal]]]}
        {:fx [[:dispatch
@@ -85,9 +89,16 @@
 
 (rf/reg-event-fx
  :wallet-connect/on-session-request
- (fn [_ [event]]
-   (log/info "Received Wallet Connect session request: " event)
-   {:fx [[:dispatch [:wallet-connect/process-session-request event]]]}))
+ (fn [{:keys [db]} [event]]
+   (when (wallet-connect-core/event-should-be-handled? db event)
+     {:fx [[:dispatch [:wallet-connect/process-session-request event]]]})))
+
+(rf/reg-event-fx
+ :wallet-connect/on-session-delete
+ (fn [{:keys [db]} [{:keys [topic] :as event}]]
+   (when (wallet-connect-core/event-should-be-handled? db event)
+     (log/info "Received Wallet Connect session delete: " event)
+     {:fx [[:dispatch [:wallet-connect/disconnect-session topic]]]})))
 
 (rf/reg-event-fx
  :wallet-connect/reset-current-session-proposal
@@ -105,27 +116,17 @@
    {:db (dissoc db :wallet-connect/current-request)}))
 
 (rf/reg-event-fx
- :wallet-connect/set-pairings
- (fn [{:keys [db]} [pairings]]
-   {:db (assoc db :wallet-connect/pairings pairings)}))
-
-(rf/reg-event-fx
- :wallet-connect/remove-pairing-by-topic
- (fn [{:keys [db]} [topic]]
-   {:db (update db
-                :wallet-connect/pairings
-                (fn [pairings]
-                  (remove #(= (:topic %) topic) pairings)))}))
-
-(rf/reg-event-fx
  :wallet-connect/disconnect-dapp
- (fn [{:keys [db]} [{:keys [topic on-success on-fail]}]]
+ (fn [{:keys [db]} [{:keys [pairing-topic on-success on-fail]}]]
    (let [web3-wallet (get db :wallet-connect/web3-wallet)]
      {:fx [[:effects.wallet-connect/disconnect
             {:web3-wallet web3-wallet
-             :topic       topic
+             :topic       pairing-topic
              :on-fail     on-fail
-             :on-success  on-success}]]})))
+             :on-success  (fn []
+                            (rf/dispatch [:wallet-connect/disconnect-session pairing-topic])
+                            (when on-success
+                              (on-success)))}]]})))
 
 (rf/reg-event-fx
  :wallet-connect/pair
@@ -136,15 +137,6 @@
              :url         url
              :on-fail     #(log/error "Failed to pair with dApp" {:error %})
              :on-success  #(log/info "dApp paired successfully")}]]})))
-
-(rf/reg-event-fx
- :wallet-connect/fetch-active-sessions
- (fn [{:keys [db]}]
-   (let [web3-wallet (get db :wallet-connect/web3-wallet)]
-     {:fx [[:effects.wallet-connect/fetch-active-sessions
-            {:web3-wallet web3-wallet
-             :on-fail     #(log/error "Failed to get active sessions" {:error %})
-             :on-success  #(log/info "Got active sessions successfully" {:sessions %})}]]})))
 
 (rf/reg-event-fx
  :wallet-connect/approve-session
@@ -204,10 +196,55 @@
                                          {:version version}))}]]]}
        {:fx [[:dispatch [:wallet-connect/pair scanned-text]]]}))))
 
+;; We first load sessions from database, then we initiate a call to Wallet Connect SDK and
+;; then replace the list we have stored in the database with the one that came from the SDK.
+;; In addition to that, we also update the backend state by marking sessions that are not
+;; active anymore by calling `:wallet-connect/disconnect-session`.
+(rf/reg-event-fx
+ :wallet-connect/fetch-active-sessions-success
+ (fn [{:keys [db now]} [sessions]]
+   (let [persisted-sessions (:wallet-connect/sessions db)
+         sessions           (->> (js->clj sessions :keywordize-keys true)
+                                 vals
+                                 (map wallet-connect-core/sdk-session->db-session))
+         expired-sessions   (remove
+                             (fn [{:keys [expiry]}]
+                               (> expiry (/ now 1000)))
+                             persisted-sessions)]
+     {:fx (mapv (fn [{:keys [pairingTopic]}]
+                  [:wallet-connect/disconnect-session pairingTopic])
+                expired-sessions)
+      :db (assoc db :wallet-connect/sessions sessions)})))
+
+(rf/reg-event-fx
+ :wallet-connect/fetch-active-sessions
+ (fn [{:keys [db]}]
+   (let [web3-wallet (get db :wallet-connect/web3-wallet)]
+     {:fx [[:effects.wallet-connect/fetch-active-sessions
+            {:web3-wallet web3-wallet
+             :on-fail     #(log/error "Failed to get active sessions" {:error %})
+             :on-success  #(rf/dispatch [:wallet-connect/fetch-active-sessions-success %])}]]})))
+
 (rf/reg-event-fx
  :wallet-connect/fetch-persisted-sessions-success
  (fn [{:keys [db]} [sessions]]
-   {:db (assoc db :wallet-connect/persisted-sessions sessions)}))
+   (let [sessions' (mapv (fn [{:keys [sessionJson] :as session}]
+                           (assoc session
+                                  :accounts
+                                  (-> sessionJson
+                                      types/json->clj
+                                      :namespaces
+                                      :eip155
+                                      :accounts)))
+                         sessions)]
+     {:fx [[:dispatch [:wallet-connect/fetch-active-sessions]]]
+      :db (assoc db :wallet-connect/sessions sessions')})))
+
+(rf/reg-event-fx
+ :wallet-connect/fetch-persisted-sessions-fail
+ (fn [_ [error]]
+   (log/info "Wallet Connect fetch persisted sessions failed" error)
+   {:fx [[:dispatch [:wallet-connect/fetch-active-sessions]]]}))
 
 (rf/reg-event-fx
  :wallet-connect/fetch-persisted-sessions
@@ -218,7 +255,7 @@
             ;; 0 means, return everything
             :params     [0]
             :on-success [:wallet-connect/fetch-persisted-sessions-success]
-            :on-error   #(log/info "Wallet Connect fetch persisted sessions failed" %)}]]]}))
+            :on-error   [:wallet-connect/fetch-persisted-sessions-fail]}]]]}))
 
 (rf/reg-event-fx
  :wallet-connect/persist-session
@@ -226,5 +263,22 @@
    {:fx [[:json-rpc/call
           [{:method     "wallet_addWalletConnectSession"
             :params     [(js/JSON.stringify session-info)]
-            :on-success #(log/info "Wallet Connect session persisted")
+            :on-success (fn []
+                          (log/info "Wallet Connect session persisted")
+                          (rf/dispatch [:wallet-connect/fetch-persisted-sessions]))
+            :on-error   #(log/info "Wallet Connect session persistence failed" %)}]]]}))
+
+(rf/reg-event-fx
+ :wallet-connect/disconnect-session
+ (fn [{:keys [db]} [pairing-topic]]
+   {:db (update db
+                :wallet-connect/sessions
+                (fn [sessions]
+                  (->> sessions
+                       (remove #(= (:pairingTopic %) pairing-topic))
+                       (into []))))
+    :fx [[:json-rpc/call
+          [{:method     "wallet_disconnectWalletConnectSession"
+            :params     [pairing-topic]
+            :on-success #(log/info "Wallet Connect session disconnected")
             :on-error   #(log/info "Wallet Connect session persistence failed" %)}]]]}))

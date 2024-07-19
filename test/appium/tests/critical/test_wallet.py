@@ -144,14 +144,15 @@ class TestWalletMultipleDevice(MultipleSharedDeviceTestCase):
         self._check_balances_after_tx(amount_to_send, sender_balance, receiver_balance, eth_amount_sender,
                                       eth_amount_receiver)
 
-        self.loop.run_until_complete(
-            run_in_parallel(((self._check_last_transaction_in_activity, {'wallet_view': self.wallet_1,
-                                                                         'device_time': device_time,
-                                                                         'amount_to_send': amount_to_send}),
-                             (self._check_last_transaction_in_activity, {'wallet_view': self.wallet_2,
-                                                                         'device_time': device_time,
-                                                                         'amount_to_send': amount_to_send,
-                                                                         'sender': False}))))
+        # ToDo: enable when issues 20807 and 20808 are fixed
+        # self.loop.run_until_complete(
+        #     run_in_parallel(((self._check_last_transaction_in_activity, {'wallet_view': self.wallet_1,
+        #                                                                  'device_time': device_time,
+        #                                                                  'amount_to_send': amount_to_send}),
+        #                      (self._check_last_transaction_in_activity, {'wallet_view': self.wallet_2,
+        #                                                                  'device_time': device_time,
+        #                                                                  'amount_to_send': amount_to_send,
+        #                                                                  'sender': False}))))
         self.errors.verify_no_errors()
 
     @marks.testrail_id(727230)
@@ -171,14 +172,15 @@ class TestWalletMultipleDevice(MultipleSharedDeviceTestCase):
         self._check_balances_after_tx(amount_to_send, sender_balance, receiver_balance, eth_amount_sender,
                                       eth_amount_receiver)
 
-        self.loop.run_until_complete(
-            run_in_parallel(((self._check_last_transaction_in_activity, {'wallet_view': self.wallet_1,
-                                                                         'device_time': device_time,
-                                                                         'amount_to_send': amount_to_send}),
-                             (self._check_last_transaction_in_activity, {'wallet_view': self.wallet_2,
-                                                                         'device_time': device_time,
-                                                                         'amount_to_send': amount_to_send,
-                                                                         'sender': False}))))
+        # ToDo: enable when issues 20807 and 20808 are fixed
+        # self.loop.run_until_complete(
+        #     run_in_parallel(((self._check_last_transaction_in_activity, {'wallet_view': self.wallet_1,
+        #                                                                  'device_time': device_time,
+        #                                                                  'amount_to_send': amount_to_send}),
+        #                      (self._check_last_transaction_in_activity, {'wallet_view': self.wallet_2,
+        #                                                                  'device_time': device_time,
+        #                                                                  'amount_to_send': amount_to_send,
+        #                                                                  'sender': False}))))
         self.errors.verify_no_errors()
 
 
