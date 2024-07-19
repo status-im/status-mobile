@@ -52,7 +52,6 @@
 (rf/reg-event-fx
  :wallet-connect/on-session-proposal
  (fn [{:keys [db]} [proposal]]
-   (prn :a-> proposal)
    (log/info "Received Wallet Connect session proposal: " {:id (:id proposal)})
    (let [accounts                     (get-in db [:wallet :accounts])
          current-viewing-address      (get-in db [:wallet :current-viewing-account-address])
@@ -89,7 +88,6 @@
 (rf/reg-event-fx
  :wallet-connect/on-session-request
  (fn [{:keys [db]} [event]]
-   (prn :-->req event)
    (when (wallet-connect-core/event-should-be-handled? db event)
      {:fx [[:dispatch [:wallet-connect/process-session-request event]]]})))
 

@@ -93,7 +93,6 @@
        :wallet-account wallet-account
        :on-close       #(rf/dispatch [:navigate-back])
        :on-add         #(rf/dispatch [:navigate-to :screen/wallet.scan-dapp])}]
-     (prn :---> sessions)
      (if (empty? sessions)
        [quo/empty-state
         {:title           (i18n/label :t/no-dapps)
