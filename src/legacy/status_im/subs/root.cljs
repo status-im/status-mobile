@@ -15,8 +15,6 @@
 (reg-root-key-sub :visibility-status-updates :visibility-status-updates)
 (reg-root-key-sub :fleets/custom-fleets :custom-fleets)
 (reg-root-key-sub :ui/search :ui/search)
-(reg-root-key-sub :network/type :network/type)
-(reg-root-key-sub :network-status :network-status)
 (reg-root-key-sub :peer-stats/count :peer-stats/count)
 (reg-root-key-sub :peers-summary :peers-summary)
 (reg-root-key-sub :web3-node-version :web3-node-version)
