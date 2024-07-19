@@ -13,13 +13,11 @@
 
 (def first-tab-id :assets)
 
-(defn tabs-data
-  [watch-only?]
-  (cond-> [{:id :assets :label (i18n/label :t/assets) :accessibility-label :assets-tab}
-           {:id :collectibles :label (i18n/label :t/collectibles) :accessibility-label :collectibles-tab}
-           {:id :activity :label (i18n/label :t/activity) :accessibility-label :activity-tab}]
-    (not watch-only?) (conj {:id :dapps :label (i18n/label :t/dapps) :accessibility-label :dapps})
-    :always           (conj {:id :about :label (i18n/label :t/about) :accessibility-label :about})))
+(def tabs-data
+  [{:id :assets :label (i18n/label :t/assets) :accessibility-label :assets-tab}
+   {:id :collectibles :label (i18n/label :t/collectibles) :accessibility-label :collectibles-tab}
+   {:id :activity :label (i18n/label :t/activity) :accessibility-label :activity-tab}
+   {:id :about :label (i18n/label :t/about) :accessibility-label :about}])
 
 (defn- change-tab [id] (rf/dispatch [:wallet/select-account-tab id]))
 
@@ -69,7 +67,7 @@
       {:style            style/tabs
        :size             32
        :active-tab-id    selected-tab
-       :data             (tabs-data watch-only?)
+       :data             tabs-data
        :on-change        change-tab
        :scrollable?      true
        :scroll-on-press? true}]
