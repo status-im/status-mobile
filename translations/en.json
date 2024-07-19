@@ -2057,6 +2057,7 @@
     "wallet-connect-send-transaction-warning": "Send transactions only if you trust the dApp",
     "wallet-connect-sign-transaction-warning": "Sign transactions only if you trust the dApp",
     "wallet-connect-networks-not-supported": "{{dapp}} requires an unsupported network.",
+    "wallet-connect-typed-data-wrong-chain-id-warning": "Wrong network in the request data. Expected '{{expected-chain}}', but got '{{wrong-chain}}'",
     "reject": "Reject",
     "manage-connections": "Manage connections from within Application Connections",
     "contact-request-was-ignored": "Contact request ignored",

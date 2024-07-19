@@ -5,8 +5,10 @@
             [re-frame.core :as rf]
             [status-im.constants :as constants]
             [status-im.contexts.wallet.wallet-connect.core :as wallet-connect-core]
+            [status-im.contexts.wallet.wallet-connect.signing :as signing]
             [status-im.contexts.wallet.wallet-connect.transactions :as transactions]
             [taoensso.timbre :as log]
+            [utils.i18n :as i18n]
             [utils.transforms :as transforms]))
 
 (rf/reg-event-fx
@@ -122,15 +124,30 @@
  :wallet-connect/process-sign-typed
  (fn [{:keys [db]}]
    (let [[address raw-data] (wallet-connect-core/get-db-current-request-params db)
-         parsed-data        (try (-> raw-data
-                                     transforms/js-parse
+         parsed-raw-data    (transforms/js-parse raw-data)
+         session-chain-id   (-> (wallet-connect-core/get-db-current-request-event db)
+                                (get-in [:params :chainId])
+                                wallet-connect-core/eip155->chain-id)
+         data-chain-id      (-> parsed-raw-data
+                                transforms/js->clj
+                                signing/typed-data-chain-id)
+         parsed-data        (try (-> parsed-raw-data
                                      (transforms/js-dissoc :types :primaryType)
                                      (transforms/js-stringify 2))
                                  (catch js/Error _ nil))]
-     (if (nil? parsed-data)
+     (cond
+       (nil? parsed-data)
        {:fx [[:dispatch
               [:wallet-connect/on-processing-error
                (ex-info "Failed to parse JSON typed data" {:data raw-data})]]]}
+
+       (not= session-chain-id data-chain-id)
+       {:fx [[:dispatch
+              [:wallet-connect/wrong-typed-data-chain-id
+               {:expected-chain-id session-chain-id
+                :wrong-chain-id    data-chain-id}]]]}
+
+       :else
        {:db (update-in db
                        [:wallet-connect/current-request]
                        assoc
@@ -139,19 +156,39 @@
                        :raw-data     raw-data)
         :fx [[:dispatch [:wallet-connect/show-request-modal]]]}))))
 
+(rf/reg-event-fx
+ :wallet-connect/wrong-typed-data-chain-id
+ (fn [_ [{:keys [expected-chain-id wrong-chain-id]}]]
+   (let [wrong-network-name    (-> wrong-chain-id
+                                   wallet-connect-core/chain-id->network-details
+                                   :full-name)
+         expected-network-name (-> expected-chain-id
+                                   wallet-connect-core/chain-id->network-details
+                                   :full-name)
+         toast-message         (i18n/label :t/wallet-connect-typed-data-wrong-chain-id-warning
+                                           {:wrong-chain    wrong-network-name
+                                            :expected-chain expected-network-name})]
+     {:fx [[:dispatch
+            [:toasts/upsert
+             {:type  :negative
+              :theme :dark
+              :text  toast-message}]]
+           [:dispatch
+            [:wallet-connect/on-processing-error
+             (ex-info "Can't proceed signing typed data due to wrong chain-id included in the data"
+                      {:expected-chain-id expected-chain-id
+                       :wrong-chain-id    wrong-chain-id})]]]})))
+
 ;; TODO: we should reject a request if processing fails
 (rf/reg-event-fx
  :wallet-connect/on-processing-error
  (fn [{:keys [db]} [error]]
    (let [{:keys [address event]} (get db :wallet-connect/current-request)
-         method                  (wallet-connect-core/get-request-method event)
-         screen                  (wallet-connect-core/method-to-screen method)]
+         method                  (wallet-connect-core/get-request-method event)]
      (log/error "Failed to process Wallet Connect request"
                 {:error                error
                  :address              address
                  :method               method
                  :wallet-connect-event event
                  :event                :wallet-connect/on-processing-error})
-
-     {:fx [[:dispatch [:dismiss-modal screen]]
-           [:dispatch [:wallet-connect/reset-current-request]]]})))
+     {:fx [[:dispatch [:wallet-connect/reject-session-request]]]})))
