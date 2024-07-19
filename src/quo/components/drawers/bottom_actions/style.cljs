@@ -30,6 +30,9 @@
     :padding-horizontal 20}
    container-style))
 
+(def button-container
+  {:flex-grow 1})
+
 (def description-top
   {:flex-direction  :row
    :align-items     :center
