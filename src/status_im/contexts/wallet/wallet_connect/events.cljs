@@ -28,6 +28,13 @@
          [:dispatch [:wallet-connect/fetch-persisted-sessions]]]}))
 
 (rf/reg-event-fx
+ :wallet-connect/reload-on-network-change
+ (fn [{:keys [db]} [is-connected?]]
+   (let [logged-in? (-> db :profile/profile boolean)]
+     (when (and is-connected? logged-in?)
+       {:fx [[:dispatch [:wallet-connect/init]]]}))))
+
+(rf/reg-event-fx
  :wallet-connect/register-event-listeners
  (fn [{:keys [db]}]
    (let [web3-wallet (get db :wallet-connect/web3-wallet)]

@@ -3,6 +3,7 @@
     status-im.common.alert-banner.events
     status-im.common.alert.effects
     status-im.common.async-storage.effects
+    status-im.common.device-network
     status-im.common.emoji-picker.events
     status-im.common.font.events
     status-im.common.image-crop-picker.events
@@ -57,7 +58,7 @@
    cofx
    {:db db/app-db
     :theme/init-theme nil
-    :network/listen-to-network-info nil
+    :effects.device-network/listen-to-network-info nil
     :effects.biometric/get-supported-type nil
     :effects.keycard/register-card-events nil
     :effects.keycard/check-nfc-enabled nil
