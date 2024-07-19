@@ -54,6 +54,7 @@
 (reg-root-key-sub :sync-state :sync-state)
 (reg-root-key-sub :dimensions/window :dimensions/window)
 (reg-root-key-sub :sync-data :sync-data)
+(reg-root-key-sub :network-status :network-status)
 (reg-root-key-sub :mobile-network/remember-choice? :mobile-network/remember-choice?)
 (reg-root-key-sub :qr-modal :qr-modal)
 (reg-root-key-sub :bootnodes/manage :bootnodes/manage)
