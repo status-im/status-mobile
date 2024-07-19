@@ -155,39 +155,55 @@
                                         {:chains   session-networks
                                          :methods  constants/wallet-connect-supported-methods
                                          :events   constants/wallet-connect-supported-events
-                                         :accounts accounts}})]
-     {:fx [[:effects.wallet-connect/approve-session
-            {:web3-wallet          web3-wallet
-             :proposal             current-proposal
-             :supported-namespaces supported-namespaces
-             :on-success           (fn [approved-session]
-                                     (log/info "Wallet Connect session approved")
-                                     (rf/dispatch [:wallet-connect/reset-current-session-proposal])
-                                     (rf/dispatch [:wallet-connect/persist-session approved-session]))
-             :on-fail              (fn [error]
-                                     (log/error "Wallet Connect session approval failed"
-                                                {:error error
-                                                 :event :wallet-connect/approve-session})
-                                     (rf/dispatch
-                                      [:wallet-connect/reset-current-session-proposal]))}]
-           [:dispatch [:dismiss-modal :screen/wallet.wallet-connect-session-proposal]]]})))
+                                         :accounts accounts}})
+         network-status       (:network-status db)]
+
+     (if (= network-status :offline)
+       {:fx [
+             [:effects.wallet-connect/approve-session
+              {:web3-wallet          web3-wallet
+               :proposal             current-proposal
+               :supported-namespaces supported-namespaces
+               :on-success           (fn [approved-session]
+                                       (log/info "Wallet Connect session approved")
+                                       (rf/dispatch [:wallet-connect/reset-current-session-proposal])
+                                       (rf/dispatch [:wallet-connect/persist-session approved-session]))
+               :on-fail              (fn [error]
+                                       (log/error "Wallet Connect session approval failed"
+                                                  {:error error
+                                                   :event :wallet-connect/approve-session})
+                                       (rf/dispatch
+                                        [:wallet-connect/reset-current-session-proposal]))}]
+             [:dispatch [:dismiss-modal :screen/wallet.wallet-connect-session-proposal]]]}
+       {:fx [[:dispatch
+              [:toasts/upsert
+               {:type  :negative
+                :theme :dark
+                :text  (i18n/label :t/wallet-connect-no-internet-warning)}]]]}))))
 
 (rf/reg-event-fx
  :wallet-connect/on-scan-connection
- (fn [_ [scanned-text]]
-   (let [parsed-uri         (wallet-connect/parse-uri scanned-text)
+ (fn [{:keys [db]} [scanned-text]]
+   (let [network-status     (:network-status db)
+         parsed-uri         (wallet-connect/parse-uri scanned-text)
          version            (:version parsed-uri)
          valid-wc-uri?      (wc-utils/valid-wc-uri? parsed-uri)
          expired?           (-> parsed-uri
                                 :expiryTimestamp
                                 wc-utils/timestamp-expired?)
          version-supported? (wc-utils/version-supported? version)]
-     (if (or (not valid-wc-uri?) expired? (not version-supported?))
+     (if (or (not valid-wc-uri?)
+             (not version-supported?)
+             (= network-status :offline)
+             expired?)
        {:fx [[:dispatch
               [:toasts/upsert
                {:type  :negative
                 :theme :dark
-                :text  (cond (not valid-wc-uri?)
+                :text  (cond (= network-status :offline)
+                             (i18n/label :t/wallet-connect-no-internet-warning)
+
+                             (not valid-wc-uri?)
                              (i18n/label :t/wallet-connect-wrong-qr)
 
                              expired?

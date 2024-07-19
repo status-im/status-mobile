@@ -2644,6 +2644,7 @@
   "wallet-connect-sign-warning": "Sign only if you trust the dApp",
   "wallet-connect-typed-data-wrong-chain-id-warning": "Wrong network in the request data. Expected '{{expected-chain}}', but got '{{wrong-chain}}'",
   "wallet-connect-version-not-supported": "WalletConnect version {{version}} is not supported",
+  "wallet-connect-no-internet-warning": "Oops, you have no internet. Try again later!",
   "wallet-connect-via": "via",
   "wallet-connect-wrong-qr": "It’s not a WalletConnect QR",
   "wallet-insufficient-funds": "Insufficient funds",
