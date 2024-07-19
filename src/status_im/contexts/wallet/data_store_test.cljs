@@ -1,7 +1,6 @@
 (ns status-im.contexts.wallet.data-store-test
   (:require
     [cljs.test :refer-macros [deftest is testing]]
-    [matcher-combinators.matchers :as matchers]
     matcher-combinators.test
     [status-im.contexts.wallet.data-store :as sut]))
 
@@ -162,82 +161,73 @@
 (deftest reconcile-keypairs-test
   (testing "reconcile-keypairs represents updated key pairs and accounts"
     (is
-     (match?
-      (matchers/match-with
-       [set? matchers/set-equals
-        map? matchers/equals]
-       {:removed-keypair-ids         #{}
-        :removed-account-addresses   #{}
-        :updated-accounts-by-address {"1x123" (merge account
-                                                     {:key-uid "0x123"
-                                                      :address "1x123"})
-                                      "1x456" (merge account
-                                                     {:key-uid   "0x456"
-                                                      :address   "1x456"
-                                                      :operable? false
-                                                      :operable  :no})}
-        :updated-keypairs-by-id      {"0x123" {:key-uid            "0x123"
-                                               :type               :seed
-                                               :lowest-operability :fully
-                                               :accounts           [(merge account
-                                                                           {:key-uid "0x123"
-                                                                            :address "1x123"})]}
-                                      "0x456" {:key-uid            "0x456"
-                                               :type               :key
-                                               :lowest-operability :no
-                                               :accounts           [(merge account
-                                                                           {:key-uid   "0x456"
-                                                                            :address   "1x456"
-                                                                            :operable? false
-                                                                            :operable  :no})]}}})
+     (match-strict?
+      {:removed-keypair-ids         #{}
+       :removed-account-addresses   #{}
+       :updated-accounts-by-address {"1x123" (merge account
+                                                    {:key-uid "0x123"
+                                                     :address "1x123"})
+                                     "1x456" (merge account
+                                                    {:key-uid   "0x456"
+                                                     :address   "1x456"
+                                                     :operable? false
+                                                     :operable  :no})}
+       :updated-keypairs-by-id      {"0x123" {:key-uid            "0x123"
+                                              :type               :seed
+                                              :lowest-operability :fully
+                                              :accounts           [(merge account
+                                                                          {:key-uid "0x123"
+                                                                           :address "1x123"})]}
+                                     "0x456" {:key-uid            "0x456"
+                                              :type               :key
+                                              :lowest-operability :no
+                                              :accounts           [(merge account
+                                                                          {:key-uid   "0x456"
+                                                                           :address   "1x456"
+                                                                           :operable? false
+                                                                           :operable  :no})]}}}
       (sut/reconcile-keypairs [raw-keypair-seed-phrase
                                raw-keypair-private-key]))))
   (testing "reconcile-keypairs represents removed key pairs and accounts"
     (is
-     (match?
-      (matchers/match-with
-       [set? matchers/set-equals
-        map? matchers/equals]
-       {:removed-keypair-ids         #{"0x456"}
-        :removed-account-addresses   #{"1x456"}
-        :updated-accounts-by-address {"1x123" (merge account
-                                                     {:key-uid "0x123"
-                                                      :address "1x123"})}
-        :updated-keypairs-by-id      {"0x123" {:key-uid            "0x123"
-                                               :type               :seed
-                                               :lowest-operability :fully
-                                               :accounts           [(merge account
-                                                                           {:key-uid "0x123"
-                                                                            :address "1x123"})]}}})
+     (match-strict?
+      {:removed-keypair-ids         #{"0x456"}
+       :removed-account-addresses   #{"1x456"}
+       :updated-accounts-by-address {"1x123" (merge account
+                                                    {:key-uid "0x123"
+                                                     :address "1x123"})}
+       :updated-keypairs-by-id      {"0x123" {:key-uid            "0x123"
+                                              :type               :seed
+                                              :lowest-operability :fully
+                                              :accounts           [(merge account
+                                                                          {:key-uid "0x123"
+                                                                           :address "1x123"})]}}}
       (sut/reconcile-keypairs [raw-keypair-seed-phrase
                                (assoc raw-keypair-private-key :removed true)]))))
   (testing "reconcile-keypairs ignores chat accounts inside updated accounts"
     (is
-     (match?
-      (matchers/match-with
-       [set? matchers/set-equals
-        map? matchers/equals]
-       {:removed-keypair-ids         #{}
-        :removed-account-addresses   #{}
-        :updated-accounts-by-address {"2x000" (merge account
-                                                     {:key-uid          "0x000"
-                                                      :address          "2x000"
-                                                      :chat             false
-                                                      :wallet           true
-                                                      :default-account? true})}
-        :updated-keypairs-by-id      {"0x000" {:key-uid            "0x000"
-                                               :type               :profile
-                                               :lowest-operability :fully
-                                               :accounts           [(merge account
-                                                                           {:key-uid          "0x000"
-                                                                            :address          "1x000"
-                                                                            :chat             true
-                                                                            :wallet           false
-                                                                            :default-account? false})
-                                                                    (merge account
-                                                                           {:key-uid          "0x000"
-                                                                            :address          "2x000"
-                                                                            :chat             false
-                                                                            :wallet           true
-                                                                            :default-account? true})]}}})
+     (match-strict?
+      {:removed-keypair-ids         #{}
+       :removed-account-addresses   #{}
+       :updated-accounts-by-address {"2x000" (merge account
+                                                    {:key-uid          "0x000"
+                                                     :address          "2x000"
+                                                     :chat             false
+                                                     :wallet           true
+                                                     :default-account? true})}
+       :updated-keypairs-by-id      {"0x000" {:key-uid            "0x000"
+                                              :type               :profile
+                                              :lowest-operability :fully
+                                              :accounts           [(merge account
+                                                                          {:key-uid          "0x000"
+                                                                           :address          "1x000"
+                                                                           :chat             true
+                                                                           :wallet           false
+                                                                           :default-account? false})
+                                                                   (merge account
+                                                                          {:key-uid          "0x000"
+                                                                           :address          "2x000"
+                                                                           :chat             false
+                                                                           :wallet           true
+                                                                           :default-account? true})]}}}
       (sut/reconcile-keypairs [raw-keypair-profile])))))
