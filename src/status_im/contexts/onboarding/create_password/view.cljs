@@ -1,10 +1,8 @@
 (ns status-im.contexts.onboarding.create-password.view
   (:require
-    [oops.core :as oops]
     [quo.core :as quo]
     [quo.foundations.colors :as colors]
     [react-native.core :as rn]
-    [react-native.hooks :as hooks]
     [react-native.platform :as platform]
     [react-native.safe-area :as safe-area]
     [status-im.common.floating-button-page.view :as floating-button]
@@ -14,10 +12,6 @@
     [utils.re-frame :as rf]
     [utils.security.core :as security]
     [utils.string :as utils.string]))
-
-(defn- get-height-from-layout
-  [laytout-event]
-  (oops/oget laytout-event :nativeEvent :layout :height))
 
 (defn header
   []
@@ -176,10 +170,6 @@
         [focused-input set-focused-input]               (rn/use-state nil)
         [show-password-validation?
          set-show-password-validation?]                 (rn/use-state false)
-        [footer-height set-footer-height]               (rn/use-state 0)
-        on-footer-layout-change                         (comp set-footer-height
-                                                              get-height-from-layout)
-
         {user-color :color}                             (rf/sub [:onboarding/profile])
 
 
@@ -197,20 +187,12 @@
                                                                same-passwords?
                                                                accepts-disclaimer?)
                                                          [password repeat-password
-                                                          accepts-disclaimer?])
-        {:keys [keyboard-will-show? keyboard-shown]}    (hooks/use-keyboard)
-        keyboard-shown?                                 (if platform/ios?
-                                                          keyboard-will-show?
-                                                          keyboard-shown)
-        safe-area-bottom                                (safe-area/get-bottom)]
+                                                          accepts-disclaimer?])]
 
     [floating-button/view
      {:header [page-nav]
       :keyboard-should-persist-taps :handled
       :content-avoid-keyboard? true
-      :content-container-style (style/container
-                                keyboard-shown?
-                                (+ safe-area-bottom footer-height))
       :blur-options
       {:blur-amount        34
        :blur-radius        20
@@ -222,8 +204,7 @@
       :footer-container-padding 0
       :footer
       [rn/view
-       {:on-layout on-footer-layout-change
-        :style     style/footer-container}
+       {:style style/footer-container}
        (when same-passwords?
          [rn/view {:style style/disclaimer-container}
           [quo/disclaimer
@@ -245,23 +226,22 @@
         (i18n/label :t/password-creation-confirm)]]}
 
      [rn/view {:style style/form-container}
-      [rn/view {:style style/top-part}
-       [header]
-       [password-inputs
-        {:password-long-enough?     password-long-enough?
-         :passwords-match?          same-passwords?
-         :empty-password?           empty-password?
-         :show-password-validation? show-password-validation?
-         :on-input-focus            #(set-focused-input :password)
-         :on-change-password        (fn [new-value]
-                                      (set-password new-value)
-                                      (when same-password-length?
-                                        (set-show-password-validation? true)))
+      [header]
+      [password-inputs
+       {:password-long-enough?     password-long-enough?
+        :passwords-match?          same-passwords?
+        :empty-password?           empty-password?
+        :show-password-validation? show-password-validation?
+        :on-input-focus            #(set-focused-input :password)
+        :on-change-password        (fn [new-value]
+                                     (set-password new-value)
+                                     (when same-password-length?
+                                       (set-show-password-validation? true)))
 
-         :on-change-repeat-password (fn [new-value]
-                                      (set-repeat-password new-value)
-                                      (when same-password-length?
-                                        (set-show-password-validation? true)))
-         :on-blur-repeat-password   #(if empty-password?
-                                       (set-show-password-validation? false)
-                                       (set-show-password-validation? true))}]]]]))
+        :on-change-repeat-password (fn [new-value]
+                                     (set-repeat-password new-value)
+                                     (when same-password-length?
+                                       (set-show-password-validation? true)))
+        :on-blur-repeat-password   #(if empty-password?
+                                      (set-show-password-validation? false)
+                                      (set-show-password-validation? true))}]]]))

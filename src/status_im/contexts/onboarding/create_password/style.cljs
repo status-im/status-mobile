@@ -16,22 +16,11 @@
    :justify-content    :space-between
    :padding-horizontal 20})
 
-(defn container
-  [keyboard-shown footer-height]
-  {:flex-grow      (if keyboard-shown 0 1)
-   :padding-bottom (when-not keyboard-shown (+ footer-height 36))})
-
-(def form-container {:flex 1 :justify-content :space-between})
-
-(def top-part
-  {:padding-horizontal 20
-   :flex               0
-   :margin-vertical    12})
-
-(def disclaimer-container
-  {:padding-horizontal 20
+(def form-container
+  {:justify-content    :space-between
    :padding-top        12
-   :margin-vertical    4})
+   :padding-horizontal 20})
 
+(def disclaimer-container {:padding-horizontal 20})
 (def footer-container {:padding-bottom 12})
 (def footer-button-container {:margin-top 20 :padding-horizontal 20})

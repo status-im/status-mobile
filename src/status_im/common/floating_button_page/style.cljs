@@ -14,4 +14,12 @@
    :left     0
    :right    0})
 
+(defn content-keyboard-avoiding-view
+  [{:keys [top bottom]}]
+  {:position :absolute
+   :top      top
+   :left     0
+   :right    0
+   :bottom   bottom})
+
 (def scroll-view-container {:flex 1})

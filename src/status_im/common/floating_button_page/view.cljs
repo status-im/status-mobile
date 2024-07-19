@@ -30,13 +30,15 @@
       (reset! ratom height))))
 
 (defn- init-keyboard-listeners
-  [{:keys [on-did-show scroll-view-ref]}]
+  [{:keys [on-did-show on-will-show scroll-view-ref]}]
   (let [keyboard-will-show? (reagent/atom false)
         keyboard-did-show?  (reagent/atom false)
         add-listener        (fn [listener callback]
                               (oops/ocall rn/keyboard "addListener" listener callback))
         will-show-listener  (add-listener "keyboardWillShow"
-                                          #(reset! keyboard-will-show? true))
+                                          (fn [e]
+                                            (reset! keyboard-will-show? true)
+                                            (when on-will-show (on-will-show e))))
         did-show-listener   (add-listener "keyboardDidShow"
                                           (fn [e]
                                             (reset! keyboard-did-show? true)
@@ -70,20 +72,24 @@
                      content-container-height     (reagent/atom 0)
                      content-scroll-y             (reagent/atom 0)
                      keyboard-height              (reagent/atom 0)
+                     reset-keyboard-height        #(reset! keyboard-height (oops/oget
+                                                                            %
+                                                                            "endCoordinates.height"))
                      {:keys [keyboard-will-show?
                              keyboard-did-show?
                              remove-listeners]}   (init-keyboard-listeners
-                                                   {:scroll-view-ref scroll-view-ref
-                                                    :on-did-show
-                                                    (fn [e]
-                                                      (reset! keyboard-height
-                                                        (oops/oget e "endCoordinates.height")))})
+                                                   (cond-> {:scroll-view-ref scroll-view-ref}
+                                                     platform/ios?
+                                                     (assoc :on-will-show reset-keyboard-height)
+                                                     (not platform/ios?)
+                                                     (assoc :on-did-show reset-keyboard-height)))
                      set-header-height            (set-height-on-layout header-height)
                      set-content-container-height (set-height-on-layout content-container-height)
                      set-footer-container-height  (set-height-on-layout footer-container-height)
                      set-content-y-scroll         (fn [event]
                                                     (reset! content-scroll-y
-                                                      (oops/oget event "nativeEvent.contentOffset.y")))]
+                                                      (oops/oget event "nativeEvent.contentOffset.y")))
+                     bottom-safe-area             (safe-area/get-bottom)]
     (let [keyboard-shown?          (if platform/ios? @keyboard-will-show? @keyboard-did-show?)
           footer-container-padding (+ footer-container-padding (rf/sub [:alert-banners/top-margin]))
           show-background?         (show-background
@@ -103,14 +109,19 @@
           :style     header-container-style}
          header]
         [(if content-avoid-keyboard? rn/keyboard-avoiding-view rn/view)
-         {:style style/scroll-view-container}
+         {:style
+          (if content-avoid-keyboard?
+            (style/content-keyboard-avoiding-view
+             {:top    @header-height
+              :bottom (if keyboard-shown?
+                        @footer-container-height
+                        (+ bottom-safe-area @footer-container-height))})
+            style/scroll-view-container)}
          [gesture/scroll-view
           {:ref                                  set-scroll-ref
            :on-scroll                            set-content-y-scroll
            :scroll-event-throttle                64
-           :content-container-style              {:flex-grow      1
-                                                  :padding-bottom (when keyboard-shown?
-                                                                    @footer-container-height)}
+           :content-container-style              {:flex-grow 1}
            :always-bounce-vertical               @keyboard-did-show?
            :automatically-adjust-keyboard-insets true
            :shows-vertical-scroll-indicator      false

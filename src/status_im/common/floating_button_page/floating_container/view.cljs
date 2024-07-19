@@ -13,10 +13,11 @@
          {:blur-amount   20
           :blur-type     :transparent
           :overlay-color :transparent})
-     [rn/view {:style (style/blur-inner-container (assoc
-                                                   blur-options
-                                                   :theme theme
-                                                   :shell-overlay? shell-overlay?))}
+     [rn/view
+      {:style (style/blur-inner-container (assoc
+                                           blur-options
+                                           :theme          theme
+                                           :shell-overlay? shell-overlay?))}
       child]]))
 
 (defn view
