@@ -23,26 +23,29 @@
 (rf/reg-event-fx
  :wallet-connect/process-session-request
  (fn [{:keys [db]} [event]]
-   (let [method (wallet-connect-core/get-request-method event)]
-     {:db (assoc-in db [:wallet-connect/current-request :event] event)
-      :fx [(condp = method
-             constants/wallet-connect-eth-send-transaction-method
-             [:dispatch [:wallet-connect/process-eth-send-transaction]]
+   (let [method         (wallet-connect-core/get-request-method event)
+         existing-event (get-in db [:wallet-connect/current-request :event])]
+     ;; NOTE: make sure we don't show two requests at the same time
+     (when-not existing-event
+       {:db (assoc-in db [:wallet-connect/current-request :event] event)
+        :fx [(condp = method
+               constants/wallet-connect-eth-send-transaction-method
+               [:dispatch [:wallet-connect/process-eth-send-transaction]]
 
-             constants/wallet-connect-eth-sign-method
-             [:dispatch [:wallet-connect/process-eth-sign]]
+               constants/wallet-connect-eth-sign-method
+               [:dispatch [:wallet-connect/process-eth-sign]]
 
-             constants/wallet-connect-eth-sign-transaction-method
-             [:dispatch [:wallet-connect/process-eth-sign-transaction]]
+               constants/wallet-connect-eth-sign-transaction-method
+               [:dispatch [:wallet-connect/process-eth-sign-transaction]]
 
-             constants/wallet-connect-eth-sign-typed-method
-             [:dispatch [:wallet-connect/process-sign-typed]]
+               constants/wallet-connect-eth-sign-typed-method
+               [:dispatch [:wallet-connect/process-sign-typed]]
 
-             constants/wallet-connect-eth-sign-typed-v4-method
-             [:dispatch [:wallet-connect/process-sign-typed]]
+               constants/wallet-connect-eth-sign-typed-v4-method
+               [:dispatch [:wallet-connect/process-sign-typed]]
 
-             constants/wallet-connect-personal-sign-method
-             [:dispatch [:wallet-connect/process-personal-sign]])]})))
+               constants/wallet-connect-personal-sign-method
+               [:dispatch [:wallet-connect/process-personal-sign]])]}))))
 
 (rf/reg-event-fx
  :wallet-connect/process-personal-sign
