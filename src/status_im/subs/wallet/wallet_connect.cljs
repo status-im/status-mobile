@@ -4,6 +4,7 @@
             [status-im.contexts.wallet.common.utils :as wallet-utils]
             [status-im.contexts.wallet.common.utils.networks :as networks]
             [status-im.contexts.wallet.wallet-connect.core :as wallet-connect-core]
+            [status-im.contexts.wallet.wallet-connect.transactions :as transactions]
             [utils.money :as money]))
 
 (rf/reg-sub
@@ -57,66 +58,95 @@
     sessions)))
 
 (rf/reg-sub
- :wallet-connect/current-request-network
+ :wallet-connect/chain-id
  :<- [:wallet-connect/current-request]
  (fn [request]
    (-> request
        (get-in [:event :params :chainId])
-       (wallet-connect-core/eip155->chain-id)
-       (networks/get-network-details))))
+       (wallet-connect-core/eip155->chain-id))))
+
+(rf/reg-sub
+ :wallet-connect/current-request-network
+ :<- [:wallet-connect/chain-id]
+ (fn [chain-id]
+   (-> chain-id
+       (networks/get-network-details)
+       (wallet-connect-core/add-full-testnet-name))))
+
+(rf/reg-sub
+ :wallet-connect/transaction-args
+ :<- [:wallet-connect/current-request]
+ (fn [{:keys [event transaction]}]
+   (when (transactions/transaction-request? event)
+     transaction)))
+
+(rf/reg-sub
+ :wallet-connect/transaction-suggested-fees
+ :<- [:wallet-connect/current-request]
+ (fn [{:keys [event raw-data]}]
+   (when (transactions/transaction-request? event)
+     (:suggested-fees raw-data))))
+
+(rf/reg-sub
+ :wallet-connect/transaction-max-fees-wei
+ :<- [:wallet-connect/transaction-args]
+ :<- [:wallet-connect/transaction-suggested-fees]
+ (fn [[transaction suggested-fees]]
+   (when transaction
+     (let [{:keys [gasPrice gas gasLimit maxFeePerGas]} transaction
+           eip-1559-chain?                              (:eip1559Enabled suggested-fees)
+           gas-limit                                    (or gasLimit gas)
+           max-gas-fee                                  (if eip-1559-chain? maxFeePerGas gasPrice)]
+       (money/bignumber (* max-gas-fee gas-limit))))))
+
+(rf/reg-sub
+ :wallet-connect/account-eth-token
+ :<- [:wallet-connect/current-request-address]
+ :<- [:wallet/accounts]
+ (fn [[address accounts]]
+   (let [fee-token    "ETH"
+         find-account #(when (= (:address %) address) %)
+         find-token   #(when (= (:symbol %) fee-token) %)]
+     (->> accounts
+          (some find-account)
+          :tokens
+          (some find-token)))))
 
 (rf/reg-sub
  :wallet-connect/current-request-transaction-information
- :<- [:wallet-connect/current-request]
- :<- [:wallet/accounts]
+ :<- [:wallet-connect/chain-id]
+ :<- [:wallet-connect/transaction-max-fees-wei]
+ :<- [:wallet-connect/transaction-args]
+ :<- [:wallet-connect/account-eth-token]
  :<- [:profile/currency]
  :<- [:profile/currency-symbol]
- (fn [[request accounts currency currency-symbol]]
-   (let [chain-id                          (-> request
-                                               (get-in [:raw-data :params :chainId])
-                                               (wallet-connect-core/eip155->chain-id))
-         all-tokens                        (->> accounts
-                                                (filter #(= (:address %)
-                                                            (:address request)))
-                                                (first)
-                                                :tokens)
-         eth-token                         (->> all-tokens
-                                                (filter #(= (:symbol %) "ETH"))
-                                                (first))
-         {:keys [gasPrice gasLimit value]} (-> request
-                                               :raw-data
-                                               wallet-connect-core/get-request-params
-                                               first)
-         max-fees-wei                      (money/bignumber (* gasPrice gasLimit))]
-     (when (and gasPrice gasLimit)
-       (let [max-fees-ether          (money/wei->ether max-fees-wei)
-             token-fiat-value        (wallet-utils/calculate-token-fiat-value {:currency currency
-                                                                               :balance  max-fees-ether
-                                                                               :token    eth-token})
-             crypto-formatted        (wallet-utils/get-standard-crypto-format eth-token max-fees-ether)
-             fiat-formatted          (wallet-utils/get-standard-fiat-format crypto-formatted
-                                                                            currency-symbol
-                                                                            token-fiat-value)
-             balance                 (-> eth-token
-                                         (get-in [:balances-per-chain chain-id :raw-balance])
-                                         (money/bignumber))
-             value                   (money/bignumber value)
-             total-transaction-value (money/add max-fees-wei value)]
-         {:total-transaction-value total-transaction-value
-          :balance                 balance
-          :max-fees                max-fees-wei
-          :max-fees-fiat-value     token-fiat-value
-          :max-fees-fiat-formatted fiat-formatted
-          :error-state             (cond
-                                     (and
-                                      (money/sufficient-funds? value balance)
-                                      (not (money/sufficient-funds? total-transaction-value balance)))
-                                     :not-enough-assets-to-pay-gas-fees
+ (fn [[chain-id max-fees-wei transaction eth-token currency currency-symbol]]
+   (when transaction
+     (let [max-fees-ether          (money/wei->ether max-fees-wei)
+           max-fees-fiat           (wallet-utils/calculate-token-fiat-value {:currency currency
+                                                                             :balance  max-fees-ether
+                                                                             :token    eth-token})
+           max-fees-fiat-formatted (-> max-fees-ether
+                                       (wallet-utils/get-standard-crypto-format eth-token)
+                                       (wallet-utils/get-standard-fiat-format currency-symbol
+                                                                              max-fees-fiat))
+           balance                 (-> eth-token
+                                       (get-in [:balances-per-chain chain-id :raw-balance])
+                                       money/bignumber)
+           tx-value                (money/bignumber (:value transaction))
+           total-transaction-value (money/add max-fees-wei tx-value)]
+       {:total-transaction-value total-transaction-value
+        :balance                 balance
+        :max-fees                max-fees-wei
+        :max-fees-fiat-value     max-fees-fiat
+        :max-fees-fiat-formatted max-fees-fiat-formatted
+        :error-state             (cond
+                                   (not (money/sufficient-funds? tx-value balance))
+                                   :not-enough-assets
 
-                                     (not (money/sufficient-funds? value balance))
-                                     :not-enough-assets
-
-                                     :else nil)})))))
+                                   (not (money/sufficient-funds? total-transaction-value
+                                                                 balance))
+                                   :not-enough-assets-to-pay-gas-fees)}))))
 
 (rf/reg-sub
  :wallet-connect/current-proposal-request

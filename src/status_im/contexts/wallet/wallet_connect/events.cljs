@@ -63,7 +63,7 @@
                                                                                           networks)
          required-networks-supported? (wallet-connect-core/required-networks-supported? proposal
                                                                                         networks)]
-     (if required-networks-supported?
+     (if (and (not-empty session-networks) required-networks-supported?)
        {:db (update db
                     :wallet-connect/current-proposal assoc
                     :request                         proposal

@@ -3,6 +3,8 @@
             [react-native.core :as rn]
             [react-native.safe-area :as safe-area]
             [status-im.contexts.wallet.wallet-connect.modals.common.data-block.view :as data-block]
+            [status-im.contexts.wallet.wallet-connect.modals.common.fees-data-item.view :as
+             fees-data-item]
             [status-im.contexts.wallet.wallet-connect.modals.common.footer.view :as footer]
             [status-im.contexts.wallet.wallet-connect.modals.common.header.view :as header]
             [status-im.contexts.wallet.wallet-connect.modals.common.page-nav.view :as page-nav]
@@ -28,13 +30,7 @@
          :account account}]
        [data-block/view]]
       [footer/view
-       {:warning-label     (i18n/label :t/wallet-connect-sign-message-warning)
+       {:warning-label     (i18n/label :t/wallet-connect-sign-warning)
         :slide-button-text (i18n/label :t/slide-to-sign)}
-       [quo/data-item
-        {:size            :small
-         :status          :default
-         :card?           false
-         :container-style style/data-item
-         :title           (i18n/label :t/max-fees)
-         :subtitle        (i18n/label :t/no-fees)}]]]]))
+       [fees-data-item/view]]]]))
 
