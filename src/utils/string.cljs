@@ -81,3 +81,10 @@
   (if (and (string? url) (string/ends-with? url "/"))
     (subs url 0 (dec (count url)))
     url))
+
+(defn remove-http-prefix
+  "Given a URL, removes the 'http://' or 'https://' prefix if present.
+  Returns the URL without the prefix."
+  [url]
+  (when (string? url)
+    (string/replace url #"^https?://" "")))
