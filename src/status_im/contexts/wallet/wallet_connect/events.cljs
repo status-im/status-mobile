@@ -115,14 +115,16 @@
 
 (rf/reg-event-fx
  :wallet-connect/disconnect-dapp
- (fn [{:keys [db]} [{:keys [pairing-topic on-success on-fail]}]]
+ (fn [{:keys [db]} [{:keys [topic on-success on-fail]}]]
    (let [web3-wallet (get db :wallet-connect/web3-wallet)]
      {:fx [[:effects.wallet-connect/disconnect
             {:web3-wallet web3-wallet
-             :topic       pairing-topic
+             :topic       topic
+             :reason      (wallet-connect/get-sdk-error
+                           constants/wallet-connect-user-disconnected-reason-key)
              :on-fail     on-fail
              :on-success  (fn []
-                            (rf/dispatch [:wallet-connect/disconnect-session pairing-topic])
+                            (rf/dispatch [:wallet-connect/disconnect-session topic])
                             (when on-success
                               (on-success)))}]]})))
 
@@ -211,12 +213,14 @@
                                  (map wallet-connect-core/sdk-session->db-session)
                                  (wallet-connect-core/filter-sessions-for-account-addresses
                                   account-addresses))
-         expired-sessions   (remove
-                             (fn [{:keys [expiry]}]
-                               (> expiry (/ now 1000)))
+         session-topics     (set (map :topic sessions))
+         expired-sessions   (filter
+                             (fn [{:keys [expiry topic]}]
+                               (or (< expiry (/ now 1000))
+                                   (not (contains? session-topics topic))))
                              persisted-sessions)]
-     {:fx (mapv (fn [{:keys [pairingTopic]}]
-                  [:wallet-connect/disconnect-session pairingTopic])
+     {:fx (mapv (fn [{:keys [topic]}]
+                  [:dispatch [:wallet-connect/disconnect-session topic]])
                 expired-sessions)
       :db (assoc db :wallet-connect/sessions sessions)})))
 
@@ -274,15 +278,15 @@
 
 (rf/reg-event-fx
  :wallet-connect/disconnect-session
- (fn [{:keys [db]} [pairing-topic]]
+ (fn [{:keys [db]} [topic]]
    {:db (update db
                 :wallet-connect/sessions
                 (fn [sessions]
                   (->> sessions
-                       (remove #(= (:pairingTopic %) pairing-topic))
+                       (remove #(= (:topic %) topic))
                        (into []))))
     :fx [[:json-rpc/call
           [{:method     "wallet_disconnectWalletConnectSession"
-            :params     [pairing-topic]
+            :params     [topic]
             :on-success #(log/info "Wallet Connect session disconnected")
             :on-error   #(log/info "Wallet Connect session persistence failed" %)}]]]}))

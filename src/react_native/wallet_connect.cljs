@@ -62,15 +62,16 @@
               (bean/->js {:id         id
                           :namespaces approved-namespaces})))
 
+(defn disconnect-session
+  [{:keys [web3-wallet reason topic]}]
+  (oops/ocall web3-wallet
+              "disconnectSession"
+              (bean/->js {:topic  topic
+                          :reason reason})))
+
 (defn get-active-sessions
   [web3-wallet]
   (oops/ocall web3-wallet "getActiveSessions"))
-
-(defn core-pairing-disconnnect
-  [web3-wallet topic]
-  (oops/ocall web3-wallet
-              "core.pairing.disconnect"
-              (bean/->js {:topic topic})))
 
 (defn core-pairing-pair
   [web3-wallet url]
