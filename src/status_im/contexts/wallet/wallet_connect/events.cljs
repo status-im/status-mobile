@@ -55,9 +55,7 @@
    (log/info "Received Wallet Connect session proposal: " {:id (:id proposal)})
    (let [accounts                     (get-in db [:wallet :accounts])
          current-viewing-address      (get-in db [:wallet :current-viewing-account-address])
-         available-accounts           (filter #(and (:operable? %)
-                                                    (not (:watch-only? %)))
-                                              (vals accounts))
+         available-accounts           (wallet-connect-core/filter-operable-accounts (vals accounts))
          networks                     (wallet-connect-core/get-networks-by-mode db)
          session-networks             (wallet-connect-core/proposal-networks-intersection proposal
                                                                                           networks)
@@ -204,9 +202,15 @@
  :wallet-connect/fetch-active-sessions-success
  (fn [{:keys [db now]} [sessions]]
    (let [persisted-sessions (:wallet-connect/sessions db)
+         account-addresses  (->> (get-in db [:wallet :accounts])
+                                 vals
+                                 wallet-connect-core/filter-operable-accounts
+                                 (map :address))
          sessions           (->> (js->clj sessions :keywordize-keys true)
                                  vals
-                                 (map wallet-connect-core/sdk-session->db-session))
+                                 (map wallet-connect-core/sdk-session->db-session)
+                                 (wallet-connect-core/filter-sessions-for-account-addresses
+                                  account-addresses))
          expired-sessions   (remove
                              (fn [{:keys [expiry]}]
                                (> expiry (/ now 1000)))
