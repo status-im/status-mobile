@@ -15,10 +15,12 @@
  :wallet-connect/init
  (fn [{:keys [db]}]
    (let [network-status (:network/status db)]
-     (when (= network-status :online)
+     (if (= network-status :online)
        {:fx [[:effects.wallet-connect/init
               {:on-success #(rf/dispatch [:wallet-connect/on-init-success %])
-               :on-fail    #(rf/dispatch [:wallet-connect/on-init-fail %])}]]}))))
+               :on-fail    #(rf/dispatch [:wallet-connect/on-init-fail %])}]]}
+       ;; NOTE: when offline, fetching persistent sessions only
+       {:fx [[:dispatch [:wallet-connect/fetch-persisted-sessions]]]}))))
 
 (rf/reg-event-fx
  :wallet-connect/on-init-success
@@ -259,16 +261,18 @@
 (rf/reg-event-fx
  :wallet-connect/fetch-persisted-sessions-success
  (fn [{:keys [db]} [sessions]]
-   (let [sessions' (mapv (fn [{:keys [sessionJson] :as session}]
-                           (assoc session
-                                  :accounts
-                                  (-> sessionJson
-                                      types/json->clj
-                                      :namespaces
-                                      :eip155
-                                      :accounts)))
-                         sessions)]
-     {:fx [[:dispatch [:wallet-connect/fetch-active-sessions]]]
+   (let [network-status (:network/status db)
+         sessions'      (mapv (fn [{:keys [sessionJson] :as session}]
+                                (assoc session
+                                       :accounts
+                                       (-> sessionJson
+                                           types/json->clj
+                                           :namespaces
+                                           :eip155
+                                           :accounts)))
+                              sessions)]
+     {:fx [(when (= network-status :online)
+             [:dispatch [:wallet-connect/fetch-active-sessions]])]
       :db (assoc db :wallet-connect/sessions sessions')})))
 
 (rf/reg-event-fx
@@ -279,14 +283,14 @@
 
 (rf/reg-event-fx
  :wallet-connect/fetch-persisted-sessions
- (fn [_ _]
-   {:fx [[:json-rpc/call
-          [{:method     "wallet_getWalletConnectActiveSessions"
-            ;; This is the activeSince timestamp to avoid expired sessions
-            ;; 0 means, return everything
-            :params     [0]
-            :on-success [:wallet-connect/fetch-persisted-sessions-success]
-            :on-error   [:wallet-connect/fetch-persisted-sessions-fail]}]]]}))
+ (fn [{:keys [now]} _]
+   (let [current-timestamp (quot now 1000)]
+     {:fx [[:json-rpc/call
+            [{:method     "wallet_getWalletConnectActiveSessions"
+              ;; NOTE: This is the activeSince timestamp to avoid expired sessions
+              :params     [current-timestamp]
+              :on-success [:wallet-connect/fetch-persisted-sessions-success]
+              :on-error   [:wallet-connect/fetch-persisted-sessions-fail]}]]]})))
 
 (rf/reg-event-fx
  :wallet-connect/persist-session

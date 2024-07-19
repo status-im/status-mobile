@@ -2,7 +2,6 @@
   (:require
     ["@react-native-community/netinfo" :default net-info]
     [native-module.core :as native-module]
-    [oops.core :as oops]
     [status-im.feature-flags :as ff]
     [taoensso.timbre :as log]
     [utils.re-frame :as rf]))
@@ -10,10 +9,10 @@
 (rf/reg-fx
  :effects.device-network/listen-to-network-info
  (fn []
-   (oops/ocall net-info
-               "addEventListener"
-               #(rf/dispatch [:device-network/on-state-change
-                              (js->clj % :keywordize-keys true)]))))
+   (when net-info
+     (.addEventListener ^js net-info
+                        #(rf/dispatch [:device-network/on-state-change
+                                       (js->clj % :keywordize-keys true)])))))
 
 (rf/reg-event-fx
  :device-network/on-state-change
