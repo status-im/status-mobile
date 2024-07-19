@@ -168,12 +168,13 @@
    (let [search-lc (string/lower-case query)]
      (reduce
       (fn [acc currency]
-        (let [{:keys [popular? token? display-name code]} currency
-              matches-query?                              (or (string/includes? (string/lower-case
-                                                                                 display-name)
-                                                                                search-lc)
-                                                              (string/includes? (string/lower-case code)
-                                                                                search-lc))]
+        (let [{:keys [popular? token? name short-name]} currency
+              matches-query?                            (or (string/includes? (string/lower-case
+                                                                               name)
+                                                                              search-lc)
+                                                            (string/includes? (string/lower-case
+                                                                               short-name)
+                                                                              search-lc))]
           (cond-> acc
             matches-query?                                   (update :total inc)
             (and popular? matches-query?)                    (update :popular conj currency)

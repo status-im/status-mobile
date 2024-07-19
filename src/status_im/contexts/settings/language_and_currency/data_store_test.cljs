@@ -27,13 +27,13 @@
 (deftest rpc->currency-test
   (testing "rpc->currency transforms a currency"
     (is
-     (match? {:id           :usd
-              :code         "USD"
-              :symbol       "$"
-              :emoji        "🇺🇸"
-              :display-name "US Dollar"
-              :popular?     true
-              :token?       false}
+     (match? {:id         :usd
+              :short-name "USD"
+              :symbol     "$"
+              :emoji      "🇺🇸"
+              :name       "US Dollar"
+              :popular?   true
+              :token?     false}
              (sut/rpc->currency raw-currency-popular)))))
 
 (deftest rpc->currencies-test

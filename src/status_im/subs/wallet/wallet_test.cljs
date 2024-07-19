@@ -13,13 +13,13 @@
               {:before #(reset! rf-db/app-db {})})
 
 (def ^:private currencies
-  {:usd {:id           :usd
-         :code         "USD"
-         :symbol       "$"
-         :emoji        "🇺🇸"
-         :display-name "US Dollar"
-         :popular?     true
-         :token?       false}})
+  {:usd {:id         :usd
+         :short-name "USD"
+         :symbol     "$"
+         :emoji      "🇺🇸"
+         :name       "US Dollar"
+         :popular?   true
+         :token?     false}})
 
 (def ^:private accounts-with-tokens
   {:0x1 {:tokens                    [{:symbol                     "ETH"

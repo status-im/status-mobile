@@ -1,18 +1,16 @@
-
 (ns status-im.contexts.settings.language-and-currency.data-store
   (:require [clojure.set :as set]
             [utils.i18n :as i18n]))
 
 (defn rpc->currency
   [currency]
-  (-> currency
-      (set/rename-keys
-       {:shortName :code
-        :name      :display-name
-        :isPopular :popular?
-        :isToken   :token?})
-      (update :id keyword)
-      (dissoc :imageSource)))
+  (some-> currency
+          (set/rename-keys
+           {:shortName :short-name
+            :isPopular :popular?
+            :isToken   :token?})
+          (update :id keyword)
+          (dissoc :imageSource)))
 
 (defn rpc->currencies
   [currencies]

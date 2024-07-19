@@ -4,10 +4,10 @@
   "This function generates props for quo/category component item"
   [{:keys [currency selected-currency on-change]}]
   (cond-> {:title             (if (:token? currency)
-                                (:code currency)
-                                (str (:code currency) " · " (:symbol currency)))
+                                (:short-name currency)
+                                (str (:short-name currency) " · " (:symbol currency)))
            :description       :text
-           :description-props {:text (:display-name currency)}
+           :description-props {:text (:name currency)}
            :image             (when (:token? currency) :token)
            :image-props       {:token (:id currency)
                                :size  :size-20}

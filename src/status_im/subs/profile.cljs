@@ -36,7 +36,7 @@
  (fn [[currencies currency-id]]
    (let [currency (get currencies currency-id)]
      (if (:token? currency)
-       (:code currency)
+       (:short-name currency)
        (:symbol currency)))))
 
 (re-frame/reg-sub

@@ -101,13 +101,13 @@
    :installation-id "cee7e269-1ca7-4468-a1dd-e60e5cfb0894"})
 
 (def sample-currency
-  {:usd {:id           :usd
-         :code         "USD"
-         :symbol       "$"
-         :emoji        "🇺🇸"
-         :display-name "US Dollar"
-         :popular?     true
-         :token?       false}})
+  {:usd {:id         :usd
+         :short-name "USD"
+         :symbol     "$"
+         :emoji      "🇺🇸"
+         :name       "US Dollar"
+         :popular?   true
+         :token?     false}})
 
 (h/deftest-sub :profile/currency
   [sub-name]

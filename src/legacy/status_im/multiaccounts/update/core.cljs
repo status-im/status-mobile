@@ -103,11 +103,11 @@
                                                                        (:stickers/recent-stickers db))]
                                  (assoc db :stickers/recent-stickers recent-stickers-from-remote))
                                db)]
-    (cond->
-      {:db db}
-      setting-value         (assoc-in [:db :profile/profile setting] setting-value)
-      (not setting-value)   (update :db :profile/profile dissoc setting)
-      (= :currency setting) (assoc :dispatch [:wallet/get-wallet-token-for-all-accounts]))))
+    {:db (if setting-value
+           (assoc-in db [:profile/profile setting] setting-value)
+           (update db :profile/profile dissoc setting))
+     :fx [(when (= setting :currency)
+            [:dispatch [:wallet/get-wallet-token-for-all-accounts]])]}))
 
 (rf/defn set-many-js
   [cofx settings-js]

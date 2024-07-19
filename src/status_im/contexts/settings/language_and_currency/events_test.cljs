@@ -5,10 +5,23 @@
     status-im.contexts.settings.language-and-currency.events
     [test-helpers.unit :as h]))
 
-(h/deftest-event :settings/get-currencies
+(def raw-currency-popular
+  {:id          "usd"
+   :shortName   "USD"
+   :name        "US Dollar"
+   :symbol      "$"
+   :emoji       "🇺🇸"
+   :isPopular   true
+   :isToken     false
+   :imageSource "https://example.com/image.png"})
+
+(h/deftest-event :settings/get-currencies-success
   [event-id dispatch]
-  (let [expected-effects {:fx [[:json-rpc/call
-                                [{:method     "wakuext_getCurrencies"
-                                  :on-success [:settings/get-currencies-success]
-                                  :on-error   [:log-rpc-error {:event :settings/get-currencies}]}]]]}]
-    (is (match? expected-effects (dispatch [event-id])))))
+  (let [expected-effects {:db {:currencies {:usd {:id         :usd
+                                                  :short-name "USD"
+                                                  :symbol     "$"
+                                                  :emoji      "🇺🇸"
+                                                  :name       "US Dollar"
+                                                  :popular?   true
+                                                  :token?     false}}}}]
+    (is (match? expected-effects (dispatch [event-id [raw-currency-popular]])))))

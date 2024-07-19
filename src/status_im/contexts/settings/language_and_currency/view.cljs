@@ -11,10 +11,10 @@
 
 (defn view
   []
-  (let [{:keys [display-name code token?]
+  (let [{:keys [name short-name token?]
          :as   currency} (rf/sub [:profile/currency-info])
         currency-title   (rn/use-memo
-                          #(if token? code (str code " · " (:symbol currency)))
+                          #(if token? name (str short-name " · " (:symbol currency)))
                           [currency])]
     [quo/overlay
      {:type       :shell
@@ -31,6 +31,6 @@
                     :on-press          on-currency-press
                     :description       :text
                     :action            :arrow
-                    :description-props {:text display-name}}]
+                    :description-props {:text name}}]
        :blur?     true
        :list-type :settings}]]))
