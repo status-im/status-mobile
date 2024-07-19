@@ -1,5 +1,6 @@
 (ns quo.components.avatars.token-avatar.view
   (:require [quo.components.avatars.token-avatar.style :as style]
+            [quo.components.utilities.token.view :as token]
             [react-native.core :as rn]
             [react-native.hole-view :as hole-view]
             [react-native.platform :as platform]
@@ -12,13 +13,14 @@
      [:map {:closed true}
       [:type {:optional true} [:enum :asset :collectible]]
       [:context? {:optional true} [:maybe :boolean]]
-      [:image :schema.common/image-source]
+      [:image {:optional true} [:maybe :schema.common/image-source]]
+      [:token {:optional true} [:maybe [:or :keyword :string]]]
       [:network-image {:optional true} [:maybe :schema.common/image-source]]
       [:container-style {:optional true} [:maybe :map]]]]]
    :any])
 
 (defn- view-internal
-  [{:keys [type context? image network-image container-style]}]
+  [{:keys [type context? image token network-image container-style]}]
   [rn/view
    {:style               (merge style/container container-style)
     :accessibility-label :token-avatar}
@@ -32,9 +34,11 @@
                       [])
              :style style/hole-view}
       platform/android? (assoc :key context?))
-    [rn/image
-     {:source image
-      :style  (style/image type)}]]
+    [token/view
+     {:size         :size-32
+      :token        token
+      :style        (style/image type)
+      :image-source image}]]
    (when context?
      [rn/image
       {:source network-image
