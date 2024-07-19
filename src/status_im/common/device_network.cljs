@@ -52,5 +52,5 @@
 
 (rf/reg-fx
  :effects.device-network/notify-status-go
- (fn [[network-type expensive?]]
+ (fn [network-type expensive?]
    (native-module/connection-change network-type expensive?)))
