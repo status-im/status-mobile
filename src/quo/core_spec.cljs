@@ -112,6 +112,7 @@
     quo.components.wallet.progress-bar.component-spec
     quo.components.wallet.required-tokens.component-spec
     quo.components.wallet.summary-info.component-spec
+    quo.components.wallet.swap-input.component-spec
     quo.components.wallet.token-input.component-spec
     quo.components.wallet.transaction-progress.component-spec
     quo.components.wallet.transaction-summary.component-spec

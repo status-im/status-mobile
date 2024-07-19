@@ -186,6 +186,7 @@
     quo.components.wallet.progress-bar.view
     quo.components.wallet.required-tokens.view
     quo.components.wallet.summary-info.view
+    quo.components.wallet.swap-input.view
     quo.components.wallet.token-input.view
     quo.components.wallet.transaction-progress.view
     quo.components.wallet.transaction-summary.view
@@ -472,6 +473,7 @@
 (def progress-bar quo.components.wallet.progress-bar.view/view)
 (def required-tokens quo.components.wallet.required-tokens.view/view)
 (def summary-info quo.components.wallet.summary-info.view/view)
+(def swap-input quo.components.wallet.swap-input.view/view)
 (def network-link quo.components.wallet.network-link.view/view)
 (def token-input quo.components.wallet.token-input.view/view)
 (def wallet-overview quo.components.wallet.wallet-overview.view/view)

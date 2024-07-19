@@ -32,13 +32,6 @@
      :handler     handler})))
 
 (rf/reg-fx
- :effects.wallet-connect/fetch-pairings
- (fn [{:keys [web3-wallet on-success on-fail]}]
-   (-> (wallet-connect/get-pairings web3-wallet)
-       (promesa/then on-success)
-       (promesa/catch on-fail))))
-
-(rf/reg-fx
  :effects.wallet-connect/pair
  (fn [{:keys [web3-wallet url on-success on-fail]}]
    (when web3-wallet
@@ -50,13 +43,6 @@
  :effects.wallet-connect/disconnect
  (fn [{:keys [web3-wallet topic on-success on-fail]}]
    (-> (wallet-connect/core-pairing-disconnnect web3-wallet topic)
-       (promesa/then on-success)
-       (promesa/catch on-fail))))
-
-(rf/reg-fx
- :effects.wallet-connect/fetch-active-sessions
- (fn [{:keys [web3-wallet on-success on-fail]}]
-   (-> (wallet-connect/get-active-sessions web3-wallet)
        (promesa/then on-success)
        (promesa/catch on-fail))))
 
@@ -75,6 +61,13 @@
          (promesa/catch on-fail)))))
 
 (rf/reg-fx
+ :effects.wallet-connect/fetch-active-sessions
+ (fn [{:keys [web3-wallet on-success on-fail]}]
+   (-> (wallet-connect/get-active-sessions web3-wallet)
+       (promesa/then on-success)
+       (promesa/catch on-fail))))
+
+(rf/reg-fx
  :effects.wallet-connect/sign-message
  (fn [{:keys [password address data rpc-method on-success on-error]}]
    (let [password (security/safe-unmask-data password)]
@@ -91,21 +84,32 @@
          (promesa/catch on-error)))))
 
 (rf/reg-fx
+ :effects.wallet-connect/prepare-transaction
+ (fn [{:keys [tx chain-id on-success on-error]}]
+   (-> (transactions/prepare-transaction tx
+                                         chain-id
+                                         transactions/default-tx-priority)
+       (promesa/then on-success)
+       (promesa/catch on-error))))
+
+(rf/reg-fx
  :effects.wallet-connect/sign-transaction
- (fn [{:keys [password address chain-id tx on-success on-error]}]
+ (fn [{:keys [password address chain-id tx-hash tx-args on-success on-error]}]
    (-> (transactions/sign-transaction (security/safe-unmask-data password)
                                       address
-                                      tx
+                                      tx-hash
+                                      tx-args
                                       chain-id)
        (promesa/then on-success)
        (promesa/catch on-error))))
 
 (rf/reg-fx
  :effects.wallet-connect/send-transaction
- (fn [{:keys [password address chain-id tx on-success on-error]}]
+ (fn [{:keys [password address chain-id tx-hash tx-args on-success on-error]}]
    (-> (transactions/send-transaction (security/safe-unmask-data password)
                                       address
-                                      tx
+                                      tx-hash
+                                      tx-args
                                       chain-id)
        (promesa/then on-success)
        (promesa/catch on-error))))

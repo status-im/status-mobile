@@ -45,6 +45,11 @@
 (def ^:const activity-center-membership-status-accepted 2)
 (def ^:const activity-center-membership-status-declined 3)
 
+;; Choose the maximum number of notifications that *usually/safely* fit on
+;; most screens, so that the UI doesn't have to needlessly render
+;; notifications.
+(def ^:const notifications-per-page 7)
+
 (def ^:const mute-for-15-mins-type 1)
 (def ^:const mute-for-1-hour-type 2)
 (def ^:const mute-for-8-hours-type 3)
@@ -276,12 +281,14 @@
   #{wallet-connect-personal-sign-method
     wallet-connect-eth-sign-method
     wallet-connect-eth-send-transaction-method
-    wallet-connect-eth-sign-transaction-method
+    ;; NOTE: disabled, as we have no clear use cases for it and other wallets don't support it
+    ;; wallet-connect-eth-sign-transaction-method
     wallet-connect-eth-sign-typed-method
     wallet-connect-eth-sign-typed-v4-method})
 (def ^:const wallet-connect-supported-events #{"accountsChanged" "chainChanged"})
 (def ^:const wallet-connect-session-proposal-event "session_proposal")
 (def ^:const wallet-connect-session-request-event "session_request")
+(def ^:const wallet-connect-session-delete-event "session_delete")
 (def ^:const wallet-connect-user-rejected-error-key "USER_REJECTED")
 
 (def ^:const transaction-pending-type-wallet-connect-transfer "WalletConnectTransfer")
@@ -505,6 +512,9 @@
 (def ^:const mainnet-full-name "Mainnet")
 (def ^:const optimism-full-name "Optimism")
 (def ^:const arbitrum-full-name "Arbitrum")
+
+(def ^:const sepolia-full-name "Sepolia")
+(def ^:const goerli-full-name "Goerli")
 
 (def ^:const mainnet-network-name :mainnet)
 (def ^:const ethereum-network-name :ethereum)

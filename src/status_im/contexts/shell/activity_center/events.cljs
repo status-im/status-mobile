@@ -15,10 +15,7 @@
 (def defaults
   {:filter-status          :unread
    :filter-type            types/no-type
-   ;; Choose the maximum number of notifications that *usually/safely* fit on
-   ;; most screens, so that the UI doesn't have to needlessly render
-   ;; notifications.
-   :notifications-per-page 8})
+   :notifications-per-page constants/notifications-per-page})
 
 ;;;; Navigation
 

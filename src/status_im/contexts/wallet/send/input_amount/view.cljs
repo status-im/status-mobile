@@ -120,7 +120,7 @@
   []
   [quo/alert-banner
    {:action?         true
-    :text            (i18n/label :t/not-enough-assets)
+    :text            (i18n/label :t/not-enough-assets-to-pay-gas-fees)
     :button-text     (i18n/label :t/buy-eth)
     :on-button-press #(rf/dispatch [:show-bottom-sheet
                                     {:content buy-token/view}])}])

@@ -59,3 +59,8 @@
             password
             chain-id
             legacy?))
+
+(defn wallet-get-suggested-fees
+  [chain-id]
+  (-> (call-rpc "wallet_getSuggestedFees" chain-id)
+      (promesa/then transforms/js->clj)))
