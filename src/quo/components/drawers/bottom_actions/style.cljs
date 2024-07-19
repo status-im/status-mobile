@@ -31,7 +31,7 @@
    container-style))
 
 (def button-container
-  {:flex 1})
+  {:flex-grow 1})
 
 (def description-top
   {:flex-direction  :row
