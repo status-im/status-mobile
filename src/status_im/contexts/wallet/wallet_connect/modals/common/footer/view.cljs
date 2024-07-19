@@ -16,7 +16,7 @@
 (defn view
   [{:keys [warning-label slide-button-text error-text]} & children]
   (let [{:keys [customization-color]} (rf/sub [:wallet-connect/current-request-account-details])
-        network-status                (rf/sub [:network-status])
+        network-status                (rf/sub [:network/status])
         offline?                      (= network-status :offline)
         theme                         (quo.theme/use-theme)]
     [:<>

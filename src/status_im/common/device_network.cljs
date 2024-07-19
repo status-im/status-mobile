@@ -18,7 +18,7 @@
 (rf/reg-event-fx
  :device-network/on-state-change
  (fn [{:keys [db]} [{:keys [isConnected type details]}]]
-   (let [old-network-status       (:network-status db)
+   (let [old-network-status       (:network/status db)
          old-network-type         (:network/type db)
          connectivity-status      (if isConnected :online :offline)
          status-changed?          (not= connectivity-status old-network-status)
@@ -46,7 +46,7 @@
  :device-network/on-network-status-change
  (fn [{:keys [db]} [is-connected?]]
    (let [network-status (if is-connected? :online :offline)]
-     {:db (assoc db :network-status network-status)
+     {:db (assoc db :network/status network-status)
       :fx [(when (ff/enabled? ::ff/wallet.wallet-connect)
              [:dispatch [:wallet-connect/reload-on-network-change is-connected?]])]})))
 

@@ -14,7 +14,7 @@
 (rf/reg-event-fx
  :wallet-connect/init
  (fn [{:keys [db]}]
-   (let [network-status (:network-status db)]
+   (let [network-status (:network/status db)]
      (when (= network-status :online)
        {:fx [[:effects.wallet-connect/init
               {:on-success #(rf/dispatch [:wallet-connect/on-init-success %])
@@ -127,7 +127,7 @@
  :wallet-connect/disconnect-dapp
  (fn [{:keys [db]} [{:keys [topic on-success on-fail]}]]
    (let [web3-wallet    (get db :wallet-connect/web3-wallet)
-         network-status (:network-status db)]
+         network-status (:network/status db)]
      (if (= network-status :online)
        {:fx [[:effects.wallet-connect/disconnect
               {:web3-wallet web3-wallet
@@ -167,7 +167,7 @@
                                          :methods  constants/wallet-connect-supported-methods
                                          :events   constants/wallet-connect-supported-events
                                          :accounts accounts}})
-         network-status       (:network-status db)]
+         network-status       (:network/status db)]
      (if (= network-status :online)
        {:fx [[:effects.wallet-connect/approve-session
               {:web3-wallet          web3-wallet
@@ -189,7 +189,7 @@
 (rf/reg-event-fx
  :wallet-connect/on-scan-connection
  (fn [{:keys [db]} [scanned-text]]
-   (let [network-status     (:network-status db)
+   (let [network-status     (:network/status db)
          parsed-uri         (wallet-connect/parse-uri scanned-text)
          version            (:version parsed-uri)
          valid-wc-uri?      (wc-utils/valid-wc-uri? parsed-uri)

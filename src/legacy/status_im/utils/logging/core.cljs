@@ -127,7 +127,7 @@
                                                 [:app-state
                                                  :current-chat-id
                                                  :network
-                                                 :network-status
+                                                 :network/status
                                                  :peers-summary
                                                  :sync-state
                                                  :view-id
