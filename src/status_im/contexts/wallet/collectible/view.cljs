@@ -160,6 +160,9 @@
             collectible-owner              (rf/sub [:wallet/collectible-details-owner collectible])
             aspect-ratio                   (rf/sub [:wallet/collectible-aspect-ratio])
             gradient-color                 (rf/sub [:wallet/collectible-gradient-color])
+            total-owned                    (rf/sub [:wallet/total-owned-collectible
+                                                    (:ownership collectible)
+                                                    (:address collectible-owner)])
             {:keys [id
                     preview-url
                     collection-data
@@ -182,10 +185,7 @@
                                             :image-height 300
                                             :id           token-id
                                             :header       collectible-name
-                                            :description  collection-name}
-            total-owned                    (utils/total-owned-collectible
-                                            (:ownership collectible)
-                                            (:address collectible-owner))]
+                                            :description  collection-name}]
         [rn/view {:style style/container}
          [rn/view
           [gradient-layer preview-uri]

@@ -123,3 +123,17 @@
               %)
            accounts))))
 
+(re-frame/reg-sub
+ :wallet/total-owned-collectible
+ :<- [:wallet/accounts-without-watched-accounts]
+ (fn [accounts [_ ownership address]]
+   (let [addresses (map :address accounts)]
+     (reduce (fn [acc item]
+               (if (or
+                    (and (not address)
+                         (contains? (set addresses) (:address item)))
+                    (= (:address item) address))
+                 (+ acc (js/parseInt (:balance item)))
+                 acc))
+             0
+             ownership))))
