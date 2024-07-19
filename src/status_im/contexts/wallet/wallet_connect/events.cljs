@@ -13,10 +13,12 @@
 
 (rf/reg-event-fx
  :wallet-connect/init
- (fn []
-   {:fx [[:effects.wallet-connect/init
-          {:on-success #(rf/dispatch [:wallet-connect/on-init-success %])
-           :on-fail    #(rf/dispatch [:wallet-connect/on-init-fail %])}]]}))
+ (fn [{:keys [db]}]
+   (let [network-status (:network-status db)]
+     (when (= network-status :online)
+       {:fx [[:effects.wallet-connect/init
+              {:on-success #(rf/dispatch [:wallet-connect/on-init-success %])
+               :on-fail    #(rf/dispatch [:wallet-connect/on-init-fail %])}]]}))))
 
 (rf/reg-event-fx
  :wallet-connect/on-init-success
