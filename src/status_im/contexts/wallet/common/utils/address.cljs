@@ -2,7 +2,6 @@
   (:require
    [status-im.constants :as constants]))
 
-
 (defn eip-155-suffix->eip-3770-prefix
   [eip-155-suffix]
   (case eip-155-suffix
@@ -13,8 +12,11 @@
 
 (defn is-metamask-address?
   [address]
-  (re-matches constants/regx-metamask-address address))
+  (re-find constants/regx-metamask-address address))
 
 (defn metamask-address->status-address
   [metamask-address]
-  metamask-address)
+  (when-let [[_ address metamask-network-suffix] (is-metamask-address? metamask-address)]
+    (when-let [status-network-prefix (eip-155-suffix->eip-3770-prefix metamask-network-suffix)]
+      (str status-network-prefix address))))
+
