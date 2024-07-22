@@ -118,6 +118,7 @@
     [status-im.contexts.wallet.send.transaction-confirmation.view :as wallet-transaction-confirmation]
     [status-im.contexts.wallet.send.transaction-progress.view :as wallet-transaction-progress]
     [status-im.contexts.wallet.swap.select-asset-to-pay.view :as wallet-swap-select-asset-to-pay]
+    [status-im.contexts.wallet.swap.set-spending-cap.view :as wallet-swap-set-spending-cap]
     [status-im.contexts.wallet.swap.swap-confirmation.view :as wallet-swap-confirmation]
     [status-im.contexts.wallet.swap.swap-proposal.view :as wallet-swap-propasal]
     [status-im.contexts.wallet.wallet-connect.modals.send-transaction.view :as
@@ -525,6 +526,10 @@
     {:name      :screen/wallet.swap-confirmation
      :options   {:modalPresentationStyle :overCurrentContext}
      :component wallet-swap-confirmation/view}
+
+    {:name      :screen/wallet.swap-set-spending-cap
+     :options   {:sheet? true}
+     :component wallet-swap-set-spending-cap/view}
 
     {:name      :scan-profile-qr-code
      :options   (merge

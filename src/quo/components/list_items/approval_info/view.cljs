@@ -107,7 +107,7 @@
           :style  (style/description blur? theme)}
          description])]
      (when (= type :account) [tiny-tag/view {:label tag-label}])
-     (when (= type :spending-cap)
+     (when (and (= type :spending-cap) button-icon)
        [button/button
         {:type      :outline
          :size      24

@@ -16,4 +16,7 @@
      [quo/button
       {:on-press #(rf/dispatch [:navigate-to-within-stack
                                 [:screen/wallet.swap-confirmation :screen/wallet.swap-propasal]])}
-      "Swap confirmation"]]))
+      "Swap confirmation"]
+     [quo/button
+      {:on-press #(rf/dispatch [:open-modal :screen/wallet.swap-set-spending-cap])}
+      "Set spending cap"]]))
