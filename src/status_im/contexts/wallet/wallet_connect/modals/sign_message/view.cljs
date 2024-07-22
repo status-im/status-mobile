@@ -18,6 +18,7 @@
         {:keys [customization-color]
          :as   account} (rf/sub [:wallet-connect/current-request-account-details])
         dapp            (rf/sub [:wallet-connect/current-request-dapp])]
+    (rn/use-unmount #(rf/dispatch [:wallet-connect/on-request-modal-dismissed]))
     [rn/view {:style (style/container bottom)}
      [quo/gradient-cover {:customization-color customization-color}]
      [page-nav/view
