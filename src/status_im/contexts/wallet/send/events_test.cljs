@@ -438,7 +438,7 @@
                                                                   :collectible collectible}}}
                                     :profile/profile {:test-networks-enabled? false
                                                       :is-goerli-enabled?     false}}
-                               :fx [[:dispatch [:wallet/get-suggested-routes {:amount 1}]]
+                               :fx [[:dispatch [:wallet/start-get-suggested-routes {:amount 1}]]
                                     [:dispatch
                                      [:wallet/wizard-navigate-forward
                                       {:current-screen stack-id
