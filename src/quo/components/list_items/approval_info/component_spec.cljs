@@ -28,6 +28,7 @@
         {:type            :spending-cap
          :label           "Spending Cap"
          :button-label    "Edit"
+         :button-icon     :i/options
          :on-button-press on-button-press
          :avatar-props    {:image "image"}}])
       (h/fire-event :press (h/get-by-text "Edit"))
