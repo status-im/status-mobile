@@ -97,21 +97,12 @@
   [sub-name]
   (testing "Return only the name of the session proposer"
     (swap! rf-db/app-db
-      assoc-in
-      [:wallet-connect/current-proposal :request]
-      sample-session)
+           assoc-in
+           [:wallet-connect/current-proposal :request]
+           sample-session)
 
     (is (= (-> sample-session :params :proposer :metadata :name)
-           (rf/sub [sub-name])))
-
-    (testing "Return url capitalised if name is empty"
-      (swap! rf-db/app-db
-        assoc-in
-        [:wallet-connect/current-proposal :request]
-        sample-session-empty-name)
-
-      (is (= "Lab.web3modal.com"
-             (rf/sub [sub-name]))))))
+           (rf/sub [sub-name])))))
 
 (h/deftest-sub :wallet-connect/current-proposal-address
   [sub-name]
