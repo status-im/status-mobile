@@ -107,11 +107,12 @@
               (assoc network-tag-props
                      :status
                      (if error? :error :default))]])
-          [text/text
-           {:size   :paragraph-2
-            :style  style/fiat-amount
-            :weight :medium}
-           (str currency-symbol fiat-value)]])
+          (when fiat-value
+            [text/text
+             {:size   :paragraph-2
+              :style  style/fiat-amount
+              :weight :medium}
+             (str currency-symbol fiat-value)])])
        (when loading?
          [rn/view {:style (style/row-2-loader theme)}])]]
      (when (and (not= status :loading) (= type :pay) show-approval-label?)

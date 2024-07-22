@@ -15,6 +15,11 @@
  :-> :asset-to-pay)
 
 (rf/reg-sub
+ :wallet/swap-asset-to-receive
+ :<- [:wallet/swap]
+ :-> :asset-to-receive)
+
+(rf/reg-sub
  :wallet/swap-asset-to-pay-token-symbol
  :<- [:wallet/swap-asset-to-pay]
  :-> :symbol)

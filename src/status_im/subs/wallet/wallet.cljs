@@ -690,23 +690,29 @@
 
 (rf/reg-sub
  :wallet/wallet-send-fee-fiat-formatted
+ :<- [:wallet/current-viewing-account]
  :<- [:wallet/wallet-send-route]
  :<- [:profile/currency]
  :<- [:profile/currency-symbol]
- (fn [[route currency currency-symbol] [_ token-for-fees]]
-   (let [fee-in-native-token     (send-utils/calculate-full-route-gas-fee route)
-         fee-in-crypto-formatted (utils/get-standard-crypto-format
-                                  token-for-fees
-                                  fee-in-native-token)
-         fee-in-fiat             (utils/calculate-token-fiat-value
-                                  {:currency currency
-                                   :balance  fee-in-native-token
-                                   :token    token-for-fees})
-         fee-formatted           (utils/get-standard-fiat-format
-                                  fee-in-crypto-formatted
-                                  currency-symbol
-                                  fee-in-fiat)]
-     fee-formatted)))
+ (fn [[account route currency currency-symbol] [_ token-symbol-for-fees]]
+   (when token-symbol-for-fees
+     (let [tokens                  (:tokens account)
+           token-for-fees          (first (filter #(= (string/lower-case (:symbol %))
+                                                      (string/lower-case token-symbol-for-fees))
+                                                  tokens))
+           fee-in-native-token     (send-utils/calculate-full-route-gas-fee route)
+           fee-in-crypto-formatted (utils/get-standard-crypto-format
+                                    token-for-fees
+                                    fee-in-native-token)
+           fee-in-fiat             (utils/calculate-token-fiat-value
+                                    {:currency currency
+                                     :balance  fee-in-native-token
+                                     :token    token-for-fees})
+           fee-formatted           (utils/get-standard-fiat-format
+                                    fee-in-crypto-formatted
+                                    currency-symbol
+                                    fee-in-fiat)]
+       fee-formatted))))
 
 (rf/reg-sub
  :wallet/has-partially-operable-accounts?

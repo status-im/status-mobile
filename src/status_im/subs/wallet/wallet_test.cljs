@@ -13,17 +13,20 @@
               {:before #(reset! rf-db/app-db {})})
 
 (def ^:private accounts-with-tokens
-  {:0x1 {:tokens                    [{:symbol             "ETH"
-                                      :balances-per-chain {1 {:raw-balance "100"}}}
-                                     {:symbol             "SNT"
-                                      :balances-per-chain {1 {:raw-balance "100"}}}]
+  {:0x1 {:tokens                    [{:symbol                     "ETH"
+                                      :balances-per-chain         {1 {:raw-balance "100"}}
+                                      :market-values-per-currency {:usd {:price 10000}}}
+                                     {:symbol                     "SNT"
+                                      :balances-per-chain         {1 {:raw-balance "100"}}
+                                      :market-values-per-currency {:usd {:price 10000}}}]
          :network-preferences-names #{}
          :customization-color       nil
          :operable?                 true
          :operable                  :fully
          :address                   "0x1"}
-   :0x2 {:tokens                    [{:symbol             "SNT"
-                                      :balances-per-chain {1 {:raw-balance "200"}}}]
+   :0x2 {:tokens                    [{:symbol                     "SNT"
+                                      :balances-per-chain         {1 {:raw-balance "200"}}
+                                      :market-values-per-currency {:usd {:price 10000}}}]
          :network-preferences-names #{}
          :customization-color       nil
          :operable?                 true
@@ -501,10 +504,12 @@
            (assoc-in [:wallet :ui :send :token-symbol] "ETH")))
     (let [result (rf/sub [sub-name])]
       (is (match? result
-                  [{:tokens                    [{:symbol             "ETH"
-                                                 :balances-per-chain {1 {:raw-balance "100"}}}
-                                                {:symbol             "SNT"
-                                                 :balances-per-chain {1 {:raw-balance "100"}}}]
+                  [{:tokens                    [{:symbol                     "ETH"
+                                                 :balances-per-chain         {1 {:raw-balance "100"}}
+                                                 :market-values-per-currency {:usd {:price 10000}}}
+                                                {:symbol                     "SNT"
+                                                 :balances-per-chain         {1 {:raw-balance "100"}}
+                                                 :market-values-per-currency {:usd {:price 10000}}}]
                     :network-preferences-names #{}
                     :customization-color       nil
                     :operable?                 true
@@ -518,10 +523,12 @@
            (assoc-in [:wallet :ui :send :token] {:symbol "ETH"})))
     (let [result (rf/sub [sub-name])]
       (is (match? result
-                  [{:tokens                    [{:symbol             "ETH"
-                                                 :balances-per-chain {1 {:raw-balance "100"}}}
-                                                {:symbol             "SNT"
-                                                 :balances-per-chain {1 {:raw-balance "100"}}}]
+                  [{:tokens                    [{:symbol                     "ETH"
+                                                 :balances-per-chain         {1 {:raw-balance "100"}}
+                                                 :market-values-per-currency {:usd {:price 10000}}}
+                                                {:symbol                     "SNT"
+                                                 :balances-per-chain         {1 {:raw-balance "100"}}
+                                                 :market-values-per-currency {:usd {:price 10000}}}]
                     :network-preferences-names #{}
                     :customization-color       nil
                     :operable?                 true
@@ -959,15 +966,14 @@
   (testing "wallet send fee calculated and formatted in fiat"
     (swap! rf-db/app-db
       #(-> %
+           (assoc-in [:wallet :accounts] accounts-with-tokens)
+           (assoc-in [:wallet :current-viewing-account-address] "0x1")
            (assoc-in [:wallet :ui :send :route] route-data)
            (assoc-in [:profile/profile :currency] :usd)
            (assoc-in [:profile/profile :currency-symbol] "$")))
 
-    (let [token-for-fees {:decimals                   18
-                          :symbol                     "ETH"
-                          :name                       "Ether"
-                          :market-values-per-currency {:usd {:price 10000}}}
-          result         (rf/sub [sub-name token-for-fees])]
+    (let [token-symbol-for-fees "ETH"
+          result                (rf/sub [sub-name token-symbol-for-fees])]
       (is (match? result "$1.00")))))
 
 (h/deftest-sub :wallet/has-partially-operable-accounts?
