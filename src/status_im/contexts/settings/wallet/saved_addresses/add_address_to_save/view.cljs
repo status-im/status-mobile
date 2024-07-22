@@ -31,7 +31,7 @@
       :own-account
 
       (not
-       (or (validation/eth-address? user-input)
+       (or (validation/eip-3770-address? user-input)
            (validation/ens-name? user-input)))
       :invalid-address-or-ens)))
 

@@ -39,12 +39,6 @@
   (map #(str % path) status-web-urls))
 
 
-(comment
-  "ethereum:0xeD620C9dC11401b63B35Dfe8e93F2b11DB0F6F9e@0xa4b1"
-  "ethereum:0xeD620C9dC11401b63B35Dfe8e93F2b11DB0F6F9e@0xa"
-  "ethereum:0xeD620C9dC11401b63B35Dfe8e93F2b11DB0F6F9e@0x1"
-  [])
-
 (def handled-schemes (set (into uri-schemes status-web-urls)))
 
 (def group-chat-extractor

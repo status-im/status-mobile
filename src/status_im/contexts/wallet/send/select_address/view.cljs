@@ -34,7 +34,7 @@
   (debounce/debounce-and-dispatch
    (cond
      (<= (count address) 0)            [:wallet/address-validation-failed address]
-     (validation/eth-address? address) [:wallet/address-validation-success address]
+     (validation/eip-3770-address? address) [:wallet/address-validation-success address]
      :else                             [:wallet/address-validation-failed address])
    300))
 
@@ -58,7 +58,7 @@
                                                {:on-result on-result}]))
         :ens-regex             constants/regx-ens
         :scanned-value         (or (when recipient-plain-address? send-address) scanned-address)
-        :address-regex         constants/regx-multichain-address
+        :address-regex         constants/regx-eip-3770-address
         :on-detect-address     (fn [address]
                                  (when (or (= current-screen-id :screen/wallet.select-address)
                                            (= current-screen-id :screen/wallet.scan-address))

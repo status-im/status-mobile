@@ -20,7 +20,7 @@
     (or (nil? user-input) (= user-input "")) nil
     (contains? known-addresses user-input)   (i18n/label :t/address-already-in-use)
     (not
-     (or (validation/eth-address? user-input)
+     (or (validation/eip-3770-address? user-input)
          (validation/ens-name? user-input))) (i18n/label :t/invalid-address)))
 
 (defn- extract-address

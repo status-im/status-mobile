@@ -7,6 +7,7 @@
             [status-im.common.validation.general :as validators]
             [status-im.contexts.communities.events]
             [status-im.contexts.wallet.common.validation :as wallet-validation]
+            [status-im.contexts.wallet.common.utils.address :as wallet-address]
             [status-im.contexts.wallet.wallet-connect.utils :as wc-utils]
             [status-im.feature-flags :as ff]
             [utils.debounce :as debounce]
@@ -30,7 +31,7 @@
 
 (defn eth-address?
   [scanned-text]
-  (wallet-validation/eth-address? scanned-text))
+  (wallet-validation/eip-3770-address? scanned-text))
 
 (defn eip681-address?
   [scanned-text]
@@ -92,8 +93,13 @@
       (debounce/debounce-and-dispatch [:generic-scanner/scan-success scanned-text] 300)
       (debounce/debounce-and-dispatch [:navigate-change-tab :wallet-stack] 300))
 
-    #_(eip681-address? scanned-text)
-    #_(do
+    (wallet-address/is-metamask-address? scanned-text)
+    (when-let [status-address (wallet-address/metamask-address->status-address scanned-text)]
+      (debounce/debounce-and-dispatch [:generic-scanner/scan-success status-address] 300)
+      (debounce/debounce-and-dispatch [:navigate-change-tab :wallet-stack] 300))
+
+    (eip681-address? scanned-text)
+    (do
       (debounce/debounce-and-dispatch [:wallet-legacy/request-uri-parsed
                                        (eip681/parse-uri scanned-text)]
                                       300)
