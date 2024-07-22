@@ -300,6 +300,11 @@
     (existing-account-names s)                   :existing-name
     (utils.string/contains-special-character? s) :special-character))
 
+(defn- tokens-sort-fn
+  [token]
+  [(comp - (:balance token))
+   (get constants/token-sort-priority (:symbol token) ##Inf)])
+
 (defn calculate-and-sort-tokens
   [{:keys [tokens color currency currency-symbol]}]
   (let [calculate-token   (fn [token]
