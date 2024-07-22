@@ -290,9 +290,3 @@
             :params     [topic]
             :on-success #(log/info "Wallet Connect session disconnected")
             :on-error   #(log/info "Wallet Connect session persistence failed" %)}]]]}))
-
-(comment
-  (rf/dispatch [:wallet-connect/on-scan-connection "wc:70cd10e85be08cc94e18e41debf7707ec325d053f8ebfb958b5a6f5e0e03619a@2?expiryTimestamp=1721391801&relay-protocol=irn&symKey=958f40384b51c8f3bfb713c861e0131aa4aff82035d921f80515b8a24ee6a62b"])
-
-  ;;
-  )
