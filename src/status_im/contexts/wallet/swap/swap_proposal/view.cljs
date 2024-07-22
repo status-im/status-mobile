@@ -10,6 +10,10 @@
   (let [max-slippage (rf/sub [:wallet/swap-max-slippage])]
     [rn/view {:style style/container}
      [quo/button
+      {:on-press #(rf/dispatch [:navigate-back])
+       :type     :grey}
+      "Back"]
+     [quo/button
       {:on-press #(rf/dispatch [:show-bottom-sheet
                                 {:content slippage-settings/view}])}
       (str "Edit Slippage: " max-slippage "%")]

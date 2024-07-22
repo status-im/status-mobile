@@ -21,9 +21,11 @@
 
 (rf/reg-sub
  :wallet/swap-asset-to-pay-networks
- :<- [:wallet/swap-asset-to-pay]
- (fn [token]
-   (let [{token-networks :networks} token
+ (fn []
+   [(rf/subscribe [:wallet/swap-asset-to-pay])
+    (rf/subscribe [:wallet/current-viewing-account-tokens-filtered])])
+ (fn [[asset-to-pay tokens]]
+   (let [{token-networks :networks} (some #(when (= (:symbol %) (:symbol asset-to-pay)) %) tokens)
          grouped-networks           (group-by :layer
                                               token-networks)
          mainnet-network            (first (get grouped-networks constants/layer-1-network))

@@ -1,18 +1,28 @@
 (ns status-im.contexts.wallet.swap.events
   (:require [re-frame.core :as rf]
             [status-im.constants :as constants]
+            [status-im.contexts.communities.utils :as utils]
             [status-im.contexts.wallet.sheets.network-selection.view :as network-selection]
             [utils.number]))
 
 (rf/reg-event-fx :wallet.swap/start
- (fn [{:keys [_db]}]
-   {:fx [[:dispatch [:open-modal :screen/wallet.swap-select-asset-to-pay]]]}))
+ (fn [{:keys [db]} [{:keys [token-symbol]}]]
+   (let [current-address (get-in db [:wallet :current-viewing-account-address])
+         address         (:address (first (utils/sorted-operable-non-watch-only-accounts db)))
+         tokens          (get-in db [:wallet :accounts (or current-address address) :tokens])
+         token           (some #(when (= (:symbol %) token-symbol) %) tokens)]
+     (if token
+       {:fx [(when-not current-address
+               [:dispatch
+                [:wallet/switch-current-viewing-account address]])
+             [:dispatch [:wallet.swap/select-asset-to-pay {:token token}]]]}
+       {:fx [[:dispatch [:open-modal :screen/wallet.swap-select-asset-to-pay]]]}))))
 
 (rf/reg-event-fx :wallet.swap/select-asset-to-pay
  (fn [{:keys [db]} [{:keys [token network]}]]
    {:db (-> db
             (assoc-in [:wallet :ui :swap :asset-to-pay] token)
-            (assoc-in [:wallet :ui :swap :network] network))
+            (cond-> network (assoc-in [:wallet :ui :swap :network] network)))
     :fx (if network
           [[:dispatch [:navigate-to :screen/wallet.swap-propasal]]
            [:dispatch [:wallet.swap/set-default-slippage]]]
