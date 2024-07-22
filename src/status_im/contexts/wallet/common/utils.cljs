@@ -307,10 +307,14 @@
                                                     :color           color
                                                     :currency        currency
                                                     :currency-symbol currency-symbol}))
-        calculated-tokens (map calculate-token tokens)
-        token-priority    {"SNT" 1 "STT" 1 "ETH" 2 "DAI" 3}]
+        calculated-tokens (map calculate-token tokens)]
     (sort-by (fn [token]
                (let [fiat-value (get-in token [:values :fiat-unformatted-value])
-                     priority   (get token-priority (:token token) 999)]
+                     priority   (get constants/token-sort-priority (:token token) ##Inf)]
                  [(- fiat-value) priority]))
              calculated-tokens)))
+
+(defn sort-tokens
+  [tokens]
+  (let [priority #(get constants/token-sort-priority (:symbol %) ##Inf)]
+    (sort-by (juxt (comp - :balance) priority) tokens)))
