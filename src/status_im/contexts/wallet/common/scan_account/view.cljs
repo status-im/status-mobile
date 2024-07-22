@@ -1,7 +1,7 @@
 (ns status-im.contexts.wallet.common.scan-account.view
   (:require
     [status-im.common.scan-qr-code.view :as scan-qr-code]
-    [status-im.contexts.wallet.common.utils.address :as utils-address]
+    [utils.address :as utils-address]
     [utils.debounce :as debounce]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))

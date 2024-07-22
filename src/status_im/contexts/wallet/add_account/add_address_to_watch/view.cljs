@@ -7,9 +7,9 @@
     [reagent.core :as reagent]
     [status-im.common.floating-button-page.view :as floating-button-page]
     [status-im.contexts.wallet.add-account.add-address-to-watch.style :as style]
-    [status-im.contexts.wallet.common.utils.address :as utils-address]
     [status-im.contexts.wallet.common.validation :as validation]
     [status-im.subs.wallet.add-account.address-to-watch]
+    [utils.address :as utils-address]
     [utils.debounce :as debounce]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
