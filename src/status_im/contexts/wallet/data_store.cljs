@@ -211,13 +211,10 @@
 
 (defn new->old-route-path
   [new-path]
-  (let [unit        (-> (get-in new-path [:from-token :symbol])
-                        string/lower-case
-                        keyword)
-        bonder-fees (:tx-bonder-fees new-path)
-        token-fees  (+ (money/wei-> unit bonder-fees)
-                       (money/wei-> unit
-                                    (:tx-token-fees new-path)))]
+  (let [bonder-fees (:tx-bonder-fees new-path)
+        token-fees  (+ (money/wei->ether bonder-fees)
+                       (money/wei->ether
+                        (:tx-token-fees new-path)))]
     {:from                      (:from-chain new-path)
      :amount-in-locked          (:amount-in-locked new-path)
      :amount-in                 (:amount-in new-path)
