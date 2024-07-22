@@ -1,11 +1,11 @@
 (ns status-im.subs.wallet.wallet-connect-test
   (:require
-   [cljs.test :refer [is testing]]
-   [re-frame.db :as rf-db]
-   status-im.subs.root
-   status-im.subs.wallet.wallet-connect
-   [test-helpers.unit :as h]
-   [utils.re-frame :as rf]))
+    [cljs.test :refer [is testing]]
+    [re-frame.db :as rf-db]
+    status-im.subs.root
+    status-im.subs.wallet.wallet-connect
+    [test-helpers.unit :as h]
+    [utils.re-frame :as rf]))
 
 (def sample-session
   {:session-proposal
@@ -81,9 +81,9 @@
   [sub-name]
   (testing "Return the session proposer public key and metadata"
     (swap! rf-db/app-db
-           assoc-in
-           [:wallet-connect/current-proposal :request]
-           sample-session)
+      assoc-in
+      [:wallet-connect/current-proposal :request]
+      sample-session)
 
     (let [proposer (rf/sub [sub-name])]
       (is (= (-> proposer :publicKey)
@@ -97,18 +97,18 @@
   [sub-name]
   (testing "Return only the name of the session proposer"
     (swap! rf-db/app-db
-           assoc-in
-           [:wallet-connect/current-proposal :request]
-           sample-session)
+      assoc-in
+      [:wallet-connect/current-proposal :request]
+      sample-session)
 
     (is (= (-> sample-session :params :proposer :metadata :name)
            (rf/sub [sub-name])))
 
     (testing "Return url capitalised if name is empty"
       (swap! rf-db/app-db
-             assoc-in
-             [:wallet-connect/current-proposal :request]
-             sample-session-empty-name)
+        assoc-in
+        [:wallet-connect/current-proposal :request]
+        sample-session-empty-name)
 
       (is (= "Lab.web3modal.com"
              (rf/sub [sub-name]))))))

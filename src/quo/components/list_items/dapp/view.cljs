@@ -1,11 +1,11 @@
 (ns quo.components.list-items.dapp.view
   (:require
-   [quo.components.avatars.user-avatar.view :as user-avatar]
-   [quo.components.list-items.dapp.style :as style]
-   [quo.components.markdown.text :as text]
-   [quo.theme :as quo.theme]
-   [react-native.core :as rn]
-   [react-native.fast-image :as fast-image]))
+    [quo.components.avatars.user-avatar.view :as user-avatar]
+    [quo.components.list-items.dapp.style :as style]
+    [quo.components.markdown.text :as text]
+    [quo.theme :as quo.theme]
+    [react-native.core :as rn]
+    [react-native.fast-image :as fast-image]))
 
 (defn view
   [{:keys [dapp on-press right-component accessibility-label] :as props}]
@@ -24,11 +24,12 @@
       (if (:avatar dapp)
         [fast-image/fast-image
          {:source (:avatar dapp)
-          :style  {:width 32 :height 32}}]
-        [user-avatar/initials-avatar
-         {:full-name           (:name dapp)
-          :size                :xs
-          :customization-color (:customization-color dapp)}])
+          :style  style/image-avatar}]
+        [rn/view {:style style/initials-avatar-container}
+         [user-avatar/initials-avatar
+          {:full-name           (:name dapp)
+           :size                :small
+           :customization-color (:customization-color dapp)}]])
       [rn/view {:style style/user-info}
        [text/text
         {:weight          :semi-bold

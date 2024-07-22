@@ -1,19 +1,18 @@
 (ns status-im.contexts.wallet.connected-dapps.view
   (:require
-   [clojure.string :as string]
-   [quo.core :as quo]
-   [quo.foundations.colors :as colors]
-   [quo.theme]
-   [react-native.core :as rn]
-   [react-native.safe-area :as safe-area]
-   [status-im.common.plus-button.view :as plus-button]
-   [status-im.common.resources :as resources]
-   [status-im.contexts.wallet.connected-dapps.disconnect-dapp.view :as disconnect-dapp]
-   [status-im.contexts.wallet.connected-dapps.style :as style]
-   [status-im.contexts.wallet.wallet-connect.core :as core]
-   [utils.i18n :as i18n]
-   [utils.re-frame :as rf]
-   [utils.string]))
+    [quo.core :as quo]
+    [quo.foundations.colors :as colors]
+    [quo.theme]
+    [react-native.core :as rn]
+    [react-native.safe-area :as safe-area]
+    [status-im.common.plus-button.view :as plus-button]
+    [status-im.common.resources :as resources]
+    [status-im.contexts.wallet.connected-dapps.disconnect-dapp.view :as disconnect-dapp]
+    [status-im.contexts.wallet.connected-dapps.style :as style]
+    [status-im.contexts.wallet.wallet-connect.core :as core]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]
+    [utils.string]))
 
 (defn- on-disconnect
   [wallet-account {:keys [name topic]}]
@@ -107,29 +106,29 @@
           :always-bounce-vertical  false
           :content-container-style (style/dapps-list theme)
           :render-fn               (fn [{:keys [topic pairingTopic name url iconUrl]}]
-                                     (let [avatar (core/compute-dapp-icon-path iconUrl url)]
-                                       [quo/dapp
-                                        {:dapp                {:avatar              avatar
-                                                               :name                (core/compute-dapp-name name url)
-                                                               :value               url
-                                                               :topic               topic
-                                                               :pairing-topic       pairingTopic
-                                                               :customization-color customization-color}
-                                         :accessibility-label (str "dapp-" topic)
-                                         :state               :default
-                                         :action              :icon
-                                         :blur?               false
-                                         :customization-color color
-                                         :right-component     (fn [dapp]
-                                                                [rn/pressable
-                                                                 {:on-press (fn []
-                                                                              (on-dapp-disconnect-press
-                                                                               wallet-account
-                                                                               dapp))}
-                                                                 [quo/icon :i/disconnect
-                                                                  {:color               (colors/theme-colors
-                                                                                         colors/neutral-50
-                                                                                         colors/neutral-40
-                                                                                         theme)
-                                                                   :accessibility-label :icon}]])}]))
+                                     [quo/dapp
+                                      {:dapp                {:avatar (core/compute-dapp-icon-path iconUrl
+                                                                                                  url)
+                                                             :name (core/compute-dapp-name name url)
+                                                             :value url
+                                                             :topic topic
+                                                             :pairing-topic pairingTopic
+                                                             :customization-color customization-color}
+                                       :accessibility-label (str "dapp-" topic)
+                                       :state               :default
+                                       :action              :icon
+                                       :blur?               false
+                                       :customization-color color
+                                       :right-component     (fn [dapp]
+                                                              [rn/pressable
+                                                               {:on-press (fn []
+                                                                            (on-dapp-disconnect-press
+                                                                             wallet-account
+                                                                             dapp))}
+                                                               [quo/icon :i/disconnect
+                                                                {:color (colors/theme-colors
+                                                                         colors/neutral-50
+                                                                         colors/neutral-40
+                                                                         theme)
+                                                                 :accessibility-label :icon}]])}])
           :separator               [rn/view {:style (style/separator theme)}]}]])]))

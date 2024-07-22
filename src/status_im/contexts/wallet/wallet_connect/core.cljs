@@ -150,10 +150,11 @@
   [name url]
   (if (seq name)
     name
-    (-> url
-        utils.string/remove-trailing-slash
-        utils.string/remove-http-prefix
-        string/capitalize)))
+    (when (seq url)
+      (-> url
+          utils.string/remove-trailing-slash
+          utils.string/remove-http-prefix
+          string/capitalize))))
 
 (defn compute-dapp-icon-path
   "Some dapps have icons with relative paths, make paths absolute in those cases, send nil if icon is missing"
