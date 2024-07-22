@@ -215,7 +215,7 @@
                                               :token-display-name (:symbol token-data)))
               unique-owner (assoc-in [:wallet :current-viewing-account-address] unique-owner)
               entry-point  (assoc-in [:wallet :ui :send :entry-point] entry-point))
-        :fx [[:dispatch [:wallet/clean-suggested-routes]]
+        :fx [[:dispatch ^:flush-dom [:wallet/clean-suggested-routes]]
              [:dispatch
               ;; ^:flush-dom allows us to make sure the re-frame DB state is always synced
               ;; before the navigation occurs, so the new screen is always rendered with
