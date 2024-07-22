@@ -1,7 +1,7 @@
 (ns status-im.contexts.wallet.common.utils.address-test
   (:require
-   [cljs.test :refer-macros [deftest is testing run-tests]]
-   [status-im.contexts.wallet.common.utils.address :as utils]))
+    [cljs.test :refer-macros [deftest is testing run-tests]]
+    [status-im.contexts.wallet.common.utils.address :as utils]))
 
 (def valid-metamask-addresses
   ["ethereum:0x38cf6E0Ba4C4530735616e1Ee7ff5FbCB726fBd2@0x1"
@@ -18,9 +18,12 @@
    "ethereum:0x38cf6E0Ba4C4530735616e1Ee7ff5FbCB726fBd2"])
 
 (def metamask-to-status
-  [{:metamask  "ethereum:0x38cf6E0Ba4C4530735616e1Ee7ff5FbCB726fBd2@0x1" :status "eth:0x38cf6E0Ba4C4530735616e1Ee7ff5FbCB726fBd2"}
-   {:metamask  "ethereum:0x38cf6E0Ba4C4530735616e1Ee7ff5FbCB726fBd2@0xa4b1" :status "arb1:0x38cf6E0Ba4C4530735616e1Ee7ff5FbCB726fBd2"}
-   {:metamask  "ethereum:0x38cf6E0Ba4C4530735616e1Ee7ff5FbCB726fBd2@0xa" :status "oeth:0x38cf6E0Ba4C4530735616e1Ee7ff5FbCB726fBd2"}
+  [{:metamask "ethereum:0x38cf6E0Ba4C4530735616e1Ee7ff5FbCB726fBd2@0x1"
+    :status   "eth:0x38cf6E0Ba4C4530735616e1Ee7ff5FbCB726fBd2"}
+   {:metamask "ethereum:0x38cf6E0Ba4C4530735616e1Ee7ff5FbCB726fBd2@0xa4b1"
+    :status   "arb1:0x38cf6E0Ba4C4530735616e1Ee7ff5FbCB726fBd2"}
+   {:metamask "ethereum:0x38cf6E0Ba4C4530735616e1Ee7ff5FbCB726fBd2@0xa"
+    :status   "oeth:0x38cf6E0Ba4C4530735616e1Ee7ff5FbCB726fBd2"}
    {:metamask "ethe:0x38cf6E0Ba4C4530735616e1Ee7ff5FbCB726fBd2@0x1" :status nil}
    {:metamask ":0x38cf6E0Ba4C4530735616e1Ee7ff5FbCB726fBd2@0xa4b1" :status nil}
    {:metamask "0x38cf6E0Ba4C4530735616e1Ee7ff5FbCB726fBd2@0xa" :status nil}

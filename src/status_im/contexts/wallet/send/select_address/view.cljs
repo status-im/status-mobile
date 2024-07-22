@@ -11,8 +11,8 @@
     [status-im.constants :as constants]
     [status-im.contexts.wallet.common.account-switcher.view :as account-switcher]
     [status-im.contexts.wallet.common.utils :as utils]
+    [status-im.contexts.wallet.common.utils.address :as utils-address]
     [status-im.contexts.wallet.common.utils.networks :as network-utils]
-    [status-im.contexts.wallet.common.validation :as validation]
     [status-im.contexts.wallet.item-types :as types]
     [status-im.contexts.wallet.send.select-address.style :as style]
     [status-im.contexts.wallet.send.select-address.tabs.view :as tabs]
@@ -33,9 +33,9 @@
   [address]
   (debounce/debounce-and-dispatch
    (cond
-     (<= (count address) 0)            [:wallet/address-validation-failed address]
-     (validation/eip-3770-address? address) [:wallet/address-validation-success address]
-     :else                             [:wallet/address-validation-failed address])
+     (<= (count address) 0)                    [:wallet/address-validation-failed address]
+     (utils-address/eip-3770-address? address) [:wallet/address-validation-success address]
+     :else                                     [:wallet/address-validation-failed address])
    300))
 
 (defn- address-input
