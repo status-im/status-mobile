@@ -404,6 +404,11 @@
  (fn [[{:keys [tokens]} chain-ids]]
    (utils/filter-tokens-in-chains tokens chain-ids)))
 
+(defn tokens-sort
+  [token]
+  [(comp - :balance token)
+   (get constants/token-sort-priority (:symbol token) ##Inf)])
+
 (rf/reg-sub
  :wallet/current-viewing-account-tokens-filtered
  :<- [:wallet/current-viewing-account]
@@ -416,8 +421,7 @@
                                      :total-balance     (utils/calculate-total-token-balance token
                                                                                              chain-ids)))
                             (:tokens account))
-         priority      #(get constants/token-sort-priority (:symbol %) 999)
-         sorted-tokens (sort-by (juxt (comp - :balance) priority) tokens)]
+         sorted-tokens (sort-by tokens-sort tokens)]
      (if query
        (let [query-string (string/lower-case query)]
          (filter #(or (string/starts-with? (string/lower-case (:name %)) query-string)

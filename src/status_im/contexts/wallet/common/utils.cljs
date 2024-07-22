@@ -310,6 +310,6 @@
         calculated-tokens (map calculate-token tokens)]
     (sort-by (fn [token]
                (let [fiat-value (get-in token [:values :fiat-unformatted-value])
-                     priority   (get constants/token-sort-priority (:token token) 999)]
+                     priority   (get constants/token-sort-priority (:token token) ##Inf)]
                  [(- fiat-value) priority]))
              calculated-tokens)))
