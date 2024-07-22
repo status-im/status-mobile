@@ -145,6 +145,8 @@
             :on-success  [:community/fetch-success]
             :js-response true
             :on-error    #(log/error "failed to fetch communities" %)}]]
+         ;; Dispatch a little after 1000ms because other higher-priority events
+         ;; after login are being processed at the 1000ms mark.
          [:dispatch-later [{:ms 1200 :dispatch [:community/fetch-low-priority]}]]]}))
 
 (defn update-previous-permission-addresses
