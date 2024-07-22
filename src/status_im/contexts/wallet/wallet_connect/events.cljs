@@ -64,6 +64,7 @@
      (if (and (not-empty session-networks) required-networks-supported?)
        {:db (update db
                     :wallet-connect/current-proposal assoc
+                    :response-sent?                  false
                     :request                         proposal
                     :session-networks                session-networks
                     :address                         (or current-viewing-address
@@ -154,7 +155,8 @@
                                          :methods  constants/wallet-connect-supported-methods
                                          :events   constants/wallet-connect-supported-events
                                          :accounts accounts}})]
-     {:fx [[:effects.wallet-connect/approve-session
+     {:db (assoc-in db [:wallet-connect/current-proposal :response-sent?] true)
+      :fx [[:effects.wallet-connect/approve-session
             {:web3-wallet          web3-wallet
              :proposal             current-proposal
              :supported-namespaces supported-namespaces
