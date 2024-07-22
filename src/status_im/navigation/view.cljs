@@ -57,22 +57,22 @@
   [screen-key]
   (reagent.core/reactify-component
    (fn []
-     (let [screen-details              (get (if js/goog.DEBUG
-                                              (get-screens)
-                                              screens)
-                                            (keyword screen-key))
-           qualified-screen-details    (get (if js/goog.DEBUG
-                                              (get-screens)
-                                              screens)
-                                            (keyword "screen" screen-key))
-           {:keys [component options]} (or qualified-screen-details screen-details)
+     (let [screen-details                              (get (if js/goog.DEBUG
+                                                              (get-screens)
+                                                              screens)
+                                                            (keyword screen-key))
+           qualified-screen-details                    (get (if js/goog.DEBUG
+                                                              (get-screens)
+                                                              screens)
+                                                            (keyword "screen" screen-key))
+           {:keys [component options]}                 (or qualified-screen-details screen-details)
            {:keys [insets sheet? theme
-                   skip-background?]}  options
-           alert-banners-top-margin    (rf/sub [:alert-banners/top-margin])
-           background-color            (or (get-in options [:layout :backgroundColor])
-                                           (when sheet? :transparent))
-           app-theme                   (rf/sub [:theme])
-           theme                       (or theme app-theme)]
+                   skip-background? on-dismiss-sheet]} options
+           alert-banners-top-margin                    (rf/sub [:alert-banners/top-margin])
+           background-color                            (or (get-in options [:layout :backgroundColor])
+                                                           (when sheet? :transparent))
+           app-theme                                   (rf/sub [:theme])
+           theme                                       (or theme app-theme)]
        ^{:key (str "root" screen-key @reloader/cnt)}
        [quo.theme/provider theme
         [rn/view
@@ -83,7 +83,8 @@
                                         :alert-banners-top-margin alert-banners-top-margin))}
          [inactive]
          (if sheet?
-           [bottom-sheet-screen/view {:content component :skip-background? skip-background?}]
+           [bottom-sheet-screen/view
+            {:content component :skip-background? skip-background? :on-dismiss on-dismiss-sheet}]
            [component])]
         (when js/goog.DEBUG
           [:<>

@@ -48,7 +48,7 @@
         set-animating-true  #(reset! animating? true)
         set-animating-false (fn [ms]
                               (js/setTimeout #(reset! animating? false) ms))]
-    (fn [{:keys [content skip-background?]}]
+    (fn [{:keys [content skip-background? on-dismiss]}]
       (let [theme                    (quo.theme/use-theme)
             {:keys [top] :as insets} (safe-area/get-insets)
             alert-banners-top-margin (rf/sub [:alert-banners/top-margin])
@@ -63,6 +63,10 @@
                                        (reanimated/animate opacity 0 300)
                                        (rf/dispatch [:navigate-back])
                                        true)
+            dismiss                  (fn []
+                                       (when on-dismiss
+                                         (on-dismiss))
+                                       (close))
             reset-open-sheet         (fn []
                                        (reanimated/animate translate-y 0 300)
                                        (reanimated/animate opacity 1 300)
@@ -83,7 +87,7 @@
                                    :opacity            opacity
                                    :scroll-enabled?    scroll-enabled?
                                    :curr-scroll        curr-scroll
-                                   :close              close
+                                   :close              dismiss
                                    :reset-open-sheet   reset-open-sheet
                                    :set-animating-true set-animating-true})}
           [reanimated/view {:style (style/main-view translate-y theme)}

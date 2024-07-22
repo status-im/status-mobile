@@ -2,6 +2,7 @@
   (:require
     [legacy.status-im.ui.screens.screens :as old-screens]
     [quo.foundations.colors :as colors]
+    [re-frame.core :as rf]
     [status-im.common.emoji-picker.view :as emoji-picker]
     [status-im.common.enter-seed-phrase.view :as enter-seed-phrase]
     [status-im.common.lightbox.view :as lightbox]
@@ -539,15 +540,18 @@
     ;; Wallet Connect
 
     {:name      :screen/wallet-connect.sign-message
-     :options   {:sheet? true}
+     :options   {:sheet?           true
+                 :on-dismiss-sheet #(rf/dispatch [:wallet-connect/reject-session-request])}
      :component wallet-connect-sign-message/view}
 
     {:name      :screen/wallet-connect.sign-transaction
-     :options   {:sheet? true}
+     :options   {:sheet?           true
+                 :on-dismiss-sheet #(rf/dispatch [:wallet-connect/reject-session-request])}
      :component wallet-connect-sign-transaction/view}
 
     {:name      :screen/wallet-connect.send-transaction
-     :options   {:sheet? true}
+     :options   {:sheet?           true
+                 :on-dismiss-sheet #(rf/dispatch [:wallet-connect/reject-session-request])}
      :component wallet-connect-send-transaction/view}
 
     {:name      :screen/wallet.connected-dapps
