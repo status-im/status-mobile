@@ -127,3 +127,19 @@
    :url          (get-in session [:peer :metadata :url])
    :accounts     (get-in session [:namespaces :eip155 :accounts])
    :disconnected false})
+
+(defn filter-operable-accounts
+  [accounts]
+  (filter #(and (:operable? %)
+                (not (:watch-only? %)))
+          accounts))
+
+(defn filter-sessions-for-account-addresses
+  [account-addresses sessions]
+  (filter (fn [{:keys [accounts]}]
+            (some (fn [account]
+                    (some (fn [account-address]
+                            (clojure.string/includes? account account-address))
+                          account-addresses))
+                  accounts))
+          sessions))

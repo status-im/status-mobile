@@ -13,26 +13,25 @@
     [utils.re-frame :as rf]))
 
 (defn- on-disconnect
-  [wallet-account {:keys [name topic pairing-topic]}]
+  [wallet-account {:keys [name topic]}]
   (rf/dispatch [:hide-bottom-sheet])
   (rf/dispatch
    [:wallet-connect/disconnect-dapp
-    {:topic         topic
-     :pairing-topic pairing-topic
-     :on-success    (fn []
-                      (rf/dispatch [:toasts/upsert
-                                    {:id   :dapp-disconnect-success
-                                     :type :positive
-                                     :text (i18n/label :t/disconnect-dapp-success
-                                                       {:dapp    name
-                                                        :account (:name wallet-account)})}]))
-     :on-fail       (fn []
-                      (rf/dispatch [:toasts/upsert
-                                    {:id   :dapp-disconnect-failure
-                                     :type :negative
-                                     :text (i18n/label :t/disconnect-dapp-fail
-                                                       {:dapp    name
-                                                        :account (:name wallet-account)})}]))}]))
+    {:topic      topic
+     :on-success (fn []
+                   (rf/dispatch [:toasts/upsert
+                                 {:id   :dapp-disconnect-success
+                                  :type :positive
+                                  :text (i18n/label :t/disconnect-dapp-success
+                                                    {:dapp    name
+                                                     :account (:name wallet-account)})}]))
+     :on-fail    (fn []
+                   (rf/dispatch [:toasts/upsert
+                                 {:id   :dapp-disconnect-failure
+                                  :type :negative
+                                  :text (i18n/label :t/disconnect-dapp-fail
+                                                    {:dapp    name
+                                                     :account (:name wallet-account)})}]))}]))
 
 (defn- on-dapp-disconnect-press
   [wallet-account dapp]

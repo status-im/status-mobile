@@ -290,6 +290,7 @@
 (def ^:const wallet-connect-session-request-event "session_request")
 (def ^:const wallet-connect-session-delete-event "session_delete")
 (def ^:const wallet-connect-user-rejected-error-key "USER_REJECTED")
+(def ^:const wallet-connect-user-disconnected-reason-key "USER_DISCONNECTED")
 
 (def ^:const transaction-pending-type-wallet-connect-transfer "WalletConnectTransfer")
 
