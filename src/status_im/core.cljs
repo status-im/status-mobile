@@ -48,13 +48,7 @@
 (defn init
   []
   (navigation/init)
-  (native-module/init
-   (fn [raw-event]
-     ;; In some cases, an event should not be handled until after the GUI has
-     ;; been updated, i.e., after the next Reagent animation frame. In such a
-     ;; case, the event should be dispatched with :flush-dom metadata. For more
-     ;; details, check re-frame's source code and documentation.
-     (re-frame/dispatch ^:flush-dom [:signals/signal-received raw-event])))
+  (native-module/init #(re-frame/dispatch [:signals/signal-received %]))
   (when platform/android?
     (native-module/set-soft-input-mode adjust-resize))
   (logging/setup config/log-level)
