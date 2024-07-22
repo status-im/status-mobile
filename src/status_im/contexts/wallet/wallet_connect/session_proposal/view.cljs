@@ -1,36 +1,32 @@
 (ns status-im.contexts.wallet.wallet-connect.session-proposal.view
   (:require
-    [clojure.string :as string]
-    [quo.core :as quo]
-    [quo.foundations.colors :as colors]
-    [quo.theme]
-    [react-native.core :as rn]
-    [status-im.common.floating-button-page.view :as floating-button-page]
-    [status-im.contexts.wallet.wallet-connect.session-proposal.style :as style]
-    [utils.i18n :as i18n]
-    [utils.re-frame :as rf]
-    [utils.string]))
+   [clojure.string :as string]
+   [quo.core :as quo]
+   [quo.foundations.colors :as colors]
+   [quo.theme]
+   [react-native.core :as rn]
+   [status-im.common.floating-button-page.view :as floating-button-page]
+   [status-im.contexts.wallet.wallet-connect.core :as wallet-connect-core]
+   [status-im.contexts.wallet.wallet-connect.session-proposal.style :as style]
+   [utils.i18n :as i18n]
+   [utils.re-frame :as rf]
+   [utils.string]))
 
 (defn- dapp-metadata
   []
   (let [proposer                 (rf/sub [:wallet-connect/session-proposer])
         {:keys [icons name url]} (:metadata proposer)
         first-icon               (first icons)
-        profile-picture          (when (and (seq first-icon)
-                                            (seq url))
-                                   (if (string/starts-with? first-icon "http")
-                                     first-icon
-                                     ;; Apps like DyDx don't include an absolute URL as an icon,
-                                     ;; rather a relative path
-                                     (str (utils.string/remove-trailing-slash url) first-icon)))]
-
+        dapp-name                (wallet-connect-core/compute-dapp-name name url)
+        profile-picture          (wallet-connect-core/compute-dapp-icon-path first-icon url)]
     [:<>
      [rn/view {:style style/dapp-avatar}
       [quo/user-avatar
        {:profile-picture profile-picture
-        :size            :big}]]
+        :size            :big
+        :full-name       dapp-name}]]
      [quo/page-top
-      {:title       (if (seq name) name url) ;sometimes a dapp might not have a name, ex: yearn.fi
+      {:title       dapp-name
        :description :context-tag
        :context-tag {:type    :icon
                      :size    32

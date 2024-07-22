@@ -1,24 +1,24 @@
 (ns status-im.contexts.wallet.wallet-connect.effects
   (:require
-    [promesa.core :as promesa]
-    [re-frame.core :as rf]
-    [react-native.wallet-connect :as wallet-connect]
-    [status-im.config :as config]
-    [status-im.constants :as constants]
-    [status-im.contexts.wallet.wallet-connect.signing :as signing]
-    [status-im.contexts.wallet.wallet-connect.transactions :as transactions]
-    [utils.i18n :as i18n]
-    [utils.security.core :as security]))
+   [promesa.core :as promesa]
+   [re-frame.core :as rf]
+   [react-native.wallet-connect :as wallet-connect]
+   [status-im.config :as config]
+   [status-im.constants :as constants]
+   [status-im.contexts.wallet.wallet-connect.signing :as signing]
+   [status-im.contexts.wallet.wallet-connect.transactions :as transactions]
+   [utils.i18n :as i18n]
+   [utils.security.core :as security]))
 
 (rf/reg-fx
  :effects.wallet-connect/init
  (fn [{:keys [on-success on-fail]}]
    (let
-     [project-id config/WALLET_CONNECT_PROJECT_ID
-      metadata   {:name        (i18n/label :t/status)
-                  :description (i18n/label :t/status-is-a-secure-messaging-app)
-                  :url         constants/wallet-connect-metadata-url
-                  :icons       [constants/wallet-connect-metadata-icon]}]
+    [project-id config/WALLET_CONNECT_PROJECT_ID
+     metadata   {:name        (i18n/label :t/status)
+                 :description (i18n/label :t/status-is-a-secure-messaging-app)
+                 :url         constants/wallet-connect-metadata-url
+                 :icons       [constants/wallet-connect-metadata-icon]}]
      (-> (wallet-connect/init project-id metadata)
          (promesa/then on-success)
          (promesa/catch on-fail)))))
@@ -34,10 +34,11 @@
 (rf/reg-fx
  :effects.wallet-connect/pair
  (fn [{:keys [web3-wallet url on-success on-fail]}]
+   (prn :.---->here)
    (when web3-wallet
      (-> (wallet-connect/core-pairing-pair web3-wallet url)
-         (promesa/then on-success)
-         (promesa/catch on-fail)))))
+         (promesa/then prn)
+         (promesa/catch prn)))))
 
 (rf/reg-fx
  :effects.wallet-connect/disconnect
@@ -74,7 +75,7 @@
  (fn [{:keys [password address data rpc-method on-success on-error]}]
    (let [password (security/safe-unmask-data password)]
      (-> (condp =
-           rpc-method
+                rpc-method
            :personal-sign
            (signing/personal-sign password address data)
 

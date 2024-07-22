@@ -170,7 +170,8 @@
  :wallet-connect/session-proposer-name
  :<- [:wallet-connect/session-proposer]
  (fn [proposer]
-   (-> proposer :metadata :name)))
+   (let [{:keys [name url]} (-> proposer :metadata)]
+     (wallet-connect-core/compute-dapp-name name url))))
 
 (rf/reg-sub
  :wallet-connect/session-proposal-network-details

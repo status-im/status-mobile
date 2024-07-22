@@ -1,18 +1,19 @@
 (ns status-im.contexts.wallet.connected-dapps.view
   (:require
-    [clojure.string :as string]
-    [quo.core :as quo]
-    [quo.foundations.colors :as colors]
-    [quo.theme]
-    [react-native.core :as rn]
-    [react-native.safe-area :as safe-area]
-    [status-im.common.plus-button.view :as plus-button]
-    [status-im.common.resources :as resources]
-    [status-im.contexts.wallet.connected-dapps.disconnect-dapp.view :as disconnect-dapp]
-    [status-im.contexts.wallet.connected-dapps.style :as style]
-    [utils.i18n :as i18n]
-    [utils.re-frame :as rf]
-    [utils.string]))
+   [clojure.string :as string]
+   [quo.core :as quo]
+   [quo.foundations.colors :as colors]
+   [quo.theme]
+   [react-native.core :as rn]
+   [react-native.safe-area :as safe-area]
+   [status-im.common.plus-button.view :as plus-button]
+   [status-im.common.resources :as resources]
+   [status-im.contexts.wallet.connected-dapps.disconnect-dapp.view :as disconnect-dapp]
+   [status-im.contexts.wallet.connected-dapps.style :as style]
+   [status-im.contexts.wallet.wallet-connect.core :as core]
+   [utils.i18n :as i18n]
+   [utils.re-frame :as rf]
+   [utils.string]))
 
 (defn- on-disconnect
   [wallet-account {:keys [name topic]}]
@@ -86,7 +87,8 @@
         {:keys [color] :as wallet-account} (rf/sub [:wallet/current-viewing-account])
         sessions                           (rf/sub
                                             [:wallet-connect/sessions-for-current-account])
-        theme                              (quo.theme/use-theme)]
+        theme                              (quo.theme/use-theme)
+        customization-color                (rf/sub [:profile/customization-color])]
     [rn/view {:flex 1}
      [header
       {:title          (i18n/label :t/connected-dapps)
@@ -105,18 +107,14 @@
           :always-bounce-vertical  false
           :content-container-style (style/dapps-list theme)
           :render-fn               (fn [{:keys [topic pairingTopic name url iconUrl]}]
-                                     (let [avatar (when (and (seq iconUrl)
-                                                             (seq url))
-                                                    (if (string/starts-with? iconUrl "http")
-                                                      iconUrl
-                                                      (str (utils.string/remove-trailing-slash url)
-                                                           iconUrl)))]
+                                     (let [avatar (core/compute-dapp-icon-path iconUrl url)]
                                        [quo/dapp
-                                        {:dapp                {:avatar        (or avatar url)
-                                                               :name          (if (seq name) name url)
-                                                               :value         url
-                                                               :topic         topic
-                                                               :pairing-topic pairingTopic}
+                                        {:dapp                {:avatar              avatar
+                                                               :name                (core/compute-dapp-name name url)
+                                                               :value               url
+                                                               :topic               topic
+                                                               :pairing-topic       pairingTopic
+                                                               :customization-color customization-color}
                                          :accessibility-label (str "dapp-" topic)
                                          :state               :default
                                          :action              :icon
@@ -129,9 +127,9 @@
                                                                                wallet-account
                                                                                dapp))}
                                                                  [quo/icon :i/disconnect
-                                                                  {:color (colors/theme-colors
-                                                                           colors/neutral-50
-                                                                           colors/neutral-40
-                                                                           theme)
+                                                                  {:color               (colors/theme-colors
+                                                                                         colors/neutral-50
+                                                                                         colors/neutral-40
+                                                                                         theme)
                                                                    :accessibility-label :icon}]])}]))
           :separator               [rn/view {:style (style/separator theme)}]}]])]))
