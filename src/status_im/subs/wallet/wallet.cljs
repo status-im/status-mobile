@@ -407,7 +407,7 @@
 (defn tokens-sort
   [token]
   [(comp - :balance token)
-   (get constants/token-sort-priority (:symbol token) ##Inf)])
+   (get constants/token-sort-priority (:symbol token) 999)])
 
 (rf/reg-sub
  :wallet/current-viewing-account-tokens-filtered
