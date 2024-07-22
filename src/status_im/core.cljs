@@ -29,7 +29,6 @@
     [status-im.setup.dev :as dev]
     [status-im.setup.global-error :as global-error]
     [status-im.setup.interceptors :as interceptors]
-    [status-im.setup.oops :as setup.oops]
     status-im.subs.root
     [utils.i18n :as i18n]))
 
@@ -60,7 +59,6 @@
   (react-native-shake/add-shake-listener #(re-frame/dispatch [:shake-event]))
   (universal-links/initialize)
   (interceptors/register-global-interceptors)
-  (setup.oops/setup!)
 
   ;; Shell
   (async-storage/get-item :selected-stack-id #(shell.utils/change-selected-stack-id % nil nil))
