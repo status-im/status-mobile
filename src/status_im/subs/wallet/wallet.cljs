@@ -416,7 +416,7 @@
                                      :total-balance     (utils/calculate-total-token-balance token
                                                                                              chain-ids)))
                             (:tokens account))
-         sorted-tokens (sort-by :name compare tokens)]
+         sorted-tokens (utils/sort-tokens tokens)]
      (if query
        (let [query-string (string/lower-case query)]
          (filter #(or (string/starts-with? (string/lower-case (:name %)) query-string)
