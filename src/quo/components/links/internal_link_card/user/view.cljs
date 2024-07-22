@@ -65,9 +65,8 @@
         :style               (style/container loading? theme size)}
        [loading-view theme]]
       [linear-gradient/linear-gradient
-       (assoc {:style (style/container loading? theme size)}
-              :colors
-              (linear-gradient-props theme customization-color))
+       {:style  (style/container loading? theme size)
+        :colors (linear-gradient-props theme customization-color)}
        [rn/pressable
         {:accessibility-label :internal-link-card
          :on-press            on-press}

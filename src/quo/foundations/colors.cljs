@@ -5,7 +5,7 @@
     [react-native.platform :as platform]))
 
 (def account-colors
-  [:blue :yellow :purple :turquoise :magenta :sky :orange :army :flamingo :camel :copper])
+  [:blue :yellow :purple :turquoise :magenta :sky :orange :army :pink :camel :copper])
 
 (defn alpha
   [value opacity]
@@ -239,7 +239,7 @@
                60 "#CC6438"}
    :army      {50 "#216266"
                60 "#1A4E52"}
-   :flamingo  {50 "#F66F8F"
+   :pink      {50 "#F66F8F"
                60 "#C55972"}
    :purple    {50 "#7140FD"
                60 "#5A33CA"}
