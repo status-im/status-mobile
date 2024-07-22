@@ -47,12 +47,11 @@
      :label               (i18n/label :t/view-token-gating)}))
 
 (defn- action-mark-as-read
-  []
-  (when config/show-not-implemented-features?
-    {:icon                :i/mark-as-read
-     :accessibility-label :chat-mark-as-read
-     :on-press            not-implemented/alert
-     :label               (i18n/label :t/mark-as-read)}))
+  [chat-id]
+  {:icon                :i/mark-as-read
+   :accessibility-label :chat-mark-as-read
+   :on-press            #(hide-sheet-and-dispatch [:chat.ui/mark-all-read-pressed chat-id])
+   :label               (i18n/label :t/mark-as-read)})
 
 (defn- action-toggle-muted
   [id muted? muted-till chat-type]
@@ -130,7 +129,7 @@
       (and (not inside-chat?) (not locked?))
       [quo/action-drawer
        [[(when-not hide-view-members? (action-view-members-and-details community-id chat-id))
-         (action-mark-as-read)
+         (action-mark-as-read chat-id)
          (action-toggle-muted chat-id muted muted-till chat-type)
          (action-notification-settings)
          (action-pinned-messages chat-id)
@@ -143,7 +142,7 @@
        [[(action-view-members-and-details community-id chat-id)
          (when token-gated?
            (action-token-requirements))
-         (action-mark-as-read)
+         (action-mark-as-read chat-id)
          (action-toggle-muted chat-id muted muted-till chat-type)
          (action-notification-settings)
          (when config/fetch-messages-enabled?
