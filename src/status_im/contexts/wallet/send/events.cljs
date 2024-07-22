@@ -205,7 +205,7 @@
        {:db (cond-> db
               :always      (update-in [:wallet :ui :send]
                                       #(-> %
-                                           (dissoc :collectible)
+                                           (dissoc :collectible :tx-type)
                                            (assoc :token-not-supported-in-receiver-networks?
                                                   unsupported-token?)))
               token-symbol (assoc-in [:wallet :ui :send :token-symbol] token-symbol)
@@ -215,7 +215,7 @@
                                               :token-display-name (:symbol token-data)))
               unique-owner (assoc-in [:wallet :current-viewing-account-address] unique-owner)
               entry-point  (assoc-in [:wallet :ui :send :entry-point] entry-point))
-        :fx [[:dispatch [:wallet/clean-suggested-routes]]
+        :fx [[:dispatch ^:flush-dom [:wallet/clean-suggested-routes]]
              [:dispatch
               [:wallet/wizard-navigate-forward
                {:current-screen stack-id
