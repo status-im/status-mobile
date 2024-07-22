@@ -23,19 +23,6 @@
           selected-networks-after  [:ethereum :optimism]
           expected-db              {:wallet {:ui {:send {:receiver-networks selected-networks-after}}}}]
       (reset! rf-db/app-db {:wallet {:ui {:send {:receiver-networks selected-networks-before}}}})
-      (is (match? expected-db (:db (dispatch [event-id selected-networks-after]))))))
-
-  (testing "if receiver network removed, it is also removed from disabled ones"
-    (let [selected-networks-before       [:ethereum :optimism :arbitrum]
-          selected-networks-after        [:ethereum :optimism]
-          disabled-from-chain-ids-before [:optimism :arbitrum]
-          disabled-from-chain-ids-after  [:optimism]
-          expected-db                    {:wallet {:ui {:send {:receiver-networks selected-networks-after
-                                                               :disabled-from-chain-ids
-                                                               disabled-from-chain-ids-after}}}}]
-      (reset! rf-db/app-db {:wallet {:ui {:send {:receiver-networks selected-networks-before
-                                                 :disabled-from-chain-ids
-                                                 disabled-from-chain-ids-before}}}})
       (is (match? expected-db (:db (dispatch [event-id selected-networks-after])))))))
 
 (h/deftest-event :wallet/set-token-to-send

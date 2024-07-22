@@ -149,5 +149,14 @@
                 expected-order ["DAI" "ETH" "SNT"]]
             (is (= expected-order sorted-tokens))))))))
 
+(deftest sort-tokens-test
+  (testing "sort-tokens function"
+    (let [mock-tokens    [{:symbol "ETH" :balance 5}
+                          {:symbol "DAI" :balance 10}
+                          {:symbol "SNT" :balance 1}]
+          sorted-tokens  (map :symbol (utils/sort-tokens mock-tokens))
+          expected-order ["DAI" "ETH" "SNT"]]
+      (is (= expected-order sorted-tokens)))))
+
 
 
