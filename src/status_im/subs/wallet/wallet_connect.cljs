@@ -186,4 +186,3 @@
  :wallet-connect/current-proposal-address
  (fn [db]
    (get-in db [:wallet-connect/current-proposal :address])))
-
