@@ -89,12 +89,12 @@
 
 (rf/reg-event-fx
  :wallet-connect/session-networks-unsupported
- (fn [_ [proposal]]
+ (fn [{:keys [db]} [proposal]]
    (let [{:keys [name]} (wallet-connect-core/get-session-dapp-metadata proposal)]
      {:fx [[:dispatch
             [:toasts/upsert
              {:type  :negative
-              :theme :dark
+              :theme (:theme db)
               :text  (i18n/label :t/wallet-connect-networks-not-supported {:dapp name})}]]]})))
 
 (rf/reg-event-fx
@@ -320,9 +320,9 @@
 
 (rf/reg-event-fx
  :wallet-connect/no-internet-toast
- (fn []
+ (fn [{:keys [db]}]
    {:fx [[:dispatch
           [:toasts/upsert
            {:type  :negative
-            :theme :dark
+            :theme (:theme db)
             :text  (i18n/label :t/wallet-connect-no-internet-warning)}]]]}))
