@@ -97,9 +97,9 @@
   [sub-name]
   (testing "Return only the name of the session proposer"
     (swap! rf-db/app-db
-           assoc-in
-           [:wallet-connect/current-proposal :request]
-           sample-session)
+      assoc-in
+      [:wallet-connect/current-proposal :request]
+      sample-session)
 
     (is (= (-> sample-session :params :proposer :metadata :name)
            (rf/sub [sub-name])))))
