@@ -14,11 +14,6 @@
       hex
       (str hex-prefix hex))))
 
-(defn naked-address
-  [s]
-  (when s
-    (string/replace s hex-prefix "")))
-
 (defn address?
   [address]
   (native-module/address? address))
@@ -92,6 +87,7 @@
   (re-find constants/regx-metamask-address address))
 
 (defn eip-3770-address?
+  "Checks if address follows EIP-3770 format which is default for Status"
   [s]
   (re-find constants/regx-eip-3770-address s))
 

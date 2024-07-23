@@ -6,14 +6,6 @@
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
-(comment
-  (def ma "ethereum:0x38cf6E0Ba4C4530735616e1Ee7ff5FbCB726fBd2@0x1")
-  (def sa "arb1:0x38cf6E0Ba4C4530735616e1Ee7ff5FbCB726fBd2")
-  (utils-address/supported-address? ma)
-  (utils-address/supported-address? sa)
-  (utils-address/supported-address->status-address sa)
-  (utils-address/supported-address->status-address ma))
-
 (defn view
   []
   (let [{:keys [on-result]} (rf/sub [:get-screen-params])]
