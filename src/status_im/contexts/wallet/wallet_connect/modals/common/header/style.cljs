@@ -2,8 +2,8 @@
 
 (def header-container
   {:padding-vertical 12
-   :flex-direction :column
-   :align-items :stretch})
+   :flex-direction   :column
+   :align-items      :stretch})
 
 (def header-dapp-name
   {:flex-direction :row})

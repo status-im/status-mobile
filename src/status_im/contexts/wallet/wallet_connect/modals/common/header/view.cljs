@@ -13,9 +13,10 @@
         {:type         :dapp
          :label        name
          :image-source iconUrl}]]])
-   [quo/text {:size   :heading-1
-              :weight :semi-bold
-              :style  style/header-text}
+   [quo/text
+    {:size   :heading-1
+     :weight :semi-bold
+     :style  style/header-text}
     label]
    (let [{:keys [emoji customization-color name]} account]
      [rn/view {:style style/header-account-name}
