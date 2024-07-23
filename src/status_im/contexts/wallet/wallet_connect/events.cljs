@@ -138,7 +138,7 @@
                              constants/wallet-connect-user-disconnected-reason-key)
                :on-fail     on-fail
                :on-success  (fn []
-                              (rf/dispatch [:wallet-connect/disconnect-session pairing-topic])
+                              (rf/dispatch [:wallet-connect/disconnect-session topic])
                               (when on-success
                                 (on-success)))}]]}
        {:fx [[:dispatch [:wallet-connect/no-internet-toast]]]}))))
