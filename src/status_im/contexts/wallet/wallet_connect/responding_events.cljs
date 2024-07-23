@@ -3,7 +3,8 @@
             [react-native.wallet-connect :as wallet-connect]
             [status-im.constants :as constants]
             [status-im.contexts.wallet.wallet-connect.core :as wallet-connect-core]
-            [taoensso.timbre :as log]))
+            [taoensso.timbre :as log]
+            [utils.i18n :as i18n]))
 
 (rf/reg-event-fx
  :wallet-connect/respond-current-session
@@ -140,13 +141,20 @@
  :wallet-connect/reject-session-proposal
  (fn [{:keys [db]} _]
    (let [web3-wallet      (get db :wallet-connect/web3-wallet)
-         current-proposal (get-in db [:wallet-connect/current-proposal :request])]
+         current-proposal (get-in db [:wallet-connect/current-proposal :request])
+         dapp-name        (-> (wallet-connect-core/get-session-dapp-metadata current-proposal)
+                              :name)]
      {:fx [[:effects.wallet-connect/reject-session-proposal
             {:web3-wallet web3-wallet
              :proposal    current-proposal
              :on-success  #(log/info "Wallet Connect session proposal rejected")
              :on-error    #(log/error "Wallet Connect unable to reject session proposal")}]
-           [:dispatch [:wallet-connect/reset-current-session-proposal]]]})))
+           [:dispatch [:wallet-connect/reset-current-session-proposal]]
+           [:dispatch
+            [:toasts/upsert
+             {:text  (i18n/label :t/dapp-connection-request-rejected {:dapp dapp-name})
+              :type  :positive
+              :theme (:theme db)}]]]})))
 
 ;; NOTE: Currently we only reject a session if the user rejected it
 ;; But this needs to be solidified to ensure other cases:

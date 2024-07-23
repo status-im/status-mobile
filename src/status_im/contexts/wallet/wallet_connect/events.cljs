@@ -143,6 +143,8 @@
  (fn [{:keys [db]}]
    (let [web3-wallet          (get db :wallet-connect/web3-wallet)
          current-proposal     (get-in db [:wallet-connect/current-proposal :request])
+         dapp-name            (-> (wallet-connect-core/get-session-dapp-metadata current-proposal)
+                                  :name)
          session-networks     (->> (get-in db [:wallet-connect/current-proposal :session-networks])
                                    (map wallet-connect-core/chain-id->eip155)
                                    vec)
@@ -168,7 +170,13 @@
                                                  :event :wallet-connect/approve-session})
                                      (rf/dispatch
                                       [:wallet-connect/reset-current-session-proposal]))}]
-           [:dispatch [:dismiss-modal :screen/wallet.wallet-connect-session-proposal]]]})))
+           [:dispatch [:dismiss-modal :screen/wallet.wallet-connect-session-proposal]]
+           [:dispatch
+            [:toasts/upsert
+             {:type  :positive
+              :theme (:theme db)
+              :text  (i18n/label :t/dapp-connection-request-approved
+                                 {:dapp dapp-name})}]]]})))
 
 (rf/reg-event-fx
  :wallet-connect/on-scan-connection

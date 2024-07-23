@@ -2626,6 +2626,8 @@
   "wallet-backup-recovery-title": "Back up your seed phrase",
   "wallet-choose-recipient": "Choose Recipient",
   "wallet-collectibles": "Collectibles",
+  "dapp-connection-request-rejected": "Connection request from {{dapp}} declined",
+  "dapp-connection-request-approved": "Connected to {{dapp}}, go back to the dApp",
   "wallet-connect": "Wallet Connect",
   "wallet-connect-2.0": "Wallet Connect 2.0",
   "wallet-connect-app-connected": "is connected",
