@@ -41,8 +41,10 @@
 
 (rf/reg-fx
  :effects.wallet-connect/disconnect
- (fn [{:keys [web3-wallet topic on-success on-fail]}]
-   (-> (wallet-connect/core-pairing-disconnnect web3-wallet topic)
+ (fn [{:keys [web3-wallet topic reason on-success on-fail]}]
+   (-> (wallet-connect/disconnect-session {:web3-wallet web3-wallet
+                                           :topic       topic
+                                           :reason      reason})
        (promesa/then on-success)
        (promesa/catch on-fail))))
 
