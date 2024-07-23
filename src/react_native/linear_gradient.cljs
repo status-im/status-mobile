@@ -2,7 +2,6 @@
   (:require
     ["react-native-linear-gradient" :default LinearGradient]
     [clojure.string :as string]
-    [react-native.core :as rn]
     [reagent.core :as reagent]
     [taoensso.timbre :as log]))
 
@@ -20,20 +19,22 @@
       :always      (update :safe-colors conj (if color? color "transparent"))
       (not color?) (update :wrong-colors conj [idx color]))))
 
-(defn linear-gradient [props & children]
-  (assert (vector? (:colors props)))
-  (let [{:keys [wrong-colors safe-colors]} (rn/use-memo
-                                            (fn []
-                                              (reduce-kv split-valid-colors
-                                                         {:safe-colors  []
-                                                          :wrong-colors {}}
-                                                         (:colors props)))
-                                            [(:colors props)])]
-    (when (seq wrong-colors)
-      (log/error "Invalid color values in vector passed to Linear Gradient:"
-                 (reduce-kv (fn [s idx color]
-                              (str s "Index: " idx ", color: " (prn-str color)))
-                            "\n"
-                            wrong-colors)))
-    (into [linear-gradient* (assoc props :colors safe-colors)]
-          children)))
+(defn- wrong-colors-str [colors]
+  (reduce-kv (fn [s idx color]
+               (str s "Index: " idx ", color: " (prn-str color)))
+             "Invalid color values in vector passed to Linear Gradient:\n"
+             colors))
+
+(def linear-gradient
+  (if ^boolean js/goog.DEBUG
+    (fn [props & children]
+      (assert (vector? (:colors props)))
+      (let [{:keys [wrong-colors safe-colors]} (reduce-kv split-valid-colors
+                                                          {:safe-colors  []
+                                                           :wrong-colors {}}
+                                                          (:colors props))]
+        (when (seq wrong-colors)
+          (log/error (wrong-colors-str wrong-colors)))
+        (into [linear-gradient* (assoc props :colors safe-colors)]
+              children)))
+    linear-gradient*))
