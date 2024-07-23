@@ -9,30 +9,31 @@
     [status-im.common.resources :as resources]
     [status-im.contexts.wallet.connected-dapps.disconnect-dapp.view :as disconnect-dapp]
     [status-im.contexts.wallet.connected-dapps.style :as style]
+    [status-im.contexts.wallet.wallet-connect.core :as core]
     [utils.i18n :as i18n]
-    [utils.re-frame :as rf]))
+    [utils.re-frame :as rf]
+    [utils.string]))
 
 (defn- on-disconnect
-  [wallet-account {:keys [name topic pairing-topic]}]
+  [wallet-account {:keys [name topic]}]
   (rf/dispatch [:hide-bottom-sheet])
   (rf/dispatch
    [:wallet-connect/disconnect-dapp
-    {:topic         topic
-     :pairing-topic pairing-topic
-     :on-success    (fn []
-                      (rf/dispatch [:toasts/upsert
-                                    {:id   :dapp-disconnect-success
-                                     :type :positive
-                                     :text (i18n/label :t/disconnect-dapp-success
-                                                       {:dapp    name
-                                                        :account (:name wallet-account)})}]))
-     :on-fail       (fn []
-                      (rf/dispatch [:toasts/upsert
-                                    {:id   :dapp-disconnect-failure
-                                     :type :negative
-                                     :text (i18n/label :t/disconnect-dapp-fail
-                                                       {:dapp    name
-                                                        :account (:name wallet-account)})}]))}]))
+    {:topic      topic
+     :on-success (fn []
+                   (rf/dispatch [:toasts/upsert
+                                 {:id   :dapp-disconnect-success
+                                  :type :positive
+                                  :text (i18n/label :t/disconnect-dapp-success
+                                                    {:dapp    name
+                                                     :account (:name wallet-account)})}]))
+     :on-fail    (fn []
+                   (rf/dispatch [:toasts/upsert
+                                 {:id   :dapp-disconnect-failure
+                                  :type :negative
+                                  :text (i18n/label :t/disconnect-dapp-fail
+                                                    {:dapp    name
+                                                     :account (:name wallet-account)})}]))}]))
 
 (defn- on-dapp-disconnect-press
   [wallet-account dapp]
@@ -85,7 +86,8 @@
         {:keys [color] :as wallet-account} (rf/sub [:wallet/current-viewing-account])
         sessions                           (rf/sub
                                             [:wallet-connect/sessions-for-current-account])
-        theme                              (quo.theme/use-theme)]
+        theme                              (quo.theme/use-theme)
+        customization-color                (rf/sub [:profile/customization-color])]
     [rn/view {:flex 1}
      [header
       {:title          (i18n/label :t/connected-dapps)
@@ -105,11 +107,13 @@
           :content-container-style (style/dapps-list theme)
           :render-fn               (fn [{:keys [topic pairingTopic name url iconUrl]}]
                                      [quo/dapp
-                                      {:dapp                {:avatar        iconUrl
-                                                             :name          name
-                                                             :value         url
-                                                             :topic         topic
-                                                             :pairing-topic pairingTopic}
+                                      {:dapp                {:avatar (core/compute-dapp-icon-path iconUrl
+                                                                                                  url)
+                                                             :name (core/compute-dapp-name name url)
+                                                             :value url
+                                                             :topic topic
+                                                             :pairing-topic pairingTopic
+                                                             :customization-color customization-color}
                                        :accessibility-label (str "dapp-" topic)
                                        :state               :default
                                        :action              :icon

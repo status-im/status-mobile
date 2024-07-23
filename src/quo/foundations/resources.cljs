@@ -43,6 +43,7 @@
    :gnosis   (js/require "../resources/images/networks/Gnosis.png")
    :hermez   (js/require "../resources/images/networks/Hermez.png")
    :optimism (js/require "../resources/images/networks/Optimism.png")
+   :paraswap (js/require "../resources/images/networks/Paraswap.png")
    :polygon  (js/require "../resources/images/networks/Polygon.png")
    :scroll   (js/require "../resources/images/networks/Scroll.png")
    :taiko    (js/require "../resources/images/networks/Taiko.png")

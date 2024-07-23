@@ -55,9 +55,7 @@
    (log/info "Received Wallet Connect session proposal: " {:id (:id proposal)})
    (let [accounts                     (get-in db [:wallet :accounts])
          current-viewing-address      (get-in db [:wallet :current-viewing-account-address])
-         available-accounts           (filter #(and (:operable? %)
-                                                    (not (:watch-only? %)))
-                                              (vals accounts))
+         available-accounts           (wallet-connect-core/filter-operable-accounts (vals accounts))
          networks                     (wallet-connect-core/get-networks-by-mode db)
          session-networks             (wallet-connect-core/proposal-networks-intersection proposal
                                                                                           networks)
@@ -117,14 +115,16 @@
 
 (rf/reg-event-fx
  :wallet-connect/disconnect-dapp
- (fn [{:keys [db]} [{:keys [pairing-topic on-success on-fail]}]]
+ (fn [{:keys [db]} [{:keys [topic on-success on-fail]}]]
    (let [web3-wallet (get db :wallet-connect/web3-wallet)]
      {:fx [[:effects.wallet-connect/disconnect
             {:web3-wallet web3-wallet
-             :topic       pairing-topic
+             :topic       topic
+             :reason      (wallet-connect/get-sdk-error
+                           constants/wallet-connect-user-disconnected-reason-key)
              :on-fail     on-fail
              :on-success  (fn []
-                            (rf/dispatch [:wallet-connect/disconnect-session pairing-topic])
+                            (rf/dispatch [:wallet-connect/disconnect-session topic])
                             (when on-success
                               (on-success)))}]]})))
 
@@ -204,15 +204,23 @@
  :wallet-connect/fetch-active-sessions-success
  (fn [{:keys [db now]} [sessions]]
    (let [persisted-sessions (:wallet-connect/sessions db)
+         account-addresses  (->> (get-in db [:wallet :accounts])
+                                 vals
+                                 wallet-connect-core/filter-operable-accounts
+                                 (map :address))
          sessions           (->> (js->clj sessions :keywordize-keys true)
                                  vals
-                                 (map wallet-connect-core/sdk-session->db-session))
-         expired-sessions   (remove
-                             (fn [{:keys [expiry]}]
-                               (> expiry (/ now 1000)))
+                                 (map wallet-connect-core/sdk-session->db-session)
+                                 (wallet-connect-core/filter-sessions-for-account-addresses
+                                  account-addresses))
+         session-topics     (set (map :topic sessions))
+         expired-sessions   (filter
+                             (fn [{:keys [expiry topic]}]
+                               (or (< expiry (/ now 1000))
+                                   (not (contains? session-topics topic))))
                              persisted-sessions)]
-     {:fx (mapv (fn [{:keys [pairingTopic]}]
-                  [:wallet-connect/disconnect-session pairingTopic])
+     {:fx (mapv (fn [{:keys [topic]}]
+                  [:dispatch [:wallet-connect/disconnect-session topic]])
                 expired-sessions)
       :db (assoc db :wallet-connect/sessions sessions)})))
 
@@ -270,15 +278,15 @@
 
 (rf/reg-event-fx
  :wallet-connect/disconnect-session
- (fn [{:keys [db]} [pairing-topic]]
+ (fn [{:keys [db]} [topic]]
    {:db (update db
                 :wallet-connect/sessions
                 (fn [sessions]
                   (->> sessions
-                       (remove #(= (:pairingTopic %) pairing-topic))
+                       (remove #(= (:topic %) topic))
                        (into []))))
     :fx [[:json-rpc/call
           [{:method     "wallet_disconnectWalletConnectSession"
-            :params     [pairing-topic]
+            :params     [topic]
             :on-success #(log/info "Wallet Connect session disconnected")
             :on-error   #(log/info "Wallet Connect session persistence failed" %)}]]]}))

@@ -290,8 +290,11 @@
 (def ^:const wallet-connect-session-request-event "session_request")
 (def ^:const wallet-connect-session-delete-event "session_delete")
 (def ^:const wallet-connect-user-rejected-error-key "USER_REJECTED")
+(def ^:const wallet-connect-user-disconnected-reason-key "USER_DISCONNECTED")
 
 (def ^:const transaction-pending-type-wallet-connect-transfer "WalletConnectTransfer")
+
+(def ^:const token-sort-priority {"SNT" 1 "STT" 1 "ETH" 2 "DAI" 3})
 
 (def ^:const dapp-permission-contact-code "contact-code")
 (def ^:const dapp-permission-web3 "web3")
@@ -577,5 +580,8 @@
 (def ^:const max-recommended-slippage 5)
 (def ^:const max-slippage-decimal-places 2)
 (def ^:const swap-default-provider
-  {:name                     "Paraswap"
+  {:name                     :paraswap
+   :full-name                "Paraswap"
+   :color                    :blue
+   :contract-address         "0xdef171fe48cf0115b1d80b88dc8eab59176fee57"
    :terms-and-conditions-url "https://files.paraswap.io/tos_v4.pdf"})
