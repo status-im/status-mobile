@@ -353,14 +353,17 @@ test: export SHADOW_NS_REGEXP := .*-test$$
 test: ##@test Run all Clojure tests
 test: _test-clojure
 
-test-watch-for-repl: export TARGET := default
-test-watch-for-repl: export SHADOW_OUTPUT_TO := target/test/test.js
-test-watch-for-repl: export SHADOW_NS_REGEXP := .*-test$$
-test-watch-for-repl: ##@test Watch all Clojure tests and support REPL connections
-	yarn install && shadow-cljs compile mocks && \
-	concurrently --kill-others --prefix-colors 'auto' --names 'build,repl' \
-		'yarn shadow-cljs watch test --verbose' \
-		"until [ -f $$SHADOW_OUTPUT_TO ] ; do sleep 1 ; done ; node --require ./test-resources/override.js $$SHADOW_OUTPUT_TO --repl"
+test-repl-run-watcher: export TARGET := default
+test-repl-run-watcher: export SHADOW_OUTPUT_TO := target/test/test.js
+test-repl-run-watcher: export SHADOW_NS_REGEXP := .*-test$$
+test-repl-run-watcher: ##@test Watch all Clojure tests and support REPL connections
+	yarn install && shadow-cljs compile mocks && yarn shadow-cljs watch test
+
+test-repl-run-js-backend: export TARGET := default
+test-repl-run-js-backend: export SHADOW_OUTPUT_TO := target/test/test.js
+test-repl-run-js-backend: export SHADOW_NS_REGEXP := .*-test$$
+test-repl-run-js-backend: ##@test Run Clojure tests in node with REPL support
+	node --require ./test-resources/override.js $$SHADOW_OUTPUT_TO --repl # \
 
 test-unit: export SHADOW_OUTPUT_TO := target/unit_test/test.js
 test-unit: export SHADOW_NS_REGEXP := ^(?!tests\.integration-test)(?!tests\.contract-test).*-test$$
