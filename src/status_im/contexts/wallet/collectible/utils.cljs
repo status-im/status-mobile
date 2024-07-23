@@ -28,17 +28,6 @@
       (log/debug "unsupported collectible file type:" (or collectible-type "Unknown type"))
       false)))
 
-(defn total-owned-collectible
-  ([ownership]
-   (total-owned-collectible ownership false))
-  ([ownership address]
-   (reduce (fn [acc item]
-             (if (or (not address) (= (:address item) address))
-               (+ acc (js/parseInt (:balance item)))
-               acc))
-           0
-           ownership)))
-
 (defn collectible-owned-counter
   [total]
   (when (> total 1) (str "x" total)))

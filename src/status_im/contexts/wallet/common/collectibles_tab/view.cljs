@@ -7,7 +7,8 @@
     [status-im.contexts.wallet.collectible.utils :as utils]
     [status-im.contexts.wallet.common.collectibles-tab.style :as style]
     [status-im.contexts.wallet.common.empty-tab.view :as empty-tab]
-    [utils.i18n :as i18n]))
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]))
 
 (defn- collectible-item
   [{:keys [preview-url collection-data collectible-data total-owned on-press on-long-press]
@@ -61,15 +62,16 @@
       ;; TODO: https://github.com/status-im/status-mobile/issues/20137
       ;; 1. If possible, move `collectibles-data` calculation to a subscription
       ;; 2. Optimization: do not recalculate all the collectibles, process only the new ones
-      (let [collectibles-data (map-indexed (fn [index {:keys [ownership] :as collectible}]
-                                             (assoc collectible
-                                                    :total-owned       (utils/total-owned-collectible
-                                                                        ownership
-                                                                        current-account-address)
-                                                    :on-long-press     on-collectible-long-press
-                                                    :on-press          on-collectible-press
-                                                    :collectible-index index))
-                                           collectibles)]
+      (let [collectibles-data (map-indexed
+                               (fn [index {:keys [ownership] :as collectible}]
+                                 (let [total-owned (rf/sub [:wallet/total-owned-collectible ownership
+                                                            current-account-address])]
+                                   (assoc collectible
+                                          :total-owned       total-owned
+                                          :on-long-press     on-collectible-long-press
+                                          :on-press          on-collectible-press
+                                          :collectible-index index)))
+                               collectibles)]
         [rn/flat-list
          {:data                     collectibles-data
           :style                    {:flex 1}
