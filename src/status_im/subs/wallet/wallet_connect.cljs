@@ -72,9 +72,11 @@
                                       (-> chain
                                           (string/split ":")
                                           second
-                                          js/parseInt)) chains))]
-        ;; If network is testnet, we ensure that the required chains for that session are not a subset of mainnet chain ids
-        ;; If network is mainnet, we ensure that the required chains for that session are a subset of mainnet chain ids
+                                          js/parseInt))
+                                    chains))]
+        ;; If network is testnet, we ensure that the required chains for that session are not a
+        ;; subset of mainnet chain ids. If network is mainnet, we ensure that the required chains
+        ;; for that session are a subset of mainnet chain ids
         (comparison-fn chain-numbers constants/mainnet-chain-ids)))
     sessions)))
 
