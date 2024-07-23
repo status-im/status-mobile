@@ -6,21 +6,27 @@
     [quo.theme]
     [react-native.core :as rn]
     [status-im.common.floating-button-page.view :as floating-button-page]
+    [status-im.contexts.wallet.wallet-connect.core :as wallet-connect-core]
     [status-im.contexts.wallet.wallet-connect.session-proposal.style :as style]
     [utils.i18n :as i18n]
-    [utils.re-frame :as rf]))
+    [utils.re-frame :as rf]
+    [utils.string]))
 
 (defn- dapp-metadata
   []
   (let [proposer                 (rf/sub [:wallet-connect/session-proposer])
-        {:keys [icons name url]} (:metadata proposer)]
+        {:keys [icons name url]} (:metadata proposer)
+        first-icon               (first icons)
+        dapp-name                (wallet-connect-core/compute-dapp-name name url)
+        profile-picture          (wallet-connect-core/compute-dapp-icon-path first-icon url)]
     [:<>
      [rn/view {:style style/dapp-avatar}
       [quo/user-avatar
-       {:profile-picture (first icons)
-        :size            :big}]]
+       {:profile-picture profile-picture
+        :size            :big
+        :full-name       dapp-name}]]
      [quo/page-top
-      {:title       name
+      {:title       dapp-name
        :description :context-tag
        :context-tag {:type    :icon
                      :size    32
@@ -31,8 +37,9 @@
   []
   (let [dapp-name (rf/sub [:wallet-connect/session-proposer-name])
         labels    [(i18n/label :t/check-your-account-balance-and-activity)
-                   (i18n/label :t/request-txns-and-message-signing)]]
-    [rn/view {:style style/approval-note-container}
+                   (i18n/label :t/request-txns-and-message-signing)]
+        theme     (quo.theme/use-theme)]
+    [rn/view {:style (style/approval-note-container theme)}
      [quo/text
       {:style  style/approval-note-title
        :weight :regular
@@ -46,7 +53,8 @@
           {:color colors/neutral-40}]
          [quo/text
           {:weight :regular
-           :size   :paragraph-2}
+           :size   :paragraph-2
+           :color  colors/neutral-40}
           label]])
       labels)]))
 

@@ -5,14 +5,15 @@
   {:padding-horizontal 20
    :padding-top        12})
 
-(def approval-note-container
+(defn approval-note-container
+  [theme]
   {:margin-horizontal  20
    :padding-horizontal 16
    :padding-vertical   12
    :border-radius      16
    :border-width       1
-   :border-color       colors/neutral-10
-   :background-color   colors/neutral-2_5})
+   :border-color       (colors/theme-colors colors/neutral-10 colors/black-opa-30 theme)
+   :background-color   (colors/theme-colors colors/neutral-2_5 colors/black-opa-30 theme)})
 
 (def approval-note-title
   {:color         colors/neutral-50
