@@ -450,27 +450,28 @@
                          network-preferences
                          gas-rates
                          from-locked-amount]]
-     {:db            (cond-> db
-                       :always (assoc-in [:wallet :ui :send :amount] amount)
-                       :always (assoc-in [:wallet :ui :send :loading-suggested-routes?] true)
-                       :always (assoc-in [:wallet :ui :send :sender-network-values]
-                                sender-network-values)
-                       :always (assoc-in [:wallet :ui :send :receiver-network-values]
-                                receiver-network-values)
-                       :always (assoc-in [:wallet :ui :send :suggested-routes-call-timestamp] now)
-                       :always (update-in [:wallet :ui :send] dissoc :network-links)
-                       token   (assoc-in [:wallet :ui :send :token] token))
-      :json-rpc/call [{:method     "wallet_getSuggestedRoutes"
-                       :params     request-params
-                       :on-success (fn [suggested-routes]
-                                     (rf/dispatch [:wallet/suggested-routes-success suggested-routes
-                                                   now]))
-                       :on-error   (fn [error]
-                                     (rf/dispatch [:wallet/suggested-routes-error error])
-                                     (log/error "failed to get suggested routes"
-                                                {:event  :wallet/get-suggested-routes
-                                                 :error  error
-                                                 :params request-params}))}]})))
+     (when (and to-address from-address amount-in token-id)
+       {:db            (cond-> db
+                               :always (assoc-in [:wallet :ui :send :amount] amount)
+                               :always (assoc-in [:wallet :ui :send :loading-suggested-routes?] true)
+                               :always (assoc-in [:wallet :ui :send :sender-network-values]
+                                                 sender-network-values)
+                               :always (assoc-in [:wallet :ui :send :receiver-network-values]
+                                                 receiver-network-values)
+                               :always (assoc-in [:wallet :ui :send :suggested-routes-call-timestamp] now)
+                               :always (update-in [:wallet :ui :send] dissoc :network-links)
+                               token   (assoc-in [:wallet :ui :send :token] token))
+        :json-rpc/call [{:method     "wallet_getSuggestedRoutes"
+                         :params     request-params
+                         :on-success (fn [suggested-routes]
+                                       (rf/dispatch [:wallet/suggested-routes-success suggested-routes
+                                                     now]))
+                         :on-error   (fn [error]
+                                       (rf/dispatch [:wallet/suggested-routes-error error])
+                                       (log/error "failed to get suggested routes"
+                                                  {:event  :wallet/get-suggested-routes
+                                                   :error  error
+                                                   :params request-params}))}]}))))
 
 (rf/reg-event-fx :wallet/add-authorized-transaction
  (fn [{:keys [db]} [transaction]]
