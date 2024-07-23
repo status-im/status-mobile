@@ -7,19 +7,22 @@
 
 (def ^:private linear-gradient* (reagent/adapt-react-class LinearGradient))
 
-(defn- valid-color? [color]
+(defn- valid-color?
+  [color]
   (or (keyword? color)
       (and (string? color)
            (or (string/starts-with? color "#")
                (string/starts-with? color "rgb")))))
 
-(defn- split-valid-colors [acc idx color]
+(defn- split-valid-colors
+  [acc idx color]
   (let [color? (valid-color? color)]
     (cond-> acc
       :always      (update :safe-colors conj (if color? color "transparent"))
       (not color?) (update :wrong-colors conj [idx color]))))
 
-(defn- wrong-colors-str [colors]
+(defn- wrong-colors-str
+  [colors]
   (reduce-kv (fn [s idx color]
                (str s "Index: " idx ", color: " (prn-str color)))
              "Invalid color values in vector passed to Linear Gradient:\n"
