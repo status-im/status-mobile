@@ -215,8 +215,13 @@
                                               :token-display-name (:symbol token-data)))
               unique-owner (assoc-in [:wallet :current-viewing-account-address] unique-owner)
               entry-point  (assoc-in [:wallet :ui :send :entry-point] entry-point))
-        :fx [[:dispatch ^:flush-dom [:wallet/clean-suggested-routes]]
+        :fx [[:dispatch [:wallet/clean-suggested-routes]]
              [:dispatch
+              ;; ^:flush-dom allows us to make sure the re-frame DB state is always synced
+              ;; before the navigation occurs, so the new screen is always rendered with
+              ;; the DB state set by this event.  By adding the metadata we are omitting
+              ;; a 1-frame blink when the screen is mounted.
+              ^:flush-dom
               [:wallet/wizard-navigate-forward
                {:current-screen stack-id
                 :start-flow?    start-flow?
