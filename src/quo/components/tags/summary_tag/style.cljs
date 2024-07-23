@@ -4,7 +4,7 @@
 
 (defn main
   [{:keys [type customization-color]} theme]
-  {:justify-content  :center
+  {:justify-content  :flex-start
    :align-items      :center
    :height           32
    :padding-left     4
