@@ -37,15 +37,6 @@
                                      :id      :screen/profile.profiles
                                      :options (options/dark-root-options)}}]}}}
 
-   :screen/onboarding.enable-notifications
-   {:root {:stack {:children [{:component {:name    :screen/onboarding.enable-notifications
-                                           :id      :screen/onboarding.enable-notifications
-                                           :options (options/dark-root-options)}}]}}}
-
-   :screen/onboarding.welcome
-   {:root {:stack {:children [{:component {:name    :screen/onboarding.welcome
-                                           :id      :screen/onboarding.welcome
-                                           :options (options/dark-root-options)}}]}}}
    :screen/onboarding.syncing-results
    {:root {:stack {:children [{:component {:name    :screen/onboarding.syncing-results
                                            :id      :screen/onboarding.syncing-results

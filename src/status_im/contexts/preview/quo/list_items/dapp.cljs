@@ -13,14 +13,17 @@
                :value "Default"}
               {:key   :active
                :value "Active"}]}
-   {:key     :action
+   {:key     :dapp
     :type    :select
-    :options [{:key   :none
-               :value "None"}
-              {:key   :icon
-               :value "Icon"}]}
-   {:key  :blur?
-    :type :boolean}])
+    :options [{:value "With icon"
+               :key   {:avatar (resources/get-dapp :coingecko)
+                       :name   "Coingecko"
+                       :value  "coingecko.com"}}
+              {:value "Without icon"
+               :key   {:avatar              nil
+                       :name                "Coingecko"
+                       :value               "coingecko.com"
+                       :customization-color :blue}}]}])
 
 (defn preview
   []

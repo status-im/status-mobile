@@ -55,13 +55,13 @@
    (filter-collectibles-in-chains collectibles chain-ids)))
 
 (re-frame/reg-sub
- :wallet/all-collectibles-list
- :<- [:wallet]
- (fn [{:keys [accounts]}]
+ :wallet/owned-collectibles-list
+ :<- [:wallet/accounts-without-watched-accounts]
+ (fn [accounts]
    (let [max-collectibles (->> accounts
-                               (map (comp count :collectibles val))
+                               (map (comp count :collectibles))
                                (apply max))
-         all-collectibles (map (fn [[_address {:keys [collectibles]}]]
+         all-collectibles (map (fn [{:keys [collectibles]}]
                                  (let [amount-to-add      (- max-collectibles (count collectibles))
                                        empty-collectibles (repeat amount-to-add nil)]
                                    (reduce conj collectibles empty-collectibles)))
@@ -72,8 +72,8 @@
           (add-collectibles-preview-url)))))
 
 (re-frame/reg-sub
- :wallet/all-collectibles-list-in-selected-networks
- :<- [:wallet/all-collectibles-list]
+ :wallet/owned-collectibles-list-in-selected-networks
+ :<- [:wallet/owned-collectibles-list]
  :<- [:wallet/selected-networks->chain-ids]
  (fn [[all-collectibles chain-ids]]
    (filter-collectibles-in-chains all-collectibles chain-ids)))
@@ -123,3 +123,17 @@
               %)
            accounts))))
 
+(re-frame/reg-sub
+ :wallet/total-owned-collectible
+ :<- [:wallet/accounts-without-watched-accounts]
+ (fn [accounts [_ ownership address]]
+   (let [addresses (map :address accounts)]
+     (reduce (fn [acc item]
+               (if (or
+                    (and (not address)
+                         (contains? (set addresses) (:address item)))
+                    (= (:address item) address))
+                 (+ acc (js/parseInt (:balance item)))
+                 acc))
+             0
+             ownership))))

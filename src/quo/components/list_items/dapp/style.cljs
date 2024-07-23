@@ -47,3 +47,12 @@
 (defn style-text-value
   [theme]
   {:color (colors/theme-colors colors/neutral-50 colors/white theme)})
+
+(def initials-avatar-container
+  {:width  32
+   :height 32})
+
+(def image-avatar
+  {:width         32
+   :height        32
+   :border-radius 32})

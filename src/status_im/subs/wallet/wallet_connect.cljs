@@ -5,7 +5,8 @@
             [status-im.contexts.wallet.common.utils.networks :as networks]
             [status-im.contexts.wallet.wallet-connect.core :as wallet-connect-core]
             [status-im.contexts.wallet.wallet-connect.transactions :as transactions]
-            [utils.money :as money]))
+            [utils.money :as money]
+            [utils.string]))
 
 (rf/reg-sub
  :wallet-connect/current-request-address
@@ -44,7 +45,8 @@
    (let [dapp-url (get-in request [:event :verifyContext :verified :origin])]
      (->> sessions
           (filter (fn [session]
-                    (= dapp-url (get session :url))))
+                    (= (utils.string/remove-trailing-slash dapp-url)
+                       (utils.string/remove-trailing-slash (get session :url)))))
           (first)))))
 
 (rf/reg-sub
@@ -168,7 +170,8 @@
  :wallet-connect/session-proposer-name
  :<- [:wallet-connect/session-proposer]
  (fn [proposer]
-   (-> proposer :metadata :name)))
+   (let [{:keys [name url]} (-> proposer :metadata)]
+     (wallet-connect-core/compute-dapp-name name url))))
 
 (rf/reg-sub
  :wallet-connect/session-proposal-network-details
