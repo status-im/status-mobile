@@ -1,6 +1,6 @@
 (ns status-im.subs.wallet.activities-test
   (:require
-    [cljs.test :refer [is run-tests testing]]
+    [cljs.test :refer [is testing]]
     [re-frame.db :as rf-db]
     [status-im.contexts.wallet.common.activity-tab.constants :as constants]
     [status-im.subs.root]
@@ -114,5 +114,3 @@
                      :sender        "acc1"
                      :timestamp     1588291200}]}]
       (rf/sub [sub-name])))))
-
-(run-tests)
