@@ -15,7 +15,7 @@
     [utils.string]))
 
 (defn- on-disconnect
-  [wallet-account {:keys [name topic]}]
+  [{:keys [name topic]}]
   (rf/dispatch [:hide-bottom-sheet])
   (rf/dispatch
    [:wallet-connect/disconnect-dapp
@@ -25,15 +25,13 @@
                                  {:id   :dapp-disconnect-success
                                   :type :positive
                                   :text (i18n/label :t/disconnect-dapp-success
-                                                    {:dapp    name
-                                                     :account (:name wallet-account)})}]))
+                                                    {:dapp name})}]))
      :on-fail    (fn []
                    (rf/dispatch [:toasts/upsert
                                  {:id   :dapp-disconnect-failure
                                   :type :negative
                                   :text (i18n/label :t/disconnect-dapp-fail
-                                                    {:dapp    name
-                                                     :account (:name wallet-account)})}]))}]))
+                                                    {:dapp name})}]))}]))
 
 (defn- on-dapp-disconnect-press
   [wallet-account dapp]
@@ -41,7 +39,7 @@
                 {:content (fn [] [disconnect-dapp/view
                                   {:customization-color (:color wallet-account)
                                    :dapp                dapp
-                                   :on-disconnect       #(on-disconnect wallet-account dapp)}])}]))
+                                   :on-disconnect       #(on-disconnect dapp)}])}]))
 
 (defn- account-details
   [{:keys [name emoji color]}]
