@@ -346,7 +346,8 @@
                                               #(reset! camera-permission-granted? %)
                                               #(reset! camera-permission-granted? false)))))
         [:<>
-         background
+         [rn/view {:style style/absolute-fill}
+          background]
          (when camera-ready-to-scan?
            [render-camera
             {:torch-mode            torch-mode
