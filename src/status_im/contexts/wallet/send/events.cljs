@@ -461,23 +461,24 @@
                   :username             (:username args)
                   :publicKey            (:publicKey args)
                   :packID               (:packID args)}]]
-     {:db            (update-in db
-                                [:wallet :ui :send]
-                                #(-> %
-                                     (assoc :amount                    amount
-                                            :loading-suggested-routes? true
-                                            :sender-network-values     sender-network-values
-                                            :receiver-network-values   receiver-network-values)
-                                     (dissoc :network-links)
-                                     (cond-> token (assoc :token token))))
-      :json-rpc/call [{:method   "wallet_getSuggestedRoutesV2Async"
-                       :params   params
-                       :on-error (fn [error]
-                                   (rf/dispatch [:wallet/suggested-routes-error error])
-                                   (log/error "failed to get suggested routes (async)"
-                                              {:event  :wallet/start-get-suggested-routes
-                                               :error  error
-                                               :params params}))}]})))
+     (when (and to-address from-address amount-in token-id)
+       {:db            (update-in db
+                                  [:wallet :ui :send]
+                                  #(-> %
+                                       (assoc :amount                    amount
+                                              :loading-suggested-routes? true
+                                              :sender-network-values     sender-network-values
+                                              :receiver-network-values   receiver-network-values)
+                                       (dissoc :network-links)
+                                       (cond-> token (assoc :token token))))
+        :json-rpc/call [{:method   "wallet_getSuggestedRoutesV2Async"
+                         :params   params
+                         :on-error (fn [error]
+                                     (rf/dispatch [:wallet/suggested-routes-error error])
+                                     (log/error "failed to get suggested routes (async)"
+                                                {:event  :wallet/start-get-suggested-routes
+                                                 :error  error
+                                                 :params params}))}]}))))
 
 (rf/reg-event-fx :wallet/stop-get-suggested-routes
  (fn []
@@ -683,6 +684,7 @@
             :transfer-type transaction-type-param})
           transaction-paths
           sha3-pwd]]
+     (log/info "multi transaction called")
      {:json-rpc/call [{:method     "wallet_createMultiTransaction"
                        :params     request-params
                        :on-success (fn [result]
