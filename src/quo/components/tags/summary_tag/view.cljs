@@ -1,14 +1,14 @@
 (ns quo.components.tags.summary-tag.view
   (:require
-    [quo.components.avatars.account-avatar.view :as account-avatar]
-    [quo.components.avatars.user-avatar.view :as user-avatar]
-    [quo.components.avatars.wallet-user-avatar.view :as wallet-user-avatar]
-    [quo.components.markdown.text :as text]
-    [quo.components.tags.summary-tag.style :as style]
-    [quo.components.utilities.token.view :as token]
-    [quo.foundations.colors :as colors]
-    [quo.theme :as quo.theme]
-    [react-native.core :as rn]))
+   [quo.components.avatars.account-avatar.view :as account-avatar]
+   [quo.components.avatars.user-avatar.view :as user-avatar]
+   [quo.components.avatars.wallet-user-avatar.view :as wallet-user-avatar]
+   [quo.components.markdown.text :as text]
+   [quo.components.tags.summary-tag.style :as style]
+   [quo.components.utilities.token.view :as token]
+   [quo.foundations.colors :as colors]
+   [quo.theme :as quo.theme]
+   [react-native.core :as rn]))
 
 (defn- left-view
   [{:keys [label type customization-color emoji image-source token]}]
@@ -69,5 +69,7 @@
      [text/text
       {:style  (style/label type theme)
        :weight :semi-bold
+       :ellipsize-mode :tail
+       :number-of-lines 1
        :size   :heading-1}
       label]]))

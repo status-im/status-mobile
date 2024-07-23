@@ -1,11 +1,10 @@
 (ns quo.components.tags.summary-tag.style
   (:require
-    [quo.foundations.colors :as colors]))
+   [quo.foundations.colors :as colors]))
 
 (defn main
   [{:keys [type customization-color]} theme]
-  {:justify-content  :center
-   :align-items      :center
+  {:align-items      :center
    :height           32
    :padding-left     4
    :padding-right    10

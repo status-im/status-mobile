@@ -1,16 +1,16 @@
 (ns status-im.contexts.wallet.connected-dapps.view
   (:require
-    [quo.core :as quo]
-    [quo.foundations.colors :as colors]
-    [quo.theme]
-    [react-native.core :as rn]
-    [react-native.safe-area :as safe-area]
-    [status-im.common.plus-button.view :as plus-button]
-    [status-im.common.resources :as resources]
-    [status-im.contexts.wallet.connected-dapps.disconnect-dapp.view :as disconnect-dapp]
-    [status-im.contexts.wallet.connected-dapps.style :as style]
-    [utils.i18n :as i18n]
-    [utils.re-frame :as rf]))
+   [quo.core :as quo]
+   [quo.foundations.colors :as colors]
+   [quo.theme]
+   [react-native.core :as rn]
+   [react-native.safe-area :as safe-area]
+   [status-im.common.plus-button.view :as plus-button]
+   [status-im.common.resources :as resources]
+   [status-im.contexts.wallet.connected-dapps.disconnect-dapp.view :as disconnect-dapp]
+   [status-im.contexts.wallet.connected-dapps.style :as style]
+   [utils.i18n :as i18n]
+   [utils.re-frame :as rf]))
 
 (defn- on-disconnect
   [wallet-account {:keys [name topic]}]
