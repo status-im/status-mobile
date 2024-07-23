@@ -4,6 +4,7 @@
             [native-module.core :as native-module]
             [status-im.constants :as constants]
             [utils.security.core :as security]
+            [utils.string]
             [utils.transforms :as transforms]))
 
 (def method-to-screen
@@ -143,3 +144,23 @@
                           account-addresses))
                   accounts))
           sessions))
+
+(defn compute-dapp-name
+  "Sometimes dapps have no name or an empty name. Return url as name in that case"
+  [name url]
+  (if (seq name)
+    name
+    (when (seq url)
+      (-> url
+          utils.string/remove-trailing-slash
+          utils.string/remove-http-prefix
+          string/capitalize))))
+
+(defn compute-dapp-icon-path
+  "Some dapps have icons with relative paths, make paths absolute in those cases, send nil if icon is missing"
+  [icon-path url]
+  (when (and (seq icon-path)
+             (seq url))
+    (if (string/starts-with? icon-path "http")
+      icon-path
+      (str (utils.string/remove-trailing-slash url) icon-path))))

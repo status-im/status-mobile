@@ -1,5 +1,6 @@
 (ns quo.components.list-items.dapp.view
   (:require
+    [quo.components.avatars.user-avatar.view :as user-avatar]
     [quo.components.list-items.dapp.style :as style]
     [quo.components.markdown.text :as text]
     [quo.theme :as quo.theme]
@@ -20,9 +21,15 @@
       :on-press-in         on-press-in
       :on-press-out        on-press-out}
      [rn/view {:style style/container-info}
-      [fast-image/fast-image
-       {:source (:avatar dapp)
-        :style  {:width 32 :height 32}}]
+      (if (:avatar dapp)
+        [fast-image/fast-image
+         {:source (:avatar dapp)
+          :style  style/image-avatar}]
+        [rn/view {:style style/initials-avatar-container}
+         [user-avatar/initials-avatar
+          {:full-name           (:name dapp)
+           :size                :small
+           :customization-color (:customization-color dapp)}]])
       [rn/view {:style style/user-info}
        [text/text
         {:weight          :semi-bold
