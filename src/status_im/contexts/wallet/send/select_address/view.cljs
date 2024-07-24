@@ -177,7 +177,9 @@
                          (rf/dispatch [:wallet/clean-selected-collectible])
                          (rf/dispatch [:wallet/clean-send-address])
                          (rf/dispatch [:wallet/clean-disabled-from-networks])
-                         (rf/dispatch [:wallet/select-address-tab nil]))
+                         (rf/dispatch [:wallet/select-address-tab nil])
+                         (rf/dispatch [:wallet/clean-current-viewing-account
+                                       :ignore-just-complete-transaction]))
         on-change-tab  #(rf/dispatch [:wallet/select-address-tab %])
         input-value    (reagent/atom "")
         input-focused? (reagent/atom false)]

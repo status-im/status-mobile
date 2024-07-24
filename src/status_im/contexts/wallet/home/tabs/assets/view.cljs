@@ -18,4 +18,5 @@
       [rn/flat-list
        {:render-fn               token-value/view
         :data                    tokens
+        :render-data             {:entry-point :wallet-stack}
         :content-container-style style/list-container}])))
