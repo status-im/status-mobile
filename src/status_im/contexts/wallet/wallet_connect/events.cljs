@@ -141,7 +141,8 @@
 (rf/reg-event-fx
  :wallet-connect/approve-session
  (fn [{:keys [db]}]
-   (let [web3-wallet          (get db :wallet-connect/web3-wallet)
+   (let [theme                (:theme db)
+         web3-wallet          (get db :wallet-connect/web3-wallet)
          current-proposal     (get-in db [:wallet-connect/current-proposal :request])
          dapp-name            (-> (wallet-connect-core/get-session-dapp-metadata current-proposal)
                                   :name)
@@ -162,21 +163,26 @@
              :supported-namespaces supported-namespaces
              :on-success           (fn [approved-session]
                                      (log/info "Wallet Connect session approved")
+                                     (rf/dispatch [:toasts/upsert
+                                                   {:type  :positive
+                                                    :theme (:theme db)
+                                                    :text  (i18n/label
+                                                            :t/wallet-connect-proposal-approved-toast
+                                                            {:dapp dapp-name})}])
                                      (rf/dispatch [:wallet-connect/reset-current-session-proposal])
                                      (rf/dispatch [:wallet-connect/persist-session approved-session]))
              :on-fail              (fn [error]
                                      (log/error "Wallet Connect session approval failed"
                                                 {:error error
                                                  :event :wallet-connect/approve-session})
+                                     (rf/dispatch [:toasts/upsert
+                                                   {:theme theme
+                                                    :text  (i18n/label
+                                                            :t/wallet-connect-something-went-wrong)
+                                                    :type  :negative}])
                                      (rf/dispatch
                                       [:wallet-connect/reset-current-session-proposal]))}]
-           [:dispatch [:dismiss-modal :screen/wallet.wallet-connect-session-proposal]]
-           [:dispatch
-            [:toasts/upsert
-             {:type  :positive
-              :theme (:theme db)
-              :text  (i18n/label :t/wallet-connect-proposal-approved-toast
-                                 {:dapp dapp-name})}]]]})))
+           [:dispatch [:dismiss-modal :screen/wallet.wallet-connect-session-proposal]]]})))
 
 (rf/reg-event-fx
  :wallet-connect/on-scan-connection
