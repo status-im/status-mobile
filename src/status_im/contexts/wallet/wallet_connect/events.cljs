@@ -175,7 +175,7 @@
             [:toasts/upsert
              {:type  :positive
               :theme (:theme db)
-              :text  (i18n/label :t/dapp-connection-request-approved
+              :text  (i18n/label :t/wallet-connect-proposal-approved-toast
                                  {:dapp dapp-name})}]]]})))
 
 (rf/reg-event-fx

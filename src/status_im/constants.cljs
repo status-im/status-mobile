@@ -285,6 +285,14 @@
     ;; wallet-connect-eth-sign-transaction-method
     wallet-connect-eth-sign-typed-method
     wallet-connect-eth-sign-typed-v4-method})
+(def ^:const wallet-connect-message-signing-methods
+  #{wallet-connect-personal-sign-method
+    wallet-connect-eth-sign-typed-method
+    wallet-connect-eth-sign-method
+    wallet-connect-eth-sign-typed-v4-method})
+(def ^:const wallet-connect-transaction-methods
+  #{wallet-connect-eth-send-transaction-method
+    wallet-connect-eth-sign-transaction-method})
 (def ^:const wallet-connect-supported-events #{"accountsChanged" "chainChanged"})
 (def ^:const wallet-connect-session-proposal-event "session_proposal")
 (def ^:const wallet-connect-session-request-event "session_request")

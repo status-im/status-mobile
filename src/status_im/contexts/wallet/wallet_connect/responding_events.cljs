@@ -101,7 +101,7 @@
 
 (rf/reg-event-fx
  :wallet-connect/send-response
- (fn [{:keys [db]} [{:keys [result error]}]]
+ (fn [{:keys [db]} [{:keys [result error on-success on-error]}]]
    (let [{:keys [id topic] :as event} (get-in db [:wallet-connect/current-request :event])
          method                       (wallet-connect-core/get-request-method event)
          web3-wallet                  (get db :wallet-connect/web3-wallet)]
@@ -112,6 +112,8 @@
              :result      result
              :error       error
              :on-error    (fn [error]
+                            (when on-error
+                              (on-error))
                             (log/error "Failed to send Wallet Connect response"
                                        {:error                error
                                         :method               method
@@ -119,6 +121,8 @@
                                         :wallet-connect-event event})
                             (rf/dispatch [:wallet-connect/reset-current-request]))
              :on-success  (fn []
+                            (when on-success
+                              (on-success))
                             (log/info "Successfully sent Wallet Connect response to dApp")
                             (rf/dispatch [:wallet-connect/reset-current-request]))}]]})))
 
@@ -133,9 +137,25 @@
 
 (rf/reg-event-fx
  :wallet-connect/finish-session-request
- (fn [_ [result]]
-   {:fx [[:dispatch [:wallet-connect/send-response {:result result}]]
-         [:dispatch [:wallet-connect/dismiss-request-modal]]]}))
+ (fn [{:keys [db]} [result]]
+   (let [event      (get-in db [:wallet-connect/current-request :event])
+         method     (wallet-connect-core/get-request-method event)
+         theme      (:theme db)
+         toast-text (condp contains? method
+                      constants/wallet-connect-message-signing-methods
+                      (i18n/label :t/wallet-connect-message-request-success-toast)
+
+                      ;;TODO
+                      constants/wallet-connect-transaction-methods
+                      (i18n/label :t/a))]
+     {:fx [[:dispatch
+            [:wallet-connect/send-response
+             {:result     result
+              :on-success #(rf/dispatch [:toasts/upsert
+                                         {:type  :positive
+                                          :text  toast-text
+                                          :theme theme}])}]]
+           [:dispatch [:wallet-connect/dismiss-request-modal]]]})))
 
 (rf/reg-event-fx
  :wallet-connect/reject-session-proposal
@@ -152,7 +172,7 @@
            [:dispatch [:wallet-connect/reset-current-session-proposal]]
            [:dispatch
             [:toasts/upsert
-             {:text  (i18n/label :t/dapp-connection-request-rejected {:dapp dapp-name})
+             {:text  (i18n/label :t/wallet-connect-proposal-rejected-toast {:dapp dapp-name})
               :type  :positive
               :theme (:theme db)}]]]})))
 
@@ -165,8 +185,22 @@
 ;; - Failed "responding" (signing or sending message/transaction)
 (rf/reg-event-fx
  :wallet-connect/reject-session-request
- (fn [_ _]
-   {:fx [[:dispatch
-          [:wallet-connect/send-response
-           {:error (wallet-connect/get-sdk-error
-                    constants/wallet-connect-user-rejected-error-key)}]]]}))
+ (fn [{:keys [db]} _]
+   (let [event      (get-in db [:wallet-connect/current-request :event])
+         method     (wallet-connect-core/get-request-method event)
+         theme      (:theme db)
+         toast-text (condp contains? method
+                      constants/wallet-connect-message-signing-methods
+                      (i18n/label :t/wallet-connect-message-request-rejected-toast)
+
+                      ;;TODO
+                      constants/wallet-connect-transaction-methods
+                      (i18n/label :t/a))]
+     {:fx [[:dispatch
+            [:wallet-connect/send-response
+             {:error      (wallet-connect/get-sdk-error
+                           constants/wallet-connect-user-rejected-error-key)
+              :on-success #(rf/dispatch [:toasts/upsert
+                                         {:type  :positive
+                                          :text  toast-text
+                                          :theme theme}])}]]]})))
