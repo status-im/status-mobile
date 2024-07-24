@@ -13,16 +13,22 @@
               {:before #(reset! rf-db/app-db {})})
 
 (def ^:private accounts-with-tokens
-  {:0x1 {:tokens                    [{:symbol "ETH"} {:symbol "SNT"}]
+  {:0x1 {:tokens                    [{:symbol             "ETH"
+                                      :balances-per-chain {1 {:raw-balance "100"}}}
+                                     {:symbol             "SNT"
+                                      :balances-per-chain {1 {:raw-balance "100"}}}]
          :network-preferences-names #{}
          :customization-color       nil
          :operable?                 true
-         :operable                  :fully}
-   :0x2 {:tokens                    [{:symbol "SNT"}]
+         :operable                  :fully
+         :address                   "0x1"}
+   :0x2 {:tokens                    [{:symbol             "SNT"
+                                      :balances-per-chain {1 {:raw-balance "200"}}}]
          :network-preferences-names #{}
          :customization-color       nil
          :operable?                 true
-         :operable                  :partially}})
+         :operable                  :partially
+         :address                   "0x2"}})
 
 (def tokens-0x1
   [{:decimals                   1
@@ -495,11 +501,15 @@
            (assoc-in [:wallet :ui :send :token-symbol] "ETH")))
     (let [result (rf/sub [sub-name])]
       (is (match? result
-                  [{:tokens                    [{:symbol "ETH"} {:symbol "SNT"}]
+                  [{:tokens                    [{:symbol             "ETH"
+                                                 :balances-per-chain {1 {:raw-balance "100"}}}
+                                                {:symbol             "SNT"
+                                                 :balances-per-chain {1 {:raw-balance "100"}}}]
                     :network-preferences-names #{}
                     :customization-color       nil
                     :operable?                 true
-                    :operable                  :fully}]))))
+                    :operable                  :fully
+                    :address                   "0x1"}]))))
 
   (testing "returns the accounts list with the current asset using token"
     (swap! rf-db/app-db
@@ -508,11 +518,15 @@
            (assoc-in [:wallet :ui :send :token] {:symbol "ETH"})))
     (let [result (rf/sub [sub-name])]
       (is (match? result
-                  [{:tokens                    [{:symbol "ETH"} {:symbol "SNT"}]
+                  [{:tokens                    [{:symbol             "ETH"
+                                                 :balances-per-chain {1 {:raw-balance "100"}}}
+                                                {:symbol             "SNT"
+                                                 :balances-per-chain {1 {:raw-balance "100"}}}]
                     :network-preferences-names #{}
                     :customization-color       nil
                     :operable?                 true
-                    :operable                  :fully}]))))
+                    :operable                  :fully
+                    :address                   "0x1"}]))))
 
   (testing
     "returns the full accounts list with the current asset using token-symbol if each account has the asset"

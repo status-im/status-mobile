@@ -53,7 +53,7 @@
 
 (re-frame/reg-sub :communities/accounts-to-reveal
  (fn [[_ community-id]]
-   [(re-frame/subscribe [:wallet/operable-accounts-without-watched-accounts])
+   [(re-frame/subscribe [:wallet/operable-accounts])
     (re-frame/subscribe [:communities/addresses-to-reveal community-id])])
  (fn [[accounts addresses] _]
    (filter #(contains? addresses (:address %))
@@ -61,7 +61,7 @@
 
 (re-frame/reg-sub :communities/airdrop-account
  (fn [[_ community-id]]
-   [(re-frame/subscribe [:wallet/operable-accounts-without-watched-accounts])
+   [(re-frame/subscribe [:wallet/operable-accounts])
     (re-frame/subscribe [:communities/airdrop-address community-id])])
  (fn [[accounts airdrop-address] _]
    (->> accounts
