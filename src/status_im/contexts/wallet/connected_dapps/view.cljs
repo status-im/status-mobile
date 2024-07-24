@@ -126,9 +126,9 @@
                                                                              wallet-account
                                                                              dapp))}
                                                                [quo/icon :i/disconnect
-                                                                {:color               (colors/theme-colors
-                                                                                       colors/neutral-50
-                                                                                       colors/neutral-40
-                                                                                       theme)
+                                                                {:color (colors/theme-colors
+                                                                         colors/neutral-50
+                                                                         colors/neutral-40
+                                                                         theme)
                                                                  :accessibility-label :icon}]])}])
           :separator               [rn/view {:style (style/separator theme)}]}]])]))

@@ -1,30 +1,30 @@
 (ns status-im.subs.root
   (:require
-   [re-frame.core :as re-frame]
-   status-im.subs.activity-center
-   status-im.subs.alert-banner
-   status-im.subs.biometrics
-   status-im.subs.chats
-   status-im.subs.communities
-   status-im.subs.community.account-selection
-   status-im.subs.contact
-   status-im.subs.general
-   status-im.subs.keycard
-   status-im.subs.messages
-   status-im.subs.onboarding
-   status-im.subs.pairing
-   status-im.subs.profile
-   status-im.subs.settings
-   status-im.subs.shell
-   status-im.subs.wallet.activities
-   status-im.subs.wallet.buy
-   status-im.subs.wallet.collectibles
-   status-im.subs.wallet.networks
-   status-im.subs.wallet.saved-addresses
-   status-im.subs.wallet.send
-   status-im.subs.wallet.swap
-   status-im.subs.wallet.wallet
-   status-im.subs.wallet.wallet-connect))
+    [re-frame.core :as re-frame]
+    status-im.subs.activity-center
+    status-im.subs.alert-banner
+    status-im.subs.biometrics
+    status-im.subs.chats
+    status-im.subs.communities
+    status-im.subs.community.account-selection
+    status-im.subs.contact
+    status-im.subs.general
+    status-im.subs.keycard
+    status-im.subs.messages
+    status-im.subs.onboarding
+    status-im.subs.pairing
+    status-im.subs.profile
+    status-im.subs.settings
+    status-im.subs.shell
+    status-im.subs.wallet.activities
+    status-im.subs.wallet.buy
+    status-im.subs.wallet.collectibles
+    status-im.subs.wallet.networks
+    status-im.subs.wallet.saved-addresses
+    status-im.subs.wallet.send
+    status-im.subs.wallet.swap
+    status-im.subs.wallet.wallet
+    status-im.subs.wallet.wallet-connect))
 
 (defn reg-root-key-sub
   [sub-name db-key]
@@ -174,7 +174,6 @@
 (reg-root-key-sub :wallet-connect/current-proposal :wallet-connect/current-proposal)
 (reg-root-key-sub :wallet-connect/current-request :wallet-connect/current-request)
 (reg-root-key-sub :wallet-connect/sessions :wallet-connect/sessions)
-(reg-root-key-sub :wallet-connect/pairings :wallet-connect/pairings)
 
 ;;biometrics
 (reg-root-key-sub :biometrics :biometrics)
