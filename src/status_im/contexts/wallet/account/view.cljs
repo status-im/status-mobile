@@ -7,18 +7,17 @@
     [status-im.contexts.wallet.common.account-switcher.view :as account-switcher]
     [status-im.contexts.wallet.sheets.buy-token.view :as buy-token]
     [status-im.feature-flags :as ff]
+    [status-im.setup.hot-reload :as hot-reload]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
 (def first-tab-id :assets)
 
-(defn tabs-data
-  [watch-only?]
-  (cond-> [{:id :assets :label (i18n/label :t/assets) :accessibility-label :assets-tab}
-           {:id :collectibles :label (i18n/label :t/collectibles) :accessibility-label :collectibles-tab}
-           {:id :activity :label (i18n/label :t/activity) :accessibility-label :activity-tab}]
-    (not watch-only?) (conj {:id :dapps :label (i18n/label :t/dapps) :accessibility-label :dapps})
-    :always           (conj {:id :about :label (i18n/label :t/about) :accessibility-label :about})))
+(def tabs-data
+  [{:id :assets :label (i18n/label :t/assets) :accessibility-label :assets-tab}
+   {:id :collectibles :label (i18n/label :t/collectibles) :accessibility-label :collectibles-tab}
+   {:id :activity :label (i18n/label :t/activity) :accessibility-label :activity-tab}
+   {:id :about :label (i18n/label :t/about) :accessibility-label :about}])
 
 (defn- change-tab [id] (rf/dispatch [:wallet/select-account-tab id]))
 
@@ -28,14 +27,15 @@
         {:keys [name color formatted-balance
                 watch-only?]} (rf/sub [:wallet/current-viewing-account])
         customization-color   (rf/sub [:profile/customization-color])]
-    (rn/use-unmount #(rf/dispatch [:wallet/clean-send-data]))
+    (hot-reload/use-safe-unmount (fn []
+                                   (rf/dispatch [:wallet/close-account-page])
+                                   (rf/dispatch [:wallet/clean-current-viewing-account])))
     (rn/use-mount
      #(rf/dispatch [:wallet/fetch-activities-for-current-account]))
     [rn/view {:style {:flex 1}}
      [account-switcher/view
       {:type     :wallet-networks
-       :on-press (fn []
-                   (rf/dispatch [:wallet/close-account-page]))}]
+       :on-press #(rf/dispatch [:pop-to-root :shell-stack])}]
      [quo/account-overview
       {:container-style     style/account-overview
        :current-value       formatted-balance
@@ -67,7 +67,7 @@
       {:style            style/tabs
        :size             32
        :active-tab-id    selected-tab
-       :data             (tabs-data watch-only?)
+       :data             tabs-data
        :on-change        change-tab
        :scrollable?      true
        :scroll-on-press? true}]

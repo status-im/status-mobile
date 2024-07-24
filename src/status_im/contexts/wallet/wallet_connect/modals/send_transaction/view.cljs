@@ -1,10 +1,14 @@
 (ns status-im.contexts.wallet.wallet-connect.modals.send-transaction.view
   (:require [quo.core :as quo]
+            [quo.theme]
             [react-native.core :as rn]
             [react-native.safe-area :as safe-area]
             [status-im.contexts.wallet.wallet-connect.modals.common.data-block.view :as data-block]
+            [status-im.contexts.wallet.wallet-connect.modals.common.fees-data-item.view :as
+             fees-data-item]
             [status-im.contexts.wallet.wallet-connect.modals.common.footer.view :as footer]
             [status-im.contexts.wallet.wallet-connect.modals.common.header.view :as header]
+            [status-im.contexts.wallet.wallet-connect.modals.common.page-nav.view :as page-nav]
             [status-im.contexts.wallet.wallet-connect.modals.common.style :as style]
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]))
@@ -20,11 +24,8 @@
                 error-state]} (rf/sub [:wallet-connect/current-request-transaction-information])]
     [rn/view {:style (style/container bottom)}
      [quo/gradient-cover {:customization-color customization-color}]
-     [quo/page-nav
-      {:icon-name           :i/close
-       :background          :blur
-       :on-press            #(rf/dispatch [:navigate-back])
-       :accessibility-label :wallet-connect-sign-message-close}]
+     [page-nav/view
+      {:accessibility-label :wallet-connect-sign-message-close}]
      [rn/view {:flex 1}
       [rn/view {:style style/data-content-container}
        [header/view
@@ -42,7 +43,7 @@
                                  :not-enough-assets
                                  :t/not-enough-assets))}])
       [footer/view
-       {:warning-label     (i18n/label :t/wallet-connect-send-transaction-warning)
+       {:warning-label     (i18n/label :t/wallet-connect-sign-warning)
         :slide-button-text (i18n/label :t/slide-to-send)
         :disabled?         error-state}
        [quo/data-item
@@ -53,11 +54,7 @@
          :subtitle-type   :network
          :network-image   (:source network)
          :subtitle        (:full-name network)}]
-       [quo/data-item
-        {:size            :small
-         :status          :default
-         :card?           false
-         :container-style style/data-item
-         :title           (i18n/label :t/max-fees)
-         :subtitle        (or max-fees-fiat-formatted (i18n/label :t/no-fees))}]]]]))
+       [fees-data-item/view
+        {:fees       max-fees-fiat-formatted
+         :fees-error error-state}]]]]))
 

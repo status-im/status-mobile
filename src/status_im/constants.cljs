@@ -45,6 +45,11 @@
 (def ^:const activity-center-membership-status-accepted 2)
 (def ^:const activity-center-membership-status-declined 3)
 
+;; Choose the maximum number of notifications that *usually/safely* fit on
+;; most screens, so that the UI doesn't have to needlessly render
+;; notifications.
+(def ^:const notifications-per-page 7)
+
 (def ^:const mute-for-15-mins-type 1)
 (def ^:const mute-for-1-hour-type 2)
 (def ^:const mute-for-8-hours-type 3)
@@ -126,6 +131,7 @@
 (def ^:const profile-pictures-visibility-none 3)
 
 (def ^:const min-password-length 6)
+(def ^:const pincode-length 6)
 (def ^:const new-password-min-length 10)
 (def ^:const max-group-chat-participants 20)
 (def ^:const max-group-chat-name-length 24)
@@ -275,14 +281,20 @@
   #{wallet-connect-personal-sign-method
     wallet-connect-eth-sign-method
     wallet-connect-eth-send-transaction-method
-    wallet-connect-eth-sign-transaction-method
+    ;; NOTE: disabled, as we have no clear use cases for it and other wallets don't support it
+    ;; wallet-connect-eth-sign-transaction-method
     wallet-connect-eth-sign-typed-method
     wallet-connect-eth-sign-typed-v4-method})
 (def ^:const wallet-connect-supported-events #{"accountsChanged" "chainChanged"})
 (def ^:const wallet-connect-session-proposal-event "session_proposal")
 (def ^:const wallet-connect-session-request-event "session_request")
+(def ^:const wallet-connect-session-delete-event "session_delete")
+(def ^:const wallet-connect-user-rejected-error-key "USER_REJECTED")
+(def ^:const wallet-connect-user-disconnected-reason-key "USER_DISCONNECTED")
 
 (def ^:const transaction-pending-type-wallet-connect-transfer "WalletConnectTransfer")
+
+(def ^:const token-sort-priority {"SNT" 1 "STT" 1 "ETH" 2 "DAI" 3})
 
 (def ^:const dapp-permission-contact-code "contact-code")
 (def ^:const dapp-permission-web3 "web3")
@@ -369,16 +381,18 @@
 (def ^:const local-pairing-role-receiver "receiver")
 
 ;; sender and receiver events
+(def ^:const local-pairing-event-peer-discovered "peer-discovered")
 (def ^:const local-pairing-event-connection-success "connection-success")
 (def ^:const local-pairing-event-connection-error "connection-error")
 (def ^:const local-pairing-event-transfer-success "transfer-success")
 (def ^:const local-pairing-event-transfer-error "transfer-error")
+(def ^:const local-pairing-event-received-installation "received-installation")
 
 ;; receiver events
 (def ^:const local-pairing-event-received-account "received-account")
 (def ^:const local-pairing-event-process-success "process-success")
 (def ^:const local-pairing-event-process-error "process-error")
-(def ^:const local-pairing-event-received-installation "received-installation")
+(def ^:const local-pairing-event-received-keystore-files "received-keystore-files")
 
 (def ^:const local-pairing-event-errors
   #{local-pairing-event-connection-error
@@ -389,6 +403,8 @@
 (def ^:const local-pairing-action-pairing-account 2)
 (def ^:const local-pairing-action-sync-device 3)
 (def ^:const local-pairing-action-pairing-installation 4)
+(def ^:const local-pairing-action-peer-discovery 5)
+(def ^:const local-pairing-action-keystore-files-transfer 6)
 
 (def ^:const serialization-key
   "We pass this serialization key as a parameter to MultiformatSerializePublicKey
@@ -500,6 +516,9 @@
 (def ^:const optimism-full-name "Optimism")
 (def ^:const arbitrum-full-name "Arbitrum")
 
+(def ^:const sepolia-full-name "Sepolia")
+(def ^:const goerli-full-name "Goerli")
+
 (def ^:const mainnet-network-name :mainnet)
 (def ^:const ethereum-network-name :ethereum)
 (def ^:const optimism-network-name :optimism)
@@ -555,3 +574,14 @@
 (def ^:const default-telemetry-server-url "https://telemetry.status.im")
 
 (def ^:const contact-item-height 56)
+
+(def ^:const slippages [0.1 0.5 1])
+(def ^:const default-slippage 0.5)
+(def ^:const max-recommended-slippage 5)
+(def ^:const max-slippage-decimal-places 2)
+(def ^:const swap-default-provider
+  {:name                     :paraswap
+   :full-name                "Paraswap"
+   :color                    :blue
+   :contract-address         "0xdef171fe48cf0115b1d80b88dc8eab59176fee57"
+   :terms-and-conditions-url "https://files.paraswap.io/tos_v4.pdf"})

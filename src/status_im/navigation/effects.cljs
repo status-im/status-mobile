@@ -104,14 +104,14 @@
 ;;;; Navigate to within stack
 
 (defn- navigate-to-within-stack
-  [[component comp-id]]
+  [[component comp-id theme]]
   (let [{:keys [options]} (get views/screens component)]
     (navigation/push
      (name comp-id)
      {:component {:id      component
                   :name    component
                   :options (merge
-                            (options/root-options {:theme (:theme options)})
+                            (options/root-options {:theme theme})
                             options)}})
     (state/navigation-state-push {:id     component
                                   :type   :stack
@@ -230,6 +230,7 @@
  (fn [] (navigation/dissmiss-overlay "bottom-sheet")))
 
 ;;;; Alert Banner
+
 (rf/reg-fx :show-alert-banner
  (fn [[view-id theme]]
    (show-overlay "alert-banner"
@@ -245,67 +246,17 @@
    (reset! state/alert-banner-shown? false)
    (reload-status-nav-color-fx [view-id theme])))
 
-;;;; Merge options
+;;;; NFC sheet
 
-(rf/reg-fx :merge-options
- (fn [{:keys [id options]}]
-   (navigation/merge-options id options)))
+(rf/reg-fx :show-nfc-sheet
+ (fn [] (show-overlay "nfc-sheet")))
+
+(rf/reg-fx :hide-nfc-sheet
+ (fn [] (navigation/dissmiss-overlay "nfc-sheet")))
 
 ;;;; Legacy (should be removed in status 2.0)
-
-(defn- get-screen-component
-  [component]
-  (let [{:keys [options]} (get views/screens component)]
-    {:component {:id      component
-                 :name    component
-                 :options (merge (options/statusbar-and-navbar-options (:theme options) nil nil)
-                                 options)}}))
-
-(rf/reg-fx :set-stack-root-fx
- (fn [[stack component]]
-   ;; We don't have bottom tabs as separate stacks anymore,. So the old way of pushing screens in
-   ;; specific tabs will not work. Disabled set-stack-root for :shell-stack as it is not working
-   ;; and currently only being used for browser and some rare keycard flows after login
-   (when-not (= @state/root-id :shell-stack)
-     (log/debug :set-stack-root-fx stack component)
-     (navigation/set-stack-root
-      (name stack)
-      (if (vector? component)
-        (mapv get-screen-component component)
-        (get-screen-component component))))))
-
 (rf/reg-fx :show-popover
  (fn [] (show-overlay "popover")))
 
 (rf/reg-fx :hide-popover
  (fn [] (navigation/dissmiss-overlay "popover")))
-
-(rf/reg-fx :show-visibility-status-popover
- (fn [] (show-overlay "visibility-status-popover")))
-
-(rf/reg-fx :hide-visibility-status-popover
- (fn [] (navigation/dissmiss-overlay "visibility-status-popover")))
-
-(rf/reg-fx :show-wallet-connect-sheet
- (fn [] (show-overlay "wallet-connect-sheet")))
-
-(rf/reg-fx :hide-wallet-connect-sheet
- (fn [] (navigation/dissmiss-overlay "wallet-connect-sheet")))
-
-(rf/reg-fx :show-wallet-connect-success-sheet
- (fn [] (show-overlay "wallet-connect-success-sheet")))
-
-(rf/reg-fx :hide-wallet-connect-success-sheet
- (fn [] (navigation/dissmiss-overlay "wallet-connect-success-sheet")))
-
-(rf/reg-fx :show-wallet-connect-app-management-sheet
- (fn [] (show-overlay "wallet-connect-app-management-sheet")))
-
-(rf/reg-fx :hide-wallet-connect-app-management-sheet
- (fn [] (navigation/dissmiss-overlay "wallet-connect-app-management-sheet")))
-
-(rf/reg-fx :show-signing-sheet
- (fn [] (show-overlay "signing-sheet")))
-
-(rf/reg-fx :hide-signing-sheet
- (fn [] (navigation/dissmiss-overlay "signing-sheet")))

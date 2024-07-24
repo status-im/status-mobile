@@ -2,8 +2,19 @@
   (:require
     [cljs.test :refer-macros [is testing]]
     [re-frame.db :as rf-db]
+    [status-im.contexts.wallet.common.utils.networks :as network-utils]
     status-im.contexts.wallet.send.events
-    [test-helpers.unit :as h]))
+    [status-im.contexts.wallet.send.utils :as send-utils]
+    [test-helpers.unit :as h]
+    [utils.money :as money]))
+
+(defn collectible-with-balance
+  [balance]
+  {:name "DOG #1"
+   :description
+   "dogs are cute and this one is the cutestdogs are cute and this one is the cutest"
+   :ownership [{:address "0x01"
+                :balance balance}]})
 
 (h/deftest-event :wallet/update-receiver-networks
   [event-id dispatch]
@@ -12,19 +23,6 @@
           selected-networks-after  [:ethereum :optimism]
           expected-db              {:wallet {:ui {:send {:receiver-networks selected-networks-after}}}}]
       (reset! rf-db/app-db {:wallet {:ui {:send {:receiver-networks selected-networks-before}}}})
-      (is (match? expected-db (:db (dispatch [event-id selected-networks-after]))))))
-
-  (testing "if receiver network removed, it is also removed from disabled ones"
-    (let [selected-networks-before       [:ethereum :optimism :arbitrum]
-          selected-networks-after        [:ethereum :optimism]
-          disabled-from-chain-ids-before [:optimism :arbitrum]
-          disabled-from-chain-ids-after  [:optimism]
-          expected-db                    {:wallet {:ui {:send {:receiver-networks selected-networks-after
-                                                               :disabled-from-chain-ids
-                                                               disabled-from-chain-ids-after}}}}]
-      (reset! rf-db/app-db {:wallet {:ui {:send {:receiver-networks selected-networks-before
-                                                 :disabled-from-chain-ids
-                                                 disabled-from-chain-ids-before}}}})
       (is (match? expected-db (:db (dispatch [event-id selected-networks-after])))))))
 
 (h/deftest-event :wallet/set-token-to-send
@@ -163,3 +161,298 @@
         result     (dispatch [event-id {:amount amount}])]
     (testing "amount set"
       (is (match? amount (get-in result [:db :wallet :ui :send :amount]))))))
+
+(h/deftest-event :wallet/clean-send-data
+  [event-id dispatch]
+  (let [token-symbol      "ETH"
+        token             {:symbol   "ETH"
+                           :name     "Ether"
+                           :networks #{{:chain-id 421614}
+                                       {:chain-id 11155420}
+                                       {:chain-id 11155111}}}
+        receiver-networks [421614 11155420]]
+    (reset! rf-db/app-db
+      {:wallet {:ui {:send        {:token-display-name token-symbol
+                                   :token              token
+                                   :receiver-networks  receiver-networks}
+                     :other-props :value}}})
+    (is (not (contains? (get-in (dispatch [event-id]) [:db :wallet :ui]) :send)))))
+
+(h/deftest-event :wallet/select-address-tab
+  [event-id dispatch]
+  (let [expected-db {:wallet {:ui {:send {:select-address-tab "tab"}}}}]
+    (reset! rf-db/app-db
+      {:wallet {:ui {:send nil}}})
+    (is (match? expected-db (:db (dispatch [event-id "tab"]))))))
+
+(h/deftest-event :wallet/clean-send-address
+  [event-id dispatch]
+  (reset! rf-db/app-db
+    {:wallet {:ui {:send {:to-address  "0x01"
+                          :recipient   {:recipient-type :saved-address
+                                        :label          "label"}
+                          :other-props :value}}}})
+  (is (not (contains? (get-in (dispatch [event-id]) [:db :wallet :ui :send]) :to-address)))
+  (is (not (contains? (get-in (dispatch [event-id]) [:db :wallet :ui :send]) :recipient)))
+  (is (contains? (get-in (dispatch [event-id]) [:db :wallet :ui :send]) :other-props)))
+
+(h/deftest-event :wallet/clean-send-amount
+  [event-id dispatch]
+  (reset! rf-db/app-db
+    {:wallet {:ui {:send {:amount      10
+                          :other-props :value}}}})
+  (is (not (contains? (get-in (dispatch [event-id]) [:db :wallet :ui :send]) :amount)))
+  (is (contains? (get-in (dispatch [event-id]) [:db :wallet :ui :send]) :other-props)))
+
+(h/deftest-event :wallet/clean-disabled-from-networks
+  [event-id dispatch]
+  (reset! rf-db/app-db
+    {:wallet {:ui {:send {:disabled-from-chain-ids [:optimism]
+                          :other-props             :value}}}})
+  (is (not (contains? (get-in (dispatch [event-id]) [:db :wallet :ui :send]) :disabled-from-chain-ids)))
+  (is (contains? (get-in (dispatch [event-id]) [:db :wallet :ui :send]) :other-props)))
+
+(h/deftest-event :wallet/clean-from-locked-amounts
+  [event-id dispatch]
+  (reset! rf-db/app-db
+    {:wallet {:ui {:send {:from-locked-amounts "value"
+                          :other-props         :value}}}})
+  (is (not (contains? (get-in (dispatch [event-id]) [:db :wallet :ui :send]) :from-locked-amounts)))
+  (is (contains? (get-in (dispatch [event-id]) [:db :wallet :ui :send]) :other-props)))
+
+(h/deftest-event :wallet/disable-from-networks
+  [event-id dispatch]
+  (let [expected-db {:wallet {:ui {:send {:disabled-from-chain-ids [:optimism]
+                                          :other-props             :value}}}}]
+    (reset! rf-db/app-db
+      {:wallet {:ui {:send {:other-props :value}}}})
+    (is (match? expected-db (:db (dispatch [event-id [:optimism]]))))))
+
+(h/deftest-event :wallet/unlock-from-amount
+  [event-id dispatch]
+  (let [expected-db {:wallet {:ui {:send {:other-props         :value
+                                          :from-locked-amounts {}}}}}]
+    (reset! rf-db/app-db
+      {:wallet {:ui {:send {:other-props         :value
+                            :from-locked-amounts {:chain-id [1 10]}}}}})
+    (is (match? expected-db (:db (dispatch [event-id :chain-id]))))))
+
+(h/deftest-event :wallet/lock-from-amount
+  [event-id dispatch]
+  (let [expected-db {:wallet {:ui {:send {:other-props         :value
+                                          :from-locked-amounts {:amount 10}}}}}]
+    (reset! rf-db/app-db
+      {:wallet {:ui {:send {:other-props :value}}}})
+    (is (match? expected-db (:db (dispatch [event-id :amount 10]))))))
+
+(h/deftest-event :wallet/clean-selected-token
+  [event-id dispatch]
+  (reset! rf-db/app-db
+    {:wallet {:ui {:send {:other-props        :value
+                          :token              "ETH"
+                          :token-display-name "ETH"
+                          :tx-type            :tx/collectible-erc-721}}}})
+  (is (not (contains? (get-in (dispatch [event-id]) [:db :wallet :ui :send]) :token)))
+  (is (not (contains? (get-in (dispatch [event-id]) [:db :wallet :ui :send]) :token-display-name)))
+  (is (not (contains? (get-in (dispatch [event-id]) [:db :wallet :ui :send]) :tx-type)))
+  (is (contains? (get-in (dispatch [event-id]) [:db :wallet :ui :send]) :other-props)))
+
+(h/deftest-event :wallet/clean-selected-collectible
+  [event-id dispatch]
+  (reset! rf-db/app-db
+    {:wallet {:ui {:send {:other-props        :value
+                          :collectible        "ETH"
+                          :token-display-name "ETH"
+                          :amount             10}}}})
+  (is (not (contains? (get-in (dispatch [event-id]) [:db :wallet :ui :send]) :collectible)))
+  (is (not (contains? (get-in (dispatch [event-id]) [:db :wallet :ui :send]) :token-display-name)))
+  (is (not (contains? (get-in (dispatch [event-id]) [:db :wallet :ui :send]) :amount)))
+  (is (contains? (get-in (dispatch [event-id]) [:db :wallet :ui :send]) :other-props)))
+
+(h/deftest-event :wallet/clean-suggested-routes
+  [event-id dispatch]
+  (reset! rf-db/app-db
+    {:wallet {:ui {:send
+                   {:other-props                     :value
+                    :suggested-routes                ["1" "2"]
+                    :route                           "1"
+                    :amount                          10
+                    :from-values-by-chain            [{:chain-id 1} {:chain-id 10} {:chain-id 42161}]
+                    :to-values-by-chain              [{:chain-id 1} {:chain-id 10} {:chain-id 42161}]
+                    :sender-network-values           [:eth :arb1]
+                    :receiver-network-values         [:eth :arb1]
+                    :network-links                   [{:from-chain-id 1
+                                                       :to-chain-id   10
+                                                       :position-diff 1}]
+                    :loading-suggested-routes?       false
+                    :suggested-routes-call-timestamp ["1" "2"]}}}})
+  (is (not (contains? (get-in (dispatch [event-id]) [:db :wallet :ui :send]) :suggested-routes)))
+  (is (not (contains? (get-in (dispatch [event-id]) [:db :wallet :ui :send]) :route)))
+  (is (not (contains? (get-in (dispatch [event-id]) [:db :wallet :ui :send]) :amount)))
+  (is (not (contains? (get-in (dispatch [event-id]) [:db :wallet :ui :send]) :from-values-by-chain)))
+  (is (not (contains? (get-in (dispatch [event-id]) [:db :wallet :ui :send]) :to-values-by-chain)))
+  (is (not (contains? (get-in (dispatch [event-id]) [:db :wallet :ui :send]) :sender-network-values)))
+  (is (not (contains? (get-in (dispatch [event-id]) [:db :wallet :ui :send]) :receiver-network-values)))
+  (is (not (contains? (get-in (dispatch [event-id]) [:db :wallet :ui :send]) :network-links)))
+  (is (not (contains? (get-in (dispatch [event-id]) [:db :wallet :ui :send])
+                      :loading-suggested-routes?)))
+  (is (not (contains? (get-in (dispatch [event-id]) [:db :wallet :ui :send])
+                      :suggested-routes-call-timestamp)))
+  (is (contains? (get-in (dispatch [event-id]) [:db :wallet :ui :send]) :other-props)))
+
+(h/deftest-event :wallet/suggested-routes-error
+  [event-id dispatch]
+  (let [sender-network-amounts   [{:chain-id 1 :total-amount (money/bignumber "100") :type :loading}
+                                  {:chain-id 10 :total-amount (money/bignumber "200") :type :default}]
+        receiver-network-amounts [{:chain-id 1 :total-amount (money/bignumber "100") :type :loading}]
+        expected-result          {:db {:wallet {:ui {:send
+                                                     {:sender-network-values
+                                                      (send-utils/reset-loading-network-amounts-to-zero
+                                                       sender-network-amounts)
+                                                      :receiver-network-values
+                                                      (send-utils/reset-loading-network-amounts-to-zero
+                                                       receiver-network-amounts)
+                                                      :loading-suggested-routes? false
+                                                      :suggested-routes {:best []}}}}}
+                                  :fx [[:dispatch
+                                        [:toasts/upsert
+                                         {:id   :send-transaction-error
+                                          :type :negative
+                                          :text "error"}]]]}]
+    (reset! rf-db/app-db
+      {:wallet {:ui {:send {:sender-network-values     sender-network-amounts
+                            :receiver-network-values   receiver-network-amounts
+                            :route                     :values
+                            :loading-suggested-routes? true}}}})
+    (is (match? expected-result (dispatch [event-id {:message "error"}])))))
+
+(h/deftest-event :wallet/reset-network-amounts-to-zero
+  [event-id dispatch]
+  (let [sender-network-values   [{:chain-id 1 :total-amount (money/bignumber "100") :type :default}
+                                 {:chain-id 10 :total-amount (money/bignumber "200") :type :default}]
+        receiver-network-values [{:chain-id 1 :total-amount (money/bignumber "100") :type :loading}]
+        disabled-from-chain-ids [:ethereum]
+        sender-network-zero     (send-utils/reset-network-amounts-to-zero
+                                 {:network-amounts    sender-network-values
+                                  :disabled-chain-ids disabled-from-chain-ids})
+        receiver-network-zero   (send-utils/reset-network-amounts-to-zero
+                                 {:network-amounts    receiver-network-values
+                                  :disabled-chain-ids []})]
+    (testing "if sender-network-value and receiver-network-value are not empty"
+      (let [expected-db {:wallet {:ui {:send {:other-props             :value
+                                              :sender-network-values   sender-network-zero
+                                              :receiver-network-values receiver-network-zero}}}}]
+        (reset! rf-db/app-db
+          {:wallet {:ui {:send {:other-props             :value
+                                :sender-network-values   sender-network-values
+                                :receiver-network-values receiver-network-values
+                                :network-links           [{:from-chain-id 1
+                                                           :to-chain-id   10
+                                                           :position-diff 1}]}}}})
+        (is (match? expected-db (:db (dispatch [event-id]))))))
+    (testing "if only receiver-network-value is empty"
+      (let [expected-db {:wallet {:ui {:send {:other-props           :value
+                                              :sender-network-values sender-network-zero}}}}]
+        (reset! rf-db/app-db
+          {:wallet {:ui {:send {:other-props             :value
+                                :sender-network-values   sender-network-values
+                                :receiver-network-values []
+                                :network-links           [{:from-chain-id 1
+                                                           :to-chain-id   10
+                                                           :position-diff 1}]}}}})
+        (is (match? expected-db (:db (dispatch [event-id]))))))
+    (testing "if receiver-network-value and sender-network-values are empty"
+      (let [expected-db {:wallet {:ui {:send {:other-props :value}}}}]
+        (reset! rf-db/app-db
+          {:wallet {:ui {:send {:other-props             :value
+                                :sender-network-values   []
+                                :receiver-network-values []
+                                :network-links           [{:from-chain-id 1
+                                                           :to-chain-id   10
+                                                           :position-diff 1}]}}}})
+        (is (match? expected-db (:db (dispatch [event-id]))))))))
+
+(h/deftest-event :wallet/select-send-address
+  [event-id dispatch]
+  (let [address     "eth:arb1:0x01"
+        prefix      "eth:arb1:"
+        to-address  "0x01"
+        recipient   {:type  :saved-address
+                     :label "0x01...23f"}
+        stack-id    :screen/wallet.select-address
+        start-flow? false
+        tx-type     :tx/collectible-erc-721]
+    (testing "testing when collectible balance is more than 1"
+      (let [collectible       (collectible-with-balance 2)
+            testnet-enabled?  false
+            goerli-enabled?   false
+            receiver-networks (network-utils/resolve-receiver-networks
+                               {:prefix           prefix
+                                :testnet-enabled? testnet-enabled?
+                                :goerli-enabled?  goerli-enabled?})
+            expected-result   {:db {:wallet          {:ui {:send {:other-props :value
+                                                                  :recipient recipient
+                                                                  :to-address to-address
+                                                                  :address-prefix prefix
+                                                                  :receiver-preferred-networks
+                                                                  receiver-networks
+                                                                  :receiver-networks receiver-networks
+                                                                  :tx-type tx-type
+                                                                  :collectible collectible}}}
+                                    :profile/profile {:test-networks-enabled? false
+                                                      :is-goerli-enabled?     false}}
+                               :fx [nil
+                                    [:dispatch
+                                     [:wallet/wizard-navigate-forward
+                                      {:current-screen stack-id
+                                       :start-flow?    start-flow?
+                                       :flow-id        :wallet-send-flow}]]]}]
+        (reset! rf-db/app-db
+          {:wallet          {:ui {:send {:other-props :value
+                                         :tx-type     tx-type
+                                         :collectible collectible}}}
+           :profile/profile {:test-networks-enabled? testnet-enabled?
+                             :is-goerli-enabled?     goerli-enabled?}})
+        (is (match? expected-result
+                    (dispatch [event-id
+                               {:address     address
+                                :recipient   recipient
+                                :stack-id    stack-id
+                                :start-flow? start-flow?}])))))
+    (testing "testing when collectible balance is 1"
+      (let [collectible       (collectible-with-balance 1)
+            testnet-enabled?  false
+            goerli-enabled?   false
+            receiver-networks (network-utils/resolve-receiver-networks
+                               {:prefix           prefix
+                                :testnet-enabled? testnet-enabled?
+                                :goerli-enabled?  goerli-enabled?})
+            expected-result   {:db {:wallet          {:ui {:send {:other-props :value
+                                                                  :recipient recipient
+                                                                  :to-address to-address
+                                                                  :address-prefix prefix
+                                                                  :receiver-preferred-networks
+                                                                  receiver-networks
+                                                                  :receiver-networks receiver-networks
+                                                                  :tx-type tx-type
+                                                                  :collectible collectible}}}
+                                    :profile/profile {:test-networks-enabled? false
+                                                      :is-goerli-enabled?     false}}
+                               :fx [[:dispatch [:wallet/get-suggested-routes {:amount 1}]]
+                                    [:dispatch
+                                     [:wallet/wizard-navigate-forward
+                                      {:current-screen stack-id
+                                       :start-flow?    start-flow?
+                                       :flow-id        :wallet-send-flow}]]]}]
+        (reset! rf-db/app-db
+          {:wallet          {:ui {:send {:other-props :value
+                                         :tx-type     tx-type
+                                         :collectible collectible}}}
+           :profile/profile {:test-networks-enabled? testnet-enabled?
+                             :is-goerli-enabled?     goerli-enabled?}})
+        (is (match? expected-result
+                    (dispatch [event-id
+                               {:address     address
+                                :recipient   recipient
+                                :stack-id    stack-id
+                                :start-flow? start-flow?}])))))))

@@ -7,6 +7,7 @@
     [status-im.contexts.wallet.common.asset-list.view :as asset-list]
     [status-im.contexts.wallet.common.collectibles-tab.view :as collectibles-tab]
     [status-im.contexts.wallet.send.select-asset.style :as style]
+    [status-im.setup.hot-reload :as hot-reload]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
@@ -32,7 +33,7 @@
      {:collectibles         collectibles
       :filtered?            search-performed?
       :on-end-reached       #(rf/dispatch [:wallet/request-collectibles-for-current-viewing-account])
-      :on-collectible-press (fn [collectible]
+      :on-collectible-press (fn [{:keys [collectible]}]
                               (rf/dispatch [:wallet/set-collectible-to-send
                                             {:collectible    collectible
                                              :current-screen :screen/wallet.select-asset}]))}]))
@@ -66,9 +67,9 @@
                                           (rf/dispatch [:wallet/clean-selected-token])
                                           (rf/dispatch [:wallet/clean-selected-collectible])
                                           (rf/dispatch [:navigate-back]))]
-    (rn/use-unmount (fn []
-                      (rf/dispatch [:wallet/clean-selected-token])
-                      (rf/dispatch [:wallet/clean-selected-collectible])))
+    (hot-reload/use-safe-unmount (fn []
+                                   (rf/dispatch [:wallet/clean-selected-token])
+                                   (rf/dispatch [:wallet/clean-selected-collectible])))
     [rn/safe-area-view {:style style/container}
      [account-switcher/view
       {:icon-name     :i/arrow-left

@@ -8,10 +8,12 @@
 (defn view
   []
   [input-amount/view
-   {:current-screen-id :screen/wallet.send-input-amount
-    :button-one-label  (i18n/label :t/review-send)
-    :on-navigate-back  (fn []
-                         (rf/dispatch [:wallet/clean-disabled-from-networks])
-                         (rf/dispatch [:wallet/clean-from-locked-amounts])
-                         (rf/dispatch [:wallet/clean-send-amount])
-                         (rf/dispatch [:navigate-back]))}])
+   {:current-screen-id      :screen/wallet.send-input-amount
+    :button-one-label       (i18n/label :t/review-send)
+    :enabled-from-chain-ids (rf/sub
+                             [:wallet/wallet-send-enabled-from-chain-ids])
+    :from-enabled-networks  (rf/sub [:wallet/wallet-send-enabled-networks])
+    :on-navigate-back       (fn []
+                              (rf/dispatch [:wallet/clean-disabled-from-networks])
+                              (rf/dispatch [:wallet/clean-from-locked-amounts])
+                              (rf/dispatch [:wallet/clean-send-amount]))}])

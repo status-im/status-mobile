@@ -9,8 +9,10 @@
     [status-im.common.resources :as resources]
     [status-im.contexts.wallet.connected-dapps.disconnect-dapp.view :as disconnect-dapp]
     [status-im.contexts.wallet.connected-dapps.style :as style]
+    [status-im.contexts.wallet.wallet-connect.core :as core]
     [utils.i18n :as i18n]
-    [utils.re-frame :as rf]))
+    [utils.re-frame :as rf]
+    [utils.string]))
 
 (defn- on-disconnect
   [wallet-account {:keys [name topic]}]
@@ -19,7 +21,6 @@
    [:wallet-connect/disconnect-dapp
     {:topic      topic
      :on-success (fn []
-                   (rf/dispatch [:wallet-connect/remove-pairing-by-topic topic])
                    (rf/dispatch [:toasts/upsert
                                  {:id   :dapp-disconnect-success
                                   :type :positive
@@ -83,15 +84,17 @@
   []
   (let [{:keys [bottom]}                   (safe-area/get-insets)
         {:keys [color] :as wallet-account} (rf/sub [:wallet/current-viewing-account])
-        pairings                           (rf/sub [:wallet-connect/pairings])
-        theme                              (quo.theme/use-theme)]
+        sessions                           (rf/sub
+                                            [:wallet-connect/sessions-for-current-account])
+        theme                              (quo.theme/use-theme)
+        customization-color                (rf/sub [:profile/customization-color])]
     [rn/view {:flex 1}
      [header
       {:title          (i18n/label :t/connected-dapps)
        :wallet-account wallet-account
        :on-close       #(rf/dispatch [:navigate-back])
-       :on-add         #(js/alert "Feature not implemented")}]
-     (if (empty? pairings)
+       :on-add         #(rf/dispatch [:navigate-to :screen/wallet.scan-dapp])}]
+     (if (empty? sessions)
        [quo/empty-state
         {:title           (i18n/label :t/no-dapps)
          :description     (i18n/label :t/no-dapps-description)
@@ -99,16 +102,18 @@
          :container-style style/empty-container-style}]
        [rn/view (style/dapps-container bottom)
         [rn/flat-list
-         {:data                    pairings
+         {:data                    sessions
           :always-bounce-vertical  false
           :content-container-style (style/dapps-list theme)
-          :render-fn               (fn [{:keys                    [topic]
-                                         {:keys [icons name url]} :peerMetadata}]
+          :render-fn               (fn [{:keys [topic pairingTopic name url iconUrl]}]
                                      [quo/dapp
-                                      {:dapp                {:avatar (get icons 0)
-                                                             :name   name
-                                                             :value  url
-                                                             :topic  topic}
+                                      {:dapp                {:avatar (core/compute-dapp-icon-path iconUrl
+                                                                                                  url)
+                                                             :name (core/compute-dapp-name name url)
+                                                             :value url
+                                                             :topic topic
+                                                             :pairing-topic pairingTopic
+                                                             :customization-color customization-color}
                                        :accessibility-label (str "dapp-" topic)
                                        :state               :default
                                        :action              :icon

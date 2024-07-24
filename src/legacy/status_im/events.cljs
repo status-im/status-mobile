@@ -26,7 +26,6 @@
     legacy.status-im.ui.components.invite.events
     [legacy.status-im.ui.components.react :as react]
     legacy.status-im.ui.screens.notifications-settings.events
-    legacy.status-im.ui.screens.privacy-and-security-settings.events
     [legacy.status-im.utils.dimensions :as dimensions]
     legacy.status-im.utils.logging.core
     [legacy.status-im.utils.utils :as utils]
@@ -108,8 +107,7 @@
     (when (and (multiaccounts.model/logged-in? db)
                (= current-theme-type status-im.constants/theme-type-system))
       {:profile.settings/switch-theme-fx
-       [(get-in db [:profile/profile :appearance])
-        (:view-id db) true]})))
+       [(get-in db [:profile/profile :appearance]) (:view-id db)]})))
 
 (defn- on-biometric-auth-fail
   [{:keys [code]}]

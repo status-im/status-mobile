@@ -16,6 +16,7 @@
     [status-im.navigation.events :as navigation]
     [status-im.navigation.transitions :as transitions]
     [taoensso.timbre :as log]
+    [utils.collection :as collection-utils]
     [utils.re-frame :as rf]))
 
 (defn handle-community
@@ -154,7 +155,7 @@
 (defn update-previous-permission-addresses
   [{:keys [db]} [community-id]]
   (when community-id
-    (let [accounts                      (utils/sorted-non-watch-only-accounts db)
+    (let [accounts                      (utils/sorted-operable-non-watch-only-accounts db)
           selected-permission-addresses (get-in db
                                                 [:communities community-id
                                                  :selected-permission-addresses])
@@ -198,7 +199,7 @@
   [{:keys [db]} [community-id]]
   (let [share-all-addresses?      (get-in db [:communities community-id :share-all-addresses?])
         next-share-all-addresses? (not share-all-addresses?)
-        accounts                  (utils/sorted-non-watch-only-accounts db)
+        accounts                  (utils/sorted-operable-non-watch-only-accounts db)
         addresses                 (set (map :address accounts))]
     {:db (update-in db
                     [:communities community-id]
@@ -343,7 +344,7 @@
              (when (get-in db [:communities community-id :joined])
                [:dispatch
                 [:activity-center.notifications/dismiss-community-overview community-id]])]}
-       (when-not (or (= current-view-id :shell) (= current-view-id :communities-stack))
+       (when-not (#{:shell :communities-stack :discover-communities} current-view-id)
          (navigation/pop-to-root :shell-stack))))))
 
 (rf/reg-event-fx :communities/navigate-to-community-overview navigate-to-community-overview)
@@ -372,15 +373,14 @@
     (when (and community joined (not fetching-revealed-accounts))
       {:db (assoc-in db [:communities community-id :fetching-revealed-accounts] true)
        :json-rpc/call
-       [{:method      "wakuext_getRevealedAccounts"
-         :params      [community-id (get-in db [:profile/profile :public-key])]
-         :js-response true
-         :on-success  [:communities/get-revealed-accounts-success community-id on-success]
-         :on-error    (fn [err]
-                        (log/error {:message      "failed to fetch revealed accounts"
-                                    :community-id community-id
-                                    :err          err})
-                        (rf/dispatch [:communities/get-revealed-accounts-failed community-id]))}]})))
+       [{:method     "wakuext_latestRequestToJoinForCommunity"
+         :params     [community-id]
+         :on-success [:communities/get-revealed-accounts-success community-id on-success]
+         :on-error   (fn [err]
+                       (log/error {:message      "failed to fetch revealed accounts"
+                                   :community-id community-id
+                                   :err          err})
+                       (rf/dispatch [:communities/get-revealed-accounts-failed community-id]))}]})))
 
 (rf/reg-event-fx :communities/get-revealed-accounts get-revealed-accounts)
 
@@ -399,22 +399,18 @@
      [:json-rpc/call :schema.common/rpc-call]]]])
 
 (rf/reg-event-fx :communities/get-revealed-accounts-success
- (fn [{:keys [db]} [community-id on-success revealed-accounts-js]]
+ (fn [{:keys [db]} [community-id on-success request-to-join]]
    (when-let [community (get-in db [:communities community-id])]
-     (let [revealed-accounts
-           (reduce
-            (fn [acc {:keys [address] :as revealed-account}]
-              (assoc acc address revealed-account))
-            {}
-            (data-store.communities/<-revealed-accounts-rpc revealed-accounts-js))
-
+     (let [revealed-accounts (collection-utils/index-by :address (:revealedAccounts request-to-join))
+           share-future-addresses? (:shareFutureAddresses request-to-join)
            community-with-revealed-accounts
            (-> community
                (assoc :revealed-accounts revealed-accounts)
+               (assoc :share-future-addresses? share-future-addresses?)
                (dissoc :fetching-revealed-accounts))]
        {:db (assoc-in db [:communities community-id] community-with-revealed-accounts)
         :fx [(when (vector? on-success)
-               [:dispatch (conj on-success revealed-accounts)])]}))))
+               [:dispatch (conj on-success revealed-accounts share-future-addresses?)])]}))))
 
 (rf/reg-event-fx :communities/get-revealed-accounts-failed
  (fn [{:keys [db]} [community-id]]

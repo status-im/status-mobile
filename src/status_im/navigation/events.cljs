@@ -29,7 +29,7 @@
   {:events [:navigate-to-within-stack]}
   [{:keys [db]} comp-id screen-params]
   {:db (all-screens-params db (first comp-id) screen-params)
-   :fx [[:navigate-to-within-stack comp-id]]})
+   :fx [[:navigate-to-within-stack (conj comp-id (:theme db))]]})
 
 (re-frame/reg-event-fx :open-modal
  (fn [{:keys [db]} [component screen-params]]
@@ -74,11 +74,6 @@
   [{:keys [db]} root-id]
   {:set-root [root-id (:theme db)]})
 
-(rf/defn set-stack-root
-  {:events [:set-stack-root]}
-  [_ stack root]
-  {:set-stack-root-fx [stack root]})
-
 (rf/defn change-tab
   {:events [:navigate-change-tab]}
   [{:keys [db]} stack-id]
@@ -122,16 +117,6 @@
                   (if (seq sheets)
                     (hide-bottom-sheet new-cofx)
                     {:show-bottom-sheet {:theme theme}}))))))
-
-(rf/defn dismiss-all-overlays
-  {:events [:dismiss-all-overlays]}
-  [_]
-  {:dispatch-n [[:hide-popover]
-                [:hide-visibility-status-popover]
-                [:hide-bottom-sheet]
-                [:bottom-sheet-hidden]
-                [:bottom-sheet/hide-old-navigation-overlay]
-                [:toasts/close-all-toasts]]})
 
 (rf/defn set-view-id
   {:events [:set-view-id]}

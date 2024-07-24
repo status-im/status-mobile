@@ -12,7 +12,7 @@
       :balance
       js/parseInt))
 
-(def ^:const supported-collectible-types
+(def supported-collectible-types
   #{"image/jpeg"
     "image/gif"
     "image/bmp"
@@ -27,17 +27,6 @@
     (do
       (log/debug "unsupported collectible file type:" (or collectible-type "Unknown type"))
       false)))
-
-(defn total-owned-collectible
-  ([ownership]
-   (total-owned-collectible ownership false))
-  ([ownership address]
-   (reduce (fn [acc item]
-             (if (or (not address) (= (:address item) address))
-               (+ acc (js/parseInt (:balance item)))
-               acc))
-           0
-           ownership)))
 
 (defn collectible-owned-counter
   [total]

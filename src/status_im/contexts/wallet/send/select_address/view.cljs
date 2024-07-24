@@ -17,6 +17,7 @@
     [status-im.contexts.wallet.send.select-address.style :as style]
     [status-im.contexts.wallet.send.select-address.tabs.view :as tabs]
     [status-im.feature-flags :as ff]
+    [status-im.setup.hot-reload :as hot-reload]
     [utils.debounce :as debounce]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
@@ -76,6 +77,7 @@
                                     300)))
         :on-change-text        (fn [text]
                                  (rf/dispatch [:wallet/clean-local-suggestions])
+                                 (rf/dispatch [:wallet/searching-address])
                                  (validate-address text)
                                  (reset! input-value text))
         :valid-ens-or-address? valid-ens-or-address?}])))
@@ -176,19 +178,22 @@
                          (rf/dispatch [:wallet/clean-send-address])
                          (rf/dispatch [:wallet/clean-disabled-from-networks])
                          (rf/dispatch [:wallet/select-address-tab nil])
-                         (rf/dispatch [:navigate-back]))
+                         (rf/dispatch [:wallet/clean-current-viewing-account
+                                       :ignore-just-complete-transaction]))
         on-change-tab  #(rf/dispatch [:wallet/select-address-tab %])
         input-value    (reagent/atom "")
         input-focused? (reagent/atom false)]
     (fn []
       (let [selected-tab          (or (rf/sub [:wallet/send-tab]) (:id (first tabs-data)))
-            valid-ens-or-address? (boolean (rf/sub [:wallet/valid-ens-or-address?]))]
+            valid-ens-or-address? (boolean (rf/sub [:wallet/valid-ens-or-address?]))
+            searching-address?    (rf/sub [:wallet/searching-address?])]
+        (hot-reload/use-safe-unmount on-close)
         [floating-button-page/view
          {:content-container-style      {:flex 1}
           :footer-container-padding     0
           :keyboard-should-persist-taps true
           :header                       [account-switcher/view
-                                         {:on-press      on-close
+                                         {:on-press      #(rf/dispatch [:navigate-back])
                                           :margin-top    (safe-area/get-top)
                                           :switcher-type :select-account}]
           :footer                       (when-not (string/blank? @input-value)
@@ -198,7 +203,7 @@
            :title-accessibility-label :title-label}]
          [address-input input-value input-focused?]
          [quo/divider-line]
-         (when (and (not valid-ens-or-address?) (> (count @input-value) 0))
+         (when (and (not valid-ens-or-address?) (> (count @input-value) 0) (not searching-address?))
            [rn/view {:style {:padding 20}}
             [quo/info-message
              {:status :error

@@ -6,21 +6,27 @@
     [quo.theme]
     [react-native.core :as rn]
     [status-im.common.floating-button-page.view :as floating-button-page]
+    [status-im.contexts.wallet.wallet-connect.core :as wallet-connect-core]
     [status-im.contexts.wallet.wallet-connect.session-proposal.style :as style]
     [utils.i18n :as i18n]
-    [utils.re-frame :as rf]))
+    [utils.re-frame :as rf]
+    [utils.string]))
 
 (defn- dapp-metadata
   []
   (let [proposer                 (rf/sub [:wallet-connect/session-proposer])
-        {:keys [icons name url]} (:metadata proposer)]
+        {:keys [icons name url]} (:metadata proposer)
+        first-icon               (first icons)
+        dapp-name                (wallet-connect-core/compute-dapp-name name url)
+        profile-picture          (wallet-connect-core/compute-dapp-icon-path first-icon url)]
     [:<>
      [rn/view {:style style/dapp-avatar}
       [quo/user-avatar
-       {:profile-picture (first icons)
-        :size            :big}]]
+       {:profile-picture profile-picture
+        :size            :big
+        :full-name       dapp-name}]]
      [quo/page-top
-      {:title       name
+      {:title       dapp-name
        :description :context-tag
        :context-tag {:type    :icon
                      :size    32
@@ -31,18 +37,25 @@
   []
   (let [dapp-name (rf/sub [:wallet-connect/session-proposer-name])
         labels    [(i18n/label :t/check-your-account-balance-and-activity)
-                   (i18n/label :t/request-txns-and-message-signing)]]
-    [rn/view {:style style/approval-note-container}
-     [quo/text {:style style/approval-note-title}
+                   (i18n/label :t/request-txns-and-message-signing)]
+        theme     (quo.theme/use-theme)]
+    [rn/view {:style (style/approval-note-container theme)}
+     [quo/text
+      {:style  style/approval-note-title
+       :weight :regular
+       :size   :paragraph-2}
       (i18n/label :t/dapp-will-be-able-to {:dapp-name dapp-name})]
      (map-indexed
       (fn [idx label]
         ^{:key (str idx label)}
         [rn/view {:style style/approval-note-li}
          [quo/icon :i/bullet
-          {:color colors/neutral-50}]
-         [rn/view {:style style/approval-li-spacer}]
-         [quo/text label]])
+          {:color colors/neutral-40}]
+         [quo/text
+          {:weight :regular
+           :size   :paragraph-2
+           :color  colors/neutral-40}
+          label]])
       labels)]))
 
 (defn- format-network-name
@@ -57,16 +70,14 @@
 
 (defn- accounts-list
   []
-  (let [accounts         (rf/sub [:wallet/accounts-without-watched-accounts])
+  (let [accounts         (rf/sub [:wallet/operable-accounts])
         selected-address (rf/sub [:wallet-connect/current-proposal-address])]
     [rn/view {:style style/account-switcher-list}
-     (for [account accounts]
-       ^{:key (-> account :address str)}
+     (for [{:keys [address] :as account} accounts]
+       ^{:key (str address)}
        [quo/account-item
         {:type          :default
-         :state         (if (and selected-address
-                                 (= (account :address)
-                                    selected-address))
+         :state         (if (= address selected-address)
                           :selected
                           :default)
          :account-props account
@@ -101,12 +112,10 @@
                                                       (map format-network-name)
                                                       (string/join ", "))
         network-images                           (mapv :source session-networks)
-        data-item-common-props                   {:blur?       false
-                                                  :description :default
-                                                  :card?       false
-                                                  :label       :preview
-                                                  :status      :default
-                                                  :size        :large}
+        data-item-common-props                   {:blur?  false
+                                                  :card?  false
+                                                  :status :default
+                                                  :size   :large}
         account-data-item-props                  (assoc data-item-common-props
                                                         :right-content {:type :accounts
                                                                         :size :size-32
@@ -116,9 +125,7 @@
                                                         :on-press      show-account-switcher-bottom-sheet
                                                         :title         (i18n/label :t/account-title)
                                                         :subtitle      name
-                                                        :icon-right?   true
-                                                        :right-icon    :i/chevron-right
-                                                        :icon-color    colors/neutral-10)
+                                                        :right-icon    :i/chevron-right)
         networks-data-item-props                 (assoc data-item-common-props
                                                         :right-content {:type :network
                                                                         :data network-images}
@@ -136,18 +143,21 @@
   []
   (let [customization-color (rf/sub [:profile/customization-color])]
     [quo/bottom-actions
-     {:actions          :two-actions
-      :button-two-label (i18n/label :t/decline)
-      :button-two-props {:type                :grey
-                         :accessibility-label :wc-deny-connection
-                         :on-press            #(do (rf/dispatch [:navigate-back])
-                                                   (rf/dispatch
-                                                    [:wallet-connect/reset-current-session]))}
-      :button-one-label (i18n/label :t/connect)
-      :button-one-props {:customization-color customization-color
-                         :type                :primary
-                         :accessibility-label :wc-connect
-                         :on-press            #(rf/dispatch [:wallet-connect/approve-session])}}]))
+     {:actions                 :two-actions
+      :buttons-container-style style/footer-buttons-container
+      :button-two-label        (i18n/label :t/decline)
+      :button-two-props        {:type                :grey
+                                :accessibility-label :wc-deny-connection
+                                :on-press            (fn []
+                                                       (rf/dispatch [:navigate-back])
+                                                       (rf/dispatch
+                                                        [:wallet-connect/reject-session-proposal]))}
+      :button-one-label        (i18n/label :t/connect)
+      :button-one-props        {:customization-color customization-color
+                                :type                :primary
+                                :accessibility-label :wc-connect
+                                :on-press            #(rf/dispatch
+                                                       [:wallet-connect/approve-session])}}]))
 
 (defn- header
   []

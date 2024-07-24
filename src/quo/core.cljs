@@ -86,6 +86,7 @@
     quo.components.list-items.account-list-card.view
     quo.components.list-items.account.view
     quo.components.list-items.address.view
+    quo.components.list-items.approval-info.view
     quo.components.list-items.channel.view
     quo.components.list-items.community.view
     quo.components.list-items.dapp.view
@@ -120,6 +121,7 @@
     quo.components.overlay.view
     quo.components.password.password-tips.view
     quo.components.password.tips.view
+    quo.components.pin-input.view
     quo.components.profile.collectible-list-item.view
     quo.components.profile.collectible.view
     quo.components.profile.expanded-collectible.view
@@ -145,6 +147,7 @@
     quo.components.settings.settings-item.view
     quo.components.share.qr-code.view
     quo.components.share.share-qr-code.view
+    quo.components.slideshow.slider-bar.view
     quo.components.switchers.group-messaging-card.view
     quo.components.tabs.account-selector
     quo.components.tabs.segmented-tab
@@ -183,6 +186,7 @@
     quo.components.wallet.progress-bar.view
     quo.components.wallet.required-tokens.view
     quo.components.wallet.summary-info.view
+    quo.components.wallet.swap-input.view
     quo.components.wallet.token-input.view
     quo.components.wallet.transaction-progress.view
     quo.components.wallet.transaction-summary.view
@@ -320,6 +324,9 @@
 (def keyboard-key quo.components.numbered-keyboard.keyboard-key.view/view)
 (def numbered-keyboard quo.components.numbered-keyboard.numbered-keyboard.view/view)
 
+;;;; PIN input
+(def pin-input quo.components.pin-input.view/view)
+
 ;;;; Links
 (def internal-link-card quo.components.links.internal-link-card.view/view)
 (def link-preview quo.components.links.link-preview.view/view)
@@ -330,6 +337,7 @@
 (def account-item quo.components.list-items.account.view/view)
 (def account-list-card quo.components.list-items.account-list-card.view/view)
 (def address quo.components.list-items.address.view/view)
+(def approval-info quo.components.list-items.approval-info.view/view)
 (def channel quo.components.list-items.channel.view/view)
 (def community-list quo.components.list-items.community.view/view)
 (def dapp quo.components.list-items.dapp.view/view)
@@ -412,6 +420,9 @@
 (def qr-code quo.components.share.qr-code.view/view)
 (def share-qr-code quo.components.share.share-qr-code.view/view)
 
+;;;; Slideshow
+(def slider-bar quo.components.slideshow.slider-bar.view/view)
+
 ;;;; SWITCHER
 (def group-messaging-card quo.components.switchers.group-messaging-card.view/view)
 
@@ -462,6 +473,7 @@
 (def progress-bar quo.components.wallet.progress-bar.view/view)
 (def required-tokens quo.components.wallet.required-tokens.view/view)
 (def summary-info quo.components.wallet.summary-info.view/view)
+(def swap-input quo.components.wallet.swap-input.view/view)
 (def network-link quo.components.wallet.network-link.view/view)
 (def token-input quo.components.wallet.token-input.view/view)
 (def wallet-overview quo.components.wallet.wallet-overview.view/view)

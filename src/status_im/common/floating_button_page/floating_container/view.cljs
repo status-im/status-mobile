@@ -6,20 +6,20 @@
     [status-im.common.floating-button-page.floating-container.style :as style]))
 
 (defn- blur-container
-  [child]
+  [child shell-overlay?]
   (let [theme (quo.theme/use-theme)]
     [quo/blur
-     {:blur-amount 12
-      :blur-radius 12
-      :blur-type   theme}
-     [rn/view {:style style/blur-inner-container}
+     {:blur-amount   20
+      :blur-type     :transparent
+      :overlay-color :transparent}
+     [rn/view {:style (style/blur-inner-container theme shell-overlay?)}
       child]]))
 
 (defn view
-  [{:keys [on-layout keyboard-shown? blur?]} child]
+  [{:keys [on-layout keyboard-shown? blur? shell-overlay?]} child]
   [rn/view
    {:style     (style/content-container blur? keyboard-shown?)
     :on-layout on-layout}
    (if blur?
-     [blur-container child]
+     [blur-container child shell-overlay?]
      child)])

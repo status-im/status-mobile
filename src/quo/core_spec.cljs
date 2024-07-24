@@ -55,6 +55,7 @@
     quo.components.links.url-preview.component-spec
     quo.components.list-items.account.component-spec
     quo.components.list-items.address.component-spec
+    quo.components.list-items.approval-info.component-spec
     quo.components.list-items.channel.component-spec
     quo.components.list-items.community.component-spec
     quo.components.list-items.dapp.component-spec
@@ -86,6 +87,7 @@
     quo.components.settings.reorder-item.component-spec
     quo.components.settings.settings-item.component-spec
     quo.components.share.share-qr-code.component-spec
+    quo.components.slideshow.slider-bar.component-spec
     quo.components.switchers.base-card.component-spec
     quo.components.switchers.group-messaging-card.component-spec
     quo.components.tags.collectible-tag.component-spec
@@ -110,6 +112,7 @@
     quo.components.wallet.progress-bar.component-spec
     quo.components.wallet.required-tokens.component-spec
     quo.components.wallet.summary-info.component-spec
+    quo.components.wallet.swap-input.component-spec
     quo.components.wallet.token-input.component-spec
     quo.components.wallet.transaction-progress.component-spec
     quo.components.wallet.transaction-summary.component-spec

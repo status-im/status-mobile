@@ -8,6 +8,7 @@
     [react-native.safe-area :as safe-area]
     [reagent.core :as reagent]
     [status-im.common.scroll-page.view :as scroll-page]
+    [status-im.config :as config]
     [status-im.contexts.communities.actions.community-options.view :as options]
     [status-im.contexts.communities.discover.style :as style]
     [status-im.feature-flags :as ff]
@@ -76,12 +77,14 @@
      :data           [{:id                  :all
                        :label               (i18n/label :t/all)
                        :accessibility-label :all-communities-tab}
-                      {:id                  :open
-                       :label               (i18n/label :t/open)
-                       :accessibility-label :open-communities-tab}
-                      {:id                  :gated
-                       :label               (i18n/label :t/gated)
-                       :accessibility-label :gated-communities-tab}]}]])
+                      (when config/show-not-implemented-features?
+                        {:id                  :open
+                         :label               (i18n/label :t/open)
+                         :accessibility-label :open-communities-tab})
+                      (when config/show-not-implemented-features?
+                        {:id                  :gated
+                         :label               (i18n/label :t/gated)
+                         :accessibility-label :gated-communities-tab})]}]])
 
 (defn loading-community-item
   [_ _ _ {:keys [width]}]

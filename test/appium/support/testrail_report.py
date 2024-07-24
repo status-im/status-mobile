@@ -108,51 +108,23 @@ class TestrailReport(BaseTestReport):
         test_cases['pr'] = dict()
         test_cases['nightly'] = dict()
         test_cases['upgrade'] = dict()
-        ## PR e2e old UI
-        # test_cases['pr']['critical'] = 730
-        # test_cases['pr']['contacts'] = 50831
-        # test_cases['pr']['public_chat'] = 50654
-        # test_cases['pr']['one_to_one_chat'] = 50655
-        # test_cases['pr']['group_chat'] = 50656
-        # test_cases['pr']['onboarding'] = 50659
-        # test_cases['pr']['recovery'] = 50660
-        # test_cases['pr']['wallet'] = 50661
-        # test_cases['pr']['send_tx'] = 50662
-        # test_cases['pr']['keycard_tx'] = 50663
-        # test_cases['pr']['1_1_chat_commands'] = 50825
-        # test_cases['pr']['ens'] = 50827
-        # test_cases['pr']['sync'] = 50834
-        # test_cases['pr']['browser'] = 50812
 
+        # PR e2e
         test_cases['pr']['critical'] = 50955
-        test_cases['pr']['one_to_one_chat'] = 50956
-        test_cases['pr']['deep_links'] = 51535
-        test_cases['pr']['group_chat'] = 50964
-        test_cases['pr']['community_single'] = 50983
-        test_cases['pr']['community_multiple'] = 50982
-        test_cases['pr']['activity_centre_contact_request'] = 50984
-        test_cases['pr']['activity_centre_other'] = 51005
+        # test_cases['pr']['one_to_one_chat'] = 50956
+        # test_cases['pr']['community_single'] = 50983
         test_cases['pr']['wallet'] = 59443
 
-        ## Nightly e2e
-        # test_cases['nightly']['activity_center'] = 736
-        # test_cases['nightly']['chat'] = 50811
-        # test_cases['nightly']['browser'] = 50826
-        # test_cases['nightly']['profile'] = 50828
-        # test_cases['nightly']['deep_link'] = 50836
-        # test_cases['nightly']['share_profile'] = 50837
-        # test_cases['nightly']['chat_2'] = 50838
-        # test_cases['nightly']['group_chat'] = 50839
-        # test_cases['nightly']['pairing'] = 50840
-        # test_cases['nightly']['activity_center'] = 50833
-        # test_cases['nightly']['timeline'] = 50842
-        # test_cases['nightly']['community'] = 50841
-        # test_cases['nightly']['permissions'] = 50843
-        # test_cases['nightly']['scan qr'] = 50844
-        # test_cases['nightly']['mentions'] = 50845
-        # test_cases['nightly']['mutual_contact_requests'] = 50857
-        # test_cases['nightly']['keycard'] = 50850
-        # test_cases['nightly']['wallet'] = 50851
+        # Nightly e2e
+        test_cases['nightly']['critical'] = 50955
+        test_cases['nightly']['one_to_one_chat'] = 50956
+        test_cases['nightly']['deep_links'] = 51535
+        test_cases['nightly']['group_chat'] = 50964
+        test_cases['nightly']['community_single'] = 50983
+        test_cases['nightly']['community_multiple'] = 50982
+        test_cases['nightly']['activity_centre_contact_request'] = 50984
+        test_cases['nightly']['activity_centre_other'] = 51005
+        test_cases['nightly']['wallet'] = 59443
 
         ## Upgrade e2e
         # test_cases['upgrade']['general'] = 881
@@ -163,10 +135,14 @@ class TestrailReport(BaseTestReport):
                 key, value = arg.split('=')
                 case_ids = value.split(',')
         if len(case_ids) == 0:
-            # if 'critical' in argv:
-            if 'new_ui_critical' in argv:
+            if 'smoke' in argv:
                 for category in test_cases['pr']:
                     for case in self.get_cases([test_cases['pr'][category]]):
+                        case_ids.append(case['id'])
+                case_ids.extend([703133, 702742, 702745])
+            elif 'nightly' in argv:
+                for category in test_cases['nightly']:
+                    for case in self.get_cases([test_cases['nightly'][category]]):
                         case_ids.append(case['id'])
             elif 'upgrade' in argv and 'not upgrade' not in argv:
                 for case in self.get_cases([test_cases['upgrade']['general']]):

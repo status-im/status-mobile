@@ -7,9 +7,11 @@
     [react-native.safe-area :as safe-area]
     [status-im.common.check-before-syncing.view :as check-before-syncing]
     [status-im.common.confirmation-drawer.view :as confirmation-drawer]
+    [status-im.common.metrics-confirmation-modal.view :as metrics-modal]
     [status-im.common.standard-authentication.core :as standard-authentication]
     [status-im.config :as config]
     [status-im.constants :as constants]
+    [status-im.contexts.keycard.pin.view :as keycard.pin]
     [status-im.contexts.onboarding.common.background.view :as background]
     [status-im.contexts.profile.profiles.style :as style]
     [taoensso.timbre :as log]
@@ -140,7 +142,7 @@
                                [:profile/profile-selected key-uid])
                               (rf/dispatch
                                [:profile.login/login-with-biometric-if-available key-uid])
-                              (when-not keycard-pairing (set-hide-profiles)))}]))
+                              (set-hide-profiles))}]))
 
 (defn- profiles-section
   [{:keys [hide-profiles]}]
@@ -189,8 +191,8 @@
                                                            [:profile.login/biometric-success])
                                              :on-fail    #(rf/dispatch
                                                            [:profile.login/biometric-auth-fail
-                                                            %])}]))
-       ]
+                                                            %])}]))]
+
     [standard-authentication/password-input
      {:shell?              true
       :blur?               true
@@ -199,7 +201,7 @@
 (defn login-section
   [{:keys [show-profiles]}]
   (let [processing                    (rf/sub [:profile/login-processing])
-        {:keys [key-uid name
+        {:keys [key-uid name keycard-pairing
                 customization-color]} (rf/sub [:profile/login-profile])
         sign-in-enabled?              (rf/sub [:sign-in-enabled?])
         profile-picture               (rf/sub [:profile/login-profiles-picture key-uid])
@@ -228,7 +230,7 @@
         :disabled?           processing
         :accessibility-label :show-profiles}
        :i/multi-profile]]
-     [rn/scroll-view
+     [(if keycard-pairing rn/view rn/scroll-view)
       {:keyboard-should-persist-taps :always
        :style                        {:flex 1}}
       [quo/profile-card
@@ -236,20 +238,24 @@
         :customization-color (or customization-color :primary)
         :profile-picture     profile-picture
         :card-style          style/login-profile-card}]
-      [password-input]]
-     [quo/button
-      {:size                40
-       :type                :primary
-       :customization-color (or customization-color :primary)
-       :accessibility-label :login-button
-       :icon-left           :i/unlocked
-       :disabled?           (or (not sign-in-enabled?) processing)
-       :on-press            login-multiaccount
-       :container-style     {:margin-bottom (+ (safe-area/get-bottom) 12)}}
-      (i18n/label :t/log-in)]]))
+      (if keycard-pairing
+        [keycard.pin/auth :keycard/read-card-and-login]
+        [password-input])]
+     (when-not keycard-pairing
+       [quo/button
+        {:size                40
+         :type                :primary
+         :customization-color (or customization-color :primary)
+         :accessibility-label :login-button
+         :icon-left           :i/unlocked
+         :disabled?           (or (not sign-in-enabled?) processing)
+         :on-press            login-multiaccount
+         :container-style     {:margin-bottom (+ (safe-area/get-bottom) 12)}}
+        (i18n/label :t/log-in)])]))
 
 (defn view
   []
+  (rn/use-mount #(rf/dispatch [:centralized-metrics/check-modal metrics-modal/view]))
   (let [[show-profiles? set-show-profiles] (rn/use-state false)
         show-profiles                      (rn/use-callback #(set-show-profiles true))
         hide-profiles                      (rn/use-callback #(set-show-profiles false))]

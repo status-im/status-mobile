@@ -105,7 +105,7 @@
   (rf/dispatch [:activity-center.notifications/mark-as-read id]))
 
 (defn- swipeable
-  [{:keys [active-swipeable extra-fn notification replying?] :as props} child]
+  [{:keys [extra-fn notification replying?] :as props} child]
   (let [{:keys [id message
                 contact-verification-status]} notification
         challenger?                           (:outgoing message)]
@@ -116,23 +116,21 @@
       (and (not challenger?)
            (= contact-verification-status constants/contact-verification-status-pending))
       [common/swipeable
-       {:left-button      swipe-button-reply
-        :left-on-press    #(prepare-challenge-reply props)
-        :right-button     swipe-button-decline
-        :right-on-press   #(decline-challenge id)
-        :active-swipeable active-swipeable
-        :extra-fn         extra-fn}
+       {:left-button    swipe-button-reply
+        :left-on-press  #(prepare-challenge-reply props)
+        :right-button   swipe-button-decline
+        :right-on-press #(decline-challenge id)
+        :extra-fn       extra-fn}
        child]
 
       (and challenger?
            (= contact-verification-status constants/contact-verification-status-accepted))
       [common/swipeable
-       {:left-button      swipe-button-trust
-        :left-on-press    #(mark-challenge-trusted id)
-        :right-button     swipe-button-untrustworthy
-        :right-on-press   #(mark-challenge-untrustworthy id)
-        :active-swipeable active-swipeable
-        :extra-fn         extra-fn}
+       {:left-button    swipe-button-trust
+        :left-on-press  #(mark-challenge-trusted id)
+        :right-button   swipe-button-untrustworthy
+        :right-on-press #(mark-challenge-untrustworthy id)
+        :extra-fn       extra-fn}
        child]
 
       (#{constants/contact-verification-status-accepted
@@ -140,12 +138,11 @@
          constants/contact-verification-status-trusted}
        contact-verification-status)
       [common/swipeable
-       {:left-button      common/swipe-button-read-or-unread
-        :left-on-press    common/swipe-on-press-toggle-read
-        :right-button     common/swipe-button-delete
-        :right-on-press   common/swipe-on-press-delete
-        :active-swipeable active-swipeable
-        :extra-fn         extra-fn}
+       {:left-button    common/swipe-button-read-or-unread
+        :left-on-press  common/swipe-on-press-toggle-read
+        :right-button   common/swipe-button-delete
+        :right-on-press common/swipe-on-press-delete
+        :extra-fn       extra-fn}
        child]
 
       :else
@@ -154,8 +151,9 @@
 (defn view
   [_]
   (let [reply (atom "")]
-    (fn [{:keys [notification set-swipeable-height replying? customization-color] :as props}]
-      (let [{:keys [id message
+    (fn [{:keys [notification replying?] :as props}]
+      (let [customization-color                   (rf/sub [:profile/customization-color])
+            {:keys [id message
                     contact-verification-status]} notification
             challenger?                           (:outgoing message)]
         ;; TODO(@ilmotta): Declined challenges should only be displayed for the challengee, not the
@@ -165,86 +163,84 @@
                (= contact-verification-status constants/contact-verification-status-declined))
           [swipeable props
            [quo/activity-log
-            (merge
-             (when-not replying?
-               {:on-layout set-swipeable-height})
-             {:title (i18n/label :t/identity-verification-request)
-              :customization-color customization-color
-              :icon :i/friend
-              :timestamp (datetime/timestamp->relative (:timestamp notification))
-              :unread? (not (:read notification))
-              :on-update-reply #(reset! reply %)
-              :replying? replying?
-              :max-reply-length max-reply-length
-              :valid-reply? valid-reply?
-              :context (context-tags challenger? notification)
-              :message (activity-message challenger? notification)
-              :items
-              (cond-> []
-                (and challenger?
-                     (= contact-verification-status constants/contact-verification-status-accepted))
-                (concat
-                 [{:type                :button
-                   :subtype             :danger
-                   :key                 :button-mark-as-untrustworthy
-                   :label               (i18n/label :t/untrustworthy)
-                   :accessibility-label :mark-contact-verification-as-untrustworthy
-                   :on-press            #(mark-challenge-untrustworthy id)}
-                  {:type                :button
-                   :subtype             :positive
-                   :key                 :button-accept
-                   :label               (i18n/label :t/accept)
-                   :accessibility-label :mark-contact-verification-as-trusted
-                   :on-press            #(mark-challenge-trusted id)}])
+            {:title (i18n/label :t/identity-verification-request)
+             :customization-color customization-color
+             :icon :i/friend
+             :timestamp (datetime/timestamp->relative (:timestamp notification))
+             :unread? (not (:read notification))
+             :on-update-reply #(reset! reply %)
+             :replying? replying?
+             :max-reply-length max-reply-length
+             :valid-reply? valid-reply?
+             :context (context-tags challenger? notification)
+             :message (activity-message challenger? notification)
+             :items
+             (cond-> []
+               (and challenger?
+                    (= contact-verification-status constants/contact-verification-status-accepted))
+               (concat
+                [{:type                :button
+                  :subtype             :danger
+                  :key                 :button-mark-as-untrustworthy
+                  :label               (i18n/label :t/untrustworthy)
+                  :accessibility-label :mark-contact-verification-as-untrustworthy
+                  :on-press            #(mark-challenge-untrustworthy id)}
+                 {:type                :button
+                  :subtype             :positive
+                  :key                 :button-accept
+                  :label               (i18n/label :t/accept)
+                  :accessibility-label :mark-contact-verification-as-trusted
+                  :on-press            #(mark-challenge-trusted id)}])
 
-                (and challenger?
-                     (= contact-verification-status constants/contact-verification-status-trusted))
-                (concat [{:type    :status
-                          :subtype :positive
-                          :key     :status-trusted
-                          :label   (i18n/label :t/status-confirmed)}])
+               (and challenger?
+                    (= contact-verification-status constants/contact-verification-status-trusted))
+               (concat [{:type    :status
+                         :subtype :positive
+                         :key     :status-trusted
+                         :label   (i18n/label :t/status-confirmed)}])
 
-                (and challenger?
-                     (= contact-verification-status constants/contact-verification-status-untrustworthy))
-                (concat [{:type    :status
-                          :subtype :negative
-                          :key     :status-untrustworthy
-                          :label   (i18n/label :t/untrustworthy)}])
+               (and challenger?
+                    (= contact-verification-status
+                       constants/contact-verification-status-untrustworthy))
+               (concat [{:type    :status
+                         :subtype :negative
+                         :key     :status-untrustworthy
+                         :label   (i18n/label :t/untrustworthy)}])
 
-                (and (not challenger?)
-                     (= contact-verification-status constants/contact-verification-status-accepted))
-                (concat [{:type    :status
-                          :subtype :positive
-                          :key     :status-accepted
-                          :label   (i18n/label :t/replied)}])
+               (and (not challenger?)
+                    (= contact-verification-status constants/contact-verification-status-accepted))
+               (concat [{:type    :status
+                         :subtype :positive
+                         :key     :status-accepted
+                         :label   (i18n/label :t/replied)}])
 
-                (and (not challenger?)
-                     (= contact-verification-status constants/contact-verification-status-declined))
-                (concat [{:type    :status
-                          :subtype :negative
-                          :key     :status-declined
-                          :label   (i18n/label :t/declined)}])
+               (and (not challenger?)
+                    (= contact-verification-status constants/contact-verification-status-declined))
+               (concat [{:type    :status
+                         :subtype :negative
+                         :key     :status-declined
+                         :label   (i18n/label :t/declined)}])
 
-                (and (not challenger?)
-                     (= contact-verification-status constants/contact-verification-status-pending))
-                (concat
-                 [{:type                :button
-                   :subtype             :danger
-                   :key                 :button-decline
-                   :label               (i18n/label :t/decline)
-                   :accessibility-label :decline-contact-verification
-                   :on-press            #(decline-challenge id)}
-                  (if replying?
-                    {:type                :button
-                     :subtype             :primary
-                     :key                 :button-reply
-                     :label               (i18n/label :t/send-reply)
-                     :accessibility-label :reply-to-contact-verification
-                     :disable-when        invalid-reply?
-                     :on-press            #(send-challenge-reply id @reply)}
-                    {:type                :button
-                     :subtype             :primary
-                     :key                 :button-send-reply
-                     :label               (i18n/label :t/message-reply)
-                     :accessibility-label :send-reply-to-contact-verification
-                     :on-press            #(prepare-challenge-reply props)})]))})]])))))
+               (and (not challenger?)
+                    (= contact-verification-status constants/contact-verification-status-pending))
+               (concat
+                [{:type                :button
+                  :subtype             :danger
+                  :key                 :button-decline
+                  :label               (i18n/label :t/decline)
+                  :accessibility-label :decline-contact-verification
+                  :on-press            #(decline-challenge id)}
+                 (if replying?
+                   {:type                :button
+                    :subtype             :primary
+                    :key                 :button-reply
+                    :label               (i18n/label :t/send-reply)
+                    :accessibility-label :reply-to-contact-verification
+                    :disable-when        invalid-reply?
+                    :on-press            #(send-challenge-reply id @reply)}
+                   {:type                :button
+                    :subtype             :primary
+                    :key                 :button-send-reply
+                    :label               (i18n/label :t/message-reply)
+                    :accessibility-label :send-reply-to-contact-verification
+                    :on-press            #(prepare-challenge-reply props)})]))}]])))))

@@ -108,9 +108,8 @@
   []
   (let [options-height (reagent/atom 0)]
     (fn []
-      (let [theme (quo.theme/use-theme)
-            accounts (rf/sub
-                      [:wallet/fully-or-partially-operable-accounts-without-current-viewing-account])
+      (let [theme                  (quo.theme/use-theme)
+            accounts               (rf/sub [:wallet/operable-accounts-without-current-viewing-account])
             show-account-selector? (pos? (count accounts))]
         [:<>
          (when show-account-selector?

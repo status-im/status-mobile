@@ -317,7 +317,7 @@ lint: ##@test Run code style checks
 	scripts/lint/translations.clj && \
 	zprint '{:search-config? true}' -sfc $$ALL_CLOJURE_FILES && \
 	sh scripts/lint/trailing-newline.sh && \
-	node_modules/.bin/prettier --write .
+	node_modules/.bin/prettier --check .
 
 # NOTE: We run the linter twice because of https://github.com/kkinnear/zprint/issues/271
 lint-fix: export TARGET := clojure
@@ -353,13 +353,17 @@ test: export SHADOW_NS_REGEXP := .*-test$$
 test: ##@test Run all Clojure tests
 test: _test-clojure
 
+# Note: we need to override the :output-to and :ns-regexp options because
+# shadow-cljs has a bug where it will not read from the env vars to expand the
+# configuration when the shadow-cljs mobile target is already running.
 test-watch-for-repl: export TARGET := default
 test-watch-for-repl: export SHADOW_OUTPUT_TO := target/test/test.js
 test-watch-for-repl: export SHADOW_NS_REGEXP := .*-test$$
 test-watch-for-repl: ##@test Watch all Clojure tests and support REPL connections
+	rm -f "$$SHADOW_OUTPUT_TO" && \
 	yarn install && shadow-cljs compile mocks && \
 	concurrently --kill-others --prefix-colors 'auto' --names 'build,repl' \
-		'yarn shadow-cljs watch test --verbose' \
+		"yarn shadow-cljs watch test --verbose --config-merge '{:output-to \"$(SHADOW_OUTPUT_TO)\" :ns-regexp \"$(SHADOW_NS_REGEXP)\"}'" \
 		"until [ -f $$SHADOW_OUTPUT_TO ] ; do sleep 1 ; done ; node --require ./test-resources/override.js $$SHADOW_OUTPUT_TO --repl"
 
 test-unit: export SHADOW_OUTPUT_TO := target/unit_test/test.js
@@ -456,6 +460,12 @@ android-tail-geth: export TARGET := android-sdk
 android-tail-geth: export VERSION ?= debug
 android-tail-geth:
 	adb shell 'while true; do cat; sleep 1; done < /storage/emulated/0/Android/data/im.status.ethereum$$( [ "$(VERSION)" = "release" ] || echo ".$(VERSION)" )/files/Download/geth.log'
+
+android-clean-geth: export TARGET := android-sdk
+android-clean-geth: export VERSION ?= debug
+android-clean-geth:
+	adb shell 'rm /storage/emulated/0/Android/data/im.status.ethereum$$( [ "$(VERSION)" = "release" ] || echo ".$(VERSION)" )/files/Download/geth.log'
+
 
 android-logcat: export TARGET := android-sdk
 android-logcat: ##@other Read status-mobile logs from Android phone using adb

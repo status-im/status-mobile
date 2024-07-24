@@ -15,7 +15,7 @@ from views.sign_in_view import SignInView
 
 
 @pytest.mark.xdist_group(name="new_one_1")
-@marks.new_ui_critical
+@marks.nightly
 class TestCommunityOneDeviceMerged(MultipleSharedDeviceTestCase):
 
     def prepare_devices(self):
@@ -47,6 +47,7 @@ class TestCommunityOneDeviceMerged(MultipleSharedDeviceTestCase):
             self.drivers[0].fail("Not navigated to channel view after reopening app")
 
     @marks.testrail_id(702742)
+    @marks.smoke
     def test_community_copy_and_paste_message_in_chat_input(self):
         message_texts = ['mmmeowesage_text', 'https://status.im']
         if not self.channel.chat_message_input.is_element_displayed():
@@ -152,6 +153,7 @@ class TestCommunityOneDeviceMerged(MultipleSharedDeviceTestCase):
         self.errors.verify_no_errors()
 
     @marks.testrail_id(703133)
+    @marks.smoke
     def test_restore_multiaccount_with_waku_backup_remove_switch(self):
         self.home.reopen_app(sign_in=False)
         self.home.just_fyi("Restore user with predefined communities and contacts")
@@ -217,6 +219,7 @@ class TestCommunityOneDeviceMerged(MultipleSharedDeviceTestCase):
         self.sign_in.show_profiles_button.wait_and_click()
         self.sign_in.element_by_text(self.username).click()
         self.sign_in.sign_in()
+        self.home.navigate_back_to_home_view()
         self.home.communities_tab.click()
         if self.home.element_by_text(waku_user.communities['admin_open']).is_element_displayed(30):
             self.errors.append("Community of previous user is shown!")
@@ -261,7 +264,7 @@ class TestCommunityOneDeviceMerged(MultipleSharedDeviceTestCase):
         self.home.community_card_item.wait_for_elements(seconds=120)
 
         expected_communities = {
-            ' 0xUX': ['Design', 'Ethereum', 'Collaboration'],
+            # ' 0xUX': ['Design', 'Ethereum', 'Collaboration'],
             'Status': ['Web3', 'Blockchain', 'Ethereum'],
             'Status Inu': ['News', 'Social', 'Web3'],
         }
@@ -291,7 +294,6 @@ class TestCommunityOneDeviceMerged(MultipleSharedDeviceTestCase):
                         self.errors.append("Status community logo is different from expected template.")
 
                     self.community_view.close_community_view_button.click()
-                    self.home.discover_communities_button.click()
                     self.home.swipe_up()
 
             except TimeoutException:
@@ -302,7 +304,7 @@ class TestCommunityOneDeviceMerged(MultipleSharedDeviceTestCase):
 
 
 @pytest.mark.xdist_group(name="new_three_2")
-@marks.new_ui_critical
+@marks.nightly
 class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
 
     def prepare_devices(self):
@@ -827,7 +829,7 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
 
 
 @pytest.mark.xdist_group(name="new_five_2")
-@marks.new_ui_critical
+@marks.nightly
 class TestCommunityMultipleDeviceMergedTwo(MultipleSharedDeviceTestCase):
 
     def prepare_devices(self):

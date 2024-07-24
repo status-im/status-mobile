@@ -16,6 +16,7 @@
     [status-im.contexts.wallet.sheets.buy-token.view :as buy-token]
     [status-im.contexts.wallet.sheets.unpreferred-networks-alert.view :as unpreferred-networks-alert]
     [status-im.feature-flags :as ff]
+    [status-im.setup.hot-reload :as hot-reload]
     [utils.debounce :as debounce]
     [utils.i18n :as i18n]
     [utils.money :as money]
@@ -119,7 +120,7 @@
   []
   [quo/alert-banner
    {:action?         true
-    :text            (i18n/label :t/not-enough-assets)
+    :text            (i18n/label :t/not-enough-assets-to-pay-gas-fees)
     :button-text     (i18n/label :t/buy-eth)
     :on-button-press #(rf/dispatch [:show-bottom-sheet
                                     {:content buy-token/view}])}])
@@ -145,6 +146,8 @@
     button-one-props         :button-one-props
     current-screen-id        :current-screen-id
     initial-crypto-currency? :initial-crypto-currency?
+    enabled-from-chain-ids   :enabled-from-chain-ids
+    from-enabled-networks    :from-enabled-networks
     :or                      {initial-crypto-currency? true}}]
   (let [_ (rn/dismiss-keyboard!)
         bottom                                      (safe-area/get-bottom)
@@ -153,11 +156,9 @@
         [input-state set-input-state]               (rn/use-state controlled-input/init-state)
         [just-toggled-mode? set-just-toggled-mode?] (rn/use-state false)
         clear-input!                                #(set-input-state controlled-input/delete-all)
-        handle-on-confirm                           (fn []
+        handle-on-confirm                           (fn [amount]
                                                       (rf/dispatch [:wallet/set-token-amount-to-send
-                                                                    {:amount
-                                                                     (controlled-input/input-value
-                                                                      input-state)
+                                                                    {:amount   amount
                                                                      :stack-id current-screen-id}]))
         {fiat-currency :currency}                   (rf/sub [:profile/profile])
         {token-symbol :symbol
@@ -165,9 +166,6 @@
          token-decimals :decimals
          :as
          token}                                     (rf/sub [:wallet/wallet-send-token])
-        send-enabled-networks                       (rf/sub [:wallet/wallet-send-enabled-networks])
-        enabled-from-chain-ids                      (rf/sub
-                                                     [:wallet/wallet-send-enabled-from-chain-ids])
         send-from-locked-amounts                    (rf/sub [:wallet/wallet-send-from-locked-amounts])
         {token-balance     :total-balance
          available-balance :available-balance
@@ -322,6 +320,7 @@
        (let [dismiss-keyboard-fn   #(when (= % "active") (rn/dismiss-keyboard!))
              app-keyboard-listener (.addEventListener rn/app-state "change" dismiss-keyboard-fn)]
          #(.remove app-keyboard-listener))))
+    (hot-reload/use-safe-unmount on-navigate-back)
     (rn/use-effect
      (fn []
        (set-input-state #(controlled-input/set-upper-limit % current-limit)))
@@ -346,7 +345,7 @@
                                 (when (controlled-input/input-error input-state) "-error"))}
      [account-switcher/view
       {:icon-name     :i/arrow-left
-       :on-press      on-navigate-back
+       :on-press      #(rf/dispatch [:navigate-back])
        :switcher-type :select-account}]
      [quo/token-input
       {:container-style  style/input-container
@@ -355,7 +354,7 @@
        :currency-symbol  currency-symbol
        :crypto-decimals  (min token-decimals 6)
        :error?           (controlled-input/input-error input-state)
-       :networks         (seq send-enabled-networks)
+       :networks         (seq from-enabled-networks)
        :title            (i18n/label
                           :t/send-limit
                           {:limit (if crypto-currency?
@@ -429,3 +428,4 @@
                                (set-just-toggled-mode? false)
                                (set-input-state controlled-input/delete-all)
                                (rf/dispatch [:wallet/clean-suggested-routes]))}]]))
+

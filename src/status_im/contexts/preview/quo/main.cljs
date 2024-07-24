@@ -105,6 +105,7 @@
     [status-im.contexts.preview.quo.list-items.account-list-card :as
      account-list-card]
     [status-im.contexts.preview.quo.list-items.address :as address]
+    [status-im.contexts.preview.quo.list-items.approval-info :as approval-info]
     [status-im.contexts.preview.quo.list-items.channel :as channel]
     [status-im.contexts.preview.quo.list-items.dapp :as dapp]
     [status-im.contexts.preview.quo.list-items.missing-keypair :as missing-keypair]
@@ -144,6 +145,7 @@
      small-option-card]
     [status-im.contexts.preview.quo.password.password-tips :as password-tips]
     [status-im.contexts.preview.quo.password.tips :as tips]
+    [status-im.contexts.preview.quo.pin-input.pin-input :as pin-input]
     [status-im.contexts.preview.quo.profile.collectible :as collectible]
     [status-im.contexts.preview.quo.profile.collectible-list-item :as collectible-list-item]
     [status-im.contexts.preview.quo.profile.expanded-collectible :as expanded-collectible]
@@ -168,6 +170,7 @@
     [status-im.contexts.preview.quo.settings.settings-item :as settings-item]
     [status-im.contexts.preview.quo.share.qr-code :as qr-code]
     [status-im.contexts.preview.quo.share.share-qr-code :as share-qr-code]
+    [status-im.contexts.preview.quo.slideshow.slider-bar :as slider-bar]
     [status-im.contexts.preview.quo.style :as style]
     [status-im.contexts.preview.quo.switcher.group-messaging-card :as
      group-messaging-card]
@@ -209,6 +212,7 @@
     [status-im.contexts.preview.quo.wallet.progress-bar :as progress-bar]
     [status-im.contexts.preview.quo.wallet.required-tokens :as required-tokens]
     [status-im.contexts.preview.quo.wallet.summary-info :as summary-info]
+    [status-im.contexts.preview.quo.wallet.swap-input :as swap-input]
     [status-im.contexts.preview.quo.wallet.token-input :as token-input]
     [status-im.contexts.preview.quo.wallet.transaction-progress :as transaction-progress]
     [status-im.contexts.preview.quo.wallet.transaction-summary :as
@@ -369,6 +373,8 @@
                         :component keyboard-key/view}
                        {:name      :numbered-keyboard
                         :component numbered-keyboard/view}]
+   :pin-input         [{:name      :pin-input
+                        :component pin-input/view}]
    :links             [{:name      :internal-link-card
                         :options   {:insets {:top true}}
                         :component internal-link-card/view}
@@ -387,6 +393,8 @@
                         :component account-list-card/view}
                        {:name      :address
                         :component address/view}
+                       {:name      :approval-info
+                        :component approval-info/view}
                        {:name      :channel
                         :component channel/view}
                        {:name      :community-list
@@ -496,6 +504,8 @@
                         :component qr-code/view}
                        {:name      :share-qr-code
                         :component share-qr-code/view}]
+   :slideshow         [{:name      :slider-bar
+                        :component slider-bar/view}]
    :switchers         [{:name      :group-messaging-card
                         :component group-messaging-card/view}
                        {:name      :switcher-cards
@@ -561,6 +571,7 @@
                        {:name      :required-tokens
                         :component required-tokens/view}
                        {:name :summary-info :component summary-info/view}
+                       {:name :swap-input :component swap-input/view}
                        {:name :token-input :component token-input/view}
                        {:name :wallet-activity :component wallet-activity/view}
                        {:name :transaction-progress :component transaction-progress/view}

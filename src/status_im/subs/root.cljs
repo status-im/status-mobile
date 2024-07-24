@@ -9,6 +9,7 @@
     status-im.subs.community.account-selection
     status-im.subs.contact
     status-im.subs.general
+    status-im.subs.keycard
     status-im.subs.messages
     status-im.subs.onboarding
     status-im.subs.pairing
@@ -91,9 +92,6 @@
 (reg-root-key-sub :multiaccount/reset-password-form-vals :multiaccount/reset-password-form-vals)
 (reg-root-key-sub :multiaccount/reset-password-errors :multiaccount/reset-password-errors)
 (reg-root-key-sub :multiaccount/resetting-password? :multiaccount/resetting-password?)
-;;delete profile
-(reg-root-key-sub :delete-profile/error :delete-profile/error)
-(reg-root-key-sub :delete-profile/keep-keys-on-keycard? :delete-profile/keep-keys-on-keycard?)
 
 ;;chat
 (reg-root-key-sub :chats/cooldown-enabled? :chat/cooldown-enabled?)
@@ -171,7 +169,7 @@
 (reg-root-key-sub :wallet-connect/web3-wallet :wallet-connect/web3-wallet)
 (reg-root-key-sub :wallet-connect/current-proposal :wallet-connect/current-proposal)
 (reg-root-key-sub :wallet-connect/current-request :wallet-connect/current-request)
-(reg-root-key-sub :wallet-connect/pairings :wallet-connect/pairings)
+(reg-root-key-sub :wallet-connect/sessions :wallet-connect/sessions)
 
 ;;biometrics
 (reg-root-key-sub :biometrics :biometrics)
@@ -185,3 +183,10 @@
 
 ;;theme
 (reg-root-key-sub :theme :theme)
+
+;; centralized-metrics
+(reg-root-key-sub :centralized-metrics/enabled? :centralized-metrics/enabled?)
+(reg-root-key-sub :centralized-metrics/user-confirmed? :centralized-metrics/user-confirmed?)
+
+;;keycard
+(reg-root-key-sub :keycard :keycard)

@@ -177,7 +177,7 @@
   "This function returns token values in the props of token-value (quo) component"
   [{:keys [token color currency currency-symbol]}]
   (let [balance                           (calculate-total-token-balance token)
-        fiat-value                        (calculate-token-fiat-value
+        fiat-unformatted-value            (calculate-token-fiat-value
                                            {:currency currency
                                             :balance  balance
                                             :token    token})
@@ -191,7 +191,7 @@
         crypto-value                      (get-standard-crypto-format token balance)
         fiat-value                        (get-standard-fiat-format crypto-value
                                                                     currency-symbol
-                                                                    fiat-value)]
+                                                                    fiat-unformatted-value)]
     {:token               (:symbol token)
      :token-name          (:name token)
      :state               :default
@@ -201,10 +201,11 @@
                             (neg? change-pct-24hour) :negative
                             :else                    :empty)
      :customization-color color
-     :values              {:crypto-value      crypto-value
-                           :fiat-value        fiat-value
-                           :fiat-change       formatted-token-price
-                           :percentage-change percentage-change}}))
+     :values              {:crypto-value           crypto-value
+                           :fiat-value             fiat-value
+                           :fiat-unformatted-value fiat-unformatted-value
+                           :fiat-change            formatted-token-price
+                           :percentage-change      percentage-change}}))
 
 (defn get-multichain-address
   [networks address]
@@ -298,3 +299,22 @@
     (utils.string/contains-emoji? s)             :emoji
     (existing-account-names s)                   :existing-name
     (utils.string/contains-special-character? s) :special-character))
+
+(defn calculate-and-sort-tokens
+  [{:keys [tokens color currency currency-symbol]}]
+  (let [calculate-token   (fn [token]
+                            (calculate-token-value {:token           token
+                                                    :color           color
+                                                    :currency        currency
+                                                    :currency-symbol currency-symbol}))
+        calculated-tokens (map calculate-token tokens)]
+    (sort-by (fn [token]
+               (let [fiat-value (get-in token [:values :fiat-unformatted-value])
+                     priority   (get constants/token-sort-priority (:token token) ##Inf)]
+                 [(- fiat-value) priority]))
+             calculated-tokens)))
+
+(defn sort-tokens
+  [tokens]
+  (let [priority #(get constants/token-sort-priority (:symbol %) ##Inf)]
+    (sort-by (juxt (comp - :balance) priority) tokens)))

@@ -1,5 +1,6 @@
 (ns quo.components.profile.collectible-list-item.view
   (:require
+    [clojure.string :as string]
     [quo.components.avatars.collection-avatar.view :as collection-avatar]
     [quo.components.counter.collectible-counter.view :as collectible-counter]
     [quo.components.icon :as icon]
@@ -21,7 +22,7 @@
 (def cached-load-time 200)
 (def error-wait-time 800)
 
-(defn on-load-end
+(defn animate-loading-image
   [{:keys [load-time set-state loader-opacity image-opacity]}]
   (reanimated/animate loader-opacity 0 timing-options-out)
   (reanimated/animate image-opacity 1 timing-options-in)
@@ -60,12 +61,12 @@
                  (assoc prev-state :avatar-loaded? true)))))
 
 (defn- fallback-view
-  [{:keys [label theme image-opacity]}]
-  [reanimated/view
-   {:style (style/fallback {:opacity image-opacity
-                            :theme   theme})}
+  [{:keys [label theme image-opacity on-load-end]}]
+  (rn/use-mount on-load-end)
+  [reanimated/view {:style (style/fallback {:opacity image-opacity :theme theme})}
    [rn/view
-    [icon/icon :i/sad {:color (colors/theme-colors colors/neutral-40 colors/neutral-50 theme)}]]
+    [icon/icon :i/sad
+     {:color (colors/theme-colors colors/neutral-40 colors/neutral-50 theme)}]]
    [rn/view {:style {:height 4}}]
    [text/text
     {:size  :paragraph-2
@@ -93,31 +94,43 @@
   [{:keys [community? avatar-image-src collectible-name theme state set-state]}]
   (let [loader-opacity            (reanimated/use-shared-value 1)
         avatar-opacity            (reanimated/use-shared-value 0)
-        [load-time set-load-time] (rn/use-state (datetime/now))]
+        [load-time set-load-time] (rn/use-state (datetime/now))
+        set-avatar-loaded         (fn []
+                                    (on-load-avatar {:set-state      set-state
+                                                     :load-time      load-time
+                                                     :loader-opacity loader-opacity
+                                                     :avatar-opacity avatar-opacity}))
+        empty-name?               (string/blank? collectible-name)]
+    (rn/use-mount (fn []
+                    (when (string/blank? avatar-image-src)
+                      (set-avatar-loaded))))
     [rn/view {:style style/card-details-container}
      [reanimated/view {:style (style/avatar-container avatar-opacity)}
-      (if community?
-        [preview-list/view
-         {:type :communities
-          :size :size-20}
+      (cond
+        (string/blank? avatar-image-src)
+        [loading-square theme]
+
+        community?
+        [preview-list/view {:type :communities :size :size-20}
          [avatar-image-src]]
+
+        :else
         [collection-avatar/view
          {:size        :size-20
           :on-start    #(set-load-time (fn [start-time] (- (datetime/now) start-time)))
-          :on-load-end #(on-load-avatar {:set-state      set-state
-                                         :load-time      load-time
-                                         :loader-opacity loader-opacity
-                                         :avatar-opacity avatar-opacity})
+          :on-load-end set-avatar-loaded
           :image       avatar-image-src}])
-      [rn/view {:style {:width 8}}]
       [text/text
        {:size            :paragraph-1
         :weight          :semi-bold
         :ellipsize-mode  :tail
         :number-of-lines 1
-        :style           style/card-detail-text}
-       collectible-name]]
-     (when (not (:avatar-loaded? state))
+        :style           (style/card-detail-text empty-name? theme)}
+       (if empty-name?
+         (i18n/label :t/unknown)
+         collectible-name)]]
+
+     (when-not (:avatar-loaded? state)
        [reanimated/view {:style (style/card-loader loader-opacity)}
         [loading-square theme]
         [loading-message theme]])]))
@@ -128,40 +141,44 @@
   (let [theme                     (quo.theme/use-theme)
         loader-opacity            (reanimated/use-shared-value (if supported-file? 1 0))
         image-opacity             (reanimated/use-shared-value (if supported-file? 0 1))
-        [load-time set-load-time] (rn/use-state (datetime/now))]
+        [load-time set-load-time] (rn/use-state (datetime/now))
+        set-image-loaded          (fn []
+                                    (animate-loading-image {:load-time      load-time
+                                                            :set-state      set-state
+                                                            :loader-opacity loader-opacity
+                                                            :image-opacity  image-opacity}))]
     [rn/view {:style (style/card-view-container theme)}
      [rn/view {:style {:aspect-ratio 1}}
       (cond
-        (:image-error? state)
-        [fallback-view
-         {:image-opacity image-opacity
-          :theme         theme
-          :label         (i18n/label :t/cant-fetch-info)}]
+        (:image-error? state)        [fallback-view
+                                      {:image-opacity image-opacity
+                                       :on-load-end   set-image-loaded
+                                       :theme         theme
+                                       :label         (i18n/label :t/cant-fetch-info)}]
+        (not supported-file?)        [fallback-view
+                                      {:image-opacity image-opacity
+                                       :on-load-end   set-image-loaded
+                                       :theme         theme
+                                       :label         (i18n/label :t/unsupported-file)}]
+        (not (:image-loaded? state)) [loading-image
+                                      {:loader-opacity       loader-opacity
+                                       :theme                theme
+                                       :gradient-color-index gradient-color-index}])
 
-        (not supported-file?)
-        [fallback-view
-         {:image-opacity image-opacity
-          :theme         theme
-          :label         (i18n/label :t/unsupported-file)}]
-
-        (not (:image-loaded? state))
-        [loading-image
-         {:loader-opacity       loader-opacity
-          :theme                theme
-          :gradient-color-index gradient-color-index}])
       (when supported-file?
         [reanimated/view {:style (style/supported-file image-opacity)}
          [rn/image
           {:style         style/image
            :on-load       #(on-load % set-state)
            :on-load-start #(set-load-time (fn [start-time] (- (datetime/now) start-time)))
-           :on-load-end   #(on-load-end {:load-time      load-time
-                                         :set-state      set-state
-                                         :loader-opacity loader-opacity
-                                         :image-opacity  image-opacity})
+           :on-load-end   set-image-loaded
            :on-error      #(on-load-error set-state)
            :source        image-src}]])]
-     (when (and (:image-loaded? state) (not (:image-error? state)) counter)
+
+     (when (and (or (:image-loaded? state)
+                    (not supported-file?))
+                (not (:image-error? state))
+                counter)
        [collectible-counter/view
         {:container-style style/collectible-counter
          :size            :size-24
@@ -206,10 +223,10 @@
          {:style         style/image
           :on-load       #(on-load % set-state)
           :on-load-start #(set-load-time (fn [start-time] (- (datetime/now) start-time)))
-          :on-load-end   #(on-load-end {:load-time      load-time
-                                        :set-state      set-state
-                                        :loader-opacity loader-opacity
-                                        :image-opacity  image-opacity})
+          :on-load-end   #(animate-loading-image {:load-time      load-time
+                                                  :set-state      set-state
+                                                  :loader-opacity loader-opacity
+                                                  :image-opacity  image-opacity})
           :on-error      #(on-load-error set-state)
           :source        image-src}]])
      (when (and (:image-loaded? state) (not (:image-error? state)) counter)

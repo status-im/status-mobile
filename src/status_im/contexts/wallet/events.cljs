@@ -65,14 +65,27 @@
    {:db (assoc-in db [:wallet :current-viewing-account-address] address)}))
 
 (rf/reg-event-fx :wallet/clean-current-viewing-account
- (fn [{:keys [db]}]
-   {:db (update db :wallet dissoc :current-viewing-account-address)}))
+ (fn [{:keys [db]} [ignore-just-completed-transaction?]]
+   (let [{:keys [entry-point just-completed-transaction?]} (-> db :wallet :ui :send)
+         entry-point-wallet-home?                          (= entry-point :wallet-stack)]
+     {:db (cond-> db
+            (and (not entry-point)
+                 (not ignore-just-completed-transaction?)
+                 (not just-completed-transaction?))
+            (update :wallet dissoc :current-viewing-account-address)
+
+            entry-point-wallet-home?
+            (update-in [:wallet :ui :send] dissoc :entry-point)
+
+            (and entry-point-wallet-home?
+                 (not just-completed-transaction?))
+            (update :wallet dissoc :current-viewing-account-address))})))
 
 (rf/reg-event-fx :wallet/close-account-page
- (fn [_]
-   {:fx [[:dispatch [:wallet/clean-current-viewing-account]]
-         [:dispatch [:wallet/clear-account-tab]]
-         [:dispatch [:pop-to-root :shell-stack]]]}))
+ (fn [{:keys [db]}]
+   (let [just-completed-transaction? (get-in db [:wallet :ui :send :just-completed-transaction?])]
+     (when-not just-completed-transaction?
+       {:fx [[:dispatch [:wallet/clear-account-tab]]]}))))
 
 (defn log-rpc-error
   [_ [{:keys [event params]} error]]
@@ -86,6 +99,13 @@
   [[:dispatch [:wallet/get-wallet-token-for-all-accounts]]
    [:dispatch [:wallet/request-collectibles-for-all-accounts {:new-request? true}]]
    [:dispatch [:wallet/check-recent-history-for-all-accounts]]])
+
+(rf/reg-event-fx
+ :wallet/fetch-assets-for-address
+ (fn [_ [address]]
+   {:fx [[:dispatch [:wallet/get-wallet-token-for-account address]]
+         [:dispatch [:wallet/request-new-collectibles-for-account-from-signal address]]
+         [:dispatch [:wallet/check-recent-history-for-account address]]]}))
 
 (rf/reg-event-fx
  :wallet/get-accounts-success
@@ -112,9 +132,7 @@
 (rf/reg-event-fx :wallet/process-account-from-signal
  (fn [{:keys [db]} [{:keys [address] :as account}]]
    {:db (assoc-in db [:wallet :accounts address] (data-store/rpc->account account))
-    :fx [[:dispatch [:wallet/get-wallet-token-for-account address]]
-         [:dispatch [:wallet/request-new-collectibles-for-account-from-signal address]]
-         [:dispatch [:wallet/check-recent-history-for-account address]]]}))
+    :fx [[:dispatch [:wallet/fetch-assets-for-address address]]]}))
 
 (rf/reg-event-fx
  :wallet/save-account
@@ -362,17 +380,29 @@
 
 (rf/reg-event-fx :wallet/address-validation-success
  (fn [{:keys [db]}]
-   {:db (assoc-in db [:wallet :ui :search-address :valid-ens-or-address?] true)}))
+   {:db (update-in db
+                   [:wallet :ui :search-address]
+                   assoc
+                   :valid-ens-or-address? true
+                   :loading?              false)}))
 
 (rf/reg-event-fx :wallet/address-validation-failed
  (fn [{:keys [db]}]
-   {:db (assoc-in db [:wallet :ui :search-address :valid-ens-or-address?] false)}))
+   {:db (update-in db
+                   [:wallet :ui :search-address]
+                   assoc
+                   :valid-ens-or-address? false
+                   :loading?              false)}))
 
 (rf/reg-event-fx :wallet/clean-local-suggestions
  (fn [{:keys [db]}]
    {:db (-> db
             (assoc-in [:wallet :ui :search-address :local-suggestions] [])
             (assoc-in [:wallet :ui :search-address :valid-ens-or-address?] false))}))
+
+(rf/reg-event-fx :wallet/searching-address
+ (fn [{:keys [db]}]
+   {:db (assoc-in db [:wallet :ui :search-address :loading?] true)}))
 
 (rf/reg-event-fx
  :wallet/navigate-to-chain-explorer-from-bottom-sheet
@@ -563,18 +593,17 @@
         updated-account-addresses    (set (map :address updated-accounts))
         new-account-addresses        (clojure.set/difference updated-account-addresses
                                                              existing-account-addresses)]
-    {:db (update-in db
-                    [:wallet :accounts]
-                    (fn [existing-accounts]
-                      (merge-with merge
-                                  (apply dissoc existing-accounts removed-account-addresses)
-                                  (utils.collection/index-by :address updated-accounts))))
-     :fx (mapcat (fn [address]
-                   [[:dispatch [:wallet/get-wallet-token-for-account address]]
-                    [:dispatch
-                     [:wallet/request-new-collectibles-for-account-from-signal address]]
-                    [:dispatch [:wallet/check-recent-history-for-account address]]])
-          new-account-addresses)}))
+    (cond-> {:db (update-in db
+                            [:wallet :accounts]
+                            (fn [existing-accounts]
+                              (merge-with merge
+                                          (apply dissoc existing-accounts removed-account-addresses)
+                                          (utils.collection/index-by :address updated-accounts))))}
+
+      (seq new-account-addresses)
+      (assoc :fx
+             (mapv (fn [address] [:dispatch [:wallet/fetch-assets-for-address address]])
+                   new-account-addresses)))))
 
 (rf/reg-event-fx :wallet/reconcile-watch-only-accounts reconcile-watch-only-accounts)
 
@@ -609,13 +638,10 @@
                                                   (into removed-account-addresses
                                                         old-account-addresses))
                                            updated-accounts-by-address)))}
+
       (seq new-account-addresses)
       (assoc :fx
-             (mapcat (fn [address]
-                       [[:dispatch [:wallet/get-wallet-token-for-account address]]
-                        [:dispatch
-                         [:wallet/request-new-collectibles-for-account-from-signal address]]
-                        [:dispatch [:wallet/check-recent-history-for-account address]]])
-              new-account-addresses)))))
+             (mapv (fn [address] [:dispatch [:wallet/fetch-assets-for-address address]])
+                   new-account-addresses)))))
 
 (rf/reg-event-fx :wallet/reconcile-keypairs reconcile-keypairs)

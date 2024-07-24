@@ -1,5 +1,6 @@
 (ns status-im.contexts.wallet.collectible.events
   (:require [camel-snake-kebab.extras :as cske]
+            [clojure.string :as string]
             [react-native.platform :as platform]
             [status-im.contexts.wallet.collectible.utils :as collectible-utils]
             [taoensso.timbre :as log]
@@ -43,13 +44,6 @@
   {:db (update-in db [:wallet :accounts] update-vals #(dissoc % :collectibles))})
 
 (rf/reg-event-fx :wallet/clear-stored-collectibles clear-stored-collectibles)
-
-(defn store-last-collectible-details
-  [{:keys [db]} [collectible]]
-  {:db       (assoc-in db [:wallet :last-collectible-details] collectible)
-   :dispatch [:navigate-to :screen/wallet.collectible]})
-
-(rf/reg-event-fx :wallet/store-last-collectible-details store-last-collectible-details)
 
 (rf/reg-event-fx
  :wallet/request-new-collectibles-for-account
@@ -166,39 +160,58 @@
              [:dispatch [:wallet/flush-collectibles-fetched]])]})))
 
 (rf/reg-event-fx
- :wallet/get-collectible-details
- (fn [{:keys [db]} [collectible-id aspect-ratio]]
+ :wallet/navigate-to-collectible-details
+ (fn [{:keys [db]}
+      [{{collectible-id :id :as collectible} :collectible
+        aspect-ratio                         :aspect-ratio
+        gradient-color                       :gradient-color}]]
    (let [request-id               0
          collectible-id-converted (cske/transform-keys transforms/->PascalCaseKeyword collectible-id)
          data-type                (collectible-data-types :details)
          request-params           [request-id [collectible-id-converted] data-type]]
-     {:db (assoc-in db [:wallet :last-collectible-aspect-ratio] aspect-ratio)
+     {:db (assoc-in db
+           [:wallet :ui :collectible]
+           {:details        collectible
+            :aspect-ratio   aspect-ratio
+            :gradient-color gradient-color})
       :fx [[:json-rpc/call
             [{:method   "wallet_getCollectiblesByUniqueIDAsync"
               :params   request-params
               :on-error (fn [error]
                           (log/error "failed to request collectible"
-                                     {:event  :wallet/get-collectible-details
+                                     {:event  :wallet/navigate-to-collectible-details
                                       :error  error
-                                      :params request-params}))}]]]})))
+                                      :params request-params}))}]]
+           ;; We delay the navigation because we need re-frame to update the DB on time.
+           ;; By doing it, we skip a blink while visiting the collectible detail page.
+           [:dispatch-later
+            {:ms       17
+             :dispatch [:navigate-to :screen/wallet.collectible]}]]})))
+
+(defn- keep-not-empty-value
+  [old-value new-value]
+  (if (or (string/blank? new-value) (nil? new-value))
+    old-value
+    new-value))
+
+(def merge-skipping-empty-values (partial merge-with keep-not-empty-value))
 
 (rf/reg-event-fx
  :wallet/get-collectible-details-done
- (fn [_ [{:keys [message]}]]
-   (let [response               (cske/transform-keys transforms/->kebab-case-keyword
-                                                     (transforms/json->clj message))
-         {:keys [collectibles]} response
-         collectible            (first collectibles)]
+ (fn [{db :db} [{:keys [message]}]]
+   (let [response                      (cske/transform-keys transforms/->kebab-case-keyword
+                                                            (transforms/json->clj message))
+         {[collectible] :collectibles} response]
      (if collectible
-       {:fx [[:dispatch [:wallet/store-last-collectible-details collectible]]]}
+       {:db (update-in db [:wallet :ui :collectible :details] merge-skipping-empty-values collectible)}
        (log/error "failed to get collectible details"
                   {:event    :wallet/get-collectible-details-done
                    :response response})))))
 
 (rf/reg-event-fx
- :wallet/clear-last-collectible-details
+ :wallet/clear-collectible-details
  (fn [{:keys [db]}]
-   {:db (update-in db [:wallet] dissoc :last-collectible-details :last-collectible-aspect-ratio)}))
+   {:db (update-in db [:wallet :ui] dissoc :collectible)}))
 
 (rf/reg-event-fx :wallet/trigger-share-collectible
  (fn [_ [{:keys [title uri]}]]

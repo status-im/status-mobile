@@ -128,4 +128,8 @@ RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(toChecksumAddress:(NSString *)address) {
     return StatusgoToChecksumAddress(address);
 }
 
+RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(validateConnectionString:(NSString *)cs) {
+    return StatusgoValidateConnectionString(cs);
+}
+
 @end

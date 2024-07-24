@@ -11,6 +11,12 @@
 
 (def ^:private initial-flags
   {::community.edit-account-selection   (enabled-in-env? :FLAG_EDIT_ACCOUNT_SELECTION_ENABLED)
+
+   ;; Feature toggled (off by default) because the desktop app disabled this
+   ;; feature and we want both clients in sync. We keep the code because it
+   ;; works and we may re-enable it by default.
+   ::profile-pictures-visibility        (enabled-in-env? :FLAG_PROFILE_PICTURES_VISIBILITY_ENABLED)
+
    ::settings.import-all-keypairs       (enabled-in-env?
                                          :FLAG_WALLET_SETTINGS_IMPORT_ALL_KEYPAIRS)
    ::shell.jump-to                      (enabled-in-env? :ENABLE_JUMP_TO)

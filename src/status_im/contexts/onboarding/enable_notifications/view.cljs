@@ -38,7 +38,7 @@
                               (rf/dispatch [:push-notifications/switch true])
                               (rf/dispatch [:navigate-to-within-stack
                                             [:screen/onboarding.welcome
-                                             :screen/onboarding.enable-notifications]]))
+                                             :screen/onboarding.generating-keys]]))
        :type                :primary
        :icon-left           :i/notifications
        :accessibility-label :enable-notifications-button
@@ -52,7 +52,7 @@
                                nil)
                               (rf/dispatch [:navigate-to-within-stack
                                             [:screen/onboarding.welcome
-                                             :screen/onboarding.enable-notifications]]))
+                                             :screen/onboarding.generating-keys]]))
        :accessibility-label :enable-notifications-later-button
        :type                :grey
        :background          :blur
@@ -72,10 +72,7 @@
   (let [insets (safe-area/get-insets)]
     [rn/view {:style (style/page-container insets)}
      [rn/view {:style style/page-heading}
-      [quo/page-nav
-       {:background :blur
-        :icon-name  :i/arrow-left
-        :on-press   #(rf/dispatch [:navigate-back])}]
+      [quo/page-nav {:type :no-title :background :blur}]
       [page-title]]
      [enable-notifications-simple]
      [enable-notification-buttons {:insets insets}]]))

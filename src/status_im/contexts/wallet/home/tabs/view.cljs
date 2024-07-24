@@ -17,13 +17,11 @@
                               :name  (:name collectible-data)
                               :image (:uri preview-url)}])}]))
 
-(defn- on-collectible-press
-  [{:keys [id]} aspect-ratio]
-  (rf/dispatch [:wallet/get-collectible-details id aspect-ratio]))
+(def on-collectible-press #(rf/dispatch [:wallet/navigate-to-collectible-details %]))
 
 (defn view
   [{:keys [selected-tab]}]
-  (let [collectible-list     (rf/sub [:wallet/all-collectibles-list-in-selected-networks])
+  (let [collectible-list     (rf/sub [:wallet/owned-collectibles-list-in-selected-networks])
         request-collectibles #(rf/dispatch
                                [:wallet/request-collectibles-for-all-accounts {}])]
     [rn/view {:style style/container}

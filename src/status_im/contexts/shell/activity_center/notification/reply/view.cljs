@@ -51,26 +51,26 @@
     nil))
 
 (defn- swipeable
-  [{:keys [active-swipeable extra-fn]} child]
+  [{:keys [extra-fn]} child]
   [common/swipeable
-   {:left-button      common/swipe-button-read-or-unread
-    :left-on-press    common/swipe-on-press-toggle-read
-    :right-button     common/swipe-button-delete
-    :right-on-press   common/swipe-on-press-delete
-    :active-swipeable active-swipeable
-    :extra-fn         extra-fn}
+   {:left-button    common/swipe-button-read-or-unread
+    :left-on-press  common/swipe-on-press-toggle-read
+    :right-button   common/swipe-button-delete
+    :right-on-press common/swipe-on-press-delete
+    :extra-fn       extra-fn}
    child])
 
 (defn view
-  [{:keys [notification set-swipeable-height customization-color] :as props}]
+  [{:keys [notification extra-fn]}]
   (let [{:keys [author chat-name community-id chat-id
-                message read timestamp album-messages]} notification
-        community-chat?                                 (not (string/blank? community-id))
-        community                                       (rf/sub [:communities/community community-id])
-        community-name                                  (:name community)
-        community-image                                 (get-in community [:images :thumbnail :uri])
-        media-server-port                               (rf/sub [:mediaserver/port])]
-    [swipeable props
+                message read timestamp
+                album-messages]} notification
+        community-chat?          (not (string/blank? community-id))
+        community-name           (rf/sub [:communities/name community-id])
+        community-logo           (rf/sub [:communities/logo community-id])
+        customization-color      (rf/sub [:profile/customization-color])
+        media-server-port        (rf/sub [:mediaserver/port])]
+    [swipeable {:extra-fn extra-fn}
      [gesture/touchable-without-feedback
       {:on-press (fn []
                    (rf/dispatch [:hide-popover])
@@ -78,7 +78,6 @@
       [quo/activity-log
        {:title               (i18n/label :t/message-reply)
         :customization-color customization-color
-        :on-layout           set-swipeable-height
         :icon                :i/reply
         :timestamp           (datetime/timestamp->relative timestamp)
         :unread?             (not read)
@@ -89,7 +88,7 @@
                                  {:type           :channel
                                   :blur?          true
                                   :size           24
-                                  :community-logo community-image
+                                  :community-logo community-logo
                                   :community-name community-name
                                   :channel-name   chat-name}]
                                 [quo/context-tag
@@ -113,10 +112,7 @@
 
                                                       (= (:content-type message)
                                                          constants/content-type-gif)
-                                                      :gif
-
-                                                      :else
-                                                      nil)
+                                                      :gif)
                               :body                 (get-message-content message
                                                                          album-messages
                                                                          media-server-port)}}]]]))

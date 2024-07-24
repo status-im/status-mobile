@@ -94,6 +94,10 @@ RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(hexToUtf8:(NSString *)str) {
     return StatusgoHexToUtf8(str);
 }
 
+RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(serializeLegacyKey:(NSString *)str) {
+    return StatusgoSerializeLegacyKey(str);
+}
+
 RCT_EXPORT_METHOD(setBlankPreviewFlag:(BOOL *)newValue)
 {
     NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];

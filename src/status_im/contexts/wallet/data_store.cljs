@@ -23,6 +23,7 @@
 (defn add-keys-to-account
   [account]
   (-> account
+      (assoc :operable? (not= (:operable account) :no))
       (assoc :watch-only? (= (:type account) :watch))
       (assoc :default-account? (:wallet account))))
 
@@ -67,7 +68,7 @@
                         :color                    :colorId})
       (update :prodPreferredChainIds chain-ids-set->string)
       (update :testPreferredChainIds chain-ids-set->string)
-      (dissoc :watch-only? :default-account? :tokens :collectibles)))
+      (dissoc :watch-only? :default-account? :operable? :tokens :collectibles)))
 
 (defn- rpc->balances-per-chain
   [token]

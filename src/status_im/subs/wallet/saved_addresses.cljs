@@ -38,11 +38,11 @@
  (fn [saved-addresses]
    (->> saved-addresses
         vals
-        (sort-by :name)
-        (group-by #(string/upper-case (first (:name %))))
+        (group-by (comp string/upper-case first :name))
         (map (fn [[k v]]
                {:title k
-                :data  v})))))
+                :data  (sort-by (comp string/lower-case :name) v)}))
+        (sort-by :title))))
 
 (rf/reg-sub
  :wallet/saved-addresses-addresses
@@ -62,7 +62,7 @@
  (fn [saved-addresses [_ query]]
    (->> saved-addresses
         vals
-        (sort-by :name)
+        (sort-by (comp string/lower-case :name))
         (filter
          (fn [{:keys [name address ens chain-short-names]}]
            (let [lowercase-query (string/lower-case (string/trim query))]

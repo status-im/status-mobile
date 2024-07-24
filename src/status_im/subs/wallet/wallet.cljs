@@ -134,10 +134,12 @@
                                                               (:chain-id %))))
                                      (map :chain-id)
                                      set)]
-     (assoc token
-            :networks          (network-utils/network-list token networks)
-            :available-balance (utils/calculate-total-token-balance token)
-            :total-balance     (utils/calculate-total-token-balance token enabled-from-chain-ids)))))
+     (some-> token
+             (assoc :networks          (network-utils/network-list token networks)
+                    :available-balance (utils/calculate-total-token-balance token)
+                    :total-balance     (utils/calculate-total-token-balance
+                                        token
+                                        enabled-from-chain-ids))))))
 
 (rf/reg-sub
  :wallet/wallet-send-token-symbol
@@ -416,7 +418,7 @@
                                      :total-balance     (utils/calculate-total-token-balance token
                                                                                              chain-ids)))
                             (:tokens account))
-         sorted-tokens (sort-by :name compare tokens)]
+         sorted-tokens (utils/sort-tokens tokens)]
      (if query
        (let [query-string (string/lower-case query)]
          (filter #(or (string/starts-with? (string/lower-case (:name %)) query-string)
@@ -454,53 +456,63 @@
  (fn [accounts]
    (remove :watch-only? accounts)))
 
-(defn- keep-fully-or-partially-operable-accounts
+(defn- keep-operable-accounts
   [accounts]
-  (filter (fn fully-or-partially-operable? [{:keys [operable]}]
-            (#{:fully :partially} operable))
-          accounts))
+  (filter :operable? accounts))
 
 (rf/reg-sub
- :wallet/fully-or-partially-operable-accounts-without-current-viewing-account
+ :wallet/operable-accounts-without-current-viewing-account
  :<- [:wallet/accounts-without-current-viewing-account]
- keep-fully-or-partially-operable-accounts)
+ keep-operable-accounts)
 
 (rf/reg-sub
- :wallet/fully-or-partially-operable-accounts-without-watched-accounts
+ :wallet/operable-accounts
  :<- [:wallet/accounts-without-watched-accounts]
- keep-fully-or-partially-operable-accounts)
+ keep-operable-accounts)
+
+(rf/reg-sub
+ :wallet/operable-addresses-tokens-with-positive-balance
+ :<- [:wallet/operable-accounts]
+ (fn [accounts]
+   (let [positive-balance-in-any-chain? (fn [{:keys [balances-per-chain]}]
+                                          (->> balances-per-chain
+                                               (map (comp :raw-balance val))
+                                               (some pos?)))]
+     (as-> accounts $
+       (group-by :address $)
+       (update-vals $ #(filter positive-balance-in-any-chain? (:tokens (first %))))))))
 
 (rf/reg-sub
  :wallet/accounts-with-current-asset
- :<- [:wallet/fully-or-partially-operable-accounts-without-watched-accounts]
+ :<- [:wallet/operable-accounts]
+ :<- [:wallet/operable-addresses-tokens-with-positive-balance]
  :<- [:wallet/wallet-send-token-symbol]
  :<- [:wallet/wallet-send-token]
- (fn [[accounts token-symbol token]]
-   (let [asset-symbol (or token-symbol (:symbol token))]
-     (if asset-symbol
-       (filter (fn [account]
-                 (some #(= (:symbol %) asset-symbol) (:tokens account)))
-               accounts)
-       accounts))))
+ (fn [[accounts addresses-tokens token-symbol token]]
+   (if-let [asset-symbol (or token-symbol (:symbol token))]
+     (let [addresses-with-asset (as-> addresses-tokens $
+                                  (update-vals $ #(set (map :symbol %)))
+                                  (keep (fn [[address token-symbols]]
+                                          (when (token-symbols asset-symbol) address))
+                                        $)
+                                  (set $))]
+       (filter #(addresses-with-asset (:address %)) accounts))
+     accounts)))
+
+(rf/reg-sub
+ :wallet/operable-addresses-with-token-symbol
+ :<- [:wallet/operable-addresses-tokens-with-positive-balance]
+ (fn [addresses-tokens [_ token-symbol]]
+   (keep (fn [[address tokens]]
+           (some #(when (= (:symbol %) token-symbol) address)
+                 tokens))
+         addresses-tokens)))
 
 (rf/reg-sub
  :wallet/account-tab
  :<- [:wallet/ui]
  (fn [ui]
    (get-in ui [:account-page :active-tab])))
-
-(rf/reg-sub
- :wallet/current-viewing-account-token-values
- :<- [:wallet/current-viewing-account]
- :<- [:wallet/current-viewing-account-tokens-in-selected-networks]
- :<- [:profile/currency]
- :<- [:profile/currency-symbol]
- (fn [[{:keys [color]} tokens currency currency-symbol]]
-   (mapv #(utils/calculate-token-value {:token           %
-                                        :color           color
-                                        :currency        currency
-                                        :currency-symbol currency-symbol})
-         tokens)))
 
 (rf/reg-sub
  :wallet/aggregated-tokens
@@ -516,22 +528,35 @@
    (utils/filter-tokens-in-chains aggregated-tokens chain-ids)))
 
 (rf/reg-sub
+ :wallet/current-viewing-account-token-values
+ :<- [:wallet/current-viewing-account]
+ :<- [:wallet/current-viewing-account-tokens-in-selected-networks]
+ :<- [:profile/currency]
+ :<- [:profile/currency-symbol]
+ (fn [[{:keys [color]} tokens currency currency-symbol]]
+   (utils/calculate-and-sort-tokens {:tokens          tokens
+                                     :color           color
+                                     :currency        currency
+                                     :currency-symbol currency-symbol})))
+
+(rf/reg-sub
  :wallet/aggregated-token-values-and-balance
  :<- [:wallet/aggregated-tokens-in-selected-networks]
  :<- [:profile/customization-color]
  :<- [:profile/currency]
  :<- [:profile/currency-symbol]
  (fn [[aggregated-tokens color currency currency-symbol]]
-   (let [balance           (utils/calculate-balance-from-tokens {:currency currency
-                                                                 :tokens   aggregated-tokens})
-         formatted-balance (utils/prettify-balance currency-symbol balance)]
+   (let [balance             (utils/calculate-balance-from-tokens {:currency currency
+                                                                   :tokens   aggregated-tokens})
+         formatted-balance   (utils/prettify-balance currency-symbol balance)
+         sorted-token-values (utils/calculate-and-sort-tokens {:tokens          aggregated-tokens
+                                                               :color           color
+                                                               :currency        currency
+                                                               :currency-symbol currency-symbol})]
      {:balance           balance
       :formatted-balance formatted-balance
-      :tokens            (mapv #(utils/calculate-token-value {:token           %
-                                                              :color           color
-                                                              :currency        currency
-                                                              :currency-symbol currency-symbol})
-                               aggregated-tokens)})))
+      :tokens            sorted-token-values})))
+
 
 (rf/reg-sub
  :wallet/network-preference-details
@@ -594,6 +619,11 @@
  :wallet/valid-ens-or-address?
  :<- [:wallet/search-address]
  :-> :valid-ens-or-address?)
+
+(rf/reg-sub
+ :wallet/searching-address?
+ :<- [:wallet/search-address]
+ :-> :loading?)
 
 (rf/reg-sub
  :wallet/aggregated-fiat-balance-per-chain

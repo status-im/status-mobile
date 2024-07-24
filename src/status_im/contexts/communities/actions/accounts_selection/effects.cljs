@@ -27,7 +27,7 @@
        :on-error   #(p-reject (str "failed to sign data\n" %))}))))
 
 (defn- edit-shared-addresses-for-community
-  [community-id signatures addresses-to-reveal airdrop-address]
+  [community-id signatures addresses-to-reveal airdrop-address _share-future-addresses?]
   (promesa/create
    (fn [p-resolve p-reject]
      (rpc/call
@@ -41,15 +41,16 @@
        :on-error    p-reject}))))
 
 (defn- request-to-join
-  [community-id signatures addresses-to-reveal airdrop-address]
+  [community-id signatures addresses-to-reveal airdrop-address share-future-addresses?]
   (promesa/create
    (fn [p-resolve p-reject]
      (rpc/call
       {:method      :wakuext_requestToJoinCommunity
-       :params      [{:communityId       community-id
-                      :signatures        signatures
-                      :addressesToReveal addresses-to-reveal
-                      :airdropAddress    airdrop-address}]
+       :params      [{:communityId          community-id
+                      :signatures           signatures
+                      :addressesToReveal    addresses-to-reveal
+                      :airdropAddress       airdrop-address
+                      :shareFutureAddresses share-future-addresses?}]
        :js-response true
        :on-success  p-resolve
        :on-error    p-reject}))))
@@ -64,15 +65,18 @@
 
 (defn- sign-and-call-endpoint
   [{:keys [community-id password pub-key
-           addresses-to-reveal airdrop-address
+           addresses-to-reveal airdrop-address share-future-addresses?
            on-success on-error
            callback]}]
-  (-> (promesa/let [sign-params (generate-requests-for-signing pub-key community-id addresses-to-reveal)
+  (-> (promesa/let [sign-params (generate-requests-for-signing pub-key
+                                                               community-id
+                                                               addresses-to-reveal)
                     signatures  (sign-data sign-params password)
                     result      (callback community-id
                                           signatures
                                           addresses-to-reveal
-                                          airdrop-address)]
+                                          airdrop-address
+                                          share-future-addresses?)]
         (run-callback-or-event on-success result))
       (promesa/catch #(run-callback-or-event on-error %))))
 
@@ -87,6 +91,7 @@
       [:or [:set string?]
        [:sequential string?]]]
      [:airdrop-address string?]
+     [:share-future-addresses? boolean?]
      [:on-success [:or fn? :schema.re-frame/event]]
      [:on-error [:or fn? :schema.re-frame/event]]
      [:callback fn?]]]

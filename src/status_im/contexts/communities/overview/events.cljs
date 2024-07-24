@@ -51,7 +51,7 @@
 
 (rf/reg-event-fx :communities/check-permissions-to-join-community-with-all-addresses
  (fn [{:keys [db]} [community-id]]
-   (let [accounts  (utils/sorted-non-watch-only-accounts db)
+   (let [accounts  (utils/sorted-operable-non-watch-only-accounts db)
          addresses (set (map :address accounts))]
      {:db            (assoc-in db [:communities/permissions-check community-id :checking?] true)
       :json-rpc/call [{:method "wakuext_checkPermissionsToJoinCommunity"
@@ -117,13 +117,14 @@
                      {:community community-name})}]]]})))
 
 (defn request-to-join-with-signatures
-  [_ [community-id addresses-to-reveal signatures]]
+  [_ [community-id addresses-to-reveal signatures share-future-addresses?]]
   {:fx [[:json-rpc/call
          [{:method      "wakuext_requestToJoinCommunity"
-           :params      [{:communityId       community-id
-                          :signatures        signatures
-                          :addressesToReveal addresses-to-reveal
-                          :airdropAddress    (first addresses-to-reveal)}]
+           :params      [{:communityId          community-id
+                          :signatures           signatures
+                          :addressesToReveal    addresses-to-reveal
+                          :shareFutureAddresses share-future-addresses?
+                          :airdropAddress       (first addresses-to-reveal)}]
            :js-response true
            :on-success  [:communities/requested-to-join]
            :on-error    [:communities/requested-to-join-error community-id]}]]]})
@@ -153,16 +154,18 @@
 (defn request-to-join-with-addresses
   [{:keys [db]}
    [{:keys [community-id password]}]]
-  (let [pub-key             (get-in db [:profile/profile :public-key])
-        addresses-to-reveal (get-in db [:communities/all-addresses-to-reveal community-id])
-        airdrop-address     (get-in db [:communities/all-airdrop-addresses community-id])]
+  (let [pub-key                 (get-in db [:profile/profile :public-key])
+        addresses-to-reveal     (get-in db [:communities/all-addresses-to-reveal community-id])
+        share-future-addresses? (get-in db [:communities/selected-share-all-addresses community-id])
+        airdrop-address         (get-in db [:communities/all-airdrop-addresses community-id])]
     {:fx [[:effects.community/request-to-join
-           {:community-id        community-id
-            :password            password
-            :pub-key             pub-key
-            :addresses-to-reveal addresses-to-reveal
-            :airdrop-address     airdrop-address
-            :on-success          [:communities/requested-to-join]
-            :on-error            [:communities/requested-to-join-error community-id]}]]}))
+           {:community-id            community-id
+            :password                password
+            :pub-key                 pub-key
+            :addresses-to-reveal     addresses-to-reveal
+            :airdrop-address         airdrop-address
+            :share-future-addresses? share-future-addresses?
+            :on-success              [:communities/requested-to-join]
+            :on-error                [:communities/requested-to-join-error community-id]}]]}))
 
 (rf/reg-event-fx :communities/request-to-join-with-addresses request-to-join-with-addresses)

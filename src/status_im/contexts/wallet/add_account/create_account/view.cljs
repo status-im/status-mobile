@@ -15,6 +15,7 @@
     [status-im.contexts.wallet.common.utils :as common.utils]
     [status-im.contexts.wallet.sheets.account-origin.view :as account-origin]
     [status-im.feature-flags :as ff]
+    [status-im.setup.hot-reload :as hot-reload]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]
     [utils.responsiveness :as responsiveness]
@@ -22,37 +23,38 @@
 
 (defn- get-keypair-data
   [{:keys [title primary-keypair? new-keypair? derivation-path customization-color]}]
-  (let [formatted-path  (string/replace derivation-path #"/" " / ")
-        on-auth-success (fn [password]
-                          (rf/dispatch [:navigate-to
-                                        :screen/wallet.edit-derivation-path
-                                        {:password                password
-                                         :current-derivation-path formatted-path}]))]
-    [{:title             title
-      :image             (if primary-keypair? :avatar :icon)
-      :image-props       (if primary-keypair?
-                           {:full-name           (utils.string/get-initials title 1)
-                            :size                :xxs
-                            :customization-color customization-color}
-                           :i/seed)
-      :action            (when-not new-keypair? :button)
-      :action-props      {:on-press    #(rf/dispatch [:navigate-to :screen/wallet.select-keypair])
-                          :button-text (i18n/label :t/edit)
-                          :alignment   :flex-start}
-      :description       :text
-      :description-props {:text (i18n/label :t/on-device)}}
-     {:title             (i18n/label :t/derivation-path)
-      :image             :icon
-      :image-props       :i/derivated-path
-      :action            (if (ff/enabled? ::ff/wallet.edit-derivation-path) :button :none)
-      :action-props      {:on-press    #(rf/dispatch [:standard-auth/authorize
-                                                      {:on-auth-success   on-auth-success
-                                                       :auth-button-label (i18n/label :t/continue)}])
-                          :button-text (i18n/label :t/edit)
-                          :icon-left   :i/face-id
-                          :alignment   :flex-start}
-      :description       :text
-      :description-props {:text formatted-path}}]))
+  [{:title             title
+    :image             (if primary-keypair? :avatar :icon)
+    :image-props       (if primary-keypair?
+                         {:full-name           (utils.string/get-initials title 1)
+                          :size                :xxs
+                          :customization-color customization-color}
+                         :i/seed)
+    :action            (when-not new-keypair? :button)
+    :action-props      {:on-press    #(rf/dispatch [:navigate-to :screen/wallet.select-keypair])
+                        :button-text (i18n/label :t/edit)
+                        :alignment   :flex-start}
+    :description       :text
+    :description-props {:text (i18n/label :t/on-device)}}
+   (when-not (string/blank? derivation-path)
+     (let [formatted-path  (string/replace derivation-path #"/" " / ")
+           on-auth-success (fn [password]
+                             (rf/dispatch [:navigate-to
+                                           :screen/wallet.edit-derivation-path
+                                           {:password                password
+                                            :current-derivation-path formatted-path}]))]
+       {:title             (i18n/label :t/derivation-path)
+        :image             :icon
+        :image-props       :i/derivated-path
+        :action            (if (ff/enabled? ::ff/wallet.edit-derivation-path) :button :none)
+        :action-props      {:on-press    #(rf/dispatch [:standard-auth/authorize
+                                                        {:on-auth-success   on-auth-success
+                                                         :auth-button-label (i18n/label :t/continue)}])
+                            :button-text (i18n/label :t/edit)
+                            :icon-left   :i/face-id
+                            :alignment   :flex-start}
+        :description       :text
+        :description-props {:text formatted-path}}))])
 
 (defn- avatar
   [{:keys [account-color emoji on-select-emoji]}]
@@ -167,38 +169,59 @@
                                            :container-style     (style/slide-button-container bottom))]}]
        children))))
 
+(defn- on-auth-success-mnemonic
+  [password account-preferences]
+  (rf/dispatch
+   [:wallet/import-mnemonic-and-create-keypair-with-account
+    {:password            password
+     :account-preferences account-preferences}]))
+
+(defn- on-auth-success-import-private-key
+  [password account-preferences]
+  (rf/dispatch
+   [:wallet/import-private-key-and-create-keypair-with-account
+    {:password            password
+     :account-preferences account-preferences}]))
+
 (defn add-new-keypair-variant
   [{{:keys [account-name account-color emoji]} :state}]
-  (let [on-auth-success (fn [password]
-                          (rf/dispatch
-                           [:wallet/import-and-create-keypair-with-account
-                            {:password            password
-                             :account-preferences {:account-name @account-name
-                                                   :color        @account-color
-                                                   :emoji        @emoji}}]))]
-    (fn [{:keys [on-change-text set-account-color set-emoji customization-color keypair-name error]}]
-      (let [{:keys [new-account-data]} (rf/sub [:wallet/create-account-new-keypair])]
-        [floating-button
-         {:account-color      @account-color
-          :slide-button-props {:on-auth-success on-auth-success
-                               :disabled?       (empty? @account-name)
-                               :dependencies    [new-account-data]}}
-         [avatar
-          {:account-color   @account-color
-           :emoji           @emoji
-           :on-select-emoji set-emoji}]
-         [input
-          {:account-color  @account-color
-           :account-name   @account-name
-           :on-change-text on-change-text
-           :error          error}]
-         [color-picker
-          {:account-color     @account-color
-           :set-account-color set-account-color}]
-         [new-account-origin
-          {:derivation-path     constants/path-default-wallet
-           :customization-color customization-color
-           :keypair-title       keypair-name}]]))))
+  (fn [{:keys [on-change-text set-account-color set-emoji customization-color keypair-name error]}]
+    (let [{:keys [new-account-data workflow]} (rf/sub [:wallet/create-account-new-keypair])
+          derivation-path                     (when (not= workflow
+                                                          :workflow/new-keypair.import-private-key)
+                                                constants/path-default-wallet)]
+      [floating-button
+       {:account-color      @account-color
+        :slide-button-props {:on-auth-success (fn on-auth-success [password]
+                                                (let [account-preferences {:account-name @account-name
+                                                                           :color        @account-color
+                                                                           :emoji        @emoji}]
+                                                  (if (= workflow
+                                                         :workflow/new-keypair.import-private-key)
+                                                    (on-auth-success-import-private-key
+                                                     password
+                                                     account-preferences)
+                                                    (on-auth-success-mnemonic
+                                                     password
+                                                     account-preferences))))
+                             :disabled?       (empty? @account-name)
+                             :dependencies    [new-account-data]}}
+       [avatar
+        {:account-color   @account-color
+         :emoji           @emoji
+         :on-select-emoji set-emoji}]
+       [input
+        {:account-color  @account-color
+         :account-name   @account-name
+         :on-change-text on-change-text
+         :error          error}]
+       [color-picker
+        {:account-color     @account-color
+         :set-account-color set-account-color}]
+       [new-account-origin
+        {:derivation-path     derivation-path
+         :customization-color customization-color
+         :keypair-title       keypair-name}]])))
 
 (defn derive-account-variant
   [{{:keys [account-name account-color emoji]} :state}]
@@ -262,36 +285,36 @@
                                 :account-name-error     account-name-error
                                 :emoji-and-color-error? emoji-and-color-error?}]
     (fn []
-      (let [customization-color         (rf/sub [:profile/customization-color])
+      (let [customization-color             (rf/sub [:profile/customization-color])
             ;; Having a keypair means the user is importing it or creating it.
-            {:keys [keypair-name]}      (rf/sub [:wallet/create-account-new-keypair])
-            accounts-names              (rf/sub [:wallet/accounts-names])
-            accounts-emojis-and-colors  (rf/sub [:wallet/accounts-emojis-and-colors])
-            on-change-text              (rn/use-callback
-                                         (fn [new-text]
-                                           (reset! account-name new-text)
-                                           (reset! account-name-error
-                                             (common.utils/get-account-name-error new-text
-                                                                                  accounts-names)))
-                                         [accounts-names accounts-emojis-and-colors])
-            check-emoji-and-color-error (fn [emoji color]
-                                          (let [repeated? (accounts-emojis-and-colors [emoji color])]
-                                            (reset! emoji-and-color-error?
-                                              (when repeated? :emoji-and-color))))
-            set-account-color           (rn/use-callback
-                                         (fn [new-color]
-                                           (reset! account-color new-color)
-                                           (check-emoji-and-color-error @emoji new-color))
-                                         [accounts-emojis-and-colors @emoji])
-            set-emoji                   (rn/use-callback
-                                         (fn [new-emoji]
-                                           (reset! emoji new-emoji)
-                                           (check-emoji-and-color-error new-emoji @account-color))
-                                         [accounts-emojis-and-colors @account-color])
-            error                       (or @account-name-error @emoji-and-color-error?)]
+            {:keys [keypair-name workflow]} (rf/sub [:wallet/create-account-new-keypair])
+            accounts-names                  (rf/sub [:wallet/accounts-names])
+            accounts-emojis-and-colors      (rf/sub [:wallet/accounts-emojis-and-colors])
+            on-change-text                  (rn/use-callback
+                                             (fn [new-text]
+                                               (reset! account-name new-text)
+                                               (reset! account-name-error
+                                                 (common.utils/get-account-name-error new-text
+                                                                                      accounts-names)))
+                                             [accounts-names accounts-emojis-and-colors])
+            check-emoji-and-color-error     (fn [emoji color]
+                                              (let [repeated? (accounts-emojis-and-colors [emoji color])]
+                                                (reset! emoji-and-color-error?
+                                                  (when repeated? :emoji-and-color))))
+            set-account-color               (rn/use-callback
+                                             (fn [new-color]
+                                               (reset! account-color new-color)
+                                               (check-emoji-and-color-error @emoji new-color))
+                                             [accounts-emojis-and-colors @emoji])
+            set-emoji                       (rn/use-callback
+                                             (fn [new-emoji]
+                                               (reset! emoji new-emoji)
+                                               (check-emoji-and-color-error new-emoji @account-color))
+                                             [accounts-emojis-and-colors @account-color])
+            error                           (or @account-name-error @emoji-and-color-error?)]
 
         (rn/use-mount #(check-emoji-and-color-error @emoji @account-color))
-        (rn/use-unmount #(rf/dispatch [:wallet/clear-create-account]))
+        (hot-reload/use-safe-unmount #(rf/dispatch [:wallet/clear-create-account]))
 
         (if keypair-name
           [add-new-keypair-variant
@@ -300,8 +323,10 @@
             :on-change-text      on-change-text
             :set-account-color   set-account-color
             :set-emoji           set-emoji
+
             :keypair-name        keypair-name
-            :error               error}]
+            :error               error
+            :workflow            workflow}]
           [derive-account-variant
            {:state               state
             :customization-color customization-color

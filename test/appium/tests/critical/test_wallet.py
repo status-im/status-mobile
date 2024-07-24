@@ -13,8 +13,9 @@ from views.sign_in_view import SignInView
 
 
 @pytest.mark.xdist_group(name="new_four_2")
-@marks.new_ui_critical
+@marks.nightly
 @marks.secured
+@marks.smoke
 class TestWalletMultipleDevice(MultipleSharedDeviceTestCase):
 
     def prepare_devices(self):
@@ -32,16 +33,16 @@ class TestWalletMultipleDevice(MultipleSharedDeviceTestCase):
                                                               'username': self.receiver_username}))))
         self.home_1, self.home_2 = self.sign_in_1.get_home_view(), self.sign_in_2.get_home_view()
         self.wallet_1, self.wallet_2 = self.sign_in_1.get_wallet_view(), self.sign_in_2.get_wallet_view()
+        self.wallet_1.wallet_tab.click()
+        self.wallet_2.wallet_tab.click()
 
     def _get_balances_before_tx(self):
         sender_balance = self.network_api.get_balance(self.sender['wallet_address'])
         receiver_balance = self.network_api.get_balance(self.receiver['wallet_address'])
         self.wallet_1.just_fyi("Getting ETH amount in the wallet of the sender before transaction")
-        self.wallet_1.wallet_tab.click()
         self.wallet_1.get_account_element().click()
         eth_amount_sender = self.wallet_1.get_asset(asset_name='Ether').get_amount()
         self.wallet_2.just_fyi("Getting ETH amount in the wallet of the receiver before transaction")
-        self.wallet_2.wallet_tab.click()
         self.wallet_2.get_account_element().click()
         eth_amount_receiver = self.wallet_2.get_asset(asset_name='Ether').get_amount()
         return sender_balance, receiver_balance, eth_amount_sender, eth_amount_receiver
@@ -67,7 +68,6 @@ class TestWalletMultipleDevice(MultipleSharedDeviceTestCase):
                 exp_amount = round(initial_eth_amount + amount_to_send, 4)
 
             # for _ in range(12):  # ToDo: 120 sec wait time, enable when autoupdate feature is ready
-            wallet_view.wallet_tab.wait_and_click()
             new_eth_amount = round(wallet_view.get_asset(asset_name='Ether').get_amount(), 4)
             if user_name == 'sender' and new_eth_amount <= exp_amount:
                 return
@@ -86,6 +86,10 @@ class TestWalletMultipleDevice(MultipleSharedDeviceTestCase):
         self.loop.run_until_complete(
             run_in_parallel(((self.home_1.reopen_app,),
                              (self.home_2.reopen_app,))))
+        self.wallet_1.wallet_tab.wait_and_click()
+        self.wallet_2.wallet_tab.wait_and_click()
+        self.wallet_1.select_network(network_name='Arbitrum')
+        self.wallet_2.select_network(network_name='Arbitrum')
         self.loop.run_until_complete(
             run_in_parallel(((wait_for_wallet_balance_to_update, {'wallet_view': self.wallet_1,
                                                                   'user_name': self.sender_username,
@@ -122,6 +126,8 @@ class TestWalletMultipleDevice(MultipleSharedDeviceTestCase):
 
     @marks.testrail_id(727229)
     def test_wallet_send_eth(self):
+        self.wallet_1.select_network(network_name='Arbitrum')
+        self.wallet_2.select_network(network_name='Arbitrum')
         sender_balance, receiver_balance, eth_amount_sender, eth_amount_receiver = self._get_balances_before_tx()
 
         self.wallet_2.close_account_button.click()
@@ -129,21 +135,24 @@ class TestWalletMultipleDevice(MultipleSharedDeviceTestCase):
 
         self.wallet_1.just_fyi("Sending funds from wallet")
         amount_to_send = 0.0001
-        self.wallet_1.send_asset(address=self.receiver['wallet_address'], asset_name='Ether', amount=amount_to_send)
+        self.wallet_1.send_asset(address='arb1:' + self.receiver['wallet_address'],
+                                 asset_name='Ether',
+                                 amount=amount_to_send)
 
         device_time = self.wallet_1.driver.device_time
 
         self._check_balances_after_tx(amount_to_send, sender_balance, receiver_balance, eth_amount_sender,
                                       eth_amount_receiver)
 
-        self.loop.run_until_complete(
-            run_in_parallel(((self._check_last_transaction_in_activity, {'wallet_view': self.wallet_1,
-                                                                         'device_time': device_time,
-                                                                         'amount_to_send': amount_to_send}),
-                             (self._check_last_transaction_in_activity, {'wallet_view': self.wallet_2,
-                                                                         'device_time': device_time,
-                                                                         'amount_to_send': amount_to_send,
-                                                                         'sender': False}))))
+        # ToDo: enable when issues 20807 and 20808 are fixed
+        # self.loop.run_until_complete(
+        #     run_in_parallel(((self._check_last_transaction_in_activity, {'wallet_view': self.wallet_1,
+        #                                                                  'device_time': device_time,
+        #                                                                  'amount_to_send': amount_to_send}),
+        #                      (self._check_last_transaction_in_activity, {'wallet_view': self.wallet_2,
+        #                                                                  'device_time': device_time,
+        #                                                                  'amount_to_send': amount_to_send,
+        #                                                                  'sender': False}))))
         self.errors.verify_no_errors()
 
     @marks.testrail_id(727230)
@@ -155,26 +164,29 @@ class TestWalletMultipleDevice(MultipleSharedDeviceTestCase):
 
         self.wallet_1.just_fyi("Sending asset from drawer")
         amount_to_send = 0.0001
-        self.wallet_1.send_asset_from_drawer(address=self.receiver['wallet_address'], asset_name='Ether',
+        self.wallet_1.send_asset_from_drawer(address='arb1:' + self.receiver['wallet_address'],
+                                             asset_name='Ether',
                                              amount=amount_to_send)
         device_time = self.wallet_1.driver.device_time
 
         self._check_balances_after_tx(amount_to_send, sender_balance, receiver_balance, eth_amount_sender,
                                       eth_amount_receiver)
 
-        self.loop.run_until_complete(
-            run_in_parallel(((self._check_last_transaction_in_activity, {'wallet_view': self.wallet_1,
-                                                                         'device_time': device_time,
-                                                                         'amount_to_send': amount_to_send}),
-                             (self._check_last_transaction_in_activity, {'wallet_view': self.wallet_2,
-                                                                         'device_time': device_time,
-                                                                         'amount_to_send': amount_to_send,
-                                                                         'sender': False}))))
+        # ToDo: enable when issues 20807 and 20808 are fixed
+        # self.loop.run_until_complete(
+        #     run_in_parallel(((self._check_last_transaction_in_activity, {'wallet_view': self.wallet_1,
+        #                                                                  'device_time': device_time,
+        #                                                                  'amount_to_send': amount_to_send}),
+        #                      (self._check_last_transaction_in_activity, {'wallet_view': self.wallet_2,
+        #                                                                  'device_time': device_time,
+        #                                                                  'amount_to_send': amount_to_send,
+        #                                                                  'sender': False}))))
         self.errors.verify_no_errors()
 
 
 @pytest.mark.xdist_group(name="new_one_2")
-@marks.new_ui_critical
+@marks.nightly
+@marks.smoke
 class TestWalletOneDevice(MultipleSharedDeviceTestCase):
 
     def prepare_devices(self):

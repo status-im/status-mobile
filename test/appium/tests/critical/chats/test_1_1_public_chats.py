@@ -13,7 +13,7 @@ from views.sign_in_view import SignInView
 
 
 @pytest.mark.xdist_group(name="new_one_2")
-@marks.new_ui_critical
+@marks.nightly
 class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
 
     def prepare_devices(self):
@@ -261,15 +261,17 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
         #     self.errors.append("Message_4 is not unpinned!")
 
         for chat_number, chat in enumerate([self.chat_1, self.chat_2]):
-            count = chat.pinned_messages_count.text
-            if count != '2':
+            try:
+                chat.pinned_messages_count.wait_for_element_text(text='2', wait_time=20)
+            except Failed:
                 self.errors.append(
-                    "Pinned messages count is %s but should be 2 after unpinning the last pinned message for user %s" %
-                    (count, chat_number + 1)
+                    "Pinned messages count is not 2 after unpinning the last pinned message for user %s" % (
+                                chat_number + 1)
                 )
         self.errors.verify_no_errors()
 
     @marks.testrail_id(702745)
+    @marks.smoke
     def test_1_1_chat_non_latin_messages_stack_update_profile_photo(self):
         self.home_1.navigate_back_to_home_view()
         self.home_1.profile_button.click()
@@ -532,7 +534,7 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
 
 
 @pytest.mark.xdist_group(name="new_six_2")
-@marks.new_ui_critical
+@marks.nightly
 class TestOneToOneChatMultipleSharedDevicesNewUiTwo(MultipleSharedDeviceTestCase):
 
     def prepare_devices(self):

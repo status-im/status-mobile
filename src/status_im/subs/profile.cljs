@@ -88,6 +88,12 @@
    (get-in profile [:wakuv2-config :LightClient])))
 
 (re-frame/reg-sub
+ :profile/store-confirmations-enabled?
+ :<- [:profile/profile]
+ (fn [profile]
+   (get-in profile [:wakuv2-config :EnableStoreConfirmationForMessagesSent])))
+
+(re-frame/reg-sub
  :profile/telemetry-enabled?
  :<- [:profile/profile]
  (fn [profile]
@@ -230,6 +236,20 @@
  :<- [:profile/profile]
  (fn [multiaccount]
    (pos? (count (get multiaccount :images)))))
+
+(re-frame/reg-sub :profile/pictures-visibility
+ :<- [:profile/profile]
+ :-> :profile-pictures-visibility)
+
+(re-frame/reg-sub :profile/allow-new-contact-requests?
+ :<- [:profile/profile]
+ (fn [{:keys [messages-from-contacts-only]}]
+   (not messages-from-contacts-only)))
+
+(re-frame/reg-sub :profile/preview-privacy?
+ :<- [:profile/profile]
+ (fn [{:keys [preview-privacy?]}]
+   (boolean preview-privacy?)))
 
 (defn- replace-multiaccount-image-uri
   [profile ens-names port font-file avatar-opts theme]

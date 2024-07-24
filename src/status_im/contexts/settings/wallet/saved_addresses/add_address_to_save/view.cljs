@@ -36,8 +36,10 @@
 (defn- address-input
   [{:keys [input-value on-change-text paste-into-input clear-input]}]
   (let [empty-input?    (string/blank? input-value)
-        on-scan-address (rn/use-callback #(rf/dispatch [:open-modal :screen/wallet.scan-address
-                                                        {:on-result on-change-text}]))]
+        on-scan-address (rn/use-callback (fn []
+                                           (rf/dispatch [:wallet/clean-scanned-address])
+                                           (rf/dispatch [:open-modal :screen/wallet.scan-address
+                                                         {:on-result on-change-text}])))]
     [rn/view {:style style/input-container}
      [quo/input
       {:accessibility-label :add-address-to-save
@@ -111,7 +113,8 @@
 
 (defn view
   []
-  (let [profile-color                       (rf/sub [:profile/customization-color])
+  (let [view-id                             (rf/sub [:view-id])
+        profile-color                       (rf/sub [:profile/customization-color])
         accounts-addresses                  (rf/sub [:wallet/addresses])
         saved-addresses-addresses           (rf/sub [:wallet/saved-addresses-addresses])
         [address-or-ens set-address-or-ens] (rn/use-state "")
@@ -161,7 +164,8 @@
                                                (rf/dispatch
                                                 [:open-modal :screen/settings.save-address]))
                                              [address ens-name? address-or-ens])]
-    (rn/use-unmount #(rf/dispatch [:wallet/clear-address-to-save]))
+    (rn/use-unmount #(rf/dispatch [:wallet/clean-scanned-address]))
+    (rn/use-mount #(rf/dispatch [:wallet/clear-address-to-save]))
     [quo/overlay {:type :shell}
      [floating-button-page/view
       {:footer-container-padding 0
@@ -172,11 +176,12 @@
                                    :on-press            navigate-back
                                    :margin-top          (safe-area/get-top)
                                    :accessibility-label :add-address-to-save-page-nav}]
-       :footer                   [quo/button
-                                  {:customization-color profile-color
-                                   :disabled?           button-disabled?
-                                   :on-press            on-press-continue}
-                                  (i18n/label :t/continue)]}
+       :footer                   (when (= view-id :screen/settings.add-address-to-save)
+                                   [quo/button
+                                    {:customization-color profile-color
+                                     :disabled?           button-disabled?
+                                     :on-press            on-press-continue}
+                                    (i18n/label :t/continue)])}
       [quo/page-top
        {:container-style  style/header-container
         :blur?            true

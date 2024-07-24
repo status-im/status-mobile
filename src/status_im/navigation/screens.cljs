@@ -57,6 +57,7 @@
     [status-im.contexts.profile.settings.screens.password.change-password.view :as change-password]
     [status-im.contexts.profile.settings.screens.password.view :as settings-password]
     [status-im.contexts.profile.settings.view :as settings]
+    [status-im.contexts.settings.privacy-and-security.view :as settings.privacy-and-security]
     [status-im.contexts.settings.wallet.keypairs-and-accounts.missing-keypairs.encrypted-qr.view
      :as encrypted-keypair-qr]
     [status-im.contexts.settings.wallet.keypairs-and-accounts.missing-keypairs.import-private-key.view
@@ -107,6 +108,7 @@
     [status-im.contexts.wallet.bridge.select-asset.view :as wallet-bridge-select-asset]
     [status-im.contexts.wallet.collectible.view :as wallet-collectible]
     [status-im.contexts.wallet.common.scan-account.view :as wallet-scan-address]
+    [status-im.contexts.wallet.connected-dapps.scan-dapp.view :as wallet-scan-dapp]
     [status-im.contexts.wallet.connected-dapps.view :as wallet-connected-dapps]
     [status-im.contexts.wallet.send.from.view :as wallet-select-from]
     [status-im.contexts.wallet.send.select-address.view :as wallet-select-address]
@@ -116,6 +118,9 @@
     [status-im.contexts.wallet.send.transaction-confirmation.view :as wallet-transaction-confirmation]
     [status-im.contexts.wallet.send.transaction-progress.view :as wallet-transaction-progress]
     [status-im.contexts.wallet.swap.select-asset-to-pay.view :as wallet-swap-select-asset-to-pay]
+    [status-im.contexts.wallet.swap.set-spending-cap.view :as wallet-swap-set-spending-cap]
+    [status-im.contexts.wallet.swap.swap-confirmation.view :as wallet-swap-confirmation]
+    [status-im.contexts.wallet.swap.swap-proposal.view :as wallet-swap-propasal]
     [status-im.contexts.wallet.wallet-connect.modals.send-transaction.view :as
      wallet-connect-send-transaction]
     [status-im.contexts.wallet.wallet-connect.modals.sign-message.view :as wallet-connect-sign-message]
@@ -348,7 +353,10 @@
                  :animations             (merge
                                           transitions/new-to-status-modal-animations
                                           transitions/push-animations-for-transparent-background)
-                 :modalPresentationStyle :overCurrentContext}
+                 :popGesture             false
+                 :modalPresentationStyle :overCurrentContext
+                 :hardwareBackButton     {:dismissModalOnPress false
+                                          :popStackOnPress     false}}
      :component enable-notifications/view}
 
     {:name      :screen/onboarding.identifiers
@@ -408,10 +416,6 @@
     {:name      :screen/wallet.accounts
      :options   {:insets {:top? true}}
      :component wallet-accounts/view}
-
-    {:name      :screen/wallet.connected-dapps
-     :options   {:insets {:top? true}}
-     :component wallet-connected-dapps/view}
 
     {:name      :screen/wallet.wallet-connect-session-proposal
      :options   {:sheet? true}
@@ -519,6 +523,18 @@
                  :insets                 {:top? true}}
      :component wallet-swap-select-asset-to-pay/view}
 
+    {:name      :screen/wallet.swap-propasal
+     :options   {:insets {:top? true}}
+     :component wallet-swap-propasal/view}
+
+    {:name      :screen/wallet.swap-confirmation
+     :options   {:modalPresentationStyle :overCurrentContext}
+     :component wallet-swap-confirmation/view}
+
+    {:name      :screen/wallet.swap-set-spending-cap
+     :options   {:sheet? true}
+     :component wallet-swap-set-spending-cap/view}
+
     {:name      :scan-profile-qr-code
      :options   (merge
                  options/dark-screen
@@ -542,6 +558,16 @@
     {:name      :screen/wallet-connect.send-transaction
      :options   {:sheet? true}
      :component wallet-connect-send-transaction/view}
+
+    {:name      :screen/wallet.connected-dapps
+     :options   {:insets {:top? true}}
+     :component wallet-connected-dapps/view}
+
+    {:name      :screen/wallet.scan-dapp
+     :options   (merge
+                 options/dark-screen
+                 {:modalPresentationStyle :overCurrentContext})
+     :component wallet-scan-dapp/view}
 
     ;; Settings
 
@@ -608,6 +634,10 @@
     {:name      :screen/settings-blocked-users
      :options   options/transparent-modal-screen-options
      :component settings.blocked-users/view}
+
+    {:name      :screen/settings-privacy-and-security
+     :options   options/transparent-modal-screen-options
+     :component settings.privacy-and-security/view}
 
     {:name      :screen/change-password
      :options   (assoc options/transparent-modal-screen-options :theme :dark)

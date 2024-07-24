@@ -3,7 +3,6 @@
     [react-native.core :as rn]
     [status-im.contexts.wallet.account.tabs.about.view :as about]
     [status-im.contexts.wallet.account.tabs.assets.view :as assets]
-    [status-im.contexts.wallet.account.tabs.dapps.view :as dapps]
     [status-im.contexts.wallet.collectible.options.view :as options-drawer]
     [status-im.contexts.wallet.common.activity-tab.view :as activity]
     [status-im.contexts.wallet.common.collectibles-tab.view :as collectibles]
@@ -11,9 +10,7 @@
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
-(defn- on-collectible-press
-  [{:keys [id]} aspect-ratio]
-  (rf/dispatch [:wallet/get-collectible-details id aspect-ratio]))
+(def on-collectible-press #(rf/dispatch [:wallet/navigate-to-collectible-details %]))
 
 (defn- on-collectible-long-press
   [{:keys [preview-url collectible-details id]}]
@@ -47,5 +44,4 @@
                       {:title        (i18n/label :t/no-permissions)
                        :description  (i18n/label :t/no-collectibles-description)
                        :placeholder? true}]
-       :dapps        [dapps/view]
        [about/view])]))

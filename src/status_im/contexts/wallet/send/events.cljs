@@ -187,38 +187,41 @@
 (rf/reg-event-fx
  :wallet/update-receiver-networks
  (fn [{:keys [db]} [selected-networks]]
-   (let [amount                           (get-in db [:wallet :ui :send :amount])
-         disabled-from-chain-ids          (get-in db [:wallet :ui :send :disabled-from-chain-ids])
-         filtered-disabled-from-chain-ids (filter (fn [chain-id]
-                                                    (some #(= chain-id %)
-                                                          selected-networks))
-                                                  disabled-from-chain-ids)]
-     {:db (-> db
-              (assoc-in [:wallet :ui :send :receiver-networks] selected-networks)
-              (assoc-in [:wallet :ui :send :disabled-from-chain-ids] filtered-disabled-from-chain-ids))
+   (let [amount (get-in db [:wallet :ui :send :amount])]
+     {:db (assoc-in db [:wallet :ui :send :receiver-networks] selected-networks)
       :fx [[:dispatch [:wallet/get-suggested-routes {:amount amount}]]]})))
 
 (rf/reg-event-fx
  :wallet/set-token-to-send
- (fn [{:keys [db]} [{:keys [token-symbol token stack-id start-flow?]}]]
+ (fn [{:keys [db]} [{:keys [token-symbol token stack-id start-flow? owners]} entry-point]]
    ;; `token` is a map extracted from the sender, but in the wallet home page we don't know the
    ;; sender yet, so we only provide the `token-symbol`, later in
    ;; `:wallet/select-from-account` the `token` key will be set.
-   (let [{token-networks :networks}                token
-         receiver-networks                         (get-in db [:wallet :ui :send :receiver-networks])
-         token-networks-ids                        (mapv #(:chain-id %) token-networks)
-         token-not-supported-in-receiver-networks? (not-any? (set receiver-networks)
-                                                             token-networks-ids)]
-     (when (or token token-symbol)
+   (let [{:keys [networks]}  token
+         receiver-networks   (get-in db [:wallet :ui :send :receiver-networks])
+         token-networks-ids  (map :chain-id networks)
+         unsupported-token?  (not-any? (set receiver-networks) token-networks-ids)
+         unique-owner        (when (= (count owners) 1)
+                               (first owners))
+         unique-owner-tokens (get-in db [:wallet :accounts unique-owner :tokens])
+         token-data          (or token
+                                 (when (and token-symbol unique-owner)
+                                   (some #(when (= (:symbol %) token-symbol) %)
+                                         unique-owner-tokens)))]
+     (when (or token-data token-symbol)
        {:db (cond-> db
-              :always      (update-in [:wallet :ui :send] dissoc :collectible)
-              :always      (assoc-in
-                            [:wallet :ui :send :token-not-supported-in-receiver-networks?]
-                            token-not-supported-in-receiver-networks?)
-              token        (assoc-in [:wallet :ui :send :token] token)
-              token        (assoc-in [:wallet :ui :send :token-display-name]
-                            (:symbol token))
-              token-symbol (assoc-in [:wallet :ui :send :token-symbol] token-symbol))
+              :always      (update-in [:wallet :ui :send]
+                                      #(-> %
+                                           (dissoc :collectible)
+                                           (assoc :token-not-supported-in-receiver-networks?
+                                                  unsupported-token?)))
+              token-symbol (assoc-in [:wallet :ui :send :token-symbol] token-symbol)
+              token-data   (update-in [:wallet :ui :send]
+                                      #(assoc %
+                                              :token              token-data
+                                              :token-display-name (:symbol token-data)))
+              unique-owner (assoc-in [:wallet :current-viewing-account-address] unique-owner)
+              entry-point  (assoc-in [:wallet :ui :send :entry-point] entry-point))
         :fx [[:dispatch [:wallet/clean-suggested-routes]]
              [:dispatch
               [:wallet/wizard-navigate-forward
@@ -232,9 +235,9 @@
    (let [{token-networks :networks
           token-symbol   :symbol}                  token
          receiver-networks                         (get-in db [:wallet :ui :send :receiver-networks])
-         token-networks-ids                        (mapv #(:chain-id %) token-networks)
-         token-not-supported-in-receiver-networks? (not (some (set receiver-networks)
-                                                              token-networks-ids))]
+         token-networks-ids                        (map :chain-id token-networks)
+         token-not-supported-in-receiver-networks? (not-any? (set receiver-networks)
+                                                             token-networks-ids)]
      {:db (-> db
               (assoc-in [:wallet :ui :send :token] token)
               (assoc-in [:wallet :ui :send :token-display-name] token-symbol)
@@ -263,7 +266,9 @@
 (rf/reg-event-fx
  :wallet/set-collectible-to-send
  (fn [{db :db} [{:keys [collectible current-screen start-flow?]}]]
-   (let [collection-data    (:collection-data collectible)
+   (let [viewing-account?   (some? (-> db :wallet :current-viewing-account-address))
+         entry-point        (when-not viewing-account? :wallet-stack)
+         collection-data    (:collection-data collectible)
          collectible-data   (:collectible-data collectible)
          contract-type      (:contract-type collectible)
          tx-type            (if (= contract-type constants/wallet-contract-type-erc-1155)
@@ -278,6 +283,7 @@
 
                               collectible
                               (str (:name collection-data) " #" collectible-id))
+         owner-address      (-> collectible :ownership first :address)
          collectible-tx     (-> db
                                 (update-in [:wallet :ui :send] dissoc :token)
                                 (assoc-in [:wallet :ui :send :collectible] collectible)
@@ -285,7 +291,14 @@
                                 (assoc-in [:wallet :ui :send :tx-type] tx-type))
          recipient-set?     (-> db :wallet :ui :send :recipient)]
      {:db (cond-> collectible-tx
-            one-collectible? (assoc-in [:wallet :ui :send :amount] 1))
+            :always
+            (assoc-in [:wallet :ui :send :entry-point] entry-point)
+
+            (not viewing-account?)
+            (assoc-in [:wallet :current-viewing-account-address] owner-address)
+
+            one-collectible?
+            (assoc-in [:wallet :ui :send :amount] 1))
       :fx [(when (and one-collectible? recipient-set?)
              [:dispatch [:wallet/get-suggested-routes {:amount 1}]])
            [:dispatch
@@ -487,10 +500,18 @@
          transaction-details  (send-utils/map-multitransaction-by-ids transaction-batch-id
                                                                       transaction-hashes)]
      {:db (-> db
+              (assoc-in [:wallet :ui :send :just-completed-transaction?] true)
               (assoc-in [:wallet :transactions] transaction-details)
               (assoc-in [:wallet :ui :send :transaction-ids] transaction-ids))
       :fx [[:dispatch
-            [:wallet/end-transaction-flow]]]})))
+            [:wallet/end-transaction-flow]]
+           [:dispatch-later
+            [{:ms       2000
+              :dispatch [:wallet/clean-just-completed-transaction]}]]]})))
+
+(rf/reg-event-fx :wallet/clean-just-completed-transaction
+ (fn [{:keys [db]}]
+   {:db (update-in db [:wallet :ui :send] dissoc :just-completed-transaction?)}))
 
 (rf/reg-event-fx :wallet/clean-up-transaction-flow
  (fn [_]
@@ -659,8 +680,8 @@
      {:json-rpc/call [{:method     "wallet_createMultiTransaction"
                        :params     request-params
                        :on-success (fn [result]
-                                     (rf/dispatch [:hide-bottom-sheet])
-                                     (rf/dispatch [:wallet/add-authorized-transaction result]))
+                                     (rf/dispatch [:wallet/add-authorized-transaction result])
+                                     (rf/dispatch [:hide-bottom-sheet]))
                        :on-error   (fn [error]
                                      (log/error "failed to send transaction"
                                                 {:event  :wallet/send-transaction

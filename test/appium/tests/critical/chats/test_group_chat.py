@@ -12,7 +12,7 @@ from views.sign_in_view import SignInView
 
 
 @pytest.mark.xdist_group(name="new_one_3")
-@marks.new_ui_critical
+@marks.nightly
 class TestGroupChatMultipleDeviceMergedNewUI(MultipleSharedDeviceTestCase):
 
     def prepare_devices(self):
@@ -435,16 +435,14 @@ class TestGroupChatMultipleDeviceMergedNewUI(MultipleSharedDeviceTestCase):
         self.errors.verify_no_errors()
 
     @marks.testrail_id(703495)
-    @marks.xfail(
-        reason="Chat is not unmuted after expected time: https://github.com/status-im/status-mobile/issues/19627")
     def test_group_chat_mute_chat(self):
         [self.homes[i].navigate_back_to_home_view() for i in range(3)]
 
-        self.homes[1].just_fyi("Member 1 mutes the chat for 1 hour")
-        self.homes[1].mute_chat_long_press(self.chat_name, "mute-for-1-hour")
+        self.homes[1].just_fyi("Member 1 mutes the chat for 8 hours")
+        self.homes[1].mute_chat_long_press(self.chat_name, "mute-for-8-hours")
         device_time = self.homes[1].driver.device_time
         current_time = datetime.datetime.strptime(device_time, "%Y-%m-%dT%H:%M:%S%z")
-        expected_times = [current_time + datetime.timedelta(minutes=i) for i in range(59, 62)]
+        expected_times = [current_time + datetime.timedelta(minutes=i) for i in range(479, 482)]
         expected_texts = [
             "Muted until %s %s" % (exp_time.strftime('%H:%M'), "today" if current_time.hour < 23 else "tomorrow") for
             exp_time in expected_times]
@@ -484,14 +482,12 @@ class TestGroupChatMultipleDeviceMergedNewUI(MultipleSharedDeviceTestCase):
                 "Message '%s' is not shown in chat for %s after mute" % (muted_message, self.usernames[1]))
         self.chats[1].navigate_back_to_home_view()
 
-        self.chats[1].just_fyi("Change device time so chat will be unmuted by timer")
-        unmute_time = current_time + datetime.timedelta(minutes=61)
-        self.homes[1].driver.execute_script("mobile: shell",
-                                            {"command": "su root date %s" % unmute_time.strftime("%m%d%H%M%Y.%S")}
-                                            )
+        self.chats[1].just_fyi("Member 1 unmutes the chat")
+        chat.long_press_element()
+        self.homes[1].mute_chat_button.click()
         chat.long_press_element()
         if self.homes[1].element_starts_with_text("Muted until").is_element_displayed():
-            self.errors.append("Chat is still muted after timeout")
+            self.errors.append("Chat is still muted after being unmuted")
             self.errors.verify_no_errors()
         if self.homes[1].mute_chat_button.is_element_displayed():
             self.homes[1].click_system_back_button()

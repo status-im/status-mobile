@@ -61,7 +61,13 @@
        :image       :icon
        :blur?       true
        :action      :arrow})]
-   [{:title       (i18n/label :t/syncing)
+   [{:title       (i18n/label :t/privacy-and-security)
+     :on-press    #(rf/dispatch [:open-modal :screen/settings-privacy-and-security])
+     :image-props :i/privacy
+     :image       :icon
+     :blur?       true
+     :action      :arrow}
+    {:title       (i18n/label :t/syncing)
      :on-press    #(rf/dispatch [:open-modal :settings-syncing])
      :image-props :i/syncing
      :image       :icon

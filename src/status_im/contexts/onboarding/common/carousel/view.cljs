@@ -18,19 +18,18 @@
      :size   :heading-2}
     (get-in header-text [index :text])]
    [quo/text
-    {:style style/carousel-sub-text
-     :size  :paragraph-1}
+    {:style style/carousel-sub-text}
     (get-in header-text [index :sub-text])]])
 
 (defn content-view
   [{:keys [window-width status-bar-height index header-text header-background]} content]
   (let [content-width (* 4 window-width)]
-    [:<>
-     (when content content)
+    [rn/view {:style {:flex 1}}
      [rn/view {:style (style/header-container status-bar-height content-width index header-background)}
       (for [index (range 4)]
         ^{:key index}
-        [header-text-view index window-width header-text])]]))
+        [header-text-view index window-width header-text])]
+     (when content content)]))
 
 (defn progress-bar
   [{:keys [static? progress-bar-width]}]
@@ -64,10 +63,10 @@
           :swipeable (animation/composed-gestures progress paused? is-dragging? drag-amount)
           :tappable  (animation/tap-gesture progress paused?)
           nil)]
-    [:<>
+    [rn/view {:style {:flex 1}}
      [gesture/gesture-detector {:gesture identified-gesture}
-      [container-view {:style (style/carousel-container carousel-left animate?)}
-       (for [index (range 2)]
+      [container-view {:style (style/carousel-container carousel-left animate? (* 4 window-width))}
+       (for [index (range 1)]
          ^{:key index}
          [content-view
           {:window-width      window-width

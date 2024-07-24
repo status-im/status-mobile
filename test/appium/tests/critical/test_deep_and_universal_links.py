@@ -6,7 +6,7 @@ from views.sign_in_view import SignInView
 
 
 @pytest.mark.xdist_group(name="new_one_1")
-@marks.new_ui_critical
+@marks.nightly
 class TestDeepLinksOneDevice(MultipleSharedDeviceTestCase):
 
     def prepare_devices(self):
@@ -48,11 +48,11 @@ class TestDeepLinksOneDevice(MultipleSharedDeviceTestCase):
             self.profile_view.close_button.click()
 
         community_urls = {
-            "https://status.app/c/G0IAAGS9TbI9SrSPbDPplfBUeBBOIWhFRhGIKVlxntAg5CSvsJw4jurb636UKo7Lm2gTUS_M#zQ3shm7cS2MX6K1iinjNhiw88g1WH6fbE8rvnMHBq4RhznkWc":
-                "token-gated community e2e",
-            "https://status.app/c/G0UAAMTyNsn2QZDEG0EXftOl8pOEfwEBOOSA_YTfIk85xmADDgINGmxpUHAXzK36bN0fK42Xf4YD2yjPk1z2pbFwFw==#zQ3shZU9PNP6QHwEmqoh5mQqjCMDsfZYnpY4BEC8hom7KoNEz":
+            "https://status.app/c/ixyACjgKDVNOVCBjb21tdW5pdHkSHHJlcXVpcmUgMTAgU05UIEdvZXJsaSB0byB1c2UYASIHI2VhYjcwMAM=#zQ3shUeGnhM33QW4g9JfYfeLFAH9ZwbDboNYn5exCR7S3ii1y":
+                "SNT community",
+            "https://status.app/c/G0UAAMTyNsn2QZDEG0EXftOl8pOEfwEBOOSA_YTfIk85xmADDgINGmxpUHAXzK36bN0fK42Xf4YD2yjPk1z2pbFwFw==#zQ3sheoNX5kiuM393TJ6xDnL57aQoiwFWEuJnazJ6W2eNuh9u":
                 "open community",
-            "https://status.app/c/G00AAGS9TbI9mSR-ZNmFrhRjNuEeXAAbcAIUaLLJyjMOG3ACJQ12oIHD78QhzO9s_T5bUeU7rnATWJg3mGgTUemrAg==#zQ3shTK1zXmLq2yZWMij65j1LNtmvuG6x71Nmg2fwtKs32wHj":
+            "https://status.app/c/G00AAGS9TbI9mSR-ZNmFrhRjNuEeXAAbcAIUaLLJyjMOG3ACJQ12oIHD78QhzO9s_T5bUeU7rnATWJg3mGgTUemrAg==#zQ3shp9f5M3uyMpwTi3rFpFrP6WCWmNsW9pgK9cjXVTaf2vgj":
                 "closed community"
         }
         for url, text in community_urls.items():
@@ -60,11 +60,14 @@ class TestDeepLinksOneDevice(MultipleSharedDeviceTestCase):
             self.channel.chat_message_input.clear()
             self.channel.send_message(url)
             self.channel.chat_element_by_text(url).click_on_link_inside_message_body()
-            if not (self.community_view.join_button.is_element_displayed(10)
-                    or self.community_view.join_community_button.is_element_displayed(5)) \
-                    or self.community_view.community_title.text != text:
-                self.errors.append("Community '%s' was not requested to join by the url %s" % (text, url))
-            if text != "Closed community":  # the last one
+            if text == 'SNT community':
+                if self.community_view.community_title.text != text:
+                    self.errors.append("Community '%s' was not requested to join by the url %s" % (text, url))
+            else:
+                if not self.community_view.join_button.is_element_displayed(
+                        10) or self.community_view.community_title.text != text:
+                    self.errors.append("Community '%s' was not requested to join by the url %s" % (text, url))
+            if text != "closed community":  # the last one
                 self.home.navigate_back_to_home_view()
                 self.home.get_to_community_channel_from_home(self.community_name)
 
@@ -95,22 +98,26 @@ class TestDeepLinksOneDevice(MultipleSharedDeviceTestCase):
             self.browser_view.click_system_back_button()
 
         community_links = {
-            "status.app://c/G0IAAGS9TbI9SrSPbDPplfBUeBBOIWhFRhGIKVlxntAg5CSvsJw4jurb636UKo7Lm2gTUS_M#zQ3shm7cS2MX6K1iinjNhiw88g1WH6fbE8rvnMHBq4RhznkWc":
-                "token-gated community e2e",
-            "status.app://c/G0UAAMTyNsn2QZDEG0EXftOl8pOEfwEBOOSA_YTfIk85xmADDgINGmxpUHAXzK36bN0fK42Xf4YD2yjPk1z2pbFwFw==#zQ3shZU9PNP6QHwEmqoh5mQqjCMDsfZYnpY4BEC8hom7KoNEz":
+            "status.app://c/ixyACjgKDVNOVCBjb21tdW5pdHkSHHJlcXVpcmUgMTAgU05UIEdvZXJsaSB0byB1c2UYASIHI2VhYjcwMAM=#zQ3shUeGnhM33QW4g9JfYfeLFAH9ZwbDboNYn5exCR7S3ii1y":
+                "SNT community",
+            "status.app://c/G0UAAMTyNsn2QZDEG0EXftOl8pOEfwEBOOSA_YTfIk85xmADDgINGmxpUHAXzK36bN0fK42Xf4YD2yjPk1z2pbFwFw==#zQ3sheoNX5kiuM393TJ6xDnL57aQoiwFWEuJnazJ6W2eNuh9u":
                 "open community",
-            "status.app://c/G00AAGS9TbI9mSR-ZNmFrhRjNuEeXAAbcAIUaLLJyjMOG3ACJQ12oIHD78QhzO9s_T5bUeU7rnATWJg3mGgTUemrAg==#zQ3shTK1zXmLq2yZWMij65j1LNtmvuG6x71Nmg2fwtKs32wHj":
+            "status.app://c/G00AAGS9TbI9mSR-ZNmFrhRjNuEeXAAbcAIUaLLJyjMOG3ACJQ12oIHD78QhzO9s_T5bUeU7rnATWJg3mGgTUemrAg==#zQ3shp9f5M3uyMpwTi3rFpFrP6WCWmNsW9pgK9cjXVTaf2vgj":
                 "closed community"
         }
         for link, text in community_links.items():
             self.channel.just_fyi("Opening community '%s' by the link %s" % (text, link))
             self.browser_view.open_url(link)
-            if not (self.community_view.join_button.is_element_displayed(10)
-                    or self.community_view.join_community_button.is_element_displayed(5)) \
-                    or self.community_view.community_title.text != text:
-                self.errors.append("Community '%s' was not requested to join by the deep link %s" % (text, link))
-            self.home.navigate_back_to_home_view()
-            self.home.browser_tab.click()
+            if text == 'SNT community':
+                if self.community_view.community_title.text != text:
+                    self.errors.append("Community '%s' was not requested to join by the deep link %s" % (text, link))
+            else:
+                if not self.community_view.join_button.is_element_displayed(
+                        10) or self.community_view.community_title.text != text:
+                    self.errors.append("Community '%s' was not requested to join by the deep link %s" % (text, link))
+            if text != "closed community":  # the last one
+                self.home.navigate_back_to_home_view()
+                self.home.browser_tab.click()
 
         self.errors.verify_no_errors()
 

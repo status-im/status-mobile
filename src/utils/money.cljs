@@ -148,6 +148,10 @@
   [n]
   (wei-> :gwei n))
 
+(defn gwei->wei
+  [n]
+  (->wei :gwei n))
+
 (defn ether->wei
   [^js bn]
   (when bn

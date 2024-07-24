@@ -139,6 +139,7 @@
   [id token-gated? intro-message]
   [[(when-not token-gated? (view-members id))
     (when-not token-gated? (view-rules id intro-message))
+    (mark-as-read id)
     (invite-contacts id)
     (when token-gated? (view-token-gating id))
     (show-qr id)

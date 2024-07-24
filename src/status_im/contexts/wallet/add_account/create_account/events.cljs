@@ -71,7 +71,7 @@
 
 (rf/reg-event-fx :wallet/seed-phrase-entered seed-phrase-entered)
 
-(defn store-account-generated
+(defn store-account-generated-with-mnemonic
   [{:keys [db]} [{:keys [new-account-data keypair-name]}]]
   (let [new-account (update new-account-data :mnemonic security/mask-data)]
     {:db (-> db
@@ -85,20 +85,21 @@
                         :random-phrase))
      :fx [[:dispatch [:navigate-back-to :screen/wallet.create-account]]]}))
 
-(rf/reg-event-fx :wallet/store-account-generated store-account-generated)
+(rf/reg-event-fx :wallet/store-account-generated-with-mnemonic store-account-generated-with-mnemonic)
 
-(defn generate-account-for-keypair
+(defn generate-account-for-keypair-with-mnemonic
   [{:keys [db]} [{:keys [keypair-name]}]]
   (let [seed-phrase (-> db :wallet :ui :create-account :new-keypair :seed-phrase)]
     {:fx [[:effects.wallet/create-account-from-mnemonic
            {:mnemonic-phrase (security/safe-unmask-data seed-phrase)
             :paths           [constants/path-default-wallet]
             :on-success      (fn [new-account-data]
-                               (rf/dispatch [:wallet/store-account-generated
+                               (rf/dispatch [:wallet/store-account-generated-with-mnemonic
                                              {:new-account-data new-account-data
                                               :keypair-name     keypair-name}]))}]]}))
 
-(rf/reg-event-fx :wallet/generate-account-for-keypair generate-account-for-keypair)
+(rf/reg-event-fx :wallet/generate-account-for-keypair-with-mnemonic
+ generate-account-for-keypair-with-mnemonic)
 
 (defn clear-create-account-data
   [{:keys [db]}]
@@ -159,14 +160,19 @@
 (rf/reg-event-fx
  :wallet/create-keypair-with-account
  (fn [{db :db} [password account-preferences]]
-   (let [{:keys [keypair-name
+   (let [{:keys [workflow
+                 keypair-name
                  new-account-data]} (-> db :wallet :ui :create-account :new-keypair)
+         keypair-type               (if (= workflow :workflow/new-keypair.import-private-key)
+                                      :key
+                                      :seed)
          keypair-with-account       (create-account.utils/prepare-new-account
                                      {:keypair-name        keypair-name
+                                      :keypair-type        keypair-type
                                       :account-data        new-account-data
                                       :account-preferences account-preferences})
          new-address                (some-> new-account-data
-                                            (create-account.utils/first-derived-account)
+                                            (create-account.utils/first-derived-account keypair-type)
                                             (:address)
                                             (string/lower-case))
          unmasked-password          (security/safe-unmask-data password)]
@@ -176,7 +182,7 @@
               :on-success [:wallet/add-account-success new-address]
               :on-error   #(log/error "Failed to add Keypair and create account" %)}]]]})))
 
-(defn import-and-create-keypair-with-account
+(defn import-mnemonic-and-create-keypair-with-account
   [{db :db} [{:keys [password account-preferences]}]]
   (let [account-data      (-> db :wallet :ui :create-account :new-keypair :new-account-data)
         unmasked-mnemonic (security/safe-unmask-data (:mnemonic account-data))
@@ -187,7 +193,8 @@
              :on-success #(rf/dispatch
                            [:wallet/create-keypair-with-account password account-preferences])}]]]}))
 
-(rf/reg-event-fx :wallet/import-and-create-keypair-with-account import-and-create-keypair-with-account)
+(rf/reg-event-fx :wallet/import-mnemonic-and-create-keypair-with-account
+ import-mnemonic-and-create-keypair-with-account)
 
 (rf/reg-event-fx
  :wallet/derive-address-and-add-account
@@ -206,3 +213,49 @@
             :on-error   [:wallet/log-rpc-error
                          {:event  :wallet/derive-address-and-add-account
                           :params [derived-from-address [derivation-path]]}]}]]]}))
+
+(defn import-private-key-and-create-keypair-with-account
+  [{:keys [db]} [{:keys [password account-preferences]}]]
+  (let [private-key          (get-in db
+                                     [:wallet :ui :create-account :new-keypair
+                                      :new-account-data :private-key])
+        unmasked-private-key (security/safe-unmask-data private-key)
+        unmasked-password    (security/safe-unmask-data password)]
+    {:json-rpc/call
+     [{:method     "accounts_importPrivateKey"
+       :params     [unmasked-private-key unmasked-password]
+       :on-success [:wallet/create-keypair-with-account password account-preferences]
+       :on-error   #(log/error "Failed to import private key" %)}]}))
+
+(rf/reg-event-fx
+ :wallet/import-private-key-and-create-keypair-with-account
+ import-private-key-and-create-keypair-with-account)
+
+(defn store-account-generated-with-private-key
+  [{:keys [db]} [{:keys [new-account-data keypair-name]}]]
+  {:db (-> db
+           (update-in [:wallet :ui :create-account :new-keypair]
+                      assoc
+                      :new-account-data new-account-data
+                      :keypair-name     keypair-name)
+           (update-in [:wallet :ui :create-account :new-keypair]
+                      dissoc
+                      :private-key))
+   :fx [[:dispatch [:navigate-back-to :screen/wallet.create-account]]]})
+
+(rf/reg-event-fx :wallet/store-account-generated-with-private-key
+ store-account-generated-with-private-key)
+
+(rf/reg-event-fx
+ :wallet/import-private-key-and-generate-account-for-keypair
+ (fn [{:keys [db]} [{:keys [keypair-name]}]]
+   (let [private-key (get-in db [:wallet :ui :create-account :private-key])]
+     {:db (assoc-in db
+           [:wallet :ui :create-account :new-keypair :workflow]
+           :workflow/new-keypair.import-private-key)
+      :fx [[:effects.wallet/create-account-from-private-key
+            {:private-key private-key
+             :on-success  (fn [new-account-data]
+                            (rf/dispatch [:wallet/store-account-generated-with-private-key
+                                          {:keypair-name     keypair-name
+                                           :new-account-data new-account-data}]))}]]})))

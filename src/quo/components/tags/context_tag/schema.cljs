@@ -6,7 +6,7 @@
    [:type {:optional true}
     [:maybe
      [:enum :default :multiuser :group :channel :community :token :network :multinetwork :account
-      :collectible :address :icon :audio :wallet-user]]]
+      :collectible :address :icon :audio :wallet-user :dapp]]]
    [:customization-color {:optional true} [:maybe :schema.common/customization-color]]
    [:container-style {:optional true} [:maybe :map]]
    [:blur? {:optional true} [:maybe :boolean]]
@@ -53,7 +53,7 @@
 (def ^:private ?network
   [:map
    [:network-logo {:optional true} [:maybe :schema.common/image-source]]
-   [:network-name {:optional true} [:maybe :string]]])
+   [:network-name {:optional true} [:maybe [:or :string :keyword]]]])
 
 (def ^:private ?multinetwork
   [:map

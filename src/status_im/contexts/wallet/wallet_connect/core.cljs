@@ -3,7 +3,9 @@
             [clojure.string :as string]
             [native-module.core :as native-module]
             [status-im.constants :as constants]
+            [status-im.contexts.wallet.common.utils.networks :as networks]
             [utils.security.core :as security]
+            [utils.string]
             [utils.transforms :as transforms]))
 
 (def method-to-screen
@@ -85,12 +87,87 @@
 
 (defn required-networks-supported?
   [proposal supported-networks]
-  (let [required-networks (get-in proposal [:params :requiredNamespaces :eip155 :chains])
-        supported-eip155  (set (map chain-id->eip155 supported-networks))]
-    (every? #(contains? supported-eip155 %) required-networks)))
+  (let [supported-namespaces #{:eip155}
+        required-namespaces  (get-in proposal [:params :requiredNamespaces])]
+    (when (every? #(contains? supported-namespaces %)
+                  (keys required-namespaces))
+      (let [required-networks (get-in required-namespaces [:eip155 :chains])
+            supported-eip155  (set (map chain-id->eip155 supported-networks))]
+        (every? #(contains? supported-eip155 %)
+                required-networks)))))
 
 (defn get-networks-by-mode
   [db]
   (let [test-mode? (get-in db [:profile/profile :test-networks-enabled?])
         networks   (get-in db [:wallet :networks (if test-mode? :test :prod)])]
     (mapv #(-> % :chain-id) networks)))
+
+(defn- add-full-testnet-name
+  "Updates the `:full-name` key with the full testnet name if using testnet `:chain-id`.\n
+  e.g. `{:full-name \"Mainnet\"}` -> `{:full-name \"Mainnet Sepolia\"`}`"
+  [network]
+  (let [add-testnet-name (fn [testnet-name]
+                           (update network :full-name #(str % " " testnet-name)))]
+    (condp #(contains? %1 %2) (:chain-id network)
+      constants/sepolia-chain-ids (add-testnet-name constants/sepolia-full-name)
+      constants/goerli-chain-ids  (add-testnet-name constants/goerli-full-name)
+      network)))
+
+(defn chain-id->network-details
+  [chain-id]
+  (-> chain-id
+      (networks/get-network-details)
+      (add-full-testnet-name)))
+
+(defn event-should-be-handled?
+  [db {:keys [topic]}]
+  (some #(= topic %)
+        (map :topic (:wallet-connect/sessions db))))
+
+(defn sdk-session->db-session
+  [{:keys [topic expiry pairingTopic] :as session}]
+  {:topic        topic
+   :expiry       expiry
+   :sessionJson  (transforms/clj->json session)
+   :pairingTopic pairingTopic
+   :name         (get-in session [:peer :metadata :name])
+   :iconUrl      (get-in session [:peer :metadata :icons 0])
+   :url          (get-in session [:peer :metadata :url])
+   :accounts     (get-in session [:namespaces :eip155 :accounts])
+   :disconnected false})
+
+(defn filter-operable-accounts
+  [accounts]
+  (filter #(and (:operable? %)
+                (not (:watch-only? %)))
+          accounts))
+
+(defn filter-sessions-for-account-addresses
+  [account-addresses sessions]
+  (filter (fn [{:keys [accounts]}]
+            (some (fn [account]
+                    (some (fn [account-address]
+                            (clojure.string/includes? account account-address))
+                          account-addresses))
+                  accounts))
+          sessions))
+
+(defn compute-dapp-name
+  "Sometimes dapps have no name or an empty name. Return url as name in that case"
+  [name url]
+  (if (seq name)
+    name
+    (when (seq url)
+      (-> url
+          utils.string/remove-trailing-slash
+          utils.string/remove-http-prefix
+          string/capitalize))))
+
+(defn compute-dapp-icon-path
+  "Some dapps have icons with relative paths, make paths absolute in those cases, send nil if icon is missing"
+  [icon-path url]
+  (when (and (seq icon-path)
+             (seq url))
+    (if (string/starts-with? icon-path "http")
+      icon-path
+      (str (utils.string/remove-trailing-slash url) icon-path))))

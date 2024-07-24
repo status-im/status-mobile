@@ -121,7 +121,8 @@
                                    :on-press            on-press-save}
                                   (i18n/label :t/save-address)]
        :customization-color      address-color
-       :gradient-cover?          true}
+       :gradient-cover?          true
+       :shell-overlay?           true}
       [quo/wallet-user-avatar
        {:full-name           (if (string/blank? address-label)
                                placeholder
