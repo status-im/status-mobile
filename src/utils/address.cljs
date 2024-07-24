@@ -2,10 +2,14 @@
   (:require
     [clojure.string :as string]
     [native-module.core :as native-module]
-    [status-im.constants :as constants]
     [utils.ethereum.eip.eip55 :as eip55]))
 
+
 (def hex-prefix "0x")
+;; EIP-3770 is a format used by Status and described here: https://eips.ethereum.org/EIPS/eip-3770
+(def regx-eip-3770-address #"^(?:(?:eth:|arb1:|oeth:)(?=:|))*0x[0-9a-fA-F]{40}$")
+(def regx-metamask-address #"^ethereum:(0x[0-9a-fA-F]{40})@(0x1|0xa|0xa4b1)$")
+(def regx-address-contains #"(?i)0x[a-fA-F0-9]{40}")
 
 (defn normalized-hex
   [hex]
@@ -84,12 +88,12 @@
 
 (defn is-metamask-address?
   [address]
-  (re-find constants/regx-metamask-address address))
+  (re-find regx-metamask-address address))
 
 (defn eip-3770-address?
   "Checks if address follows EIP-3770 format which is default for Status"
   [s]
-  (re-find constants/regx-eip-3770-address s))
+  (re-find regx-eip-3770-address s))
 
 (defn supported-address?
   [s]
@@ -116,4 +120,4 @@
 
 (defn extract-address-without-chains-info
   [address]
-  (re-find constants/regx-address-contains address))
+  (re-find regx-address-contains address))

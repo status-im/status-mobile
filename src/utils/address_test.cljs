@@ -82,5 +82,6 @@
 (deftest metamask-address->status-address-test
   (testing "Check metamask to status address conversion is valid"
     (dorun
-     (for [[metamask-address status-address] metamask-to-status]
+     (for [{metamask-address :metamask
+            status-address   :status} metamask-to-status]
        (is (= status-address (utils.address/metamask-address->status-address metamask-address)))))))

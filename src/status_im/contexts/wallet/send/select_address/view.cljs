@@ -58,7 +58,7 @@
                                                {:on-result on-result}]))
         :ens-regex             constants/regx-ens
         :scanned-value         (or (when recipient-plain-address? send-address) scanned-address)
-        :address-regex         constants/regx-eip-3770-address
+        :address-regex         utils-address/regx-eip-3770-address
         :on-detect-address     (fn [address]
                                  (when (or (= current-screen-id :screen/wallet.select-address)
                                            (= current-screen-id :screen/wallet.scan-address))
