@@ -7,6 +7,7 @@
     [react-native.safe-area :as safe-area]
     [status-im.common.floating-button-page.view :as floating-button-page]
     [status-im.contexts.settings.wallet.saved-addresses.add-address-to-save.style :as style]
+    [status-im.contexts.wallet.common.utils :as utils]
     [status-im.contexts.wallet.common.validation :as validation]
     [utils.debounce :as debounce]
     [utils.i18n :as i18n]
@@ -18,20 +19,21 @@
 
 (defn- validate-input
   [account-addresses saved-addresses user-input]
-  (cond
-    (string/blank? user-input)
-    nil
+  (let [[_ address-without-prefix] (utils/split-prefix-and-address user-input)]
+    (cond
+      (string/blank? user-input)
+      nil
 
-    (contains? saved-addresses user-input)
-    :existing-saved-address
+      (contains? saved-addresses address-without-prefix)
+      :existing-saved-address
 
-    (contains? account-addresses user-input)
-    :own-account
+      (contains? account-addresses address-without-prefix)
+      :own-account
 
-    (not
-     (or (validation/eth-address? user-input)
-         (validation/ens-name? user-input)))
-    :invalid-address-or-ens))
+      (not
+       (or (validation/eth-address? user-input)
+           (validation/ens-name? user-input)))
+      :invalid-address-or-ens)))
 
 (defn- address-input
   [{:keys [input-value on-change-text paste-into-input clear-input]}]
@@ -93,8 +95,9 @@
 
 (defn- existing-saved-address
   [{:keys [address]}]
-  (let [{:keys [name customization-color chain-short-names ens ens?]}
-        (rf/sub [:wallet/saved-address-by-address address])]
+  (let [[_ address-without-prefix] (utils/split-prefix-and-address address)
+        {:keys [name customization-color chain-short-names ens ens?]}
+        (rf/sub [:wallet/saved-address-by-address address-without-prefix])]
     [rn/view {:style style/existing-saved-address-container}
      [quo/text
       {:size   :paragraph-1
@@ -105,7 +108,7 @@
       {:blur?           true
        :active-state?   true
        :user-props      {:name                name
-                         :address             (str chain-short-names address)
+                         :address             (str chain-short-names address-without-prefix)
                          :ens                 (when ens? ens)
                          :customization-color customization-color
                          :blur?               true}
@@ -168,20 +171,21 @@
     (rn/use-mount #(rf/dispatch [:wallet/clear-address-to-save]))
     [quo/overlay {:type :shell}
      [floating-button-page/view
-      {:footer-container-padding 0
-       :header                   [quo/page-nav
-                                  {:type                :no-title
-                                   :icon-name           :i/close
-                                   :behind-overlay?     true
-                                   :on-press            navigate-back
-                                   :margin-top          (safe-area/get-top)
-                                   :accessibility-label :add-address-to-save-page-nav}]
-       :footer                   (when (= view-id :screen/settings.add-address-to-save)
-                                   [quo/button
-                                    {:customization-color profile-color
-                                     :disabled?           button-disabled?
-                                     :on-press            on-press-continue}
-                                    (i18n/label :t/continue)])}
+      {:footer-container-padding     0
+       :keyboard-should-persist-taps :handled
+       :header                       [quo/page-nav
+                                      {:type                :no-title
+                                       :icon-name           :i/close
+                                       :behind-overlay?     true
+                                       :on-press            navigate-back
+                                       :margin-top          (safe-area/get-top)
+                                       :accessibility-label :add-address-to-save-page-nav}]
+       :footer                       (when (= view-id :screen/settings.add-address-to-save)
+                                       [quo/button
+                                        {:customization-color profile-color
+                                         :disabled?           button-disabled?
+                                         :on-press            on-press-continue}
+                                        (i18n/label :t/continue)])}
       [quo/page-top
        {:container-style  style/header-container
         :blur?            true
