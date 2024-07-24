@@ -15,23 +15,24 @@
     [utils.string]))
 
 (defn- on-disconnect
-  [{:keys [name topic]}]
-  (rf/dispatch [:hide-bottom-sheet])
-  (rf/dispatch
-   [:wallet-connect/disconnect-dapp
-    {:topic      topic
-     :on-success (fn []
-                   (rf/dispatch [:toasts/upsert
-                                 {:id   :dapp-disconnect-success
-                                  :type :positive
-                                  :text (i18n/label :t/disconnect-dapp-success
-                                                    {:dapp name})}]))
-     :on-fail    (fn []
-                   (rf/dispatch [:toasts/upsert
-                                 {:id   :dapp-disconnect-failure
-                                  :type :negative
-                                  :text (i18n/label :t/disconnect-dapp-fail
-                                                    {:dapp name})}]))}]))
+  [{:keys [name url topic]}]
+  (let [dapp-name (core/compute-dapp-name name url)]
+    (rf/dispatch [:hide-bottom-sheet])
+    (rf/dispatch
+     [:wallet-connect/disconnect-dapp
+      {:topic      topic
+       :on-success (fn []
+                     (rf/dispatch [:toasts/upsert
+                                   {:id   :dapp-disconnect-success
+                                    :type :positive
+                                    :text (i18n/label :t/disconnect-dapp-success
+                                                      {:dapp dapp-name})}]))
+       :on-fail    (fn []
+                     (rf/dispatch [:toasts/upsert
+                                   {:id   :dapp-disconnect-failure
+                                    :type :negative
+                                    :text (i18n/label :t/disconnect-dapp-fail
+                                                      {:dapp dapp-name})}]))}])))
 
 (defn- on-dapp-disconnect-press
   [wallet-account dapp]
