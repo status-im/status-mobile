@@ -1,6 +1,5 @@
 (ns status-im.contexts.settings.language-and-currency.view
   (:require [quo.core :as quo]
-            [react-native.core :as rn]
             [utils.i18n :as i18n]
             [utils.navigation :as navigation]
             [utils.re-frame :as rf]))
@@ -13,9 +12,7 @@
   []
   (let [{:keys [name short-name token?]
          :as   currency} (rf/sub [:profile/currency-info])
-        currency-title   (rn/use-memo
-                          #(if token? name (str short-name " · " (:symbol currency)))
-                          [currency])]
+        currency-title   (if token? name (str short-name " · " (:symbol currency)))]
     [quo/overlay
      {:type       :shell
       :top-inset? true}

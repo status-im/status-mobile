@@ -5,12 +5,12 @@
 (defn rpc->currency
   [currency]
   (some-> currency
+          (dissoc :imageSource)
           (set/rename-keys
            {:shortName :short-name
             :isPopular :popular?
             :isToken   :token?})
-          (update :id keyword)
-          (dissoc :imageSource)))
+          (update :id keyword)))
 
 (defn rpc->currencies
   [currencies]
@@ -19,12 +19,12 @@
 (defn get-formatted-currency-data
   [{:keys [popular crypto other]}]
   (concat
-   (when-not (empty? popular)
+   (when (seq popular)
      [{:title (i18n/label :t/popular-currencies)
        :data  popular}])
-   (when-not (empty? crypto)
+   (when (seq crypto)
      [{:title (i18n/label :t/crypto)
        :data  crypto}])
-   (when-not (empty? other)
+   (when (seq other)
      [{:title (i18n/label :t/all-currencies)
        :data  other}])))

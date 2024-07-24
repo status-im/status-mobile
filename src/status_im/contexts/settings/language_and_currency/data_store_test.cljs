@@ -25,7 +25,7 @@
    :imageSource "https://example.com/image.png"})
 
 (deftest rpc->currency-test
-  (testing "rpc->currency transforms a currency"
+  (testing "transforms a currency"
     (is
      (match? {:id         :usd
               :short-name "USD"
@@ -37,7 +37,7 @@
              (sut/rpc->currency raw-currency-popular)))))
 
 (deftest rpc->currencies-test
-  (testing "rpc->currencies transforms and sorts raw keypairs"
+  (testing "transforms and sorts raw keypairs"
     (is
      (match? [(sut/rpc->currency raw-currency-popular)
               (sut/rpc->currency raw-currency-token)]
@@ -45,7 +45,7 @@
                                    raw-currency-token])))))
 
 (deftest get-formatted-currency-data-test
-  (testing "get-formatted-currency-data returns formatted currency data"
+  (testing "returns formatted currency data"
     (is
      (match? [{:title "Popular currencies"
                :data  [(sut/rpc->currency raw-currency-popular)]}

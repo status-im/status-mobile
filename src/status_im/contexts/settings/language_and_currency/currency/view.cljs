@@ -2,6 +2,7 @@
   (:require [quo.core :as quo]
             [react-native.core :as rn]
             [status-im.common.resources :as resources]
+            [status-im.constants :as constants]
             [status-im.contexts.settings.language-and-currency.currency.style :as style]
             [status-im.contexts.settings.language-and-currency.currency.utils :as utils]
             [status-im.contexts.settings.language-and-currency.data-store :as data-store]
@@ -12,19 +13,21 @@
 
 (defn- get-item-layout
   [_ index]
-  #js {:length 100 :offset (* 100 index) :index index})
+  #js {:length constants/currency-item-height
+       :offset (* constants/currency-item-height index)
+       :index  index})
 
 (defn- settings-category-view
   [{:keys [title data]} _ _ {:keys [selected-currency on-currency-press]}]
   [rn/delay-render
    [quo/category
     {:label     title
-     :data      (mapv (fn [currency]
-                        (utils/make-currency-item
-                         {:currency          currency
-                          :selected-currency selected-currency
-                          :on-change         on-currency-press}))
-                      data)
+     :data      (map (fn [currency]
+                       (utils/make-currency-item
+                        {:currency          currency
+                         :selected-currency selected-currency
+                         :on-change         on-currency-press}))
+                     data)
      :blur?     true
      :list-type :settings}]])
 
@@ -41,7 +44,7 @@
                                         300))
         formatted-data                (rn/use-memo
                                        #(data-store/get-formatted-currency-data currencies)
-                                       [search-text])]
+                                       [search-text currencies])]
     [quo/overlay
      {:type       :shell
       :top-inset? true}
