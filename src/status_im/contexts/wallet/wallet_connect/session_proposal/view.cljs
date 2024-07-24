@@ -149,7 +149,6 @@
       :button-two-props        {:type                :grey
                                 :accessibility-label :wc-deny-connection
                                 :on-press            (fn []
-                                                       (rf/dispatch [:navigate-back])
                                                        (rf/dispatch
                                                         [:wallet-connect/reject-session-proposal]))}
       :button-one-label        (i18n/label :t/connect)

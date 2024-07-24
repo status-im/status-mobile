@@ -131,12 +131,13 @@
  (fn [{:keys [db]} _]
    (let [web3-wallet      (get db :wallet-connect/web3-wallet)
          current-proposal (get-in db [:wallet-connect/current-proposal :request])]
-     {:fx [[:effects.wallet-connect/reject-session-proposal
+     {:db (dissoc db :wallet-connect/current-proposal)
+      :fx [[:effects.wallet-connect/reject-session-proposal
             {:web3-wallet web3-wallet
              :proposal    current-proposal
              :on-success  #(log/info "Wallet Connect session proposal rejected")
              :on-error    #(log/error "Wallet Connect unable to reject session proposal")}]
-           [:dispatch [:wallet-connect/reset-current-session-proposal]]]})))
+           [:dispatch [:dismiss-modal :screen/wallet.wallet-connect-session-proposal]]]})))
 
 ;; NOTE: Currently we only reject a session if the user rejected it
 ;; But this needs to be solidified to ensure other cases:
