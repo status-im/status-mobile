@@ -74,9 +74,7 @@
                                       js/parseInt))
                                 chains))]
         (if testnet-mode?
-          (or
-           (set/subset? chain-ids constants/sepolia-chain-ids)
-           (set/subset? chain-ids constants/goerli-chain-ids))
+          (set/subset? chain-ids (set/union constants/sepolia-chain-ids constants/goerli-chain-ids))
           (set/subset? chain-ids constants/mainnet-chain-ids))))
     sessions)))
 
