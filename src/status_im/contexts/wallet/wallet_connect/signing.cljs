@@ -6,6 +6,20 @@
             [utils.hex :as hex]
             [utils.transforms :as transforms]))
 
+(defn typed-data-chain-id
+  "Returns the `:chain-id` from typed data if it's present and if the EIP712 domain defines it. Without
+  the `:chain-id` in the domain type, it will not be signed as part of the typed-data."
+  [typed-data]
+  (let [chain-id-type? (->> typed-data
+                            :types
+                            :EIP712Domain
+                            (some #(= "chainId" (:name %))))
+        data-chain-id  (-> typed-data
+                           :domain
+                           :chainId)]
+    (when chain-id-type?
+      data-chain-id)))
+
 (defn eth-sign
   [password address data]
   (-> {:data     data

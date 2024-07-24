@@ -2642,6 +2642,7 @@
   "wallet-connect-sign-transaction-header": "wants you to sign this transaction with",
   "wallet-connect-sign-transaction-warning": "Sign transactions only if you trust the dApp",
   "wallet-connect-sign-warning": "Sign only if you trust the dApp",
+  "wallet-connect-typed-data-wrong-chain-id-warning": "Wrong network in the request data. Expected '{{expected-chain}}', but got '{{wrong-chain}}'",
   "wallet-connect-version-not-supported": "WalletConnect version {{version}} is not supported",
   "wallet-connect-via": "via",
   "wallet-connect-wrong-qr": "It’s not a WalletConnect QR",

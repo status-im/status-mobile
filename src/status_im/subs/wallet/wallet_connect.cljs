@@ -2,7 +2,6 @@
   (:require [clojure.string :as string]
             [re-frame.core :as rf]
             [status-im.contexts.wallet.common.utils :as wallet-utils]
-            [status-im.contexts.wallet.common.utils.networks :as networks]
             [status-im.contexts.wallet.wallet-connect.core :as wallet-connect-core]
             [status-im.contexts.wallet.wallet-connect.transactions :as transactions]
             [utils.money :as money]
@@ -70,10 +69,7 @@
 (rf/reg-sub
  :wallet-connect/current-request-network
  :<- [:wallet-connect/chain-id]
- (fn [chain-id]
-   (-> chain-id
-       (networks/get-network-details)
-       (wallet-connect-core/add-full-testnet-name))))
+ wallet-connect-core/chain-id->network-details)
 
 (rf/reg-sub
  :wallet-connect/transaction-args
