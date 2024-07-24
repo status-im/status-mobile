@@ -104,7 +104,7 @@
        :other []}
       (rf/sub [sub-name "eur"])))
     (is
-     (= {:total   2
+     (= {:total   3
          :popular []
          :crypto  [{:id         :btc
                     :short-name "BTC"
@@ -150,7 +150,7 @@
        :other []}
       (rf/sub [sub-name "eUr"])))
     (is
-     (= {:total   2
+     (= {:total   3
          :popular []
          :crypto  [{:id         :btc
                     :short-name "BTC"
