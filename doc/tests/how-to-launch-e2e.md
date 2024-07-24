@@ -8,7 +8,7 @@ As a part of CI for Status mobile app and in order to ensure there are no regres
 - Automated tests written on Python 3.9 and pytest.
 - Appium (server) and Selenium WebDriver (protocol) are the base of test automation framework.
 
-TestRail is a test case management system tool where we have test cases. 
+TestRail is a test case management system tool where we have test cases.
 
 
 Each of the test case gets a priority (Critical/High/Medium)
@@ -20,21 +20,21 @@ For now we support e2e for Android only.
 Whenever we need to push set of test scripts we create 16 parallel sessions (max, but depending on amount of cases that are included in job) and each thread: 1) uploads Android .apk file to SauceLabs -> 2) runs through the test steps -> 3) receives results whether test failed on particular step or succeeded with no errors -> 3) Parse test results and push them as a Github comment (if the suite ran against respective PR) and into TestRail.
 
 We push **whole automation test suite (currently 155, amount is changing)** against each nightly build (if the nightly builds job succeeded). Results of the test run are saved in TestRail.
-And also we push set of autotests whenever PR with successful builds got moved in to `E2E Tests` column from [Pipeline for QA dashboard ](https://github.com/status-im/status-react/projects/7). 
+And also we push set of autotests whenever PR with successful builds got moved in to `E2E Tests` column from [Pipeline for QA dashboard ](https://github.com/status-im/status-react/projects/7).
 In that case we save results in TestRail as well and push a comment with test results in a respective PR.
 
 For example: https://github.com/status-im/status-react/pull/9147#issuecomment-540008770
 
-![](images/how-to-launch-e2e/how-to-launch-e2e-1.png)
+![](../images/how-to-launch-e2e/how-to-launch-e2e-1.png)
 
 
 The test_send_stt_from_wallet opens link in TestRail https://ethstatus.testrail.net/index.php?/tests/view/890885 where performed steps could be found
-List of all runs performed by test jobs could be found here https://ethstatus.testrail.net/index.php?/runs/overview/14 
+List of all runs performed by test jobs could be found here https://ethstatus.testrail.net/index.php?/runs/overview/14
 
 **For credentials for TestRail to see results ping Chu in DM**:
 
 Opening any test run navigates you to list of test cases with results:
-![](images/how-to-launch-e2e/how-to-launch-e2e-2.png)
+![](../images/how-to-launch-e2e/how-to-launch-e2e-2.png)
 
 
 ## What about launching e2e manually
@@ -53,12 +53,12 @@ Params to specify:
 - test_marks: tests by priorities (by default: `critical or high or medium`, which corresponds the whole suite; to launch the same suite as in PRs, use `critical or high`)
 - testrail_case_id: here is the list of test cases which you may find in test rail (4-digit value)
 
-For easier access you can hit `Rerun tests` in GH comment and testrail_case_id/ apk_name/ pr_id  will be filled automatically. For making sure that tests are being rerun on most recent e2e build it is recommended to paste link to the last e2e build in apk_name field. The list of PR builds can be found in Jenkins Builds block on PR page. 
-![](images/how-to-launch-e2e/how-to-launch-e2e-3.png) 
+For easier access you can hit `Rerun tests` in GH comment and testrail_case_id/ apk_name/ pr_id  will be filled automatically. For making sure that tests are being rerun on most recent e2e build it is recommended to paste link to the last e2e build in apk_name field. The list of PR builds can be found in Jenkins Builds block on PR page.
+![](../images/how-to-launch-e2e/how-to-launch-e2e-3.png)
 And then hit ‘Build’.
 Once the job starts it picks up specified tests, runs them against provided apk and sends results to pull request.
 
-Even we have 16 parallel sessions for testing it’s a time consuming operation (whole test suite we have automated at the moment takes ~140 minutes to finish). 
+Even we have 16 parallel sessions for testing it’s a time consuming operation (whole test suite we have automated at the moment takes ~140 minutes to finish).
 So for PRs we pick only set of `critical or high` (you can also use this in TEST_MARKS param for job)
 tests (otherwise some PRs could wait their turn of the scheduled Jenkins job till the next day).
 
@@ -78,9 +78,9 @@ Several examples of when test fails to succeed:
 
 - **Valid issue in the automated test scripts** - that's what we're looking for
 
-Example: here is the test results https://github.com/status-im/status-react/pull/13015#issuecomment-1016495043 where one test failed. 
+Example: here is the test results https://github.com/status-im/status-react/pull/13015#issuecomment-1016495043 where one test failed.
     1. Open the test in TestRail and open session recorded for this test in SauceLabs
-![](images/how-to-launch-e2e/how-to-launch-e2e-4.png)
+![](../images/how-to-launch-e2e/how-to-launch-e2e-4.png)
 
 
 In TestRail you may find all the steps performed by the test.
@@ -98,6 +98,6 @@ Not all features of the app could be covered by e2e at the moment:
 ## Brief flow for test to be automated
 
 Whenever there is a need to have a new test:
-1) Create a test scenario in TestRail. 
+1) Create a test scenario in TestRail.
 2) If certain item could be checked in scope of existing test case we update existing one (otherwise we may have thousands of test cases which is overkill to manage in TestRail as well as in automated test scripts). And also complex autotests increase probability to not catch regressions by stopping test execution (due to valid bug or changed feature) keeping the rest test steps uncovered. So here we need to balance when it makes sense to update existing test case with more checks.
 3) Then we create test script based on the test case, ensure test passes for the build and pushing the changes to repo.

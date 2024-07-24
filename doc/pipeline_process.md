@@ -32,9 +32,9 @@ Ready for testing, a PR should meet the following criteria:
 ### E2E tests and analyzing the results
 
 The PR **MUST** be moved to the E2E column when it is ready for testing (**mandatory for all PRs**).
-That will also trigger e2e tests run. QAs are monitoring PRs from E2E column and take it into test. 
+That will also trigger e2e tests run. QAs are monitoring PRs from E2E column and take it into test.
 This step cannot be skipped. So, at least one comment from the `status-im-auto` bot with results is a prerequisite for moving forward.
-Information on how to analyze tests can be found [here](https://github.com/status-im/status-mobile/blob/develop/doc/how-to-launch-e2e.md).
+Information on how to analyze tests can be found [here](https://github.com/status-im/status-mobile/blob/develop/doc/tests/how-to-launch-e2e.md).
 Tests might be flaky, as they depend on infrastructure - SauceLabs and Waku.
 
 If there are `Failed tests` and you are not sure about the reason, you can always ping the mobile QAs for help (preferably in PRs by `@status-im/mobile-qa`).
@@ -46,14 +46,14 @@ Please, respect this rule.**
 
 ### Adding `skip-manual-qa`
 
-**Do not hesitate to use a `skip-manual-qa`** if you're sure that it is a simple flow and you checked it. 
+**Do not hesitate to use a `skip-manual-qa`** if you're sure that it is a simple flow and you checked it.
 - Please ask another team member before adding the `skip-manual-qa` label (PR/Status community/DMs) so that there's a second opinion.
 - The PR MUST have a proper reasoning why manual QA is skipped.
 - The PR MUST include the steps of testing that has been done by the developer prior to moving it forward.
 
 **NOTE:** Make sure that QAs are OK with that;
 
-Before merging PRs, please make sure that information is added about how you tested the PRs, that e2s have been passed and their results have been reviewed. 
+Before merging PRs, please make sure that information is added about how you tested the PRs, that e2s have been passed and their results have been reviewed.
 
 The QA team appreciates your help!
 
@@ -72,7 +72,7 @@ The QA team appreciates your help!
 - QA engineer picks up one of PRs with the ```request-manual-qa``` label, drags the item to the ```IN TESTING``` column and assigns it to themselves.
 - During testing, QA will add comments describing the issues found, and also review automation tests results.
 Usually found issues are numbered as "Issue 1, Issue 2", etc.
-When the first round of testing is completed and all issues for this stage are found, the QA can add the ```Tested - Issues``` label and drag the card to the ```CONTRIBUTOR``` column. These two actions are optional. 
+When the first round of testing is completed and all issues for this stage are found, the QA can add the ```Tested - Issues``` label and drag the card to the ```CONTRIBUTOR``` column. These two actions are optional.
 
 **IMPORTANT NOTE:** when the issues are fixed, developer **MUST** notify the QA that it is ready to be re-tested again by mention them in the PR.
 
@@ -86,7 +86,7 @@ After that the developer merges PR into develop.
 _**How do I know if a design review is needed?**_
 
 There are three cases here depending on the changes in the PR:
-1. **Functional PRs with UI changes:** after the ```Tested - OK``` label is added, the QA moves the PR to the ```Design review``` column + mentions ```@Francesca-G``` in comments. 
+1. **Functional PRs with UI changes:** after the ```Tested - OK``` label is added, the QA moves the PR to the ```Design review``` column + mentions ```@Francesca-G``` in comments.
 2. **Component PRs:** once the PR has received a review from developers and e2e tests results, it can be moved directly to the ```Design review``` column by the developer (manual testing step can be skipped) + the developer mentions ```@Francesca-G``` in comments.
 3. **Functional PRs changes in which are not related to UI (e.g. a crash fix):** skip the ```Design review``` step (the PR should only be manually tested by QA).
 
@@ -99,7 +99,7 @@ There are three possible scenarios when the design review is completed:
 **Notes:**
 - If your PR has a long story and started from `develop` branch several days ago, please rebase it to current develop before adding label
 - if PR can be tested by developer (in case of small changes) and/or developer is sure that the changes made cannot introduce a regression, then PR can be merged without manual testing. Also, currently, PRs are not manually tested if the changes relate only the design (creation of components, etc.) and do not affect the functionality (see `skip-manual-qa` label)
----        
+---
 
 #### Why my PR is in `Contributor` column?
 PR can be moved to this column by the ```status-github-bot``` or by QA engineer with label `Tested-issues` or if one of the requirements for manual QA was not met.
@@ -120,6 +120,6 @@ In the second case - after fixing of all found issues, the developer should ping
 6. In case of manual testing - the label ```Tested - OK``` from QA
 7. In case of design review - the approval from the designer
 
-You can merge your PR into develop - some useful clues you can find [here](https://notes.status.im/setup-e2e#3-Merging-PR) 
+You can merge your PR into develop - some useful clues you can find [here](https://notes.status.im/setup-e2e#3-Merging-PR)
 
-HAPPY DEVELOPMENT! :tada: 
+HAPPY DEVELOPMENT! :tada:

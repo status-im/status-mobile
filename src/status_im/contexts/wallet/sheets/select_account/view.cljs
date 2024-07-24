@@ -20,7 +20,7 @@
 (defn view
   []
   (let [selected-account-address (rf/sub [:wallet/current-viewing-account-address])
-        accounts                 (rf/sub [:wallet/operable-accounts-without-watched-accounts])]
+        accounts                 (rf/sub [:wallet/operable-accounts])]
     [:<>
      [quo/drawer-top {:title (i18n/label :t/select-account)}]
      [gesture/flat-list

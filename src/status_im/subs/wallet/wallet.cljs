@@ -134,10 +134,12 @@
                                                               (:chain-id %))))
                                      (map :chain-id)
                                      set)]
-     (assoc token
-            :networks          (network-utils/network-list token networks)
-            :available-balance (utils/calculate-total-token-balance token)
-            :total-balance     (utils/calculate-total-token-balance token enabled-from-chain-ids)))))
+     (some-> token
+             (assoc :networks          (network-utils/network-list token networks)
+                    :available-balance (utils/calculate-total-token-balance token)
+                    :total-balance     (utils/calculate-total-token-balance
+                                        token
+                                        enabled-from-chain-ids))))))
 
 (rf/reg-sub
  :wallet/wallet-send-token-symbol
@@ -464,22 +466,47 @@
  keep-operable-accounts)
 
 (rf/reg-sub
- :wallet/operable-accounts-without-watched-accounts
+ :wallet/operable-accounts
  :<- [:wallet/accounts-without-watched-accounts]
  keep-operable-accounts)
 
 (rf/reg-sub
+ :wallet/operable-addresses-tokens-with-positive-balance
+ :<- [:wallet/operable-accounts]
+ (fn [accounts]
+   (let [positive-balance-in-any-chain? (fn [{:keys [balances-per-chain]}]
+                                          (->> balances-per-chain
+                                               (map (comp :raw-balance val))
+                                               (some pos?)))]
+     (as-> accounts $
+       (group-by :address $)
+       (update-vals $ #(filter positive-balance-in-any-chain? (:tokens (first %))))))))
+
+(rf/reg-sub
  :wallet/accounts-with-current-asset
- :<- [:wallet/operable-accounts-without-watched-accounts]
+ :<- [:wallet/operable-accounts]
+ :<- [:wallet/operable-addresses-tokens-with-positive-balance]
  :<- [:wallet/wallet-send-token-symbol]
  :<- [:wallet/wallet-send-token]
- (fn [[accounts token-symbol token]]
-   (let [asset-symbol (or token-symbol (:symbol token))]
-     (if asset-symbol
-       (filter (fn [account]
-                 (some #(= (:symbol %) asset-symbol) (:tokens account)))
-               accounts)
-       accounts))))
+ (fn [[accounts addresses-tokens token-symbol token]]
+   (if-let [asset-symbol (or token-symbol (:symbol token))]
+     (let [addresses-with-asset (as-> addresses-tokens $
+                                  (update-vals $ #(set (map :symbol %)))
+                                  (keep (fn [[address token-symbols]]
+                                          (when (token-symbols asset-symbol) address))
+                                        $)
+                                  (set $))]
+       (filter #(addresses-with-asset (:address %)) accounts))
+     accounts)))
+
+(rf/reg-sub
+ :wallet/operable-addresses-with-token-symbol
+ :<- [:wallet/operable-addresses-tokens-with-positive-balance]
+ (fn [addresses-tokens [_ token-symbol]]
+   (keep (fn [[address tokens]]
+           (some #(when (= (:symbol %) token-symbol) address)
+                 tokens))
+         addresses-tokens)))
 
 (rf/reg-sub
  :wallet/account-tab

@@ -70,7 +70,7 @@
 
 (defn- accounts-list
   []
-  (let [accounts         (rf/sub [:wallet/operable-accounts-without-watched-accounts])
+  (let [accounts         (rf/sub [:wallet/operable-accounts])
         selected-address (rf/sub [:wallet-connect/current-proposal-address])]
     [rn/view {:style style/account-switcher-list}
      (for [{:keys [address] :as account} accounts]
