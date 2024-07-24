@@ -44,6 +44,13 @@
         (alpha light-color light-opacity)
         (alpha dark-color dark-opacity))))))
 
+(defn valid-color?
+  [color]
+  (or (keyword? color)
+      (and (string? color)
+           (or (string/starts-with? color "#")
+               (string/starts-with? color "rgb")))))
+
 
 ;;;;Neutral
 
