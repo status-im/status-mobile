@@ -185,3 +185,26 @@
  :wallet-connect/current-proposal-address
  (fn [db]
    (get-in db [:wallet-connect/current-proposal :address])))
+
+;; Return pairings that are only related to the selected networks:
+;; Testnet or Otherwise
+(rf/reg-sub
+ :wallet-connect/network-filtered-pairings
+ :<- [:wallet-connect/pairings]
+ :<- [:profile/test-networks-enabled?]
+ :<- [:wallet-connect/persisted-sessions]
+ (fn [[pairings testnet-mode? persisted-sessions]]
+   (if persisted-sessions
+     (->> pairings
+          ;; Map and inject testChains boolean
+          (map
+           (fn [pairing]
+             (let [persisted (some #(when (= (:pairingTopic %) (:topic pairing)) %)
+                                   persisted-sessions)]
+               (assoc pairing
+                      :testChains
+                      (:testChains persisted)))))
+          (filter
+           (fn [pairing]
+             (= (:testChains pairing) (boolean testnet-mode?)))))
+     pairings)))

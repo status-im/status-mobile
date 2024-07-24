@@ -1,18 +1,18 @@
 (ns status-im.contexts.wallet.connected-dapps.view
   (:require
-    [quo.core :as quo]
-    [quo.foundations.colors :as colors]
-    [quo.theme]
-    [react-native.core :as rn]
-    [react-native.safe-area :as safe-area]
-    [status-im.common.plus-button.view :as plus-button]
-    [status-im.common.resources :as resources]
-    [status-im.contexts.wallet.connected-dapps.disconnect-dapp.view :as disconnect-dapp]
-    [status-im.contexts.wallet.connected-dapps.style :as style]
-    [status-im.contexts.wallet.wallet-connect.core :as core]
-    [utils.i18n :as i18n]
-    [utils.re-frame :as rf]
-    [utils.string]))
+   [quo.core :as quo]
+   [quo.foundations.colors :as colors]
+   [quo.theme]
+   [react-native.core :as rn]
+   [react-native.safe-area :as safe-area]
+   [status-im.common.plus-button.view :as plus-button]
+   [status-im.common.resources :as resources]
+   [status-im.contexts.wallet.connected-dapps.disconnect-dapp.view :as disconnect-dapp]
+   [status-im.contexts.wallet.connected-dapps.style :as style]
+   [status-im.contexts.wallet.wallet-connect.core :as core]
+   [utils.i18n :as i18n]
+   [utils.re-frame :as rf]
+   [utils.string]))
 
 (defn- on-disconnect
   [wallet-account {:keys [name topic]}]
@@ -86,8 +86,8 @@
         {:keys [color] :as wallet-account} (rf/sub [:wallet/current-viewing-account])
         sessions                           (rf/sub
                                             [:wallet-connect/sessions-for-current-account])
-        theme                              (quo.theme/use-theme)
-        customization-color                (rf/sub [:profile/customization-color])]
+        customization-color                (rf/sub [:profile/customization-color])
+        theme                              (quo.theme/use-theme)]
     [rn/view {:flex 1}
      [header
       {:title          (i18n/label :t/connected-dapps)

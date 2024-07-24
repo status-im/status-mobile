@@ -40,7 +40,16 @@
       :right-side          [(when (and (ff/enabled? ::ff/wallet.wallet-connect)
                                        (not watch-only?))
                               {:icon-name :i/dapps
-                               :on-press  #(rf/dispatch [:navigate-to :screen/wallet.connected-dapps])})
+                               :on-press  #(do
+                                             ;; Pairings from WC don't have chain info. But we need
+                                             ;; to filter pairings in UI on the basis of testnet
+                                             ;; mode. So we `fetch-persisted-sessions` and inject
+                                             ;; chain info in pairings received from WC. That's why
+                                             ;; we fetch it here, before redirecting to connected
+                                             ;; dapps screen.
+                                             (rf/dispatch [:wallet-connect/fetch-persisted-sessions])
+                                             (rf/dispatch [:navigate-to
+                                                           :screen/wallet.connected-dapps]))})
 
                             {:content-type        :account-switcher
                              :customization-color color
