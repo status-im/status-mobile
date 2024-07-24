@@ -1,5 +1,6 @@
 (ns status-im.subs.wallet.wallet-connect
-  (:require [clojure.string :as string]
+  (:require [clojure.set :as set]
+            [clojure.string :as string]
             [re-frame.core :as rf]
             [status-im.constants :as constants]
             [status-im.contexts.wallet.common.utils :as wallet-utils]
@@ -57,6 +58,24 @@
    (filter
     (fn [{:keys [accounts]}]
       (some #(string/includes? % address) accounts))
+    sessions)))
+
+(rf/reg-sub
+ :wallet-connect/sessions-for-current-account-and-networks
+ :<- [:wallet-connect/sessions-for-current-account]
+ :<- [:profile/test-networks-enabled?]
+ (fn [[sessions testnet-mode?]]
+   (filter
+    (fn [{:keys [chains]}]
+      (let [comparison-fn (if testnet-mode? (partial not set/subset?) set/subset?)
+            chain-numbers (set (map (fn [chain]
+                                      (-> chain
+                                          (string/split ":")
+                                          second
+                                          js/parseInt)) chains))]
+        ;; If network is testnet, we ensure that the required chains for that session are not a subset of mainnet chain ids
+        ;; If network is mainnet, we ensure that the required chains for that session are a subset of mainnet chain ids
+        (comparison-fn chain-numbers constants/mainnet-chain-ids)))
     sessions)))
 
 (rf/reg-sub

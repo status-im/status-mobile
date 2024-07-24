@@ -84,9 +84,8 @@
   []
   (let [{:keys [bottom]}                   (safe-area/get-insets)
         {:keys [color] :as wallet-account} (rf/sub [:wallet/current-viewing-account])
-        sessions                           (rf/sub
-                                            [:wallet-connect/sessions-for-current-account])
         customization-color                (rf/sub [:profile/customization-color])
+        sessions                           (rf/sub [:wallet-connect/sessions-for-current-account-and-networks])
         theme                              (quo.theme/use-theme)]
     [rn/view {:flex 1}
      [header
@@ -126,9 +125,9 @@
                                                                              wallet-account
                                                                              dapp))}
                                                                [quo/icon :i/disconnect
-                                                                {:color (colors/theme-colors
-                                                                         colors/neutral-50
-                                                                         colors/neutral-40
-                                                                         theme)
+                                                                {:color               (colors/theme-colors
+                                                                                       colors/neutral-50
+                                                                                       colors/neutral-40
+                                                                                       theme)
                                                                  :accessibility-label :icon}]])}])
           :separator               [rn/view {:style (style/separator theme)}]}]])]))
