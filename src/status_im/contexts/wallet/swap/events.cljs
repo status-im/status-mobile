@@ -6,12 +6,10 @@
             [utils.number]))
 
 (rf/reg-event-fx :wallet.swap/start
- (fn [{:keys [db]} [{:keys [token-symbol]}]]
-   (if token-symbol
+ (fn [{:keys [db]} [{:keys [token]}]]
+   (if token
      (let [current-address (get-in db [:wallet :current-viewing-account-address])
-           address         (:address (first (utils/sorted-operable-non-watch-only-accounts db)))
-           tokens          (get-in db [:wallet :accounts (or current-address address) :tokens])
-           token           (some #(when (= (:symbol %) token-symbol) %) tokens)]
+           address         (:address (first (utils/sorted-operable-non-watch-only-accounts db)))]
        {:fx [(when-not current-address
                [:dispatch
                 [:wallet/switch-current-viewing-account address]])

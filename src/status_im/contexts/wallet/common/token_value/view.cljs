@@ -44,12 +44,17 @@
 
 (defn- action-swap
   [token-symbol]
-  {:icon                :i/swap
-   :accessibility-label :swap
-   :label               (i18n/label :t/swap)
-   :on-press            (fn []
-                          (rf/dispatch [:hide-bottom-sheet])
-                          (rf/dispatch [:wallet.swap/start {:token-symbol token-symbol}]))})
+  (let [current-viewing-account-address (rf/sub [:wallet/current-viewing-account-address])
+        account-address                 (or current-viewing-account-address
+                                            (:address (first (rf/sub [:wallet/operable-accounts]))))
+        token                           (rf/sub [:wallet/token-with-networks token-symbol
+                                                 account-address])]
+    {:icon                :i/swap
+     :accessibility-label :swap
+     :label               (i18n/label :t/swap)
+     :on-press            (fn []
+                            (rf/dispatch [:hide-bottom-sheet])
+                            (rf/dispatch [:wallet.swap/start {:token token}]))}))
 
 (defn- action-manage-tokens
   [watch-only?]

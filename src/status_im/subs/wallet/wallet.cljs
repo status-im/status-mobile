@@ -427,6 +427,18 @@
        sorted-tokens))))
 
 (rf/reg-sub
+ :wallet/token-with-networks
+ :<- [:wallet/accounts]
+ :<- [:wallet/network-details]
+ (fn [[accounts networks] [_ token-symbol account-address]]
+   (let [account (utils/get-account-by-address accounts account-address)
+         token   (some #(when (= token-symbol (:symbol %)) %)
+                       (:tokens account))]
+     (assoc token
+            :networks
+            (network-utils/network-list token networks)))))
+
+(rf/reg-sub
  :wallet/token-by-symbol
  :<- [:wallet/current-viewing-account]
  :<- [:wallet/network-details]
