@@ -107,12 +107,12 @@
           :content-container-style (style/dapps-list theme)
           :render-fn               (fn [{:keys [topic pairingTopic name url iconUrl]}]
                                      [quo/dapp
-                                      {:dapp                {:avatar (core/compute-dapp-icon-path iconUrl
-                                                                                                  url)
-                                                             :name (core/compute-dapp-name name url)
-                                                             :value url
-                                                             :topic topic
-                                                             :pairing-topic pairingTopic
+                                      {:dapp                {:avatar              (core/compute-dapp-icon-path iconUrl
+                                                                                                               url)
+                                                             :name                (core/compute-dapp-name name url)
+                                                             :value               url
+                                                             :topic               topic
+                                                             :pairing-topic       pairingTopic
                                                              :customization-color customization-color}
                                        :accessibility-label (str "dapp-" topic)
                                        :state               :default
@@ -126,9 +126,9 @@
                                                                              wallet-account
                                                                              dapp))}
                                                                [quo/icon :i/disconnect
-                                                                {:color (colors/theme-colors
-                                                                         colors/neutral-50
-                                                                         colors/neutral-40
-                                                                         theme)
+                                                                {:color               (colors/theme-colors
+                                                                                       colors/neutral-50
+                                                                                       colors/neutral-40
+                                                                                       theme)
                                                                  :accessibility-label :icon}]])}])
           :separator               [rn/view {:style (style/separator theme)}]}]])]))

@@ -1,6 +1,7 @@
 (ns status-im.subs.wallet.wallet-connect
   (:require [clojure.string :as string]
             [re-frame.core :as rf]
+            [status-im.constants :as constants]
             [status-im.contexts.wallet.common.utils :as wallet-utils]
             [status-im.contexts.wallet.wallet-connect.core :as wallet-connect-core]
             [status-im.contexts.wallet.wallet-connect.transactions :as transactions]
@@ -186,20 +187,3 @@
  (fn [db]
    (get-in db [:wallet-connect/current-proposal :address])))
 
-;; Return pairings that are only related to the selected networks:
-;; Testnet or Otherwise
-(rf/reg-sub
- :wallet-connect/network-filtered-pairings
- :<- [:wallet-connect/pairings]
- :<- [:profile/test-networks-enabled?]
- :<- [:wallet-connect/persisted-sessions]
- (fn [[pairings testnet-mode? persisted-sessions]]
-   (if persisted-sessions
-     (filter
-      (fn [pairing]
-        (let [persisted              (some #(when (= (:pairingTopic %) (:topic pairing)) %)
-                                           persisted-sessions)
-              pairing-is-test-chain? (:testChains persisted)]
-          (= pairing-is-test-chain? (boolean testnet-mode?))))
-      pairings)
-     pairings)))
