@@ -51,9 +51,10 @@
 
 (defn reject-session
   [{:keys [web3-wallet id reason]}]
-  (.rejectSession web3-wallet
-                  (clj->js {:id     id
-                            :reason reason})))
+  (oops/ocall web3-wallet
+              "rejectSession"
+              (bean/->js {:id     id
+                          :reason reason})))
 
 (defn approve-session
   [{:keys [web3-wallet id approved-namespaces]}]
