@@ -105,24 +105,25 @@
                          [ens ens? open-network-preferences address-text])]
     [quo/overlay {:type :shell}
      [floating-button-page/view
-      {:footer-container-padding (if edit? (+ (safe-area/get-bottom) 12) 0)
-       :header                   [quo/page-nav
-                                  {:type                :no-title
-                                   :background          :blur
-                                   :icon-name           (if edit? :i/close :i/arrow-left)
-                                   :on-press            navigate-back
-                                   :margin-top          (when-not edit? (safe-area/get-top))
-                                   :accessibility-label :save-address-page-nav}]
-       :footer                   [quo/button
-                                  {:accessibility-label :save-address-button
-                                   :type                :primary
-                                   :customization-color address-color
-                                   :disabled?           (string/blank? address-label)
-                                   :on-press            on-press-save}
-                                  (i18n/label :t/save-address)]
-       :customization-color      address-color
-       :gradient-cover?          true
-       :shell-overlay?           true}
+      {:footer-container-padding     (if edit? (+ (safe-area/get-bottom) 12) 0)
+       :keyboard-should-persist-taps :handled
+       :header                       [quo/page-nav
+                                      {:type                :no-title
+                                       :background          :blur
+                                       :icon-name           (if edit? :i/close :i/arrow-left)
+                                       :on-press            navigate-back
+                                       :margin-top          (when-not edit? (safe-area/get-top))
+                                       :accessibility-label :save-address-page-nav}]
+       :footer                       [quo/button
+                                      {:accessibility-label :save-address-button
+                                       :type                :primary
+                                       :customization-color address-color
+                                       :disabled?           (string/blank? address-label)
+                                       :on-press            on-press-save}
+                                      (i18n/label :t/save-address)]
+       :customization-color          address-color
+       :gradient-cover?              true
+       :shell-overlay?               true}
       [quo/wallet-user-avatar
        {:full-name           (if (string/blank? address-label)
                                placeholder
