@@ -98,7 +98,7 @@
                      :loading-suggested-routes? false)})))
 
 (rf/reg-event-fx :wallet/suggested-routes-error
- (fn [{:keys [db]} [error]]
+ (fn [{:keys [db]} [error-message]]
    (let [cleaned-sender-network-values   (-> (get-in db [:wallet :ui :send :sender-network-values])
                                              (send-utils/reset-loading-network-amounts-to-zero))
          cleaned-receiver-network-values (-> (get-in db [:wallet :ui :send :receiver-network-values])
@@ -115,7 +115,7 @@
             [:toasts/upsert
              {:id   :send-transaction-error
               :type :negative
-              :text (:message error)}]]]})))
+              :text error-message}]]]})))
 
 (rf/reg-event-fx :wallet/clean-suggested-routes
  (fn [{:keys [db]}]
@@ -477,7 +477,7 @@
                                      (rf/dispatch [:wallet/suggested-routes-error error])
                                      (log/error "failed to get suggested routes (async)"
                                                 {:event  :wallet/start-get-suggested-routes
-                                                 :error  error
+                                                 :error  (:message error)
                                                  :params params}))}]}))))
 
 (rf/reg-event-fx :wallet/stop-get-suggested-routes
@@ -492,12 +492,19 @@
 
 (rf/reg-event-fx :wallet/handle-suggested-routes
  (fn [_ data]
-   (let [suggested-routes-new-data (data-store/rpc->suggested-routes data)
+   (let [error                     (-> data first :ErrorResponse)
+         suggested-routes-new-data (data-store/rpc->suggested-routes data)
          suggested-routes          (-> (first suggested-routes-new-data)
                                        (update :best #(map data-store/new->old-route-path %))
                                        (update :candidates #(map data-store/new->old-route-path %)))]
-     {:fx [[:dispatch
-            [:wallet/suggested-routes-success suggested-routes]]]})))
+     (when error
+       (log/error "failed to get suggested routes (async)"
+                  {:event :wallet/handle-suggested-routes
+                   :error error}))
+     {:fx [(if error
+             [:dispatch [:wallet/suggested-routes-error (:details error)]]
+             [:dispatch
+              [:wallet/suggested-routes-success suggested-routes]])]})))
 
 (rf/reg-event-fx :wallet/add-authorized-transaction
  (fn [{:keys [db]} [transaction]]
