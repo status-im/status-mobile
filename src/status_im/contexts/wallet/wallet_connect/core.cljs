@@ -171,3 +171,8 @@
     (if (string/starts-with? icon-path "http")
       icon-path
       (str (utils.string/remove-trailing-slash url) icon-path))))
+
+(defn get-session-by-topic
+  [db topic]
+  (->> (get db :wallet-connect/sessions)
+       (some #(when (= topic (:topic %)) %))))

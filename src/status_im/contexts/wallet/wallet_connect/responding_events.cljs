@@ -145,16 +145,16 @@
                       constants/wallet-connect-message-signing-methods
                       (i18n/label :t/wallet-connect-message-request-success-toast)
 
-                      ;;TODO
                       constants/wallet-connect-transaction-methods
-                      (i18n/label :t/a))]
+                      (i18n/label :t/wallet-connect-transaction-request-success-toast))]
      {:fx [[:dispatch
             [:wallet-connect/send-response
              {:result     result
-              :on-success #(rf/dispatch [:toasts/upsert
-                                         {:type  :positive
-                                          :text  toast-text
-                                          :theme theme}])}]]
+              :on-success #(when toast-text
+                             (rf/dispatch [:toasts/upsert
+                                           {:type  :positive
+                                            :text  toast-text
+                                            :theme theme}]))}]]
            [:dispatch [:wallet-connect/dismiss-request-modal]]]})))
 
 (rf/reg-event-fx
@@ -186,21 +186,25 @@
 (rf/reg-event-fx
  :wallet-connect/reject-session-request
  (fn [{:keys [db]} _]
-   (let [event      (get-in db [:wallet-connect/current-request :event])
-         method     (wallet-connect-core/get-request-method event)
-         theme      (:theme db)
-         toast-text (condp contains? method
-                      constants/wallet-connect-message-signing-methods
-                      (i18n/label :t/wallet-connect-message-request-rejected-toast)
+   (let [event              (get-in db [:wallet-connect/current-request :event])
+         method             (wallet-connect-core/get-request-method event)
+         theme              (:theme db)
+         {:keys [name url]} (wallet-connect-core/get-session-by-topic db (:topic event))
+         dapp-name          (wallet-connect-core/compute-dapp-name name url)
+         toast-text         (condp contains? method
+                              constants/wallet-connect-message-signing-methods
+                              (i18n/label :t/wallet-connect-message-request-rejected-toast
+                                          {:dapp dapp-name})
 
-                      ;;TODO
-                      constants/wallet-connect-transaction-methods
-                      (i18n/label :t/a))]
+                              constants/wallet-connect-transaction-methods
+                              (i18n/label :t/wallet-connect-transaction-request-rejected-toast
+                                          {:dapp dapp-name}))]
      {:fx [[:dispatch
             [:wallet-connect/send-response
              {:error      (wallet-connect/get-sdk-error
                            constants/wallet-connect-user-rejected-error-key)
-              :on-success #(rf/dispatch [:toasts/upsert
-                                         {:type  :positive
-                                          :text  toast-text
-                                          :theme theme}])}]]]})))
+              :on-success #(when toast-text
+                             (rf/dispatch [:toasts/upsert
+                                           {:type  :positive
+                                            :text  toast-text
+                                            :theme theme}]))}]]]})))
