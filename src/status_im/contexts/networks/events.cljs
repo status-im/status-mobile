@@ -1,4 +1,4 @@
-(ns status-im.common.device-network
+(ns status-im.contexts.networks.events
   (:require
     ["@react-native-community/netinfo" :default net-info]
     [native-module.core :as native-module]
@@ -7,15 +7,15 @@
     [utils.re-frame :as rf]))
 
 (rf/reg-fx
- :effects.device-network/listen-to-network-info
+ :effects.network/listen-to-network-info
  (fn []
    (when net-info
      (.addEventListener ^js net-info
-                        #(rf/dispatch [:device-network/on-state-change
+                        #(rf/dispatch [:network/on-state-change
                                        (js->clj % :keywordize-keys true)])))))
 
 (rf/reg-event-fx
- :device-network/on-state-change
+ :network/on-state-change
  (fn [{:keys [db]} [{:keys [isConnected type details]}]]
    (let [old-network-status       (:network/status db)
          old-network-type         (:network/type db)
@@ -30,19 +30,19 @@
                 "type"                type
                 "details"             details)
      {:fx [(when status-changed?
-             [:dispatch [:device-network/on-network-status-change isConnected]])
+             [:dispatch [:network/on-network-status-change isConnected]])
            (when type-changed?
-             [:dispatch [:device-network/on-network-type-change type is-connection-expensive?]])]})))
+             [:dispatch [:network/on-network-type-change type is-connection-expensive?]])]})))
 
 (rf/reg-event-fx
- :device-network/on-network-type-change
+ :network/on-network-type-change
  (fn [{:keys [db]} [network-type expensive?]]
    {:db (assoc db :network/type network-type)
-    :fx [[:effects.device-network/notify-status-go network-type expensive?]
+    :fx [[:effects.network/notify-status-go network-type expensive?]
          [:dispatch [:mobile-network/on-network-status-change]]]}))
 
 (rf/reg-event-fx
- :device-network/on-network-status-change
+ :network/on-network-status-change
  (fn [{:keys [db]} [is-connected?]]
    (let [network-status (if is-connected? :online :offline)]
      {:db (assoc db :network/status network-status)
@@ -50,6 +50,6 @@
              [:dispatch [:wallet-connect/reload-on-network-change is-connected?]])]})))
 
 (rf/reg-fx
- :effects.device-network/notify-status-go
+ :effects.network/notify-status-go
  (fn [network-type expensive?]
    (native-module/connection-change network-type expensive?)))
