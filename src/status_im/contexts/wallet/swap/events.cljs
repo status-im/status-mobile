@@ -7,38 +7,42 @@
 
 (rf/reg-event-fx :wallet.swap/start
  (fn [{:keys [db]} [{:keys [token-symbol]}]]
-   (let [current-address (get-in db [:wallet :current-viewing-account-address])
-         address         (:address (first (utils/sorted-operable-non-watch-only-accounts db)))
-         tokens          (get-in db [:wallet :accounts (or current-address address) :tokens])
-         token           (some #(when (= (:symbol %) token-symbol) %) tokens)]
-     (if token
+   (if token-symbol
+     (let [current-address (get-in db [:wallet :current-viewing-account-address])
+           address         (:address (first (utils/sorted-operable-non-watch-only-accounts db)))
+           tokens          (get-in db [:wallet :accounts (or current-address address) :tokens])
+           token           (some #(when (= (:symbol %) token-symbol) %) tokens)]
        {:fx [(when-not current-address
                [:dispatch
                 [:wallet/switch-current-viewing-account address]])
-             [:dispatch [:wallet.swap/select-asset-to-pay {:token token}]]]}
-       {:fx [[:dispatch [:open-modal :screen/wallet.swap-select-asset-to-pay]]]}))))
+             [:dispatch [:wallet.swap/select-asset-to-pay {:token token}]]]})
+     {:fx [[:dispatch [:open-modal :screen/wallet.swap-select-asset-to-pay]]]})))
 
 (rf/reg-event-fx :wallet.swap/select-asset-to-pay
- (fn [{:keys [db]} [{:keys [token network]}]]
-   {:db (-> db
-            (assoc-in [:wallet :ui :swap :asset-to-pay] token)
-            (cond-> network (assoc-in [:wallet :ui :swap :network] network)))
-    :fx (if network
-          [[:dispatch [:navigate-to :screen/wallet.swap-propasal]]
-           [:dispatch [:wallet.swap/set-default-slippage]]]
-          [[:dispatch
-            [:show-bottom-sheet
-             {:content (fn []
-                         [network-selection/view
-                          {:token-symbol      (:symbol token)
-                           :on-select-network (fn [network]
-                                                (rf/dispatch [:hide-bottom-sheet])
-                                                (rf/dispatch
-                                                 [:wallet.swap/select-asset-to-pay
-                                                  {:token token
-                                                   :network network
-                                                   :stack-id
-                                                   :screen/wallet.swap-select-asset-to-pay}]))}])}]]])}))
+ (fn [{:keys [db]} [{:keys [token]}]]
+   (let [networks        (:networks token)
+         single-network? (= 1 (count networks))
+         network         (when single-network? (first networks))]
+     {:db (-> db
+              (assoc-in [:wallet :ui :swap :asset-to-pay] token)
+              (cond-> network (assoc-in [:wallet :ui :swap :network] network)))
+      :fx (if network
+            [[:dispatch [:navigate-to :screen/wallet.swap-propasal]]
+             [:dispatch [:wallet.swap/set-default-slippage]]]
+            [[:dispatch
+              [:show-bottom-sheet
+               {:content (fn []
+                           [network-selection/view
+                            {:token-symbol (:symbol token)
+                             :on-select-network
+                             (fn [network]
+                               (rf/dispatch [:hide-bottom-sheet])
+                               (rf/dispatch
+                                [:wallet.swap/select-asset-to-pay
+                                 {:token token
+                                  :network network
+                                  :stack-id
+                                  :screen/wallet.swap-select-asset-to-pay}]))}])}]]])})))
 
 (rf/reg-event-fx :wallet.swap/clean-asset-to-pay
  (fn [{:keys [db]}]
