@@ -20,7 +20,8 @@
            [:dispatch
             [:wallet.swap/select-asset-to-pay
              {:token   token
-              :network (when (= count token-networks) (first token-networks))}]]]})))
+              :network (when (= count token-networks)
+                         (first token-networks))}]]]})))
 
 (rf/reg-event-fx :wallet.swap/select-asset-to-pay
  (fn [{:keys [db]} [{:keys [token network]}]]
@@ -34,15 +35,15 @@
             [:show-bottom-sheet
              {:content (fn []
                          [network-selection/view
-                          {:token-symbol (:symbol token)
-                           :on-select-network
-                           (fn [network]
-                             (rf/dispatch [:hide-bottom-sheet])
-                             (rf/dispatch
-                              [:wallet.swap/select-asset-to-pay
-                               {:token    token
-                                :network  network
-                                :stack-id :screen/wallet.swap-select-asset-to-pay}]))}])}]]])}))
+                          {:token-symbol      (:symbol token)
+                           :on-select-network (fn [network]
+                                                (rf/dispatch [:hide-bottom-sheet])
+                                                (rf/dispatch
+                                                 [:wallet.swap/select-asset-to-pay
+                                                  {:token token
+                                                   :network network
+                                                   :stack-id
+                                                   :screen/wallet.swap-select-asset-to-pay}]))}])}]]])}))
 
 (rf/reg-event-fx :wallet.swap/clean-asset-to-pay
  (fn [{:keys [db]}]
