@@ -146,6 +146,21 @@
          [:dispatch [:wallet-connect/dismiss-request-modal]]]}))
 
 (rf/reg-event-fx
+ :wallet-connect/dismiss-request-modal
+ (fn [{:keys [db]} _]
+   (let [screen (-> db
+                    (get-in [:wallet-connect/current-request :event])
+                    wallet-connect-core/get-request-method
+                    wallet-connect-core/method-to-screen)]
+     {:fx [[:dispatch [:dismiss-modal screen]]]})))
+
+(rf/reg-event-fx
+ :wallet-connect/finish-session-request
+ (fn [_ [result]]
+   {:fx [[:dispatch [:wallet-connect/send-response {:result result}]]
+         [:dispatch [:wallet-connect/dismiss-request-modal]]]}))
+
+(rf/reg-event-fx
  :wallet-connect/reject-session-proposal
  (fn [{:keys [db]} [proposal]]
    (let [web3-wallet                      (get db :wallet-connect/web3-wallet)
