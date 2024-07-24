@@ -146,6 +146,8 @@
     button-one-props         :button-one-props
     current-screen-id        :current-screen-id
     initial-crypto-currency? :initial-crypto-currency?
+    enabled-from-chain-ids   :enabled-from-chain-ids
+    from-enabled-networks    :from-enabled-networks
     :or                      {initial-crypto-currency? true}}]
   (let [_ (rn/dismiss-keyboard!)
         bottom                                      (safe-area/get-bottom)
@@ -164,9 +166,6 @@
          token-decimals :decimals
          :as
          token}                                     (rf/sub [:wallet/wallet-send-token])
-        send-enabled-networks                       (rf/sub [:wallet/wallet-send-enabled-networks])
-        enabled-from-chain-ids                      (rf/sub
-                                                     [:wallet/wallet-send-enabled-from-chain-ids])
         send-from-locked-amounts                    (rf/sub [:wallet/wallet-send-from-locked-amounts])
         {token-balance     :total-balance
          available-balance :available-balance
@@ -355,7 +354,7 @@
        :currency-symbol  currency-symbol
        :crypto-decimals  (min token-decimals 6)
        :error?           (controlled-input/input-error input-state)
-       :networks         (seq send-enabled-networks)
+       :networks         (seq from-enabled-networks)
        :title            (i18n/label
                           :t/send-limit
                           {:limit (if crypto-currency?
@@ -429,3 +428,4 @@
                                (set-just-toggled-mode? false)
                                (set-input-state controlled-input/delete-all)
                                (rf/dispatch [:wallet/clean-suggested-routes]))}]]))
+

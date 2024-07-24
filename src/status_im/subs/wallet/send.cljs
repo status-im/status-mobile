@@ -61,3 +61,22 @@
  :wallet/send-token-not-supported-in-receiver-networks?
  :<- [:wallet/wallet-send]
  :-> :token-not-supported-in-receiver-networks?)
+
+(rf/reg-sub
+ :wallet/bridge-from-networks
+ :<- [:wallet/wallet-send]
+ :<- [:wallet/network-details]
+ (fn [[{:keys [bridge-to-chain-id]} networks]]
+   (set (filter (fn [network]
+                  (not= (:chain-id network) bridge-to-chain-id))
+                networks))))
+
+(rf/reg-sub
+ :wallet/bridge-from-chain-ids
+ :<- [:wallet/wallet-send]
+ :<- [:wallet/networks-by-mode]
+ (fn [[{:keys [bridge-to-chain-id]} networks]]
+   (keep (fn [network]
+           (when (not= (:chain-id network) bridge-to-chain-id)
+             (:chain-id network)))
+         networks)))
