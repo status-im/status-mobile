@@ -2632,6 +2632,7 @@
   "wallet-connect-message-request-success-toast": "Message signed, go back to the dApp",
   "wallet-connect-transaction-request-rejected-toast": "{{dapp}} sign request rejected",
   "wallet-connect-transaction-request-success-toast": "Transaction signed, go back to the dApp",
+  "wallet-connect-something-went-wrong": "Oops, something went wrong with this request",
   "wallet-connect": "Wallet Connect",
   "wallet-connect-2.0": "Wallet Connect 2.0",
   "wallet-connect-app-connected": "is connected",

@@ -88,7 +88,8 @@
  :wallet-connect/on-sign-error
  (fn [{:keys [db]} [error]]
    (let [{:keys [raw-data address event]} (get db :wallet-connect/current-request)
-         method                           (wallet-connect-core/get-request-method event)]
+         method                           (wallet-connect-core/get-request-method event)
+         theme                            (:theme db)]
      (log/error "Failed to sign Wallet Connect request"
                 {:error                error
                  :address              address
@@ -97,6 +98,11 @@
                  :wallet-connect-event event
                  :event                :wallet-connect/on-sign-error})
      {:fx [[:dispatch [:wallet-connect/reject-session-request]]
+           [:dispatch
+            [:toasts/upsert
+             {:theme theme
+              :text  (i18n/label :t/wallet-connect-something-went-wrong)
+              :type  :negative}]]
            [:dispatch [:wallet-connect/dismiss-request-modal]]]})))
 
 (rf/reg-event-fx
@@ -104,7 +110,8 @@
  (fn [{:keys [db]} [{:keys [result error on-success on-error]}]]
    (let [{:keys [id topic] :as event} (get-in db [:wallet-connect/current-request :event])
          method                       (wallet-connect-core/get-request-method event)
-         web3-wallet                  (get db :wallet-connect/web3-wallet)]
+         web3-wallet                  (get db :wallet-connect/web3-wallet)
+         theme                        (:theme db)]
      {:fx [[:effects.wallet-connect/respond-session-request
             {:web3-wallet web3-wallet
              :topic       topic
@@ -119,7 +126,11 @@
                                         :method               method
                                         :event                :wallet-connect/send-response
                                         :wallet-connect-event event})
-                            (rf/dispatch [:wallet-connect/reset-current-request]))
+                            (rf/dispatch [:wallet-connect/reset-current-request])
+                            (rf/dispatch [:toasts/upsert
+                                          {:theme theme
+                                           :text  (i18n/label :t/wallet-connect-something-went-wrong)
+                                           :type  :negative}]))
              :on-success  (fn []
                             (when on-success
                               (on-success))
