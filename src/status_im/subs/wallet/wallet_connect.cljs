@@ -67,19 +67,17 @@
  (fn [[sessions testnet-mode?]]
    (filter
     (fn [{:keys [chains]}]
-      (let [chain-numbers             (set (map (fn [chain]
-                                                  (-> chain
-                                                      (string/split ":")
-                                                      second
-                                                      js/parseInt))
-                                                chains))
-            chains-subset-of-mainnet? (set/subset? chain-numbers constants/mainnet-chain-ids)]
-        ;; If network is testnet, we ensure that the required chains for that session are not a
-        ;; subset of mainnet chain ids. If network is mainnet, we ensure that the required chains
-        ;; for that session are a subset of mainnet chain ids
+      (let [chain-ids (set (map (fn [chain]
+                                  (-> chain
+                                      (string/split ":")
+                                      second
+                                      js/parseInt))
+                                chains))]
         (if testnet-mode?
-          (not chains-subset-of-mainnet?)
-          chains-subset-of-mainnet?)))
+          (or
+           (set/subset? chain-ids constants/sepolia-chain-ids)
+           (set/subset? chain-ids constants/goerli-chain-ids))
+          (set/subset? chain-ids constants/mainnet-chain-ids))))
     sessions)))
 
 (rf/reg-sub
