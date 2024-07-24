@@ -6,15 +6,17 @@
             [utils.number]))
 
 (rf/reg-event-fx :wallet.swap/start
- (fn [{:keys [db]} [{:keys [token]}]]
-   (if token
-     (let [current-address (get-in db [:wallet :current-viewing-account-address])
-           address         (:address (first (utils/sorted-operable-non-watch-only-accounts db)))]
-       {:fx [(when-not current-address
-               [:dispatch
-                [:wallet/switch-current-viewing-account address]])
-             [:dispatch [:wallet.swap/select-asset-to-pay {:token token}]]]})
-     {:fx [[:dispatch [:open-modal :screen/wallet.swap-select-asset-to-pay]]]})))
+ (fn [{:keys [_]}]
+   {:fx [[:dispatch [:open-modal :screen/wallet.swap-select-asset-to-pay]]]}))
+
+(rf/reg-event-fx :wallet.swap/start-with-token
+ (fn [{:keys [db]} [token]]
+   (let [current-address (get-in db [:wallet :current-viewing-account-address])
+         address         (:address (first (utils/sorted-operable-non-watch-only-accounts db)))]
+     {:fx [(when-not current-address
+             [:dispatch
+              [:wallet/switch-current-viewing-account address]])
+           [:dispatch [:wallet.swap/select-asset-to-pay {:token token}]]]})))
 
 (rf/reg-event-fx :wallet.swap/select-asset-to-pay
  (fn [{:keys [db]} [{:keys [token]}]]

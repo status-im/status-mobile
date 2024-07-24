@@ -54,7 +54,7 @@
      :label               (i18n/label :t/swap)
      :on-press            (fn []
                             (rf/dispatch [:hide-bottom-sheet])
-                            (rf/dispatch [:wallet.swap/start {:token token}]))}))
+                            (rf/dispatch [:wallet.swap/start-with-token token]))}))
 
 (defn- action-manage-tokens
   [watch-only?]
