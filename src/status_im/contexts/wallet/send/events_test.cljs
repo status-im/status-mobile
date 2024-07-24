@@ -273,19 +273,18 @@
   [event-id dispatch]
   (reset! rf-db/app-db
     {:wallet {:ui {:send
-                   {:other-props                     :value
-                    :suggested-routes                ["1" "2"]
-                    :route                           "1"
-                    :amount                          10
-                    :from-values-by-chain            [{:chain-id 1} {:chain-id 10} {:chain-id 42161}]
-                    :to-values-by-chain              [{:chain-id 1} {:chain-id 10} {:chain-id 42161}]
-                    :sender-network-values           [:eth :arb1]
-                    :receiver-network-values         [:eth :arb1]
-                    :network-links                   [{:from-chain-id 1
-                                                       :to-chain-id   10
-                                                       :position-diff 1}]
-                    :loading-suggested-routes?       false
-                    :suggested-routes-call-timestamp ["1" "2"]}}}})
+                   {:other-props               :value
+                    :suggested-routes          ["1" "2"]
+                    :route                     "1"
+                    :amount                    10
+                    :from-values-by-chain      [{:chain-id 1} {:chain-id 10} {:chain-id 42161}]
+                    :to-values-by-chain        [{:chain-id 1} {:chain-id 10} {:chain-id 42161}]
+                    :sender-network-values     [:eth :arb1]
+                    :receiver-network-values   [:eth :arb1]
+                    :network-links             [{:from-chain-id 1
+                                                 :to-chain-id   10
+                                                 :position-diff 1}]
+                    :loading-suggested-routes? false}}}})
   (is (not (contains? (get-in (dispatch [event-id]) [:db :wallet :ui :send]) :suggested-routes)))
   (is (not (contains? (get-in (dispatch [event-id]) [:db :wallet :ui :send]) :route)))
   (is (not (contains? (get-in (dispatch [event-id]) [:db :wallet :ui :send]) :amount)))
@@ -296,8 +295,6 @@
   (is (not (contains? (get-in (dispatch [event-id]) [:db :wallet :ui :send]) :network-links)))
   (is (not (contains? (get-in (dispatch [event-id]) [:db :wallet :ui :send])
                       :loading-suggested-routes?)))
-  (is (not (contains? (get-in (dispatch [event-id]) [:db :wallet :ui :send])
-                      :suggested-routes-call-timestamp)))
   (is (contains? (get-in (dispatch [event-id]) [:db :wallet :ui :send]) :other-props)))
 
 (h/deftest-event :wallet/suggested-routes-error
@@ -324,7 +321,7 @@
                             :receiver-network-values   receiver-network-amounts
                             :route                     :values
                             :loading-suggested-routes? true}}}})
-    (is (match? expected-result (dispatch [event-id {:message "error"}])))))
+    (is (match? expected-result (dispatch [event-id "error"])))))
 
 (h/deftest-event :wallet/reset-network-amounts-to-zero
   [event-id dispatch]
