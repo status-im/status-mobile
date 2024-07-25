@@ -77,7 +77,7 @@ net/cgrand/macrovich/0.2.1/macrovich-0.2.1.jar
 net/java/dev/jna/jna/5.12.1/jna-5.12.1.jar
 nrepl/bencode/1.1.0/bencode-1.1.0.jar
 nrepl/nrepl/1.0.0/nrepl-1.0.0.jar
-nubank/matcher-combinators/3.8.8/matcher-combinators-3.8.8.jar
+nubank/matcher-combinators/3.9.1/matcher-combinators-3.9.1.jar
 org/apache/ant/ant/1.10.11/ant-1.10.11.jar
 org/apache/ant/ant-launcher/1.10.11/ant-launcher-1.10.11.jar
 org/apache/commons/commons-lang3/3.12.0/commons-lang3-3.12.0.jar
