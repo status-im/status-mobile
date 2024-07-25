@@ -2632,6 +2632,7 @@
   "wallet-connect-go-back": "Go back to your browser or dapp",
   "wallet-connect-label": "WalletConnect",
   "wallet-connect-networks-not-supported": "{{dapp}} requires an unsupported network.",
+  "wallet-connect-no-internet-warning": "Oops, you have no internet. Try again later!",
   "wallet-connect-proposal-description": "By connecting you allow {{name}} to retrieve your account address and enable Web3",
   "wallet-connect-proposal-title": "Would like to connect with your wallet",
   "wallet-connect-qr-expired": "WalletConnect QR has expired",

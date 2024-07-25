@@ -18,7 +18,6 @@
     legacy.status-im.multiaccounts.logout.core
     [legacy.status-im.multiaccounts.model :as multiaccounts.model]
     legacy.status-im.multiaccounts.update.core
-    legacy.status-im.network.net-info
     legacy.status-im.pairing.core
     legacy.status-im.profile.core
     legacy.status-im.search.core

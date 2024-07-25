@@ -13,10 +13,14 @@
 
 (rf/reg-event-fx
  :wallet-connect/init
- (fn []
-   {:fx [[:effects.wallet-connect/init
-          {:on-success #(rf/dispatch [:wallet-connect/on-init-success %])
-           :on-fail    #(rf/dispatch [:wallet-connect/on-init-fail %])}]]}))
+ (fn [{:keys [db]}]
+   (let [network-status (:network/status db)]
+     (if (= network-status :online)
+       {:fx [[:effects.wallet-connect/init
+              {:on-success #(rf/dispatch [:wallet-connect/on-init-success %])
+               :on-fail    #(rf/dispatch [:wallet-connect/on-init-fail %])}]]}
+       ;; NOTE: when offline, fetching persistent sessions only
+       {:fx [[:dispatch [:wallet-connect/fetch-persisted-sessions]]]}))))
 
 (rf/reg-event-fx
  :wallet-connect/on-init-success
@@ -24,6 +28,14 @@
    {:db (assoc db :wallet-connect/web3-wallet web3-wallet)
     :fx [[:dispatch [:wallet-connect/register-event-listeners]]
          [:dispatch [:wallet-connect/fetch-persisted-sessions]]]}))
+
+(rf/reg-event-fx
+ :wallet-connect/reload-on-network-change
+ (fn [{:keys [db]} [is-connected?]]
+   (let [logged-in?           (-> db :profile/profile boolean)
+         web3-wallet-missing? (-> db :wallet-connect/web3-wallet boolean not)]
+     (when (and is-connected? logged-in? web3-wallet-missing?)
+       {:fx [[:dispatch [:wallet-connect/init]]]}))))
 
 (rf/reg-event-fx
  :wallet-connect/register-event-listeners
@@ -77,12 +89,12 @@
 
 (rf/reg-event-fx
  :wallet-connect/session-networks-unsupported
- (fn [_ [proposal]]
+ (fn [{:keys [db]} [proposal]]
    (let [{:keys [name]} (wallet-connect-core/get-session-dapp-metadata proposal)]
      {:fx [[:dispatch
             [:toasts/upsert
              {:type  :negative
-              :theme :dark
+              :theme (:theme db)
               :text  (i18n/label :t/wallet-connect-networks-not-supported {:dapp name})}]]]})))
 
 (rf/reg-event-fx
@@ -116,17 +128,20 @@
 (rf/reg-event-fx
  :wallet-connect/disconnect-dapp
  (fn [{:keys [db]} [{:keys [topic on-success on-fail]}]]
-   (let [web3-wallet (get db :wallet-connect/web3-wallet)]
-     {:fx [[:effects.wallet-connect/disconnect
-            {:web3-wallet web3-wallet
-             :topic       topic
-             :reason      (wallet-connect/get-sdk-error
-                           constants/wallet-connect-user-disconnected-reason-key)
-             :on-fail     on-fail
-             :on-success  (fn []
-                            (rf/dispatch [:wallet-connect/disconnect-session topic])
-                            (when on-success
-                              (on-success)))}]]})))
+   (let [web3-wallet    (get db :wallet-connect/web3-wallet)
+         network-status (:network/status db)]
+     (if (= network-status :online)
+       {:fx [[:effects.wallet-connect/disconnect
+              {:web3-wallet web3-wallet
+               :topic       topic
+               :reason      (wallet-connect/get-sdk-error
+                             constants/wallet-connect-user-disconnected-reason-key)
+               :on-fail     on-fail
+               :on-success  (fn []
+                              (rf/dispatch [:wallet-connect/disconnect-session topic])
+                              (when on-success
+                                (on-success)))}]]}
+       {:fx [[:dispatch [:wallet-connect/no-internet-toast]]]}))))
 
 (rf/reg-event-fx
  :wallet-connect/pair
@@ -141,51 +156,57 @@
 (rf/reg-event-fx
  :wallet-connect/approve-session
  (fn [{:keys [db]}]
-   (let [web3-wallet          (get db :wallet-connect/web3-wallet)
-         current-proposal     (get-in db [:wallet-connect/current-proposal :request])
-         session-networks     (->> (get-in db [:wallet-connect/current-proposal :session-networks])
-                                   (map wallet-connect-core/chain-id->eip155)
-                                   vec)
-         current-address      (get-in db [:wallet-connect/current-proposal :address])
-         accounts             (-> (partial wallet-connect-core/format-eip155-address current-address)
-                                  (map session-networks))
-         supported-namespaces (clj->js {:eip155
-                                        {:chains   session-networks
-                                         :methods  constants/wallet-connect-supported-methods
-                                         :events   constants/wallet-connect-supported-events
-                                         :accounts accounts}})]
-     {:fx [[:effects.wallet-connect/approve-session
-            {:web3-wallet          web3-wallet
-             :proposal             current-proposal
-             :supported-namespaces supported-namespaces
-             :on-success           (fn [approved-session]
-                                     (log/info "Wallet Connect session approved")
-                                     (rf/dispatch [:wallet-connect/reset-current-session-proposal])
-                                     (rf/dispatch [:wallet-connect/persist-session approved-session]))
-             :on-fail              (fn [error]
-                                     (log/error "Wallet Connect session approval failed"
-                                                {:error error
-                                                 :event :wallet-connect/approve-session})
-                                     (rf/dispatch
-                                      [:wallet-connect/reset-current-session-proposal]))}]
-           [:dispatch [:dismiss-modal :screen/wallet.wallet-connect-session-proposal]]]})))
+   (let [web3-wallet      (get db :wallet-connect/web3-wallet)
+         current-proposal (get-in db [:wallet-connect/current-proposal :request])
+         session-networks (->> (get-in db [:wallet-connect/current-proposal :session-networks])
+                               (map wallet-connect-core/chain-id->eip155)
+                               vec)
+         current-address  (get-in db [:wallet-connect/current-proposal :address])
+         accounts         (-> (partial wallet-connect-core/format-eip155-address current-address)
+                              (map session-networks))
+         network-status   (:network/status db)]
+     (if (= network-status :online)
+       {:fx [[:effects.wallet-connect/approve-session
+              {:web3-wallet web3-wallet
+               :proposal    current-proposal
+               :networks    session-networks
+               :accounts    accounts
+               :on-success  (fn [approved-session]
+                              (log/info "Wallet Connect session approved")
+                              (rf/dispatch [:wallet-connect/reset-current-session-proposal])
+                              (rf/dispatch [:wallet-connect/persist-session approved-session]))
+               :on-fail     (fn [error]
+                              (log/error "Wallet Connect session approval failed"
+                                         {:error error
+                                          :event :wallet-connect/approve-session})
+                              (rf/dispatch
+                               [:wallet-connect/reset-current-session-proposal]))}]
+             [:dispatch [:dismiss-modal :screen/wallet.wallet-connect-session-proposal]]]}
+       {:fx [[:dispatch [:wallet-connect/no-internet-toast]]]}))))
 
 (rf/reg-event-fx
  :wallet-connect/on-scan-connection
- (fn [_ [scanned-text]]
-   (let [parsed-uri         (wallet-connect/parse-uri scanned-text)
+ (fn [{:keys [db]} [scanned-text]]
+   (let [network-status     (:network/status db)
+         parsed-uri         (wallet-connect/parse-uri scanned-text)
          version            (:version parsed-uri)
          valid-wc-uri?      (wc-utils/valid-wc-uri? parsed-uri)
          expired?           (-> parsed-uri
                                 :expiryTimestamp
                                 wc-utils/timestamp-expired?)
          version-supported? (wc-utils/version-supported? version)]
-     (if (or (not valid-wc-uri?) expired? (not version-supported?))
+     (if (or (not valid-wc-uri?)
+             (not version-supported?)
+             (= network-status :offline)
+             expired?)
        {:fx [[:dispatch
               [:toasts/upsert
                {:type  :negative
                 :theme :dark
-                :text  (cond (not valid-wc-uri?)
+                :text  (cond (= network-status :offline)
+                             (i18n/label :t/wallet-connect-no-internet-warning)
+
+                             (not valid-wc-uri?)
                              (i18n/label :t/wallet-connect-wrong-qr)
 
                              expired?
@@ -236,16 +257,18 @@
 (rf/reg-event-fx
  :wallet-connect/fetch-persisted-sessions-success
  (fn [{:keys [db]} [sessions]]
-   (let [sessions' (mapv (fn [{:keys [sessionJson] :as session}]
-                           (assoc session
-                                  :accounts
-                                  (-> sessionJson
-                                      types/json->clj
-                                      :namespaces
-                                      :eip155
-                                      :accounts)))
-                         sessions)]
-     {:fx [[:dispatch [:wallet-connect/fetch-active-sessions]]]
+   (let [network-status (:network/status db)
+         sessions'      (mapv (fn [{:keys [sessionJson] :as session}]
+                                (assoc session
+                                       :accounts
+                                       (-> sessionJson
+                                           types/json->clj
+                                           :namespaces
+                                           :eip155
+                                           :accounts)))
+                              sessions)]
+     {:fx [(when (= network-status :online)
+             [:dispatch [:wallet-connect/fetch-active-sessions]])]
       :db (assoc db :wallet-connect/sessions sessions')})))
 
 (rf/reg-event-fx
@@ -256,14 +279,14 @@
 
 (rf/reg-event-fx
  :wallet-connect/fetch-persisted-sessions
- (fn [_ _]
-   {:fx [[:json-rpc/call
-          [{:method     "wallet_getWalletConnectActiveSessions"
-            ;; This is the activeSince timestamp to avoid expired sessions
-            ;; 0 means, return everything
-            :params     [0]
-            :on-success [:wallet-connect/fetch-persisted-sessions-success]
-            :on-error   [:wallet-connect/fetch-persisted-sessions-fail]}]]]}))
+ (fn [{:keys [now]} _]
+   (let [current-timestamp (quot now 1000)]
+     {:fx [[:json-rpc/call
+            [{:method     "wallet_getWalletConnectActiveSessions"
+              ;; NOTE: This is the activeSince timestamp to avoid expired sessions
+              :params     [current-timestamp]
+              :on-success [:wallet-connect/fetch-persisted-sessions-success]
+              :on-error   [:wallet-connect/fetch-persisted-sessions-fail]}]]]})))
 
 (rf/reg-event-fx
  :wallet-connect/persist-session
@@ -290,3 +313,12 @@
             :params     [topic]
             :on-success #(log/info "Wallet Connect session disconnected")
             :on-error   #(log/info "Wallet Connect session persistence failed" %)}]]]}))
+
+(rf/reg-event-fx
+ :wallet-connect/no-internet-toast
+ (fn [{:keys [db]}]
+   {:fx [[:dispatch
+          [:toasts/upsert
+           {:type  :negative
+            :theme (:theme db)
+            :text  (i18n/label :t/wallet-connect-no-internet-warning)}]]]}))

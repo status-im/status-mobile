@@ -27,6 +27,7 @@
     status-im.contexts.contact.blocking.events
     status-im.contexts.keycard.effects
     status-im.contexts.keycard.events
+    status-im.contexts.networks.events
     status-im.contexts.onboarding.common.overlay.events
     status-im.contexts.onboarding.events
     status-im.contexts.profile.events
@@ -57,7 +58,7 @@
    cofx
    {:db db/app-db
     :theme/init-theme nil
-    :network/listen-to-network-info nil
+    :effects.network/listen-to-network-info nil
     :effects.biometric/get-supported-type nil
     :effects.keycard/register-card-events nil
     :effects.keycard/check-nfc-enabled nil
