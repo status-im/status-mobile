@@ -43,8 +43,7 @@
 
 (rf/reg-event-fx :wallet.swap/set-default-slippage
  (fn [{:keys [db]}]
-   {:db
-    (assoc-in db [:wallet :ui :swap :max-slippage] constants/default-slippage)}))
+   {:db (assoc-in db [:wallet :ui :swap :max-slippage] constants/default-slippage)}))
 
 (rf/reg-event-fx :wallet.swap/set-max-slippage
  (fn [{:keys [db]} [max-slippage]]

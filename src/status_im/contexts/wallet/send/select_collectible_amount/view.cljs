@@ -23,8 +23,9 @@
         increase-value        (rn/use-callback #(set-value controlled-input/increase))
         decrease-value        (rn/use-callback #(set-value controlled-input/decrease))
         delete-character      (rn/use-callback #(set-value controlled-input/delete-last))
-        add-character         (rn/use-callback (fn [c]
-                                                 (set-value #(controlled-input/add-character % c))))]
+        add-character         (rn/use-callback
+                               (fn [c]
+                                 (set-value #(controlled-input/add-character % c))))]
     (rn/use-effect
      (fn []
        (set-value #(controlled-input/set-upper-limit % balance)))
