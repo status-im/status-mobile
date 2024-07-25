@@ -492,19 +492,22 @@
 
 (rf/reg-event-fx :wallet/handle-suggested-routes
  (fn [_ data]
-   (let [error                     (-> data first :ErrorResponse)
-         suggested-routes-new-data (data-store/rpc->suggested-routes data)
-         suggested-routes          (-> (first suggested-routes-new-data)
-                                       (update :best #(map data-store/new->old-route-path %))
-                                       (update :candidates #(map data-store/new->old-route-path %)))]
-     (when error
+   (if-let [error (some-> data
+                          first
+                          :ErrorResponse
+                          (#(if (= (:code %) "0") "An error occurred" (:details %))))]
+     (do
        (log/error "failed to get suggested routes (async)"
                   {:event :wallet/handle-suggested-routes
-                   :error error}))
-     {:fx [(if error
-             [:dispatch [:wallet/suggested-routes-error (:details error)]]
-             [:dispatch
-              [:wallet/suggested-routes-success suggested-routes]])]})))
+                   :error error})
+       {:fx [[:dispatch [:wallet/suggested-routes-error error]]]})
+     (let [suggested-routes-new-data (data-store/rpc->suggested-routes data)
+           suggested-routes          (-> suggested-routes-new-data
+                                         first
+                                         (update :best #(map data-store/new->old-route-path %))
+                                         (update :candidates #(map data-store/new->old-route-path %)))]
+       {:fx [[:dispatch
+              [:wallet/suggested-routes-success suggested-routes]]]}))))
 
 (rf/reg-event-fx :wallet/add-authorized-transaction
  (fn [{:keys [db]} [transaction]]
