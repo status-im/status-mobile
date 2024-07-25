@@ -8,6 +8,7 @@ from os import environ
 from sys import argv
 
 import emoji
+import pytest
 import requests
 
 from support.base_test_report import BaseTestReport
@@ -139,20 +140,12 @@ class TestrailReport(BaseTestReport):
                 for category in test_cases['pr']:
                     for case in self.get_cases([test_cases['pr'][category]]):
                         case_ids.append(case['id'])
-                case_ids.extend([703133, 702742, 702745])
-            elif 'nightly' in argv:
+                case_ids.extend([703133, 702742, 702745, 702843])
+            # elif 'nightly' in argv:
+            else:
                 for category in test_cases['nightly']:
                     for case in self.get_cases([test_cases['nightly'][category]]):
                         case_ids.append(case['id'])
-            elif 'upgrade' in argv and 'not upgrade' not in argv:
-                for case in self.get_cases([test_cases['upgrade']['general']]):
-                    case_ids.append(case['id'])
-            else:
-                for phase in test_cases:
-                    if phase != 'upgrade':
-                        for category in test_cases[phase]:
-                            for case in self.get_cases([test_cases[phase][category]]):
-                                case_ids.append(case['id'])
         return case_ids
 
     def add_results(self):

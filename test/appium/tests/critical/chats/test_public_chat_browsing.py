@@ -253,9 +253,7 @@ class TestCommunityOneDeviceMerged(MultipleSharedDeviceTestCase):
         self.home.navigate_back_to_home_view()
         self.home.just_fyi("Turn off testnet in the profile settings")
         profile = self.home.profile_button.click()
-        profile.advanced_button.scroll_and_click()
-        profile.testnet_mode_toggle.click()
-        profile.ok_button.click()
+        profile.switch_network()
         self.sign_in.sign_in()
 
         self.home.just_fyi("Check Discover Communities content")
@@ -368,6 +366,7 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
             self.errors.append("Default username '%s' is not shown next to the received message" % self.username_1)
         self.errors.verify_no_errors()
 
+    @marks.smoke
     @marks.testrail_id(702843)
     def test_community_message_edit(self):
         message_before_edit, message_after_edit = 'Message BEFORE edit', "Message AFTER edit 2"
