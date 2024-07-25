@@ -76,6 +76,7 @@
      (if (and (not-empty session-networks) required-networks-supported?)
        {:db (update db
                     :wallet-connect/current-proposal assoc
+                    :response-sent?                  false
                     :request                         proposal
                     :session-networks                session-networks
                     :address                         (or current-viewing-address
@@ -167,7 +168,8 @@
          network-status   (:network/status db)
          expiry           (get-in current-proposal [:params :expiryTimestamp])]
      (if (= network-status :online)
-       {:fx [(if (wc-utils/timestamp-expired? expiry)
+       {:db (assoc-in db [:wallet-connect/current-proposal :response-sent?] true)
+        :fx [(if (wc-utils/timestamp-expired? expiry)
                [:dispatch
                 [:toasts/upsert
                  {:id   :wallet-connect-proposal-expired

@@ -106,31 +106,29 @@
                  :method               method
                  :wallet-connect-event event
                  :event                :wallet-connect/on-sign-error})
-     {:fx [[:dispatch [:wallet-connect/reject-session-request]]
-           [:dispatch [:wallet-connect/dismiss-request-modal]]]})))
+     {:fx [[:dispatch [:wallet-connect/dismiss-request-modal]]]})))
 
 (rf/reg-event-fx
  :wallet-connect/send-response
  (fn [{:keys [db]} [{:keys [result error]}]]
-   (let [{:keys [id topic] :as event} (get-in db [:wallet-connect/current-request :event])
-         method                       (wallet-connect-core/get-request-method event)
-         web3-wallet                  (get db :wallet-connect/web3-wallet)]
-     {:fx [[:effects.wallet-connect/respond-session-request
-            {:web3-wallet web3-wallet
-             :topic       topic
-             :id          id
-             :result      result
-             :error       error
-             :on-error    (fn [error]
-                            (log/error "Failed to send Wallet Connect response"
-                                       {:error                error
-                                        :method               method
-                                        :event                :wallet-connect/send-response
-                                        :wallet-connect-event event})
-                            (rf/dispatch [:wallet-connect/reset-current-request]))
-             :on-success  (fn []
-                            (log/info "Successfully sent Wallet Connect response to dApp")
-                            (rf/dispatch [:wallet-connect/reset-current-request]))}]]})))
+   (when-let [{:keys [id topic] :as event} (get-in db [:wallet-connect/current-request :event])]
+     (let [method      (wallet-connect-core/get-request-method event)
+           web3-wallet (get db :wallet-connect/web3-wallet)]
+       {:db (assoc-in db [:wallet-connect/current-request :response-sent?] true)
+        :fx [[:effects.wallet-connect/respond-session-request
+              {:web3-wallet web3-wallet
+               :topic       topic
+               :id          id
+               :result      result
+               :error       error
+               :on-error    (fn [error]
+                              (log/error "Failed to send Wallet Connect response"
+                                         {:error                error
+                                          :method               method
+                                          :event                :wallet-connect/send-response
+                                          :wallet-connect-event event}))
+               :on-success  (fn []
+                              (log/info "Successfully sent Wallet Connect response to dApp"))}]]}))))
 
 (rf/reg-event-fx
  :wallet-connect/dismiss-request-modal
@@ -150,16 +148,18 @@
 (rf/reg-event-fx
  :wallet-connect/reject-session-proposal
  (fn [{:keys [db]} _]
-   (let [web3-wallet      (get db :wallet-connect/web3-wallet)
-         current-proposal (get-in db [:wallet-connect/current-proposal :request])]
-     {:fx [[:effects.wallet-connect/reject-session-proposal
-            {:web3-wallet web3-wallet
-             :proposal    current-proposal
-             :on-success  #(log/info "Wallet Connect session proposal rejected")
-             :on-error    #(log/error "Wallet Connect unable to reject session proposal")}]
+   (let [web3-wallet                      (get db :wallet-connect/web3-wallet)
+         {:keys [request response-sent?]} (:wallet-connect/current-proposal db)]
+     {:fx [(when-not response-sent?
+             [:effects.wallet-connect/reject-session-proposal
+              {:web3-wallet web3-wallet
+               :proposal    request
+               :on-success  #(log/info "Wallet Connect session proposal rejected")
+               :on-error    #(log/error "Wallet Connect unable to reject session proposal")}])
            [:dispatch [:wallet-connect/reset-current-session-proposal]]]})))
 
-;; NOTE: Currently we only reject a session if the user rejected it
+;; NOTE: Currently we only reject a session if the user dismissed a modal
+;; without accepting the session first.
 ;; But this needs to be solidified to ensure other cases:
 ;; - Unsupported WC version
 ;; - Invalid params from dapps
@@ -167,9 +167,11 @@
 ;; - Failed processing of request
 ;; - Failed "responding" (signing or sending message/transaction)
 (rf/reg-event-fx
- :wallet-connect/reject-session-request
- (fn [_ _]
-   {:fx [[:dispatch
-          [:wallet-connect/send-response
-           {:error (wallet-connect/get-sdk-error
-                    constants/wallet-connect-user-rejected-error-key)}]]]}))
+ :wallet-connect/on-request-modal-dismissed
+ (fn [{:keys [db]}]
+   {:fx [(when-not (get-in db [:wallet-connect/current-request :response-sent?])
+           [:dispatch
+            [:wallet-connect/send-response
+             {:error (wallet-connect/get-sdk-error
+                      constants/wallet-connect-user-rejected-error-key)}]])
+         [:dispatch [:wallet-connect/reset-current-request]]]}))
