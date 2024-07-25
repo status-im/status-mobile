@@ -74,7 +74,8 @@
                 ;; https://github.com/borkdude/clj-kondo/issues/867
                 :unresolved-symbol             {:exclude [PersistentPriorityMap.EMPTY
                                                           number
-                                                          legacy.status-im.test-helpers/restore-app-db]}
+                                                          legacy.status-im.test-helpers/restore-app-db
+                                                          (cljs.test/is [match-strict?])]}
                 :unresolved-var                {:level :error}
                 :unsorted-required-namespaces  {:level :error}
                 :unused-alias                  {:level :warning}
