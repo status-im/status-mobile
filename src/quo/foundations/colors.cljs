@@ -5,7 +5,7 @@
     [react-native.platform :as platform]))
 
 (def account-colors
-  [:blue :yellow :purple :turquoise :magenta :sky :orange :army :flamingo :camel :copper])
+  [:blue :yellow :purple :turquoise :magenta :sky :orange :army :pink :camel :copper])
 
 (defn alpha
   [value opacity]
@@ -43,6 +43,13 @@
       (if (= :dark theme)
         (alpha light-color light-opacity)
         (alpha dark-color dark-opacity))))))
+
+(defn valid-color?
+  [color]
+  (or (keyword? color)
+      (and (string? color)
+           (or (string/starts-with? color "#")
+               (string/starts-with? color "rgb")))))
 
 
 ;;;;Neutral
@@ -239,7 +246,7 @@
                60 "#CC6438"}
    :army      {50 "#216266"
                60 "#1A4E52"}
-   :flamingo  {50 "#F66F8F"
+   :pink      {50 "#F66F8F"
                60 "#C55972"}
    :purple    {50 "#7140FD"
                60 "#5A33CA"}
@@ -316,13 +323,14 @@
   [s]
   (and (string? s) (string/starts-with? s "#")))
 
+(def fallback-color (customization :blue))
+
 (defn- get-from-colors-map
   [color suffix]
-  (let [color-without-suffix (get colors-map color)
-        resolved-color?      (hex-string? color-without-suffix)]
-    (if resolved-color?
+  (let [color-without-suffix (get colors-map color fallback-color)]
+    (if (hex-string? color-without-suffix)
       color-without-suffix
-      (get-in colors-map [color suffix]))))
+      (get color-without-suffix suffix))))
 
 (defn- resolve-color*
   ([color theme]
@@ -356,11 +364,15 @@
      ([color suffix]
       (custom-color color suffix nil))
      ([color suffix opacity]
-      (let [hex?           (not (keyword? color))
-            resolved-color (cond hex?                                 color
-                                 (hex-string? (get colors-map color)) (get colors-map color)
-                                 :else                                (get-in colors-map
-                                                                              [color suffix]))]
+      (let [resolved-color (cond
+                             (not (keyword? color))
+                             color
+
+                             (hex-string? (get colors-map color))
+                             (get colors-map color fallback-color)
+
+                             :else
+                             (get-in colors-map [color suffix] (get fallback-color suffix)))]
         (if opacity
           (alpha resolved-color (/ opacity 100))
           resolved-color))))))

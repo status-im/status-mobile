@@ -14,7 +14,7 @@
   []
   (let [state (reagent/atom {:type                :default
                              :customization-color :blue
-                             :account-color       :flamingo
+                             :account-color       :pink
                              :title               "Alisher Yakupov"
                              :address             "0x21a...49e"
                              :on-options-press    #(js/alert "Options button pressed!")})]
