@@ -19,7 +19,7 @@
                 [cider/piggieback "0.4.1"]
                 [org.slf4j/slf4j-nop "2.0.9"]
                 [re-frisk-remote "1.6.0"]
-                [nubank/matcher-combinators "3.8.8"]
+                [nubank/matcher-combinators "3.9.1"]
 
                 ;; Use the same version specified in the Nix dependency.
                 [clj-kondo/clj-kondo "2024.03.13"]
