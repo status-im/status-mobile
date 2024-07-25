@@ -13,6 +13,6 @@
 
 (rf/reg-fx :settings/get-currencies
  (fn []
-   (json-rpc/call {:method     "wakuext_getCurrencies"
+   (json-rpc/call {:method     "appgeneral_getCurrencies"
                    :on-success [:settings/get-currencies-success]
                    :on-error   [:log-rpc-error {:event :settings/get-currencies}]})))

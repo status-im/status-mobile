@@ -5,7 +5,7 @@
 (defn rpc->currency
   [currency]
   (some-> currency
-          (dissoc :imageSource)
+          (dissoc :unicode)
           (set/rename-keys
            {:shortName :short-name
             :isPopular :popular?
