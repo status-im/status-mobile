@@ -4,7 +4,7 @@
 
 (defn main
   [{:keys [type customization-color]} theme]
-  {:justify-content  :center
+  {:justify-content  :flex-start
    :align-items      :center
    :height           32
    :padding-left     4
@@ -16,6 +16,7 @@
 (defn label
   [type theme]
   {:color       (colors/theme-colors colors/neutral-100 colors/white theme)
+   :flex-shrink 1
    :margin-left (if (= type :address) 6 4)})
 
 (def collectible-image
