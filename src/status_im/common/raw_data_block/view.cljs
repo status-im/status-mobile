@@ -1,14 +1,14 @@
 (ns status-im.common.raw-data-block.view
   (:require [quo.core :as quo]
-            [react-native.core :as rn]
+            [react-native.gesture :as gesture]
             [status-im.common.raw-data-block.style :as style]))
 
 (defn view
   [data]
-  [rn/scroll-view
-   {:style                   style/container
-    :content-container-style style/content}
+  [gesture/scroll-view
+   {:style style/container}
    [quo/text
     {:size   :paragraph-2
+     :style  style/content
      :weight :code}
     data]])
