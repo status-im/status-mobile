@@ -1,16 +1,16 @@
 (ns status-im.contexts.wallet.wallet-connect.session-proposal.view
   (:require
-   [clojure.string :as string]
-   [quo.core :as quo]
-   [quo.foundations.colors :as colors]
-   [quo.theme]
-   [react-native.core :as rn]
-   [status-im.common.floating-button-page.view :as floating-button-page]
-   [status-im.contexts.wallet.wallet-connect.core :as wallet-connect-core]
-   [status-im.contexts.wallet.wallet-connect.session-proposal.style :as style]
-   [utils.i18n :as i18n]
-   [utils.re-frame :as rf]
-   [utils.string]))
+    [clojure.string :as string]
+    [quo.core :as quo]
+    [quo.foundations.colors :as colors]
+    [quo.theme]
+    [react-native.core :as rn]
+    [status-im.common.floating-button-page.view :as floating-button-page]
+    [status-im.contexts.wallet.wallet-connect.core :as wallet-connect-core]
+    [status-im.contexts.wallet.wallet-connect.session-proposal.style :as style]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]
+    [utils.string]))
 
 (defn- dapp-metadata
   []
@@ -151,12 +151,12 @@
                                 :on-press            #(rf/dispatch
                                                        [:dismiss-modal
                                                         :screen/wallet.wallet-connect-session-proposal])}
-      :button-one-label (i18n/label :t/connect)
-      :button-one-props {:customization-color customization-color
-                         :type                :primary
-                         :accessibility-label :wc-connect
-                         :on-press            #(rf/dispatch
-                                                [:wallet-connect/approve-session])}}]))
+      :button-one-label        (i18n/label :t/connect)
+      :button-one-props        {:customization-color customization-color
+                                :type                :primary
+                                :accessibility-label :wc-connect
+                                :on-press            #(rf/dispatch
+                                                       [:wallet-connect/approve-session])}}]))
 
 (defn- header
   []

@@ -1,6 +1,6 @@
 (ns status-im.constants
   (:require
-   [clojure.string :as string]))
+    [clojure.string :as string]))
 
 (def ^:const ms-in-bg-for-require-bioauth 5000)
 
