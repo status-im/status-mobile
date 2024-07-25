@@ -38,7 +38,7 @@
                               (rf/dispatch [:push-notifications/switch true])
                               (rf/dispatch [:navigate-to-within-stack
                                             [:screen/onboarding.welcome
-                                             :screen/onboarding.generating-keys]]))
+                                             :screen/onboarding.enable-notifications]]))
        :type                :primary
        :icon-left           :i/notifications
        :accessibility-label :enable-notifications-button
@@ -52,7 +52,7 @@
                                nil)
                               (rf/dispatch [:navigate-to-within-stack
                                             [:screen/onboarding.welcome
-                                             :screen/onboarding.generating-keys]]))
+                                             :screen/onboarding.enable-notifications]]))
        :accessibility-label :enable-notifications-later-button
        :type                :grey
        :background          :blur
