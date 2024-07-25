@@ -82,6 +82,10 @@
 ;                        :network-logo network-logo}
 ;    :blur?             false}])
 
+(defn- section-header
+  [{:keys [title]}]
+  [quo/divider-date title])
+
 (defn activity-item
   [{:keys [transaction] :as activity}]
   (case transaction
@@ -94,7 +98,8 @@
   [{:keys [on-press text]}]
   [rn/text
    {:style    {:text-decoration-line :underline}
-    :on-press on-press} text])
+    :on-press on-press}
+   text])
 
 (defn view
   []
@@ -123,19 +128,19 @@
        :closable? false
        :style     {:margin-horizontal 20 :margin-vertical 8}}
       [:<>
-       [rn/text (str (i18n/label :t/wallet-activity-beta-message) " ")]
+       (str (i18n/label :t/wallet-activity-beta-message) " ")
        [pressable-text
         {:on-press open-eth-chain-explorer
          :text     (i18n/label :t/etherscan)}]
-       [rn/text ", "]
+       ", "
        [pressable-text
         {:on-press open-oeth-chain-explorer
          :text     (i18n/label :t/op-explorer)}]
-       [rn/text (str ", " (string/lower-case (i18n/label :t/or)) " ")]
+       (str ", " (string/lower-case (i18n/label :t/or)) " ")
        [pressable-text
         {:on-press open-arb-chain-explorer
          :text     (i18n/label :t/arbiscan)}]
-       [rn/text "."]]]
+       "."]]
      (if (empty? activity-list)
        [empty-tab/view
         {:title       (i18n/label :t/no-activity)
@@ -148,4 +153,4 @@
                                           :padding-horizontal 8}
          :content-container-style        {:padding-bottom jump-to.constants/floating-shell-button-height}
          :render-fn                      activity-item
-         :render-section-header-fn       (fn [{:keys [title]}] [quo/divider-date title])}])]))
+         :render-section-header-fn       section-header}])]))
