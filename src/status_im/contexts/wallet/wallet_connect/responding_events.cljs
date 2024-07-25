@@ -39,7 +39,7 @@
              :data       raw-data
              :rpc-method rpc-method
              :on-error   #(rf/dispatch [:wallet-connect/on-sign-error %])
-             :on-success #(rf/dispatch [:wallet-connect/send-response {:result %}])}]]})))
+             :on-success #(rf/dispatch [:wallet-connect/finish-session-request %])}]]})))
 
 (rf/reg-event-fx
  :wallet-connect/respond-sign-typed-data
@@ -53,7 +53,7 @@
              :chain-id   chain-id
              :version    typed-data-version
              :on-error   #(rf/dispatch [:wallet-connect/on-sign-error %])
-             :on-success #(rf/dispatch [:wallet-connect/send-response {:result %}])}]]})))
+             :on-success #(rf/dispatch [:wallet-connect/finish-session-request %])}]]})))
 
 (rf/reg-event-fx
  :wallet-connect/respond-send-transaction-data
@@ -67,7 +67,7 @@
              :tx-hash    tx-hash
              :tx-args    tx-args
              :on-error   #(rf/dispatch [:wallet-connect/on-sign-error %])
-             :on-success #(rf/dispatch [:wallet-connect/send-response {:result %}])}]]})))
+             :on-success #(rf/dispatch [:wallet-connect/finish-session-request %])}]]})))
 
 (rf/reg-event-fx
  :wallet-connect/respond-sign-transaction-data
@@ -81,15 +81,13 @@
              :tx-hash    tx-hash
              :tx-params  tx-args
              :on-error   #(rf/dispatch [:wallet-connect/on-sign-error %])
-             :on-success #(rf/dispatch [:wallet-connect/send-response {:result %}])}]]})))
+             :on-success #(rf/dispatch [:wallet-connect/finish-session-request %])}]]})))
 
-;; TODO: should reject if "signing" fails
 (rf/reg-event-fx
  :wallet-connect/on-sign-error
  (fn [{:keys [db]} [error]]
    (let [{:keys [raw-data address event]} (get db :wallet-connect/current-request)
-         method                           (wallet-connect-core/get-request-method event)
-         screen                           (wallet-connect-core/method-to-screen method)]
+         method                           (wallet-connect-core/get-request-method event)]
      (log/error "Failed to sign Wallet Connect request"
                 {:error                error
                  :address              address
@@ -97,15 +95,14 @@
                  :method               method
                  :wallet-connect-event event
                  :event                :wallet-connect/on-sign-error})
-     {:fx [[:dispatch [:dismiss-modal screen]]
-           [:dispatch [:wallet-connect/reset-current-request]]]})))
+     {:fx [[:dispatch [:wallet-connect/reject-session-request]]
+           [:dispatch [:wallet-connect/dismiss-request-modal]]]})))
 
 (rf/reg-event-fx
  :wallet-connect/send-response
  (fn [{:keys [db]} [{:keys [result error]}]]
    (let [{:keys [id topic] :as event} (get-in db [:wallet-connect/current-request :event])
          method                       (wallet-connect-core/get-request-method event)
-         screen                       (wallet-connect-core/method-to-screen method)
          web3-wallet                  (get db :wallet-connect/web3-wallet)]
      {:fx [[:effects.wallet-connect/respond-session-request
             {:web3-wallet web3-wallet
@@ -119,12 +116,25 @@
                                         :method               method
                                         :event                :wallet-connect/send-response
                                         :wallet-connect-event event})
-                            (rf/dispatch [:dismiss-modal screen])
                             (rf/dispatch [:wallet-connect/reset-current-request]))
              :on-success  (fn []
                             (log/info "Successfully sent Wallet Connect response to dApp")
-                            (rf/dispatch [:dismiss-modal screen])
                             (rf/dispatch [:wallet-connect/reset-current-request]))}]]})))
+
+(rf/reg-event-fx
+ :wallet-connect/dismiss-request-modal
+ (fn [{:keys [db]} _]
+   (let [screen (-> db
+                    (get-in [:wallet-connect/current-request :event])
+                    wallet-connect-core/get-request-method
+                    wallet-connect-core/method-to-screen)]
+     {:fx [[:dispatch [:dismiss-modal screen]]]})))
+
+(rf/reg-event-fx
+ :wallet-connect/finish-session-request
+ (fn [_ [result]]
+   {:fx [[:dispatch [:wallet-connect/send-response {:result result}]]
+         [:dispatch [:wallet-connect/dismiss-request-modal]]]}))
 
 (rf/reg-event-fx
  :wallet-connect/reject-session-proposal
@@ -143,6 +153,8 @@
 ;; - Unsupported WC version
 ;; - Invalid params from dapps
 ;; - Unsupported method
+;; - Failed processing of request
+;; - Failed "responding" (signing or sending message/transaction)
 (rf/reg-event-fx
  :wallet-connect/reject-session-request
  (fn [_ _]

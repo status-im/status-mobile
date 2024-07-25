@@ -3,6 +3,7 @@
             [clojure.string :as string]
             [native-module.core :as native-module]
             [status-im.constants :as constants]
+            [status-im.contexts.wallet.common.utils.networks :as networks]
             [utils.security.core :as security]
             [utils.string]
             [utils.transforms :as transforms]))
@@ -101,7 +102,7 @@
         networks   (get-in db [:wallet :networks (if test-mode? :test :prod)])]
     (mapv #(-> % :chain-id) networks)))
 
-(defn add-full-testnet-name
+(defn- add-full-testnet-name
   "Updates the `:full-name` key with the full testnet name if using testnet `:chain-id`.\n
   e.g. `{:full-name \"Mainnet\"}` -> `{:full-name \"Mainnet Sepolia\"`}`"
   [network]
@@ -111,6 +112,12 @@
       constants/sepolia-chain-ids (add-testnet-name constants/sepolia-full-name)
       constants/goerli-chain-ids  (add-testnet-name constants/goerli-full-name)
       network)))
+
+(defn chain-id->network-details
+  [chain-id]
+  (-> chain-id
+      (networks/get-network-details)
+      (add-full-testnet-name)))
 
 (defn event-should-be-handled?
   [db {:keys [topic]}]

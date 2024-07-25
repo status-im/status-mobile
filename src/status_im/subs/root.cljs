@@ -44,6 +44,10 @@
 ;;push notifications
 (reg-root-key-sub :push-notifications/preferences :push-notifications/preferences)
 
+;;device
+(reg-root-key-sub :network/status :network/status)
+(reg-root-key-sub :network/type :network/type)
+
 ;;general
 (reg-root-key-sub :messenger/started? :messenger/started?)
 (reg-root-key-sub :animations :animations)
