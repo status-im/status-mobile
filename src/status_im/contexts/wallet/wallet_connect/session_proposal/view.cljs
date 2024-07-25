@@ -148,10 +148,9 @@
       :button-two-label        (i18n/label :t/decline)
       :button-two-props        {:type                :grey
                                 :accessibility-label :wc-deny-connection
-                                :on-press            (fn []
-                                                       (rf/dispatch [:navigate-back])
-                                                       (rf/dispatch
-                                                        [:wallet-connect/reject-session-proposal]))}
+                                :on-press            #(rf/dispatch
+                                                       [:dismiss-modal
+                                                        :screen/wallet.wallet-connect-session-proposal])}
       :button-one-label        (i18n/label :t/connect)
       :button-one-props        {:customization-color customization-color
                                 :type                :primary
@@ -165,11 +164,13 @@
    {:type                :no-title
     :background          :blur
     :icon-name           :i/close
-    :on-press            (rn/use-callback #(rf/dispatch [:navigate-back]))
+    :on-press            (rn/use-callback
+                          #(rf/dispatch [:dismiss-modal :screen/wallet.wallet-connect-session-proposal]))
     :accessibility-label :wc-session-proposal-top-bar}])
 
 (defn view
   []
+  (rn/use-unmount #(rf/dispatch [:wallet-connect/reject-session-proposal]))
   [floating-button-page/view
    {:footer-container-padding 0
     :header                   [header]
