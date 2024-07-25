@@ -14,26 +14,34 @@
   (rf/dispatch [:wallet-connect/respond-current-session password]))
 
 (defn view
-  [{:keys [warning-label slide-button-text disabled?]} & children]
+  [{:keys [warning-label slide-button-text error-text]} & children]
   (let [{:keys [customization-color]} (rf/sub [:wallet-connect/current-request-account-details])
+        offline?                      (rf/sub [:network/offline?])
         theme                         (quo.theme/use-theme)]
-    [rn/view {:style style/content-container}
-     (into [rn/view
-            {:style style/data-items-container}]
-           children)
-     [rn/view {:style style/auth-container}
-      [standard-authentication/slide-button
-       {:size                :size-48
-        :track-text          slide-button-text
-        :disabled?           disabled?
-        :customization-color customization-color
-        :on-auth-success     on-auth-success
-        :auth-button-label   (i18n/label :t/confirm)}]]
-     [rn/view {:style style/warning-container}
-      [quo/text
-       {:size   :paragraph-2
-        :style  {:color (if (= theme :dark)
-                          colors/white-opa-70
-                          colors/neutral-80-opa-70)}
-        :weight :medium}
-       warning-label]]]))
+    [:<>
+     (when (or offline? error-text)
+       [quo/alert-banner
+        {:action? false
+         :text    (if offline?
+                    (i18n/label :t/wallet-connect-no-internet-warning)
+                    error-text)}])
+     [rn/view {:style style/content-container}
+      (into [rn/view
+             {:style style/data-items-container}]
+            children)
+      [rn/view {:style style/auth-container}
+       [standard-authentication/slide-button
+        {:size                :size-48
+         :track-text          slide-button-text
+         :disabled?           (or offline? (seq error-text))
+         :customization-color customization-color
+         :on-auth-success     on-auth-success
+         :auth-button-label   (i18n/label :t/confirm)}]]
+      [rn/view {:style style/warning-container}
+       [quo/text
+        {:size   :paragraph-2
+         :style  {:color (if (= theme :dark)
+                           colors/white-opa-70
+                           colors/neutral-80-opa-70)}
+         :weight :medium}
+        warning-label]]]]))

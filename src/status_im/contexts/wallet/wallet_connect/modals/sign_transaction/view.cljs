@@ -21,6 +21,7 @@
         network               (rf/sub [:wallet-connect/current-request-network])
         {:keys [max-fees-fiat-formatted
                 error-state]} (rf/sub [:wallet-connect/current-request-transaction-information])]
+    (rn/use-unmount #(rf/dispatch [:wallet-connect/on-request-modal-dismissed]))
     [rn/view {:style (style/container bottom)}
      [quo/gradient-cover {:customization-color customization-color}]
      [page-nav/view
@@ -32,19 +33,16 @@
          :dapp    dapp
          :account account}]
        [data-block/view]]
-      (when error-state
-        [quo/alert-banner
-         {:action? false
-          :text    (i18n/label (condp = error-state
-                                 :not-enough-assets-to-pay-gas-fees
-                                 :t/not-enough-assets-to-pay-gas-fees
-
-                                 :not-enough-assets
-                                 :t/not-enough-assets))}])
       [footer/view
        {:warning-label     (i18n/label :t/wallet-connect-sign-warning)
         :slide-button-text (i18n/label :t/slide-to-sign)
-        :disabled?         error-state}
+        :error-text        (when error-state
+                             (i18n/label (condp = error-state
+                                           :not-enough-assets-to-pay-gas-fees
+                                           :t/not-enough-assets-to-pay-gas-fees
+
+                                           :not-enough-assets
+                                           :t/not-enough-assets)))}
        [quo/data-item
         {:status          :default
          :card?           false

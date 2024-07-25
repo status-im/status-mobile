@@ -29,7 +29,9 @@
          existing-event (get-in db [:wallet-connect/current-request :event])]
      ;; NOTE: make sure we don't show two requests at the same time
      (when-not existing-event
-       {:db (assoc-in db [:wallet-connect/current-request :event] event)
+       {:db (-> db
+                (assoc-in [:wallet-connect/current-request :event] event)
+                (assoc-in [:wallet-connect/current-request :response-sent?] false))
         :fx [(condp = method
                constants/wallet-connect-eth-send-transaction-method
                [:dispatch [:wallet-connect/process-eth-send-transaction]]
@@ -191,4 +193,4 @@
                  :method               method
                  :wallet-connect-event event
                  :event                :wallet-connect/on-processing-error})
-     {:fx [[:dispatch [:wallet-connect/reject-session-request]]]})))
+     {:fx [[:dispatch [:wallet-connect/dismiss-request-modal]]]})))
