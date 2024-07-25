@@ -191,7 +191,7 @@
         [floating-button-page/view
          {:content-container-style      {:flex 1}
           :footer-container-padding     0
-          :keyboard-should-persist-taps true
+          :keyboard-should-persist-taps :always
           :header                       [account-switcher/view
                                          {:on-press      #(rf/dispatch [:navigate-back])
                                           :margin-top    (safe-area/get-top)
