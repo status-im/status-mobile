@@ -99,7 +99,7 @@
 
 (rf/reg-event-fx
  :wallet-connect/send-response
- (fn [{:keys [db]} [{:keys [result error]}]]
+ (fn [{:keys [db]} [{:keys [result error no-dismiss-modal?]}]]
    (when-let [{:keys [id topic] :as event} (get-in db [:wallet-connect/current-request :event])]
      (let [method      (wallet-connect-core/get-request-method event)
            screen      (wallet-connect-core/method-to-screen method)
@@ -117,10 +117,15 @@
                                           :method               method
                                           :event                :wallet-connect/send-response
                                           :wallet-connect-event event})
-                              (rf/dispatch [:dismiss-modal screen]))
+                              ;; FIXME(@clauxx): this is no good and we should fix it ASAP. IMO the
+                              ;; dispatcher of send-response should be responsible for success/error
+                              ;; behavior, including dismissing the modal. The flag ugly as hell.
+                              (when-not no-dismiss-modal?
+                                (rf/dispatch [:dismiss-modal screen])))
                :on-success  (fn []
                               (log/info "Successfully sent Wallet Connect response to dApp")
-                              (rf/dispatch [:dismiss-modal screen]))}]]}))))
+                              (when-not no-dismiss-modal?
+                                (rf/dispatch [:dismiss-modal screen])))}]]}))))
 
 (rf/reg-event-fx
  :wallet-connect/dismiss-request-modal
@@ -164,6 +169,7 @@
    {:fx [(when-not (get-in db [:wallet-connect/current-request :response-sent?])
            [:dispatch
             [:wallet-connect/send-response
-             {:error (wallet-connect/get-sdk-error
-                      constants/wallet-connect-user-rejected-error-key)}]])
+             {:error             (wallet-connect/get-sdk-error
+                                  constants/wallet-connect-user-rejected-error-key)
+              :no-dismiss-modal? true}]])
          [:dispatch [:wallet-connect/reset-current-request]]]}))
