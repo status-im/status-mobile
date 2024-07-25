@@ -2,8 +2,8 @@
   (:require
     [native-module.core :as native-module]
     [status-im.common.emoji-picker.utils :as emoji-picker.utils]
-    [status-im.contexts.profile.config :as profile.config]
     [status-im.constants :as constants]
+    [status-im.contexts.profile.config :as profile.config]
     status-im.contexts.profile.recover.effects
     [utils.re-frame :as rf]
     [utils.security.core :as security]))

@@ -6,15 +6,14 @@
   prefer to use it for more general purpose concepts, such as the re-frame event
   layer."
   (:require-macros test-helpers.unit)
-  (:require
+  (:require ;; We must require this namespace to register the custom cljs.test
+ ;; directive `match-strict?`.
     [re-frame.core :as rf]
     [re-frame.db :as rf-db]
     [re-frame.events :as rf-events]
     [re-frame.registrar :as rf-registrar]
     [re-frame.subs :as rf-subs]
-    [taoensso.timbre :as log]
-
-    ;; We must require this namespace to register the custom cljs.test directive `match-strict?`.
+    [taoensso.timbre :as log] ;; We must require this namespace to register the custom cljs.test
     test-helpers.matchers))
 
 (defn db

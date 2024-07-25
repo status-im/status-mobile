@@ -47,7 +47,7 @@
   [rn/view
    (when-not logged-in?
      [quo/button
-      {:on-press #(navigate-to-enter-seed-phrase view-id)
+      {:on-press            #(navigate-to-enter-seed-phrase view-id)
        :accessibility-label :try-seed-phrase-button
        :customization-color profile-color
        :container-style     style/try-again-button}
@@ -58,15 +58,15 @@
     {:on-press            (fn []
                             (rf/dispatch [:syncing/clear-states])
                             (cond
-                             logged-in?     (rf/dispatch [:navigate-back])
-                             in-onboarding? (rf/dispatch [:navigate-back-to
-                                                          :screen/onboarding.sign-in-intro])
-                             :else          (do
-                                             (rf/dispatch [:navigate-back])
-                                             (debounce/throttle-and-dispatch
-                                              [:open-modal
-                                               :screen/onboarding.sign-in]
-                                              1000))))
+                              logged-in?     (rf/dispatch [:navigate-back])
+                              in-onboarding? (rf/dispatch [:navigate-back-to
+                                                           :screen/onboarding.sign-in-intro])
+                              :else          (do
+                                               (rf/dispatch [:navigate-back])
+                                               (debounce/throttle-and-dispatch
+                                                [:open-modal
+                                                 :screen/onboarding.sign-in]
+                                                1000))))
      :accessibility-label :try-again-later-button
      :customization-color profile-color
      :container-style     style/try-again-button}

@@ -1,7 +1,6 @@
 (ns status-im.common.new-device-sheet.view
   (:require
     [quo.core :as quo]
-    [react-native.core :as rn]
     [status-im.common.new-device-sheet.style :as style]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
@@ -14,7 +13,8 @@
   []
   (rf/dispatch [:hide-bottom-sheet]))
 
-(defn- pair-and-sync [installation-id]
+(defn- pair-and-sync
+  [installation-id]
   (rf/dispatch [:pairing/pair-and-sync installation-id])
   (hide-bottom-sheet))
 
@@ -45,7 +45,7 @@
      :blur?            true
      :container-style  {:margin-top 12}
      :button-two-label (i18n/label :t/cancel)
-     :button-two-props {:type      :grey
+     :button-two-props {:type     :grey
                         :on-press hide-bottom-sheet}
      :button-one-label (i18n/label :t/pair-and-sync)
      :button-one-props {:on-press #(pair-and-sync installation-id)}}]])
@@ -78,5 +78,5 @@
        :blur?            true
        :container-style  {:margin-top 12}
        :button-one-label (i18n/label :t/close)
-       :button-one-props {:type      :grey
+       :button-one-props {:type     :grey
                           :on-press hide-bottom-sheet}}]]))

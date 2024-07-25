@@ -66,7 +66,7 @@
   {:events [:syncing/set-syncing-installation-id]}
   [{:keys [db]} installation-id key-uid]
   {:db (assoc db
-              :syncing/key-uid key-uid
+              :syncing/key-uid         key-uid
               :syncing/installation-id installation-id)})
 
 (rf/defn preflight-outbound-check-for-local-pairing

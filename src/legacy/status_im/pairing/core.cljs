@@ -222,7 +222,8 @@
                   :device-type     (:deviceType metadata))})
 
 
-(defn should-show-syncing-pop-up? [db installations]
+(defn should-show-syncing-pop-up?
+  [db installations]
   (and (:syncing/pairing-process-initiated? db)
        (first (filter #(not (get-in db [:pairing/installations (:id %)])) installations))))
 
@@ -236,7 +237,8 @@
                  %
                  installations))
    :fx [(when-let [new-installation (should-show-syncing-pop-up? db installations)]
-          [:dispatch [:show-bottom-sheet {:content (fn [] [new-device-sheet/view (:id new-installation)])}]])]})
+          [:dispatch
+           [:show-bottom-sheet {:content (fn [] [new-device-sheet/view (:id new-installation)])}]])]})
 
 (rf/defn load-installations
   {:events [:pairing.callback/get-our-installations-success]}
@@ -255,17 +257,19 @@
   {:events [:pairing/finish-seed-phrase-fallback-syncing]}
   [{:keys [db]}]
   {:fx [[:dispatch [:show-bottom-sheet {:content (fn [] [new-device-sheet/view-2])}]]
-        [:json-rpc/call [{:method     "wakuext_finishPairingThroughSeedPhraseProcess"
-                          :params     [{:installationId (:syncing/installation-id db)}]
-                          :js-response true
-                          :on-success  #(rf/dispatch [:sanitize-messages-and-process-response %])}]]]})
+        [:json-rpc/call
+         [{:method      "wakuext_finishPairingThroughSeedPhraseProcess"
+           :params      [{:installationId (:syncing/installation-id db)}]
+           :js-response true
+           :on-success  #(rf/dispatch [:sanitize-messages-and-process-response %])}]]]})
 
 (rf/defn pair-and-sync
   {:events [:pairing/pair-and-sync]}
   [cofx installation-id]
-  {:fx [[:json-rpc/call [{:method     "wakuext_enableAndSyncInstallation"
-                          :params     [{:installationId installation-id}]
-                          :on-success #(log/debug "successfully synced devices")}]]]})
+  {:fx [[:json-rpc/call
+         [{:method     "wakuext_enableAndSyncInstallation"
+           :params     [{:installationId installation-id}]
+           :on-success #(log/debug "successfully synced devices")}]]]})
 
 (rf/defn enable-installation-success
   {:events [:pairing.callback/enable-installation-success]}
