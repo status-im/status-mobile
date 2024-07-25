@@ -164,23 +164,31 @@
          current-address  (get-in db [:wallet-connect/current-proposal :address])
          accounts         (-> (partial wallet-connect-core/format-eip155-address current-address)
                               (map session-networks))
-         network-status   (:network/status db)]
+         network-status   (:network/status db)
+         expiry           (get-in current-proposal [:params :expiryTimestamp])]
      (if (= network-status :online)
-       {:fx [[:effects.wallet-connect/approve-session
-              {:web3-wallet web3-wallet
-               :proposal    current-proposal
-               :networks    session-networks
-               :accounts    accounts
-               :on-success  (fn [approved-session]
-                              (log/info "Wallet Connect session approved")
-                              (rf/dispatch [:wallet-connect/reset-current-session-proposal])
-                              (rf/dispatch [:wallet-connect/persist-session approved-session]))
-               :on-fail     (fn [error]
-                              (log/error "Wallet Connect session approval failed"
-                                         {:error error
-                                          :event :wallet-connect/approve-session})
-                              (rf/dispatch
-                               [:wallet-connect/reset-current-session-proposal]))}]
+       {:fx [(if (wc-utils/timestamp-expired? expiry)
+               [:dispatch
+                [:toasts/upsert
+                 {:id   :wallet-connect-proposal-expired
+                  :type :negative
+                  :text (i18n/label :t/wallet-connect-proposal-expired)}]]
+               [:effects.wallet-connect/approve-session
+                {:web3-wallet web3-wallet
+                 :proposal    current-proposal
+                 :networks    session-networks
+                 :accounts    accounts
+                 :on-success  (fn [approved-session]
+                                (log/info "Wallet Connect session approved")
+                                (rf/dispatch [:wallet-connect/reset-current-session-proposal])
+                                (rf/dispatch [:wallet-connect/persist-session
+                                              approved-session]))
+                 :on-fail     (fn [error]
+                                (log/error "Wallet Connect session approval failed"
+                                           {:error error
+                                            :event :wallet-connect/approve-session})
+                                (rf/dispatch
+                                 [:wallet-connect/reset-current-session-proposal]))}])
              [:dispatch [:dismiss-modal :screen/wallet.wallet-connect-session-proposal]]]}
        {:fx [[:dispatch [:wallet-connect/no-internet-toast]]]}))))
 

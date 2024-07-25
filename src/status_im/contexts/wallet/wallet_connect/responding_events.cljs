@@ -3,31 +3,42 @@
             [react-native.wallet-connect :as wallet-connect]
             [status-im.constants :as constants]
             [status-im.contexts.wallet.wallet-connect.core :as wallet-connect-core]
-            [taoensso.timbre :as log]))
+            [status-im.contexts.wallet.wallet-connect.utils :as wc-utils]
+            [taoensso.timbre :as log]
+            [utils.i18n :as i18n]))
 
 (rf/reg-event-fx
  :wallet-connect/respond-current-session
  (fn [{:keys [db]} [password]]
    (let [event  (get-in db [:wallet-connect/current-request :event])
-         method (wallet-connect-core/get-request-method event)]
-     {:fx [(condp = method
-             constants/wallet-connect-personal-sign-method
-             [:dispatch [:wallet-connect/respond-sign-message password :personal-sign]]
+         method (wallet-connect-core/get-request-method event)
+         screen (wallet-connect-core/method-to-screen method)
+         expiry (get-in event [:params :request :expiryTimestamp])]
+     (if (wc-utils/timestamp-expired? expiry)
+       {:fx [[:dispatch
+              [:toasts/upsert
+               {:id   :new-wallet-account-created
+                :type :negative
+                :text (i18n/label :t/wallet-connect-request-expired)}]]
+             [:dispatch [:dismiss-modal screen]]]}
+       {:fx [(condp = method
+               constants/wallet-connect-personal-sign-method
+               [:dispatch [:wallet-connect/respond-sign-message password :personal-sign]]
 
-             constants/wallet-connect-eth-sign-method
-             [:dispatch [:wallet-connect/respond-sign-message password :eth-sign]]
+               constants/wallet-connect-eth-sign-method
+               [:dispatch [:wallet-connect/respond-sign-message password :eth-sign]]
 
-             constants/wallet-connect-eth-send-transaction-method
-             [:dispatch [:wallet-connect/respond-send-transaction-data password]]
+               constants/wallet-connect-eth-send-transaction-method
+               [:dispatch [:wallet-connect/respond-send-transaction-data password]]
 
-             constants/wallet-connect-eth-sign-transaction-method
-             [:dispatch [:wallet-connect/respond-sign-transaction-data password]]
+               constants/wallet-connect-eth-sign-transaction-method
+               [:dispatch [:wallet-connect/respond-sign-transaction-data password]]
 
-             constants/wallet-connect-eth-sign-typed-method
-             [:dispatch [:wallet-connect/respond-sign-typed-data password :v1]]
+               constants/wallet-connect-eth-sign-typed-method
+               [:dispatch [:wallet-connect/respond-sign-typed-data password :v1]]
 
-             constants/wallet-connect-eth-sign-typed-v4-method
-             [:dispatch [:wallet-connect/respond-sign-typed-data password :v4]])]})))
+               constants/wallet-connect-eth-sign-typed-v4-method
+               [:dispatch [:wallet-connect/respond-sign-typed-data password :v4]])]}))))
 
 (rf/reg-event-fx
  :wallet-connect/respond-sign-message
