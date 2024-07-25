@@ -76,7 +76,7 @@
            [quo/data-item
             {:status          :default
              :size            :default
-             :description     :default
+             :subtitle-type   :default
              :blur?           blur?
              :card?           true
              :title           (i18n/label :t/address)
