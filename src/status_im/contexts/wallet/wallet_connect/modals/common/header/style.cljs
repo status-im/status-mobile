@@ -1,10 +1,23 @@
-(ns status-im.contexts.wallet.wallet-connect.modals.common.header.style)
+(ns status-im.contexts.wallet.wallet-connect.modals.common.header.style
+  (:require [quo.foundations.typography :as typography]))
+
+(def ^:private line-height (:line-height typography/heading-1))
 
 (def header-container
-  {:padding-vertical 12})
+  {:padding-vertical 12
+   :justify-content  :flex-start
+   :align-items      :center
+   :flex-direction   :row
+   :flex-wrap        :wrap
+   :row-gap          2})
 
-(def header-dapp-name
-  {:margin-top -4})
+(def word-container
+  {:height          line-height
+   :justify-content :center})
 
-(def header-account-name
-  {:padding-top 4})
+(def dapp-container
+  {:margin-top 0
+   :height     line-height})
+
+(def account-container
+  {:height line-height})
