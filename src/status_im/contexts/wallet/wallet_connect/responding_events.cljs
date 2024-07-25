@@ -113,7 +113,6 @@
  (fn [{:keys [db]} [{:keys [result error]}]]
    (when-let [{:keys [id topic] :as event} (get-in db [:wallet-connect/current-request :event])]
      (let [method      (wallet-connect-core/get-request-method event)
-           screen      (wallet-connect-core/method-to-screen method)
            web3-wallet (get db :wallet-connect/web3-wallet)]
        {:db (assoc-in db [:wallet-connect/current-request :response-sent?] true)
         :fx [[:effects.wallet-connect/respond-session-request
@@ -127,11 +126,9 @@
                                          {:error                error
                                           :method               method
                                           :event                :wallet-connect/send-response
-                                          :wallet-connect-event event})
-                              (rf/dispatch [:dismiss-modal screen]))
+                                          :wallet-connect-event event}))
                :on-success  (fn []
-                              (log/info "Successfully sent Wallet Connect response to dApp")
-                              (rf/dispatch [:dismiss-modal screen]))}]]}))))
+                              (log/info "Successfully sent Wallet Connect response to dApp"))}]]}))))
 
 (rf/reg-event-fx
  :wallet-connect/dismiss-request-modal
