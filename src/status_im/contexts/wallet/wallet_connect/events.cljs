@@ -175,8 +175,8 @@
        {:fx [(if (wc-utils/timestamp-expired? expiry)
                [:dispatch
                 [:toasts/upsert
-                 {:id   :new-wallet-account-created
-                  :type :positive
+                 {:id   :wallet-connect-proposal-expired
+                  :type :negative
                   :text (i18n/label :t/wallet-connect-proposal-expired)}]]
                [:effects.wallet-connect/approve-session
                 {:web3-wallet          web3-wallet
