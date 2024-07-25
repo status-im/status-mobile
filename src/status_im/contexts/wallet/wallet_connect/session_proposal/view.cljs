@@ -151,12 +151,12 @@
                                 :on-press            #(rf/dispatch
                                                        [:dismiss-modal
                                                         :screen/wallet.wallet-connect-session-proposal])}
-      :button-one-label        (i18n/label :t/connect)
-      :button-one-props        {:customization-color customization-color
-                                :type                :primary
-                                :accessibility-label :wc-connect
-                                :on-press            #(rf/dispatch
-                                                       [:wallet-connect/approve-session])}}]))
+      :button-one-label (i18n/label :t/connect)
+      :button-one-props {:customization-color customization-color
+                         :type                :primary
+                         :accessibility-label :wc-connect
+                         :on-press            #(rf/dispatch
+                                                [:wallet-connect/approve-session])}}]))
 
 (defn- header
   []

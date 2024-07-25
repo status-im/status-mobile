@@ -118,14 +118,9 @@
 (rf/reg-event-fx
  :wallet-connect/on-session-delete
  (fn [{:keys [db]} [{:keys [topic] :as event}]]
-   (if (wallet-connect-core/event-should-be-handled? db event)
-     (do
-       (log/info "Received Wallet Connect session delete: " event)
-       {:fx [[:dispatch [:wallet-connect/disconnect-session topic]]]})
-     {:fx [[:dispatch
-            [:wallet-connect/send-response
-             {:error (wallet-connect/get-sdk-error
-                      constants/wallet-connect-user-rejected-chains-error-key)}]]]})))
+   (when (wallet-connect-core/event-should-be-handled? db event)
+     (log/info "Received Wallet Connect session delete: " event)
+     {:fx [[:dispatch [:wallet-connect/disconnect-session topic]]]})))
 
 (rf/reg-event-fx
  :wallet-connect/reset-current-session-proposal
