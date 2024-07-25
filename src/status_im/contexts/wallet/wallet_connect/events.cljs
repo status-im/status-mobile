@@ -78,32 +78,33 @@
                                                                                           networks)
          required-networks-supported? (wallet-connect-core/required-networks-supported? proposal
                                                                                         networks)]
-     (if (and (not-empty session-networks) required-networks-supported?)
-       {:db (update db
-                    :wallet-connect/current-proposal assoc
-                    :response-sent?                  false
-                    :request                         proposal
-                    :session-networks                session-networks
-                    :address                         (or current-viewing-address
-                                                         (-> available-accounts
-                                                             first
-                                                             :address)))
-        :fx [[:dispatch
-              [:open-modal :screen/wallet.wallet-connect-session-proposal]]]}
-       {:fx [[:dispatch
-              [:wallet-connect/session-networks-unsupported proposal]]
-             [:dispatch
-              [:wallet-connect/reject-session-proposal proposal]]]}))))
+     (merge
+      {:db (update db
+                   :wallet-connect/current-proposal assoc
+                   :request                         proposal
+                   :session-networks                session-networks
+                   :address                         (or current-viewing-address
+                                                        (-> available-accounts
+                                                            first
+                                                            :address)))}
+      (if (and (not-empty session-networks) required-networks-supported?)
+        {:fx [[:dispatch
+               [:open-modal :screen/wallet.wallet-connect-session-proposal]]]}
+        {:fx [[:dispatch
+               [:wallet-connect/show-session-networks-unsupported-toast]]
+              [:dispatch
+               [:wallet-connect/reject-session-proposal]]]})))))
 
 (rf/reg-event-fx
- :wallet-connect/session-networks-unsupported
+ :wallet-connect/show-session-networks-unsupported-toast
  (fn [{:keys [db]} [proposal]]
-   (let [{:keys [name]} (wallet-connect-core/get-session-dapp-metadata proposal)]
+   (let [{:keys [name url]} (wallet-connect-core/get-session-dapp-metadata proposal)]
      {:fx [[:dispatch
             [:toasts/upsert
              {:type  :negative
               :theme (:theme db)
-              :text  (i18n/label :t/wallet-connect-networks-not-supported {:dapp name})}]]]})))
+              :text  (i18n/label :t/wallet-connect-networks-not-supported
+                                 {:dapp (wallet-connect-core/compute-dapp-name name url)})}]]]})))
 
 (rf/reg-event-fx
  :wallet-connect/on-session-request
