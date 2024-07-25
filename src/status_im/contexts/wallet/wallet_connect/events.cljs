@@ -156,35 +156,31 @@
 (rf/reg-event-fx
  :wallet-connect/approve-session
  (fn [{:keys [db]}]
-   (let [web3-wallet          (get db :wallet-connect/web3-wallet)
-         current-proposal     (get-in db [:wallet-connect/current-proposal :request])
-         session-networks     (->> (get-in db [:wallet-connect/current-proposal :session-networks])
-                                   (map wallet-connect-core/chain-id->eip155)
-                                   vec)
-         current-address      (get-in db [:wallet-connect/current-proposal :address])
-         accounts             (-> (partial wallet-connect-core/format-eip155-address current-address)
-                                  (map session-networks))
-         supported-namespaces (clj->js {:eip155
-                                        {:chains   session-networks
-                                         :methods  constants/wallet-connect-supported-methods
-                                         :events   constants/wallet-connect-supported-events
-                                         :accounts accounts}})
-         network-status       (:network/status db)]
+   (let [web3-wallet      (get db :wallet-connect/web3-wallet)
+         current-proposal (get-in db [:wallet-connect/current-proposal :request])
+         session-networks (->> (get-in db [:wallet-connect/current-proposal :session-networks])
+                               (map wallet-connect-core/chain-id->eip155)
+                               vec)
+         current-address  (get-in db [:wallet-connect/current-proposal :address])
+         accounts         (-> (partial wallet-connect-core/format-eip155-address current-address)
+                              (map session-networks))
+         network-status   (:network/status db)]
      (if (= network-status :online)
        {:fx [[:effects.wallet-connect/approve-session
-              {:web3-wallet          web3-wallet
-               :proposal             current-proposal
-               :supported-namespaces supported-namespaces
-               :on-success           (fn [approved-session]
-                                       (log/info "Wallet Connect session approved")
-                                       (rf/dispatch [:wallet-connect/reset-current-session-proposal])
-                                       (rf/dispatch [:wallet-connect/persist-session approved-session]))
-               :on-fail              (fn [error]
-                                       (log/error "Wallet Connect session approval failed"
-                                                  {:error error
-                                                   :event :wallet-connect/approve-session})
-                                       (rf/dispatch
-                                        [:wallet-connect/reset-current-session-proposal]))}]
+              {:web3-wallet web3-wallet
+               :proposal    current-proposal
+               :networks    session-networks
+               :accounts    accounts
+               :on-success  (fn [approved-session]
+                              (log/info "Wallet Connect session approved")
+                              (rf/dispatch [:wallet-connect/reset-current-session-proposal])
+                              (rf/dispatch [:wallet-connect/persist-session approved-session]))
+               :on-fail     (fn [error]
+                              (log/error "Wallet Connect session approval failed"
+                                         {:error error
+                                          :event :wallet-connect/approve-session})
+                              (rf/dispatch
+                               [:wallet-connect/reset-current-session-proposal]))}]
              [:dispatch [:dismiss-modal :screen/wallet.wallet-connect-session-proposal]]]}
        {:fx [[:dispatch [:wallet-connect/no-internet-toast]]]}))))
 
