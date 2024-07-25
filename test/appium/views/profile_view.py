@@ -304,7 +304,6 @@ class ProfileView(BaseView):
         self.advanced_button = AdvancedButton(self.driver)
         self.mutual_contact_request_switcher = Button(self.driver, accessibility_id="mutual-contact-requests-switch")
         ## Network
-        self.network_settings_button = Button(self.driver, accessibility_id="network-button")
         self.active_network_name = Text(self.driver,
                                         xpath="//android.widget.TextView[contains(@text,'with upstream RPC')]")
         self.plus_button = Button(self.driver, xpath="(//android.widget.ImageView[@content-desc='icon'])[2]")
@@ -361,22 +360,18 @@ class ProfileView(BaseView):
         self.profile_password_button = Button(self.driver, accessibility_id="icon, Password, label-component, icon")
         self.profile_messages_button = Button(self.driver, accessibility_id="icon, Messages, label-component, icon")
         self.profile_blocked_users_button = Button(self.driver, accessibility_id="Blocked users, label-component, icon")
+        self.profile_wallet_button = Button(self.driver, accessibility_id="icon, Wallet, label-component, icon")
+        self.network_settings_button = Button(self.driver, accessibility_id="Network settings, label-component, icon")
         self.profile_legacy_button = Button(self.driver,
                                             accessibility_id="icon, Legacy settings, label-component, icon")
-        self.testnet_mode_toggle = Button(self.driver,
-                                          xpath="//*[@content-desc='test-networks-enabled']/android.widget.Switch")
+        self.testnet_mode_toggle = Button(self.driver, accessibility_id="icon, Testnet mode, label-component")
+        self.confirm_testnet_mode_change_button = Button(self.driver, accessibility_id="confirm-testnet-mode-change")
 
-    def switch_network(self, network='Mainnet with upstream RPC'):
-        self.driver.info("## Switch network to '%s'" % network, device=False)
-        self.advanced_button.click()
+    def switch_network(self):
+        self.profile_wallet_button.click()
         self.network_settings_button.click()
-        network_button = Button(self.driver, xpath="//*[@text='%s']" % network)
-        network_button.scroll_and_click()
-        self.connect_button.click_until_presence_of_element(self.confirm_button)
-        self.confirm_button.click_until_absense_of_element(self.confirm_button)
-        from views.sign_in_view import SignInView
-        SignInView(self.driver).sign_in()
-        self.driver.info("## Network is switched successfully!", device=False)
+        self.testnet_mode_toggle.click()
+        self.confirm_testnet_mode_change_button.click()
 
     def open_contact_from_profile(self, username):
         self.driver.info("Opening profile of '%s' via Contacts" % username)
