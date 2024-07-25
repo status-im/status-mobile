@@ -3,6 +3,13 @@
     [quo.foundations.colors :as colors]
     [react-native.reanimated :as reanimated]))
 
+(def absolute-fill
+  {:position :absolute
+   :top      0
+   :bottom   0
+   :left     0
+   :right    0})
+
 (defn page-container
   [top]
   {:flex             1
