@@ -28,7 +28,7 @@
     {:image-source (quo.resources/get-network :ethereum)
      :label        "Mainnet"}
     :saved-address
-    {:customization-color :flamingo
+    {:customization-color :pink
      :label               "Peter Lambo"}
     :account
     {:label               "Account"
