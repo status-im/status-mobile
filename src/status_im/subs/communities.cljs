@@ -71,7 +71,7 @@
  (fn [[_ community-id]]
    [(re-frame/subscribe [:communities/community community-id])])
  (fn [[{:keys [members]}] _]
-   members))
+   (js-keys members)))
 
 (re-frame/reg-sub
  :communities/community-chat-members
@@ -97,8 +97,8 @@
 (defn- sort-members-by-name-old
   [names descending? members]
   (if descending?
-    (sort-by #(get names (first %)) #(compare %2 %1) members)
-    (sort-by #(get names (first %)) members)))
+    (sort-by #(get names %) #(compare %2 %1) members)
+    (sort-by #(get names %) members)))
 
 (defn- sort-members-by-name
   [names members-keys]
@@ -117,12 +117,10 @@
 ;; can ignore it for now.
 (re-frame/reg-sub :communities/sorted-community-members
  (fn [[_ community-id]]
-   (let [profile (re-frame/subscribe [:profile/profile])
-         members (re-frame/subscribe [:communities/community-members community-id])]
-     [profile members]))
+   [(re-frame/subscribe [:profile/profile])
+    (re-frame/subscribe [:communities/community-members community-id])])
  (fn [[profile members] _]
-   (let [members (js->clj members)
-         names   (keys->names (keys members) profile)]
+   (let [names (keys->names members profile)]
      (->> members
           (sort-members-by-name-old names false)
           (sort-by #(visibility-status-utils/visibility-status-order (get % 0)))))))
