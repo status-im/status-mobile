@@ -44,7 +44,7 @@
     (let [current-screen-id        (rf/sub [:view-id])
           scanned-address          (rf/sub [:wallet/scanned-address])
           send-address             (rf/sub [:wallet/wallet-send-to-address])
-          recipient                (rf/sub [:wallet/wallet-send-recipient])
+          recipient                (rf/sub [:wallet/send-recipient])
           recipient-plain-address? (= send-address recipient)
           valid-ens-or-address?    (rf/sub [:wallet/valid-ens-or-address?])
           contacts                 (rf/sub [:contacts/active])]

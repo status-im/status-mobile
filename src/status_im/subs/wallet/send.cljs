@@ -1,8 +1,9 @@
 (ns status-im.subs.wallet.send
   (:require
-    [re-frame.core :as rf]
-    [status-im.contexts.wallet.common.activity-tab.constants :as constants]
-    [utils.number]))
+   [re-frame.core :as rf]
+   [status-im.contexts.wallet.common.activity-tab.constants :as constants]
+   [status-im.contexts.wallet.send.utils :as send-utils]
+   [utils.number]))
 
 (rf/reg-sub
  :wallet/send-tab
@@ -16,7 +17,7 @@
  :-> :send)
 
 (rf/reg-sub
- :wallet/wallet-send-recipient
+ :wallet/send-recipient
  :<- [:wallet/wallet-send]
  :-> :recipient)
 
@@ -31,7 +32,7 @@
  :-> :just-completed-transaction?)
 
 (rf/reg-sub
- :wallet/wallet-send-amount
+ :wallet/send-amount
  :<- [:wallet/wallet-send]
  :-> :amount)
 
