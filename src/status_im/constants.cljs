@@ -1,6 +1,6 @@
 (ns status-im.constants
   (:require
-    [clojure.string :as string]))
+   [clojure.string :as string]))
 
 (def ^:const ms-in-bg-for-require-bioauth 5000)
 
@@ -291,6 +291,7 @@
 (def ^:const wallet-connect-session-delete-event "session_delete")
 (def ^:const wallet-connect-user-rejected-error-key "USER_REJECTED")
 (def ^:const wallet-connect-user-disconnected-reason-key "USER_DISCONNECTED")
+(def ^:const wallet-connect-user-rejected-chains-error-key "USER_REJECTED_CHAINS")
 
 (def ^:const transaction-pending-type-wallet-connect-transfer "WalletConnectTransfer")
 
