@@ -26,7 +26,7 @@
     (tap> show-token-balance?)
     (tap> token-symbol)
     [:<>
-     [quo/drawer-top {:title (i18n/label :t/select-account350 *)}]
+     [quo/drawer-top {:title (i18n/label :t/select-account350)}]
      [gesture/flat-list
       {:data                            accounts
        :render-fn                       render-account-item
