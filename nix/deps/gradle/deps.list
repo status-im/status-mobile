@@ -45,7 +45,6 @@ androidx.core:core-splashscreen:1.0.0
 androidx.core:core:1.0.0
 androidx.core:core:1.1.0
 androidx.core:core:1.1.0-rc01
-androidx.core:core:1.2.0
 androidx.core:core:1.6.0
 androidx.core:core:1.9.0
 androidx.cursoradapter:cursoradapter:1.0.0
@@ -68,7 +67,6 @@ androidx.documentfile:documentfile:1.0.0
 androidx.drawerlayout:drawerlayout:1.0.0
 androidx.emoji2:emoji2-views-helper:1.2.0
 androidx.emoji2:emoji2:1.2.0
-androidx.exifinterface:exifinterface:1.0.0
 androidx.exifinterface:exifinterface:1.1.0-beta01
 androidx.exifinterface:exifinterface:1.1.0-rc01
 androidx.exifinterface:exifinterface:1.2.0
@@ -518,15 +516,7 @@ com.googlecode.javaewah:JavaEWAH:1.1.12
 com.googlecode.javaewah:JavaEWAH:1.1.13
 com.googlecode.json-simple:json-simple:1.1
 com.googlecode.juniversalchardet:juniversalchardet:1.0.3
-com.google.android.datatransport:transport-api:2.2.1
-com.google.android.datatransport:transport-backend-cct:2.3.3
-com.google.android.datatransport:transport-runtime:2.2.6
-com.google.android.gms:play-services-basement:18.0.0
-com.google.android.gms:play-services-base:18.0.1
-com.google.android.gms:play-services-mlkit-barcode-scanning:18.0.0
-com.google.android.gms:play-services-tasks:18.0.1
 com.google.android.material:material:1.2.0-alpha03
-com.google.android.odml:image:1.0.0-beta1
 com.google.android:annotations:4.1.1.4
 com.google.api.grpc:proto-google-common-protos:1.12.0
 com.google.api.grpc:proto-google-common-protos:2.0.1
@@ -553,10 +543,6 @@ com.google.errorprone:error_prone_annotations:2.3.4
 com.google.errorprone:error_prone_annotations:2.4.0
 com.google.errorprone:error_prone_annotations:2.9.0
 com.google.errorprone:error_prone_annotations:2.11.0
-com.google.firebase:firebase-annotations:16.0.0
-com.google.firebase:firebase-components:16.1.0
-com.google.firebase:firebase-encoders-json:17.1.0
-com.google.firebase:firebase-encoders:16.1.0
 com.google.flatbuffers:flatbuffers-java:1.12.0
 com.google.guava:failureaccess:1.0.1
 com.google.guava:guava:17.0
@@ -572,11 +558,6 @@ com.google.guava:listenablefuture:9999.0-empty-to-avoid-conflict-with-guava
 com.google.j2objc:j2objc-annotations:1.1
 com.google.j2objc:j2objc-annotations:1.3
 com.google.jimfs:jimfs:1.1
-com.google.mlkit:barcode-scanning-common:17.0.0
-com.google.mlkit:barcode-scanning:17.0.2
-com.google.mlkit:common:18.0.0
-com.google.mlkit:vision-common:17.0.0
-com.google.mlkit:vision-interfaces:16.0.0
 com.google.prefab:cli:2.0.0
 com.google.protobuf:protobuf-java-util:3.4.0
 com.google.protobuf:protobuf-java-util:3.10.0
@@ -591,6 +572,7 @@ com.google.testing.platform:core-proto:0.0.8-alpha04
 com.google.testing.platform:core-proto:0.0.8-alpha07
 com.google.testing.platform:core-proto:0.0.8-alpha08
 com.google.test.platform:core-proto:0.0.2-dev
+com.google.zxing:core:3.4.1
 com.ibm.icu:icu4j:53.1
 com.intellij:annotations:12.0
 com.parse.bolts:bolts-tasks:1.4.0
