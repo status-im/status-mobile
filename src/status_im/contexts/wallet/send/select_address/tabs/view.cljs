@@ -16,9 +16,9 @@
   (let [full-address (rf/sub [:wallet/account-address address network-preferences-names])]
     [quo/account-item
      {:account-props (assoc account
-                       :customization-color color
-                       :address             full-address
-                       :full-address?       true)
+                            :customization-color color
+                            :address             full-address
+                            :full-address?       true)
       :on-press      (fn []
                        (rf/dispatch [:wallet/select-send-address
                                      {:address   address

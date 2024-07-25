@@ -11,7 +11,8 @@
 
 (defn view
   []
-  (let [on-close              (rn/use-callback #(rf/dispatch [:navigate-back]))
+  (let [on-close              (rn/use-callback
+                               #(rf/dispatch [:wallet/collectible-amount-navigate-back]))
         send-transaction-data (rf/sub [:wallet/wallet-send])
         collectible           (:collectible send-transaction-data)
         balance               (utils/collectible-balance collectible)
