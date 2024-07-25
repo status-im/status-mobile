@@ -14,17 +14,20 @@
 (rf/reg-event-fx
  :wallet-connect/init
  (fn [{:keys [db]}]
-   (let [network-status (:network/status db)]
-     (if (= network-status :online)
-       {:fx [[:effects.wallet-connect/init
-              {:on-success #(rf/dispatch [:wallet-connect/on-init-success %])
-               :on-fail    #(rf/dispatch [:wallet-connect/on-init-fail %])}]]}
+   (let [network-status       (:network/status db)
+         web3-wallet-missing? (-> db :wallet-connect/web3-wallet boolean not)]
+     (if (and (= network-status :online) web3-wallet-missing?)
+       (do (log/info "Initialising WalletConnect SDK")
+           {:fx [[:effects.wallet-connect/init
+                  {:on-success #(rf/dispatch [:wallet-connect/on-init-success %])
+                   :on-fail    #(rf/dispatch [:wallet-connect/on-init-fail %])}]]})
        ;; NOTE: when offline, fetching persistent sessions only
        {:fx [[:dispatch [:wallet-connect/fetch-persisted-sessions]]]}))))
 
 (rf/reg-event-fx
  :wallet-connect/on-init-success
  (fn [{:keys [db]} [web3-wallet]]
+   (log/info "WalletConnect SDK initialisation successful")
    {:db (assoc db :wallet-connect/web3-wallet web3-wallet)
     :fx [[:dispatch [:wallet-connect/register-event-listeners]]
          [:dispatch [:wallet-connect/fetch-persisted-sessions]]]}))
@@ -32,9 +35,9 @@
 (rf/reg-event-fx
  :wallet-connect/reload-on-network-change
  (fn [{:keys [db]} [is-connected?]]
-   (let [logged-in?           (-> db :profile/profile boolean)
-         web3-wallet-missing? (-> db :wallet-connect/web3-wallet boolean not)]
-     (when (and is-connected? logged-in? web3-wallet-missing?)
+   (let [logged-in? (-> db :profile/profile boolean)]
+     (when (and is-connected? logged-in?)
+       (log/info "Re-Initialising WalletConnect SDK due to network change")
        {:fx [[:dispatch [:wallet-connect/init]]]}))))
 
 (rf/reg-event-fx
@@ -224,7 +227,10 @@
 
                              (not version-supported?)
                              (i18n/label :t/wallet-connect-version-not-supported
-                                         {:version version}))}]]]}
+                                         {:version version})
+
+                             :else
+                             (i18n/label :t/something-went-wrong))}]]]}
        {:fx [[:dispatch [:wallet-connect/pair scanned-text]]]}))))
 
 ;; We first load sessions from database, then we initiate a call to Wallet Connect SDK and
