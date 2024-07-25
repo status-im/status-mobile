@@ -3,7 +3,7 @@
     "_comment": "Instead use: scripts/update-status-go.sh <rev>",
     "owner": "status-im",
     "repo": "status-go",
-    "version": "router-fixes",
-    "commit-sha1": "560214ac0531581d46796199002bb71e48b50b9d",
-    "src-sha256": "0ksqmdh71h6f4lmw00apjrwsvk1drqhn7bk3gk6h2lfkhz3mpmf3"
+    "version": "v0.182.38",
+    "commit-sha1": "2bbdb35f6cabd1a4f7775e180e0647b70ce8d1aa",
+    "src-sha256": "03bksi5gn44ky76kblikpr6j3x69baid81ghfk27a4qx9hnc0qgc"
 }
