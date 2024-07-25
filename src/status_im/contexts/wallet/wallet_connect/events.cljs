@@ -78,22 +78,21 @@
                                                                                           networks)
          required-networks-supported? (wallet-connect-core/required-networks-supported? proposal
                                                                                         networks)]
-     (merge
-      {:db (update db
-                   :wallet-connect/current-proposal assoc
-                   :request                         proposal
-                   :session-networks                session-networks
-                   :address                         (or current-viewing-address
-                                                        (-> available-accounts
-                                                            first
-                                                            :address)))}
-      (if (and (not-empty session-networks) required-networks-supported?)
-        {:fx [[:dispatch
-               [:open-modal :screen/wallet.wallet-connect-session-proposal]]]}
-        {:fx [[:dispatch
-               [:wallet-connect/show-session-networks-unsupported-toast]]
-              [:dispatch
-               [:wallet-connect/reject-session-proposal]]]})))))
+     (if (and (not-empty session-networks) required-networks-supported?)
+       {:db (update db
+                    :wallet-connect/current-proposal assoc
+                    :request                         proposal
+                    :session-networks                session-networks
+                    :address                         (or current-viewing-address
+                                                         (-> available-accounts
+                                                             first
+                                                             :address)))
+        :fx [[:dispatch
+              [:open-modal :screen/wallet.wallet-connect-session-proposal]]]}
+       {:fx [[:dispatch
+              [:wallet-connect/show-session-networks-unsupported-toast proposal]]
+             [:dispatch
+              [:wallet-connect/reject-session-proposal proposal]]]}))))
 
 (rf/reg-event-fx
  :wallet-connect/show-session-networks-unsupported-toast
