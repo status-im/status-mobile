@@ -208,6 +208,12 @@
    (vals keypairs)))
 
 (rf/reg-sub
+ :wallet/fully-operable-keypairs-list
+ :<- [:wallet/keypairs-list]
+ (fn [keypairs]
+   (filter #(= :fully (:lowest-operability %)) keypairs)))
+
+(rf/reg-sub
  :wallet/keypair-names
  :<- [:wallet/keypairs-list]
  (fn [keypairs]
