@@ -33,3 +33,7 @@
 (def drawer-message-container
   {:padding-top    4
    :padding-bottom 4})
+
+(def group-member-mention
+  {:flex-direction :row
+   :align-items    :center})
