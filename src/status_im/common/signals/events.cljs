@@ -38,6 +38,12 @@
       "wallet"
       {:fx [[:dispatch [:wallet/signal-received event-js]]]}
 
+      "wallet.sign.transactions"
+      {:fx [[:dispatch
+             [:standard-auth/authorize-with-keycard
+              {:on-complete #(rf/dispatch [:keycard/sign-hash %
+                                           (first (transforms/js->clj event-js))])}]]]}
+
       "wallet.suggested.routes"
       {:fx [[:dispatch [:wallet/handle-suggested-routes (transforms/js->clj event-js)]]]}
 
