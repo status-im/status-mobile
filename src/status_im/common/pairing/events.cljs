@@ -55,7 +55,7 @@
              {:dispatch (if user-in-sign-in-intro-screen?
                           [:navigate-to-within-stack
                            [:screen/onboarding.syncing-progress-intro :screen/onboarding.sign-in-intro]]
-                          [:navigate-to :screen/onboarding.syncing-progress])}
+                          [:open-modal :screen/onboarding.syncing-progress])}
 
              (and completed-pairing? sender?)
              {:dispatch [:syncing/clear-states]}
