@@ -82,10 +82,11 @@
                              {})})
 
 (def dark-screen
-  {:theme  :dark
-   :layout {:componentBackgroundColor colors/neutral-95
-            :orientation              ["portrait"]
-            :backgroundColor          colors/neutral-95}})
+  {:theme                  :dark
+   :modalPresentationStyle :overCurrentContext
+   :layout                 {:componentBackgroundColor colors/neutral-95
+                            :orientation              ["portrait"]
+                            :backgroundColor          colors/neutral-95}})
 
 (def lightbox
   {:topBar        {:visible false}
