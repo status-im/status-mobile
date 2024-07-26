@@ -1,0 +1,9 @@
+{
+    "_comment": "THIS SHOULD NOT BE EDITED BY HAND.",
+    "_comment": "Instead use: scripts/update-status-go.sh <rev>",
+    "owner": "status-im",
+    "repo": "status-go",
+    "version": "fix/default_wallet_account_color",
+    "commit-sha1": "53851dae9d5fe27a0837175cf1182c574bf8f111",
+    "src-sha256": "0x9fnx3w8b543x4i2hf3y8dcas5hy1nfak2v5kc6x7zxy051rb8d"
+}
