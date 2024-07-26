@@ -2,10 +2,9 @@
   (:require
     [quo.core :as quo]
     [react-native.core :as rn]
-    [status-im.config :as config]
+    [status-im.common.resources :as resources]
     [status-im.contexts.onboarding.common.background.view :as background]
     [status-im.contexts.onboarding.syncing.progress.style :as style]
-    [utils.debounce :as debounce]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
@@ -27,45 +26,39 @@
     :description-accessibility-label :progress-screen-sub-title}])
 
 (defn try-again-button
-  [profile-color in-onboarding? logged-in?]
+  [profile-color]
   [quo/button
    {:on-press            (fn []
                            (rf/dispatch [:syncing/clear-states])
-                           (cond
-                             logged-in?     (rf/dispatch [:navigate-back])
-                             in-onboarding? (rf/dispatch [:navigate-back-to
-                                                          :screen/onboarding.sign-in-intro])
-                             :else          (do
-                                              (rf/dispatch [:navigate-back])
-                                              (debounce/throttle-and-dispatch
-                                               [:open-modal
-                                                :screen/onboarding.sign-in]
-                                               1000))))
+                           (rf/dispatch [:navigate-back]))
     :accessibility-label :try-again-later-button
     :customization-color profile-color
+    :size                40
     :container-style     style/try-again-button}
    (i18n/label :t/try-again)])
 
+(defn- illustration
+  [pairing-progress?]
+  [rn/image
+   {:resize-mode :contain
+    :style       (style/page-illustration (:width (rn/get-window)))
+    :source      (resources/get-image (if pairing-progress? :syncing-devices :syncing-wrong))}])
+
 (defn view
   [in-onboarding?]
-  (let [pairing-status (rf/sub [:pairing/pairing-status])
-        profile-color  (:color (rf/sub [:onboarding/profile]))
-        logged-in?     (rf/sub [:multiaccount/logged-in?])]
+  (let [pairing-status    (rf/sub [:pairing/pairing-status])
+        pairing-progress? (pairing-progress pairing-status)
+        profile-color     (or (:color (rf/sub [:onboarding/profile]))
+                              (rf/sub [:profile/customization-color]))]
     [rn/view {:style (style/page-container in-onboarding?)}
      (when-not in-onboarding?
        [rn/view {:style style/absolute-fill}
         [background/view true]])
      [quo/page-nav {:type :no-title :background :blur}]
-     [page-title (pairing-progress pairing-status)]
-     (if config/show-not-implemented-features?
-       (if (pairing-progress pairing-status)
-         [rn/view {:style style/page-illustration}
-          [quo/text "[Success here]"]]
-         [rn/view {:style style/page-illustration}
-          [quo/text "[Error here]"]])
-       [rn/view {:flex 1}])
+     [page-title pairing-progress?]
+     [illustration pairing-progress?]
      (when-not (pairing-progress pairing-status)
-       [try-again-button profile-color in-onboarding? logged-in?])]))
+       [try-again-button profile-color])]))
 
 (defn view-onboarding
   []

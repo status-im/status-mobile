@@ -27,7 +27,9 @@
    :welcome-illustration          (js/require "../resources/images/ui2/welcome_illustration.png")
    :notifications                 (js/require "../resources/images/ui2/notifications.png")
    :nfc-prompt                    (js/require "../resources/images/ui2/nfc-prompt.png")
-   :nfc-success                   (js/require "../resources/images/ui2/nfc-success.png")})
+   :nfc-success                   (js/require "../resources/images/ui2/nfc-success.png")
+   :syncing-devices               (js/require "../resources/images/ui2/syncing_devices.png")
+   :syncing-wrong                 (js/require "../resources/images/ui2/syncing_wrong.png")})
 
 (def ui-themed
   {:angry-man

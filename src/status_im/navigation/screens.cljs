@@ -147,7 +147,7 @@
      :component shell/shell-stack}
 
     {:name      :shell-qr-reader
-     :options   (assoc options/dark-screen :modalPresentationStyle :overCurrentContext)
+     :options   options/dark-screen
      :component shell-qr-reader/view}
 
     {:name      :chat
@@ -369,7 +369,7 @@
                                       :popStackOnPress     false}}}
 
     {:name      :scan-sync-code-page
-     :options   options/dark-screen
+     :options   options/transparent-modal-screen-options
      :component scan-sync-code-page/view}
 
     {:name      :screen/onboarding.sign-in-intro
@@ -387,9 +387,9 @@
      :component sign-in/view}
 
     {:name      :screen/onboarding.syncing-progress
-     :options   {:theme      :dark
-                 :layout     options/onboarding-layout
-                 :popGesture false}
+     :options   (assoc options/dark-screen
+                       :popGesture
+                       false)
      :component syncing-devices/view}
 
     {:name      :screen/onboarding.syncing-progress-intro
@@ -513,9 +513,7 @@
      :component wallet-transaction-progress/view}
 
     {:name      :screen/wallet.scan-address
-     :options   (merge
-                 options/dark-screen
-                 {:modalPresentationStyle :overCurrentContext})
+     :options   options/dark-screen
      :component wallet-scan-address/view}
 
     {:name      :screen/wallet.swap-select-asset-to-pay
@@ -536,9 +534,7 @@
      :component wallet-swap-set-spending-cap/view}
 
     {:name      :scan-profile-qr-code
-     :options   (merge
-                 options/dark-screen
-                 {:modalPresentationStyle :overCurrentContext})
+     :options   options/dark-screen
      :component scan-profile-qr-page/view}
 
     {:name      :invite-people-community
@@ -564,9 +560,7 @@
      :component wallet-connected-dapps/view}
 
     {:name      :screen/wallet.scan-dapp
-     :options   (merge
-                 options/dark-screen
-                 {:modalPresentationStyle :overCurrentContext})
+     :options   options/dark-screen
      :component wallet-scan-dapp/view}
 
     ;; Settings
