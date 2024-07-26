@@ -20,14 +20,13 @@
    :padding-bottom   20
    :background-color (when-not in-onboarding? colors/neutral-80-opa-80-blur)})
 
-(def page-illustration
-  {:flex              1
-   :background-color  colors/danger-50
-   :align-items       :center
-   :margin-horizontal 20
-   :border-radius     20
-   :margin-top        20
-   :justify-content   :center})
+(defn page-illustration
+  [width]
+  {:flex            1
+   :width           width
+   :align-items     :center
+   :align-self      :center
+   :justify-content :center})
 
 (def try-again-button
   {:margin-top         20
