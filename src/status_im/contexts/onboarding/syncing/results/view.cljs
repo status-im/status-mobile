@@ -66,7 +66,8 @@
         translate-x  (reanimated/use-shared-value 0)
         window-width (:width (rn/get-window))]
     [rn/view {:style (style/page-container top)}
-     [background/view true]
+     [rn/view {:style style/absolute-fill}
+      [background/view true]]
      [reanimated/view
       {:style (style/content translate-x)}
       [page-title]

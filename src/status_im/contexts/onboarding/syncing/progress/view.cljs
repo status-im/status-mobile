@@ -52,7 +52,9 @@
         profile-color  (:color (rf/sub [:onboarding/profile]))
         logged-in?     (rf/sub [:multiaccount/logged-in?])]
     [rn/view {:style (style/page-container in-onboarding?)}
-     (when-not in-onboarding? [background/view true])
+     (when-not in-onboarding?
+       [rn/view {:style style/absolute-fill}
+        [background/view true]])
      [quo/page-nav {:type :no-title :background :blur}]
      [page-title (pairing-progress pairing-status)]
      (if config/show-not-implemented-features?
