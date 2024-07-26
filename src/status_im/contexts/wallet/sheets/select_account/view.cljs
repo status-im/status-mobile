@@ -8,16 +8,18 @@
 
 (defn- render-account-item
   [{:keys [color address] :as account} _ _ {:keys [selected-account-address]}]
-  [quo/account-item
-   {:type                :tag
-    :token-props         {:symbol "SNT"
-                          :value  "1,000"}
-    :account-props       (assoc account :customization-color color)
-    :customization-color color
-    :state               (if (= address selected-account-address) :selected :default)
-    :on-press            (fn []
-                           (rf/dispatch [:wallet/switch-current-viewing-account address])
-                           (rf/dispatch [:hide-bottom-sheet]))}])
+  (let [state (if (= address selected-account-address) :selected :default)]
+    [quo/account-item
+     {:type (if (= state :selected) :default :tag)
+      :token-props {:symbol "SNT"
+                    :value  "1,000"}
+      :account-props (assoc account :customization-color color)
+      :customization-color color
+      :state state
+      :on-press
+      (fn []
+        (rf/dispatch [:wallet/switch-current-viewing-account address])
+        (rf/dispatch [:hide-bottom-sheet]))}]))
 
 (defn view
   [{:keys [show-token-balance? token-symbol]}]
