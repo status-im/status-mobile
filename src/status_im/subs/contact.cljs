@@ -2,28 +2,14 @@
   (:require
     [clojure.set :as set]
     [clojure.string :as string]
-    [legacy.status-im.ui.screens.profile.visibility-status.utils :as visibility-status-utils]
     [quo.theme]
     [re-frame.core :as re-frame]
     [status-im.constants :as constants]
-    [status-im.contexts.profile.utils :as profile.utils]
     [status-im.subs.chat.utils :as chat.utils]
     [status-im.subs.contact.utils :as contact.utils]
     [utils.address :as address]
     [utils.collection]
     [utils.i18n :as i18n]))
-
-(defn query-chat-contacts
-  [{:keys [contacts]} all-contacts query-fn]
-  (let [participant-set (into #{} (filter identity) contacts)]
-    (query-fn (comp participant-set :public-key) (vals all-contacts))))
-
-(re-frame/reg-sub
- ::query-current-chat-contacts
- :<- [:chats/current-chat]
- :<- [:contacts/contacts]
- (fn [[chat contacts] [_ query-fn]]
-   (query-chat-contacts chat contacts query-fn)))
 
 (re-frame/reg-sub
  :multiaccount/profile-pictures-show-to
@@ -125,15 +111,6 @@
        vals)))
 
 (re-frame/reg-sub
- :contacts/sorted-contacts
- :<- [:contacts/active]
- (fn [active-contacts]
-   (->> active-contacts
-        (sort-by :primary-name)
-        (sort-by
-         #(visibility-status-utils/visibility-status-order (:public-key %))))))
-
-(re-frame/reg-sub
  :contacts/sorted-and-grouped-by-first-letter
  :<- [:contacts/active]
  :<- [:selected-contacts-count]
@@ -151,12 +128,6 @@
                 :data  data})))))
 
 (re-frame/reg-sub
- :contacts/active-count
- :<- [:contacts/active]
- (fn [active-contacts]
-   (count active-contacts)))
-
-(re-frame/reg-sub
  :contacts/blocked
  :<- [:contacts/contacts]
  (fn [contacts]
@@ -170,12 +141,6 @@
  :<- [:contacts/blocked]
  (fn [contacts]
    (into #{} (map :public-key contacts))))
-
-(re-frame/reg-sub
- :contacts/blocked-count
- :<- [:contacts/blocked]
- (fn [blocked-contacts]
-   (count blocked-contacts)))
 
 (defn public-key-and-ens-name->new-contact
   [public-key ens-name]
@@ -226,24 +191,8 @@
  (fn [[_ contact-identity] _]
    [(re-frame/subscribe [:contacts/contact-by-identity contact-identity])
     (re-frame/subscribe [:profile/profile])])
- (fn [[{:keys [primary-name] :as contact}
-       {:keys [public-key preferred-name display-name name]}]
-      [_ contact-identity]]
-   [(if (= public-key contact-identity)
-      (cond
-        (not (string/blank? preferred-name)) preferred-name
-        (not (string/blank? display-name))   display-name
-        (not (string/blank? primary-name))   primary-name
-        (not (string/blank? name))           name
-        :else                                public-key)
-      (profile.utils/displayed-name contact))
-    (:secondary-name contact)]))
-
-(re-frame/reg-sub
- :contacts/all-contacts-not-in-current-chat
- :<- [::query-current-chat-contacts remove]
- (fn [contacts]
-   (filter :added? contacts)))
+ (fn [[contact profile] [_ _]]
+   (contact.utils/contact-two-names contact profile)))
 
 (defn get-all-contacts-in-group-chat
   [members admins contacts {:keys [public-key preferred-name name display-name] :as current-account}]
@@ -300,8 +249,10 @@
  :<- [:multiaccount/contact]
  (fn [[contacts multiaccount] [_ address]]
    (if (address/address= address (:public-key multiaccount))
-     multiaccount
-     (find-contact-by-address contacts address))))
+     (merge (contact.utils/build-contact-from-public-key address)
+            multiaccount)
+     (or (find-contact-by-address contacts address)
+         (contact.utils/build-contact-from-public-key address)))))
 
 (re-frame/reg-sub
  :contacts/contact-customization-color-by-address

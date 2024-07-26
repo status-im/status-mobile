@@ -187,7 +187,7 @@
          :preferred-name "Preferred Name"}
 
         :contacts/contacts
-        {profile-key   {:primary-name "Primary Name"}
+        {profile-key   {:primary-name "Primary Name" :public-key profile-key}
          "contact-key" {:secondary-name "Secondary Name"}})
 
       (is (= ["Preferred Name" nil] (rf/sub [sub-name profile-key])))
