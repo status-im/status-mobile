@@ -225,6 +225,7 @@
                                                  bridge-to-chain-id]))
             loading-suggested-routes? (rf/sub
                                        [:wallet/wallet-send-loading-suggested-routes?])
+            total-amount-receiver     (rf/sub [:wallet/total-amount true])
             from-account-props        {:customization-color account-color
                                        :size                32
                                        :emoji               (:emoji account)
@@ -249,8 +250,8 @@
                                       [transaction-details
                                        {:estimated-time-min estimated-time-min
                                         :max-fees           fee-formatted
-                                        :token-display-name token-display-name
-                                        :amount             amount
+                                        :token-display-name token-symbol
+                                        :amount             total-amount-receiver
                                         :to-network         bridge-to-network
                                         :theme              theme
                                         :route              route
