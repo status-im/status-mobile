@@ -453,7 +453,8 @@
          [:dispatch [:wallet/get-ethereum-chains]]
          [:dispatch [:wallet/get-accounts]]
          [:dispatch [:wallet/get-keypairs]]
-         [:dispatch [:wallet/get-saved-addresses]]]}))
+         [:dispatch [:wallet/get-saved-addresses]]
+         [:dispatch [:wallet/get-supported-token-list]]]}))
 
 (rf/reg-event-fx :wallet/share-account
  (fn [_ [{:keys [content title]}]]
@@ -645,3 +646,17 @@
                    new-account-addresses)))))
 
 (rf/reg-event-fx :wallet/reconcile-keypairs reconcile-keypairs)
+
+(rf/reg-event-fx
+ :wallet/get-supported-token-list
+ (fn [_]
+   {:json-rpc/call
+    [{:method     "wallet_getTokenList"
+      :params     []
+      :on-success [:wallet/get-supported-token-list-success]
+      :on-error   [:wallet/log-rpc-error {:event :wallet/get-supported-token-list}]}]}))
+
+(rf/reg-event-fx
+ :wallet/get-supported-token-list-success
+ (fn [{:keys [db]} [data]]
+   {:db (assoc-in db [:wallet :supported-token-list] data)}))
