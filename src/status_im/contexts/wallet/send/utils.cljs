@@ -1,6 +1,7 @@
 (ns status-im.contexts.wallet.send.utils
   (:require
     [native-module.core :as native-module]
+    [status-im.constants :as constants]
     [status-im.contexts.wallet.common.utils.networks :as network-utils]
     [utils.hex :as utils.hex]
     [utils.money :as money]))
@@ -249,3 +250,7 @@
       money/wei->gwei
       (money/with-precision precision)
       (str)))
+
+(defn bridge-disabled?
+  [token-symbol]
+  (not (constants/bridge-assets token-symbol)))

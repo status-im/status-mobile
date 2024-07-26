@@ -62,6 +62,7 @@
       :on-press-in         on-press-in
       :on-press-out        on-press-out
       :on-press            on-press
+      :disabled            (= state :disabled)
       :accessibility-label :token-network}
      [info props]
      [values props]]))
