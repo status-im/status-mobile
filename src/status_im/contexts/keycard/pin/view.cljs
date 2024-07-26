@@ -6,7 +6,7 @@
             [utils.re-frame :as rf]))
 
 (defn auth
-  [callback-event-key]
+  [{:keys [on-complete]}]
   (let [{:keys [text status]} (rf/sub [:keycard/pin])
         pin-retry-counter     (rf/sub [:keycard/pin-retry-counter])
         error?                (= status :error)]
@@ -23,4 +23,4 @@
       {:delete-key? true
        :on-delete   #(rf/dispatch [:keycard.pin/delete-pressed])
        :on-press    #(rf/dispatch [:keycard.pin/number-pressed % constants/pincode-length
-                                   callback-event-key])}]]))
+                                   on-complete])}]]))

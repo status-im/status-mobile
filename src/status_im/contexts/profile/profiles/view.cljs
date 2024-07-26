@@ -239,7 +239,16 @@
         :profile-picture     profile-picture
         :card-style          style/login-profile-card}]
       (if keycard-pairing
-        [keycard.pin/auth :keycard/read-card-and-login]
+        [keycard.pin/auth
+         {:on-complete
+          (fn [pin-text]
+            (rf/dispatch
+             [:keycard/read-card
+              {:key-uid    key-uid
+               :on-read-fx [[:effects.keycard/get-keys
+                             {:pin        pin-text
+                              :on-success #(rf/dispatch [:keycard.login/on-get-keys-success %])
+                              :on-failure #(rf/dispatch [:keycard/on-action-with-pin-error %])}]]}]))}]
         [password-input])]
      (when-not keycard-pairing
        [quo/button
