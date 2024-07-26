@@ -141,7 +141,7 @@
 (h/deftest-event :wallet/set-collectible-amount-to-send
   [event-id dispatch]
   (let [initial-db  {:wallet {:ui {:send nil}}}
-        expected-fx [[:dispatch [:wallet/get-suggested-routes {:amount 10}]]
+        expected-fx [[:dispatch [:wallet/start-get-suggested-routes {:amount 10}]]
                      [:dispatch
                       [:wallet/wizard-navigate-forward
                        {:current-screen nil :flow-id :wallet-send-flow}]]]
@@ -273,19 +273,18 @@
   [event-id dispatch]
   (reset! rf-db/app-db
     {:wallet {:ui {:send
-                   {:other-props                     :value
-                    :suggested-routes                ["1" "2"]
-                    :route                           "1"
-                    :amount                          10
-                    :from-values-by-chain            [{:chain-id 1} {:chain-id 10} {:chain-id 42161}]
-                    :to-values-by-chain              [{:chain-id 1} {:chain-id 10} {:chain-id 42161}]
-                    :sender-network-values           [:eth :arb1]
-                    :receiver-network-values         [:eth :arb1]
-                    :network-links                   [{:from-chain-id 1
-                                                       :to-chain-id   10
-                                                       :position-diff 1}]
-                    :loading-suggested-routes?       false
-                    :suggested-routes-call-timestamp ["1" "2"]}}}})
+                   {:other-props               :value
+                    :suggested-routes          ["1" "2"]
+                    :route                     "1"
+                    :amount                    10
+                    :from-values-by-chain      [{:chain-id 1} {:chain-id 10} {:chain-id 42161}]
+                    :to-values-by-chain        [{:chain-id 1} {:chain-id 10} {:chain-id 42161}]
+                    :sender-network-values     [:eth :arb1]
+                    :receiver-network-values   [:eth :arb1]
+                    :network-links             [{:from-chain-id 1
+                                                 :to-chain-id   10
+                                                 :position-diff 1}]
+                    :loading-suggested-routes? false}}}})
   (is (not (contains? (get-in (dispatch [event-id]) [:db :wallet :ui :send]) :suggested-routes)))
   (is (not (contains? (get-in (dispatch [event-id]) [:db :wallet :ui :send]) :route)))
   (is (not (contains? (get-in (dispatch [event-id]) [:db :wallet :ui :send]) :amount)))
@@ -296,8 +295,6 @@
   (is (not (contains? (get-in (dispatch [event-id]) [:db :wallet :ui :send]) :network-links)))
   (is (not (contains? (get-in (dispatch [event-id]) [:db :wallet :ui :send])
                       :loading-suggested-routes?)))
-  (is (not (contains? (get-in (dispatch [event-id]) [:db :wallet :ui :send])
-                      :suggested-routes-call-timestamp)))
   (is (contains? (get-in (dispatch [event-id]) [:db :wallet :ui :send]) :other-props)))
 
 (h/deftest-event :wallet/suggested-routes-error
@@ -324,7 +321,7 @@
                             :receiver-network-values   receiver-network-amounts
                             :route                     :values
                             :loading-suggested-routes? true}}}})
-    (is (match? expected-result (dispatch [event-id {:message "error"}])))))
+    (is (match? expected-result (dispatch [event-id "error"])))))
 
 (h/deftest-event :wallet/reset-network-amounts-to-zero
   [event-id dispatch]
@@ -438,7 +435,7 @@
                                                                   :collectible collectible}}}
                                     :profile/profile {:test-networks-enabled? false
                                                       :is-goerli-enabled?     false}}
-                               :fx [[:dispatch [:wallet/get-suggested-routes {:amount 1}]]
+                               :fx [[:dispatch [:wallet/start-get-suggested-routes {:amount 1}]]
                                     [:dispatch
                                      [:wallet/wizard-navigate-forward
                                       {:current-screen stack-id
