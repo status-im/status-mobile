@@ -134,6 +134,7 @@
    :iconUrl      (get-in session [:peer :metadata :icons 0])
    :url          (get-in session [:peer :metadata :url])
    :accounts     (get-in session [:namespaces :eip155 :accounts])
+   :chains       (get-in session [:namespaces :eip155 :chains])
    :disconnected false})
 
 (defn filter-operable-accounts

@@ -41,7 +41,6 @@
                                        (not watch-only?))
                               {:icon-name :i/dapps
                                :on-press  #(rf/dispatch [:navigate-to :screen/wallet.connected-dapps])})
-
                             {:content-type        :account-switcher
                              :customization-color color
                              :on-press            #(on-dapps-press switcher-type)
