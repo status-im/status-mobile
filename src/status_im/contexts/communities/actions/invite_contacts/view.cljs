@@ -54,7 +54,7 @@
     :as   item}]
   (let [user-selected?         (rf/sub [:is-contact-selected? public-key])
         {:keys [id]}           (rf/sub [:get-screen-params])
-        community-members-keys (set (keys (rf/sub [:communities/community-members id])))
+        community-members-keys (set (rf/sub [:communities/community-members id]))
         community-member?      (boolean (community-members-keys public-key))
         on-toggle              (fn []
                                  (when-not community-member?

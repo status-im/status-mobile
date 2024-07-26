@@ -1,7 +1,5 @@
 (ns status-im.contexts.chat.messenger.messages.link-preview.events
   (:require [camel-snake-kebab.core :as csk]
-            [status-im.common.json-rpc.events :as json-rpc]
-            [taoensso.timbre :as log]
             [utils.collection]
             [utils.re-frame :as rf]))
 
@@ -34,17 +32,6 @@
  (fn [_ [enabled?]]
    {:fx [[:dispatch
           [:profile.settings/profile-update :link-preview-request-enabled (boolean enabled?)]]]}))
-
-(rf/reg-event-fx :chat.ui/link-preview-whitelist-received
- (fn [{:keys [db]} [whitelist]]
-   {:db (assoc db :link-previews-whitelist whitelist)}))
-
-(rf/reg-fx :chat.ui/request-link-preview-whitelist
- (fn []
-   (json-rpc/call {:method     "wakuext_getLinkPreviewWhitelist"
-                   :params     []
-                   :on-success [:chat.ui/link-preview-whitelist-received]
-                   :on-error   #(log/error "Failed to get link preview whitelist")})))
 
 (rf/reg-event-fx :chat.ui/enable-link-previews
  (fn [{{:profile/keys [profile]} :db} [site enabled?]]

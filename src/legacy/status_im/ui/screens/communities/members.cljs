@@ -127,7 +127,7 @@
          (when (and can-manage-users? (= constants/community-on-request-access (:access permissions)))
            [requests-to-join community-id])
          [rn/flat-list
-          {:data        (keys sorted-members)
+          {:data        sorted-members
            :render-data {:community-id      community-id
                          :my-public-key     my-public-key
                          :can-kick-users?   (and can-manage-users?

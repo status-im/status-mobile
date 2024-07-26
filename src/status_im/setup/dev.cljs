@@ -2,6 +2,7 @@
   (:require
     ["react-native" :refer (DevSettings LogBox NativeModules)]
     [react-native.platform :as platform]
+    [status-im.setup.oops :as setup.oops]
     [status-im.setup.schema :as schema]
     [utils.re-frame :as rf]))
 
@@ -47,6 +48,7 @@
                            :utils/dispatch-later
                            :json-rpc/call})
   (when ^:boolean js/goog.DEBUG
+    (setup.oops/setup!)
     (schema/setup!)
     (when platform/ios?
       ;; on Android this method doesn't work
