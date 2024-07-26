@@ -5,6 +5,7 @@
     [legacy.status-im.ui.components.list.views :as list]
     [quo.core :as quo]
     [re-frame.core :as re-frame]
+    [status-im.feature-flags :as ff]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf])
   (:require-macros [legacy.status-im.utils.views :as views]))
@@ -59,14 +60,14 @@
      :on-press
      #(re-frame/dispatch [:open-modal :peers-stats])
      :chevron true}
-    {:size :small
-     :title "Telemetry"
-     :accessibility-label :telemetry-enabled
-     :container-margin-bottom 8
-     :on-press
-     #(re-frame/dispatch [:profile.settings/toggle-telemetry])
-     :accessory :switch
-     :active telemetry-enabled?}
+    (when (ff/enabled? ::ff/settings.telemetry)
+      {:size                    :small
+       :title                   "Telemetry"
+       :accessibility-label     :telemetry-enabled
+       :container-margin-bottom 8
+       :on-press                #(re-frame/dispatch [:profile.settings/toggle-telemetry])
+       :accessory               :switch
+       :active                  telemetry-enabled?})
     {:size :small
      :title (i18n/label :t/light-client-enabled)
      :accessibility-label :light-client-enabled
