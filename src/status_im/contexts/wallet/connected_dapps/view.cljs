@@ -84,10 +84,10 @@
   []
   (let [{:keys [bottom]}                   (safe-area/get-insets)
         {:keys [color] :as wallet-account} (rf/sub [:wallet/current-viewing-account])
+        customization-color                (rf/sub [:profile/customization-color])
         sessions                           (rf/sub
-                                            [:wallet-connect/sessions-for-current-account])
-        theme                              (quo.theme/use-theme)
-        customization-color                (rf/sub [:profile/customization-color])]
+                                            [:wallet-connect/sessions-for-current-account-and-networks])
+        theme                              (quo.theme/use-theme)]
     [rn/view {:flex 1}
      [header
       {:title          (i18n/label :t/connected-dapps)

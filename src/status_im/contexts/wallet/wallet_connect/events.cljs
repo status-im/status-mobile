@@ -79,7 +79,6 @@
      (if (and (not-empty session-networks) required-networks-supported?)
        {:db (update db
                     :wallet-connect/current-proposal assoc
-                    :response-sent?                  false
                     :request                         proposal
                     :session-networks                session-networks
                     :address                         (or current-viewing-address
@@ -89,23 +88,30 @@
         :fx [[:dispatch
               [:open-modal :screen/wallet.wallet-connect-session-proposal]]]}
        {:fx [[:dispatch
-              [:wallet-connect/session-networks-unsupported proposal]]]}))))
+              [:wallet-connect/show-session-networks-unsupported-toast proposal]]
+             [:dispatch
+              [:wallet-connect/reject-session-proposal proposal]]]}))))
 
 (rf/reg-event-fx
- :wallet-connect/session-networks-unsupported
+ :wallet-connect/show-session-networks-unsupported-toast
  (fn [{:keys [db]} [proposal]]
-   (let [{:keys [name]} (wallet-connect-core/get-session-dapp-metadata proposal)]
+   (let [{:keys [name url]} (wallet-connect-core/get-session-dapp-metadata proposal)]
      {:fx [[:dispatch
             [:toasts/upsert
              {:type  :negative
               :theme (:theme db)
-              :text  (i18n/label :t/wallet-connect-networks-not-supported {:dapp name})}]]]})))
+              :text  (i18n/label :t/wallet-connect-networks-not-supported
+                                 {:dapp (wallet-connect-core/compute-dapp-name name url)})}]]]})))
 
 (rf/reg-event-fx
  :wallet-connect/on-session-request
  (fn [{:keys [db]} [event]]
-   (when (wallet-connect-core/event-should-be-handled? db event)
-     {:fx [[:dispatch [:wallet-connect/process-session-request event]]]})))
+   (if (wallet-connect-core/event-should-be-handled? db event)
+     {:fx [[:dispatch [:wallet-connect/process-session-request event]]]}
+     {:fx [[:dispatch
+            [:wallet-connect/send-response
+             {:error (wallet-connect/get-sdk-error
+                      constants/wallet-connect-user-rejected-chains-error-key)}]]]})))
 
 (rf/reg-event-fx
  :wallet-connect/on-session-delete
