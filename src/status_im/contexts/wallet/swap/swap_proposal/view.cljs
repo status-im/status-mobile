@@ -10,6 +10,10 @@
   []
   (let [max-slippage (rf/sub [:wallet/swap-max-slippage])]
     [rn/view {:style style/container}
+
+     [quo/button
+      {:on-press #(rf/dispatch [:navigate-back])}
+      "Back"]
      [quo/button
       {:on-press #(rf/dispatch [:show-bottom-sheet
                                 {:content (fn [] [select-account/view
