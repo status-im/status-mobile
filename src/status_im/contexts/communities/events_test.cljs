@@ -151,7 +151,7 @@
                     (-> effects :json-rpc/call first (select-keys [:method :params]))))))))
 
 (deftest handle-community-test
-  (let [community {:id community-id :clock 2}]
+  (let [community #js {:id community-id :clock 2}]
     (testing "given a unjoined community"
       (let [effects (events/handle-community {} [community])]
         (is (match? community-id
@@ -163,7 +163,7 @@
              (filter some? (:fx effects))))))
 
     (testing "given a joined community"
-      (let [community (assoc community :joined true)
+      (let [community #js {:id community-id :clock 2 :joined true}
             effects   (events/handle-community {} [community])]
         (is (match?
              [[:dispatch
@@ -172,16 +172,19 @@
              (filter some? (:fx effects))))))
 
     (testing "given a community with token-permissions-check"
-      (let [community (assoc community :token-permissions-check :fake-token-permissions-check)
+      (let [community #js
+                       {:id community-id :clock 2 :token-permissions-check :fake-token-permissions-check}
             effects   (events/handle-community {} [community])]
         (is (match?
              [[:dispatch
                [:communities/check-permissions-to-join-community-with-all-addresses community-id]]]
              (filter some? (:fx effects))))))
+
     (testing "given a community with lower clock"
       (let [effects (events/handle-community {:db {:communities {community-id {:clock 3}}}} [community])]
         (is (nil? effects))))
+
     (testing "given a community without clock"
-      (let [community (dissoc community :clock)
+      (let [community #js {:id community-id}
             effects   (events/handle-community {} [community])]
         (is (nil? effects))))))

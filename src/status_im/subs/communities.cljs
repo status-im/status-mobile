@@ -6,7 +6,9 @@
     [re-frame.core :as re-frame]
     [status-im.constants :as constants]
     [status-im.contexts.communities.utils :as utils]
+    [status-im.contexts.profile.utils :as profile.utils]
     [status-im.subs.chat.utils :as subs.utils]
+    [status-im.subs.contact.utils :as contact.utils]
     [utils.i18n :as i18n]
     [utils.money :as money]))
 
@@ -69,7 +71,7 @@
  (fn [[_ community-id]]
    [(re-frame/subscribe [:communities/community community-id])])
  (fn [[{:keys [members]}] _]
-   members))
+   (js-keys members)))
 
 (re-frame/reg-sub
  :communities/community-chat-members
@@ -92,51 +94,80 @@
           {}
           public-keys))
 
-(defn- sort-members-by-name
+(defn- sort-members-by-name-old
   [names descending? members]
   (if descending?
-    (sort-by #(get names (first %)) #(compare %2 %1) members)
-    (sort-by #(get names (first %)) members)))
+    (sort-by #(get names %) #(compare %2 %1) members)
+    (sort-by #(get names %) members)))
 
-(re-frame/reg-sub
- :communities/sorted-community-members
+(defn- sort-members-by-name
+  [names members-keys]
+  (let [forced-last-key "zzzzzz"
+        sort-keyfn      (fn [k]
+                          (if-let [[primary-name secondary-name] (get names k)]
+                            (or (some-> primary-name
+                                        string/lower-case)
+                                (some-> secondary-name
+                                        string/lower-case))
+                            ;; Sort unknown keys at the end.
+                            forced-last-key))]
+    (sort-by sort-keyfn members-keys)))
+
+;; This implementation is wrong, but since it's only used in a legacy view, we
+;; can ignore it for now.
+(re-frame/reg-sub :communities/sorted-community-members
  (fn [[_ community-id]]
-   (let [profile (re-frame/subscribe [:profile/profile])
-         members (re-frame/subscribe [:communities/community-members community-id])]
-     [profile members]))
+   [(re-frame/subscribe [:profile/profile])
+    (re-frame/subscribe [:communities/community-members community-id])])
  (fn [[profile members] _]
-   (let [names (keys->names (keys members) profile)]
+   (let [names (keys->names members profile)]
      (->> members
-          (sort-members-by-name names false)
+          (sort-members-by-name-old names false)
           (sort-by #(visibility-status-utils/visibility-status-order (get % 0)))))))
 
-(re-frame/reg-sub
- :communities/sorted-community-members-section-list
+(re-frame/reg-sub :communities/chat-members
  (fn [[_ community-id chat-id]]
-   (let [profile                   (re-frame/subscribe [:profile/profile])
-         members                   (re-frame/subscribe [:communities/community-chat-members
-                                                        community-id chat-id])
-         visibility-status-updates (re-frame/subscribe
-                                    [:visibility-status-updates])
-         my-status-update          (re-frame/subscribe
-                                    [:multiaccount/current-user-visibility-status])]
-     [profile members visibility-status-updates my-status-update]))
- (fn [[profile members visibility-status-updates my-status-update] _]
-   (let [online? (fn [public-key]
-                   (let [{visibility-status-type :status-type}
-                         (if (or (string/blank? (:public-key profile))
-                                 (= (:public-key profile) public-key))
-                           my-status-update
-                           (get visibility-status-updates public-key))]
-                     (subs.utils/online? visibility-status-type)))
-         names   (keys->names (keys members) profile)]
-     (->> members
-          (sort-members-by-name names true)
-          keys
-          (group-by online?)
-          (map (fn [[k v]]
-                 {:title (if k (i18n/label :t/online) (i18n/label :t/offline))
-                  :data  v}))))))
+   [(re-frame/subscribe [:profile/public-key])
+    (re-frame/subscribe [:communities/community-chat-members community-id chat-id])
+    (re-frame/subscribe [:visibility-status-updates])
+    (re-frame/subscribe [:multiaccount/current-user-visibility-status])])
+ (fn [[profile-pub-key members-js visibility-status-updates my-status-update] [_ _ _ visibility-status]]
+   (let [members-keys (js-keys members-js)
+         online?      (fn [public-key]
+                        (let [{visibility-status-type :status-type}
+                              (if (or (string/blank? profile-pub-key)
+                                      (= profile-pub-key public-key))
+                                my-status-update
+                                (get visibility-status-updates public-key))]
+                          (subs.utils/online? visibility-status-type)))]
+     (filter (if (= :online visibility-status)
+               online?
+               (complement online?))
+             members-keys))))
+
+(defn- names-by-key
+  [contacts profile public-keys]
+  (let [names (reduce (fn [acc k]
+                        (if-let [contact (get contacts k)]
+                          (assoc acc k (contact.utils/contact-two-names contact profile))
+                          acc))
+                      {}
+                      public-keys)]
+    (assoc names
+           (:public-key profile)
+           [(profile.utils/displayed-name profile) nil])))
+
+;; This is a potentially expensive subscription because we don't control how
+;; many members and contacts exist in the app-db. Future improvements include
+;; removing members from the payload and paginating them from status-go.
+(re-frame/reg-sub :communities/chat-members-sorted
+ (fn [[_ community-id chat-id visibility-status]]
+   [(re-frame/subscribe [:profile/profile])
+    (re-frame/subscribe [:contacts/contacts-raw])
+    (re-frame/subscribe [:communities/chat-members community-id chat-id visibility-status])])
+ (fn [[profile contacts ^js members-keys]]
+   (sort-members-by-name (names-by-key contacts profile members-keys)
+                         members-keys)))
 
 (re-frame/reg-sub
  :communities/featured-contract-communities
@@ -177,6 +208,13 @@
    (if (or (empty? @memo-communities-stack-items) (= view-id :communities-stack))
      (let [grouped-communities (->> communities
                                     vals
+                                    ;; Remove data that can grow fast or is
+                                    ;; reliably not needed to list communities.
+                                    ;; We could use an allowlist of keys for
+                                    ;; optimal performance of this sub, but
+                                    ;; that's harder to maintain in case we miss
+                                    ;; any key.
+                                    (map #(dissoc % :members :chats :token-permissions :tokens-metadata))
                                     (group-by #(group-communities-by-status requests %))
                                     merge-opened-communities
                                     (map (fn [[k v]]

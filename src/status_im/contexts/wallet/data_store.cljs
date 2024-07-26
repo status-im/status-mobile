@@ -5,6 +5,7 @@
     [clojure.string :as string]
     [status-im.constants :as constants]
     [status-im.contexts.wallet.common.utils.networks :as network-utils]
+    [status-im.contexts.wallet.send.utils :as send-utils]
     [utils.collection :as utils.collection]
     [utils.money :as money]
     [utils.number :as utils.number]
@@ -188,3 +189,77 @@
      :removed-account-addresses   removed-account-addresses
      :updated-keypairs-by-id      updated-keypairs-by-id
      :updated-accounts-by-address updated-accounts-by-address}))
+
+(defn- rename-keys-to-kebab-case
+  [m]
+  (set/rename-keys m (zipmap (keys m) (map transforms/->kebab-case-keyword (keys m)))))
+
+(defn rpc->suggested-routes
+  [suggested-routes]
+  (cond
+    (map? suggested-routes)
+    (into {}
+          (for [[k v] (rename-keys-to-kebab-case suggested-routes)]
+            [k (rpc->suggested-routes v)]))
+
+    (vector? suggested-routes)
+    (map rpc->suggested-routes suggested-routes)
+
+    :else suggested-routes))
+
+(def ^:private precision 6)
+
+(defn new->old-route-path
+  [new-path]
+  (let [bonder-fees (:tx-bonder-fees new-path)
+        token-fees  (+ (money/wei->ether bonder-fees)
+                       (money/wei->ether
+                        (:tx-token-fees new-path)))]
+    {:from                      (:from-chain new-path)
+     :amount-in-locked          (:amount-in-locked new-path)
+     :amount-in                 (:amount-in new-path)
+     :max-amount-in             "0x0"
+     :gas-fees                  {:gas-price                "0"
+                                 :base-fee                 (send-utils/convert-to-gwei (:tx-base-fee
+                                                                                        new-path)
+                                                                                       precision)
+                                 :max-priority-fee-per-gas (send-utils/convert-to-gwei (:tx-priority-fee
+                                                                                        new-path)
+                                                                                       precision)
+                                 :max-fee-per-gas-low      (send-utils/convert-to-gwei
+                                                            (get-in
+                                                             new-path
+                                                             [:suggested-levels-for-max-fees-per-gas
+                                                              :low])
+                                                            precision)
+                                 :max-fee-per-gas-medium   (send-utils/convert-to-gwei
+                                                            (get-in
+                                                             new-path
+                                                             [:suggested-levels-for-max-fees-per-gas
+                                                              :medium])
+                                                            precision)
+                                 :max-fee-per-gas-high     (send-utils/convert-to-gwei
+                                                            (get-in
+                                                             new-path
+                                                             [:suggested-levels-for-max-fees-per-gas
+                                                              :high])
+                                                            precision)
+                                 :l-1-gas-fee              (send-utils/convert-to-gwei (:tx-l-1-fee
+                                                                                        new-path)
+                                                                                       precision)
+                                 :eip-1559-enabled         true}
+     :bridge-name               (:processor-name new-path)
+     :amount-out                (:amount-out new-path)
+     :approval-contract-address (:approval-contract-address new-path)
+     :approval-required         (:approval-required new-path)
+     :estimated-time            (:estimated-time new-path)
+     :approval-gas-fees         (* (money/wei->ether (get-in new-path
+                                                             [:suggested-levels-for-max-fees-per-gas
+                                                              :medium]))
+                                   (:approval-gas-amount new-path))
+     :to                        (:to-chain new-path)
+     :bonder-fees               bonder-fees
+     :approval-amount-required  (:approval-amount-required new-path)
+     ;;  :cost () ;; tbd not used on desktop
+     :token-fees                token-fees
+     :gas-amount                (:tx-gas-amount new-path)}))

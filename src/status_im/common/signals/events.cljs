@@ -38,6 +38,9 @@
       "wallet"
       {:fx [[:dispatch [:wallet/signal-received event-js]]]}
 
+      "wallet.suggested.routes"
+      {:fx [[:dispatch [:wallet/handle-suggested-routes (transforms/js->clj event-js)]]]}
+
       "envelope.sent"
       (messages.transport/update-envelopes-status
        cofx

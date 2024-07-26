@@ -75,46 +75,51 @@
     :banner              (resources/get-image :discover)
     :accessibility-label :communities-home-discover-card}})
 
+(defn on-tab-change
+  [tab]
+  (rf/dispatch [:communities/select-tab tab]))
+
 (defn view
   []
-  (let [flat-list-ref     (atom nil)
-        set-flat-list-ref #(reset! flat-list-ref %)]
-    (fn []
-      (let [theme                           (quo.theme/use-theme)
-            customization-color             (rf/sub [:profile/customization-color])
-            selected-tab                    (or (rf/sub [:communities/selected-tab]) :joined)
-            {:keys [joined pending opened]} (rf/sub [:communities/grouped-by-status])
-            selected-items                  (case selected-tab
-                                              :joined  joined
-                                              :pending pending
-                                              :opened  opened)
-            scroll-shared-value             (reanimated/use-shared-value 0)]
-        [:<>
-         (if (empty? selected-items)
-           [common.empty-state/view
-            {:selected-tab selected-tab
-             :tab->content (empty-state-content theme)}]
-           [reanimated/flat-list
-            {:ref                               set-flat-list-ref
-             :key-fn                            :id
-             :content-inset-adjustment-behavior :never
-             :header                            [common.header-spacing/view]
-             :render-fn                         item-render
-             :style                             {:margin-top -1}
-             :data                              selected-items
-             :scroll-event-throttle             8
-             :content-container-style           {:padding-bottom
-                                                 jump-to.constants/floating-shell-button-height}
-             :on-scroll                         #(common.banner/set-scroll-shared-value
-                                                  {:scroll-input (oops/oget
-                                                                  %
-                                                                  "nativeEvent.contentOffset.y")
-                                                   :shared-value scroll-shared-value})}])
-         [:f> common.banner/animated-banner
-          {:content             banner-data
-           :customization-color customization-color
-           :scroll-ref          flat-list-ref
-           :tabs                tabs-data
-           :selected-tab        selected-tab
-           :on-tab-change       (fn [tab] (rf/dispatch [:communities/select-tab tab]))
-           :scroll-shared-value scroll-shared-value}]]))))
+  (let [flat-list-ref                   (rn/use-ref-atom nil)
+        set-flat-list-ref               (rn/use-callback #(reset! flat-list-ref %))
+        theme                           (quo.theme/use-theme)
+        customization-color             (rf/sub [:profile/customization-color])
+        selected-tab                    (or (rf/sub [:communities/selected-tab]) :joined)
+        {:keys [joined pending opened]} (rf/sub [:communities/grouped-by-status])
+        selected-items                  (case selected-tab
+                                          :joined  joined
+                                          :pending pending
+                                          :opened  opened)
+        scroll-shared-value             (reanimated/use-shared-value 0)
+        on-scroll                       (rn/use-callback
+                                         (fn [event]
+                                           (common.banner/set-scroll-shared-value
+                                            {:scroll-input (oops/oget event
+                                                                      "nativeEvent.contentOffset.y")
+                                             :shared-value scroll-shared-value})))]
+    [:<>
+     (if (empty? selected-items)
+       [common.empty-state/view
+        {:selected-tab selected-tab
+         :tab->content (empty-state-content theme)}]
+       [reanimated/flat-list
+        {:ref                               set-flat-list-ref
+         :key-fn                            :id
+         :content-inset-adjustment-behavior :never
+         :header                            [common.header-spacing/view]
+         :render-fn                         item-render
+         :style                             {:margin-top -1}
+         :data                              selected-items
+         :scroll-event-throttle             8
+         :content-container-style           {:padding-bottom
+                                             jump-to.constants/floating-shell-button-height}
+         :on-scroll                         on-scroll}])
+     [common.banner/animated-banner
+      {:content             banner-data
+       :customization-color customization-color
+       :scroll-ref          flat-list-ref
+       :tabs                tabs-data
+       :selected-tab        selected-tab
+       :on-tab-change       on-tab-change
+       :scroll-shared-value scroll-shared-value}]]))

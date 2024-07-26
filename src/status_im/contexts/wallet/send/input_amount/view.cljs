@@ -129,7 +129,7 @@
   [{:keys [amount bounce-duration-ms token valid-input?]}]
   (if valid-input?
     (debounce/debounce-and-dispatch
-     [:wallet/get-suggested-routes
+     [:wallet/start-get-suggested-routes
       {:amount        amount
        :updated-token token}]
      bounce-duration-ms)
@@ -396,7 +396,7 @@
                                                 (and (not should-try-again?) confirm-disabled?))
                                  :on-press  (cond
                                               should-try-again?
-                                              #(rf/dispatch [:wallet/get-suggested-routes
+                                              #(rf/dispatch [:wallet/start-get-suggested-routes
                                                              {:amount        amount-in-crypto
                                                               :updated-token token-by-symbol}])
                                               sending-to-unpreferred-networks?
