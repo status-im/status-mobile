@@ -402,11 +402,11 @@
                                                       receiver-networks)))
                                          network-chain-ids))
          from-locked-amount (update-vals from-locked-amounts to-hex)
-         transaction-type (case tx-type
-                            :tx/collectible-erc-721  constants/send-type-erc-721-transfer
-                            :tx/collectible-erc-1155 constants/send-type-erc-1155-transfer
-                            :tx/bridge               constants/send-type-bridge
-                            constants/send-type-transfer)
+         send-type (case tx-type
+                     :tx/collectible-erc-721  constants/send-type-erc-721-transfer
+                     :tx/collectible-erc-1155 constants/send-type-erc-1155-transfer
+                     :tx/bridge               constants/send-type-bridge
+                     constants/send-type-transfer)
          balances-per-chain (when token (:balances-per-chain token))
          sender-token-available-networks-for-suggested-routes
          (when token
@@ -447,7 +447,7 @@
                                      :tx-type tx-type
                                      :receiver? true}))
          params [{:uuid                 (str (random-uuid))
-                  :sendType             transaction-type
+                  :sendType             send-type
                   :addrFrom             from-address
                   :addrTo               to-address
                   :amountIn             amount-in
@@ -619,7 +619,8 @@
       (= bridge-name constants/bridge-name-hop)
       (assoc :HopTx
              (assoc tx-data
-                    :ChainID   to-chain-id
+                    :ChainID   from-chain-id
+                    :ChainIDTo to-chain-id
                     :Symbol    token-id
                     :Recipient to-address
                     :Amount    amount-in
@@ -636,14 +637,14 @@
                     :Amount    amount-in)))))
 
 (defn- multi-transaction-command
-  [{:keys [from-address to-address from-asset to-asset amount-out transfer-type]
-    :or   {transfer-type constants/send-type-transfer}}]
+  [{:keys [from-address to-address from-asset to-asset amount-out multi-transaction-type]
+    :or   {multi-transaction-type constants/multi-transaction-type-unknown}}]
   {:fromAddress from-address
    :toAddress   to-address
    :fromAsset   from-asset
    :toAsset     to-asset
    :fromAmount  amount-out
-   :type        transfer-type})
+   :type        multi-transaction-type})
 
 (rf/reg-event-fx :wallet/send-transaction
  (fn [{:keys [db]} [sha3-pwd]]
@@ -651,11 +652,9 @@
          first-route (first routes)
          from-address (get-in db [:wallet :current-viewing-account-address])
          transaction-type (get-in db [:wallet :ui :send :tx-type])
-         transaction-type-param (case transaction-type
-                                  :tx/collectible-erc-721  constants/send-type-erc-721-transfer
-                                  :tx/collectible-erc-1155 constants/send-type-erc-1155-transfer
-                                  :tx/bridge               constants/send-type-bridge
-                                  constants/send-type-transfer)
+         multi-transaction-type (if (= :tx/bridge transaction-type)
+                                  constants/multi-transaction-type-bridge
+                                  constants/multi-transaction-type-send)
          token (get-in db [:wallet :ui :send :token])
          collectible (get-in db [:wallet :ui :send :collectible])
          first-route-from-chain-id (get-in first-route [:from :chain-id])
@@ -688,12 +687,12 @@
                                  routes)
          request-params
          [(multi-transaction-command
-           {:from-address  from-address
-            :to-address    to-address
-            :from-asset    token-id
-            :to-asset      token-id
-            :amount-out    (if eth-transfer? (:amount-out first-route) "0x0")
-            :transfer-type transaction-type-param})
+           {:from-address           from-address
+            :to-address             to-address
+            :from-asset             token-id
+            :to-asset               token-id
+            :amount-out             (if eth-transfer? (:amount-out first-route) "0x0")
+            :multi-transaction-type multi-transaction-type})
           transaction-paths
           sha3-pwd]]
      (log/info "multi transaction called")
