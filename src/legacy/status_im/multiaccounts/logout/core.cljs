@@ -13,19 +13,17 @@
    (native-module/logout)))
 
 (rf/defn initialize-app-db
-  [{{:keys                [keycard initials-avatar-font-file biometrics]
-     :network/keys        [type status expensive?]
-     :wallet-connect/keys [web3-wallet]}
+  [{{:keys         [keycard initials-avatar-font-file biometrics]
+     :network/keys [type status expensive?]}
     :db}]
   {:db (assoc db/app-db
-              :network/type               type
-              :network/status             status
-              :network/expensive?         expensive?
-              :initials-avatar-font-file  initials-avatar-font-file
-              :keycard                    (dissoc keycard :secrets :pin :application-info)
-              :biometrics                 biometrics
-              :syncing                    nil
-              :wallet-connect/web3-wallet web3-wallet)})
+              :network/type              type
+              :network/status            status
+              :network/expensive?        expensive?
+              :initials-avatar-font-file initials-avatar-font-file
+              :keycard                   (dissoc keycard :secrets :pin :application-info)
+              :biometrics                biometrics
+              :syncing                   nil)})
 
 (rf/defn logout-method
   {:events [::logout-method]}
