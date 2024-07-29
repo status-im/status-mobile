@@ -181,7 +181,6 @@
                       {:expected-chain-id expected-chain-id
                        :wrong-chain-id    wrong-chain-id})]]]})))
 
-;; TODO: we should reject a request if processing fails
 (rf/reg-event-fx
  :wallet-connect/on-processing-error
  (fn [{:keys [db]} [error]]
@@ -193,4 +192,5 @@
                  :method               method
                  :wallet-connect-event event
                  :event                :wallet-connect/on-processing-error})
-     {:fx [[:dispatch [:wallet-connect/dismiss-request-modal]]]})))
+     ;; FIXME(@clauxx/@alwx): rename this event eventually
+     {:fx [[:dispatch [:wallet-connect/on-request-modal-dismissed]]]})))
