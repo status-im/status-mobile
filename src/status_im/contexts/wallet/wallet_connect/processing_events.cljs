@@ -27,6 +27,7 @@
  (fn [{:keys [db]} [event]]
    (let [method         (wallet-connect-core/get-request-method event)
          existing-event (get-in db [:wallet-connect/current-request :event])]
+     (log/info "Processing Wallet Connect session request" method)
      ;; NOTE: make sure we don't show two requests at the same time
      (when-not existing-event
        {:db (-> db
