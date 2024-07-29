@@ -54,7 +54,7 @@
         {:size   :heading-1
          :weight :semi-bold
          :style  {:color colors/white}}
-        (i18n/label :t/syncing)]
+        (i18n/label :t/paired-devices)]
        [quo/button
         {:size                32
          :type                :primary

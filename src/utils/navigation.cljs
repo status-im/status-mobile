@@ -6,3 +6,11 @@
 (defn navigate-back
   []
   (rf/dispatch [:navigate-back]))
+
+(defn hide-bottom-sheet
+  []
+  (rf/dispatch [:hide-bottom-sheet]))
+
+(defn dismiss-keyboard
+  []
+  (rf/dispatch [:dismiss-keyboard]))

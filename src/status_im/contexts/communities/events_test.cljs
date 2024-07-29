@@ -1,6 +1,5 @@
 (ns status-im.contexts.communities.events-test
   (:require [cljs.test :refer [deftest is testing]]
-            [legacy.status-im.mailserver.core :as mailserver]
             matcher-combinators.test
             [status-im.contexts.chat.messenger.messages.link-preview.events :as link-preview.events]
             [status-im.contexts.communities.events :as events]))
@@ -112,7 +111,7 @@
     (testing "dispatch fxs for first community"
       (is (match?
            {:fx [[:dispatch [:communities/handle-community {:id community-id}]]
-                 [:dispatch [::mailserver/request-messages]]]}
+                ]}
            (events/spectate-community-success {} [{:communities [{:id community-id}]}])))))
   (testing "given empty community"
     (testing "do nothing"

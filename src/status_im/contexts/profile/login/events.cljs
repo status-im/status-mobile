@@ -1,7 +1,6 @@
 (ns status-im.contexts.profile.login.events
   (:require
     [legacy.status-im.data-store.settings :as data-store.settings]
-    [legacy.status-im.mailserver.core :as mailserver]
     [native-module.core :as native-module]
     [status-im.common.keychain.events :as keychain]
     [status-im.config :as config]
@@ -99,7 +98,7 @@
            ;; thread to process more important events first, but we can't delay
            ;; too much otherwise the UX may degrade due to stale data.
            [:dispatch-later [{:ms 1500 :dispatch [:profile.login/non-critical-initialization]}]]
-           [:dispatch [:mobile-network/on-network-status-change]]
+           [:dispatch [:network/check-expensive-connection]]
            [:profile.settings/get-profile-picture key-uid]
            (when (ff/enabled? ::ff/wallet.wallet-connect)
              [:dispatch [:wallet-connect/init]])
@@ -131,11 +130,9 @@
               :on-error   #(log/error "node-info: failed error" %)}]]]})))
 
 (rf/reg-event-fx :profile.login/messenger-started
- (fn [{:keys [db]} [{:keys [mailservers]}]]
+ (fn [{:keys [db]} [_]]
    (let [new-account? (get db :onboarding/new-account?)]
-     {:db (-> db
-              (assoc :messenger/started? true)
-              (mailserver/add-mailservers mailservers))
+     {:db (assoc db :messenger/started? true)
       :fx [[:fetch-chats-preview
             {:on-success (fn [result]
                            (rf/dispatch [:chats-list/load-success result])
