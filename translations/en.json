@@ -468,6 +468,7 @@
   "connected": "Connected",
   "connected-dapps": "Connected dApps",
   "connected-to": "Connected to",
+  "connected-to-dapp": "Connected to dApp",
   "connecting": "Connecting...",
   "connecting-requires-login": "Connecting to another network requires login",
   "connection-request": "Connection Request",

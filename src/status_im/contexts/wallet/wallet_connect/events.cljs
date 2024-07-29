@@ -326,6 +326,7 @@
               :on-success (fn []
                             (log/info "Wallet Connect session persisted")
                             (rf/dispatch [:wallet-connect/fetch-persisted-sessions])
+                            (rf/dispatch [:activity-center.notifications/fetch-unread-count])
                             (rf/dispatch [:wallet-connect/redirect-to-dapp redirect-url]))
               :on-error   #(log/info "Wallet Connect session persistence failed" %)}]]]})))
 

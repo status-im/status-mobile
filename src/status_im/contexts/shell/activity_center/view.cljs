@@ -16,6 +16,7 @@
      contact-requests]
     [status-im.contexts.shell.activity-center.notification.contact-verification.view :as
      contact-verification]
+    [status-im.contexts.shell.activity-center.notification.dapp-connection.view :as dapp-connection]
     [status-im.contexts.shell.activity-center.notification.membership.view :as membership]
     [status-im.contexts.shell.activity-center.notification.mentions.view :as mentions]
     [status-im.contexts.shell.activity-center.notification.reply.view :as reply]
@@ -50,6 +51,9 @@
 
        (= type types/admin)
        [admin/view props]
+
+       (= type types/dapp-connected)
+       [dapp-connection/view props]
 
        (some types/membership [type])
        (condp = type

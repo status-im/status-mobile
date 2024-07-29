@@ -10,6 +10,8 @@
 (def ^:const admin 8)
 (def ^:const community-kicked 9)
 (def ^:const contact-verification 10)
+(def ^:const dapp-connected 23)
+(def ^:const dapp-disconnected 24)
 
 (def ^:const all-supported
   #{one-to-one-chat
@@ -20,7 +22,8 @@
     community-request
     admin
     community-kicked
-    contact-verification})
+    contact-verification
+    dapp-connected})
 
 ;; TODO: Replace with correct enum values once status-go implements them.
 (def ^:const tx 66612)
