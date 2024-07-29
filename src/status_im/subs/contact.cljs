@@ -128,6 +128,13 @@
                 :data  data})))))
 
 (re-frame/reg-sub
+ :contacts/is-participant-selected?
+ :<- [:group-chat/selected-participants]
+ (fn [selected-participants [_ id]]
+   (-> selected-participants
+       (contains? id))))
+
+(re-frame/reg-sub
  :contacts/blocked
  :<- [:contacts/contacts]
  (fn [contacts]

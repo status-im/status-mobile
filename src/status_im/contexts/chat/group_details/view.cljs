@@ -6,7 +6,6 @@
     [react-native.core :as rn]
     [react-native.gesture :as gesture]
     [react-native.safe-area :as safe-area]
-    [reagent.core :as reagent]
     [status-im.common.contact-list-item.view :as contact-list-item]
     [status-im.common.contact-list.view :as contact-list]
     [status-im.common.home.actions.view :as actions]
@@ -28,26 +27,28 @@
 
 (defn add-member-contact-item-render
   [{:keys [public-key] :as item} _ _ {:keys [group admin? current-pk]}]
-  (let [{:keys [contacts]} group
-        member?            (contains? contacts public-key)
-        checked?           (reagent/atom member?)]
-    (if (or (= current-pk public-key) (and (not admin?) member?))
-      (fn []
+  (let [{:keys [contacts]}     group
+        member?                (contains? contacts public-key)
+        selected?              (or member? (rf/sub [:contacts/is-participant-selected? public-key]))
+        [checked? set-checked] (rn/use-state selected?)
+        disabled?              (or (= current-pk public-key) (and (not admin?) member?))]
+    (let [on-toggle (fn []
+                      (set-checked (not checked?))
+                      (group-chat-member-toggle member? (not checked?) public-key))]
+      (if disabled?
         [contact-list-item/contact-list-item
          {:disabled? true
           :accessory {:disabled? true
                       :type      :checkbox
-                      :checked?  @checked?}}
-         item])
-      (fn []
-        (let [on-toggle #(group-chat-member-toggle member? (swap! checked? not) public-key)]
-          [contact-list-item/contact-list-item
-           {:on-press                on-toggle
-            :allow-multiple-presses? true
-            :accessory               {:type     :checkbox
-                                      :checked? @checked?
-                                      :on-check on-toggle}}
-           item])))))
+                      :checked?  checked?}}
+         item]
+        [contact-list-item/contact-list-item
+         {:disabled? (or disabled? (and admin? member?))
+          :on-press  (when-not disabled? on-toggle)
+          :accessory {:type     :checkbox
+                      :checked? checked?
+                      :on-check on-toggle}}
+         item]))))
 
 (defn add-manage-members
   [{:keys [scroll-enabled? on-scroll]}]
@@ -144,7 +145,10 @@
                                                {:content (fn [] [actions/group-details-actions
                                                                  group])}])}]
        :icon-name  :i/arrow-left
-       :on-press   #(rf/dispatch [:navigate-back])}]
+       :on-press   (fn []
+                     (rf/dispatch [:group/clear-added-participants])
+                     (rf/dispatch [:group/clear-removed-members])
+                     (rf/dispatch [:navigate-back]))}]
      [quo/page-top
       {:title  chat-name
        :avatar {:group?              true
