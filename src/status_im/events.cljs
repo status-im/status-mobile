@@ -27,7 +27,8 @@
     status-im.contexts.contact.blocking.events
     status-im.contexts.keycard.effects
     status-im.contexts.keycard.events
-    status-im.contexts.networks.events
+    status-im.contexts.network.effects
+    status-im.contexts.network.events
     status-im.contexts.onboarding.common.overlay.events
     status-im.contexts.onboarding.events
     status-im.contexts.profile.events

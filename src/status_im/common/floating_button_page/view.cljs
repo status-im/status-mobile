@@ -30,13 +30,15 @@
       (reset! ratom height))))
 
 (defn- init-keyboard-listeners
-  [{:keys [on-did-show scroll-view-ref]}]
+  [{:keys [on-did-show on-will-show scroll-view-ref]}]
   (let [keyboard-will-show? (reagent/atom false)
         keyboard-did-show?  (reagent/atom false)
         add-listener        (fn [listener callback]
                               (oops/ocall rn/keyboard "addListener" listener callback))
         will-show-listener  (add-listener "keyboardWillShow"
-                                          #(reset! keyboard-will-show? true))
+                                          (fn [e]
+                                            (reset! keyboard-will-show? true)
+                                            (when on-will-show (on-will-show e))))
         did-show-listener   (add-listener "keyboardDidShow"
                                           (fn [e]
                                             (reset! keyboard-did-show? true)
@@ -58,7 +60,8 @@
 
 (defn view
   [{:keys [header footer customization-color footer-container-padding header-container-style
-           content-container-style gradient-cover? keyboard-should-persist-taps shell-overlay?]
+           content-container-style gradient-cover? keyboard-should-persist-taps shell-overlay?
+           blur-options content-avoid-keyboard?]
     :or   {footer-container-padding (safe-area/get-top)}}
    & children]
   (reagent/with-let [scroll-view-ref              (atom nil)
@@ -69,29 +72,34 @@
                      content-container-height     (reagent/atom 0)
                      content-scroll-y             (reagent/atom 0)
                      keyboard-height              (reagent/atom 0)
+                     reset-keyboard-height        #(reset! keyboard-height (oops/oget
+                                                                            %
+                                                                            "endCoordinates.height"))
                      {:keys [keyboard-will-show?
                              keyboard-did-show?
                              remove-listeners]}   (init-keyboard-listeners
-                                                   {:scroll-view-ref scroll-view-ref
-                                                    :on-did-show
-                                                    (fn [e]
-                                                      (reset! keyboard-height
-                                                        (oops/oget e "endCoordinates.height")))})
+                                                   (cond-> {:scroll-view-ref scroll-view-ref}
+                                                     platform/ios?
+                                                     (assoc :on-will-show reset-keyboard-height)
+                                                     (not platform/ios?)
+                                                     (assoc :on-did-show reset-keyboard-height)))
                      set-header-height            (set-height-on-layout header-height)
                      set-content-container-height (set-height-on-layout content-container-height)
                      set-footer-container-height  (set-height-on-layout footer-container-height)
                      set-content-y-scroll         (fn [event]
                                                     (reset! content-scroll-y
-                                                      (oops/oget event "nativeEvent.contentOffset.y")))]
+                                                      (oops/oget event "nativeEvent.contentOffset.y")))
+                     bottom-safe-area             (safe-area/get-bottom)]
     (let [keyboard-shown?          (if platform/ios? @keyboard-will-show? @keyboard-did-show?)
           footer-container-padding (+ footer-container-padding (rf/sub [:alert-banners/top-margin]))
-          show-background?         (show-background {:window-height            window-height
-                                                     :footer-container-height  @footer-container-height
-                                                     :keyboard-height          @keyboard-height
-                                                     :content-scroll-y         @content-scroll-y
-                                                     :content-container-height @content-container-height
-                                                     :header-height            @header-height
-                                                     :keyboard-shown?          keyboard-shown?})]
+          show-background?         (show-background
+                                    {:window-height            window-height
+                                     :footer-container-height  @footer-container-height
+                                     :keyboard-height          @keyboard-height
+                                     :content-scroll-y         @content-scroll-y
+                                     :content-container-height @content-container-height
+                                     :header-height            @header-height
+                                     :keyboard-shown?          keyboard-shown?})]
       [:<>
        (when gradient-cover?
          [quo/gradient-cover {:customization-color customization-color}])
@@ -100,20 +108,28 @@
          {:on-layout set-header-height
           :style     header-container-style}
          header]
-        [gesture/scroll-view
-         {:ref                             set-scroll-ref
-          :on-scroll                       set-content-y-scroll
-          :scroll-event-throttle           64
-          :content-container-style         {:flex-grow      1
-                                            :padding-bottom (when @keyboard-did-show?
-                                                              @footer-container-height)}
-          :always-bounce-vertical          @keyboard-did-show?
-          :shows-vertical-scroll-indicator false
-          :keyboard-should-persist-taps    keyboard-should-persist-taps}
-         (into [rn/view
-                {:style     content-container-style
-                 :on-layout set-content-container-height}]
-               children)]
+        [(if content-avoid-keyboard? rn/keyboard-avoiding-view rn/view)
+         {:style
+          (if content-avoid-keyboard?
+            (style/content-keyboard-avoiding-view
+             {:top    @header-height
+              :bottom (if keyboard-shown?
+                        @footer-container-height
+                        (+ bottom-safe-area @footer-container-height))})
+            style/scroll-view-container)}
+         [gesture/scroll-view
+          {:ref                                  set-scroll-ref
+           :on-scroll                            set-content-y-scroll
+           :scroll-event-throttle                64
+           :content-container-style              {:flex-grow 1}
+           :always-bounce-vertical               @keyboard-did-show?
+           :automatically-adjust-keyboard-insets true
+           :shows-vertical-scroll-indicator      false
+           :keyboard-should-persist-taps         keyboard-should-persist-taps}
+          (into [rn/view
+                 {:style     content-container-style
+                  :on-layout set-content-container-height}]
+                children)]]
         [rn/keyboard-avoiding-view
          {:style                    style/keyboard-avoiding-view
           :keyboard-vertical-offset (if platform/ios? footer-container-padding 0)
@@ -121,8 +137,9 @@
          [floating-container/view
           {:on-layout       set-footer-container-height
            :keyboard-shown? keyboard-shown?
-           :blur?           show-background?
-           :shell-overlay?  shell-overlay?}
+           :blur-options    blur-options
+           :shell-overlay?  shell-overlay?
+           :blur?           show-background?}
           footer]]]])
     (finally
      (remove-listeners))))

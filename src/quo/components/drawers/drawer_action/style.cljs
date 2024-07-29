@@ -60,7 +60,7 @@
 
 (defn icon-color
   [{:keys [theme blur? type]}]
-  (let [theme-with-blur (if blur? :blue theme)
+  (let [theme-with-blur (if blur? :blur theme)
         matcher         [theme-with-blur type]]
     (case matcher
       ([:dark :main] [:light :main])     (colors/theme-colors colors/neutral-50 colors/neutral-40 theme)

@@ -115,13 +115,13 @@
                                              (comp :network-name first))
          address-activities     (->> (get activities current-viewing-account-address)
                                      (vals)
-                                     (sort :timestamp))]
+                                     (sort-by :timestamp))]
      (->> address-activities
           (keep #(process-activity-by-type chain-id->network-name %))
           (group-by (fn [{:keys [timestamp]}]
                       (datetime/timestamp->relative-short-date (* timestamp 1000))))
           (map (fn [[date activities]]
                  {:title     date
-                  :data      activities
+                  :data      (reverse activities)
                   :timestamp (:timestamp (first activities))}))
           (sort-by (fn [{:keys [timestamp]}] (- timestamp)))))))

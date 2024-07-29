@@ -126,14 +126,60 @@
       :photo-path          photo-path
       :incoming?           (not= public-key from)}]))
 
+(defn group-member
+  [literal]
+  (let [[primary-name _] (rf/sub [:contacts/contact-two-names-by-identity literal])
+        photo-path       (rf/sub [:chats/photo-path literal])]
+    [rn/view {:style style/group-member-mention}
+     [quo/user-avatar
+      {:full-name         primary-name
+       :profile-picture   photo-path
+       :status-indicator? false
+       :size              :xxxs
+       :ring?             false}]
+     [quo/text
+      {:weight :semi-bold
+       :style  {:margin-left 4}}
+      primary-name]]))
+
+
+(defn resolve-group-system-message
+  [{:keys [children]}]
+  (reduce (fn [acc {:keys [type literal]}]
+            (if (= type "mention")
+              (conj acc [group-member literal])
+              (conj acc
+                    [rn/view
+                     [quo/text literal]])))
+          [:<>]
+          children))
+
+
+(defn render-parsed-text
+  [content]
+  (reduce (fn [acc e]
+            (conj acc (resolve-group-system-message e)))
+          [quo/text]
+          (:parsed-text content)))
+
+(defn group-system-message
+  [{:keys [chat-id timestamp-str content]} type]
+  (let [{:keys [customization-color]} (rf/sub [:contacts/contact-by-address chat-id])]
+    [quo/system-message
+     {:type                type
+      :timestamp           timestamp-str
+      :customization-color customization-color
+      :child               (render-parsed-text content)}]))
+
 (defn system-message-content
   [{:keys [content-type quoted-message] :as message-data}]
+
   (if quoted-message
     [pin/pinned-message message-data]
     (condp = content-type
 
       constants/content-type-system-text
-      [system.text/text-content message-data]
+      [group-system-message message-data :group]
 
       constants/content-type-system-pinned-message
       [system.text/text-content message-data]

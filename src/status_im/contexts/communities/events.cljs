@@ -2,7 +2,6 @@
   (:require
     [clojure.string :as string]
     [legacy.status-im.data-store.communities :as data-store.communities]
-    [legacy.status-im.mailserver.core :as mailserver]
     [schema.core :as schema]
     [status-im.constants :as constants]
     [status-im.contexts.chat.messenger.messages.link-preview.events :as link-preview.events]
@@ -288,8 +287,7 @@
   (when-let [community (first communities)]
     {:db (-> db
              (assoc-in [:communities (:id community) :spectated] true))
-     :fx [[:dispatch [:communities/handle-community community]]
-          [:dispatch [::mailserver/request-messages]]]}))
+     :fx [[:dispatch [:communities/handle-community community]]]}))
 
 (rf/reg-event-fx :chat.ui/spectate-community-success spectate-community-success)
 

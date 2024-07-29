@@ -1,5 +1,5 @@
 #!/usr/bin/env groovy
-library 'status-jenkins-lib@v1.9.1'
+library 'status-jenkins-lib@v1.9.3'
 
 /* Options section can't access functions in objects. */
 def isPRBuild = utils.isPRBuild()
@@ -72,11 +72,7 @@ pipeline {
         stage('Upload') {
           steps { script {
             def urls = apks.collect { s5cmd.upload(it) }
-            if (urls.size() > 1) { /* Return only the universal APK. */
-              env.PKG_URL = urls.find { it.contains('universal') }
-            } else { /* If no universal is available pick first. */
-              env.PKG_URL = urls.first()
-            }
+            env.PKG_URL = urls.first()
             jenkins.setBuildDesc(APK: env.PKG_URL)
           } }
         }
