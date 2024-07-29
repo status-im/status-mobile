@@ -25,6 +25,12 @@
    (or currency constants/profile-default-currency)))
 
 (re-frame/reg-sub
+ :profile/syncing-on-mobile-network?
+ :<- [:profile/profile]
+ (fn [{:keys [syncing-on-mobile-network?]}]
+   (boolean syncing-on-mobile-network?)))
+
+(re-frame/reg-sub
  :profile/currency-symbol
  :<- [:profile/currency]
  (fn [currency-id]

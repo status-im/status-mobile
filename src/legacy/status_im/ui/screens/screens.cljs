@@ -13,7 +13,6 @@
     [legacy.status-im.ui.screens.glossary.view :as glossary]
     [legacy.status-im.ui.screens.help-center.views :as help-center]
     [legacy.status-im.ui.screens.log-level-settings.views :as log-level-settings]
-    [legacy.status-im.ui.screens.mobile-network-settings.view :as mobile-network-settings]
     [legacy.status-im.ui.screens.notifications-settings.views :as notifications-settings]
     [legacy.status-im.ui.screens.offline-messaging-settings.edit-mailserver.views :as edit-mailserver]
     [legacy.status-im.ui.screens.offline-messaging-settings.views :as offline-messaging-settings]
@@ -145,10 +144,6 @@
     :options   {:topBar (topbar-options :t/fleet-settings)
                 :insets {:top? true}}
     :component fleet-settings/fleet-settings}
-   {:name      :mobile-network-settings
-    :options   {:topBar (topbar-options :t/mobile-network-settings)
-                :insets {:top? true}}
-    :component mobile-network-settings/mobile-network-settings}
    {:name      :backup-settings
     :options   {:topBar (topbar-options :t/backup-settings)
                 :insets {:top? true}}
