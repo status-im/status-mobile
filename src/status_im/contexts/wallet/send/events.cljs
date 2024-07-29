@@ -504,6 +504,8 @@
      (let [suggested-routes-new-data (data-store/rpc->suggested-routes data)
            suggested-routes          (-> suggested-routes-new-data
                                          first
+                                         ;; if route is multichain, we remove it
+                                         (update :best (fn [best] (if (> (count best) 1) [] best)))
                                          (update :best #(map data-store/new->old-route-path %))
                                          (update :candidates #(map data-store/new->old-route-path %)))]
        {:fx [[:dispatch
