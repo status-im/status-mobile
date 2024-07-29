@@ -58,9 +58,7 @@
                                          {:content buy-token/view}])
          :bridge-action   (fn []
                             (rf/dispatch [:wallet/clean-send-data])
-                            (rf/dispatch [:wallet/wizard-navigate-forward
-                                          {:start-flow? true
-                                           :flow-id     :wallet-bridge-flow}]))
+                            (rf/dispatch [:wallet/start-bridge]))
          :swap-action     (when (ff/enabled? ::ff/wallet.swap)
                             #(rf/dispatch [:wallet.swap/start]))}])
      [quo/tabs
