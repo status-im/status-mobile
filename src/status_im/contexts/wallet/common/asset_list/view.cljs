@@ -9,6 +9,7 @@
   [{token-symbol  :symbol
     token-name    :name
     total-balance :total-balance
+    disabled?     :bridge-disabled?
     :as           token}
    _ _
    {:keys [currency currency-symbol on-token-press preselected-token-symbol]}]
@@ -25,7 +26,9 @@
       :fiat-value  fiat-formatted
       :networks    (seq (:networks token))
       :on-press    #(on-token-press token)
-      :state       (when (= preselected-token-symbol token-symbol)
+      :state       (cond
+                     disabled? :disabled
+                     (= preselected-token-symbol token-symbol)
                      :selected)}]))
 
 (defn view

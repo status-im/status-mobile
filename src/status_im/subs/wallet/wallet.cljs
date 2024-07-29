@@ -416,9 +416,15 @@
  :wallet/current-viewing-account-tokens-filtered
  :<- [:wallet/current-viewing-account]
  :<- [:wallet/network-details]
- (fn [[account networks] [_ query chain-ids]]
-   (let [tokens        (map (fn [token]
+ :<- [:wallet/wallet-send]
+ (fn [[account networks send-data] [_ query chain-ids]]
+   (prn send-data)
+   (let [tx-type       (:tx-type send-data)
+         tokens        (map (fn [token]
                               (assoc token
+                                     :bridge-disabled?  (and (= tx-type :tx/bridge)
+                                                             (send-utils/bridge-disabled? (:symbol
+                                                                                           token)))
                                      :networks          (network-utils/network-list token networks)
                                      :available-balance (utils/calculate-total-token-balance token)
                                      :total-balance     (utils/calculate-total-token-balance token
