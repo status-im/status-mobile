@@ -11,9 +11,6 @@
     legacy.status-im.fleet.core
     legacy.status-im.group-chats.core
     legacy.status-im.log-level.core
-    legacy.status-im.mailserver.constants
-    [legacy.status-im.mailserver.core :as mailserver]
-    legacy.status-im.mobile-sync-settings.core
     legacy.status-im.multiaccounts.login.core
     legacy.status-im.multiaccounts.logout.core
     [legacy.status-im.multiaccounts.model :as multiaccounts.model]
@@ -134,7 +131,6 @@
     (rf/merge cofx
               {:db                                   (dissoc db :app-in-background-since)
                :effects.biometric/get-supported-type nil}
-              (mailserver/process-next-messages-request)
               (when-not new-account?
                 (universal-links/process-stored-event))
               #(when-let [chat-id (:current-chat-id db)]
