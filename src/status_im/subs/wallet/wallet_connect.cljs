@@ -1,8 +1,6 @@
 (ns status-im.subs.wallet.wallet-connect
-  (:require [clojure.set :as set]
-            [clojure.string :as string]
+  (:require [clojure.string :as string]
             [re-frame.core :as rf]
-            [status-im.constants :as constants]
             [status-im.contexts.wallet.common.utils :as wallet-utils]
             [status-im.contexts.wallet.wallet-connect.core :as wallet-connect-core]
             [status-im.contexts.wallet.wallet-connect.transactions :as transactions]
@@ -66,16 +64,7 @@
  :<- [:profile/test-networks-enabled?]
  (fn [[sessions testnet-mode?]]
    (filter
-    (fn [{:keys [chains]}]
-      (let [chain-ids (set (map (fn [chain]
-                                  (-> chain
-                                      (string/split ":")
-                                      second
-                                      js/parseInt))
-                                chains))]
-        (if testnet-mode?
-          (set/subset? chain-ids (set/union constants/sepolia-chain-ids constants/goerli-chain-ids))
-          (set/subset? chain-ids constants/mainnet-chain-ids))))
+    (partial wallet-connect-core/session-networks-allowed? testnet-mode?)
     sessions)))
 
 (rf/reg-sub

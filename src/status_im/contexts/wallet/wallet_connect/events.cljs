@@ -67,7 +67,7 @@
 (rf/reg-event-fx
  :wallet-connect/on-session-proposal
  (fn [{:keys [db]} [proposal]]
-   (log/info "Received Wallet Connect session proposal: " {:id (:id proposal)})
+   (log/info "Received Wallet Connect session proposal: " proposal)
    (let [accounts                     (get-in db [:wallet :accounts])
          current-viewing-address      (get-in db [:wallet :current-viewing-account-address])
          available-accounts           (wallet-connect-core/filter-operable-accounts (vals accounts))
@@ -117,7 +117,7 @@
  :wallet-connect/on-session-delete
  (fn [{:keys [db]} [{:keys [topic] :as event}]]
    (when (wallet-connect-core/event-should-be-handled? db event)
-     (log/info "Received Wallet Connect session delete: " event)
+     (log/info "Received Wallet Connect session delete from the SDK: " event)
      {:fx [[:dispatch [:wallet-connect/disconnect-session topic]]]})))
 
 (rf/reg-event-fx
@@ -140,6 +140,7 @@
  (fn [{:keys [db]} [{:keys [topic on-success on-fail]}]]
    (let [web3-wallet    (get db :wallet-connect/web3-wallet)
          network-status (:network/status db)]
+     (log/info "Disconnecting dApp session" topic)
      (if (= network-status :online)
        {:fx [[:effects.wallet-connect/disconnect
               {:web3-wallet web3-wallet
@@ -262,6 +263,11 @@
                                (or (< expiry (/ now 1000))
                                    (not (contains? session-topics topic))))
                              persisted-sessions)]
+     (when (seq expired-sessions)
+       (log/info "Updating WalletConnect persisted sessions due to expired/inactive sessions"
+                 {:expired   expired-sessions
+                  :persisted persisted-sessions
+                  :active    sessions}))
      {:fx (mapv (fn [{:keys [topic]}]
                   [:dispatch [:wallet-connect/disconnect-session topic]])
                 expired-sessions)
@@ -324,6 +330,7 @@
 (rf/reg-event-fx
  :wallet-connect/disconnect-session
  (fn [{:keys [db]} [topic]]
+   (log/info "Removing session from persistance and state" topic)
    {:db (update db
                 :wallet-connect/sessions
                 (fn [sessions]

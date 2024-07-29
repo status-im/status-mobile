@@ -66,8 +66,7 @@
  :network/on-network-type-change
  (fn [{:keys [db]} [network-type expensive?]]
    {:db (assoc db :network/type network-type)
-    :fx [[:effects.network/notify-status-go network-type expensive?]
-         [:dispatch [:network/on-network-status-change]]]}))
+    :fx [[:effects.network/notify-status-go network-type expensive?]]}))
 
 (rf/reg-event-fx
  :network/on-network-status-change
