@@ -560,6 +560,8 @@
 (def ^:const multi-transaction-type-swap 3)
 (def ^:const multi-transaction-type-unknown 255)
 
+(def ^:const contract-function-signature-erc20-approve "approve(address,uint256)")
+
 (def ^:const bridge-name-transfer "Transfer")
 (def ^:const bridge-name-erc-721-transfer "ERC721Transfer")
 (def ^:const bridge-name-erc-1155-transfer "ERC1155Transfer")

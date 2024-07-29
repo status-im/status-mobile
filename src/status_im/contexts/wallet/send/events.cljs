@@ -10,6 +10,7 @@
     [status-im.contexts.wallet.send.utils :as send-utils]
     [taoensso.timbre :as log]
     [utils.address :as address]
+    [utils.hex :as utils.hex]
     [utils.money :as money]
     [utils.number]
     [utils.re-frame :as rf]))
@@ -583,6 +584,29 @@
                                        :gwei
                                        gas-price))))))
 
+(defn- approval-path
+  [{:keys [route from-address to-address token-address]}]
+  (let [{:keys [from]}                     route
+        from-chain-id                      (:chain-id from)
+        approval-amount-required           (:approval-amount-required route)
+        approval-amount-required-sanitized (-> approval-amount-required
+                                               (utils.hex/normalize-hex)
+                                               (native-module/hex-to-number))
+        approval-contract-address          (:approval-contract-address route)
+        data                               (native-module/encode-function-call
+                                            constants/contract-function-signature-erc20-approve
+                                            [approval-contract-address
+                                             approval-amount-required-sanitized])
+        tx-data                            (transaction-data {:from-address  from-address
+                                                              :to-address    to-address
+                                                              :token-address token-address
+                                                              :route         route
+                                                              :data          data
+                                                              :eth-transfer? false})]
+    {:BridgeName constants/bridge-name-transfer
+     :ChainID    from-chain-id
+     :TransferTx tx-data}))
+
 (defn- transaction-path
   [{:keys [from-address to-address token-id token-address route data eth-transfer?]}]
   (let [{:keys [bridge-name amount-in bonder-fees from
@@ -669,21 +693,32 @@
                              erc20-transfer?
                              (get-in token [:balances-per-chain first-route-from-chain-id :address]))
          to-address (get-in db [:wallet :ui :send :to-address])
-         transaction-paths (mapv (fn [route]
-                                   (let [data (when erc20-transfer?
-                                                (native-module/encode-transfer
-                                                 (address/normalized-hex to-address)
-                                                 (:amount-in route)))]
-                                     (transaction-path {:to-address    to-address
-                                                        :from-address  from-address
-                                                        :route         route
-                                                        :token-address token-address
-                                                        :token-id      (if collectible
-                                                                         (money/to-hex (js/parseInt
-                                                                                        token-id))
-                                                                         token-id)
-                                                        :data          data
-                                                        :eth-transfer? eth-transfer?})))
+         transaction-paths (into []
+                                 (mapcat
+                                  (fn [route]
+                                    (let [approval-required? (:approval-required route)
+                                          data               (when erc20-transfer?
+                                                               (native-module/encode-transfer
+                                                                (address/normalized-hex to-address)
+                                                                (:amount-in route)))
+                                          base-path          (transaction-path
+                                                              {:to-address    to-address
+                                                               :from-address  from-address
+                                                               :route         route
+                                                               :token-address token-address
+                                                               :token-id      (if collectible
+                                                                                (money/to-hex
+                                                                                 (js/parseInt token-id))
+                                                                                token-id)
+                                                               :data          data
+                                                               :eth-transfer? eth-transfer?})]
+                                      (if approval-required?
+                                        [(approval-path {:route         route
+                                                         :token-address token-address
+                                                         :from-address  from-address
+                                                         :to-address    to-address})
+                                         base-path]
+                                        [base-path]))))
                                  routes)
          request-params
          [(multi-transaction-command
