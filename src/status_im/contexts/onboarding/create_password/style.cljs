@@ -2,8 +2,6 @@
   (:require
     [quo.foundations.colors :as colors]))
 
-(def flex-fill {:flex 1})
-
 (def heading {:margin-bottom 20})
 (def heading-subtitle {:color colors/white})
 (def heading-title (assoc heading-subtitle :margin-bottom 8))
@@ -14,23 +12,15 @@
 (def space-between-inputs {:height 16})
 
 (def password-tips
-  {:flex-direction    :row
-   :justify-content   :space-between
-   :margin-horizontal 20})
+  {:flex-direction     :row
+   :justify-content    :space-between
+   :padding-horizontal 20})
 
-(def top-part
-  {:margin-horizontal 20
-   :margin-top        12})
+(def form-container
+  {:justify-content    :space-between
+   :padding-top        12
+   :padding-horizontal 20})
 
-(def bottom-part
-  {:flex            1
-   :margin-top      12
-   :justify-content :flex-end})
-
-(def disclaimer-container
-  {:margin-horizontal 20
-   :margin-vertical   4})
-
-(def button-container
-  {:margin-horizontal 20
-   :margin-vertical   12})
+(def disclaimer-container {:padding-horizontal 20})
+(def footer-container {:padding-bottom 12})
+(def footer-button-container {:margin-top 20 :padding-horizontal 20})

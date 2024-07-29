@@ -32,8 +32,7 @@
 
 (def system-message-base-wrapper
   {:flex-direction :row
-   :flex           1
-   :align-items    :center})
+   :flex           1})
 
 (def system-message-base-content-wrapper
   {:align-self     :center

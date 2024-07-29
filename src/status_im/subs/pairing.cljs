@@ -13,6 +13,12 @@
         (pairing/sort-installations installation-id))))
 
 (re-frame/reg-sub
+ :pairing/paired-devices-count
+ :<- [:pairing/installations]
+ (fn [installations]
+   (count (filter :enabled? (rest installations)))))
+
+(re-frame/reg-sub
  :pairing/enabled-installations
  :<- [:pairing/installations]
  (fn [installations]

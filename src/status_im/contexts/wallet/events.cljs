@@ -291,7 +291,11 @@
 (rf/reg-event-fx :wallet/start-bridge
  (fn [{:keys [db]}]
    {:db (assoc-in db [:wallet :ui :send :tx-type] :tx/bridge)
-    :fx [[:dispatch [:open-modal :screen/wallet.bridge-select-asset]]]}))
+    :fx [[:dispatch
+          [:wallet/wizard-navigate-forward
+           {:start-flow? true
+            :flow-id     :wallet-bridge-flow}]]]}))
+
 
 (rf/reg-event-fx :wallet/select-bridge-network
  (fn [{:keys [db]} [{:keys [network-chain-id stack-id]}]]
