@@ -698,8 +698,9 @@
      {:json-rpc/call [{:method     "wallet_createMultiTransaction"
                        :params     request-params
                        :on-success (fn [result]
-                                     (rf/dispatch [:wallet/add-authorized-transaction result])
-                                     (rf/dispatch [:hide-bottom-sheet]))
+                                     (when result
+                                       (rf/dispatch [:wallet/add-authorized-transaction result])
+                                       (rf/dispatch [:hide-bottom-sheet])))
                        :on-error   (fn [error]
                                      (log/error "failed to send transaction"
                                                 {:event  :wallet/send-transaction
@@ -709,6 +710,23 @@
                                                    {:id   :send-transaction-error
                                                     :type :negative
                                                     :text (:message error)}]))}]})))
+
+(rf/reg-event-fx :wallet/proceed-with-transactions-signatures
+ (fn [_ [signatures]]
+   {:json-rpc/call [{:method     "wallet_proceedWithTransactionsSignatures"
+                     :params     [signatures]
+                     :on-success (fn [result]
+                                   (when result
+                                     (rf/dispatch [:wallet/add-authorized-transaction result])
+                                     (rf/dispatch [:hide-bottom-sheet])))
+                     :on-error   (fn [error]
+                                   (log/error "failed to proceed-with-transactions-signatures"
+                                              {:event :wallet/proceed-with-transactions-signatures
+                                               :error error})
+                                   (rf/dispatch [:toasts/upsert
+                                                 {:id   :send-transaction-error
+                                                  :type :negative
+                                                  :text (:message error)}]))}]}))
 
 (rf/reg-event-fx
  :wallet/select-from-account

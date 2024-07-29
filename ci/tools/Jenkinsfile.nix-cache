@@ -1,5 +1,5 @@
 #!/usr/bin/env groovy
-library 'status-jenkins-lib@v1.9.1'
+library 'status-jenkins-lib@v1.9.3'
 
 pipeline {
   agent { label params.AGENT_LABEL }

@@ -68,7 +68,7 @@
      :blur?       true
      :action      :arrow}
     {:title       (i18n/label :t/syncing)
-     :on-press    #(rf/dispatch [:open-modal :settings-syncing])
+     :on-press    #(rf/dispatch [:open-modal :screen/settings.syncing])
      :image-props :i/syncing
      :image       :icon
      :blur?       true

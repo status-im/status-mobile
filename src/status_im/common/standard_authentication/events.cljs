@@ -3,21 +3,35 @@
     [schema.core :as schema]
     [status-im.common.standard-authentication.enter-password.view :as enter-password]
     [status-im.common.standard-authentication.events-schema :as events-schema]
+    [status-im.contexts.keycard.pin.view :as keycard.pin]
     [taoensso.timbre :as log]
+    [utils.address]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]
     [utils.security.core :as security]))
 
+(rf/reg-fx :effects.keycard/call-on-auth-success
+ (fn [on-auth-success]
+   (when on-auth-success (on-auth-success ""))))
+
 (defn authorize
-  [{:keys [db]} [args]]
+  [{:keys [db]} [{:keys [on-auth-success keycard-supported?] :as args}]]
   (let [key-uid  (get-in db [:profile/profile :key-uid])
         keycard? (get-in db [:profile/profile :keycard-pairing])]
-    {:fx [[:effects.biometric/check-if-available
-           {:key-uid    key-uid
-            :on-success #(rf/dispatch [:standard-auth/authorize-with-biometric args])
-            :on-fail    (if keycard?
-                          #(rf/dispatch [:standard-auth/authorize-with-keycard args])
-                          #(rf/dispatch [:standard-auth/authorize-with-password args]))}]]}))
+    {:fx
+     [(if keycard?
+        (if keycard-supported?
+          [:effects.keycard/call-on-auth-success on-auth-success]
+          [:effects.utils/show-popup
+           {:title "This feature is not supported yet "
+            :content
+            "Keycard support is limited to logging in
+            and signing the sending transaction.
+            Use Status Desktop to access all functions."}])
+        [:effects.biometric/check-if-available
+         {:key-uid    key-uid
+          :on-success #(rf/dispatch [:standard-auth/authorize-with-biometric args])
+          :on-fail    #(rf/dispatch [:standard-auth/authorize-with-password args])}])]}))
 
 (schema/=> authorize events-schema/?authorize)
 (rf/reg-event-fx :standard-auth/authorize authorize)
@@ -94,6 +108,16 @@
         :button-icon-left    auth-button-icon-left
         :button-label        auth-button-label}])))
 
+(defn authorize-with-keycard
+  [_ [{:keys [on-complete]}]]
+  {:fx [[:dispatch
+         [:show-bottom-sheet
+          {:hide-on-background-press? false
+           :on-close                  #(rf/dispatch [:standard-auth/reset-login-password])
+           :content                   (fn []
+                                        [keycard.pin/auth {:on-complete on-complete}])}]]]})
+(rf/reg-event-fx :standard-auth/authorize-with-keycard authorize-with-keycard)
+
 (defn authorize-with-password
   [_ [{:keys [on-close theme blur?] :as args}]]
   {:fx [[:dispatch [:standard-auth/reset-login-password]]
@@ -110,7 +134,9 @@
 (rf/reg-event-fx
  :standard-auth/reset-login-password
  (fn [{:keys [db]}]
-   {:db (update db :profile/login dissoc :password :error)}))
+   {:db (-> db
+            (update :profile/login dissoc :password :error)
+            (update :keycard dissoc :pin))}))
 
 (rf/reg-fx
  :standard-auth/on-close

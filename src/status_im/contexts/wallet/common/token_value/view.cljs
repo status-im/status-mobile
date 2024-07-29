@@ -1,6 +1,7 @@
 (ns status-im.contexts.wallet.common.token-value.view
   (:require [quo.core :as quo]
             [status-im.common.not-implemented :as not-implemented]
+            [status-im.contexts.wallet.send.utils :as send-utils]
             [status-im.contexts.wallet.sheets.buy-token.view :as buy-token]
             [status-im.feature-flags :as ff]
             [utils.i18n :as i18n]
@@ -39,6 +40,7 @@
   {:icon                :i/bridge
    :accessibility-label :bridge
    :label               (i18n/label :t/bridge)
+   :disabled?           (:bridge-disabled? bridge-params)
    :on-press            (fn []
                           (rf/dispatch [:hide-bottom-sheet])
                           (rf/dispatch [:wallet/bridge-select-token bridge-params]))})
@@ -67,20 +69,31 @@
 
 (defn token-value-drawer
   [token watch-only? entry-point]
-  (let [token-symbol          (:token token)
-        token-data            (first (rf/sub [:wallet/current-viewing-account-tokens-filtered
-                                              token-symbol]))
-        selected-account?     (rf/sub [:wallet/current-viewing-account-address])
-        token-owners          (rf/sub [:wallet/operable-addresses-with-token-symbol token-symbol])
-        send-or-bridge-params (if selected-account?
-                                {:token       token-data
-                                 :stack-id    :screen/wallet.accounts
-                                 :start-flow? true
-                                 :owners      token-owners}
-                                {:token-symbol token-symbol
-                                 :stack-id     :wallet-stack
-                                 :start-flow?  true
-                                 :owners       token-owners})]
+  (let [token-symbol      (:token token)
+        token-data        (first (rf/sub [:wallet/current-viewing-account-tokens-filtered
+                                          token-symbol]))
+        selected-account? (rf/sub [:wallet/current-viewing-account-address])
+        token-owners      (rf/sub [:wallet/operable-addresses-with-token-symbol token-symbol])
+        send-params       (if selected-account?
+                            {:token       token-data
+                             :stack-id    :screen/wallet.accounts
+                             :start-flow? true
+                             :owners      token-owners}
+                            {:token-symbol token-symbol
+                             :stack-id     :wallet-stack
+                             :start-flow?  true
+                             :owners       token-owners})
+        bridge-params     (if selected-account?
+                            {:token            token-data
+                             :bridge-disabled? (send-utils/bridge-disabled? token-symbol)
+                             :stack-id         :screen/wallet.accounts
+                             :start-flow?      true
+                             :owners           token-owners}
+                            {:token-symbol     token-symbol
+                             :bridge-disabled? (send-utils/bridge-disabled? token-symbol)
+                             :stack-id         :wallet-stack
+                             :start-flow?      true
+                             :owners           token-owners})]
     [quo/action-drawer
      [(cond->> [(when (ff/enabled? ::ff/wallet.assets-modal-manage-tokens)
                   (action-manage-tokens watch-only?))
@@ -88,11 +101,11 @@
                   (action-hide))]
         (not watch-only?) (concat [(action-buy)
                                    (when (seq token-owners)
-                                     (action-send send-or-bridge-params entry-point))
+                                     (action-send send-params entry-point))
                                    (action-receive selected-account?)
                                    (when (ff/enabled? ::ff/wallet.swap) (action-swap))
                                    (when (seq (seq token-owners))
-                                     (action-bridge send-or-bridge-params))]))]]))
+                                     (action-bridge bridge-params))]))]]))
 
 (defn view
   [item _ _ {:keys [watch-only? entry-point]}]

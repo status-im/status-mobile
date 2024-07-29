@@ -215,15 +215,13 @@ build-fdroid: ##@build Build release for F-Droid
 build-android: export BUILD_ENV ?= prod
 build-android: export BUILD_TYPE ?= nightly
 build-android: export ORG_GRADLE_PROJECT_versionCode ?= $(TMP_BUILD_NUMBER)
-build-android: export ANDROID_ABI_SPLIT ?= false
-build-android: export ANDROID_ABI_INCLUDE ?= armeabi-v7a;arm64-v8a;x86
 build-android: ##@build Build unsigned Android APK
 	@scripts/build-android.sh
 
 release-android: export TARGET := keytool
 release-android: export KEYSTORE_PATH ?= $(HOME)/.gradle/status-im.keystore
 release-android: keystore build-android ##@build Build signed Android APK
-	@scripts/sign-android.sh result/app-release-unsigned.apk
+	@scripts/sign-android.sh result/app-arm64-v8a-release-unsigned.apk
 
 release-ios: export TARGET := ios
 release-ios: export IOS_STATUS_GO_TARGETS := ios/arm64

@@ -56,6 +56,7 @@
      change-password-loading]
     [status-im.contexts.profile.settings.screens.password.change-password.view :as change-password]
     [status-im.contexts.profile.settings.screens.password.view :as settings-password]
+    [status-im.contexts.profile.settings.screens.syncing.view :as settings.syncing]
     [status-im.contexts.profile.settings.view :as settings]
     [status-im.contexts.settings.privacy-and-security.view :as settings.privacy-and-security]
     [status-im.contexts.settings.wallet.keypairs-and-accounts.missing-keypairs.encrypted-qr.view
@@ -84,7 +85,7 @@
     [status-im.contexts.syncing.how-to-pair.view :as how-to-pair]
     [status-im.contexts.syncing.scan-sync-code-page.view :as scan-sync-code-page]
     [status-im.contexts.syncing.setup-syncing.view :as settings-setup-syncing]
-    [status-im.contexts.syncing.syncing-devices-list.view :as settings-syncing]
+    [status-im.contexts.syncing.syncing-devices-list.view :as syncing-devices-list]
     [status-im.contexts.wallet.account.edit-account.view :as wallet-edit-account]
     [status-im.contexts.wallet.account.share-address.view :as wallet-share-address]
     [status-im.contexts.wallet.account.view :as wallet-accounts]
@@ -147,7 +148,7 @@
      :component shell/shell-stack}
 
     {:name      :shell-qr-reader
-     :options   (assoc options/dark-screen :modalPresentationStyle :overCurrentContext)
+     :options   options/dark-screen
      :component shell-qr-reader/view}
 
     {:name      :chat
@@ -241,9 +242,9 @@
      :options   options/transparent-screen-options
      :component settings/view}
 
-    {:name      :settings-syncing
+    {:name      :screen/paired-devices
      :options   options/transparent-modal-screen-options
-     :component settings-syncing/view}
+     :component syncing-devices-list/view}
 
     {:name      :settings-setup-syncing
      :options   options/transparent-screen-options
@@ -369,7 +370,7 @@
                                       :popStackOnPress     false}}}
 
     {:name      :scan-sync-code-page
-     :options   options/dark-screen
+     :options   options/transparent-modal-screen-options
      :component scan-sync-code-page/view}
 
     {:name      :screen/onboarding.sign-in-intro
@@ -387,9 +388,9 @@
      :component sign-in/view}
 
     {:name      :screen/onboarding.syncing-progress
-     :options   {:theme      :dark
-                 :layout     options/onboarding-layout
-                 :popGesture false}
+     :options   (assoc options/dark-screen
+                       :popGesture
+                       false)
      :component syncing-devices/view}
 
     {:name      :screen/onboarding.syncing-progress-intro
@@ -513,9 +514,7 @@
      :component wallet-transaction-progress/view}
 
     {:name      :screen/wallet.scan-address
-     :options   (merge
-                 options/dark-screen
-                 {:modalPresentationStyle :overCurrentContext})
+     :options   options/dark-screen
      :component wallet-scan-address/view}
 
     {:name      :screen/wallet.swap-select-asset-to-pay
@@ -536,9 +535,7 @@
      :component wallet-swap-set-spending-cap/view}
 
     {:name      :scan-profile-qr-code
-     :options   (merge
-                 options/dark-screen
-                 {:modalPresentationStyle :overCurrentContext})
+     :options   options/dark-screen
      :component scan-profile-qr-page/view}
 
     {:name      :invite-people-community
@@ -564,9 +561,7 @@
      :component wallet-connected-dapps/view}
 
     {:name      :screen/wallet.scan-dapp
-     :options   (merge
-                 options/dark-screen
-                 {:modalPresentationStyle :overCurrentContext})
+     :options   options/dark-screen
      :component wallet-scan-dapp/view}
 
     ;; Settings
@@ -630,6 +625,10 @@
     {:name      :screen/settings-messages
      :options   options/transparent-modal-screen-options
      :component settings.messages/view}
+
+    {:name      :screen/settings.syncing
+     :options   options/transparent-modal-screen-options
+     :component settings.syncing/view}
 
     {:name      :screen/settings-blocked-users
      :options   options/transparent-modal-screen-options

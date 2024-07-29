@@ -1,4 +1,4 @@
-(ns legacy.status-im.network.core
+(ns utils.network.core
   (:require
     [clojure.string :as string]))
 
