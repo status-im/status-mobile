@@ -387,6 +387,11 @@
   (log/debug "[native-module] encode-transfer")
   (.encodeTransfer ^js (encryption) to-norm amount-hex))
 
+(defn encode-function-call
+  [method params]
+  (log/debug "[native-module] encode-function-call")
+  (.encodeFunctionCall ^js (encryption) method (types/clj->json params)))
+
 (defn decode-parameters
   [bytes-string types]
   (log/debug "[native-module] decode-parameters")

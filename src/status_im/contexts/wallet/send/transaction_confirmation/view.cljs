@@ -124,7 +124,7 @@
           :customization-color (:color account)}]])]))
 
 (defn- user-summary
-  [{:keys [account-props theme label accessibility-label summary-type recipient account-to?]}]
+  [{:keys [account-props theme label accessibility-label summary-type recipient bridge-tx? account-to?]}]
   (let [network-values    (rf/sub [:wallet/network-values account-to?])
         summary-info-type (case (:recipient-type recipient)
                             :saved-address :saved-account
@@ -144,7 +144,7 @@
        :networks?     true
        :values        network-values
        :account-props (cond-> account-props
-                        account-to?
+                        (and account-to? (not bridge-tx?))
                         (assoc
                          :size                32
                          :name                (:label recipient)
@@ -298,5 +298,6 @@
                                     from-account-props
                                     user-props)
              :recipient           recipient
+             :bridge-tx?          (= transaction-type :tx/bridge)
              :account-to?         true
              :theme               theme}]]]]))))
