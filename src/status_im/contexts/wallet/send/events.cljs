@@ -10,6 +10,7 @@
     [status-im.contexts.wallet.send.utils :as send-utils]
     [taoensso.timbre :as log]
     [utils.address :as address]
+    [utils.hex :as utils.hex]
     [utils.money :as money]
     [utils.number]
     [utils.re-frame :as rf]))
@@ -402,11 +403,11 @@
                                                       receiver-networks)))
                                          network-chain-ids))
          from-locked-amount (update-vals from-locked-amounts to-hex)
-         transaction-type (case tx-type
-                            :tx/collectible-erc-721  constants/send-type-erc-721-transfer
-                            :tx/collectible-erc-1155 constants/send-type-erc-1155-transfer
-                            :tx/bridge               constants/send-type-bridge
-                            constants/send-type-transfer)
+         send-type (case tx-type
+                     :tx/collectible-erc-721  constants/send-type-erc-721-transfer
+                     :tx/collectible-erc-1155 constants/send-type-erc-1155-transfer
+                     :tx/bridge               constants/send-type-bridge
+                     constants/send-type-transfer)
          balances-per-chain (when token (:balances-per-chain token))
          sender-token-available-networks-for-suggested-routes
          (when token
@@ -447,7 +448,7 @@
                                      :tx-type tx-type
                                      :receiver? true}))
          params [{:uuid                 (str (random-uuid))
-                  :sendType             transaction-type
+                  :sendType             send-type
                   :addrFrom             from-address
                   :addrTo               to-address
                   :amountIn             amount-in
@@ -583,6 +584,29 @@
                                        :gwei
                                        gas-price))))))
 
+(defn- approval-path
+  [{:keys [route from-address to-address token-address]}]
+  (let [{:keys [from]}                     route
+        from-chain-id                      (:chain-id from)
+        approval-amount-required           (:approval-amount-required route)
+        approval-amount-required-sanitized (-> approval-amount-required
+                                               (utils.hex/normalize-hex)
+                                               (native-module/hex-to-number))
+        approval-contract-address          (:approval-contract-address route)
+        data                               (native-module/encode-function-call
+                                            constants/contract-function-signature-erc20-approve
+                                            [approval-contract-address
+                                             approval-amount-required-sanitized])
+        tx-data                            (transaction-data {:from-address  from-address
+                                                              :to-address    to-address
+                                                              :token-address token-address
+                                                              :route         route
+                                                              :data          data
+                                                              :eth-transfer? false})]
+    {:BridgeName constants/bridge-name-transfer
+     :ChainID    from-chain-id
+     :TransferTx tx-data}))
+
 (defn- transaction-path
   [{:keys [from-address to-address token-id token-address route data eth-transfer?]}]
   (let [{:keys [bridge-name amount-in bonder-fees from
@@ -619,7 +643,8 @@
       (= bridge-name constants/bridge-name-hop)
       (assoc :HopTx
              (assoc tx-data
-                    :ChainID   to-chain-id
+                    :ChainID   from-chain-id
+                    :ChainIDTo to-chain-id
                     :Symbol    token-id
                     :Recipient to-address
                     :Amount    amount-in
@@ -636,14 +661,14 @@
                     :Amount    amount-in)))))
 
 (defn- multi-transaction-command
-  [{:keys [from-address to-address from-asset to-asset amount-out transfer-type]
-    :or   {transfer-type constants/send-type-transfer}}]
+  [{:keys [from-address to-address from-asset to-asset amount-out multi-transaction-type]
+    :or   {multi-transaction-type constants/multi-transaction-type-unknown}}]
   {:fromAddress from-address
    :toAddress   to-address
    :fromAsset   from-asset
    :toAsset     to-asset
    :fromAmount  amount-out
-   :type        transfer-type})
+   :type        multi-transaction-type})
 
 (rf/reg-event-fx :wallet/send-transaction
  (fn [{:keys [db]} [sha3-pwd]]
@@ -651,11 +676,9 @@
          first-route (first routes)
          from-address (get-in db [:wallet :current-viewing-account-address])
          transaction-type (get-in db [:wallet :ui :send :tx-type])
-         transaction-type-param (case transaction-type
-                                  :tx/collectible-erc-721  constants/send-type-erc-721-transfer
-                                  :tx/collectible-erc-1155 constants/send-type-erc-1155-transfer
-                                  :tx/bridge               constants/send-type-bridge
-                                  constants/send-type-transfer)
+         multi-transaction-type (if (= :tx/bridge transaction-type)
+                                  constants/multi-transaction-type-bridge
+                                  constants/multi-transaction-type-send)
          token (get-in db [:wallet :ui :send :token])
          collectible (get-in db [:wallet :ui :send :collectible])
          first-route-from-chain-id (get-in first-route [:from :chain-id])
@@ -670,30 +693,41 @@
                              erc20-transfer?
                              (get-in token [:balances-per-chain first-route-from-chain-id :address]))
          to-address (get-in db [:wallet :ui :send :to-address])
-         transaction-paths (mapv (fn [route]
-                                   (let [data (when erc20-transfer?
-                                                (native-module/encode-transfer
-                                                 (address/normalized-hex to-address)
-                                                 (:amount-in route)))]
-                                     (transaction-path {:to-address    to-address
-                                                        :from-address  from-address
-                                                        :route         route
-                                                        :token-address token-address
-                                                        :token-id      (if collectible
-                                                                         (money/to-hex (js/parseInt
-                                                                                        token-id))
-                                                                         token-id)
-                                                        :data          data
-                                                        :eth-transfer? eth-transfer?})))
+         transaction-paths (into []
+                                 (mapcat
+                                  (fn [route]
+                                    (let [approval-required? (:approval-required route)
+                                          data               (when erc20-transfer?
+                                                               (native-module/encode-transfer
+                                                                (address/normalized-hex to-address)
+                                                                (:amount-in route)))
+                                          base-path          (transaction-path
+                                                              {:to-address    to-address
+                                                               :from-address  from-address
+                                                               :route         route
+                                                               :token-address token-address
+                                                               :token-id      (if collectible
+                                                                                (money/to-hex
+                                                                                 (js/parseInt token-id))
+                                                                                token-id)
+                                                               :data          data
+                                                               :eth-transfer? eth-transfer?})]
+                                      (if approval-required?
+                                        [(approval-path {:route         route
+                                                         :token-address token-address
+                                                         :from-address  from-address
+                                                         :to-address    to-address})
+                                         base-path]
+                                        [base-path]))))
                                  routes)
          request-params
          [(multi-transaction-command
-           {:from-address  from-address
-            :to-address    to-address
-            :from-asset    token-id
-            :to-asset      token-id
-            :amount-out    (if eth-transfer? (:amount-out first-route) "0x0")
-            :transfer-type transaction-type-param})
+           {:from-address           from-address
+            :to-address             to-address
+            :from-asset             token-id
+            :to-asset               token-id
+            :amount-out             (if eth-transfer? (:amount-out first-route) "0x0")
+            :multi-transaction-type multi-transaction-type})
           transaction-paths
           sha3-pwd]]
      (log/info "multi transaction called")
