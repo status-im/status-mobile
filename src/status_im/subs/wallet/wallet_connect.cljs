@@ -59,6 +59,15 @@
     sessions)))
 
 (rf/reg-sub
+ :wallet-connect/sessions-for-current-account-and-networks
+ :<- [:wallet-connect/sessions-for-current-account]
+ :<- [:profile/test-networks-enabled?]
+ (fn [[sessions testnet-mode?]]
+   (filter
+    (partial wallet-connect-core/session-networks-allowed? testnet-mode?)
+    sessions)))
+
+(rf/reg-sub
  :wallet-connect/chain-id
  :<- [:wallet-connect/current-request]
  (fn [request]

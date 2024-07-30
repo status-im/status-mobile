@@ -1,7 +1,6 @@
 (ns status-im.contexts.profile.login.events
   (:require
     [legacy.status-im.data-store.settings :as data-store.settings]
-    [legacy.status-im.mailserver.core :as mailserver]
     [native-module.core :as native-module]
     [status-im.common.keychain.events :as keychain]
     [status-im.config :as config]
@@ -57,14 +56,15 @@
                   [{:method     "wakuext_startMessenger"
                     :on-success [:profile.login/messenger-started]
                     :on-error   #(log/error "failed to start messenger" %)}]]
-                 [:dispatch [:universal-links/generate-profile-url]]
                  [:dispatch [:community/fetch]]
-                 [:push-notifications/load-preferences]
-                 [:profile.config/get-node-config]
+
+                 ;; Wallet initialization can be delayed a little bit because we
+                 ;; need to free the queue for heavier events first, such as
+                 ;; loading chats and communities. This globally helps alleviate
+                 ;; stuttering immediately after login.
+                 [:dispatch-later [{:ms 500 :dispatch [:wallet/initialize]}]]
+
                  [:logs/set-level log-level]
-                 [:activity-center.notifications/fetch-pending-contact-requests-fx]
-                 [:activity-center/update-seen-state]
-                 [:activity-center.notifications/fetch-unread-count]
 
                  ;; Immediately try to open last chat. We can't wait until the
                  ;; messenger has started and has processed all chats because
@@ -90,40 +90,54 @@
 ;; login phase 2: we want to load and show chats faster, so we split login into 2 phases
 (rf/reg-event-fx :profile.login/get-chats-callback
  (fn [{:keys [db]}]
-   (let [{:keys [notifications-enabled? key-uid
-                 preview-privacy?]} (:profile/profile db)]
+   (let [{:keys [notifications-enabled? key-uid]} (:profile/profile db)]
      {:db db
       :fx [[:effects.profile/enable-local-notifications]
            [:contacts/initialize-contacts]
-           [:browser/initialize-browser]
-           [:dispatch [:mobile-network/on-network-status-change]]
-           [:group-chats/get-group-chat-invitations]
+           ;; The delay is arbitrary. We just want to give some time for the
+           ;; thread to process more important events first, but we can't delay
+           ;; too much otherwise the UX may degrade due to stale data.
+           [:dispatch-later [{:ms 1500 :dispatch [:profile.login/non-critical-initialization]}]]
+           [:dispatch [:network/check-expensive-connection]]
            [:profile.settings/get-profile-picture key-uid]
-           [:profile.settings/blank-preview-flag-changed preview-privacy?]
-           [:chat.ui/request-link-preview-whitelist]
-           [:visibility-status-updates/fetch]
-           [:switcher-cards/fetch]
            (when (ff/enabled? ::ff/wallet.wallet-connect)
              [:dispatch [:wallet-connect/init]])
            (when notifications-enabled?
              [:effects/push-notifications-enable])]})))
 
+;; Login phase 3: events at this phase can wait a bit longer to be processed in
+;; order to leave room for higher-priority or heavy weight events.
+(rf/reg-event-fx :profile.login/non-critical-initialization
+ (fn [{:keys [db]}]
+   (let [{:keys [preview-privacy?]} (:profile/profile db)]
+     {:fx [[:browser/initialize-browser]
+           [:logging/initialize-web3-client-version]
+           [:group-chats/get-group-chat-invitations]
+           [:profile.settings/blank-preview-flag-changed preview-privacy?]
+           (when (ff/enabled? ::ff/shell.jump-to)
+             [:switcher-cards/fetch])
+           [:visibility-status-updates/fetch]
+           [:dispatch [:universal-links/generate-profile-url]]
+           [:push-notifications/load-preferences]
+           [:profile.config/get-node-config]
+           [:activity-center.notifications/fetch-pending-contact-requests-fx]
+           [:activity-center/update-seen-state]
+           [:activity-center.notifications/fetch-unread-count]
+           [:pairing/get-our-installations]
+           [:json-rpc/call
+            [{:method     "admin_nodeInfo"
+              :on-success [:profile.login/node-info-fetched]
+              :on-error   #(log/error "node-info: failed error" %)}]]]})))
+
 (rf/reg-event-fx :profile.login/messenger-started
- (fn [{:keys [db]} [{:keys [mailservers]}]]
+ (fn [{:keys [db]} [_]]
    (let [new-account? (get db :onboarding/new-account?)]
-     {:db (-> db
-              (assoc :messenger/started? true)
-              (mailserver/add-mailservers mailservers))
+     {:db (assoc db :messenger/started? true)
       :fx [[:fetch-chats-preview
             {:on-success (fn [result]
                            (rf/dispatch [:chats-list/load-success result])
                            (rf/dispatch [:communities/get-user-requests-to-join])
                            (rf/dispatch [:profile.login/get-chats-callback]))}]
-           [:json-rpc/call
-            [{:method     "admin_nodeInfo"
-              :on-success [:profile.login/node-info-fetched]
-              :on-error   #(log/error "node-info: failed error" %)}]]
-           [:pairing/get-our-installations]
            (when-not new-account?
              [:dispatch [:universal-links/process-stored-event]])]})))
 
@@ -139,11 +153,9 @@
    (if error
      {:db (update db :profile/login #(-> % (dissoc :processing) (assoc :error error)))}
      {:db (dissoc db :profile/login)
-      :fx [[:logging/initialize-web3-client-version]
-           (when (and new-account? (not recovered-account?))
-             [:dispatch [:wallet-legacy/set-initial-blocks-range]])
-           [:dispatch [:ens/update-usernames ensUsernames]]
-           [:dispatch [:wallet/initialize]]
+      :fx [(when (and new-account? (not recovered-account?))
+             [:dispatch-later [{:ms 1000 :dispatch [:wallet-legacy/set-initial-blocks-range]}]])
+           [:dispatch-later [{:ms 2000 :dispatch [:ens/update-usernames ensUsernames]}]]
            [:dispatch [:profile.login/login-existing-profile settings account]]]})))
 
 (rf/reg-event-fx

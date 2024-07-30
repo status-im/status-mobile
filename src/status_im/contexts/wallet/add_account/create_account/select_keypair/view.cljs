@@ -73,7 +73,7 @@
   []
   (let [compressed-key                          (rf/sub [:profile/compressed-key])
         customization-color                     (rf/sub [:profile/customization-color])
-        keypairs                                (rf/sub [:wallet/keypairs-list])
+        keypairs                                (rf/sub [:wallet/fully-operable-keypairs-list])
         selected-keypair                        (rf/sub [:wallet/selected-keypair-uid])
         profile-picture                         (rf/sub [:profile/image])
         [selected-key-uid set-selected-key-uid] (rn/use-state selected-keypair)]

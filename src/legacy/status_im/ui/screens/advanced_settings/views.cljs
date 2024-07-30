@@ -5,6 +5,7 @@
     [legacy.status-im.ui.components.list.views :as list]
     [quo.core :as quo]
     [re-frame.core :as re-frame]
+    [status-im.feature-flags :as ff]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf])
   (:require-macros [legacy.status-im.utils.views :as views]))
@@ -20,8 +21,6 @@
            light-client-enabled?
            store-confirmations-enabled?
            current-fleet
-           test-networks-enabled?
-           is-goerli-enabled?
            peer-syncing-enabled?]}]
   (keep
    identity
@@ -61,14 +60,14 @@
      :on-press
      #(re-frame/dispatch [:open-modal :peers-stats])
      :chevron true}
-    {:size :small
-     :title "Telemetry"
-     :accessibility-label :telemetry-enabled
-     :container-margin-bottom 8
-     :on-press
-     #(re-frame/dispatch [:profile.settings/toggle-telemetry])
-     :accessory :switch
-     :active telemetry-enabled?}
+    (when (ff/enabled? ::ff/settings.telemetry)
+      {:size                    :small
+       :title                   "Telemetry"
+       :accessibility-label     :telemetry-enabled
+       :container-margin-bottom 8
+       :on-press                #(re-frame/dispatch [:profile.settings/toggle-telemetry])
+       :accessory               :switch
+       :active                  telemetry-enabled?})
     {:size :small
      :title (i18n/label :t/light-client-enabled)
      :accessibility-label :light-client-enabled
@@ -87,22 +86,6 @@
        [:wakuv2.ui/toggle-store-confirmations (not store-confirmations-enabled?)])
      :accessory :switch
      :active store-confirmations-enabled?}
-    {:size :small
-     :title "Testnet mode"
-     :accessibility-label :test-networks-enabled
-     :container-margin-bottom 8
-     :on-press
-     #(re-frame/dispatch [:profile.settings/toggle-test-networks])
-     :accessory :switch
-     :active test-networks-enabled?}
-    {:size :small
-     :title "Enable Goerli as test network"
-     :accessibility-label :enable-sepolia-as-test-network
-     :container-margin-bottom 8
-     :on-press
-     #(re-frame/dispatch [:profile.settings/toggle-goerli-test-network])
-     :accessory :switch
-     :active is-goerli-enabled?}
     {:size :small
      :title "Peer syncing"
      :accessibility-label :peer-syncing
@@ -124,9 +107,7 @@
 
 (views/defview advanced-settings
   []
-  (views/letsubs [test-networks-enabled?       [:profile/test-networks-enabled?]
-                  is-goerli-enabled?           [:profile/is-goerli-enabled?]
-                  light-client-enabled?        [:profile/light-client-enabled?]
+  (views/letsubs [light-client-enabled?        [:profile/light-client-enabled?]
                   store-confirmations-enabled? [:profile/store-confirmations-enabled?]
                   telemetry-enabled?           [:profile/telemetry-enabled?]
                   current-log-level            [:log-level/current-log-level]
@@ -147,8 +128,6 @@
                     :store-confirmations-enabled? store-confirmations-enabled?
                     :current-fleet                current-fleet
                     :dev-mode?                    false
-                    :test-networks-enabled?       test-networks-enabled?
-                    :is-goerli-enabled?           is-goerli-enabled?
                     :peer-syncing-enabled?        peer-syncing-enabled?})
        :key-fn    (fn [_ i] (str i))
        :render-fn render-item}]]))

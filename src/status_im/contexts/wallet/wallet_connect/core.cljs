@@ -1,5 +1,6 @@
 (ns status-im.contexts.wallet.wallet-connect.core
   (:require [clojure.edn :as edn]
+            [clojure.set :as set]
             [clojure.string :as string]
             [native-module.core :as native-module]
             [status-im.constants :as constants]
@@ -119,10 +120,24 @@
       (networks/get-network-details)
       (add-full-testnet-name)))
 
+(defn session-networks-allowed?
+  [testnet-mode? {:keys [chains]}]
+  (let [chain-ids (set (map (fn [chain]
+                              (-> chain
+                                  (string/split ":")
+                                  second
+                                  js/parseInt))
+                            chains))]
+    (if testnet-mode?
+      (set/subset? chain-ids (set/union constants/sepolia-chain-ids constants/goerli-chain-ids))
+      (set/subset? chain-ids constants/mainnet-chain-ids))))
+
 (defn event-should-be-handled?
   [db {:keys [topic]}]
-  (some #(= topic %)
-        (map :topic (:wallet-connect/sessions db))))
+  (let [testnet-mode? (get-in db [:profile/profile :test-networks-enabled?])]
+    (some #(and (= (:topic %) topic)
+                (session-networks-allowed? testnet-mode? %))
+          (:wallet-connect/sessions db))))
 
 (defn sdk-session->db-session
   [{:keys [topic expiry pairingTopic] :as session}]
@@ -134,6 +149,7 @@
    :iconUrl      (get-in session [:peer :metadata :icons 0])
    :url          (get-in session [:peer :metadata :url])
    :accounts     (get-in session [:namespaces :eip155 :accounts])
+   :chains       (get-in session [:namespaces :eip155 :chains])
    :disconnected false})
 
 (defn filter-operable-accounts

@@ -7,6 +7,5 @@
   [quo/page-nav
    {:icon-name           :i/close
     :background          :blur
-    :on-press            #(do (rf/dispatch [:wallet-connect/dismiss-request-modal])
-                              (rf/dispatch [:wallet-connect/reject-session-request]))
+    :on-press            #(rf/dispatch [:wallet-connect/dismiss-request-modal])
     :accessibility-label accessibility-label}])

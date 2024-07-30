@@ -58,16 +58,19 @@
     - :emoji - string - emoji used for displaying account avatar
     - :image-source - resource - image to display on :network, :collectible and :user
     - :theme - :light / :dark"
-  [{:keys [label customization-color type]
+  [{:keys [label customization-color type container-style]
     :as   props
     :or   {customization-color colors/neutral-80-opa-5}}]
   (let [theme (quo.theme/use-theme)]
     [rn/view
      {:accessibility-label :container
-      :style               (style/main (assoc props :customization-color customization-color) theme)}
+      :style               (merge (style/main (assoc props :customization-color customization-color)
+                                              theme)
+                                  container-style)}
      [left-view props]
      [text/text
-      {:style  (style/label type theme)
-       :weight :semi-bold
-       :size   :heading-1}
+      {:style           (style/label type theme)
+       :weight          :semi-bold
+       :number-of-lines 1
+       :size            :heading-1}
       label]]))

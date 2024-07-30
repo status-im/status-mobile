@@ -332,7 +332,9 @@
 (defn set-blank-preview-flag
   [flag]
   (log/debug "[native-module] set-blank-preview-flag")
-  (.setBlankPreviewFlag ^js (encryption) flag))
+  ;; Sometimes the app crashes during logout because `flag` is nil.
+  (when flag
+    (.setBlankPreviewFlag ^js (encryption) flag)))
 
 (defn get-device-model-info
   []
@@ -384,6 +386,11 @@
   [to-norm amount-hex]
   (log/debug "[native-module] encode-transfer")
   (.encodeTransfer ^js (encryption) to-norm amount-hex))
+
+(defn encode-function-call
+  [method params]
+  (log/debug "[native-module] encode-function-call")
+  (.encodeFunctionCall ^js (encryption) method (types/clj->json params)))
 
 (defn decode-parameters
   [bytes-string types]

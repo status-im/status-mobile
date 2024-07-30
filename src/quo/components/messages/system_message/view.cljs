@@ -127,6 +127,14 @@
       (when incoming? [split-text "sent you a contact request" theme true])
       [sm-timestamp timestamp theme]]]))
 
+(defn system-message-group
+  [{:keys [customization-color child]}]
+  [system-message-base
+   {:icon {:icon    :i/add-user
+           :color   (or customization-color :primary)
+           :opacity 5}}
+   [rn/view child]])
+
 (defn system-message-pinned
   [{:keys [pinned-by child customization-color timestamp]}]
   (let [theme (quo.theme/use-theme)]
@@ -183,6 +191,7 @@
        :contact-request [system-message-contact-request data]
        :added           [system-message-added data]
        :removed         [system-message-removed data]
+       :group           [system-message-group data]
        nil)]))
 
 (defn system-message

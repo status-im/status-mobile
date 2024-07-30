@@ -291,6 +291,7 @@
 (def ^:const wallet-connect-session-delete-event "session_delete")
 (def ^:const wallet-connect-user-rejected-error-key "USER_REJECTED")
 (def ^:const wallet-connect-user-disconnected-reason-key "USER_DISCONNECTED")
+(def ^:const wallet-connect-user-rejected-chains-error-key "USER_REJECTED_CHAINS")
 
 (def ^:const transaction-pending-type-wallet-connect-transfer "WalletConnectTransfer")
 
@@ -553,10 +554,20 @@
 (def ^:const send-type-erc-721-transfer 6)
 (def ^:const send-type-erc-1155-transfer 7)
 
+(def ^:const multi-transaction-type-send 0)
+(def ^:const multi-transaction-type-approve 1)
+(def ^:const multi-transaction-type-bridge 2)
+(def ^:const multi-transaction-type-swap 3)
+(def ^:const multi-transaction-type-unknown 255)
+
+(def ^:const contract-function-signature-erc20-approve "approve(address,uint256)")
+
 (def ^:const bridge-name-transfer "Transfer")
 (def ^:const bridge-name-erc-721-transfer "ERC721Transfer")
 (def ^:const bridge-name-erc-1155-transfer "ERC1155Transfer")
 (def ^:const bridge-name-hop "Hop")
+
+(def ^:const bridge-assets #{"ETH" "USDT" "USDC" "DAI"})
 
 (def ^:const wallet-contract-type-uknown 0)
 (def ^:const wallet-contract-type-erc-20 1)

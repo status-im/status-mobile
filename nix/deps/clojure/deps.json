@@ -711,11 +711,11 @@
   },
 
   {
-    "path": "nubank/matcher-combinators/3.8.8/matcher-combinators-3.8.8",
+    "path": "nubank/matcher-combinators/3.9.1/matcher-combinators-3.9.1",
     "host": "https://repo.clojars.org",
     "jar": {
-      "sha1": "4c94bd510f0c18a20191e46dd6becedebc640bbd",
-      "sha256": "0wpla2hx0s4mda58ndyd8938zmnz1gyhgfr6pzfphy27xfbvsssl"
+      "sha1": "f0830a112cae8ee931a90d9f39214a0ed4d44150",
+      "sha256": "1rjcgqhms84xmnhs7sqcd3b2dpa37mmzgz2yz33yz2rdb9skl96g"
     }
   },
 

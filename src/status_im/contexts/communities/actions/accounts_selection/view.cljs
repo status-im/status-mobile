@@ -22,7 +22,7 @@
         airdrop-account (rf/sub [:communities/airdrop-account id])
         revealed-accounts (rf/sub [:communities/accounts-to-reveal id])
         revealed-accounts-count (count revealed-accounts)
-        wallet-accounts-count (count (rf/sub [:wallet/operable-accounts-without-watched-accounts]))
+        wallet-accounts-count (count (rf/sub [:wallet/operable-accounts]))
         addresses-shared-text (if (= revealed-accounts-count wallet-accounts-count)
                                 (i18n/label :t/all-addresses)
                                 (i18n/label-pluralize

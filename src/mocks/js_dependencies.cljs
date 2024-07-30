@@ -171,7 +171,7 @@
   #js
    {:getEnforcing {}})
 
-(def net-info #js {})
+(def net-info #js {:addEventListener identity})
 (def react-native-biometrics #js {:default {}})
 (def react-native-static-safe-area-insets #js {:default {}})
 

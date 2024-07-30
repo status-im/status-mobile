@@ -21,3 +21,8 @@
   (if blur?
     (colors/theme-colors colors/neutral-80-opa-70 colors/white-opa-70 theme)
     (colors/theme-colors colors/neutral-50 colors/neutral-40 theme)))
+
+(def text
+  {:flex          1
+   ;; NOTE: assures the ellipses are not cut off when text is too long
+   :padding-right 2})

@@ -26,7 +26,7 @@
    "0xD" {:address   "0xD"
           :operable? false
           :position  3
-          :color     :flamingo
+          :color     :pink
           :emoji     "🦩"}})
 
 (def permissioned-accounts

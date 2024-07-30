@@ -1,8 +1,8 @@
 (ns legacy.status-im.data-store.communities
   (:require
     [clojure.set :as set]
-    [clojure.walk :as walk]
-    [status-im.constants :as constants]))
+    [status-im.constants :as constants]
+    [utils.transforms :as transforms]))
 
 (defn <-revealed-accounts-rpc
   [accounts]
@@ -22,19 +22,26 @@
   (reduce #(assoc %1 (key-fn %2) (<-request-to-join-community-rpc %2)) {} requests))
 
 (defn <-chats-rpc
-  [chats]
-  (reduce-kv (fn [acc k v]
-               (assoc acc
-                      (name k)
-                      (-> v
-                          (assoc :token-gated?                 (:tokenGated v)
-                                 :can-post?                    (:canPost v)
-                                 :can-view?                    (:canView v)
-                                 :hide-if-permissions-not-met? (:hideIfPermissionsNotMet v))
-                          (dissoc :canPost :tokenGated :canView :hideIfPermissionsNotMet)
-                          (update :members walk/stringify-keys))))
-             {}
-             chats))
+  "This transformation from RPC is optimized differently because there can be
+  thousands of members in all chats and we don't want to transform them from JS
+  to CLJS because they will only be used to list community members or community
+  chat members."
+  [chats-js]
+  (let [chat-key-fn (fn [k]
+                      (case k
+                        "tokenGated"              :token-gated?
+                        "canPost"                 :can-post?
+                        "can-view"                :can-view?
+                        "hideIfPermissionsNotMet" :hide-if-permissions-not-met?
+                        (keyword k)))
+        chat-val-fn (fn [k v]
+                      (if (= "members" k)
+                        v
+                        (transforms/js->clj v)))]
+    (transforms/<-js-map
+     chats-js
+     {:val-fn (fn [_ v]
+                (transforms/<-js-map v {:key-fn chat-key-fn :val-fn chat-val-fn}))})))
 
 (defn <-categories-rpc
   [categ]
@@ -48,49 +55,59 @@
   [token-permission]
   (= (:type token-permission) constants/community-token-permission-become-member))
 
+(defn- rename-community-key
+  [k]
+  (case k
+    "canRequestAccess"            :can-request-access?
+    "canManageUsers"              :can-manage-users?
+    "canDeleteMessageForEveryone" :can-delete-message-for-everyone?
+    ;; This flag is misleading based on its name alone
+    ;; because it should not be used to decide if the user
+    ;; is *allowed* to join. Allowance is based on token
+    ;; permissions. Still, the flag can be used to know
+    ;; whether or not the user will have to wait until an
+    ;; admin approves a join request.
+    "canJoin"                     :can-join?
+    "requestedToJoinAt"           :requested-to-join-at
+    "isMember"                    :is-member?
+    "outroMessage"                :outro-message
+    "adminSettings"               :admin-settings
+    "tokenPermissions"            :token-permissions
+    "communityTokensMetadata"     :tokens-metadata
+    "introMessage"                :intro-message
+    "muteTill"                    :muted-till
+    "lastOpenedAt"                :last-opened-at
+    "joinedAt"                    :joined-at
+    (keyword k)))
+
 (defn <-rpc
-  [c]
-  (-> c
-      (set/rename-keys
-       {:canRequestAccess            :can-request-access?
-        :canManageUsers              :can-manage-users?
-        :canDeleteMessageForEveryone :can-delete-message-for-everyone?
-        ;; This flag is misleading based on its name alone
-        ;; because it should not be used to decide if the user
-        ;; is *allowed* to join. Allowance is based on token
-        ;; permissions. Still, the flag can be used to know
-        ;; whether or not the user will have to wait until an
-        ;; admin approves a join request.
-        :canJoin                     :can-join?
-        :requestedToJoinAt           :requested-to-join-at
-        :isMember                    :is-member?
-        :outroMessage                :outro-message
-        :adminSettings               :admin-settings
-        :tokenPermissions            :token-permissions
-        :communityTokensMetadata     :tokens-metadata
-        :introMessage                :intro-message
-        :muteTill                    :muted-till
-        :lastOpenedAt                :last-opened-at
-        :joinedAt                    :joined-at})
-      (update :admin-settings
-              set/rename-keys
-              {:pinMessageAllMembersEnabled :pin-message-all-members-enabled?})
-      (update :members walk/stringify-keys)
-      (update :chats <-chats-rpc)
-      (update :token-permissions seq)
-      (update :categories <-categories-rpc)
-      (assoc :role-permissions?
-             (->> c
-                  :tokenPermissions
-                  vals
-                  (some role-permission?)))
-      (assoc :membership-permissions?
-             (->> c
-                  :tokenPermissions
-                  vals
-                  (some membership-permission?)))
-      (assoc :token-images
-             (reduce (fn [acc {sym :symbol image :image}]
-                       (assoc acc sym image))
-                     {}
-                     (:communityTokensMetadata c)))))
+  [c-js]
+  (let [community (transforms/<-js-map
+                   c-js
+                   {:key-fn rename-community-key
+                    :val-fn (fn [k v]
+                              (case k
+                                "members" v
+                                "chats"   (<-chats-rpc v)
+                                (transforms/js->clj v)))})]
+    (-> community
+        (update :admin-settings
+                set/rename-keys
+                {:pinMessageAllMembersEnabled :pin-message-all-members-enabled?})
+        (update :token-permissions seq)
+        (update :categories <-categories-rpc)
+        (assoc :role-permissions?
+               (->> community
+                    :tokenPermissions
+                    vals
+                    (some role-permission?)))
+        (assoc :membership-permissions?
+               (->> community
+                    :tokenPermissions
+                    vals
+                    (some membership-permission?)))
+        (assoc :token-images
+               (reduce (fn [acc {sym :symbol image :image}]
+                         (assoc acc sym image))
+                       {}
+                       (:communityTokensMetadata community))))))

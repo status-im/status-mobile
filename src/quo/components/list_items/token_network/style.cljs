@@ -18,6 +18,7 @@
    :padding-vertical   8
    :border-radius      12
    :height             56
+   :opacity            (when (= state :disabled) 0.3)
    :background-color   (background-color state customization-color theme)})
 
 (defn check-color

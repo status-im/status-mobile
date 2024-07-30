@@ -151,3 +151,9 @@
  :<- [:toasts]
  (fn [toasts [_ toast-id & cursor]]
    (get-in toasts (into [:toasts toast-id] cursor))))
+
+(re-frame/reg-sub
+ :network/offline?
+ :<- [:network/status]
+ (fn [status]
+   (= status :offline)))

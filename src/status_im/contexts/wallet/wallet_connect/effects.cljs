@@ -50,11 +50,15 @@
 
 (rf/reg-fx
  :effects.wallet-connect/approve-session
- (fn [{:keys [web3-wallet proposal supported-namespaces on-success on-fail]}]
+ (fn [{:keys [web3-wallet proposal networks accounts on-success on-fail]}]
    (let [{:keys [params id]} proposal
-         approved-namespaces (wallet-connect/build-approved-namespaces
-                              params
-                              supported-namespaces)]
+         approved-namespaces (->> {:eip155
+                                   {:chains   networks
+                                    :accounts accounts
+                                    :methods  constants/wallet-connect-supported-methods
+                                    :events   constants/wallet-connect-supported-events}}
+                                  (wallet-connect/build-approved-namespaces
+                                   params))]
      (-> (wallet-connect/approve-session
           {:web3-wallet         web3-wallet
            :id                  id

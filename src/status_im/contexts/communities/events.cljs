@@ -2,7 +2,6 @@
   (:require
     [clojure.string :as string]
     [legacy.status-im.data-store.communities :as data-store.communities]
-    [legacy.status-im.mailserver.core :as mailserver]
     [schema.core :as schema]
     [status-im.constants :as constants]
     [status-im.contexts.chat.messenger.messages.link-preview.events :as link-preview.events]
@@ -39,17 +38,6 @@
 
 (rf/reg-event-fx :communities/handle-community handle-community)
 
-(schema/=> handle-community
-  [:=>
-   [:catn
-    [:cofx :schema.re-frame/cofx]
-    [:args
-     [:schema [:catn [:community-js map?]]]]]
-   [:maybe
-    [:map
-     [:db [:map [:communities map?]]]
-     [:fx vector?]]]])
-
 (rf/defn handle-removed-chats
   [{:keys [db]} chat-ids]
   {:db (reduce (fn [db chat-id]
@@ -84,10 +72,9 @@
 
 (rf/defn handle-communities
   {:events [:community/fetch-success]}
-  [{:keys [db]} communities]
-  {:fx
-   (->> communities
-        (map #(vector :dispatch [:communities/handle-community %])))})
+  [{:keys [db]} communities-js]
+  {:fx (map (fn [c] [:dispatch [:communities/handle-community c]])
+            communities-js)})
 
 (rf/reg-event-fx :communities/request-to-join-result
  (fn [{:keys [db]} [community-id request-id response-js]]
@@ -136,21 +123,30 @@
                 {}
                 categories))}))
 
+(rf/reg-event-fx :community/fetch-low-priority
+ (fn []
+   {:fx [[:json-rpc/call
+          [{:method      "wakuext_checkAndDeletePendingRequestToJoinCommunity"
+            :params      []
+            :js-response true
+            :on-success  [:sanitize-messages-and-process-response]
+            :on-error    #(log/info "failed to fetch communities" %)}
+           {:method     "wakuext_collapsedCommunityCategories"
+            :params     []
+            :on-success [:communities/fetched-collapsed-categories-success]
+            :on-error   #(log/error "failed to fetch collapsed community categories" %)}]]]}))
+
 (rf/reg-event-fx :community/fetch
  (fn [_]
-   {:json-rpc/call [{:method     "wakuext_serializedCommunities"
-                     :params     []
-                     :on-success #(rf/dispatch [:community/fetch-success %])
-                     :on-error   #(log/error "failed to fetch communities" %)}
-                    {:method      "wakuext_checkAndDeletePendingRequestToJoinCommunity"
-                     :params      []
-                     :js-response true
-                     :on-success  #(rf/dispatch [:sanitize-messages-and-process-response %])
-                     :on-error    #(log/info "failed to fetch communities" %)}
-                    {:method     "wakuext_collapsedCommunityCategories"
-                     :params     []
-                     :on-success #(rf/dispatch [:communities/fetched-collapsed-categories-success %])
-                     :on-error   #(log/error "failed to fetch collapsed community categories" %)}]}))
+   {:fx [[:json-rpc/call
+          [{:method      "wakuext_serializedCommunities"
+            :params      []
+            :on-success  [:community/fetch-success]
+            :js-response true
+            :on-error    #(log/error "failed to fetch communities" %)}]]
+         ;; Dispatch a little after 1000ms because other higher-priority events
+         ;; after login are being processed at the 1000ms mark.
+         [:dispatch-later [{:ms 1200 :dispatch [:community/fetch-low-priority]}]]]}))
 
 (defn update-previous-permission-addresses
   [{:keys [db]} [community-id]]
@@ -291,8 +287,7 @@
   (when-let [community (first communities)]
     {:db (-> db
              (assoc-in [:communities (:id community) :spectated] true))
-     :fx [[:dispatch [:communities/handle-community community]]
-          [:dispatch [::mailserver/request-messages]]]}))
+     :fx [[:dispatch [:communities/handle-community community]]]}))
 
 (rf/reg-event-fx :chat.ui/spectate-community-success spectate-community-success)
 

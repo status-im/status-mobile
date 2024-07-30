@@ -124,7 +124,7 @@
           :customization-color (:color account)}]])]))
 
 (defn- user-summary
-  [{:keys [account-props theme label accessibility-label summary-type recipient account-to?]}]
+  [{:keys [account-props theme label accessibility-label summary-type recipient bridge-tx? account-to?]}]
   (let [network-values    (rf/sub [:wallet/network-values account-to?])
         summary-info-type (case (:recipient-type recipient)
                             :saved-address :saved-account
@@ -144,7 +144,7 @@
        :networks?     true
        :values        network-values
        :account-props (cond-> account-props
-                        account-to?
+                        (and account-to? (not bridge-tx?))
                         (assoc
                          :size                32
                          :name                (:label recipient)
@@ -257,7 +257,8 @@
                                         :transaction-type   transaction-type}]
                                       (when (and (not loading-suggested-routes?) route (seq route))
                                         [standard-auth/slide-button
-                                         {:size                :size-48
+                                         {:keycard-supported?  true
+                                          :size                :size-48
                                           :track-text          (if (= transaction-type :tx/bridge)
                                                                  (i18n/label :t/slide-to-bridge)
                                                                  (i18n/label :t/slide-to-send))
@@ -265,8 +266,7 @@
                                           :customization-color account-color
                                           :on-auth-success     #(rf/dispatch
                                                                  [:wallet/send-transaction
-                                                                  (security/safe-unmask-data
-                                                                   %)])
+                                                                  (security/safe-unmask-data %)])
                                           :auth-button-label   (i18n/label :t/confirm)}])]
            :gradient-cover?          true
            :customization-color      (:color account)}
@@ -298,5 +298,6 @@
                                     from-account-props
                                     user-props)
              :recipient           recipient
+             :bridge-tx?          (= transaction-type :tx/bridge)
              :account-to?         true
              :theme               theme}]]]]))))

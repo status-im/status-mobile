@@ -274,7 +274,7 @@
 (rf/reg-event-fx :wallet/get-keypairs get-keypairs)
 
 (rf/reg-event-fx :wallet/bridge-select-token
- (fn [{:keys [db]} [{:keys [token token-symbol stack-id]}]]
+ (fn [{:keys [db]} [{:keys [token token-symbol stack-id start-flow?]}]]
    (let [missing-recipient? (-> db :wallet :ui :send :to-address nil?)
          to-address         (-> db :wallet :current-viewing-account-address)]
      {:db (cond-> db
@@ -285,13 +285,17 @@
       :fx [[:dispatch
             [:wallet/wizard-navigate-forward
              {:current-screen stack-id
-              :start-flow?    true
+              :start-flow?    start-flow?
               :flow-id        :wallet-bridge-flow}]]]})))
 
 (rf/reg-event-fx :wallet/start-bridge
  (fn [{:keys [db]}]
    {:db (assoc-in db [:wallet :ui :send :tx-type] :tx/bridge)
-    :fx [[:dispatch [:open-modal :screen/wallet.bridge-select-asset]]]}))
+    :fx [[:dispatch
+          [:wallet/wizard-navigate-forward
+           {:start-flow? true
+            :flow-id     :wallet-bridge-flow}]]]}))
+
 
 (rf/reg-event-fx :wallet/select-bridge-network
  (fn [{:keys [db]} [{:keys [network-chain-id stack-id]}]]

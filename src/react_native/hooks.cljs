@@ -4,11 +4,37 @@
     [oops.core :as oops]
     [react-native.core :as rn]))
 
+(defn- add-keyboard-listener
+  [listener callback]
+  (oops/ocall rn/keyboard "addListener" listener callback))
+
 (defn use-keyboard
   []
-  (let [kb (.useKeyboard hooks)]
-    {:keyboard-shown  (.-keyboardShown ^js kb)
-     :keyboard-height (.-keyboardHeight ^js kb)}))
+  (let [[keyboard-height set-keyboard-height] (rn/use-state 0)
+        [did-show? set-did-show]              (rn/use-state false)
+        [will-show? set-will-show]            (rn/use-state false)]
+    (rn/use-mount
+     (fn []
+       (let [will-show-listener (add-keyboard-listener "keyboardWillShow" #(set-will-show true))
+             did-show-listener  (add-keyboard-listener "keyboardDidShow"
+                                                       (fn [e]
+                                                         (set-did-show true)
+                                                         (set-keyboard-height
+                                                          (oops/oget e "endCoordinates.height"))))
+             will-hide-listener (add-keyboard-listener "keyboardWillHide" #(set-will-show false))
+             did-hide-listener  (add-keyboard-listener "keyboardDidHide"
+                                                       (fn [e]
+                                                         (set-did-show false)
+                                                         (when e
+                                                           (oops/oget e "endCoordinates.height"))))]
+         (fn []
+           (oops/ocall will-show-listener "remove")
+           (oops/ocall did-show-listener "remove")
+           (oops/ocall will-hide-listener "remove")
+           (oops/ocall did-hide-listener "remove")))))
+    {:keyboard-shown      did-show?
+     :keyboard-will-show? will-show?
+     :keyboard-height     keyboard-height}))
 
 (defn use-back-handler
   [handler]

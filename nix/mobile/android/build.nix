@@ -18,10 +18,10 @@
   buildUrl ? lib.getEnvWithDefault "ORG_GRADLE_PROJECT_buildUrl" null,
   statusGoSrcOverride ? lib.getEnvWithDefault "STATUS_GO_SRC_OVERRIDE" null,
   # If APKs should be split based on architectures
-  androidAbiSplit ? lib.getEnvWithDefault "ANDROID_ABI_SPLIT" "false",
+  androidAbiSplit ? lib.getEnvWithDefault "ANDROID_ABI_SPLIT" "true",
   # Android architectures to build for
   # Used to detect end-to-end builds
-  androidAbiInclude ? lib.getEnvWithDefault "ANDROID_ABI_INCLUDE" "armeabi-v7a;arm64-v8a;x86",
+  androidAbiInclude ? lib.getEnvWithDefault "ANDROID_ABI_INCLUDE" "arm64-v8a",
 }:
 
 let
