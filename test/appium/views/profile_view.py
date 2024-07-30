@@ -290,8 +290,11 @@ class ProfileView(BaseView):
         self.advertise_device_button = Button(self.driver, accessibility_id="advertise-device")
         self.sync_all_button = Button(self.driver, translation_id="sync-all-devices")
         self.syncing_button = Button(self.driver, accessibility_id="icon, Syncing, label-component, icon")
-        self.sync_plus_button = Button(self.driver,
-                                       xpath="//*[@text='Syncing']/following-sibling::android.view.ViewGroup[1]")
+        self.paired_devices_button = Button(self.driver,
+                                            accessibility_id="icon, Paired devices, 0 devices, label-component, icon")
+        self.sync_plus_button = Button(
+            self.driver,
+            xpath="//*[@text='Paired devices']/following-sibling::android.view.ViewGroup[@content-desc='icon']")
 
         # Keycard
         self.keycard_button = Button(self.driver, accessibility_id="keycard-button")
@@ -539,6 +542,7 @@ class ProfileView(BaseView):
 
     def get_sync_code(self):
         self.syncing_button.scroll_and_click()
+        self.paired_devices_button.click()
         self.sync_plus_button.click()
         for checkbox in Button(
                 self.driver,

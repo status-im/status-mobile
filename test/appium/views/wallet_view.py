@@ -160,7 +160,6 @@ class WalletView(BaseView):
         self.add_account_button.click()
         self.add_account_to_watch.click()
         self.address_to_watch_input.send_keys(address)
-        self.account_has_activity_label.wait_for_visibility_of_element()
         self.add_account_continue_button.click()
         SignInView(self.driver).profile_title_input.send_keys(account_name)
         self.add_watched_address_button.click()
