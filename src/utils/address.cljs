@@ -18,6 +18,11 @@
       hex
       (str hex-prefix hex))))
 
+(defn naked-address
+  [s]
+  (when s
+    (string/replace s hex-prefix "")))
+
 (defn address?
   [address]
   (native-module/address? address))
