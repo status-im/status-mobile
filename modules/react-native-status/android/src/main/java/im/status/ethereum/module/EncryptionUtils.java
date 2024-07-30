@@ -63,6 +63,11 @@ public class EncryptionUtils extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod(isBlockingSynchronousMethod = true)
+    public String encodeFunctionCall(final String method, final String paramsJSON) {
+        return Statusgo.encodeFunctionCall(method, paramsJSON);
+    }
+
+    @ReactMethod(isBlockingSynchronousMethod = true)
     public String decodeParameters(final String decodeParamJSON) {
         return Statusgo.decodeParameters(decodeParamJSON);
     }
