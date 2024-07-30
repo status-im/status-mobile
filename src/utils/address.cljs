@@ -86,9 +86,13 @@
     "0xa"    "oeth:"
     nil))
 
-(defn is-metamask-address?
+(defn split-metamask-address
   [address]
   (re-find regx-metamask-address address))
+
+(defn metamask-address?
+  [address]
+  (boolean (split-metamask-address address)))
 
 (defn eip-3770-address?
   "Checks if address follows EIP-3770 format which is default for Status"
@@ -98,11 +102,11 @@
 (defn supported-address?
   [s]
   (boolean (or (eip-3770-address? s)
-               (is-metamask-address? s))))
+               (metamask-address? s))))
 
 (defn metamask-address->status-address
   [metamask-address]
-  (when-let [[_ address metamask-network-suffix] (is-metamask-address? metamask-address)]
+  (when-let [[_ address metamask-network-suffix] (split-metamask-address metamask-address)]
     (when-let [status-network-prefix (eip-155-suffix->eip-3770-prefix metamask-network-suffix)]
       (str status-network-prefix address))))
 
@@ -112,11 +116,8 @@
     (eip-3770-address? address)
     address
 
-    (is-metamask-address? address)
-    (metamask-address->status-address address)
-
-    :else
-    nil))
+    (metamask-address? address)
+    (metamask-address->status-address address)))
 
 (defn extract-address-without-chains-info
   [address]

@@ -19,7 +19,7 @@
    :theme :dark
    :text  (i18n/label :t/invalid-qr)})
 
-(defn- is-text-a-status-url-for-path?
+(defn- text-a-status-url-for-path?
   [text path]
   (some #(string/starts-with? text %) (router/prepend-status-urls path)))
 
@@ -71,11 +71,11 @@
   [scanned-text]
   (cond
     (or
-     (is-text-a-status-url-for-path? scanned-text router/community-with-data-path)
-     (is-text-a-status-url-for-path? scanned-text router/channel-path))
+     (text-a-status-url-for-path? scanned-text router/community-with-data-path)
+     (text-a-status-url-for-path? scanned-text router/channel-path))
     (debounce/debounce-and-dispatch [:universal-links/handle-url scanned-text] 300)
 
-    (is-text-a-status-url-for-path? scanned-text router/user-with-data-path)
+    (text-a-status-url-for-path? scanned-text router/user-with-data-path)
     (let [address (extract-id scanned-text)]
       (load-and-show-profile address))
 

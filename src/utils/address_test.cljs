@@ -69,15 +69,15 @@
    {:metamask "ethereum:0x38cf6E0Ba4C4530735616e1Ee7ff5FbCB726fBd2:0xa" :status nil}
    {:metamask "ethereum:0x38cf6E0Ba4C4530735616e1Ee7ff5FbCB726fBd2" :status nil}])
 
-(deftest is-metamask-address?-test
+(deftest metamask-address?-test
   (testing "Check valid metamask addresses"
     (dorun
      (for [address valid-metamask-addresses]
-       (is (utils.address/is-metamask-address? address)))))
+       (is (utils.address/metamask-address? address)))))
   (testing "Check invalid metamask addresses"
     (dorun
      (for [address invalid-metamask-addresses]
-       (is (not (utils.address/is-metamask-address? address)))))))
+       (is (not (utils.address/metamask-address? address)))))))
 
 (deftest metamask-address->status-address-test
   (testing "Check metamask to status address conversion is valid"
