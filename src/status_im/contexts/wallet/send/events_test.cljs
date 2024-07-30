@@ -1,6 +1,7 @@
 (ns status-im.contexts.wallet.send.events-test
   (:require
-    [cljs.test :refer-macros [is testing]]
+    [cljs.test :refer-macros [is testing run-tests]]
+    matcher-combinators.test
     [re-frame.db :as rf-db]
     [status-im.contexts.wallet.common.utils.networks :as network-utils]
     status-im.contexts.wallet.send.events
@@ -14,7 +15,10 @@
    :description
    "dogs are cute and this one is the cutestdogs are cute and this one is the cutest"
    :ownership [{:address "0x01"
-                :balance balance}]})
+                :balance balance}]
+   :id {:contract-id {:address  "0x11"
+                      :chain-id 1}
+        :token-id    "some-id"}})
 
 (h/deftest-event :wallet/update-receiver-networks
   [event-id dispatch]
@@ -170,13 +174,14 @@
                            :networks #{{:chain-id 421614}
                                        {:chain-id 11155420}
                                        {:chain-id 11155111}}}
-        receiver-networks [421614 11155420]]
+        receiver-networks [421614 11155420]
+        expected-db       {:wallet {:ui {:other-props :value}}}]
     (reset! rf-db/app-db
       {:wallet {:ui {:send        {:token-display-name token-symbol
                                    :token              token
                                    :receiver-networks  receiver-networks}
                      :other-props :value}}})
-    (is (not (contains? (get-in (dispatch [event-id]) [:db :wallet :ui]) :send)))))
+    (is (match-strict? expected-db (:db (dispatch [event-id]))))))
 
 (h/deftest-event :wallet/select-address-tab
   [event-id dispatch]
@@ -187,38 +192,37 @@
 
 (h/deftest-event :wallet/clean-send-address
   [event-id dispatch]
-  (reset! rf-db/app-db
-    {:wallet {:ui {:send {:to-address  "0x01"
-                          :recipient   {:recipient-type :saved-address
-                                        :label          "label"}
-                          :other-props :value}}}})
-  (is (not (contains? (get-in (dispatch [event-id]) [:db :wallet :ui :send]) :to-address)))
-  (is (not (contains? (get-in (dispatch [event-id]) [:db :wallet :ui :send]) :recipient)))
-  (is (contains? (get-in (dispatch [event-id]) [:db :wallet :ui :send]) :other-props)))
+  (let [expected-db {:wallet {:ui {:send {:other-props :value}}}}]
+    (reset! rf-db/app-db
+      {:wallet {:ui {:send {:to-address  "0x01"
+                            :recipient   {:recipient-type :saved-address
+                                          :label          "label"}
+                            :other-props :value}}}})
+    (is (match-strict? expected-db (:db (dispatch [event-id]))))))
 
 (h/deftest-event :wallet/clean-send-amount
   [event-id dispatch]
-  (reset! rf-db/app-db
-    {:wallet {:ui {:send {:amount      10
-                          :other-props :value}}}})
-  (is (not (contains? (get-in (dispatch [event-id]) [:db :wallet :ui :send]) :amount)))
-  (is (contains? (get-in (dispatch [event-id]) [:db :wallet :ui :send]) :other-props)))
+  (let [expected-db {:wallet {:ui {:send {:other-props :value}}}}]
+    (reset! rf-db/app-db
+      {:wallet {:ui {:send {:amount      10
+                            :other-props :value}}}})
+    (is (match-strict? expected-db (:db (dispatch [event-id]))))))
 
 (h/deftest-event :wallet/clean-disabled-from-networks
   [event-id dispatch]
-  (reset! rf-db/app-db
-    {:wallet {:ui {:send {:disabled-from-chain-ids [:optimism]
-                          :other-props             :value}}}})
-  (is (not (contains? (get-in (dispatch [event-id]) [:db :wallet :ui :send]) :disabled-from-chain-ids)))
-  (is (contains? (get-in (dispatch [event-id]) [:db :wallet :ui :send]) :other-props)))
+  (let [expected-db {:wallet {:ui {:send {:other-props :value}}}}]
+    (reset! rf-db/app-db
+      {:wallet {:ui {:send {:disabled-from-chain-ids [:optimism]
+                            :other-props             :value}}}})
+    (is (match-strict? expected-db (:db (dispatch [event-id]))))))
 
 (h/deftest-event :wallet/clean-from-locked-amounts
   [event-id dispatch]
-  (reset! rf-db/app-db
-    {:wallet {:ui {:send {:from-locked-amounts "value"
-                          :other-props         :value}}}})
-  (is (not (contains? (get-in (dispatch [event-id]) [:db :wallet :ui :send]) :from-locked-amounts)))
-  (is (contains? (get-in (dispatch [event-id]) [:db :wallet :ui :send]) :other-props)))
+  (let [expected-db {:wallet {:ui {:send {:other-props :value}}}}]
+    (reset! rf-db/app-db
+      {:wallet {:ui {:send {:from-locked-amounts "value"
+                            :other-props         :value}}}})
+    (is (match-strict? expected-db (:db (dispatch [event-id]))))))
 
 (h/deftest-event :wallet/disable-from-networks
   [event-id dispatch]
@@ -247,55 +251,42 @@
 
 (h/deftest-event :wallet/clean-selected-token
   [event-id dispatch]
-  (reset! rf-db/app-db
-    {:wallet {:ui {:send {:other-props        :value
-                          :token              "ETH"
-                          :token-display-name "ETH"
-                          :tx-type            :tx/collectible-erc-721}}}})
-  (is (not (contains? (get-in (dispatch [event-id]) [:db :wallet :ui :send]) :token)))
-  (is (not (contains? (get-in (dispatch [event-id]) [:db :wallet :ui :send]) :token-display-name)))
-  (is (not (contains? (get-in (dispatch [event-id]) [:db :wallet :ui :send]) :tx-type)))
-  (is (contains? (get-in (dispatch [event-id]) [:db :wallet :ui :send]) :other-props)))
+  (let [expected-db {:wallet {:ui {:send {:other-props :value}}}}]
+    (reset! rf-db/app-db
+      {:wallet {:ui {:send {:other-props        :value
+                            :token              "ETH"
+                            :token-display-name "ETH"
+                            :tx-type            :tx/collectible-erc-721}}}})
+    (is (match-strict? expected-db (:db (dispatch [event-id]))))))
 
 (h/deftest-event :wallet/clean-selected-collectible
   [event-id dispatch]
-  (reset! rf-db/app-db
-    {:wallet {:ui {:send {:other-props        :value
-                          :collectible        "ETH"
-                          :token-display-name "ETH"
-                          :amount             10}}}})
-  (is (not (contains? (get-in (dispatch [event-id]) [:db :wallet :ui :send]) :collectible)))
-  (is (not (contains? (get-in (dispatch [event-id]) [:db :wallet :ui :send]) :token-display-name)))
-  (is (not (contains? (get-in (dispatch [event-id]) [:db :wallet :ui :send]) :amount)))
-  (is (contains? (get-in (dispatch [event-id]) [:db :wallet :ui :send]) :other-props)))
+  (let [expected-db {:wallet {:ui {:send {:other-props :value}}}}]
+    (reset! rf-db/app-db
+      {:wallet {:ui {:send {:other-props        :value
+                            :collectible        "ETH"
+                            :token-display-name "ETH"
+                            :amount             10}}}})
+    (is (match-strict? expected-db (:db (dispatch [event-id]))))))
 
 (h/deftest-event :wallet/clean-suggested-routes
   [event-id dispatch]
-  (reset! rf-db/app-db
-    {:wallet {:ui {:send
-                   {:other-props               :value
-                    :suggested-routes          ["1" "2"]
-                    :route                     "1"
-                    :amount                    10
-                    :from-values-by-chain      [{:chain-id 1} {:chain-id 10} {:chain-id 42161}]
-                    :to-values-by-chain        [{:chain-id 1} {:chain-id 10} {:chain-id 42161}]
-                    :sender-network-values     [:eth :arb1]
-                    :receiver-network-values   [:eth :arb1]
-                    :network-links             [{:from-chain-id 1
-                                                 :to-chain-id   10
-                                                 :position-diff 1}]
-                    :loading-suggested-routes? false}}}})
-  (is (not (contains? (get-in (dispatch [event-id]) [:db :wallet :ui :send]) :suggested-routes)))
-  (is (not (contains? (get-in (dispatch [event-id]) [:db :wallet :ui :send]) :route)))
-  (is (not (contains? (get-in (dispatch [event-id]) [:db :wallet :ui :send]) :amount)))
-  (is (not (contains? (get-in (dispatch [event-id]) [:db :wallet :ui :send]) :from-values-by-chain)))
-  (is (not (contains? (get-in (dispatch [event-id]) [:db :wallet :ui :send]) :to-values-by-chain)))
-  (is (not (contains? (get-in (dispatch [event-id]) [:db :wallet :ui :send]) :sender-network-values)))
-  (is (not (contains? (get-in (dispatch [event-id]) [:db :wallet :ui :send]) :receiver-network-values)))
-  (is (not (contains? (get-in (dispatch [event-id]) [:db :wallet :ui :send]) :network-links)))
-  (is (not (contains? (get-in (dispatch [event-id]) [:db :wallet :ui :send])
-                      :loading-suggested-routes?)))
-  (is (contains? (get-in (dispatch [event-id]) [:db :wallet :ui :send]) :other-props)))
+  (let [expected-db {:wallet {:ui {:send {:other-props :value}}}}]
+    (reset! rf-db/app-db
+      {:wallet {:ui {:send
+                     {:other-props               :value
+                      :suggested-routes          ["1" "2"]
+                      :route                     "1"
+                      :amount                    10
+                      :from-values-by-chain      [{:chain-id 1} {:chain-id 10} {:chain-id 42161}]
+                      :to-values-by-chain        [{:chain-id 1} {:chain-id 10} {:chain-id 42161}]
+                      :sender-network-values     [:eth :arb1]
+                      :receiver-network-values   [:eth :arb1]
+                      :network-links             [{:from-chain-id 1
+                                                   :to-chain-id   10
+                                                   :position-diff 1}]
+                      :loading-suggested-routes? false}}}})
+    (is (match-strict? expected-db (:db (dispatch [event-id]))))))
 
 (h/deftest-event :wallet/suggested-routes-error
   [event-id dispatch]
@@ -453,3 +444,287 @@
                                 :recipient   recipient
                                 :stack-id    stack-id
                                 :start-flow? start-flow?}])))))))
+
+(h/deftest-event :wallet/suggested-routes-success
+  [event-id dispatch]
+  (let [timestamp                     :timestamp
+        suggested-routes              {:Best
+                                       [{:From           {:isTest    false
+                                                          :chainName "Arbitrum"
+                                                          :chainId   42161}
+                                         :AmountInLocked false
+                                         :AmountIn       "0x5af3107a4000"
+                                         :MaxAmountIn    "0x4f7920c6831d6"
+                                         :GasFees        {:gasPrice       "0.01"
+                                                          :baseFee        "0.008750001"
+                                                          :eip1559Enabled true}
+                                         :BridgeName     "Transfer"
+                                         :AmountOut      "0x5af3107a4000"
+                                         :To             {:isTest    false
+                                                          :chainName "Arbitrum"
+                                                          :chainId   42161}
+                                         :Cost           "0.006539438247064285301"
+                                         :GasAmount      108197}]
+                                       :Candidates
+                                       [{:From           {:isTest    false
+                                                          :chainName "Arbitrum"
+                                                          :chainId   42161}
+                                         :AmountInLocked false
+                                         :AmountIn       "0x5af3107a4000"
+                                         :MaxAmountIn    "0x4f7920c6831d6"
+                                         :GasFees        {:gasPrice       "0.01"
+                                                          :baseFee        "0.008750001"
+                                                          :eip1559Enabled true}
+                                         :BridgeName     "Transfer"
+                                         :AmountOut      "0x5af3107a4000"
+                                         :To             {:isTest    false
+                                                          :chainName "Arbitrum"
+                                                          :chainId   42161}
+                                         :Cost           "0.006539438247064285301"
+                                         :GasAmount      108197}
+                                        {:From           {:isTest    false
+                                                          :chainName "Ethereum"
+                                                          :chainId   1}
+                                         :AmountInLocked false
+                                         :AmountIn       "0x0"
+                                         :MaxAmountIn    "0x245aa392272e6"
+                                         :GasFees        {:gasPrice       "1.01"
+                                                          :baseFee        "1.008750001"
+                                                          :eip1559Enabled true}
+                                         :BridgeName     "Transfer"
+                                         :AmountOut      "0x0"
+                                         :To             {:isTest    false
+                                                          :chainName "Arbitrum"
+                                                          :chainId   42161}
+                                         :Cost           "1.906539438247064285301"
+                                         :GasAmount      23487}]
+                                       :NativeChainTokenPrice 123
+                                       :TokenPrice 123}
+        suggested-routes-data         suggested-routes
+        chosen-route                  (:best suggested-routes-data)
+        token-symbol                  "ETH"
+        token                         {:symbol   "ETH"
+                                       :name     "Ether"
+                                       :networks #{{:chain-id 421614}
+                                                   {:chain-id 11155420}
+                                                   {:chain-id 11155111}}}
+        token-networks                (:networks token)
+        routes-available?             (pos? (count chosen-route))
+        sender-network-values         [1 10]
+        receiver-network-values       [1 10]
+        receiver-networks             [1 10 421614]
+        token-decimals                (if (collectible-with-balance 1) 0 (:decimals token))
+        native-token?                 (and token (= token-symbol "ETH"))
+        from-network-amounts-by-chain (send-utils/network-amounts-by-chain {:route chosen-route
+                                                                            :token-decimals
+                                                                            token-decimals
+                                                                            :native-token?
+                                                                            native-token?
+                                                                            :receiver? false})
+        to-network-amounts-by-chain   (send-utils/network-amounts-by-chain {:route chosen-route
+                                                                            :token-decimals
+                                                                            token-decimals
+                                                                            :native-token?
+                                                                            native-token?
+                                                                            :receiver? true})
+        to-network-values-for-ui      (send-utils/network-values-for-ui to-network-amounts-by-chain)
+        tx-type                       :tx/collectible-erc-1155
+        from-network-values-for-ui    (send-utils/network-values-for-ui from-network-amounts-by-chain)
+        disabled-from-chain-ids       [:421614]
+        token-networks-ids            (when token-networks (mapv #(:chain-id %) token-networks))
+        sender-possible-chain-ids     (mapv :chain-id sender-network-values)
+        receiver-network-values       (if routes-available?
+                                        (send-utils/network-amounts
+                                         {:network-values     to-network-values-for-ui
+                                          :disabled-chain-ids disabled-from-chain-ids
+                                          :receiver-networks  receiver-networks
+                                          :token-networks-ids token-networks-ids
+                                          :tx-type            tx-type
+                                          :receiver?          true})
+                                        (cond->
+                                          (send-utils/reset-loading-network-amounts-to-zero
+                                           receiver-network-values)
+
+                                          (not= tx-type :tx/bridge) (conj {:type :edit})))
+        sender-network-values         (if routes-available?
+                                        (send-utils/network-amounts
+                                         {:network-values
+                                          (if (= tx-type :tx/bridge)
+                                            from-network-values-for-ui
+                                            (send-utils/add-zero-values-to-network-values
+                                             from-network-values-for-ui
+                                             sender-possible-chain-ids))
+                                          :disabled-chain-ids disabled-from-chain-ids
+                                          :receiver-networks receiver-networks
+                                          :token-networks-ids token-networks-ids
+                                          :from-locked-amounts {}
+                                          :tx-type tx-type
+                                          :receiver? false})
+                                        (send-utils/reset-loading-network-amounts-to-zero
+                                         sender-network-values))
+        expected-db                   {:wallet {:ui {:send
+                                                     {:other-props :value
+                                                      :suggested-routes suggested-routes-data
+                                                      :route chosen-route
+                                                      :token token
+                                                      :disabled-from-chain-ids disabled-from-chain-ids
+                                                      :suggested-routes-call-timestamp timestamp
+                                                      :collectible (collectible-with-balance 1)
+                                                      :token-display-name token-symbol
+                                                      :receiver-networks receiver-networks
+                                                      :tx-type tx-type
+                                                      :from-values-by-chain from-network-values-for-ui
+                                                      :to-values-by-chain to-network-values-for-ui
+                                                      :sender-network-values sender-network-values
+                                                      :receiver-network-values receiver-network-values
+                                                      :network-links (when routes-available?
+                                                                       (send-utils/network-links
+                                                                        chosen-route
+                                                                        sender-network-values
+                                                                        receiver-network-values))
+                                                      :loading-suggested-routes? false
+                                                      :from-locked-amounts {}}}}}]
+    (reset! rf-db/app-db
+      {:wallet {:ui {:send {:other-props                     :value
+                            :suggested-routes-call-timestamp timestamp
+                            :token                           token
+                            :collectible                     (collectible-with-balance 1)
+                            :token-display-name              token-symbol
+                            :receiver-networks               receiver-networks
+                            :receiver-network-values         [1 10]
+                            :sender-network-values           [1 10]
+                            :tx-type                         tx-type
+                            :disabled-from-chain-ids         disabled-from-chain-ids
+                            :from-locked-amounts             {}}}}})
+    (is (match? expected-db (:db (dispatch [event-id suggested-routes timestamp]))))))
+
+(h/deftest-event :wallet/add-authorized-transaction
+  [event-id dispatch]
+  (let [hashes          {:chain-1 ["tx-1" "tx-2" "tx-3"]
+                         :chain-2 ["tx-4" "tx-5"]
+                         :chain-3 ["tx-6" "tx-7" "tx-8" "tx-9"]}
+        transaction-id  "txid-1"
+        expected-result {:db {:wallet {:ui           {:send {:transaction-ids ["tx-1" "tx-2" "tx-3"
+                                                                               "tx-4" "tx-5" "tx-6"
+                                                                               "tx-7" "tx-8" "tx-9"]}}
+                                       :transactions (send-utils/map-multitransaction-by-ids
+                                                      transaction-id
+                                                      hashes)}}
+                         :fx [[:dispatch [:wallet/end-transaction-flow]]
+                              [:dispatch-later
+                               [{:ms       2000
+                                 :dispatch [:wallet/clean-just-completed-transaction]}]]]}]
+    (is (match? expected-result
+                (dispatch [event-id
+                           {:id     transaction-id
+                            :hashes hashes}])))))
+
+(h/deftest-event :wallet/select-from-account
+  [event-id dispatch]
+  (let [stack-id    :screen/stack
+        start-flow? false
+        address     "0x01"]
+    (testing "when tx-type is :tx/bridge and token-symbol is nil"
+      (let [flow-id         :wallet-bridge-flow
+            tx-type         :tx/bridge
+            expected-result {:db {:wallet {:ui {:send {:to-address address
+                                                       :tx-type    tx-type}}}}
+                             :fx [[:dispatch [:wallet/switch-current-viewing-account address]]
+                                  [:dispatch
+                                   [:wallet/wizard-navigate-forward
+                                    {:current-screen stack-id
+                                     :start-flow?    start-flow?
+                                     :flow-id        flow-id}]]]}]
+        (reset! rf-db/app-db {:wallet {:ui {:send {:tx-type tx-type}}}})
+        (is (match? expected-result
+                    (dispatch [event-id
+                               {:address     address
+                                :stack-id    stack-id
+                                :start-flow? start-flow?}])))))
+    (testing "when tx-type is not :tx/bridge and token-symbol is nil"
+      (let [flow-id         :wallet-send-flow
+            tx-type         :tx/collectible-erc-721
+            expected-result {:db {:wallet {:ui {:send {:tx-type tx-type}}}}
+                             :fx [[:dispatch [:wallet/switch-current-viewing-account address]]
+                                  [:dispatch
+                                   [:wallet/wizard-navigate-forward
+                                    {:current-screen stack-id
+                                     :start-flow?    start-flow?
+                                     :flow-id        flow-id}]]]}]
+        (reset! rf-db/app-db {:wallet {:ui {:send {:tx-type tx-type}}}})
+        (is (match? expected-result
+                    (dispatch [event-id
+                               {:address     address
+                                :stack-id    stack-id
+                                :start-flow? start-flow?}])))))
+    (testing "when tx-type is :tx/bridge and token-symbol is not nil"
+      (let [flow-id         :wallet-bridge-flow
+            tx-type         :tx/bridge
+            tokens          [{:symbol             "ETH"
+                              :chain-id           1
+                              :balances-per-chain {1     {:raw-balance (money/bignumber 100)}
+                                                   10    {:raw-balance (money/bignumber 200)}
+                                                   42161 {:raw-balance (money/bignumber 300)}}
+                              :decimals           2}]
+            network-details #{{:chain-id 1}
+                              {:chain-id 10}
+                              {:chain-id 42161}}
+            expected-result {:db {:wallet {:ui       {:send {:to-address   address
+                                                             :tx-type      tx-type
+                                                             :token-symbol "ETH"
+                                                             :token        (assoc (first tokens)
+                                                                                  :networks #{nil}
+                                                                                  :total-balance
+                                                                                  (money/bignumber 6))}}
+                                           :accounts {address {:tokens tokens}}}}
+                             :fx [[:dispatch [:wallet/switch-current-viewing-account address]]
+                                  [:dispatch
+                                   [:wallet/wizard-navigate-forward
+                                    {:current-screen stack-id
+                                     :start-flow?    start-flow?
+                                     :flow-id        flow-id}]]]}]
+        (reset! rf-db/app-db {:wallet {:ui       {:send {:tx-type      tx-type
+                                                         :token-symbol "ETH"}}
+                                       :accounts {address {:tokens tokens}}}})
+        (is (match? expected-result
+                    (dispatch [event-id
+                               {:address        address
+                                :stack-id       stack-id
+                                :start-flow?    start-flow?
+                                :netork-details network-details}])))))
+    (testing "when tx-type is not :tx/bridge and token-symbol is not nil"
+      (let [flow-id         :wallet-send-flow
+            tx-type         :tx/collectible-erc-721
+            tokens          [{:symbol             "ETH"
+                              :chain-id           1
+                              :balances-per-chain {1     {:raw-balance (money/bignumber 100)}
+                                                   10    {:raw-balance (money/bignumber 200)}
+                                                   42161 {:raw-balance (money/bignumber 300)}}
+                              :decimals           2}]
+            network-details #{{:chain-id 1}
+                              {:chain-id 10}
+                              {:chain-id 42161}}
+            expected-result {:db {:wallet {:ui       {:send {:tx-type      tx-type
+                                                             :token-symbol "ETH"
+                                                             :token        (assoc (first tokens)
+                                                                                  :networks #{nil}
+                                                                                  :total-balance
+                                                                                  (money/bignumber 6))}}
+                                           :accounts {address {:tokens tokens}}}}
+                             :fx [[:dispatch [:wallet/switch-current-viewing-account address]]
+                                  [:dispatch
+                                   [:wallet/wizard-navigate-forward
+                                    {:current-screen stack-id
+                                     :start-flow?    start-flow?
+                                     :flow-id        flow-id}]]]}]
+        (reset! rf-db/app-db {:wallet {:ui       {:send {:tx-type      tx-type
+                                                         :token-symbol "ETH"}}
+                                       :accounts {address {:tokens tokens}}}})
+        (is (match? expected-result
+                    (dispatch [event-id
+                               {:address        address
+                                :stack-id       stack-id
+                                :start-flow?    start-flow?
+                                :netork-details network-details}])))))))
+
+(run-tests)
