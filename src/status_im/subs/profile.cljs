@@ -20,9 +20,9 @@
 
 (re-frame/reg-sub
  :profile/currency
- :<- [:profile/profile]
- (fn [{:keys [currency]}]
-   (or currency constants/profile-default-currency)))
+ (fn []
+   ;; returns "usd" by default as the support for other currencies are in progress on Mobile
+   constants/profile-default-currency))
 
 (re-frame/reg-sub
  :profile/syncing-on-mobile-network?
