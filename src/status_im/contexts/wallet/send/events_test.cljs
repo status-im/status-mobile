@@ -596,8 +596,6 @@
                             :tx-type                         tx-type
                             :disabled-from-chain-ids         disabled-from-chain-ids
                             :from-locked-amounts             {}}}}})
-    (tap> {:real     (:db (dispatch [event-id suggested-routes timestamp]))
-           :expected expected-db})
     (is (match? expected-db (:db (dispatch [event-id suggested-routes timestamp]))))))
 
 (h/deftest-event :wallet/add-authorized-transaction
