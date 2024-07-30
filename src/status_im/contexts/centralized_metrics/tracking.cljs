@@ -12,25 +12,38 @@
     :eventValue {:action action}}})
 
 (def ^:const app-started-event "app-started")
-(def ^:const navigate-to-create-profile-event "navigate-to-create-profile")
-(def ^:const communities-tab-clicked "communities-tab-clicked")
-(def ^:const wallet-tab-clicked "wallet-tab-clicked")
-(def ^:const chats-tab-clicked "chats-tab-clicked")
+
+(def ^:const view-ids-to-track
+  [;; Tabs
+   :communities-stack
+   :chats-stack
+   :wallet-stack
+
+   ;; Onboarding
+   :screen/onboarding.intro
+   :screen/onboarding.new-to-status
+   :screen/onboarding.sync-or-recover-profile
+   :screen/onboarding.enter-seed-phrase
+   :screen/onboarding.create-profile
+   :screen/onboarding.create-profile-password
+   :screen/onboarding.enable-biometrics
+   :screen/onboarding.generating-keys
+   :screen/onboarding.enable-notifications
+   :screen/onboarding.sign-in-intro
+   :screen/onboarding.sign-in
+   :screen/onboarding.syncing-progress
+   :screen/onboarding.syncing-progress-intro
+   :screen/onboarding.syncing-results
+   :screen/onboarding.welcome])
 
 (defn track-view-id-event
   [view-id]
-  (case view-id
-    :communities-stack (user-journey-event communities-tab-clicked)
-    :chats-stack       (user-journey-event chats-tab-clicked)
-    :wallet-stack      (user-journey-event wallet-tab-clicked)
-    nil))
+  (when (some #{view-id} view-ids-to-track)
+    (user-journey-event (str "view-id." (name view-id)))))
 
 (defn tracked-event
   [[event-name second-parameter]]
   (case event-name
-    :onboarding/navigate-to-create-profile
-    (user-journey-event navigate-to-create-profile-event)
-
     :profile/get-profiles-overview-success
     (user-journey-event app-started-event)
 
