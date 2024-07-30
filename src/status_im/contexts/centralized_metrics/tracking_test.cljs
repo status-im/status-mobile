@@ -5,31 +5,75 @@
     [react-native.platform :as platform]
     [status-im.contexts.centralized-metrics.tracking :as tracking]))
 
+(def platform-os platform/os)
+(def app-version build/app-short-version)
+
+(deftest key-value-event-test
+  (testing "creates correct key-value event"
+    (let [event-name "test-event"
+          val-key    :test-key
+          value      "test-value"
+          expected   {:metric
+                      {:eventName  event-name
+                       :platform   platform-os
+                       :appVersion app-version
+                       :eventValue {val-key value}}}]
+      (is (= expected (tracking/key-value-event event-name val-key value))))))
+
 (deftest user-journey-event-test
-  (testing "creates correct metric event"
-    (let [action   "some-action"
-          expected {:metric {:eventName  "user-journey"
-                             :platform   platform/os
-                             :appVersion build/app-short-version
-                             :eventValue {:action action}}}]
+  (testing "creates correct user journey event"
+    (let [action   "test-action"
+          expected {:metric
+                    {:eventName  "user-journey"
+                     :platform   platform-os
+                     :appVersion app-version
+                     :eventValue {:action action}}}]
       (is (= expected (tracking/user-journey-event action))))))
 
+(deftest navigation-event-test
+  (testing "creates correct navigation event"
+    (let [view-id  :test-view-id
+          expected {:metric
+                    {:eventName  "navigation"
+                     :platform   platform-os
+                     :appVersion app-version
+                     :eventValue {:viewId view-id}}}]
+      (is (= expected (tracking/navigation-event view-id))))))
+
 (deftest track-view-id-event-test
-  (testing "returns correct event for view-id"
-    (is (= (tracking/user-journey-event tracking/communities-tab-clicked)
+  (testing "returns correct navigation event for view-id"
+    (is (= {:metric
+            {:eventName  "navigation"
+             :platform   platform-os
+             :appVersion app-version
+             :eventValue {:viewId "communities-stack"}}}
            (tracking/track-view-id-event :communities-stack)))
-    (is (= (tracking/user-journey-event tracking/chats-tab-clicked)
-           (tracking/track-view-id-event :chats-stack)))
-    (is (= (tracking/user-journey-event tracking/wallet-tab-clicked)
-           (tracking/track-view-id-event :wallet-stack)))
+    (is (= {:metric
+            {:eventName  "navigation"
+             :platform   platform-os
+             :appVersion app-version
+             :eventValue {:viewId "onboarding.create-profile"}}}
+           (tracking/track-view-id-event :screen/onboarding.create-profile)))
     (is (nil? (tracking/track-view-id-event :unknown-stack)))))
 
 (deftest tracked-event-test
   (testing "returns correct event for given inputs"
-    (is (= (tracking/user-journey-event tracking/navigate-to-create-profile-event)
-           (tracking/tracked-event [:onboarding/navigate-to-create-profile])))
-    (is (= (tracking/user-journey-event tracking/app-started-event)
+    (is (= {:metric
+            {:eventName  "user-journey"
+             :platform   platform-os
+             :appVersion app-version
+             :eventValue {:action tracking/app-started-event}}}
            (tracking/tracked-event [:profile/get-profiles-overview-success])))
-    (is (= (tracking/track-view-id-event :wallet-stack)
+    (is (= {:metric
+            {:eventName  "events.metrics-enabled"
+             :platform   platform-os
+             :appVersion app-version
+             :eventValue {:enabled true}}}
+           (tracking/tracked-event [:centralized-metrics/toggle-centralized-metrics true])))
+    (is (= {:metric
+            {:eventName  "navigation"
+             :platform   platform-os
+             :appVersion app-version
+             :eventValue {:viewId "wallet-stack"}}}
            (tracking/tracked-event [:set-view-id :wallet-stack])))
     (is (nil? (tracking/tracked-event [:unknown-event])))))
