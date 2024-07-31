@@ -221,9 +221,9 @@
                                                       (number/remove-trailing-zeroes
                                                        (.toFixed (/ input-amount conversion-rate)
                                                                  crypto-decimals)))
-        send-amount                                 (rf/sub [:wallet/wallet-send-amount])
+        total-amount-receiver                       (rf/sub [:wallet/total-amount true])
         amount-text                                 (str (number/remove-trailing-zeroes
-                                                          (.toFixed (js/parseFloat send-amount)
+                                                          (.toFixed total-amount-receiver
                                                                     (min token-decimals 6)))
                                                          " "
                                                          token-symbol)
