@@ -41,7 +41,7 @@
     "react-native-background-timer": "^2.1.1",
     "react-native-biometrics": "^3.0.1",
     "react-native-blob-util": "^0.13.18",
-    "react-native-camera-kit": "14.0.0-beta13",
+    "react-native-camera-kit": "git+https://github.com/status-im/react-native-camera-kit.git#refs/tags/v14.0.0-beta15-status-v1",
     "react-native-config": "^1.5.0",
     "react-native-dialogs": "1.1.2",
     "react-native-draggable-flatlist": "4.0.1",
