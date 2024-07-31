@@ -436,7 +436,7 @@ android-clean: ##@prepare Clean Gradle state
 	rm -rf ~/.gradle
 
 
-android-ports: export FLOWSTORM_PORT := 7722
+android-ports: export FLOWSTORM_PORT ?= 7722
 android-ports: export TARGET := android-sdk
 android-ports: export RCT_METRO_PORT ?= 8081
 android-ports: ##@other Add proxies to Android Device/Simulator
