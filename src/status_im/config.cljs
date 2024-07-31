@@ -12,6 +12,8 @@
 
 (goog-define INFURA_TOKEN "")
 (goog-define POKT_TOKEN "3ef2018191814b7e1009b8d9")
+(goog-define STATUS_BUILD_PROXY_USER "")
+(goog-define STATUS_BUILD_PROXY_PASSWORD "")
 (goog-define OPENSEA_API_KEY "")
 (goog-define RARIBLE_MAINNET_API_KEY "")
 (goog-define RARIBLE_TESTNET_API_KEY "")
@@ -45,6 +47,7 @@
 (def mixpanel-token MIXPANEL_TOKEN)
 
 (def opensea-api-key OPENSEA_API_KEY)
+(def status-proxy-enabled? true)
 (def bootnodes-settings-enabled? (enabled? (get-config :BOOTNODES_SETTINGS_ENABLED "1")))
 (def mailserver-confirmations-enabled? (enabled? (get-config :MAILSERVER_CONFIRMATIONS_ENABLED)))
 (def pairing-popup-disabled? (enabled? (get-config :PAIRING_POPUP_DISABLED "0")))

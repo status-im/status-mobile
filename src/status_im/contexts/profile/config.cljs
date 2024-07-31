@@ -9,21 +9,26 @@
 (defn login
   []
   {;; Temporary fix until https://github.com/status-im/status-go/issues/3024 is resolved
-   :wakuV2Nameserver            "8.8.8.8"
-   :openseaAPIKey               config/opensea-api-key
-   :poktToken                   config/POKT_TOKEN
-   :infuraToken                 config/INFURA_TOKEN
-   :raribleMainnetAPIKey        config/RARIBLE_MAINNET_API_KEY
-   :raribleTestnetAPIKey        config/RARIBLE_TESTNET_API_KEY
-   :alchemyEthereumMainnetToken config/ALCHEMY_ETHEREUM_MAINNET_TOKEN
-   :alchemyEthereumGoerliToken  config/ALCHEMY_ETHEREUM_GOERLI_TOKEN
-   :alchemyEthereumSepoliaToken config/ALCHEMY_ETHEREUM_SEPOLIA_TOKEN
-   :alchemyOptimismMainnetToken config/ALCHEMY_OPTIMISM_MAINNET_TOKEN
-   :alchemyOptimismGoerliToken  config/ALCHEMY_OPTIMISM_GOERLI_TOKEN
-   :alchemyOptimismSepoliaToken config/ALCHEMY_OPTIMISM_SEPOLIA_TOKEN
-   :alchemyArbitrumMainnetToken config/ALCHEMY_ARBITRUM_MAINNET_TOKEN
-   :alchemyArbitrumGoerliToken  config/ALCHEMY_ARBITRUM_GOERLI_TOKEN
-   :alchemyArbitrumSepoliaToken config/ALCHEMY_ARBITRUM_SEPOLIA_TOKEN})
+   :wakuV2Nameserver              "8.8.8.8"
+   :statusProxyEnabled            config/status-proxy-enabled?
+   :statusProxyMarketUser         config/STATUS_BUILD_PROXY_USER
+   :statusProxyMarketPassword     config/STATUS_BUILD_PROXY_PASSWORD
+   :statusProxyBlockchainUser     config/STATUS_BUILD_PROXY_USER
+   :statusProxyBlockchainPassword config/STATUS_BUILD_PROXY_PASSWORD
+   :openseaAPIKey                 config/opensea-api-key
+   :poktToken                     config/POKT_TOKEN
+   :infuraToken                   config/INFURA_TOKEN
+   :raribleMainnetAPIKey          config/RARIBLE_MAINNET_API_KEY
+   :raribleTestnetAPIKey          config/RARIBLE_TESTNET_API_KEY
+   :alchemyEthereumMainnetToken   config/ALCHEMY_ETHEREUM_MAINNET_TOKEN
+   :alchemyEthereumGoerliToken    config/ALCHEMY_ETHEREUM_GOERLI_TOKEN
+   :alchemyEthereumSepoliaToken   config/ALCHEMY_ETHEREUM_SEPOLIA_TOKEN
+   :alchemyOptimismMainnetToken   config/ALCHEMY_OPTIMISM_MAINNET_TOKEN
+   :alchemyOptimismGoerliToken    config/ALCHEMY_OPTIMISM_GOERLI_TOKEN
+   :alchemyOptimismSepoliaToken   config/ALCHEMY_OPTIMISM_SEPOLIA_TOKEN
+   :alchemyArbitrumMainnetToken   config/ALCHEMY_ARBITRUM_MAINNET_TOKEN
+   :alchemyArbitrumGoerliToken    config/ALCHEMY_ARBITRUM_GOERLI_TOKEN
+   :alchemyArbitrumSepoliaToken   config/ALCHEMY_ARBITRUM_SEPOLIA_TOKEN})
 
 (defn create
   []
