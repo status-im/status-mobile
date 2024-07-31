@@ -47,7 +47,7 @@
   [{:keys [route token-decimals native-token? receiver?]}]
   (reduce
    (fn [acc path]
-     (let [amount-hex   (if receiver? (:amount-in path) (:amount-out path))
+     (let [amount-hex   (if receiver? (:amount-out path) (:amount-in path))
            amount-units (native-module/hex-to-number
                          (utils.hex/normalize-hex amount-hex))
            amount       (money/with-precision
