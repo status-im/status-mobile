@@ -9372,10 +9372,9 @@ react-native-blob-util@^0.13.18:
     base-64 "0.1.0"
     glob "^7.1.6"
 
-react-native-camera-kit@14.0.0-beta13:
-  version "14.0.0-beta13"
-  resolved "https://registry.yarnpkg.com/react-native-camera-kit/-/react-native-camera-kit-14.0.0-beta13.tgz#7d1c40571e7e7ce2c4b6bd6f58807f7573217c3c"
-  integrity sha512-49q6l/Y3j1QMUDPGqIqkUzdraNtKWVQz5X4U8qfixSe+MeWe0N1vWlWWr8iH1apxQCS5v0dKPlYot0e3VKy05g==
+"react-native-camera-kit@git+https://github.com/status-im/react-native-camera-kit.git#refs/tags/v14.0.0-beta15-status-v1":
+  version "14.0.0-beta15"
+  resolved "git+https://github.com/status-im/react-native-camera-kit.git#90821bc45c950c98119acc896651997a5357dd4f"
 
 react-native-config@^1.5.0:
   version "1.5.0"
