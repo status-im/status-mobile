@@ -135,11 +135,14 @@ class TestWalletMultipleDevice(MultipleSharedDeviceTestCase):
 
         self.wallet_1.just_fyi("Sending funds from wallet")
         amount_to_send = 0.0001
+        device_time_before_sending = self.wallet_1.driver.device_time
         self.wallet_1.send_asset(address='arb1:' + self.receiver['wallet_address'],
                                  asset_name='Ether',
                                  amount=amount_to_send)
+        self.network_api.wait_for_confirmation_of_transaction(address=self.sender['wallet_address'],
+                                                              tx_time=device_time_before_sending)
 
-        device_time = self.wallet_1.driver.device_time
+        device_time_after_sending = self.wallet_1.driver.device_time
 
         self._check_balances_after_tx(amount_to_send, sender_balance, receiver_balance, eth_amount_sender,
                                       eth_amount_receiver)
@@ -164,10 +167,13 @@ class TestWalletMultipleDevice(MultipleSharedDeviceTestCase):
 
         self.wallet_1.just_fyi("Sending asset from drawer")
         amount_to_send = 0.0001
+        device_time_before_sending = self.wallet_1.driver.device_time
         self.wallet_1.send_asset_from_drawer(address='arb1:' + self.receiver['wallet_address'],
                                              asset_name='Ether',
                                              amount=amount_to_send)
-        device_time = self.wallet_1.driver.device_time
+        self.network_api.wait_for_confirmation_of_transaction(address=self.sender['wallet_address'],
+                                                              tx_time=device_time_before_sending)
+        device_time_after_sending = self.wallet_1.driver.device_time
 
         self._check_balances_after_tx(amount_to_send, sender_balance, receiver_balance, eth_amount_sender,
                                       eth_amount_receiver)

@@ -48,11 +48,11 @@ class TestDeepLinksOneDevice(MultipleSharedDeviceTestCase):
             self.profile_view.close_button.click()
 
         community_urls = {
-            "https://status.app/c/ixyACjgKDVNOVCBjb21tdW5pdHkSHHJlcXVpcmUgMTAgU05UIEdvZXJsaSB0byB1c2UYASIHI2VhYjcwMAM=#zQ3shUeGnhM33QW4g9JfYfeLFAH9ZwbDboNYn5exCR7S3ii1y":
+            "https://status.app/c/ixyACjgKDVNOVCBjb21tdW5pdHkSHHJlcXVpcmUgMTAgU05UIEdvZXJsaSB0byB1c2UYASIHI2VhYjcwMAM=#zQ3shhxbnaCooVQqaEkZRuRbez2SRws52Sas9HxkZNGimLRpi":
                 "SNT community",
-            "https://status.app/c/G0UAAMTyNsn2QZDEG0EXftOl8pOEfwEBOOSA_YTfIk85xmADDgINGmxpUHAXzK36bN0fK42Xf4YD2yjPk1z2pbFwFw==#zQ3sheoNX5kiuM393TJ6xDnL57aQoiwFWEuJnazJ6W2eNuh9u":
+            "https://status.app/c/G0UAAMTyNsn2QZDEG0EXftOl8pOEfwEBOOSA_YTfIk85xmADDgINGmxpUHAXzK36bN0fK42Xf4YD2yjPk1z2pbFwFw==#zQ3shQGRffgENQzqDLAVCUbF8S2iPZHFfCGCPbApUfAoCNBMu":
                 "open community",
-            "https://status.app/c/G00AAGS9TbI9mSR-ZNmFrhRjNuEeXAAbcAIUaLLJyjMOG3ACJQ12oIHD78QhzO9s_T5bUeU7rnATWJg3mGgTUemrAg==#zQ3shp9f5M3uyMpwTi3rFpFrP6WCWmNsW9pgK9cjXVTaf2vgj":
+            "https://status.app/c/G00AAGS9TbI9mSR-ZNmFrhRjNuEeXAAbcAIUaLLJyjMOG3ACJQ12oIHD78QhzO9s_T5bUeU7rnATWJg3mGgTUemrAg==#zQ3shf1JfZjB7yJ1EorFnnmeTs2PN5chpD98Li5kLN7wd2SpL":
                 "closed community"
         }
         for url, text in community_urls.items():
@@ -98,11 +98,11 @@ class TestDeepLinksOneDevice(MultipleSharedDeviceTestCase):
             self.browser_view.click_system_back_button()
 
         community_links = {
-            "status.app://c/ixyACjgKDVNOVCBjb21tdW5pdHkSHHJlcXVpcmUgMTAgU05UIEdvZXJsaSB0byB1c2UYASIHI2VhYjcwMAM=#zQ3shUeGnhM33QW4g9JfYfeLFAH9ZwbDboNYn5exCR7S3ii1y":
+            "status.app://c/ixyACjgKDVNOVCBjb21tdW5pdHkSHHJlcXVpcmUgMTAgU05UIEdvZXJsaSB0byB1c2UYASIHI2VhYjcwMAM=#zQ3shhxbnaCooVQqaEkZRuRbez2SRws52Sas9HxkZNGimLRpi":
                 "SNT community",
-            "status.app://c/G0UAAMTyNsn2QZDEG0EXftOl8pOEfwEBOOSA_YTfIk85xmADDgINGmxpUHAXzK36bN0fK42Xf4YD2yjPk1z2pbFwFw==#zQ3sheoNX5kiuM393TJ6xDnL57aQoiwFWEuJnazJ6W2eNuh9u":
+            "status.app://c/G0UAAMTyNsn2QZDEG0EXftOl8pOEfwEBOOSA_YTfIk85xmADDgINGmxpUHAXzK36bN0fK42Xf4YD2yjPk1z2pbFwFw==#zQ3shQGRffgENQzqDLAVCUbF8S2iPZHFfCGCPbApUfAoCNBMu":
                 "open community",
-            "status.app://c/G00AAGS9TbI9mSR-ZNmFrhRjNuEeXAAbcAIUaLLJyjMOG3ACJQ12oIHD78QhzO9s_T5bUeU7rnATWJg3mGgTUemrAg==#zQ3shp9f5M3uyMpwTi3rFpFrP6WCWmNsW9pgK9cjXVTaf2vgj":
+            "status.app://c/G00AAGS9TbI9mSR-ZNmFrhRjNuEeXAAbcAIUaLLJyjMOG3ACJQ12oIHD78QhzO9s_T5bUeU7rnATWJg3mGgTUemrAg==#zQ3shf1JfZjB7yJ1EorFnnmeTs2PN5chpD98Li5kLN7wd2SpL":
                 "closed community"
         }
         for link, text in community_links.items():
