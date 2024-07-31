@@ -438,6 +438,7 @@ android-clean: ##@prepare Clean Gradle state
 
 android-ports: export FLOWSTORM_PORT := 7722
 android-ports: export TARGET := android-sdk
+android-ports: export RCT_METRO_PORT ?= 8081
 android-ports: ##@other Add proxies to Android Device/Simulator
 	adb reverse tcp:$(RCT_METRO_PORT) tcp:$(RCT_METRO_PORT) && \
 	adb reverse tcp:3449 tcp:3449 && \
