@@ -3,6 +3,7 @@
     [clojure.string :as string]
     [native-module.core :as native-module]
     [status-im.contexts.settings.wallet.data-store :as data-store]
+    [status-im.contexts.settings.wallet.network-settings.testnet-mode.view :as testnet]
     [taoensso.timbre :as log]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]
@@ -292,3 +293,13 @@
 
 (rf/reg-event-fx :wallet/make-partially-operable-accounts-fully-operable
  make-partially-operable-accounts-fully-operable)
+
+(rf/reg-event-fx :wallet/show-disable-testnet-mode-confirmation
+ (fn [_]
+   {:fx [[:dispatch
+          [:show-bottom-sheet
+           {:content (fn [] [testnet/view
+                             {:enable? false
+                              :blur?   true}])
+            :shell?  true
+            :theme   :dark}]]]}))

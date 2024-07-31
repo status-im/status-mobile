@@ -126,7 +126,8 @@
       [reanimated/view
        {:style (reanimated/apply-animations-to-style
                 {:opacity bg-opacity}
-                {:flex 1 :background-color colors/neutral-100-opa-70})}]]
+                {:flex             1
+                 :background-color (if shell? colors/neutral-100-opa-60 colors/neutral-100-opa-70)})}]]
      ;; sheet
      [gesture/gesture-detector {:gesture sheet-gesture}
       [reanimated/view
@@ -138,7 +139,7 @@
           [quo/blur
            {:style         style/shell-bg
             :blur-radius   (or blur-radius 20)
-            :blur-amount   32
+            :blur-amount   15
             :blur-type     :transparent
             :overlay-color :transparent}]])
        (when selected-item
