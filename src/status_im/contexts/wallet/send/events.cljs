@@ -105,9 +105,7 @@
          cleaned-receiver-network-values (-> (get-in db [:wallet :ui :send :receiver-network-values])
                                              (send-utils/reset-loading-network-amounts-to-zero))]
      {:db (-> db
-              (update-in [:wallet :ui :send]
-                         dissoc
-                         :route)
+              (update-in [:wallet :ui :send] dissoc :route)
               (assoc-in [:wallet :ui :send :sender-network-values] cleaned-sender-network-values)
               (assoc-in [:wallet :ui :send :receiver-network-values] cleaned-receiver-network-values)
               (assoc-in [:wallet :ui :send :loading-suggested-routes?] false)
@@ -491,26 +489,48 @@
                                             {:event :wallet/stop-get-suggested-routes
                                              :error error}))}]}))
 
-(rf/reg-event-fx :wallet/handle-suggested-routes
+(defn- bridge-amount-greater-than-bonder-fees?
+  [{{token-decimals :decimals} :from-token
+    bonder-fees                :tx-bonder-fees
+    amount-in                  :amount-in}]
+  (let [bonder-fees      (utils.money/token->unit bonder-fees token-decimals)
+        amount-to-bridge (utils.money/token->unit amount-in token-decimals)]
+    (> amount-to-bridge bonder-fees)))
+
+(defn- remove-multichain-routes
+  [routes]
+  (if (> (count routes) 1)
+    [] ;; if route is multichain, we remove it
+    routes))
+
+(defn- remove-invalid-bonder-fees-routes
+  [routes]
+  (filter bridge-amount-greater-than-bonder-fees? routes))
+
+(defn- ->old-route-paths
+  [routes]
+  (map data-store/new->old-route-path routes))
+
+(rf/reg-event-fx
+ :wallet/handle-suggested-routes
  (fn [_ data]
-   (if-let [error (some-> data
-                          first
-                          :ErrorResponse
-                          (#(if (= (:code %) "0") "An error occurred" (:details %))))]
-     (do
+   (if-let [{:keys [code details]} (-> data :ErrorResponse first)]
+     (let [error-message (if (= code "0") "An error occurred" details)]
        (log/error "failed to get suggested routes (async)"
                   {:event :wallet/handle-suggested-routes
-                   :error error})
-       {:fx [[:dispatch [:wallet/suggested-routes-error error]]]})
-     (let [suggested-routes-new-data (data-store/rpc->suggested-routes data)
-           suggested-routes          (-> suggested-routes-new-data
-                                         first
-                                         ;; if route is multichain, we remove it
-                                         (update :best (fn [best] (if (> (count best) 1) [] best)))
-                                         (update :best #(map data-store/new->old-route-path %))
-                                         (update :candidates #(map data-store/new->old-route-path %)))]
-       {:fx [[:dispatch
-              [:wallet/suggested-routes-success suggested-routes]]]}))))
+                   :error error-message})
+       {:fx [[:dispatch [:wallet/suggested-routes-error error-message]]]})
+     (let [best-routes-fix (comp ->old-route-paths
+                                 remove-invalid-bonder-fees-routes
+                                 remove-multichain-routes)
+           candidates-fix  (comp ->old-route-paths
+                                 remove-invalid-bonder-fees-routes)
+           routes          (-> data
+                               (first)
+                               (data-store/rpc->suggested-routes)
+                               (update :best best-routes-fix)
+                               (update :candidates candidates-fix))]
+       {:fx [[:dispatch [:wallet/suggested-routes-success routes]]]}))))
 
 (rf/reg-event-fx :wallet/add-authorized-transaction
  (fn [{:keys [db]} [transaction]]
