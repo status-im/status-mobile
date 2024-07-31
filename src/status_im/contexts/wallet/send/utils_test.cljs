@@ -32,10 +32,10 @@
 
 (deftest network-amounts-by-chain-test
   (testing "Correctly calculates network amounts for transaction with native token"
-    (let [route          [{:amount-in "0xde0b6b3a7640000"
-                           :to        {:chain-id 1}}
-                          {:amount-in "0xde0b6b3a7640000"
-                           :to        {:chain-id 10}}]
+    (let [route          [{:amount-out "0xde0b6b3a7640000"
+                           :to         {:chain-id 1}}
+                          {:amount-out "0xde0b6b3a7640000"
+                           :to         {:chain-id 10}}]
           token-decimals 18
           native-token?  true
           receiver?      true
@@ -50,10 +50,10 @@
 
   (testing
     "Correctly calculates network amounts for transaction with native token and multiple routes to same chain-id"
-    (let [route          [{:amount-in "0xde0b6b3a7640000"
-                           :to        {:chain-id 1}}
-                          {:amount-in "0xde0b6b3a7640000"
-                           :to        {:chain-id 1}}]
+    (let [route          [{:amount-out "0xde0b6b3a7640000"
+                           :to         {:chain-id 1}}
+                          {:amount-out "0xde0b6b3a7640000"
+                           :to         {:chain-id 1}}]
           token-decimals 18
           native-token?  true
           receiver?      true
@@ -66,10 +66,10 @@
         (is (money/equal-to (get result chain-id) exp-value)))))
 
   (testing "Correctly calculates network amounts for transaction with non-native token"
-    (let [route          [{:amount-out "0x1e8480"
-                           :from       {:chain-id 1}}
-                          {:amount-out "0x1e8480"
-                           :from       {:chain-id 10}}]
+    (let [route          [{:amount-in "0x1e8480"
+                           :from      {:chain-id 1}}
+                          {:amount-in "0x1e8480"
+                           :from      {:chain-id 10}}]
           token-decimals 6
           native-token?  false
           receiver?      false
