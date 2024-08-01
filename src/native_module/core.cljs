@@ -333,7 +333,7 @@
   [flag]
   (log/debug "[native-module] set-blank-preview-flag")
   ;; Sometimes the app crashes during logout because `flag` is nil.
-  (when flag
+  (when-not (nil? flag)
     (.setBlankPreviewFlag ^js (encryption) flag)))
 
 (defn get-device-model-info
