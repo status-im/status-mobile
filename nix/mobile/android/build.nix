@@ -17,6 +17,7 @@
   hermesEnabled ? lib.getEnvWithDefault "ORG_GRADLE_PROJECT_hermesEnabled" "true",
   buildUrl ? lib.getEnvWithDefault "ORG_GRADLE_PROJECT_buildUrl" null,
   statusGoSrcOverride ? lib.getEnvWithDefault "STATUS_GO_SRC_OVERRIDE" null,
+  reactMetroPort ? lib.getEnvWithDefault "RCT_METRO_PORT" 8081,
   # If APKs should be split based on architectures
   androidAbiSplit ? lib.getEnvWithDefault "ANDROID_ABI_SPLIT" "true",
   # Android architectures to build for
@@ -88,6 +89,7 @@ in stdenv.mkDerivation rec {
   ORG_GRADLE_PROJECT_commitHash = commitHash;
   ORG_GRADLE_PROJECT_buildUrl = buildUrl;
   ORG_GRADLE_PROJECT_hermesEnabled = hermesEnabled;
+  RCT_METRO_PORT = reactMetroPort;
 
   # Fix for ERR_OSSL_EVP_UNSUPPORTED error.
   NODE_OPTIONS = "--openssl-legacy-provider";
@@ -106,6 +108,7 @@ in stdenv.mkDerivation rec {
     export ANDROID_NDK_ROOT="${androidPkgs.ndk}"
 
     export STATUS_NIX_MAVEN_REPO="${deps.gradle}"
+    export RCT_METRO_PORT=${toString reactMetroPort}
   '';
 
   unpackPhase = ''
@@ -158,6 +161,7 @@ in stdenv.mkDerivation rec {
       --no-build-cache \
       --parallel \
       -Dmaven.repo.local='${deps.gradle}' \
+      -PreactNativeDevServerPort=${toString reactMetroPort} \
       assemble${gradleBuildType}
     '';
   in
