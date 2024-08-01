@@ -106,7 +106,11 @@
                  :method               method
                  :wallet-connect-event event
                  :event                :wallet-connect/on-sign-error})
-     {:fx [[:dispatch [:wallet-connect/dismiss-request-modal]]]})))
+     {:fx [[:dispatch [:wallet-connect/dismiss-request-modal]]
+           [:dispatch
+            [:toasts/upsert
+             {:type :negative
+              :text (i18n/label :t/something-went-wrong)}]]]})))
 
 (rf/reg-event-fx
  :wallet-connect/send-response

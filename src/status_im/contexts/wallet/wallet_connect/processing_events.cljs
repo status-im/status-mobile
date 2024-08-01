@@ -130,10 +130,12 @@
          parsed-raw-data    (transforms/js-parse raw-data)
          session-chain-id   (-> (wallet-connect-core/get-db-current-request-event db)
                                 (get-in [:params :chainId])
-                                wallet-connect-core/eip155->chain-id)
+                                wallet-connect-core/eip155->chain-id
+                                str)
          data-chain-id      (-> parsed-raw-data
                                 transforms/js->clj
-                                signing/typed-data-chain-id)
+                                signing/typed-data-chain-id
+                                str)
          parsed-data        (try (-> parsed-raw-data
                                      (transforms/js-dissoc :types :primaryType)
                                      (transforms/js-stringify 2))
@@ -144,7 +146,7 @@
               [:wallet-connect/on-processing-error
                (ex-info "Failed to parse JSON typed data" {:data raw-data})]]]}
 
-       (not= session-chain-id data-chain-id)
+       (and (seq session-chain-id) (not= session-chain-id data-chain-id))
        {:fx [[:dispatch
               [:wallet-connect/wrong-typed-data-chain-id
                {:expected-chain-id session-chain-id
@@ -173,9 +175,8 @@
                                             :expected-chain expected-network-name})]
      {:fx [[:dispatch
             [:toasts/upsert
-             {:type  :negative
-              :theme :dark
-              :text  toast-message}]]
+             {:type :negative
+              :text toast-message}]]
            [:dispatch
             [:wallet-connect/on-processing-error
              (ex-info "Can't proceed signing typed data due to wrong chain-id included in the data"
