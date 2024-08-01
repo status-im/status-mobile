@@ -54,7 +54,7 @@
                     (update :profile/login #(select-profile % key-uid)))
                 db-with-settings)
           :fx [[:dispatch [:init-root :screen/profile.profiles]]
-               (when key-uid
+               (when (and key-uid userConfirmed)
                  [:effects.biometric/check-if-available
                   {:key-uid    key-uid
                    :on-success (fn [auth-method]
