@@ -126,40 +126,37 @@
 (rf/reg-event-fx
  :wallet-connect/process-sign-typed
  (fn [{:keys [db]}]
-   (let [[address raw-data] (wallet-connect-core/get-db-current-request-params db)
-         parsed-raw-data    (transforms/js-parse raw-data)
-         session-chain-id   (-> (wallet-connect-core/get-db-current-request-event db)
-                                (get-in [:params :chainId])
-                                wallet-connect-core/eip155->chain-id
-                                str)
-         data-chain-id      (-> parsed-raw-data
-                                transforms/js->clj
-                                signing/typed-data-chain-id
-                                str)
-         parsed-data        (try (-> parsed-raw-data
-                                     (transforms/js-dissoc :types :primaryType)
-                                     (transforms/js-stringify 2))
-                                 (catch js/Error _ nil))]
-     (cond
-       (nil? parsed-data)
+   (try
+     (let [[address raw-data] (wallet-connect-core/get-db-current-request-params db)
+           parsed-raw-data    (transforms/js-parse raw-data)
+           session-chain-id   (-> (wallet-connect-core/get-db-current-request-event db)
+                                  (get-in [:params :chainId])
+                                  wallet-connect-core/eip155->chain-id)
+           data-chain-id      (-> parsed-raw-data
+                                  transforms/js->clj
+                                  signing/typed-data-chain-id)
+           parsed-data        (-> parsed-raw-data
+                                  (transforms/js-dissoc :types :primaryType)
+                                  (transforms/js-stringify 2))]
+       (if (and data-chain-id
+                (not= session-chain-id data-chain-id))
+         {:fx [[:dispatch
+                [:wallet-connect/wrong-typed-data-chain-id
+                 {:expected-chain-id session-chain-id
+                  :wrong-chain-id    data-chain-id}]]]}
+         {:db (update-in db
+                         [:wallet-connect/current-request]
+                         assoc
+                         :address      (string/lower-case address)
+                         :display-data (or parsed-data raw-data)
+                         :raw-data     raw-data)
+          :fx [[:dispatch [:wallet-connect/show-request-modal]]]}))
+     (catch js/Error err
        {:fx [[:dispatch
               [:wallet-connect/on-processing-error
-               (ex-info "Failed to parse JSON typed data" {:data raw-data})]]]}
-
-       (and (seq session-chain-id) (not= session-chain-id data-chain-id))
-       {:fx [[:dispatch
-              [:wallet-connect/wrong-typed-data-chain-id
-               {:expected-chain-id session-chain-id
-                :wrong-chain-id    data-chain-id}]]]}
-
-       :else
-       {:db (update-in db
-                       [:wallet-connect/current-request]
-                       assoc
-                       :address      (string/lower-case address)
-                       :display-data (or parsed-data raw-data)
-                       :raw-data     raw-data)
-        :fx [[:dispatch [:wallet-connect/show-request-modal]]]}))))
+               (ex-info "Failed to parse JSON typed data"
+                        {:error err
+                         :data  (wallet-connect-core/get-db-current-request-params db)})]]]}))))
 
 (rf/reg-event-fx
  :wallet-connect/wrong-typed-data-chain-id
@@ -171,7 +168,9 @@
                                    wallet-connect-core/chain-id->network-details
                                    :full-name)
          toast-message         (i18n/label :t/wallet-connect-typed-data-wrong-chain-id-warning
-                                           {:wrong-chain    wrong-network-name
+                                           {:wrong-chain    (or wrong-network-name
+                                                                (wallet-connect-core/chain-id->eip155
+                                                                 wrong-chain-id))
                                             :expected-chain expected-network-name})]
      {:fx [[:dispatch
             [:toasts/upsert
