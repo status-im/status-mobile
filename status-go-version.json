@@ -3,7 +3,7 @@
     "_comment": "Instead use: scripts/update-status-go.sh <rev>",
     "owner": "status-im",
     "repo": "status-go",
-    "version": "feature/fallback-pairing-seed",
-    "commit-sha1": "c39d9dc2d5cefccf594d66729fcb0bc3d4b51321",
-    "src-sha256": "1sq62qrbvr1v0skd6s15ja2k6165li60kc5gk3n0afa2a1dwzasm"
+    "version": "feat/enable_sync_fallback",
+    "commit-sha1": "880152abcac69bb7cf29088ce413d2c4e01be412",
+    "src-sha256": "067pj4xx0bph9573sdk57hdhq0xkaaz1zmgkk09d27a5fz2rdm4n"
 }
