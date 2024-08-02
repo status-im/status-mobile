@@ -89,7 +89,6 @@ in stdenv.mkDerivation rec {
   ORG_GRADLE_PROJECT_commitHash = commitHash;
   ORG_GRADLE_PROJECT_buildUrl = buildUrl;
   ORG_GRADLE_PROJECT_hermesEnabled = hermesEnabled;
-  RCT_METRO_PORT = reactMetroPort;
 
   # Fix for ERR_OSSL_EVP_UNSUPPORTED error.
   NODE_OPTIONS = "--openssl-legacy-provider";
@@ -108,7 +107,6 @@ in stdenv.mkDerivation rec {
     export ANDROID_NDK_ROOT="${androidPkgs.ndk}"
 
     export STATUS_NIX_MAVEN_REPO="${deps.gradle}"
-    export RCT_METRO_PORT=${toString reactMetroPort}
   '';
 
   unpackPhase = ''
