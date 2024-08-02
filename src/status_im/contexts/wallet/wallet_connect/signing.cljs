@@ -4,6 +4,7 @@
             [status-im.contexts.wallet.wallet-connect.core :as core]
             [status-im.contexts.wallet.wallet-connect.rpc :as rpc]
             [utils.hex :as hex]
+            [utils.number :as number]
             [utils.transforms :as transforms]))
 
 (defn typed-data-chain-id
@@ -16,7 +17,8 @@
                             (some #(= "chainId" (:name %))))
         data-chain-id  (-> typed-data
                            :domain
-                           :chainId)]
+                           :chainId
+                           number/parse-int)]
     (when chain-id-type?
       data-chain-id)))
 
