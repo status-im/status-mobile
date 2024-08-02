@@ -13,8 +13,7 @@
 
 (views/defview sync-settings
   []
-  (views/letsubs [{:keys [syncing-on-mobile-network?
-                          backup-enabled?
+  (views/letsubs [{:keys [backup-enabled?
                           default-sync-period
                           use-mailservers?]}
                   [:profile/profile]
@@ -27,16 +26,6 @@
        :on-press   #(rf/dispatch [:navigate-back])}]
      [react/scroll-view
       [components/list-header (i18n/label :t/data-syncing)]
-      [list.item/list-item
-       {:size                :small
-        :title               (i18n/label :t/mobile-network-settings)
-        :accessibility-label :notifications-button
-        :on-press            #(re-frame/dispatch [:navigate-to :mobile-network-settings])
-        :chevron             true
-        :accessory           :text
-        :accessory-text      (if syncing-on-mobile-network?
-                               (i18n/label :t/mobile-network-use-mobile)
-                               (i18n/label :t/mobile-network-use-wifi))}]
       [list.item/list-item
        {:size                :small
         :title               (i18n/label :t/backup-settings)
