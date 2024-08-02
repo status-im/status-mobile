@@ -265,9 +265,7 @@
                              persisted-sessions)]
      (when (seq expired-sessions)
        (log/info "Updating WalletConnect persisted sessions due to expired/inactive sessions"
-                 {:expired   expired-sessions
-                  :persisted persisted-sessions
-                  :active    sessions}))
+                 {:expired expired-sessions}))
      {:fx (mapv (fn [{:keys [topic]}]
                   [:dispatch [:wallet-connect/disconnect-session topic]])
                 expired-sessions)
