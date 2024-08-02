@@ -46,6 +46,11 @@
    (when (show-confirmation-modal? db)
      {:fx [[:dispatch
             [:show-bottom-sheet
-             {:content (fn [] [modal-view])
-              :shell?  true}]]]})))
+             {:content  (fn [] [modal-view])
+              ;; When in the profiles screen do biometric auth after the metrics sheet is dismissed
+              ;; https://github.com/status-im/status-mobile/issues/20932
+              :on-close (when (= (:view-id db) :screen/profile.profiles)
+                          #(rf/dispatch [:profile.login/login-with-biometric-if-available
+                                         (get-in db [:profile/login :key-uid])]))
+              :shell?   true}]]]})))
 
