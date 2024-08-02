@@ -3,13 +3,21 @@
     [legacy.status-im.utils.build :as build]
     [react-native.platform :as platform]))
 
-(defn user-journey-event
-  [action]
+(defn key-value-event
+  [event-name val-key value]
   {:metric
-   {:eventName  "user-journey"
+   {:eventName  event-name
     :platform   platform/os
     :appVersion build/app-short-version
-    :eventValue {:action action}}})
+    :eventValue {val-key value}}})
+
+(defn user-journey-event
+  [action]
+  (key-value-event "user-journey" :action action))
+
+(defn navigation-event
+  [view-id]
+  (key-value-event "navigation" :viewId view-id))
 
 (def ^:const app-started-event "app-started")
 
@@ -39,13 +47,16 @@
 (defn track-view-id-event
   [view-id]
   (when (contains? view-ids-to-track view-id)
-    (user-journey-event (str "view-id." (name view-id)))))
+    (navigation-event (name view-id))))
 
 (defn tracked-event
   [[event-name second-parameter]]
   (case event-name
     :profile/get-profiles-overview-success
     (user-journey-event app-started-event)
+
+    :centralized-metrics/toggle-centralized-metrics
+    (key-value-event "events.metrics-enabled" :enabled second-parameter)
 
     :set-view-id
     (track-view-id-event second-parameter)
