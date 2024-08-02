@@ -1,4 +1,10 @@
 module.exports = {
+  project: {
+    android: {
+      // https://github.com/reactwg/react-native-new-architecture/discussions/135
+      unstable_reactLegacyComponentNames: ['BVLinearGradient', 'CKCameraManager', 'FastImageView'],
+    },
+  },
   dependencies: {
     'react-native-config': {
       platforms: {
