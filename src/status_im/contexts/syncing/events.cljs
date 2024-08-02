@@ -52,8 +52,7 @@
   (let [config-map (.stringify js/JSON
                                (clj->js
                                 {:receiverConfig
-                                 {:createAccount (profile.config/create)
-                                  :deviceType    platform/os}}))]
+                                 {:createAccount (profile.config/create)}}))]
     (rf/dispatch [:syncing/update-role constants/local-pairing-role-receiver])
     (native-module/input-connection-string-for-bootstrapping
      connection-string
