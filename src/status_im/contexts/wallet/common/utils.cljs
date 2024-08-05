@@ -155,6 +155,10 @@
   [accounts address]
   (some #(when (= (:address %) address) %) accounts))
 
+(defn get-default-account
+  [accounts]
+  (some #(when (:default-account? %) %) accounts))
+
 (defn calculate-token-fiat-value
   "Returns the token fiat value for provided raw balance"
   [{:keys [currency balance token]}]

@@ -41,6 +41,7 @@
     status-im.contexts.syncing.events
     status-im.contexts.wallet.add-account.add-address-to-watch.events
     status-im.contexts.wallet.add-account.create-account.events
+    status-im.contexts.wallet.buy-crypto.events
     status-im.contexts.wallet.collectible.events
     status-im.contexts.wallet.common.wizard.events
     status-im.contexts.wallet.effects

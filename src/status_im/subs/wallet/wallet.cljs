@@ -400,6 +400,22 @@
                 :formatted-balance formatted-balance)))))
 
 (rf/reg-sub
+ :wallet/current-viewing-account-or-default
+ :<- [:wallet/accounts]
+ :<- [:wallet/current-viewing-account-address]
+ :<- [:wallet/balances-in-selected-networks]
+ :<- [:profile/currency-symbol]
+ (fn [[accounts current-viewing-account-address balances currency-symbol]]
+   (let [account           (or (utils/get-account-by-address accounts current-viewing-account-address)
+                               (utils/get-default-account accounts))
+         address           (:address account)
+         balance           (get balances address)
+         formatted-balance (utils/prettify-balance currency-symbol balance)]
+     (assoc account
+            :balance           balance
+            :formatted-balance formatted-balance))))
+
+(rf/reg-sub
  :wallet/current-viewing-account-color
  :<- [:wallet/current-viewing-account]
  :-> :color)
@@ -420,7 +436,7 @@
 
 (rf/reg-sub
  :wallet/current-viewing-account-tokens-filtered
- :<- [:wallet/current-viewing-account]
+ :<- [:wallet/current-viewing-account-or-default]
  :<- [:wallet/network-details]
  :<- [:wallet/wallet-send]
  (fn [[account networks send-data] [_ {:keys [query chain-ids hide-token-fn]}]]

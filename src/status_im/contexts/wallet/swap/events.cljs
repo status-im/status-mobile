@@ -76,11 +76,7 @@
 
 (rf/reg-event-fx :wallet.swap/select-asset-to-receive
  (fn [{:keys [db]} [{:keys [token]}]]
-   {:db (update-in db
-                   [:wallet :ui :swap]
-                   #(-> %
-                        (assoc :asset-to-receive token)
-                        (assoc :loading-swap-proposal? true)))}))
+   {:db (assoc-in db [:wallet :ui :swap :asset-to-receive] token)}))
 
 (rf/reg-event-fx :wallet.swap/set-default-slippage
  (fn [{:keys [db]}]
