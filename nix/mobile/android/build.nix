@@ -17,6 +17,7 @@
   hermesEnabled ? lib.getEnvWithDefault "ORG_GRADLE_PROJECT_hermesEnabled" "true",
   buildUrl ? lib.getEnvWithDefault "ORG_GRADLE_PROJECT_buildUrl" null,
   statusGoSrcOverride ? lib.getEnvWithDefault "STATUS_GO_SRC_OVERRIDE" null,
+  reactMetroPort ? lib.getEnvWithDefault "RCT_METRO_PORT" 8081,
   # If APKs should be split based on architectures
   androidAbiSplit ? lib.getEnvWithDefault "ANDROID_ABI_SPLIT" "true",
   # Android architectures to build for
@@ -158,6 +159,7 @@ in stdenv.mkDerivation rec {
       --no-build-cache \
       --parallel \
       -Dmaven.repo.local='${deps.gradle}' \
+      -PreactNativeDevServerPort=${toString reactMetroPort} \
       assemble${gradleBuildType}
     '';
   in
