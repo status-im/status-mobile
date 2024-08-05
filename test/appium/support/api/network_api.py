@@ -150,7 +150,7 @@ class NetworkApi:
             balance = round(self.get_balance(address), 4)
             if balance == expected_balance:
                 return
-            time.sleep(10)
+            time.sleep(20)
         raise TimeoutException(
             'balance is not updated on Etherscan, it is %s but expected to be %s' % (balance, expected_balance))
 

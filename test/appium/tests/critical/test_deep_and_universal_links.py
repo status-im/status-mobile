@@ -17,13 +17,14 @@ class TestDeepLinksOneDevice(MultipleSharedDeviceTestCase):
 
         self.home = self.sign_in.create_user(username=self.username)
         self.home.communities_tab.click_until_presence_of_element(self.home.plus_community_button)
-        self.community_name = "open community"
+        self.open_community_name = "open community"
         self.channel_name = "general"
         self.community = self.home.create_community(community_type="open")
         self.profile_view = self.home.get_profile_view()
         self.browser_view = self.home.get_dapp_view()
-        self.home.get_chat(self.community_name, community=True).click()
+        self.home.get_chat(self.open_community_name, community=True).click()
         self.community_view = self.home.get_community_view()
+        self.open_community_url = self.community_view.copy_community_link()
         self.channel = self.community_view.get_channel(self.channel_name).click()
 
     @marks.testrail_id(704613)
@@ -39,7 +40,6 @@ class TestDeepLinksOneDevice(MultipleSharedDeviceTestCase):
             self.channel.send_message(url)
             self.channel.chat_element_by_text(url).click_on_link_inside_message_body()
             if self.channel.profile_send_contact_request_button.is_element_displayed(10):
-                # username_text = self.profile_view.default_username_text.text
                 username_text = self.profile_view.contact_name_text.text
                 if not (username_text.endswith(url[-6:]) or username_text == text):
                     self.errors.append("Incorrect username is shown for profile url %s" % url)
@@ -47,34 +47,10 @@ class TestDeepLinksOneDevice(MultipleSharedDeviceTestCase):
                 self.errors.append("Profile was not opened by the profile url %s" % url)
             self.profile_view.close_button.click()
 
-        community_urls = {
-            "https://status.app/c/ixyACjgKDVNOVCBjb21tdW5pdHkSHHJlcXVpcmUgMTAgU05UIEdvZXJsaSB0byB1c2UYASIHI2VhYjcwMAM=#zQ3shhxbnaCooVQqaEkZRuRbez2SRws52Sas9HxkZNGimLRpi":
-                "SNT community",
-            "https://status.app/c/G0UAAMTyNsn2QZDEG0EXftOl8pOEfwEBOOSA_YTfIk85xmADDgINGmxpUHAXzK36bN0fK42Xf4YD2yjPk1z2pbFwFw==#zQ3shQGRffgENQzqDLAVCUbF8S2iPZHFfCGCPbApUfAoCNBMu":
-                "open community",
-            "https://status.app/c/G00AAGS9TbI9mSR-ZNmFrhRjNuEeXAAbcAIUaLLJyjMOG3ACJQ12oIHD78QhzO9s_T5bUeU7rnATWJg3mGgTUemrAg==#zQ3shf1JfZjB7yJ1EorFnnmeTs2PN5chpD98Li5kLN7wd2SpL":
-                "closed community"
-        }
-        for url, text in community_urls.items():
-            self.channel.just_fyi("Opening community '%s' by the url %s" % (text, url))
-            self.channel.chat_message_input.clear()
-            self.channel.send_message(url)
-            self.channel.chat_element_by_text(url).click_on_link_inside_message_body()
-            if text == 'SNT community':
-                if self.community_view.community_title.text != text:
-                    self.errors.append("Community '%s' was not requested to join by the url %s" % (text, url))
-            else:
-                if not self.community_view.join_button.is_element_displayed(
-                        10) or self.community_view.community_title.text != text:
-                    self.errors.append("Community '%s' was not requested to join by the url %s" % (text, url))
-            if text != "closed community":  # the last one
-                self.home.navigate_back_to_home_view()
-                self.home.get_to_community_channel_from_home(self.community_name)
-
         self.errors.verify_no_errors()
 
     @marks.testrail_id(702775)
-    def test_links_deep_links(self):
+    def test_links_deep_links_profile(self):
         self.home.navigate_back_to_home_view()
         self.home.browser_tab.click()
 
@@ -87,7 +63,6 @@ class TestDeepLinksOneDevice(MultipleSharedDeviceTestCase):
         for link, text in profile_links.items():
             self.channel.just_fyi("Opening profile link %s" % link)
             self.browser_view.open_url(link)
-            # shown_name_text = self.profile_view.default_username_text.text
             shown_name_text = self.profile_view.contact_name_text.text
             if text:
                 name_is_shown = shown_name_text == text or shown_name_text.endswith(link[-6:])
@@ -97,25 +72,42 @@ class TestDeepLinksOneDevice(MultipleSharedDeviceTestCase):
                 self.errors.append("Profile was not opened by the profile deep link %s" % link)
             self.browser_view.click_system_back_button()
 
+        self.errors.verify_no_errors()
+
+    @marks.testrail_id(739307)
+    def test_deep_links_communities(self):
+        closed_community_name, snt_community_name = "closed community", "SNT community"
+        self.home.navigate_back_to_home_view()
+        self.home.create_community(community_type="closed")
+        if not self.community_view.community_options_button.is_element_displayed():
+            self.home.get_chat(closed_community_name, community=True).click()
+        closed_community_url = self.community_view.copy_community_link()
+        self.home.navigate_back_to_home_view()
+        self.home.create_community(community_type="token-gated")
+        if not self.community_view.community_options_button.is_element_displayed():
+            self.home.get_chat(snt_community_name, community=True).click()
+        snt_community_url = self.community_view.copy_community_link()
+        self.home.reopen_app(sign_in=False)
+        self.sign_in.create_user(username="second user", first_user=False)
+        self.home.browser_tab.click()
+
+        old, new = "https://status.app/", "status-app://"
         community_links = {
-            "status.app://c/ixyACjgKDVNOVCBjb21tdW5pdHkSHHJlcXVpcmUgMTAgU05UIEdvZXJsaSB0byB1c2UYASIHI2VhYjcwMAM=#zQ3shhxbnaCooVQqaEkZRuRbez2SRws52Sas9HxkZNGimLRpi":
-                "SNT community",
-            "status.app://c/G0UAAMTyNsn2QZDEG0EXftOl8pOEfwEBOOSA_YTfIk85xmADDgINGmxpUHAXzK36bN0fK42Xf4YD2yjPk1z2pbFwFw==#zQ3shQGRffgENQzqDLAVCUbF8S2iPZHFfCGCPbApUfAoCNBMu":
-                "open community",
-            "status.app://c/G00AAGS9TbI9mSR-ZNmFrhRjNuEeXAAbcAIUaLLJyjMOG3ACJQ12oIHD78QhzO9s_T5bUeU7rnATWJg3mGgTUemrAg==#zQ3shf1JfZjB7yJ1EorFnnmeTs2PN5chpD98Li5kLN7wd2SpL":
-                "closed community"
+            snt_community_name: snt_community_url.replace(old, new),
+            self.open_community_name: self.open_community_url.replace(old, new),
+            closed_community_name: closed_community_url.replace(old, new)
         }
-        for link, text in community_links.items():
+        for text, link in community_links.items():
             self.channel.just_fyi("Opening community '%s' by the link %s" % (text, link))
             self.browser_view.open_url(link)
-            if text == 'SNT community':
+            if text == snt_community_name:
                 if self.community_view.community_title.text != text:
                     self.errors.append("Community '%s' was not requested to join by the deep link %s" % (text, link))
             else:
                 if not self.community_view.join_button.is_element_displayed(
                         10) or self.community_view.community_title.text != text:
                     self.errors.append("Community '%s' was not requested to join by the deep link %s" % (text, link))
-            if text != "closed community":  # the last one
+            if text != closed_community_name:  # the last one
                 self.home.navigate_back_to_home_view()
                 self.home.browser_tab.click()
 

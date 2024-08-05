@@ -372,7 +372,7 @@ class CommunityView(HomeView):
         self.community_create_a_channel_button = Button(self.driver, accessibility_id="community-create-channel")
         self.channel_name_edit_box = EditBox(self.driver, translation_id="name-your-channel-placeholder")
         self.channel_descripton = ChatView(self.driver).community_description_edit_box
-        self.community_options_button = Button(self.driver, accessibility_id="community-menu-button")
+        self.community_options_button = Button(self.driver, accessibility_id="community-options-for-community")
         self.view_members_button = Button(self.driver, accessibility_id="view-members")
         self.community_info_button = Button(self.driver, translation_id="community-info")
         self.invite_button = Button(self.driver, accessibility_id="community-invite-people")
@@ -455,11 +455,10 @@ class CommunityView(HomeView):
     def copy_community_link(self):
         self.driver.info("Copy community link")
         self.community_options_button.click()
-        self.community_info_button.click()
-        self.element_starts_with_text('join.status.im/c/').click()
-        community_link_text = self.element_starts_with_text('join.status.im/c/').text
-        self.home_button.double_click()
-        return 'https://%s' % community_link_text
+        self.share_community_button.click()
+        text = self.sharing_text_native.text
+        self.click_system_back_button()
+        return text
 
     def handle_membership_request(self, username: str, approve=True):
         self.driver.info("Handling membership request of user '%s', approve='%s'" % (username, str(approve)))
