@@ -262,7 +262,7 @@ class SignInView(BaseView):
         if enable_notifications:
             self.enable_notifications_button.click_until_presence_of_element(self.start_button)
             if self.allow_button.is_element_displayed(10):
-                self.allow_button.click()
+                self.allow_button.click_until_presence_of_element(self.start_button)
         else:
             self.maybe_later_button.click_until_presence_of_element(self.start_button)
         self.start_button.click()
