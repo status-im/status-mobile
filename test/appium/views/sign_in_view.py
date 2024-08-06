@@ -265,6 +265,7 @@ class SignInView(BaseView):
                 self.allow_button.click_until_presence_of_element(self.start_button)
         else:
             self.maybe_later_button.click_until_presence_of_element(self.start_button)
+        self.cancel_button.click_if_shown()  # TODO: remove when issue 20806 is fixed
         self.start_button.click()
         self.chats_tab.wait_for_visibility_of_element(30)
         self.driver.info("## New multiaccount is created successfully!", device=False)

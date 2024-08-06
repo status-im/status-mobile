@@ -457,7 +457,7 @@ class CommunityView(HomeView):
         self.community_options_button.click()
         self.share_community_button.click()
         text = self.sharing_text_native.text
-        self.click_system_back_button()
+        self.click_system_back_button(times=2)
         return text
 
     def handle_membership_request(self, username: str, approve=True):
