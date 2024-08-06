@@ -240,6 +240,7 @@ class TestWalletOneDevice(MultipleSharedDeviceTestCase):
         self.errors.verify_no_errors()
 
     @marks.testrail_id(727232)
+    @marks.skip("The feature is disabled in https://github.com/status-im/status-mobile/pull/20955")
     @marks.xfail(reason="Missing networks in account address, https://github.com/status-im/status-mobile/issues/20166")
     def test_wallet_add_remove_watch_only_account(self):
         self.wallet_view.just_fyi("Adding new watch only account")
