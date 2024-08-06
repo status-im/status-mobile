@@ -1,5 +1,5 @@
 #!/usr/bin/env groovy
-library 'status-jenkins-lib@v1.9.3'
+library 'status-jenkins-lib@v1.9.4'
 
 pipeline {
 
