@@ -11,12 +11,12 @@
   ;; Originally, the flow went to the send flow, but it has been removed to avoid bugs. Please check
   ;; https://github.com/status-im/status-mobile/issues/20972. The previous code has been commented
   ;; out.
-  (let [#_#_[_ split-address] (network-utils/split-network-full-address address)]
-    (clipboard/set-string address)
-    (rf/dispatch [:toasts/upsert
-                  {:type :positive
-                   :text (i18n/label :t/address-copied)}])
-    #_(rf/dispatch
+  (clipboard/set-string address)
+  (rf/dispatch [:toasts/upsert
+                {:type :positive
+                 :text (i18n/label :t/address-copied)}])
+  #_(let [[_ split-address] (network-utils/split-network-full-address address)]
+      (rf/dispatch
        [:wallet/select-send-address
         {:address     address
          :recipient   {:recipient-type :address
