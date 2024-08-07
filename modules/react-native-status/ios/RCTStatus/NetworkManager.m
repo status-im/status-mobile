@@ -35,21 +35,7 @@ RCT_EXPORT_METHOD(inputConnectionStringForBootstrapping:(NSString *)cs
         configJSON:(NSString *)configJSON
         callback:(RCTResponseSenderBlock)callback) {
 
-    NSData *configData = [configJSON dataUsingEncoding:NSUTF8StringEncoding];
-    NSError *error;
-    NSMutableDictionary *configDict = [NSJSONSerialization JSONObjectWithData:configData options:NSJSONReadingMutableContainers error:&error];
-    NSMutableDictionary *receiverConfig = configDict[@"receiverConfig"];
-    NSMutableDictionary *nodeConfig = receiverConfig[@"nodeConfig"];
-    NSFileManager *fileManager = [NSFileManager defaultManager];
-    NSURL *rootUrl =[[fileManager URLsForDirectory:NSLibraryDirectory inDomains:NSUserDomainMask] lastObject];
-    NSURL *multiaccountKeystoreDir = [rootUrl URLByAppendingPathComponent:@"keystore"];
-    NSString *keystoreDir = multiaccountKeystoreDir.path;
-    NSString *rootDataDir = rootUrl.path;
-
-    [receiverConfig setValue:keystoreDir forKey:@"keystorePath"];
-    [nodeConfig setValue:rootDataDir forKey:@"rootDataDir"];
-    NSString *modifiedConfigJSON = [Utils jsonStringWithPrettyPrint:NO fromDictionary:configDict];
-    NSString *result = StatusgoInputConnectionStringForBootstrapping(cs, modifiedConfigJSON);
+    NSString *result = StatusgoInputConnectionStringForBootstrapping(cs, configJSON);
     callback(@[result]);
 }
 
