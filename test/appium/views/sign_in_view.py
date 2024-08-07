@@ -260,9 +260,12 @@ class SignInView(BaseView):
         #     self.next_button.click()
         # self.identifiers_button.wait_and_click(30)
         if enable_notifications:
-            self.enable_notifications_button.click_until_presence_of_element(self.start_button)
-            if self.allow_button.is_element_displayed(10):
-                self.allow_button.click_until_presence_of_element(self.start_button)
+            self.enable_notifications_button.wait_and_click()
+            for _ in range(3):
+                self.allow_button.click_if_shown(sec=10)
+                self.enable_notifications_button.click_if_shown()
+                if self.start_button.is_element_displayed():
+                    break
         else:
             self.maybe_later_button.click_until_presence_of_element(self.start_button)
         self.cancel_button.click_if_shown()  # TODO: remove when issue 20806 is fixed
@@ -294,6 +297,7 @@ class SignInView(BaseView):
             self.enable_notifications_button.click_until_presence_of_element(self.start_button)
         else:
             self.maybe_later_button.click_until_presence_of_element(self.start_button)
+        self.cancel_button.click_if_shown()  # TODO: remove when issue 20806 is fixed
         self.start_button.click()
         self.chats_tab.wait_for_visibility_of_element(30)
         self.driver.info("## Multiaccount is recovered successfully!", device=False)

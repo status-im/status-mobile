@@ -78,6 +78,7 @@ class TestDeepLinksOneDevice(MultipleSharedDeviceTestCase):
     def test_deep_links_communities(self):
         closed_community_name, snt_community_name = "closed community", "SNT community"
         self.home.navigate_back_to_home_view()
+        self.home.communities_tab.click()
         self.home.create_community(community_type="closed")
         if not self.community_view.community_options_button.is_element_displayed():
             self.home.get_chat(closed_community_name, community=True).click()

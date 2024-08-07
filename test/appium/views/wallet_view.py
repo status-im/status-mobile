@@ -1,3 +1,5 @@
+import time
+
 import pytest
 
 from tests import common_password
@@ -120,7 +122,12 @@ class WalletView(BaseView):
         self.login_button.click()
 
     def confirm_transaction(self):
-        self.confirm_button.click_until_presence_of_element(self.slide_button_track)
+        self.confirm_button.click()
+        for _ in range(3):
+            if self.slide_button_track.is_element_displayed():
+                break
+            time.sleep(1)
+            self.confirm_button.click()
         self.slide_and_confirm_with_password()
 
     def set_amount(self, amount: float):
