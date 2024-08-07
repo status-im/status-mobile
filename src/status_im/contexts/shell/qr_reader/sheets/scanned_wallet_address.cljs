@@ -1,21 +1,21 @@
 (ns status-im.contexts.shell.qr-reader.sheets.scanned-wallet-address
   (:require
-   [quo.core :as quo]
-   [react-native.clipboard :as clipboard]
-   [status-im.contexts.wallet.common.utils :as utils]
-   [status-im.contexts.wallet.common.utils.networks :as network-utils]
-   [status-im.feature-flags :as ff]
-   [utils.i18n :as i18n]
-   [utils.re-frame :as rf]))
+    [quo.core :as quo]
+    [react-native.clipboard :as clipboard]
+    [status-im.feature-flags :as ff]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]))
 
-(defn- on-press [address]
-  ;; Originally, the flow went to the send flow, but it has been removed to avoid bugs.
-  ;; Please check https://github.com/status-im/status-mobile/issues/20972
-  ;; The previous code has been commented out.
+(defn- on-press
+  [address]
+  ;; Originally, the flow went to the send flow, but it has been removed to avoid bugs. Please check
+  ;; https://github.com/status-im/status-mobile/issues/20972. The previous code has been commented
+  ;; out.
   (let [#_#_[_ split-address] (network-utils/split-network-full-address address)]
     (clipboard/set-string address)
-    (rf/dispatch [:toasts/upsert {:type :positive
-                                  :text (i18n/label :t/address-copied)}])
+    (rf/dispatch [:toasts/upsert
+                  {:type :positive
+                   :text (i18n/label :t/address-copied)}])
     #_(rf/dispatch
        [:wallet/select-send-address
         {:address     address
