@@ -98,16 +98,16 @@
         (update :categories <-categories-rpc)
         (assoc :role-permissions?
                (->> community
-                    :tokenPermissions
+                    :token-permissions
                     vals
                     (some role-permission?)))
         (assoc :membership-permissions?
                (->> community
-                    :tokenPermissions
+                    :token-permissions
                     vals
                     (some membership-permission?)))
         (assoc :token-images
                (reduce (fn [acc {sym :symbol image :image}]
                          (assoc acc sym image))
                        {}
-                       (:communityTokensMetadata community))))))
+                       (:tokens-metadata community))))))
