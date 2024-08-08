@@ -6,23 +6,23 @@
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
-(defn- on-press
+(defn- copy-address
   [address]
-  ;; Originally, the flow went to the send flow, but it has been removed to avoid bugs. Please check
-  ;; https://github.com/status-im/status-mobile/issues/20972. The previous code has been commented
-  ;; out.
   (clipboard/set-string address)
   (rf/dispatch [:toasts/upsert
                 {:type :positive
-                 :text (i18n/label :t/address-copied)}])
-  #_(let [[_ split-address] (network-utils/split-network-full-address address)]
-      (rf/dispatch
-       [:wallet/select-send-address
-        {:address     address
-         :recipient   {:recipient-type :address
-                       :label          (utils/get-shortened-address split-address)}
-         :stack-id    :wallet-select-address
-         :start-flow? true}])))
+                 :text (i18n/label :t/address-copied)}]))
+
+(comment
+ (defn- send-to-address [address]
+   (let [[_ split-address] (network-utils/split-network-full-address address)]
+     (rf/dispatch
+      [:wallet/select-send-address
+       {:address     address
+        :recipient   {:recipient-type :address
+                      :label          (utils/get-shortened-address split-address)}
+        :stack-id    :wallet-select-address
+        :start-flow? true}]))))
 
 (defn view
   [address]
@@ -32,7 +32,15 @@
     [[{:icon                :i/copy
        :accessibility-label :send-asset
        :label               (i18n/label :t/copy-address)
-       :on-press            #(on-press address)}
+       :on-press            #(copy-address address)}
+      ;; Originally, the flow went to the send flow, but it has been removed to avoid bugs,
+      ;; please check https://github.com/status-im/status-mobile/issues/20972 for more context
+      ;; The previous code has been commented out to be reintroduced in the future easily.
+      (comment
+       {:icon                :i/send
+        :accessibility-label :send-asset
+        :label               (i18n/label :t/send-to-this-address)
+        :on-press            #(send-to-address address)})
       (when (ff/enabled? :ff/wallet.saved-addresses)
         {:icon                :i/save
          :accessibility-label :save-address
