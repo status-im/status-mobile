@@ -265,9 +265,11 @@
                                                                  (i18n/label :t/slide-to-send))
                                           :container-style     {:z-index 2}
                                           :customization-color account-color
-                                          :on-auth-success     #(rf/dispatch
-                                                                 [:wallet/send-transaction
-                                                                  (security/safe-unmask-data %)])
+                                          :on-auth-success     #(do
+                                                                  (rf/dispatch
+                                                                   [:wallet/send-transaction
+                                                                    (security/safe-unmask-data %)])
+                                                                  (rf/dispatch [:hide-bottom-sheet]))
                                           :auth-button-label   (i18n/label :t/confirm)}])]
            :gradient-cover?          true
            :customization-color      (:color account)}
