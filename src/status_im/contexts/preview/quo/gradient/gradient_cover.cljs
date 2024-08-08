@@ -50,7 +50,7 @@
      (fn []
        (rn/use-effect (fn []
                         (when @blur?
-                          (rf/dispatch [:theme/switch :dark])))
+                          (rf/dispatch [:theme/switch {:theme :dark}])))
                       [@blur?])
        [preview/preview-container {:state state :descriptor descriptor}
         [rn/view
