@@ -8,5 +8,5 @@
    (print "------------ parvesh" url)
    [fast-image/fast-image
     {:style  {:width 120 :height 120}
-     :on-error #(print "------------ parvesh" %)
+     :on-error #(js/console.log "------------ parvesh js-logs" %)
      :source {:uri (str url "&download=true")}}]])
