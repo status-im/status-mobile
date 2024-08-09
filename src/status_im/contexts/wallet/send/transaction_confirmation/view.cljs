@@ -268,8 +268,7 @@
                                           :on-auth-success     #(do
                                                                   (rf/dispatch
                                                                    [:wallet/send-transaction
-                                                                    (security/safe-unmask-data %)])
-                                                                  (rf/dispatch [:hide-bottom-sheet]))
+                                                                    (security/safe-unmask-data %)]))
                                           :auth-button-label   (i18n/label :t/confirm)}])]
            :gradient-cover?          true
            :customization-color      (:color account)}
