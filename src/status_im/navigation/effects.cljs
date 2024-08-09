@@ -74,9 +74,7 @@
    (let [[status-bar-theme] (get-status-nav-color root-id theme)
          root               (get (roots/roots status-bar-theme) root-id)]
      (dismiss-all-modals)
-     (rf/dispatch [:profile.settings/switch-theme
-                   (get roots/themes root-id)
-                   root-id])
+     (rf/dispatch [:theme/switch {:view-id root-id}])
      (reset! state/root-id (or (get-in root [:root :stack :id]) root-id))
      (navigation/set-root root)
      (state/navigation-state-reset [{:id   root-id

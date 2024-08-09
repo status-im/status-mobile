@@ -12,6 +12,7 @@
     status-im.common.peer-stats.events
     status-im.common.shared-urls.events
     status-im.common.signals.events
+    status-im.common.theme.effects
     status-im.common.theme.events
     [status-im.common.toasts.events]
     status-im.common.universal-links
