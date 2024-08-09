@@ -6,11 +6,12 @@
 
 (defn collectible-balance
   [collectible]
-  (-> collectible
-      :ownership
-      first
-      :balance
-      js/parseInt))
+  (let [balance (-> collectible
+                    :ownership
+                    first
+                    :balance
+                    js/parseInt)]
+    (if (js/Number.isNaN balance) 0 balance)))
 
 (def supported-collectible-types
   #{"image/jpeg"
