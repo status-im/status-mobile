@@ -377,8 +377,8 @@
     (rn/use-effect (fn []
                      (when blur-dark-only?
                        (if blur?
-                         (rf/dispatch [:theme/switch :dark])
-                         (rf/dispatch [:theme/switch :light]))))
+                         (rf/dispatch [:theme/switch {:theme :dark}])
+                         (rf/dispatch [:theme/switch {:theme :light}]))))
                    [blur? blur-dark-only?])
     [rn/view
      {:style {:top  (safe-area/get-top)

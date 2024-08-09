@@ -19,10 +19,10 @@
       :icon-name  :i/close
       :right-side [{:icon-name (if light? :i/dark :i/light)
                     :on-press  #(if light?
-                                  (rf/dispatch [:theme/switch :dark])
-                                  (rf/dispatch [:theme/switch :light]))}]
+                                  (rf/dispatch [:theme/switch {:theme :dark}])
+                                  (rf/dispatch [:theme/switch {:theme :light}]))}]
       :on-press   #(if (or logged-in? (not= (rf/sub [:view-id]) :quo-preview))
                      (rf/dispatch [:navigate-back])
                      (do
-                       (rf/dispatch [:theme/switch :dark])
+                       (rf/dispatch [:theme/switch {:theme :dark}])
                        (rf/dispatch [:init-root root])))}]))
