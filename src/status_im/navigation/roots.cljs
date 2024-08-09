@@ -1,18 +1,7 @@
 (ns status-im.navigation.roots
   (:require
     [quo.foundations.colors :as colors]
-    [status-im.constants :as constants]
     [status-im.navigation.options :as options]))
-
-;; Theme Order for navigation roots
-;; 1. Themes hardcoded in below map
-;; 2. If nil or no entry in map, then theme stored in
-;;    [:db :profile/profile :appearance] will be used (for mulitaccounts)
-;; 3). Fallback theme - Dark
-(def themes
-  {:screen/onboarding.intro constants/theme-type-dark
-   :screen/profile.profiles constants/theme-type-dark
-   :shell-stack             nil})
 
 (defn roots-internal
   [status-bar-theme]

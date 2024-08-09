@@ -4,7 +4,6 @@
     [native-module.core :as native-module]
     [status-im.common.keychain.events :as keychain]
     [status-im.config :as config]
-    [status-im.constants :as constants]
     status-im.contexts.profile.login.effects
     [status-im.contexts.profile.rpc :as profile.rpc]
     [status-im.feature-flags :as ff]
@@ -80,11 +79,7 @@
                   [[:dispatch [:onboarding/finalize-setup]]]
 
                   :else
-                  [[:profile.settings/switch-theme-fx
-                    [(or (:appearance settings)
-                         constants/theme-type-dark)
-                     :shell-stack]]
-                   [:dispatch [:init-root :shell-stack]]
+                  [[:dispatch [:init-root :shell-stack]]
                    [:dispatch [:profile/show-testnet-mode-banner-if-enabled]]]))})))
 
 ;; login phase 2: we want to load and show chats faster, so we split login into 2 phases
