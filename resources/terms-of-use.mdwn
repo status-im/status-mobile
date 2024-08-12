@@ -38,7 +38,7 @@ You not only release Status’ liability on a number of items, but also agree th
 
 - Arbitration
 If a dispute arises between you and Status, we will seek to first solve it amicably with you before proceeding to the use of an arbitration administered by the Swiss Chambers’ Arbitration Institution.
-&nbsp;
+
 
 2. About Status Software
 
@@ -77,7 +77,7 @@ Within Messaging, you will also be able to participate in Status Community Space
 2.1.2 Web 3 browser
 
 Status Software also includes a Web 3 browser through which you may access and interact with Web 3, exchanges, marketplaces, games and more. We will refer to the Web 3 browser in these terms as the “Web 3 Browser”.
-&nbsp;
+
 
 3. Privacy
 
@@ -95,7 +95,7 @@ If you use third party services offered through Status Software, your privacy ma
 
 
 Learn more about how we protect your data on Status Software by reading the Status Privacy Statement and relevant security page on the Status website.
-&nbsp;
+
 
 4. Using third party services and interacting with Web 3
 
@@ -114,19 +114,19 @@ You are solely responsible for your use of Third Party Services and your interac
 In principle, Status does not provide any advice, recommendation, support or endorse Third Party Services you may use or any aspect of Web 3 that you may interact with through Status Software. Their integration or availability through Status Software does not imply any support or endorsement by Status. Status may also receive a fee from certain third parties who provide the Third Party Services.
 
 Please also note that Status participates in the development of other open source projects that utilise peer-to-peer technologies, which you can find more details about on Status’ GitHub page.
-&nbsp;
+
 
 5. Nodes
 
 The use of Status Software on your device will turn it into a node that supports the Waku network.
 
 In general, by participating in or interacting with Web 3 networks, you may choose or be required to operate a node or perform other functions in support of such a network. Status is not responsible for the operation or functioning of such nodes.
-&nbsp;
+
 
 6. Security
 
 Although security is a top priority for us and many functions of Status Software are privacy-mode by default, we cannot guarantee the full security of Status Software and we are not responsible for alerting you to potential security risks. We intend to continuously update the security measures of Status Software and we will from time to time post updates on the security of Status Software through our communication channels.
-&nbsp;
+
 
 7. Content
 
@@ -142,7 +142,7 @@ You acknowledge that Status has no means of monitoring, moderating, removing, mo
 1. could be offensive, indecent, or otherwise objectionable;
 2. contains technical inaccuracies, typographical mistakes, and other errors; or
 3. could violate others’ rights, including but not limited to privacy, publicity, intellectual property, or other proprietary rights.
-&nbsp;
+
 
 8. Acceptable use of Status software
 
@@ -167,12 +167,12 @@ You shall not, nor try to, encourage or assist others using Status Software to:
 12. engage in any activity through Status Software that may be in violation of applicable law, rules or regulations in your jurisdiction;
 13. interfere, disrupt, negatively affect, or inhibit other users from their use of Status Software; or
 14. engage in any attack, hack, denial-of-service attack, interference, or exploit of any smart contract in connection with use of Status Software.
-&nbsp;
+
 
 9. Fees
 
 When you use Status Software to interact with Third Party Services or Web 3, you may incur costs and may have to pay various fees, such as service fees, transfer fees, transaction fees, swap fees, bridge fees or network fees. You will be solely liable for any such fees, costs and expenses. Status has no control over and is unable to influence these fees in any manner.
-&nbsp;
+
 
 10. Intellectual property and branding
 
@@ -187,7 +187,7 @@ Status (and its affiliates as the case may be) owns all the rights to Status bra
 We love to see creative work from the Status community, but please let us know in advance and in writing if you want to use trademarks, logos, or graphics or modify them from our standard colours and designs. If you write articles, blogs, create websites, or talk about Status, please make sure it is clear that you are not speaking for, on behalf of, or under endorsement by Status.
 
 To request permission to use our copyrighted material or trademarks or any other intellectual property, such as logos, please contact: marketing@status.im. If we grant you permission, you must follow our guidelines and instructions for using our intellectual property.
-&nbsp;
+
 
 11. Risks
 
@@ -222,7 +222,7 @@ With Status Software, you can interact with and transact in Digital Assets and t
 You acknowledge that there may be legal and regulatory implications applicable to you while using Status Software and interacting with Web 3 and that may also adversely impact your use of Status Software.
 
 You are solely responsible for evaluating the legal and regulatory implications and taking appropriate actions, which could include obtaining any necessary licences, permits or approvals. Additionally, you are solely responsible for any tax implications, such as the payment of any taxes, resulting from your activities conducted through Status Software, including any transactions in Digital Assets.
-&nbsp;
+
 
 12. Disclaimers
 
@@ -233,7 +233,7 @@ Status Software is provided on an “as is” basis. Status does not make any ex
 4. regarding the value, utility or legality of any Digital Asset;
 5. regarding the completeness, accuracy, legality, utility, suitability, functionality, security or availability of any smart contract that you may interact with or deploy; or
 6. regarding the completeness, accuracy, legality, utility, reliability, suitability or availability of any user content.
-&nbsp;
+
 
 13. Releases you should read closely
 
@@ -250,13 +250,13 @@ You release Status from all liability related to any claim, cause of action, con
 10. your content or other users’ content;
 11. any unauthorised third party activities, including without limitation the use of viruses, phishing, brute forcing, or other means of attack against Status Software; and
 12. any risks identified in these terms or any that a reasonable person should have been aware of in relation to using Status Software.
-&nbsp;
+
 
 14. Limitation of liability
 
 Status will not be held liable to you under any contract, negligence, strict liability, or other legal or equitable theory for any lost profits, cost of procurement for substitute services, or any special, incidental, or consequential damages related to, arising from, or in any way connected with these terms, Status, your use of Status Software, particularly where Status has indicated that it is not responsible. This includes without limitation, your use of SNT or other Digital Assets (creating, distributing, transacting in or otherwise) even if Status has been advised of the possibility of such damages.
 In any event, Status’ aggregate liability for any claims is limited to EUR 100 (one hundred Euros). This limitation of liability will apply to the extent permitted by applicable law.
-&nbsp;
+
 
 15. Indemnity
 
@@ -268,7 +268,7 @@ You shall indemnify and hold harmless Status from and against any and all claims
 5. your harm to or violation of the rights of any third party, including any privacy, intellectual property, publicity, confidentiality, property or any other rights;
 6. your use of Third Party Services or any aspect of Web 3; or
 7. any misrepresentation or fraudulent statements made by you.
-&nbsp;
+
 
 16. Restricted jurisdictions
 
@@ -277,7 +277,7 @@ Status is a Swiss company which makes Status Software available through third pa
 You acknowledge that Status Software is not intended for use or distribution in any jurisdiction where such use or distribution of software that is similar or identical to Status Software is prohibited or restricted in any way. Your use of Status Software does not and will not subject Status to such jurisdiction under any circumstance, particularly if there are any prohibitions or restrictions on the use of such software. Status reserves the right to limit the availability of Status Software in any jurisdiction.
 
 Status does not conduct any business activities (i.e. activities undertaken for the purpose of earning a profit) within the United States of America, District of Columbia, Puerto Rico, the U.S. Virgin Islands, and all other U.S. territories and possessions, as well as all Swiss embargoed countries.
-&nbsp;
+
 
 17. Materials provided are solely for informational purposes
 
@@ -286,7 +286,7 @@ Status provides materials and other information through Status Software for info
 You should always conduct your own research and seek independent professional advice if necessary. The materials and other information that Status may provide through Status Software does not constitute financial, legal, tax, or other advice and should not be treated as such.
 
 Additionally, Status is not responsible for any information, content, or services contained on any third party websites accessible or linked through the Status Software. By linking such third party websites, Status does not represent or imply that it endorses or supports such third party websites or content therein, or that it believes such third party websites and content therein to be accurate, useful or non-harmful. Status has no control over such third party websites and will not be liable for your use of or activities on any third party websites accessed through Status Software. The terms and conditions, including privacy policies, of such third party websites govern your use of their websites.If you access such third party websites through Status Software, it is at your own risk and you are solely responsible for your activities on such third party websites.
-&nbsp;
+
 
 18. Governing law and dispute resolution
 
@@ -305,14 +305,14 @@ If a (potential) dispute arises, you must first use your reasonable efforts to r
 If you and Status are unable to further resolve this dispute within sixty (60) calendar days of Status receiving this notice of dispute, then any such dispute will be referred to and finally resolved by you and Status through an arbitration administered by the Swiss Chambers’ Arbitration Institution in accordance with the Swiss Rules of International Arbitration for the time being in force, which rules are deemed to be incorporated herein by reference. The arbitral decision may be enforced in any court. The arbitration will be held in Zug, Switzerland, and may be conducted via video conference virtual/online methods if possible. The tribunal will consist of one arbitrator, and all proceedings as well as communications between the parties will be kept confidential. The language of the arbitration will be in English. Payment of all relevant fees in respect of the arbitration, including filing, administration and arbitrator fees will be in accordance with the Swiss Rules of International Arbitration.
 
 Regardless of any applicable statute of limitations, you must bring any claims within one year after the claim arose or the time when you should have reasonably known about the claim. You also waive the right to participate in a class action lawsuit or a classwide arbitration against Status.
-&nbsp;
+
 
 19. What happens if you stop using Status Software
 
 If, at any time, you no longer agree to these terms, you must immediately stop using Status Software and uninstall it from all your devices. You acknowledge that even after uninstalling Status Software from all your devices, messages (including content) you have sent may still remain on the recipient’s device, blockchain transactions you have may still be recorded on the blockchain, and any smart contracts you have deployed to a blockchain may still remain deployed.
 
 Even after you have stopped using Status Software, all provisions of these terms which by their nature should survive termination shall survive termination. These provisions include, but are not limited to, warranty disclaimers, indemnity, limitations of liability, dispute resolution, and governing law.
-&nbsp;
+
 
 20. General provisions
 
