@@ -2,6 +2,7 @@
   (:require
     [clojure.string :as string]
     [native-module.core :as native-module]
+    [react-native.platform :as platform]
     [status-im.contexts.settings.wallet.data-store :as data-store]
     [status-im.contexts.settings.wallet.network-settings.testnet-mode.view :as testnet]
     [taoensso.timbre :as log]
@@ -300,6 +301,6 @@
           [:show-bottom-sheet
            {:content (fn [] [testnet/view
                              {:enable? false
-                              :blur?   true}])
-            :shell?  true
-            :theme   :dark}]]]}))
+                              :blur?   (not platform/android?)}])
+            :shell?  (not platform/android?)
+            :theme   (when-not platform/android? :dark)}]]]}))
