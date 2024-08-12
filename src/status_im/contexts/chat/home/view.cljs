@@ -118,7 +118,8 @@
 (defn- banner-data
   [profile-link]
   {:title-props
-   {:label               (i18n/label :t/messages)
+   {:beta?               true
+    :label               (i18n/label :t/messages)
     :handler             #(rf/dispatch
                            [:show-bottom-sheet {:content chat.actions.view/new-chat}])
     :accessibility-label :new-chat-button}
