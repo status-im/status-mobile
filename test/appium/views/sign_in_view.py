@@ -149,6 +149,8 @@ class SignInView(BaseView):
         # intro screen
         self.i_m_new_in_status_button = Button(self.driver, accessibility_id="new-to-status-button")
 
+        self.terms_and_privacy_checkbox = Button(
+            self.driver, xpath="//*[@content-desc='terms-privacy-checkbox-container']/*[@content-desc='checkbox-off']")
         self.create_profile_button = Button(self.driver, accessibility_id='new-to-status-button')
         self.not_now_button = Button(self.driver, xpath="//*[@text='Not now']")
         self.sync_or_recover_profile_button = Button(self.driver, accessibility_id='already-use-status-button')
@@ -236,6 +238,7 @@ class SignInView(BaseView):
         self.driver.info("## Creating new multiaccount (password:'%s', keycard:'%s', enable_notification: '%s')" %
                          (password, str(keycard), str(enable_notifications)), device=False)
         if first_user:
+            self.terms_and_privacy_checkbox.click()
             self.create_profile_button.click_until_presence_of_element(self.generate_keys_button)
             self.not_now_button.wait_and_click()
         else:
@@ -279,6 +282,7 @@ class SignInView(BaseView):
         self.driver.info("## Recover access(password:%s, keycard:%s)" % (password, str(keycard)), device=False)
 
         if not second_user:
+            self.terms_and_privacy_checkbox.click()
             self.sync_or_recover_profile_button.click_until_presence_of_element(self.generate_keys_button)
             self.not_now_button.wait_and_click()
         else:
