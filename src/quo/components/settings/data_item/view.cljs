@@ -126,7 +126,7 @@
       [:subtitle-type {:optional true} [:maybe [:enum :default :icon :network :account :editable]]]
       [:size {:optional true} [:maybe [:enum :default :small :large]]]
       [:title :string]
-      [:subtitle {:optional true} [:maybe :string]]
+      [:subtitle {:optional true} [:maybe [:or :string :double]]]
       [:custom-subtitle {:optional true} [:maybe fn?]]
       [:icon {:optional true} [:maybe :keyword]]
       [:emoji {:optional true} [:maybe :string]]

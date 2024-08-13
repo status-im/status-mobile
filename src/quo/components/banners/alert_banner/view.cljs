@@ -11,12 +11,12 @@
             [schema.core :as schema]))
 
 (defn- view-internal
-  [{:keys [action? text button-text on-button-press]}]
+  [{:keys [action? text button-text container-style on-button-press]}]
   (let [theme (quo.theme/use-theme)]
     [rn/view
      {:accessibility-label :alert-banner}
      [linear-gradient/linear-gradient
-      {:style  style/container
+      {:style  (style/container container-style)
        :start  {:x 0 :y 0}
        :end    {:x 0 :y 1}
        :colors [(colors/theme-colors

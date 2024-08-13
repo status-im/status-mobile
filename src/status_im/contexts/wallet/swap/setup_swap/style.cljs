@@ -22,14 +22,19 @@
    :height           36
    :background-color :transparent})
 
-(def swap-order-button
-  {:margin-top -9
+(defn swap-order-button
+  [approval-required?]
+  {:margin-top (if approval-required? 3 -9)
    :z-index    2
    :align-self :center})
 
-(def receive-token-swap-input-container
-  {:margin-top -9})
+(defn receive-token-swap-input-container
+  [approval-required?]
+  {:margin-top (if approval-required? 3 -9)})
 
 (def footer-container
   {:flex            1
    :justify-content :flex-end})
+
+(def alert-banner
+  {:height 40})

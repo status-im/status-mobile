@@ -202,11 +202,6 @@
   [gas gas-price]
   (.times ^js (bignumber gas) ^js (bignumber gas-price)))
 
-(defn crypto->fiat
-  [crypto fiat-price]
-  (when-let [^js bn (bignumber crypto)]
-    (.times bn ^js (bignumber fiat-price))))
-
 (defn percent-change
   [from to]
   (let [^js bnf (bignumber from)
@@ -220,6 +215,12 @@
   [n decimals]
   (when-let [^js bn (bignumber n)]
     (.round bn decimals)))
+
+(defn crypto->fiat
+  [crypto fiat-price]
+  (when-let [^js bn (bignumber crypto)]
+    (-> (.times bn ^js (bignumber fiat-price))
+        (with-precision 2))))
 
 (defn sufficient-funds?
   [^js amount ^js balance]

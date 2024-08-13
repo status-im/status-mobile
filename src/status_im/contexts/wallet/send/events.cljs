@@ -518,23 +518,29 @@
 
 (rf/reg-event-fx
  :wallet/handle-suggested-routes
- (fn [_ [data]]
-   (if-let [{:keys [code details]} (-> data :ErrorResponse)]
-     (let [error-message (if (= code "0") "An error occurred" details)]
-       (log/error "failed to get suggested routes (async)"
-                  {:event :wallet/handle-suggested-routes
-                   :error error-message})
-       {:fx [[:dispatch [:wallet/suggested-routes-error error-message]]]})
-     (let [best-routes-fix (comp ->old-route-paths
-                                 remove-invalid-bonder-fees-routes
-                                 remove-multichain-routes)
-           candidates-fix  (comp ->old-route-paths
-                                 remove-invalid-bonder-fees-routes)
-           routes          (-> data
-                               (data-store/rpc->suggested-routes)
-                               (update :best best-routes-fix)
-                               (update :candidates candidates-fix))]
-       {:fx [[:dispatch [:wallet/suggested-routes-success routes]]]}))))
+ (fn [{:keys [db]} [data]]
+   (let [swap?                                     (get-in db [:wallet :ui :swap])
+         {:keys [code details] :as error-response} (-> data :ErrorResponse)]
+     (if (and (not swap?) error-response)
+       (let [error-message (if (= code "0") "An error occurred" details)]
+         (log/error "failed to get suggested routes (async)"
+                    {:event :wallet/handle-suggested-routes
+                     :error error-message})
+         {:fx [(if swap?
+                 [:dispatch [:wallet/swap-proposal-error error-message]]
+                 [:dispatch [:wallet/suggested-routes-error error-message]])]})
+       (let [best-routes-fix (comp ->old-route-paths
+                                   remove-invalid-bonder-fees-routes
+                                   remove-multichain-routes)
+             candidates-fix  (comp ->old-route-paths
+                                   remove-invalid-bonder-fees-routes)
+             routes          (-> data
+                                 (data-store/rpc->suggested-routes)
+                                 (update :best best-routes-fix)
+                                 (update :candidates candidates-fix))]
+         {:fx [(if swap?
+                 [:dispatch [:wallet/swap-proposal-success routes]]
+                 [:dispatch [:wallet/suggested-routes-success routes]])]})))))
 
 (rf/reg-event-fx :wallet/add-authorized-transaction
  (fn [{:keys [db]} [transaction]]

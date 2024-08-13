@@ -1,7 +1,9 @@
 (ns status-im.subs.wallet.swap
-  (:require [re-frame.core :as rf]
+  (:require [clojure.string :as string]
+            [re-frame.core :as rf]
             [status-im.constants :as constants]
             [status-im.contexts.wallet.common.utils :as utils]
+            [status-im.contexts.wallet.send.utils :as send-utils]
             [utils.money :as money]))
 
 (rf/reg-sub
@@ -18,6 +20,16 @@
  :wallet/swap-asset-to-receive
  :<- [:wallet/swap]
  :-> :asset-to-receive)
+
+(rf/reg-sub
+ :wallet/swap-network
+ :<- [:wallet/swap]
+ :-> :network)
+
+(rf/reg-sub
+ :wallet/swap-error-response
+ :<- [:wallet/swap]
+ :-> :error-response)
 
 (rf/reg-sub
  :wallet/swap-asset-to-pay-token-symbol
@@ -62,3 +74,59 @@
  :wallet/swap-max-slippage
  :<- [:wallet/swap]
  :-> :max-slippage)
+
+(rf/reg-sub
+ :wallet/swap-loading-fees?
+ :<- [:wallet/swap]
+ :-> :loading-fees?)
+
+(rf/reg-sub
+ :wallet/swap-proposal
+ :<- [:wallet/swap]
+ :-> :swap-proposal)
+
+(rf/reg-sub
+ :wallet/swap-loading-swap-proposal?
+ :<- [:wallet/swap]
+ :-> :loading-swap-proposal?)
+
+(rf/reg-sub
+ :wallet/swap-proposal-amount-out
+ :<- [:wallet/swap-proposal]
+ :-> :amount-out)
+
+(rf/reg-sub
+ :wallet/swap-proposal-approval-required
+ :<- [:wallet/swap-proposal]
+ :-> :approval-required)
+
+(rf/reg-sub
+ :wallet/swap-proposal-approval-amount-required
+ :<- [:wallet/swap-proposal]
+ :-> :approval-amount-required)
+
+(rf/reg-sub
+ :wallet/wallet-swap-proposal-fee-fiat-formatted
+ :<- [:wallet/current-viewing-account]
+ :<- [:wallet/swap-proposal]
+ :<- [:profile/currency]
+ :<- [:profile/currency-symbol]
+ (fn [[account swap-proposal currency currency-symbol] [_ token-symbol-for-fees]]
+   (when token-symbol-for-fees
+     (let [tokens                  (:tokens account)
+           token-for-fees          (first (filter #(= (string/lower-case (:symbol %))
+                                                      (string/lower-case token-symbol-for-fees))
+                                                  tokens))
+           fee-in-native-token     (send-utils/calculate-full-route-gas-fee [swap-proposal])
+           fee-in-crypto-formatted (utils/get-standard-crypto-format
+                                    token-for-fees
+                                    fee-in-native-token)
+           fee-in-fiat             (utils/calculate-token-fiat-value
+                                    {:currency currency
+                                     :balance  fee-in-native-token
+                                     :token    token-for-fees})
+           fee-formatted           (utils/get-standard-fiat-format
+                                    fee-in-crypto-formatted
+                                    currency-symbol
+                                    fee-in-fiat)]
+       fee-formatted))))
