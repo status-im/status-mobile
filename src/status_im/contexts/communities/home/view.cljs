@@ -64,7 +64,8 @@
 
 (def ^:private banner-data
   {:title-props
-   {:label               (i18n/label :t/communities)
+   {:beta?               true
+    :label               (i18n/label :t/communities)
     :handler             (when config/fast-create-community-enabled?
                            #(rf/dispatch [:show-bottom-sheet {:content actions.home-plus/view}]))
     :accessibility-label :new-communities-button}
