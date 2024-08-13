@@ -58,24 +58,23 @@
           :style {:color (colors/theme-colors colors/danger-50 colors/danger-60 theme)}}
          error-message]])
 
-     (when (and (= description :top) (string? description-top-text) (or role context-tag-props))
-       [rn/view {:style style/description-top}
-        [text/text
-         {:size  :paragraph-2
-          :style (style/description-top-text scroll? blur? theme)}
-         (or description-top-text (i18n/label :t/eligible-to-join-as))]
-        [context-tag/view
-         (if role
-           {:type    :icon
-            :size    24
-            :icon    (role role-icon)
-            :blur?   blur?
-            :context (i18n/label (keyword "t" role))}
-           context-tag-props)]])
-
-     (when (and (= description :top)
-                (vector? description-top-text))
-       description-top-text)
+     (when (= description :top)
+       (if (vector? description-top-text)
+         description-top-text
+         (when (or role context-tag-props)
+           [rn/view {:style style/description-top}
+            [text/text
+             {:size  :paragraph-2
+              :style (style/description-top-text scroll? blur? theme)}
+             (or description-top-text (i18n/label :t/eligible-to-join-as))]
+            [context-tag/view
+             (if role
+               {:type    :icon
+                :size    24
+                :icon    (role role-icon)
+                :blur?   blur?
+                :context (i18n/label (keyword "t" role))}
+               context-tag-props)]])))
 
      [rn/view {:style (style/buttons-container actions buttons-container-style)}
       (when (or (= actions :two-actions)
