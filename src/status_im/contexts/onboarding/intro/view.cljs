@@ -23,10 +23,12 @@
        :description-top-text [rn/view
                               {:style          style/terms-privacy-container
                                :flex-direction :row}
-                              [quo/selectors
-                               {:type      :checkbox
-                                :checked?  terms-accepted?
-                                :on-change #(set-terms-accepted? not)}]
+                              [rn/view
+                               {:accessibility-label :terms-privacy-checkbox-container}
+                               [quo/selectors
+                                {:type      :checkbox
+                                 :checked?  terms-accepted?
+                                 :on-change #(set-terms-accepted? not)}]]
                               [rn/view {:style {:flex 1}}
                                [quo/text
                                 {:style style/text-container
