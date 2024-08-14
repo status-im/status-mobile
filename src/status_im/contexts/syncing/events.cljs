@@ -34,7 +34,7 @@
             :WakuV2Config {;; Temporary fix until https://github.com/status-im/status-go/issues/3024
                            ;; is resolved
                            :Nameserver  "8.8.8.8"
-                           :LightClient false}
+                           :LightClient true}
             :ShhextConfig {:VerifyTransactionURL     config/verify-transaction-url
                            :VerifyENSURL             config/verify-ens-url
                            :VerifyENSContractAddress config/verify-ens-contract-address
