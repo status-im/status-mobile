@@ -3,14 +3,30 @@
     [quo.core :as quo]
     [react-native.core :as rn]
     [status-im.common.home.title-column.style :as style]
-    [status-im.common.plus-button.view :as plus-button]))
+    [status-im.common.plus-button.view :as plus-button]
+    [utils.i18n :as i18n]))
 
 (defn view
-  [{:keys [label handler accessibility-label customization-color]}]
+  [{:keys [beta? label handler accessibility-label customization-color]}]
   [rn/view style/title-column
-   [rn/view {:flex 1}
+   [rn/view
+    {:style {:flex           1
+             :align-items    :center
+             :flex-direction :row}}
     [quo/text style/title-column-text
-     label]]
+     label]
+    (when beta?
+      [rn/view
+       {:style {:padding-top    6
+                :padding-bottom 2}}
+       [quo/tag
+        {:accessibility-label :communities-chat-beta-tag
+         :size                24
+         :type                :label
+         :label               (i18n/label :t/beta)
+         :labelled?           true
+         :blurred?            false}]])]
+
    (when handler
      [plus-button/plus-button
       {:on-press            handler
