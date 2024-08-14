@@ -27,12 +27,11 @@
                                {:accessibility-label :terms-privacy-checkbox-container}
                                [quo/selectors
                                 {:type      :checkbox
+                                 :blur?     true
                                  :checked?  terms-accepted?
                                  :on-change #(set-terms-accepted? not)}]]
                               [rn/view {:style {:flex 1}}
-                               [quo/text
-                                {:style style/text-container
-                                 :size  :paragraph-2}
+                               [rn/view {:style style/text-container}
                                 [quo/text
                                  {:style style/plain-text
                                   :size  :paragraph-2}
@@ -42,7 +41,8 @@
                                                            {:content (fn [] [terms/terms-of-use])
                                                             :shell?  true}])
                                   :style    style/highlighted-text
-                                  :size     :paragraph-2}
+                                  :size     :paragraph-2
+                                  :weight   :medium}
                                  (i18n/label :t/terms-of-service)]
                                 [quo/text
                                  {:style style/plain-text
@@ -54,7 +54,7 @@
                                                             :shell?  true}])
                                   :style    style/highlighted-text
                                   :size     :paragraph-2
-                                  :weight   :regular}
+                                  :weight   :medium}
                                  (i18n/label :t/intro-privacy-statement)]]]]
        :button-one-label     (i18n/label :t/sync-or-recover-profile)
        :button-one-props     {:type                :dark-grey

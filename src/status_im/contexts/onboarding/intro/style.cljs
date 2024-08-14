@@ -7,9 +7,10 @@
    :justify-content :flex-end})
 
 (def text-container
-  {:flex       1
-   :flex-wrap  :wrap
-   :text-align :center})
+  {:flex           1
+   :flex-direction :row
+   :flex-wrap      :wrap
+   :align-self     :center})
 
 (def terms-privacy-container
   {:gap                8
@@ -20,8 +21,7 @@
   {:color colors/white-opa-70})
 
 (def highlighted-text
-  {:flex  1
-   :color colors/white})
+  {:color colors/white})
 
 (defn bottom-actions-container
   [bottom-insets]
