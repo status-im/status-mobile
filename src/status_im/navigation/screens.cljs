@@ -127,10 +127,11 @@
     [status-im.contexts.wallet.swap.swap-proposal.view :as wallet-swap-propasal]
     [status-im.contexts.wallet.wallet-connect.modals.send-transaction.view :as
      wallet-connect-send-transaction]
+    [status-im.contexts.wallet.wallet-connect.modals.session-proposal.view :as
+     wallet-connect-session-proposal]
     [status-im.contexts.wallet.wallet-connect.modals.sign-message.view :as wallet-connect-sign-message]
     [status-im.contexts.wallet.wallet-connect.modals.sign-transaction.view :as
      wallet-connect-sign-transaction]
-    [status-im.contexts.wallet.wallet-connect.session-proposal.view :as wallet-connect-session-proposal]
     [status-im.navigation.options :as options]
     [status-im.navigation.transitions :as transitions]))
 
