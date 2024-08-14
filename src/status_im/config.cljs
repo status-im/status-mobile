@@ -48,6 +48,7 @@
 
 (def opensea-api-key OPENSEA_API_KEY)
 (def status-proxy-enabled? true)
+(def status-proxy-stage-name (get-config :STATUS_PROXY_STAGE_NAME "test"))
 (def bootnodes-settings-enabled? (enabled? (get-config :BOOTNODES_SETTINGS_ENABLED "1")))
 (def mailserver-confirmations-enabled? (enabled? (get-config :MAILSERVER_CONFIRMATIONS_ENABLED)))
 (def pairing-popup-disabled? (enabled? (get-config :PAIRING_POPUP_DISABLED "0")))

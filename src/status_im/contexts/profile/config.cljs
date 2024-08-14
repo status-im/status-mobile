@@ -11,6 +11,7 @@
   {;; Temporary fix until https://github.com/status-im/status-go/issues/3024 is resolved
    :wakuV2Nameserver              "8.8.8.8"
    :statusProxyEnabled            config/status-proxy-enabled?
+   :statusProxyStageName          config/status-proxy-stage-name
    :statusProxyMarketUser         config/STATUS_BUILD_PROXY_USER
    :statusProxyMarketPassword     config/STATUS_BUILD_PROXY_PASSWORD
    :statusProxyBlockchainUser     config/STATUS_BUILD_PROXY_USER
