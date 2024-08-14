@@ -1,8 +1,8 @@
-(ns status-im.contexts.wallet.wallet-connect.signing
+(ns status-im.contexts.wallet.wallet-connect.utils.signing
   (:require [native-module.core :as native-module]
             [promesa.core :as promesa]
             [status-im.contexts.wallet.wallet-connect.core :as core]
-            [status-im.contexts.wallet.wallet-connect.rpc :as rpc]
+            [status-im.contexts.wallet.wallet-connect.utils.rpc :as rpc]
             [utils.hex :as hex]
             [utils.number :as number]
             [utils.transforms :as transforms]))

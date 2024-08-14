@@ -3,7 +3,7 @@
             [react-native.wallet-connect :as wallet-connect]
             [status-im.constants :as constants]
             [status-im.contexts.wallet.wallet-connect.core :as wallet-connect-core]
-            [status-im.contexts.wallet.wallet-connect.utils :as wc-utils]
+            [status-im.contexts.wallet.wallet-connect.utils.uri :as uri]
             [taoensso.timbre :as log]
             [utils.i18n :as i18n]
             [utils.transforms :as transforms]))
@@ -15,7 +15,7 @@
          method (wallet-connect-core/get-request-method event)
          screen (wallet-connect-core/method-to-screen method)
          expiry (get-in event [:params :request :expiryTimestamp])]
-     (if (wc-utils/timestamp-expired? expiry)
+     (if (uri/timestamp-expired? expiry)
        {:fx [[:dispatch
               [:toasts/upsert
                {:id   :new-wallet-account-created

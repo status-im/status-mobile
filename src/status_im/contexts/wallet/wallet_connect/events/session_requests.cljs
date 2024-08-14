@@ -5,8 +5,8 @@
             [re-frame.core :as rf]
             [status-im.constants :as constants]
             [status-im.contexts.wallet.wallet-connect.core :as wallet-connect-core]
-            [status-im.contexts.wallet.wallet-connect.signing :as signing]
-            [status-im.contexts.wallet.wallet-connect.transactions :as transactions]
+            [status-im.contexts.wallet.wallet-connect.utils.signing :as signing]
+            [status-im.contexts.wallet.wallet-connect.utils.transactions :as transactions]
             [taoensso.timbre :as log]
             [utils.i18n :as i18n]
             [utils.transforms :as transforms]))

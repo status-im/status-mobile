@@ -1,4 +1,4 @@
-(ns status-im.contexts.wallet.wallet-connect.rpc
+(ns status-im.contexts.wallet.wallet-connect.utils.rpc
   (:require [oops.core :as oops]
             [promesa.core :as promesa]
             [status-im.common.json-rpc.events :as rpc-events]

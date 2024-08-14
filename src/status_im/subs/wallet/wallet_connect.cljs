@@ -3,7 +3,7 @@
             [re-frame.core :as rf]
             [status-im.contexts.wallet.common.utils :as wallet-utils]
             [status-im.contexts.wallet.wallet-connect.core :as wallet-connect-core]
-            [status-im.contexts.wallet.wallet-connect.transactions :as transactions]
+            [status-im.contexts.wallet.wallet-connect.utils.transactions :as transactions]
             [utils.money :as money]
             [utils.string]))
 

@@ -1,4 +1,4 @@
-(ns status-im.contexts.wallet.wallet-connect.utils
+(ns status-im.contexts.wallet.wallet-connect.utils.uri
   (:require [react-native.wallet-connect :as wallet-connect]))
 
 (defn version-supported?

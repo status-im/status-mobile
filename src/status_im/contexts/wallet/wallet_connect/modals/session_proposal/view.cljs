@@ -1,4 +1,4 @@
-(ns status-im.contexts.wallet.wallet-connect.session-proposal.view
+(ns status-im.contexts.wallet.wallet-connect.modals.session-proposal.view
   (:require
     [clojure.string :as string]
     [quo.core :as quo]
@@ -7,7 +7,7 @@
     [react-native.core :as rn]
     [status-im.common.floating-button-page.view :as floating-button-page]
     [status-im.contexts.wallet.wallet-connect.core :as wallet-connect-core]
-    [status-im.contexts.wallet.wallet-connect.session-proposal.style :as style]
+    [status-im.contexts.wallet.wallet-connect.modals.session-proposal.style :as style]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]
     [utils.string]))

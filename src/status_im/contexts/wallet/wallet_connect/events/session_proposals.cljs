@@ -2,7 +2,7 @@
   (:require [re-frame.core :as rf]
             [react-native.wallet-connect :as wallet-connect]
             [status-im.contexts.wallet.wallet-connect.core :as wallet-connect-core]
-            [status-im.contexts.wallet.wallet-connect.utils :as wc-utils]
+            [status-im.contexts.wallet.wallet-connect.utils.uri :as uri]
             [taoensso.timbre :as log]
             [utils.i18n :as i18n]))
 
@@ -22,11 +22,11 @@
    (let [network-status     (:network/status db)
          parsed-uri         (wallet-connect/parse-uri scanned-text)
          version            (:version parsed-uri)
-         valid-wc-uri?      (wc-utils/valid-wc-uri? parsed-uri)
+         valid-wc-uri?      (uri/valid-wc-uri? parsed-uri)
          expired?           (-> parsed-uri
                                 :expiryTimestamp
-                                wc-utils/timestamp-expired?)
-         version-supported? (wc-utils/version-supported? version)]
+                                uri/timestamp-expired?)
+         version-supported? (uri/version-supported? version)]
      (if (or (not valid-wc-uri?)
              (not version-supported?)
              (= network-status :offline)
@@ -112,7 +112,7 @@
          expiry           (get-in current-proposal [:params :expiryTimestamp])]
      (if (= network-status :online)
        {:db (assoc-in db [:wallet-connect/current-proposal :response-sent?] true)
-        :fx [(if (wc-utils/timestamp-expired? expiry)
+        :fx [(if (uri/timestamp-expired? expiry)
                [:dispatch
                 [:toasts/upsert
                  {:id   :wallet-connect-proposal-expired
