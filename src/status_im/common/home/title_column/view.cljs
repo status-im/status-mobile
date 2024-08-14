@@ -21,7 +21,7 @@
                 :padding-bottom 2}}
        [quo/tag
         {:accessibility-label :communities-chat-beta-tag
-         :size                32
+         :size                24
          :type                :label
          :label               (i18n/label :t/beta)
          :labelled?           true
