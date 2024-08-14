@@ -74,7 +74,7 @@
  (fn [{:keys [db]} [contact-id]]
    {:db (update-in db
                    [:contacts/contacts contact-id]
-                   #(assoc % :blocked? false :added true :active? true))}))
+                   #(assoc % :blocked? false))}))
 
 (rf/reg-event-fx :contact/unblock-contact
  (fn [_ [contact-id]]
