@@ -1,4 +1,4 @@
-(ns status-im.contexts.wallet.wallet-connect.processing-events
+(ns status-im.contexts.wallet.wallet-connect.events.session-requests
   (:require [cljs-bean.core :as bean]
             [clojure.string :as string]
             [native-module.core :as native-module]

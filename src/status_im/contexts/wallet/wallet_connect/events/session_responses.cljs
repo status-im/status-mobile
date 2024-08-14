@@ -1,4 +1,4 @@
-(ns status-im.contexts.wallet.wallet-connect.responding-events
+(ns status-im.contexts.wallet.wallet-connect.events.session-responses
   (:require [re-frame.core :as rf]
             [react-native.wallet-connect :as wallet-connect]
             [status-im.constants :as constants]
