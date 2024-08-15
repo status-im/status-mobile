@@ -123,8 +123,6 @@
    :waku.test
    ["enrtree://AOGYWMBYOUIMOENHXCHILPKY3ZRFEULMFI4DOM442QSZ73TT2A7VI@test.waku.nodes.status.im"]})
 
-(def default-kdf-iterations 3200)
-
 (def community-accounts-selection-enabled? true)
 (def fetch-messages-enabled? (enabled? (get-config :FETCH_MESSAGES_ENABLED "1")))
 (def test-networks-enabled? (enabled? (get-config :TEST_NETWORKS_ENABLED "0")))

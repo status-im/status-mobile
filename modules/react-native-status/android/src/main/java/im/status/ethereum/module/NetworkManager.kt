@@ -36,11 +36,6 @@ class NetworkManager(private val reactContext: ReactApplicationContext) : ReactC
     @ReactMethod
     fun inputConnectionStringForBootstrapping(connectionString: String, configJSON: String, callback: Callback) {
         val jsonConfig = JSONObject(configJSON)
-        val receiverConfig = jsonConfig.getJSONObject("receiverConfig")
-        val keyStorePath = utils.pathCombine(utils.getNoBackupDirectory(), "/keystore")
-        receiverConfig.put("keystorePath", keyStorePath)
-        receiverConfig.getJSONObject("nodeConfig").put("rootDataDir", utils.getNoBackupDirectory())
-
         utils.executeRunnableStatusGoMethod(
             { Statusgo.inputConnectionStringForBootstrapping(connectionString, jsonConfig.toString()) },
             callback

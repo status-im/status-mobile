@@ -3,8 +3,8 @@
     [clojure.string :as string]
     [native-module.core :as native-module]
     [react-native.platform :as platform]
-    [status-im.config :as config]
     [status-im.constants :as constants]
+    [status-im.contexts.profile.config :as profile.config]
     [status-im.contexts.syncing.utils :as sync-utils]
     [taoensso.timbre :as log]
     [utils.i18n :as i18n]
@@ -21,26 +21,6 @@
   {:events [:syncing/clear-states]}
   [{:keys [db]} role]
   {:db (dissoc db :syncing)})
-
-(defn- get-default-node-config
-  []
-  (let [log-level  config/log-level
-        log-config (if (empty? log-level)
-                     {:LogLevel "ERROR" :LogEnabled false}
-                     {:LogLevel log-level :LogEnabled true})]
-    (merge {:WalletConfig (cond-> {:Enabled true}
-                            (not= config/opensea-api-key "")
-                            (assoc :OpenseaAPIKey config/opensea-api-key))
-            :WakuV2Config {;; Temporary fix until https://github.com/status-im/status-go/issues/3024
-                           ;; is resolved
-                           :Nameserver  "8.8.8.8"
-                           :LightClient true}
-            :ShhextConfig {:VerifyTransactionURL     config/verify-transaction-url
-                           :VerifyENSURL             config/verify-ens-url
-                           :VerifyENSContractAddress config/verify-ens-contract-address
-                           :VerifyTransactionChainID config/verify-transaction-chain-id}}
-           log-config)))
-
 (defn- input-connection-string-callback
   [res]
   (log/info "[local-pairing] input-connection-string-for-bootstrapping callback"
@@ -69,24 +49,15 @@
 (rf/defn initiate-local-pairing-with-connection-string
   {:events [:syncing/input-connection-string-for-bootstrapping]}
   [{:keys [db]} connection-string]
-  (let [default-node-config-string (.stringify js/JSON (clj->js (get-default-node-config)))
-        callback
-        (fn [final-node-config]
-          (let [config-map (.stringify js/JSON
-                                       (clj->js
-                                        {:receiverConfig
-                                         {:kdfIterations config/default-kdf-iterations
-                                          :nodeConfig final-node-config
-                                          :settingCurrentNetwork config/default-network
-                                          :deviceType platform/os
-                                          :deviceName
-                                          (native-module/get-installation-name)}}))]
-            (rf/dispatch [:syncing/update-role constants/local-pairing-role-receiver])
-            (native-module/input-connection-string-for-bootstrapping
-             connection-string
-             config-map
-             input-connection-string-callback)))]
-    (native-module/prepare-dir-and-update-config "" default-node-config-string callback)))
+  (let [config-map (.stringify js/JSON
+                               (clj->js
+                                {:receiverConfig
+                                 {:createAccount (profile.config/create)}}))]
+    (rf/dispatch [:syncing/update-role constants/local-pairing-role-receiver])
+    (native-module/input-connection-string-for-bootstrapping
+     connection-string
+     config-map
+     input-connection-string-callback)))
 
 (rf/defn preparations-for-connection-string
   {:events [:syncing/get-connection-string]}
