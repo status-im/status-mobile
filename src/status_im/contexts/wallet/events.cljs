@@ -296,7 +296,6 @@
            {:start-flow? true
             :flow-id     :wallet-bridge-flow}]]]}))
 
-
 (rf/reg-event-fx :wallet/select-bridge-network
  (fn [{:keys [db]} [{:keys [network-chain-id stack-id]}]]
    {:db (assoc-in db [:wallet :ui :send :bridge-to-chain-id] network-chain-id)
@@ -497,16 +496,15 @@
                                         (string/join ", ")))]
      (when (seq down-chain-ids)
        (log/info "[wallet] Chain(s) down: " down-chain-ids)
+       (log/info "[wallet] Chain name(s) down: " chain-names)
        (log/info "[wallet] Test network enabled: " (boolean test-networks-enabled?))
        (log/info "[wallet] Goerli network enabled: " (boolean is-goerli-enabled?)))
-     {:db (assoc-in db [:wallet :statuses :blockchains] chains)
-      :fx [(when chains-down?
-             [:dispatch
-              [:toasts/upsert
-               {:id       :chains-down
-                :type     :negative
-                :text     (i18n/label :t/provider-is-down {:chains chain-names})
-                :duration constants/toast-chain-down-duration}]])]})))
+
+     ;; NOTE <shivekkhurana>: We used to show an error toast, but disabled it because the down
+     ;; signal is sent randomly. Needs to be investigated and enabled again !
+     ;; Context: https://github.com/status-im/status-mobile/issues/21054
+
+     {:db (assoc-in db [:wallet :statuses :blockchains] chains)})))
 
 (rf/reg-event-fx :wallet/reset-selected-networks
  (fn [{:keys [db]}]

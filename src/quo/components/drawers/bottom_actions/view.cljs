@@ -20,7 +20,7 @@
       [:actions [:maybe [:enum :one-action :two-actions :two-vertical-actions]]]
       [:description {:optional true} [:maybe [:enum :top :bottom :top-error]]]
       [:description-text {:optional true} [:maybe [:or :string :schema.common/hiccup]]]
-      [:description-top-text {:optional true} [:maybe :string]]
+      [:description-top-text {:optional true} [:maybe [:or :string :schema.common/hiccup]]]
       [:error-message {:optional true} [:maybe :string]]
       [:role {:optional true} [:maybe [:enum :admin :member :token-master :owner]]]
       [:context-tag-props {:optional true} [:maybe context-tag.schema/?schema]]
@@ -58,20 +58,23 @@
           :style {:color (colors/theme-colors colors/danger-50 colors/danger-60 theme)}}
          error-message]])
 
-     (when (and (= description :top) (or role context-tag-props))
-       [rn/view {:style style/description-top}
-        [text/text
-         {:size  :paragraph-2
-          :style (style/description-top-text scroll? blur? theme)}
-         (or description-top-text (i18n/label :t/eligible-to-join-as))]
-        [context-tag/view
-         (if role
-           {:type    :icon
-            :size    24
-            :icon    (role role-icon)
-            :blur?   blur?
-            :context (i18n/label (keyword "t" role))}
-           context-tag-props)]])
+     (when (= description :top)
+       (if (vector? description-top-text)
+         description-top-text
+         (when (or role context-tag-props)
+           [rn/view {:style style/description-top}
+            [text/text
+             {:size  :paragraph-2
+              :style (style/description-top-text scroll? blur? theme)}
+             (or description-top-text (i18n/label :t/eligible-to-join-as))]
+            [context-tag/view
+             (if role
+               {:type    :icon
+                :size    24
+                :icon    (role role-icon)
+                :blur?   blur?
+                :context (i18n/label (keyword "t" role))}
+               context-tag-props)]])))
 
      [rn/view {:style (style/buttons-container actions buttons-container-style)}
       (when (or (= actions :two-actions)
