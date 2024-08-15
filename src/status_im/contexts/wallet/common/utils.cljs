@@ -7,6 +7,7 @@
             [utils.number :as number]
             [utils.string]))
 
+(def missing-price-decimals 6) ; if we don't have the monetary value of the token, we default to 6 decimals
 (defn get-first-name
   [full-name]
   (first (string/split full-name #" ")))
@@ -66,16 +67,20 @@
 (defn get-standard-crypto-format
   "For full details: https://github.com/status-im/status-mobile/issues/18225"
   [{:keys [market-values-per-currency]} token-units]
-  (if (or (nil? token-units)
-          (nil? market-values-per-currency)
-          (money/equal-to token-units 0))
-    "0"
-    (let [price          (-> market-values-per-currency :usd :price)
-          one-cent-value (if (pos? price) (/ 0.01 price) 0)
-          decimals-count (calc-max-crypto-decimals one-cent-value)]
-      (if (< token-units one-cent-value)
-        (str "<" (number/remove-trailing-zeroes (.toFixed one-cent-value decimals-count)))
-        (number/remove-trailing-zeroes (.toFixed token-units decimals-count))))))
+  (cond (or (nil? token-units)
+            (money/equal-to token-units 0))
+        "0"
+
+        (nil? (-> market-values-per-currency :usd :price))
+        (number/remove-trailing-zeroes (.toFixed token-units missing-price-decimals))
+
+        :else
+        (let [price          (-> market-values-per-currency :usd :price)
+              one-cent-value (if (pos? price) (/ 0.01 price) 0)
+              decimals-count (calc-max-crypto-decimals one-cent-value)]
+          (if (< token-units one-cent-value)
+            (str "<" (number/remove-trailing-zeroes (.toFixed one-cent-value decimals-count)))
+            (number/remove-trailing-zeroes (.toFixed token-units decimals-count))))))
 
 (defn get-market-value
   [currency {:keys [market-values-per-currency]}]
