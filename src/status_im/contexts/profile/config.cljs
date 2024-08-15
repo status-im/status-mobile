@@ -12,10 +12,10 @@
    :wakuV2Nameserver              "8.8.8.8"
    :statusProxyEnabled            config/status-proxy-enabled?
    :statusProxyStageName          config/status-proxy-stage-name
-   :statusProxyMarketUser         config/STATUS_BUILD_PROXY_USER
-   :statusProxyMarketPassword     config/STATUS_BUILD_PROXY_PASSWORD
-   :statusProxyBlockchainUser     config/STATUS_BUILD_PROXY_USER
-   :statusProxyBlockchainPassword config/STATUS_BUILD_PROXY_PASSWORD
+   :statusProxyMarketUser         "test"
+   :statusProxyMarketPassword     "test"
+   :statusProxyBlockchainUser     "test"
+   :statusProxyBlockchainPassword "test"
    :openseaAPIKey                 config/opensea-api-key
    :poktToken                     config/POKT_TOKEN
    :infuraToken                   config/INFURA_TOKEN
