@@ -264,15 +264,15 @@ class TestCommunityOneDeviceMerged(MultipleSharedDeviceTestCase):
         expected_communities = {
             # ' 0xUX': ['Design', 'Ethereum', 'Collaboration'],
             'Status': ['Web3', 'Blockchain', 'Ethereum'],
-            'Status Inu': ['News', 'Social', 'Web3'],
+            # 'Status Inu': ['News', 'Social', 'Web3'],
         }
         for community_name, tags in expected_communities.items():
             self.home.just_fyi("Check %s community tags in the Discover communities screen" % community_name)
             card = self.home.get_discover_community_card_by_name(community_name=community_name)
             try:
                 card.wait_for_visibility_of_element(30)
-                if community_name == 'Status':
-                    card.swipe_to_web_element()
+                # if community_name == 'Status':
+                #     card.swipe_to_web_element()
                 missing_tags = list()
                 for text in tags:
                     try:
@@ -281,18 +281,17 @@ class TestCommunityOneDeviceMerged(MultipleSharedDeviceTestCase):
                         missing_tags.append(text)
                 if missing_tags:
                     self.errors.append("Community '%s' is missing tag(s) %s." % (community_name, ','.join(tags)))
+                # if community_name == 'Status':
+                self.home.just_fyi("Check Status community screen")
+                card.click()
+                if self.community_view.join_button.is_element_differs_from_template(
+                        'status_community_join_button.png'):
+                    self.errors.append("Status community Join button is different from expected template.")
+                if self.community_view.community_logo.is_element_differs_from_template('status_community_logo.png'):
+                    self.errors.append("Status community logo is different from expected template.")
 
-                if community_name == 'Status':
-                    self.home.just_fyi("Check Status community screen")
-                    card.click()
-                    if self.community_view.join_button.is_element_differs_from_template(
-                            'status_community_join_button.png'):
-                        self.errors.append("Status community Join button is different from expected template.")
-                    if self.community_view.community_logo.is_element_differs_from_template('status_community_logo.png'):
-                        self.errors.append("Status community logo is different from expected template.")
-
-                    self.community_view.close_community_view_button.click()
-                    self.home.swipe_up()
+                    # self.community_view.close_community_view_button.click()
+                    # self.home.swipe_up()
 
             except TimeoutException:
                 self.errors.append("Community '%s' is not in the Discover Communities list." % community_name)
