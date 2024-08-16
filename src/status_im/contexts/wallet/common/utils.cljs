@@ -71,7 +71,7 @@
             (money/equal-to token-units 0))
         "0"
 
-        (nil? market-values-per-currency)
+        (nil? (-> market-values-per-currency :usd :price))
         (number/remove-trailing-zeroes (.toFixed token-units missing-price-decimals))
 
         :else
