@@ -3,7 +3,7 @@
     "_comment": "Instead use: scripts/update-status-go.sh <rev>",
     "owner": "status-im",
     "repo": "status-go",
-    "version": "release/0.182.x",
-    "commit-sha1": "dd787c982aac6cd2d376c9eb8c5a32a31c8f4405",
-    "src-sha256": "0i5s7hdy27xjwb4vfg90w6b336149sdawq8x0xa9ynix0f7i6ixc"
+    "version": "fix/scheduler_stop_panic_cherry",
+    "commit-sha1": "b99e77a9387641a0a589d6131236993bc8a9e394",
+    "src-sha256": "0cxq0q9i94vzmnl1rk7hqh7ipqk1p2fliak6r80mv24fcq0yhh25"
 }
