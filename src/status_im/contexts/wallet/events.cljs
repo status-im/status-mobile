@@ -190,9 +190,7 @@
     :fx [[:json-rpc/call
           [{:method     "wallet_getWalletToken"
             :params     [[address]]
-            :on-success #(do
-                           (println "RESPONSE HERE" %)
-                           (rf/dispatch [:wallet/store-wallet-token address %]))
+            :on-success [:wallet/store-wallet-token address]
             :on-error   [:wallet/get-wallet-token-for-account-failed address]}]]]}))
 
 (rf/reg-event-fx

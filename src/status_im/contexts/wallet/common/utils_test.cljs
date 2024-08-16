@@ -64,6 +64,11 @@
       (is (= (utils/get-standard-crypto-format {:market-values-per-currency market-values-per-currency}
                                                token-units)
              "0.005")))
+    (let [market-values-per-currency {:usd {:price nil}}
+          token-units                (money/bignumber 0.0123456)]
+      (is (= (utils/get-standard-crypto-format {:market-values-per-currency market-values-per-currency}
+                                               token-units)
+             "0.012346")))
     (let [market-values-per-currency {:usd {:price 0.005}}
           token-units                (money/bignumber 0.01)]
       (is (= (utils/get-standard-crypto-format {:market-values-per-currency market-values-per-currency}

@@ -340,14 +340,10 @@
  :<- [:profile/currency]
  :<- [:wallet/selected-networks->chain-ids]
  (fn [[accounts currency chain-ids]]
-   (println "CHAINS" currency chain-ids)
    (zipmap (map :address accounts)
-           (map #(do
-                   (println "HERE" chain-ids (:tokens %))
-                   (println "HERE2" %)
-                   (utils/calculate-balance-from-tokens {:currency  currency
+           (map #(utils/calculate-balance-from-tokens {:currency  currency
                                                        :tokens    (:tokens %)
-                                                       :chain-ids chain-ids}))
+                                                       :chain-ids chain-ids})
                 accounts))))
 
 (rf/reg-sub
