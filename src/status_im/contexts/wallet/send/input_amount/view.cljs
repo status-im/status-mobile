@@ -231,11 +231,9 @@
         native-currency-symbol                      (when-not confirm-disabled?
                                                       (get-in first-route
                                                               [:from :native-currency-symbol]))
-        native-token                                (when native-currency-symbol
-                                                      (rf/sub [:wallet/token-by-symbol
+        fee-formatted                               (when native-currency-symbol
+                                                      (rf/sub [:wallet/wallet-send-fee-fiat-formatted
                                                                native-currency-symbol]))
-        fee-formatted                               (rf/sub [:wallet/wallet-send-fee-fiat-formatted
-                                                             native-token])
         show-select-asset-sheet                     #(rf/dispatch
                                                       [:show-bottom-sheet
                                                        {:content (fn []

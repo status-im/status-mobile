@@ -213,11 +213,8 @@
             first-route               (first route)
             native-currency-symbol    (get-in first-route
                                               [:from :native-currency-symbol])
-            native-token              (when native-currency-symbol
-                                        (rf/sub [:wallet/token-by-symbol
-                                                 native-currency-symbol]))
             fee-formatted             (rf/sub [:wallet/wallet-send-fee-fiat-formatted
-                                               native-token])
+                                               native-currency-symbol])
             account                   (rf/sub [:wallet/current-viewing-account])
             account-color             (:color account)
             bridge-to-network         (when bridge-to-chain-id

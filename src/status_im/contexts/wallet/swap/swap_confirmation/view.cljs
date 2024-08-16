@@ -103,11 +103,7 @@
 (defn footer
   [{:keys [estimated-time-min native-currency-symbol max-slippage theme account-color provider
            loading-fees?]}]
-  (let [native-token  (when native-currency-symbol
-                        (rf/sub [:wallet/token-by-symbol
-                                 native-currency-symbol]))
-        fee-formatted (rf/sub [:wallet/wallet-send-fee-fiat-formatted
-                               native-token])]
+  (let [fee-formatted (rf/sub [:wallet/wallet-send-fee-fiat-formatted native-currency-symbol])]
     [:<>
      [transaction-details
       {:estimated-time-min estimated-time-min

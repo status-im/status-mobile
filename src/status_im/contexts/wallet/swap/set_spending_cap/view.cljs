@@ -172,11 +172,7 @@
 
 (defn footer
   [{:keys [estimated-time-min native-currency-symbol network theme account-color loading-fees?]}]
-  (let [native-token    (when native-currency-symbol
-                          (rf/sub [:wallet/token-by-symbol
-                                   native-currency-symbol]))
-        fee-formatted   (rf/sub [:wallet/wallet-send-fee-fiat-formatted
-                                 native-token])
+  (let [fee-formatted   (rf/sub [:wallet/wallet-send-fee-fiat-formatted native-currency-symbol])
         on-auth-success (rn/use-callback #(js/alert "Not implemented yet"))]
     [rn/view {:style {:margin-bottom -10}}
      [transaction-details

@@ -28,20 +28,23 @@
                     :max-priority-fee-per-gas "0.011000001"
                     :eip1559-enabled          true}
    :estimated-time 3
-   :receive-amount 99.98
-   :receive-token  {:symbol  "SNT"
+   :receive-amount "99.98"
+   :pay-token      {:symbol  "SNT"
+                    :address "0x432492384728934239789"}
+   :receive-token  {:symbol  "USDT"
                     :address "0x432492384728934239789"}})
 
 (defn- assets-view
   [search-text on-change-text]
   (let [on-token-press (fn [token]
-                         (let [token-networks (:networks token)]
+                         (let [token-networks   (:networks token)
+                               asset-to-receive (rf/sub [:wallet/token-by-symbol "SNT"])]
                            (rf/dispatch [:wallet.swap/select-asset-to-pay
                                          {:token    token
                                           :network  (when (= (count token-networks) 1)
                                                       (first token-networks))
                                           :stack-id :screen/wallet.swap-select-asset-to-pay}])
-                           (rf/dispatch [:wallet.swap/select-asset-to-receive {:token token}])
+                           (rf/dispatch [:wallet.swap/select-asset-to-receive {:token asset-to-receive}])
                            (rf/dispatch [:wallet.swap/set-pay-amount 100])
                            (rf/dispatch [:wallet.swap/set-swap-proposal dummy-swap-proposal])
                            (rf/dispatch [:wallet.swap/set-provider])))]
