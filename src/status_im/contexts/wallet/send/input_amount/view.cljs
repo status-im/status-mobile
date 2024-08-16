@@ -375,7 +375,7 @@
                             (money/crypto->fiat input-amount
                                                 conversion-rate))
                            (utils/prettify-crypto-balance
-                            (or (name token-symbol) "")
+                            (or (clj->js token-symbol) "")
                             (money/fiat->crypto input-amount
                                                 conversion-rate)
                             conversion-rate))}]
