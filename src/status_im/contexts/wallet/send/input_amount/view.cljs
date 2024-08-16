@@ -350,35 +350,33 @@
        :on-press      #(rf/dispatch [:navigate-back])
        :switcher-type :select-account}]
      [quo/token-input
-      {:container-style  style/input-container
-       :token            token-symbol
-       :currency         fiat-currency
-       :currency-symbol  currency-symbol
-       :crypto-decimals  (min token-decimals 6)
-       :error?           (controlled-input/input-error input-state)
-       :networks         (seq from-enabled-networks)
-       :title            (i18n/label
-                          :t/send-limit
-                          {:limit (if crypto-currency?
-                                    (utils/make-limit-label-crypto current-limit token-symbol)
-                                    (utils/make-limit-label-fiat current-limit currency-symbol))})
-       :conversion       conversion-rate
-       :show-keyboard?   false
-       :value            input-amount
-       :on-swap          swap-between-fiat-and-crypto
-       :on-token-press   show-select-asset-sheet
-       :allow-selection? false
-       :crypto?          crypto-currency?
-       :converted-value  (if crypto-currency?
-                           (utils/prettify-balance
-                            currency-symbol
-                            (money/crypto->fiat input-amount
-                                                conversion-rate))
-                           (utils/prettify-crypto-balance
-                            (or (clj->js token-symbol) "")
-                            (money/fiat->crypto input-amount
-                                                conversion-rate)
-                            conversion-rate))}]
+      {:container-style style/input-container
+       :token-symbol    token-symbol
+       :currency        fiat-currency
+       :value           input-amount
+       :on-swap         swap-between-fiat-and-crypto
+       :on-token-press  show-select-asset-sheet
+       :crypto?         crypto-currency?
+       :error?          (controlled-input/input-error input-state)
+       :converted-value (if crypto-currency?
+                          (utils/prettify-balance
+                           currency-symbol
+                           (money/crypto->fiat input-amount
+                                               conversion-rate))
+                          (utils/prettify-crypto-balance
+                           (or (clj->js token-symbol) "")
+                           (money/fiat->crypto input-amount
+                                               conversion-rate)
+                           conversion-rate))
+       :hint-component  [quo/network-tags
+                         {:networks (seq from-enabled-networks)
+                          :title    (i18n/label
+                                     :t/send-limit
+                                     {:limit (if crypto-currency?
+                                               (utils/make-limit-label-crypto current-limit token-symbol)
+                                               (utils/make-limit-label-fiat current-limit
+                                                                            currency-symbol))})
+                          :status   (when (controlled-input/input-error input-state) :error)}]}]
      [routes/view
       {:token                                     token-by-symbol
        :send-amount-in-crypto                     amount-in-crypto

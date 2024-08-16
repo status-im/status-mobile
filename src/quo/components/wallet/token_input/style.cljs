@@ -25,9 +25,11 @@
 
 (defn input-container
   [window-width]
-  {:width        (- window-width 120)
-   :margin-left  8
-   :margin-right 8})
+  {:width          (- window-width 120)
+   :margin-left    8
+   :margin-right   8
+   :flex-direction :row
+   :align-items    :flex-end})
 
 (def text-input-dimensions
   (-> typography/heading-1
@@ -65,6 +67,6 @@
    :justify-content    :space-between
    :align-items        :center})
 
-(defn fiat-amount
+(defn converted-amount
   [theme]
   {:color (colors/theme-colors colors/neutral-50 colors/neutral-40 theme)})
