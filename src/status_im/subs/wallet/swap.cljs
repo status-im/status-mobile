@@ -81,6 +81,18 @@
  :-> :loading-fees?)
 
 (rf/reg-sub
+ :wallet/swap-approval-transaction-id
+ :<- [:wallet/swap]
+ :-> :approval-transaction-id)
+
+(rf/reg-sub
+ :wallet/swap-approval-transaction-status
+ :<- [:wallet/transactions]
+ :<- [:wallet/swap-approval-transaction-id]
+ (fn [[transactions approval-transaction-id]]
+   (get-in transactions [approval-transaction-id :status])))
+
+(rf/reg-sub
  :wallet/swap-proposal
  :<- [:wallet/swap]
  :-> :swap-proposal)
@@ -96,6 +108,19 @@
  :-> :amount-out)
 
 (rf/reg-sub
+ :wallet/swap-proposal-amount-in
+ :<- [:wallet/swap-proposal]
+ :-> :amount-in)
+
+(rf/reg-sub
+ :wallet/swap-proposal-provider
+ :<- [:wallet/swap-proposal]
+ (fn [swap-proposal]
+   (let [bridge-name  (:bridge-name swap-proposal)
+         provider-key (keyword (string/lower-case bridge-name))]
+     (get constants/swap-providers provider-key))))
+
+(rf/reg-sub
  :wallet/swap-proposal-approval-required
  :<- [:wallet/swap-proposal]
  :-> :approval-required)
@@ -104,6 +129,11 @@
  :wallet/swap-proposal-approval-amount-required
  :<- [:wallet/swap-proposal]
  :-> :approval-amount-required)
+
+(rf/reg-sub
+ :wallet/swap-proposal-estimated-time
+ :<- [:wallet/swap-proposal]
+ :-> :estimated-time)
 
 (rf/reg-sub
  :wallet/wallet-swap-proposal-fee-fiat-formatted

@@ -76,6 +76,7 @@
         approval-required                (rf/sub [:wallet/swap-proposal-approval-required])
         approval-amount-required         (rf/sub [:wallet/swap-proposal-approval-amount-required])
         currency-symbol                  (rf/sub [:profile/currency-symbol])
+        approval-transaction-status      (rf/sub [:wallet/swap-approval-transaction-status])
         pay-input-num-value              (controlled-input/numeric-value input-state)
         pay-input-amount                 (controlled-input/input-value input-state)
         pay-token-symbol                 (:symbol asset-to-pay)
@@ -141,7 +142,11 @@
                                                    {:number       available-crypto-limit
                                                     :token-symbol pay-token-symbol})
                              :networks [{:source (:source network)}]}
-      :approval-label-props {:status              :approve
+      :approval-label-props {:status              (case approval-transaction-status
+                                                    :pending   :approving
+                                                    :confirmed :approved
+                                                    :finalised :approved
+                                                    :approve)
                              :token-value         approval-amount-required-num
                              :button-props        {:on-press on-approve-press}
                              :customization-color account-color
@@ -199,16 +204,18 @@
 
 (defn- action-button
   [{:keys [on-press]}]
-  (let [account-color          (rf/sub [:wallet/current-viewing-account-color])
-        swap-proposal          (rf/sub [:wallet/swap-proposal])
-        loading-fees?          (rf/sub [:wallet/swap-loading-fees?])
-        loading-swap-proposal? (rf/sub [:wallet/swap-loading-swap-proposal?])
-        approval-required?     (rf/sub [:wallet/swap-proposal-approval-required])]
+  (let [account-color               (rf/sub [:wallet/current-viewing-account-color])
+        swap-proposal               (rf/sub [:wallet/swap-proposal])
+        loading-fees?               (rf/sub [:wallet/swap-loading-fees?])
+        loading-swap-proposal?      (rf/sub [:wallet/swap-loading-swap-proposal?])
+        approval-required?          (rf/sub [:wallet/swap-proposal-approval-required])
+        approval-transaction-status (rf/sub [:wallet/swap-approval-transaction-status])]
     [quo/bottom-actions
      {:actions          :one-action
       :button-one-label (i18n/label :t/review-swap)
       :button-one-props {:disabled?           (or (not swap-proposal)
-                                                  approval-required?
+                                                  (and approval-required?
+                                                       (not= approval-transaction-status :confirmed))
                                                   loading-swap-proposal?
                                                   loading-fees?)
                          :customization-color account-color
@@ -262,7 +269,7 @@
         :on-max-press     #(set-pay-input-state pay-token-balance-selected-chain)
         :input-focused?   pay-input-focused?
         :on-token-press   #(js/alert "Token Pressed")
-        :on-approve-press #(js/alert "Approve Pressed")
+        :on-approve-press #(rf/dispatch [:open-modal :screen/wallet.swap-set-spending-cap])
         :on-input-focus   #(set-pay-input-focused? true)}]
       [swap-order-button {:on-press #(js/alert "Swap Order Pressed")}]
       [receive-token-input

@@ -1,9 +1,13 @@
 (ns status-im.contexts.wallet.swap.events
-  (:require [re-frame.core :as rf]
+  (:require [native-module.core :as native-module]
+            [re-frame.core :as rf]
             [status-im.constants :as constants]
+            [status-im.contexts.wallet.common.utils :as utils]
             [status-im.contexts.wallet.send.utils :as send-utils]
             [status-im.contexts.wallet.sheets.network-selection.view :as network-selection]
             [taoensso.timbre :as log]
+            [utils.address :as address]
+            [utils.i18n :as i18n]
             [utils.number]))
 
 (rf/reg-event-fx :wallet.swap/start
@@ -152,8 +156,123 @@
                    :last-request-uuid
                    :swap-proposal
                    :error-response
-                   :loading-swap-proposal?)}))
+                   :loading-swap-proposal?
+                   :approval-transaction-id)}))
 
 (rf/reg-event-fx :wallet/clean-swap
  (fn [{:keys [db]}]
    {:db (update-in db [:wallet :ui] dissoc :swap)}))
+
+(rf/reg-event-fx :wallet/swap-transaction
+ (fn [{:keys [db]} [sha3-pwd]]
+   (let [wallet-address                    (get-in db [:wallet :current-viewing-account-address])
+         {:keys [asset-to-pay swap-proposal network
+                 approval-transaction-id]} (get-in db [:wallet :ui :swap])
+         transactions                      (get-in db [:wallet :transactions])
+         approval-transaction              (when approval-transaction-id
+                                             (get transactions approval-transaction-id))
+         already-approved?                 (and approval-transaction
+                                                (= (:status approval-transaction) :confirmed))
+         approval-required?                (and (:approval-required swap-proposal)
+                                                (not already-approved?))
+         multi-transaction-type            constants/multi-transaction-type-swap
+         swap-chain-id                     (:chain-id network)
+         token-id                          (:symbol asset-to-pay)
+         erc20-transfer?                   (and asset-to-pay (not= token-id "ETH"))
+         eth-transfer?                     (and asset-to-pay (not erc20-transfer?))
+         token-address                     (when erc20-transfer?
+                                             (get-in asset-to-pay
+                                                     [:balances-per-chain swap-chain-id :address]))
+         data                              (when erc20-transfer?
+                                             (native-module/encode-transfer
+                                              (address/normalized-hex wallet-address)
+                                              (:amount-in swap-proposal)))
+         transaction-paths                 (if approval-required?
+                                             [(utils/approval-path {:route         swap-proposal
+                                                                    :token-address token-address
+                                                                    :from-address  wallet-address
+                                                                    :to-address    wallet-address})]
+                                             [(utils/transaction-path
+                                               {:to-address    wallet-address
+                                                :from-address  wallet-address
+                                                :route         swap-proposal
+                                                :token-address token-address
+                                                :token-id      token-id
+                                                :data          data
+                                                :eth-transfer? eth-transfer?})])
+         request-params                    [(utils/multi-transaction-command
+                                             {:from-address           wallet-address
+                                              :to-address             wallet-address
+                                              :from-asset             token-id
+                                              :to-asset               token-id
+                                              :amount-out             (if eth-transfer?
+                                                                        (:amount-out swap-proposal)
+                                                                        "0x0")
+                                              :multi-transaction-type multi-transaction-type})
+                                            transaction-paths
+                                            sha3-pwd]]
+     (log/info "multi transaction called")
+     {:json-rpc/call [{:method     "wallet_createMultiTransaction"
+                       :params     request-params
+                       :on-success (fn [result]
+                                     (when result
+                                       (rf/dispatch [:wallet.swap/add-authorized-transaction
+                                                     {:transaction           result
+                                                      :approval-transaction? approval-required?}])
+                                       (rf/dispatch [:dismiss-modal
+                                                     :screen/wallet.swap-set-spending-cap])
+                                       (rf/dispatch [:hide-bottom-sheet])))
+                       :on-error   (fn [error]
+                                     (log/error "failed swap transaction"
+                                                {:event  :wallet/swap-transaction
+                                                 :error  error
+                                                 :params request-params})
+                                     (rf/dispatch [:toasts/upsert
+                                                   {:id   :swap-transaction-error
+                                                    :type :negative
+                                                    :text (:message error)}]))}]})))
+
+(rf/reg-event-fx :wallet.swap/add-authorized-transaction
+ (fn [{:keys [db]} [{:keys [transaction approval-transaction?]}]]
+   (let [transaction-batch-id (:id transaction)
+         transaction-hashes   (:hashes transaction)
+         transaction-ids      (flatten (vals transaction-hashes))
+         transaction-details  (send-utils/map-multitransaction-by-ids transaction-batch-id
+                                                                      transaction-hashes)]
+     {:db (cond-> db
+            :always               (assoc-in [:wallet :transactions] transaction-details)
+            :always               (assoc-in [:wallet :ui :swap :transaction-ids] transaction-ids)
+            approval-transaction? (assoc-in [:wallet :ui :swap :approval-transaction-id]
+                                   (first transaction-ids)))})))
+
+(rf/reg-event-fx :wallet.swap/approve-transaction-update
+ (fn [{:keys [db]} [status]]
+   (let [{:keys [amount asset-to-pay swap-proposal]} (get-in db [:wallet :ui :swap])
+         provider-name                               (:bridge-name swap-proposal)
+         token-symbol                                (:symbol asset-to-pay)
+         current-viewing-account-address             (get-in db
+                                                             [:wallet :current-viewing-account-address])
+         account-name                                (get-in db
+                                                             [:wallet :accounts
+                                                              current-viewing-account-address :name])
+         transaction-confirmed-or-failed?            (#{:confirmed :failed} status)
+         transaction-confirmed?                      (= status :confirmed)]
+     (when transaction-confirmed-or-failed?
+       (cond-> {:fx
+                [[:dispatch
+                  [:toasts/upsert
+                   {:id   :approve-transaction-update
+                    :type (if transaction-confirmed? :positive :negative)
+                    :text (if transaction-confirmed?
+                            (i18n/label :t/spending-cap-set
+                                        {:amount        amount
+                                         :token-symbol  token-symbol
+                                         :provider-name provider-name
+                                         :account-name  account-name})
+                            (i18n/label :t/spending-cap-failed
+                                        {:amount        amount
+                                         :token-symbol  token-symbol
+                                         :provider-name provider-name
+                                         :account-name  account-name}))}]]]}
+         (not transaction-confirmed?)
+         (assoc :db (update-in db [:wallet :ui :swap] dissoc :approval-transaction-id)))))))

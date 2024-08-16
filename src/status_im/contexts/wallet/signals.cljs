@@ -1,6 +1,7 @@
 (ns status-im.contexts.wallet.signals
   (:require
     [oops.core :as oops]
+    [status-im.constants :as constants]
     [taoensso.timbre :as log]
     [utils.re-frame :as rf]
     [utils.transforms :as transforms]))
@@ -8,9 +9,21 @@
 (rf/reg-event-fx
  :wallet/pending-transaction-status-changed-received
  (fn [{:keys [db]} [{:keys [message]}]]
-   (let [details (transforms/json->clj message)
-         tx-hash (:hash details)]
-     {:db (update-in db [:wallet :transactions tx-hash] assoc :status :confirmed :blocks 1)})))
+   (let [details                      (transforms/json->clj message)
+         tx-hash                      (:hash details)
+         tx-status                    (:status details)
+         status                       (cond
+                                        (= tx-status constants/transaction-status-success)
+                                        :confirmed
+                                        (= tx-status constants/transaction-status-pending)
+                                        :pending
+                                        (= tx-status constants/transaction-status-failed)
+                                        :failed)
+         swap-approval-transaction-id (get-in db [:wallet :ui :swap :approval-transaction-id])
+         swap-approval-transaction?   (= swap-approval-transaction-id tx-hash)]
+     (cond-> {:db (update-in db [:wallet :transactions tx-hash] assoc :status status)}
+       swap-approval-transaction?
+       (assoc :fx [[:dispatch [:wallet.swap/approve-transaction-update status]]])))))
 
 (rf/reg-event-fx
  :wallet/signal-received
