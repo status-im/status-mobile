@@ -11,32 +11,10 @@
     [quo.components.wallet.token-input.style :as style]
     [quo.theme :as quo.theme]
     [react-native.core :as rn]
-    [schema.core :as schema]
-    [utils.number :as number]))
-
-(defn fiat-format
-  [currency-symbol num-value conversion]
-  (str currency-symbol (.toFixed (* num-value conversion) 2)))
-
-(defn crypto-format
-  [num-value conversion crypto-decimals token]
-  (str (number/remove-trailing-zeroes
-        (.toFixed (/ num-value conversion) (or crypto-decimals 2)))
-       " "
-       (string/upper-case (or (clj->js token) ""))))
-
-(defn calc-value
-  [{:keys [crypto? currency-symbol token value conversion crypto-decimals]}]
-  (let [num-value (if (string? value)
-                    (or (parse-double value) 0)
-                    value)]
-    (if crypto?
-      (fiat-format currency-symbol num-value conversion)
-      (crypto-format num-value conversion crypto-decimals token))))
+    [schema.core :as schema]))
 
 (defn- data-info
-  [{:keys [theme token crypto-decimals conversion networks title crypto? currency-symbol amount
-           error?]}]
+  [{:keys [theme networks title converted-value error?]}]
   [rn/view {:style style/data-container}
    [network-tag/view
     {:networks networks
@@ -46,12 +24,7 @@
     {:size   :paragraph-2
      :weight :medium
      :style  (style/fiat-amount theme)}
-    (calc-value {:crypto?         crypto?
-                 :currency-symbol currency-symbol
-                 :token           token
-                 :value           amount
-                 :conversion      conversion
-                 :crypto-decimals crypto-decimals})]])
+    converted-value]])
 
 (defn- token-name-text
   [theme text]
@@ -123,16 +96,14 @@
           :i/reorder]]))))
 
 (defn- view-internal
-  [{:keys [container-style value on-swap] :as props}]
+  [{:keys [container-style on-swap crypto?] :as props}]
   (let [theme                               (quo.theme/use-theme)
         width                               (:width (rn/get-window))
         [value-internal set-value-internal] (rn/use-state nil)
-        [crypto? set-crypto]                (rn/use-state true)
         handle-on-swap                      (rn/use-callback
                                              (fn []
-                                               (set-crypto (not crypto?))
                                                (when on-swap (on-swap (not crypto?))))
-                                             [crypto? on-swap])]
+                                             [on-swap])]
     [rn/view {:style (merge (style/main-container width) container-style)}
      [rn/view {:style style/amount-container}
       [input-section
@@ -143,10 +114,6 @@
               :handle-on-swap     handle-on-swap
               :crypto?            crypto?)]]
      [divider-line/view {:container-style (style/divider theme)}]
-     [data-info
-      (assoc props
-             :theme   theme
-             :crypto? crypto?
-             :amount  (or value value-internal))]]))
+     [data-info (assoc props :theme theme)]]))
 
 (def view (schema/instrument #'view-internal component-schema/?schema))
