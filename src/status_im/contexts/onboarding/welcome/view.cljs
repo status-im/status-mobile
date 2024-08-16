@@ -2,12 +2,10 @@
   (:require
     [quo.core :as quo]
     [quo.foundations.colors :as colors]
-    [re-frame.core :as re-frame]
     [react-native.core :as rn]
     [react-native.linear-gradient :as linear-gradient]
     [react-native.safe-area :as safe-area]
     [status-im.common.resources :as resources]
-    [status-im.constants :as constants]
     [status-im.contexts.onboarding.welcome.style :as style]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
@@ -24,20 +22,12 @@
       :description                     (i18n/label :t/welcome-to-web3-sub-title)
       :description-accessibility-label :welcome-sub-title}]))
 
-(defn dispatch-visibility-status-update
-  [status-type]
-  (re-frame/dispatch
-   [:visibility-status-updates/delayed-visibility-status-update status-type]))
-
 (defn view
   []
-  (let [profile-color         (rf/sub [:onboarding/customization-color])
-        {:keys [status-type]} (rf/sub [:multiaccount/current-user-visibility-status])
-        window                (rf/sub [:dimensions/window])
-        insets                (safe-area/get-insets)]
+  (let [profile-color (rf/sub [:onboarding/customization-color])
+        window        (rf/sub [:dimensions/window])
+        insets        (safe-area/get-insets)]
     [rn/view {:style (style/page-container insets)}
-     (when (nil? status-type)
-       (dispatch-visibility-status-update constants/visibility-status-automatic))
      [quo/page-nav
       {:type       :no-title
        :background :blur
