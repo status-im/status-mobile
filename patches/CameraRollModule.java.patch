@@ -1,0 +1,37 @@
+--- /tmp/tmp-status-mobile-ca53bf738/tmp.QcO69SAqs7/CameraRollModule.java	2024-04-19 14:02:42.746932000 +0200
++++ ./node_modules/@react-native-camera-roll/camera-roll/android/src/main/java/com/reactnativecommunity/cameraroll/CameraRollModule.java	2024-04-19 14:03:51.776866113 +0200
+@@ -677,7 +677,7 @@
+ 
+     WritableArray subTypes = Arguments.createArray();
+     node.putArray("subTypes", subTypes);
+-    
++
+     if (includeSourceType) {
+       node.putString("sourceType", "UserLibrary");
+     } else {
+@@ -685,7 +685,7 @@
+     }
+ 
+     WritableArray group_name = Arguments.createArray();
+-  
++
+     if (includeAlbums) {
+       group_name.pushString(media.getString(groupNameIndex));
+     }
+@@ -1089,6 +1089,16 @@
+     promise.reject("CameraRoll:getPhotoThumbnail", "getPhotoThumbnail is not supported on Android");
+   }
+ 
++  @ReactMethod
++  public void getPhotosCountiOS(String arg, Promise promise) {
++    promise.reject("CameraRoll:getPhotosCountiOS", "getPhotosCountiOS is not supported on Android");
++  }
++
++  @ReactMethod
++  public void getFavoritesiOS(String arg, Promise promise) {
++    promise.reject("CameraRoll:getFavoritesiOS", "getFavoritesiOS is not supported on Android");
++  }
++
+   public void addListener(String eventName) {}
+   public void removeListeners(double count) {}
+ }
