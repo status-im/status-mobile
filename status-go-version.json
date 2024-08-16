@@ -1,0 +1,9 @@
+{
+    "_comment": "THIS SHOULD NOT BE EDITED BY HAND.",
+    "_comment": "Instead use: scripts/update-status-go.sh <rev>",
+    "owner": "status-im",
+    "repo": "status-go",
+    "version": "feat/close-hystrix-on-going-online",
+    "commit-sha1": "10a12762c21e9124d623a6619e8cac90116dc1b9",
+    "src-sha256": "0r1zxnfkbf16fry1nysxpl00d88r9fr59b6h07fnzp5nkpzzyxjb"
+}
