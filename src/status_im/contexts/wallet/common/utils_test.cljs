@@ -73,7 +73,12 @@
           token-units                (money/bignumber 0.01)]
       (is (= (utils/get-standard-crypto-format {:market-values-per-currency market-values-per-currency}
                                                token-units)
-             "<2")))))
+             "<2")))
+    (let [market-values-per-currency {:usd {:price 0.005}}
+          token-units                "0.01"]
+      (is (= (utils/get-standard-crypto-format {:market-values-per-currency market-values-per-currency}
+                                               token-units)
+             "0")))))
 
 (deftest calculate-total-token-balance-test
   (testing "calculate-total-token-balance function"
@@ -162,6 +167,4 @@
           sorted-tokens  (map :symbol (utils/sort-tokens mock-tokens))
           expected-order ["DAI" "ETH" "SNT"]]
       (is (= expected-order sorted-tokens)))))
-
-
 

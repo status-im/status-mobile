@@ -6,6 +6,8 @@
   prefer to use it for more general purpose concepts, such as the re-frame event
   layer."
   (:require-macros test-helpers.unit)
+  ;; We must require test-helpers.matchers namespace to register the custom cljs.test directive
+  ;; `match-strict?`
   (:require
     [re-frame.core :as rf]
     [re-frame.db :as rf-db]

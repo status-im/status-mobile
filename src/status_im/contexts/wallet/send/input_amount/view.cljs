@@ -295,6 +295,14 @@
                                                         :valid-input?       valid-input?
                                                         :bounce-duration-ms bounce-duration-ms
                                                         :token              token}))
+        swap-currency                               (fn [to-crypto? value]
+                                                      (if to-crypto?
+                                                        (utils/cut-crypto-decimals-to-fit-usd-cents
+                                                         conversion-rate
+                                                         (money/fiat->crypto value conversion-rate))
+                                                        (utils/cut-fiat-balance-to-two-decimals
+                                                         (money/crypto->fiat value
+                                                                             conversion-rate))))
         swap-between-fiat-and-crypto                (fn [swap-to-crypto-currency?]
                                                       (set-just-toggled-mode? true)
                                                       (set-crypto-currency swap-to-crypto-currency?)
@@ -304,13 +312,9 @@
                                                           input-state
                                                           (let [value     (controlled-input/input-value
                                                                            input-state)
-                                                                new-value (if swap-to-crypto-currency?
-                                                                            (.toFixed (/ value
-                                                                                         conversion-rate)
-                                                                                      crypto-decimals)
-                                                                            (.toFixed (* value
-                                                                                         conversion-rate)
-                                                                                      12))]
+                                                                new-value (swap-currency
+                                                                           swap-to-crypto-currency?
+                                                                           value)]
                                                             (number/remove-trailing-zeroes
                                                              new-value))))))]
     (rn/use-mount
@@ -363,7 +367,18 @@
        :value            input-amount
        :on-swap          swap-between-fiat-and-crypto
        :on-token-press   show-select-asset-sheet
-       :allow-selection? false}]
+       :allow-selection? false
+       :crypto?          crypto-currency?
+       :converted-value  (if crypto-currency?
+                           (utils/prettify-balance
+                            currency-symbol
+                            (money/crypto->fiat input-amount
+                                                conversion-rate))
+                           (utils/prettify-crypto-balance
+                            (or (name token-symbol) "")
+                            (money/fiat->crypto input-amount
+                                                conversion-rate)
+                            conversion-rate))}]
      [routes/view
       {:token                                     token-by-symbol
        :send-amount-in-crypto                     amount-in-crypto

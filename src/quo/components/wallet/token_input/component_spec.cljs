@@ -6,16 +6,16 @@
 (h/describe "Wallet: Token Input"
   (h/test "Token label renders"
     (h/render-with-theme-provider [token-input/view
-                                   {:token           :snt
-                                    :currency        :eur
-                                    :currency-symbol "€"
-                                    :conversion      1}])
+                                   {:token      :snt
+                                    :currency   :eur
+                                    :crypto?    true
+                                    :conversion 1}])
     (h/is-truthy (h/get-by-text "SNT")))
 
   (h/test "Amount renders"
     (h/render-with-theme-provider [token-input/view
                                    {:token           :snt
                                     :currency        :eur
-                                    :currency-symbol "€"
+                                    :converted-value "€0.00"
                                     :conversion      1}])
     (h/is-truthy (h/get-by-text "€0.00"))))
