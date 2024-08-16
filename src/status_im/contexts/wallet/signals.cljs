@@ -43,9 +43,15 @@
        {:fx [[:dispatch [:wallet/reload]]]}
 
        "wallet-blockchain-status-changed"
-       {:fx [[:dispatch
-              [:wallet/blockchain-status-changed
-               (transforms/js->clj event-js)]]]}
+       {:fx [[:dispatch-later
+              ;; Don't dispatch immediately because the signal may arrive as
+              ;; soon as the device goes offline. We need to give some time for
+              ;; RN to dispatch the network status update, otherwise when going
+              ;; offline the user will immediately see a toast saying "provider
+              ;; X is down".
+              [{:ms       500
+                :dispatch [:wallet/blockchain-status-changed
+                           (transforms/js->clj event-js)]}]]]}
 
        "wallet-activity-filtering-done"
        {:fx
