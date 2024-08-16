@@ -54,7 +54,7 @@
                                                (controlled-input/set-input-value
                                                 input-state
                                                 (let [new-value
-                                                      (if (not crypto?)
+                                                      (if-not crypto?
                                                         (utils/cut-crypto-decimals-to-fit-usd-cents
                                                          conversion-rate
                                                          (money/fiat->crypto input-amount
