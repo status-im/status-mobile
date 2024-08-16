@@ -2,6 +2,7 @@
   (:require [re-frame.core :as rf]
             [react-native.wallet-connect :as wallet-connect]
             [status-im.contexts.wallet.wallet-connect.core :as wallet-connect-core]
+            [status-im.contexts.wallet.wallet-connect.utils.networks :as networks]
             [status-im.contexts.wallet.wallet-connect.utils.uri :as uri]
             [taoensso.timbre :as log]
             [utils.i18n :as i18n]))
@@ -59,11 +60,9 @@
    (let [accounts                     (get-in db [:wallet :accounts])
          current-viewing-address      (get-in db [:wallet :current-viewing-account-address])
          available-accounts           (wallet-connect-core/filter-operable-accounts (vals accounts))
-         networks                     (wallet-connect-core/get-networks-by-mode db)
-         session-networks             (wallet-connect-core/proposal-networks-intersection proposal
-                                                                                          networks)
-         required-networks-supported? (wallet-connect-core/required-networks-supported? proposal
-                                                                                        networks)]
+         networks                     (networks/get-networks-by-mode db)
+         session-networks             (networks/proposal-networks-intersection proposal networks)
+         required-networks-supported? (networks/required-networks-supported? proposal networks)]
      (if (and (not-empty session-networks) required-networks-supported?)
        {:db (update db
                     :wallet-connect/current-proposal assoc
@@ -103,10 +102,10 @@
    (let [web3-wallet      (get db :wallet-connect/web3-wallet)
          current-proposal (get-in db [:wallet-connect/current-proposal :request])
          session-networks (->> (get-in db [:wallet-connect/current-proposal :session-networks])
-                               (map wallet-connect-core/chain-id->eip155)
+                               (map networks/chain-id->eip155)
                                vec)
          current-address  (get-in db [:wallet-connect/current-proposal :address])
-         accounts         (-> (partial wallet-connect-core/format-eip155-address current-address)
+         accounts         (-> (partial networks/format-eip155-address current-address)
                               (map session-networks))
          network-status   (:network/status db)
          expiry           (get-in current-proposal [:params :expiryTimestamp])]

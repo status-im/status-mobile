@@ -2,6 +2,7 @@
   (:require [native-module.core :as native-module]
             [promesa.core :as promesa]
             [status-im.contexts.wallet.wallet-connect.core :as core]
+            [status-im.contexts.wallet.wallet-connect.utils.networks :as networks]
             [status-im.contexts.wallet.wallet-connect.utils.rpc :as rpc]
             [utils.hex :as hex]
             [utils.number :as number]
@@ -40,7 +41,7 @@
 (defn eth-sign-typed-data
   [password address data chain-id-eip155 version]
   (let [legacy?  (= version :v1)
-        chain-id (core/eip155->chain-id chain-id-eip155)]
+        chain-id (networks/eip155->chain-id chain-id-eip155)]
     (rpc/wallet-safe-sign-typed-data data
                                      address
                                      password

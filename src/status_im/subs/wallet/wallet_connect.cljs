@@ -3,6 +3,7 @@
             [re-frame.core :as rf]
             [status-im.contexts.wallet.common.utils :as wallet-utils]
             [status-im.contexts.wallet.wallet-connect.core :as wallet-connect-core]
+            [status-im.contexts.wallet.wallet-connect.utils.networks :as networks]
             [status-im.contexts.wallet.wallet-connect.utils.transactions :as transactions]
             [utils.money :as money]
             [utils.string]))
@@ -59,7 +60,7 @@
  :<- [:profile/test-networks-enabled?]
  (fn [[sessions testnet-mode?]]
    (filter
-    (partial wallet-connect-core/session-networks-allowed? testnet-mode?)
+    (partial networks/session-networks-allowed? testnet-mode?)
     sessions)))
 
 (rf/reg-sub
@@ -68,12 +69,12 @@
  (fn [request]
    (-> request
        (get-in [:event :params :chainId])
-       (wallet-connect-core/eip155->chain-id))))
+       (networks/eip155->chain-id))))
 
 (rf/reg-sub
  :wallet-connect/current-request-network
  :<- [:wallet-connect/chain-id]
- wallet-connect-core/chain-id->network-details)
+ networks/chain-id->network-details)
 
 (rf/reg-sub
  :wallet-connect/transaction-args

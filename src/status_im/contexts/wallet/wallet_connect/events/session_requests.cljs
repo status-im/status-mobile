@@ -5,6 +5,7 @@
             [re-frame.core :as rf]
             [status-im.constants :as constants]
             [status-im.contexts.wallet.wallet-connect.core :as wallet-connect-core]
+            [status-im.contexts.wallet.wallet-connect.utils.networks :as networks]
             [status-im.contexts.wallet.wallet-connect.utils.signing :as signing]
             [status-im.contexts.wallet.wallet-connect.utils.transactions :as transactions]
             [taoensso.timbre :as log]
@@ -102,7 +103,7 @@
          tx       (-> event wallet-connect-core/get-request-params first)
          chain-id (-> event
                       (get-in [:params :chainId])
-                      wallet-connect-core/eip155->chain-id)]
+                      networks/eip155->chain-id)]
      {:fx [[:effects.wallet-connect/prepare-transaction
             {:tx         tx
              :chain-id   chain-id
@@ -116,7 +117,7 @@
          tx       (-> event wallet-connect-core/get-request-params first)
          chain-id (-> event
                       (get-in [:params :chainId])
-                      wallet-connect-core/eip155->chain-id)]
+                      networks/eip155->chain-id)]
      {:fx [[:effects.wallet-connect/prepare-transaction
             {:tx         tx
              :chain-id   chain-id
@@ -131,7 +132,7 @@
            parsed-raw-data    (transforms/js-parse raw-data)
            session-chain-id   (-> (wallet-connect-core/get-db-current-request-event db)
                                   (get-in [:params :chainId])
-                                  wallet-connect-core/eip155->chain-id)
+                                  networks/eip155->chain-id)
            data-chain-id      (-> parsed-raw-data
                                   transforms/js->clj
                                   signing/typed-data-chain-id)
@@ -162,14 +163,14 @@
  :wallet-connect/wrong-typed-data-chain-id
  (fn [_ [{:keys [expected-chain-id wrong-chain-id]}]]
    (let [wrong-network-name    (-> wrong-chain-id
-                                   wallet-connect-core/chain-id->network-details
+                                   networks/chain-id->network-details
                                    :full-name)
          expected-network-name (-> expected-chain-id
-                                   wallet-connect-core/chain-id->network-details
+                                   networks/chain-id->network-details
                                    :full-name)
          toast-message         (i18n/label :t/wallet-connect-typed-data-wrong-chain-id-warning
                                            {:wrong-chain    (or wrong-network-name
-                                                                (wallet-connect-core/chain-id->eip155
+                                                                (networks/chain-id->eip155
                                                                  wrong-chain-id))
                                             :expected-chain expected-network-name})]
      {:fx [[:dispatch
