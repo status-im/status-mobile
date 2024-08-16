@@ -3,7 +3,7 @@
     "_comment": "Instead use: scripts/update-status-go.sh <rev>",
     "owner": "status-im",
     "repo": "status-go",
-    "version": "release/0.182.x",
-    "commit-sha1": "09f8051238d5254b01afb2c174f3dc820cde3928",
-    "src-sha256": "07yn28lrj4mlh6y46cvcljfn3mzbaji66q8igmqy3fn69lvszf4m"
+    "version": "feat/close-hystrix-on-going-online",
+    "commit-sha1": "10a12762c21e9124d623a6619e8cac90116dc1b9",
+    "src-sha256": "0r1zxnfkbf16fry1nysxpl00d88r9fr59b6h07fnzp5nkpzzyxjb"
 }
