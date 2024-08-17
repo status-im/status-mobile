@@ -13,7 +13,7 @@ export BUILD_TYPE=debug
 
 # Install the APK on running emulator or android device.
 installAndLaunchApp() {
-  adb install -r ./result/app-arm64-v8a-debug.apk > "${ADB_INSTALL_LOG_FILE}" 2>&1
+  adb install -r "./result/app-${ANDROID_ABI_INCLUDE}-debug.apk" > "${ADB_INSTALL_LOG_FILE}" 2>&1
   "${GIT_ROOT}/scripts/wait-for-metro-port.sh" 2>&1
   # connected android devices need this port to be exposed for metro
   adb reverse "tcp:${RCT_METRO_PORT}" "tcp:${RCT_METRO_PORT}"
