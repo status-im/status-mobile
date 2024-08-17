@@ -5,6 +5,7 @@
     [clojure.string :as string]
     [react-native.platform :as platform]
     [status-im.constants :as constants]
+    [status-im.contexts.network.data-store :as network.data-store]
     [status-im.contexts.settings.wallet.effects]
     [status-im.contexts.settings.wallet.events]
     [status-im.contexts.wallet.common.activity-tab.events]
@@ -107,23 +108,44 @@
          [:dispatch [:wallet/request-new-collectibles-for-account-from-signal address]]
          [:dispatch [:wallet/check-recent-history-for-account address]]]}))
 
-(rf/reg-event-fx
- :wallet/get-accounts-success
+(defn- reconcile-accounts
+  [db-accounts-by-address new-accounts]
+  (reduce
+   (fn [res {:keys [address] :as account}]
+     ;; Because we add extra fields (tokens and collectibles) into the RPC
+     ;; response from accounts_getAccounts, if we are offline we want to keep
+     ;; the old balances in the accounts, thus we merge the up-to-date account
+     ;; from status-go into the cached accounts. We also merge when online
+     ;; because we will re-fetch balances anyway.
+     ;;
+     ;; Refactor improvement: don't augment entities from status-go, store
+     ;; tokens and collectibles in separate keys in the app-db indexed by
+     ;; account address.
+     (assoc res
+            address
+            (-> (get db-accounts-by-address address)
+                (merge account)
+                ;; These should not be cached, otherwise when going
+                ;; offline->online collectibles won't be fetched.
+                (dissoc :current-collectible-idx :has-more-collectibles?))))
+   {}
+   new-accounts))
+
+(rf/reg-event-fx :wallet/get-accounts-success
  (fn [{:keys [db]} [accounts]]
    (let [wallet-accounts     (data-store/rpc->accounts accounts)
          wallet-db           (get db :wallet)
          new-account?        (:new-account? wallet-db)
          navigate-to-account (:navigate-to-account wallet-db)]
-     {:db (assoc-in db
-           [:wallet :accounts]
-           (utils.collection/index-by :address wallet-accounts))
-      :fx (concat refresh-accounts-fx-dispatches
+     {:db (update-in db [:wallet :accounts] reconcile-accounts wallet-accounts)
+      :fx (concat (when (or (data-store/tokens-never-loaded? db)
+                            (network.data-store/online? db))
+                    refresh-accounts-fx-dispatches)
                   [(when new-account?
                      [:dispatch [:wallet/navigate-to-new-account navigate-to-account]])])})))
 
-(rf/reg-event-fx
- :wallet/get-accounts
- (fn [_]
+(rf/reg-event-fx :wallet/get-accounts
+ (fn []
    {:fx [[:json-rpc/call
           [{:method     "accounts_getAccounts"
             :on-success [:wallet/get-accounts-success]
@@ -486,7 +508,7 @@
                                   {:test-networks-enabled? test-networks-enabled?
                                    :is-goerli-enabled?     is-goerli-enabled?})
          chains-filtered-by-mode (remove #(not (contains? chain-ids-by-mode %)) down-chain-ids)
-         chains-down?            (seq chains-filtered-by-mode)
+         chains-down?            (and (network.data-store/online? db) (seq chains-filtered-by-mode))
          chain-names             (when chains-down?
                                    (->> (map #(-> (network-utils/id->network %)
                                                   name

@@ -48,11 +48,10 @@
  :wallet/home-tokens-loading?
  :<- [:wallet/tokens-loading]
  (fn [tokens-loading]
-   (or (empty? tokens-loading)
-       (->> tokens-loading
-            vals
-            (some true?)
-            boolean))))
+   (->> tokens-loading
+        vals
+        (some true?)
+        boolean)))
 
 (rf/reg-sub
  :wallet/current-viewing-account-tokens-loading?
@@ -351,9 +350,10 @@
  :<- [:wallet/accounts]
  :<- [:wallet/balances-in-selected-networks]
  :<- [:wallet/tokens-loading]
+ :<- [:network/online?]
  :<- [:profile/currency-symbol]
  :<- [:wallet/keypairs]
- (fn [[accounts balances tokens-loading currency-symbol keypairs]]
+ (fn [[accounts balances tokens-loading online? currency-symbol keypairs]]
    (mapv (fn [{:keys [color address watch-only? key-uid operable] :as account}]
            (let [account-type (cond
                                 (= operable :no) :missing-keypair
@@ -373,8 +373,9 @@
                                                                        account
                                                                        keypair)}]))
                                            #(rf/dispatch [:wallet/navigate-to-account address]))
-                    :loading?            (or (get tokens-loading address)
-                                             (not (contains? tokens-loading address)))
+                    :loading?            (and online?
+                                              (or (get tokens-loading address)
+                                                  (not (contains? tokens-loading address))))
                     :balance             (utils/prettify-balance currency-symbol
                                                                  (get balances address)))))
          accounts)))
