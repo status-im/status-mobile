@@ -262,3 +262,7 @@
      ;;  :cost () ;; tbd not used on desktop
      :token-fees                token-fees
      :gas-amount                (:tx-gas-amount new-path)}))
+
+(defn tokens-never-loaded?
+  [db]
+  (nil? (get-in db [:wallet :ui :tokens-loading])))

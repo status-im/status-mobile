@@ -138,7 +138,8 @@
          new-account?        (:new-account? wallet-db)
          navigate-to-account (:navigate-to-account wallet-db)]
      {:db (update-in db [:wallet :accounts] reconcile-accounts wallet-accounts)
-      :fx (concat (when (network.data-store/online? db)
+      :fx (concat (when (or (data-store/tokens-never-loaded? db)
+                            (network.data-store/online? db))
                     refresh-accounts-fx-dispatches)
                   [(when new-account?
                      [:dispatch [:wallet/navigate-to-new-account navigate-to-account]])])})))
