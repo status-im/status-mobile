@@ -11,8 +11,6 @@
     [react-native.core :as rn]
     [schema.core :as schema]))
 
-
-
 (defn- token-name-text
   [theme text]
   [text/text
@@ -22,8 +20,7 @@
    (string/upper-case (or (clj->js text) ""))])
 
 (defn input-section
-  [{:keys [token-symbol on-token-press crypto? currency value error?
-           on-swap]}]
+  [{:keys [token-symbol on-token-press value error? on-swap currency-symbol]}]
   (let [theme        (quo.theme/use-theme)
         window-width (:width (rn/get-window))]
     [rn/pressable
@@ -41,12 +38,12 @@
         :keyboard-type          :numeric
         :editable               false
         :value                  value}]
-      [token-name-text theme (if crypto? token-symbol currency)]]
+      [token-name-text theme currency-symbol ]]
      [button/button
       {:icon                true
        :icon-only?          true
        :size                32
-       :on-press            #(when on-swap (on-swap (not crypto?)))
+       :on-press            #(when on-swap (on-swap))
        :type                :outline
        :accessibility-label :reorder}
       :i/reorder]]))
@@ -55,12 +52,12 @@
   [{:keys [token-symbol
            value
            on-token-press
-           currency error?
+           error?
            container-style
            on-swap
-           crypto?
            converted-value
-           hint-component]}]
+           hint-component
+           currency-symbol]}]
   (let [theme (quo.theme/use-theme)
         width (:width (rn/get-window))]
     [rn/view {:style (merge (style/main-container width) container-style)}
@@ -69,11 +66,10 @@
        {:theme          theme
         :token-symbol   token-symbol
         :on-token-press on-token-press
-        :crypto?        crypto?
-        :currency       currency
         :value          value
         :error?         error?
-        :on-swap        on-swap}]]
+        :on-swap        on-swap
+        :currency-symbol currency-symbol}]]
      [divider-line/view {:container-style (style/divider theme)}]
      [rn/view {:style style/data-container}
       hint-component

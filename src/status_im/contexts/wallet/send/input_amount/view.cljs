@@ -303,20 +303,20 @@
                                                         (utils/cut-fiat-balance-to-two-decimals
                                                          (money/crypto->fiat value
                                                                              conversion-rate))))
-        swap-between-fiat-and-crypto                (fn [swap-to-crypto-currency?]
-                                                      (set-just-toggled-mode? true)
-                                                      (set-crypto-currency swap-to-crypto-currency?)
-                                                      (set-input-state
-                                                       (fn [input-state]
-                                                         (controlled-input/set-input-value
-                                                          input-state
-                                                          (let [value     (controlled-input/input-value
-                                                                           input-state)
-                                                                new-value (swap-currency
-                                                                           swap-to-crypto-currency?
-                                                                           value)]
-                                                            (number/remove-trailing-zeroes
-                                                             new-value))))))]
+        swap-between-fiat-and-crypto                (fn []
+                                                      (let [new-crypto-currency? (not crypto-currency?)]
+                                                        (set-just-toggled-mode? true)
+                                                        (set-crypto-currency new-crypto-currency?)
+                                                        (set-input-state
+                                                         (fn [input-state]
+                                                           (controlled-input/set-input-value
+                                                            input-state
+                                                            (let [new-value (swap-currency
+                                                                             new-crypto-currency?
+                                                                             (controlled-input/input-value
+                                                                              input-state))]
+                                                              (number/remove-trailing-zeroes
+                                                               new-value)))))))]
     (rn/use-mount
      (fn []
        (let [dismiss-keyboard-fn   #(when (= % "active") (rn/dismiss-keyboard!))
@@ -352,12 +352,11 @@
      [quo/token-input
       {:container-style style/input-container
        :token-symbol    token-symbol
-       :currency        fiat-currency
        :value           input-amount
        :on-swap         swap-between-fiat-and-crypto
        :on-token-press  show-select-asset-sheet
-       :crypto?         crypto-currency?
        :error?          (controlled-input/input-error input-state)
+       :currency-symbol    (if crypto-currency? token-symbol fiat-currency)
        :converted-value (if crypto-currency?
                           (utils/prettify-balance
                            currency-symbol

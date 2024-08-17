@@ -6,13 +6,12 @@
     [:props
      [:map {:closed true}
       [:token-symbol [:maybe [:or :string :keyword]]]
+      [:currency-symbol [:maybe [:or :string :keyword]]]
       [:hint-component {:optional true} [:maybe :schema.common/hiccup]]
-      [:currency [:maybe [:or :string :keyword]]]
       [:on-token-press {:optional true} [:maybe fn?]]
       [:on-swap [:maybe fn?]]
       [:container-style {:optional true} [:maybe :map]]
       [:error? [:maybe :boolean]]
-      [:crypto? [:maybe :boolean]]
       [:value [:maybe :string]]
       [:converted-value [:maybe :string]]]]]
    :any])

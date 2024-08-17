@@ -39,7 +39,7 @@
                              :crypto?      true
                              :error?       false})]
     (fn []
-      (let [{:keys [currency token crypto?]} @state
+      (let [{:keys [currency token-symbol crypto? error?]} @state
             [input-state set-input-state]    (rn/use-state controlled-input/init-state)
             input-amount                     (controlled-input/input-value input-state)
             swap-between-fiat-and-crypto     (fn []
@@ -64,7 +64,7 @@
                                                                         input-amount
                                                                         conversion-rate))
                                                (utils/prettify-crypto-balance
-                                                (or (clj->js token) "")
+                                                (or (clj->js token-symbol) "")
                                                 (money/fiat->crypto input-amount conversion-rate)
                                                 conversion-rate))]
         [preview/preview-container
@@ -74,16 +74,18 @@
           :component-container-style {:flex            1
                                       :justify-content :space-between}}
          [quo/token-input
-          (merge @state
-                 {:value           input-amount
-                  :converted-value converted-value
-                  :on-swap         (fn [crypto]
-                                     (swap! state assoc :crypto? crypto)
-                                     (swap-between-fiat-and-crypto))
-                  :hint-component  [quo/network-tags
-                                    {:networks networks
-                                     :title    title
-                                     :status   (when (:error? @state) :error)}]})]
+          {:token-symbol token-symbol
+           :currency-symbol (if crypto? token-symbol currency)
+           :error? error?
+           :value           input-amount
+           :converted-value converted-value
+           :on-swap         (fn []
+                              (swap! state assoc :crypto? (not crypto?))
+                              (swap-between-fiat-and-crypto))
+           :hint-component  [quo/network-tags
+                             {:networks networks
+                              :title    title
+                              :status   (when (:error? @state) :error)}]}]
          [quo/numbered-keyboard
           {:container-style {:padding-bottom (safe-area/get-top)}
            :left-action     :dot
