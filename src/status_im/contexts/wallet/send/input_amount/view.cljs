@@ -168,7 +168,6 @@
          token}                                     (rf/sub [:wallet/wallet-send-token])
         send-from-locked-amounts                    (rf/sub [:wallet/wallet-send-from-locked-amounts])
         {token-balance     :total-balance
-         available-balance :available-balance
          :as               token-by-symbol}         (rf/sub [:wallet/token-by-symbol
                                                              (str token-symbol)
                                                              enabled-from-chain-ids])
@@ -187,39 +186,34 @@
                                                         (utils/get-standard-crypto-format
                                                          token
                                                          token-balance))
-        available-crypto-limit                      (or default-limit-crypto
-                                                        (utils/get-standard-crypto-format
-                                                         token
-                                                         available-balance))
         current-fiat-limit                          (.toFixed (* token-balance conversion-rate) 2)
-        available-fiat-limit                        (.toFixed (* available-balance conversion-rate) 2)
         current-limit                               (if crypto-currency?
                                                       current-crypto-limit
                                                       current-fiat-limit)
-        available-limit                             (if crypto-currency?
-                                                      available-crypto-limit
-                                                      available-fiat-limit)
-        valid-input?                                (not (or (string/blank?
-                                                              (controlled-input/input-value
-                                                               input-state))
+        input-value                                (controlled-input/input-value input-state)
+        valid-input?                                (not (or (string/blank? input-value)
                                                              (<= (controlled-input/numeric-value
                                                                   input-state)
                                                                  0)
                                                              (> (controlled-input/numeric-value
                                                                  input-state)
-                                                                available-limit)))
+                                                                current-limit)))
+        #_(tap> {:in `send
+               :token-balance (money/to-string token-balance)
+               :available-balance (money/to-string available-balance)
+               :curent-limit current-limit
+               :available-limit available-limit
+               :valid-input? valid-input?})
         input-num-value                             (controlled-input/numeric-value input-state)
-        input-amount                                (controlled-input/input-value input-state)
         confirm-disabled?                           (or (nil? route)
                                                         (empty? route)
-                                                        (string/blank? (controlled-input/input-value
-                                                                        input-state))
+                                                        (string/blank? input-value)
                                                         (<= input-num-value 0)
                                                         (> input-num-value current-limit))
         amount-in-crypto                            (if crypto-currency?
-                                                      input-amount
+                                                      input-value
                                                       (number/remove-trailing-zeroes
-                                                       (.toFixed (/ input-amount conversion-rate)
+                                                       (.toFixed (/ input-value conversion-rate)
                                                                  crypto-decimals)))
         total-amount-receiver                       (rf/sub [:wallet/total-amount true])
         amount-text                                 (str (number/remove-trailing-zeroes
@@ -281,7 +275,7 @@
                                                      (if (= token-symbol
                                                             (string/upper-case
                                                              constants/mainnet-short-name))
-                                                       (= current-limit input-amount)
+                                                       (= current-limit input-value)
                                                        (money/equal-to (:total-balance
                                                                         owned-eth-token)
                                                                        0)))
@@ -313,8 +307,7 @@
                                                             input-state
                                                             (let [new-value (swap-currency
                                                                              new-crypto-currency?
-                                                                             (controlled-input/input-value
-                                                                              input-state))]
+                                                                             input-value)]
                                                               (number/remove-trailing-zeroes
                                                                new-value)))))))]
     (rn/use-mount
@@ -352,7 +345,7 @@
      [quo/token-input
       {:container-style style/input-container
        :token-symbol    token-symbol
-       :value           input-amount
+       :value           input-value
        :on-swap         swap-between-fiat-and-crypto
        :on-token-press  show-select-asset-sheet
        :error?          (controlled-input/input-error input-state)
@@ -360,11 +353,11 @@
        :converted-value (if crypto-currency?
                           (utils/prettify-balance
                            currency-symbol
-                           (money/crypto->fiat input-amount
+                           (money/crypto->fiat input-value
                                                conversion-rate))
                           (utils/prettify-crypto-balance
                            (or (clj->js token-symbol) "")
-                           (money/fiat->crypto input-amount
+                           (money/fiat->crypto input-value
                                                conversion-rate)
                            conversion-rate))
        :hint-component  [quo/network-tags
@@ -420,7 +413,7 @@
        :left-action          :dot
        :delete-key?          true
        :on-press             (fn [c]
-                               (let [new-text      (str input-amount c)
+                               (let [new-text      (str input-value c)
                                      max-decimals  (if crypto-currency? crypto-decimals 2)
                                      regex-pattern (str "^\\d*\\.?\\d{0," max-decimals "}$")
                                      regex         (re-pattern regex-pattern)]
