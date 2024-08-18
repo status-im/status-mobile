@@ -191,19 +191,12 @@
                                                       current-crypto-limit
                                                       current-fiat-limit)
         input-value                                (controlled-input/input-value input-state)
-        valid-input?                                (not (or (string/blank? input-value)
-                                                             (<= (controlled-input/numeric-value
-                                                                  input-state)
-                                                                 0)
-                                                             (> (controlled-input/numeric-value
-                                                                 input-state)
-                                                                current-limit)))
-        input-num-value                             (controlled-input/numeric-value input-state)
+
+        valid-input?                                (not (or (controlled-input/empty-value? input-state)
+                                                             (controlled-input/input-error input-state)))
         confirm-disabled?                           (or (nil? route)
                                                         (empty? route)
-                                                        (string/blank? input-value)
-                                                        (<= input-num-value 0)
-                                                        (> input-num-value current-limit))
+                                                        (not valid-input?))
         amount-in-crypto                            (if crypto-currency?
                                                       input-value
                                                       (number/remove-trailing-zeroes
@@ -344,9 +337,8 @@
                           :title    (i18n/label
                                      :t/send-limit
                                      {:limit (if crypto-currency?
-                                               (utils/make-limit-label-crypto current-limit token-symbol)
-                                               (utils/make-limit-label-fiat current-limit
-                                                                            currency-symbol))})
+                                               (utils/prettify-crypto-balance token-symbol (money/bignumber current-limit) conversion-rate)
+                                               (utils/prettify-balance currency-symbol (money/bignumber current-limit)))})
                           :status   (when (controlled-input/input-error input-state) :error)}]}]
      [routes/view
       {:token                                     token-by-symbol

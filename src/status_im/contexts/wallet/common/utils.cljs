@@ -320,18 +320,6 @@
     (let [counter (count address)]
       (str (subs address 0 6) "\u2026" (subs address (- counter 3) counter)))))
 
-(defn make-limit-label-crypto
-  [amount currency]
-  (str amount
-       " "
-       (some-> currency
-               name
-               string/upper-case)))
-
-(defn make-limit-label-fiat
-  [amount currency-symbol]
-  (str currency-symbol amount))
-
 (defn get-account-name-error
   [s existing-account-names]
   (cond
