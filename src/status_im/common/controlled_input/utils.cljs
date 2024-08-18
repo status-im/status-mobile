@@ -1,6 +1,8 @@
 (ns status-im.common.controlled-input.utils
   (:require
-    [clojure.string :as string]))
+   [clojure.string :as string]
+   [status-im.contexts.wallet.common.utils :as wallet-utils]
+   [utils.money :as money]))
 
 (def init-state
   {:value       ""
@@ -32,13 +34,13 @@
   [state]
   (:lower-limit state))
 
-(defn upper-limit-exceeded?
+(defn- upper-limit-exceeded?
   [state]
   (and
    (upper-limit state)
    (> (numeric-value state) (upper-limit state))))
 
-(defn lower-limit-exceeded?
+(defn- lower-limit-exceeded?
   [state]
   (and
    (lower-limit state)
@@ -130,3 +132,29 @@
 (defn empty-value?
   [state]
   (string/blank? (:value state)))
+
+(defn- fiat->crypto
+  [value conversion-rate]
+  (-> value
+      (money/fiat->crypto conversion-rate)
+      (wallet-utils/cut-crypto-decimals-to-fit-usd-cents conversion-rate)))
+
+(defn- crypto->fiat
+  [value conversion-rate]
+  (-> value
+      (money/crypto->fiat conversion-rate)
+      (wallet-utils/cut-fiat-balance-to-two-decimals)))
+
+(defn ->crypto
+  [state conversion-rate]
+  (-> state
+      (set-input-value (fiat->crypto (input-value state) conversion-rate))
+      (set-upper-limit (fiat->crypto (upper-limit state) conversion-rate))
+      (set-lower-limit (fiat->crypto (lower-limit state) conversion-rate))))
+
+(defn ->fiat
+  [state conversion-rate]
+  (-> state
+      (set-input-value (crypto->fiat (input-value state) conversion-rate))
+      (set-upper-limit (crypto->fiat (upper-limit state) conversion-rate))
+      (set-lower-limit (crypto->fiat (lower-limit state) conversion-rate))))

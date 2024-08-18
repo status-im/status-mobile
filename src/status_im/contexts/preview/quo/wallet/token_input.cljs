@@ -43,21 +43,9 @@
             [input-state set-input-state]    (rn/use-state controlled-input/init-state)
             input-amount                     (controlled-input/input-value input-state)
             swap-between-fiat-and-crypto     (fn []
-                                               (set-input-state
-                                                (fn [input-state]
-                                                  (controlled-input/set-input-value
-                                                   input-state
-                                                   (let [new-value
-                                                         (if-not crypto?
-                                                           (utils/cut-crypto-decimals-to-fit-usd-cents
-                                                            conversion-rate
-                                                            (money/fiat->crypto input-amount
-                                                                                conversion-rate))
-                                                           (utils/cut-fiat-balance-to-two-decimals
-                                                            (money/crypto->fiat input-amount
-                                                                                conversion-rate)))]
-                                                     (number/remove-trailing-zeroes
-                                                      new-value))))))
+                                               (if crypto?
+                                                 (set-input-state #(controlled-input/->crypto % conversion-rate))
+                                                 (set-input-state #(controlled-input/->fiat % conversion-rate))))
             converted-value                  (if crypto?
                                                (utils/prettify-balance currency
                                                                        (money/crypto->fiat

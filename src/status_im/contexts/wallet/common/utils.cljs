@@ -85,7 +85,7 @@
                                       (calc-max-crypto-decimals cent-value))})))
 
 (defn cut-crypto-decimals-to-fit-usd-cents
-  [token-price-in-usd token-units]
+  [token-units token-price-in-usd]
   (let [{:keys [zero-value? usd-cent-value standardized-decimals-count]}
         (analyze-token-amount-for-price token-price-in-usd token-units)]
     (cond
@@ -96,7 +96,7 @@
 
 (defn prettify-crypto-balance
   [token-symbol crypto-balance conversion-rate]
-  (str (cut-crypto-decimals-to-fit-usd-cents conversion-rate crypto-balance)
+  (str (cut-crypto-decimals-to-fit-usd-cents crypto-balance conversion-rate)
        " "
        (string/upper-case token-symbol)))
 

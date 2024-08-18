@@ -198,12 +198,6 @@
                                                              (> (controlled-input/numeric-value
                                                                  input-state)
                                                                 current-limit)))
-        #_(tap> {:in `send
-               :token-balance (money/to-string token-balance)
-               :available-balance (money/to-string available-balance)
-               :curent-limit current-limit
-               :available-limit available-limit
-               :valid-input? valid-input?})
         input-num-value                             (controlled-input/numeric-value input-state)
         confirm-disabled?                           (or (nil? route)
                                                         (empty? route)
@@ -289,27 +283,12 @@
                                                         :valid-input?       valid-input?
                                                         :bounce-duration-ms bounce-duration-ms
                                                         :token              token}))
-        swap-currency                               (fn [to-crypto? value]
-                                                      (if to-crypto?
-                                                        (utils/cut-crypto-decimals-to-fit-usd-cents
-                                                         conversion-rate
-                                                         (money/fiat->crypto value conversion-rate))
-                                                        (utils/cut-fiat-balance-to-two-decimals
-                                                         (money/crypto->fiat value
-                                                                             conversion-rate))))
         swap-between-fiat-and-crypto                (fn []
-                                                      (let [new-crypto-currency? (not crypto-currency?)]
-                                                        (set-just-toggled-mode? true)
-                                                        (set-crypto-currency new-crypto-currency?)
-                                                        (set-input-state
-                                                         (fn [input-state]
-                                                           (controlled-input/set-input-value
-                                                            input-state
-                                                            (let [new-value (swap-currency
-                                                                             new-crypto-currency?
-                                                                             input-value)]
-                                                              (number/remove-trailing-zeroes
-                                                               new-value)))))))]
+                                                      (set-just-toggled-mode? true)
+                                                      (if crypto-currency?
+                                                        (set-input-state #(controlled-input/->fiat % conversion-rate))
+                                                        (set-input-state #(controlled-input/->crypto % conversion-rate)))
+                                                      (set-crypto-currency (not crypto-currency?)))]
     (rn/use-mount
      (fn []
        (let [dismiss-keyboard-fn   #(when (= % "active") (rn/dismiss-keyboard!))
