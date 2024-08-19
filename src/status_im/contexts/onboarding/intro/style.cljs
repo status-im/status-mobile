@@ -13,9 +13,10 @@
    :align-self     :flex-start})
 
 (def terms-privacy-container
-  {:gap                8
+  {:flex-direction     :row
    :padding-horizontal 20
-   :padding-vertical   8})
+   :padding-vertical   8
+   :gap                8})
 
 (def plain-text
   {:color colors/white-opa-70})

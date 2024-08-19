@@ -21,8 +21,7 @@
        :actions              :two-vertical-actions
        :description          :top
        :description-top-text [rn/view
-                              {:style          style/terms-privacy-container
-                               :flex-direction :row}
+                              {:style style/terms-privacy-container}
                               [rn/view
                                {:accessibility-label :terms-privacy-checkbox-container}
                                [quo/selectors
@@ -30,32 +29,31 @@
                                  :blur?     true
                                  :checked?  terms-accepted?
                                  :on-change #(set-terms-accepted? not)}]]
-                              [rn/view {:style {:flex 1}}
-                               [rn/view {:style style/text-container}
-                                [quo/text
-                                 {:style style/plain-text
-                                  :size  :paragraph-2}
-                                 (str (i18n/label :t/accept-status-tos-prefix) " ")]
-                                [quo/text
-                                 {:on-press #(rf/dispatch [:show-bottom-sheet
-                                                           {:content terms/terms-of-use
-                                                            :shell?  true}])
-                                  :style    style/highlighted-text
-                                  :size     :paragraph-2
-                                  :weight   :medium}
-                                 (i18n/label :t/terms-of-service)]
-                                [quo/text
-                                 {:style style/plain-text
-                                  :size  :paragraph-2}
-                                 " & "]
-                                [quo/text
-                                 {:on-press #(rf/dispatch [:show-bottom-sheet
-                                                           {:content privacy/privacy-statement
-                                                            :shell?  true}])
-                                  :style    style/highlighted-text
-                                  :size     :paragraph-2
-                                  :weight   :medium}
-                                 (i18n/label :t/intro-privacy-statement)]]]]
+                              [rn/view {:style style/text-container}
+                               [quo/text
+                                {:style style/plain-text
+                                 :size  :paragraph-2}
+                                (str (i18n/label :t/accept-status-tos-prefix) " ")]
+                               [quo/text
+                                {:on-press #(rf/dispatch [:show-bottom-sheet
+                                                          {:content terms/terms-of-use
+                                                           :shell?  true}])
+                                 :style    style/highlighted-text
+                                 :size     :paragraph-2
+                                 :weight   :medium}
+                                (i18n/label :t/terms-of-service)]
+                               [quo/text
+                                {:style style/plain-text
+                                 :size  :paragraph-2}
+                                " " (i18n/label :t/and) " "]
+                               [quo/text
+                                {:on-press #(rf/dispatch [:show-bottom-sheet
+                                                          {:content privacy/privacy-statement
+                                                           :shell?  true}])
+                                 :style    style/highlighted-text
+                                 :size     :paragraph-2
+                                 :weight   :medium}
+                                (i18n/label :t/intro-privacy-statement)]]]
        :button-one-label     (i18n/label :t/sync-or-recover-profile)
        :button-one-props     {:type                :dark-grey
                               :disabled?           (not terms-accepted?)
