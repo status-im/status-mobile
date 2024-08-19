@@ -21,7 +21,8 @@
     [utils.i18n :as i18n]
     [utils.money :as money]
     [utils.number :as number]
-    [utils.re-frame :as rf]))
+    [utils.re-frame :as rf]
+    [quo.components.record-audio.record-audio.buttons.send-button :as send-button]))
 
 (defn- estimated-fees
   [{:keys [loading-routes? fees amount]}]
@@ -153,9 +154,8 @@
         bottom                                      (safe-area/get-bottom)
         [crypto-currency? set-crypto-currency]      (rn/use-state initial-crypto-currency?)
         on-navigate-back                            on-navigate-back
-        [input-state set-input-state]               (rn/use-state controlled-input/init-state)
+
         [just-toggled-mode? set-just-toggled-mode?] (rn/use-state false)
-        clear-input!                                #(set-input-state controlled-input/delete-all)
         handle-on-confirm                           (fn [amount]
                                                       (rf/dispatch [:wallet/set-token-amount-to-send
                                                                     {:amount   amount
@@ -171,27 +171,24 @@
          :as               token-by-symbol}         (rf/sub [:wallet/token-by-symbol
                                                              (str token-symbol)
                                                              enabled-from-chain-ids])
-        currency-symbol                             (rf/sub [:profile/currency-symbol])
         currency                                    (rf/sub [:profile/currency])
         conversion-rate                             (-> token
                                                         :market-values-per-currency
                                                         currency
                                                         :price)
+        [input-state set-input-state]               (rn/use-state (-> controlled-input/init-state
+                                                                      (controlled-input/set-upper-limit (utils/cut-crypto-decimals-to-fit-usd-cents
+                                                                                                         (or default-limit-crypto token-balance)
+                                                                                                         conversion-rate))))
+        clear-input!                                #(set-input-state controlled-input/delete-all)
+        currency-symbol                             (rf/sub [:profile/currency-symbol])
+        
         loading-routes?                             (rf/sub
                                                      [:wallet/wallet-send-loading-suggested-routes?])
         route                                       (rf/sub [:wallet/wallet-send-route])
         on-confirm                                  (or default-on-confirm handle-on-confirm)
         crypto-decimals                             (or token-decimals default-crypto-decimals)
-        current-crypto-limit                        (or default-limit-crypto
-                                                        (utils/get-standard-crypto-format
-                                                         token
-                                                         token-balance))
-        current-fiat-limit                          (.toFixed (* token-balance conversion-rate) 2)
-        current-limit                               (if crypto-currency?
-                                                      current-crypto-limit
-                                                      current-fiat-limit)
         input-value                                (controlled-input/input-value input-state)
-
         valid-input?                                (not (or (controlled-input/empty-value? input-state)
                                                              (controlled-input/input-error input-state)))
         confirm-disabled?                           (or (nil? route)
@@ -248,8 +245,7 @@
                                                                     receiver-selected-network))
                                                                  receiver-networks))
         input-error                                 (controlled-input/input-error input-state)
-        limit-insufficient?                         (> (controlled-input/numeric-value input-state)
-                                                       current-limit)
+        limit-insufficient?                         (controlled-input/upper-limit-exceeded? input-state)
         should-try-again?                           (and (not limit-insufficient?) no-routes-found?)
         current-address                             (rf/sub [:wallet/current-viewing-account-address])
         owned-eth-token                             (rf/sub [:wallet/token-by-symbol
@@ -262,7 +258,7 @@
                                                      (if (= token-symbol
                                                             (string/upper-case
                                                              constants/mainnet-short-name))
-                                                       (= current-limit input-value)
+                                                       (money/equal-to (controlled-input/numeric-value input-state) (controlled-input/upper-limit input-state))
                                                        (money/equal-to (:total-balance
                                                                         owned-eth-token)
                                                                        0)))
@@ -288,10 +284,10 @@
              app-keyboard-listener (.addEventListener rn/app-state "change" dismiss-keyboard-fn)]
          #(.remove app-keyboard-listener))))
     (hot-reload/use-safe-unmount on-navigate-back)
-    (rn/use-effect
-     (fn []
-       (set-input-state #(controlled-input/set-upper-limit % current-limit)))
-     [current-limit])
+    #_(rn/use-effect
+       (fn []
+         #_(set-input-state #(controlled-input/set-upper-limit % current-limit)))
+       [current-limit])
     (rn/use-effect
      (fn []
        (when input-error (debounce/clear-all))
@@ -337,8 +333,8 @@
                           :title    (i18n/label
                                      :t/send-limit
                                      {:limit (if crypto-currency?
-                                               (utils/prettify-crypto-balance token-symbol (money/bignumber current-limit) conversion-rate)
-                                               (utils/prettify-balance currency-symbol (money/bignumber current-limit)))})
+                                               (utils/prettify-crypto-balance token-symbol (money/bignumber (controlled-input/upper-limit input-state)) conversion-rate)
+                                               (utils/prettify-balance currency-symbol (money/bignumber (controlled-input/upper-limit input-state))))})
                           :status   (when (controlled-input/input-error input-state) :error)}]}]
      [routes/view
       {:token                                     token-by-symbol
