@@ -21,8 +21,7 @@
        :actions              :two-vertical-actions
        :description          :top
        :description-top-text [rn/view
-                              {:style          style/terms-privacy-container
-                               :flex-direction :row}
+                              {:style style/terms-privacy-container}
                               [rn/view
                                {:accessibility-label :terms-privacy-checkbox-container}
                                [quo/selectors
@@ -30,7 +29,7 @@
                                  :blur?     true
                                  :checked?  terms-accepted?
                                  :on-change #(set-terms-accepted? not)}]]
-                              [rn/view {:style {:flex 1}}
+                              [rn/view {:style style/text-aligner}
                                [rn/view {:style style/text-container}
                                 [quo/text
                                  {:style style/plain-text
@@ -47,7 +46,7 @@
                                 [quo/text
                                  {:style style/plain-text
                                   :size  :paragraph-2}
-                                 " & "]
+                                 " " (i18n/label :t/and) " "]
                                 [quo/text
                                  {:on-press #(rf/dispatch [:show-bottom-sheet
                                                            {:content (fn [] [privacy/privacy-statement])
