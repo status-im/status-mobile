@@ -1,0 +1,9 @@
+{
+    "_comment": "THIS SHOULD NOT BE EDITED BY HAND.",
+    "_comment": "Instead use: scripts/update-status-go.sh <rev>",
+    "owner": "status-im",
+    "repo": "status-go",
+    "version": "fix/crash-sending-collectibles",
+    "commit-sha1": "07b381754329dff2f39c58f95f3af84012173388",
+    "src-sha256": "1wbr0za3b2j9ldv7c8ahsym6h3wxl62wgvsd58nvyv3qcrk8m59b"
+}

@@ -1,0 +1,54 @@
+Last updated: 2023-09-22
+
+Who we are
+
+Status is developing a set of open source projects that use peer-to-peer technologies to help people transact securely, communicate freely, and organise with confidence. Anyone participating in these projects helps to build technology and tools that empowers people to advance their own sovereign communities.
+
+Whenever “Status” or “we” or “us” or any similar variation, are used in these terms, we’re referring to Status Research & Development GmbH, a Swiss company with its registered office at Baarerstrasse 10, Zug, Switzerland, and includes its “representatives”, which means Status’ affiliates, directors, officers, employees, agents and any other representatives of Status. For the purposes of these terms, “representatives” also includes Status core contributors without prejudice to the other legal categories mentioned.
+
+Status does not provide any services, such as financial services, to users of Status Software or any third party. Status is not an intermediary, agent, advisor, or custodian, and does not owe you any fiduciary duty.
+
+
+Status Software
+
+At Status, we strive to develop open source software that can serve as a secure communication tool that helps to uphold human rights. Status Software is specifically designed to facilitate the free flow of information, protect the right to private, secure communications and promote the sovereignty of individuals.
+
+Status Software is composed of a secure messaging tool, a crypto wallet, and a Web 3 browser integrated together. The software developed by Status in this regard is simply called “Status Software” and you can find more details about its development on Status’ GitHub page.
+
+
+Our role in your privacy
+
+This Privacy Statement applies to you as a user of Status Software.
+
+Under the relevant data protection legislation, we would be under certain obligations if we process any personal data when you use Status Software. Personal data means all information by which a person can be directly or indirectly identified, in line with the definitions of the General Data Protection Regulation (GDPR), the Swiss Federal Act on Data Protection of June 19, 1992 (DPA) (as amended from time to time) and its ordinances, and other relevant legislation on the protection of personal data. When we refer to privacy legislation in this Privacy Statement, we mean GDPR and all such relevant legislation.
+
+However, since we do not collect or process any of your personal data when you use Status Software, we have decided to inform you of the following instead:
+
+- Ethereum is a public blockchain:
+Ethereum is the community-run technology powering the cryptocurrency ether (ETH) and thousands of decentralized applications (DApps). Status Software provides a mobile portal and streamlined access to Ethereum’s growing ecosystem of decentralized applications.
+
+The Ethereum public network is accessible to anyone in the world with an internet connection. Anyone can read or create transactions on a public blockchain and validate the transactions being executed. Therefore, information you share on the Ethereum blockchain is public, whether or not you use Status Software.
+
+You will also be able to create (and join) open and public communities on Status Software that are accessible to other users. We note that content in these open and public communities will be accessible to all other users of Status Software. Nonetheless, all content will still be protected by the same end-to-end encryption utilised in Status Software.
+
+Ethereum Name Service (ENS) allows Ethereum addresses to be replaced by custom text-based names. Anyone can register a stateofus.eth username by staking the required Status Network Tokens (SNT) from within the profile tab on Status Software. When you register an ENS name with a given wallet address, that address becomes associated with the username, reducing the privacy of that account.
+
+- Offering secure, private messaging:
+When generating an account, a randomisation process is started on your own device that generates a key pair. Status does not have visibility of or access to your private keys. You will then be given display name options to choose from (derived from this key pair). Your display name will only be shared if you choose to share it by chatting with Status or other users.
+
+Within Status Software, you can create a list of trusted contacts based on the chat keys you choose to trust. Your trusted contacts are also stored locally on your own device. This means that Status has no access to your contact list and does not collect or process any personal data in this respect.
+
+On Status Software, you can exchange messages with other users, including photos and audio messages. Only the recipient of a message can decrypt the message by opening it on their own device. This means that Status can never access any user messages in private chats.
+
+Messaging on Status Software uses an open source, peer-to-peer protocol with end-to-end encryption and metadata suppression, to protect your messages from third parties (including Status). End-to-end encryption means that only the sender and recipient of a message can read its contents, and no one else. This protocol, known as Waku, relies on a distributed network of nodes instead of a centralised server which means that there is no central party or server from which messages can be intercepted, modified or blocked. Learn more about Waku and how it works on Waku’s website.
+
+- A quick bite on cookies:
+We do not set any cookies for the use of Status Software. However, the Web 3.0 browser embedded within Status Software technically supports the use of cookies set by third party websites. Status is not responsible for nor is it able to influence whether such cookies are set by such third party websites and you should consult the relevant privacy policies of such third party websites.
+
+
+Changes to Status Privacy Statement
+It is unlikely that this Privacy Statement will change because we do not intend to collect or process your personal data, ever. That said, we reserve the right to modify or replace any part of this Privacy Statement at any time and in our sole discretion.
+
+If you have any questions about the Status Software Privacy Statement, please contact us at legal@status.im or through the appropriate means of communication indicated on Status’ website.
+
+This document is CC-BY-SA.
