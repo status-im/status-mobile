@@ -3,11 +3,11 @@
     [quo.core :as quo]
     [react-native.core :as rn]
     [react-native.safe-area :as safe-area]
+    [status-im.common.privacy.view :as privacy]
+    [status-im.common.terms.view :as terms]
     [status-im.contexts.onboarding.common.background.view :as background]
     [status-im.contexts.onboarding.common.overlay.view :as overlay]
     [status-im.contexts.onboarding.intro.style :as style]
-    [status-im.contexts.onboarding.privacy.view :as privacy]
-    [status-im.contexts.onboarding.terms.view :as terms]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 

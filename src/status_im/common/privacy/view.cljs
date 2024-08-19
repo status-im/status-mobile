@@ -1,4 +1,4 @@
-(ns status-im.contexts.onboarding.privacy.view
+(ns status-im.common.privacy.view
   (:require-macros [legacy.status-im.utils.slurp :refer [slurp]])
   (:require [quo.core :as quo]
             [react-native.gesture :as gesture]))
