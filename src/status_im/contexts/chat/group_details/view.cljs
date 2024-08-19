@@ -58,6 +58,9 @@
         {:keys [admins] :as group} (rf/sub [:chats/chat-by-id chat-id])
         current-pk                 (rf/sub [:multiaccount/public-key])
         admin?                     (get admins current-pk)]
+    (rn/use-mount (fn []
+                    (rf/dispatch [:group/clear-added-participants])
+                    (rf/dispatch [:group/clear-removed-members])))
     [rn/view {:flex 1 :margin-top 20}
      [rn/touchable-opacity
       {:on-press            #(rf/dispatch [:navigate-back])
@@ -174,11 +177,8 @@
                           :icon                :i/add-user
                           :label               (i18n/label (if admin? :t/manage-members :t/add-members))
                           :counter-value       (count contacts)
-                          :on-press            (fn []
-                                                 (rf/dispatch [:group/clear-added-participants])
-                                                 (rf/dispatch [:group/clear-removed-members])
-                                                 (rf/dispatch [:open-modal :group-add-manage-members
-                                                               chat-id]))}]}]
+                          :on-press            #(rf/dispatch [:open-modal :group-add-manage-members
+                                                              chat-id])}]}]
      [rn/section-list
       {:key-fn                         :title
        :sticky-section-headers-enabled false
