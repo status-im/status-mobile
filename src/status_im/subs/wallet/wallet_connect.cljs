@@ -41,12 +41,7 @@
  :<- [:wallet-connect/current-request]
  :<- [:wallet-connect/sessions]
  (fn [[request sessions]]
-   (let [dapp-url (get-in request [:event :verifyContext :verified :origin])]
-     (->> sessions
-          (filter (fn [session]
-                    (= (utils.string/remove-trailing-slash dapp-url)
-                       (utils.string/remove-trailing-slash (get session :url)))))
-          (first)))))
+   (wallet-connect-core/get-current-request-dapp request sessions)))
 
 (rf/reg-sub
  :wallet-connect/sessions-for-current-account

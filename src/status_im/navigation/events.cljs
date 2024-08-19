@@ -1,11 +1,14 @@
 (ns status-im.navigation.events
   (:require
+    [clojure.string :as string]
     [re-frame.core :as re-frame]
+    [react-native.core :as react]
     [status-im.contexts.shell.jump-to.events :as shell.events]
     [status-im.contexts.shell.jump-to.state :as shell.state]
     [status-im.contexts.shell.jump-to.utils :as shell.utils]
     [status-im.feature-flags :as ff]
-    [utils.re-frame :as rf]))
+    [utils.re-frame :as rf]
+    [utils.url :as url]))
 
 (defn- all-screens-params
   [db view screen-params]
@@ -142,3 +145,9 @@
   {:fx [[:effects.share/open config]]})
 
 (rf/reg-event-fx :open-share open-share)
+
+(rf/reg-fx
+ :open-url
+ (fn [url]
+   (when (not (string/blank? url))
+     (.openURL ^js react/linking (url/normalize-url url)))))
