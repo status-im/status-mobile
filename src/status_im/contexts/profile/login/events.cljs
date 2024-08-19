@@ -251,5 +251,6 @@
               config/enable-alert-banner?)
      {:fx [[:dispatch
             [:alert-banners/add
-             {:type :alert
-              :text (i18n/label :t/testnet-mode-enabled)}]]]})))
+             {:type     :alert
+              :text     (i18n/label :t/testnet-mode-enabled)
+              :on-press #(rf/dispatch [:wallet/show-disable-testnet-mode-confirmation])}]]]})))

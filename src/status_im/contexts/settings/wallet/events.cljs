@@ -2,7 +2,9 @@
   (:require
     [clojure.string :as string]
     [native-module.core :as native-module]
+    [react-native.platform :as platform]
     [status-im.contexts.settings.wallet.data-store :as data-store]
+    [status-im.contexts.settings.wallet.network-settings.testnet-mode.view :as testnet]
     [taoensso.timbre :as log]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]
@@ -292,3 +294,15 @@
 
 (rf/reg-event-fx :wallet/make-partially-operable-accounts-fully-operable
  make-partially-operable-accounts-fully-operable)
+
+(rf/reg-event-fx :wallet/show-disable-testnet-mode-confirmation
+ (fn [{:keys [db]} _]
+   (let [theme (:theme db)
+         blur? (and (not platform/android?) (= theme :dark))]
+     {:fx [[:dispatch
+            [:show-bottom-sheet
+             {:content (fn [] [testnet/view
+                               {:enable? false
+                                :blur?   blur?}])
+              :shell?  blur?
+              :theme   (when-not platform/android? theme)}]]]})))

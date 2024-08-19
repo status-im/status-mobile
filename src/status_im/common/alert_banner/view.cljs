@@ -19,8 +19,10 @@
     :text-color       (colors/resolve-color :danger theme)}})
 
 (defn- banner
-  [{:keys [text type second-banner? colors-map]}]
-  [rn/view (when second-banner? {:style style/second-banner-wrapper})
+  [{:keys [text type second-banner? colors-map on-press]}]
+  [rn/pressable
+   {:on-press #(when on-press (on-press))
+    :style    (when second-banner? style/second-banner-wrapper)}
    [hole-view/hole-view
     {:style (style/hole-view (get-in colors-map [type :background-color]))
      :holes (if second-banner?
