@@ -38,7 +38,7 @@
                                  (str (i18n/label :t/accept-status-tos-prefix) " ")]
                                 [quo/text
                                  {:on-press #(rf/dispatch [:show-bottom-sheet
-                                                           {:content (fn [] [terms/terms-of-use])
+                                                           {:content terms/terms-of-use
                                                             :shell?  true}])
                                   :style    style/highlighted-text
                                   :size     :paragraph-2
@@ -50,7 +50,7 @@
                                  " & "]
                                 [quo/text
                                  {:on-press #(rf/dispatch [:show-bottom-sheet
-                                                           {:content (fn [] [privacy/privacy-statement])
+                                                           {:content privacy/privacy-statement
                                                             :shell?  true}])
                                   :style    style/highlighted-text
                                   :size     :paragraph-2
@@ -68,7 +68,7 @@
                                                        :screen/onboarding.sync-or-recover-profile]))}
        :button-two-label     (i18n/label :t/create-profile)
        :button-two-props     {:accessibility-label :new-to-status-button
-                              :disabled? (not terms-accepted?)
+                              :disabled?           (not terms-accepted?)
                               :on-press
                               (fn []
                                 (when-let [blur-show-fn @overlay/blur-show-fn-atom]
