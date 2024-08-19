@@ -296,11 +296,13 @@
  make-partially-operable-accounts-fully-operable)
 
 (rf/reg-event-fx :wallet/show-disable-testnet-mode-confirmation
- (fn [_]
-   {:fx [[:dispatch
-          [:show-bottom-sheet
-           {:content (fn [] [testnet/view
-                             {:enable? false
-                              :blur?   (not platform/android?)}])
-            :shell?  (not platform/android?)
-            :theme   (when-not platform/android? :dark)}]]]}))
+ (fn [{:keys [db]} _]
+   (let [theme (:theme db)
+         blur? (and (not platform/android?) (= theme :dark))]
+     {:fx [[:dispatch
+            [:show-bottom-sheet
+             {:content (fn [] [testnet/view
+                               {:enable? false
+                                :blur?   blur?}])
+              :shell?  blur?
+              :theme   (when-not platform/android? theme)}]]]})))
