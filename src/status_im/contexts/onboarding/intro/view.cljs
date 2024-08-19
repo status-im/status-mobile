@@ -68,7 +68,7 @@
                                                        :screen/onboarding.sync-or-recover-profile]))}
        :button-two-label     (i18n/label :t/create-profile)
        :button-two-props     {:accessibility-label :new-to-status-button
-                              :disabled?           (not terms-accepted?)
+                              :disabled? (not terms-accepted?)
                               :on-press
                               (fn []
                                 (when-let [blur-show-fn @overlay/blur-show-fn-atom]
