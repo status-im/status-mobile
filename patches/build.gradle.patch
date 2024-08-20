@@ -1,0 +1,9 @@
+--- /tmp/tmp-status-mobile-215e516b2/tmp.iCGv95VzNg/build.gradle	2024-08-20 19:39:24.147334000 +0530
++++ ./node_modules/@react-native-community/blur/android/build.gradle	2024-08-20 19:39:27.720555147 +0530
+@@ -138,5 +138,5 @@
+   implementation "com.facebook.react:react-native:+"
+   // From node_modules
+ 
+-  implementation 'com.github.Dimezis:BlurView:version-2.0.3'
++  implementation 'com.github.Dimezis:BlurView:version-2.0.4'
+ }
