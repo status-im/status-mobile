@@ -5,6 +5,7 @@
     legacy.status-im.subs.root
     [promesa.core :as promesa]
     [status-im.common.emoji-picker.utils :as emoji-picker.utils]
+    [status-im.common.json-rpc.events :as rpc-events]
     [status-im.constants :as constants]
     [status-im.contexts.wallet.data-store :as data-store]
     status-im.events
@@ -26,7 +27,7 @@
 (deftest accounts-get-accounts-contract-test
   (h/test-async :contract/accounts-get-accounts
     (fn []
-      (promesa/let [result (contract-utils/call-rpc "accounts_getAccounts")]
+      (promesa/let [result (rpc-events/call-async "accounts_getAccounts" false)]
         (assert-accounts-get-accounts result)))))
 
 (defn check-emoji-is-updated
@@ -38,12 +39,13 @@
   (h/test-async :contract/accounts-save-account
     (fn []
       (promesa/let [test-emoji      (emoji-picker.utils/random-emoji)
-                    account         (contract-utils/call-rpc "accounts_getAccounts")
+                    account         (rpc-events/call-async "accounts_getAccounts" false)
                     default-account (contract-utils/get-default-account account)
-                    _ (contract-utils/call-rpc
+                    _ (rpc-events/call-async
                        "accounts_saveAccount"
+                       false
                        (data-store/<-account (merge default-account {:emoji test-emoji})))
-                    accounts        (contract-utils/call-rpc "accounts_getAccounts")]
+                    accounts        (rpc-events/call-async "accounts_getAccounts" false)]
         (check-emoji-is-updated test-emoji accounts)))))
 
 (defn assert-ethereum-chains
@@ -59,7 +61,7 @@
 (deftest accounts-get-chains-contract-test
   (h/test-async :contract/wallet_get-ethereum-chains
     (fn []
-      (promesa/let [response (contract-utils/call-rpc "wallet_getEthereumChains")]
+      (promesa/let [response (rpc-events/call-async "wallet_getEthereumChains" false)]
         (assert-ethereum-chains response)))))
 
 (defn assert-wallet-tokens
@@ -81,10 +83,11 @@
 (deftest wallet-get-walet-token-test
   (h/test-async :wallet/get-wallet-token
     (fn []
-      (promesa/let [accounts        (contract-utils/call-rpc "accounts_getAccounts")
+      (promesa/let [accounts        (rpc-events/call-async "accounts_getAccounts" false)
                     default-address (contract-utils/get-default-address accounts)
-                    response        (contract-utils/call-rpc
+                    response        (rpc-events/call-async
                                      "wallet_getWalletToken"
+                                     false
                                      [default-address])]
         (assert-wallet-tokens response)))))
 
@@ -100,10 +103,11 @@
     (fn []
       (promesa/let [input       "test.eth"
                     chain-id    constants/ethereum-mainnet-chain-id
-                    ens-address (contract-utils/call-rpc "ens_addressOf" chain-id input)
-                    response    (contract-utils/call-rpc "wallet_getAddressDetails"
-                                                         chain-id
-                                                         ens-address)]
+                    ens-address (rpc-events/call-async "ens_addressOf" false chain-id input)
+                    response    (rpc-events/call-async "wallet_getAddressDetails"
+                                                       false
+                                                       chain-id
+                                                       ens-address)]
         (assert-address-details response)))))
 
 (defn assert-search-ens
@@ -129,6 +133,6 @@
             (promesa/all
              (map (fn [{:keys [ens-name chain-id expected-result]}]
                     (promesa/let [ens-address
-                                  (contract-utils/call-rpc "ens_addressOf" chain-id ens-name)]
+                                  (rpc-events/call-async "ens_addressOf" false chain-id ens-name)]
                       (assert-search-ens expected-result ens-address)))
                   test-cases)))))))

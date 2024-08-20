@@ -5,6 +5,7 @@
     legacy.status-im.subs.root
     [native-module.core :as native-module]
     [promesa.core :as promesa]
+    [status-im.common.json-rpc.events :as rpc-events]
     status-im.events
     status-im.navigation.core
     status-im.subs.root
@@ -26,10 +27,11 @@
     (fn []
       (promesa/let [sha3-pwd-hash   (native-module/sha3 integration-constants/password)
                     derivation-path [integration-constants/derivation-path]
-                    accounts        (contract-utils/call-rpc "accounts_getAccounts")
+                    accounts        (rpc-events/call-async "accounts_getAccounts" false)
                     default-address (contract-utils/get-default-address accounts)
-                    response        (contract-utils/call-rpc
+                    response        (rpc-events/call-async
                                      "wallet_getDerivedAddresses"
+                                     false
                                      sha3-pwd-hash
                                      default-address
                                      derivation-path)]
