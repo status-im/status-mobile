@@ -21,12 +21,14 @@
     :description                     (i18n/label :t/enable-notifications-sub-title)
     :description-accessibility-label :notifications-sub-title}])
 
-(defn- finish-onboarding []
+(defn- finish-onboarding
+  []
   (rf/dispatch [:init-root :shell-stack])
   (rf/dispatch [:profile/show-testnet-mode-banner-if-enabled])
   (rf/dispatch [:universal-links/process-stored-event]))
 
-(defn- enable-notifications-and-navigate []
+(defn- enable-notifications-and-navigate
+  []
   (shell.utils/change-selected-stack-id shell.constants/default-selected-stack true nil)
   (rf/dispatch [:request-permissions
                 {:permissions [:post-notifications]
@@ -35,7 +37,8 @@
   (rf/dispatch [:push-notifications/switch true])
   (finish-onboarding))
 
-(defn- skip-notifications-and-navigate []
+(defn- skip-notifications-and-navigate
+  []
   (shell.utils/change-selected-stack-id shell.constants/default-selected-stack true nil)
   (finish-onboarding))
 
