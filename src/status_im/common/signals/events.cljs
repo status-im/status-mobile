@@ -31,8 +31,8 @@
   (let [^js data     (.parse js/JSON event-str)
         ^js event-js (.-event data)
         type         (.-type data)]
-    (log/info "Signal received" {:type type})
-    (log/info "Signal received" {:payload event-str})
+    (log/debug "Signal received" {:type type})
+    (log/trace "Signal received" {:payload event-str})
     (case type
       "wallet"
       {:fx [[:dispatch [:wallet/signal-received event-js]]]}
