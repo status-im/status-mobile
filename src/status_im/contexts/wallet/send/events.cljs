@@ -731,8 +731,8 @@
                                                                :route         route
                                                                :token-address token-address
                                                                :token-id      (if collectible
-                                                                                (money/to-hex
-                                                                                 (js/parseInt token-id))
+                                                                                (utils.hex/number-to-hex
+                                                                                 token-id)
                                                                                 token-id)
                                                                :data          data
                                                                :eth-transfer? eth-transfer?})]
