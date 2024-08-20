@@ -518,8 +518,8 @@
 
 (rf/reg-event-fx
  :wallet/handle-suggested-routes
- (fn [_ data]
-   (if-let [{:keys [code details]} (-> data :ErrorResponse first)]
+ (fn [_ [data]]
+   (if-let [{:keys [code details]} (-> data :ErrorResponse)]
      (let [error-message (if (= code "0") "An error occurred" details)]
        (log/error "failed to get suggested routes (async)"
                   {:event :wallet/handle-suggested-routes
@@ -531,7 +531,6 @@
            candidates-fix  (comp ->old-route-paths
                                  remove-invalid-bonder-fees-routes)
            routes          (-> data
-                               (first)
                                (data-store/rpc->suggested-routes)
                                (update :best best-routes-fix)
                                (update :candidates candidates-fix))]

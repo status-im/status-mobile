@@ -3,7 +3,7 @@
     "_comment": "Instead use: scripts/update-status-go.sh <rev>",
     "owner": "status-im",
     "repo": "status-go",
-    "version": "fix/circuit-breaker-errors",
-    "commit-sha1": "1abe2dec4c87ff6b9ca34ad93322abd602ab0e83",
-    "src-sha256": "0y9csnfdmpnlb5a2imcyblzj2da02br55nqa16h9a8br4ym5q6iq"
+    "version": "release/0.182.x",
+    "commit-sha1": "90b3d0fdcc641917694dc665d44c59ae358aa363",
+    "src-sha256": "13pyik8wfaczjqwzp6zpw18yha5ryw38cw6jcw3mdizb21l11jy4"
 }
