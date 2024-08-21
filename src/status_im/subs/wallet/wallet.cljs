@@ -210,7 +210,7 @@
  :wallet/fully-operable-keypairs-list
  :<- [:wallet/keypairs-list]
  (fn [keypairs]
-   (filter #(= :fully (:lowest-operability %)) keypairs)))
+   (filter #(and (= :fully (:lowest-operability %)) (not-empty (:derived-from %))) keypairs)))
 
 (rf/reg-sub
  :wallet/keypair-names
