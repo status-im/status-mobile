@@ -1,21 +1,21 @@
 (ns quo.components.tags.context-tag.view
   (:require
-   [clojure.string :as string]
-   [quo.components.avatars.account-avatar.view :as account-avatar]
-   [quo.components.avatars.group-avatar.view :as group-avatar]
-   [quo.components.avatars.user-avatar.view :as user-avatar]
-   [quo.components.avatars.wallet-user-avatar.view :as wallet-user-avatar]
-   [quo.components.icon :as icons]
-   [quo.components.list-items.preview-list.view :as preview-list]
-   [quo.components.markdown.text :as text]
-   [quo.components.tags.context-tag.schema :as component-schema]
-   [quo.components.tags.context-tag.style :as style]
-   [quo.components.utilities.token.view :as token]
-   [quo.foundations.colors :as colors]
-   [quo.theme :as quo.theme]
-   [react-native.core :as rn]
-   [react-native.fast-image :as fast-image]
-   [schema.core :as schema]))
+    [clojure.string :as string]
+    [quo.components.avatars.account-avatar.view :as account-avatar]
+    [quo.components.avatars.group-avatar.view :as group-avatar]
+    [quo.components.avatars.user-avatar.view :as user-avatar]
+    [quo.components.avatars.wallet-user-avatar.view :as wallet-user-avatar]
+    [quo.components.icon :as icons]
+    [quo.components.list-items.preview-list.view :as preview-list]
+    [quo.components.markdown.text :as text]
+    [quo.components.tags.context-tag.schema :as component-schema]
+    [quo.components.tags.context-tag.style :as style]
+    [quo.components.utilities.token.view :as token]
+    [quo.foundations.colors :as colors]
+    [quo.theme :as quo.theme]
+    [react-native.core :as rn]
+    [react-native.fast-image :as fast-image]
+    [schema.core :as schema]))
 
 (defn- tag-skeleton
   [{:keys [size text theme shrinkable? gray-text?]
@@ -168,9 +168,10 @@
             :gray-text?  gray-text?}
            (if nft-placeholder?
              [icons/icon :i/nft {:size 20}]
-             [rn/image {:style    (style/rounded-logo size)
-                        :source   collectible
-                        :on-error #(set-image-error true)}])])
+             [rn/image
+              {:style    (style/rounded-logo size)
+               :source   collectible
+               :on-error #(set-image-error true)}])])
 
         :account
         [tag-skeleton {:theme theme :size size :text account-name}

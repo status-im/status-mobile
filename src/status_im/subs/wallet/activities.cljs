@@ -1,6 +1,5 @@
 (ns status-im.subs.wallet.activities
   (:require
-    [clojure.string :as string]
     [native-module.core :as native-module]
     [quo.foundations.resources :as quo.resources]
     [quo.foundations.resources]
