@@ -60,8 +60,12 @@
     shrinkable? (assoc :flex-shrink 1)))
 
 (defn text
-  [theme]
-  {:color (colors/theme-colors colors/neutral-100 colors/white theme)})
+  ([theme]
+   (text theme false))
+  ([theme gray-text?]
+   {:color (if gray-text?
+             colors/neutral-50
+             (colors/theme-colors colors/neutral-100 colors/white theme))}))
 
 (defn token-logo
   [size]
