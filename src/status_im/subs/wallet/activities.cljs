@@ -33,12 +33,6 @@
       (native-module/hex-to-number)
       (str)))
 
-(defn- normalize-nft-name
-  [token-id nft-name]
-  (if (and (some? token-id) (string/blank? nft-name))
-    "Unknown"
-    nft-name))
-
 (defn- get-token-amount
   [token amount]
   (let [token-type (:token-type token)]
@@ -77,7 +71,7 @@
 (defn- process-activity-by-type
   [chain-id->network-name
    {:keys [activity-type activity-status timestamp sender recipient token-in token-out
-           chain-id-in chain-id-out nft-name]
+           chain-id-in chain-id-out]
     :as   data}]
   (let [network-name (chain-id->network-name (or chain-id-in chain-id-out))
         token-id     (some-> (or token-in token-out)
@@ -91,8 +85,7 @@
                             :network-name  network-name
                             :token-id      token-id
                             :status        (constants/wallet-activity-status->name activity-status)
-                            :network-logo  (quo.resources/get-network network-name)
-                            :nft-name      (normalize-nft-name token-id nft-name))]
+                            :network-logo  (quo.resources/get-network network-name))]
     (condp = activity-type
       constants/wallet-activity-type-send
       (process-send-activity activity)
