@@ -50,14 +50,14 @@ androidx.core:core:1.9.0
 androidx.cursoradapter:cursoradapter:1.0.0
 androidx.customview:customview:1.0.0
 androidx.databinding:databinding-common:3.2.1
-androidx.databinding:databinding-common:3.5.3
+androidx.databinding:databinding-common:3.5.4
 androidx.databinding:databinding-common:4.1.0
 androidx.databinding:databinding-common:7.0.4
 androidx.databinding:databinding-common:7.2.1
 androidx.databinding:databinding-common:7.3.1
 androidx.databinding:databinding-common:8.1.1
 androidx.databinding:databinding-compiler-common:3.2.1
-androidx.databinding:databinding-compiler-common:3.5.3
+androidx.databinding:databinding-compiler-common:3.5.4
 androidx.databinding:databinding-compiler-common:4.1.0
 androidx.databinding:databinding-compiler-common:7.0.4
 androidx.databinding:databinding-compiler-common:7.2.1
@@ -151,7 +151,6 @@ commons-codec:commons-codec:1.11
 commons-io:commons-io:2.4
 commons-logging:commons-logging:1.1.1
 commons-logging:commons-logging:1.2
-com.adarshr:gradle-test-logger-plugin:2.0.0
 com.adobe.xmp:xmpcore:6.1.11
 com.afollestad.material-dialogs:commons:0.9.6.0
 com.afollestad.material-dialogs:core:0.9.6.0
@@ -160,7 +159,7 @@ com.almworks.sqlite4java:sqlite4java:1.0.392
 com.android.databinding:baseLibrary:1.0-rc5
 com.android.databinding:baseLibrary:3.0.1
 com.android.databinding:baseLibrary:3.2.1
-com.android.databinding:baseLibrary:3.5.3
+com.android.databinding:baseLibrary:3.5.4
 com.android.databinding:baseLibrary:4.1.0
 com.android.databinding:baseLibrary:7.0.4
 com.android.databinding:baseLibrary:7.2.1
@@ -169,7 +168,7 @@ com.android.databinding:baseLibrary:8.1.1
 com.android.databinding:compilerCommon:1.0-rc5
 com.android.databinding:compilerCommon:3.0.1
 com.android.tools.analytics-library:crash:26.2.1
-com.android.tools.analytics-library:crash:26.5.3
+com.android.tools.analytics-library:crash:26.5.4
 com.android.tools.analytics-library:crash:27.1.0
 com.android.tools.analytics-library:crash:30.0.4
 com.android.tools.analytics-library:crash:30.2.1
@@ -177,7 +176,7 @@ com.android.tools.analytics-library:crash:30.3.1
 com.android.tools.analytics-library:crash:31.1.1
 com.android.tools.analytics-library:protos:26.0.1
 com.android.tools.analytics-library:protos:26.2.1
-com.android.tools.analytics-library:protos:26.5.3
+com.android.tools.analytics-library:protos:26.5.4
 com.android.tools.analytics-library:protos:27.1.0
 com.android.tools.analytics-library:protos:30.0.4
 com.android.tools.analytics-library:protos:30.2.1
@@ -185,7 +184,7 @@ com.android.tools.analytics-library:protos:30.3.1
 com.android.tools.analytics-library:protos:31.1.1
 com.android.tools.analytics-library:shared:26.0.1
 com.android.tools.analytics-library:shared:26.2.1
-com.android.tools.analytics-library:shared:26.5.3
+com.android.tools.analytics-library:shared:26.5.4
 com.android.tools.analytics-library:shared:27.1.0
 com.android.tools.analytics-library:shared:30.0.4
 com.android.tools.analytics-library:shared:30.2.1
@@ -193,7 +192,7 @@ com.android.tools.analytics-library:shared:30.3.1
 com.android.tools.analytics-library:shared:31.1.1
 com.android.tools.analytics-library:tracker:26.0.1
 com.android.tools.analytics-library:tracker:26.2.1
-com.android.tools.analytics-library:tracker:26.5.3
+com.android.tools.analytics-library:tracker:26.5.4
 com.android.tools.analytics-library:tracker:27.1.0
 com.android.tools.analytics-library:tracker:30.0.4
 com.android.tools.analytics-library:tracker:30.2.1
@@ -222,14 +221,14 @@ com.android.tools.build:aaptcompiler:7.3.1
 com.android.tools.build:aaptcompiler:8.1.1
 com.android.tools.build:apksig:3.0.1
 com.android.tools.build:apksig:3.2.1
-com.android.tools.build:apksig:3.5.3
+com.android.tools.build:apksig:3.5.4
 com.android.tools.build:apksig:4.1.0
 com.android.tools.build:apksig:7.0.4
 com.android.tools.build:apksig:7.2.1
 com.android.tools.build:apksig:7.3.1
 com.android.tools.build:apksig:8.1.1
 com.android.tools.build:apkzlib:3.2.1
-com.android.tools.build:apkzlib:3.5.3
+com.android.tools.build:apkzlib:3.5.4
 com.android.tools.build:apkzlib:4.1.0
 com.android.tools.build:apkzlib:7.0.4
 com.android.tools.build:apkzlib:7.2.1
@@ -239,7 +238,7 @@ com.android.tools.build:builder-model:1.3.1
 com.android.tools.build:builder-model:1.5.0
 com.android.tools.build:builder-model:3.0.1
 com.android.tools.build:builder-model:3.2.1
-com.android.tools.build:builder-model:3.5.3
+com.android.tools.build:builder-model:3.5.4
 com.android.tools.build:builder-model:4.1.0
 com.android.tools.build:builder-model:7.0.4
 com.android.tools.build:builder-model:7.2.1
@@ -249,7 +248,7 @@ com.android.tools.build:builder-test-api:1.3.1
 com.android.tools.build:builder-test-api:1.5.0
 com.android.tools.build:builder-test-api:3.0.1
 com.android.tools.build:builder-test-api:3.2.1
-com.android.tools.build:builder-test-api:3.5.3
+com.android.tools.build:builder-test-api:3.5.4
 com.android.tools.build:builder-test-api:4.1.0
 com.android.tools.build:builder-test-api:7.0.4
 com.android.tools.build:builder-test-api:7.2.1
@@ -259,7 +258,7 @@ com.android.tools.build:builder:1.3.1
 com.android.tools.build:builder:1.5.0
 com.android.tools.build:builder:3.0.1
 com.android.tools.build:builder:3.2.1
-com.android.tools.build:builder:3.5.3
+com.android.tools.build:builder:3.5.4
 com.android.tools.build:builder:4.1.0
 com.android.tools.build:builder:7.0.4
 com.android.tools.build:builder:7.2.1
@@ -274,7 +273,7 @@ com.android.tools.build:bundletool:1.9.0
 com.android.tools.build:bundletool:1.14.0
 com.android.tools.build:gradle-api:3.0.1
 com.android.tools.build:gradle-api:3.2.1
-com.android.tools.build:gradle-api:3.5.3
+com.android.tools.build:gradle-api:3.5.4
 com.android.tools.build:gradle-api:4.1.0
 com.android.tools.build:gradle-api:7.0.4
 com.android.tools.build:gradle-api:7.2.1
@@ -288,7 +287,7 @@ com.android.tools.build:gradle:1.3.1
 com.android.tools.build:gradle:1.5.0
 com.android.tools.build:gradle:3.0.1
 com.android.tools.build:gradle:3.2.1
-com.android.tools.build:gradle:3.5.3
+com.android.tools.build:gradle:3.5.4
 com.android.tools.build:gradle:4.1.0
 com.android.tools.build:gradle:7.0.4
 com.android.tools.build:gradle:7.2.1
@@ -297,7 +296,7 @@ com.android.tools.build:manifest-merger:24.3.1
 com.android.tools.build:manifest-merger:24.5.0
 com.android.tools.build:manifest-merger:26.0.1
 com.android.tools.build:manifest-merger:26.2.1
-com.android.tools.build:manifest-merger:26.5.3
+com.android.tools.build:manifest-merger:26.5.4
 com.android.tools.build:manifest-merger:27.1.0
 com.android.tools.build:manifest-merger:30.0.4
 com.android.tools.build:manifest-merger:30.2.1
@@ -309,7 +308,7 @@ com.android.tools.ddms:ddmlib:24.3.1
 com.android.tools.ddms:ddmlib:24.5.0
 com.android.tools.ddms:ddmlib:26.0.1
 com.android.tools.ddms:ddmlib:26.2.1
-com.android.tools.ddms:ddmlib:26.5.3
+com.android.tools.ddms:ddmlib:26.5.4
 com.android.tools.ddms:ddmlib:27.1.0
 com.android.tools.ddms:ddmlib:30.0.4
 com.android.tools.ddms:ddmlib:30.2.1
@@ -324,7 +323,7 @@ com.android.tools.layoutlib:layoutlib-api:24.3.1
 com.android.tools.layoutlib:layoutlib-api:24.5.0
 com.android.tools.layoutlib:layoutlib-api:26.0.1
 com.android.tools.layoutlib:layoutlib-api:26.2.1
-com.android.tools.layoutlib:layoutlib-api:26.5.3
+com.android.tools.layoutlib:layoutlib-api:26.5.4
 com.android.tools.layoutlib:layoutlib-api:27.1.0
 com.android.tools.layoutlib:layoutlib-api:30.0.4
 com.android.tools.layoutlib:layoutlib-api:30.2.1
@@ -337,7 +336,7 @@ com.android.tools.lint:lint-checks:24.3.1
 com.android.tools.lint:lint-checks:24.5.0
 com.android.tools.lint:lint-checks:26.0.1
 com.android.tools.lint:lint-gradle-api:26.2.1
-com.android.tools.lint:lint-gradle-api:26.5.3
+com.android.tools.lint:lint-gradle-api:26.5.4
 com.android.tools.lint:lint-gradle-api:27.1.0
 com.android.tools.lint:lint-model:27.1.0
 com.android.tools.lint:lint-model:30.0.4
@@ -378,7 +377,7 @@ com.android.tools:annotations:24.3.1
 com.android.tools:annotations:24.5.0
 com.android.tools:annotations:26.0.1
 com.android.tools:annotations:26.2.1
-com.android.tools:annotations:26.5.3
+com.android.tools:annotations:26.5.4
 com.android.tools:annotations:27.1.0
 com.android.tools:annotations:30.0.4
 com.android.tools:annotations:30.2.1
@@ -388,7 +387,7 @@ com.android.tools:common:24.3.1
 com.android.tools:common:24.5.0
 com.android.tools:common:26.0.1
 com.android.tools:common:26.2.1
-com.android.tools:common:26.5.3
+com.android.tools:common:26.5.4
 com.android.tools:common:27.1.0
 com.android.tools:common:30.0.4
 com.android.tools:common:30.2.1
@@ -398,7 +397,7 @@ com.android.tools:dvlib:24.3.1
 com.android.tools:dvlib:24.5.0
 com.android.tools:dvlib:26.0.1
 com.android.tools:dvlib:26.2.1
-com.android.tools:dvlib:26.5.3
+com.android.tools:dvlib:26.5.4
 com.android.tools:dvlib:27.1.0
 com.android.tools:dvlib:30.0.4
 com.android.tools:dvlib:30.2.1
@@ -406,7 +405,7 @@ com.android.tools:dvlib:30.3.1
 com.android.tools:dvlib:31.1.1
 com.android.tools:repository:26.0.1
 com.android.tools:repository:26.2.1
-com.android.tools:repository:26.5.3
+com.android.tools:repository:26.5.4
 com.android.tools:repository:27.1.0
 com.android.tools:repository:30.0.4
 com.android.tools:repository:30.2.1
@@ -416,7 +415,7 @@ com.android.tools:sdklib:24.3.1
 com.android.tools:sdklib:24.5.0
 com.android.tools:sdklib:26.0.1
 com.android.tools:sdklib:26.2.1
-com.android.tools:sdklib:26.5.3
+com.android.tools:sdklib:26.5.4
 com.android.tools:sdklib:27.1.0
 com.android.tools:sdklib:30.0.4
 com.android.tools:sdklib:30.2.1
@@ -426,7 +425,7 @@ com.android.tools:sdk-common:24.3.1
 com.android.tools:sdk-common:24.5.0
 com.android.tools:sdk-common:26.0.1
 com.android.tools:sdk-common:26.2.1
-com.android.tools:sdk-common:26.5.3
+com.android.tools:sdk-common:26.5.4
 com.android.tools:sdk-common:27.1.0
 com.android.tools:sdk-common:30.0.4
 com.android.tools:sdk-common:30.2.1
@@ -496,7 +495,7 @@ com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.11.1
 com.fasterxml.jackson.module:jackson-module-jaxb-annotations:2.11.1
 com.fasterxml.jackson.module:jackson-module-kotlin:2.11.1
 com.fasterxml.woodstox:woodstox-core:6.2.1
-com.github.Dimezis:BlurView:version-2.0.3
+com.github.Dimezis:BlurView:version-2.0.4
 com.github.bumptech.glide:annotations:4.12.0
 com.github.bumptech.glide:compiler:4.12.0
 com.github.bumptech.glide:disklrucache:4.12.0
@@ -734,7 +733,6 @@ org.eclipse.jdt.core.compiler:ecj:4.4.2
 org.eclipse.jdt.core.compiler:ecj:4.6.1
 org.eclipse.jgit:org.eclipse.jgit:5.13.0.202109080827-r
 org.eclipse.jgit:org.eclipse.jgit:5.13.1.202206130422-r
-org.fusesource.jansi:jansi:1.18
 org.glassfish.jaxb:jaxb-core:2.2.11
 org.glassfish.jaxb:jaxb-runtime:2.2.11
 org.glassfish.jaxb:jaxb-runtime:2.3.1
