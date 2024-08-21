@@ -74,6 +74,12 @@
   [{:keys [db]} root-id]
   {:set-root [root-id (:theme db)]})
 
+(rf/defn update-theme-and-init-root
+  {:events [:update-theme-and-init-root]}
+  [_ root-id]
+  {:fx [[:dispatch [:theme/switch {:view-id root-id}]]
+        [:dispatch [:init-root root-id]]]})
+
 (rf/defn change-tab
   {:events [:navigate-change-tab]}
   [{:keys [db]} stack-id]

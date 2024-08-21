@@ -45,7 +45,7 @@
           :colors [colors/neutral-100-opa-0 colors/neutral-100-opa-80]}])
       [quo/button
        {:on-press            (fn []
-                               (rf/dispatch [:init-root :shell-stack])
+                               (rf/dispatch [:update-theme-and-init-root :shell-stack])
                                (rf/dispatch [:profile/show-testnet-mode-banner-if-enabled])
                                (rf/dispatch [:universal-links/process-stored-event]))
         :type                :primary

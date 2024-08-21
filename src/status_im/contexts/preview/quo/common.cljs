@@ -25,4 +25,4 @@
                      (rf/dispatch [:navigate-back])
                      (do
                        (rf/dispatch [:theme/switch {:theme :dark}])
-                       (rf/dispatch [:init-root root])))}]))
+                       (rf/dispatch [:update-theme-and-init-root root])))}]))
