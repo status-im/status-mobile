@@ -1,4 +1,6 @@
-Last updated: 2023-09-22
+Status Terms of Use
+
+Last updated: 14 August 2024
 
 1. Introduction
 
@@ -81,20 +83,15 @@ Status Software also includes a Web 3 browser through which you may access and i
 
 3. Privacy
 
-Status uses an open source, peer-to-peer protocol with end-to-end encryption and metadata suppression, which by design, means that Status (and any third party) is unable to and does not collect, store, own, control or have any visibility or means of access to your identity, Wallet, browsing information, any user private keys, Digital Assets, messages, content, history of interactions, transactions, user accounts or any other user information.
+Status uses an open source, peer-to-peer protocol with end-to-end encryption and metadata suppression, which by design, means that Status (and any third party) is unable to and does not collect, store, own, control or have any visibility or means of access to your identity, Wallet, browsing information, any user private keys, Digital Assets, messages, content, history of interactions, user accounts or any other user information.
 
-Therefore, Status does not (and cannot) monetise any users’ data or content, such as messages or browser information and Status does have any interest in doing so.
+Therefore, Status does not (and cannot) monetise any users’ data or content, such as messages or browser information and Status does not have any interest in doing so.
 
-When generating an account on Status Software, you will have the option to utilise your phone number and certain social media handles such as your Twitter account, to generate an account. While this information is not shared with Status and Status has no access to it, third party service providers may receive it to authenticate your ownership of such accounts. Using your phone number or social media handle, such as on X (formerly known as Twitter), will allow you to find your contacts who are also using Status Software and it will help your contacts to find you. This will allow them to discover and potentially interact with you, if you accept their request to connect, so that you can start building up your network of contacts on Status Software. Please note that this is not required for you to access or utilise Status Software, and you can always choose to generate an account anonymously without utilising your phone number or social media handle.
-
-In addition, you may opt in to submit certain technical information (also referred to as telemetry) to assist Status with the development of the Status Software, particularly to measure message reliability and bandwidth usage. In any event this technical information is anonymised by Status Software and also protected by end-to-end encryption. We note that even anonymised data can be vulnerable to being potentially compromised, such as by correlation attacks. You should opt in to submit this technical information only if you are willing to accept these risks.
-
-You acknowledge that an inherent feature of Web 3 is its transparency, particularly in the context of blockchain networks. This means that your public key and wallet address will be visible to others when you engage in transactions on such networks and that third parties may be able to (and for the avoidance of doubt, not through the use of Status Software) connect your public key and wallet address to your identity and determine the Digital Assets you own in your Wallet. You should also be aware that entries on blockchain networks are practically immutable, which means that they generally cannot be deleted or modified by anyone, including Status, even if the transaction turns out to have been made in error or otherwise.
+Status however processes a limited amount of user data to ensure the technical operation of the Status Software, enhance its functionality, and improve the user experience. For more details on this limited process of user data, please refer to our Privacy Policy.
 
 If you use third party services offered through Status Software, your privacy may not be protected and you will be subject to the privacy terms and conditions of such third parties. Please refer to our full terms regarding third party services below.
 
 
-Learn more about how we protect your data on Status Software by reading the Status Privacy Statement and relevant security page on the Status website.
 
 
 4. Using third party services and interacting with Web 3
@@ -103,9 +100,9 @@ When using Status Software, you may access or use third party products, services
 
 Your interactions with Web 3 could include many aspects, such as interacting with smart contracts that reside on blockchain networks, for example to swap Digital Assets or use (crypto) bridges, or deploying your own smart contracts through Status Community Spaces. You may also interact with and participate in peer-to-peer networks which could vary in their level of decentralisation, ranging from more centralised networks controlled by a single party to networks governed by decentralised communities.
 
-You acknowledge when you use Third Party Services or interact with Web 3, that Status does not control or operate any Third Party Service or Web 3. These are products, services or tools that are respectively provided by others or may be operating autonomously, and not by Status.
+When you use Third Party Services or interact with Web 3, you acknowledge that Status does not control or operate any Third Party Service or Web 3. These products, services, or tools are either controlled, operated, owned, or licensed by the third party providing them, or they may operate autonomously, independently of Status or any other party.
 
-Please note that when you use Third Party Services or interact with Web 3 that there may be applicable terms and conditions, including privacy policies which govern your use of Third Party Services or interaction with Web 3. In case of interactions with Web 3, such as decentralised exchanges, there may be in some cases no applicable terms and conditions, and the relevant software code will govern your interactions.
+Please note that using Third Party Services or interacting with Web 3 might be subject to specific terms and conditions, including privacy policies, set by the third-party providers. These providers might exclude and disclaim all liability regarding their Third Party Services and are not responsible or liable for your use of Status Software. It is crucial that you read and understand the applicable terms and conditions, including privacy policies, of these Third Party Services to be aware of the implications of their use. In case of interactions with Web 3, such as decentralised exchanges, there might be in some cases no applicable terms and conditions, and the relevant software code will govern your interactions.
 
 Please also note that bridges are used to move tokens from one blockchain network to another. When you use a bridge, for example in the course of sending or bridging tokens, Status utilises an algorithm that aims to determine the lowest service fee which the user may incur at the time of a bridge’s use. This algorithm relies on information extracted directly from the relevant blockchain networks. Status is not responsible for the accuracy and correctness of any information that these algorithms may extract from such networks
 

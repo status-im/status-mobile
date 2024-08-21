@@ -1,8 +1,10 @@
 (ns status-im.common.metrics-confirmation-modal.view
   (:require
     [quo.core :as quo]
+    [quo.theme]
     [react-native.core :as rn]
     [status-im.common.metrics-confirmation-modal.style :as style]
+    [status-im.common.privacy.view :as privacy]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
@@ -50,6 +52,15 @@
   (toggle-metrics false)
   (hide-bottom-sheet))
 
+(defn- on-privacy-policy-press
+  []
+  (rf/dispatch
+   [:show-bottom-sheet
+    {:content (fn []
+                [quo.theme/provider :dark
+                 [privacy/privacy-statement]])
+     :shell?  true}]))
+
 (defn view
   [{:keys [settings?]}]
   (rn/use-mount #(dismiss-keyboard))
@@ -64,7 +75,17 @@
     [bullet-points
      {:title  (i18n/label :t/what-we-wont-receive)
       :points not-receive-points}]
-    (when-not settings?
+    (if settings?
+      [quo/text
+       {:size  :paragraph-2
+        :style style/info-text}
+       (i18n/label :t/usage-data-shared-from-all-profiles)
+       (i18n/label :t/more-details-in-privacy-policy-1)
+       [quo/text
+        {:size     :paragraph-2
+         :weight   :bold
+         :on-press on-privacy-policy-press}
+        (i18n/label :t/more-details-in-privacy-policy-2)]]
       [quo/text
        {:size  :paragraph-2
         :style style/info-text}

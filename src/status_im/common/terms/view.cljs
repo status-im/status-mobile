@@ -1,4 +1,4 @@
-(ns status-im.contexts.onboarding.terms.view
+(ns status-im.common.terms.view
   (:require-macros [legacy.status-im.utils.slurp :refer [slurp]])
   (:require [quo.core :as quo]
             [react-native.gesture :as gesture]))
