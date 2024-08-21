@@ -193,6 +193,7 @@
      {:header [page-nav]
       :keyboard-should-persist-taps :handled
       :content-avoid-keyboard? true
+      :automatically-adjust-keyboard-insets true
       :blur-options
       {:blur-amount        34
        :blur-radius        20
