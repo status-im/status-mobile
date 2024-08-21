@@ -1,5 +1,6 @@
 (ns status-im.contexts.wallet.sheets.account-options.view
-  (:require [oops.core :as oops]
+  (:require [clojure.string :as string]
+            [oops.core :as oops]
             [quo.core :as quo]
             [quo.foundations.colors :as colors]
             quo.theme
@@ -33,6 +34,7 @@
   [{:keys [theme show-account-selector? options-height]}]
   (let [{:keys [name color emoji address watch-only?
                 default-account?]} (rf/sub [:wallet/current-viewing-account])
+        {:keys [derived-from]}     (rf/sub [:wallet/current-viewing-account-keypair])
         network-preference-details (rf/sub [:wallet/network-preference-details])
         multichain-address         (utils/get-multichain-address
                                     network-preference-details
@@ -89,7 +91,7 @@
                                  #(rf/dispatch [:wallet/share-account
                                                 {:title share-title :content multichain-address}])
                                  600))}
-        (when-not default-account?
+        (when-not (or default-account? (string/blank? derived-from))
           {:add-divider?        (not show-account-selector?)
            :icon                :i/delete
            :accessibility-label :remove-account
