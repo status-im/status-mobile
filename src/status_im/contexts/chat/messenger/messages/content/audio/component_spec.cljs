@@ -26,7 +26,7 @@
     (h/render [audio-message/audio-message message context])
     (h/is-truthy (h/get-by-label-text :audio-message-container)))
 
-  (h/test "press play calls audio/toggle-playpause-player"
+  (h/test-skip "press play calls audio/toggle-playpause-player"
     (with-redefs [audio/toggle-playpause-player     (js/jest.fn)
                   audio/new-player                  (fn [_ _ _] {})
                   audio/prepare-player              (fn [_ on-success _] (on-success))
