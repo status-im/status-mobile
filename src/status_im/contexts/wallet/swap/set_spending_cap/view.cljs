@@ -4,13 +4,13 @@
     [quo.foundations.resources :as resources]
     [quo.theme :as quo.theme]
     [react-native.core :as rn]
+    [status-im.common.events-helper :as events-helper]
     [status-im.common.floating-button-page.view :as floating-button-page]
     [status-im.common.standard-authentication.core :as standard-auth]
     [status-im.contexts.wallet.common.utils.external-links :as external-links]
     [status-im.contexts.wallet.swap.set-spending-cap.style :as style]
     [utils.address :as address-utils]
     [utils.i18n :as i18n]
-    [utils.navigation :as navigation]
     [utils.re-frame :as rf]))
 
 (defn- swap-title
@@ -209,7 +209,7 @@
       {:footer-container-padding 0
        :header                   [quo/page-nav
                                   {:icon-name           :i/close
-                                   :on-press            navigation/navigate-back
+                                   :on-press            events-helper/navigate-back
                                    :margin-top          8
                                    :background          :blur
                                    :accessibility-label :top-bar}]

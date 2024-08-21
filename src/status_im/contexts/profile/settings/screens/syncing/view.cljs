@@ -2,8 +2,8 @@
   (:require
     [quo.core :as quo]
     [status-im.common.data-confirmation-sheet.view :as data-confirmation-sheet]
+    [status-im.common.events-helper :as events-helper]
     [utils.i18n :as i18n]
-    [utils.navigation :as navigation]
     [utils.re-frame :as rf]))
 
 (defn- open-paired-devices-list
@@ -26,7 +26,7 @@
      [quo/page-nav
       {:background :blur
        :icon-name  :i/arrow-left
-       :on-press   navigation/navigate-back}]
+       :on-press   events-helper/navigate-back}]
      [quo/page-top {:title (i18n/label :t/syncing)}]
      [quo/category
       {:data      [{:title             (i18n/label :t/sync-and-backup)

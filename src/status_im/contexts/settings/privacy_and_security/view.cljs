@@ -5,11 +5,11 @@
     [react-native.core :as rn]
     [react-native.platform :as platform]
     [react-native.safe-area :as safe-area]
+    [status-im.common.events-helper :as events-helper]
     [status-im.contexts.settings.privacy-and-security.profile-picture.view :as profile-picture.view]
     [status-im.contexts.settings.privacy-and-security.style :as style]
     [status-im.feature-flags :as ff]
     [utils.i18n :as i18n]
-    [utils.navigation :as navigation]
     [utils.re-frame :as rf]))
 
 (defn- setting-preview-privacy
@@ -68,7 +68,7 @@
       {:key        :header
        :background :blur
        :icon-name  :i/arrow-left
-       :on-press   navigation/navigate-back}]
+       :on-press   events-helper/navigate-back}]
      [quo/standard-title
       {:title               (i18n/label :t/privacy-and-security)
        :container-style     style/title-container
