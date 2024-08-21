@@ -24,7 +24,6 @@ export ANDROID_ABI_SPLIT=false
 export ANDROID_ABI_INCLUDE="x86"
 # Local source override, see below
 export STATUS_GO_SRC_OVERRIDE="$HOME/my/source/status-go"
-export STATUS_GO_IPFS_GATEWAY_URL="https://ipfs.status.im/"
 ```
 You can see the defaults in code:
 - [`nix/status-go/default.nix`](./status-go/default.nix)
