@@ -21,8 +21,7 @@
     [utils.i18n :as i18n]
     [utils.money :as money]
     [utils.number :as number]
-    [utils.re-frame :as rf]
-    [quo.components.record-audio.record-audio.buttons.send-button :as send-button]))
+    [utils.re-frame :as rf]))
 
 (defn- estimated-fees
   [{:keys [loading-routes? fees amount]}]
@@ -182,7 +181,7 @@
                                                                                                          conversion-rate))))
         clear-input!                                #(set-input-state controlled-input/delete-all)
         currency-symbol                             (rf/sub [:profile/currency-symbol])
-        
+
         loading-routes?                             (rf/sub
                                                      [:wallet/wallet-send-loading-suggested-routes?])
         route                                       (rf/sub [:wallet/wallet-send-route])
@@ -284,10 +283,6 @@
              app-keyboard-listener (.addEventListener rn/app-state "change" dismiss-keyboard-fn)]
          #(.remove app-keyboard-listener))))
     (hot-reload/use-safe-unmount on-navigate-back)
-    #_(rn/use-effect
-       (fn []
-         #_(set-input-state #(controlled-input/set-upper-limit % current-limit)))
-       [current-limit])
     (rn/use-effect
      (fn []
        (when input-error (debounce/clear-all))
@@ -328,14 +323,14 @@
                            (money/fiat->crypto input-value
                                                conversion-rate)
                            conversion-rate))
-       :hint-component  [quo/network-tags
-                         {:networks (seq from-enabled-networks)
-                          :title    (i18n/label
-                                     :t/send-limit
-                                     {:limit (if crypto-currency?
-                                               (utils/prettify-crypto-balance token-symbol (money/bignumber (controlled-input/upper-limit input-state)) conversion-rate)
-                                               (utils/prettify-balance currency-symbol (money/bignumber (controlled-input/upper-limit input-state))))})
-                          :status   (when (controlled-input/input-error input-state) :error)}]}]
+       :hint-component [quo/network-tags
+                        {:networks (seq from-enabled-networks)
+                         :title    (i18n/label
+                                    :t/send-limit
+                                    {:limit (if crypto-currency?
+                                              (utils/prettify-crypto-balance token-symbol (controlled-input/upper-limit input-state) conversion-rate)
+                                              (utils/prettify-balance currency-symbol (controlled-input/upper-limit input-state)))})
+                         :status   (when (controlled-input/input-error input-state) :error)}]}]
      [routes/view
       {:token                                     token-by-symbol
        :send-amount-in-crypto                     amount-in-crypto
