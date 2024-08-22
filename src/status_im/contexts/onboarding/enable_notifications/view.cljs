@@ -4,7 +4,6 @@
     [react-native.core :as rn]
     [react-native.safe-area :as safe-area]
     [status-im.common.resources :as resources]
-    [status-im.constants :as constants]
     [status-im.contexts.onboarding.enable-notifications.style :as style]
     [status-im.contexts.shell.jump-to.constants :as shell.constants]
     [status-im.contexts.shell.jump-to.utils :as shell.utils]
@@ -23,13 +22,13 @@
 
 (defn- finish-onboarding
   []
+  (shell.utils/change-selected-stack-id shell.constants/default-selected-stack true nil)
   (rf/dispatch [:init-root :shell-stack])
   (rf/dispatch [:profile/show-testnet-mode-banner-if-enabled])
   (rf/dispatch [:universal-links/process-stored-event]))
 
-(defn- enable-notifications-and-navigate
+(defn- enable-notifications-and-finish-onboarding
   []
-  (shell.utils/change-selected-stack-id shell.constants/default-selected-stack true nil)
   (rf/dispatch [:request-permissions
                 {:permissions [:post-notifications]
                  :on-allowed  #(log/info "push notification permissions were allowed")
@@ -37,34 +36,24 @@
   (rf/dispatch [:push-notifications/switch true])
   (finish-onboarding))
 
-(defn- skip-notifications-and-navigate
-  []
-  (shell.utils/change-selected-stack-id shell.constants/default-selected-stack true nil)
-  (finish-onboarding))
-
 (defn enable-notification-buttons
   [{:keys [insets]}]
   (let [profile-color (rf/sub [:onboarding/customization-color])]
     [rn/view {:style (style/buttons insets)}
      [quo/button
-      {:on-press            enable-notifications-and-navigate
+      {:on-press            enable-notifications-and-finish-onboarding
        :type                :primary
        :icon-left           :i/notifications
        :accessibility-label :enable-notifications-button
        :customization-color profile-color}
       (i18n/label :t/intro-wizard-title6)]
      [quo/button
-      {:on-press            skip-notifications-and-navigate
+      {:on-press            finish-onboarding
        :accessibility-label :enable-notifications-later-button
        :type                :grey
        :background          :blur
        :container-style     {:margin-top 12}}
       (i18n/label :t/maybe-later)]]))
-
-(defn dispatch-visibility-status-update
-  [status-type]
-  (rf/dispatch
-   [:visibility-status-updates/delayed-visibility-status-update status-type]))
 
 (defn enable-notifications-simple
   []
@@ -76,10 +65,7 @@
 
 (defn view
   []
-  (let [insets                (safe-area/get-insets)
-        {:keys [status-type]} (rf/sub [:multiaccount/current-user-visibility-status])]
-    (when (nil? status-type)
-      (dispatch-visibility-status-update constants/visibility-status-automatic))
+  (let [insets (safe-area/get-insets)]
     [rn/view {:style (style/page-container insets)}
      [rn/view {:style style/page-heading}
       [quo/page-nav {:type :no-title :background :blur}]
