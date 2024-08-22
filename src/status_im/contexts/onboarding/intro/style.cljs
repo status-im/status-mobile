@@ -10,7 +10,7 @@
   {:flex           1
    :flex-direction :row
    :flex-wrap      :wrap
-   :align-self     :center})
+   :align-self     :flex-start})
 
 (def terms-privacy-container
   {:gap                8

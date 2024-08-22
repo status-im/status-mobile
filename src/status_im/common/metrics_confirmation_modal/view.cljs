@@ -1,6 +1,7 @@
 (ns status-im.common.metrics-confirmation-modal.view
   (:require
     [quo.core :as quo]
+    [quo.foundations.colors :as colors]
     [quo.theme]
     [react-native.core :as rn]
     [status-im.common.metrics-confirmation-modal.style :as style]
@@ -52,14 +53,36 @@
   (toggle-metrics false)
   (hide-bottom-sheet))
 
+(declare view)
+
 (defn- on-privacy-policy-press
-  []
+  [settings?]
   (rf/dispatch
    [:show-bottom-sheet
-    {:content (fn []
-                [quo.theme/provider :dark
-                 [privacy/privacy-statement]])
-     :shell?  true}]))
+    {:content  (fn []
+                 [quo.theme/provider :dark
+                  [privacy/privacy-statement]])
+     :on-close (fn []
+                 (rf/dispatch [:show-bottom-sheet
+                               {:content (fn []
+                                           [quo.theme/provider :dark
+                                            [view {:settings? settings?}]])
+                                :shell?  true}]))
+     :shell?   true}]))
+
+(defn- privacy-policy-text
+  [settings?]
+  [rn/view {:style style/privacy-policy}
+   [quo/text
+    [quo/text
+     {:style {:color colors/white-opa-50}
+      :size  :paragraph-2}
+     (i18n/label :t/more-details-in-privacy-policy-1)]
+    [quo/text
+     {:size     :paragraph-2
+      :weight   :bold
+      :on-press #(on-privacy-policy-press settings?)}
+     (i18n/label :t/more-details-in-privacy-policy-2)]]])
 
 (defn view
   [{:keys [settings?]}]
@@ -79,22 +102,18 @@
       [quo/text
        {:size  :paragraph-2
         :style style/info-text}
-       (i18n/label :t/usage-data-shared-from-all-profiles)
-       (i18n/label :t/more-details-in-privacy-policy-1)
-       [quo/text
-        {:size     :paragraph-2
-         :weight   :bold
-         :on-press on-privacy-policy-press}
-        (i18n/label :t/more-details-in-privacy-policy-2)]]
+       (i18n/label :t/usage-data-shared-from-all-profiles)]
       [quo/text
        {:size  :paragraph-2
         :style style/info-text}
+       (i18n/label :t/usage-data-shared-from-all-profiles)
        (i18n/label :t/sharing-usage-data-can-be-turned-off)])]
    [quo/bottom-actions
     {:actions          :two-actions
      :blur?            true
      :button-one-label (i18n/label :t/share-usage-data)
      :button-one-props {:on-press on-share-usage}
-     :button-two-label (i18n/label (if settings? :t/do-not-share :t/not-now))
+     :button-two-label (i18n/label :t/not-now)
      :button-two-props {:type     :grey
-                        :on-press on-do-not-share}}]])
+                        :on-press on-do-not-share}}]
+   [privacy-policy-text settings?]])
