@@ -2,11 +2,11 @@
   (:require [quo.core :as quo]
             [react-native.core :as rn]
             [react-native.safe-area :as safe-area]
+            [status-im.common.events-helper :as events-helper]
             [status-im.contexts.wallet.common.account-switcher.view :as account-switcher]
             [status-im.contexts.wallet.common.utils :as utils]
             [status-im.contexts.wallet.swap.setup-swap.style :as style]
             [utils.i18n :as i18n]
-            [utils.navigation :as navigation]
             [utils.re-frame :as rf]))
 
 (defn- data-item
@@ -65,7 +65,7 @@
                                            (set-pay-value #(subs % 0 (dec (count %)))))]
     [rn/view {:style style/container}
      [account-switcher/view
-      {:on-press      navigation/navigate-back
+      {:on-press      events-helper/navigate-back
        :icon-name     :i/arrow-left
        :margin-top    (safe-area/get-top)
        :switcher-type :select-account}]

@@ -3,14 +3,14 @@
     [quo.core :as quo]
     [react-native.core :as rn]
     [status-im.common.data-confirmation-sheet.style :as style]
+    [status-im.common.events-helper :as events-helper]
     [utils.i18n :as i18n]
-    [utils.navigation :as navigation]
     [utils.re-frame :as rf]))
 
 (defn on-choice-callback
   [syncing-on-mobile-network?]
   (rf/dispatch [:network/set-syncing-on-mobile-network syncing-on-mobile-network?])
-  (navigation/hide-bottom-sheet))
+  (events-helper/hide-bottom-sheet))
 
 (def on-wifi-only (partial on-choice-callback false))
 (def on-mobile-and-wifi (partial on-choice-callback true))
@@ -19,7 +19,7 @@
   []
   (let [settings-drawer?           (= (rf/sub [:view-id]) :screen/settings.syncing)
         syncing-on-mobile-network? (rf/sub [:profile/syncing-on-mobile-network?])]
-    (rn/use-mount navigation/dismiss-keyboard)
+    (rn/use-mount events-helper/dismiss-keyboard)
     [:<>
      [quo/text
       {:weight              :semi-bold

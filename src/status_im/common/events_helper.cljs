@@ -1,6 +1,6 @@
-(ns utils.navigation
-  "Prefer to declare in this namespace only reusable navigation functions that
-  aren't better suited in a particular bounded context."
+(ns status-im.common.events-helper
+  "Provides highly reusable dispatch functions to ensure consistency and avoid duplication in managing various events,
+  including navigation and other actions that affect application behavior."
   (:require [utils.re-frame :as rf]))
 
 (defn navigate-back

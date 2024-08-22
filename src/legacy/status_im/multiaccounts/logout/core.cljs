@@ -30,7 +30,7 @@
   [{:keys [db] :as cofx} {:keys [auth-method logout?]}]
   (let [key-uid (get-in db [:profile/profile :key-uid])]
     (rf/merge cofx
-              {:dispatch                               [:init-root :progress]
+              {:dispatch                               [:update-theme-and-init-root :progress]
                :effects.shell/reset-state              nil
                :hide-popover                           nil
                ::logout                                nil

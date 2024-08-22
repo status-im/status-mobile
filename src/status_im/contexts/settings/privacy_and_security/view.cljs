@@ -5,11 +5,12 @@
     [react-native.core :as rn]
     [react-native.platform :as platform]
     [react-native.safe-area :as safe-area]
+    [status-im.common.events-helper :as events-helper]
+    [status-im.common.metrics-confirmation-modal.view :as metrics-modal]
     [status-im.contexts.settings.privacy-and-security.profile-picture.view :as profile-picture.view]
     [status-im.contexts.settings.privacy-and-security.style :as style]
     [status-im.feature-flags :as ff]
     [utils.i18n :as i18n]
-    [utils.navigation :as navigation]
     [utils.re-frame :as rf]))
 
 (defn- setting-preview-privacy
@@ -23,6 +24,15 @@
                   :checked?            preview-privacy?
                   :id                  :preview-privacy
                   :customization-color customization-color}})
+
+(defn- on-share-usage-data-press
+  []
+  (rf/dispatch
+   [:show-bottom-sheet
+    {:content (fn []
+                [quo.theme/provider :dark
+                 [metrics-modal/view {:settings? true}]])
+     :shell?  true}]))
 
 (defn view
   []
@@ -68,7 +78,7 @@
       {:key        :header
        :background :blur
        :icon-name  :i/arrow-left
-       :on-press   navigation/navigate-back}]
+       :on-press   events-helper/navigate-back}]
      [quo/standard-title
       {:title               (i18n/label :t/privacy-and-security)
        :container-style     style/title-container
@@ -85,13 +95,13 @@
                       show-profile-pictures-to
                       open-show-profile-pictures-to-options))
                    (setting-preview-privacy preview-privacy? customization-color toggle-preview-privacy)
-                   {:title        (i18n/label :t/share-usage-data)
-                    :blur?        true
-                    :action       :selector
-                    :action-props {:on-change #(rf/dispatch
-                                                [:centralized-metrics/toggle-centralized-metrics
-                                                 (not centralized-metrics-enabled?)])
-                                   :customization-color customization-color
-                                   :checked? centralized-metrics-enabled?}}]
+                   {:title             (i18n/label :t/share-usage-data)
+                    :description       :text
+                    :description-props {:text (i18n/label :t/from-all-profiles-on-device)}
+                    :blur?             true
+                    :action            :selector
+                    :action-props      {:on-change           on-share-usage-data-press
+                                        :customization-color customization-color
+                                        :checked?            centralized-metrics-enabled?}}]
        :blur?     true
        :list-type :settings}]]))
