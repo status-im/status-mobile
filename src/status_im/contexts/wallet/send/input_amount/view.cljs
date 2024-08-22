@@ -166,8 +166,8 @@
          :as
          token}                                     (rf/sub [:wallet/wallet-send-token])
         send-from-locked-amounts                    (rf/sub [:wallet/wallet-send-from-locked-amounts])
-        {token-balance     :total-balance
-         :as               token-by-symbol}         (rf/sub [:wallet/token-by-symbol
+        {token-balance :total-balance
+         :as           token-by-symbol}             (rf/sub [:wallet/token-by-symbol
                                                              (str token-symbol)
                                                              enabled-from-chain-ids])
         currency                                    (rf/sub [:profile/currency])
@@ -175,10 +175,12 @@
                                                         :market-values-per-currency
                                                         currency
                                                         :price)
-        [input-state set-input-state]               (rn/use-state (-> controlled-input/init-state
-                                                                      (controlled-input/set-upper-limit (utils/cut-crypto-decimals-to-fit-usd-cents
-                                                                                                         (or default-limit-crypto token-balance)
-                                                                                                         conversion-rate))))
+        [input-state set-input-state]               (rn/use-state
+                                                     (-> controlled-input/init-state
+                                                         (controlled-input/set-upper-limit
+                                                          (utils/cut-crypto-decimals-to-fit-usd-cents
+                                                           (or default-limit-crypto token-balance)
+                                                           conversion-rate))))
         clear-input!                                #(set-input-state controlled-input/delete-all)
         currency-symbol                             (rf/sub [:profile/currency-symbol])
 
@@ -187,7 +189,7 @@
         route                                       (rf/sub [:wallet/wallet-send-route])
         on-confirm                                  (or default-on-confirm handle-on-confirm)
         crypto-decimals                             (or token-decimals default-crypto-decimals)
-        input-value                                (controlled-input/input-value input-state)
+        input-value                                 (controlled-input/input-value input-state)
         valid-input?                                (not (or (controlled-input/empty-value? input-state)
                                                              (controlled-input/input-error input-state)))
         confirm-disabled?                           (or (nil? route)
@@ -257,7 +259,9 @@
                                                      (if (= token-symbol
                                                             (string/upper-case
                                                              constants/mainnet-short-name))
-                                                       (money/equal-to (controlled-input/numeric-value input-state) (controlled-input/upper-limit input-state))
+                                                       (money/equal-to
+                                                        (controlled-input/numeric-value input-state)
+                                                        (controlled-input/upper-limit input-state))
                                                        (money/equal-to (:total-balance
                                                                         owned-eth-token)
                                                                        0)))
@@ -274,8 +278,10 @@
         swap-between-fiat-and-crypto                (fn []
                                                       (set-just-toggled-mode? true)
                                                       (if crypto-currency?
-                                                        (set-input-state #(controlled-input/->fiat % conversion-rate))
-                                                        (set-input-state #(controlled-input/->crypto % conversion-rate)))
+                                                        (set-input-state
+                                                         #(controlled-input/->fiat % conversion-rate))
+                                                        (set-input-state
+                                                         #(controlled-input/->crypto % conversion-rate)))
                                                       (set-crypto-currency (not crypto-currency?)))]
     (rn/use-mount
      (fn []
@@ -312,7 +318,7 @@
        :on-swap         swap-between-fiat-and-crypto
        :on-token-press  show-select-asset-sheet
        :error?          (controlled-input/input-error input-state)
-       :currency-symbol    (if crypto-currency? token-symbol fiat-currency)
+       :currency-symbol (if crypto-currency? token-symbol fiat-currency)
        :converted-value (if crypto-currency?
                           (utils/prettify-balance
                            currency-symbol
@@ -323,14 +329,19 @@
                            (money/fiat->crypto input-value
                                                conversion-rate)
                            conversion-rate))
-       :hint-component [quo/network-tags
-                        {:networks (seq from-enabled-networks)
-                         :title    (i18n/label
-                                    :t/send-limit
-                                    {:limit (if crypto-currency?
-                                              (utils/prettify-crypto-balance token-symbol (controlled-input/upper-limit input-state) conversion-rate)
-                                              (utils/prettify-balance currency-symbol (controlled-input/upper-limit input-state)))})
-                         :status   (when (controlled-input/input-error input-state) :error)}]}]
+       :hint-component  [quo/network-tags
+                         {:networks (seq from-enabled-networks)
+                          :title    (i18n/label
+                                     :t/send-limit
+                                     {:limit (if crypto-currency?
+                                               (utils/prettify-crypto-balance
+                                                token-symbol
+                                                (controlled-input/upper-limit input-state)
+                                                conversion-rate)
+                                               (utils/prettify-balance currency-symbol
+                                                                       (controlled-input/upper-limit
+                                                                        input-state)))})
+                          :status   (when (controlled-input/input-error input-state) :error)}]}]
      [routes/view
       {:token                                     token-by-symbol
        :send-amount-in-crypto                     amount-in-crypto

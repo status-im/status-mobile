@@ -1,8 +1,8 @@
 (ns status-im.common.controlled-input.utils
   (:require
-   [clojure.string :as string]
-   [status-im.contexts.wallet.common.utils :as wallet-utils]
-   [utils.money :as money]))
+    [clojure.string :as string]
+    [status-im.contexts.wallet.common.utils :as wallet-utils]
+    [utils.money :as money]))
 
 (def init-state
   {:value       ""

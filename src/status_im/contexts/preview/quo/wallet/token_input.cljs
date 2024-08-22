@@ -8,8 +8,7 @@
     [status-im.common.controlled-input.utils :as controlled-input]
     [status-im.contexts.preview.quo.preview :as preview]
     [status-im.contexts.wallet.common.utils :as utils]
-    [utils.money :as money]
-    [utils.number :as number]))
+    [utils.money :as money]))
 
 (def networks
   [{:source (resources/get-network :arbitrum)}
@@ -40,21 +39,27 @@
                              :error?       false})]
     (fn []
       (let [{:keys [currency token-symbol crypto? error?]} @state
-            [input-state set-input-state]    (rn/use-state controlled-input/init-state)
-            input-amount                     (controlled-input/input-value input-state)
-            swap-between-fiat-and-crypto     (fn []
-                                               (if crypto?
-                                                 (set-input-state #(controlled-input/->crypto % conversion-rate))
-                                                 (set-input-state #(controlled-input/->fiat % conversion-rate))))
-            converted-value                  (if crypto?
-                                               (utils/prettify-balance currency
-                                                                       (money/crypto->fiat
-                                                                        input-amount
-                                                                        conversion-rate))
-                                               (utils/prettify-crypto-balance
-                                                (or (clj->js token-symbol) "")
-                                                (money/fiat->crypto input-amount conversion-rate)
-                                                conversion-rate))]
+            [input-state set-input-state]                  (rn/use-state controlled-input/init-state)
+            input-amount                                   (controlled-input/input-value input-state)
+            swap-between-fiat-and-crypto                   (fn []
+                                                             (if crypto?
+                                                               (set-input-state
+                                                                #(controlled-input/->crypto
+                                                                  %
+                                                                  conversion-rate))
+                                                               (set-input-state #(controlled-input/->fiat
+                                                                                  %
+                                                                                  conversion-rate))))
+            converted-value                                (if crypto?
+                                                             (utils/prettify-balance currency
+                                                                                     (money/crypto->fiat
+                                                                                      input-amount
+                                                                                      conversion-rate))
+                                                             (utils/prettify-crypto-balance
+                                                              (or (clj->js token-symbol) "")
+                                                              (money/fiat->crypto input-amount
+                                                                                  conversion-rate)
+                                                              conversion-rate))]
         [preview/preview-container
          {:state                     state
           :descriptor                descriptor
@@ -62,9 +67,9 @@
           :component-container-style {:flex            1
                                       :justify-content :space-between}}
          [quo/token-input
-          {:token-symbol token-symbol
+          {:token-symbol    token-symbol
            :currency-symbol (if crypto? token-symbol currency)
-           :error? error?
+           :error?          error?
            :value           input-amount
            :converted-value converted-value
            :on-swap         (fn []

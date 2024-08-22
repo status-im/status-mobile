@@ -38,7 +38,7 @@
         :keyboard-type          :numeric
         :editable               false
         :value                  value}]
-      [token-name-text theme currency-symbol ]]
+      [token-name-text theme currency-symbol]]
      [button/button
       {:icon                true
        :icon-only?          true
@@ -63,12 +63,12 @@
     [rn/view {:style (merge (style/main-container width) container-style)}
      [rn/view {:style style/amount-container}
       [input-section
-       {:theme          theme
-        :token-symbol   token-symbol
-        :on-token-press on-token-press
-        :value          value
-        :error?         error?
-        :on-swap        on-swap
+       {:theme           theme
+        :token-symbol    token-symbol
+        :on-token-press  on-token-press
+        :value           value
+        :error?          error?
+        :on-swap         on-swap
         :currency-symbol currency-symbol}]]
      [divider-line/view {:container-style (style/divider theme)}]
      [rn/view {:style style/data-container}
