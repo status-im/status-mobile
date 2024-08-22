@@ -8,6 +8,7 @@
 
 (def text-container
   {:flex-direction :row
+   :align-self     :flex-start
    :flex-wrap      :wrap})
 
 (def text-aligner
