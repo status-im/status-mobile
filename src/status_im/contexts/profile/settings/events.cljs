@@ -95,7 +95,7 @@
 (rf/reg-event-fx :profile.settings/change-appearance
  (fn [_ [theme]]
    {:fx [[:dispatch [:profile.settings/profile-update :appearance theme]]
-         [:dispatch [:theme/switch {:theme-type theme}]]]}))
+         [:dispatch [:theme/switch {:appearance-type theme}]]]}))
 
 (rf/reg-fx :profile.settings/get-profile-picture
  (fn [key-uid]
