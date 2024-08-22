@@ -91,7 +91,7 @@
     (merge
      {:db (assoc db :profile/profiles-overview multiaccounts)}
      (when-not (seq multiaccounts)
-       {:dispatch [:init-root :screen/onboarding.intro]}))))
+       {:dispatch [:update-theme-and-init-root :screen/onboarding.intro]}))))
 
 (rf/defn password-set
   {:events [:onboarding/password-set]}

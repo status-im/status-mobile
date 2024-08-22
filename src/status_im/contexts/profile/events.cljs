@@ -53,7 +53,7 @@
                     (assoc :profile/profiles-overview profiles)
                     (update :profile/login #(select-profile % key-uid)))
                 db-with-settings)
-          :fx [[:dispatch [:init-root :screen/profile.profiles]]
+          :fx [[:dispatch [:update-theme-and-init-root :screen/profile.profiles]]
                (when (and key-uid userConfirmed)
                  [:effects.biometric/check-if-available
                   {:key-uid    key-uid
@@ -61,7 +61,7 @@
                                  (rf/dispatch [:profile.login/check-biometric-success key-uid
                                                auth-method]))}])]})
        {:db db-with-settings
-        :fx [[:dispatch [:init-root :screen/onboarding.intro]]]}))))
+        :fx [[:dispatch [:update-theme-and-init-root :screen/onboarding.intro]]]}))))
 
 (rf/reg-event-fx
  :profile/update-setting-from-backup

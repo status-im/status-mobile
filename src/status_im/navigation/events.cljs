@@ -70,9 +70,16 @@
     (assoc :dispatch [:chat/close (:current-chat-id db)])))
 
 (rf/defn init-root
+  "WARNING: Use `:update-theme-and-init-root` instead. `:init-root` should not be used directly."
   {:events [:init-root]}
   [{:keys [db]} root-id]
   {:set-root [root-id (:theme db)]})
+
+(rf/defn update-theme-and-init-root
+  {:events [:update-theme-and-init-root]}
+  [_ root-id]
+  {:fx [[:dispatch [:theme/switch {:view-id root-id}]]
+        [:dispatch [:init-root root-id]]]})
 
 (rf/defn change-tab
   {:events [:navigate-change-tab]}
