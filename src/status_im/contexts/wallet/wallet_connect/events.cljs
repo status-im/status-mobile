@@ -317,13 +317,17 @@
 (rf/reg-event-fx
  :wallet-connect/persist-session
  (fn [_ [session-info]]
-   {:fx [[:json-rpc/call
-          [{:method     "wallet_addWalletConnectSession"
-            :params     [(js/JSON.stringify session-info)]
-            :on-success (fn []
-                          (log/info "Wallet Connect session persisted")
-                          (rf/dispatch [:wallet-connect/fetch-persisted-sessions]))
-            :on-error   #(log/info "Wallet Connect session persistence failed" %)}]]]}))
+   (let [redirect-url (-> session-info
+                          (js->clj :keywordize-keys true)
+                          (wallet-connect-core/get-dapp-redirect-url))]
+     {:fx [[:json-rpc/call
+            [{:method     "wallet_addWalletConnectSession"
+              :params     [(js/JSON.stringify session-info)]
+              :on-success (fn []
+                            (log/info "Wallet Connect session persisted")
+                            (rf/dispatch [:wallet-connect/fetch-persisted-sessions])
+                            (rf/dispatch [:wallet-connect/redirect-to-dapp redirect-url]))
+              :on-error   #(log/info "Wallet Connect session persistence failed" %)}]]]})))
 
 (rf/reg-event-fx
  :wallet-connect/disconnect-session

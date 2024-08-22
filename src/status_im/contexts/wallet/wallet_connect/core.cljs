@@ -59,12 +59,11 @@
          (filter (fn [session]
                    (= (utils.string/remove-trailing-slash dapp-url)
                       (utils.string/remove-trailing-slash (get session :url)))))
-         (first))))
+         first)))
 
 (defn get-dapp-redirect-url
   [session]
-  (let [peer-metadata (get-in session [:peer :metadata])]
-    (get-in peer-metadata [:redirect :native])))
+  (get-in session [:peer :metadata :redirect :native]))
 
 (defn get-db-current-request-params
   [db]

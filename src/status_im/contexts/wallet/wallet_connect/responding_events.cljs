@@ -1,6 +1,5 @@
 (ns status-im.contexts.wallet.wallet-connect.responding-events
   (:require [re-frame.core :as rf]
-            [react-native.platform :as platform]
             [react-native.wallet-connect :as wallet-connect]
             [status-im.constants :as constants]
             [status-im.contexts.wallet.wallet-connect.core :as wallet-connect-core]
@@ -134,18 +133,19 @@
                                           :event                :wallet-connect/send-response
                                           :wallet-connect-event event}))
                :on-success  (fn []
-                              (when platform/android?
-                                (rf/dispatch [:wallet-connect/redirect-to-dapp]))
+                              (rf/dispatch [:wallet-connect/redirect-to-dapp])
                               (log/info "Successfully sent Wallet Connect response to dApp"))}]]}))))
 
 (rf/reg-event-fx
  :wallet-connect/redirect-to-dapp
- (fn [{:keys [db]} _]
-   (let [current-request (get db :wallet-connect/current-request)
-         sessions        (get db :wallet-connect/sessions)
-         dapp            (wallet-connect-core/get-current-request-dapp current-request sessions)
-         session         (transforms/json->clj (dapp :sessionJson))
-         redirect-url    (wallet-connect-core/get-dapp-redirect-url session)]
+ (fn [{:keys [db]} [url]]
+   (let [redirect-url (or url
+                          (->> (get db :wallet-connect/current-request)
+                               (wallet-connect-core/get-current-request-dapp
+                                (get db :wallet-connect/sessions))
+                               :sessionJson
+                               transforms/json->clj
+                               wallet-connect-core/get-dapp-redirect-url))]
      {:fx [[:open-url redirect-url]]})))
 
 (rf/reg-event-fx

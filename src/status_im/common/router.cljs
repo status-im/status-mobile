@@ -38,8 +38,11 @@
   [path]
   (map #(str % path) status-web-urls))
 
-
 (def handled-schemes (set (into uri-schemes status-web-urls)))
+
+(defn wc-normalize-uri
+  [uri]
+  (if (string/includes? uri "//wc:") (string/replace-first uri "/?" "?") uri))
 
 (def group-chat-extractor
   {[#"(.*)" :params] {""  :group-chat
@@ -96,8 +99,8 @@
         (if equal-end-of-base64url (string/replace-first uri equal-end-of-base64url "") uri)
 
         ;;bidi has issue to detect wc regex with /?, couldn't fine any other workaround
-        normalize-url
-        (if (string/includes? uri "//wc:") (string/replace-first uri "/?" "?") uri-without-equal-in-path)
+        normalize-uri
+        (wc-normalize-uri uri-without-equal-in-path)
 
         ;; fragment is the one after `#`, usually user-id, ens-name, community-id
         fragment (parse-fragment uri)
@@ -105,7 +108,7 @@
         compressed-key? (validators/valid-compressed-key? fragment)
 
         {:keys [handler route-params query-params] :as parsed}
-        (assoc (bidi/match-route routes normalize-url)
+        (assoc (bidi/match-route routes normalize-uri)
                :uri          uri
                :query-params (parse-query-params uri))]
     (cond-> parsed
@@ -148,7 +151,7 @@
       (assoc-in [:route-params :uri]
        (if (get query-params "uri")
          (get query-params "uri")
-         (remove-scheme normalize-url))))))
+         (remove-scheme normalize-uri))))))
 
 (defn match-contact-async
   [chain {:keys [user-id ens-name]} callback]
