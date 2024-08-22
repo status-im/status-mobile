@@ -43,13 +43,8 @@
             input-amount                                   (controlled-input/input-value input-state)
             swap-between-fiat-and-crypto                   (fn []
                                                              (if crypto?
-                                                               (set-input-state
-                                                                #(controlled-input/->crypto
-                                                                  %
-                                                                  conversion-rate))
-                                                               (set-input-state #(controlled-input/->fiat
-                                                                                  %
-                                                                                  conversion-rate))))
+                                                               (set-input-state #(controlled-input/->fiat % conversion-rate))
+                                                               (set-input-state #(controlled-input/->crypto % conversion-rate))))
             converted-value                                (if crypto?
                                                              (utils/prettify-balance currency
                                                                                      (money/crypto->fiat
