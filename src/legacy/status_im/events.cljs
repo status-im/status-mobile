@@ -99,9 +99,9 @@
 (rf/defn system-theme-mode-changed
   {:events [:system-theme-mode-changed]}
   [{:keys [db] :as cofx} _]
-  (let [current-theme-type (get-in cofx [:db :profile/profile :appearance])]
+  (let [appearance-type (get-in cofx [:db :profile/profile :appearance])]
     (when (and (multiaccounts.model/logged-in? db)
-               (= current-theme-type status-im.constants/theme-type-system))
+               (= appearance-type status-im.constants/appearance-type-system))
       {:dispatch [:theme/switch]})))
 
 (defn- on-biometric-auth-fail

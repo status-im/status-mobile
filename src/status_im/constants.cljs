@@ -425,9 +425,9 @@
   "We prefix our keys with 0xe701 prior to serialisation them"
   "0xe701")
 
-(def ^:const theme-type-system 0)
-(def ^:const theme-type-light 1)
-(def ^:const theme-type-dark 2)
+(def ^:const appearance-type-system 0)
+(def ^:const appearance-type-light 1)
+(def ^:const appearance-type-dark 2)
 (def ^:const bottom-sheet-animation-delay 450)
 
 (def ^:const local-pair-event-process-success "process-success")
