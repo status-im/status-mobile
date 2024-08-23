@@ -109,9 +109,12 @@
    (if (wallet-connect-core/event-should-be-handled? db event)
      {:fx [[:dispatch [:wallet-connect/process-session-request event]]]}
      {:fx [[:dispatch
+            [:wallet-connect/show-session-networks-unsupported-toast event]]
+           [:dispatch
             [:wallet-connect/send-response
-             {:error (wallet-connect/get-sdk-error
-                      constants/wallet-connect-user-rejected-chains-error-key)}]]]})))
+             {:request event
+              :error   (wallet-connect/get-sdk-error
+                        constants/wallet-connect-user-rejected-chains-error-key)}]]]})))
 
 (rf/reg-event-fx
  :wallet-connect/on-session-delete
