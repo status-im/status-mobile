@@ -335,7 +335,7 @@
                                      :t/send-limit
                                      {:limit (if crypto-currency?
                                                (utils/prettify-crypto-balance
-                                                token-symbol
+                                                (or (clj->js token-symbol) "")
                                                 (controlled-input/upper-limit input-state)
                                                 conversion-rate)
                                                (utils/prettify-balance currency-symbol
