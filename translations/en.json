@@ -1174,6 +1174,7 @@
   "instruction-after-qr-generated": "On your other device, navigate to the Syncing screen and select “Scan sync”",
   "insufficient-balance-to-cover-fee": "not enough balance to cover transaction fee",
   "intro-message1": "Welcome to Status!\nTap this message to set your password and get started.",
+  "intro-privacy-policy": "Privacy Policy",
   "intro-privacy-policy-note1": "Status does not collect or profit from your personal data. By continuing, you agree with the ",
   "intro-privacy-policy-note2": "privacy policy",
   "intro-privacy-statement": "Privacy Statement",

@@ -53,7 +53,7 @@
                                  :style    style/highlighted-text
                                  :size     :paragraph-2
                                  :weight   :medium}
-                                (i18n/label :t/intro-privacy-statement)]]]
+                                (i18n/label :t/intro-privacy-policy)]]]
        :button-one-label     (i18n/label :t/sync-or-recover-profile)
        :button-one-props     {:type                :dark-grey
                               :disabled?           (not terms-accepted?)
