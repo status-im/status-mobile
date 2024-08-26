@@ -163,7 +163,6 @@
         {fiat-currency :currency}                   (rf/sub [:profile/profile])
         {token-symbol :symbol
          token-networks :networks
-         token-decimals :decimals
          :as
          token}                                     (rf/sub [:wallet/wallet-send-token])
         send-from-locked-amounts                    (rf/sub [:wallet/wallet-send-from-locked-amounts])
@@ -178,6 +177,10 @@
                                                         :market-values-per-currency
                                                         currency
                                                         :price)
+        token-decimals                              (-> token
+                                                        utils/token-usd-price
+                                                        utils/one-cent-value
+                                                        utils/calc-max-crypto-decimals)
         loading-routes?                             (rf/sub
                                                      [:wallet/wallet-send-loading-suggested-routes?])
         route                                       (rf/sub [:wallet/wallet-send-route])
