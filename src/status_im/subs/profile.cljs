@@ -9,6 +9,7 @@
     [re-frame.core :as re-frame]
     [status-im.common.pixel-ratio :as pixel-ratio]
     [status-im.constants :as constants]
+    [status-im.contexts.profile.data-store :as profile.data-store]
     [status-im.contexts.profile.utils :as profile.utils]
     [utils.security.core :as security]))
 
@@ -17,6 +18,18 @@
  :<- [:profile/profile]
  (fn [{:keys [customization-color]}]
    (or customization-color constants/profile-default-color)))
+
+(re-frame/reg-sub :profile/accepted-terms?
+ :<- [:profile/profile]
+ (fn [{:keys [hasAcceptedTerms]}]
+   hasAcceptedTerms))
+
+;; A profile can only be created without accepting terms in Status v1.
+(re-frame/reg-sub :profile/from-status-v1-without-terms-accepted?
+ :<- [:profile/profiles-overview]
+ (fn [profiles-overview]
+   (and (seq profiles-overview)
+        (not (profile.data-store/accepted-terms? (vals profiles-overview))))))
 
 (re-frame/reg-sub
  :profile/currency
