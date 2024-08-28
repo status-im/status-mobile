@@ -1,18 +1,18 @@
 (ns status-im.contexts.settings.wallet.saved-addresses.add-address-to-save.view
   (:require
-   [clojure.string :as string]
-   [quo.core :as quo]
-   [react-native.clipboard :as clipboard]
-   [react-native.core :as rn]
-   [react-native.safe-area :as safe-area]
-   [status-im.common.floating-button-page.view :as floating-button-page]
-   [status-im.contexts.settings.wallet.saved-addresses.add-address-to-save.style :as style]
-   [status-im.contexts.wallet.common.utils :as utils]
-   [status-im.contexts.wallet.common.validation :as validation]
-   [utils.address :as utils-address]
-   [utils.debounce :as debounce]
-   [utils.i18n :as i18n]
-   [utils.re-frame :as rf]))
+    [clojure.string :as string]
+    [quo.core :as quo]
+    [react-native.clipboard :as clipboard]
+    [react-native.core :as rn]
+    [react-native.safe-area :as safe-area]
+    [status-im.common.floating-button-page.view :as floating-button-page]
+    [status-im.contexts.settings.wallet.saved-addresses.add-address-to-save.style :as style]
+    [status-im.contexts.wallet.common.utils :as utils]
+    [status-im.contexts.wallet.common.validation :as validation]
+    [utils.address :as utils-address]
+    [utils.debounce :as debounce]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]))
 
 (defn- navigate-back
   []
@@ -33,7 +33,7 @@
 
       (not
        (or (utils-address/eip-3770-address? user-input)
-         (validation/ens-name? user-input)))
+           (validation/ens-name? user-input)))
       :invalid-address-or-ens)))
 
 (defn- address-input
