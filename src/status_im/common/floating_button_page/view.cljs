@@ -61,7 +61,7 @@
 (defn view
   [{:keys [header footer customization-color footer-container-padding header-container-style
            content-container-style gradient-cover? keyboard-should-persist-taps shell-overlay?
-           blur-options content-avoid-keyboard?]
+           blur-options content-avoid-keyboard? automatically-adjust-keyboard-insets]
     :or   {footer-container-padding (safe-area/get-top)}}
    & children]
   (reagent/with-let [scroll-view-ref              (atom nil)
@@ -123,7 +123,7 @@
            :scroll-event-throttle                64
            :content-container-style              {:flex-grow 1}
            :always-bounce-vertical               @keyboard-did-show?
-           :automatically-adjust-keyboard-insets true
+           :automatically-adjust-keyboard-insets automatically-adjust-keyboard-insets
            :shows-vertical-scroll-indicator      false
            :keyboard-should-persist-taps         keyboard-should-persist-taps}
           (into [rn/view
