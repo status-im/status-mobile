@@ -3,6 +3,7 @@
             [native-module.core :as native-module]
             [quo.core :as quo]
             [react-native.core :as rn]
+            [react-native.platform :as platform]
             [react-native.safe-area :as safe-area]
             [status-im.common.controlled-input.utils :as controlled-input]
             [status-im.common.events-helper :as events-helper]
@@ -17,7 +18,6 @@
             [utils.re-frame :as rf]
             [utils.string :as utils.string]))
 
-(def ^:private min-token-decimals-to-display 6)
 (def ^:private default-text-for-unfocused-input "0.00")
 
 (defn- on-close
@@ -94,7 +94,7 @@
                                           (.toFixed (money/bignumber
                                                      pay-token-balance-selected-chain)
                                                     (min pay-token-decimals
-                                                         min-token-decimals-to-display)))
+                                                         constants/min-token-decimals-to-display)))
         approval-amount-required-num     (when approval-amount-required
                                            (str (number/convert-to-whole-number
                                                  (native-module/hex-to-number
@@ -128,13 +128,14 @@
       :customization-color  :blue
       :show-approval-label? (and swap-proposal approval-required)
       :auto-focus?          true
+      :show-keyboard?       false
       :status               (cond
                               (and loading-swap-proposal? (not input-focused?)) :loading
                               input-focused?                                    :typing
                               :else                                             :disabled)
       :currency-symbol      currency-symbol
       :on-token-press       on-token-press
-      :on-max-press         on-max-press
+      :on-max-press         #(on-max-press available-crypto-limit)
       :on-input-focus       on-input-focus
       :value                pay-input-amount
       :fiat-value           pay-token-fiat-value
@@ -177,7 +178,8 @@
                                       amount-out))
                                     receive-token-decimals))
         amount-out-num           (if amount-out-whole-number
-                                   (str amount-out-whole-number)
+                                   (number/remove-trailing-zeroes
+                                    (.toFixed amount-out-whole-number receive-token-decimals))
                                    default-text-for-unfocused-input)
         receive-token-fiat-value (str (utils/calculate-token-fiat-value
                                        {:currency currency
@@ -191,6 +193,7 @@
       :show-approval-label? false
       :enable-swap?         true
       :input-disabled?      true
+      :show-keyboard?       false
       :status               (cond
                               (and loading-swap-proposal? (not input-focused?)) :loading
                               input-focused?                                    :typing
@@ -226,17 +229,16 @@
   (let [[pay-input-state set-pay-input-state]       (rn/use-state controlled-input/init-state)
         [pay-input-focused? set-pay-input-focused?] (rn/use-state true)
         error-response                              (rf/sub [:wallet/swap-error-response])
-        network                                     (rf/sub [:wallet/swap-network])
         loading-swap-proposal?                      (rf/sub [:wallet/swap-loading-swap-proposal?])
         swap-proposal                               (rf/sub [:wallet/swap-proposal])
         asset-to-pay                                (rf/sub [:wallet/swap-asset-to-pay])
         pay-input-amount                            (controlled-input/input-value pay-input-state)
         pay-token-decimals                          (:decimals asset-to-pay)
-        network-chain-id                            (:chain-id network)
-        pay-token-balance-selected-chain            (get-in asset-to-pay
-                                                            [:balances-per-chain network-chain-id
-                                                             :balance]
-                                                            0)
+        on-review-swap-press                        (rn/use-callback
+                                                     (fn []
+                                                       (rf/dispatch [:navigate-to-within-stack
+                                                                     [:screen/wallet.swap-confirmation
+                                                                      :screen/wallet.setup-swap]])))
         on-press                                    (rn/use-callback
                                                      (fn [c]
                                                        (let
@@ -256,7 +258,14 @@
                                                      (fn []
                                                        (set-pay-input-state
                                                         controlled-input/delete-last)
-                                                       (rf/dispatch [:wallet/clean-swap-proposal])))]
+                                                       (rf/dispatch [:wallet/clean-swap-proposal])))
+        on-max-press                                (rn/use-callback
+                                                     (fn [max-value]
+                                                       (set-pay-input-state
+                                                        (fn [input-state]
+                                                          (controlled-input/set-input-value
+                                                           input-state
+                                                           max-value)))))]
     [rn/view {:style style/container}
      [account-switcher/view
       {:on-press      on-close
@@ -266,11 +275,13 @@
      [rn/view {:style style/inputs-container}
       [pay-token-input
        {:input-state      pay-input-state
-        :on-max-press     #(set-pay-input-state pay-token-balance-selected-chain)
+        :on-max-press     on-max-press
         :input-focused?   pay-input-focused?
         :on-token-press   #(js/alert "Token Pressed")
         :on-approve-press #(rf/dispatch [:open-modal :screen/wallet.swap-set-spending-cap])
-        :on-input-focus   #(set-pay-input-focused? true)}]
+        :on-input-focus   (fn []
+                            (when platform/android? (rf/dispatch [:dismiss-keyboard]))
+                            (set-pay-input-focused? true))}]
       [swap-order-button {:on-press #(js/alert "Swap Order Pressed")}]
       [receive-token-input
        {:input-focused? (not pay-input-focused?)
@@ -283,8 +294,7 @@
           :text            (i18n/label :t/something-went-wrong-please-try-again-later)}])
       (when (or loading-swap-proposal? swap-proposal)
         [transaction-details])
-      [action-button
-       {:on-press #(js/alert "Review swap pressed")}]]
+      [action-button {:on-press on-review-swap-press}]]
      [quo/numbered-keyboard
       {:container-style style/keyboard-container
        :left-action     :dot

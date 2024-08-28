@@ -20,10 +20,22 @@
                                         (= tx-status constants/transaction-status-failed)
                                         :failed)
          swap-approval-transaction-id (get-in db [:wallet :ui :swap :approval-transaction-id])
-         swap-approval-transaction?   (= swap-approval-transaction-id tx-hash)]
+         swap-approval-transaction?   (= swap-approval-transaction-id tx-hash)
+         swap-transaction-ids         (get-in db [:wallet :swap-transaction-ids])
+         swap-transaction?            (and swap-transaction-ids
+                                           (contains? swap-transaction-ids tx-hash))]
      (cond-> {:db (update-in db [:wallet :transactions tx-hash] assoc :status status)}
        swap-approval-transaction?
-       (assoc :fx [[:dispatch [:wallet.swap/approve-transaction-update status]]])))))
+       (assoc :fx
+              [[:dispatch
+                [:wallet.swap/approve-transaction-update
+                 {:status status}]]])
+       swap-transaction?
+       (assoc :fx
+              [[:dispatch
+                [:wallet.swap/swap-transaction-update
+                 {:tx-hash tx-hash
+                  :status  status}]]])))))
 
 (rf/reg-event-fx
  :wallet/signal-received

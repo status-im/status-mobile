@@ -1,10 +1,13 @@
 (ns status-im.subs.wallet.swap
   (:require [clojure.string :as string]
+            [native-module.core :as native-module]
             [re-frame.core :as rf]
             [status-im.constants :as constants]
             [status-im.contexts.wallet.common.utils :as utils]
             [status-im.contexts.wallet.send.utils :as send-utils]
-            [utils.money :as money]))
+            [utils.hex :as hex]
+            [utils.money :as money]
+            [utils.number :as number]))
 
 (rf/reg-sub
  :wallet/swap
@@ -111,6 +114,44 @@
  :wallet/swap-proposal-amount-in
  :<- [:wallet/swap-proposal]
  :-> :amount-in)
+
+(rf/reg-sub
+ :wallet/swap-receive-amount
+ :<- [:wallet/swap-proposal-amount-out]
+ :<- [:wallet/swap-asset-to-receive]
+ (fn [[amount-out asset-to-receive]]
+   (let [receive-token-decimals (:decimals asset-to-receive)
+         receive-amount         (when amount-out
+                                  (number/convert-to-whole-number
+                                   (native-module/hex-to-number
+                                    (hex/normalize-hex
+                                     amount-out))
+                                   receive-token-decimals))
+         receive-amount         (when amount-out
+                                  (number/remove-trailing-zeroes
+                                   (.toFixed receive-amount
+                                             (min receive-token-decimals
+                                                  constants/min-token-decimals-to-display))))]
+     (or receive-amount 0))))
+
+(rf/reg-sub
+ :wallet/swap-pay-amount
+ :<- [:wallet/swap-proposal-amount-in]
+ :<- [:wallet/swap-asset-to-pay]
+ (fn [[amount-in asset-to-pay]]
+   (let [pay-token-decimals (:decimals asset-to-pay)
+         pay-amount         (when amount-in
+                              (number/convert-to-whole-number
+                               (native-module/hex-to-number
+                                (hex/normalize-hex
+                                 amount-in))
+                               pay-token-decimals))
+         pay-amount         (when amount-in
+                              (number/remove-trailing-zeroes
+                               (.toFixed pay-amount
+                                         (min pay-token-decimals
+                                              constants/min-token-decimals-to-display))))]
+     (or pay-amount 0))))
 
 (rf/reg-sub
  :wallet/swap-proposal-provider
