@@ -155,5 +155,4 @@
 (rf/reg-event-fx :profile.settings/update-currency
  (fn [_ [currency]]
    {:fx [[:dispatch [:profile.settings/profile-update :currency currency]]
-         [:dispatch [:wallet/get-wallet-token-for-all-accounts]]
-         [:dispatch [:navigate-back]]]}))
+         [:dispatch [:wallet/get-wallet-token-for-all-accounts]]]}))
