@@ -113,33 +113,10 @@
                                     :limit-crypto             250
                                     :initial-crypto-currency? false}])
     (h/is-truthy (h/get-by-text "0"))
-    (h/is-truthy (h/get-by-text "ETH"))
-    (h/is-truthy (h/get-by-text "$0.00"))
+    (h/is-truthy (h/get-by-text "USD"))
+    (h/is-truthy (h/get-by-text "0 ETH"))
     (h/is-truthy (h/get-by-label-text :container))
     (h/is-disabled (h/get-by-label-text :button-one)))
-
-  (h/test "Fill token input and confirm"
-    (h/setup-subs sub-mocks)
-    (let [on-confirm (h/mock-fn)]
-      (h/render-with-theme-provider [input-amount/view
-                                     {:on-confirm               on-confirm
-                                      :crypto-decimals          10
-                                      :limit-crypto             1000
-                                      :initial-crypto-currency? false}])
-
-      (h/fire-event :press (h/query-by-label-text :keyboard-key-1))
-      (h/fire-event :press (h/query-by-label-text :keyboard-key-2))
-      (h/fire-event :press (h/query-by-label-text :keyboard-key-3))
-      (h/fire-event :press (h/query-by-label-text :keyboard-key-.))
-      (h/fire-event :press (h/query-by-label-text :keyboard-key-4))
-      (h/fire-event :press (h/query-by-label-text :keyboard-key-5))
-
-      (-> (h/wait-for #(h/get-by-text "$1234.50"))
-          (.then (fn []
-                   (h/is-truthy (h/get-by-label-text :button-one))
-                   (h/is-truthy (h/get-by-label-text :container))
-                   (h/fire-event :press (h/get-by-label-text :button-one))
-                   (h/was-called on-confirm))))))
 
   (h/test "Fill token input and confirm"
     (h/setup-subs sub-mocks)
@@ -149,7 +126,7 @@
                                      {:crypto-decimals          10
                                       :limit-crypto             1000
                                       :on-confirm               on-confirm
-                                      :initial-crypto-currency? false}])
+                                      :initial-crypto-currency? true}])
 
       (h/fire-event :press (h/query-by-label-text :keyboard-key-1))
       (h/fire-event :press (h/query-by-label-text :keyboard-key-2))

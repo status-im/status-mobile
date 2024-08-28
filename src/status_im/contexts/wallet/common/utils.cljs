@@ -12,14 +12,17 @@
   [full-name]
   (first (string/split full-name #" ")))
 
-(defn prettify-balance
-  [currency-symbol balance]
+(defn cut-fiat-balance-to-two-decimals
+  [balance]
   (let [valid-balance? (and balance
                             (or (number? balance) (.-toFixed balance)))]
     (as-> balance $
       (if valid-balance? $ 0)
-      (.toFixed $ 2)
-      (str currency-symbol $))))
+      (.toFixed $ 2))))
+
+(defn prettify-balance
+  [currency-symbol balance]
+  (str currency-symbol (cut-fiat-balance-to-two-decimals balance)))
 
 (defn get-derivation-path
   [number-of-accounts]
@@ -47,8 +50,8 @@
     nil))
 
 (defn calc-max-crypto-decimals
-  [value]
-  (let [str-representation   (str value)
+  [one-cent-value]
+  (let [str-representation   (str one-cent-value)
         decimal-part         (second (clojure.string/split str-representation #"\."))
         exponent             (extract-exponent str-representation)
         zeroes-count         (count (take-while #(= \0 %) decimal-part))
@@ -58,29 +61,60 @@
       (inc max-decimals)
       max-decimals)))
 
-(defn get-crypto-decimals-count
-  [{:keys [market-values-per-currency]}]
-  (let [price          (get-in market-values-per-currency [:usd :price])
-        one-cent-value (if (pos? price) (/ 0.01 price) 0)]
-    (calc-max-crypto-decimals one-cent-value)))
+(defn token-usd-price
+  [token]
+  (get-in token [:market-values-per-currency :usd :price]))
+
+(defn one-cent-value
+  [token-price-in-usd]
+  (if (pos? token-price-in-usd)
+    (/ 0.01 token-price-in-usd)
+    0))
+
+(defn analyze-token-amount-for-price
+  "For full details: https://github.com/status-im/status-mobile/issues/18225"
+  [token-price-in-usd token-units]
+  (if (or (nil? token-units)
+          (not (money/bignumber? token-units))
+          (money/equal-to token-units 0))
+    {:zero-value? true}
+    (let [cent-value (one-cent-value token-price-in-usd)]
+      {:usd-cent-value              cent-value
+       :standardized-decimals-count (if (nil? token-price-in-usd)
+                                      missing-price-decimals
+                                      (calc-max-crypto-decimals cent-value))})))
+
+(defn cut-crypto-decimals-to-fit-usd-cents
+  [token-price-in-usd token-units]
+  (let [{:keys [zero-value? usd-cent-value standardized-decimals-count]}
+        (analyze-token-amount-for-price token-price-in-usd token-units)]
+    (cond
+      zero-value?                    "0"
+      (< token-units usd-cent-value) "0"
+      :else                          (number/remove-trailing-zeroes
+                                      (.toFixed token-units standardized-decimals-count)))))
+
+(defn prettify-crypto-balance
+  [token-symbol crypto-balance conversion-rate]
+  (str (cut-crypto-decimals-to-fit-usd-cents conversion-rate crypto-balance)
+       " "
+       (string/upper-case token-symbol)))
 
 (defn get-standard-crypto-format
   "For full details: https://github.com/status-im/status-mobile/issues/18225"
-  [{:keys [market-values-per-currency]} token-units]
-  (cond (or (nil? token-units)
-            (money/equal-to token-units 0))
-        "0"
+  [token token-units]
+  (let [token-price-in-usd (token-usd-price token)
+        {:keys [zero-value? usd-cent-value standardized-decimals-count]}
+        (analyze-token-amount-for-price token-price-in-usd token-units)]
+    (cond
+      zero-value?
+      "0"
 
-        (nil? (-> market-values-per-currency :usd :price))
-        (number/remove-trailing-zeroes (.toFixed token-units missing-price-decimals))
+      (< token-units usd-cent-value)
+      (str "<" (number/remove-trailing-zeroes (.toFixed usd-cent-value standardized-decimals-count)))
 
-        :else
-        (let [price          (-> market-values-per-currency :usd :price)
-              one-cent-value (if (pos? price) (/ 0.01 price) 0)
-              decimals-count (calc-max-crypto-decimals one-cent-value)]
-          (if (< token-units one-cent-value)
-            (str "<" (number/remove-trailing-zeroes (.toFixed one-cent-value decimals-count)))
-            (number/remove-trailing-zeroes (.toFixed token-units decimals-count))))))
+      :else
+      (number/remove-trailing-zeroes (.toFixed token-units standardized-decimals-count)))))
 
 (defn get-market-value
   [currency {:keys [market-values-per-currency]}]

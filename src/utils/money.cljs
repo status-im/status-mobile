@@ -262,6 +262,12 @@
   [bn1 bn2]
   (.round (.dividedBy ^js bn1 bn2) 0))
 
+(defn fiat->crypto
+  [crypto fiat-price]
+  (when-let [crypto-bn (bignumber crypto)]
+    (div crypto-bn
+         (bignumber fiat-price))))
+
 (defn absolute-value
   [bn]
   (when bn
