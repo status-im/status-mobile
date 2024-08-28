@@ -1,8 +1,11 @@
 (ns status-im.contexts.settings.language-and-currency.view
   (:require [quo.core :as quo]
             [utils.i18n :as i18n]
-            [utils.navigation :as navigation]
             [utils.re-frame :as rf]))
+
+(defn- navigate-back
+  []
+  (rf/dispatch [:navigate-back]))
 
 (defn- on-currency-press
   []
@@ -19,7 +22,7 @@
      [quo/page-nav
       {:background :blur
        :icon-name  :i/arrow-left
-       :on-press   navigation/navigate-back}]
+       :on-press   navigate-back}]
      [quo/page-top
       {:title (i18n/label :t/language-and-currency)}]
      [quo/category

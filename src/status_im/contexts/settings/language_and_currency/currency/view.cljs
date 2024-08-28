@@ -8,8 +8,11 @@
             [status-im.contexts.settings.language-and-currency.data-store :as data-store]
             [utils.debounce :as debounce]
             [utils.i18n :as i18n]
-            [utils.navigation :as navigation]
             [utils.re-frame :as rf]))
+
+(defn- navigate-back
+  []
+  (rf/dispatch [:navigate-back]))
 
 (defn- get-item-layout
   [_ index]
@@ -51,7 +54,7 @@
      [quo/page-nav
       {:background :blur
        :icon-name  :i/arrow-left
-       :on-press   navigation/navigate-back}]
+       :on-press   navigate-back}]
      [quo/page-top
       {:title (i18n/label :t/currency)}]
      [quo/input
