@@ -25,7 +25,7 @@
   (let [formatted-symbol (if (> (count currency-symbol) 1)
                            (str currency-symbol " ")
                            currency-symbol)]
-  (str formatted-symbol (cut-fiat-balance-to-two-decimals balance))))
+    (str formatted-symbol (cut-fiat-balance-to-two-decimals balance))))
 
 (defn get-derivation-path
   [number-of-accounts]
