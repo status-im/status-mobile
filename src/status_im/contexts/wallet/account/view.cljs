@@ -60,7 +60,7 @@
                             (rf/dispatch [:wallet/clean-send-data])
                             (rf/dispatch [:wallet/start-bridge]))
          :swap-action     (when (ff/enabled? ::ff/wallet.swap)
-                            #(rf/dispatch [:wallet.swap/start]))}])
+                            #(rf/dispatch [:open-modal :screen/wallet.swap-select-asset-to-pay]))}])
      [quo/tabs
       {:style            style/tabs
        :size             32

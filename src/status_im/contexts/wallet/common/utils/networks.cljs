@@ -189,3 +189,14 @@
       nil)
     (when $
       (assoc $ :chain-id chain-id))))
+
+(defn sorted-networks-with-details
+  [networks]
+  (->> networks
+       (map
+        (fn [{:keys [chain-id related-chain-id layer]}]
+          (assoc (get-network-details chain-id)
+                 :chain-id         chain-id
+                 :related-chain-id related-chain-id
+                 :layer            layer)))
+       (sort-by (juxt :layer :short-name))))

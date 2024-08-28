@@ -73,7 +73,7 @@
   [token watch-only? entry-point]
   (let [token-symbol           (:token token)
         token-data             (first (rf/sub [:wallet/current-viewing-account-tokens-filtered
-                                               token-symbol]))
+                                               {:query token-symbol}]))
         fiat-unformatted-value (get-in token [:values :fiat-unformatted-value])
         has-balance?           (money/greater-than fiat-unformatted-value (money/bignumber "0"))
         selected-account?      (rf/sub [:wallet/current-viewing-account-address])

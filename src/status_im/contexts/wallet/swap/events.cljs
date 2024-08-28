@@ -5,6 +5,7 @@
             [status-im.contexts.wallet.common.utils :as utils]
             [status-im.contexts.wallet.send.utils :as send-utils]
             [status-im.contexts.wallet.sheets.network-selection.view :as network-selection]
+            [status-im.contexts.wallet.swap.utils :as swap-utils]
             [taoensso.timbre :as log]
             [utils.address :as address]
             [utils.debounce :as debounce]
@@ -13,32 +14,43 @@
             [utils.number :as number]))
 
 (rf/reg-event-fx :wallet.swap/start
- (fn [{:keys [_db]}]
-   {:fx [[:dispatch [:open-modal :screen/wallet.swap-select-asset-to-pay]]]}))
+ (fn [{:keys [db]} [{:keys [asset-to-pay asset-to-receive network]}]]
+   (let [asset-to-receive' (or asset-to-receive
+                               (swap-utils/select-asset-to-receive
+                                (:wallet db)
+                                (:profile/profile db)
+                                asset-to-pay))
+         network'          (or network
+                               (swap-utils/select-network asset-to-pay))]
+     {:db (-> db
+              (assoc-in [:wallet :ui :swap :asset-to-pay] asset-to-pay)
+              (assoc-in [:wallet :ui :swap :asset-to-receive] asset-to-receive')
+              (assoc-in [:wallet :ui :swap :network] network'))
+      :fx (if network'
+            [[:dispatch
+              [:navigate-to-within-stack
+               [:screen/wallet.setup-swap :screen/wallet.swap-select-asset-to-pay]]]
+             [:dispatch [:wallet.swap/set-default-slippage]]]
+            [[:dispatch
+              [:show-bottom-sheet
+               {:content (fn []
+                           [network-selection/view
+                            {:token-symbol      (:symbol asset-to-pay)
+                             :on-select-network (fn [network]
+                                                  (rf/dispatch [:hide-bottom-sheet])
+                                                  (rf/dispatch
+                                                   [:wallet.swap/start
+                                                    {:asset-to-pay     asset-to-pay
+                                                     :asset-to-receive asset-to-receive'
+                                                     :network          network}]))}])}]]])})))
 
 (rf/reg-event-fx :wallet.swap/select-asset-to-pay
- (fn [{:keys [db]} [{:keys [token network]}]]
-   {:db (-> db
-            (assoc-in [:wallet :ui :swap :asset-to-pay] token)
-            (assoc-in [:wallet :ui :swap :network] network))
-    :fx (if network
-          [[:dispatch
-            [:navigate-to-within-stack
-             [:screen/wallet.setup-swap :screen/wallet.swap-select-asset-to-pay]]]
-           [:dispatch [:wallet.swap/set-default-slippage]]]
-          [[:dispatch
-            [:show-bottom-sheet
-             {:content (fn []
-                         [network-selection/view
-                          {:token-symbol      (:symbol token)
-                           :on-select-network (fn [network]
-                                                (rf/dispatch [:hide-bottom-sheet])
-                                                (rf/dispatch
-                                                 [:wallet.swap/select-asset-to-pay
-                                                  {:token token
-                                                   :network network
-                                                   :stack-id
-                                                   :screen/wallet.swap-select-asset-to-pay}]))}])}]]])}))
+ (fn [{:keys [db]} [{:keys [token]}]]
+   {:db (assoc-in db [:wallet :ui :swap :asset-to-pay] token)}))
+
+(rf/reg-event-fx :wallet.swap/select-asset-to-receive
+ (fn [{:keys [db]} [{:keys [token]}]]
+   {:db (assoc-in db [:wallet :ui :swap :asset-to-receive] token)}))
 
 (rf/reg-event-fx :wallet.swap/set-default-slippage
  (fn [{:keys [db]}]

@@ -40,6 +40,11 @@
  :-> :scanned-address)
 
 (rf/reg-sub
+ :wallet/tokens
+ :<- [:wallet]
+ :-> :tokens)
+
+(rf/reg-sub
  :wallet/tokens-loading
  :<- [:wallet/ui]
  :-> :tokens-loading)
@@ -418,20 +423,41 @@
  :<- [:wallet/current-viewing-account]
  :<- [:wallet/network-details]
  :<- [:wallet/wallet-send]
- (fn [[account networks send-data] [_ query chain-ids]]
-   (prn send-data)
+ (fn [[account networks send-data] [_ {:keys [query chain-ids hide-token-fn]}]]
    (let [tx-type       (:tx-type send-data)
-         tokens        (map (fn [token]
-                              (assoc token
-                                     :bridge-disabled?  (and (= tx-type :tx/bridge)
-                                                             (send-utils/bridge-disabled? (:symbol
-                                                                                           token)))
-                                     :networks          (network-utils/network-list token networks)
-                                     :available-balance (utils/calculate-total-token-balance token)
-                                     :total-balance     (utils/calculate-total-token-balance token
-                                                                                             chain-ids)))
-                            (:tokens account))
+         tokens        (->> (:tokens account)
+                            (map (fn [token]
+                                   (assoc token
+                                          :bridge-disabled?  (and (= tx-type :tx/bridge)
+                                                                  (send-utils/bridge-disabled? (:symbol
+                                                                                                token)))
+                                          :networks          (network-utils/network-list token networks)
+                                          :available-balance (utils/calculate-total-token-balance token)
+                                          :total-balance     (utils/calculate-total-token-balance
+                                                              token
+                                                              chain-ids))))
+                            (remove #(when hide-token-fn (hide-token-fn constants/swap-tokens-my %))))
          sorted-tokens (utils/sort-tokens tokens)]
+     (if query
+       (let [query-string (string/lower-case query)]
+         (filter #(or (string/starts-with? (string/lower-case (:name %)) query-string)
+                      (string/starts-with? (string/lower-case (:symbol %)) query-string))
+                 sorted-tokens))
+       sorted-tokens))))
+
+(rf/reg-sub
+ :wallet/tokens-filtered
+ :<- [:wallet/tokens]
+ (fn [{:keys [by-symbol market-values-per-token details-per-token]} [_ {:keys [query hide-token-fn]}]]
+   (let [tokens        (->> by-symbol
+                            (map (fn [token]
+                                   (-> token
+                                       (assoc :market-values
+                                              (get market-values-per-token (:symbol token)))
+                                       (assoc :details (get details-per-token (:symbol token))))))
+                            (remove #(when hide-token-fn
+                                       (hide-token-fn constants/swap-tokens-popular %))))
+         sorted-tokens (utils/sort-tokens-by-name tokens)]
      (if query
        (let [query-string (string/lower-case query)]
          (filter #(or (string/starts-with? (string/lower-case (:name %)) query-string)
@@ -443,18 +469,11 @@
  :wallet/token-by-symbol
  :<- [:wallet/current-viewing-account]
  :<- [:wallet/network-details]
- (fn [[account networks] [_ token-symbol chain-ids]]
-   (let [tokens (map (fn [token]
-                       (assoc token
-                              :networks          (network-utils/network-list token networks)
-                              :available-balance (utils/calculate-total-token-balance token)
-                              :total-balance     (utils/calculate-total-token-balance token
-                                                                                      chain-ids)))
-                     (:tokens account))
-         token  (first (filter #(= (string/lower-case (:symbol %))
-                                   (string/lower-case token-symbol))
-                               tokens))]
-     token)))
+ (fn [[{:keys [tokens]} networks] [_ token-symbol chain-ids]]
+   (->> (utils/tokens-with-balance tokens networks chain-ids)
+        (filter #(= (string/lower-case (:symbol %))
+                    (string/lower-case token-symbol)))
+        first)))
 
 (rf/reg-sub
  :wallet/accounts-without-current-viewing-account
