@@ -3,7 +3,7 @@
     "_comment": "Instead use: scripts/update-status-go.sh <rev>",
     "owner": "status-im",
     "repo": "status-go",
-    "version": "v0.184.51",
-    "commit-sha1": "9e722ed09544cc798bc8aa5cdb3b7b58241fbf95",
-    "src-sha256": "1r8w9309gffb52myfgnqyv8cpn372qkq14hpwk2zmz86qphw9jvf"
+    "version": "fix/send-account-event-on-handling-backedup-accounts",
+    "commit-sha1": "e34b2fb1a10dc25ed5385b9fae78cc6a18b06410",
+    "src-sha256": "1f72zwpq7s5fd89dp25l9pib04kzgbyy46imbn765pcszdabcc04"
 }

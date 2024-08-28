@@ -137,3 +137,29 @@
                  acc))
              0
              ownership))))
+
+(re-frame/reg-sub
+ :wallet/collectibles
+ :<- [:wallet/ui]
+ :-> :collectibles)
+
+(re-frame/reg-sub
+ :wallet/collectibles-updating
+ :<- [:wallet/collectibles]
+ :-> :updating)
+
+(re-frame/reg-sub
+ :wallet/current-viewing-account-collectibles-updating?
+ :<- [:wallet/collectibles-updating]
+ :<- [:wallet/current-viewing-account-address]
+ (fn [[updating-addresses address]]
+   (contains? updating-addresses address)))
+
+(re-frame/reg-sub
+ :wallet/home-tab-collectibles-updating?
+ :<- [:wallet/collectibles-updating]
+ :<- [:wallet/accounts-without-watched-accounts]
+ (fn [[updating-addresses accounts]]
+   (->> accounts
+        (map :address)
+        (every? #(contains? updating-addresses %)))))

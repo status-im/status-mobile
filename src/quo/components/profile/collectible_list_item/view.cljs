@@ -91,7 +91,7 @@
      :color-index     gradient-color-index}]])
 
 (defn- card-details
-  [{:keys [community? avatar-image-src collectible-name theme state set-state]}]
+  [{:keys [community? avatar-image-src collectible-name theme state set-state loading?]}]
   (let [loader-opacity            (reanimated/use-shared-value 1)
         avatar-opacity            (reanimated/use-shared-value 0)
         [load-time set-load-time] (rn/use-state (datetime/now))
@@ -102,7 +102,7 @@
                                                      :avatar-opacity avatar-opacity}))
         empty-name?               (string/blank? collectible-name)]
     (rn/use-mount (fn []
-                    (when (string/blank? avatar-image-src)
+                    (when (and (string/blank? avatar-image-src) (not loading?))
                       (set-avatar-loaded))))
     [rn/view {:style style/card-details-container}
      [reanimated/view {:style (style/avatar-container avatar-opacity)}
@@ -137,7 +137,7 @@
 
 (defn- card-view
   [{:keys [avatar-image-src collectible-name community? counter state set-state
-           gradient-color-index image-src supported-file?]}]
+           gradient-color-index image-src supported-file? loading?]}]
   (let [theme                     (quo.theme/use-theme)
         loader-opacity            (reanimated/use-shared-value (if supported-file? 1 0))
         image-opacity             (reanimated/use-shared-value (if supported-file? 0 1))
@@ -189,6 +189,7 @@
        :community?       community?
        :avatar-image-src avatar-image-src
        :collectible-name collectible-name
+       :loading?         loading?
        :theme            theme}]]))
 
 (defn- image-view
@@ -276,6 +277,7 @@
       [:supported-file? {:optional true} [:maybe boolean?]]
       [:native-ID {:optional true} [:maybe [:or string? keyword?]]]
       [:community? {:optional true} [:maybe boolean?]]
+      [:loading? {:optional true} [:maybe boolean?]]
       [:counter {:optional true} [:maybe [:or :string :int]]]
       [:gradient-color-index {:optional true}
        [:maybe [:enum :gradient-1 :gradient-2 :gradient-3 :gradient-4 :gradient-5]]]

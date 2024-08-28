@@ -19,17 +19,23 @@
 
 (def on-collectible-press #(rf/dispatch [:wallet/navigate-to-collectible-details %]))
 
+(def request-collectibles #(rf/dispatch [:wallet/request-collectibles-for-all-accounts {}]))
+
+(defn- collectibles-tab
+  []
+  (let [updating?        (rf/sub [:wallet/home-tab-collectibles-updating?])
+        collectible-list (rf/sub [:wallet/owned-collectibles-list-in-selected-networks])]
+    [collectibles/view
+     {:loading?                  updating?
+      :collectibles              collectible-list
+      :on-collectible-long-press on-collectible-long-press
+      :on-end-reached            request-collectibles
+      :on-collectible-press      on-collectible-press}]))
+
 (defn view
   [{:keys [selected-tab]}]
-  (let [collectible-list     (rf/sub [:wallet/owned-collectibles-list-in-selected-networks])
-        request-collectibles #(rf/dispatch
-                               [:wallet/request-collectibles-for-all-accounts {}])]
-    [rn/view {:style style/container}
-     (case selected-tab
-       :assets       [assets/view]
-       :collectibles [collectibles/view
-                      {:collectibles              collectible-list
-                       :on-collectible-long-press on-collectible-long-press
-                       :on-end-reached            request-collectibles
-                       :on-collectible-press      on-collectible-press}]
-       [activity/view {:activities []}])]))
+  [rn/view {:style style/container}
+   (case selected-tab
+     :assets       [assets/view]
+     :collectibles [collectibles-tab]
+     [activity/view {:activities []}])])

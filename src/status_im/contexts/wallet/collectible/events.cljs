@@ -1,11 +1,15 @@
 (ns status-im.contexts.wallet.collectible.events
   (:require [camel-snake-kebab.extras :as cske]
+            [clojure.set]
             [clojure.string :as string]
             [react-native.platform :as platform]
             [status-im.contexts.network.data-store :as network.data-store]
             [status-im.contexts.wallet.collectible.utils :as collectible-utils]
+            [status-im.contexts.wallet.data-store :as data-store]
             [taoensso.timbre :as log]
+            [utils.collection]
             [utils.ethereum.chain :as chain]
+            [utils.number :as utils.number]
             [utils.re-frame :as rf]
             [utils.transforms :as transforms]))
 
@@ -23,6 +27,12 @@
 
 (def max-cache-age-seconds 3600)
 (def collectibles-request-batch-size 25)
+
+(def ownership-state
+  {:idle     1
+   :delayed  2
+   :updating 3
+   :error    4})
 
 (defn- move-collectibles-to-accounts
   [accounts new-collectibles-per-account]
@@ -84,12 +94,18 @@
 (rf/reg-event-fx
  :wallet/request-collectibles-for-all-accounts
  (fn [{:keys [db]} [{:keys [new-request?]}]]
-   (let [accounts                 (->> (get-in db [:wallet :accounts])
+   (let [updating-addresses       (-> (get-in db [:wallet :ui :collectibles :updating])
+                                      keys
+                                      set)
+         accounts                 (->> (get-in db [:wallet :accounts])
                                        (filter (fn [[_ {:keys [has-more-collectibles?]}]]
                                                  (or (nil? has-more-collectibles?)
                                                      (true? has-more-collectibles?))))
                                        (keys))
-         num-accounts             (count accounts)
+         ;; filter the addresses which are requested before and the collectibles are updating
+         requestable-addresses    (clojure.set/difference (set accounts)
+                                                          updating-addresses)
+         num-accounts             (count requestable-addresses)
          collectibles-per-account (quot collectibles-request-batch-size num-accounts)
          ;; We need to pass unique IDs for simultaneous requests, otherwise they'll fail
          request-ids              (get-unique-collectible-request-id num-accounts)
@@ -100,13 +116,13 @@
                                             :account    account
                                             :amount     collectibles-per-account}]])
                                        request-ids
-                                       accounts)]
+                                       requestable-addresses)]
      {:db (cond-> db
             :always      (assoc-in [:wallet :ui :collectibles :pending-requests] num-accounts)
             new-request? (update-in [:wallet :accounts] update-vals #(dissoc % :collectibles)))
       :fx collectible-requests})))
 
-(defn request-new-collectibles-for-account-from-signal
+(defn request-collectibles-for-account
   [{:keys [db]} [address]]
   (let [pending-requests (get-in db [:wallet :ui :collectibles :pending-requests] 0)
         [request-id]     (get-unique-collectible-request-id 1)]
@@ -117,49 +133,138 @@
              :account    address
              :amount     collectibles-request-batch-size}]]]}))
 
-(rf/reg-event-fx :wallet/request-new-collectibles-for-account-from-signal
- request-new-collectibles-for-account-from-signal)
+(rf/reg-event-fx :wallet/request-collectibles-for-account request-collectibles-for-account)
 
 (rf/reg-event-fx
  :wallet/request-collectibles-for-current-viewing-account
  (fn [{:keys [db]} _]
    (when (network.data-store/online? db)
-     (let [current-viewing-account (-> db :wallet :current-viewing-account-address)
-           [request-id]            (get-unique-collectible-request-id 1)]
-       {:db (assoc-in db [:wallet :ui :collectibles :pending-requests] 1)
-        :fx [[:dispatch
-              [:wallet/request-new-collectibles-for-account
-               {:request-id request-id
-                :account    current-viewing-account
-                :amount     collectibles-request-batch-size}]]]}))))
+     (let [current-viewing-account (-> db :wallet :current-viewing-account-address)]
+       {:fx [[:dispatch [:wallet/request-collectibles-for-account current-viewing-account]]]}))))
+
+(rf/reg-event-fx
+ :wallet/collectible-ownership-update-finished-with-error
+ (fn [{:keys [db]} [{:keys [accounts message chainId]}]]
+   (let [address            (first accounts)
+         pending-chain-ids  (get-in db [:wallet :ui :collectibles :updating address])
+         updated-chain-ids  (disj pending-chain-ids chainId)
+         all-chain-updated? (and (some? pending-chain-ids) (empty? updated-chain-ids))]
+     {:db (cond-> db
+            (some? pending-chain-ids)
+            (assoc-in [:wallet :ui :collectibles :updating address] updated-chain-ids))
+      :fx [[:dispatch
+            [:wallet/log-rpc-error
+             {:event  :wallet/collectible-ownership-update-finished-with-error
+              :params {:address  address
+                       :chain-id chainId}}
+             message]]
+           (when all-chain-updated?
+             [:dispatch [:wallet/request-collectibles-for-account address]])]})))
+
+(rf/reg-event-fx
+ :wallet/collectible-ownership-update-finished
+ (fn [{:keys [db]} [{:keys [accounts chainId]}]]
+   (let [address            (first accounts)
+         pending-chain-ids  (get-in db [:wallet :ui :collectibles :updating address])
+         updated-chain-ids  (disj pending-chain-ids chainId)
+         all-chain-updated? (and (some? pending-chain-ids) (empty? updated-chain-ids))]
+     {:db (cond-> db
+            (some? pending-chain-ids)
+            (assoc-in [:wallet :ui :collectibles :updating address] updated-chain-ids))
+      :fx [(when all-chain-updated?
+             [:dispatch [:wallet/request-collectibles-for-account address]])]})))
+
+(defn- update-collectibles-in-account
+  [existing-collectibles updated-collectibles]
+  (let [indexed-existing (utils.collection/index-by
+                          :unique-id
+                          existing-collectibles)
+        existing-ids     (-> indexed-existing keys vec)
+        ;; pick collectibles only in the app-db
+        indexed-updated  (-> (utils.collection/index-by
+                              :unique-id
+                              updated-collectibles)
+                             (select-keys existing-ids))]
+    (-> (merge-with
+         merge
+         indexed-existing
+         indexed-updated)
+        vals
+        vec)))
+
+(rf/reg-event-fx
+ :wallet/collectibles-data-updated
+ (fn [{:keys [db]} [{:keys [message]}]]
+   (let [collectibles-by-address (->> message
+                                      transforms/json->clj
+                                      data-store/rpc->collectibles
+                                      (group-by #(-> % :ownership first :address)))]
+     {:db (update-in db
+                     [:wallet :accounts]
+                     #(reduce-kv
+                       (fn [accounts address updated-collectibles]
+                         (if (contains? accounts address)
+                           (update-in accounts
+                                      [address :collectibles]
+                                      update-collectibles-in-account
+                                      updated-collectibles)
+                           accounts))
+                       %
+                       collectibles-by-address))})))
+
+(rf/reg-event-fx
+ :wallet/set-collectibles-updating-status
+ (fn [{:keys [db]} [address chain-ids]]
+   {:db (assoc-in db [:wallet :ui :collectibles :updating address] chain-ids)}))
 
 (defn- update-fetched-collectibles-progress
   [db owner-address collectibles offset has-more?]
   (-> db
+      (update-in [:wallet :ui :collectibles :updating] dissoc owner-address)
       (assoc-in [:wallet :ui :collectibles :fetched owner-address] collectibles)
       (assoc-in [:wallet :accounts owner-address :current-collectible-idx]
                 (+ offset (count collectibles)))
       (assoc-in [:wallet :accounts owner-address :has-more-collectibles?] has-more?)))
 
+(defn- updating-collectibles?
+  [status]
+  (and (= (:state status) (ownership-state :updating))
+       (= (:timestamp status) -1)))
+
 (rf/reg-event-fx
  :wallet/owned-collectibles-filtering-done
  (fn [{:keys [db]} [{:keys [message]}]]
    (let [{:keys [offset ownershipStatus collectibles
-                 hasMore]} (transforms/json->clj message)
-         collectibles      (cske/transform-keys transforms/->kebab-case-keyword collectibles)
-         pending-requests  (dec (get-in db [:wallet :ui :collectibles :pending-requests]))
-         owner-address     (some->> ownershipStatus
-                                    first
-                                    key
-                                    name)]
+                 hasMore]}           (transforms/json->clj message)
+         ownership-status-by-address (-> ownershipStatus
+                                         (update-keys name)
+                                         (update-vals #(update-keys %
+                                                                    (comp utils.number/parse-int name))))
+         owner-address               (some-> ownership-status-by-address
+                                             first
+                                             key)
+         ownership-status            (get ownership-status-by-address owner-address)
+         collectibles                (data-store/rpc->collectibles collectibles)
+         pending-requests            (dec (get-in db [:wallet :ui :collectibles :pending-requests]))
+         ;; check if collectibles are updating (never fetched and cached before) for this address
+         updating-chains             (-> (select-keys
+                                          ownership-status
+                                          (for [[k v] ownership-status
+                                                :when (updating-collectibles? v)]
+                                            k))
+                                         keys
+                                         set)
+         updating?                   (-> updating-chains count pos?)]
      {:db (cond-> db
             :always       (assoc-in [:wallet :ui :collectibles :pending-requests] pending-requests)
             owner-address (update-fetched-collectibles-progress owner-address
                                                                 collectibles
                                                                 offset
-                                                                hasMore))
+                                                                (when-not updating? hasMore)))
       :fx [(when (zero? pending-requests)
-             [:dispatch [:wallet/flush-collectibles-fetched]])]})))
+             [:dispatch [:wallet/flush-collectibles-fetched]])
+           (when updating?
+             [:dispatch [:wallet/set-collectibles-updating-status owner-address updating-chains]])]})))
 
 (rf/reg-event-fx
  :wallet/navigate-to-collectible-details

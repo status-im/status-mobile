@@ -43,8 +43,8 @@
 
         (is (match? result-db expected-db))))))
 
-(deftest request-new-collectibles-for-account-from-signal-test
-  (testing "request new collectibles for account from signal"
+(deftest request-collectibles-for-account-test
+  (testing "request collectibles for account"
     (let [db       {:wallet {}}
           address  "0x1"
           expected {:db {:wallet {:ui {:collectibles {:pending-requests 1}}}}
@@ -53,6 +53,6 @@
                            {:request-id 0
                             :account    address
                             :amount     events/collectibles-request-batch-size}]]]}
-          effects  (events/request-new-collectibles-for-account-from-signal {:db db}
-                                                                            [address])]
+          effects  (events/request-collectibles-for-account {:db db}
+                                                            [address])]
       (is (match? expected effects)))))
