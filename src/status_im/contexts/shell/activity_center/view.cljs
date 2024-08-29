@@ -24,7 +24,7 @@
     [utils.re-frame :as rf]))
 
 (defn notification-component
-  [{:keys [type] :as notification} index]
+  [{notification-type :type :as notification} index]
   (let [extra-fn (rn/use-callback
                   (fn []
                     {:notification notification})
@@ -36,23 +36,23 @@
     ;; AC after pressing the bell icon can be high.
     [rn/view {:style (style/notification-container index)}
      (cond
-       (= type types/contact-verification)
+       (= notification-type types/contact-verification)
        [contact-verification/view props]
 
-       (= type types/contact-request)
+       (= notification-type types/contact-request)
        [contact-requests/view props]
 
-       (= type types/mention)
+       (= notification-type types/mention)
        [mentions/view props]
 
-       (= type types/reply)
+       (= notification-type types/reply)
        [reply/view props]
 
-       (= type types/admin)
+       (= notification-type types/admin)
        [admin/view props]
 
-       (some types/membership [type])
-       (condp = type
+       (types/membership notification-type)
+       (condp = notification-type
          types/private-group-chat [membership/view props]
          types/community-request  [community-request/view props]
          types/community-kicked   [community-kicked/view props]
