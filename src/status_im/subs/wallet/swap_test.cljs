@@ -141,7 +141,6 @@
                                               :eip-1559-enabled       true
                                               :l-1-gas-fee            "0"}}
    :error-response "Error"
-   :loading-fees? false
    :loading-swap-proposal? false
    :max-slippage 0.5})
 
@@ -217,14 +216,6 @@
       [:wallet :ui :swap]
       swap-data)
     (is (match? 0.5 (rf/sub [sub-name])))))
-
-(h/deftest-sub :wallet/swap-loading-fees?
-  [sub-name]
-  (testing "Return if swap is loading fees"
-    (swap! rf-db/app-db assoc-in
-      [:wallet :ui :swap]
-      swap-data)
-    (is (false? (rf/sub [sub-name])))))
 
 (h/deftest-sub :wallet/swap-loading-swap-proposal?
   [sub-name]

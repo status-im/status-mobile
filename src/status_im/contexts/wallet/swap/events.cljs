@@ -54,10 +54,6 @@
  (fn [{:keys [db]} [{:keys [token]}]]
    {:db (assoc-in db [:wallet :ui :swap :asset-to-receive] token)}))
 
-(rf/reg-event-fx :wallet.swap/recalculate-fees
- (fn [{:keys [db]} [loading-fees?]]
-   {:db (assoc-in db [:wallet :ui :swap :loading-fees?] loading-fees?)}))
-
 (rf/reg-event-fx :wallet/start-get-swap-proposal
  (fn [{:keys [db]} [{:keys [amount-in amount-out]}]]
    (let [wallet-address          (get-in db [:wallet :current-viewing-account-address])
@@ -120,16 +116,25 @@
 (rf/reg-event-fx :wallet/swap-proposal-success
  (fn [{:keys [db]} [swap-proposal]]
    (let [last-request-uuid (get-in db [:wallet :ui :swap :last-request-uuid])
+         view-id           (:view-id db)
          request-uuid      (:uuid swap-proposal)
          best-routes       (:best swap-proposal)
          error-response    (:error-response swap-proposal)]
      (when (= request-uuid last-request-uuid)
-       {:db (update-in db
-                       [:wallet :ui :swap]
-                       assoc
-                       :swap-proposal          (first best-routes)
-                       :error-response         (when (empty? best-routes) error-response)
-                       :loading-swap-proposal? false)}))))
+       (cond-> {:db (update-in db
+                               [:wallet :ui :swap]
+                               assoc
+                               :swap-proposal          (first best-routes)
+                               :error-response         (when (empty? best-routes) error-response)
+                               :loading-swap-proposal? false)}
+         ;; Router is unstable and it can return a swap proposal and after auto-refetching it can
+         ;; return an error. Ideally this shouldn't happen, but adding this behavior so if the
+         ;; user is in swap confirmation screen or in token approval confirmation screen, we
+         ;; navigate back to setup swap screen so proper error is displayed.
+         (and (empty? best-routes) (= view-id :screen/wallet.swap-set-spending-cap))
+         (assoc :fx [[:dismiss-modal :screen/wallet.swap-set-spending-cap]])
+         (and (empty? best-routes) (= view-id :screen/wallet.swap-confirmation))
+         (assoc :fx [[:navigate-back]]))))))
 
 (rf/reg-event-fx :wallet/swap-proposal-error
  (fn [{:keys [db]} [error-message]]

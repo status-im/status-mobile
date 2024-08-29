@@ -73,11 +73,12 @@
        :style               (style/section-label theme)
        :accessibility-label :spending-cap-label}
       (i18n/label :t/spending-cap)]
-     [quo/approval-info
-      {:type            :spending-cap
-       :unlimited-icon? false
-       :label           (str pay-amount " " pay-token-symbol)
-       :avatar-props    {:token pay-token-symbol}}]]))
+     (when (and asset-to-pay pay-amount)
+       [quo/approval-info
+        {:type            :spending-cap
+         :unlimited-icon? false
+         :label           (str pay-amount " " pay-token-symbol)
+         :avatar-props    {:token pay-token-symbol}}])]))
 
 (defn- account-section
   []
@@ -93,14 +94,15 @@
        :style               (style/section-label theme)
        :accessibility-label :account-label}
       (i18n/label :t/account)]
-     [quo/approval-info
-      {:type            :account
-       :unlimited-icon? false
-       :label           (:name account)
-       :description     (address-utils/get-short-wallet-address (:address account))
-       :tag-label       (str pay-amount " " pay-token-symbol)
-       :avatar-props    {:emoji               (:emoji account)
-                         :customization-color (:color account)}}]]))
+     (when (and asset-to-pay pay-amount)
+       [quo/approval-info
+        {:type            :account
+         :unlimited-icon? false
+         :label           (:name account)
+         :description     (address-utils/get-short-wallet-address (:address account))
+         :tag-label       (str pay-amount " " pay-token-symbol)
+         :avatar-props    {:emoji               (:emoji account)
+                           :customization-color (:color account)}}])]))
 
 (defn- on-option-press
   [{:keys [chain-id contract-address]}]
@@ -133,15 +135,16 @@
        :style               (style/section-label theme)
        :accessibility-label :token-label}
       (i18n/label :t/token)]
-     [quo/approval-info
-      {:type            :token-contract
-       :option-icon     :i/options
-       :on-option-press #(on-option-press {:chain-id         network-chain-id
-                                           :contract-address pay-token-address})
-       :unlimited-icon? false
-       :label           pay-token-symbol
-       :description     (address-utils/get-short-wallet-address pay-token-address)
-       :avatar-props    {:token pay-token-symbol}}]]))
+     (when asset-to-pay
+       [quo/approval-info
+        {:type            :token-contract
+         :option-icon     :i/options
+         :on-option-press #(on-option-press {:chain-id         network-chain-id
+                                             :contract-address pay-token-address})
+         :unlimited-icon? false
+         :label           pay-token-symbol
+         :description     (address-utils/get-short-wallet-address pay-token-address)
+         :avatar-props    {:token pay-token-symbol}}])]))
 
 (defn- spender-contract-section
   []
@@ -156,15 +159,16 @@
        :style               (style/section-label theme)
        :accessibility-label :spender-contract-label}
       (i18n/label :t/spender-contract)]
-     [quo/approval-info
-      {:type            :token-contract
-       :option-icon     :i/options
-       :on-option-press #(on-option-press {:chain-id         network-chain-id
-                                           :contract-address (:contract-address provider)})
-       :unlimited-icon? false
-       :label           (:full-name provider)
-       :description     (address-utils/get-short-wallet-address (:contract-address provider))
-       :avatar-props    {:image (resources/get-network (:name provider))}}]]))
+     (when provider
+       [quo/approval-info
+        {:type            :token-contract
+         :option-icon     :i/options
+         :on-option-press #(on-option-press {:chain-id         network-chain-id
+                                             :contract-address (:contract-address provider)})
+         :unlimited-icon? false
+         :label           (:full-name provider)
+         :description     (address-utils/get-short-wallet-address (:contract-address provider))
+         :avatar-props    {:image (resources/get-network (:name provider))}}])]))
 
 (defn- data-item
   [{:keys [network-image title subtitle size loading?]}]
@@ -181,11 +185,11 @@
 
 (defn- transaction-details
   []
-  (let [network        (rf/sub [:wallet/swap-network])
-        max-fees       (rf/sub [:wallet/wallet-swap-proposal-fee-fiat-formatted
-                                constants/token-for-fees-symbol])
-        loading-fees?  (rf/sub [:wallet/swap-loading-fees?])
-        estimated-time (rf/sub [:wallet/swap-proposal-estimated-time])]
+  (let [network                (rf/sub [:wallet/swap-network])
+        max-fees               (rf/sub [:wallet/wallet-swap-proposal-fee-fiat-formatted
+                                        constants/token-for-fees-symbol])
+        loading-swap-proposal? (rf/sub [:wallet/swap-loading-swap-proposal?])
+        estimated-time         (rf/sub [:wallet/swap-proposal-estimated-time])]
     [rn/view {:style style/details-container}
      [:<>
       [data-item
@@ -194,26 +198,31 @@
         :network-image (:source network)}]
       [data-item
        {:title    (i18n/label :t/max-fees)
-        :subtitle max-fees
-        :loading? loading-fees?
+        :subtitle (if (and estimated-time max-fees) max-fees (i18n/label :t/unknown))
+        :loading? loading-swap-proposal?
         :size     :small}]
       [data-item
        {:title    (i18n/label :t/est-time)
-        :subtitle (i18n/label :t/time-in-mins {:minutes (str estimated-time)})}]]]))
+        :subtitle (if estimated-time
+                    (i18n/label :t/time-in-mins {:minutes (str estimated-time)})
+                    (i18n/label :t/unknown))
+        :loading? loading-swap-proposal?
+        :size     :small}]]]))
 
 (defn- slide-button
   []
-  (let [loading-fees?   (rf/sub [:wallet/swap-loading-fees?])
-        account         (rf/sub [:wallet/current-viewing-account])
-        on-auth-success (rn/use-callback #(rf/dispatch
-                                           [:wallet/swap-transaction
-                                            (security/safe-unmask-data %)]))]
+  (let [loading-swap-proposal? (rf/sub [:wallet/swap-loading-swap-proposal?])
+        swap-proposal          (rf/sub [:wallet/swap-proposal])
+        account                (rf/sub [:wallet/current-viewing-account])
+        on-auth-success        (rn/use-callback #(rf/dispatch
+                                                  [:wallet/swap-transaction
+                                                   (security/safe-unmask-data %)]))]
     [standard-auth/slide-button
      {:size                :size-48
       :track-text          (i18n/label :t/slide-to-sign)
       :container-style     {:z-index 2}
       :customization-color (:color account)
-      :disabled?           loading-fees?
+      :disabled?           (or loading-swap-proposal? (not swap-proposal))
       :on-auth-success     on-auth-success
       :auth-button-label   (i18n/label :t/confirm)}]))
 
