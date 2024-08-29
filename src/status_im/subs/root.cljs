@@ -74,6 +74,7 @@
 (reg-root-key-sub :initials-avatar-font-file :initials-avatar-font-file)
 (reg-root-key-sub :alert-banners :alert-banners)
 (reg-root-key-sub :alert-banners/hide? :alert-banners/hide?)
+(reg-root-key-sub :currencies :currencies)
 
 ;;onboarding
 (reg-root-key-sub :onboarding/generated-keys? :onboarding/generated-keys?)

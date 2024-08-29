@@ -1,5 +1,6 @@
 (ns legacy.status-im.multiaccounts.update.core
   (:require
+    [legacy.status-im.data-store.settings :as settings]
     [legacy.status-im.utils.deprecated-types :as types]
     [status-im.constants :as constants]
     [taoensso.timbre :as log]
@@ -81,7 +82,7 @@
   [{:keys [db] :as cofx} setting setting-value]
   (let [current-multiaccount (:profile/profile db)
         setting-value        (if (= :currency setting)
-                               (keyword setting-value)
+                               (settings/rpc->currency setting-value)
                                setting-value)
         db                   (case setting
                                :stickers/packs-pending
@@ -104,7 +105,9 @@
                                db)]
     {:db (if setting-value
            (assoc-in db [:profile/profile setting] setting-value)
-           (update db :profile/profile dissoc setting))}))
+           (update db :profile/profile dissoc setting))
+     :fx [(when (= setting :currency)
+            [:dispatch [:wallet/get-wallet-token-for-all-accounts]])]}))
 
 (rf/defn set-many-js
   [cofx settings-js]

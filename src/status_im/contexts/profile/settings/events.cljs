@@ -151,3 +151,8 @@
           [{:method     "settings_mnemonicWasShown"
             :on-success #(log/debug "mnemonic was marked as shown")
             :on-error   #(log/error "mnemonic was not marked as shown" %)}]]]}))
+
+(rf/reg-event-fx :profile.settings/update-currency
+ (fn [_ [currency]]
+   {:fx [[:dispatch [:profile.settings/profile-update :currency currency]]
+         [:dispatch [:wallet/get-wallet-token-for-all-accounts]]]}))

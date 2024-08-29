@@ -100,6 +100,15 @@
    :colorHash [[3 25] [4 3] [5 4] [2 0] [1 10] [5 2] [2 4] [1 17] [3 23] [2 19] [4 1]]
    :installation-id "cee7e269-1ca7-4468-a1dd-e60e5cfb0894"})
 
+(def sample-currency
+  {:usd {:id         :usd
+         :short-name "USD"
+         :symbol     "$"
+         :emoji      "🇺🇸"
+         :name       "US Dollar"
+         :popular?   true
+         :token?     false}})
+
 (h/deftest-sub :profile/currency
   [sub-name]
   (testing "returns the selected currency of user"
@@ -109,7 +118,9 @@
 (h/deftest-sub :profile/currency-symbol
   [sub-name]
   (testing "returns the symbol of the user's selected currency"
-    (swap! rf-db/app-db #(assoc % :profile/profile sample-profile))
+    (swap! rf-db/app-db assoc
+      :profile/profile sample-profile
+      :currencies      sample-currency)
     (is (match? "$" (rf/sub [sub-name])))))
 
 (h/deftest-sub :profile/public-key

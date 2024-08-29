@@ -13,6 +13,7 @@
    :pairing/installations              {}
    :group/selected-contacts            #{}
    :chats                              {}
+   :currencies                         {}
    :current-chat-id                    nil
    :group-chat/selected-participants   #{}
    :group-chat/deselected-members      #{}

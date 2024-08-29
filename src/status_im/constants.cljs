@@ -586,6 +586,8 @@
 
 (def ^:const contact-item-height 56)
 
+(def ^:const currency-item-height 64)
+
 (def ^:const slippages [0.1 0.5 1])
 (def ^:const default-slippage 0.5)
 (def ^:const max-recommended-slippage 5)

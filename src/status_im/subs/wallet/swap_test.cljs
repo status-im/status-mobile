@@ -7,6 +7,15 @@
     [test-helpers.unit :as h]
     [utils.re-frame :as rf]))
 
+(def ^:private currencies
+  {:usd {:id         :usd
+         :short-name "USD"
+         :symbol     "$"
+         :emoji      "🇺🇸"
+         :name       "US Dollar"
+         :popular?   true
+         :token?     false}})
+
 (def networks
   {:mainnet-network
    {:full-name        "Mainnet"
@@ -146,7 +155,8 @@
 (h/deftest-sub :wallet/swap-asset-to-pay-network-balance
   [sub-name]
   (testing "Return swap asset-to-pay"
-    (swap! rf-db/app-db assoc-in
-      [:wallet :ui :swap]
-      swap-data)
+    (swap! rf-db/app-db
+      #(-> %
+           (assoc :currencies currencies)
+           (assoc-in [:wallet :ui :swap] swap-data)))
     (is (match? {:crypto "1 SNT" :fiat "$0.03"} (rf/sub [sub-name 1])))))

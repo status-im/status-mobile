@@ -94,3 +94,11 @@
  (fn [params]
    (doseq [param params]
      (call param))))
+
+(defn log-rpc-error
+  [_ [{:keys [event params]} error]]
+  (log/error (str "Failed to " event)
+             {:params params
+              :error  error}))
+
+(rf/reg-event-fx :log-rpc-error log-rpc-error)

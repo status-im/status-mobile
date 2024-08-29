@@ -4,7 +4,6 @@
     [clojure.string :as string]
     [legacy.status-im.fleet.core :as fleet]
     [legacy.status-im.multiaccounts.db :as multiaccounts.db]
-    [legacy.status-im.utils.currency :as currency]
     [quo.theme]
     [re-frame.core :as re-frame]
     [status-im.common.pixel-ratio :as pixel-ratio]
@@ -20,9 +19,9 @@
 
 (re-frame/reg-sub
  :profile/currency
- (fn []
-   ;; returns "usd" by default as the support for other currencies are in progress on Mobile
-   constants/profile-default-currency))
+ :<- [:profile/profile]
+ (fn [{:keys [currency]}]
+   (or currency constants/profile-default-currency)))
 
 (re-frame/reg-sub
  :profile/syncing-on-mobile-network?
@@ -32,10 +31,20 @@
 
 (re-frame/reg-sub
  :profile/currency-symbol
+ :<- [:currencies]
  :<- [:profile/currency]
- (fn [currency-id]
-   (-> (get currency/currencies currency-id)
-       :symbol)))
+ (fn [[currencies currency-id]]
+   (let [currency (get currencies currency-id)]
+     (if (:token? currency)
+       (:short-name currency)
+       (:symbol currency)))))
+
+(re-frame/reg-sub
+ :profile/currency-info
+ :<- [:currencies]
+ :<- [:profile/currency]
+ (fn [[currencies currency-id]]
+   (get currencies currency-id)))
 
 (re-frame/reg-sub
  :profile/login-profiles-picture

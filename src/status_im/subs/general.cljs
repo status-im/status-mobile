@@ -161,3 +161,27 @@
  :<- [:network/status]
  (fn [status]
    (= status :online)))
+
+(re-frame/reg-sub :currencies/categorized
+ :<- [:currencies]
+ (fn [currencies [_ query]]
+   (let [search-lc (string/lower-case query)]
+     (reduce
+      (fn [acc currency]
+        (let [{:keys [popular? token? name short-name]} currency
+              matches-query?                            (or (string/includes? (string/lower-case
+                                                                               name)
+                                                                              search-lc)
+                                                            (string/includes? (string/lower-case
+                                                                               short-name)
+                                                                              search-lc))]
+          (cond-> acc
+            matches-query?                                   (update :total inc)
+            (and popular? matches-query?)                    (update :popular conj currency)
+            (and token? matches-query?)                      (update :crypto conj currency)
+            (and matches-query? (not popular?) (not token?)) (update :other conj currency))))
+      {:total   0
+       :popular []
+       :crypto  []
+       :other   []}
+      (vals currencies)))))

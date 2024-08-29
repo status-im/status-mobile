@@ -90,7 +90,10 @@
     :dark  (js/require "../resources/images/ui2/sweating-man-dark.png")}
    :no-pinned-messages
    {:light (js/require "../resources/images/ui2/no-pinned-messages-light.png")
-    :dark  (js/require "../resources/images/ui2/no-pinned-messages-dark.png")}})
+    :dark  (js/require "../resources/images/ui2/no-pinned-messages-dark.png")}
+   :no-assets
+   {:light (js/require "../resources/images/ui2/no-assets-light.png")
+    :dark  (js/require "../resources/images/ui2/no-assets-dark.png")}})
 
 (def mock-images
   {:bored-ape             (js/require "../resources/images/mock2/bored-ape.png")

@@ -12,6 +12,15 @@
 (use-fixtures :each
               {:before #(reset! rf-db/app-db {})})
 
+(def ^:private currencies
+  {:usd {:id         :usd
+         :short-name "USD"
+         :symbol     "$"
+         :emoji      "🇺🇸"
+         :name       "US Dollar"
+         :popular?   true
+         :token?     false}})
+
 (def ^:private accounts-with-tokens
   {:0x1 {:tokens                    [{:symbol                     "ETH"
                                       :balances-per-chain         {1 {:raw-balance "100"}}
@@ -318,6 +327,7 @@
     (swap! rf-db/app-db
       #(-> %
            (assoc :wallet db/defaults)
+           (assoc :currencies currencies)
            (assoc-in [:wallet :accounts] accounts)
            (assoc-in [:wallet :current-viewing-account-address] "0x1")
            (assoc-in [:wallet :networks] network-data)))
@@ -600,6 +610,7 @@
   (testing "returns aggregated tokens (in quo/token-value props) and balances from all accounts"
     (swap! rf-db/app-db #(-> %
                              (assoc :wallet db/defaults)
+                             (assoc :currencies currencies)
                              (assoc-in [:wallet :accounts] accounts)))
     (let [{:keys [formatted-balance tokens]} (rf/sub [sub-name])]
       (is (match? 2 (count tokens)))
@@ -873,6 +884,7 @@
            (assoc-in [:wallet :accounts] accounts)
            (assoc-in [:wallet :networks] network-data)
            (assoc-in [:wallet :current-viewing-account-address] "0x2")
+           (assoc :currencies currencies)
            (assoc-in [:profile/profile :currency] :usd)))
     (is (match? (count (rf/sub [sub-name ""])) 2))
     (is (match? (count (rf/sub [sub-name "et"])) 1))))
@@ -936,6 +948,7 @@
       #(-> %
            (assoc-in [:wallet :accounts] accounts)
            (assoc-in [:wallet :networks] network-data)
+           (assoc :currencies currencies)
            (assoc-in [:profile/profile :currency] :usd)))
 
     (let [result (rf/sub [sub-name])
@@ -952,6 +965,7 @@
            (assoc-in [:wallet :accounts] accounts)
            (assoc-in [:wallet :networks] network-data)
            (assoc-in [:wallet :current-viewing-account-address] "0x2")
+           (assoc :currencies currencies)
            (assoc-in [:profile/profile :currency] :usd)))
 
     (let [result (rf/sub [sub-name])
@@ -969,6 +983,7 @@
            (assoc-in [:wallet :accounts] accounts-with-tokens)
            (assoc-in [:wallet :current-viewing-account-address] "0x1")
            (assoc-in [:wallet :ui :send :route] route-data)
+           (assoc :currencies currencies)
            (assoc-in [:profile/profile :currency] :usd)
            (assoc-in [:profile/profile :currency-symbol] "$")))
 

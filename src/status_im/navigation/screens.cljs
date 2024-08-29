@@ -58,6 +58,8 @@
     [status-im.contexts.profile.settings.screens.password.view :as settings-password]
     [status-im.contexts.profile.settings.screens.syncing.view :as settings.syncing]
     [status-im.contexts.profile.settings.view :as settings]
+    [status-im.contexts.settings.language-and-currency.currency.view :as settings.currency-selection]
+    [status-im.contexts.settings.language-and-currency.view :as settings.language-and-currency]
     [status-im.contexts.settings.privacy-and-security.view :as settings.privacy-and-security]
     [status-im.contexts.settings.wallet.keypairs-and-accounts.missing-keypairs.encrypted-qr.view
      :as encrypted-keypair-qr]
@@ -642,6 +644,14 @@
     {:name      :screen/settings-privacy-and-security
      :options   options/transparent-modal-screen-options
      :component settings.privacy-and-security/view}
+
+    {:name      :screen/settings.language-and-currency
+     :options   options/transparent-modal-screen-options
+     :component settings.language-and-currency/view}
+
+    {:name      :screen/settings.currency-selection
+     :options   options/transparent-modal-screen-options
+     :component settings.currency-selection/view}
 
     {:name      :screen/change-password
      :options   (assoc options/transparent-modal-screen-options :theme :dark)

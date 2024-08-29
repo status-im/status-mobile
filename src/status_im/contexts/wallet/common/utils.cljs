@@ -22,7 +22,10 @@
 
 (defn prettify-balance
   [currency-symbol balance]
-  (str currency-symbol (cut-fiat-balance-to-two-decimals balance)))
+  (let [formatted-symbol (if (> (count currency-symbol) 1)
+                           (str currency-symbol " ")
+                           currency-symbol)]
+    (str formatted-symbol (cut-fiat-balance-to-two-decimals balance))))
 
 (defn get-derivation-path
   [number-of-accounts]
