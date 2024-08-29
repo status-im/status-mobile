@@ -496,7 +496,7 @@ com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.11.1
 com.fasterxml.jackson.module:jackson-module-jaxb-annotations:2.11.1
 com.fasterxml.jackson.module:jackson-module-kotlin:2.11.1
 com.fasterxml.woodstox:woodstox-core:6.2.1
-com.github.Dimezis:BlurView:version-2.0.3
+com.github.Dimezis:BlurView:version-2.0.4
 com.github.bumptech.glide:annotations:4.12.0
 com.github.bumptech.glide:compiler:4.12.0
 com.github.bumptech.glide:disklrucache:4.12.0
