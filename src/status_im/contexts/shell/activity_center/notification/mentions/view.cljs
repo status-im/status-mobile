@@ -9,38 +9,45 @@
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
-(defn- mention-text [literal]
+(defn- mention-text
+  [literal]
   (let [mention (rf/sub [:messages/resolve-mention literal])]
     [quo/text
      {:style style/mention-text
       :size  :paragraph-1}
      (str "@" mention)]))
 
-(defn- parsed-text->hiccup [{:keys [literal destination] message-type :type}]
+(defn- parsed-text->hiccup
+  [{:keys [literal destination] message-type :type}]
   (case message-type
     "mention" [mention-text literal]
-    "link" destination
+    "link"    destination
     literal))
 
-(defn- message-body [{:keys [container parsed-text]}]
+(defn- message-body
+  [{:keys [container parsed-text]}]
   (into container (map parsed-text->hiccup) parsed-text))
 
-(defn- simple-message [content]
+(defn- simple-message
+  [content]
   (let [parsed-text (get-in content [:content :parsed-text 0 :children])]
-    [message-body {:container   [quo/text
-                                 {:number-of-lines     1
-                                  :style               style/tag-text
-                                  :accessibility-label :activity-message-body
-                                  :size                :paragraph-1}]
-                   :parsed-text parsed-text}]))
+    [message-body
+     {:container   [quo/text
+                    {:number-of-lines     1
+                     :style               style/tag-text
+                     :accessibility-label :activity-message-body
+                     :size                :paragraph-1}]
+      :parsed-text parsed-text}]))
 
-(defn- album-message [content]
+(defn- album-message
+  [content]
   (let [parsed-text (get-in content [0 :parsedText 0 :children])
         images      (map :image content)]
     [quo/activity-logs-photos
      {:photos       images
-      :message-text [message-body {:container   [:<>]
-                                   :parsed-text parsed-text}]}]))
+      :message-text [message-body
+                     {:container   [:<>]
+                      :parsed-text parsed-text}]}]))
 
 (defn- swipeable
   [{:keys [extra-fn]} child]
@@ -56,10 +63,10 @@
   [{:keys [notification extra-fn]}]
   (let [{:keys [author chat-name community-id chat-id message read timestamp
                 album-messages]} notification
-        community-chat?     (not (string/blank? community-id))
-        community-name      (rf/sub [:communities/name community-id])
-        community-logo      (rf/sub [:communities/logo community-id])
-        customization-color (rf/sub [:profile/customization-color])]
+        community-chat?          (not (string/blank? community-id))
+        community-name           (rf/sub [:communities/name community-id])
+        community-logo           (rf/sub [:communities/logo community-id])
+        customization-color      (rf/sub [:profile/customization-color])]
     [swipeable {:extra-fn extra-fn}
      [gesture/touchable-without-feedback
       {:on-press (fn []
