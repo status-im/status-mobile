@@ -8,7 +8,7 @@
 (def hex-prefix "0x")
 ;; EIP-3770 is a format used by Status and described here: https://eips.ethereum.org/EIPS/eip-3770
 (def regx-eip-3770-address #"^(?:(?:eth:|arb1:|oeth:)(?=:|))*0x[0-9a-fA-F]{40}$")
-(def regx-metamask-address #"^ethereum:(0x[0-9a-fA-F]{40})@(0x1|0xa|0xa4b1)$")
+(def regx-metamask-address #"^ethereum:(0x[0-9a-fA-F]{40})(?:@(0x1|0xa|0xa4b1))?$")
 (def regx-address-contains #"(?i)0x[a-fA-F0-9]{40}")
 
 (defn normalized-hex
@@ -112,8 +112,9 @@
 (defn metamask-address->status-address
   [metamask-address]
   (when-let [[_ address metamask-network-suffix] (split-metamask-address metamask-address)]
-    (when-let [status-network-prefix (eip-155-suffix->eip-3770-prefix metamask-network-suffix)]
-      (str status-network-prefix address))))
+    (if-let [status-network-prefix (eip-155-suffix->eip-3770-prefix metamask-network-suffix)]
+      (str status-network-prefix address)
+      address)))
 
 (defn supported-address->status-address
   [address]

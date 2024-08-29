@@ -43,7 +43,8 @@
 (def valid-metamask-addresses
   ["ethereum:0x38cf6E0Ba4C4530735616e1Ee7ff5FbCB726fBd2@0x1"
    "ethereum:0x38cf6E0Ba4C4530735616e1Ee7ff5FbCB726fBd2@0xa4b1"
-   "ethereum:0x38cf6E0Ba4C4530735616e1Ee7ff5FbCB726fBd2@0xa"])
+   "ethereum:0x38cf6E0Ba4C4530735616e1Ee7ff5FbCB726fBd2@0xa"
+   "ethereum:0x38cf6E0Ba4C4530735616e1Ee7ff5FbCB726fBd2"])
 
 (def invalid-metamask-addresses
   ["ethe:0x38cf6E0Ba4C4530735616e1Ee7ff5FbCB726fBd2@0x1"
@@ -51,8 +52,7 @@
    "0x38cf6E0Ba4C4530735616e1Ee7ff5FbCB726fBd2@0xa"
    "ethereum:0x38cf6E0Ba4C4530735616e1Ee7ff5FbCB726fBd2@0x1d"
    "ethereum:0x38cf6E0Ba4C4530735616e1Ee7ff5FbCB726fBd20xa4b1"
-   "ethereum:0x38cf6E0Ba4C4530735616e1Ee7ff5FbCB726fBd2:0xa"
-   "ethereum:0x38cf6E0Ba4C4530735616e1Ee7ff5FbCB726fBd2"])
+   "ethereum:0x38cf6E0Ba4C4530735616e1Ee7ff5FbCB726fBd2:0xa"])
 
 (def metamask-to-status
   [{:metamask "ethereum:0x38cf6E0Ba4C4530735616e1Ee7ff5FbCB726fBd2@0x1"
@@ -61,13 +61,14 @@
     :status   "arb1:0x38cf6E0Ba4C4530735616e1Ee7ff5FbCB726fBd2"}
    {:metamask "ethereum:0x38cf6E0Ba4C4530735616e1Ee7ff5FbCB726fBd2@0xa"
     :status   "oeth:0x38cf6E0Ba4C4530735616e1Ee7ff5FbCB726fBd2"}
+   {:metamask "ethereum:0x38cf6E0Ba4C4530735616e1Ee7ff5FbCB726fBd2"
+    :status   "0x38cf6E0Ba4C4530735616e1Ee7ff5FbCB726fBd2"}
    {:metamask "ethe:0x38cf6E0Ba4C4530735616e1Ee7ff5FbCB726fBd2@0x1" :status nil}
    {:metamask ":0x38cf6E0Ba4C4530735616e1Ee7ff5FbCB726fBd2@0xa4b1" :status nil}
    {:metamask "0x38cf6E0Ba4C4530735616e1Ee7ff5FbCB726fBd2@0xa" :status nil}
    {:metamask "ethereum:0x38cf6E0Ba4C4530735616e1Ee7ff5FbCB726fBd2@0x1d" :status nil}
    {:metamask "ethereum:0x38cf6E0Ba4C4530735616e1Ee7ff5FbCB726fBd20xa4b1" :status nil}
-   {:metamask "ethereum:0x38cf6E0Ba4C4530735616e1Ee7ff5FbCB726fBd2:0xa" :status nil}
-   {:metamask "ethereum:0x38cf6E0Ba4C4530735616e1Ee7ff5FbCB726fBd2" :status nil}])
+   {:metamask "ethereum:0x38cf6E0Ba4C4530735616e1Ee7ff5FbCB726fBd2:0xa" :status nil}])
 
 (deftest metamask-address?-test
   (testing "Check valid metamask addresses"
