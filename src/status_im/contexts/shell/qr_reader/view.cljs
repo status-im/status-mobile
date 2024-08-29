@@ -6,9 +6,9 @@
             [status-im.common.scan-qr-code.view :as scan-qr-code]
             [status-im.common.validation.general :as validators]
             [status-im.contexts.communities.events]
-            [status-im.contexts.wallet.common.validation :as wallet-validation]
             [status-im.contexts.wallet.wallet-connect.utils :as wc-utils]
             [status-im.feature-flags :as ff]
+            [utils.address :as utils-address]
             [utils.debounce :as debounce]
             [utils.ethereum.eip.eip681 :as eip681]
             [utils.i18n :as i18n]
@@ -19,18 +19,14 @@
    :theme :dark
    :text  (i18n/label :t/invalid-qr)})
 
-(defn- text-for-url-path?
+(defn- text-a-status-url-for-path?
   [text path]
-  (some #(string/starts-with? text %) (router/path-urls path)))
+  (some #(string/starts-with? text %) (router/prepend-status-urls path)))
 
 (defn- extract-id
   [scanned-text]
   (let [index (string/index-of scanned-text "#")]
     (subs scanned-text (inc index))))
-
-(defn eth-address?
-  [scanned-text]
-  (wallet-validation/eth-address? scanned-text))
 
 (defn eip681-address?
   [scanned-text]
@@ -71,15 +67,15 @@
    [:wallet-connect/on-scan-connection scanned-text]
    300))
 
-(defn on-qr-code-scanned
+(defn- on-qr-code-scanned
   [scanned-text]
   (cond
     (or
-     (text-for-url-path? scanned-text router/community-with-data-path)
-     (text-for-url-path? scanned-text router/channel-path))
+     (text-a-status-url-for-path? scanned-text router/community-with-data-path)
+     (text-a-status-url-for-path? scanned-text router/channel-path))
     (debounce/debounce-and-dispatch [:universal-links/handle-url scanned-text] 300)
 
-    (text-for-url-path? scanned-text router/user-with-data-path)
+    (text-a-status-url-for-path? scanned-text router/user-with-data-path)
     (let [address (extract-id scanned-text)]
       (load-and-show-profile address))
 
@@ -87,9 +83,9 @@
         (validators/valid-compressed-key? scanned-text))
     (load-and-show-profile scanned-text)
 
-    (eth-address? scanned-text)
-    (do
-      (debounce/debounce-and-dispatch [:generic-scanner/scan-success scanned-text] 300)
+    (utils-address/supported-address? scanned-text)
+    (when-let [address (utils-address/supported-address->status-address scanned-text)]
+      (debounce/debounce-and-dispatch [:generic-scanner/scan-success address] 300)
       (debounce/debounce-and-dispatch [:navigate-change-tab :wallet-stack] 300))
 
     (eip681-address? scanned-text)

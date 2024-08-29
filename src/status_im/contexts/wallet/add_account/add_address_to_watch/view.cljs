@@ -6,10 +6,10 @@
     [react-native.core :as rn]
     [reagent.core :as reagent]
     [status-im.common.floating-button-page.view :as floating-button-page]
-    [status-im.constants :as constants]
     [status-im.contexts.wallet.add-account.add-address-to-watch.style :as style]
     [status-im.contexts.wallet.common.validation :as validation]
     [status-im.subs.wallet.add-account.address-to-watch]
+    [utils.address :as utils-address]
     [utils.debounce :as debounce]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
@@ -20,12 +20,8 @@
     (or (nil? user-input) (= user-input "")) nil
     (contains? known-addresses user-input)   (i18n/label :t/address-already-in-use)
     (not
-     (or (validation/eth-address? user-input)
+     (or (utils-address/supported-address? user-input)
          (validation/ens-name? user-input))) (i18n/label :t/invalid-address)))
-
-(defn- extract-address
-  [scanned-text]
-  (re-find constants/regx-address-contains scanned-text))
 
 (defn- address-input
   [{:keys [input-value validation-msg validate clear-input]}]
@@ -141,10 +137,12 @@
                                               (= activity-state :scanning)
                                               (not validated-address))
                      :on-press            (fn []
-                                            (rf/dispatch [:navigate-to
-                                                          :screen/wallet.confirm-address-to-watch
-                                                          {:address (extract-address
-                                                                     validated-address)}])
+                                            (rf/dispatch
+                                             [:navigate-to
+                                              :screen/wallet.confirm-address-to-watch
+                                              {:address
+                                               (utils-address/extract-address-without-chains-info
+                                                validated-address)}])
                                             (clear-input))
                      :container-style     {:z-index 2}}
                     (i18n/label :t/continue)]}

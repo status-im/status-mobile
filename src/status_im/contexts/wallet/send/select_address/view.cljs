@@ -12,12 +12,12 @@
     [status-im.contexts.wallet.common.account-switcher.view :as account-switcher]
     [status-im.contexts.wallet.common.utils :as utils]
     [status-im.contexts.wallet.common.utils.networks :as network-utils]
-    [status-im.contexts.wallet.common.validation :as validation]
     [status-im.contexts.wallet.item-types :as types]
     [status-im.contexts.wallet.send.select-address.style :as style]
     [status-im.contexts.wallet.send.select-address.tabs.view :as tabs]
     [status-im.feature-flags :as ff]
     [status-im.setup.hot-reload :as hot-reload]
+    [utils.address :as utils-address]
     [utils.debounce :as debounce]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
@@ -33,9 +33,9 @@
   [address]
   (debounce/debounce-and-dispatch
    (cond
-     (<= (count address) 0)            [:wallet/address-validation-failed address]
-     (validation/eth-address? address) [:wallet/address-validation-success address]
-     :else                             [:wallet/address-validation-failed address])
+     (<= (count address) 0)                    [:wallet/address-validation-failed address]
+     (utils-address/eip-3770-address? address) [:wallet/address-validation-success address]
+     :else                                     [:wallet/address-validation-failed address])
    300))
 
 (defn- address-input
@@ -58,7 +58,7 @@
                                                {:on-result on-result}]))
         :ens-regex             constants/regx-ens
         :scanned-value         (or (when recipient-plain-address? send-address) scanned-address)
-        :address-regex         constants/regx-multichain-address
+        :address-regex         utils-address/regx-eip-3770-address
         :on-detect-address     (fn [address]
                                  (when (or (= current-screen-id :screen/wallet.select-address)
                                            (= current-screen-id :screen/wallet.scan-address))

@@ -9,6 +9,7 @@
     [status-im.contexts.settings.wallet.saved-addresses.add-address-to-save.style :as style]
     [status-im.contexts.wallet.common.utils :as utils]
     [status-im.contexts.wallet.common.validation :as validation]
+    [utils.address :as utils-address]
     [utils.debounce :as debounce]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
@@ -31,7 +32,7 @@
       :own-account
 
       (not
-       (or (validation/eth-address? user-input)
+       (or (utils-address/eip-3770-address? user-input)
            (validation/ens-name? user-input)))
       :invalid-address-or-ens)))
 

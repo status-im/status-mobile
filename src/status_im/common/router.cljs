@@ -24,7 +24,7 @@
 
 (def web-prefixes ["https://" "http://" "https://www." "http://www."])
 
-(def web2-domain "status.app")
+(def status-web2-domain "status.app")
 
 (def user-path "u#")
 (def user-with-data-path "u/")
@@ -32,13 +32,14 @@
 (def community-with-data-path "c/")
 (def channel-path "cc/")
 
-(def web-urls (map #(str % web2-domain "/") web-prefixes))
+(def status-web-urls (map #(str % status-web2-domain "/") web-prefixes))
 
-(defn path-urls
+(defn prepend-status-urls
   [path]
-  (map #(str % path) web-urls))
+  (map #(str % path) status-web-urls))
 
-(def handled-schemes (set (into uri-schemes web-urls)))
+
+(def handled-schemes (set (into uri-schemes status-web-urls)))
 
 (def group-chat-extractor
   {[#"(.*)" :params] {""  :group-chat
