@@ -57,6 +57,7 @@
                                 chat-screen-layout-calculations-complete?}]
     (when *screen-loaded?*
       (rn/use-mount #(reset! *screen-loaded?* true)))
+    (rn/use-unmount #(rf/dispatch [:chat/clear-current-chat-id]))
     (when-not (if *screen-loaded?* @*screen-loaded?* screen-loaded?)
       (reanimated/set-shared-value chat-screen-layout-calculations-complete? false)
       (reanimated/set-shared-value distance-from-list-top 0)
