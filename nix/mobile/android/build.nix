@@ -152,7 +152,6 @@ in stdenv.mkDerivation rec {
     gradleCommand = ''
       ${pkgs.gradle}/bin/gradle \
       --console=plain \
-      --offline \
       --no-daemon \
       --no-scan \
       --no-watch-fs \
