@@ -3,6 +3,7 @@
     [clojure.set :as set]
     [clojure.string :as string]
     [legacy.status-im.data-store.visibility-status-updates :as visibility-status-updates]
+    [status-im.contexts.wallet.common.validation :as validation]
     [utils.ethereum.eip.eip55 :as eip55]))
 
 (defn rpc->visible-tokens
@@ -35,6 +36,7 @@
       (update :pinned-mailservers rpc->pinned-mailservers)
       (update :link-previews-enabled-sites set)
       (update :currency rpc->currency)
+      (assoc :ens-name? (validation/ens-name? (:preferred-name settings)))
       (visibility-status-updates/<-rpc-settings)
       (set/rename-keys {:compressedKey :compressed-key
                         :emojiHash     :emoji-hash})))

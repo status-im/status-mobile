@@ -45,8 +45,8 @@
       (let [db  {:profile/profile {:ens-name? true :public-key pubkey}}
             rst (links/generate-profile-url {:db db} [])]
         (are [result expected] (match? result expected)
-         "wakuext_shareUserURLWithENS" (-> rst :json-rpc/call first :method)
-         pubkey                        (-> rst :json-rpc/call first :params first)))))
+         "wakuext_shareUserURLWithData" (-> rst :json-rpc/call first :method)
+         pubkey                         (-> rst :json-rpc/call first :params first)))))
   (testing "user has no ens name"
     (testing "it calls the ens rpc method with public keyas param"
       (let [db  {:profile/profile {:public-key pubkey}}
@@ -60,8 +60,8 @@
             db  {:contacts/contacts {pubkey {:ens-name ens}}}
             rst (links/generate-profile-url {:db db} [{:public-key pubkey}])]
         (are [result expected] (match? result expected)
-         "wakuext_shareUserURLWithENS" (-> rst :json-rpc/call first :method)
-         pubkey                        (-> rst :json-rpc/call first :params first)))))
+         "wakuext_shareUserURLWithData" (-> rst :json-rpc/call first :method)
+         pubkey                         (-> rst :json-rpc/call first :params first)))))
   (testing "contact has no ens name"
     (testing "it calls the ens rpc method with public keyas param"
       (let [db  {:contacts/contacts {pubkey {:public-key pubkey}}}
