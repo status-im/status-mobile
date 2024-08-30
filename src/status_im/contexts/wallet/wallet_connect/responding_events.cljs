@@ -168,11 +168,11 @@
  :wallet-connect/reject-session-proposal
  (fn [{:keys [db]} [proposal]]
    (let [web3-wallet                      (get db :wallet-connect/web3-wallet)
-         {:keys [request response-sent?]} (or proposal (:wallet-connect/current-proposal db))]
+         {:keys [request response-sent?]} (:wallet-connect/current-proposal db)]
      {:fx [(when-not response-sent?
              [:effects.wallet-connect/reject-session-proposal
               {:web3-wallet web3-wallet
-               :proposal    request
+               :proposal    (or proposal request)
                :on-success  #(log/info "Wallet Connect session proposal rejected")
                :on-error    #(log/error "Wallet Connect unable to reject session proposal")}])
            [:dispatch [:wallet-connect/reset-current-session-proposal]]]})))
