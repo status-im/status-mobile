@@ -9,15 +9,12 @@ writeScript "patch-maven-srcs" (''
   source ${stdenv}/setup
 
   function patchMavenSource() {
-    grep "$source" $1 > /dev/null && \
-      substituteInPlace $1 --replace "$2" "$3" 2>/dev/null
+    if ! grep -q "mavenLocal()" "$1"; then
+      sed -i '/repositories {/a \    mavenLocal()' "$1"
+    fi
   }
 
   gradleFile="$1"
 
-  # Some of those find something, some don't, that's fine.
-  patchMavenSource "$gradleFile" 'mavenCentral()'       'mavenLocal()'
-  patchMavenSource "$gradleFile" 'google()'             'mavenLocal()'
-  patchMavenSource "$gradleFile" 'jcenter()'            'mavenLocal()'
-  patchMavenSource "$gradleFile" 'gradlePluginPortal()' 'mavenLocal()'
+  patchMavenSource "$gradleFile"
 '')
