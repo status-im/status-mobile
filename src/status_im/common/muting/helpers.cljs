@@ -17,7 +17,7 @@
   (let [parsed-time       (t.format/parse (t.format/formatters :date-time-no-ms) muted-till-string)
         hours-and-minutes (str (add-leading-zero (t/hour (t/plus parsed-time time-zone-offset)))
                                ":"
-                               (add-leading-zero (t/minute parsed-time)))
+                               (add-leading-zero (t/minute (t/plus parsed-time time-zone-offset))))
         when-to-unmute    (cond (= go-default-time
                                    muted-till-string)   (i18n/label :t/until-you-turn-it-back-on)
                                 (today? parsed-time)    (str hours-and-minutes " today")
