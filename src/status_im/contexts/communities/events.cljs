@@ -25,7 +25,7 @@
                   token-permissions-check id last-opened-at]
            :as   community}       (data-store.communities/<-rpc community-js)
           previous-last-opened-at (get-in db [:communities id :last-opened-at])]
-      (when (> clock (get-in db [:communities id :clock]))
+      (when (>= clock (get-in db [:communities id :clock]))
         {:db (assoc-in db
               [:communities id]
               (assoc community :last-opened-at (max last-opened-at previous-last-opened-at)))

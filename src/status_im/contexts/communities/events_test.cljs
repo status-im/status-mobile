@@ -181,9 +181,4 @@
 
     (testing "given a community with lower clock"
       (let [effects (events/handle-community {:db {:communities {community-id {:clock 3}}}} [community])]
-        (is (nil? effects))))
-
-    (testing "given a community without clock"
-      (let [community #js {:id community-id}
-            effects   (events/handle-community {} [community])]
         (is (nil? effects))))))
