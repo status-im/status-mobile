@@ -1,10 +1,10 @@
 (ns legacy.status-im.data-store.settings
   (:require
-   [clojure.set :as set]
-   [clojure.string :as string]
-   [legacy.status-im.data-store.visibility-status-updates :as visibility-status-updates]
-   [status-im.contexts.wallet.common.validation :as validation]
-   [utils.ethereum.eip.eip55 :as eip55]))
+    [clojure.set :as set]
+    [clojure.string :as string]
+    [legacy.status-im.data-store.visibility-status-updates :as visibility-status-updates]
+    [status-im.contexts.wallet.common.validation :as validation]
+    [utils.ethereum.eip.eip55 :as eip55]))
 
 (defn rpc->visible-tokens
   [visible-tokens]
