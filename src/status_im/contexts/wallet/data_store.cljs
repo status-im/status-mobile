@@ -4,6 +4,7 @@
     [clojure.set :as set]
     [clojure.string :as string]
     [status-im.constants :as constants]
+    [status-im.contexts.wallet.collectible.utils :as collectible-utils]
     [status-im.contexts.wallet.common.utils.networks :as network-utils]
     [status-im.contexts.wallet.send.utils :as send-utils]
     [utils.collection :as utils.collection]
@@ -266,3 +267,10 @@
 (defn tokens-never-loaded?
   [db]
   (nil? (get-in db [:wallet :ui :tokens-loading])))
+
+(defn rpc->collectibles
+  [collectibles]
+  (->> collectibles
+       (cske/transform-keys transforms/->kebab-case-keyword)
+       (map #(assoc % :unique-id (collectible-utils/get-collectible-unique-id %)))
+       vec))

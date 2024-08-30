@@ -143,13 +143,6 @@
                              address-2 {:address address-2}}}})
       (is (match? expected-fx (:fx (dispatch [event-id])))))))
 
-(h/deftest-event :wallet/process-account-from-signal
-  [event-id dispatch]
-  (let [expected-effects {:db {:wallet {:accounts {address account}}}
-                          :fx [[:dispatch [:wallet/fetch-assets-for-address address]]]}]
-    (reset! rf-db/app-db {:wallet {:accounts {}}})
-    (is (match? expected-effects (dispatch [event-id raw-account])))))
-
 (h/deftest-event :wallet/reconcile-keypairs
   [event-id dispatch]
   (let [keypair-key-uid (:key-uid raw-account)]

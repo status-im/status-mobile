@@ -105,7 +105,7 @@
  :wallet/fetch-assets-for-address
  (fn [_ [address]]
    {:fx [[:dispatch [:wallet/get-wallet-token-for-account address]]
-         [:dispatch [:wallet/request-new-collectibles-for-account-from-signal address]]
+         [:dispatch [:wallet/request-collectibles-for-account address]]
          [:dispatch [:wallet/check-recent-history-for-account address]]]}))
 
 (defn- reconcile-accounts
@@ -150,11 +150,6 @@
           [{:method     "accounts_getAccounts"
             :on-success [:wallet/get-accounts-success]
             :on-error   [:wallet/log-rpc-error {:event :wallet/get-accounts}]}]]]}))
-
-(rf/reg-event-fx :wallet/process-account-from-signal
- (fn [{:keys [db]} [{:keys [address] :as account}]]
-   {:db (assoc-in db [:wallet :accounts address] (data-store/rpc->account account))
-    :fx [[:dispatch [:wallet/fetch-assets-for-address address]]]}))
 
 (rf/reg-event-fx
  :wallet/save-account
@@ -584,25 +579,13 @@
 
 (rf/reg-event-fx
  :wallet/process-keypair-from-backup
- (fn [{:keys [db]} [{:keys [backedUpKeypair]}]]
-   (let [{:keys [key-uid accounts]} backedUpKeypair
-         accounts-fx
-         (mapv (fn [{:keys [chat] :as account}]
-                 ;; We exclude the chat account from the profile keypair for fetching the assets
-                 (when-not chat
-                   [:dispatch
-                    [:wallet/process-account-from-signal
-                     account]]))
-               accounts)]
-     {:db (assoc-in db
-           [:wallet :keypairs key-uid]
-           (data-store/rpc->keypair backedUpKeypair))
-      :fx accounts-fx})))
+ (fn [_ [{:keys [backedUpKeypair]}]]
+   {:fx [[:dispatch [:wallet/reconcile-keypairs [backedUpKeypair]]]]}))
 
 (rf/reg-event-fx
  :wallet/process-watch-only-account-from-backup
  (fn [_ [{:keys [backedUpWatchOnlyAccount]}]]
-   {:fx [[:dispatch [:wallet/process-account-from-signal backedUpWatchOnlyAccount]]]}))
+   {:fx [[:dispatch [:wallet/reconcile-watch-only-accounts [backedUpWatchOnlyAccount]]]]}))
 
 (defn reconcile-watch-only-accounts
   [{:keys [db]} [watch-only-accounts]]

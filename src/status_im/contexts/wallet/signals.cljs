@@ -29,6 +29,21 @@
           [:wallet/pending-transaction-status-changed-received
            (transforms/js->clj event-js)]]]}
 
+       "wallet-collectibles-ownership-update-finished"
+       {:fx [[:dispatch
+              [:wallet/collectible-ownership-update-finished
+               (transforms/js->clj event-js)]]]}
+
+       "wallet-collectibles-ownership-update-finished-with-error"
+       {:fx [[:dispatch
+              [:wallet/collectible-ownership-update-finished-with-error
+               (transforms/js->clj event-js)]]]}
+
+       "wallet-collectibles-data-updated"
+       {:fx [[:dispatch
+              [:wallet/collectibles-data-updated
+               (transforms/js->clj event-js)]]]}
+
        "wallet-owned-collectibles-filtering-done"
        {:fx [[:dispatch
               [:wallet/owned-collectibles-filtering-done

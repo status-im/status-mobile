@@ -70,3 +70,10 @@
                                                        test-networks-enabled?
                                                        is-goerli-enabled?)]
     (str base-link "/assets/" opensea-network-name "/" contract-address "/" token-id)))
+
+(defn get-collectible-unique-id
+  [{:keys [id]}]
+  (let [chain-id         (-> id :contract-id :chain-id)
+        contract-address (-> id :contract-id :address)
+        token-id         (-> id :token-id)]
+    (str chain-id contract-address token-id)))

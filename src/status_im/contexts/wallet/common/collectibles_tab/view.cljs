@@ -10,6 +10,16 @@
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
+(defn- loading-collectible-item
+  [_ index]
+  (let [gradient-color (keyword (str "gradient-" (inc (mod index 5))))]
+    [quo/collectible-list-item
+     {:type                 :card
+      :gradient-color-index gradient-color
+      :supported-file?      true
+      :loading?             true
+      :container-style      style/collectible-container}]))
+
 (defn- collectible-item
   [{:keys [preview-url collection-data collectible-data total-owned on-press on-long-press]
     :as   collectible}
@@ -41,10 +51,18 @@
 
 (defn view
   [{:keys [collectibles filtered? on-end-reached on-collectible-press
-           current-account-address on-collectible-long-press]}]
+           current-account-address on-collectible-long-press loading?]}]
   (let [theme                   (quo.theme/use-theme)
         no-results-match-query? (and filtered? (empty? collectibles))]
     (cond
+      loading?
+      [rn/flat-list
+       {:data                    (repeat 8 {})
+        :style                   {:flex 1}
+        :content-container-style style/list-container-style
+        :num-columns             2
+        :render-fn               loading-collectible-item}]
+
       no-results-match-query?
       [rn/view {:style {:flex 1 :justify-content :center}}
        [quo/empty-state
@@ -62,15 +80,14 @@
       ;; TODO: https://github.com/status-im/status-mobile/issues/20137
       ;; 1. If possible, move `collectibles-data` calculation to a subscription
       ;; 2. Optimization: do not recalculate all the collectibles, process only the new ones
-      (let [collectibles-data (map-indexed
-                               (fn [index {:keys [ownership] :as collectible}]
+      (let [collectibles-data (map
+                               (fn [{:keys [ownership] :as collectible}]
                                  (let [total-owned (rf/sub [:wallet/total-owned-collectible ownership
                                                             current-account-address])]
                                    (assoc collectible
-                                          :total-owned       total-owned
-                                          :on-long-press     on-collectible-long-press
-                                          :on-press          on-collectible-press
-                                          :collectible-index index)))
+                                          :total-owned   total-owned
+                                          :on-long-press on-collectible-long-press
+                                          :on-press      on-collectible-press)))
                                collectibles)]
         [rn/flat-list
          {:data                     collectibles-data
@@ -80,5 +97,5 @@
           :num-columns              2
           :render-fn                collectible-item
           :on-end-reached           on-end-reached
-          :key-fn                   :collectible-index
+          :key-fn                   :unique-id
           :on-end-reached-threshold 4}]))))

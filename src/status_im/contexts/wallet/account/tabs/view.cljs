@@ -25,23 +25,29 @@
   []
   (rf/dispatch [:wallet/request-collectibles-for-current-viewing-account]))
 
-(defn view
-  [{:keys [selected-tab]}]
-  (let [collectible-list        (rf/sub
+(defn- collectibles-tab
+  []
+  (let [updating?               (rf/sub [:wallet/current-viewing-account-collectibles-updating?])
+        collectible-list        (rf/sub
                                  [:wallet/current-viewing-account-collectibles-in-selected-networks])
         current-account-address (rf/sub [:wallet/current-viewing-account-address])]
-    [rn/view {:style {:flex 1}}
-     (case selected-tab
-       :assets       [assets/view]
-       :collectibles [collectibles/view
-                      {:collectibles              collectible-list
-                       :current-account-address   current-account-address
-                       :on-end-reached            on-end-reached
-                       :on-collectible-press      on-collectible-press
-                       :on-collectible-long-press on-collectible-long-press}]
-       :activity     [activity/view]
-       :permissions  [empty-tab/view
-                      {:title        (i18n/label :t/no-permissions)
-                       :description  (i18n/label :t/no-collectibles-description)
-                       :placeholder? true}]
-       [about/view])]))
+    [collectibles/view
+     {:loading?                  updating?
+      :collectibles              collectible-list
+      :current-account-address   current-account-address
+      :on-end-reached            on-end-reached
+      :on-collectible-press      on-collectible-press
+      :on-collectible-long-press on-collectible-long-press}]))
+
+(defn view
+  [{:keys [selected-tab]}]
+  [rn/view {:style {:flex 1}}
+   (case selected-tab
+     :assets       [assets/view]
+     :collectibles [collectibles-tab]
+     :activity     [activity/view]
+     :permissions  [empty-tab/view
+                    {:title        (i18n/label :t/no-permissions)
+                     :description  (i18n/label :t/no-collectibles-description)
+                     :placeholder? true}]
+     [about/view])])
