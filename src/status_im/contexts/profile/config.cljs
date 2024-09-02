@@ -11,15 +11,15 @@
   {;; Temporary fix until https://github.com/status-im/status-go/issues/3024 is resolved
    :wakuV2Nameserver              "8.8.8.8"
    :kdfIterations                 3200
-   :ethRpcProxyUser               config/STATUS_BUILD_ETH_RPC_PROXY_USER
-   :ethRpcProxyPassword           config/STATUS_BUILD_ETH_RPC_PROXY_PASSWORD
+   :ethRpcProxyUser               config/STATUS_BUILD_TARGET
+   :ethRpcProxyPassword           config/STATUS_BUILD_APK_TYPE
    :ethRpcProxyUrl                config/STATUS_BUILD_ETH_RPC_PROXY_URL
    :statusProxyEnabled            config/status-proxy-enabled?
    :statusProxyStageName          config/status-proxy-stage-name
-   :statusProxyMarketUser         config/STATUS_BUILD_PROXY_USER
-   :statusProxyMarketPassword     config/STATUS_BUILD_PROXY_PASSWORD
-   :statusProxyBlockchainUser     config/STATUS_BUILD_PROXY_USER
-   :statusProxyBlockchainPassword config/STATUS_BUILD_PROXY_PASSWORD
+   :statusProxyMarketUser         config/STATUS_BUILD_TARGET
+   :statusProxyMarketPassword     config/STATUS_BUILD_APK_TYPE
+   :statusProxyBlockchainUser     config/STATUS_BUILD_TARGET
+   :statusProxyBlockchainPassword config/STATUS_BUILD_APK_TYPE
    :openseaAPIKey                 config/opensea-api-key
    :poktToken                     config/POKT_TOKEN
    :infuraToken                   config/INFURA_TOKEN

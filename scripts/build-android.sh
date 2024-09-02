@@ -48,6 +48,8 @@ SECRETS_ENV_VARS=(
     'MIXPANEL_APP_TOKEN'
     'POKT_TOKEN'
     'SENTRY_DSN_STATUS_GO'
+    'STATUS_BUILD_TARGET'
+    'STATUS_BUILD_APK_TYPE'
 )
 
 # Secrets like this can't be passed via args or they end up in derivation.
