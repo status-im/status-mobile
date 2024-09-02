@@ -5,7 +5,6 @@
     [react-native.core :as rn]
     [react-native.reanimated :as reanimated]
     [react-native.safe-area :as safe-area]
-    [status-im.common.check-before-syncing.view :as check-before-syncing]
     [status-im.common.confirmation-drawer.view :as confirmation-drawer]
     [status-im.common.metrics-confirmation-modal.view :as metrics-modal]
     [status-im.common.standard-authentication.core :as standard-authentication]
@@ -44,32 +43,32 @@
                                               :linear
                                               50))
 
-(defn- show-check-before-syncing
+(defn- navigate-to-new-to-status
   []
-  (rf/dispatch
-   [:show-bottom-sheet
-    {:content (fn [] [check-before-syncing/view
-                      {:on-submit
-                       #(debounce/throttle-and-dispatch
-                         [:open-modal :screen/onboarding.sign-in]
-                         1000)}])
-     :shell?  true}]))
+  (when @push-animation-fn-atom
+    (@push-animation-fn-atom))
+  (debounce/throttle-and-dispatch
+   [:open-modal :screen/onboarding.new-to-status]
+   1000))
+
+(defn- navigate-to-sync-or-recover-profile
+  []
+  (when @push-animation-fn-atom
+    (@push-animation-fn-atom))
+  (debounce/throttle-and-dispatch
+   [:open-modal :screen/onboarding.sync-or-recover-profile]
+   1000))
 
 (defn new-account-options
   []
   [quo/action-drawer
    [[{:icon                :i/profile
       :label               (i18n/label :t/create-new-profile)
-      :on-press            (fn []
-                             (when @push-animation-fn-atom
-                               (@push-animation-fn-atom))
-                             (debounce/throttle-and-dispatch
-                              [:open-modal :screen/onboarding.new-to-status]
-                              1000))
+      :on-press            navigate-to-new-to-status
       :accessibility-label :create-new-profile}
      {:icon                :i/multi-profile
-      :label               (i18n/label :t/add-existing-status-profile)
-      :on-press            show-check-before-syncing
+      :label               (i18n/label :t/sync-or-recover-profile)
+      :on-press            navigate-to-sync-or-recover-profile
       :accessibility-label :multi-profile}]]])
 
 (defn show-new-account-options
