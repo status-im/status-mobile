@@ -25,11 +25,13 @@
        :context             [[quo/context-tag
                               {:type      :dapp
                                :size      24
+                               :blur?     true
                                :dapp-logo dapp-icon-url
                                :dapp-name (utils.url/url-host dapp-url)}]
                              (i18n/label :t/via)
                              [quo/context-tag
                               {:type      :dapp
                                :size      24
+                               :blur?     true
                                :dapp-logo (quo.resources/get-dapp :wallet-connect)
                                :dapp-name "WalletConnect"}]]}]]))
