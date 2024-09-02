@@ -18,6 +18,8 @@
 (goog-define STATUS_MARKET_DATA_PROXY_URL "")
 (goog-define STATUS_MARKET_DATA_PROXY_USER "")
 (goog-define STATUS_MARKET_DATA_PROXY_PASSWORD "")
+(goog-define STATUS_BUILD_TARGET "")
+(goog-define STATUS_BUILD_APK_TYPE "")
 (goog-define OPENSEA_API_KEY "")
 (goog-define RARIBLE_MAINNET_API_KEY "")
 (goog-define RARIBLE_TESTNET_API_KEY "")

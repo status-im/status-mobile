@@ -51,6 +51,8 @@ SECRETS_ENV_VARS=(
     'STATUS_MARKET_DATA_PROXY_URL'
     'STATUS_MARKET_DATA_PROXY_USER'
     'STATUS_MARKET_DATA_PROXY_PASSWORD'
+    'STATUS_BUILD_TARGET'
+    'STATUS_BUILD_APK_TYPE'
 )
 
 # Secrets like this can't be passed via args or they end up in derivation.
