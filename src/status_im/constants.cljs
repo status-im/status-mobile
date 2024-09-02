@@ -295,6 +295,8 @@
 
 (def ^:const token-sort-priority {"SNT" 1 "STT" 1 "ETH" 2 "DAI" 3})
 
+(def ^:const token-display-precision 6)
+
 (def ^:const dapp-permission-contact-code "contact-code")
 (def ^:const dapp-permission-web3 "web3")
 (def ^:const dapp-permission-qr-code "qr-code")
