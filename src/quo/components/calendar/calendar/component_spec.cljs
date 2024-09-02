@@ -4,7 +4,7 @@
     [quo.components.calendar.calendar.view :as calendar]
     [test-helpers.component :as h]))
 
-(def start-date (time/date-time (time/year (time/now)) (time/month (time/now)) 5))
+(def start-date (time/date-time (time/year (time/now)) (time/month (time/now)) 8))
 (def end-date (time/date-time (time/plus start-date (time/days 2))))
 
 (h/describe "calendar component"
