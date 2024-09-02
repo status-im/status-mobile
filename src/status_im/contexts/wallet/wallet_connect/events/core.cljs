@@ -2,12 +2,12 @@
   (:require [re-frame.core :as rf]
             [react-native.wallet-connect :as wallet-connect]
             [status-im.constants :as constants]
-            [status-im.contexts.wallet.wallet-connect.core :as wallet-connect-core]
-            status-im.contexts.wallet.wallet-connect.effects
+            status-im.contexts.wallet.wallet-connect.events.effects
             status-im.contexts.wallet.wallet-connect.events.session-proposals
             status-im.contexts.wallet.wallet-connect.events.session-requests
             status-im.contexts.wallet.wallet-connect.events.session-responses
             status-im.contexts.wallet.wallet-connect.events.sessions
+            [status-im.contexts.wallet.wallet-connect.utils.networks :as networks]
             [taoensso.timbre :as log]
             [utils.i18n :as i18n]))
 
@@ -67,7 +67,7 @@
 (rf/reg-event-fx
  :wallet-connect/on-session-request
  (fn [{:keys [db]} [event]]
-   (if (wallet-connect-core/event-should-be-handled? db event)
+   (if (networks/event-should-be-handled? db event)
      {:fx [[:dispatch [:wallet-connect/process-session-request event]]]}
      {:fx [[:dispatch
             [:wallet-connect/send-response

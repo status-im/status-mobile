@@ -2,14 +2,15 @@
   (:require [re-frame.core :as rf]
             [react-native.wallet-connect :as wallet-connect]
             [status-im.constants :as constants]
-            [status-im.contexts.wallet.wallet-connect.core :as wallet-connect-core]
+            [status-im.contexts.wallet.wallet-connect.utils.networks :as networks]
+            [status-im.contexts.wallet.wallet-connect.utils.sessions :as sessions]
             [taoensso.timbre :as log]
             [utils.transforms :as types]))
 
 (rf/reg-event-fx
  :wallet-connect/on-session-delete
  (fn [{:keys [db]} [{:keys [topic] :as event}]]
-   (when (wallet-connect-core/event-should-be-handled? db event)
+   (when (networks/event-should-be-handled? db event)
      (log/info "Received Wallet Connect session delete from the SDK: " event)
      {:fx [[:dispatch [:wallet-connect/disconnect-persisted-session topic]]]})))
 
@@ -42,12 +43,12 @@
    (let [persisted-sessions (:wallet-connect/sessions db)
          account-addresses  (->> (get-in db [:wallet :accounts])
                                  vals
-                                 wallet-connect-core/filter-operable-accounts
+                                 sessions/filter-operable-accounts
                                  (map :address))
          sessions           (->> (js->clj sessions :keywordize-keys true)
                                  vals
-                                 (map wallet-connect-core/sdk-session->db-session)
-                                 (wallet-connect-core/filter-sessions-for-account-addresses
+                                 (map sessions/sdk-session->db-session)
+                                 (sessions/filter-sessions-for-account-addresses
                                   account-addresses))
          session-topics     (set (map :topic sessions))
          expired-sessions   (filter

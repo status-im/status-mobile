@@ -1,4 +1,4 @@
-(ns status-im.contexts.wallet.wallet-connect.effects
+(ns status-im.contexts.wallet.wallet-connect.events.effects
   (:require
     [promesa.core :as promesa]
     [re-frame.core :as rf]

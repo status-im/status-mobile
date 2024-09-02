@@ -4,7 +4,8 @@
             [native-module.core :as native-module]
             [re-frame.core :as rf]
             [status-im.constants :as constants]
-            [status-im.contexts.wallet.wallet-connect.core :as wallet-connect-core]
+            [status-im.contexts.wallet.wallet-connect.utils.data-transformations :as
+             data-transformations]
             [status-im.contexts.wallet.wallet-connect.utils.networks :as networks]
             [status-im.contexts.wallet.wallet-connect.utils.signing :as signing]
             [status-im.contexts.wallet.wallet-connect.utils.transactions :as transactions]
@@ -16,8 +17,8 @@
  :wallet-connect/show-request-modal
  (fn [{:keys [db]}]
    (let [event  (get-in db [:wallet-connect/current-request :event])
-         method (wallet-connect-core/get-request-method event)
-         screen (wallet-connect-core/method-to-screen method)]
+         method (data-transformations/get-request-method event)
+         screen (data-transformations/method-to-screen method)]
      (if screen
        {:fx [[:dispatch [:open-modal screen]]]}
        (log/error "Didn't find screen for Wallet Connect method"
@@ -26,7 +27,7 @@
 (rf/reg-event-fx
  :wallet-connect/process-session-request
  (fn [{:keys [db]} [event]]
-   (let [method         (wallet-connect-core/get-request-method event)
+   (let [method         (data-transformations/get-request-method event)
          existing-event (get-in db [:wallet-connect/current-request :event])]
      (log/info "Processing Wallet Connect session request" method)
      ;; NOTE: make sure we don't show two requests at the same time
@@ -56,7 +57,7 @@
 (rf/reg-event-fx
  :wallet-connect/process-personal-sign
  (fn [{:keys [db]}]
-   (let [[raw-data address] (wallet-connect-core/get-db-current-request-params db)
+   (let [[raw-data address] (data-transformations/get-db-current-request-params db)
          parsed-data        (native-module/hex-to-utf8 raw-data)]
      {:db (update-in db
                      [:wallet-connect/current-request]
@@ -69,7 +70,7 @@
 (rf/reg-event-fx
  :wallet-connect/process-eth-sign
  (fn [{:keys [db]}]
-   (let [[address raw-data] (wallet-connect-core/get-db-current-request-params db)
+   (let [[address raw-data] (data-transformations/get-db-current-request-params db)
          parsed-data        (native-module/hex-to-utf8 raw-data)]
      {:db (update-in db
                      [:wallet-connect/current-request]
@@ -99,8 +100,8 @@
 (rf/reg-event-fx
  :wallet-connect/process-eth-send-transaction
  (fn [{:keys [db]}]
-   (let [event    (wallet-connect-core/get-db-current-request-event db)
-         tx       (-> event wallet-connect-core/get-request-params first)
+   (let [event    (data-transformations/get-db-current-request-event db)
+         tx       (-> event data-transformations/get-request-params first)
          chain-id (-> event
                       (get-in [:params :chainId])
                       networks/eip155->chain-id)]
@@ -113,8 +114,8 @@
 (rf/reg-event-fx
  :wallet-connect/process-eth-sign-transaction
  (fn [{:keys [db]}]
-   (let [event    (wallet-connect-core/get-db-current-request-event db)
-         tx       (-> event wallet-connect-core/get-request-params first)
+   (let [event    (data-transformations/get-db-current-request-event db)
+         tx       (-> event data-transformations/get-request-params first)
          chain-id (-> event
                       (get-in [:params :chainId])
                       networks/eip155->chain-id)]
@@ -128,9 +129,9 @@
  :wallet-connect/process-sign-typed
  (fn [{:keys [db]}]
    (try
-     (let [[address raw-data] (wallet-connect-core/get-db-current-request-params db)
+     (let [[address raw-data] (data-transformations/get-db-current-request-params db)
            parsed-raw-data    (transforms/js-parse raw-data)
-           session-chain-id   (-> (wallet-connect-core/get-db-current-request-event db)
+           session-chain-id   (-> (data-transformations/get-db-current-request-event db)
                                   (get-in [:params :chainId])
                                   networks/eip155->chain-id)
            data-chain-id      (-> parsed-raw-data
@@ -157,7 +158,7 @@
               [:wallet-connect/on-processing-error
                (ex-info "Failed to parse JSON typed data"
                         {:error err
-                         :data  (wallet-connect-core/get-db-current-request-params db)})]]]}))))
+                         :data  (data-transformations/get-db-current-request-params db)})]]]}))))
 
 (rf/reg-event-fx
  :wallet-connect/wrong-typed-data-chain-id
@@ -187,7 +188,7 @@
  :wallet-connect/on-processing-error
  (fn [{:keys [db]} [error]]
    (let [{:keys [address event]} (get db :wallet-connect/current-request)
-         method                  (wallet-connect-core/get-request-method event)]
+         method                  (data-transformations/get-request-method event)]
      (log/error "Failed to process Wallet Connect request"
                 {:error                error
                  :address              address

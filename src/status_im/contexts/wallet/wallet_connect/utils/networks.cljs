@@ -83,3 +83,10 @@
   (let [test-mode? (get-in db [:profile/profile :test-networks-enabled?])
         networks   (get-in db [:wallet :networks (if test-mode? :test :prod)])]
     (mapv #(-> % :chain-id) networks)))
+
+(defn event-should-be-handled?
+  [db {:keys [topic]}]
+  (let [testnet-mode? (get-in db [:profile/profile :test-networks-enabled?])]
+    (some #(and (= (:topic %) topic)
+                (session-networks-allowed? testnet-mode? %))
+          (:wallet-connect/sessions db))))

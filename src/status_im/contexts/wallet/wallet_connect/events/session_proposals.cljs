@@ -1,8 +1,10 @@
 (ns status-im.contexts.wallet.wallet-connect.events.session-proposals
   (:require [re-frame.core :as rf]
             [react-native.wallet-connect :as wallet-connect]
-            [status-im.contexts.wallet.wallet-connect.core :as wallet-connect-core]
+            [status-im.contexts.wallet.wallet-connect.utils.data-transformations :as
+             data-transformations]
             [status-im.contexts.wallet.wallet-connect.utils.networks :as networks]
+            [status-im.contexts.wallet.wallet-connect.utils.sessions :as sessions]
             [status-im.contexts.wallet.wallet-connect.utils.uri :as uri]
             [taoensso.timbre :as log]
             [utils.i18n :as i18n]))
@@ -59,7 +61,7 @@
    (log/info "Received Wallet Connect session proposal: " proposal)
    (let [accounts                     (get-in db [:wallet :accounts])
          current-viewing-address      (get-in db [:wallet :current-viewing-account-address])
-         available-accounts           (wallet-connect-core/filter-operable-accounts (vals accounts))
+         available-accounts           (sessions/filter-operable-accounts (vals accounts))
          networks                     (networks/get-networks-by-mode db)
          session-networks             (networks/proposal-networks-intersection proposal networks)
          required-networks-supported? (networks/required-networks-supported? proposal networks)]
@@ -77,13 +79,13 @@
 (rf/reg-event-fx
  :wallet-connect/show-session-networks-unsupported-toast
  (fn [{:keys [db]} [proposal]]
-   (let [{:keys [name url]} (wallet-connect-core/get-session-dapp-metadata proposal)]
+   (let [{:keys [name url]} (data-transformations/get-session-dapp-metadata proposal)]
      {:fx [[:dispatch
             [:toasts/upsert
              {:type  :negative
               :theme (:theme db)
               :text  (i18n/label :t/wallet-connect-networks-not-supported
-                                 {:dapp (wallet-connect-core/compute-dapp-name name url)})}]]]})))
+                                 {:dapp (data-transformations/compute-dapp-name name url)})}]]]})))
 
 (rf/reg-event-fx
  :wallet-connect/reset-current-session-proposal

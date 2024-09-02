@@ -2,7 +2,8 @@
   (:require [clojure.string :as string]
             [re-frame.core :as rf]
             [status-im.contexts.wallet.common.utils :as wallet-utils]
-            [status-im.contexts.wallet.wallet-connect.core :as wallet-connect-core]
+            [status-im.contexts.wallet.wallet-connect.utils.data-transformations :as
+             data-transformations]
             [status-im.contexts.wallet.wallet-connect.utils.networks :as networks]
             [status-im.contexts.wallet.wallet-connect.utils.transactions :as transactions]
             [utils.money :as money]
@@ -171,7 +172,7 @@
  :<- [:wallet-connect/session-proposer]
  (fn [proposer]
    (let [{:keys [name url]} (-> proposer :metadata)]
-     (wallet-connect-core/compute-dapp-name name url))))
+     (data-transformations/compute-dapp-name name url))))
 
 (rf/reg-sub
  :wallet-connect/session-proposal-network-details
