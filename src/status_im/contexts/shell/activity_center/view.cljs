@@ -31,9 +31,6 @@
                   [notification])
         props    {:notification notification
                   :extra-fn     extra-fn}]
-    ;; Notifications are expensive to render. Without `delay-render` the opening
-    ;; animation of the Activity Center can be clunky and the time to open the
-    ;; AC after pressing the bell icon can be high.
     [rn/view {:style (style/notification-container index)}
      (cond
        (= notification-type types/contact-verification)
