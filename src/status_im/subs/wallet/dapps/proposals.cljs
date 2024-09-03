@@ -1,7 +1,7 @@
 (ns status-im.subs.wallet.dapps.proposals
   (:require [re-frame.core :as rf]
-            [status-im.contexts.wallet.wallet-connect.utils.data-transformations :as
-             data-transformations]
+            [status-im.contexts.wallet.wallet-connect.utils.data-store :as
+             data-store]
             [utils.string]))
 
 (rf/reg-sub
@@ -25,7 +25,7 @@
  :<- [:wallet-connect/session-proposer]
  (fn [proposer]
    (let [{:keys [name url]} (-> proposer :metadata)]
-     (data-transformations/compute-dapp-name name url))))
+     (data-store/compute-dapp-name name url))))
 
 (rf/reg-sub
  :wallet-connect/session-proposal-network-details

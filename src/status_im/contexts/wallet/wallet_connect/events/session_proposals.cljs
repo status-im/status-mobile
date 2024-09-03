@@ -1,8 +1,8 @@
 (ns status-im.contexts.wallet.wallet-connect.events.session-proposals
   (:require [re-frame.core :as rf]
             [react-native.wallet-connect :as wallet-connect]
-            [status-im.contexts.wallet.wallet-connect.utils.data-transformations :as
-             data-transformations]
+            [status-im.contexts.wallet.wallet-connect.utils.data-store :as
+             data-store]
             [status-im.contexts.wallet.wallet-connect.utils.networks :as networks]
             [status-im.contexts.wallet.wallet-connect.utils.sessions :as sessions]
             [status-im.contexts.wallet.wallet-connect.utils.uri :as uri]
@@ -79,13 +79,13 @@
 (rf/reg-event-fx
  :wallet-connect/show-session-networks-unsupported-toast
  (fn [{:keys [db]} [proposal]]
-   (let [{:keys [name url]} (data-transformations/get-session-dapp-metadata proposal)]
+   (let [{:keys [name url]} (data-store/get-session-dapp-metadata proposal)]
      {:fx [[:dispatch
             [:toasts/upsert
              {:type  :negative
               :theme (:theme db)
               :text  (i18n/label :t/wallet-connect-networks-not-supported
-                                 {:dapp (data-transformations/compute-dapp-name name url)})}]]]})))
+                                 {:dapp (data-store/compute-dapp-name name url)})}]]]})))
 
 (rf/reg-event-fx
  :wallet-connect/reset-current-session-proposal

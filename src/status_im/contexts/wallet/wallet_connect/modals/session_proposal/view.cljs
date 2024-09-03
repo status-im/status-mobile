@@ -7,7 +7,7 @@
     [react-native.core :as rn]
     [status-im.common.floating-button-page.view :as floating-button-page]
     [status-im.contexts.wallet.wallet-connect.modals.session-proposal.style :as style]
-    [status-im.contexts.wallet.wallet-connect.utils.data-transformations :as data-transformations]
+    [status-im.contexts.wallet.wallet-connect.utils.data-store :as data-store]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]
     [utils.string]))
@@ -17,8 +17,8 @@
   (let [proposer                 (rf/sub [:wallet-connect/session-proposer])
         {:keys [icons name url]} (:metadata proposer)
         first-icon               (first icons)
-        dapp-name                (data-transformations/compute-dapp-name name url)
-        profile-picture          (data-transformations/compute-dapp-icon-path first-icon url)]
+        dapp-name                (data-store/compute-dapp-name name url)
+        profile-picture          (data-store/compute-dapp-icon-path first-icon url)]
     [:<>
      [rn/view {:style style/dapp-avatar}
       [quo/user-avatar

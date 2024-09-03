@@ -1,4 +1,4 @@
-(ns status-im.contexts.wallet.wallet-connect.utils.data-transformations
+(ns status-im.contexts.wallet.wallet-connect.utils.data-store
   (:require
     [clojure.string :as string]
     [status-im.constants :as constants]

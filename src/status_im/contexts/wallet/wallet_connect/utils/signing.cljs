@@ -1,8 +1,8 @@
 (ns status-im.contexts.wallet.wallet-connect.utils.signing
   (:require [native-module.core :as native-module]
             [promesa.core :as promesa]
-            [status-im.contexts.wallet.wallet-connect.utils.data-transformations :as
-             data-transformations]
+            [status-im.contexts.wallet.wallet-connect.utils.data-store :as
+             data-store]
             [status-im.contexts.wallet.wallet-connect.utils.networks :as networks]
             [status-im.contexts.wallet.wallet-connect.utils.rpc :as rpc]
             [utils.hex :as hex]
@@ -31,7 +31,7 @@
        :password password}
       transforms/clj->json
       native-module/sign-message
-      (promesa/then data-transformations/extract-native-call-signature)))
+      (promesa/then data-store/extract-native-call-signature)))
 
 (defn personal-sign
   [password address data]

@@ -1,6 +1,8 @@
 (ns status-im.subs.wallet.dapps.requests
   (:require [re-frame.core :as rf]
             [status-im.contexts.wallet.common.utils :as wallet-utils]
+            [status-im.contexts.wallet.wallet-connect.utils.data-store :as
+             data-store]
             [status-im.contexts.wallet.wallet-connect.utils.networks :as networks]
             [utils.string]))
 
@@ -29,12 +31,7 @@
  :<- [:wallet-connect/current-request]
  :<- [:wallet-connect/sessions]
  (fn [[request sessions]]
-   (let [dapp-url (get-in request [:event :verifyContext :verified :origin])]
-     (->> sessions
-          (filter (fn [session]
-                    (= (utils.string/remove-trailing-slash dapp-url)
-                       (utils.string/remove-trailing-slash (get session :url)))))
-          (first)))))
+   (data-store/get-current-request-dapp request sessions)))
 
 (rf/reg-sub
  :wallet-connect/chain-id

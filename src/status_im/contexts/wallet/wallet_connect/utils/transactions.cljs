@@ -4,15 +4,15 @@
             [native-module.core :as native-module]
             [promesa.core :as promesa]
             [status-im.constants :as constants]
-            [status-im.contexts.wallet.wallet-connect.utils.data-transformations :as
-             data-transformations]
+            [status-im.contexts.wallet.wallet-connect.utils.data-store :as
+             data-store]
             [status-im.contexts.wallet.wallet-connect.utils.rpc :as rpc]
             [utils.money :as money]
             [utils.transforms :as transforms]))
 
 (defn transaction-request?
   [event]
-  (->> (data-transformations/get-request-method event)
+  (->> (data-store/get-request-method event)
        (contains? #{constants/wallet-connect-eth-send-transaction-method
                     constants/wallet-connect-eth-sign-transaction-method})))
 

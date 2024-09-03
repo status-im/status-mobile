@@ -2,6 +2,8 @@
   (:require [re-frame.core :as rf]
             [react-native.wallet-connect :as wallet-connect]
             [status-im.constants :as constants]
+            [status-im.contexts.wallet.wallet-connect.utils.data-store :as
+             data-store]
             [status-im.contexts.wallet.wallet-connect.utils.networks :as networks]
             [status-im.contexts.wallet.wallet-connect.utils.sessions :as sessions]
             [taoensso.timbre :as log]
@@ -110,13 +112,17 @@
 (rf/reg-event-fx
  :wallet-connect/persist-session
  (fn [_ [session-info]]
-   {:fx [[:json-rpc/call
-          [{:method     "wallet_addWalletConnectSession"
-            :params     [(js/JSON.stringify session-info)]
-            :on-success (fn []
-                          (log/info "Wallet Connect session persisted")
-                          (rf/dispatch [:wallet-connect/fetch-persisted-sessions]))
-            :on-error   #(log/info "Wallet Connect session persistence failed" %)}]]]}))
+   (let [redirect-url (-> session-info
+                          (js->clj :keywordize-keys true)
+                          (data-store/get-dapp-redirect-url))]
+     {:fx [[:json-rpc/call
+            [{:method     "wallet_addWalletConnectSession"
+              :params     [(js/JSON.stringify session-info)]
+              :on-success (fn []
+                            (log/info "Wallet Connect session persisted")
+                            (rf/dispatch [:wallet-connect/fetch-persisted-sessions])
+                            (rf/dispatch [:wallet-connect/redirect-to-dapp redirect-url]))
+              :on-error   #(log/info "Wallet Connect session persistence failed" %)}]]]})))
 
 (rf/reg-event-fx
  :wallet-connect/disconnect-persisted-session
