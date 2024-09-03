@@ -9,7 +9,7 @@ writeScript "patch-maven-srcs" (''
   source ${stdenv}/setup
 
   function patchMavenSource() {
-    if ! grep -q "mavenLocal()" "$1"; then
+    if [ "$IN_NIX_BUILD_DERIVATION" = "TRUE" ]; then
       sed -i '/repositories {/a \    mavenLocal()' "$1"
     fi
   }
