@@ -52,9 +52,7 @@
   [proposal]
   (let [metadata (get-in proposal [:params :proposer :metadata])
         origin   (get-in proposal [:verifyContext :verified :origin])]
-    (if metadata
-      metadata
-      {:url origin})))
+    (or metadata {:url origin})))
 
 (defn get-current-request-dapp
   [request sessions]
