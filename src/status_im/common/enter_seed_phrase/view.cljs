@@ -200,13 +200,13 @@
      (.remove keyboard-hide-listener))))
 
 (defn screen
-  [{:keys [initial-insets title keypair navigation-icon recovering-keypair? render-controls]}]
-  (let [{navigation-bar-top :top} initial-insets
-        banner-offset             (rf/sub [:alert-banners/top-margin])]
+  [{:keys [title keypair navigation-icon recovering-keypair? render-controls]}]
+  (let [[insets _]    (rn/use-state (safe-area/get-insets))
+        banner-offset (rf/sub [:alert-banners/top-margin])]
     [rn/view {:style style/full-layout}
      [rn/keyboard-avoiding-view {:style style/page-container}
       [quo/page-nav
-       {:margin-top navigation-bar-top
+       {:margin-top (:top insets)
         :background :blur
         :icon-name  (or navigation-icon
                         (if recovering-keypair? :i/close :i/arrow-left))
@@ -216,15 +216,14 @@
         :keypair             keypair
         :render-controls     render-controls
         :banner-offset       banner-offset
-        :initial-insets      initial-insets
+        :initial-insets      insets
         :recovering-keypair? recovering-keypair?}]]]))
 
 (defn view
   []
-  (let [insets (safe-area/get-insets)]
-    (fn []
-      (let [{:keys [recovering-keypair?]} (rf/sub [:get-screen-params])]
-        [screen
-         {:title               (i18n/label :t/use-recovery-phrase)
-          :initial-insets      insets
-          :recovering-keypair? recovering-keypair?}]))))
+  (let [{:keys [recovering-keypair?]} (rf/sub [:get-screen-params])]
+    (rn/use-unmount
+     #(rf/dispatch [:onboarding/clear-navigated-to-enter-seed-phrase-from-screen]))
+    [screen
+     {:title               (i18n/label :t/use-recovery-phrase)
+      :recovering-keypair? recovering-keypair?}]))
