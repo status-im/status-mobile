@@ -17,14 +17,16 @@
   []
   (rf/dispatch [:hide-bottom-sheet]))
 
-(defn- toggle-metrics
-  [enabled?]
-  (rf/dispatch [:centralized-metrics/toggle-centralized-metrics enabled?]))
+(def ^:private will-receive-for-current-points
+  [:t/number-of-messages-sent
+   :t/connected-peers
+   :t/successful-messages-rate
+   :t/connection-type
+   :t/os-app-version-bandwidth])
 
-(def ^:private will-receive-points
-  [:t/ip-address
-   :t/universally-unique-identifiers-of-device
-   :t/logs-of-actions-withing-the-app])
+(def ^:private will-receive-for-all-points
+  [:t/action-logs
+   :t/ip-addresses-uuid])
 
 (def ^:private not-receive-points
   [:t/your-profile-information
@@ -45,33 +47,30 @@
 
 (defn- on-share-usage
   []
-  (toggle-metrics true)
+  (rf/dispatch [:centralized-metrics/toggle-centralized-metrics true true])
   (hide-bottom-sheet))
 
 (defn- on-do-not-share
   []
-  (toggle-metrics false)
   (hide-bottom-sheet))
 
 (declare view)
 
 (defn- on-privacy-policy-press
-  [settings?]
+  []
   (rf/dispatch
    [:show-bottom-sheet
-    {:content  (fn []
-                 [quo.theme/provider :dark
-                  [privacy/privacy-statement]])
+    {:content  privacy/privacy-statement
      :on-close (fn []
                  (rf/dispatch [:show-bottom-sheet
-                               {:content (fn []
-                                           [quo.theme/provider :dark
-                                            [view {:settings? settings?}]])
+                               {:content view
+                                :theme   :dark
                                 :shell?  true}]))
+     :theme    :dark
      :shell?   true}]))
 
 (defn- privacy-policy-text
-  [settings?]
+  []
   [rn/view {:style style/privacy-policy}
    [quo/text
     [quo/text
@@ -81,11 +80,11 @@
     [quo/text
      {:size     :paragraph-2
       :weight   :bold
-      :on-press #(on-privacy-policy-press settings?)}
+      :on-press on-privacy-policy-press}
      (i18n/label :t/more-details-in-privacy-policy-2)]]])
 
 (defn view
-  [{:keys [settings?]}]
+  []
   (rn/use-mount #(dismiss-keyboard))
   [:<>
    [quo/drawer-top
@@ -93,21 +92,18 @@
      :description (i18n/label :t/collecting-usage-data)}]
    [rn/view {:style style/points-wrapper}
     [bullet-points
-     {:title  (i18n/label :t/what-we-will-receive)
-      :points will-receive-points}]
+     {:title  (i18n/label :t/we-will-receive-from-all-profiles)
+      :points will-receive-for-all-points}]
+    [bullet-points
+     {:title  (i18n/label :t/we-will-receive-from-the-current-profile)
+      :points will-receive-for-current-points}]
     [bullet-points
      {:title  (i18n/label :t/what-we-wont-receive)
       :points not-receive-points}]
-    (if settings?
-      [quo/text
-       {:size  :paragraph-2
-        :style style/info-text}
-       (i18n/label :t/usage-data-shared-from-all-profiles)]
-      [quo/text
-       {:size  :paragraph-2
-        :style style/info-text}
-       (i18n/label :t/usage-data-shared-from-all-profiles)
-       (i18n/label :t/sharing-usage-data-can-be-turned-off)])]
+    [quo/text
+     {:size  :paragraph-2
+      :style style/info-text}
+     (i18n/label :t/sharing-usage-data-can-be-turned-off)]]
    [quo/bottom-actions
     {:actions          :two-actions
      :blur?            true
@@ -116,4 +112,4 @@
      :button-two-label (i18n/label :t/not-now)
      :button-two-props {:type     :grey
                         :on-press on-do-not-share}}]
-   [privacy-policy-text settings?]])
+   [privacy-policy-text]])

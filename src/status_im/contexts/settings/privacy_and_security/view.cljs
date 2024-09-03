@@ -6,7 +6,6 @@
     [react-native.platform :as platform]
     [react-native.safe-area :as safe-area]
     [status-im.common.events-helper :as events-helper]
-    [status-im.common.metrics-confirmation-modal.view :as metrics-modal]
     [status-im.contexts.settings.privacy-and-security.profile-picture.view :as profile-picture.view]
     [status-im.contexts.settings.privacy-and-security.style :as style]
     [status-im.feature-flags :as ff]
@@ -25,19 +24,9 @@
                   :id                  :preview-privacy
                   :customization-color customization-color}})
 
-(defn- on-share-usage-data-press
-  []
-  (rf/dispatch
-   [:show-bottom-sheet
-    {:content (fn []
-                [quo.theme/provider :dark
-                 [metrics-modal/view {:settings? true}]])
-     :shell?  true}]))
-
 (defn view
   []
   (let [insets (safe-area/get-insets)
-        centralized-metrics-enabled? (rf/sub [:centralized-metrics/enabled?])
         customization-color (rf/sub [:profile/customization-color])
 
         preview-privacy? (rf/sub [:profile/preview-privacy?])
@@ -95,13 +84,12 @@
                       show-profile-pictures-to
                       open-show-profile-pictures-to-options))
                    (setting-preview-privacy preview-privacy? customization-color toggle-preview-privacy)
-                   {:title             (i18n/label :t/share-usage-data-with-status)
+                   {:title             (i18n/label :t/share-usage-data)
                     :description       :text
                     :description-props {:text (i18n/label :t/from-all-profiles-on-device)}
                     :blur?             true
-                    :action            :selector
-                    :action-props      {:on-change           on-share-usage-data-press
-                                        :customization-color customization-color
-                                        :checked?            centralized-metrics-enabled?}}]
+                    :action            :arrow
+                    :action-props      {:on-change #(rf/dispatch [:open-modal
+                                                                  :screen/settings.share-usage-data])}}]
        :blur?     true
        :list-type :settings}]]))
