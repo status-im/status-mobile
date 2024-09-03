@@ -160,15 +160,6 @@
      {:fx [[:dispatch [:dismiss-modal screen]]]})))
 
 (rf/reg-event-fx
- :wallet-connect/dismiss-request-modal
- (fn [{:keys [db]} _]
-   (let [screen (-> db
-                    (get-in [:wallet-connect/current-request :event])
-                    data-transformations/get-request-method
-                    data-transformations/method-to-screen)]
-     {:fx [[:dispatch [:dismiss-modal screen]]]})))
-
-(rf/reg-event-fx
  :wallet-connect/finish-session-request
  (fn [_ [result]]
    {:fx [[:dispatch [:wallet-connect/send-response {:result result}]]
