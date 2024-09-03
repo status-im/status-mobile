@@ -38,8 +38,11 @@
   [path]
   (map #(str % path) status-web-urls))
 
-
 (def handled-schemes (set (into uri-schemes status-web-urls)))
+
+(defn wc-normalize-uri
+  [uri]
+  (if (string/includes? uri "//wc:") (string/replace-first uri "/?" "?") uri))
 
 (def group-chat-extractor
   {[#"(.*)" :params] {""  :group-chat
@@ -60,7 +63,9 @@
                      ["wallet/" :account]                       :wallet-account
                      [user-with-data-path :user-data]           :user
                      "c"                                        :community
-                     "u"                                        :user}
+                     "u"                                        :user
+                     #"wc:([^\?]+)"                             :wallet-connect
+                     "wc"                                       :wallet-connect}
     ethereum-scheme eip-extractor}])
 
 (defn parse-query-params
@@ -75,6 +80,11 @@
     (when-not (string/blank? fragment)
       fragment)))
 
+(defn remove-scheme
+  [uri]
+  (let [[_ url] (string/split uri #"://")]
+    url))
+
 (defn match-uri
   [uri]
   (let [;; bidi has trouble parse path with `=` in it extract `=` here and add back to parsed
@@ -88,13 +98,17 @@
         uri-without-equal-in-path
         (if equal-end-of-base64url (string/replace-first uri equal-end-of-base64url "") uri)
 
+        ;;bidi has issue to detect wc regex with /?, couldn't fine any other workaround
+        normalize-uri
+        (wc-normalize-uri uri-without-equal-in-path)
+
         ;; fragment is the one after `#`, usually user-id, ens-name, community-id
         fragment (parse-fragment uri)
         ens? (utils.ens/is-valid-eth-name? fragment)
         compressed-key? (validators/valid-compressed-key? fragment)
 
-        {:keys [handler route-params] :as parsed}
-        (assoc (bidi/match-route routes uri-without-equal-in-path)
+        {:keys [handler route-params query-params] :as parsed}
+        (assoc (bidi/match-route routes normalize-uri)
                :uri          uri
                :query-params (parse-query-params uri))]
     (cond-> parsed
@@ -131,7 +145,13 @@
       (update-in [:route-params :user-data] #(str % equal-end-of-base64url))
 
       (and (= handler :user) compressed-key?)
-      (assoc-in [:route-params :user-id] fragment))))
+      (assoc-in [:route-params :user-id] fragment)
+
+      (= handler :wallet-connect)
+      (assoc-in [:route-params :uri]
+       (if (get query-params "uri")
+         (get query-params "uri")
+         (remove-scheme normalize-uri))))))
 
 (defn match-contact-async
   [chain {:keys [user-id ens-name]} callback]
@@ -327,6 +347,10 @@
       ;; NOTE: removed in `match-uri`, might need this in the future
       (= handler :wallet-account)
       (cb (match-wallet-account route-params))
+
+      (= handler :wallet-connect)
+      (cb {:type :wallet-connect
+           :uri  (:uri route-params)})
 
       (address/address? uri)
       (cb (address->eip681 uri))

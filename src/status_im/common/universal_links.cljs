@@ -105,6 +105,12 @@
   [full-url]
   (log/info "universal-links: no handler for " full-url))
 
+(rf/defn handle-wallet-connect
+  [_ uri]
+  (log/info "universal-links: handle-wallet-connect" uri)
+  {:dispatch-later {:ms       1500
+                    :dispatch [:wallet-connect/on-scan-connection uri]}})
+
 (defn dispatch-url
   "Dispatch url so we can get access to re-frame/db"
   [url]
@@ -117,7 +123,7 @@
 
 (rf/defn on-handle
   {:events [:universal-links/match-value]}
-  [cofx url {:keys [type chat-id community-id] :as data}]
+  [cofx url {:keys [type chat-id community-id uri] :as data}]
   (case type
     :group-chat         (handle-group-chat cofx data)
     :private-chat       (handle-private-chat cofx data)
@@ -130,6 +136,7 @@
     :browser            (handle-browse cofx data)
     :eip681             (handle-eip681 cofx data)
     :wallet-account     (handle-wallet-account cofx data)
+    :wallet-connect     (handle-wallet-connect cofx uri)
     (handle-not-found url)))
 
 (rf/defn route-url

@@ -5,7 +5,8 @@
             [status-im.contexts.wallet.wallet-connect.core :as wallet-connect-core]
             [status-im.contexts.wallet.wallet-connect.utils :as wc-utils]
             [taoensso.timbre :as log]
-            [utils.i18n :as i18n]))
+            [utils.i18n :as i18n]
+            [utils.transforms :as transforms]))
 
 (rf/reg-event-fx
  :wallet-connect/respond-current-session
@@ -132,7 +133,20 @@
                                           :event                :wallet-connect/send-response
                                           :wallet-connect-event event}))
                :on-success  (fn []
+                              (rf/dispatch [:wallet-connect/redirect-to-dapp])
                               (log/info "Successfully sent Wallet Connect response to dApp"))}]]}))))
+
+(rf/reg-event-fx
+ :wallet-connect/redirect-to-dapp
+ (fn [{:keys [db]} [url]]
+   (let [redirect-url (or url
+                          (->> (get db :wallet-connect/current-request)
+                               (wallet-connect-core/get-current-request-dapp
+                                (get db :wallet-connect/sessions))
+                               :sessionJson
+                               transforms/json->clj
+                               wallet-connect-core/get-dapp-redirect-url))]
+     {:fx [[:open-url redirect-url]]})))
 
 (rf/reg-event-fx
  :wallet-connect/dismiss-request-modal
@@ -142,12 +156,6 @@
                     wallet-connect-core/get-request-method
                     wallet-connect-core/method-to-screen)]
      {:fx [[:dispatch [:dismiss-modal screen]]]})))
-
-(rf/reg-event-fx
- :wallet-connect/finish-session-request
- (fn [_ [result]]
-   {:fx [[:dispatch [:wallet-connect/send-response {:result result}]]
-         [:dispatch [:wallet-connect/dismiss-request-modal]]]}))
 
 (rf/reg-event-fx
  :wallet-connect/dismiss-request-modal
