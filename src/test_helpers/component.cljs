@@ -101,6 +101,7 @@
 (def get-by-text (with-node-or-screen :get-by-text))
 (def query-all-by-text (with-node-or-screen :query-all-by-text))
 (def query-by-text (with-node-or-screen :query-by-text))
+(def query-first-by-text (comp first query-all-by-text))
 
 (def get-all-by-label-text (with-node-or-screen :get-all-by-label-text))
 (def get-by-label-text (with-node-or-screen :get-by-label-text))
