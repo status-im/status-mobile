@@ -4,7 +4,7 @@
     [quo.components.calendar.calendar.view :as calendar]
     [test-helpers.component :as h]))
 
-(def start-date (time/date-time (time/year (time/now)) (time/month (time/now)) 5))
+(def start-date (time/date-time (time/year (time/now)) (time/month (time/now)) 8))
 (def end-date (time/date-time (time/plus start-date (time/days 2))))
 
 (h/describe "calendar component"
@@ -23,7 +23,7 @@
         {:start-date nil
          :end-date   nil
          :on-change  on-change}])
-      (h/fire-event :press (h/query-by-text (str (time/day start-date))))
+      (h/fire-event :press (h/query-first-by-text (str (time/day start-date))))
       (h/was-called-with on-change {:start-date start-date :end-date nil})))
 
   (h/test "should call on-change with start and end date on second click"
@@ -31,7 +31,7 @@
       (h/render
        [calendar/view
         {:start-date start-date :end-date nil :on-change on-change}])
-      (h/fire-event :press (h/query-by-text (str (time/day end-date))))
+      (h/fire-event :press (h/query-first-by-text (str (time/day end-date))))
       (h/was-called-with on-change {:start-date start-date :end-date end-date})))
 
   (h/test "should reset the dates on third click"
@@ -41,7 +41,7 @@
         {:start-date start-date
          :end-date   end-date
          :on-change  on-change}])
-      (h/fire-event :press (h/query-by-text (str (time/day start-date))))
+      (h/fire-event :press (h/query-first-by-text (str (time/day start-date))))
       (h/was-called-with on-change {:start-date start-date :end-date nil})))
 
   (h/test "should reset dates when start date is clicked again"
@@ -51,7 +51,7 @@
         {:start-date start-date
          :end-date   nil
          :on-change  on-change}])
-      (h/fire-event :press (h/query-by-text (str (time/day start-date))))
+      (h/fire-event :press (h/query-first-by-text (str (time/day start-date))))
       (h/was-called-with on-change {:start-date nil :end-date nil})))
 
   (h/test "should assign start and end date correctly when upper range selected first"
@@ -61,5 +61,5 @@
         {:start-date end-date
          :end-date   nil
          :on-change  on-change}])
-      (h/fire-event :press (h/query-by-text (str (time/day start-date))))
+      (h/fire-event :press (h/query-first-by-text (str (time/day start-date))))
       (h/was-called-with on-change {:start-date start-date :end-date end-date}))))
