@@ -331,14 +331,12 @@
                           (wallet-connect-core/get-dapp-redirect-url))]
      (log/info "Wallet Connect session persisted")
      {:fx [[:dispatch [:wallet-connect/fetch-active-sessions]]
-           [:activity-center.notifications/fetch-unread-count]
-           [:activity-center/update-seen-state]
            [[:dispatch [:wallet-connect/redirect-to-dapp redirect-url]]]]})))
 
 (rf/reg-event-fx
  :wallet-connect/disconnect-session
  (fn [{:keys [db]} [topic]]
-   (log/info "Removing session from persistance and state" topic)
+   (log/info "Removing session from persistence and state" topic)
    {:db (update db
                 :wallet-connect/sessions
                 (fn [sessions]
