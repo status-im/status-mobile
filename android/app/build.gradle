@@ -211,7 +211,7 @@ android {
             reset()
             enable getEnvOrConfig('ANDROID_ABI_SPLIT').toBoolean()
             include getEnvOrConfig('ANDROID_ABI_INCLUDE').split(";")
-            universalApk false
+            universalApk getEnvOrConfig('ORG_GRADLE_PROJECT_universalApk').toBoolean()
         }
     }
     signingConfigs {
