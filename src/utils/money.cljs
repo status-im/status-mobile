@@ -55,8 +55,9 @@
   (.lessThan ^js bn1 bn2))
 
 (defn equal-to
-  [bn1 bn2]
-  (.eq ^js bn1 bn2))
+  [n1 n2]
+  (when-let [^js bn1 (bignumber n1)]
+    (.eq ^js bn1 n2)))
 
 (extend-type BigNumber
  IEquiv

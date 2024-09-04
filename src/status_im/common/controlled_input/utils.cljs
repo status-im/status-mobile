@@ -1,6 +1,8 @@
 (ns status-im.common.controlled-input.utils
   (:require
-    [clojure.string :as string]))
+    [clojure.string :as string]
+    [status-im.contexts.wallet.common.utils :as wallet-utils]
+    [utils.money :as money]))
 
 (def init-state
   {:value       ""
@@ -14,7 +16,7 @@
 
 (defn numeric-value
   [state]
-  (or (parse-double (input-value state)) 0))
+  (money/bignumber (input-value state)))
 
 (defn input-error
   [state]
@@ -26,23 +28,27 @@
 
 (defn upper-limit
   [state]
-  (:upper-limit state))
+  (money/bignumber (:upper-limit state)))
 
 (defn lower-limit
   [state]
-  (:lower-limit state))
+  (money/bignumber (:lower-limit state)))
 
 (defn upper-limit-exceeded?
   [state]
-  (and
-   (upper-limit state)
-   (> (numeric-value state) (upper-limit state))))
+  (let [num-value (numeric-value state)]
+    (and
+     (upper-limit state)
+     (when (money/bignumber? num-value)
+       (money/greater-than (numeric-value state) (upper-limit state))))))
 
-(defn lower-limit-exceeded?
+(defn- lower-limit-exceeded?
   [state]
-  (and
-   (lower-limit state)
-   (< (numeric-value state) (lower-limit state))))
+  (let [num-value (numeric-value state)]
+    (and
+     (lower-limit state)
+     (when (money/bignumber? num-value)
+       (money/less-than (numeric-value state) (lower-limit state))))))
 
 (defn- recheck-errorness
   [state]
@@ -75,13 +81,11 @@
 
 (defn increase
   [state]
-  (let [new-val (inc (numeric-value state))]
-    (set-input-value state (str new-val))))
+  (set-input-value state (str (money/add (numeric-value state) 1))))
 
 (defn decrease
   [state]
-  (let [new-val (dec (numeric-value state))]
-    (set-input-value state (str new-val))))
+  (set-input-value state (str (money/add (numeric-value state) -1))))
 
 (def ^:private not-digits-or-dot-pattern
   #"[^0-9+\.]")
@@ -130,3 +134,29 @@
 (defn empty-value?
   [state]
   (string/blank? (:value state)))
+
+(defn- fiat->crypto
+  [value conversion-rate]
+  (-> value
+      (money/fiat->crypto conversion-rate)
+      (wallet-utils/cut-crypto-decimals-to-fit-usd-cents conversion-rate)))
+
+(defn- crypto->fiat
+  [value conversion-rate]
+  (-> value
+      (money/crypto->fiat conversion-rate)
+      (wallet-utils/cut-fiat-balance-to-two-decimals)))
+
+(defn ->crypto
+  [state conversion-rate]
+  (-> state
+      (set-input-value (fiat->crypto (input-value state) conversion-rate))
+      (set-upper-limit (fiat->crypto (upper-limit state) conversion-rate))
+      (set-lower-limit (fiat->crypto (lower-limit state) conversion-rate))))
+
+(defn ->fiat
+  [state conversion-rate]
+  (-> state
+      (set-input-value (crypto->fiat (input-value state) conversion-rate))
+      (set-upper-limit (crypto->fiat (upper-limit state) conversion-rate))
+      (set-lower-limit (crypto->fiat (lower-limit state) conversion-rate))))
