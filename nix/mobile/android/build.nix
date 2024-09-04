@@ -22,7 +22,7 @@
   # Android architectures to build for
   # Used to detect end-to-end builds
   androidAbiInclude ? lib.getEnvWithDefault "ANDROID_ABI_INCLUDE" "arm64-v8a",
-  universalApk ? lib.getEnvWthDefault "ORG_GRADLE_PROJECT_universalApk" "false"
+  universalApk ? lib.getEnvWithDefault "ORG_GRADLE_PROJECT_universalApk" "false"
 }:
 
 let
