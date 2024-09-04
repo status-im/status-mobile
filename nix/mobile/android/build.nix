@@ -89,7 +89,7 @@ in stdenv.mkDerivation rec {
   ORG_GRADLE_PROJECT_commitHash = commitHash;
   ORG_GRADLE_PROJECT_buildUrl = buildUrl;
   ORG_GRADLE_PROJECT_hermesEnabled = hermesEnabled;
-  ORG_GRADLE_PROECT_universalApk = universalApk;
+  ORG_GRADLE_PROJECT_universalApk = universalApk;
 
   # Fix for ERR_OSSL_EVP_UNSUPPORTED error.
   NODE_OPTIONS = "--openssl-legacy-provider";
