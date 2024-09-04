@@ -44,15 +44,18 @@
 
 (defn greater-than-or-equals
   [^js bn1 ^js bn2]
-  (.greaterThanOrEqualTo bn1 bn2))
+  (when (bignumber? bn1)
+    (.greaterThanOrEqualTo bn1 bn2)))
 
 (defn greater-than
   [bn1 bn2]
-  (.greaterThan ^js bn1 bn2))
+  (when (bignumber? bn1)
+    (.greaterThan ^js bn1 bn2)))
 
 (defn less-than
   [bn1 bn2]
-  (.lessThan ^js bn1 bn2))
+  (when (bignumber? bn1)
+    (.lessThan ^js bn1 bn2)))
 
 (defn equal-to
   [n1 n2]

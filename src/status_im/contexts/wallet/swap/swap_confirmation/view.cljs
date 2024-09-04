@@ -157,12 +157,13 @@
 (defn- slide-button
   []
   (let [loading-swap-proposal? (rf/sub [:wallet/swap-loading-swap-proposal?])
-        swap-proposal          (rf/sub [:wallet/swap-proposal])
+        swap-proposal          (rf/sub [:wallet/swap-proposal-without-fees])
         account                (rf/sub [:wallet/current-viewing-account])
         account-color          (:color account)
-        on-auth-success        (rn/use-callback #(rf/dispatch
-                                                  [:wallet/swap-transaction
-                                                   (security/safe-unmask-data %)]))]
+        on-auth-success        (rn/use-callback (fn [data]
+                                                  (rf/dispatch [:wallet/stop-get-swap-proposal])
+                                                  (rf/dispatch [:wallet/swap-transaction
+                                                                (security/safe-unmask-data data)])))]
     [standard-auth/slide-button
      {:size                :size-48
       :track-text          (i18n/label :t/slide-to-swap)
