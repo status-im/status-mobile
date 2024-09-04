@@ -57,13 +57,17 @@
   [item]
   (-> item
       rpc->type
-      (set/rename-keys {:lastMessage               :last-message
-                        :replyMessage              :reply-message
-                        :chatId                    :chat-id
-                        :contactVerificationStatus :contact-verification-status
-                        :communityId               :community-id
-                        :membershipStatus          :membership-status
-                        :albumMessages             :album-messages})
+      (set/rename-keys {:lastMessage                :last-message
+                        :replyMessage               :reply-message
+                        :chatId                     :chat-id
+                        :contactVerificationStatus  :contact-verification-status
+                        :communityId                :community-id
+                        :membershipStatus           :membership-status
+                        :albumMessages              :album-messages
+                        :walletProviderSessionTopic :wallet-provider-session-topic
+                        :dappURL                    :dapp-url
+                        :dappName                   :dapp-name
+                        :dappIconURL                :dapp-icon-url})
       (update :last-message #(when % (messages/<-rpc %)))
       (update :message #(when % (messages/<-rpc %)))
       (update :reply-message #(when % (messages/<-rpc %)))

@@ -3,7 +3,6 @@
     [clojure.string :as string]
     [native-module.core :as native-module]
     [quo.foundations.resources :as quo.resources]
-    [quo.foundations.resources]
     [re-frame.core :as rf]
     [status-im.contexts.wallet.common.activity-tab.constants :as constants]
     [utils.datetime :as datetime]
