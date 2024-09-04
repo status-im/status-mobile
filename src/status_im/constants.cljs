@@ -591,11 +591,17 @@
 (def ^:const default-slippage 0.5)
 (def ^:const max-recommended-slippage 5)
 (def ^:const max-slippage-decimal-places 2)
-(def ^:const swap-default-provider
+(def ^:const swap-provider-paraswap
   {:name                     :paraswap
    :full-name                "Paraswap"
    :color                    :blue
    :contract-address         "0xdef171fe48cf0115b1d80b88dc8eab59176fee57"
    :terms-and-conditions-url "https://files.paraswap.io/tos_v4.pdf"})
+(def ^:const swap-providers
+  {:paraswap swap-provider-paraswap})
 
 (def ^:const token-for-fees-symbol "ETH")
+
+(def ^:const transaction-status-success "Success")
+(def ^:const transaction-status-pending "Pending")
+(def ^:const transaction-status-failed "Failed")

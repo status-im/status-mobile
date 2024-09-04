@@ -11,7 +11,7 @@
     [taoensso.timbre :as log]
     [utils.address :as address]
     [utils.hex :as utils.hex]
-    [utils.money :as money]
+    [utils.money :as utils.money]
     [utils.number]
     [utils.re-frame :as rf]))
 
@@ -582,124 +582,6 @@
             [{:ms       20
               :dispatch [:wallet/clean-up-transaction-flow]}]]]})))
 
-(defn- transaction-data
-  [{:keys [from-address to-address token-address route data eth-transfer?]}]
-  (let [{:keys [amount-in gas-amount gas-fees]} route
-        eip-1559-enabled?                       (:eip-1559-enabled gas-fees)
-        {:keys [gas-price max-fee-per-gas-medium
-                max-priority-fee-per-gas]}      gas-fees]
-    (cond-> {:From  from-address
-             :To    (or token-address to-address)
-             :Gas   (money/to-hex gas-amount)
-             :Value (when eth-transfer? amount-in)
-             :Nonce nil
-             :Input ""
-             :Data  (or data "0x")}
-      eip-1559-enabled?       (assoc
-                               :TxType "0x02"
-                               :MaxFeePerGas
-                               (money/to-hex
-                                (money/->wei
-                                 :gwei
-                                 max-fee-per-gas-medium))
-                               :MaxPriorityFeePerGas
-                               (money/to-hex
-                                (money/->wei
-                                 :gwei
-                                 max-priority-fee-per-gas)))
-      (not eip-1559-enabled?) (assoc :TxType "0x00"
-                                     :GasPrice
-                                     (money/to-hex
-                                      (money/->wei
-                                       :gwei
-                                       gas-price))))))
-
-(defn- approval-path
-  [{:keys [route from-address to-address token-address]}]
-  (let [{:keys [from]}                     route
-        from-chain-id                      (:chain-id from)
-        approval-amount-required           (:approval-amount-required route)
-        approval-amount-required-sanitized (-> approval-amount-required
-                                               (utils.hex/normalize-hex)
-                                               (native-module/hex-to-number))
-        approval-contract-address          (:approval-contract-address route)
-        data                               (native-module/encode-function-call
-                                            constants/contract-function-signature-erc20-approve
-                                            [approval-contract-address
-                                             approval-amount-required-sanitized])
-        tx-data                            (transaction-data {:from-address  from-address
-                                                              :to-address    to-address
-                                                              :token-address token-address
-                                                              :route         route
-                                                              :data          data
-                                                              :eth-transfer? false})]
-    {:BridgeName constants/bridge-name-transfer
-     :ChainID    from-chain-id
-     :TransferTx tx-data}))
-
-(defn- transaction-path
-  [{:keys [from-address to-address token-id token-address route data eth-transfer?]}]
-  (let [{:keys [bridge-name amount-in bonder-fees from
-                to]}  route
-        tx-data       (transaction-data {:from-address  from-address
-                                         :to-address    to-address
-                                         :token-address token-address
-                                         :route         route
-                                         :data          data
-                                         :eth-transfer? eth-transfer?})
-        to-chain-id   (:chain-id to)
-        from-chain-id (:chain-id from)]
-    (cond-> {:BridgeName bridge-name
-             :ChainID    from-chain-id}
-
-      (= bridge-name constants/bridge-name-erc-721-transfer)
-      (assoc :ERC721TransferTx
-             (assoc tx-data
-                    :Recipient to-address
-                    :TokenID   token-id
-                    :ChainID   to-chain-id))
-
-      (= bridge-name constants/bridge-name-erc-1155-transfer)
-      (assoc :ERC1155TransferTx
-             (assoc tx-data
-                    :Recipient to-address
-                    :TokenID   token-id
-                    :ChainID   to-chain-id
-                    :Amount    amount-in))
-
-      (= bridge-name constants/bridge-name-transfer)
-      (assoc :TransferTx tx-data)
-
-      (= bridge-name constants/bridge-name-hop)
-      (assoc :HopTx
-             (assoc tx-data
-                    :ChainID   from-chain-id
-                    :ChainIDTo to-chain-id
-                    :Symbol    token-id
-                    :Recipient to-address
-                    :Amount    amount-in
-                    :BonderFee bonder-fees))
-
-      (not (or (= bridge-name constants/bridge-name-erc-721-transfer)
-               (= bridge-name constants/bridge-name-transfer)
-               (= bridge-name constants/bridge-name-hop)))
-      (assoc :CbridgeTx
-             (assoc tx-data
-                    :ChainID   to-chain-id
-                    :Symbol    token-id
-                    :Recipient to-address
-                    :Amount    amount-in)))))
-
-(defn- multi-transaction-command
-  [{:keys [from-address to-address from-asset to-asset amount-out multi-transaction-type]
-    :or   {multi-transaction-type constants/multi-transaction-type-unknown}}]
-  {:fromAddress from-address
-   :toAddress   to-address
-   :fromAsset   from-asset
-   :toAsset     to-asset
-   :fromAmount  amount-out
-   :type        multi-transaction-type})
-
 (rf/reg-event-fx :wallet/send-transaction
  (fn [{:keys [db]} [sha3-pwd]]
    (let [routes (get-in db [:wallet :ui :send :route])
@@ -731,7 +613,7 @@
                                                                (native-module/encode-transfer
                                                                 (address/normalized-hex to-address)
                                                                 (:amount-in route)))
-                                          base-path          (transaction-path
+                                          base-path          (utils/transaction-path
                                                               {:to-address    to-address
                                                                :from-address  from-address
                                                                :route         route
@@ -743,15 +625,15 @@
                                                                :data          data
                                                                :eth-transfer? eth-transfer?})]
                                       (if approval-required?
-                                        [(approval-path {:route         route
-                                                         :token-address token-address
-                                                         :from-address  from-address
-                                                         :to-address    to-address})
+                                        [(utils/approval-path {:route         route
+                                                               :token-address token-address
+                                                               :from-address  from-address
+                                                               :to-address    to-address})
                                          base-path]
                                         [base-path]))))
                                  routes)
          request-params
-         [(multi-transaction-command
+         [(utils/multi-transaction-command
            {:from-address           from-address
             :to-address             to-address
             :from-asset             token-id

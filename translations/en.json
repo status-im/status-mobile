@@ -2313,6 +2313,8 @@
   "specify-symbol": "Specify a symbol",
   "spender-contract": "Spender contract",
   "spending-cap": "Spending cap",
+  "spending-cap-failed": "Spending cap failed: {{amount}} {{token-symbol}} for {{provider-name}} in {{account-name}}",
+  "spending-cap-set": "Spending cap set: {{amount}} {{token-symbol}} for {{provider-name}} in {{account-name}}",
   "start-chat": "Start chat",
   "start-conversation": "Start conversation",
   "start-group-chat": "Start group chat",
