@@ -1,8 +1,8 @@
 ---
-name: MVPBug Report
-about: MVPBug Report
+name: Bug Report
+about: Bug Report
 title: ''
-labels: ['E:Mobile Bug MVP', ':1234: low prio']
+labels: ['bug', ':1234: low prio']
 assignees: ''
 
 ---
