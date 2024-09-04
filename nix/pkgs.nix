@@ -6,11 +6,11 @@ let
   # For testing local version of nixpkgs
   #nixpkgsSrc = (import <nixpkgs> { }).lib.cleanSource "/home/jakubgs/work/nixpkgs";
 
-  # We follow release 23-11 of nixpkgs
-  # https://github.com/NixOS/nixpkgs/releases/tag/23.11
+  # We follow release 24-05 of nixpkgs
+  # https://github.com/NixOS/nixpkgs/releases/tag/24.05
   nixpkgsSrc = builtins.fetchTarball {
-    url = "https://github.com/NixOS/nixpkgs/archive/224fd9a362487ab2894dac0df161c84ab1d8880b.tar.gz";
-    sha256 = "sha256:1syvl39pi1h8lf5gkd9h7ksn5hp34cj7pa3abr59217kv0bdklhy";
+    url = "https://github.com/NixOS/nixpkgs/archive/a72e2a58d01698b77dd373f598c776a53090e97d.tar.gz";
+    sha256 = "sha256:0g7byc7kk2sp3irrq510mx2ddf0l101wb1xfm86v3p6z5n7y0ag1";
   };
 
   # Status specific configuration defaults

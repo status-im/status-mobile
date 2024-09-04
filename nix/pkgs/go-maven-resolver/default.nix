@@ -4,7 +4,7 @@ buildGoModule rec {
   pname = "go-maven-resolver";
   version = "v1.1.2";
 
-  vendorSha256 = "1p9pl33zpbw8zc85301mnp692lkr46ppm1q99wnqwynzi7x8hnkn";
+  vendorHash = "sha256-dlqI+onfeo4tTwmHeq8heVKRzLU1gFEQ+4iv+8egN90=";
 
   src = fetchFromGitHub rec {
     name = "${repo}-${version}-source";
