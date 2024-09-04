@@ -1,12 +1,15 @@
 (ns quo.components.banners.alert-banner.style
   (:require [quo.foundations.colors :as colors]))
 
-(def container
-  {:flex-direction     :row
-   :align-items        :center
-   :height             50
-   :padding-horizontal 20
-   :padding-vertical   12})
+(defn container
+  [container-style]
+  (merge
+   {:flex-direction     :row
+    :align-items        :center
+    :height             50
+    :padding-horizontal 20
+    :padding-vertical   12}
+   container-style))
 
 (defn label
   [theme]

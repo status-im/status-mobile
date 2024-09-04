@@ -1,5 +1,6 @@
 (ns quo.components.wallet.swap-input.style
   (:require [quo.foundations.colors :as colors]
+            [quo.foundations.shadows :as shadows]
             [quo.foundations.typography :as typography]))
 
 (defn- border-color
@@ -11,11 +12,13 @@
   (colors/theme-colors colors/neutral-5 colors/neutral-90 theme))
 
 (defn content
-  [theme]
-  {:border-width     1
-   :border-radius    16
-   :border-color     (border-color theme)
-   :background-color (colors/theme-colors colors/white colors/neutral-95 theme)})
+  [typing? theme]
+  (merge
+   {:border-width     1
+    :border-radius    16
+    :border-color     (border-color theme)
+    :background-color (colors/theme-colors colors/white colors/neutral-95 theme)}
+   (when typing? (shadows/get 1 theme))))
 
 (defn row-1
   [loading?]

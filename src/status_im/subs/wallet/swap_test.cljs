@@ -16,6 +16,27 @@
          :popular?   true
          :token?     false}})
 
+(def ^:private accounts-with-tokens
+  {:0x1 {:tokens                    [{:symbol                     "ETH"
+                                      :balances-per-chain         {1 {:raw-balance "100"}}
+                                      :market-values-per-currency {:usd {:price 10000}}}
+                                     {:symbol                     "SNT"
+                                      :balances-per-chain         {1 {:raw-balance "100"}}
+                                      :market-values-per-currency {:usd {:price 10000}}}]
+         :network-preferences-names #{}
+         :customization-color       nil
+         :operable?                 true
+         :operable                  :fully
+         :address                   "0x1"}
+   :0x2 {:tokens                    [{:symbol                     "SNT"
+                                      :balances-per-chain         {1 {:raw-balance "200"}}
+                                      :market-values-per-currency {:usd {:price 10000}}}]
+         :network-preferences-names #{}
+         :customization-color       nil
+         :operable?                 true
+         :operable                  :partially
+         :address                   "0x2"}})
+
 (def networks
   {:mainnet-network
    {:full-name        "Mainnet"
@@ -110,7 +131,19 @@
     :token-list-id ""
     :built-on "ETH"
     :verified true}
-   :network nil})
+   :network (networks :mainnet-network)
+   :swap-proposal {:amount-out               "0x10000"
+                   :amount-in                "0x10000"
+                   :approval-required        true
+                   :approval-amount-required "0x10000"
+                   :gas-amount               "25000"
+                   :gas-fees                 {:max-fee-per-gas-medium "4"
+                                              :eip-1559-enabled       true
+                                              :l-1-gas-fee            "0"}}
+   :error-response "Error"
+   :loading-fees? false
+   :loading-swap-proposal? false
+   :max-slippage 0.5})
 
 (h/deftest-sub :wallet/swap
   [sub-name]
@@ -160,3 +193,91 @@
            (assoc :currencies currencies)
            (assoc-in [:wallet :ui :swap] swap-data)))
     (is (match? {:crypto "1 SNT" :fiat "$0.03"} (rf/sub [sub-name 1])))))
+
+(h/deftest-sub :wallet/swap-network
+  [sub-name]
+  (testing "Return the current swap network"
+    (swap! rf-db/app-db assoc-in
+      [:wallet :ui :swap]
+      swap-data)
+    (is (match? (swap-data :network) (rf/sub [sub-name])))))
+
+(h/deftest-sub :wallet/swap-error-response
+  [sub-name]
+  (testing "Return the swap error response"
+    (swap! rf-db/app-db assoc-in
+      [:wallet :ui :swap]
+      swap-data)
+    (is (match? (swap-data :error-response) (rf/sub [sub-name])))))
+
+(h/deftest-sub :wallet/swap-max-slippage
+  [sub-name]
+  (testing "Return the max slippage for the swap"
+    (swap! rf-db/app-db assoc-in
+      [:wallet :ui :swap]
+      swap-data)
+    (is (match? 0.5 (rf/sub [sub-name])))))
+
+(h/deftest-sub :wallet/swap-loading-fees?
+  [sub-name]
+  (testing "Return if swap is loading fees"
+    (swap! rf-db/app-db assoc-in
+      [:wallet :ui :swap]
+      swap-data)
+    (is (false? (rf/sub [sub-name])))))
+
+(h/deftest-sub :wallet/swap-loading-swap-proposal?
+  [sub-name]
+  (testing "Return if swap is loading the swap proposal"
+    (swap! rf-db/app-db assoc-in
+      [:wallet :ui :swap]
+      swap-data)
+    (is (false? (rf/sub [sub-name])))))
+
+(h/deftest-sub :wallet/swap-proposal
+  [sub-name]
+  (testing "Return the swap proposal"
+    (swap! rf-db/app-db assoc-in
+      [:wallet :ui :swap]
+      swap-data)
+    (is (match? (swap-data :swap-proposal) (rf/sub [sub-name])))))
+
+(h/deftest-sub :wallet/swap-proposal-amount-out
+  [sub-name]
+  (testing "Return the amount out in the swap proposal"
+    (swap! rf-db/app-db assoc-in
+      [:wallet :ui :swap]
+      swap-data)
+    (is (match? "0x10000" (rf/sub [sub-name])))))
+
+(h/deftest-sub :wallet/swap-proposal-approval-required
+  [sub-name]
+  (testing "Return if approval is required in the swap proposal"
+    (swap! rf-db/app-db assoc-in
+      [:wallet :ui :swap]
+      swap-data)
+    (is (true? (rf/sub [sub-name])))))
+
+(h/deftest-sub :wallet/swap-proposal-approval-amount-required
+  [sub-name]
+  (testing "Return the approval amount required in the swap proposal"
+    (swap! rf-db/app-db assoc-in
+      [:wallet :ui :swap]
+      swap-data)
+    (is (match? "0x10000" (rf/sub [sub-name])))))
+
+(h/deftest-sub :wallet/wallet-swap-proposal-fee-fiat-formatted
+  [sub-name]
+  (testing "wallet send fee calculated and formatted in fiat"
+    (swap! rf-db/app-db
+      #(-> %
+           (assoc-in [:wallet :accounts] accounts-with-tokens)
+           (assoc-in [:wallet :current-viewing-account-address] "0x1")
+           (assoc-in [:wallet :ui :swap] swap-data)
+           (assoc-in [:currencies] currencies)
+           (assoc-in [:profile/profile :currency] :usd)
+           (assoc-in [:profile/profile :currency-symbol] "$")))
+
+    (let [token-symbol-for-fees "ETH"
+          result                (rf/sub [sub-name token-symbol-for-fees])]
+      (is (match? result "$1.00")))))

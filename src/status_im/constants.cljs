@@ -551,6 +551,7 @@
 (def ^:const send-type-bridge 5)
 (def ^:const send-type-erc-721-transfer 6)
 (def ^:const send-type-erc-1155-transfer 7)
+(def ^:const send-type-swap 8)
 
 (def ^:const multi-transaction-type-send 0)
 (def ^:const multi-transaction-type-approve 1)
@@ -596,3 +597,5 @@
    :color                    :blue
    :contract-address         "0xdef171fe48cf0115b1d80b88dc8eab59176fee57"
    :terms-and-conditions-url "https://files.paraswap.io/tos_v4.pdf"})
+
+(def ^:const token-for-fees-symbol "ETH")

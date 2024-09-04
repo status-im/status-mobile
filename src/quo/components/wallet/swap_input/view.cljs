@@ -19,13 +19,15 @@
     [:props
      [:map {:closed true}
       [:type {:optional true} [:maybe [:enum :pay :receive]]]
-      [:status {:optional true} [:maybe [:enum :default :disabled :loading]]]
+      [:status {:optional true} [:maybe [:enum :default :typing :disabled :loading]]]
       [:token {:optional true} [:maybe :string]]
       [:value {:optional true} [:maybe :string]]
       [:default-value {:optional true} [:maybe :string]]
       [:currency-symbol {:optional true} [:maybe :string]]
       [:fiat-value {:optional true} [:maybe :string]]
       [:show-approval-label? {:optional true} [:maybe :boolean]]
+      [:auto-focus? {:optional true} [:maybe :boolean]]
+      [:input-disabled? {:optional true} [:maybe :boolean]]
       [:error? {:optional true} [:maybe :boolean]]
       [:show-keyboard? {:optional true} [:maybe :boolean]]
       [:approval-label-props {:optional true} [:maybe approval-label.schema/?schema]]
@@ -33,6 +35,7 @@
       [:on-change-text {:optional true} [:maybe fn?]]
       [:enable-swap? {:optional true} [:maybe :boolean]]
       [:on-swap-press {:optional true} [:maybe fn?]]
+      [:on-input-focus {:optional true} [:maybe fn?]]
       [:on-token-press {:optional true} [:maybe fn?]]
       [:on-max-press {:optional true} [:maybe fn?]]
       [:customization-color {:optional true} [:maybe :schema.common/customization-color]]
@@ -41,13 +44,14 @@
 
 (defn view-internal
   [{:keys [type status token value fiat-value show-approval-label? error? network-tag-props
-           approval-label-props default-value enable-swap?
+           approval-label-props default-value auto-focus? input-disabled? enable-swap?
            currency-symbol on-change-text show-keyboard?
-           container-style on-swap-press on-token-press on-max-press]}]
+           container-style on-swap-press on-token-press on-max-press on-input-focus]}]
   (let [theme             (quo.theme/use-theme)
         pay?              (= type :pay)
         disabled?         (= status :disabled)
         loading?          (= status :loading)
+        typing?           (= status :typing)
         controlled-input? (some? value)
         input-ref         (rn/use-ref-atom nil)
         set-input-ref     (rn/use-callback (fn [ref] (reset! input-ref ref)) [])
@@ -58,7 +62,7 @@
     [rn/view
      {:style               container-style
       :accessibility-label :swap-input}
-     [rn/view {:style (style/content theme)}
+     [rn/view {:style (style/content typing? theme)}
       [rn/view
        {:style (style/row-1 loading?)}
        [rn/pressable {:on-press on-token-press}
@@ -78,7 +82,9 @@
                                                                     colors/neutral-50
                                                                     theme)
                      :keyboard-type            :numeric
-                     :auto-focus               true
+                     :editable                 (not input-disabled?)
+                     :auto-focus               auto-focus?
+                     :on-focus                 on-input-focus
                      :on-change-text           on-change-text
                      :show-soft-input-on-focus show-keyboard?
                      :default-value            default-value

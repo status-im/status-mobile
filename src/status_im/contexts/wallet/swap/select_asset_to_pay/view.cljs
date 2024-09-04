@@ -18,22 +18,6 @@
      :value          search-text
      :on-change-text on-change-text}]])
 
-(def dummy-swap-proposal
-  {:from           {:chain-id               1
-                    :native-currency-symbol "ETH"}
-   :to             {:chain-id               1
-                    :native-currency-symbol "ETH"}
-   :gas-amount     "23487"
-   :gas-fees       {:base-fee                 "32.325296406"
-                    :max-priority-fee-per-gas "0.011000001"
-                    :eip1559-enabled          true}
-   :estimated-time 3
-   :receive-amount "99.98"
-   :pay-token      {:symbol  "SNT"
-                    :address "0x432492384728934239789"}
-   :receive-token  {:symbol  "USDT"
-                    :address "0x432492384728934239789"}})
-
 (defn- assets-view
   [search-text on-change-text]
   (let [on-token-press (fn [token]
@@ -44,10 +28,8 @@
                                           :network  (when (= (count token-networks) 1)
                                                       (first token-networks))
                                           :stack-id :screen/wallet.swap-select-asset-to-pay}])
-                           (rf/dispatch [:wallet.swap/select-asset-to-receive {:token asset-to-receive}])
-                           (rf/dispatch [:wallet.swap/set-pay-amount 100])
-                           (rf/dispatch [:wallet.swap/set-swap-proposal dummy-swap-proposal])
-                           (rf/dispatch [:wallet.swap/set-provider])))]
+                           (rf/dispatch [:wallet.swap/select-asset-to-receive
+                                         {:token asset-to-receive}])))]
     [:<>
      [search-input search-text on-change-text]
      [asset-list/view
@@ -59,7 +41,7 @@
   (let [[search-text set-search-text] (rn/use-state "")
         on-change-text                #(set-search-text %)
         on-close                      (fn []
-                                        (rf/dispatch [:wallet.swap/clean-asset-to-pay])
+                                        (rf/dispatch [:wallet/clean-swap])
                                         (rf/dispatch [:navigate-back]))]
     [rn/safe-area-view {:style style/container}
      [account-switcher/view

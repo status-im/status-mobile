@@ -15,6 +15,17 @@
     (/ (Math/round (* n scale))
        scale)))
 
+(defn convert-to-whole-number
+  "Converts a fractional `amount` to its corresponding whole number representation
+  by dividing it by 10 raised to the power of `decimals`. This is often used in financial
+  calculations where amounts are stored in their smallest units (e.g., cents) and need
+  to be converted to their whole number equivalents (e.g., dollars).
+
+  Example usage:
+  (convert-to-whole-number 12345 2) ; => 123.45"
+  [amount decimals]
+  (/ amount (Math/pow 10 decimals)))
+
 (defn parse-int
   "Parses `n` as an integer. Defaults to zero or `default` instead of NaN."
   ([n]
