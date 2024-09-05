@@ -23,6 +23,7 @@
   # Android architectures to build for
   # Used to detect end-to-end builds
   androidAbiInclude ? lib.getEnvWithDefault "ANDROID_ABI_INCLUDE" "arm64-v8a",
+  universalApk ? lib.getEnvWithDefault "ORG_GRADLE_PROJECT_universalApk" "false"
 }:
 
 let
@@ -89,6 +90,7 @@ in stdenv.mkDerivation rec {
   ORG_GRADLE_PROJECT_commitHash = commitHash;
   ORG_GRADLE_PROJECT_buildUrl = buildUrl;
   ORG_GRADLE_PROJECT_hermesEnabled = hermesEnabled;
+  ORG_GRADLE_PROJECT_universalApk = universalApk;
 
   # Fix for ERR_OSSL_EVP_UNSUPPORTED error.
   NODE_OPTIONS = "--openssl-legacy-provider";
