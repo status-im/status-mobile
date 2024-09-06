@@ -1,6 +1,5 @@
 (ns status-im.contexts.wallet.swap.set-spending-cap.view
   (:require
-    [native-module.core :as native-module]
     [quo.core :as quo]
     [quo.foundations.resources :as resources]
     [quo.theme :as quo.theme]
@@ -12,26 +11,17 @@
     [status-im.contexts.wallet.common.utils.external-links :as external-links]
     [status-im.contexts.wallet.swap.set-spending-cap.style :as style]
     [utils.address :as address-utils]
-    [utils.hex :as hex]
     [utils.i18n :as i18n]
-    [utils.number :as number]
     [utils.re-frame :as rf]
     [utils.security.core :as security]))
 
 (defn- swap-title
   []
-  (let [asset-to-pay       (rf/sub [:wallet/swap-asset-to-pay])
-        amount-in          (rf/sub [:wallet/swap-proposal-amount-in])
-        account            (rf/sub [:wallet/current-viewing-account])
-        provider           (rf/sub [:wallet/swap-proposal-provider])
-        pay-token-symbol   (:symbol asset-to-pay)
-        pay-token-decimals (:decimals asset-to-pay)
-        pay-amount         (when amount-in
-                             (number/convert-to-whole-number
-                              (native-module/hex-to-number
-                               (hex/normalize-hex
-                                amount-in))
-                              pay-token-decimals))]
+  (let [asset-to-pay     (rf/sub [:wallet/swap-asset-to-pay])
+        pay-amount       (rf/sub [:wallet/swap-pay-amount])
+        account          (rf/sub [:wallet/current-viewing-account])
+        provider         (rf/sub [:wallet/swap-proposal-provider])
+        pay-token-symbol (:symbol asset-to-pay)]
     [rn/view {:style style/content-container}
      [rn/view {:style {:flex-direction :row}}
       [quo/text
@@ -72,17 +62,10 @@
 
 (defn- spending-cap-section
   []
-  (let [theme              (quo.theme/use-theme)
-        asset-to-pay       (rf/sub [:wallet/swap-asset-to-pay])
-        amount-in          (rf/sub [:wallet/swap-proposal-amount-in])
-        pay-token-symbol   (:symbol asset-to-pay)
-        pay-token-decimals (:decimals asset-to-pay)
-        pay-amount         (when amount-in
-                             (number/convert-to-whole-number
-                              (native-module/hex-to-number
-                               (hex/normalize-hex
-                                amount-in))
-                              pay-token-decimals))]
+  (let [theme            (quo.theme/use-theme)
+        asset-to-pay     (rf/sub [:wallet/swap-asset-to-pay])
+        pay-amount       (rf/sub [:wallet/swap-pay-amount])
+        pay-token-symbol (:symbol asset-to-pay)]
     [rn/view {:style style/summary-section-container}
      [quo/text
       {:size                :paragraph-2
@@ -98,18 +81,11 @@
 
 (defn- account-section
   []
-  (let [theme              (quo.theme/use-theme)
-        asset-to-pay       (rf/sub [:wallet/swap-asset-to-pay])
-        amount-in          (rf/sub [:wallet/swap-proposal-amount-in])
-        account            (rf/sub [:wallet/current-viewing-account])
-        pay-token-symbol   (:symbol asset-to-pay)
-        pay-token-decimals (:decimals asset-to-pay)
-        pay-amount         (when amount-in
-                             (number/convert-to-whole-number
-                              (native-module/hex-to-number
-                               (hex/normalize-hex
-                                amount-in))
-                              pay-token-decimals))]
+  (let [theme            (quo.theme/use-theme)
+        asset-to-pay     (rf/sub [:wallet/swap-asset-to-pay])
+        account          (rf/sub [:wallet/current-viewing-account])
+        pay-amount       (rf/sub [:wallet/swap-pay-amount])
+        pay-token-symbol (:symbol asset-to-pay)]
     [rn/view {:style style/summary-section-container}
      [quo/text
       {:size                :paragraph-2
@@ -217,13 +193,13 @@
         :subtitle      (:full-name network)
         :network-image (:source network)}]
       [data-item
-       {:title    (i18n/label :t/est-time)
-        :subtitle (i18n/label :t/time-in-mins {:minutes (str estimated-time)})}]
-      [data-item
        {:title    (i18n/label :t/max-fees)
         :subtitle max-fees
         :loading? loading-fees?
-        :size     :small}]]]))
+        :size     :small}]
+      [data-item
+       {:title    (i18n/label :t/est-time)
+        :subtitle (i18n/label :t/time-in-mins {:minutes (str estimated-time)})}]]]))
 
 (defn- slide-button
   []
@@ -234,7 +210,7 @@
                                             (security/safe-unmask-data %)]))]
     [standard-auth/slide-button
      {:size                :size-48
-      :track-text          (i18n/label :t/slide-to-swap)
+      :track-text          (i18n/label :t/slide-to-sign)
       :container-style     {:z-index 2}
       :customization-color (:color account)
       :disabled?           loading-fees?

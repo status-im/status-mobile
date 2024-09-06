@@ -407,7 +407,8 @@
      :TransferTx tx-data}))
 
 (defn transaction-path
-  [{:keys [from-address to-address token-id token-address route data eth-transfer?]}]
+  [{:keys [from-address to-address token-id-from token-address token-id-to route data
+           slippage-percentage eth-transfer?]}]
   (let [{:keys [bridge-name amount-in bonder-fees from
                 to]}  route
         tx-data       (transaction-data {:from-address  from-address
@@ -425,14 +426,14 @@
       (assoc :ERC721TransferTx
              (assoc tx-data
                     :Recipient to-address
-                    :TokenID   token-id
+                    :TokenID   token-id-from
                     :ChainID   to-chain-id))
 
       (= bridge-name constants/bridge-name-erc-1155-transfer)
       (assoc :ERC1155TransferTx
              (assoc tx-data
                     :Recipient to-address
-                    :TokenID   token-id
+                    :TokenID   token-id-from
                     :ChainID   to-chain-id
                     :Amount    amount-in))
 
@@ -444,10 +445,19 @@
              (assoc tx-data
                     :ChainID   from-chain-id
                     :ChainIDTo to-chain-id
-                    :Symbol    token-id
+                    :Symbol    token-id-from
                     :Recipient to-address
                     :Amount    amount-in
                     :BonderFee bonder-fees))
+
+      (= bridge-name constants/bridge-name-paraswap)
+      (assoc :SwapTx
+             (assoc tx-data
+                    :ChainID            from-chain-id
+                    :ChainIDTo          to-chain-id
+                    :TokenIDFrom        token-id-from
+                    :TokenIDTo          token-id-to
+                    :SlippagePercentage slippage-percentage))
 
       (not (or (= bridge-name constants/bridge-name-erc-721-transfer)
                (= bridge-name constants/bridge-name-transfer)
@@ -455,7 +465,7 @@
       (assoc :CbridgeTx
              (assoc tx-data
                     :ChainID   to-chain-id
-                    :Symbol    token-id
+                    :Symbol    token-id-from
                     :Recipient to-address
                     :Amount    amount-in)))))
 

@@ -618,7 +618,7 @@
                                                                :from-address  from-address
                                                                :route         route
                                                                :token-address token-address
-                                                               :token-id      (if collectible
+                                                               :token-id-from (if collectible
                                                                                 (utils.hex/number-to-hex
                                                                                  token-id)
                                                                                 token-id)

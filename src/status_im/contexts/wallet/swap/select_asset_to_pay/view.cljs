@@ -22,7 +22,7 @@
   [search-text on-change-text]
   (let [on-token-press (fn [token]
                          (let [token-networks   (:networks token)
-                               asset-to-receive (rf/sub [:wallet/token-by-symbol "SNT"])]
+                               asset-to-receive (rf/sub [:wallet/token-by-symbol "DAI"])]
                            (rf/dispatch [:wallet.swap/select-asset-to-pay
                                          {:token    token
                                           :network  (when (= (count token-networks) 1)

@@ -565,6 +565,7 @@
 (def ^:const bridge-name-erc-721-transfer "ERC721Transfer")
 (def ^:const bridge-name-erc-1155-transfer "ERC1155Transfer")
 (def ^:const bridge-name-hop "Hop")
+(def ^:const bridge-name-paraswap "Paraswap")
 
 (def ^:const bridge-assets #{"ETH" "USDT" "USDC" "DAI"})
 
@@ -605,3 +606,5 @@
 (def ^:const transaction-status-success "Success")
 (def ^:const transaction-status-pending "Pending")
 (def ^:const transaction-status-failed "Failed")
+
+(def ^:const min-token-decimals-to-display 6)
