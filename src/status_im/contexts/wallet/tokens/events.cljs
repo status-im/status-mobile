@@ -1,10 +1,10 @@
 (ns status-im.contexts.wallet.tokens.events
   (:require [re-frame.core :as rf]
             [status-im.constants :as constants]
-            [status-im.contexts.wallet.common.validation :as wallet-validation]
             [status-im.contexts.wallet.tokens.data :as tokens-data]
             [status-im.contexts.wallet.tokens.effects]
             [taoensso.timbre :as log]
+            [utils.address]
             [utils.ethereum.chain :as chain]))
 
 (rf/reg-event-fx
@@ -51,7 +51,7 @@
          symbols   (->> tokens
                         :by-symbol
                         keys
-                        (remove wallet-validation/eth-address?))]
+                        (remove utils.address/address?))]
      {:fx [[:effects.wallet.tokens/fetch-market-values
             {:symbols    symbols
              :currency   constants/profile-default-currency
