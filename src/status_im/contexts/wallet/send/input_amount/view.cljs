@@ -178,12 +178,7 @@
                                                         utils/token-usd-price
                                                         utils/one-cent-value
                                                         utils/calc-max-crypto-decimals)
-        [input-state set-input-state]               (rn/use-state
-                                                     (-> controlled-input/init-state
-                                                         (controlled-input/set-upper-limit
-                                                          (utils/cut-crypto-decimals-to-fit-usd-cents
-                                                           (or default-limit-crypto token-balance)
-                                                           conversion-rate))))
+        [input-state set-input-state]               (rn/use-state controlled-input/init-state)
         clear-input!                                #(set-input-state controlled-input/delete-all)
         currency-symbol                             (rf/sub [:profile/currency-symbol])
         loading-routes?                             (rf/sub
@@ -291,6 +286,15 @@
              app-keyboard-listener (.addEventListener rn/app-state "change" dismiss-keyboard-fn)]
          #(.remove app-keyboard-listener))))
     (hot-reload/use-safe-unmount on-navigate-back)
+    (rn/use-effect
+     (fn []
+       (set-input-state
+        #(-> %
+             (controlled-input/set-upper-limit
+              (utils/cut-crypto-decimals-to-fit-usd-cents
+               (or default-limit-crypto token-balance)
+               conversion-rate)))))
+     [token-symbol])
     (rn/use-effect
      (fn []
        (when input-error (debounce/clear-all))
