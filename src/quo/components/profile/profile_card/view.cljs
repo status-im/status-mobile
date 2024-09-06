@@ -43,7 +43,8 @@
                 []
                 [{:x            20
                   :y            108
-                  :width        (- width 40)
+                  ;; https://github.com/status-im/status-mobile/pull/20950#issuecomment-2351505926
+                  :width        (- (int width) 40)
                   :height       50
                   :borderRadius 16}])}
       [rn/view

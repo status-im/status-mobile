@@ -29,7 +29,7 @@
               []
               [{:x            0
                 :y            constants/alert-banner-height
-                :width        (:width (rn/get-window))
+                :width        (int (:width (rn/get-window)))
                 :height       constants/alert-banner-height
                 :borderRadius style/border-radius}])}
     [quo/text
@@ -54,7 +54,7 @@
        {:style {:padding-bottom 0.5}
         :holes [{:x            0
                  :y            (+ safe-area-top (* constants/alert-banner-height banners-count))
-                 :width        (:width (rn/get-window))
+                 :width        (int (:width (rn/get-window)))
                  :height       constants/alert-banner-height
                  :borderRadius style/border-radius}]}
        [rn/view {:style {:background-color colors/neutral-100}}

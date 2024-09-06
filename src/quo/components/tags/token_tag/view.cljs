@@ -27,7 +27,7 @@
     [rn/view {:on-layout on-layout}
      [hole-view/hole-view
       {:holes (if options
-                [{:x            (- container-width
+                [{:x            (- (int container-width)
                                    (case size
                                      :size-24 10
                                      :size-32 12
