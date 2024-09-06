@@ -55,17 +55,17 @@
      {:fx [[:effects.wallet.tokens/fetch-market-values
             {:symbols    symbols
              :currency   constants/profile-default-currency
-             :on-success #(rf/dispatch [:wallet.tokens/store-market-values %])
-             :on-error   #(rf/dispatch [:wallet.tokens/fetch-market-values-failed %])}]
+             :on-success [:wallet.tokens/store-market-values]
+             :on-error   [:wallet.tokens/fetch-market-values-failed]}]
            [:effects.wallet.tokens/fetch-details
             {:symbols    symbols
-             :on-success #(rf/dispatch [:wallet.tokens/store-details %])
-             :on-error   #(rf/dispatch [:wallet.tokens/fetch-details-failed %])}]
+             :on-success [:wallet.tokens/store-details]
+             :on-error   [:wallet.tokens/fetch-details-failed]}]
            [:effects.wallet.tokens/fetch-prices
             {:symbols    symbols
              :currencies [constants/profile-default-currency]
-             :on-success #(rf/dispatch [:wallet.tokens/store-prices %])
-             :on-error   #(rf/dispatch [:wallet.tokens/fetch-prices-failed %])}]]
+             :on-success [:wallet.tokens/store-prices]
+             :on-error   [:wallet.tokens/fetch-prices-failed]}]]
       :db (-> db
               (assoc-in [:wallet :tokens]
                         {:sources    (:sources tokens)
