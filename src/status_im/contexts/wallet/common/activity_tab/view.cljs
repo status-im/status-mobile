@@ -26,7 +26,8 @@
                           :collectible-name   (if (> amount 1)
                                                 (str amount " " nft-name)
                                                 nft-name)
-                          :collectible-number token-id}
+                          :collectible-number (when (not= token-id "0")
+                                                token-id)}
       :second-tag-prefix :t/from
       :second-tag        {:type :address :address sender}
       :third-tag-prefix  :t/to

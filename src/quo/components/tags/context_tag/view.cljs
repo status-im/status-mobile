@@ -1,5 +1,6 @@
 (ns quo.components.tags.context-tag.view
   (:require
+    [clojure.string :as string]
     [quo.components.avatars.account-avatar.view :as account-avatar]
     [quo.components.avatars.group-avatar.view :as group-avatar]
     [quo.components.avatars.user-avatar.view :as user-avatar]
@@ -17,15 +18,16 @@
     [schema.core :as schema]))
 
 (defn- tag-skeleton
-  [{:keys [size text theme shrinkable?]
-    :or   {size  24
-           theme (quo.theme/use-theme)}}
+  [{:keys [size text theme shrinkable? gray-text?]
+    :or   {size       24
+           gray-text? false
+           theme      (quo.theme/use-theme)}}
    logo-component]
   [rn/view {:style (style/tag-container size)}
    logo-component
    [rn/view {:style (style/tag-spacing size shrinkable?)}
     [text/text
-     {:style           (style/text theme)
+     {:style           (style/text theme gray-text?)
       :weight          :medium
       :size            (if (= size 24) :paragraph-2 :paragraph-1)
       :number-of-lines 1
@@ -94,92 +96,107 @@
            state               :default
            theme               (quo.theme/use-theme)}
     :as   props}]
-  [rn/view {:style (merge {:align-items :flex-start} container-style)}
-   [rn/view
-    {:style               (style/container {:theme               theme
-                                            :type                type
-                                            :size                size
-                                            :state               state
-                                            :blur?               blur?
-                                            :customization-color customization-color})
-     :accessibility-label :context-tag}
-    (case type
-      :default
-      [tag-skeleton {:theme theme :size size :text full-name}
-       [user-avatar/user-avatar
-        {:full-name           full-name
-         :profile-picture     profile-picture
-         :size                (if (= size 24) :xxs 28)
-         :status-indicator?   false
-         :ring?               false
-         :customization-color customization-color}]]
+  (let [[image-error? set-image-error] (rn/use-state false)]
+    [rn/view {:style (merge {:align-items :flex-start} container-style)}
+     [rn/view
+      {:style               (style/container {:theme               theme
+                                              :type                type
+                                              :size                size
+                                              :state               state
+                                              :blur?               blur?
+                                              :customization-color customization-color})
+       :accessibility-label :context-tag}
+      (case type
+        :default
+        [tag-skeleton {:theme theme :size size :text full-name}
+         [user-avatar/user-avatar
+          {:full-name           full-name
+           :profile-picture     profile-picture
+           :size                (if (= size 24) :xxs 28)
+           :status-indicator?   false
+           :ring?               false
+           :customization-color customization-color}]]
 
-      :multiuser
-      [preview-list/view {:type :user :size :size-20}
-       users]
+        :multiuser
+        [preview-list/view {:type :user :size :size-20}
+         users]
 
-      :multinetwork
-      [preview-list/view {:type :network :size :size-20}
-       networks]
+        :multinetwork
+        [preview-list/view {:type :network :size :size-20}
+         networks]
 
-      :audio
-      [tag-skeleton {:theme theme :text (str duration)}
-       [rn/view {:style (style/audio-tag-icon-container customization-color theme)}
-        [icons/icon :i/play {:color style/audio-tag-icon-color :size 12}]]]
+        :audio
+        [tag-skeleton {:theme theme :text (str duration)}
+         [rn/view {:style (style/audio-tag-icon-container customization-color theme)}
+          [icons/icon :i/play {:color style/audio-tag-icon-color :size 12}]]]
 
-      :group
-      [tag-skeleton {:theme theme :size size :text group-name}
-       [group-avatar/view
-        {:icon-name           :i/members
-         :size                (if (= size 24) :size-20 :size-28)
-         :customization-color (colors/custom-color customization-color 50)}]]
+        :group
+        [tag-skeleton {:theme theme :size size :text group-name}
+         [group-avatar/view
+          {:icon-name           :i/members
+           :size                (if (= size 24) :size-20 :size-28)
+           :customization-color (colors/custom-color customization-color 50)}]]
 
-      (:channel :community)
-      [communities-tag (assoc props :channel? (= type :channel))]
+        (:channel :community)
+        [communities-tag (assoc props :channel? (= type :channel))]
 
-      :token
-      [tag-skeleton {:theme theme :size size :text (str amount " " token)}
-       [token/view
-        {:style (style/token-logo size)
-         :token token
-         :size  (if (= size 24) :size-20 :size-28)}]]
+        :token
+        [tag-skeleton {:theme theme :size size :text (str amount " " token)}
+         [token/view
+          {:style (style/token-logo size)
+           :token token
+           :size  (if (= size 24) :size-20 :size-28)}]]
 
-      :network
-      [tag-skeleton {:theme theme :size size :text network-name}
-       [rn/image {:style (style/circle-logo size) :source network-logo}]]
+        :network
+        [tag-skeleton {:theme theme :size size :text network-name}
+         [rn/image {:style (style/circle-logo size) :source network-logo}]]
 
-      :collectible
-      [tag-skeleton
-       {:theme       theme
-        :size        size
-        :text        (str collectible-name " #" collectible-number)
-        :shrinkable? true}
-       [rn/image {:style (style/rounded-logo size) :source collectible}]]
+        :collectible
+        (let [gray-text?       (string/blank? collectible-name)
+              collectible-text (cond
+                                 gray-text?         "UNKNOWN"
+                                 collectible-number (str collectible-name
+                                                         " #"
+                                                         collectible-number)
+                                 :else              collectible-name)
+              nft-placeholder? (or image-error? (string/blank? collectible))]
+          [tag-skeleton
+           {:theme       theme
+            :size        size
+            :text        collectible-text
+            :shrinkable? true
+            :gray-text?  gray-text?}
+           (if nft-placeholder?
+             [icons/icon :i/nft {:size 20}]
+             [rn/image
+              {:style    (style/rounded-logo size)
+               :source   collectible
+               :on-error #(set-image-error true)}])])
 
-      :account
-      [tag-skeleton {:theme theme :size size :text account-name}
-       [account-avatar/view
-        {:customization-color customization-color
-         :emoji               emoji
-         :size                (if (= size 24) 20 28)}]]
+        :account
+        [tag-skeleton {:theme theme :size size :text account-name}
+         [account-avatar/view
+          {:customization-color customization-color
+           :emoji               emoji
+           :size                (if (= size 24) 20 28)}]]
 
-      :address
-      [address-tag props]
+        :address
+        [address-tag props]
 
-      :icon
-      [icon-tag props]
+        :icon
+        [icon-tag props]
 
-      :wallet-user
-      [tag-skeleton {:theme theme :size size :text full-name}
-       [wallet-user-avatar/wallet-user-avatar
-        {:full-name           full-name
-         :size                (if (= size 24) :size-20 :size-24)
-         :customization-color customization-color}]]
+        :wallet-user
+        [tag-skeleton {:theme theme :size size :text full-name}
+         [wallet-user-avatar/wallet-user-avatar
+          {:full-name           full-name
+           :size                (if (= size 24) :size-20 :size-24)
+           :customization-color customization-color}]]
 
-      :dapp
-      [tag-skeleton {:theme theme :size size :text dapp-name}
-       [rn/image {:style (style/circle-logo size) :source dapp-logo}]]
+        :dapp
+        [tag-skeleton {:theme theme :size size :text dapp-name}
+         [rn/image {:style (style/circle-logo size) :source dapp-logo}]]
 
-      nil)]])
+        nil)]]))
 
 (def view (schema/instrument #'view-internal component-schema/?schema))
