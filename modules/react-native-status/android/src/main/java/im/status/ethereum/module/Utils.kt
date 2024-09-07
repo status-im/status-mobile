@@ -17,7 +17,6 @@ import statusgo.Statusgo
 class Utils(private val reactContext: ReactApplicationContext) : ReactContextBaseJavaModule(reactContext) {
 
     companion object {
-        private const val gethLogFileName = "geth.log"
         private const val TAG = "Utils"
     }
 
@@ -38,11 +37,6 @@ class Utils(private val reactContext: ReactApplicationContext) : ReactContextBas
         // Environment.getExternalStoragePublicDirectory doesn't work as expected on Android Q
         // https://developer.android.com/reference/android/os/Environment#getExternalStoragePublicDirectory(java.lang.String)
         return reactContext.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS)
-    }
-
-    fun getLogsFile(): File {
-        val pubDirectory = getPublicStorageDirectory()
-        return File(pubDirectory, gethLogFileName)
     }
 
     fun getKeyUID(json: String): String {

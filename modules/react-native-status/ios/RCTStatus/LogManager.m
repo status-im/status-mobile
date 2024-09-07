@@ -57,6 +57,8 @@ RCT_EXPORT_METHOD(sendLogs:(NSString *)dbJson
     NSURL *mainGethLogsFile = [rootUrl URLByAppendingPathComponent:@"geth.log"];
     NSURL *mainLogsFile = [logsFolderName URLByAppendingPathComponent:@"geth.log"];
 
+    NSURL *requestsLogFile = [rootUrl URLByAppendingPathComponent:@"requests.log"];
+
     [dbJson writeToFile:dbFile.path atomically:YES encoding:NSUTF8StringEncoding error:nil];
     [jsLogs writeToFile:jsLogsFile.path atomically:YES encoding:NSUTF8StringEncoding error:nil];
 
@@ -65,6 +67,10 @@ RCT_EXPORT_METHOD(sendLogs:(NSString *)dbJson
     [fileManager copyItemAtPath:originalGethLogsFile.path toPath:gethLogsFile.path error:nil];
     [fileManager copyItemAtPath:goerliGethLogsFile.path toPath:goerliLogsFile.path error:nil];
     [fileManager copyItemAtPath:mainGethLogsFile.path toPath:mainLogsFile.path error:nil];
+    
+    if ([fileManager fileExistsAtPath:requestsLogFile.path]) {
+        [fileManager copyItemAtPath:requestsLogFile.path toPath:[logsFolderName URLByAppendingPathComponent:@"requests.log"].path error:nil];
+    }
 
     [SSZipArchive createZipFileAtPath:zipFile.path withContentsOfDirectory:logsFolderName.path];
     [fileManager removeItemAtPath:logsFolderName.path error:nil];
@@ -75,17 +81,20 @@ RCT_EXPORT_METHOD(sendLogs:(NSString *)dbJson
 RCT_EXPORT_METHOD(initLogging:(BOOL)enabled
                   mobileSystem:(BOOL)mobileSystem
                   logLevel:(NSString *)logLevel
+                  logRequestGo:(BOOL)logRequestGo
                   callback:(RCTResponseSenderBlock)callback)
 {
     NSString *logDirectory = [self logFileDirectory];
     NSString *logFilePath = [logDirectory stringByAppendingPathComponent:@"geth.log"];
+    NSString *logRequestFilePath = [logDirectory stringByAppendingPathComponent:@"requests.log"];
 
     NSMutableDictionary *jsonConfig = [NSMutableDictionary dictionary];
     jsonConfig[@"Enabled"] = @(enabled);
     jsonConfig[@"MobileSystem"] = @(mobileSystem);
     jsonConfig[@"Level"] = logLevel;
     jsonConfig[@"File"] = logFilePath;
-
+    jsonConfig[@"LogRequestGo"] = @(logRequestGo);
+    jsonConfig[@"LogRequestFile"] = logRequestFilePath;
     NSError *error = nil;
     NSData *jsonData = [NSJSONSerialization dataWithJSONObject:jsonConfig options:0 error:&error];
 

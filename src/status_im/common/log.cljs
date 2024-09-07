@@ -4,6 +4,7 @@
     [clojure.string :as string]
     [native-module.core :as native-module]
     [re-frame.core :as re-frame]
+    [status-im.config :as config]
     [taoensso.timbre :as log]
     [utils.transforms :as transforms]))
 
@@ -24,10 +25,11 @@
                          (let [{:keys [error]} (transforms/json->clj res)]
                            (when-not (string/blank? error)
                              (log/error "init statusgo logging failed" error))))
-        logging-params {:enable?        true
-                        :mobile-system? false
-                        :log-level      level
-                        :callback       handle-error}]
+        logging-params {:enable?         true
+                        :mobile-system?  false
+                        :log-level       level
+                        :log-request-go? config/log-request-go
+                        :callback        handle-error}]
     (log/merge-config! {:ns-filter {:allow #{"*"} :deny #{"taoensso.sente"}}})
     (if (string/blank? level)
       (native-module/init-status-go-logging (merge logging-params {:log-level "WARN"}))
