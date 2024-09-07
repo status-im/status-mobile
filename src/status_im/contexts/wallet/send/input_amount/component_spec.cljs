@@ -101,6 +101,7 @@
    :wallet/send-amount                             nil
    :wallet/wallet-send-tx-type                     :tx/send
    :wallet/wallet-send-fee-fiat-formatted          "$5,00"
+   :wallet/sending-collectible?                    false
    :wallet/total-amount                            (money/bignumber "250")})
 
 (h/describe "Send > input amount screen"
