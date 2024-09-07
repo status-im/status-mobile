@@ -37,3 +37,7 @@
 (def providers-container
   {:align-items :center
    :margin-top  12})
+
+(defn swaps-powered-by
+  [theme]
+  {:color (colors/theme-colors colors/neutral-80-opa-40 colors/white-opa-70 theme)})

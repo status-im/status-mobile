@@ -9,25 +9,45 @@
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
+(defn- mention-text
+  [literal]
+  (let [mention (rf/sub [:messages/resolve-mention literal])]
+    [quo/text
+     {:style style/mention-text
+      :size  :paragraph-1}
+     (str "@" mention)]))
+
+(defn- parsed-text->hiccup
+  [{:keys [literal destination] message-type :type}]
+  (case message-type
+    "mention" [mention-text literal]
+    "link"    destination
+    literal))
+
 (defn- message-body
-  [message]
-  (let [parsed-text          (get-in message [:content :parsed-text])
-        parsed-text-children (:children (first parsed-text))]
-    (into [quo/text
-           {:number-of-lines     1
-            :style               style/tag-text
-            :accessibility-label :activity-message-body
-            :size                :paragraph-1}]
-          (map-indexed (fn [index {:keys [type literal destination]}]
-                         ^{:key index}
-                         (case type
-                           "mention" [quo/text
-                                      {:style style/mention-text
-                                       :size  :paragraph-1}
-                                      (str "@" (rf/sub [:messages/resolve-mention literal]))]
-                           "link"    destination
-                           literal))
-                       parsed-text-children))))
+  [{:keys [container parsed-text]}]
+  (into container (map parsed-text->hiccup) parsed-text))
+
+(defn- simple-message
+  [content]
+  (let [parsed-text (get-in content [:content :parsed-text 0 :children])]
+    [message-body
+     {:container   [quo/text
+                    {:number-of-lines     1
+                     :style               style/tag-text
+                     :accessibility-label :activity-message-body
+                     :size                :paragraph-1}]
+      :parsed-text parsed-text}]))
+
+(defn- album-message
+  [content]
+  (let [parsed-text (get-in content [0 :parsedText 0 :children])
+        images      (map :image content)]
+    [quo/activity-logs-photos
+     {:photos       images
+      :message-text [message-body
+                     {:container   [:<>]
+                      :parsed-text parsed-text}]}]))
 
 (defn- swipeable
   [{:keys [extra-fn]} child]
@@ -41,12 +61,12 @@
 
 (defn view
   [{:keys [notification extra-fn]}]
-  (let [{:keys [author chat-name community-id chat-id
-                message read timestamp]} notification
-        community-chat?                  (not (string/blank? community-id))
-        community-name                   (rf/sub [:communities/name community-id])
-        community-logo                   (rf/sub [:communities/logo community-id])
-        customization-color              (rf/sub [:profile/customization-color])]
+  (let [{:keys [author chat-name community-id chat-id message read timestamp
+                album-messages]} notification
+        community-chat?          (not (string/blank? community-id))
+        community-name           (rf/sub [:communities/name community-id])
+        community-logo           (rf/sub [:communities/logo community-id])
+        customization-color      (rf/sub [:profile/customization-color])]
     [swipeable {:extra-fn extra-fn}
      [gesture/touchable-without-feedback
       {:on-press (fn []
@@ -74,4 +94,6 @@
                                   :group-name chat-name
                                   :blur?      true
                                   :size       24}])]
-        :message             {:body (message-body message)}}]]]))
+        :message             {:body (if album-messages
+                                      [album-message album-messages]
+                                      [simple-message message])}}]]]))

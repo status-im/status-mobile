@@ -4,15 +4,14 @@
   [:=>
    [:catn
     [:props
-     [:map
-      [:token {:optional true} [:maybe [:or :string :keyword]]]
-      [:currency {:optional true} [:maybe [:or :string :keyword]]]
-      [:error? {:optional true} [:maybe :boolean]]
-      [:title {:optional true} [:maybe :string]]
-      [:conversion {:optional true} [:maybe :double]]
-      [:show-keyboard? {:optional true} [:maybe :boolean]]
-      [:networks {:optional true}
-       [:maybe [:sequential [:map [:source [:maybe :schema.common/image-source]]]]]]
-      [:customization-color {:optional true} [:maybe :schema.common/customization-color]]
-      [:value {:optional true} [:maybe :string]]]]]
+     [:map {:closed true}
+      [:token-symbol [:maybe [:or :string :keyword]]]
+      [:currency-symbol [:maybe [:or :string :keyword]]]
+      [:hint-component {:optional true} [:maybe :schema.common/hiccup]]
+      [:on-token-press {:optional true} [:maybe fn?]]
+      [:on-swap [:maybe fn?]]
+      [:container-style {:optional true} [:maybe :map]]
+      [:error? [:maybe :boolean]]
+      [:value [:maybe :string]]
+      [:converted-value [:maybe :string]]]]]
    :any])

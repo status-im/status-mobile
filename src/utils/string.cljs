@@ -88,3 +88,9 @@
   [url]
   (when (string? url)
     (string/replace url #"^https?://" "")))
+
+(defn valid-amount-for-token-decimals?
+  [token-decimals amount-text]
+  (let [regex-pattern (str "^\\d*\\.?\\d{0," token-decimals "}$")
+        regex         (re-pattern regex-pattern)]
+    (re-matches regex amount-text)))

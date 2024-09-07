@@ -115,8 +115,9 @@
 
 (rf/reg-event-fx
  :wallet-connect/send-response
- (fn [{:keys [db]} [{:keys [result error]}]]
-   (when-let [{:keys [id topic] :as event} (get-in db [:wallet-connect/current-request :event])]
+ (fn [{:keys [db]} [{:keys [request result error]}]]
+   (when-let [{:keys [id topic] :as event} (or request
+                                               (get-in db [:wallet-connect/current-request :event]))]
      (let [method      (wallet-connect-core/get-request-method event)
            web3-wallet (get db :wallet-connect/web3-wallet)]
        {:db (assoc-in db [:wallet-connect/current-request :response-sent?] true)

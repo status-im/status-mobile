@@ -1485,7 +1485,7 @@ SPEC CHECKSUMS:
   FBLazyVector: 56e0e498dbb513b96c40bac6284729ba4e62672d
   FBReactNativeSpec: 146c741a3f40361f6bc13a4ba284678cbedb5881
   fmt: ff9d55029c625d3757ed641535fd4a75fedc7ce9
-  glog: c5d68082e772fa1c511173d6b30a9de2c05a69a2
+  glog: 36c15c01d70ed395c6e4f3619f98a23ee415b07a
   hermes-engine: 1d1835b2cc54c381909d94d1b3c8e0a2f1a94a0e
   HMSegmentedControl: 34c1f54d822d8308e7b24f5d901ec674dfa31352
   Keycard: ac6df4d91525c3c82635ac24d4ddd9a80aca5fc8

@@ -24,7 +24,7 @@
 
 (defn- view-internal
   [{:keys [status token-value token-symbol
-           container-style button-props]
+           container-style button-props show-view-button?]
     :as   props}]
   (let [theme                                 (quo.theme/use-theme)
         customization-color                   (or (:customization-color props) :blue)
@@ -56,7 +56,9 @@
         (i18n/label (status-message status)
                     {:amount token-value
                      :symbol token-symbol})]]
-      (when button-props
+      (when (and button-props
+                 (or (= status :approve)
+                     (and (not= status :approve) show-view-button?)))
         [button/button
          (merge {:type                (if (= status :approve) :primary :grey)
                  :background          (when-not (= status :approve) :blur)

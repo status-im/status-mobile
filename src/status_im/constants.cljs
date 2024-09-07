@@ -551,6 +551,7 @@
 (def ^:const send-type-bridge 5)
 (def ^:const send-type-erc-721-transfer 6)
 (def ^:const send-type-erc-1155-transfer 7)
+(def ^:const send-type-swap 8)
 
 (def ^:const multi-transaction-type-send 0)
 (def ^:const multi-transaction-type-approve 1)
@@ -564,6 +565,7 @@
 (def ^:const bridge-name-erc-721-transfer "ERC721Transfer")
 (def ^:const bridge-name-erc-1155-transfer "ERC1155Transfer")
 (def ^:const bridge-name-hop "Hop")
+(def ^:const bridge-name-paraswap "Paraswap")
 
 (def ^:const bridge-assets #{"ETH" "USDT" "USDC" "DAI"})
 
@@ -590,9 +592,19 @@
 (def ^:const default-slippage 0.5)
 (def ^:const max-recommended-slippage 5)
 (def ^:const max-slippage-decimal-places 2)
-(def ^:const swap-default-provider
+(def ^:const swap-provider-paraswap
   {:name                     :paraswap
    :full-name                "Paraswap"
    :color                    :blue
    :contract-address         "0xdef171fe48cf0115b1d80b88dc8eab59176fee57"
    :terms-and-conditions-url "https://files.paraswap.io/tos_v4.pdf"})
+(def ^:const swap-providers
+  {:paraswap swap-provider-paraswap})
+
+(def ^:const token-for-fees-symbol "ETH")
+
+(def ^:const transaction-status-success "Success")
+(def ^:const transaction-status-pending "Pending")
+(def ^:const transaction-status-failed "Failed")
+
+(def ^:const min-token-decimals-to-display 6)
