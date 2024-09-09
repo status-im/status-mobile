@@ -71,7 +71,9 @@
                     :request                         proposal
                     :session-networks                session-networks
                     :address                         (or current-viewing-address
-                                                         (first available-accounts)))
+                                                         (-> available-accounts
+                                                             first
+                                                             :address)))
         :fx [[:dispatch [:open-modal :screen/wallet.wallet-connect-session-proposal]]]}
        {:fx [[:dispatch [:wallet-connect/show-session-networks-unsupported-toast proposal]]
              [:dispatch [:wallet-connect/reject-session-proposal proposal]]]}))))
