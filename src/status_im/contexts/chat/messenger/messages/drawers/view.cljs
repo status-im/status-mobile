@@ -97,7 +97,7 @@
   [{:keys [outgoing content pinned-by outgoing-status deleted? deleted-for-me? content-type
            bridge-message]
     :as   message-data}
-   {:keys [able-to-send-message? community? can-delete-message-for-everyone?
+   {:keys [able-to-send-message? community? community-member? can-delete-message-for-everyone?
            message-pin-enabled group-chat group-admin?]}]
   (concat
    (when (and outgoing
@@ -131,7 +131,8 @@
        :id                  :copy}])
    ;; pinning images are temporarily disabled
    (when (and message-pin-enabled
-              (not= content-type constants/content-type-image))
+              (not= content-type constants/content-type-image)
+              (or community-member? (not community?)))
      [{:type                :main
        :on-press            #(pin-message message-data)
        :label               (i18n/label (if pinned-by
