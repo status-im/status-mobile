@@ -79,11 +79,6 @@
  :-> :max-slippage)
 
 (rf/reg-sub
- :wallet/swap-loading-fees?
- :<- [:wallet/swap]
- :-> :loading-fees?)
-
-(rf/reg-sub
  :wallet/swap-approval-transaction-id
  :<- [:wallet/swap]
  :-> :approval-transaction-id)
@@ -157,9 +152,10 @@
  :wallet/swap-proposal-provider
  :<- [:wallet/swap-proposal]
  (fn [swap-proposal]
-   (let [bridge-name  (:bridge-name swap-proposal)
-         provider-key (keyword (string/lower-case bridge-name))]
-     (get constants/swap-providers provider-key))))
+   (when swap-proposal
+     (let [bridge-name  (:bridge-name swap-proposal)
+           provider-key (keyword (string/lower-case bridge-name))]
+       (get constants/swap-providers provider-key)))))
 
 (rf/reg-sub
  :wallet/swap-proposal-approval-required

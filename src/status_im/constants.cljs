@@ -608,3 +608,4 @@
 (def ^:const transaction-status-failed "Failed")
 
 (def ^:const min-token-decimals-to-display 6)
+(def ^:const swap-proposal-refresh-interval-ms 15000)

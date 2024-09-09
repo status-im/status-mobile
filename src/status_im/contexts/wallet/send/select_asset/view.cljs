@@ -36,7 +36,8 @@
       :on-collectible-press (fn [{:keys [collectible]}]
                               (rf/dispatch [:wallet/set-collectible-to-send
                                             {:collectible    collectible
-                                             :current-screen :screen/wallet.select-asset}]))}]))
+                                             :current-screen :screen/wallet.select-asset
+                                             :entry-point    :account-send-button}]))}]))
 
 (defn- tab-view
   [search-text selected-tab on-change-text]

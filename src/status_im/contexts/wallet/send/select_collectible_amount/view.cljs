@@ -11,7 +11,8 @@
 
 (defn view
   []
-  (let [on-close              (rn/use-callback #(rf/dispatch [:navigate-back]))
+  (let [on-close              (rn/use-callback
+                               #(rf/dispatch [:wallet/collectible-amount-navigate-back]))
         send-transaction-data (rf/sub [:wallet/wallet-send])
         collectible           (:collectible send-transaction-data)
         balance               (utils/collectible-balance collectible)
@@ -23,8 +24,9 @@
         increase-value        (rn/use-callback #(set-value controlled-input/increase))
         decrease-value        (rn/use-callback #(set-value controlled-input/decrease))
         delete-character      (rn/use-callback #(set-value controlled-input/delete-last))
-        add-character         (rn/use-callback (fn [c]
-                                                 (set-value #(controlled-input/add-character % c))))]
+        add-character         (rn/use-callback
+                               (fn [c]
+                                 (set-value #(controlled-input/add-character % c))))]
     (rn/use-effect
      (fn []
        (set-value #(controlled-input/set-upper-limit % balance)))

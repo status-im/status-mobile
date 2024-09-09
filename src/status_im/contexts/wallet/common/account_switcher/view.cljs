@@ -26,7 +26,8 @@
            switcher-type       :account-options
            type                :no-title}}]
   (let [{:keys [color emoji watch-only?]} (rf/sub [:wallet/current-viewing-account])
-        networks                          (rf/sub [:wallet/selected-network-details])]
+        networks                          (rf/sub [:wallet/selected-network-details])
+        sending-collectible?              (rf/sub [:wallet/sending-collectible?])]
     [quo/page-nav
      {:type                type
       :icon-name           icon-name
@@ -41,8 +42,9 @@
                                        (not watch-only?))
                               {:icon-name :i/dapps
                                :on-press  #(rf/dispatch [:navigate-to :screen/wallet.connected-dapps])})
-                            {:content-type        :account-switcher
-                             :customization-color color
-                             :on-press            #(on-dapps-press switcher-type)
-                             :emoji               emoji
-                             :type                (when watch-only? :watch-only)}]}]))
+                            (when-not sending-collectible?
+                              {:content-type        :account-switcher
+                               :customization-color color
+                               :on-press            #(on-dapps-press switcher-type)
+                               :emoji               emoji
+                               :type                (when watch-only? :watch-only)})]}]))

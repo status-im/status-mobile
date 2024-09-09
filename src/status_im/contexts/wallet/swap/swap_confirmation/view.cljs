@@ -133,38 +133,42 @@
 
 (defn- transaction-details
   []
-  (let [max-fees       (rf/sub [:wallet/wallet-swap-proposal-fee-fiat-formatted
-                                constants/token-for-fees-symbol])
-        estimated-time (rf/sub [:wallet/swap-proposal-estimated-time])
-        loading-fees?  (rf/sub [:wallet/swap-loading-fees?])
-        max-slippage   (rf/sub [:wallet/swap-max-slippage])]
+  (let [max-fees               (rf/sub [:wallet/wallet-swap-proposal-fee-fiat-formatted
+                                        constants/token-for-fees-symbol])
+        estimated-time         (rf/sub [:wallet/swap-proposal-estimated-time])
+        loading-swap-proposal? (rf/sub [:wallet/swap-loading-swap-proposal?])
+        max-slippage           (rf/sub [:wallet/swap-max-slippage])]
     [rn/view {:style style/details-container}
      [:<>
       [data-item
        {:title    (i18n/label :t/est-time)
-        :subtitle (i18n/label :t/time-in-mins {:minutes (str estimated-time)})}]
+        :subtitle (if estimated-time
+                    (i18n/label :t/time-in-mins {:minutes (str estimated-time)})
+                    (i18n/label :t/unknown))
+        :loading? loading-swap-proposal?}]
       [data-item
        {:title    (i18n/label :t/max-fees)
-        :subtitle max-fees
-        :loading? loading-fees?}]
+        :subtitle (if (and estimated-time max-fees) max-fees (i18n/label :t/unknown))
+        :loading? loading-swap-proposal?}]
       [data-item
        {:title    (i18n/label :t/max-slippage)
         :subtitle (str max-slippage "%")}]]]))
 
 (defn- slide-button
   []
-  (let [loading-fees?   (rf/sub [:wallet/swap-loading-fees?])
-        account         (rf/sub [:wallet/current-viewing-account])
-        account-color   (:color account)
-        on-auth-success (rn/use-callback #(rf/dispatch
-                                           [:wallet/swap-transaction
-                                            (security/safe-unmask-data %)]))]
+  (let [loading-swap-proposal? (rf/sub [:wallet/swap-loading-swap-proposal?])
+        swap-proposal          (rf/sub [:wallet/swap-proposal])
+        account                (rf/sub [:wallet/current-viewing-account])
+        account-color          (:color account)
+        on-auth-success        (rn/use-callback #(rf/dispatch
+                                                  [:wallet/swap-transaction
+                                                   (security/safe-unmask-data %)]))]
     [standard-auth/slide-button
      {:size                :size-48
       :track-text          (i18n/label :t/slide-to-swap)
       :container-style     {:z-index 2}
       :customization-color account-color
-      :disabled?           loading-fees?
+      :disabled?           (or loading-swap-proposal? (not swap-proposal))
       :auth-button-label   (i18n/label :t/confirm)
       :on-auth-success     on-auth-success}]))
 
@@ -179,7 +183,8 @@
       [quo/text
        {:size  :paragraph-2
         :style (style/swaps-powered-by theme)}
-       (i18n/label :t/swaps-powered-by {:provider (:full-name provider)})]]]))
+       (i18n/label :t/swaps-powered-by
+                   {:provider (if provider (:full-name provider) (i18n/label :t/unknown))})]]]))
 
 (defn view
   []
