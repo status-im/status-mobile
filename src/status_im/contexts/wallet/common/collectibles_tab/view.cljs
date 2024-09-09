@@ -45,7 +45,7 @@
       :collectible-name     (:name collectible-data)
       :supported-file?      (utils/supported-file? (:animation-media-type collectible-data))
       :gradient-color-index gradient-color
-      :counter              (utils/collectible-owned-counter total-owned)
+      :counter              total-owned
       :container-style      style/collectible-container
       :on-press             on-press-fn
       :on-long-press        on-long-press-fn}]))

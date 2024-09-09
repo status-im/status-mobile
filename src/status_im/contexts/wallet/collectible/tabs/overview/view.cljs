@@ -63,7 +63,9 @@
 
 (defn view
   [collectible]
-  (let [owner-account (rf/sub [:wallet/collectible-details-owner collectible])
+  (let [owner-address (or (rf/sub [:wallet/current-viewing-account-address])
+                          (-> collectible :ownership first :address))
+        owner-account (rf/sub [:wallet-connect/account-details-by-address owner-address])
         traits        (-> collectible :collectible-data :traits)]
     [:<>
      [info

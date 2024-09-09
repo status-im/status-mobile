@@ -30,14 +30,15 @@
   (let [collectibles      (rf/sub [:wallet/current-viewing-account-collectibles-filtered search-text])
         search-performed? (not (string/blank? search-text))]
     [collectibles-tab/view
-     {:collectibles         collectibles
-      :filtered?            search-performed?
-      :on-end-reached       #(rf/dispatch [:wallet/request-collectibles-for-current-viewing-account])
-      :on-collectible-press (fn [{:keys [collectible]}]
-                              (rf/dispatch [:wallet/set-collectible-to-send
-                                            {:collectible    collectible
-                                             :current-screen :screen/wallet.select-asset
-                                             :entry-point    :account-send-button}]))}]))
+     {:collectibles            collectibles
+      :current-account-address (rf/sub [:wallet/current-viewing-account-address])
+      :filtered?               search-performed?
+      :on-end-reached          #(rf/dispatch [:wallet/request-collectibles-for-current-viewing-account])
+      :on-collectible-press    (fn [{:keys [collectible]}]
+                                 (rf/dispatch [:wallet/set-collectible-to-send
+                                               {:collectible    collectible
+                                                :current-screen :screen/wallet.select-asset
+                                                :entry-point    :account-send-button}]))}]))
 
 (defn- tab-view
   [search-text selected-tab on-change-text]
