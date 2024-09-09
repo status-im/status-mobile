@@ -23,7 +23,7 @@
 (defn- finish-onboarding
   []
   (shell.utils/change-selected-stack-id shell.constants/default-selected-stack true nil)
-  (rf/dispatch [:init-root :shell-stack])
+  (rf/dispatch [:update-theme-and-init-root :shell-stack])
   (rf/dispatch [:profile/show-testnet-mode-banner-if-enabled])
   (rf/dispatch [:universal-links/process-stored-event]))
 
