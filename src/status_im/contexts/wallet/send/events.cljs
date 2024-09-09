@@ -263,9 +263,12 @@
 
 (rf/reg-event-fx
  :wallet/set-collectible-to-send
- (fn [{db :db} [{:keys [collectible current-screen start-flow?]}]]
+ (fn [{db :db} [{:keys [collectible current-screen start-flow? entry-point]}]]
    (let [viewing-account?   (some? (-> db :wallet :current-viewing-account-address))
-         entry-point        (when-not viewing-account? :wallet-stack)
+         entry-point        (cond
+                              entry-point      entry-point
+                              viewing-account? :account-collectible-tab
+                              :else            :wallet-stack)
          collection-data    (:collection-data collectible)
          collectible-data   (:collectible-data collectible)
          contract-type      (:contract-type collectible)
@@ -702,3 +705,27 @@
              {:current-screen stack-id
               :start-flow?    start-flow?
               :flow-id        flow-id}]]]})))
+
+(rf/reg-event-fx
+ :wallet/transaction-confirmation-navigate-back
+ (fn [{db :db} [{:keys []}]]
+   (let [tx-type       (-> db :wallet :ui :send :tx-type)
+         keep-tx-data? (#{:account-collectible-tab :wallet-stack}
+                        (-> db :wallet :ui :send :entry-point))]
+     {:db (cond-> db
+            (and (= tx-type :tx/collectible-erc-721) (not keep-tx-data?))
+            (update-in [:wallet :ui :send] dissoc :tx-type :amount :route :suggested-routes)
+
+            (= tx-type :tx/collectible-erc-1155)
+            (update-in [:wallet :ui :send] dissoc :route :suggested-routes))
+      :fx [[:dispatch [:navigate-back]]]})))
+
+(rf/reg-event-fx
+ :wallet/collectible-amount-navigate-back
+ (fn [{db :db} [{:keys []}]]
+   (let [keep-tx-data? (#{:account-collectible-tab :wallet-stack}
+                        (-> db :wallet :ui :send :entry-point))]
+     {:db (cond-> db
+            :always             (update-in [:wallet :ui :send] dissoc :amount :route)
+            (not keep-tx-data?) (update-in [:wallet :ui :send] dissoc :tx-type))
+      :fx [[:dispatch [:navigate-back]]]})))
