@@ -404,8 +404,7 @@
         messages                             (rf/sub [:chats/raw-chat-messages-stream chat-id])
         margin-bottom?                       (and community-channel? (not able-to-send-message?))
         recording?                           (rf/sub [:chats/recording?])]
-    [rn/view
-     {:style (style/permission-context-sheet margin-bottom?)}
+    [rn/view {:style (style/permission-context-sheet margin-bottom?)}
      [rn/view {:style {:flex-shrink 1}} ;; Keeps flat list on top
       [reanimated/flat-list
        {:key-fn                            list-key-fn
