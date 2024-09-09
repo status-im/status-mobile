@@ -49,21 +49,18 @@
   (let [max-fees               (rf/sub [:wallet/wallet-swap-proposal-fee-fiat-formatted
                                         constants/token-for-fees-symbol])
         max-slippage           (rf/sub [:wallet/swap-max-slippage])
-        loading-fees?          (rf/sub [:wallet/swap-loading-fees?])
-        loading-swap-proposal? (rf/sub [:wallet/swap-loading-swap-proposal?])
-        loading?               (or loading-fees? loading-swap-proposal?)]
+        loading-swap-proposal? (rf/sub [:wallet/swap-loading-swap-proposal?])]
     [rn/view {:style style/details-container}
      [data-item
       {:title    (i18n/label :t/max-fees)
        :subtitle max-fees
-       :loading? loading?
+       :loading? loading-swap-proposal?
        :size     :small}]
      [data-item
       {:title         (i18n/label :t/max-slippage)
        :subtitle      max-slippage
        :subtitle-icon :i/edit
-       :size          :small
-       :loading?      loading?}]]))
+       :size          :small}]]))
 
 (defn- pay-token-input
   [{:keys [input-state on-max-press on-input-focus on-token-press on-approve-press input-focused?]}]
@@ -88,7 +85,7 @@
         pay-token-fiat-value             (str
                                           (utils/calculate-token-fiat-value
                                            {:currency currency
-                                            :balance  pay-input-num-value
+                                            :balance  (or pay-input-num-value 0)
                                             :token    asset-to-pay}))
         available-crypto-limit           (number/remove-trailing-zeroes
                                           (.toFixed (money/bignumber
@@ -209,7 +206,6 @@
   [{:keys [on-press]}]
   (let [account-color               (rf/sub [:wallet/current-viewing-account-color])
         swap-proposal               (rf/sub [:wallet/swap-proposal])
-        loading-fees?               (rf/sub [:wallet/swap-loading-fees?])
         loading-swap-proposal?      (rf/sub [:wallet/swap-loading-swap-proposal?])
         approval-required?          (rf/sub [:wallet/swap-proposal-approval-required])
         approval-transaction-status (rf/sub [:wallet/swap-approval-transaction-status])]
@@ -219,8 +215,7 @@
       :button-one-props {:disabled?           (or (not swap-proposal)
                                                   (and approval-required?
                                                        (not= approval-transaction-status :confirmed))
-                                                  loading-swap-proposal?
-                                                  loading-fees?)
+                                                  loading-swap-proposal?)
                          :customization-color account-color
                          :on-press            on-press}}]))
 
@@ -228,12 +223,29 @@
   []
   (let [[pay-input-state set-pay-input-state]       (rn/use-state controlled-input/init-state)
         [pay-input-focused? set-pay-input-focused?] (rn/use-state true)
+        [refetch-interval set-refetch-interval]     (rn/use-state nil)
         error-response                              (rf/sub [:wallet/swap-error-response])
         loading-swap-proposal?                      (rf/sub [:wallet/swap-loading-swap-proposal?])
         swap-proposal                               (rf/sub [:wallet/swap-proposal])
         asset-to-pay                                (rf/sub [:wallet/swap-asset-to-pay])
+        network                                     (rf/sub [:wallet/swap-network])
         pay-input-amount                            (controlled-input/input-value pay-input-state)
         pay-token-decimals                          (:decimals asset-to-pay)
+        pay-input-num-value                         (controlled-input/numeric-value pay-input-state)
+        pay-token-balance-selected-chain            (get-in asset-to-pay
+                                                            [:balances-per-chain
+                                                             (:chain-id network) :balance]
+                                                            0)
+        pay-input-error?                            (and (not (string/blank? pay-input-amount))
+                                                         (money/greater-than
+                                                          (money/bignumber pay-input-num-value)
+                                                          (money/bignumber
+                                                           pay-token-balance-selected-chain)))
+        valid-pay-input?                            (and
+                                                     (not (string/blank?
+                                                           pay-input-amount))
+                                                     (> pay-input-amount 0)
+                                                     (not pay-input-error?))
         on-review-swap-press                        (rn/use-callback
                                                      (fn []
                                                        (rf/dispatch [:navigate-to-within-stack
@@ -265,7 +277,35 @@
                                                         (fn [input-state]
                                                           (controlled-input/set-input-value
                                                            input-state
-                                                           max-value)))))]
+                                                           max-value)))))
+        on-refresh-swap-proposal                    (rn/use-callback
+                                                     (fn []
+                                                       (let [bottom-sheets (rf/sub
+                                                                            [:bottom-sheet-sheets])]
+                                                         (when-not valid-pay-input?
+                                                           (js/clearInterval refetch-interval)
+                                                           (set-refetch-interval nil))
+                                                         (when (and valid-pay-input?
+                                                                    (not loading-swap-proposal?)
+                                                                    (not bottom-sheets))
+                                                           (fetch-swap-proposal
+                                                            {:amount       pay-input-amount
+                                                             :valid-input? valid-pay-input?}))))
+                                                     [valid-pay-input? loading-swap-proposal?
+                                                      pay-input-amount])]
+    (rn/use-effect (fn []
+                     (when refetch-interval
+                       (js/clearInterval refetch-interval)
+                       (set-refetch-interval nil))
+                     (when (or swap-proposal error-response)
+                       (set-refetch-interval (js/setInterval
+                                              on-refresh-swap-proposal
+                                              constants/swap-proposal-refresh-interval-ms))))
+                   [swap-proposal error-response])
+    (rn/use-unmount (fn []
+                      (when refetch-interval
+                        (js/clearInterval refetch-interval)
+                        (set-refetch-interval nil))))
     [rn/view {:style style/container}
      [account-switcher/view
       {:on-press      on-close
