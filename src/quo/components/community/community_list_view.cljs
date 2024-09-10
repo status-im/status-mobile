@@ -81,12 +81,20 @@
             :unread-mentions-count unread-mentions-count
             :unread-messages?      unread-messages?}])]]]]))
 
+(defn- title-color
+  [unread-messages? muted theme]
+  (cond
+    muted            (colors/theme-colors colors/neutral-40 colors/neutral-60 theme)
+    unread-messages? (colors/theme-colors colors/neutral-100 colors/white theme)
+    :else            (colors/theme-colors colors/neutral-50 colors/neutral-40 theme)))
+
 (defn communities-membership-list-item
   [{:keys [customization-color] :as props}
    bottom-sheet?
    {:keys [name muted unviewed-messages-count unviewed-mentions-count status
            images tokens locked? style]}]
-  (let [theme (quo.theme/use-theme)]
+  (let [theme            (quo.theme/use-theme)
+        unread-messages? (pos? unviewed-messages-count)]
     [rn/touchable-highlight
      (merge {:underlay-color (colors/theme-colors
                               colors/neutral-5
@@ -108,11 +116,7 @@
          :ellipsize-mode      :tail
          :weight              :semi-bold
          :size                :paragraph-1
-         :style               (when muted
-                                {:color (colors/theme-colors
-                                         colors/neutral-40
-                                         colors/neutral-60
-                                         theme)})}
+         :style               {:color (title-color unread-messages? muted theme)}}
         name]]
 
       [rn/view
@@ -128,4 +132,4 @@
            :customization-color   customization-color
            :muted?                muted
            :unread-mentions-count unviewed-mentions-count
-           :unread-messages?      (pos? unviewed-messages-count)}])]]]))
+           :unread-messages?      unread-messages?}])]]]))

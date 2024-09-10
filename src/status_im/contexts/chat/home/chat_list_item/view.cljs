@@ -146,9 +146,16 @@
           "")]
     (subs preview-text 0 (min (count preview-text) max-subheader-length))))
 
+(defn- last-message-color
+  [unread-messages? muted theme]
+  (cond
+    muted            (colors/theme-colors colors/neutral-50 colors/neutral-60 theme)
+    unread-messages? (colors/theme-colors colors/neutral-100 colors/white theme)
+    :else            (colors/theme-colors colors/neutral-50 colors/neutral-40 theme)))
+
 (defn last-message-preview
   "Render the preview of a last message to a maximum of max-subheader-length characters"
-  [group-chat {:keys [deleted? outgoing from deleted-for-me?] :as message}]
+  [group-chat {:keys [deleted? outgoing from deleted-for-me?] :as message} muted unread-messages?]
   (let [theme            (quo.theme/use-theme)
         [primary-name _] (rf/sub [:contacts/contact-two-names-by-identity from])
         preview-text     (if deleted-for-me?
@@ -162,9 +169,7 @@
                              (preview-text-from-content group-chat primary-name message)))]
     [quo/text
      {:size                :paragraph-2
-      :style               {:color (colors/theme-colors colors/neutral-50
-                                                        colors/neutral-40
-                                                        theme)
+      :style               {:color (last-message-color unread-messages? muted theme)
                             :flex  1}
       :number-of-lines     1
       :ellipsize-mode      :tail
@@ -231,14 +236,16 @@
         unviewed-messages-count]])))
 
 (defn chat-item
-  [{:keys [chat-id group-chat color name last-message timestamp muted image]
+  [{:keys [chat-id group-chat color name last-message timestamp muted image
+           unviewed-messages-count]
     :as   item}]
   (let [[primary-name secondary-name]
         (if group-chat
           [name ""]
           (rf/sub [:contacts/contact-two-names-by-identity chat-id]))
         {:keys [ens-verified added?] :as contact} (when-not group-chat
-                                                    (rf/sub [:contacts/contact-by-address chat-id]))]
+                                                    (rf/sub [:contacts/contact-by-address chat-id]))
+        unread-messages? (pos? unviewed-messages-count)]
     [rn/view {:style {:flex-direction :row}}
      [avatar-view
       {:contact   contact
@@ -258,7 +265,7 @@
          :muted?         muted
          :time-str       (datetime/to-short-str timestamp)
          :style          {:flex-shrink 1}}]
-       [last-message-preview group-chat last-message muted]]]
+       [last-message-preview group-chat last-message muted unread-messages?]]]
      [notification item]]))
 
 (defn chat-user
