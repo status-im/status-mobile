@@ -14,7 +14,7 @@
   [state]
   (:value state))
 
-(defn numeric-value
+(defn value-numeric
   [state]
   (or (parse-double (input-value state)) 0))
 
@@ -70,7 +70,7 @@
       (assoc :value value)
       recheck-errorness))
 
-(defn set-numeric-value
+(defn set-value-numeric
   [state value]
   (set-input-value state (str value)))
 
@@ -143,7 +143,7 @@
 
 (defn empty-value?
   [state]
-  (or (string/blank? (:value state)) (<= (numeric-value state) 0)))
+  (or (string/blank? (:value state)) (<= (value-numeric state) 0)))
 
 (defn- fiat->crypto
   [value conversion-rate]

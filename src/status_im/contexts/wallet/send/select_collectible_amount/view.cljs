@@ -17,7 +17,7 @@
         collectible                   (:collectible send-transaction-data)
         balance                       (utils/collectible-balance collectible)
         [input-state set-input-state] (rn/use-state (-> controlled-input/init-state
-                                                        (controlled-input/set-numeric-value 1)
+                                                        (controlled-input/set-value-numeric 1)
                                                         (controlled-input/set-lower-limit 1)))
         preview-uri                   (get-in collectible [:preview-url :uri])
         incorrect-value?              (controlled-input/input-error input-state)
@@ -50,7 +50,7 @@
      [quo/amount-input
       {:max-value       (controlled-input/upper-limit input-state)
        :min-value       (controlled-input/lower-limit input-state)
-       :value           (controlled-input/numeric-value input-state)
+       :value           (controlled-input/value-numeric input-state)
        :on-inc-press    increase-value
        :on-dec-press    decrease-value
        :container-style style/amount-input-container
@@ -60,7 +60,7 @@
        :button-one-props {:on-press  #(rf/dispatch
                                        [:wallet/set-collectible-amount-to-send
                                         {:stack-id :screen/wallet.select-collectible-amount
-                                         :amount   (controlled-input/numeric-value input-state)}])
+                                         :amount   (controlled-input/value-numeric input-state)}])
                           :disabled? incorrect-value?}
        :button-one-label (i18n/label :t/confirm)}]
      [quo/numbered-keyboard
