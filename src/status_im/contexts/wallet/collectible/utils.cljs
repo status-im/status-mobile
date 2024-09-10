@@ -15,7 +15,6 @@
 
 (def supported-collectible-types
   #{"image/jpeg"
-    "image/gif"
     "image/bmp"
     "image/png"
     "image/webp"
