@@ -146,6 +146,10 @@
 
 (rf/reg-event-fx :open-share open-share)
 
+(rf/reg-event-fx :open-url
+ (fn [_ [url]]
+   {:fx [[:open-url url]]}))
+
 (rf/reg-fx
  :open-url
  (fn [url]
