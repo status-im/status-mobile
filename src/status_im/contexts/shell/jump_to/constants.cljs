@@ -4,7 +4,7 @@
 (def ^:const switcher-card-size 160)
 (def ^:const floating-shell-button-height 44)
 
-(def ^:const default-selected-stack :communities-stack)
+(def ^:const default-selected-stack :wallet-stack)
 
 ;; Bottom tabs
 (def ^:const bottom-tabs-container-height-android 57)
