@@ -10,15 +10,16 @@
     [utils.re-frame :as rf]
     [utils.security.core :as security]))
 
-(rf/defn profile-data-set
-  {:events [:onboarding/profile-data-set]}
-  [{:keys [db]} onboarding-data]
-  {:db       (update db :onboarding/profile merge onboarding-data)
-   :dispatch [:navigate-to-within-stack
-              [:screen/onboarding.create-profile-password
-               (get db
-                    :onboarding/navigated-to-enter-seed-phrase-from-screen
-                    :screen/onboarding.new-to-status)]]})
+(rf/reg-event-fx
+ :onboarding/profile-data-set
+ (fn [{:keys [db]} [onboarding-data]]
+   (let [navigate-from-screen (get db
+                                   :onboarding/navigated-to-enter-seed-phrase-from-screen
+                                   :screen/onboarding.new-to-status)]
+     {:db (update db :onboarding/profile merge onboarding-data)
+      :fx [[:dispatch
+            [:navigate-to-within-stack
+             [:screen/onboarding.create-profile-password navigate-from-screen]]]]})))
 
 (rf/defn enable-biometrics
   {:events [:onboarding/enable-biometrics]}
@@ -32,6 +33,11 @@
  (fn [{:keys [db]} [from-screen]]
    {:db (assoc db :onboarding/navigated-to-enter-seed-phrase-from-screen from-screen)
     :fx [[:dispatch [:navigate-to-within-stack [:screen/onboarding.enter-seed-phrase from-screen]]]]}))
+
+(rf/reg-event-fx
+ :onboarding/clear-navigated-to-enter-seed-phrase-from-screen
+ (fn [{:keys [db]}]
+   {:db (dissoc db :onboarding/navigated-to-enter-seed-phrase-from-screen)}))
 
 (rf/reg-event-fx :onboarding/navigate-to-enable-notifications-from-syncing
  (fn [{:keys [db]}]

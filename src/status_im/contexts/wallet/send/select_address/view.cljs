@@ -44,7 +44,7 @@
     (let [current-screen-id        (rf/sub [:view-id])
           scanned-address          (rf/sub [:wallet/scanned-address])
           send-address             (rf/sub [:wallet/wallet-send-to-address])
-          recipient                (rf/sub [:wallet/wallet-send-recipient])
+          recipient                (rf/sub [:wallet/send-recipient])
           recipient-plain-address? (= send-address recipient)
           valid-ens-or-address?    (rf/sub [:wallet/valid-ens-or-address?])
           contacts                 (rf/sub [:contacts/active])]
@@ -191,7 +191,7 @@
         [floating-button-page/view
          {:content-container-style      {:flex 1}
           :footer-container-padding     0
-          :keyboard-should-persist-taps true
+          :keyboard-should-persist-taps :always
           :header                       [account-switcher/view
                                          {:on-press      #(rf/dispatch [:navigate-back])
                                           :margin-top    (safe-area/get-top)

@@ -400,16 +400,18 @@
         {:keys [keyboard-shown]}             (hooks/use-keyboard)
         {window-height :height}              (rn/get-window)
         context                              (rf/sub [:chats/current-chat-message-list-view-context])
+        able-to-send-message?                (:able-to-send-message? context)
         messages                             (rf/sub [:chats/raw-chat-messages-stream chat-id])
+        margin-bottom?                       (and community-channel? (not able-to-send-message?))
         recording?                           (rf/sub [:chats/recording?])]
-    [rn/view {:style {:flex 3}} ;; Pushes composer to bottom
+    [rn/view {:style (style/permission-context-sheet margin-bottom?)}
      [rn/view {:style {:flex-shrink 1}} ;; Keeps flat list on top
       [reanimated/flat-list
        {:key-fn                            list-key-fn
         :ref                               list-ref
         :bounces                           false
         :header                            [:<>
-                                            [list-header insets (:able-to-send-message? context)]
+                                            [list-header insets able-to-send-message?]
                                             (when (= (:chat-type chat) constants/private-group-chat-type)
                                               [list-group-chat-header chat])]
         :footer                            [list-footer

@@ -9,6 +9,25 @@
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
+(defn other-account-item
+  [{:keys        [address color emoji network-preferences-names]
+    account-name :name
+    :as          account}]
+  (let [full-address (rf/sub [:wallet/account-address address network-preferences-names])]
+    [quo/account-item
+     {:account-props (assoc account
+                            :customization-color color
+                            :address             full-address
+                            :full-address?       true)
+      :on-press      (fn []
+                       (rf/dispatch [:wallet/select-send-address
+                                     {:address   address
+                                      :recipient {:recipient-type      :account
+                                                  :label               account-name
+                                                  :customization-color color
+                                                  :emoji               emoji}
+                                      :stack-id  :screen/wallet.select-address}]))}]))
+
 (defn- my-accounts
   [theme]
   (let [other-accounts (rf/sub [:wallet/accounts-without-current-viewing-account])]
@@ -20,22 +39,8 @@
         :container-style style/empty-container-style}]
       [rn/view {:style style/my-accounts-container}
        (doall
-        (for [{:keys [color address] :as account} other-accounts]
-          ^{:key (str address)}
-          (let [transformed-address (rf/sub [:wallet/account-address address
-                                             (:network-preferences-names account)])]
-            [quo/account-item
-             {:account-props (assoc account
-                                    :customization-color color
-                                    :address             transformed-address
-                                    :full-address?       true)
-              :on-press      #(rf/dispatch [:wallet/select-send-address
-                                            {:address   address
-                                             :recipient {:recipient-type      :account
-                                                         :label               (:name account)
-                                                         :customization-color (:color account)
-                                                         :emoji               (:emoji account)}
-                                             :stack-id  :screen/wallet.select-address}])}])))])))
+        (for [{:keys [address] :as account} other-accounts]
+          ^{:key (str address)} [other-account-item account]))])))
 
 (defn- recent-transactions
   [theme]

@@ -50,7 +50,7 @@
            item])))))
 
 (defn add-manage-members
-  [{:keys [scroll-enabled? on-scroll]}]
+  [{:keys [on-scroll]}]
   (let [theme                      (quo.theme/use-theme)
         selected-participants      (rf/sub [:group-chat/selected-participants])
         deselected-members         (rf/sub [:group-chat/deselected-members])
@@ -74,7 +74,6 @@
       (i18n/label (if admin? :t/manage-members :t/add-members))]
      [gesture/section-list
       {:key-fn                         :title
-       :scroll-enabled                 @scroll-enabled?
        :on-scroll                      on-scroll
        :sticky-section-headers-enabled false
        :sections                       (rf/sub [:contacts/grouped-by-first-letter])

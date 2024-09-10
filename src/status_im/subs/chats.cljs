@@ -228,6 +228,7 @@
          community? (some? current-community)
          group-admin? (contains? admins current-public-key)
          community-admin? (get current-community :admin false)
+         community-member? (get current-community :is-member? false)
 
          message-pin-enabled
          (cond public?          false
@@ -247,6 +248,7 @@
       :chat-id                          chat-id
       :in-pinned-view?                  (boolean in-pinned-view?)
       :able-to-send-message?            able-to-send-message?
+      :community-member?                community-member?
       :message-pin-enabled              message-pin-enabled
       :can-delete-message-for-everyone? can-delete-message-for-everyone?})))
 

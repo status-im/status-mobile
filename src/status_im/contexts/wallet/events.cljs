@@ -85,8 +85,9 @@
 (rf/reg-event-fx :wallet/close-account-page
  (fn [{:keys [db]}]
    (let [just-completed-transaction? (get-in db [:wallet :ui :send :just-completed-transaction?])]
-     (when-not just-completed-transaction?
-       {:fx [[:dispatch [:wallet/clear-account-tab]]]}))))
+     {:db (update db :wallet dissoc :current-viewing-account-address)
+      :fx [(when-not just-completed-transaction?
+             [:dispatch [:wallet/clear-account-tab]])]})))
 
 (defn log-rpc-error
   [_ [{:keys [event params]} error]]

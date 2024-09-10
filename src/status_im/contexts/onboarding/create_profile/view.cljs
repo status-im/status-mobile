@@ -59,7 +59,7 @@
        [rn/view {:style (style/view-button-container false)}
         children])]))
 
-(defn- f-page
+(defn- page
   [{:keys [onboarding-profile-data navigation-bar-top]}]
   (reagent/with-let [show-keyboard?                          (reagent/atom false)
                      content-scroll-y                        (reagent/atom 0)
@@ -205,7 +205,6 @@
   []
   (let [{:keys [top]}           (safe-area/get-insets)
         onboarding-profile-data (rf/sub [:onboarding/profile])]
-    [:<>
-     [:f> f-page
-      {:navigation-bar-top      top
-       :onboarding-profile-data onboarding-profile-data}]]))
+    [page
+     {:navigation-bar-top      top
+      :onboarding-profile-data onboarding-profile-data}]))

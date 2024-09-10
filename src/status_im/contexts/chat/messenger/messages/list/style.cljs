@@ -5,6 +5,8 @@
     [react-native.reanimated :as reanimated]
     [status-im.contexts.chat.messenger.messages.constants :as messages.constants]))
 
+(def permission-context-height 46)
+
 (defn keyboard-avoiding-container
   [theme]
   {:flex             1
@@ -73,3 +75,8 @@
   (reanimated/apply-animations-to-style
    {:top top}
    {:row-gap 16}))
+
+(defn permission-context-sheet
+  [margin-bottom?]
+  {:flex          3 ;; Pushes composer to bottom
+   :margin-bottom (when margin-bottom? permission-context-height)})

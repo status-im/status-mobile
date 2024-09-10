@@ -2,6 +2,7 @@
   (:require
     [re-frame.core :as rf]
     [status-im.contexts.wallet.common.activity-tab.constants :as constants]
+    [status-im.contexts.wallet.send.utils :as send-utils]
     [utils.number]))
 
 (rf/reg-sub
@@ -16,7 +17,7 @@
  :-> :send)
 
 (rf/reg-sub
- :wallet/wallet-send-recipient
+ :wallet/send-recipient
  :<- [:wallet/wallet-send]
  :-> :recipient)
 
@@ -31,9 +32,19 @@
  :-> :just-completed-transaction?)
 
 (rf/reg-sub
- :wallet/wallet-send-amount
+ :wallet/send-amount
  :<- [:wallet/wallet-send]
  :-> :amount)
+
+(rf/reg-sub
+ :wallet/send-tx-type
+ :<- [:wallet/wallet-send]
+ :-> :tx-type)
+
+(rf/reg-sub
+ :wallet/sending-collectible?
+ :<- [:wallet/send-tx-type]
+ #(send-utils/tx-type-collectible? %))
 
 (rf/reg-sub
  :wallet/send-transaction-progress

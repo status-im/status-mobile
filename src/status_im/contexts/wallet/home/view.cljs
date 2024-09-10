@@ -60,7 +60,7 @@
     :size           32
     :default-active default-active
     :data           data
-    :on-change      #(on-change %)}])
+    :on-change      on-change}])
 
 (defn view
   []
