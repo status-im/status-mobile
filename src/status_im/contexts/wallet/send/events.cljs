@@ -487,7 +487,7 @@
 (rf/reg-event-fx :wallet/stop-get-suggested-routes
  (fn []
    {:fx            [[:dispatch [:wallet/clean-routes-calculation]]]
-    :json-rpc/call [{:method   "wallet_stopSuggestedRoutesAsyncCalcualtion"
+    :json-rpc/call [{:method   "wallet_stopSuggestedRoutesAsyncCalculation"
                      :params   []
                      :on-error (fn [error]
                                  (log/error "failed to stop suggested routes calculation"

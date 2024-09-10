@@ -150,7 +150,7 @@
 
 (rf/reg-event-fx :wallet/stop-get-swap-proposal
  (fn []
-   {:json-rpc/call [{:method   "wallet_stopSuggestedRoutesAsyncCalcualtion"
+   {:json-rpc/call [{:method   "wallet_stopSuggestedRoutesAsyncCalculation"
                      :params   []
                      :on-error (fn [error]
                                  (log/error "failed to stop fetching swap proposals"
