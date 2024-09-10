@@ -22,6 +22,7 @@
 
 (defn- finish-onboarding
   []
+  (rf/dispatch [:push-notifications/switch true])
   (shell.utils/change-selected-stack-id shell.constants/default-selected-stack true nil)
   (rf/dispatch [:update-theme-and-init-root :shell-stack])
   (rf/dispatch [:profile/show-testnet-mode-banner-if-enabled])
@@ -31,10 +32,12 @@
   []
   (rf/dispatch [:request-permissions
                 {:permissions [:post-notifications]
-                 :on-allowed  #(log/info "push notification permissions were allowed")
-                 :on-denied   #(log/error "user denied push notification permissions")}])
-  (rf/dispatch [:push-notifications/switch true])
-  (finish-onboarding))
+                 :on-allowed  (fn []
+                                (log/debug "push notification permissions were allowed")
+                                (finish-onboarding))
+                 :on-denied   (fn []
+                                (log/debug "user denied push notification permissions")
+                                (finish-onboarding))}]))
 
 (defn enable-notification-buttons
   [{:keys [insets]}]
