@@ -70,10 +70,10 @@
       (when pass-through?
         [reanimated/blur-view (blur-overlay-params bottom-tabs-blur-overlay-style)])
       [rn/view {:style (style/bottom-tabs)}
-       [gesture/gesture-detector {:gesture communities-double-tab-gesture}
-        [bottom-tab :i/communities :communities-stack shared-values notifications-data]]
+       [bottom-tab :i/wallet :wallet-stack shared-values notifications-data]
        [gesture/gesture-detector {:gesture messages-double-tap-gesture}
         [bottom-tab :i/messages :chats-stack shared-values notifications-data]]
-       [bottom-tab :i/wallet :wallet-stack shared-values notifications-data]
+       [gesture/gesture-detector {:gesture communities-double-tab-gesture}
+        [bottom-tab :i/communities :communities-stack shared-values notifications-data]]
        (when config/show-not-implemented-features?
          [bottom-tab :i/browser :browser-stack shared-values notifications-data])]]]))
