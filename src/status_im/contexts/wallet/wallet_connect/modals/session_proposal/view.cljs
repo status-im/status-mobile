@@ -1,4 +1,4 @@
-(ns status-im.contexts.wallet.wallet-connect.session-proposal.view
+(ns status-im.contexts.wallet.wallet-connect.modals.session-proposal.view
   (:require
     [clojure.string :as string]
     [quo.core :as quo]
@@ -6,8 +6,8 @@
     [quo.theme]
     [react-native.core :as rn]
     [status-im.common.floating-button-page.view :as floating-button-page]
-    [status-im.contexts.wallet.wallet-connect.core :as wallet-connect-core]
-    [status-im.contexts.wallet.wallet-connect.session-proposal.style :as style]
+    [status-im.contexts.wallet.wallet-connect.modals.session-proposal.style :as style]
+    [status-im.contexts.wallet.wallet-connect.utils.data-store :as data-store]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]
     [utils.string]))
@@ -17,8 +17,8 @@
   (let [proposer                 (rf/sub [:wallet-connect/session-proposer])
         {:keys [icons name url]} (:metadata proposer)
         first-icon               (first icons)
-        dapp-name                (wallet-connect-core/compute-dapp-name name url)
-        profile-picture          (wallet-connect-core/compute-dapp-icon-path first-icon url)]
+        dapp-name                (data-store/compute-dapp-name name url)
+        profile-picture          (data-store/compute-dapp-icon-path first-icon url)]
     [:<>
      [rn/view {:style style/dapp-avatar}
       [quo/user-avatar

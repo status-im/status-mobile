@@ -2,14 +2,15 @@
   (:require [clojure.string :as string]
             [quo.core :as quo]
             [react-native.core :as rn]
-            [status-im.contexts.wallet.wallet-connect.core :as core]
-            [status-im.contexts.wallet.wallet-connect.modals.common.header.style :as style]))
+            [status-im.contexts.wallet.wallet-connect.modals.common.header.style :as style]
+            [status-im.contexts.wallet.wallet-connect.utils.data-store :as
+             data-store]))
 
 (defn view
   [{:keys [label dapp account]}]
   [rn/view {:style style/header-container}
    (let [{:keys [name iconUrl url]} dapp
-         image-source               (core/compute-dapp-icon-path iconUrl url)]
+         image-source               (data-store/compute-dapp-icon-path iconUrl url)]
      [rn/view {:style style/dapp-container}
       [quo/summary-tag
        {:type         :dapp

@@ -1,9 +1,10 @@
-(ns status-im.contexts.wallet.wallet-connect.responding-events
+(ns status-im.contexts.wallet.wallet-connect.events.session-responses
   (:require [re-frame.core :as rf]
             [react-native.wallet-connect :as wallet-connect]
             [status-im.constants :as constants]
-            [status-im.contexts.wallet.wallet-connect.core :as wallet-connect-core]
-            [status-im.contexts.wallet.wallet-connect.utils :as wc-utils]
+            [status-im.contexts.wallet.wallet-connect.utils.data-store :as
+             data-store]
+            [status-im.contexts.wallet.wallet-connect.utils.uri :as uri]
             [taoensso.timbre :as log]
             [utils.i18n :as i18n]
             [utils.transforms :as transforms]))
@@ -12,10 +13,10 @@
  :wallet-connect/respond-current-session
  (fn [{:keys [db]} [password]]
    (let [event  (get-in db [:wallet-connect/current-request :event])
-         method (wallet-connect-core/get-request-method event)
-         screen (wallet-connect-core/method-to-screen method)
+         method (data-store/get-request-method event)
+         screen (data-store/method-to-screen method)
          expiry (get-in event [:params :request :expiryTimestamp])]
-     (if (wc-utils/timestamp-expired? expiry)
+     (if (uri/timestamp-expired? expiry)
        {:fx [[:dispatch
               [:toasts/upsert
                {:id   :new-wallet-account-created
@@ -99,7 +100,7 @@
  :wallet-connect/on-sign-error
  (fn [{:keys [db]} [error]]
    (let [{:keys [raw-data address event]} (get db :wallet-connect/current-request)
-         method                           (wallet-connect-core/get-request-method event)]
+         method                           (data-store/get-request-method event)]
      (log/error "Failed to sign Wallet Connect request"
                 {:error                error
                  :address              address
@@ -118,7 +119,7 @@
  (fn [{:keys [db]} [{:keys [request result error]}]]
    (when-let [{:keys [id topic] :as event} (or request
                                                (get-in db [:wallet-connect/current-request :event]))]
-     (let [method      (wallet-connect-core/get-request-method event)
+     (let [method      (data-store/get-request-method event)
            web3-wallet (get db :wallet-connect/web3-wallet)]
        {:db (assoc-in db [:wallet-connect/current-request :response-sent?] true)
         :fx [[:effects.wallet-connect/respond-session-request
@@ -142,11 +143,11 @@
  (fn [{:keys [db]} [url]]
    (let [redirect-url (or url
                           (->> (get db :wallet-connect/current-request)
-                               (wallet-connect-core/get-current-request-dapp
+                               (data-store/get-current-request-dapp
                                 (get db :wallet-connect/sessions))
                                :sessionJson
                                transforms/json->clj
-                               wallet-connect-core/get-dapp-redirect-url))]
+                               data-store/get-dapp-redirect-url))]
      {:fx [[:open-url redirect-url]]})))
 
 (rf/reg-event-fx
@@ -154,17 +155,8 @@
  (fn [{:keys [db]} _]
    (let [screen (-> db
                     (get-in [:wallet-connect/current-request :event])
-                    wallet-connect-core/get-request-method
-                    wallet-connect-core/method-to-screen)]
-     {:fx [[:dispatch [:dismiss-modal screen]]]})))
-
-(rf/reg-event-fx
- :wallet-connect/dismiss-request-modal
- (fn [{:keys [db]} _]
-   (let [screen (-> db
-                    (get-in [:wallet-connect/current-request :event])
-                    wallet-connect-core/get-request-method
-                    wallet-connect-core/method-to-screen)]
+                    data-store/get-request-method
+                    data-store/method-to-screen)]
      {:fx [[:dispatch [:dismiss-modal screen]]]})))
 
 (rf/reg-event-fx

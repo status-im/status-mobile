@@ -1,8 +1,10 @@
-(ns status-im.contexts.wallet.wallet-connect.signing
+(ns status-im.contexts.wallet.wallet-connect.utils.signing
   (:require [native-module.core :as native-module]
             [promesa.core :as promesa]
-            [status-im.contexts.wallet.wallet-connect.core :as core]
-            [status-im.contexts.wallet.wallet-connect.rpc :as rpc]
+            [status-im.contexts.wallet.wallet-connect.utils.data-store :as
+             data-store]
+            [status-im.contexts.wallet.wallet-connect.utils.networks :as networks]
+            [status-im.contexts.wallet.wallet-connect.utils.rpc :as rpc]
             [utils.hex :as hex]
             [utils.number :as number]
             [utils.transforms :as transforms]))
@@ -29,7 +31,7 @@
        :password password}
       transforms/clj->json
       native-module/sign-message
-      (promesa/then core/extract-native-call-signature)))
+      (promesa/then data-store/extract-native-call-signature)))
 
 (defn personal-sign
   [password address data]
@@ -40,7 +42,7 @@
 (defn eth-sign-typed-data
   [password address data chain-id-eip155 version]
   (let [legacy?  (= version :v1)
-        chain-id (core/eip155->chain-id chain-id-eip155)]
+        chain-id (networks/eip155->chain-id chain-id-eip155)]
     (rpc/wallet-safe-sign-typed-data data
                                      address
                                      password

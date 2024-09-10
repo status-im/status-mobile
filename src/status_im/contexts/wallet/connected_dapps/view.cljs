@@ -9,7 +9,7 @@
     [status-im.common.resources :as resources]
     [status-im.contexts.wallet.connected-dapps.disconnect-dapp.view :as disconnect-dapp]
     [status-im.contexts.wallet.connected-dapps.style :as style]
-    [status-im.contexts.wallet.wallet-connect.core :as core]
+    [status-im.contexts.wallet.wallet-connect.utils.data-store :as data-store]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]
     [utils.string]))
@@ -107,9 +107,14 @@
           :content-container-style (style/dapps-list theme)
           :render-fn               (fn [{:keys [topic pairingTopic name url iconUrl]}]
                                      [quo/dapp
-                                      {:dapp                {:avatar (core/compute-dapp-icon-path iconUrl
-                                                                                                  url)
-                                                             :name (core/compute-dapp-name name url)
+                                      {:dapp                {:avatar
+                                                             (data-store/compute-dapp-icon-path
+                                                              iconUrl
+                                                              url)
+                                                             :name
+                                                             (data-store/compute-dapp-name
+                                                              name
+                                                              url)
                                                              :value url
                                                              :topic topic
                                                              :pairing-topic pairingTopic

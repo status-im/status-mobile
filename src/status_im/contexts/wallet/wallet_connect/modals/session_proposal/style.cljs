@@ -1,4 +1,4 @@
-(ns status-im.contexts.wallet.wallet-connect.session-proposal.style
+(ns status-im.contexts.wallet.wallet-connect.modals.session-proposal.style
   (:require [quo.foundations.colors :as colors]))
 
 (def dapp-avatar
