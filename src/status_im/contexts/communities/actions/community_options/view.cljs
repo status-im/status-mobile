@@ -56,7 +56,7 @@
 
 (defn mark-as-read
   [id]
-  {:icon                :i/up-to-date
+  {:icon                :i/mark-as-read
    :accessibility-label :mark-as-read
    :label               (i18n/label :t/mark-as-read)
    :on-press            #(hide-sheet-and-dispatch [:chat.ui/mark-all-read-in-community-pressed id])})
@@ -137,13 +137,11 @@
 
 (defn not-joined-options
   [id token-gated? intro-message]
-  [[(when-not token-gated? (view-members id))
-    (when-not token-gated? (view-rules id intro-message))
-    (mark-as-read id)
-    (invite-contacts id)
-    (when token-gated? (view-token-gating id))
-    (show-qr id)
-    (share-community id)]])
+  (let [common   [(show-qr id) (share-community id)]
+        specific (if token-gated?
+                   [(invite-contacts id) (view-token-gating id)]
+                   [(view-members id) (view-rules id intro-message) (invite-contacts id)])]
+    [(concat specific common)]))
 
 (defn join-request-sent-options
   [id token-gated? request-id intro-message]
