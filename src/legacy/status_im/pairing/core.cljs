@@ -243,6 +243,23 @@
                {}
                installations))})
 
+(rf/defn finish-seed-phrase-fallback-syncing
+  {:events [:pairing/finish-seed-phrase-fallback-syncing]}
+  [{:keys [db]}]
+  {:fx [[:json-rpc/call
+         [{:method      "wakuext_enableInstallationAndPair"
+           :params      [{:installationId (:syncing/installation-id db)}]
+           :js-response true
+           :on-success  [:sanitize-messages-and-process-response]}]]]})
+
+(rf/defn pair-and-sync
+  {:events [:pairing/pair-and-sync]}
+  [cofx installation-id]
+  {:fx [[:json-rpc/call
+         [{:method     "wakuext_enableInstallationAndSync"
+           :params     [{:installationId installation-id}]
+           :on-success #(log/debug "successfully synced devices")}]]]})
+
 (rf/defn enable-installation-success
   {:events [:pairing.callback/enable-installation-success]}
   [cofx installation-id]

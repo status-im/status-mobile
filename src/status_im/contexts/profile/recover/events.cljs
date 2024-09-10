@@ -1,6 +1,7 @@
 (ns status-im.contexts.profile.recover.events
   (:require
     [native-module.core :as native-module]
+    [status-im.constants :as constants]
     [status-im.contexts.profile.config :as profile.config]
     status-im.contexts.profile.recover.effects
     [utils.re-frame :as rf]
@@ -16,10 +17,10 @@
          (assoc-in [:syncing :login-sha3-password] login-sha3-password))
 
      :effects.profile/restore-and-login
-     (merge (profile.config/create)
-            {:displayName        display-name
-             :mnemonic           (security/safe-unmask-data seed-phrase)
-             :password           login-sha3-password
-             :imagePath          (profile.config/strip-file-prefix image-path)
-             :customizationColor color
-             :fetchBackup        true})}))
+     (assoc (profile.config/create)
+            :displayName        display-name
+            :mnemonic           (security/safe-unmask-data seed-phrase)
+            :password           login-sha3-password
+            :imagePath          (profile.config/strip-file-prefix image-path)
+            :customizationColor (or color constants/profile-default-color)
+            :fetchBackup        true)}))
