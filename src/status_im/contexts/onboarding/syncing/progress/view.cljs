@@ -33,25 +33,32 @@
    [:onboarding/navigate-to-sign-in-by-seed-phrase :screen/onboarding.sync-or-recover-profile]
    500))
 
+(defn- try-again
+  []
+  (rf/dispatch [:syncing/clear-states])
+  (rf/dispatch [:navigate-back]))
+
 (defn try-again-button
   [profile-color logged-in?]
-  [:<>
-   (when-not logged-in?
-     [quo/button
-      {:on-press            navigate-to-enter-seed-phrase
-       :accessibility-label :try-seed-phrase-button
-       :customization-color profile-color
-       :container-style     style/try-again-button}
-      (i18n/label :t/enter-seed-phrase)])
-   [quo/button
-    {:on-press            (fn []
-                            (rf/dispatch [:syncing/clear-states])
-                            (rf/dispatch [:navigate-back]))
+  [quo/bottom-actions
+   {:actions (if logged-in? :one-action :two-actions)
+    :blur? true
+    :button-one-label (i18n/label :t/recovery-phrase)
+    :button-one-props {:type                :primary
+                       :accessibility-label :try-seed-phrase-button
+                       :customization-color profile-color
+                       :container-style     {:flex 1}
+                       :size                40
+                       :on-press            navigate-to-enter-seed-phrase}
+    (if logged-in? :button-one-label :button-two-label)
+    (i18n/label :t/try-again)
+    (if logged-in? :button-one-props :button-two-props)
+    {:type                (if logged-in? :primary :grey)
      :accessibility-label :try-again-later-button
      :customization-color profile-color
+     :container-style     {:flex 1}
      :size                40
-     :container-style     style/try-again-button}
-    (i18n/label :t/try-again)]])
+     :on-press            try-again}}])
 
 (defn- illustration
   [pairing-progress?]
