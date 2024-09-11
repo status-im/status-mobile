@@ -103,7 +103,7 @@
                                         :amount                 amount
                                         :loading-swap-proposal? true)
                                        (dissoc :error-response)))
-        :json-rpc/call [{:method   "wallet_getSuggestedRoutesV2Async"
+        :json-rpc/call [{:method   "wallet_getSuggestedRoutesAsync"
                          :params   params
                          :on-error (fn [error]
                                      (rf/dispatch [:wallet/swap-proposal-error error])
@@ -149,7 +149,7 @@
 
 (rf/reg-event-fx :wallet/stop-get-swap-proposal
  (fn []
-   {:json-rpc/call [{:method   "wallet_stopSuggestedRoutesV2AsyncCalcualtion"
+   {:json-rpc/call [{:method   "wallet_stopSuggestedRoutesAsyncCalculation"
                      :params   []
                      :on-error (fn [error]
                                  (log/error "failed to stop fetching swap proposals"

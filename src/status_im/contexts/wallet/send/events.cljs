@@ -478,7 +478,7 @@
                                               :receiver-network-values   receiver-network-values)
                                        (dissoc :network-links)
                                        (cond-> token (assoc :token token))))
-        :json-rpc/call [{:method   "wallet_getSuggestedRoutesV2Async"
+        :json-rpc/call [{:method   "wallet_getSuggestedRoutesAsync"
                          :params   params
                          :on-error (fn [error]
                                      (rf/dispatch [:wallet/suggested-routes-error error])
@@ -490,7 +490,7 @@
 (rf/reg-event-fx :wallet/stop-get-suggested-routes
  (fn []
    {:fx            [[:dispatch [:wallet/clean-routes-calculation]]]
-    :json-rpc/call [{:method   "wallet_stopSuggestedRoutesV2AsyncCalcualtion"
+    :json-rpc/call [{:method   "wallet_stopSuggestedRoutesAsyncCalculation"
                      :params   []
                      :on-error (fn [error]
                                  (log/error "failed to stop suggested routes calculation"
