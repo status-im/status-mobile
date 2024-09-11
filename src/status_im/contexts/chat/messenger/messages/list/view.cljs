@@ -26,9 +26,7 @@
     [utils.worklets.chat.messenger.messages :as worklets]))
 
 (defonce ^:const distance-from-last-message 4)
-(defonce ^:const loading-indicator-extra-spacing 250)
 (defonce ^:const loading-indicator-page-loading-height 100)
-(defonce ^:const min-message-height 32)
 
 (defn list-key-fn [{:keys [message-id value]}] (or message-id value))
 (defn list-ref [ref] (reset! state/messages-list-ref ref))
@@ -336,8 +334,7 @@
 
 (defn list-group-chat-header
   [{:keys [chat-id invitation-admin]}]
-  [rn/view
-   [chat.group/group-chat-footer chat-id invitation-admin]])
+  [chat.group/group-chat-footer chat-id invitation-admin])
 
 (defn render-fn
   [{:keys [type value] :as message-data} _ _
@@ -410,10 +407,8 @@
        {:key-fn                            list-key-fn
         :ref                               list-ref
         :bounces                           false
-        :header                            [:<>
-                                            [list-header insets able-to-send-message?]
-                                            (when (= (:chat-type chat) constants/private-group-chat-type)
-                                              [list-group-chat-header chat])]
+        :header                            (when (= (:chat-type chat) constants/private-group-chat-type)
+                                             [list-group-chat-header chat])
         :footer                            [list-footer
                                             {:theme                  theme
                                              :chat                   chat
@@ -433,15 +428,11 @@
                                              :distance-from-list-top distance-from-list-top})
         :on-end-reached                    #(list-on-end-reached distance-from-list-top)
         :on-scroll-to-index-failed         identity
-        :scroll-indicator-insets           {:top   (if (:able-to-send-message? context)
-                                                     (- composer.constants/composer-default-height 16)
-                                                     0)
-                                            :right 1}
         :keyboard-dismiss-mode             :interactive
         :keyboard-should-persist-taps      :always
-        :on-scroll-begin-drag              #(do
-                                              (rf/dispatch [:chat.ui/set-input-focused false])
-                                              (rn/dismiss-keyboard!))
+        :on-scroll-begin-drag              (fn []
+                                             (rf/dispatch [:chat.ui/set-input-focused false])
+                                             (rn/dismiss-keyboard!))
         :on-momentum-scroll-begin          state/start-scrolling
         :on-momentum-scroll-end            state/stop-scrolling
         :scroll-event-throttle             16
@@ -463,4 +454,5 @@
                                               :chat-screen-layout-calculations-complete?
                                               chat-screen-layout-calculations-complete?})
         :scroll-enabled                    (not recording?)
-        :content-inset-adjustment-behavior :never}]]]))
+        :content-inset-adjustment-behavior :never
+        :scroll-indicator-insets           {:right 1}}]]]))
