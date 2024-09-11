@@ -5,9 +5,7 @@
 (def container
   {:padding-horizontal 12
    :padding-top        12
-   :padding-bottom     14
-   :flex-direction     :row
-   :justify-content    :space-between})
+   :padding-bottom     14})
 
 (defn left-sub-container
   [{:keys [tag description]}]

@@ -27,26 +27,23 @@
    :t/your-addresses
    :t/information-you-input-and-send])
 
-(defn- bullet-points
-  [{:keys [title points on-toggle toggle-checked? description]}]
-  [rn/view
-   [rn/view {:flex-direction :row :justify-content :space-between :margin-bottom 8}
-    [rn/view
-     [quo/text {:weight :semi-bold}
-      title]
-     (when description
-       [quo/text {:size :paragraph-2 :style {:color colors/white-opa-40}} description])]
-    (when on-toggle
-      [quo/selectors
-       {:type      :toggle
-        :on-change on-toggle
-        :checked?  toggle-checked?}])]
-   (for [label points]
-     ^{:key label}
-     [quo/markdown-list
-      {:description     (i18n/label label)
-       :blur?           true
-       :container-style {}}])])
+(defn- get-category-data
+  [{:keys [title description points on-toggle toggle-checked?]}]
+  {:title             title
+   :description       (when description :text)
+   :description-props (when description {:text description})
+   :blur?             true
+   :action            (when on-toggle :selector)
+   :action-props      (when on-toggle
+                        {:on-change on-toggle
+                         :checked?  toggle-checked?})
+   :content           [rn/view {:style {:margin-top 8}}
+                       (for [label points]
+                         ^{:key label}
+                         [quo/markdown-list
+                          {:description     (i18n/label label)
+                           :blur?           true
+                           :container-style {:padding-top 8}}])]})
 
 (defn- on-privacy-policy-press
   []
@@ -59,17 +56,15 @@
 
 (defn- privacy-policy-text
   []
-  [rn/view {:style {}}
+  [quo/text {:style {:text-align :center}}
    [quo/text
-    [quo/text
-     {:style {:color colors/white-opa-50}
-      :size  :paragraph-2}
-     (i18n/label :t/more-details-in-privacy-policy-settings-1)]
-    [quo/text
-     {:size     :paragraph-2
-      :weight   :bold
-      :on-press on-privacy-policy-press}
-     (i18n/label :t/more-details-in-privacy-policy-2)]]])
+    {:style {:color colors/white-opa-50}
+     :size  :paragraph-2}
+    (i18n/label :t/more-details-in-privacy-policy-settings-1)]
+   [quo/text
+    {:size     :paragraph-2
+     :on-press on-privacy-policy-press}
+    (i18n/label :t/more-details-in-privacy-policy-2)]])
 
 (defn view
   []
@@ -89,29 +84,30 @@
        :title-accessibility-label :title-label
        :description               :text
        :description-text          (i18n/label :t/collecting-usage-data)}]
+     [rn/scroll-view {:style {:flex 1}}
+      [quo/category
+       {:data      [(get-category-data
+                     {:toggle-checked? telemetry-enabled?
+                      :on-toggle       #(rf/dispatch [:profile.settings/toggle-telemetry])
+                      :title           (i18n/label :t/network-behavior)
+                      :description     (i18n/label :t/will-be-shared-from-the-current-profile)
+                      :points          network-behavior-points})
+                    (get-category-data {:toggle-checked? centralized-metrics-enabled?
+                                        :on-toggle #(rf/dispatch
+                                                     [:centralized-metrics/toggle-centralized-metrics
+                                                      (not centralized-metrics-enabled?)])
+                                        :title (i18n/label :t/app-interactions)
+                                        :description (i18n/label :t/will-be-shared-from-all-profiles)
+                                        :points app-interactions-points})]
+        :blur?     true
+        :list-type :settings}]
+      [quo/category
+       {:data      [(get-category-data {:title  (i18n/label :t/what-we-wont-receive)
+                                        :points not-receive-points})]
+        :blur?     true
+        :list-type :settings}]]
      [rn/view
-      {:style {:padding-horizontal 20
-               :padding-top        10
-               :padding-bottom     (+ 10 (:bottom insets))
-               :flex               1}}
-      [rn/scroll-view {:style {:flex 1}}
-       [bullet-points
-        {:toggle-checked? telemetry-enabled?
-         :on-toggle       #(rf/dispatch [:profile.settings/toggle-telemetry])
-         :title           (i18n/label :t/network-behavior)
-         :description     (i18n/label :t/will-be-shared-from-the-current-profile)
-         :points          network-behavior-points}]
-       [rn/view {:height 10}]
-       [bullet-points
-        {:toggle-checked? centralized-metrics-enabled?
-         :on-toggle       #(rf/dispatch [:centralized-metrics/toggle-centralized-metrics
-                                         (not centralized-metrics-enabled?)])
-         :title           (i18n/label :t/app-interactions)
-         :description     (i18n/label :t/will-be-shared-from-all-profiles)
-         :points          app-interactions-points}]
-       [rn/view {:height 20}]
-       [bullet-points
-        {:title  (i18n/label :t/what-we-wont-receive)
-         :points not-receive-points}]]
-      [rn/view {:align-items :center}
-       [privacy-policy-text]]]]))
+      {:align-items        :center
+       :padding-horizontal 20
+       :padding-bottom     (:bottom insets)}
+      [privacy-policy-text]]]))

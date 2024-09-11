@@ -107,7 +107,7 @@
    [quo/bottom-actions
     {:actions          :two-actions
      :blur?            true
-     :button-one-label (i18n/label :t/share-usage-data)
+     :button-one-label (i18n/label :t/help-us-improve-status)
      :button-one-props {:on-press on-share-usage}
      :button-two-label (i18n/label :t/not-now)
      :button-two-props {:type     :grey

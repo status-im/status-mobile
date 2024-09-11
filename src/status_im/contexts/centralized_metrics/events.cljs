@@ -35,7 +35,7 @@
 
 (rf/reg-event-fx :centralized-metrics/check-modal
  (fn [{:keys [db]} [modal-view]]
-   (when-not (:centralized-metrics/user-confirmed? db)
+   (when-not false ;(:centralized-metrics/user-confirmed? db)
      {:fx [[:dispatch
             [:show-bottom-sheet
              {:content  (fn [] [modal-view])
