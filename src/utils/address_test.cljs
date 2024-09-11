@@ -1,6 +1,6 @@
 (ns utils.address-test
   (:require
-    [cljs.test :refer [deftest is run-tests testing]]
+    [cljs.test :refer [deftest is testing]]
     [utils.address]))
 
 (deftest get-shortened-compressed-key-test
@@ -159,5 +159,3 @@
             status-address   :status} eip-3770-to-status]
        (is (= status-address (utils.address/supported-address->status-address eip-3770-address)))))))
 
-
-(run-tests)
