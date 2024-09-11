@@ -148,10 +148,10 @@
 
 (rf/reg-event-fx :open-url
  (fn [_ [url]]
-   {:fx [[:open-url url]]}))
+   {:fx [[:effects/open-url url]]}))
 
 (rf/reg-fx
- :open-url
+ :effects/open-url
  (fn [url]
    (when (not (string/blank? url))
      (.openURL ^js react/linking (url/normalize-url url)))))
