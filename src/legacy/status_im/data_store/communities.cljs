@@ -28,14 +28,14 @@
   chat members."
   [chats-js]
   (let [chat-key-fn (fn [k]
-                      (case k
+                      (case (name k)
                         "tokenGated"              :token-gated?
                         "canPost"                 :can-post?
                         "can-view"                :can-view?
                         "hideIfPermissionsNotMet" :hide-if-permissions-not-met?
                         (keyword k)))
         chat-val-fn (fn [k v]
-                      (if (= "members" k)
+                      (if (= "members" (name k))
                         v
                         (transforms/js->clj v)))]
     (transforms/<-js-map
@@ -57,7 +57,7 @@
 
 (defn- rename-community-key
   [k]
-  (case k
+  (case (name k)
     "canRequestAccess"            :can-request-access?
     "canManageUsers"              :can-manage-users?
     "canDeleteMessageForEveryone" :can-delete-message-for-everyone?
@@ -86,7 +86,7 @@
                    c-js
                    {:key-fn rename-community-key
                     :val-fn (fn [k v]
-                              (case k
+                              (case (name k)
                                 "members" v
                                 "chats"   (<-chats-rpc v)
                                 (transforms/js->clj v)))})]

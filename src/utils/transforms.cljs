@@ -16,9 +16,7 @@
 (defn clj->json [data] (clj->pretty-json data 0))
 
 (defn <-js-map
-  "Shallowly transforms JS Object keys/values with `key-fn`/`val-fn`.
-
-  Returns nil if `m` is not an instance of `js/Object`.
+  "Shallowly transforms JS Object keys/values with `key-fn`/`val-fn`..
 
   Implementation taken from `js->clj`, but with the ability to customize how
   keys and/or values are transformed in one loop.
@@ -33,15 +31,16 @@
   ([^js m]
    (<-js-map m nil))
   ([^js m {:keys [key-fn val-fn]}]
-   (when (identical? (type m) js/Object)
+   (let [js-object? (identical? (type m) js/Object)
+         keys-fn    (if js-object? js-keys keys)]
      (persistent!
       (reduce (fn [r k]
-                (let [v       (oops/oget+ m k)
+                (let [v       (if js-object? (oops/oget+ m k) (get m k))
                       new-key (if key-fn (key-fn k v) k)
                       new-val (if val-fn (val-fn k v) v)]
                   (assoc! r new-key new-val)))
               (transient {})
-              (js-keys m))))))
+              (keys-fn m))))))
 
 (defn js-stringify
   [js-object spaces]
