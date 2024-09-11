@@ -28,15 +28,16 @@
 
 (defn- navigate-to-enter-seed-phrase
   []
-  (rf/dispatch [:navigate-back-to :screen/onboarding.sync-or-recover-profile])
   (debounce/debounce-and-dispatch
    [:onboarding/navigate-to-sign-in-by-seed-phrase :screen/onboarding.sync-or-recover-profile]
    500))
 
 (defn- try-again
-  []
+  [logged-in?]
   (rf/dispatch [:syncing/clear-states])
-  (rf/dispatch [:navigate-back]))
+  (if logged-in?
+    (rf/dispatch [:navigate-back])
+    (rf/dispatch [:navigate-back-to :screen/onboarding.sync-or-recover-profile])))
 
 (defn try-again-button
   [profile-color logged-in?]
@@ -58,7 +59,7 @@
      :customization-color profile-color
      :container-style     {:flex 1}
      :size                40
-     :on-press            try-again}}])
+     :on-press            #(try-again logged-in?)}}])
 
 (defn- illustration
   [pairing-progress?]
