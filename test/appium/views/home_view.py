@@ -345,6 +345,7 @@ class HomeView(BaseView):
         self.link_to_profile_text = Text(self.driver, accessibility_id="share-qr-code-info-text")
         self.close_share_tab_button = Button(self.driver, accessibility_id="close-shell-share-tab")
         self.qr_code_image_element = BaseElement(self.driver, accessibility_id='share-qr-code')
+        self.share_profile_tab_button = Button(self.driver, accessibility_id="Profile")
         self.share_wallet_tab_button = Button(self.driver, accessibility_id="Wallet")
         self.account_avatar = BaseElement(self.driver, accessibility_id="account-avatar")
         self.account_name_text = Text(
@@ -578,6 +579,7 @@ class HomeView(BaseView):
 
     def get_link_to_profile(self):
         self.show_qr_code_button.click()
+        self.share_profile_tab_button.click()
         self.link_to_profile_button.click()
         link_to_profile = self.sharing_text_native.text
         self.click_system_back_button()
