@@ -9,6 +9,7 @@
     [react-native.reanimated :as reanimated]
     [status-im.constants :as constant]
     [status-im.contexts.chat.messenger.composer.constants :as constants]
+    [status-im.contexts.chat.messenger.composer.effects :as effects]
     [status-im.contexts.chat.messenger.composer.reply.style :as style]
     [status-im.contexts.chat.messenger.composer.utils :as utils]
     [utils.ens.stateofus :as stateofus]
@@ -164,14 +165,12 @@
          :end    {:x 0.7 :y 0}
          :style  style/gradient}])]))
 
-(defn- f-view
-  [recording? input-ref]
+(defn view
+  [input-ref]
   (let [reply  (rf/sub [:chats/reply-message])
         height (reanimated/use-shared-value (if reply constants/reply-container-height 0))]
+    (effects/use-reply input-ref reply)
     (rn/use-effect #(reanimated/animate height (if reply constants/reply-container-height 0)) [reply])
     [reanimated/view {:style (reanimated/apply-animations-to-style {:height height} {})}
-     (when reply [quoted-message reply true false recording? input-ref])]))
-
-(defn view
-  [{:keys [recording?]} input-ref]
-  [:f> f-view @recording? input-ref])
+     (when reply
+       [quoted-message reply true false false input-ref])]))

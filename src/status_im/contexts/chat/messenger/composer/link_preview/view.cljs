@@ -21,7 +21,7 @@
      [previews?])
     height))
 
-(defn f-view
+(defn view
   []
   (let [previews (rf/sub [:chats/link-previews-unfurled])
         height   (use-animated-height (boolean (seq previews)))]
@@ -48,7 +48,3 @@
                                  :thumbnail (:data-uri thumbnail)
                                  :url       url})
                               previews)}]]))
-
-(defn view
-  []
-  [:f> f-view])

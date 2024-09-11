@@ -345,13 +345,6 @@
    (take 15 (get mentions chat-id))))
 
 (re-frame/reg-sub
- :chat/input-with-mentions
- :<- [:chats/current-chat-id]
- :<- [:chat/inputs-with-mentions]
- (fn [[chat-id cursor]]
-   (get cursor chat-id)))
-
-(re-frame/reg-sub
  :chats/link-previews-unfurled
  :<- [:chat/link-previews]
  (fn [previews]

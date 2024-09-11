@@ -91,14 +91,14 @@
                       :on-error   #(rf/dispatch [:mention/on-error
                                                  {:method method
                                                   :params params} %])}]}))
+
 (rf/defn on-to-input-field-success
   {:events [:mention/on-to-input-field-success]}
   [{:keys [db]} result]
   (log/debug "[mentions] on-to-input-field-success" {:result result})
-  (let [{:keys [input-segments state chat-id new-text]} (transfer-mention-result result)]
-    {:db (-> db
-             (assoc-in [:chats/mentions chat-id :mentions] state)
-             (assoc-in [:chat/inputs-with-mentions chat-id] input-segments))}))
+  (let [{:keys [chat-id new-text]} (transfer-mention-result result)]
+    {:effects/set-input-text-value [(get-in db [:chat/inputs chat-id :input-ref]) new-text]
+     :dispatch                     [:chat.ui/set-chat-input-text new-text chat-id]}))
 
 (rf/defn on-change-text
   {:events [:mention/on-change-text]}
@@ -118,49 +118,32 @@
   {:events [:mention/on-change-text-success]}
   [{:keys [db]} result]
   (log/debug "[mentions] on-change-text-success" {:result result})
-  (let [{:keys [state chat-id mentionable-users input-segments]} (transfer-mention-result result)]
-    {:db (-> db
-             (assoc-in [:chats/mention-suggestions chat-id] mentionable-users)
-             (assoc-in [:chats/mentions chat-id :mentions] state)
-             (assoc-in [:chat/inputs-with-mentions chat-id] input-segments))}))
+  (let [{:keys [chat-id mentionable-users]} (transfer-mention-result result)]
+    {:db (assoc-in db [:chats/mention-suggestions chat-id] mentionable-users)}))
 
 (rf/defn on-select-mention-success
   {:events [:mention/on-select-mention-success]}
-  [{:keys [db] :as cofx} result primary-name match searched-text public-key]
+  [{:keys [db]} result primary-name match searched-text public-key]
   (log/debug "[mentions] on-select-mention-success"
              {:result        result
               :primary-name  primary-name
               :match         match
               :searched-text searched-text
               :public-key    public-key})
-  (let [{:keys [new-text chat-id state input-segments]} (transfer-mention-result result)]
-    {:db       (-> db
-                   (assoc-in [:chats/mentions chat-id :mentions] state)
-                   (assoc-in [:chat/inputs-with-mentions chat-id] input-segments)
-                   (assoc-in [:chats/mention-suggestions chat-id] nil))
-     :dispatch [:chat.ui/set-chat-input-text new-text chat-id]}))
-
-(rf/defn clear-suggestions
-  [{:keys [db]}]
-  (log/debug "[mentions] clear suggestions")
-  (let [chat-id (:current-chat-id db)]
-    {:db (update db :chats/mention-suggestions dissoc chat-id)}))
+  (let [{:keys [new-text chat-id]} (transfer-mention-result result)]
+    {:db                           (assoc-in db [:chats/mention-suggestions chat-id] nil)
+     :effects/set-input-text-value [(get-in db [:chat/inputs (:current-chat-id db) :input-ref]) new-text]
+     :dispatch                     [:chat.ui/set-chat-input-text new-text chat-id]}))
 
 (rf/defn clear-mentions
-  [{:keys [db] :as cofx}]
-  (log/debug "[mentions] clear mentions")
+  [{:keys [db]}]
   (let [chat-id (:current-chat-id db)]
-    (rf/merge
-     cofx
-     {:db            (-> db
-                         (update-in [:chats/mentions chat-id] dissoc :mentions)
-                         (update :chat/inputs-with-mentions dissoc chat-id))
-      :json-rpc/call [{:method     "wakuext_chatMentionClearMentions"
-                       :params     [chat-id]
-                       :on-success #()
-                       :on-error   #(log/error "Error while calling wakuext_chatMentionClearMentions"
-                                               {:error %})}]}
-     (clear-suggestions))))
+    {:db            (update db :chats/mention-suggestions dissoc chat-id)
+     :json-rpc/call [{:method     "wakuext_chatMentionClearMentions"
+                      :params     [chat-id]
+                      :on-success #()
+                      :on-error   #(log/error "Error while calling wakuext_chatMentionClearMentions"
+                                              {:error %})}]}))
 
 (rf/defn select-mention
   {:events [:chat.ui/select-mention]}

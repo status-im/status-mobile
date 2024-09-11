@@ -26,7 +26,7 @@
     [rn/view {:style style/remove-photo-inner-container}
      [quo/icon :i/clear {:size 20 :color colors/neutral-50 :color-2 colors/white}]]]])
 
-(defn f-images-list
+(defn images-list
   []
   (let [theme  (quo.theme/use-theme)
         images (rf/sub [:chats/sending-image])
@@ -48,7 +48,3 @@
        :horizontal                        true
        :shows-horizontal-scroll-indicator false
        :keyboard-should-persist-taps      :handled}]]))
-
-(defn images-list
-  []
-  [:f> f-images-list])

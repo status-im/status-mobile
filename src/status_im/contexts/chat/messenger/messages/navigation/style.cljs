@@ -5,12 +5,13 @@
 
 (defn navigation-view
   [navigation-view-height pinned-banner-height]
-  {:top      0
-   :left     0
-   :right    0
-   :position :absolute
-   :height   (+ navigation-view-height pinned-banner-height)
-   :z-index  1})
+  {:top            0
+   :left           0
+   :right          0
+   :position       :absolute
+   :pointer-events :box-none
+   :height         (+ navigation-view-height pinned-banner-height)
+   :z-index        1})
 
 (defn animated-background-view
   [background-opacity navigation-view-height]
