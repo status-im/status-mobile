@@ -20,12 +20,12 @@
     status-im.subs.wallet.activities
     status-im.subs.wallet.buy
     status-im.subs.wallet.collectibles
+    status-im.subs.wallet.dapps.core
     status-im.subs.wallet.networks
     status-im.subs.wallet.saved-addresses
     status-im.subs.wallet.send
     status-im.subs.wallet.swap
-    status-im.subs.wallet.wallet
-    status-im.subs.wallet.wallet-connect))
+    status-im.subs.wallet.wallet))
 
 (defn reg-root-key-sub
   [sub-name db-key]

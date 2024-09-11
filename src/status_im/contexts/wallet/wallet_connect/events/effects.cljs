@@ -1,12 +1,12 @@
-(ns status-im.contexts.wallet.wallet-connect.effects
+(ns status-im.contexts.wallet.wallet-connect.events.effects
   (:require
     [promesa.core :as promesa]
     [re-frame.core :as rf]
     [react-native.wallet-connect :as wallet-connect]
     [status-im.config :as config]
     [status-im.constants :as constants]
-    [status-im.contexts.wallet.wallet-connect.signing :as signing]
-    [status-im.contexts.wallet.wallet-connect.transactions :as transactions]
+    [status-im.contexts.wallet.wallet-connect.utils.signing :as signing]
+    [status-im.contexts.wallet.wallet-connect.utils.transactions :as transactions]
     [utils.i18n :as i18n]
     [utils.security.core :as security]))
 

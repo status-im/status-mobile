@@ -6,7 +6,7 @@
             [status-im.common.scan-qr-code.view :as scan-qr-code]
             [status-im.common.validation.general :as validators]
             [status-im.contexts.communities.events]
-            [status-im.contexts.wallet.wallet-connect.utils :as wc-utils]
+            [status-im.contexts.wallet.wallet-connect.utils.uri :as wc-uri]
             [status-im.feature-flags :as ff]
             [utils.address :as utils-address]
             [utils.debounce :as debounce]
@@ -100,7 +100,7 @@
     nil
 
     (and
-     (wc-utils/valid-uri? scanned-text)
+     (wc-uri/valid-uri? scanned-text)
      (ff/enabled? ::ff/wallet.wallet-connect))
     (handle-wallet-connect scanned-text)
 
