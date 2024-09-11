@@ -128,9 +128,7 @@
  :wallet/total-owned-collectible
  :<- [:wallet/accounts-without-watched-accounts]
  (fn [accounts [_ ownership address]]
-   (let [addresses (if address
-                     #{address}
-                     (set (map :address accounts)))]
+   (let [addresses (set (or address (map :address accounts)))]
      (reduce (fn [acc item]
                (if (contains? addresses (:address item))
                  (+ acc (js/parseInt (:balance item)))
