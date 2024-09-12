@@ -1,6 +1,5 @@
 (ns status-im.contexts.settings.language-and-currency.events
-  (:require [status-im.common.json-rpc.events :as json-rpc]
-            [status-im.contexts.settings.language-and-currency.data-store :as data-store]
+  (:require [status-im.contexts.settings.language-and-currency.data-store :as data-store]
             [utils.collection]
             [utils.re-frame :as rf]))
 
@@ -11,8 +10,9 @@
                  :currencies
                  (utils.collection/index-by :id all-currencies))})))
 
-(rf/reg-fx :settings/get-currencies
+(rf/reg-event-fx :settings/get-currencies
  (fn []
-   (json-rpc/call {:method     "appgeneral_getCurrencies"
-                   :on-success [:settings/get-currencies-success]
-                   :on-error   [:log-rpc-error {:event :settings/get-currencies}]})))
+   {:fx [[:json-rpc/call
+          [{:method     "appgeneral_getCurrencies"
+            :on-success [:settings/get-currencies-success]
+            :on-error   [:log-rpc-error {:event :settings/get-currencies}]}]]]}))
