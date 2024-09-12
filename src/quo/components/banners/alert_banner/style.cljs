@@ -11,11 +11,19 @@
     :padding-vertical   12}
    container-style))
 
+(def content-container
+  {:flex           1
+   :flex-direction :row})
+
 (defn label
   [theme]
-  {:flex              1
-   :color             (colors/resolve-color :danger theme)
-   :margin-horizontal 4})
+  {:color             (colors/resolve-color :danger theme)
+   :margin-horizontal 4
+   :flex              1
+   :flex-wrap         :wrap})
 
 (def button-text
   {:color colors/white})
+
+(def icon
+  {:margin-top 2})

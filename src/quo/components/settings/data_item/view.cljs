@@ -16,7 +16,8 @@
     [rn/view {:style (style/loading-container size blur? theme)}]))
 
 (defn- left-subtitle
-  [{:keys [size subtitle-type icon icon-color blur? subtitle customization-color emoji network-image]
+  [{:keys [size subtitle-type subtitle-color icon icon-color blur? subtitle customization-color emoji
+           network-image]
     :or   {subtitle-type :default}}]
   (let [theme (quo.theme/use-theme)]
     [rn/view {:style style/subtitle-container}
@@ -40,7 +41,7 @@
      [text/text
       {:weight :medium
        :size   :paragraph-2
-       :style  (style/description blur? theme)}
+       :style  (style/description subtitle-color blur? theme)}
       subtitle]
      (when (= subtitle-type :editable)
        [icons/icon :i/edit
@@ -65,7 +66,7 @@
 
 (defn- left-side
   "The description can either be given as a string `subtitle-type` or a component `custom-subtitle`"
-  [{:keys [title status size blur? custom-subtitle icon subtitle subtitle-type icon-color
+  [{:keys [title status size blur? custom-subtitle icon subtitle subtitle-type subtitle-color icon-color
            customization-color network-image emoji]
     :as   props}]
   (let [theme (quo.theme/use-theme)]
@@ -85,6 +86,7 @@
           {:theme               theme
            :size                size
            :subtitle-type       subtitle-type
+           :subtitle-color      subtitle-color
            :icon                icon
            :icon-color          icon-color
            :blur?               blur?
@@ -124,6 +126,7 @@
       [:icon-color {:optional true} [:maybe :schema.common/customization-color]]
       [:status {:optional true} [:maybe [:enum :default :loading]]]
       [:subtitle-type {:optional true} [:maybe [:enum :default :icon :network :account :editable]]]
+      [:subtitle-color {:optional true} [:maybe :schema.common/customization-color]]
       [:size {:optional true} [:maybe [:enum :default :small :large]]]
       [:title :string]
       [:subtitle {:optional true} [:maybe [:or :string :double]]]

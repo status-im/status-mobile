@@ -134,15 +134,8 @@
                                assoc
                                :swap-proposal          (when-not (empty? best-routes)
                                                          (assoc (first best-routes) :uuid request-uuid))
-                               :error-response         (when (empty? best-routes) error-response)
+                               :error-response         error-response
                                :loading-swap-proposal? false)}
-         (empty? best-routes)
-         (assoc :fx
-                [[:dispatch
-                  [:toasts/upsert
-                   {:id   :swap-proposal-error
-                    :type :negative
-                    :text error-response}]]])
          ;; Router is unstable and it can return a swap proposal and after auto-refetching it can
          ;; return an error. Ideally this shouldn't happen, but adding this behavior so if the
          ;; user is in swap confirmation screen or in token approval confirmation screen, we
@@ -157,12 +150,7 @@
    {:db (-> db
             (update-in [:wallet :ui :swap] dissoc :route :swap-proposal)
             (assoc-in [:wallet :ui :swap :loading-swap-proposal?] false)
-            (assoc-in [:wallet :ui :swap :error-response] error-message))
-    :fx [[:dispatch
-          [:toasts/upsert
-           {:id   :swap-proposal-error
-            :type :negative
-            :text error-message}]]]}))
+            (assoc-in [:wallet :ui :swap :error-response] error-message))}))
 
 (rf/reg-event-fx :wallet/stop-get-swap-proposal
  (fn []

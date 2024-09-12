@@ -37,4 +37,6 @@
    :justify-content :flex-end})
 
 (def alert-banner
-  {:height 40})
+  {:height     :auto
+   :min-height 40
+   :max-height 62})

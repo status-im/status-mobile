@@ -609,3 +609,10 @@
 
 (def ^:const min-token-decimals-to-display 6)
 (def ^:const swap-proposal-refresh-interval-ms 15000)
+
+(def router-error-code-generic "0")
+(def router-error-code-paraswap-custom-error "WPP-030")
+(def router-error-code-price-timeout "WPP-037")
+(def router-error-code-not-enough-liquidity "WPP-038")
+(def router-error-code-price-impact-too-high "WPP-039")
+(def router-error-code-not-enough-native-balance "WR-002")

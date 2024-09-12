@@ -33,6 +33,16 @@
  :-> :error-response)
 
 (rf/reg-sub
+ :wallet/swap-error-response-code
+ :<- [:wallet/swap-error-response]
+ :-> :code)
+
+(rf/reg-sub
+ :wallet/swap-error-response-details
+ :<- [:wallet/swap-error-response]
+ :-> :details)
+
+(rf/reg-sub
  :wallet/swap-asset-to-pay-token-symbol
  :<- [:wallet/swap-asset-to-pay]
  :-> :symbol)
