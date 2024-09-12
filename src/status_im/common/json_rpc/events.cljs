@@ -2,6 +2,7 @@
   (:require
     [clojure.string :as string]
     [native-module.core :as native-module]
+    [promesa.core :as promesa]
     [re-frame.core :as re-frame]
     [react-native.background-timer :as background-timer]
     [taoensso.timbre :as log]
@@ -88,6 +89,17 @@
                  (if (vector? on-success)
                    (rf/dispatch (conj on-success result request-id))
                    (on-success result request-id)))))))))))
+
+(defn call-async
+  "Helper to handle RPC calls to status-go as promises"
+  [method js-response? & args]
+  (promesa/create
+   (fn [p-resolve p-reject]
+     (call {:method      method
+            :params      args
+            :on-success  p-resolve
+            :on-error    p-reject
+            :js-response js-response?}))))
 
 (re-frame/reg-fx
  :json-rpc/call

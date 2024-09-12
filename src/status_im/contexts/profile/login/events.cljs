@@ -98,6 +98,8 @@
            [:settings/get-currencies]
            (when (ff/enabled? ::ff/wallet.wallet-connect)
              [:dispatch [:wallet-connect/init]])
+           (when (ff/enabled? ::ff/wallet.swap)
+             [:dispatch [:wallet.tokens/get-token-list]])
            (when notifications-enabled?
              [:effects/push-notifications-enable])]})))
 

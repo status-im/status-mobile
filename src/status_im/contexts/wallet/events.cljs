@@ -14,6 +14,7 @@
     [status-im.contexts.wallet.data-store :as data-store]
     [status-im.contexts.wallet.db :as db]
     [status-im.contexts.wallet.item-types :as item-types]
+    [status-im.contexts.wallet.tokens.events]
     [taoensso.timbre :as log]
     [utils.collection]
     [utils.ethereum.chain :as chain]
