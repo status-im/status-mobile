@@ -71,17 +71,20 @@
   {:events [:onboarding/create-account-and-login]}
   [{:keys [db] :as cofx}]
   (let [{:keys [display-name seed-phrase password image-path color] :as profile}
-        (:onboarding/profile db)]
+        (:onboarding/profile db)
+        loading-screen (if (seq (:syncing/key-uid db))
+                         :screen/onboarding.preparing-status
+                         :screen/onboarding.generating-keys)]
     (rf/merge cofx
               {:dispatch       [:navigate-to-within-stack
-                                [:screen/onboarding.generating-keys
+                                [loading-screen
                                  (get db
                                       :onboarding/navigated-to-enter-seed-phrase-from-screen
                                       :screen/onboarding.new-to-status)]]
                :dispatch-later [{:ms       constants/onboarding-generating-keys-animation-duration-ms
                                  :dispatch [:navigate-to-within-stack
                                             [:screen/onboarding.enable-notifications
-                                             :screen/onboarding.generating-keys]]}]
+                                             loading-screen]]}]
                :db             (-> db
                                    (dissoc :profile/login)
                                    (dissoc :auth-method)
