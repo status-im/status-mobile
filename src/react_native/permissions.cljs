@@ -1,7 +1,8 @@
 (ns react-native.permissions
   (:require
     ["react-native-permissions" :refer
-     [check openSettings requestMultiple PERMISSIONS RESULTS requestNotifications]]
+     [check openSettings PERMISSIONS requestMultiple requestNotifications
+      RESULTS]]
     [react-native.platform :as platform]
     [taoensso.timbre :as log]))
 
@@ -53,7 +54,7 @@
     A map with `:status` and `settings` (only for iOS) is passed to the callbacks.
     See https://github.com/zoontek/react-native-permissions?tab=readme-ov-file#requestnotifications."
   [{:keys [notification-options on-allowed on-denied]
-    :or   {notification-options #js["alert"]}}]
+    :or   {notification-options #js ["alert"]}}]
   (-> (requestNotifications notification-options)
       (.then (fn [js-response]
                (let [response (js->clj js-response :keywordize-keys true)]
