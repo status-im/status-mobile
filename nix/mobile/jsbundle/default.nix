@@ -23,7 +23,7 @@ stdenv.mkDerivation {
         lib.mkFilter {
           root = path;
           ignoreVCS = false;
-          include = [ 
+          include = [
             "VERSION" "BUILD_NUMBER" "scripts/version/.*"
             "src/.*" "shadow-cljs.edn"
             # I want to avoid including the whole .git directory
@@ -57,7 +57,7 @@ stdenv.mkDerivation {
     let anchor = ''{:source-paths ["src" "test/cljs"]'';
     in ''
       substituteInPlace shadow-cljs.edn \
-        --replace '${anchor}' \
+        --replace-quiet '${anchor}' \
                   '${anchor}
        :maven {:local-repo "${deps.clojure}"}'
     '';
