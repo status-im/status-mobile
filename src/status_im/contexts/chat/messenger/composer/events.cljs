@@ -9,7 +9,8 @@
             [utils.emojilib :as emoji]
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]
-            utils.string))
+            utils.string
+            [utils.debounce :as debounce]))
 
 (rf/defn set-chat-input-text
   {:events [:chat.ui/set-chat-input-text]}
@@ -262,6 +263,8 @@
   [{{:keys [current-chat-id] :as db} :db :as cofx}]
   (let [{:keys [input-text metadata]} (get-in db [:chat/inputs current-chat-id])
         editing-message               (:editing-message metadata)]
+    (debounce/clear :link-preview/unfurl-urls)
+    (debounce/clear :mention/on-change-text)
     (if editing-message
       (send-edited-message cofx input-text editing-message)
       (send-messages cofx input-text current-chat-id))))
