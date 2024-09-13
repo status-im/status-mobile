@@ -7,7 +7,6 @@
     [status-im.contexts.onboarding.enable-notifications.style :as style]
     [status-im.contexts.shell.jump-to.constants :as shell.constants]
     [status-im.contexts.shell.jump-to.utils :as shell.utils]
-    [taoensso.timbre :as log]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
@@ -21,37 +20,31 @@
     :description-accessibility-label :notifications-sub-title}])
 
 (defn- finish-onboarding
-  []
-  (rf/dispatch [:push-notifications/switch true])
+  [notifications-enabled?]
+  (rf/dispatch [:push-notifications/switch notifications-enabled?])
   (shell.utils/change-selected-stack-id shell.constants/default-selected-stack true nil)
   (rf/dispatch [:update-theme-and-init-root :shell-stack])
   (rf/dispatch [:profile/show-testnet-mode-banner-if-enabled])
   (rf/dispatch [:universal-links/process-stored-event]))
 
-(defn- enable-notifications-and-finish-onboarding
-  []
-  (rf/dispatch [:request-permissions
-                {:permissions [:post-notifications]
-                 :on-allowed  (fn []
-                                (log/debug "push notification permissions were allowed")
-                                (finish-onboarding))
-                 :on-denied   (fn []
-                                (log/debug "user denied push notification permissions")
-                                (finish-onboarding))}]))
-
 (defn enable-notification-buttons
   [{:keys [insets]}]
-  (let [profile-color (rf/sub [:onboarding/customization-color])]
+  (let [profile-color   (rf/sub [:onboarding/customization-color])
+        ask-permission  (fn []
+                          (rf/dispatch [:request-notifications
+                                        {:on-allowed #(finish-onboarding true)
+                                         :on-denied  #(finish-onboarding false)}]))
+        skip-permission #(finish-onboarding false)]
     [rn/view {:style (style/buttons insets)}
      [quo/button
-      {:on-press            enable-notifications-and-finish-onboarding
+      {:on-press            ask-permission
        :type                :primary
        :icon-left           :i/notifications
        :accessibility-label :enable-notifications-button
        :customization-color profile-color}
       (i18n/label :t/intro-wizard-title6)]
      [quo/button
-      {:on-press            finish-onboarding
+      {:on-press            skip-permission
        :accessibility-label :enable-notifications-later-button
        :type                :grey
        :background          :blur
