@@ -707,8 +707,10 @@ class BaseView(object):
         self.driver.terminate_app(app_package)
         self.wait_for_application_to_not_run(app_package=app_package)
         self.driver.activate_app(app_package)
+        sign_in_view = self.get_sign_in_view()
+        if sign_in_view.usage_data_text_element.is_element_displayed():
+            sign_in_view.swipe_down()
         if sign_in:
-            sign_in_view = self.get_sign_in_view()
             sign_in_view.sign_in(password)
 
     def close_share_popup(self):

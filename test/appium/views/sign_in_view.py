@@ -217,6 +217,7 @@ class SignInView(BaseView):
         self.plus_profiles_button = Button(self.driver, accessibility_id="show-new-account-options")
         self.create_new_profile_button = Button(self.driver, accessibility_id="create-new-profile")
         self.remove_profile_button = Button(self.driver, accessibility_id="remove-profile")
+        self.usage_data_text_element = Text(self.driver, accessibility_id="list-item-description")
 
     def set_password(self, password: str):
         input_elements = self.password_input.wait_for_elements()
@@ -240,7 +241,7 @@ class SignInView(BaseView):
         if first_user:
             self.terms_and_privacy_checkbox.click()
             self.create_profile_button.click_until_presence_of_element(self.generate_keys_button)
-            self.not_now_button.wait_and_click()
+            self.swipe_down()
         else:
             if self.show_profiles_button.is_element_displayed(20):
                 self.show_profiles_button.click()
@@ -284,7 +285,7 @@ class SignInView(BaseView):
         if not second_user:
             self.terms_and_privacy_checkbox.click()
             self.sync_or_recover_profile_button.click_until_presence_of_element(self.generate_keys_button)
-            self.not_now_button.wait_and_click()
+            self.swipe_down()
         else:
             self.show_profiles_button.wait_and_click(20)
             self.plus_profiles_button.click()
