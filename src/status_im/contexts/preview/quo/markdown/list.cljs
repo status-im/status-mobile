@@ -15,7 +15,8 @@
    {:key     :type
     :type    :select
     :options [{:key :bullet}
-              {:key :step}]}
+              {:key :step}
+              {:key :lock}]}
    (preview/customization-color-option)])
 
 (defn view

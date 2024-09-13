@@ -28,7 +28,7 @@
    :t/information-you-input-and-send])
 
 (defn- get-category-data
-  [{:keys [title description points on-toggle toggle-checked?]}]
+  [{:keys [title description points on-toggle toggle-checked? lock?]}]
   {:title             title
    :description       (when description :text)
    :description-props (when description {:text description})
@@ -43,6 +43,7 @@
                          [quo/markdown-list
                           {:description     (i18n/label label)
                            :blur?           true
+                           :type            (when lock? :lock)
                            :container-style {:padding-top 8}}])]})
 
 (defn- on-privacy-policy-press
@@ -103,7 +104,8 @@
         :list-type :settings}]
       [quo/category
        {:data      [(get-category-data {:title  (i18n/label :t/what-we-wont-receive)
-                                        :points not-receive-points})]
+                                        :points not-receive-points
+                                        :lock?  true})]
         :blur?     true
         :list-type :settings}]]
      [rn/view

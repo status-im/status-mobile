@@ -34,7 +34,7 @@
    :t/information-you-input-and-send])
 
 (defn- bullet-points
-  [{:keys [title points]}]
+  [{:keys [title points lock?]}]
   [rn/view
    [quo/text {:weight :semi-bold}
     title]
@@ -43,6 +43,7 @@
      [quo/markdown-list
       {:description     (i18n/label label)
        :blur?           true
+       :type            (when lock? :lock)
        :container-style style/item-text}])])
 
 (defn- on-share-usage
@@ -99,7 +100,8 @@
       :points will-receive-for-current-points}]
     [bullet-points
      {:title  (i18n/label :t/what-we-wont-receive)
-      :points not-receive-points}]
+      :points not-receive-points
+      :lock?  true}]
     [quo/text
      {:size  :paragraph-2
       :style style/info-text}

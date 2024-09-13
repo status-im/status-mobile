@@ -46,11 +46,14 @@
   (let [theme (quo.theme/use-theme)]
     [rn/view {:style (style/container container-style)}
      [rn/view {:style style/index}
-      (if (= type :step)
+      (case type
+        :step
         [step/view
          {:in-blur-view?       blur?
           :customization-color customization-color
           :type                (if customization-color :complete :neutral)} step-number]
+        :lock
+        [icon/icon :i/locked {:color (get-colors theme blur?)}]
         [icon/icon :i/bullet {:color (get-colors theme blur?)}])]
      [rn/view {:style style/text-container}
       (when title
