@@ -91,21 +91,22 @@
    [quo/drawer-top
     {:title       (i18n/label :t/help-us-improve-status)
      :description (i18n/label :t/collecting-usage-data)}]
-   [rn/view {:style style/points-wrapper}
-    [bullet-points
-     {:title  (i18n/label :t/we-will-receive-from-all-profiles)
-      :points will-receive-for-all-points}]
-    [bullet-points
-     {:title  (i18n/label :t/we-will-receive-from-the-current-profile)
-      :points will-receive-for-current-points}]
-    [bullet-points
-     {:title  (i18n/label :t/what-we-wont-receive)
-      :points not-receive-points
-      :lock?  true}]
-    [quo/text
-     {:size  :paragraph-2
-      :style style/info-text}
-     (i18n/label :t/sharing-usage-data-can-be-turned-off)]]
+   [rn/scroll-view
+    [rn/view {:style style/points-wrapper}
+     [bullet-points
+      {:title  (i18n/label :t/we-will-receive-from-all-profiles)
+       :points will-receive-for-all-points}]
+     [bullet-points
+      {:title  (i18n/label :t/we-will-receive-from-the-current-profile)
+       :points will-receive-for-current-points}]
+     [bullet-points
+      {:title  (i18n/label :t/what-we-wont-receive)
+       :points not-receive-points
+       :lock?  true}]
+     [quo/text
+      {:size  :paragraph-2
+       :style style/info-text}
+      (i18n/label :t/sharing-usage-data-can-be-turned-off)]]]
    [quo/bottom-actions
     {:actions          :two-actions
      :blur?            true
