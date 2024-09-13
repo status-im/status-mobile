@@ -1,0 +1,17 @@
+--- /tmp/tmp-status-mobile-17180a000/tmp.oDuVBOUX8y/ios-configure-glog.sh	2024-09-15 16:02:00.955892000 +0530
++++ ./node_modules/react-native/scripts/ios-configure-glog.sh	2024-09-15 16:03:11.116500837 +0530
+@@ -43,14 +43,6 @@
+ fi
+ 
+ XCRUN="$(which xcrun)"
+-if [ -n "$XCRUN" ]; then
+-  export CC="$(xcrun -find -sdk $PLATFORM_NAME cc) -arch $CURRENT_ARCH -isysroot $(xcrun -sdk $PLATFORM_NAME --show-sdk-path)"
+-  export CXX="$CC"
+-else
+-  export CC="$CC:-$(which gcc)"
+-  export CXX="$CXX:-$(which g++ || true)"
+-fi
+-export CXX="$CXX:-$CC"
+ 
+ # Remove automake symlink if it exists
+ if [ -h "test-driver" ]; then

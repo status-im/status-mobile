@@ -58,7 +58,14 @@ org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.8.0
 com.android.tools.build:gradle:3.5.4
 androidx.annotation:annotation:1.6.0
 androidx.annotation:annotation-jvm:1.6.0
-com.facebook.react:hermes-android:0.73.5' \
+com.facebook.react:hermes-android:0.75.3
+org.jetbrains.kotlin.jvm:org.jetbrains.kotlin.jvm.gradle.plugin:1.9.24
+org.checkerframework:checker-qual:3.12.0
+com.android.tools.build:gradle:8.5.0
+org.junit:junit-bom:5.9.3
+org.junit:junit-bom:5.9.2
+org.codehaus.mojo:animal-sniffer-annotations:1.23
+com.android.tools.lint:lint-gradle:31.5.0' \
         >> "${DEPS_LIST}"
 }
 

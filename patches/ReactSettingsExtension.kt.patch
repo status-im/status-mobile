@@ -1,0 +1,29 @@
+--- /tmp/tmp-status-mobile-65370082b/tmp.MuPLwTpeqQ/ReactSettingsExtension.kt	2024-09-16 15:50:03.224554000 +0530
++++ ./node_modules/@react-native/gradle-plugin/settings-plugin/src/main/kotlin/com/facebook/react/ReactSettingsExtension.kt	2024-09-16 15:57:02.999862248 +0530
+@@ -55,6 +55,9 @@
+   ) {
+     outputFile.parentFile.mkdirs()
+ 
++    val logger = Logging.getLogger("ReactSettingsExtension")
++
++   /*
+     val updateConfig =
+         object : GenerateConfig {
+           private val pb =
+@@ -69,6 +72,16 @@
+         }
+ 
+     checkAndUpdateCache(updateConfig, outputFile, outputFolder, lockFiles)
++    */
++
++    /*
++     * We update autolinking.json manually with nix/scripts/node_modules.sh
++     * We ensure we always have latest build/generated/autolinking/autolinking.json available
++     */
++
++    logger.info("Working Directory is -> $workingDirectory")
++    logger.info("Lock Files are -> ${lockFiles.files.joinToString(", ") { it.name }}")
++    logger.info("Command -> $command won't be executed. Its okay.")
+ 
+     linkLibraries(getLibrariesToAutolink(outputFile))
+   }

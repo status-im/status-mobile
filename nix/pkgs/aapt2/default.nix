@@ -10,7 +10,7 @@ let
 
   pname = "aapt2";
   # Warning: This must be the same as gradlePluginVersion android/gradle.properties
-  version = "8.1.1-10154469";
+  version = "8.5.0-11315950";
 
   pkgPath = "com/android/tools/build/aapt2";
   repoUrl = "https://dl.google.com/dl/android/maven2";
@@ -29,20 +29,20 @@ let
     jar = fetchurl {
       url = "${repoUrl}/${pkgPath}/${version}/${filenames.jar}";
       sha256 = getAttr platform {
-        linux = "sha256-p54GGvEfAo0yk8euVO7QTu/c3zuityZhyGdhFSV6w+E=";
-        osx = "sha256-bO4ljdUEfbuns7EyT1FKGLqNGz+0bms5XsplXvzD2T0=";
+        linux = "sha256-DjB8BoQz77xkWhhk1DgLx5kRz13jEal2+SBAyyGHOdw=";
+        osx = "sha256-WNIP05Kek224CbMpmYtMN/8XyGijKgsDjD2ySfAf/lU=";
       };
     };
     sha = fetchurl {
       url = "${repoUrl}/${pkgPath}/${version}/${filenames.jar}.sha1";
       sha256 = getAttr platform {
-        linux = "sha256-oUJOQ9j/sJ7Yt0V9WOrRmuqYI+2UWZxeefJ/WyNoWgw=";
-        osx = "sha256-w+q2j4MKtIOihPMaJxuIP9IwXvRIyBxgRIJLox4E7ac=";
+        linux = "sha256-FFMO+i6fvKUbr2wXjw7a/FdrLCLZwvi+B8s4FuzB8Wg=";
+        osx = "sha256-go0UDA+ISNaQXE+4i374sDXUGH+P2lLhlGZ9oWsSnQs=";
       };
     };
     pom = fetchurl {
       url = "${repoUrl}/${pkgPath}/${version}/${filenames.pom}";
-      sha256 = "sha256-UdUGCoMmEfJxBS2demYKGdG4lzd2DqQbDUCHt/h7Ohg=";
+      sha256 = "sha256-fQRRqAVn6VY+eTfrt3UZU3PPiHk9IJ6pCjj948ROnvA=";
     };
   };
 

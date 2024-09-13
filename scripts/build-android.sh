@@ -72,5 +72,7 @@ else
   nixOpts+=("--option" "build-use-sandbox" "true")
 fi
 
+# needed since react-native v0.75
+source "${GIT_ROOT}/scripts/generate_autolink_android.sh"
 
 "${GIT_ROOT}/nix/scripts/build.sh" targets.mobile.android.build "${nixOpts[@]}"

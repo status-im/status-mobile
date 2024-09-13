@@ -81,6 +81,7 @@ abstract_target 'Status' do
       installer,
       config[:reactNativePath],
       :mac_catalyst_enabled => false,
+      # :ccache_enabled => true
     )
     # some of libs wouldn't be build for x86_64 otherwise and that is
     # necessary for ios simulators

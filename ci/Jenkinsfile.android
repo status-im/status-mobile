@@ -49,6 +49,7 @@ pipeline {
         script {
           utils.symlinkEnv()
           println("Build Number: ${utils.genBuildNumber()}")
+          sh 'make generate-autolink-android'
         }
       }
     }
