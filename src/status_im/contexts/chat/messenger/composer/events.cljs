@@ -6,6 +6,7 @@
             [status-im.contexts.chat.messenger.composer.link-preview.events :as link-preview]
             [status-im.contexts.chat.messenger.messages.transport.events :as messages.transport]
             [taoensso.timbre :as log]
+            [utils.debounce :as debounce]
             [utils.emojilib :as emoji]
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]
@@ -262,6 +263,8 @@
   [{{:keys [current-chat-id] :as db} :db :as cofx}]
   (let [{:keys [input-text metadata]} (get-in db [:chat/inputs current-chat-id])
         editing-message               (:editing-message metadata)]
+    (debounce/clear :link-preview/unfurl-urls)
+    (debounce/clear :mention/on-change-text)
     (if editing-message
       (send-edited-message cofx input-text editing-message)
       (send-messages cofx input-text current-chat-id))))
