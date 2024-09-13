@@ -14,7 +14,11 @@
   [state]
   (:value state))
 
-(defn numeric-value
+(defn value-numeric
+  [state]
+  (or (parse-double (input-value state)) 0))
+
+(defn value-bn
   [state]
   (money/bignumber (input-value state)))
 
@@ -28,27 +32,31 @@
 
 (defn upper-limit
   [state]
+  (:upper-limit state))
+
+(defn upper-limit-bn
+  [state]
   (money/bignumber (:upper-limit state)))
 
 (defn lower-limit
+  [state]
+  (:lower-limit state))
+
+(defn lower-limit-bn
   [state]
   (money/bignumber (:lower-limit state)))
 
 (defn upper-limit-exceeded?
   [state]
-  (let [num-value (numeric-value state)]
-    (and
-     (upper-limit state)
-     (when (money/bignumber? num-value)
-       (money/greater-than (numeric-value state) (upper-limit state))))))
+  (and (upper-limit state)
+       (when (money/bignumber? (value-bn state))
+         (money/greater-than (value-bn state) (upper-limit-bn state)))))
 
 (defn- lower-limit-exceeded?
   [state]
-  (let [num-value (numeric-value state)]
-    (and
-     (lower-limit state)
-     (when (money/bignumber? num-value)
-       (money/less-than (numeric-value state) (lower-limit state))))))
+  (and (lower-limit state)
+       (when (money/bignumber? (value-bn state))
+         (money/less-than (value-bn state) (lower-limit-bn state)))))
 
 (defn- recheck-errorness
   [state]
@@ -62,7 +70,7 @@
       (assoc :value value)
       recheck-errorness))
 
-(defn set-numeric-value
+(defn set-value-numeric
   [state value]
   (set-input-value state (str value)))
 
@@ -81,11 +89,11 @@
 
 (defn increase
   [state]
-  (set-input-value state (str (money/add (numeric-value state) 1))))
+  (set-input-value state (str (money/add (value-bn state) 1))))
 
 (defn decrease
   [state]
-  (set-input-value state (str (money/add (numeric-value state) -1))))
+  (set-input-value state (str (money/add (value-bn state) -1))))
 
 (def ^:private not-digits-or-dot-pattern
   #"[^0-9+\.]")
@@ -122,10 +130,12 @@
     state))
 
 (defn delete-last
-  [state]
-  (let [value     (input-value state)
-        new-value (subs value 0 (dec (count value)))]
-    (set-input-value state new-value)))
+  ([state]
+   (delete-last state ""))
+  ([state default-value]
+   (let [value     (input-value state)
+         new-value (subs value 0 (dec (count value)))]
+     (set-input-value state (if (string/blank? new-value) default-value new-value)))))
 
 (defn delete-all
   [state]
@@ -133,7 +143,7 @@
 
 (defn empty-value?
   [state]
-  (string/blank? (:value state)))
+  (or (string/blank? (:value state)) (<= (value-numeric state) 0)))
 
 (defn- fiat->crypto
   [value conversion-rate]

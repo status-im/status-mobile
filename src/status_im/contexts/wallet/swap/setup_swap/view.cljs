@@ -74,7 +74,7 @@
         approval-amount-required         (rf/sub [:wallet/swap-proposal-approval-amount-required])
         currency-symbol                  (rf/sub [:profile/currency-symbol])
         approval-transaction-status      (rf/sub [:wallet/swap-approval-transaction-status])
-        pay-input-num-value              (controlled-input/numeric-value input-state)
+        pay-input-num-value              (controlled-input/value-numeric input-state)
         pay-input-amount                 (controlled-input/input-value input-state)
         pay-token-symbol                 (:symbol asset-to-pay)
         pay-token-decimals               (:decimals asset-to-pay)
@@ -231,7 +231,7 @@
         network                                     (rf/sub [:wallet/swap-network])
         pay-input-amount                            (controlled-input/input-value pay-input-state)
         pay-token-decimals                          (:decimals asset-to-pay)
-        pay-input-num-value                         (controlled-input/numeric-value pay-input-state)
+        pay-input-num-value                         (controlled-input/value-numeric pay-input-state)
         pay-token-balance-selected-chain            (get-in asset-to-pay
                                                             [:balances-per-chain
                                                              (:chain-id network) :balance]

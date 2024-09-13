@@ -262,8 +262,8 @@
                                                             (string/upper-case
                                                              constants/mainnet-short-name))
                                                        (money/equal-to
-                                                        (controlled-input/numeric-value input-state)
-                                                        (controlled-input/upper-limit input-state))
+                                                        (controlled-input/value-bn input-state)
+                                                        (controlled-input/upper-limit-bn input-state))
                                                        (money/equal-to (:total-balance
                                                                         owned-eth-token)
                                                                        0)))
@@ -338,10 +338,10 @@
                                      {:limit (if crypto-currency?
                                                (utils/prettify-crypto-balance
                                                 (or (clj->js token-symbol) "")
-                                                (controlled-input/upper-limit input-state)
+                                                (controlled-input/upper-limit-bn input-state)
                                                 conversion-rate)
                                                (utils/prettify-balance currency-symbol
-                                                                       (controlled-input/upper-limit
+                                                                       (controlled-input/upper-limit-bn
                                                                         input-state)))})
                           :status   (when (controlled-input/input-error input-state) :error)}]}]
      [routes/view
