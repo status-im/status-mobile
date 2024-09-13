@@ -50,4 +50,7 @@ org.jetbrains.kotlin.jvm:org.jetbrains.kotlin.jvm.gradle.plugin:$kotlin_version
 com.android.tools.build:gradle:$tools_version
 com.facebook.react:hermes-android:$hermes_version
 com.android.tools.lint:lint-gradle:$lint_version
+org.junit:junit-bom:5.9.3
+org.junit:junit-bom:5.9.2
+io.invertase.gradle.build:io.invertase.gradle.build.gradle.plugin:1.5
 EOF

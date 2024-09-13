@@ -116,6 +116,14 @@ def build_ios_adhoc(readonly: false, pr_build: false)
     keychain_password: kc.pass
   )
 
+   # clean pods and print verbose for debugging
+  cocoapods(
+    clean: true,
+    repo_update: true,
+    verbose: true,
+    podfile: "ios/Podfile"
+  )
+
   build_ios_app(
     scheme: scheme,
     workspace: 'ios/StatusIm.xcworkspace',

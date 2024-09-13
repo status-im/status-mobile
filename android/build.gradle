@@ -17,7 +17,8 @@ ext {
     kotlinVersion       = project.kotlinPluginVersion
     kotlinPluginVersion = project.kotlinPluginVersion
     kotlinToolsVersion  = project.kotlinPluginVersion
-    ndkVersion = "25.2.9519653"
+    // This version must match ndkVersion version inside nix/pkgs/android-sdk/compose.nix
+    ndkVersion = "26.1.10909125"
 }
 
 buildscript {

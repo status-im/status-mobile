@@ -49,6 +49,7 @@ let
     else "Release";
 
   apksPath = "./android/app/build/outputs/apk/${toLower gradleBuildType}";
+  autolinkingPath = "android/build/generated/autolinking";
 
   baseName = "${buildType}-android";
 in stdenv.mkDerivation rec {
@@ -71,8 +72,8 @@ in stdenv.mkDerivation rec {
     };
   };
 
-  buildInputs = with pkgs; [ nodejs openjdk_headless ];
-  nativeBuildInputs = with pkgs; [ bash gradle unzip ]
+buildInputs = with pkgs; [ nodejs openjdk_headless ];
+nativeBuildInputs = with pkgs; [ bash gradle unzip jq gnused ]
     ++ lib.optionals stdenv.isDarwin [ file gnumake ];
 
   # Disable metro watching for file changes. (#13783)
@@ -96,7 +97,7 @@ in stdenv.mkDerivation rec {
   NODE_OPTIONS = "--openssl-legacy-provider";
 
   phases = [
-    "shellHook" "unpackPhase" "secretsPhase" "buildPhase" "checkPhase" "installPhase"
+    "shellHook" "unpackPhase" "secretsPhase" "autolinkPhase" "buildPhase" "checkPhase" "installPhase"
   ];
 
   # We use shellHook as a single place to setup env vars for both build derivation and shell
@@ -116,6 +117,7 @@ in stdenv.mkDerivation rec {
     chmod u+w -R ./
     runHook postUnpack
   '';
+
   postUnpack = ''
     # Ensure we have the right .env file
     cp -bf ./${envFileName} ./.env
@@ -146,6 +148,21 @@ in stdenv.mkDerivation rec {
     source "${secretsFile}"
   '' else ''
     echo 'WARNING: No secrets provided!' >&2
+  '';
+
+  # Since react-native 0.75.x the autolinking.json file is required to build android.
+  autolinkPhase = ''
+    mkdir -p ${autolinkingPath}
+
+    # Generate initial autolinking.json using react-native config
+    echo "Generating autolinking.json..."
+    ${deps.nodejs-patched}/node_modules/react-native/cli.js config > ${autolinkingPath}/autolinking.json
+
+    # The json contains absolute paths, which can not be accessed from nix derivation
+    ROOT_VALUE=$(${pkgs.jq}/bin/jq -r '.root' ${autolinkingPath}/autolinking.json)
+
+    # This step makes the paths in autolinking.json relative to root directory
+    sed -i "s|$ROOT_VALUE|..|g" ${autolinkingPath}/autolinking.json
   '';
 
   buildPhase = let

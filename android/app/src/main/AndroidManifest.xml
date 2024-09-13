@@ -42,7 +42,8 @@
             android:largeHeap="true"
             android:usesCleartextTraffic="true"
             android:extractNativeLibs="true"
-            android:requestLegacyExternalStorage="true">
+            android:requestLegacyExternalStorage="true"
+            android:supportsRtl="true">
 <!--        After upgrading Android Gradle Plugin to 4.2.0 and above we must get rid of `extractNativeLibs="true"`
             and use`useLegacyPackaging` flag in our app's `build.gradle`-->
         <meta-data android:name="commitHash" android:value="${commitHash}"/>

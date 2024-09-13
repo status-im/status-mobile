@@ -1,0 +1,11 @@
+--- /private/tmp/tmp-status-mobile-15fe08799/nix-shell-98271-0/tmp.rCiCkR4Mnu/RNFBMessaging.podspec	2025-05-02 22:14:34.609449000 +0530
++++ ./node_modules/@react-native-firebase/messaging/RNFBMessaging.podspec	2025-05-02 22:14:55.950855990 +0530
+@@ -39,7 +39,7 @@
+
+   # Firebase dependencies
+   s.dependency          'Firebase/Messaging', firebase_sdk_version
+-  s.dependency          'FirebaseCoreExtension'
++  s.dependency          'FirebaseCoreExtension', '11.11.0'
+
+   if defined?($RNFirebaseAsStaticFramework)
+     Pod::UI.puts "#{s.name}: Using overridden static_framework value of '#{$RNFirebaseAsStaticFramework}'"
