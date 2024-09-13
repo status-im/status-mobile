@@ -16,7 +16,7 @@
    [quo/text-combinations
     {:container-style {:margin-horizontal 20
                        :margin-vertical   12}
-     :title           (i18n/label :t/preparing-status-for-you)
+     :title           (i18n/label :t/preparing-app-for-you)
      :description     (i18n/label :t/hang-in-there)}]])
 
 (defn content
