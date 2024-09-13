@@ -64,14 +64,14 @@ def get_capabilities_sauce_lab():
     caps = dict()
     caps['platformName'] = 'Android'
     caps['idleTimeout'] = 1000
-    caps['appium:app'] = 'sauce-storage:' + test_suite_data.apk_name
+    caps['appium:app'] = 'storage:filename=' + test_suite_data.apk_name
     caps['appium:deviceName'] = 'Android GoogleAPI Emulator'
     caps['appium:deviceOrientation'] = 'portrait'
     caps['appium:platformVersion'] = '14.0'
     caps['appium:automationName'] = 'UiAutomator2'
     caps['appium:newCommandTimeout'] = 600
     caps['appium:idleTimeout'] = 1000
-    caps['appium:unicodeKeyboard'] = True
+    caps['appium:hideKeyboard'] = True
     caps['appium:automationName'] = 'UiAutomator2'
     caps['appium:setWebContentDebuggingEnabled'] = True
     caps['appium:ignoreUnimportantViews'] = False
@@ -81,14 +81,14 @@ def get_capabilities_sauce_lab():
     caps['appium:enforceXPath1'] = True
     caps['enforceXPath1'] = True
     caps['sauce:options'] = dict()
-    caps['sauce:options']['appiumVersion'] = '2.0.0'
+    caps['sauce:options']['appiumVersion'] = '2.11.0'
     caps['sauce:options']['username'] = sauce_username
     caps['sauce:options']['accessKey'] = sauce_access_key
     caps['sauce:options']['build'] = run_name
     caps['sauce:options']['name'] = test_suite_data.current_test.name
     caps['sauce:options']['maxDuration'] = 3600
     caps['sauce:options']['idleTimeout'] = 1000
-    caps['sauce:options']['android.gpu.mode'] = 'hardware'
+    # caps['sauce:options']['android.gpu.mode'] = 'hardware'
 
     options = AppiumOptions()
     options.load_capabilities(caps)
