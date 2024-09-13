@@ -6,11 +6,11 @@
             [status-im.contexts.chat.messenger.composer.link-preview.events :as link-preview]
             [status-im.contexts.chat.messenger.messages.transport.events :as messages.transport]
             [taoensso.timbre :as log]
+            [utils.debounce :as debounce]
             [utils.emojilib :as emoji]
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]
-            utils.string
-            [utils.debounce :as debounce]))
+            utils.string))
 
 (rf/defn set-chat-input-text
   {:events [:chat.ui/set-chat-input-text]}
