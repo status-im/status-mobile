@@ -124,6 +124,11 @@ class Utils(private val reactContext: ReactApplicationContext) : ReactContextBas
         executeRunnableStatusGoMethod({ Statusgo.validateMnemonic(seed) }, callback)
     }
 
+    @ReactMethod
+    fun validateMnemonicWithPassphrase(seed: String, passphrase: String, callback: Callback) {
+        executeRunnableStatusGoMethod({ Statusgo.validateMnemonicWithPassphrase(seed, passphrase) }, callback)
+    }
+
     fun is24Hour(): Boolean {
         return android.text.format.DateFormat.is24HourFormat(reactContext.applicationContext)
     }

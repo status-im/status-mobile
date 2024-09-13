@@ -942,6 +942,46 @@ void _ValidateMnemonic(const FunctionCallbackInfo<Value>& args) {
 
 }
 
+void _ValidateMnemonicWithPassphrase(const FunctionCallbackInfo<Value>& args) {
+	Isolate* isolate = args.GetIsolate();
+        Local<Context> context = isolate->GetCurrentContext();
+
+	if (args.Length() != 2) {
+		// Throw an Error that is passed back to JavaScript
+		isolate->ThrowException(Exception::TypeError(
+			String::NewFromUtf8Literal(isolate, "Wrong number of arguments for ValidateMnemonicWithPassphrase")));
+		return;
+	}
+
+	// Check the argument types
+
+	if (!args[0]->IsString()) {
+		isolate->ThrowException(Exception::TypeError(
+			String::NewFromUtf8Literal(isolate, "Wrong argument type for 'mnemonic'")));
+		return;
+	}
+
+	if (!args[1]->IsString()) {
+		isolate->ThrowException(Exception::TypeError(
+			String::NewFromUtf8Literal(isolate, "Wrong argument type for 'passphrase'")));
+		return;
+	}
+
+	String::Utf8Value arg0Obj(isolate, args[0]->ToString(context).ToLocalChecked());
+	char *arg0 = *arg0Obj;
+
+	String::Utf8Value arg1Obj(isolate, args[1]->ToString(context).ToLocalChecked());
+	char *arg1 = *arg1Obj;
+
+	// Call exported Go function, which returns a C string
+	char *c = ValidateMnemonicWithPassphrase(arg0, arg1);
+
+	Local<String> ret = String::NewFromUtf8(isolate, c).ToLocalChecked();
+	args.GetReturnValue().Set(ret);
+	delete c;
+
+}
+
 void _MultiformatSerializePublicKey(const FunctionCallbackInfo<Value>& args) {
 	Isolate* isolate = args.GetIsolate();
         Local<Context> context = isolate->GetCurrentContext();
@@ -2016,6 +2056,7 @@ void init(Local<Object> exports) {
 	NODE_SET_METHOD(exports, "saveAccountAndLogin", _SaveAccountAndLogin);
 	NODE_SET_METHOD(exports, "createAccountAndLogin", _CreateAccountAndLogin);
 	NODE_SET_METHOD(exports, "validateMnemonic", _ValidateMnemonic);
+  NODE_SET_METHOD(exports, "validateMnemonicWithPassphrase", _ValidateMnemonicWithPassphrase);
 	NODE_SET_METHOD(exports, "multiformatSerializePublicKey", _MultiformatSerializePublicKey);
 	NODE_SET_METHOD(exports, "saveAccountAndLoginWithKeycard", _SaveAccountAndLoginWithKeycard);
 	NODE_SET_METHOD(exports, "loginWithKeycard", _LoginWithKeycard);

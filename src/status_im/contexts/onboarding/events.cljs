@@ -124,16 +124,18 @@
 
 (rf/defn seed-phrase-entered
   {:events [:onboarding/seed-phrase-entered]}
-  [_ seed-phrase on-error]
-  {:multiaccount/validate-mnemonic [seed-phrase
-                                    (fn [mnemonic key-uid]
-                                      (re-frame/dispatch [:onboarding/seed-phrase-validated
-                                                          mnemonic key-uid]))
-                                    on-error]})
+  [_ seed-phrase BIP39Passphrase on-error]
+  {:multiaccount/validate-mnemonic-with-passphrase
+   [seed-phrase
+    BIP39Passphrase
+    (fn [mnemonic key-uid]
+      (re-frame/dispatch [:onboarding/seed-phrase-validated
+                          mnemonic BIP39Passphrase key-uid]))
+    on-error]})
 
 (rf/defn seed-phrase-validated
   {:events [:onboarding/seed-phrase-validated]}
-  [{:keys [db]} seed-phrase key-uid]
+  [{:keys [db]} seed-phrase BIP39Passphrase key-uid]
   (if (contains? (:profile/profiles-overview db) key-uid)
     {:effects.utils/show-confirmation
      {:title               (i18n/label :t/multiaccount-exists-title)
@@ -144,7 +146,9 @@
                              (re-frame/dispatch
                               [:profile/profile-selected key-uid]))
       :on-cancel           #(re-frame/dispatch [:pop-to-root :multiaccounts])}}
-    {:db       (assoc-in db [:onboarding/profile :seed-phrase] seed-phrase)
+    {:db       (-> db
+                   (assoc-in [:onboarding/profile :seed-phrase] seed-phrase)
+                   (assoc-in [:onboarding/profile :BIP39Passphrase] BIP39Passphrase))
      :dispatch [:navigate-to-within-stack
                 [:screen/onboarding.create-profile
                  (get db

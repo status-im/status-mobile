@@ -60,34 +60,49 @@
       security/mask-data))
 
 (defn- recovery-phrase-form
-  [{:keys [keypair title seed-phrase word-count on-change-seed-phrase ref]} & children]
-  (->> children
-       (into
-        [rn/view {:style style/form-container}
-         [header title word-count]
-         (when keypair
-           [quo/context-tag
-            {:type            :icon
-             :container-style {:padding-top 8}
-             :icon            :i/seed-phrase
-             :size            24
-             :blur?           true
-             :context         (:name keypair)}])
-         [rn/view {:style style/input-container}
-          [quo/recovery-phrase-input
-           {:accessibility-label      :passphrase-input
-            :ref                      ref
-            :placeholder              (i18n/label :t/seed-phrase-placeholder)
-            :placeholder-text-color   colors/white-opa-30
-            :auto-capitalize          :none
-            :auto-correct             false
-            :auto-focus               true
-            :mark-errors?             true
-            :word-limit               max-seed-phrase-length
-            :error-pred-current-word  partial-word-not-in-dictionary?
-            :error-pred-written-words word-not-in-dictionary?
-            :on-change-text           on-change-seed-phrase}
-           seed-phrase]]])))
+  [{:keys [keypair title seed-phrase word-count on-change-seed-phrase on-change-passphrase passphrase-visible? ref]} & children]
+  (let [release-timer (atom 0)]
+    (->> children
+         (into
+          [rn/view {:style style/form-container}
+           [rn/pressable
+            {:on-press-in  (fn [] (reset! release-timer (js/Date.now)))
+             :on-press-out (fn [] (let [now (js/Date.now)
+                                        diff (- now @release-timer)]
+                                    ;; show BIP39 passphrase if title was pressed for more than 7 seconds
+                                    (when (> diff 7000)
+                                      (reset! passphrase-visible? true))))}
+            [header title word-count]]
+           (when keypair
+             [quo/context-tag
+              {:type            :icon
+               :container-style {:padding-top 8}
+               :icon            :i/seed-phrase
+               :size            24
+               :blur?           true
+               :context         (:name keypair)}])
+           [rn/view {:style style/input-container}
+            [quo/recovery-phrase-input
+             {:accessibility-label      :passphrase-input
+              :ref                      ref
+              :placeholder              (i18n/label :t/seed-phrase-placeholder)
+              :placeholder-text-color   colors/white-opa-30
+              :auto-capitalize          :none
+              :auto-correct             false
+              :auto-focus               true
+              :mark-errors?             true
+              :word-limit               max-seed-phrase-length
+              :error-pred-current-word  partial-word-not-in-dictionary?
+              :error-pred-written-words word-not-in-dictionary?
+              :on-change-text           on-change-seed-phrase}
+             seed-phrase]]
+           (when @passphrase-visible?
+             [rn/view {:style nil}
+              [quo/input
+               {:container-style nil
+                :auto-capitalize :none
+                :placeholder     (i18n/label :t/bip39-password-placeholder)
+                :on-change-text  on-change-passphrase}]])]))))
 
 (defn keyboard-suggestions
   [current-word]
@@ -118,6 +133,10 @@
                                                  (when @incorrect-seed-phrase?
                                                    (reset! incorrect-seed-phrase? false))
                                                  (reset! seed-phrase new-phrase))
+                     passphrase                (reagent/atom "")
+                     on-change-passphrase      (fn [new-passphrase]
+                                                 (reset! passphrase new-passphrase))
+                     passphrase-visible?       (reagent/atom false)
                      on-submit                 (fn []
                                                  (swap! seed-phrase clean-seed-phrase)
                                                  (if recovering-keypair?
@@ -127,6 +146,7 @@
                                                                  set-invalid-seed-phrase])
                                                    (rf/dispatch [:onboarding/seed-phrase-entered
                                                                  (security/mask-data @seed-phrase)
+                                                                 (security/mask-data @passphrase)
                                                                  set-invalid-seed-phrase])))]
     (let [words-coll               (mnemonic/passphrase->words @seed-phrase)
           last-word                (peek words-coll)
@@ -171,6 +191,8 @@
          :keypair               keypair
          :seed-phrase           @seed-phrase
          :on-change-seed-phrase on-change-seed-phrase
+         :on-change-passphrase  on-change-passphrase
+         :passphrase-visible?   passphrase-visible?
          :word-count            word-count
          :ref                   #(reset! input-ref %)}
         (if (fn? render-controls)

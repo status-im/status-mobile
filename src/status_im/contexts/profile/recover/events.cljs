@@ -8,7 +8,7 @@
 
 (rf/defn recover-profile-and-login
   {:events [:profile.recover/recover-and-login]}
-  [{:keys [db]} {:keys [display-name password image-path color seed-phrase]}]
+  [{:keys [db]} {:keys [display-name password image-path color seed-phrase BIP39Passphrase]}]
   (let [login-sha3-password (native-module/sha3 (security/safe-unmask-data password))]
     {:db
      (-> db
@@ -19,6 +19,7 @@
      (merge (profile.config/create)
             {:displayName        display-name
              :mnemonic           (security/safe-unmask-data seed-phrase)
+             :BIP39Passphrase    (security/safe-unmask-data BIP39Passphrase)
              :password           login-sha3-password
              :imagePath          (profile.config/strip-file-prefix image-path)
              :customizationColor color

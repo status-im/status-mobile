@@ -107,6 +107,8 @@
     (fn [address] (.checkAddressChecksum native-status address))
     :validateMnemonic
     (fn [json callback] (callback (.validateMnemonic native-status json)))
+    :validateMnemonicWithPassphrase
+    (fn [json callback] (callback (.validateMnemonicWithpassphrase native-status json)))
     :isAddress
     (fn [address] (.isAddress native-status address))}))
 

@@ -460,6 +460,14 @@
    (log/debug "[native-module] validate-mnemonic")
    (.validateMnemonic ^js (utils) mnemonic callback)))
 
+(defn validate-mnemonic-with-passphrase
+  "Validate that a mnemonic conforms to BIP39 dictionary/checksum standards and return key-uid"
+  ([mnemonic passphrase]
+   (native-utils/promisify-native-module-call validate-mnemonic-with-passphrase mnemonic passphrase))
+  ([mnemonic passphrase callback]
+   (log/debug "[native-module] validate-mnemonic-with-passphrase")
+   (.validateMnemonicWithPassphrase ^js (utils) mnemonic passphrase callback)))
+
 (defn validate-connection-string
   [connection-string]
   (log/debug "[native-module] validate-connection-string")

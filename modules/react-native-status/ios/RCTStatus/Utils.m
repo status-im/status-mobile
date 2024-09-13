@@ -116,6 +116,16 @@ RCT_EXPORT_METHOD(validateMnemonic:(NSString *)seed
     callback(@[result]);
 }
 
+RCT_EXPORT_METHOD(validateMnemonicWithPassphrase:(NSString *)seed
+    passphrase:(NSString *)passphrase
+    callback:(RCTResponseSenderBlock)callback) {
+    #if DEBUG
+        NSLog(@"validateMnemonicWithPassphrase() method called");
+    #endif
+    NSString *result = StatusgoValidateMnemonicWithPassphrase(seed, passphrase);
+    callback(@[result]);
+}
+
 RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(checkAddressChecksum:(NSString *)address) {
     return StatusgoCheckAddressChecksum(address);
 }

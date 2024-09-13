@@ -46,6 +46,27 @@
                         (when (and error (fn? on-error))
                           (on-error error)))))))
 
+(defn validate-mnemonic-with-passphrase
+  [mnemonic passphrase]
+  (-> mnemonic
+      (security/safe-unmask-data)
+      (native-module/validate-mnemonic-with-passphrase (security/safe-unmask-data passphrase))
+      (promesa/then (fn [result]
+                      (let [{:keys [keyUID]} (transforms/json->clj result)]
+                        {:key-uid keyUID})))))
+
+(rf/reg-fx
+ :multiaccount/validate-mnemonic-with-passphrase
+ (fn [[mnemonic passphrase on-success on-error]]
+   (-> (validate-mnemonic-with-passphrase mnemonic passphrase)
+       (promesa/then (fn [{:keys [key-uid]}]
+                       (when (fn? on-success)
+                         (on-success mnemonic key-uid))))
+       (promesa/catch (fn [error]
+                        (when (and error (fn? on-error))
+                          (on-error error)))))))
+
+
 (defn create-account-from-private-key
   [private-key]
   (-> private-key
