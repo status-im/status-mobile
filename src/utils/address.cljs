@@ -135,5 +135,5 @@
     (eip-3770-address->basic-eth-address address)
 
     (metamask-address? address)
-    (metamask-address->basic-eth-addressaddress)))
+    (metamask-address->basic-eth-address address)))
 
