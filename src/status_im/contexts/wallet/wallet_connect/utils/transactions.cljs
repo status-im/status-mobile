@@ -52,11 +52,15 @@
 
 (defn beautify-transaction
   [tx]
+  (-> tx
+      clj->js
+      (js/JSON.stringify nil 2)))
+
+(defn transaction-hex-values->number
+  [tx]
   (let [hex->number #(-> % (subs 2) native-module/hex-to-number)]
     (-> tx
-        (format-tx-hex-values hex->number)
-        clj->js
-        (js/JSON.stringify nil 2))))
+        (format-tx-hex-values hex->number))))
 
 (defn- gwei->hex
   [gwei]
@@ -121,10 +125,14 @@
                                                                               tx-priority
                                                                               suggested-fees)
                                                     prepare-transaction-for-rpc
-                                                    (rpc/wallet-build-transaction chain-id))]
+                                                    (rpc/wallet-build-transaction chain-id))
+                estimated-time                    (rpc/wallet-get-transaction-estimated-time
+                                                   chain-id
+                                                   (:maxPriorityFeePerGas suggested-fees))]
     {:tx-args        tx-args
      :tx-hash        message-to-sign
-     :suggested-fees suggested-fees}))
+     :suggested-fees suggested-fees
+     :estimated-time estimated-time}))
 
 (defn sign-transaction
   [password address tx-hash tx-args chain-id]
