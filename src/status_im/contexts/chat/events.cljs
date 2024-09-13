@@ -58,9 +58,9 @@
 
 (defn- create-new-chat
   [chat-id {:keys [db now]}]
-  (let [name (get-in db [:contacts/contacts chat-id :name])]
+  (let [chat-name (get-in db [:contacts/contacts chat-id :name] "")]
     {:chat-id          chat-id
-     :name             (or name "")
+     :name             chat-name
      :chat-type        constants/one-to-one-chat-type
      :group-chat       false
      :timestamp        now
