@@ -120,20 +120,20 @@
   [address]
   (re-find regx-address-contains address))
 
-(defn metamask-address->status-address
+(defn metamask-address->basic-eth-address
   [eip-3770-address]
   (extract-address-without-chains-info eip-3770-address))
 
-(defn eip-3770-address->status-address
+(defn eip-3770-address->basic-eth-address
   [eip-3770-address]
   (extract-address-without-chains-info eip-3770-address))
 
-(defn supported-address->status-address
+(defn supported-address->basic-eth-address
   [address]
   (cond
     (eip-3770-address? address)
-    (eip-3770-address->status-address address)
+    (eip-3770-address->basic-eth-address address)
 
     (metamask-address? address)
-    (metamask-address->status-address address)))
+    (metamask-address->basic-eth-addressaddress)))
 

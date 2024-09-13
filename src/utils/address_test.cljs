@@ -152,10 +152,10 @@
     (dorun
      (for [{metamask-address :metamask
             status-address   :status} metamask-to-status]
-       (is (= status-address (utils.address/supported-address->status-address metamask-address))))))
+       (is (= status-address (utils.address/supported-address->basic-eth-address metamask-address))))))
   (testing "Check eip-3770 to status address conversion is valid"
     (dorun
      (for [{eip-3770-address :eip-3770
             status-address   :status} eip-3770-to-status]
-       (is (= status-address (utils.address/supported-address->status-address eip-3770-address)))))))
+       (is (= status-address (utils.address/supported-address->basic-eth-address eip-3770-address)))))))
 
