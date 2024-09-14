@@ -68,7 +68,7 @@
       "discovery.summary"
       (summary cofx (transforms/js->clj event-js))
 
-      "local-notifications"
+      "local-notifications" ;; WIP: when it's edited, The signal is not received, but the message is
       (local-notifications/process cofx (transforms/js->clj event-js))
 
       "community.found"

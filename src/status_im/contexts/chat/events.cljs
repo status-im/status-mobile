@@ -81,21 +81,23 @@
 
 (defn ensure-chats
   [{:keys [db] :as cofx} [chats]]
-  (let [{:keys [view-id current-chat-id]} db
-        {:keys [all-chats chats-home-list removed-chats]}
+  (let [{:keys [view-id current-chat-id]}
+        db
+
+        {:keys [all-chats chats-home-list removed-chats] :as x}
         (reduce
          (fn [acc {:keys [chat-id community-id active muted] :as chat}]
-           (if (not (or active muted))
+           (if-not (or active muted)
              (update acc :removed-chats conj chat-id)
              (cond-> acc
-               (and (not community-id) active)
-               (update :chats-home-list conj chat-id)
-               :always
-               (assoc-in [:all-chats chat-id] chat))))
+               (and (not community-id) active) (update :chats-home-list conj chat-id)
+               :always                         (assoc-in [:all-chats chat-id] chat))))
          {:all-chats       {}
           :chats-home-list #{}
           :removed-chats   #{}}
-         (map (map-chats cofx) chats))]
+         (map (map-chats cofx) chats))
+
+        _ (def --x x)]
     {:db (-> db
              (update :chats merge all-chats)
              (update :chats-home-list set/union chats-home-list)

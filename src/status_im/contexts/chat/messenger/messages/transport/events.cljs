@@ -62,9 +62,9 @@
         ^js watch-only-accounts        (.-watchOnlyAccounts response-js)
         sync-handler                   (when-not process-async process-response)]
     (cond
-
       (seq chats)
       (do
+        (def --c chats)
         (js-delete response-js "chats")
         (rf/merge cofx
                   (process-next response-js sync-handler)
@@ -155,7 +155,7 @@
 
       (seq removed-messages)
       (let [removed-messages-clj (types/js->clj removed-messages)]
-        (js-delete response-js "removedMessages")
+        (js-delete response-js "removedMessages") ;; TODO: check removed messages too
         (rf/merge cofx
                   (process-next response-js sync-handler)
                   (models.message/handle-removed-messages removed-messages-clj)))

@@ -35,9 +35,10 @@
 
 (defn create-notification
   [cofx {:keys [bodyType] :as notification}]
+  (def --n notification)
   (assoc
    (case bodyType
-     "message"     (when (show-message-pn? cofx notification) notification)
+     "message"     (when true #_(show-message-pn? cofx notification) notification)
      "transaction" (notifications.wallet/create-transfer-notification cofx notification)
      nil)
    :body-type
