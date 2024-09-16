@@ -53,6 +53,7 @@
 
 (defn- on-do-not-share
   []
+  (rf/dispatch [:centralized-metrics/toggle-centralized-metrics false true])
   (hide-bottom-sheet))
 
 (declare view)
