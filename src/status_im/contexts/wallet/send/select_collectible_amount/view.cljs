@@ -7,7 +7,6 @@
     [status-im.contexts.wallet.common.account-switcher.view :as account-switcher]
     [status-im.contexts.wallet.send.select-collectible-amount.style :as style]
     [utils.i18n :as i18n]
-    [utils.money :as money]
     [utils.re-frame :as rf]))
 
 (defn view
