@@ -152,7 +152,9 @@
                                (re-frame/dispatch
                                 [:profile/profile-selected key-uid]))
         :on-cancel           #(re-frame/dispatch [:pop-to-root :multiaccounts])}}
-      {:db (assoc-in db [:onboarding/profile :seed-phrase] seed-phrase)
+      {:db (-> db
+               (assoc-in [:onboarding/profile :seed-phrase] seed-phrase)
+               (assoc-in [:onboarding/profile :color] constants/profile-default-color))
        :fx [[:dispatch
              [:navigate-to-within-stack
               [next-screen
