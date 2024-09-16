@@ -13,17 +13,19 @@
    (native-module/logout)))
 
 (rf/defn initialize-app-db
-  [{{:keys         [keycard initials-avatar-font-file biometrics]
-     :network/keys [type status expensive?]}
+  [{{:keys                     [keycard initials-avatar-font-file biometrics]
+     :network/keys             [type status expensive?]
+     :centralized-metrics/keys [user-confirmed?]}
     :db}]
   {:db (assoc db/app-db
-              :network/type              type
-              :network/status            status
-              :network/expensive?        expensive?
-              :initials-avatar-font-file initials-avatar-font-file
-              :keycard                   (dissoc keycard :secrets :pin :application-info)
-              :biometrics                biometrics
-              :syncing                   nil)})
+              :centralized-metrics/user-confirmed? user-confirmed?
+              :network/type                        type
+              :network/status                      status
+              :network/expensive?                  expensive?
+              :initials-avatar-font-file           initials-avatar-font-file
+              :keycard                             (dissoc keycard :secrets :pin :application-info)
+              :biometrics                          biometrics
+              :syncing                             nil)})
 
 (rf/defn logout-method
   {:events [::logout-method]}
