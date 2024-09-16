@@ -21,7 +21,9 @@
 (defn- assets-view
   [search-text on-change-text]
   (let [on-token-press (fn [token]
-                         (rf/dispatch [:wallet.swap/start {:asset-to-pay token}]))]
+                         (rf/dispatch [:wallet.swap/start
+                                       {:asset-to-pay           token
+                                        :navigate-within-stack? true}]))]
     [:<>
      [search-input search-text on-change-text]
      [asset-list/view

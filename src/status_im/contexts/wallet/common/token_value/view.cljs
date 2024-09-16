@@ -1,6 +1,5 @@
 (ns status-im.contexts.wallet.common.token-value.view
   (:require [quo.core :as quo]
-            [status-im.common.not-implemented :as not-implemented]
             [status-im.contexts.wallet.send.utils :as send-utils]
             [status-im.contexts.wallet.sheets.buy-token.view :as buy-token]
             [status-im.feature-flags :as ff]
@@ -18,15 +17,15 @@
    :right-icon          :i/external})
 
 (defn- action-send
-  [send-params entry-point]
+  [{:keys [disabled?] :as params} entry-point]
   {:icon                :i/send
    :accessibility-label :send
    :label               (i18n/label :t/send)
-   :disabled?           (:disabled? send-params)
+   :disabled?           disabled?
    :on-press            (fn []
                           (rf/dispatch [:hide-bottom-sheet])
                           (rf/dispatch [:wallet/clean-send-data])
-                          (rf/dispatch [:wallet/set-token-to-send send-params entry-point]))})
+                          (rf/dispatch [:wallet/set-token-to-send params entry-point]))})
 
 (defn- action-receive
   [selected-account?]
@@ -38,21 +37,24 @@
                           #(rf/dispatch [:open-modal :screen/share-shell {:initial-tab :wallet}]))})
 
 (defn- action-bridge
-  [bridge-params]
+  [{:keys [bridge-disabled?] :as params}]
   {:icon                :i/bridge
    :accessibility-label :bridge
    :label               (i18n/label :t/bridge)
-   :disabled?           (:bridge-disabled? bridge-params)
+   :disabled?           bridge-disabled?
    :on-press            (fn []
                           (rf/dispatch [:hide-bottom-sheet])
-                          (rf/dispatch [:wallet/bridge-select-token bridge-params]))})
+                          (rf/dispatch [:wallet/bridge-select-token params]))})
 
 (defn- action-swap
-  []
+  [{:keys [token token-symbol]}]
   {:icon                :i/swap
    :accessibility-label :swap
    :label               (i18n/label :t/swap)
-   :on-press            #(not-implemented/alert)})
+   :on-press            (fn []
+                          (rf/dispatch [:hide-bottom-sheet])
+                          (rf/dispatch [:wallet.swap/start
+                                        {:asset-to-pay (or token {:symbol token-symbol})}]))})
 
 (defn- action-manage-tokens
   [watch-only?]
@@ -71,47 +73,36 @@
 
 (defn token-value-drawer
   [token watch-only? entry-point]
-  (let [token-symbol           (:token token)
-        token-data             (first (rf/sub [:wallet/current-viewing-account-tokens-filtered
-                                               {:query token-symbol}]))
-        fiat-unformatted-value (get-in token [:values :fiat-unformatted-value])
-        has-balance?           (money/greater-than fiat-unformatted-value (money/bignumber "0"))
-        selected-account?      (rf/sub [:wallet/current-viewing-account-address])
-        token-owners           (rf/sub [:wallet/operable-addresses-with-token-symbol token-symbol])
-        send-params            (if selected-account?
-                                 {:token       token-data
-                                  :stack-id    :screen/wallet.accounts
-                                  :disabled?   (not has-balance?)
-                                  :start-flow? true
-                                  :owners      token-owners}
-                                 {:token-symbol token-symbol
-                                  :stack-id     :wallet-stack
-                                  :start-flow?  true
-                                  :owners       token-owners})
-        bridge-params          (if selected-account?
-                                 {:token            token-data
-                                  :bridge-disabled? (or (not has-balance?)
-                                                        (send-utils/bridge-disabled? token-symbol))
-                                  :stack-id         :screen/wallet.accounts
-                                  :start-flow?      true
-                                  :owners           token-owners}
-                                 {:token-symbol     token-symbol
-                                  :bridge-disabled? (send-utils/bridge-disabled? token-symbol)
-                                  :stack-id         :wallet-stack
-                                  :start-flow?      true
-                                  :owners           token-owners})]
+  (let [token-symbol     (:token token)
+        token-data       (first (rf/sub [:wallet/current-viewing-account-tokens-filtered
+                                         {:query token-symbol}]))
+        selected-account (rf/sub [:wallet/current-viewing-account-address])
+        token-owners     (rf/sub [:wallet/operable-addresses-with-token-symbol token-symbol])
+        params           (merge {:start-flow? true
+                                 :owners      token-owners}
+                                (if selected-account
+                                  {:token        token-data
+                                   :stack-id     :screen/wallet.accounts
+                                   :has-balance? (-> (get-in token [:values :fiat-unformatted-value])
+                                                     (money/greater-than (money/bignumber "0")))}
+                                  {:token-symbol token-symbol
+                                   :stack-id     :wallet-stack}))]
     [quo/action-drawer
      [(cond->> [(when (ff/enabled? ::ff/wallet.assets-modal-manage-tokens)
                   (action-manage-tokens watch-only?))
                 (when (ff/enabled? ::ff/wallet.assets-modal-hide)
                   (action-hide))]
-        (not watch-only?) (concat [(action-buy)
-                                   (when (seq token-owners)
-                                     (action-send send-params entry-point))
-                                   (action-receive selected-account?)
-                                   (when (ff/enabled? ::ff/wallet.swap) (action-swap))
-                                   (when (seq (seq token-owners))
-                                     (action-bridge bridge-params))]))]]))
+        (not watch-only?)
+        (concat [(action-buy)
+                 (when (seq token-owners)
+                   (action-send params entry-point))
+                 (action-receive selected-account)
+                 (when (ff/enabled? ::ff/wallet.swap)
+                   (action-swap params))
+                 (when (seq (seq token-owners))
+                   (action-bridge (assoc params
+                                         :bridge-disabled?
+                                         (send-utils/bridge-disabled? token-symbol))))]))]]))
 
 (defn view
   [item _ _ {:keys [watch-only? entry-point]}]

@@ -14,35 +14,51 @@
             [utils.number :as number]))
 
 (rf/reg-event-fx :wallet.swap/start
- (fn [{:keys [db]} [{:keys [asset-to-pay asset-to-receive network]}]]
-   (let [asset-to-receive' (or asset-to-receive
-                               (swap-utils/select-asset-to-receive
-                                (:wallet db)
-                                (:profile/profile db)
-                                asset-to-pay))
-         network'          (or network
-                               (swap-utils/select-network asset-to-pay))]
+ (fn [{:keys [db]} [{:keys [asset-to-pay asset-to-receive network navigate-within-stack?]}]]
+   (let [{:keys [wallet]}       db
+         test-networks-enabled? (get-in db [:profile/profile :test-networks-enabled?])
+         account                (swap-utils/wallet-account wallet)
+         asset-to-pay'          (if (:networks asset-to-pay)
+                                  asset-to-pay
+                                  (swap-utils/select-asset-to-pay-by-symbol
+                                   {:wallet                 wallet
+                                    :account                account
+                                    :test-networks-enabled? test-networks-enabled?
+                                    :token-symbol           (:symbol asset-to-pay)}))
+         asset-to-receive'      (or asset-to-receive
+                                    (swap-utils/select-default-asset-to-receive
+                                     {:wallet                 wallet
+                                      :account                account
+                                      :test-networks-enabled? test-networks-enabled?
+                                      :asset-to-pay           asset-to-pay'}))
+         network'               (or network
+                                    (swap-utils/select-network asset-to-pay'))]
      {:db (-> db
-              (assoc-in [:wallet :ui :swap :asset-to-pay] asset-to-pay)
+              (assoc-in [:wallet :ui :swap :asset-to-pay] asset-to-pay')
               (assoc-in [:wallet :ui :swap :asset-to-receive] asset-to-receive')
               (assoc-in [:wallet :ui :swap :network] network'))
       :fx (if network'
-            [[:dispatch
-              [:navigate-to-within-stack
-               [:screen/wallet.setup-swap :screen/wallet.swap-select-asset-to-pay]]]
+            [[:dispatch [:wallet/switch-current-viewing-account (:address account)]]
+             [:dispatch
+              (if navigate-within-stack?
+                [:navigate-to-within-stack
+                 [:screen/wallet.setup-swap :screen/wallet.swap-select-asset-to-pay]]
+                [:navigate-to :screen/wallet.setup-swap])]
              [:dispatch [:wallet.swap/set-default-slippage]]]
             [[:dispatch
               [:show-bottom-sheet
                {:content (fn []
                            [network-selection/view
-                            {:token-symbol      (:symbol asset-to-pay)
+                            {:token-symbol      (:symbol asset-to-pay')
                              :on-select-network (fn [network]
                                                   (rf/dispatch [:hide-bottom-sheet])
                                                   (rf/dispatch
                                                    [:wallet.swap/start
-                                                    {:asset-to-pay     asset-to-pay
+                                                    {:asset-to-pay asset-to-pay'
                                                      :asset-to-receive asset-to-receive'
-                                                     :network          network}]))}])}]]])})))
+                                                     :network network
+                                                     :navigate-within-stack?
+                                                     navigate-within-stack?}]))}])}]]])})))
 
 (rf/reg-event-fx :wallet.swap/select-asset-to-pay
  (fn [{:keys [db]} [{:keys [token]}]]
