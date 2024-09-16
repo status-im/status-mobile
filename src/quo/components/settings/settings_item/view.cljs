@@ -108,20 +108,25 @@
      nil)])
 
 (defn view
-  [{:keys [title on-press action-props accessibility-label blur? container-style] :as props}]
+  [{:keys [title on-press action-props accessibility-label blur? container-style content] :as props}]
   [rn/pressable
    {:style               (merge style/container container-style)
     :on-press            (or on-press (:on-change action-props))
     :accessibility-label accessibility-label}
-   [rn/view {:style (style/left-sub-container props)}
-    [image-component props]
-    [rn/view {:style (style/left-container (:image props))}
-     [text/text
-      {:weight :medium
-       :style  {:color (when blur? colors/white)}}
-      title]
-     [description-component props]
-     [tag-component props]]]
-   [rn/view {:style (style/sub-container (:alignment action-props))}
-    [label-component props]
-    [action-component props]]])
+   [rn/view
+    {:style {:flex-direction  :row
+             :justify-content :space-between}}
+    [rn/view {:style (style/left-sub-container props)}
+     [image-component props]
+     [rn/view {:style (style/left-container (:image props))}
+      [text/text
+       {:weight :medium
+        :style  {:color (when blur? colors/white)}}
+       title]
+      [description-component props]
+      [tag-component props]]]
+    [rn/view {:style (style/sub-container (:alignment action-props))}
+     [label-component props]
+     [action-component props]]]
+   (when content
+     content)])

@@ -60,6 +60,7 @@
     [status-im.contexts.profile.settings.view :as settings]
     [status-im.contexts.settings.language-and-currency.currency.view :as settings.currency-selection]
     [status-im.contexts.settings.language-and-currency.view :as settings.language-and-currency]
+    [status-im.contexts.settings.privacy-and-security.share-usage.view :as settings.share-usage]
     [status-im.contexts.settings.privacy-and-security.view :as settings.privacy-and-security]
     [status-im.contexts.settings.wallet.keypairs-and-accounts.missing-keypairs.encrypted-qr.view
      :as encrypted-keypair-qr]
@@ -645,6 +646,10 @@
     {:name      :screen/settings-privacy-and-security
      :options   options/transparent-modal-screen-options
      :component settings.privacy-and-security/view}
+
+    {:name      :screen/settings.share-usage-data
+     :options   options/transparent-modal-screen-options
+     :component settings.share-usage/view}
 
     {:name      :screen/settings.language-and-currency
      :options   options/transparent-modal-screen-options

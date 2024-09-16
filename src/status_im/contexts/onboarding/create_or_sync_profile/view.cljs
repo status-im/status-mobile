@@ -47,8 +47,8 @@
   (- window-height
      (* 2 56) ;; two other list items
      (* 2 16) ;; spacing between items
-     220) ;; extra spacing (top bar)
-)
+     220)) ;; extra spacing (top bar)
+
 
 (defn- create-profile-option-card
   [window-height]

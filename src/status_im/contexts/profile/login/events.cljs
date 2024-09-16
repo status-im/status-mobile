@@ -48,7 +48,8 @@
                              :profile/profile (merge profile-overview
                                                      settings
                                                      {:log-level log-level}))
-                      (assoc-in [:activity-center :loading?] true))
+                      (assoc-in [:activity-center :loading?] true)
+                      (dissoc :centralized-metrics/onboarding-enabled?))
             pairing-completed?
             (dissoc :syncing))
       :fx (into [[:json-rpc/call
@@ -72,7 +73,10 @@
                  ;; messenger has started and has processed all chats because
                  ;; the whole process can take a handful of seconds.
                  (when-not (:universal-links/handling db)
-                   [:effects.chat/open-last-chat (:key-uid profile-overview)])]
+                   [:effects.chat/open-last-chat (:key-uid profile-overview)])
+
+                 (when (:centralized-metrics/onboarding-enabled? db)
+                   [:dispatch [:profile.settings/toggle-telemetry true]])]
 
                 (cond
                   pairing-completed?

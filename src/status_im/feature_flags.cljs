@@ -16,8 +16,6 @@
    ;; feature and we want both clients in sync. We keep the code because it
    ;; works and we may re-enable it by default.
    ::profile-pictures-visibility        (enabled-in-env? :FLAG_PROFILE_PICTURES_VISIBILITY_ENABLED)
-
-   ::settings.telemetry                 (enabled-in-env? :FLAG_TELEMETRY_ENABLED)
    ::settings.import-all-keypairs       (enabled-in-env?
                                          :FLAG_WALLET_SETTINGS_IMPORT_ALL_KEYPAIRS)
    ::shell.jump-to                      (enabled-in-env? :ENABLE_JUMP_TO)

@@ -5,7 +5,6 @@
     [legacy.status-im.ui.components.list.views :as list]
     [quo.core :as quo]
     [re-frame.core :as re-frame]
-    [status-im.feature-flags :as ff]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf])
   (:require-macros [legacy.status-im.utils.views :as views]))
@@ -17,7 +16,6 @@
 
 (defn- normal-mode-settings-data
   [{:keys [current-log-level
-           telemetry-enabled?
            light-client-enabled?
            store-confirmations-enabled?
            current-fleet
@@ -60,14 +58,6 @@
      :on-press
      #(re-frame/dispatch [:open-modal :peers-stats])
      :chevron true}
-    (when (ff/enabled? ::ff/settings.telemetry)
-      {:size                    :small
-       :title                   "Telemetry"
-       :accessibility-label     :telemetry-enabled
-       :container-margin-bottom 8
-       :on-press                #(re-frame/dispatch [:profile.settings/toggle-telemetry])
-       :accessory               :switch
-       :active                  telemetry-enabled?})
     {:size :small
      :title (i18n/label :t/light-client-enabled)
      :accessibility-label :light-client-enabled
@@ -109,7 +99,6 @@
   []
   (views/letsubs [light-client-enabled?        [:profile/light-client-enabled?]
                   store-confirmations-enabled? [:profile/store-confirmations-enabled?]
-                  telemetry-enabled?           [:profile/telemetry-enabled?]
                   current-log-level            [:log-level/current-log-level]
                   current-fleet                [:fleets/current-fleet]
                   peer-syncing-enabled?        [:profile/peer-syncing-enabled?]]
@@ -123,7 +112,6 @@
      [list/flat-list
       {:data      (flat-list-data
                    {:current-log-level            current-log-level
-                    :telemetry-enabled?           telemetry-enabled?
                     :light-client-enabled?        light-client-enabled?
                     :store-confirmations-enabled? store-confirmations-enabled?
                     :current-fleet                current-fleet
