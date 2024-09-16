@@ -267,12 +267,11 @@ class SignInView(BaseView):
             for _ in range(3):
                 self.allow_button.click_if_shown(sec=10)
                 self.enable_notifications_button.click_if_shown()
-                if self.start_button.is_element_displayed():
+                if self.chats_tab.is_element_displayed():
                     break
         else:
-            self.maybe_later_button.click_until_presence_of_element(self.start_button)
+            self.maybe_later_button.wait_and_click()
         self.cancel_button.click_if_shown()  # TODO: remove when issue 20806 is fixed
-        self.start_button.click()
         self.chats_tab.wait_for_visibility_of_element(30)
         self.driver.info("## New multiaccount is created successfully!", device=False)
         return self.get_home_view()
@@ -298,11 +297,10 @@ class SignInView(BaseView):
         #     self.enable_biometric_maybe_later_button.click()
         # self.identifiers_button.wait_and_click(30)
         if enable_notifications:
-            self.enable_notifications_button.click_until_presence_of_element(self.start_button)
+            self.enable_notifications_button.click()
         else:
-            self.maybe_later_button.click_until_presence_of_element(self.start_button)
+            self.maybe_later_button.wait_and_click()
         self.cancel_button.click_if_shown()  # TODO: remove when issue 20806 is fixed
-        self.start_button.click()
         self.chats_tab.wait_for_visibility_of_element(30)
         self.driver.info("## Multiaccount is recovered successfully!", device=False)
         return self.get_home_view()
