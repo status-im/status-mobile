@@ -84,7 +84,7 @@
     (load-and-show-profile scanned-text)
 
     (utils-address/supported-address? scanned-text)
-    (when-let [address (utils-address/supported-address->status-address scanned-text)]
+    (when-let [address (utils-address/supported-address->eth-address scanned-text)]
       (debounce/debounce-and-dispatch [:generic-scanner/scan-success address] 300)
       (debounce/debounce-and-dispatch [:navigate-change-tab :wallet-stack] 300))
 

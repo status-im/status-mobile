@@ -15,7 +15,7 @@
       :error-message   (i18n/label :t/oops-this-qr-does-not-contain-an-address)
       :validate-fn     #(utils-address/supported-address? %)
       :on-success-scan (fn [result]
-                         (let [address (utils-address/supported-address->status-address result)]
+                         (let [address (utils-address/supported-address->eth-address result)]
                            (when on-result (on-result address))
                            (debounce/debounce-and-dispatch
                             [:wallet/scan-address-success address]

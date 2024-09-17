@@ -101,30 +101,39 @@
 
 (defn eip-3770-address?
   "Checks if address follows EIP-3770 format which is default for Status"
-  [s]
-  (re-find regx-eip-3770-address s))
+  [address]
+  (re-find regx-eip-3770-address address))
 
 (defn supported-address?
   [s]
   (boolean (or (eip-3770-address? s)
                (metamask-address? s))))
 
-(defn metamask-address->status-address
+(defn metamask-address->eip-3770-address
   [metamask-address]
   (when-let [[_ address metamask-network-suffix] (split-metamask-address metamask-address)]
     (if-let [status-network-prefix (eip-155-suffix->eip-3770-prefix metamask-network-suffix)]
       (str status-network-prefix address)
       address)))
 
-(defn supported-address->status-address
-  [address]
-  (cond
-    (eip-3770-address? address)
-    address
-
-    (metamask-address? address)
-    (metamask-address->status-address address)))
-
 (defn extract-address-without-chains-info
   [address]
   (re-find regx-address-contains address))
+
+(defn metamask-address->eth-address
+  [eip-3770-address]
+  (extract-address-without-chains-info eip-3770-address))
+
+(defn eip-3770-address->eth-address
+  [eip-3770-address]
+  (extract-address-without-chains-info eip-3770-address))
+
+(defn supported-address->eth-address
+  [address]
+  (cond
+    (eip-3770-address? address)
+    (eip-3770-address->eth-address address)
+
+    (metamask-address? address)
+    (metamask-address->eth-address address)))
+
