@@ -1,5 +1,6 @@
 (ns status-im.contexts.wallet.wallet-connect.events.session-proposals
-  (:require [re-frame.core :as rf]
+  (:require [clojure.string :as string]
+            [re-frame.core :as rf]
             [react-native.wallet-connect :as wallet-connect]
             [status-im.contexts.wallet.wallet-connect.utils.data-store :as
              data-store]
@@ -72,11 +73,17 @@
                     :wallet-connect/current-proposal assoc
                     :request                         proposal
                     :session-networks                session-networks
-                    :address                         (or current-viewing-address
-                                                         latest-connected-account-address
-                                                         (-> available-accounts
-                                                             first
-                                                             :address)))
+                    :address                         (cond
+                                                       (not (string/blank? current-viewing-address))
+                                                       current-viewing-address
+
+                                                       (not (string/blank?
+                                                             latest-connected-account-address))
+                                                       latest-connected-account-address
+
+                                                       :else (-> available-accounts
+                                                                 first
+                                                                 :address)))
         :fx [[:dispatch [:open-modal :screen/wallet.wallet-connect-session-proposal]]]}
        {:fx [[:dispatch [:wallet-connect/show-session-networks-unsupported-toast proposal]]
              [:dispatch [:wallet-connect/reject-session-proposal proposal]]]}))))
