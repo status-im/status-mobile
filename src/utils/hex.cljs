@@ -37,3 +37,12 @@
   [:=>
    [:cat [:or :string :int]]
    :string])
+
+(defn hex-to-number
+  [hex]
+  (-> hex normalize-hex native-module/hex-to-number))
+
+(schema/=> hex-to-number
+  [:=>
+   [:cat :string]
+   :int])
