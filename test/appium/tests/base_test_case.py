@@ -111,12 +111,13 @@ def get_app_path():
     return app_path
 
 
-def get_geth_path():
-    return get_app_path() + 'geth.log'
-
-
 def pull_geth(driver):
-    result = driver.pull_file(get_geth_path())
+    result = driver.pull_file(get_app_path() + 'geth.log')
+    return base64.b64decode(result)
+
+
+def pull_requests_log(driver):
+    result = driver.pull_file(get_app_path() + 'requests.log')
     return base64.b64decode(result)
 
 
@@ -377,21 +378,23 @@ class SauceSharedMultipleDeviceTestCase(AbstractTestCase):
         test_suite_data.current_test.group_name = self.__class__.__name__
 
     def teardown_method(self, method):
-        geth_names, geth_contents = [], []
+        log_names, log_contents = [], []
         for driver in self.drivers:
             try:
                 self.print_sauce_lab_info(self.drivers[driver])
                 self.add_alert_text_to_report(self.drivers[driver])
-                geth_names.append(
+                log_names.append(
                     '%s_geth%s.log' % (test_suite_data.current_test.name, str(self.drivers[driver].number)))
-                geth_contents.append(pull_geth(self.drivers[driver]))
-
+                log_contents.append(pull_geth(self.drivers[driver]))
+                log_names.append(
+                    '%s_requests%s.log' % (test_suite_data.current_test.name, str(self.drivers[driver].number)))
+                log_contents.append(pull_requests_log(self.drivers[driver]))
             except (WebDriverException, AttributeError, RemoteDisconnected, ProtocolError):
                 pass
             finally:
                 try:
-                    geth = {geth_names[i]: geth_contents[i] for i in range(len(geth_names))}
-                    test_suite_data.current_test.geth_paths = github_report.save_geth(geth)
+                    logs = {log_names[i]: log_contents[i] for i in range(len(log_names))}
+                    test_suite_data.current_test.logs_paths = github_report.save_logs(logs)
                 except IndexError:
                     pass
 
@@ -413,11 +416,14 @@ class SauceSharedMultipleDeviceTestCase(AbstractTestCase):
             group_setup_failed = True
         else:
             group_setup_failed = False
-        geth_contents = list()
+        log_contents, log_names = list(), list()
         try:
-            for _, driver in cls.drivers.items():
+            for i, driver in cls.drivers.items():
                 if group_setup_failed:
-                    geth_contents.append(pull_geth(driver=driver))
+                    log_contents.append(pull_geth(driver=driver))
+                    log_names.append('%s_geth%s.log' % (cls.__name__, i))
+                    log_contents.append(pull_requests_log(driver=driver))
+                    log_names.append('%s_requests%s.log' % (cls.__name__, i))
                 session_id = driver.session_id
                 try:
                     sauce.jobs.update_job(username=sauce_username, job_id=session_id, name=cls.__name__)
@@ -449,13 +455,12 @@ class SauceSharedMultipleDeviceTestCase(AbstractTestCase):
             except AttributeError:
                 pass
 
-        geth_names = ['%s_geth%s.log' % (cls.__name__, i) for i in range(len(geth_contents))]
-        geth = dict(zip(geth_names, geth_contents))
-        geth_paths = github_report.save_geth(geth)
+        logs = dict(zip(log_names, log_contents))
+        logs_paths = github_report.save_logs(logs)
 
         for test in test_suite_data.tests:
             if group_setup_failed:
-                test.geth_paths = geth_paths
+                test.logs_paths = logs_paths
             github_report.save_test(test)
 
 

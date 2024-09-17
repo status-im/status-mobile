@@ -2,11 +2,11 @@ from typing import Dict
 
 
 class SingleTestData(object):
-    def __init__(self, name, testruns, testrail_case_id, geth_paths, grop_name, secured):
+    def __init__(self, name, testruns, testrail_case_id, logs_paths, grop_name, secured):
         self.testrail_case_id = testrail_case_id
         self.name = name
         self.testruns = testruns
-        self.geth_paths = geth_paths
+        self.logs_paths = logs_paths
         self.group_name = grop_name
         self.secured = secured
 
