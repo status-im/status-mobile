@@ -4,6 +4,7 @@
             [react-native.core :as rn]
             [react-native.gesture :as gesture]
             [react-native.safe-area :as safe-area]
+            [status-im.constants :as constants]
             [status-im.contexts.wallet.wallet-connect.modals.common.data-block.view :as data-block]
             [status-im.contexts.wallet.wallet-connect.modals.common.fees-data-item.view :as
              fees-data-item]
@@ -15,6 +16,10 @@
             [status-im.contexts.wallet.wallet-connect.utils.transactions :as transaction-utils]
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]))
+
+(defn- refetch-transaction
+  []
+  (rf/dispatch [:wallet-connect/process-eth-send-transaction true]))
 
 (def tabs-data
   [{:id :tab/data :label (i18n/label :t/data)}
@@ -56,8 +61,23 @@
                 error-state estimated-time]} (rf/sub
                                               [:wallet-connect/current-request-transaction-information])
         [selected-tab set-selected-tab]      (rn/use-state (:id (first tabs-data)))
-        on-change-tab                        #(set-selected-tab %)]
-    (rn/use-unmount #(rf/dispatch [:wallet-connect/on-request-modal-dismissed]))
+        on-change-tab                        #(set-selected-tab %)
+        refetch-interval-ref                 (rn/use-ref nil)
+        clear-interval                       (rn/use-callback (fn []
+                                                                (when (.-current refetch-interval-ref)
+                                                                  (js/clearInterval
+                                                                   (.-current refetch-interval-ref))))
+                                                              [refetch-interval-ref])]
+    (rn/use-mount
+     (fn []
+       (clear-interval)
+       (set! (.-current refetch-interval-ref)
+         (js/setInterval refetch-transaction constants/wallet-connect-transaction-refresh-interval-ms))))
+
+    (rn/use-unmount (fn []
+                      (clear-interval)
+                      (rf/dispatch [:wallet-connect/on-request-modal-dismissed])))
+
     [rn/view {:style (style/container bottom)}
      [quo/gradient-cover {:customization-color customization-color}]
      [page-nav/view

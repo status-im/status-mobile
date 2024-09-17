@@ -626,3 +626,5 @@
    :less_than_three_minutes 2
    :less_than_five_minutes  3
    :more_than_five_minutes  4})
+
+(def ^:const wallet-connect-transaction-refresh-interval-ms 10000)

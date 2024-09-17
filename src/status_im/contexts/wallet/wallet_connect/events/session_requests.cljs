@@ -82,7 +82,7 @@
 
 (rf/reg-event-fx
  :wallet-connect/prepare-transaction-success
- (fn [{:keys [db]} [prepared-tx chain-id]]
+ (fn [{:keys [db]} [prepared-tx chain-id refetch?]]
    (let [{:keys [tx-args]} prepared-tx
          tx                (bean/->clj tx-args)
          address           (-> tx :from string/lower-case)
@@ -95,21 +95,23 @@
                      :transaction  tx
                      :chain-id     chain-id
                      :display-data display-data)
-      :fx [[:dispatch [:wallet-connect/show-request-modal]]]})))
+      :fx [(when-not refetch? [:dispatch [:wallet-connect/show-request-modal]])]})))
 
 (rf/reg-event-fx
  :wallet-connect/process-eth-send-transaction
- (fn [{:keys [db]}]
+ (fn [{:keys [db]} [refetch?]]
    (let [event    (data-store/get-db-current-request-event db)
          tx       (-> event data-store/get-request-params first)
          chain-id (-> event
                       (get-in [:params :chainId])
                       networks/eip155->chain-id)]
-     {:fx [[:effects.wallet-connect/prepare-transaction
-            {:tx         tx
-             :chain-id   chain-id
-             :on-success #(rf/dispatch [:wallet-connect/prepare-transaction-success % chain-id])
-             :on-error   #(rf/dispatch [:wallet-connect/on-processing-error %])}]]})))
+     (when tx
+       {:fx [[:effects.wallet-connect/prepare-transaction
+              {:tx         tx
+               :chain-id   chain-id
+               :on-success #(rf/dispatch [:wallet-connect/prepare-transaction-success % chain-id
+                                          refetch?])
+               :on-error   #(rf/dispatch [:wallet-connect/on-processing-error %])}]]}))))
 
 (rf/reg-event-fx
  :wallet-connect/process-eth-sign-transaction
