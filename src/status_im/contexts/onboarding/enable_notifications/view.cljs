@@ -32,8 +32,12 @@
   (let [profile-color   (rf/sub [:onboarding/customization-color])
         ask-permission  (fn []
                           (rf/dispatch [:request-notifications
-                                        {:on-allowed #(finish-onboarding true)
-                                         :on-denied  #(finish-onboarding false)}]))
+                                        {:on-allowed (fn []
+                                                       (js/setTimeout #(finish-onboarding true)
+                                                                      300))
+                                         :on-denied  (fn []
+                                                       (js/setTimeout #(finish-onboarding false)
+                                                                      300))}]))
         skip-permission #(finish-onboarding false)]
     [rn/view {:style (style/buttons insets)}
      [quo/button
