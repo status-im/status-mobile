@@ -31,3 +31,14 @@
                           account-addresses))
                   accounts))
           sessions))
+
+(defn latest-connected-account-address
+  [sessions]
+  (let [all-accounts (->> sessions
+                          (sort-by :expiry >)
+                          first
+                          :accounts)]
+    (-> all-accounts
+        first
+        (string/split #":")
+        last)))
