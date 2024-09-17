@@ -25,13 +25,18 @@ class LogManager(private val reactContext: ReactApplicationContext) : ReactConte
 
     override fun getName() = "LogManager"
 
-    private fun getLogsFile(): File {
+    private fun getRequestLogFile(): File {
+        val pubDirectory = utils.getPublicStorageDirectory()
+        return File(pubDirectory, requestsLogFileName)
+    }
+
+    private fun getGethLogFile(): File {
         val pubDirectory = utils.getPublicStorageDirectory()
         return File(pubDirectory, gethLogFileName)
     }
 
     fun prepareLogsFile(context: Context): File? {
-        val logFile = utils.getLogsFile()
+        val logFile = getGethLogFile()
 
         try {
             logFile.setReadable(true)
@@ -149,7 +154,8 @@ class LogManager(private val reactContext: ReactApplicationContext) : ReactConte
 
         val zipFile = File(logsTempDir, logsZipFileName)
         val statusLogFile = File(logsTempDir, statusLogFileName)
-        val gethLogFile = getLogsFile()
+        val gethLogFile = getGethLogFile()
+        val requestLogFile = getRequestLogFile()
 
         try {
             if (zipFile.exists() || zipFile.createNewFile()) {
@@ -165,7 +171,11 @@ class LogManager(private val reactContext: ReactApplicationContext) : ReactConte
             dumpAdbLogsTo(FileOutputStream(statusLogFile))
 
             val errorList = Stack<String>()
-            val zipped = zip(arrayOf(dbFile, gethLogFile, statusLogFile), zipFile, errorList)
+            val filesToZip = mutableListOf(dbFile, gethLogFile, statusLogFile)
+            if (requestLogFile.exists()) {
+                filesToZip.add(requestLogFile)
+            }
+            val zipped = zip(filesToZip.toTypedArray(), zipFile, errorList)
             if (zipped && zipFile.exists()) {
                 zipFile.setReadable(true, false)
                 val extUri = FileProvider.getUriForFile(context, "${context.packageName}.provider", zipFile)
@@ -186,12 +196,14 @@ class LogManager(private val reactContext: ReactApplicationContext) : ReactConte
     }
 
     @ReactMethod
-    fun initLogging(enabled: Boolean, mobileSystem: Boolean, logLevel: String, callback: Callback) {
+    fun initLogging(enabled: Boolean, mobileSystem: Boolean, logLevel: String, logRequestGo: Boolean, callback: Callback) {
         val jsonConfig = JSONObject().apply {
             put("Enabled", enabled)
             put("MobileSystem", mobileSystem)
             put("Level", logLevel)
-            put("File", getLogsFile().absolutePath)
+            put("File", getGethLogFile().absolutePath)
+            put("LogRequestGo", logRequestGo)
+            put("LogRequestFile", getRequestLogFile().absolutePath)
         }
         val config = jsonConfig.toString()
         utils.executeRunnableStatusGoMethod({ Statusgo.initLogging(config) }, callback)
@@ -206,6 +218,7 @@ class LogManager(private val reactContext: ReactApplicationContext) : ReactConte
         private const val TAG = "LogManager"
         private const val gethLogFileName = "geth.log"
         private const val statusLogFileName = "Status.log"
+        private const val requestsLogFileName = "requests.log"
         private const val logsZipFileName = "Status-debug-logs.zip"
     }
 }

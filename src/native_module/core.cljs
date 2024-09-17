@@ -531,8 +531,8 @@
   (.logFileDirectory ^js (log-manager)))
 
 (defn init-status-go-logging
-  [{:keys [enable? mobile-system? log-level callback]}]
-  (.initLogging ^js (log-manager) enable? mobile-system? log-level callback))
+  [{:keys [enable? mobile-system? log-level log-request-go? callback]}]
+  (.initLogging ^js (log-manager) enable? mobile-system? log-level log-request-go? callback))
 
 (defn get-random-mnemonic
   [callback]

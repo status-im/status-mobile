@@ -76,6 +76,7 @@
 
 ;; CONFIG VALUES
 (def log-level (string/upper-case (get-config :LOG_LEVEL "")))
+(def log-request-go (enabled? (get-config :LOG_REQUEST_GO "0")))
 (def fleet (get-config :FLEET ""))
 (def apn-topic (get-config :APN_TOPIC "im.status.ethereum"))
 (def default-network (get-config :DEFAULT_NETWORK "goerli_rpc"))
