@@ -37,7 +37,6 @@
     [status-im.contexts.onboarding.sign-in.view :as sign-in]
     [status-im.contexts.onboarding.syncing.progress.view :as syncing-devices]
     [status-im.contexts.onboarding.syncing.results.view :as syncing-results]
-    [status-im.contexts.onboarding.welcome.view :as welcome]
     [status-im.contexts.preview.feature-flags.view :as feature-flags]
     [status-im.contexts.preview.quo.component-preview.view :as component-preview]
     [status-im.contexts.preview.quo.main :as quo.preview]
@@ -356,9 +355,7 @@
     {:name      :screen/onboarding.enable-notifications
      :options   {:theme                  :dark
                  :layout                 options/onboarding-transparent-layout
-                 :animations             (merge
-                                          transitions/new-to-status-modal-animations
-                                          transitions/push-animations-for-transparent-background)
+                 :animations             transitions/push-animations-for-transparent-background
                  :popGesture             false
                  :modalPresentationStyle :overCurrentContext
                  :hardwareBackButton     {:dismissModalOnPress false
@@ -408,12 +405,6 @@
     {:name      :screen/onboarding.syncing-results
      :options   {:theme :dark}
      :component syncing-results/view}
-
-    {:name      :screen/onboarding.welcome
-     :options   {:theme      :dark
-                 :layout     options/onboarding-transparent-layout
-                 :animations transitions/push-animations-for-transparent-background}
-     :component welcome/view}
 
     {:name      :emoji-picker
      :options   {:sheet? true}
