@@ -1,5 +1,6 @@
 (ns status-im.contexts.communities.events-test
   (:require [cljs.test :refer [deftest is testing]]
+            [legacy.status-im.data-store.communities :as data-store.communities]
             matcher-combinators.test
             [status-im.contexts.chat.messenger.messages.link-preview.events :as link-preview.events]
             [status-im.contexts.communities.events :as events]))
@@ -51,7 +52,7 @@
                      [:dispatch [:chat.ui/spectate-community community-id]]
                      [:dispatch
                       [:chat.ui/cache-link-preview-data "community-link+community-id"
-                       {:id community-id}]]]}
+                       (data-store.communities/<-rpc #js {"id" community-id})]]]}
                (events/community-fetched cofx arg))))))
     (testing "given a joined community"
       (let [cofx {:db {:communities/fetching-communities {community-id true}}}
@@ -62,7 +63,7 @@
                      [:dispatch [:chat.ui/spectate-community community-id]]
                      [:dispatch
                       [:chat.ui/cache-link-preview-data "community-link+community-id"
-                       {:id community-id}]]]}
+                       (data-store.communities/<-rpc #js {"id" community-id})]]]}
                (events/community-fetched cofx arg))))))
     (testing "given a token-gated community"
       (let [cofx {:db {:communities/fetching-communities {community-id true}}}
@@ -73,7 +74,7 @@
                      [:dispatch [:chat.ui/spectate-community community-id]]
                      [:dispatch
                       [:chat.ui/cache-link-preview-data "community-link+community-id"
-                       {:id community-id}]]]}
+                       (data-store.communities/<-rpc #js {"id" community-id})]]]}
                (events/community-fetched cofx arg))))))
     (testing "given nil community"
       (testing "do nothing"

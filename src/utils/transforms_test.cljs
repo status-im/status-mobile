@@ -13,7 +13,7 @@
     (are [expected m]
      (is (equals-as-json expected (sut/<-js-map m)))
      nil               nil
-     nil               #js []
+     {:a 1}            {:a 1}
      #js {}            #js {}
      #js {"a" 1 "b" 2} #js {"a" 1 "b" 2}))
 
