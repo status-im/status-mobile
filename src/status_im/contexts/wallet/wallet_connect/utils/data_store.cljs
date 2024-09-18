@@ -73,3 +73,17 @@
   (-> db
       get-db-current-request-event
       get-request-params))
+
+(defn raw-data->sign-view
+  [raw-data display-data]
+  (let [parsed-data (transforms/json->clj raw-data)]
+    (if (string? parsed-data)
+      [["contents:" display-data]]
+      (let [{:keys [message]} parsed-data
+            from              (:from message)
+            to                (:to message)]
+        [["contents:" (:contents message)]
+         ["from: name:" (:name from)]
+         ["from: wallet:" (:wallet from)]
+         ["to: name:" (:name to)]
+         ["to: wallet:" (:wallet to)]]))))

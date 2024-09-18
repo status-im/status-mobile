@@ -1,5 +1,6 @@
 (ns status-im.contexts.wallet.wallet-connect.modals.common.style
-  (:require [status-im.constants :as constants]))
+  (:require [quo.foundations.colors :as colors]
+            [status-im.constants :as constants]))
 
 (defn container
   [bottom]
@@ -21,3 +22,16 @@
 (def data-item
   {:flex             1
    :background-color :transparent})
+
+(def list-data-item
+  (merge data-item
+         {:margin-bottom 8
+          :margin-top    2}))
+
+(def data-item-container
+  {:padding       10
+   :margin-top    10.5
+   :margin-bottom 0
+   :border-width  1
+   :border-color  colors/neutral-10
+   :border-radius 16})
