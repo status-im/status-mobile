@@ -36,11 +36,16 @@
 (def ^:private ?hiccup
   vector?)
 
+(def ^:private ?promise
+  [:fn {:error/message "schema.common/promise should be of type Promise"}
+   (fn [v] (instance? js/Promise v))])
+
 (defn register-schemas
   []
   (registry/register ::theme ?theme)
   (registry/register ::customization-color ?customization-color)
   (registry/register ::public-key ?public-key)
+  (registry/register ::promise ?promise)
   (registry/register ::image-source ?image-source)
   (registry/register ::rpc-call ?rpc-call)
   (registry/register ::exception ?exception)

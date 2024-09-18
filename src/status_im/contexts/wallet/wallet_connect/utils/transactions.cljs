@@ -212,9 +212,9 @@
 (schema/=> prepare-transaction
   [:=>
    [:catn
-    [:tx ?transaction
-     :chain-id :int
-     :tx-priority ?tx-priority]]
+    [:tx ?transaction]
+    [:chain-id :int]
+    [:tx-priority ?tx-priority]]
    [:map {:closed true}
     [:tx-args :string]
     [:tx-hash :string]
