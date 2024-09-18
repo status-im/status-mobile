@@ -1,11 +1,9 @@
 (ns status-im.subs.wallet.swap
   (:require [clojure.string :as string]
-            [native-module.core :as native-module]
             [re-frame.core :as rf]
             [status-im.constants :as constants]
             [status-im.contexts.wallet.common.utils :as utils]
             [status-im.contexts.wallet.send.utils :as send-utils]
-            [utils.hex :as hex]
             [utils.money :as money]
             [utils.number :as number]))
 
@@ -96,6 +94,25 @@
  :-> :swap-proposal)
 
 (rf/reg-sub
+ :wallet/swap-proposal-without-fees
+ :<- [:wallet/swap]
+ (fn [swap]
+   (let [swap-proposal (:swap-proposal swap)]
+     (reduce dissoc
+             swap-proposal
+             [:gas-fees :gas-amount :token-fees :bonder-fees :approval-gas-fees]))))
+
+(rf/reg-sub
+ :wallet/swap-amount
+ :<- [:wallet/swap]
+ :-> :amount)
+
+(rf/reg-sub
+ :wallet/swap-approved-amount
+ :<- [:wallet/swap]
+ :-> :approved-amount)
+
+(rf/reg-sub
  :wallet/swap-loading-swap-proposal?
  :<- [:wallet/swap]
  :-> :loading-swap-proposal?)
@@ -117,11 +134,7 @@
  (fn [[amount-out asset-to-receive]]
    (let [receive-token-decimals (:decimals asset-to-receive)
          receive-amount         (when amount-out
-                                  (number/convert-to-whole-number
-                                   (native-module/hex-to-number
-                                    (hex/normalize-hex
-                                     amount-out))
-                                   receive-token-decimals))
+                                  (number/hex->whole amount-out receive-token-decimals))
          receive-amount         (when amount-out
                                   (number/remove-trailing-zeroes
                                    (.toFixed receive-amount
@@ -136,11 +149,7 @@
  (fn [[amount-in asset-to-pay]]
    (let [pay-token-decimals (:decimals asset-to-pay)
          pay-amount         (when amount-in
-                              (number/convert-to-whole-number
-                               (native-module/hex-to-number
-                                (hex/normalize-hex
-                                 amount-in))
-                               pay-token-decimals))
+                              (number/hex->whole amount-in pay-token-decimals))
          pay-amount         (when amount-in
                               (number/remove-trailing-zeroes
                                (.toFixed pay-amount

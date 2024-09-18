@@ -1,6 +1,5 @@
 (ns status-im.contexts.wallet.swap.setup-swap.view
   (:require [clojure.string :as string]
-            [native-module.core :as native-module]
             [quo.core :as quo]
             [react-native.core :as rn]
             [react-native.platform :as platform]
@@ -11,7 +10,7 @@
             [status-im.contexts.wallet.common.account-switcher.view :as account-switcher]
             [status-im.contexts.wallet.common.utils :as utils]
             [status-im.contexts.wallet.swap.setup-swap.style :as style]
-            [utils.hex :as hex]
+            [utils.debounce :as debounce]
             [utils.i18n :as i18n]
             [utils.money :as money]
             [utils.number :as number]
@@ -22,14 +21,18 @@
 
 (defn- on-close
   []
-  (rf/dispatch [:wallet/clean-swap-proposal])
+  (rf/dispatch [:wallet/clean-swap-proposal {:clean-approval-transaction? true}])
   (events-helper/navigate-back))
 
 (defn- fetch-swap-proposal
-  [{:keys [amount valid-input?]}]
+  [{:keys [amount valid-input? clean-approval-transaction?]}]
   (if valid-input?
-    (rf/dispatch [:wallet/start-get-swap-proposal {:amount-in amount}])
-    (rf/dispatch [:wallet/clean-swap-proposal])))
+    (debounce/debounce-and-dispatch [:wallet/start-get-swap-proposal
+                                     {:amount-in                   amount
+                                      :clean-approval-transaction? clean-approval-transaction?}]
+                                    100)
+    (rf/dispatch [:wallet/clean-swap-proposal
+                  {:clean-approval-transaction? clean-approval-transaction?}])))
 
 (defn- data-item
   [{:keys [title subtitle size subtitle-icon loading?]}]
@@ -69,11 +72,13 @@
         asset-to-pay                     (rf/sub [:wallet/swap-asset-to-pay])
         currency                         (rf/sub [:profile/currency])
         loading-swap-proposal?           (rf/sub [:wallet/swap-loading-swap-proposal?])
-        swap-proposal                    (rf/sub [:wallet/swap-proposal])
+        swap-proposal                    (rf/sub [:wallet/swap-proposal-without-fees])
         approval-required                (rf/sub [:wallet/swap-proposal-approval-required])
         approval-amount-required         (rf/sub [:wallet/swap-proposal-approval-amount-required])
         currency-symbol                  (rf/sub [:profile/currency-symbol])
         approval-transaction-status      (rf/sub [:wallet/swap-approval-transaction-status])
+        approval-transaction-id          (rf/sub [:wallet/swap-approval-transaction-id])
+        approved-amount                  (rf/sub [:wallet/swap-approved-amount])
         pay-input-num-value              (controlled-input/value-numeric input-state)
         pay-input-amount                 (controlled-input/input-value input-state)
         pay-token-symbol                 (:symbol asset-to-pay)
@@ -93,16 +98,16 @@
                                                     (min pay-token-decimals
                                                          constants/min-token-decimals-to-display)))
         approval-amount-required-num     (when approval-amount-required
-                                           (str (number/convert-to-whole-number
-                                                 (native-module/hex-to-number
-                                                  (hex/normalize-hex
-                                                   approval-amount-required))
-                                                 pay-token-decimals)))
-        pay-input-error?                 (and (not (string/blank? pay-input-amount))
-                                              (money/greater-than
-                                               (money/bignumber pay-input-num-value)
-                                               (money/bignumber
-                                                pay-token-balance-selected-chain)))
+                                           (str (number/hex->whole approval-amount-required
+                                                                   pay-token-decimals)))
+        pay-input-error?                 (or (and (not (string/blank? pay-input-amount))
+                                                  (money/greater-than
+                                                   (money/bignumber pay-input-num-value)
+                                                   (money/bignumber
+                                                    pay-token-balance-selected-chain)))
+                                             (money/equal-to (money/bignumber
+                                                              available-crypto-limit)
+                                                             (money/bignumber 0)))
         valid-pay-input?                 (and
                                           (not (string/blank?
                                                 pay-input-amount))
@@ -111,8 +116,9 @@
         request-fetch-swap-proposal      (rn/use-callback
                                           (fn []
                                             (fetch-swap-proposal
-                                             {:amount       pay-input-amount
-                                              :valid-input? valid-pay-input?}))
+                                             {:amount                      pay-input-amount
+                                              :valid-input?                valid-pay-input?
+                                              :clean-approval-transaction? true}))
                                           [pay-input-amount])]
     (rn/use-effect
      (fn []
@@ -123,7 +129,8 @@
       :error?               pay-input-error?
       :token                pay-token-symbol
       :customization-color  :blue
-      :show-approval-label? (and swap-proposal approval-required)
+      :show-approval-label? (or (and swap-proposal approval-required)
+                                approval-transaction-id)
       :auto-focus?          true
       :show-keyboard?       false
       :status               (cond
@@ -145,7 +152,7 @@
                                                     :confirmed :approved
                                                     :finalised :approved
                                                     :approve)
-                             :token-value         approval-amount-required-num
+                             :token-value         (or approval-amount-required-num approved-amount)
                              :button-props        {:on-press on-approve-press}
                              :customization-color account-color
                              :token-symbol        pay-token-symbol}}]))
@@ -169,14 +176,9 @@
         receive-token-symbol     (:symbol asset-to-receive)
         receive-token-decimals   (:decimals asset-to-receive)
         amount-out-whole-number  (when amount-out
-                                   (number/convert-to-whole-number
-                                    (native-module/hex-to-number
-                                     (utils.hex/normalize-hex
-                                      amount-out))
-                                    receive-token-decimals))
+                                   (number/hex->whole amount-out receive-token-decimals))
         amount-out-num           (if amount-out-whole-number
-                                   (number/remove-trailing-zeroes
-                                    (.toFixed amount-out-whole-number receive-token-decimals))
+                                   (number/to-fixed amount-out-whole-number receive-token-decimals)
                                    default-text-for-unfocused-input)
         receive-token-fiat-value (str (utils/calculate-token-fiat-value
                                        {:currency currency
@@ -205,7 +207,7 @@
 (defn- action-button
   [{:keys [on-press]}]
   (let [account-color               (rf/sub [:wallet/current-viewing-account-color])
-        swap-proposal               (rf/sub [:wallet/swap-proposal])
+        swap-proposal               (rf/sub [:wallet/swap-proposal-without-fees])
         loading-swap-proposal?      (rf/sub [:wallet/swap-loading-swap-proposal?])
         approval-required?          (rf/sub [:wallet/swap-proposal-approval-required])
         approval-transaction-status (rf/sub [:wallet/swap-approval-transaction-status])]
@@ -223,10 +225,10 @@
   []
   (let [[pay-input-state set-pay-input-state]       (rn/use-state controlled-input/init-state)
         [pay-input-focused? set-pay-input-focused?] (rn/use-state true)
-        [refetch-interval set-refetch-interval]     (rn/use-state nil)
+        refetch-interval                            (rn/use-ref-atom nil)
         error-response                              (rf/sub [:wallet/swap-error-response])
         loading-swap-proposal?                      (rf/sub [:wallet/swap-loading-swap-proposal?])
-        swap-proposal                               (rf/sub [:wallet/swap-proposal])
+        swap-proposal                               (rf/sub [:wallet/swap-proposal-without-fees])
         asset-to-pay                                (rf/sub [:wallet/swap-asset-to-pay])
         network                                     (rf/sub [:wallet/swap-network])
         pay-input-amount                            (controlled-input/input-value pay-input-state)
@@ -270,7 +272,9 @@
                                                      (fn []
                                                        (set-pay-input-state
                                                         controlled-input/delete-last)
-                                                       (rf/dispatch [:wallet/clean-swap-proposal])))
+                                                       (rf/dispatch [:wallet/clean-swap-proposal
+                                                                     {:clean-approval-transaction?
+                                                                      true}])))
         on-max-press                                (rn/use-callback
                                                      (fn [max-value]
                                                        (set-pay-input-state
@@ -280,32 +284,66 @@
                                                            max-value)))))
         on-refresh-swap-proposal                    (rn/use-callback
                                                      (fn []
-                                                       (let [bottom-sheets (rf/sub
-                                                                            [:bottom-sheet-sheets])]
+                                                       (let
+                                                         [bottom-sheets (rf/sub
+                                                                         [:bottom-sheet-sheets])
+                                                          approval-transaction-status
+                                                          (rf/sub
+                                                           [:wallet/swap-approval-transaction-status])]
                                                          (when-not valid-pay-input?
-                                                           (js/clearInterval refetch-interval)
-                                                           (set-refetch-interval nil))
+                                                           (when @refetch-interval
+                                                             (js/clearTimeout @refetch-interval))
+                                                           (reset! refetch-interval nil))
+                                                         (when @refetch-interval
+                                                           (js/clearTimeout @refetch-interval))
+                                                         (reset! refetch-interval nil)
                                                          (when (and valid-pay-input?
                                                                     (not loading-swap-proposal?)
-                                                                    (not bottom-sheets))
+                                                                    (not bottom-sheets)
+                                                                    (not= approval-transaction-status
+                                                                          :pending))
                                                            (fetch-swap-proposal
-                                                            {:amount       pay-input-amount
-                                                             :valid-input? valid-pay-input?}))))
+                                                            {:amount pay-input-amount
+                                                             :valid-input? valid-pay-input?
+                                                             :clean-approval-transaction? false}))))
                                                      [valid-pay-input? loading-swap-proposal?
-                                                      pay-input-amount])]
+                                                      pay-input-amount])
+        on-asset-to-pay-change                      (fn []
+                                                      (when valid-pay-input?
+                                                        (fetch-swap-proposal
+                                                         {:amount                      pay-input-amount
+                                                          :valid-input?                valid-pay-input?
+                                                          :clean-approval-transaction? true})))]
     (rn/use-effect (fn []
-                     (when refetch-interval
-                       (js/clearInterval refetch-interval)
-                       (set-refetch-interval nil))
+                     (when @refetch-interval
+                       (js/clearInterval @refetch-interval)
+                       (reset! refetch-interval nil))
                      (when (or swap-proposal error-response)
-                       (set-refetch-interval (js/setInterval
-                                              on-refresh-swap-proposal
-                                              constants/swap-proposal-refresh-interval-ms))))
+                       (reset! refetch-interval
+                         (js/setInterval
+                          on-refresh-swap-proposal
+                          constants/swap-proposal-refresh-interval-ms))))
                    [swap-proposal error-response])
     (rn/use-unmount (fn []
-                      (when refetch-interval
-                        (js/clearInterval refetch-interval)
-                        (set-refetch-interval nil))))
+                      (rf/dispatch [:wallet/clean-swap-proposal {:clean-approval-transaction? true}])
+                      (when @refetch-interval
+                        (js/clearInterval @refetch-interval)
+                        (reset! refetch-interval nil))))
+    (rn/use-effect
+     (fn []
+       (when asset-to-pay
+         (let [swap-amount (rf/sub [:wallet/swap-amount])]
+           (when (and swap-amount refetch-interval)
+             (js/clearTimeout @refetch-interval)
+             (reset! refetch-interval nil))
+           (if (and swap-amount (not= swap-amount pay-input-amount))
+             (set-pay-input-state
+              (fn [input-state]
+                (controlled-input/set-input-value
+                 input-state
+                 swap-amount)))
+             (on-asset-to-pay-change)))))
+     [asset-to-pay])
     [rn/view {:style style/container}
      [account-switcher/view
       {:on-press      on-close
@@ -322,7 +360,12 @@
         :on-input-focus   (fn []
                             (when platform/android? (rf/dispatch [:dismiss-keyboard]))
                             (set-pay-input-focused? true))}]
-      [swap-order-button {:on-press #(js/alert "Swap Order Pressed")}]
+      [swap-order-button
+       {:on-press (fn []
+                    (when @refetch-interval
+                      (js/clearTimeout @refetch-interval)
+                      (reset! refetch-interval nil))
+                    (rf/dispatch [:wallet.swap/flip-assets]))}]
       [receive-token-input
        {:input-focused? (not pay-input-focused?)
         :on-token-press #(js/alert "Token Pressed")

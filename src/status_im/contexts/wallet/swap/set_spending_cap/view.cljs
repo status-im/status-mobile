@@ -212,7 +212,7 @@
 (defn- slide-button
   []
   (let [loading-swap-proposal? (rf/sub [:wallet/swap-loading-swap-proposal?])
-        swap-proposal          (rf/sub [:wallet/swap-proposal])
+        swap-proposal          (rf/sub [:wallet/swap-proposal-without-fees])
         account                (rf/sub [:wallet/current-viewing-account])
         on-auth-success        (rn/use-callback #(rf/dispatch
                                                   [:wallet/swap-transaction

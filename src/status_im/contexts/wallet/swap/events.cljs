@@ -8,9 +8,8 @@
             [taoensso.timbre :as log]
             [utils.address :as address]
             [utils.debounce :as debounce]
-            [utils.hex :as hex]
             [utils.i18n :as i18n]
-            [utils.number]
+            [utils.money :as money]
             [utils.number :as number]))
 
 (rf/reg-event-fx :wallet.swap/start
@@ -47,14 +46,14 @@
 
 (rf/reg-event-fx :wallet.swap/set-max-slippage
  (fn [{:keys [db]} [max-slippage]]
-   {:db (assoc-in db [:wallet :ui :swap :max-slippage] (utils.number/parse-float max-slippage))}))
+   {:db (assoc-in db [:wallet :ui :swap :max-slippage] (number/parse-float max-slippage))}))
 
 (rf/reg-event-fx :wallet.swap/select-asset-to-receive
  (fn [{:keys [db]} [{:keys [token]}]]
    {:db (assoc-in db [:wallet :ui :swap :asset-to-receive] token)}))
 
 (rf/reg-event-fx :wallet/start-get-swap-proposal
- (fn [{:keys [db]} [{:keys [amount-in amount-out]}]]
+ (fn [{:keys [db]} [{:keys [amount-in amount-out clean-approval-transaction?]}]]
    (let [wallet-address          (get-in db [:wallet :current-viewing-account-address])
          {:keys [asset-to-pay asset-to-receive
                  network]}       (get-in db [:wallet :ui :swap])
@@ -97,12 +96,17 @@
      (when-let [amount (or amount-in amount-out)]
        {:db            (update-in db
                                   [:wallet :ui :swap]
-                                  #(-> %
-                                       (assoc
-                                        :last-request-uuid      request-uuid
-                                        :amount                 amount
-                                        :loading-swap-proposal? true)
-                                       (dissoc :error-response)))
+                                  #(cond-> %
+                                     :always
+                                     (assoc
+                                      :last-request-uuid      request-uuid
+                                      :amount                 amount
+                                      :amount-hex             amount-in-hex
+                                      :loading-swap-proposal? true)
+                                     :always
+                                     (dissoc :error-response)
+                                     clean-approval-transaction?
+                                     (dissoc :approval-transaction-id :approved-amount :swap-proposal)))
         :json-rpc/call [{:method   "wallet_getSuggestedRoutesAsync"
                          :params   params
                          :on-error (fn [error]
@@ -115,17 +119,30 @@
 (rf/reg-event-fx :wallet/swap-proposal-success
  (fn [{:keys [db]} [swap-proposal]]
    (let [last-request-uuid (get-in db [:wallet :ui :swap :last-request-uuid])
+         amount-hex        (get-in db [:wallet :ui :swap :amount-hex])
          view-id           (:view-id db)
          request-uuid      (:uuid swap-proposal)
          best-routes       (:best swap-proposal)
          error-response    (:error-response swap-proposal)]
-     (when (= request-uuid last-request-uuid)
+     (when (and (= request-uuid last-request-uuid)
+                (or (and (empty? best-routes) error-response)
+                    (and
+                     (pos? (count best-routes))
+                     (= (:amount-in (first best-routes)) amount-hex))))
        (cond-> {:db (update-in db
                                [:wallet :ui :swap]
                                assoc
-                               :swap-proposal          (first best-routes)
+                               :swap-proposal          (when-not (empty? best-routes)
+                                                         (assoc (first best-routes) :uuid request-uuid))
                                :error-response         (when (empty? best-routes) error-response)
                                :loading-swap-proposal? false)}
+         (empty? best-routes)
+         (assoc :fx
+                [[:dispatch
+                  [:toasts/upsert
+                   {:id   :swap-proposal-error
+                    :type :negative
+                    :text error-response}]]])
          ;; Router is unstable and it can return a swap proposal and after auto-refetching it can
          ;; return an error. Ideally this shouldn't happen, but adding this behavior so if the
          ;; user is in swap confirmation screen or in token approval confirmation screen, we
@@ -156,16 +173,18 @@
                                             {:event :wallet/stop-get-swap-proposal
                                              :error error}))}]}))
 
-(rf/reg-event-fx :wallet/clean-swap-proposal
- (fn [{:keys [db]}]
-   {:db (update-in db
-                   [:wallet :ui :swap]
-                   dissoc
-                   :last-request-uuid
-                   :swap-proposal
-                   :error-response
-                   :loading-swap-proposal?
-                   :approval-transaction-id)}))
+(rf/reg-event-fx
+ :wallet/clean-swap-proposal
+ (fn [{:keys [db]} [{:keys [clean-approval-transaction?]}]]
+   (let [keys-to-dissoc (cond-> [:amount
+                                 :amount-hex
+                                 :last-request-uuid
+                                 :swap-proposal
+                                 :error-response
+                                 :loading-swap-proposal?]
+                          clean-approval-transaction? (conj :approval-transaction-id :approved-amount))]
+     {:db (apply update-in db [:wallet :ui :swap] dissoc keys-to-dissoc)
+      :fx [[:dispatch [:wallet/stop-get-swap-proposal]]]})))
 
 (rf/reg-event-fx :wallet/clean-swap
  (fn [{:keys [db]}]
@@ -245,10 +264,8 @@
                                               constants/min-token-decimals-to-display)
                                              receive-amount (when amount-out
                                                               (number/remove-trailing-zeroes
-                                                               (.toFixed (number/convert-to-whole-number
-                                                                          (native-module/hex-to-number
-                                                                           (hex/normalize-hex
-                                                                            amount-out))
+                                                               (.toFixed (number/hex->whole
+                                                                          amount-out
                                                                           receive-token-decimals)
                                                                          decimals-to-display)))]
                                          (rf/dispatch [:wallet.swap/add-authorized-transaction
@@ -268,7 +285,7 @@
                                                          :screen/wallet.swap-confirmation)])
                                          (when-not approval-required?
                                            (rf/dispatch [:wallet/select-account-tab :activity])
-                                           (debounce/debounce-and-dispatch [:wallet/clean-swap] 1000)
+                                           (rf/dispatch [:wallet/clean-swap])
                                            (debounce/debounce-and-dispatch
                                             [:toasts/upsert
                                              {:id   :swap-transaction-pending
@@ -342,6 +359,8 @@
                                          :token-symbol  token-symbol
                                          :provider-name provider-name
                                          :account-name  account-name}))}]]]}
+         transaction-confirmed?
+         (assoc :db (assoc-in db [:wallet :ui :swap :approved-amount] amount))
          (not transaction-confirmed?)
          (assoc :db (update-in db [:wallet :ui :swap] dissoc :approval-transaction-id)))))))
 
@@ -368,3 +387,27 @@
                                      :receive-token-symbol receive-token-symbol
                                      :receive-amount       receive-amount})
                         (i18n/label :t/swap-failed))}]]]}))))
+
+(rf/reg-event-fx :wallet.swap/flip-assets
+ (fn [{:keys [db]}]
+   (let [{:keys [asset-to-pay asset-to-receive
+                 swap-proposal amount]} (get-in db [:wallet :ui :swap])
+         receive-token-decimals         (:decimals asset-to-receive)
+         amount-out                     (when swap-proposal (:amount-out swap-proposal))
+         receive-amount                 (when amount-out
+                                          (-> amount-out
+                                              (number/hex->whole receive-token-decimals)
+                                              (money/to-fixed receive-token-decimals)))]
+     {:db (update-in db
+                     [:wallet :ui :swap]
+                     #(-> %
+                          (assoc
+                           :asset-to-pay     asset-to-receive
+                           :asset-to-receive asset-to-pay
+                           :amount           (or receive-amount amount))
+                          (dissoc :swap-proposal
+                                  :error-response
+                                  :loading-swap-proposal?
+                                  :last-request-uuid
+                                  :approved-amount
+                                  :approval-transaction-id)))})))
