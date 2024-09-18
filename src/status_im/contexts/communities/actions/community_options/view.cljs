@@ -186,17 +186,22 @@
 
 (defn get-context-drawers
   [{:keys [id]}]
-  (let [{:keys [role-permissions? ;; Used to check token gating for a community
-                admin joined muted banList muted-till color
-                intro-message]}  (rf/sub [:communities/community id])
-        request-id               (rf/sub [:communities/my-pending-request-to-join id])
-        test-networks-enabled?   (rf/sub [:profile/test-networks-enabled?])]
+  (let [{:keys [role-permissions? admin joined
+                muted banList muted-till color
+                intro-message]} (rf/sub [:communities/community id])
+        request-id              (rf/sub [:communities/my-pending-request-to-join id])
+        test-networks?          (rf/sub [:profile/test-networks-enabled?])]
     (cond
-      admin      (owner-options id role-permissions? muted muted-till intro-message)
-      joined     (joined-options id role-permissions? muted muted-till color intro-message)
-      request-id (join-request-sent-options id role-permissions? request-id intro-message test-networks-enabled?)
-      banList    (banned-options id role-permissions? intro-message test-networks-enabled?)
-      :else      (not-joined-options id role-permissions? intro-message test-networks-enabled?))))
+      admin
+      (owner-options id role-permissions? muted muted-till intro-message)
+      joined
+      (joined-options id role-permissions? muted muted-till color intro-message)
+      request-id
+      (join-request-sent-options id role-permissions? request-id intro-message test-networks?)
+      banList
+      (banned-options id role-permissions? intro-message test-networks?)
+      :else
+      (not-joined-options id role-permissions? intro-message test-networks?))))
 
 (defn community-options-bottom-sheet
   [id]
