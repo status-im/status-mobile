@@ -60,7 +60,9 @@
 (defn equal-to
   [n1 n2]
   (when-let [^js bn1 (bignumber n1)]
-    (.eq ^js bn1 n2)))
+    (try
+      (.eq ^js bn1 n2)
+      (catch :default _ false))))
 
 (extend-type BigNumber
  IEquiv
