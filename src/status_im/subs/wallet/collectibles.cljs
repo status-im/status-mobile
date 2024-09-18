@@ -1,7 +1,8 @@
 (ns status-im.subs.wallet.collectibles
   (:require
     [clojure.string :as string]
-    [re-frame.core :as re-frame]))
+    [re-frame.core :as re-frame]
+    [utils.collection]))
 
 (defn- filter-collectibles-in-chains
   [collectibles chain-ids]
@@ -69,7 +70,7 @@
      (->> all-collectibles
           (apply interleave)
           (remove nil?)
-          distinct
+          (utils.collection/distinct-by :id)
           (add-collectibles-preview-url)))))
 
 (re-frame/reg-sub
