@@ -1,0 +1,12 @@
+{
+    "editor.formatOnSave": true,
+    "clojure.format.enable": false,
+    "[clojure]": {
+        "editor.defaultFormatter": "rflagreca.vscode-clj-zprint"
+    },
+    "vscode-clj-zprint.IgnoreExternalFiles": false,
+    "vscode-clj-zprint.CommunityFormatting": false,
+    "vscode-clj-zprint.OptionsMap": "",
+    "vscode-clj-zprint.width": "",
+    "vscode-clj-zprint.Styles.UseOnlyTheseStyles": false
+}
