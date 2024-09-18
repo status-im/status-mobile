@@ -36,14 +36,13 @@
 
 (defn view-token-gating
   [id]
-  (when config/show-not-implemented-features?
-    {:icon                :i/token
-     :right-icon          :i/chevron-right
-     :accessibility-label :view-token-gating
-     :on-press            #(rf/dispatch [:show-bottom-sheet
-                                         {:content                 (fn [] [permissions-sheet/view id])
-                                          :padding-bottom-override 16}])
-     :label               (i18n/label :t/view-token-gating)}))
+  {:icon                :i/token
+   :right-icon          :i/chevron-right
+   :accessibility-label :view-token-gating
+   :on-press            #(rf/dispatch [:show-bottom-sheet
+                                       {:content                 (fn [] [permissions-sheet/view id])
+                                        :padding-bottom-override 16}])
+   :label               (i18n/label :t/view-token-gating)})
 
 (defn edit-shared-addresses
   [id]
@@ -56,7 +55,7 @@
 
 (defn mark-as-read
   [id]
-  {:icon                :i/up-to-date
+  {:icon                :i/mark-as-read
    :accessibility-label :mark-as-read
    :label               (i18n/label :t/mark-as-read)
    :on-press            #(hide-sheet-and-dispatch [:chat.ui/mark-all-read-in-community-pressed id])})
@@ -136,23 +135,27 @@
                                                          request-id])}])})
 
 (defn not-joined-options
-  [id token-gated? intro-message]
-  [[(when-not token-gated? (view-members id))
-    (when-not token-gated? (view-rules id intro-message))
-    (mark-as-read id)
-    (invite-contacts id)
-    (when token-gated? (view-token-gating id))
-    (show-qr id)
-    (share-community id)]])
+  [id token-gated? intro-message test-networks-enabled?]
+  (let [common   [(show-qr id) (share-community id)]
+        specific (cond
+                   (and token-gated? (not test-networks-enabled?))
+                   [(invite-contacts id) (view-token-gating id)]
+
+                   token-gated?
+                   [(invite-contacts id)]
+
+                   (not token-gated?)
+                   [(view-members id) (view-rules id intro-message) (invite-contacts id)])]
+    [(concat specific common)]))
 
 (defn join-request-sent-options
-  [id token-gated? request-id intro-message]
-  [(conj (first (not-joined-options id token-gated? intro-message))
+  [id token-gated? request-id intro-message test-networks-enabled?]
+  [(conj (first (not-joined-options id token-gated? intro-message test-networks-enabled?))
          (assoc (cancel-request-to-join id request-id) :add-divider? true))])
 
 (defn banned-options
-  [id token-gated? intro-message]
-  (not-joined-options id token-gated? intro-message))
+  [id token-gated? intro-message test-networks-enabled?]
+  (not-joined-options id token-gated? intro-message test-networks-enabled?))
 
 (defn joined-options
   [id token-gated? muted? muted-till color intro-message]
@@ -186,13 +189,19 @@
   (let [{:keys [role-permissions? admin joined
                 muted banList muted-till color
                 intro-message]} (rf/sub [:communities/community id])
-        request-id              (rf/sub [:communities/my-pending-request-to-join id])]
+        request-id              (rf/sub [:communities/my-pending-request-to-join id])
+        test-networks?          (rf/sub [:profile/test-networks-enabled?])]
     (cond
-      admin      (owner-options id role-permissions? muted muted-till intro-message)
-      joined     (joined-options id role-permissions? muted muted-till color intro-message)
-      request-id (join-request-sent-options id role-permissions? request-id intro-message)
-      banList    (banned-options id role-permissions? intro-message)
-      :else      (not-joined-options id role-permissions? intro-message))))
+      admin
+      (owner-options id role-permissions? muted muted-till intro-message)
+      joined
+      (joined-options id role-permissions? muted muted-till color intro-message)
+      request-id
+      (join-request-sent-options id role-permissions? request-id intro-message test-networks?)
+      banList
+      (banned-options id role-permissions? intro-message test-networks?)
+      :else
+      (not-joined-options id role-permissions? intro-message test-networks?))))
 
 (defn community-options-bottom-sheet
   [id]
