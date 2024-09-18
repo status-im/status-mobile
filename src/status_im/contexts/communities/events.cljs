@@ -2,6 +2,7 @@
   (:require
     [clojure.string :as string]
     [legacy.status-im.data-store.communities :as data-store.communities]
+    [oops.core :as oops]
     [schema.core :as schema]
     [status-im.constants :as constants]
     [status-im.contexts.chat.messenger.messages.link-preview.events :as link-preview.events]
@@ -25,7 +26,7 @@
                   token-permissions-check id last-opened-at]
            :as   community}       (data-store.communities/<-rpc community-js)
           previous-last-opened-at (get-in db [:communities id :last-opened-at])]
-      (when (>= clock (get-in db [:communities id :clock]))
+      (when (and id (>= clock (get-in db [:communities id :clock])))
         {:db (assoc-in db
               [:communities id]
               (assoc community :last-opened-at (max last-opened-at previous-last-opened-at)))
@@ -223,14 +224,14 @@
       :fx [[:dispatch [:communities/check-permissions-to-join-community community-id]]]})))
 
 (defn community-fetched
-  [{:keys [db]} [community-id community]]
-  (when community
+  [{:keys [db]} [community-id community-js]]
+  (when community-js
     {:db (update db :communities/fetching-communities dissoc community-id)
-     :fx [[:dispatch [:communities/handle-community community]]
+     :fx [[:dispatch [:communities/handle-community community-js]]
           [:dispatch [:chat.ui/spectate-community community-id]]
           [:dispatch
            [:chat.ui/cache-link-preview-data (link-preview.events/community-link community-id)
-            community]]]}))
+            (data-store.communities/<-rpc community-js)]]]}))
 
 (rf/reg-event-fx :chat.ui/community-fetched community-fetched)
 
@@ -253,18 +254,19 @@
              (not (get-in db [:communities community-id]))
              (not (get-in db [:communities/fetching-communities community-id])))
     {:db            (assoc-in db [:communities/fetching-communities community-id] true)
-     :json-rpc/call [{:method     "wakuext_fetchCommunity"
-                      :params     [{:CommunityKey    community-id
-                                    :TryDatabase     true
-                                    :WaitForResponse true}]
-                      :on-success (fn [community]
-                                    (if community
-                                      (rf/dispatch [:chat.ui/community-fetched community-id
-                                                    community])
-                                      (failed-to-fetch-community
-                                       community-id
-                                       "community wasn't found at the store node")))
-                      :on-error   (partial failed-to-fetch-community community-id)}]}))
+     :json-rpc/call [{:method      "wakuext_fetchCommunity"
+                      :params      [{:CommunityKey    community-id
+                                     :TryDatabase     true
+                                     :WaitForResponse true}]
+                      :js-response true
+                      :on-success  (fn [community]
+                                     (if community
+                                       (rf/dispatch [:chat.ui/community-fetched community-id
+                                                     community])
+                                       (failed-to-fetch-community
+                                        community-id
+                                        "community wasn't found at the store node")))
+                      :on-error    (partial failed-to-fetch-community community-id)}]}))
 
 (schema/=> fetch-community
   [:=>
@@ -283,11 +285,15 @@
 (rf/reg-event-fx :communities/fetch-community fetch-community)
 
 (defn spectate-community-success
-  [{:keys [db]} [{:keys [communities]}]]
-  (when-let [community (first communities)]
-    {:db (-> db
-             (assoc-in [:communities (:id community) :spectated] true))
-     :fx [[:dispatch [:communities/handle-community community]]]}))
+  [{:keys [db]} [response-js]]
+  (when response-js
+    (let [communities  (oops/oget response-js "communities")
+          community    (first communities)
+          community-id (when community (oops/oget community "id"))]
+      (when community
+        {:db (-> db
+                 (assoc-in [:communities community-id :spectated] true))
+         :fx [[:dispatch [:communities/handle-community community]]]}))))
 
 (rf/reg-event-fx :chat.ui/spectate-community-success spectate-community-success)
 
@@ -295,13 +301,14 @@
   [{:keys [db]} [community-id]]
   (let [{:keys [spectated joined]} (get-in db [:communities community-id])]
     (when (and (not joined) (not spectated))
-      {:json-rpc/call [{:method     "wakuext_spectateCommunity"
-                        :params     [community-id]
-                        :on-success [:chat.ui/spectate-community-success]
-                        :on-error   (fn [err]
-                                      (log/error {:message
-                                                  "Failed to spectate community"
-                                                  :error err}))}]})))
+      {:json-rpc/call [{:method      "wakuext_spectateCommunity"
+                        :params      [community-id]
+                        :js-response true
+                        :on-success  [:chat.ui/spectate-community-success]
+                        :on-error    (fn [err]
+                                       (log/error {:message
+                                                   "Failed to spectate community"
+                                                   :error err}))}]})))
 
 (schema/=> spectate-community
   [:=>

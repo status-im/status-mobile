@@ -1,5 +1,6 @@
 (ns status-im.contexts.communities.events-test
   (:require [cljs.test :refer [deftest is testing]]
+            [legacy.status-im.data-store.communities :as data-store.communities]
             matcher-combinators.test
             [status-im.contexts.chat.messenger.messages.link-preview.events :as link-preview.events]
             [status-im.contexts.communities.events :as events]))
@@ -51,7 +52,7 @@
                      [:dispatch [:chat.ui/spectate-community community-id]]
                      [:dispatch
                       [:chat.ui/cache-link-preview-data "community-link+community-id"
-                       {:id community-id}]]]}
+                       (data-store.communities/<-rpc #js {"id" community-id})]]]}
                (events/community-fetched cofx arg))))))
     (testing "given a joined community"
       (let [cofx {:db {:communities/fetching-communities {community-id true}}}
@@ -62,7 +63,7 @@
                      [:dispatch [:chat.ui/spectate-community community-id]]
                      [:dispatch
                       [:chat.ui/cache-link-preview-data "community-link+community-id"
-                       {:id community-id}]]]}
+                       (data-store.communities/<-rpc #js {"id" community-id})]]]}
                (events/community-fetched cofx arg))))))
     (testing "given a token-gated community"
       (let [cofx {:db {:communities/fetching-communities {community-id true}}}
@@ -73,7 +74,7 @@
                      [:dispatch [:chat.ui/spectate-community community-id]]
                      [:dispatch
                       [:chat.ui/cache-link-preview-data "community-link+community-id"
-                       {:id community-id}]]]}
+                       (data-store.communities/<-rpc #js {"id" community-id})]]]}
                (events/community-fetched cofx arg))))))
     (testing "given nil community"
       (testing "do nothing"
@@ -103,26 +104,38 @@
            (events/spectate-community {:db {:communities {community-id {}}}} [community-id]))))))
 
 (deftest spectate-community-success-test
-  (testing "given communities"
-    (testing "mark first community spectated true"
-      (is (match?
-           {:db {:communities {community-id {:spectated true}}}}
-           (events/spectate-community-success {} [{:communities [{:id community-id}]}]))))
-    (testing "dispatch fxs for first community"
-      (is (match?
-           {:fx [[:dispatch [:communities/handle-community {:id community-id}]]
-                ]}
-           (events/spectate-community-success {} [{:communities [{:id community-id}]}])))))
-  (testing "given empty community"
-    (testing "do nothing"
-      (is (match?
-           nil
-           (events/spectate-community-success {} [{:communities []}])))))
-  (testing "given nil community"
-    (testing "do nothing"
-      (is (match?
-           nil
-           (events/spectate-community-success {} []))))))
+  (let [community-id-1 1
+        community-id-2 2]
+    (testing "given communities"
+      (testing "mark first community spectated true"
+        (is (match?
+             {:db {:communities {community-id-1 {:spectated true}}}}
+             (events/spectate-community-success {}
+                                                (clj->js [{:communities [{:id community-id-1}
+                                                                         {:id community-id-2}]}])))))
+      (testing "dispatch fxs for first community"
+        ;; Convert the JavaScript object back to a Clojure map because `match?` does not work well
+        ;; with JavaScript objects.
+        (is (match?
+             {:fx [[:dispatch [:communities/handle-community {:id community-id-1}]]]}
+             (let [result (events/spectate-community-success {}
+                                                             (clj->js [{:communities
+                                                                        [{:id community-id-1}
+                                                                         {:id community-id-2}]}]))]
+               (update-in result [:fx 0 1] #(js->clj % :keywordize-keys true)))))))
+    (testing "given empty community"
+      (testing "do nothing"
+        (is (match?
+             nil
+             (events/spectate-community-success {}
+                                                (clj->js [{:communities []}]))))))
+    (testing "given nil community"
+      (testing "do nothing"
+        (is (match?
+             nil
+             (events/spectate-community-success {}
+                                                (clj->js []))))))))
+
 
 (deftest get-revealed-accounts-test
   (let [community {:id community-id}]
