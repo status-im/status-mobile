@@ -8,7 +8,8 @@
 
   (h/test "joined options - Non token Gated"
     (h/setup-subs {:communities/my-pending-request-to-join nil
-                   :communities/community                  {:joined true}})
+                   :communities/community                  {:joined true}
+                   :profile/test-networks-enabled?         false})
     (h/render [options/community-options-bottom-sheet {:id "test"}])
     (h/is-truthy (h/get-by-translation-text :t/view-members))
     (h/is-truthy (h/get-by-translation-text :t/view-community-rules))
@@ -23,7 +24,8 @@
   (h/test "joined options - Token Gated"
     (h/setup-subs {:communities/my-pending-request-to-join nil
                    :communities/community                  {:joined            true
-                                                            :role-permissions? true}})
+                                                            :role-permissions? true}
+                   :profile/test-networks-enabled?         false})
     (h/render [options/community-options-bottom-sheet {:id "test"}])
     (h/is-truthy (h/get-by-translation-text :t/view-members))
     (h/is-truthy (h/get-by-translation-text :t/view-community-rules))
@@ -38,7 +40,8 @@
 
   (h/test "admin options - Non token Gated"
     (h/setup-subs {:communities/my-pending-request-to-join nil
-                   :communities/community                  {:admin true}})
+                   :communities/community                  {:admin true}
+                   :profile/test-networks-enabled?         false})
     (h/render [options/community-options-bottom-sheet {:id "test"}])
     (h/is-truthy (h/get-by-translation-text :t/view-members))
     (h/is-truthy (h/get-by-translation-text :t/view-community-rules))
@@ -52,7 +55,8 @@
   (h/test "admin options - Token Gated"
     (h/setup-subs {:communities/my-pending-request-to-join nil
                    :communities/community                  {:admin             true
-                                                            :role-permissions? true}})
+                                                            :role-permissions? true}
+                   :profile/test-networks-enabled?         false})
     (h/render [options/community-options-bottom-sheet {:id "test"}])
     (h/is-truthy (h/get-by-translation-text :t/view-members))
     (h/is-truthy (h/get-by-translation-text :t/view-community-rules))
@@ -65,7 +69,8 @@
 
   (h/test "request sent options - Non token Gated"
     (h/setup-subs {:communities/my-pending-request-to-join "mock-id"
-                   :communities/community                  {}})
+                   :communities/community                  {}
+                   :profile/test-networks-enabled?         false})
     (h/render [options/community-options-bottom-sheet {:id "test"}])
     (h/is-truthy (h/get-by-translation-text :t/view-members))
     (h/is-truthy (h/get-by-translation-text :t/view-community-rules))
@@ -76,7 +81,8 @@
 
   (h/test "request sent options - Token Gated"
     (h/setup-subs {:communities/my-pending-request-to-join "mock-id"
-                   :communities/community                  {:role-permissions? true}})
+                   :communities/community                  {:role-permissions? true}
+                   :profile/test-networks-enabled?         false})
     (h/render [options/community-options-bottom-sheet {:id "test"}])
     (h/is-truthy (h/get-by-translation-text :t/invite-people-from-contacts))
     ;(h/is-truthy (h/get-by-translation-text :t/view-token-gating))
@@ -86,7 +92,8 @@
 
   (h/test "banned options - Non token Gated"
     (h/setup-subs {:communities/my-pending-request-to-join nil
-                   :communities/community                  {:banList true}})
+                   :communities/community                  {:banList true}
+                   :profile/test-networks-enabled?         false})
     (h/render [options/community-options-bottom-sheet {:id "test"}])
     (h/is-truthy (h/get-by-translation-text :t/view-members))
     (h/is-truthy (h/get-by-translation-text :t/view-community-rules))
@@ -97,7 +104,8 @@
   (h/test "banned options - Token Gated"
     (h/setup-subs {:communities/my-pending-request-to-join nil
                    :communities/community                  {:banList           100
-                                                            :role-permissions? true}})
+                                                            :role-permissions? true}
+                   :profile/test-networks-enabled?         false})
     (h/render [options/community-options-bottom-sheet {:id "test"}])
     (h/is-truthy (h/get-by-translation-text :t/invite-people-from-contacts))
     ;(h/is-truthy (h/get-by-translation-text :t/view-token-gating))
@@ -107,7 +115,8 @@
   (h/test "banned options - Token Gated"
     (h/setup-subs {:communities/my-pending-request-to-join nil
                    :communities/community                  {:banList           100
-                                                            :role-permissions? true}})
+                                                            :role-permissions? true}
+                   :profile/test-networks-enabled?         false})
     (h/render [options/community-options-bottom-sheet {:id "test"}])
     (h/is-truthy (h/get-by-translation-text :t/invite-people-from-contacts))
     ;(h/is-truthy (h/get-by-translation-text :t/view-token-gating))
@@ -118,6 +127,7 @@
     (h/setup-subs {:communities/my-pending-request-to-join nil
                    :communities/community                  {:joined            true
                                                             :muted             true
-                                                            :role-permissions? true}})
+                                                            :role-permissions? true}
+                   :profile/test-networks-enabled?         false})
     (h/render [options/community-options-bottom-sheet {:id "test"}])
     (h/is-truthy (h/get-by-translation-text :t/unmute-community))))
