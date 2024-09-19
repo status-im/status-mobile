@@ -29,7 +29,7 @@ identify_git_sha() {
     STATUS_GO_MATCHING_REFS=$(git ls-remote ${REPO_URL} ${1})
 
     # It's possible that there's both a branch and a tag matching the given version
-    STATUS_GO_TAG_SHA1=$(echo "${STATUS_GO_MATCHING_REFS}" | grep 'refs/tags' | cut -f1)
+    STATUS_GO_TAG_SHA1=$(echo "${STATUS_GO_MATCHING_REFS}" | grep "refs/tags/${1}" | cut -f1)
     STATUS_GO_BRANCH_SHA1=$(echo "${STATUS_GO_MATCHING_REFS}" | grep 'refs/heads' | cut -f1)
 
     # Prefer tag over branch if both are found
