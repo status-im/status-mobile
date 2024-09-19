@@ -54,7 +54,8 @@
    :on-press            (fn []
                           (rf/dispatch [:hide-bottom-sheet])
                           (rf/dispatch [:wallet.swap/start
-                                        {:asset-to-pay (or token {:symbol token-symbol})}]))})
+                                        {:asset-to-pay     (or token {:symbol token-symbol})
+                                         :open-new-screen? true}]))})
 
 (defn- action-manage-tokens
   [watch-only?]
@@ -78,15 +79,16 @@
                                          {:query token-symbol}]))
         selected-account (rf/sub [:wallet/current-viewing-account-address])
         token-owners     (rf/sub [:wallet/operable-addresses-with-token-symbol token-symbol])
-        params           (merge {:start-flow? true
-                                 :owners      token-owners}
-                                (if selected-account
-                                  {:token        token-data
-                                   :stack-id     :screen/wallet.accounts
-                                   :has-balance? (-> (get-in token [:values :fiat-unformatted-value])
-                                                     (money/greater-than (money/bignumber "0")))}
-                                  {:token-symbol token-symbol
-                                   :stack-id     :wallet-stack}))]
+        params           (cond-> {:start-flow? true
+                                  :owners      token-owners}
+                           selected-account
+                           (assoc :token        token-data
+                                  :stack-id     :screen/wallet.accounts
+                                  :has-balance? (-> (get-in token [:values :fiat-unformatted-value])
+                                                    (money/greater-than (money/bignumber "0"))))
+                           (not selected-account)
+                           (assoc :token-symbol token-symbol
+                                  :stack-id     :wallet-stack))]
     [quo/action-drawer
      [(cond->> [(when (ff/enabled? ::ff/wallet.assets-modal-manage-tokens)
                   (action-manage-tokens watch-only?))
@@ -99,7 +101,7 @@
                  (action-receive selected-account)
                  (when (ff/enabled? ::ff/wallet.swap)
                    (action-swap params))
-                 (when (seq (seq token-owners))
+                 (when (seq token-owners)
                    (action-bridge (assoc params
                                          :bridge-disabled?
                                          (send-utils/bridge-disabled? token-symbol))))]))]]))

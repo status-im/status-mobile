@@ -45,13 +45,12 @@
    `[:wallet :current-viewing-account-address]` in `db`
    or the first operable account."
   [wallet]
-  (let [wallet-address (get wallet :current-viewing-account-address)]
-    (if wallet-address
-      (-> wallet
-          :accounts
-          vals
-          (utils/get-account-by-address wallet-address))
-      (-> wallet :accounts first-operable-account))))
+  (if-let [wallet-address (get wallet :current-viewing-account-address)]
+    (-> wallet
+        :accounts
+        vals
+        (utils/get-account-by-address wallet-address))
+    (-> wallet :accounts first-operable-account)))
 
 (defn select-asset-to-pay-by-symbol
   "Selects an asset to pay by token symbol.
