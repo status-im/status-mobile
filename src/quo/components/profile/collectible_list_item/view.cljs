@@ -160,12 +160,13 @@
                                        :on-load-end   set-image-loaded
                                        :theme         theme
                                        :label         (i18n/label :t/unsupported-file)}]
-        (not (:image-loaded? state)) [loading-image
+        (or (not (:image-loaded? state))
+            loading?)                [loading-image
                                       {:loader-opacity       loader-opacity
                                        :theme                theme
                                        :gradient-color-index gradient-color-index}])
 
-      (when supported-file?
+      (when (and supported-file? (not loading?))
         [reanimated/view {:style (style/supported-file image-opacity)}
          [rn/image
           {:style         style/image
