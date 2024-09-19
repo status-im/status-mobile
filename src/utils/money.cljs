@@ -59,10 +59,10 @@
 
 (defn equal-to
   [n1 n2]
-  (when-let [^js bn1 (bignumber n1)]
-    (try
-      (.eq ^js bn1 n2)
-      (catch :default _ false))))
+  (boolean
+   (when-let [^js bn1 (if (bignumber? n1) n1 (bignumber n1))]
+     (when-let [^js bn2 (if (bignumber? n2) n2 (bignumber n2))]
+       (.eq ^js bn1 bn2)))))
 
 (extend-type BigNumber
  IEquiv
