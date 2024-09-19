@@ -28,7 +28,8 @@
 (defn- collectibles-tab
   []
   (let [updating?               (rf/sub [:wallet/current-viewing-account-collectibles-updating?])
-        collectible-list        (rf/sub [:wallet/current-viewing-account-collectibles-in-selected-networks])
+        collectible-list        (rf/sub
+                                 [:wallet/current-viewing-account-collectibles-in-selected-networks])
         current-account-address (rf/sub [:wallet/current-viewing-account-address])]
     [collectibles/view
      {:loading?                  updating?
