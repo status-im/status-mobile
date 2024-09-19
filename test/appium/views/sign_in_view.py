@@ -191,7 +191,6 @@ class SignInView(BaseView):
         self.reset_database_checkbox = Button(self.driver, translation_id="reset-database")
         self.move_and_reset_button = MoveAndResetButton(self.driver)
         self.choose_storage_button = Button(self.driver, translation_id="choose-storage")
-        self.enter_seed_phrase_next_button = Button(self.driver, translation_id="enter-seed-phrase")
         self.keycard_required_option = Button(self.driver, translation_id="empty-keycard-required")
 
         # errors
