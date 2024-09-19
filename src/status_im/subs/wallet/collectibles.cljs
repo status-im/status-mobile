@@ -1,7 +1,8 @@
 (ns status-im.subs.wallet.collectibles
   (:require
     [clojure.string :as string]
-    [re-frame.core :as re-frame]))
+    [re-frame.core :as re-frame]
+    [utils.collection]))
 
 (defn- filter-collectibles-in-chains
   [collectibles chain-ids]
@@ -69,6 +70,7 @@
      (->> all-collectibles
           (apply interleave)
           (remove nil?)
+          (utils.collection/distinct-by :id)
           (add-collectibles-preview-url)))))
 
 (re-frame/reg-sub
@@ -118,8 +120,8 @@
  :wallet/collectible-details-owner
  :<- [:wallet/accounts]
  (fn [accounts [_ collectible]]
-   (let [collectible-address (-> collectible :ownership first :address)]
-     (some #(when (= (:address %) collectible-address)
+   (let [owner-address (-> collectible :ownership first :address)]
+     (some #(when (= (:address %) owner-address)
               %)
            accounts))))
 
@@ -127,12 +129,11 @@
  :wallet/total-owned-collectible
  :<- [:wallet/accounts-without-watched-accounts]
  (fn [accounts [_ ownership address]]
-   (let [addresses (map :address accounts)]
+   (let [addresses (if address
+                     #{address}
+                     (set (map :address accounts)))]
      (reduce (fn [acc item]
-               (if (or
-                    (and (not address)
-                         (contains? (set addresses) (:address item)))
-                    (= (:address item) address))
+               (if (contains? addresses (:address item))
                  (+ acc (js/parseInt (:balance item)))
                  acc))
              0

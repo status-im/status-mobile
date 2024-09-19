@@ -15,7 +15,9 @@
                                        #(rf/dispatch [:wallet/collectible-amount-navigate-back]))
         send-transaction-data         (rf/sub [:wallet/wallet-send])
         collectible                   (:collectible send-transaction-data)
-        balance                       (utils/collectible-balance collectible)
+        sender-address                (rf/sub [:wallet/current-viewing-account-address])
+        balance                       (rf/sub [:wallet/total-owned-collectible (:ownership collectible)
+                                               sender-address])
         [input-state set-input-state] (rn/use-state (-> controlled-input/init-state
                                                         (controlled-input/set-value-numeric 1)
                                                         (controlled-input/set-lower-limit 1)))

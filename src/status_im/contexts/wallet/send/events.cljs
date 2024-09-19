@@ -284,7 +284,7 @@
 
                               collectible
                               (str (:name collection-data) " #" collectible-id))
-         owner-address      (-> collectible :ownership first :address)
+         owner-address      (-> db :wallet :current-viewing-account-address)
          collectible-tx     (-> db
                                 (update-in [:wallet :ui :send] dissoc :token)
                                 (assoc-in [:wallet :ui :send :collectible] collectible)
