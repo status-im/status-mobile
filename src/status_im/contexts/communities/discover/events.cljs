@@ -74,6 +74,7 @@
         featured (:contract-featured-communities cc)
         unknown  (:unknown-communities cc)
         other    (remove (set featured) (:contract-communities cc))]
+    (print "-------------- parvesh handle contract communities" contract-communities)
     {:db (assoc db
                 :contract-communities
                 {:featured         (select-keys (:communities cc) featured)
