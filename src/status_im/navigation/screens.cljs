@@ -34,6 +34,7 @@
     [status-im.contexts.onboarding.generating-keys.view :as generating-keys]
     [status-im.contexts.onboarding.identifiers.view :as identifiers]
     [status-im.contexts.onboarding.intro.view :as intro]
+    [status-im.contexts.onboarding.preparing-status.view :as preparing-status]
     [status-im.contexts.onboarding.sign-in.view :as sign-in]
     [status-im.contexts.onboarding.syncing.progress.view :as syncing-devices]
     [status-im.contexts.onboarding.syncing.results.view :as syncing-results]
@@ -344,6 +345,15 @@
                  :hardwareBackButton {:dismissModalOnPress false
                                       :popStackOnPress     false}}
      :component generating-keys/view}
+
+    {:name      :screen/onboarding.preparing-status
+     :options   {:theme              :dark
+                 :layout             options/onboarding-transparent-layout
+                 :animations         transitions/push-animations-for-transparent-background
+                 :popGesture         false
+                 :hardwareBackButton {:dismissModalOnPress false
+                                      :popStackOnPress     false}}
+     :component preparing-status/view}
 
     {:name      :screen/onboarding.enter-seed-phrase
      :options   {:theme      :dark

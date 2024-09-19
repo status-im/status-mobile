@@ -266,6 +266,11 @@
  (fn [{:keys [preview-privacy?]}]
    (boolean preview-privacy?)))
 
+(re-frame/reg-sub :profile/installation-id
+ :<- [:profile/profile]
+ (fn [{:keys [installation-id]}]
+   installation-id))
+
 (defn- replace-multiaccount-image-uri
   [profile ens-names port font-file avatar-opts theme]
   (let [{:keys [key-uid ens-name? images

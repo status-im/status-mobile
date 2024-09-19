@@ -37,6 +37,7 @@
     :screen/onboarding.enable-biometrics
     :screen/onboarding.generating-keys
     :screen/onboarding.enable-notifications
+    :screen/onboarding.preparing-status
     :screen/onboarding.sign-in-intro
     :screen/onboarding.sign-in
     :screen/onboarding.syncing-progress

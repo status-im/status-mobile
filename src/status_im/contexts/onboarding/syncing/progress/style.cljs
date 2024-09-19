@@ -27,7 +27,3 @@
    :align-items     :center
    :align-self      :center
    :justify-content :center})
-
-(def try-again-button
-  {:margin-top         20
-   :padding-horizontal 20})

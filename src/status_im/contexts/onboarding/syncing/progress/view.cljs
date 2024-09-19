@@ -5,6 +5,7 @@
     [status-im.common.resources :as resources]
     [status-im.contexts.onboarding.common.background.view :as background]
     [status-im.contexts.onboarding.syncing.progress.style :as style]
+    [utils.debounce :as debounce]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
@@ -25,17 +26,40 @@
     :title-accessibility-label       :progress-screen-title
     :description-accessibility-label :progress-screen-sub-title}])
 
+(defn- navigate-to-enter-seed-phrase
+  []
+  (debounce/debounce-and-dispatch
+   [:onboarding/navigate-to-sign-in-by-seed-phrase :screen/onboarding.sync-or-recover-profile]
+   500))
+
+(defn- try-again
+  [logged-in?]
+  (rf/dispatch [:syncing/clear-states])
+  (if logged-in?
+    (rf/dispatch [:navigate-back])
+    (rf/dispatch [:navigate-back-to :screen/onboarding.sync-or-recover-profile])))
+
 (defn try-again-button
-  [profile-color]
-  [quo/button
-   {:on-press            (fn []
-                           (rf/dispatch [:syncing/clear-states])
-                           (rf/dispatch [:navigate-back]))
-    :accessibility-label :try-again-later-button
-    :customization-color profile-color
-    :size                40
-    :container-style     style/try-again-button}
-   (i18n/label :t/try-again)])
+  [profile-color logged-in?]
+  [quo/bottom-actions
+   {:actions (if logged-in? :one-action :two-actions)
+    :blur? true
+    :button-one-label (i18n/label :t/recovery-phrase)
+    :button-one-props {:type                :primary
+                       :accessibility-label :try-seed-phrase-button
+                       :customization-color profile-color
+                       :container-style     {:flex 1}
+                       :size                40
+                       :on-press            navigate-to-enter-seed-phrase}
+    (if logged-in? :button-one-label :button-two-label)
+    (i18n/label :t/try-again)
+    (if logged-in? :button-one-props :button-two-props)
+    {:type                (if logged-in? :primary :grey)
+     :accessibility-label :try-again-later-button
+     :customization-color profile-color
+     :container-style     {:flex 1}
+     :size                40
+     :on-press            #(try-again logged-in?)}}])
 
 (defn- illustration
   [pairing-progress?]
@@ -47,6 +71,7 @@
 (defn view
   [in-onboarding?]
   (let [pairing-status    (rf/sub [:pairing/pairing-status])
+        logged-in?        (rf/sub [:multiaccount/logged-in?])
         pairing-progress? (pairing-progress pairing-status)
         profile-color     (or (:color (rf/sub [:onboarding/profile]))
                               (rf/sub [:profile/customization-color]))]
@@ -58,7 +83,7 @@
      [page-title pairing-progress?]
      [illustration pairing-progress?]
      (when-not (pairing-progress pairing-status)
-       [try-again-button profile-color])]))
+       [try-again-button profile-color logged-in?])]))
 
 (defn view-onboarding
   []

@@ -71,17 +71,20 @@
   {:events [:onboarding/create-account-and-login]}
   [{:keys [db] :as cofx}]
   (let [{:keys [display-name seed-phrase password image-path color] :as profile}
-        (:onboarding/profile db)]
+        (:onboarding/profile db)
+        loading-screen (if (seq (:syncing/key-uid db))
+                         :screen/onboarding.preparing-status
+                         :screen/onboarding.generating-keys)]
     (rf/merge cofx
               {:dispatch       [:navigate-to-within-stack
-                                [:screen/onboarding.generating-keys
+                                [loading-screen
                                  (get db
                                       :onboarding/navigated-to-enter-seed-phrase-from-screen
                                       :screen/onboarding.new-to-status)]]
                :dispatch-later [{:ms       constants/onboarding-generating-keys-animation-duration-ms
                                  :dispatch [:navigate-to-within-stack
                                             [:screen/onboarding.enable-notifications
-                                             :screen/onboarding.generating-keys]]}]
+                                             loading-screen]]}]
                :db             (-> db
                                    (dissoc :profile/login)
                                    (dissoc :auth-method)
@@ -134,22 +137,32 @@
 (rf/defn seed-phrase-validated
   {:events [:onboarding/seed-phrase-validated]}
   [{:keys [db]} seed-phrase key-uid]
-  (if (contains? (:profile/profiles-overview db) key-uid)
-    {:effects.utils/show-confirmation
-     {:title               (i18n/label :t/multiaccount-exists-title)
-      :content             (i18n/label :t/multiaccount-exists-content)
-      :confirm-button-text (i18n/label :t/unlock)
-      :on-accept           (fn []
-                             (re-frame/dispatch [:pop-to-root :screen/profile.profiles])
-                             (re-frame/dispatch
-                              [:profile/profile-selected key-uid]))
-      :on-cancel           #(re-frame/dispatch [:pop-to-root :multiaccounts])}}
-    {:db       (assoc-in db [:onboarding/profile :seed-phrase] seed-phrase)
-     :dispatch [:navigate-to-within-stack
-                [:screen/onboarding.create-profile
-                 (get db
-                      :onboarding/navigated-to-enter-seed-phrase-from-screen
-                      :screen/onboarding.new-to-status)]]}))
+  (let [syncing-account-recovered? (and (seq (:syncing/key-uid db))
+                                        (= (:syncing/key-uid db) key-uid))
+        next-screen                (if syncing-account-recovered?
+                                     :screen/onboarding.create-profile-password
+                                     :screen/onboarding.create-profile)]
+    (if (contains? (:profile/profiles-overview db) key-uid)
+      {:effects.utils/show-confirmation
+       {:title               (i18n/label :t/multiaccount-exists-title)
+        :content             (i18n/label :t/multiaccount-exists-content)
+        :confirm-button-text (i18n/label :t/unlock)
+        :on-accept           (fn []
+                               (re-frame/dispatch [:pop-to-root :screen/profile.profiles])
+                               (re-frame/dispatch
+                                [:profile/profile-selected key-uid]))
+        :on-cancel           #(re-frame/dispatch [:pop-to-root :multiaccounts])}}
+      {:db (-> db
+               (assoc-in [:onboarding/profile :seed-phrase] seed-phrase)
+               (assoc-in [:onboarding/profile :color] constants/profile-default-color))
+       :fx [[:dispatch
+             [:navigate-to-within-stack
+              [next-screen
+               (get db
+                    :onboarding/navigated-to-enter-seed-phrase-from-screen
+                    :screen/onboarding.new-to-status)]]]
+            (when-not syncing-account-recovered?
+              [:dispatch [:syncing/clear-syncing-data]])]})))
 
 (rf/defn navigate-to-create-profile
   {:events [:onboarding/navigate-to-create-profile]}
