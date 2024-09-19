@@ -40,7 +40,8 @@
     [quo/collectible-list-item
      {:type                 :card
       :image-src            (:uri preview-url)
-      :avatar-image-src     (:image-url collection-data)
+      :avatar-image-src     (when (utils/supported-file? (:image-url collection-data))
+                              (:image-url collection-data))
       :collectible-name     (:name collectible-data)
       :supported-file?      (utils/supported-file? (:animation-media-type collectible-data))
       :gradient-color-index gradient-color
