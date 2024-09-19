@@ -2320,6 +2320,7 @@
   "slide-to-sign": "Slide to sign",
   "slide-to-swap": "Slide to swap",
   "slippage": "Slippage",
+  "slippage-cant-be-more-than-30": "Slippage can't be more than 30",
   "slippage-may-be-higher-than-necessary": "Slippage may be higher than necessary",
   "slippage-settings": "Slippage settings",
   "slippage-settings-description": "Your transaction will revert if the price changes more than the slippage percentage",
