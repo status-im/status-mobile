@@ -58,22 +58,20 @@
 
 (defn- transfer-mention-result
   [result]
-  (let [{:keys [input-segments mentionable-users state chat-id new-text call-id call-time]}
+  (let [{:keys [input-segments mentionable-users state chat-id new-text call-id]}
         (set/rename-keys result
                          {:InputSegments      :input-segments
                           :MentionSuggestions :mentionable-users
                           :MentionState       :state
                           :ChatID             :chat-id
                           :NewText            :new-text
-                          :CallID             :call-id
-                          :CallTime           :call-time})]
+                          :CallID             :call-id})]
     {:chat-id           chat-id
      :input-segments    (transfer-input-segments input-segments)
      :mentionable-users (rename-mentionable-users mentionable-users)
      :state             (rename-state state)
      :new-text          new-text
-     :call-id           call-id
-     :call-time         call-time}))
+     :call-id           call-id}))
 
 (rf/defn on-error
   {:events [:mention/on-error]}
@@ -105,13 +103,13 @@
 
 (rf/defn on-change-text
   {:events [:mention/on-change-text]}
-  [{:keys [db now]} text]
+  [{:keys [db]} text]
   (let [chat-id (:current-chat-id db)
-        call-id (inc (get-in db [:chat/inputs chat-id :current-call-id] 0))
-        params  [chat-id text call-id now]
+        call-id (inc (get-in db [:chat/inputs chat-id :current-mentions-call-id] 0))
+        params  [chat-id text call-id]
         method  "wakuext_chatMentionOnChangeText"]
     (log/debug "[mentions] on-change-text" {:params params})
-    {:db            (assoc-in db [:chat/inputs chat-id :current-call-id] call-id)
+    {:db            (assoc-in db [:chat/inputs chat-id :current-mentions-call-id] call-id)
      :json-rpc/call [{:method     method
                       :params     params
                       :on-success #(rf/dispatch [:mention/on-change-text-success %])
@@ -121,18 +119,16 @@
 
 (rf/defn on-change-text-success
   {:events [:mention/on-change-text-success]}
-  [{:keys [db now]} result]
+  [{:keys [db]} result]
   (log/debug "[mentions] on-change-text-success" {:result result})
   (let [{:keys [state chat-id mentionable-users
-                input-segments call-id call-time]} (transfer-mention-result result)
-        current-call-id                            (get-in db [:chat/inputs chat-id :current-call-id])]
-    (when (= call-id current-call-id)
-      (let [response-time (- now call-time)]
-        (log/debug "[mentions] on-change-text-success response-time" {:response-time response-time})
-        {:db (-> db
-                 (assoc-in [:chat/inputs-with-mentions chat-id] input-segments)
-                 (assoc-in [:chats/mention-suggestions chat-id] mentionable-users)
-                 (assoc-in [:chats/mentions chat-id :mentions] state))}))))
+                input-segments call-id]} (transfer-mention-result result)
+        current-mentions-call-id         (get-in db [:chat/inputs chat-id :current-mentions-call-id])]
+    (when (= call-id current-mentions-call-id)
+      {:db (-> db
+               (assoc-in [:chat/inputs-with-mentions chat-id] input-segments)
+               (assoc-in [:chats/mention-suggestions chat-id] mentionable-users)
+               (assoc-in [:chats/mentions chat-id :mentions] state))})))
 
 (rf/defn on-select-mention-success
   {:events [:mention/on-select-mention-success]}
