@@ -7,6 +7,7 @@
     [status-im.common.floating-button-page.view :as floating-button-page]
     [status-im.common.standard-authentication.core :as standard-auth]
     [status-im.constants :as constants]
+    [status-im.contexts.wallet.send.utils :as send-utils]
     [status-im.contexts.wallet.swap.swap-confirmation.style :as style]
     [utils.address :as address-utils]
     [utils.i18n :as i18n]
@@ -76,7 +77,7 @@
      [quo/summary-info
       {:type        :token
        :networks?   true
-       :values      network-values
+       :values      (send-utils/network-values-for-ui network-values)
        :token-props {:token   token-symbol
                      :label   (str amount " " token-symbol)
                      :address (address-utils/get-shortened-compressed-key token-address)
