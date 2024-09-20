@@ -641,6 +641,7 @@
             :to-address             to-address
             :from-asset             token-id
             :to-asset               token-id
+            :amount-in              (if eth-transfer? (:amount-in first-route) "0x0")
             :amount-out             (if eth-transfer? (:amount-out first-route) "0x0")
             :multi-transaction-type multi-transaction-type})
           transaction-paths

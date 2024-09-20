@@ -470,11 +470,12 @@
                     :Amount    amount-in)))))
 
 (defn multi-transaction-command
-  [{:keys [from-address to-address from-asset to-asset amount-out multi-transaction-type]
+  [{:keys [from-address to-address from-asset to-asset amount-in amount-out multi-transaction-type]
     :or   {multi-transaction-type constants/multi-transaction-type-unknown}}]
   {:fromAddress from-address
    :toAddress   to-address
    :fromAsset   from-asset
    :toAsset     to-asset
-   :fromAmount  amount-out
+   :fromAmount  amount-in
+   :toAmount    amount-out
    :type        multi-transaction-type})

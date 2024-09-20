@@ -247,6 +247,9 @@
                                    :amount-out (if eth-transfer?
                                                  (:amount-out swap-proposal)
                                                  "0x0")
+                                   :amount-in (if eth-transfer?
+                                                (:amount-in swap-proposal)
+                                                "0x0")
                                    :multi-transaction-type
                                    multi-transaction-type})
                                  transaction-paths
