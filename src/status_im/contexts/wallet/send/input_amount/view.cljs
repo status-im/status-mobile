@@ -138,7 +138,7 @@
 (defn view
   ;; crypto-decimals, limit-crypto and initial-crypto-currency? args are needed
   ;; for component tests only
-  [{default-on-confirm       :on-confirm
+  [{on-confirm               :on-confirm
     default-limit-crypto     :limit-crypto
     default-crypto-decimals  :crypto-decimals
     on-navigate-back         :on-navigate-back
@@ -155,11 +155,6 @@
         on-navigate-back                            on-navigate-back
 
         [just-toggled-mode? set-just-toggled-mode?] (rn/use-state false)
-        handle-on-confirm                           (fn [amount]
-                                                      (rf/dispatch [:wallet/stop-get-suggested-routes])
-                                                      (rf/dispatch [:wallet/set-token-amount-to-send
-                                                                    {:amount   amount
-                                                                     :stack-id current-screen-id}]))
         {fiat-currency :currency}                   (rf/sub [:profile/profile])
         {token-symbol :symbol
          token-networks :networks
@@ -190,7 +185,6 @@
         loading-routes?                             (rf/sub
                                                      [:wallet/wallet-send-loading-suggested-routes?])
         route                                       (rf/sub [:wallet/wallet-send-route])
-        on-confirm                                  (or default-on-confirm handle-on-confirm)
         crypto-decimals                             (or token-decimals default-crypto-decimals)
         input-value                                 (controlled-input/input-value input-state)
         valid-input?                                (not (or (controlled-input/empty-value? input-state)

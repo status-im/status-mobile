@@ -14,6 +14,11 @@
     :button-one-label       (i18n/label :t/review-send)
     :enabled-from-chain-ids (rf/sub
                              [:wallet/wallet-send-enabled-from-chain-ids])
+    :on-confirm             (fn [amount]
+                              (rf/dispatch [:wallet/stop-get-suggested-routes])
+                              (rf/dispatch [:wallet/set-token-amount-to-send
+                                            {:amount   amount
+                                             :stack-id :screen/wallet.send-input-amount}]))
     :from-enabled-networks  (rf/sub [:wallet/wallet-send-enabled-networks])
     :on-navigate-back       (fn []
                               (rf/dispatch [:wallet/clean-disabled-from-networks])

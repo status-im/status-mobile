@@ -19,6 +19,7 @@
                               [:wallet/bridge-from-chain-ids])
      :from-enabled-networks  (rf/sub [:wallet/bridge-from-networks])
      :on-confirm             (fn [amount]
+                               (rf/dispatch [:wallet/stop-get-suggested-routes])
                                (rf/dispatch [:wallet/set-token-amount-to-bridge
                                              {:amount   amount
                                               :stack-id :screen/wallet.bridge-input-amount}]))
