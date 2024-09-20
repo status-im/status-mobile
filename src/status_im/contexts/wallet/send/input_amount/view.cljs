@@ -165,10 +165,12 @@
          :as
          token}                                     (rf/sub [:wallet/wallet-send-token])
         send-from-locked-amounts                    (rf/sub [:wallet/wallet-send-from-locked-amounts])
-        {token-balance :total-balance
-         :as           token-by-symbol}             (rf/sub [:wallet/token-by-symbol
+        {:keys [total-balance]
+         :as   token-by-symbol}                     (rf/sub [:wallet/token-by-symbol
                                                              (str token-symbol)
                                                              enabled-from-chain-ids])
+        token-balance                               (or default-limit-crypto total-balance)
+        usd-conversion-rate                         (utils/token-usd-price token)
         currency                                    (rf/sub [:profile/currency])
         conversion-rate                             (-> token
                                                         :market-values-per-currency
@@ -178,12 +180,7 @@
                                                         utils/token-usd-price
                                                         utils/one-cent-value
                                                         utils/calc-max-crypto-decimals)
-        [input-state set-input-state]               (rn/use-state
-                                                     (-> controlled-input/init-state
-                                                         (controlled-input/set-upper-limit
-                                                          (utils/cut-crypto-decimals-to-fit-usd-cents
-                                                           (or default-limit-crypto token-balance)
-                                                           conversion-rate))))
+        [input-state set-input-state]               (rn/use-state controlled-input/init-state)
         clear-input!                                #(set-input-state controlled-input/delete-all)
         currency-symbol                             (rf/sub [:profile/currency-symbol])
         loading-routes?                             (rf/sub
@@ -191,6 +188,14 @@
         route                                       (rf/sub [:wallet/wallet-send-route])
         on-confirm                                  (or default-on-confirm handle-on-confirm)
         crypto-decimals                             (or token-decimals default-crypto-decimals)
+        max-limit                                   (if crypto-currency?
+                                                      (utils/cut-crypto-decimals-to-fit-usd-cents
+                                                       token-balance
+                                                       usd-conversion-rate)
+                                                      (-> (money/crypto->fiat
+                                                           token-balance
+                                                           conversion-rate)
+                                                          utils/cut-fiat-balance-to-two-decimals))
         input-value                                 (controlled-input/input-value input-state)
         valid-input?                                (not (or (controlled-input/empty-value? input-state)
                                                              (controlled-input/input-error input-state)))
@@ -291,6 +296,10 @@
              app-keyboard-listener (.addEventListener rn/app-state "change" dismiss-keyboard-fn)]
          #(.remove app-keyboard-listener))))
     (hot-reload/use-safe-unmount on-navigate-back)
+    (rn/use-effect
+     (fn []
+       (set-input-state #(controlled-input/set-upper-limit % max-limit)))
+     [max-limit])
     (rn/use-effect
      (fn []
        (when input-error (debounce/clear-all))
