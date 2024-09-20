@@ -185,3 +185,12 @@
        :crypto  []
        :other   []}
       (vals currencies)))))
+
+(re-frame/reg-sub
+ :wakuv2-nodes/validation-errors
+ :<- [:wakuv2-nodes/manage]
+ (fn [manage]
+   (set (keep
+         (fn [[k {:keys [error]}]]
+           (when error k))
+         manage))))
