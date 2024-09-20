@@ -42,27 +42,35 @@
   [x]
   (instance? BigNumber x))
 
+(defn ->bignumber
+  [n]
+  (if (bignumber? n) n (bignumber n)))
+
+(defn ->bignumbers
+  [& nums]
+  (let [bignums (map ->bignumber nums)]
+    (when (every? bignumber? bignums)
+      bignums)))
+
 (defn greater-than-or-equals
-  [^js bn1 ^js bn2]
-  (when (bignumber? bn1)
+  [^js n1 ^js n2]
+  (when-let [[^js bn1 ^js bn2] (->bignumbers n1 n2)]
     (.greaterThanOrEqualTo bn1 bn2)))
 
 (defn greater-than
-  [bn1 bn2]
-  (when (bignumber? bn1)
+  [n1 n2]
+  (when-let [[^js bn1 ^js bn2] (->bignumbers n1 n2)]
     (.greaterThan ^js bn1 bn2)))
 
 (defn less-than
-  [bn1 bn2]
-  (when (bignumber? bn1)
+  [n1 n2]
+  (when-let [[^js bn1 ^js bn2] (->bignumbers n1 n2)]
     (.lessThan ^js bn1 bn2)))
 
 (defn equal-to
   [n1 n2]
-  (boolean
-   (when-let [^js bn1 (if (bignumber? n1) n1 (bignumber n1))]
-     (when-let [^js bn2 (if (bignumber? n2) n2 (bignumber n2))]
-       (.eq ^js bn1 bn2)))))
+  (when-let [[^js bn1 ^js bn2] (->bignumbers n1 n2)]
+    (.eq ^js bn1 bn2)))
 
 (extend-type BigNumber
  IEquiv
@@ -81,8 +89,9 @@
        :else                     0)))
 
 (defn sub
-  [bn1 bn2]
-  (.sub ^js bn1 bn2))
+  [n1 n2]
+  (when-let [[^js bn1 ^js bn2] (->bignumbers n1 n2)]
+    (.sub ^js bn1 bn2)))
 
 (defn valid?
   [^js bn]
@@ -127,7 +136,7 @@
 
 (defn to-number
   [^js bn]
-  (when bn
+  (when (bignumber? bn)
     (.toNumber bn)))
 
 (defn to-string
@@ -160,7 +169,7 @@
 
 (defn ether->wei
   [^js bn]
-  (when bn
+  (when (bignumber? bn)
     (.times bn ^js (bignumber 1e18))))
 
 (defn token->unit
@@ -230,7 +239,7 @@
 (defn sufficient-funds?
   [^js amount ^js balance]
   (when (and amount balance)
-    (.greaterThanOrEqualTo balance amount)))
+    (greater-than-or-equals balance amount)))
 
 (defn fiat-amount-value
   [amount-str from to prices]
@@ -277,7 +286,7 @@
 
 (defn absolute-value
   [bn]
-  (when bn
+  (when (bignumber? bn)
     (.absoluteValue ^js bn)))
 
 (defn format-amount
