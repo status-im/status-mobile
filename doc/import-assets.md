@@ -1,6 +1,6 @@
-# new icons
+# Importing assets from Figma into project
 
-## Export icons
+## Icons
 
 ![](images/export-icons/export-icons.gif)
 
@@ -13,3 +13,11 @@
     ```
     2x@2x
 4. If you want platform specific icon use `.android` or `.ios` suffixes.  Example `icon_name@2x.android.png`.:w
+
+## Images
+
+Make sure to compress images before using into project.
+```
+make shell
+./scrips/compress_image.sh image_path
+```
