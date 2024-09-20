@@ -5,7 +5,8 @@
     [react-native.core :as rn]
     [status-im.constants :as const]
     [status-im.contexts.wallet.sheets.account-origin.style :as style]
-    [utils.i18n :as i18n]))
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]))
 
 (defn- header
   [text]
@@ -41,5 +42,5 @@
      :size            24
      :icon-left       :i/info
      :container-style style/action-container
-     :on-press        #(rn/open-url const/create-account-link)}
+     :on-press        #(rf/dispatch [:open-url const/create-account-link])}
     (i18n/label :t/read-more)]])
