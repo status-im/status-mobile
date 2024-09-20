@@ -154,7 +154,6 @@ in stdenv.mkDerivation rec {
     gradleCommand = ''
       ${pkgs.gradle}/bin/gradle \
       --console=plain \
-      --offline \
       --no-daemon \
       --no-scan \
       --no-watch-fs \
@@ -171,7 +170,10 @@ in stdenv.mkDerivation rec {
     # Fixes issue with failing to load libnative-platform.so
     export GRADLE_USER_HOME=$(mktemp -d)
     export ANDROID_SDK_HOME=$(mktemp -d)
-
+     
+    # we use this env to tell gradle we are in the build nix derivation
+    export IN_NIX_BUILD_DERIVATION="TRUE"
+   
     echo "Adhoc ENV: ${adhocEnvVars}"
     echo "Running: ${gradleCommand}"
 

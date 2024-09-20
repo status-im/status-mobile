@@ -10021,20 +10021,20 @@
   },
 
   {
-    "path": "com/fasterxml/jackson/core/jackson-annotations/2.17.2",
+    "path": "com/fasterxml/jackson/core/jackson-annotations/2.18.0-rc1",
     "repo": "https://repo.maven.apache.org/maven2",
     "files": {
-      "jackson-annotations-2.17.2.pom": {
-        "sha1": "742d1e93e17a0ee2e37403439cdd80678ceedccd",
-        "sha256": "sha256-Q3gYTWCK3Nu7BKd4vGRmhj8HpFUqcgREZckQQD+ewLs="
+      "jackson-annotations-2.18.0-rc1.pom": {
+        "sha1": "276deb7ae7f5cc37d23a38989a78a57507bc7eed",
+        "sha256": "sha256-oRATGux6hy/fA91Oz5s5YRm1VNnMCxqlelPj3f8WQDE="
       },
-      "jackson-annotations-2.17.2.jar": {
-        "sha1": "147b7b9412ffff24339f8aba080b292448e08698",
-        "sha256": "sha256-hzpgbiNQeWn5u76pOdXhknSoh3XqWhabp+LXlapRVuE="
+      "jackson-annotations-2.18.0-rc1.jar": {
+        "sha1": "b9e146e8346b819e4bce934d41614cd3c248ac3d",
+        "sha256": "sha256-nC1/CioqhnDAEeEFJiyx24RN+GJlLgp1KH9uXk0ML4c="
       },
-      "jackson-annotations-2.17.2.module": {
-        "sha1": "0c39db486faed84c6298fc3c6db32af7f6c6ca5e",
-        "sha256": "sha256-KMxD6Y54gYA+HoKFIeOKt67S+XejbCVR3ReQ9DDz688="
+      "jackson-annotations-2.18.0-rc1.module": {
+        "sha1": "1739c299ec680dc1491c74f15af0fbe54a5c4d31",
+        "sha256": "sha256-5wZ65mmjvbAkUEufgG7BaUxuoK3hRDgguzcoh8pXRw4="
       }
     }
   },
@@ -10055,20 +10055,20 @@
   },
 
   {
-    "path": "com/fasterxml/jackson/core/jackson-core/2.17.2",
+    "path": "com/fasterxml/jackson/core/jackson-core/2.18.0-rc1",
     "repo": "https://repo.maven.apache.org/maven2",
     "files": {
-      "jackson-core-2.17.2.pom": {
-        "sha1": "56ebdda21a42d361ae3811b39a7053fc305d584e",
-        "sha256": "sha256-F4IeGYjoMnB6tHGvGjBvSl7lATTyLY0nF7WNqFnrNbs="
+      "jackson-core-2.18.0-rc1.pom": {
+        "sha1": "f6598c774d5b3b2e3569d3c193680675cab3ded9",
+        "sha256": "sha256-vBHD23/gCYWtOYutek+9twh84A1OXeXGiIqgxEZUHX8="
       },
-      "jackson-core-2.17.2.jar": {
-        "sha1": "969a35cb35c86512acbadcdbbbfb044c877db814",
-        "sha256": "sha256-choYkkHasFJdnoWOXLYE0+zA7eCB4t531vNPpXeaW0Y="
+      "jackson-core-2.18.0-rc1.jar": {
+        "sha1": "9baac744526012c59c575a02bde8bad10c0e1fd3",
+        "sha256": "sha256-fGA8E0M5arO7lfIJeC3idcyjDn/opy4CyTugOizYlVE="
       },
-      "jackson-core-2.17.2.module": {
-        "sha1": "f6853230bbbd73cfc6d53bb490311393df91d28f",
-        "sha256": "sha256-OCgvt1xzPSOV3TTcC1nsy7Q6p8wxohomFrqqivy38jY="
+      "jackson-core-2.18.0-rc1.module": {
+        "sha1": "12dede64fc0d1405b279bb7bd6e3b6df33c401e5",
+        "sha256": "sha256-xl48rP7iAFN7/ld6XJFnw/GWJe7xXT2x6dGEQs0hGEY="
       }
     }
   },
@@ -10089,20 +10089,20 @@
   },
 
   {
-    "path": "com/fasterxml/jackson/core/jackson-databind/2.17.2",
+    "path": "com/fasterxml/jackson/core/jackson-databind/2.18.0-rc1",
     "repo": "https://repo.maven.apache.org/maven2",
     "files": {
-      "jackson-databind-2.17.2.pom": {
-        "sha1": "0091859e6b26ea19c60a35f49993f58c1c15d3bd",
-        "sha256": "sha256-0kUGmLrpC+M48rmfrtppTNRQrbUhJCE+elO0Ehm1QGI="
+      "jackson-databind-2.18.0-rc1.pom": {
+        "sha1": "884efde7eac9bf4ea9ed6d93bf087089c0eaf172",
+        "sha256": "sha256-YD5TutTqMOQzmqHxEAQ6Z+FYlV60TRswhvCBAEq4sJs="
       },
-      "jackson-databind-2.17.2.jar": {
-        "sha1": "e6deb029e5901e027c129341fac39e515066b68c",
-        "sha256": "sha256-wEmT8zwPhFNCZTeE8U84Nz0AUoDmNZ21+AhwHPrnPAw="
+      "jackson-databind-2.18.0-rc1.jar": {
+        "sha1": "f14e430aa7d04c1241cd5764013cd1fb33b94f00",
+        "sha256": "sha256-8HgR3EuBN2bzSGntJ7j7aZQos4m40zE1OW5JSrOzKY4="
       },
-      "jackson-databind-2.17.2.module": {
-        "sha1": "eaf601f0453b2fdd5048fdd12da745f8f435fb09",
-        "sha256": "sha256-9HC96JRNV9axUMqov1O7mCqZ6x1lkecxr8uXKrPddx8="
+      "jackson-databind-2.18.0-rc1.module": {
+        "sha1": "8afe869e3e0e194ecb0b1a61357635371feb774e",
+        "sha256": "sha256-xwQUM1Ea8gTx24zhQzom0MCgA/DIiRTzU6ebmBFw/GY="
       }
     }
   },
@@ -10134,12 +10134,12 @@
   },
 
   {
-    "path": "com/fasterxml/jackson/jackson-base/2.17.2",
+    "path": "com/fasterxml/jackson/jackson-base/2.18.0-rc1",
     "repo": "https://repo.maven.apache.org/maven2",
     "files": {
-      "jackson-base-2.17.2.pom": {
-        "sha1": "3264a20cda3d7b01815fb83a59cd124c25689f02",
-        "sha256": "sha256-fPnFn70UyQVnRxN7kNcKleh3YN/huCRWufAjF9W1b68="
+      "jackson-base-2.18.0-rc1.pom": {
+        "sha1": "c1aaf1a35d2464e5e891e48d52adadc37a6193ab",
+        "sha256": "sha256-HGWLaQJXT/odhFEA4khtuk8SwBDMgDGWFweGfkOpVt4="
       }
     }
   },
@@ -10156,12 +10156,12 @@
   },
 
   {
-    "path": "com/fasterxml/jackson/jackson-bom/2.17.2",
+    "path": "com/fasterxml/jackson/jackson-bom/2.18.0-rc1",
     "repo": "https://repo.maven.apache.org/maven2",
     "files": {
-      "jackson-bom-2.17.2.pom": {
-        "sha1": "e772457e00739867a8f382ef0a8c4dcb03558772",
-        "sha256": "sha256-H0crC8IATVz0IaxIhxQX+EGJ5481wElxg4f9i0T7nzI="
+      "jackson-bom-2.18.0-rc1.pom": {
+        "sha1": "fa17302fa20114e758a1e2394ac82804ddc67066",
+        "sha256": "sha256-7/5r2W/0xIfUwmNBrWhUgGawpyK2zP237wn2VRbQknk="
       }
     }
   },
@@ -10178,12 +10178,12 @@
   },
 
   {
-    "path": "com/fasterxml/jackson/jackson-parent/2.17",
+    "path": "com/fasterxml/jackson/jackson-parent/2.18-rc1",
     "repo": "https://repo.maven.apache.org/maven2",
     "files": {
-      "jackson-parent-2.17.pom": {
-        "sha1": "df97fedb1aae67d608a69fa9262410247f3d31af",
-        "sha256": "sha256-rubeSpcoOwQOQ/Ta1XXnt0eWzZhNiSdvfsdWc4DIop0="
+      "jackson-parent-2.18-rc1.pom": {
+        "sha1": "37524f99cf067121ca21b7d3229324342bf4335f",
+        "sha256": "sha256-u9ZbiGL1WrZS/n4Dg49qwQynIUGsjsk2k0NaWgxY+u8="
       }
     }
   },
@@ -10200,12 +10200,12 @@
   },
 
   {
-    "path": "com/fasterxml/jackson/module/jackson-modules-base/2.17.2",
+    "path": "com/fasterxml/jackson/module/jackson-modules-base/2.18.0-rc1",
     "repo": "https://repo.maven.apache.org/maven2",
     "files": {
-      "jackson-modules-base-2.17.2.pom": {
-        "sha1": "b3007bc606cad1aad0f2b7f16af1977a26051b2f",
-        "sha256": "sha256-rrMBBVHhN9CeuDhPO4PCQSXcOSwqmHIexorT/4TlWSU="
+      "jackson-modules-base-2.18.0-rc1.pom": {
+        "sha1": "23cd0969e1a46558c6b99de29bfe8f1b7c996d54",
+        "sha256": "sha256-1QhPHKd7N6Da4fkGz4Hx3LF+ewUOXWYyokmxPgNma0Y="
       }
     }
   },
@@ -10226,20 +10226,20 @@
   },
 
   {
-    "path": "com/fasterxml/jackson/module/jackson-module-jaxb-annotations/2.17.2",
+    "path": "com/fasterxml/jackson/module/jackson-module-jaxb-annotations/2.18.0-rc1",
     "repo": "https://repo.maven.apache.org/maven2",
     "files": {
-      "jackson-module-jaxb-annotations-2.17.2.pom": {
-        "sha1": "0ad8d1eb06b0e3242b1160d25d223f28978b8f8b",
-        "sha256": "sha256-L4BbIPMNTBlqQV+9HljEE1p71xh9LhnFae9Eo2dKjTs="
+      "jackson-module-jaxb-annotations-2.18.0-rc1.pom": {
+        "sha1": "2ff5a34de52e25debfa1c52ddcc5d5cbf69f9b64",
+        "sha256": "sha256-RTdvvE7ToPc/eMsnOEstuJDJ244ikIQkaXP25AKN4Xs="
       },
-      "jackson-module-jaxb-annotations-2.17.2.jar": {
-        "sha1": "c2978b818ef2f2b2738b387c143624eab611d917",
-        "sha256": "sha256-hVYckOm941aaaI9XQQvelGFAs1Wr3XCuwFP+yVTjAaY="
+      "jackson-module-jaxb-annotations-2.18.0-rc1.jar": {
+        "sha1": "95b085253d574ae37fd92cbbc9d8939051b57f27",
+        "sha256": "sha256-083oiKh1HKLqQTDz7aWimJ95qu9s7qoydvwCSVMI3Ow="
       },
-      "jackson-module-jaxb-annotations-2.17.2.module": {
-        "sha1": "a7fe515d7d0ca4c75c58c6aa381d7f68bbaeb5ac",
-        "sha256": "sha256-JR4jRcce8k2uUpe84BAk2ESa3L6IJimArNCt1fiTil4="
+      "jackson-module-jaxb-annotations-2.18.0-rc1.module": {
+        "sha1": "2e0743404e71110c72a67112ee336b4700e49a59",
+        "sha256": "sha256-YE//5aKOfa47dngcLPU2lX4N6eOJnmUKE/uJMxh99a0="
       }
     }
   },
@@ -10271,12 +10271,12 @@
   },
 
   {
-    "path": "com/fasterxml/oss-parent/58",
+    "path": "com/fasterxml/oss-parent/61",
     "repo": "https://repo.maven.apache.org/maven2",
     "files": {
-      "oss-parent-58.pom": {
-        "sha1": "0ed9e5d9e7cad24fce51b18455e0cf5ccd2c94b6",
-        "sha256": "sha256-VnDmrBxN3MnUE8+HmXpdou+qTSq+Q5Njr57xAqCgnkA="
+      "oss-parent-61.pom": {
+        "sha1": "8a4169cc2907589f72b053e7b9b02cb741bf1e46",
+        "sha256": "sha256-NklRPPWX6RhtoIVZhqjFQ+Er29gF7e75wSTbVt0DZUQ="
       }
     }
   },
@@ -14687,6 +14687,21 @@
       "jaxb-api-2.2.12-b140109.1041.jar": {
         "sha1": "7ed0e0d01198614194d56dfb03d9d95aa311824c",
         "sha256": "sha256-teYM2Le1/wHOSnTF3QCPT70UztNJXQtHuFz+3BgiEfI="
+      }
+    }
+  },
+
+  {
+    "path": "javax/xml/bind/jaxb-api/2.2.12",
+    "repo": "https://repo.maven.apache.org/maven2",
+    "files": {
+      "jaxb-api-2.2.12.pom": {
+        "sha1": "650e118d32cfcbbe5da8727ccda4023e4b2331bc",
+        "sha256": "sha256-Gs08hdTP48Sa4eKsKXdCujnaW7swo60OQXbqbGNI/O8="
+      },
+      "jaxb-api-2.2.12.jar": {
+        "sha1": "4c83805595b15acf41d71d49e3add7c0e85baaed",
+        "sha256": "sha256-aKYh7BhIX5UdCax29D5X7uOU2+QsuPKkxZyTKW+p3MY="
       }
     }
   },
