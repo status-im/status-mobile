@@ -7,7 +7,7 @@
 
 go.overrideDerivation (oldAttrs: {
   postPatch = (oldAttrs.postPatch or "") + ''
-    substituteInPlace "src/cmd/go/internal/work/action.go" --replace \
+    substituteInPlace "src/cmd/go/internal/work/action.go" --replace-quiet \
       'tmp, err := ioutil.TempDir(os.Getenv("GOTMPDIR"), "go-build")' \
       'var err error
       tmp := os.Getenv("NIX_GOWORKDIR")

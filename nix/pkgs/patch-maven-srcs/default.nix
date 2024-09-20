@@ -10,7 +10,7 @@ writeScript "patch-maven-srcs" (''
 
   function patchMavenSource() {
     grep "$source" $1 > /dev/null && \
-      substituteInPlace $1 --replace "$2" "$3" 2>/dev/null
+      substituteInPlace $1 --replace-quiet "$2" "$3" 2>/dev/null
   }
 
   gradleFile="$1"
