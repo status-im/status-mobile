@@ -156,6 +156,7 @@
 
         [just-toggled-mode? set-just-toggled-mode?] (rn/use-state false)
         handle-on-confirm                           (fn [amount]
+                                                      (rf/dispatch [:wallet/stop-get-suggested-routes])
                                                       (rf/dispatch [:wallet/set-token-amount-to-send
                                                                     {:amount   amount
                                                                      :stack-id current-screen-id}]))

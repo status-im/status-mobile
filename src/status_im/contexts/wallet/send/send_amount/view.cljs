@@ -2,11 +2,13 @@
   (:require
     [quo.theme]
     [status-im.contexts.wallet.send.input-amount.view :as input-amount]
+    [status-im.setup.hot-reload :as hot-reload]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
 (defn view
   []
+  (hot-reload/use-safe-unmount #(rf/dispatch [:wallet/suggested-routes-cleanup]))
   [input-amount/view
    {:current-screen-id      :screen/wallet.send-input-amount
     :button-one-label       (i18n/label :t/review-send)

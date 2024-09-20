@@ -489,13 +489,18 @@
 
 (rf/reg-event-fx :wallet/stop-get-suggested-routes
  (fn []
-   {:fx            [[:dispatch [:wallet/clean-routes-calculation]]]
-    :json-rpc/call [{:method   "wallet_stopSuggestedRoutesAsyncCalculation"
-                     :params   []
-                     :on-error (fn [error]
-                                 (log/error "failed to stop suggested routes calculation"
-                                            {:event :wallet/stop-get-suggested-routes
-                                             :error error}))}]}))
+   {:fx [[:json-rpc/call
+          [{:method   "wallet_stopSuggestedRoutesAsyncCalculation"
+            :params   []
+            :on-error (fn [error]
+                        (log/error "failed to stop suggested routes calculation"
+                                   {:event :wallet/stop-get-suggested-routes
+                                    :error error}))}]]]}))
+
+(rf/reg-event-fx :wallet/suggested-routes-cleanup
+ (fn []
+   {:fx [[:dispatch [:wallet/clean-routes-calculation]]
+         [:dispatch [:wallet/stop-get-suggested-routes]]]}))
 
 (defn- bridge-amount-greater-than-bonder-fees?
   [{{token-decimals :decimals} :from-token
