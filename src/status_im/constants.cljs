@@ -595,7 +595,7 @@
 (def ^:const max-slippage-decimal-places 2)
 (def ^:const swap-provider-paraswap
   {:name                     :paraswap
-   :full-name                "Paraswap"
+   :full-name                "ParaSwap"
    :color                    :blue
    :contract-address         "0xdef171fe48cf0115b1d80b88dc8eab59176fee57"
    :terms-and-conditions-url "https://files.paraswap.io/tos_v4.pdf"})
