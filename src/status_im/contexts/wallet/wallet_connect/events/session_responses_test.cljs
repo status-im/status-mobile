@@ -23,5 +23,5 @@
                   data-store/get-dapp-redirect-url
                   (fn [_] "native://redirect-url")]
 
-      (is (match? {:fx [[:open-url "native://redirect-url"]]}
+      (is (match? {:fx [[:effects/open-url "native://redirect-url"]]}
                   (dispatch [event-id]))))))

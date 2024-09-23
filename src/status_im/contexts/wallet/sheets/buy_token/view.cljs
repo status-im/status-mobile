@@ -9,7 +9,8 @@
 (defn- crypto-on-ramp-item
   [{:keys [name description fees logo-url site-url recurrent-site-url]} _ _ {:keys [tab]}]
   (let [open-url (rn/use-callback (fn []
-                                    (rn/open-url (if (= tab :recurrent) recurrent-site-url site-url)))
+                                    (rf/dispatch [:open-url
+                                                  (if (= tab :recurrent) recurrent-site-url site-url)]))
                                   [site-url recurrent-site-url tab])]
     [quo/settings-item
      {:title             name

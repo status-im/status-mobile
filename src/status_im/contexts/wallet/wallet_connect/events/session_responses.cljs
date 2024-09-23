@@ -148,7 +148,7 @@
                                :sessionJson
                                transforms/json->clj
                                data-store/get-dapp-redirect-url))]
-     {:fx [[:open-url redirect-url]]})))
+     {:fx [[:effects/open-url redirect-url]]})))
 
 (rf/reg-event-fx
  :wallet-connect/dismiss-request-modal

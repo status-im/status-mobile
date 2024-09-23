@@ -33,7 +33,7 @@
 
 ## Misc
 
-- [Importing icons from Figma into project](export-icons.md)
+- [Importing assets from Figma into project](import-assets.md)
 - [Updating Status APK builds for the F-Droid Android application catalogue](fdroid.md)
 - [Troubleshooting for known errors](troubleshooting.md)
 
