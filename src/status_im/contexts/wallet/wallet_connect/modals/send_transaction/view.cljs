@@ -12,7 +12,6 @@
             [status-im.contexts.wallet.wallet-connect.modals.common.header.view :as header]
             [status-im.contexts.wallet.wallet-connect.modals.common.page-nav.view :as page-nav]
             [status-im.contexts.wallet.wallet-connect.modals.common.style :as style]
-            [status-im.contexts.wallet.wallet-connect.utils.data-store :as data-store]
             [status-im.contexts.wallet.wallet-connect.utils.transactions :as transaction-utils]
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]))
@@ -39,7 +38,7 @@
   (let [{:keys [transaction]} (rf/sub [:wallet-connect/current-request])
         transaction-items     (rn/use-memo #(-> transaction
                                                 (transaction-utils/transaction-hex-values->number)
-                                                (data-store/data-item->array))
+                                                (transaction-utils/transactions->display-array))
                                            [transaction])]
     [:<>
      (case selected-tab

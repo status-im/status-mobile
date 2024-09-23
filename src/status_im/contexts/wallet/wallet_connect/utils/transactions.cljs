@@ -149,3 +149,12 @@
                                                            tx-args
                                                            signature)]
     tx))
+
+(defn transactions->display-array
+  [data]
+  (remove (fn [[k v]]
+            (println k " and value is " v)
+            (or (= v "0x")
+                (= k :MultiTransactionID)
+                (= k :Symbol)))
+          data))

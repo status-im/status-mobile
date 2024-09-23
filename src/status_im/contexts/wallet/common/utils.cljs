@@ -498,8 +498,8 @@
   "Formats the estimated time for a transaction"
   [estimated-time]
   (condp = estimated-time
-    (:unknown constants/wallet-transaction-estimation)                 ""
+    (:unknown constants/wallet-transaction-estimation)                 "> 5"
     (:less_than_one_minute constants/wallet-transaction-estimation)    "< 1"
-    (:less_than_three_minutes constants/wallet-transaction-estimation) "< 3"
-    (:less_than_five_minutes constants/wallet-transaction-estimation)  "< 5"
+    (:less_than_three_minutes constants/wallet-transaction-estimation) "1-3"
+    (:less_than_five_minutes constants/wallet-transaction-estimation)  "3-5"
     "> 5"))

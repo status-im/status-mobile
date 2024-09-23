@@ -73,7 +73,3 @@
   (-> db
       get-db-current-request-event
       get-request-params))
-
-(defn data-item->array
-  [data]
-  (map (fn [[k v]] [k v]) data))
