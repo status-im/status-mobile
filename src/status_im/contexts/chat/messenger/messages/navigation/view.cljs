@@ -15,44 +15,26 @@
     [status-im.contexts.chat.messenger.messages.navigation.style :as style]
     [status-im.contexts.chat.messenger.messages.pin.banner.view :as pin.banner]
     [utils.i18n :as i18n]
-    [utils.re-frame :as rf]
-    [utils.worklets.chat.messenger.messages :as messages.worklets]
-    [utils.worklets.chat.messenger.navigation :as worklets]))
+    [utils.re-frame :as rf]))
 
 (defn header-content-container
-  [{:keys [chat distance-from-list-top all-loaded? chat-screen-layout-calculations-complete?]}]
-  (let [theme                 (quo.theme/use-theme)
-        {:keys [chat-id group-chat chat-type chat-name
-                emoji color]} chat
-        display-name          (cond
-                                (= chat-type constants/one-to-one-chat-type)
-                                (first (rf/sub
-                                        [:contacts/contact-two-names-by-identity
-                                         chat-id]))
-                                (= chat-type constants/community-chat-type)
-                                (str "# " chat-name)
-                                :else (str emoji chat-name))
-        online?               (when-not group-chat (rf/sub [:visibility-status-updates/online? chat-id]))
-        photo-path            (if group-chat
-                                (rf/sub [:chats/group-chat-image chat-id])
-                                (rf/sub [:chats/photo-path chat-id]))
-        header-opacity        (worklets/navigation-header-opacity
-                               distance-from-list-top
-                               all-loaded?
-                               chat-screen-layout-calculations-complete?
-                               (if platform/ios?
-                                 messages.constants/content-animation-start-position-ios
-                                 messages.constants/content-animation-start-position-android))
-        header-position       (worklets/navigation-header-position
-                               distance-from-list-top
-                               all-loaded?
-                               messages.constants/top-bar-height
-                               (if platform/ios?
-                                 messages.constants/content-animation-start-position-ios
-                                 messages.constants/content-animation-start-position-android))
-        community-channel?    (= chat-type constants/community-chat-type)]
-    [reanimated/view
-     {:style (style/header-content-container header-opacity header-position)}
+  [{:keys [chat-id group-chat chat-type chat-name emoji color] :as _chat}]
+  (let [theme              (quo.theme/use-theme)
+        display-name       (cond
+                             (= chat-type constants/one-to-one-chat-type)
+                             (first (rf/sub [:contacts/contact-two-names-by-identity chat-id]))
+
+                             (= chat-type constants/community-chat-type)
+                             (str "# " chat-name)
+
+                             :else
+                             (str emoji chat-name))
+        online?            (when-not group-chat (rf/sub [:visibility-status-updates/online? chat-id]))
+        photo-path         (if group-chat
+                             (rf/sub [:chats/group-chat-image chat-id])
+                             (rf/sub [:chats/photo-path chat-id]))
+        community-channel? (= chat-type constants/community-chat-type)]
+    [reanimated/view {:style style/header-content-container}
      (cond
        community-channel?
        [quo/channel-avatar
@@ -90,30 +72,11 @@
          (i18n/label
           (if online? :t/online :t/offline))])]]))
 
-(defn animated-background-and-pinned-banner
-  [{:keys [chat-id navigation-view-height distance-from-list-top all-loaded?]}]
-  (let [theme              (quo.theme/use-theme)
-        animation-distance messages.constants/header-animation-distance
-        props              {:distance-from-list-top distance-from-list-top
-                            :all-loaded?            all-loaded?}
-        background-opacity (worklets/interpolate-navigation-view-opacity
-                            (assoc props
-                                   :start-position
-                                   messages.constants/header-container-top-margin
-                                   :end-position
-                                   (+ animation-distance
-                                      messages.constants/header-container-top-margin)))
-        banner-opacity     (worklets/interpolate-navigation-view-opacity
-                            (assoc props
-                                   :start-position
-                                   (+ navigation-view-height
-                                      messages.constants/pinned-banner-animation-start-position)
-                                   :end-position
-                                   (+ animation-distance
-                                      navigation-view-height
-                                      messages.constants/pinned-banner-animation-start-position)))]
+(defn header-background
+  [{:keys [chat-id navigation-view-height]}]
+  (let [theme (quo.theme/use-theme)]
     [:<>
-     [reanimated/view {:style (style/animated-background-view background-opacity navigation-view-height)}
+     [rn/view {:style (style/background navigation-view-height)}
       [quo/blur
        {:style         {:flex 1}
         :blur-amount   20
@@ -121,58 +84,37 @@
         :overlay-color (colors/theme-colors colors/white-70-blur colors/neutral-95-opa-70-blur theme)
         :blur-radius   (if platform/ios? 20 10)}]]
      [pin.banner/banner
-      {:chat-id        chat-id
-       :banner-opacity banner-opacity
-       :top-offset     navigation-view-height}]]))
+      {:chat-id    chat-id
+       :top-offset navigation-view-height}]]))
 
 (defn view
-  [{:keys [distance-from-list-top chat-screen-layout-calculations-complete?]}]
+  []
   (let [{:keys [chat-id chat-type]
-         :as   chat}               (rf/sub [:chats/current-chat-chat-view])
-        all-loaded?                (reanimated/use-shared-value false)
-        all-loaded-sub             (rf/sub [:chats/all-loaded? chat-id])
-        top-insets                 (safe-area/get-top)
-        top-bar-height             messages.constants/top-bar-height
-        navigation-view-height     (+ top-bar-height top-insets)
-        navigation-buttons-opacity (worklets/navigation-buttons-complete-opacity
-                                    chat-screen-layout-calculations-complete?)
-        reached-threshold?         (messages.worklets/use-messages-scrolled-to-threshold
-                                    distance-from-list-top
-                                    top-bar-height)
-        button-background          (if reached-threshold? :photo :blur)]
-    (rn/use-effect (fn [] (reanimated/set-shared-value all-loaded? all-loaded-sub))
-                   [all-loaded-sub])
-    [rn/view
-     {:style (style/navigation-view navigation-view-height messages.constants/pinned-banner-height)}
-     [animated-background-and-pinned-banner
+         :as   chat}           (rf/sub [:chats/current-chat-chat-view])
+        top-insets             (safe-area/get-top)
+        navigation-view-height (+ top-insets messages.constants/top-bar-height)]
+    [rn/view {:style (style/navigation-view navigation-view-height)}
+     [header-background
       {:chat-id                chat-id
-       :navigation-view-height navigation-view-height
-       :distance-from-list-top distance-from-list-top
-       :all-loaded?            all-loaded?}]
-     [rn/view {:style (style/header-container top-insets top-bar-height)}
-      [reanimated/view {:style (style/button-animation-container navigation-buttons-opacity)}
-       [quo/button
-        {:icon-only?          true
-         :type                :grey
-         :background          button-background
-         :size                32
-         :accessibility-label :back-button
-         :on-press            #(rf/dispatch [:navigate-back])}
-        (if (= chat-type constants/community-chat-type) :i/arrow-left :i/close)]]
-      [header-content-container
-       {:chat                                      chat
-        :distance-from-list-top                    distance-from-list-top
-        :all-loaded?                               all-loaded?
-        :chat-screen-layout-calculations-complete? chat-screen-layout-calculations-complete?}]
-      [reanimated/view {:style (style/button-animation-container navigation-buttons-opacity)}
-       [quo/button
-        {:icon-only?          true
-         :type                :grey
-         :background          button-background
-         :size                32
-         :accessibility-label :options-button
-         :on-press            (fn []
-                                (rf/dispatch [:dismiss-keyboard])
-                                (rf/dispatch [:show-bottom-sheet
-                                              {:content (fn [] [actions/chat-actions chat true])}]))}
-        :i/options]]]]))
+       :navigation-view-height navigation-view-height}]
+     [rn/view {:style (style/header-container top-insets)}
+      [quo/button
+       {:icon-only?          true
+        :type                :grey
+        :background          :blur
+        :size                32
+        :accessibility-label :back-button
+        :on-press            #(rf/dispatch [:navigate-back])}
+       (if (= chat-type constants/community-chat-type) :i/arrow-left :i/close)]
+      [header-content-container chat]
+      [quo/button
+       {:icon-only?          true
+        :type                :grey
+        :background          :blur
+        :size                32
+        :accessibility-label :options-button
+        :on-press            (fn []
+                               (rf/dispatch [:dismiss-keyboard])
+                               (rf/dispatch [:show-bottom-sheet
+                                             {:content (fn [] [actions/chat-actions chat true])}]))}
+       :i/options]]]))
