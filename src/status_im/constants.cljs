@@ -622,9 +622,9 @@
 
 (def ^:const wallet-transaction-estimation
   {:unknown                 0
-   :less_than_one_minute    1
-   :less_than_three_minutes 2
-   :less_than_five_minutes  3
-   :more_than_five_minutes  4})
+   :less-than-one-minute    1
+   :less-than-three-minutes 2
+   :less-than-five-minutes  3
+   :more-than-five-minutes  4})
 
 (def ^:const wallet-connect-transaction-refresh-interval-ms 10000)
