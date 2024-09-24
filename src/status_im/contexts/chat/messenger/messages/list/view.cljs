@@ -63,18 +63,13 @@
   [{:keys [chat-id window-height]}]
   (let [messages            (rf/sub [:chats/raw-chat-messages-stream chat-id])
         loading-first-page? (= (count messages) 0)
-        top-spacing         (if loading-first-page?
-                              0
-                              (+ messages.constants/top-bar-height (safe-area/get-top)))
         parent-height       (if loading-first-page?
                               window-height
                               loading-indicator-page-loading-height)]
-    [rn/view {:padding-top top-spacing}
-     ;; Don't use animated loading skeleton https://github.com/status-im/status-mobile/issues/17426
-     [quo/skeleton-list
-      {:content       :messages
-       :parent-height parent-height
-       :animated?     false}]]))
+    [quo/skeleton-list
+     {:content       :messages
+      :parent-height parent-height
+      :animated?     false}]))
 
 (defn header-height
   [{:keys [insets able-to-send-message? images reply edit link-previews? input-content-height]}]
