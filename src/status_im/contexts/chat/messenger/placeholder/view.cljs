@@ -3,7 +3,6 @@
     [quo.core :as quo]
     [quo.theme]
     [react-native.core :as rn]
-    [react-native.reanimated :as reanimated]
     [status-im.contexts.chat.messenger.placeholder.style :as style]
     [utils.re-frame :as rf]))
 
@@ -18,7 +17,7 @@
   [on-layout-done?]
   (let [theme       (quo.theme/use-theme)
         chat-exist? (rf/sub [:chats/current-chat-exist?])]
-    [reanimated/view {:style (style/container theme @on-layout-done?)}
+    [rn/view {:style (style/container theme @on-layout-done?)}
      (when-not chat-exist?
        [quo/page-nav
         {:icon-name :i/arrow-left

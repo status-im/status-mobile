@@ -7,7 +7,6 @@
     [re-frame.db]
     [react-native.core :as rn]
     [react-native.platform :as platform]
-    [react-native.reanimated :as reanimated]
     [react-native.safe-area :as safe-area]
     [status-im.common.home.actions.view :as actions]
     [status-im.constants :as constants]
@@ -34,7 +33,7 @@
                              (rf/sub [:chats/group-chat-image chat-id])
                              (rf/sub [:chats/photo-path chat-id]))
         community-channel? (= chat-type constants/community-chat-type)]
-    [reanimated/view {:style style/header-content-container}
+    [rn/view {:style style/header-content-container}
      (cond
        community-channel?
        [quo/channel-avatar
