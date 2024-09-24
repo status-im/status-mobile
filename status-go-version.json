@@ -1,0 +1,9 @@
+{
+    "_comment": "THIS SHOULD NOT BE EDITED BY HAND.",
+    "_comment": "Instead use: scripts/update-status-go.sh <rev>",
+    "owner": "status-im",
+    "repo": "status-go",
+    "version": "feat/log_and_panic",
+    "commit-sha1": "484f303862c4afdaf01c2f75fcf61d4f5cf11339",
+    "src-sha256": "06rn8995z6n5lx84imzyrapm4nl3p59j3fcka2dxpln3kcj6apyk"
+}
