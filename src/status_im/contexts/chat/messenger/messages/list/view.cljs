@@ -1,6 +1,5 @@
 (ns status-im.contexts.chat.messenger.messages.list.view
   (:require
-    [clojure.string :as string]
     [legacy.status-im.ui.screens.chat.group :as chat.group]
     [oops.core :as oops]
     [quo.core :as quo]
@@ -60,33 +59,8 @@
                                                    on-loaded])
                                     (if platform/low-device? 700 100)))))
 
-(defn- contact-icon
-  [{:keys [ens-verified added?]} theme]
-  (when (or ens-verified added?)
-    [rn/view
-     {:style {:margin-left 4}}
-     (if ens-verified
-       [quo/icon :i/verified
-        {:no-color true
-         :size     20
-         :color    (colors/theme-colors
-                    (colors/custom-color :success 50)
-                    (colors/custom-color :success 60)
-                    theme)}]
-       (when added?
-         [quo/icon :i/contact
-          {:no-color true
-           :size     20
-           :color    (colors/theme-colors colors/primary-50 colors/primary-60 theme)}]))]))
-
-(defn- skeleton-list-props
-  [content parent-height animated?]
-  {:content       content
-   :parent-height parent-height
-   :animated?     animated?})
-
 (defn loading-view
-  [chat-id {:keys [window-height]}]
+  [{:keys [chat-id window-height]}]
   (let [messages            (rf/sub [:chats/raw-chat-messages-stream chat-id])
         loading-first-page? (= (count messages) 0)
         top-spacing         (if loading-first-page?
@@ -97,7 +71,10 @@
                               loading-indicator-page-loading-height)]
     [rn/view {:padding-top top-spacing}
      ;; Don't use animated loading skeleton https://github.com/status-im/status-mobile/issues/17426
-     [quo/skeleton-list (skeleton-list-props :messages parent-height false)]]))
+     [quo/skeleton-list
+      {:content       :messages
+       :parent-height parent-height
+       :animated?     false}]]))
 
 (defn header-height
   [{:keys [insets able-to-send-message? images reply edit link-previews? input-content-height]}]
@@ -124,84 +101,6 @@
       true
       (+ (:bottom insets)))
     (- 70 (:bottom insets))))
-
-(defn list-header
-  [insets able-to-send-message?]
-  (let [header-data {:insets                insets
-                     :able-to-send-message? able-to-send-message?
-                     :input-content-height  (:input-content-height (rf/sub [:chats/current-chat-input]))
-                     :images                (rf/sub [:chats/sending-image])
-                     :reply                 (rf/sub [:chats/reply-message])
-                     :edit                  (rf/sub [:chats/edit-message])
-                     :link-previews?        (or (rf/sub [:chats/link-previews?])
-                                                (rf/sub [:chats/status-link-previews?]))}]
-    [rn/view {:style {:height (header-height header-data)}}]))
-
-(defn list-footer-avatar
-  [{:keys [distance-from-list-top display-name online? profile-picture theme group-chat color
-           emoji chat-type chat-name empty-chat?]}]
-  (let [scale              (reanimated/interpolate
-                            distance-from-list-top
-                            [0 (if empty-chat? 0 messages.constants/header-container-top-margin)]
-                            [1 0.4]
-                            messages.constants/default-extrapolation-option)
-        top                (reanimated/interpolate
-                            distance-from-list-top
-                            [0 (if empty-chat? 0 messages.constants/header-container-top-margin)]
-                            [-44 -12]
-                            messages.constants/default-extrapolation-option)
-        left               (reanimated/interpolate
-                            distance-from-list-top
-                            [0 (if empty-chat? 0 messages.constants/header-container-top-margin)]
-                            [16 -8]
-                            messages.constants/default-extrapolation-option)
-        community-channel? (= chat-type constants/community-chat-type)]
-    [reanimated/view
-     {:style (style/header-image scale top left theme)}
-     (cond
-       community-channel?
-       [quo/channel-avatar
-        {:size                :size-80
-         :full-name           chat-name
-         :customization-color color
-         :emoji               (when-not (string/blank? emoji)
-                                (string/trim emoji))}]
-       group-chat
-       [quo/group-avatar
-        {:customization-color color
-         :size                :size-80
-         :picture             profile-picture
-         :chat-name           chat-name}]
-       :else
-       [quo/user-avatar
-        {:full-name       display-name
-         :online?         online?
-         :profile-picture profile-picture
-         :size            :big}])]))
-
-(defn chat-display-name
-  [{:keys [distance-from-list-top display-name contact theme empty-chat?]}]
-  (let [top  (reanimated/interpolate
-              distance-from-list-top
-              [0 (if empty-chat? 0 messages.constants/header-container-top-margin)]
-              [0 -35]
-              messages.constants/default-extrapolation-option)
-        left (reanimated/interpolate
-              distance-from-list-top
-              [0 (if empty-chat? 0 messages.constants/header-container-top-margin)]
-              [0 40]
-              messages.constants/default-extrapolation-option)]
-    [reanimated/view
-     {:style (style/user-name-container top left)}
-     [rn/view
-      {:style style/user-name}
-      [quo/text
-       {:weight          :semi-bold
-        :size            :heading-1
-        :style           {:flex-shrink 1}
-        :number-of-lines 1}
-       display-name]
-      [contact-icon contact theme]]]))
 
 (defn actions
   [chat-id cover-bg-color]
@@ -236,101 +135,12 @@
                                                                 chat-type
                                                                 muted?)))}]}]))
 
-(defn bio-and-actions
-  [{:keys [distance-from-list-top bio chat-id customization-color empty-chat? description]}]
-  (let [has-bio (seq (or bio description))
-        top     (reanimated/interpolate
-                 distance-from-list-top
-                 [0 (if empty-chat? 0 messages.constants/header-container-top-margin)]
-                 [(if has-bio 8 16) (if has-bio -28 -20)]
-                 messages.constants/default-extrapolation-option)]
-    [reanimated/view
-     {:style (style/bio-and-actions top)}
-     (when has-bio
-       [quo/text (or bio description)])
-     [actions chat-id customization-color]]))
-
-(defn footer-component
-  [{:keys [chat distance-from-list-top customization-color]}]
-  (let [theme                 (quo.theme/use-theme)
-        {:keys [chat-id chat-name emoji chat-type
-                group-chat color description
-                empty-chat?]} chat
-        display-name          (cond
-                                (= chat-type constants/one-to-one-chat-type)
-                                (first (rf/sub [:contacts/contact-two-names-by-identity chat-id]))
-                                (= chat-type constants/community-chat-type)
-                                (str "# " chat-name)
-                                :else (str emoji chat-name))
-        {:keys [bio]}         (rf/sub [:contacts/contact-by-identity chat-id])
-        online?               (rf/sub [:visibility-status-updates/online? chat-id])
-        contact               (when-not group-chat
-                                (rf/sub [:contacts/contact-by-address chat-id]))
-        photo-path            (if group-chat
-                                (rf/sub [:chats/group-chat-image chat-id])
-                                (rf/sub [:chats/photo-path chat-id]))
-        top-margin            (+ (safe-area/get-top)
-                                 messages.constants/top-bar-height
-                                 messages.constants/header-container-top-margin
-                                 32)
-        background-color      (colors/theme-colors
-                               (colors/resolve-color customization-color theme 20)
-                               (colors/resolve-color customization-color theme 40)
-                               theme)
-        bottom                (reanimated/interpolate
-                               distance-from-list-top
-                               [0 messages.constants/header-container-top-margin]
-                               [32 -4]
-                               messages.constants/default-extrapolation-option)
-        background-opacity    (reanimated/interpolate
-                               distance-from-list-top
-                               [messages.constants/header-container-top-margin
-                                (+ messages.constants/header-animation-distance
-                                   messages.constants/header-container-top-margin)]
-                               [1 0]
-                               messages.constants/default-extrapolation-option)]
-    [:<>
-     [reanimated/view
-      {:style (style/background-container background-color background-opacity top-margin)}]
-     [reanimated/view {:style (style/header-bottom-container bottom top-margin)}
-      [rn/view {:style (style/header-bottom-shadow theme)}]
-      [rn/view {:style (style/header-bottom-part theme)}
-       [list-footer-avatar
-        {:distance-from-list-top distance-from-list-top
-         :display-name           display-name
-         :online?                online?
-         :theme                  theme
-         :profile-picture        photo-path
-         :group-chat             group-chat
-         :color                  color
-         :emoji                  emoji
-         :chat-type              chat-type
-         :chat-name              chat-name
-         :empty-chat?            empty-chat?}]
-       [chat-display-name
-        {:distance-from-list-top distance-from-list-top
-         :display-name           display-name
-         :theme                  theme
-         :contact                contact
-         :group-chat             group-chat
-         :empty-chat?            empty-chat?}]
-       [bio-and-actions
-        {:distance-from-list-top distance-from-list-top
-         :bio                    bio
-         :chat-id                chat-id
-         :customization-color    customization-color
-         :description            description
-         :empty-chat?            empty-chat?}]]]]))
-
-(defn list-footer
-  [props]
-  (let [chat-id           (get-in props [:chat :chat-id])
-        loading-messages? (rf/sub [:chats/loading-messages? chat-id])
+(defn more-messages-loader
+  [{:keys [chat-id] :as props}]
+  (let [loading-messages? (rf/sub [:chats/loading-messages? chat-id])
         all-loaded?       (rf/sub [:chats/all-loaded? chat-id])]
-    [:<>
-     (if (or loading-messages? (not all-loaded?))
-       [loading-view chat-id props]
-       [footer-component props])]))
+    (when (or loading-messages? (not all-loaded?))
+      [loading-view props])))
 
 (defn list-group-chat-header
   [{:keys [chat-id invitation-admin]}]
@@ -359,8 +169,7 @@
         (reset! content-height content-height-new)))))
 
 (defn on-layout
-  [{:keys [event layout-height distance-atom distance-from-list-top
-           chat-screen-layout-calculations-complete?]}]
+  [{:keys [event layout-height distance-atom distance-from-list-top on-layout-done?]}]
   (let [layout-height-new (oops/oget event "nativeEvent.layout.height")
         change            (- layout-height-new @layout-height)
         new-distance      (- @distance-atom change)]
@@ -368,8 +177,7 @@
       (reanimated/set-shared-value distance-from-list-top new-distance)
       (reset! distance-atom new-distance)
       (reset! layout-height layout-height-new))
-    (when-not (reanimated/get-shared-value chat-screen-layout-calculations-complete?)
-      (reanimated/set-shared-value chat-screen-layout-calculations-complete? true))))
+    (reset! on-layout-done? true)))
 
 (defn on-scroll-fn
   [distance-atom layout-height-atom]
@@ -379,28 +187,21 @@
     (reset! distance-atom new-distance)))
 
 (defn messages-list-content
-  [{:keys [insets distance-from-list-top content-height layout-height distance-atom
-           chat-screen-layout-calculations-complete? chat-list-scroll-y]}]
-  (let [theme                                (quo.theme/use-theme)
-        {:keys [chat-type chat-id] :as chat} (rf/sub [:chats/current-chat-chat-view])
-        one-to-one-chat?                     (= chat-type constants/one-to-one-chat-type)
-        community-channel?                   (= constants/community-chat-type chat-type)
-        {contact-customization-color
-         :customization-color}               (when one-to-one-chat?
-                                               (rf/sub [:contacts/contact-by-identity chat-id]))
-        customization-color                  (cond community-channel?
-                                                   (or (:color chat)
-                                                       (rf/sub [:communities/community-color
-                                                                (:community-id chat)]))
-                                                   one-to-one-chat? contact-customization-color
-                                                   :else (or (:color chat) :turquoise))
-        {:keys [keyboard-shown]}             (hooks/use-keyboard)
-        {window-height :height}              (rn/get-window)
-        context                              (rf/sub [:chats/current-chat-message-list-view-context])
-        able-to-send-message?                (:able-to-send-message? context)
-        messages                             (rf/sub [:chats/raw-chat-messages-stream chat-id])
-        margin-bottom?                       (and community-channel? (not able-to-send-message?))
-        recording?                           (rf/sub [:chats/recording?])]
+  [{:keys [insets distance-from-list-top layout-height chat-list-scroll-y on-layout-done?]}]
+  (let [content-height           (rn/use-ref-atom 0)
+        distance-atom            (rn/use-ref-atom 0)
+        theme                    (quo.theme/use-theme)
+        {:keys [keyboard-shown]} (hooks/use-keyboard)
+        {:keys [chat-type chat-id]
+         :as   chat}             (rf/sub [:chats/current-chat-chat-view])
+        community-channel?       (= constants/community-chat-type chat-type)
+        {window-height :height}  (rn/get-window)
+        context                  (rf/sub [:chats/current-chat-message-list-view-context])
+        able-to-send-message?    (:able-to-send-message? context)
+        messages                 (rf/sub [:chats/raw-chat-messages-stream chat-id])
+        margin-bottom?           (and community-channel? (not able-to-send-message?))
+        recording?               (rf/sub [:chats/recording?])
+        top-margin               (+ (safe-area/get-top) messages.constants/top-bar-height)]
     [rn/view {:style (style/permission-context-sheet margin-bottom?)}
      [rn/view {:style {:flex-shrink 1}} ;; Keeps flat list on top
       [reanimated/flat-list
@@ -409,12 +210,9 @@
         :bounces                           false
         :header                            (when (= (:chat-type chat) constants/private-group-chat-type)
                                              [list-group-chat-header chat])
-        :footer                            [list-footer
-                                            {:theme                  theme
-                                             :chat                   chat
-                                             :window-height          window-height
-                                             :distance-from-list-top distance-from-list-top
-                                             :customization-color    customization-color}]
+        :footer                            [more-messages-loader
+                                            {:chat-id       chat-id
+                                             :window-height window-height}]
         :data                              messages
         :render-data                       {:theme           theme
                                             :context         context
@@ -444,15 +242,15 @@
         :style                             {:background-color (colors/theme-colors colors/white
                                                                                    colors/neutral-95
                                                                                    theme)}
-        :content-container-style           {:padding-top distance-from-last-message}
+        :content-container-style           {:padding-top    distance-from-last-message
+                                            :padding-bottom top-margin}
         :inverted                          true
         :on-layout                         #(on-layout
-                                             {:event %
-                                              :layout-height layout-height
-                                              :distance-atom distance-atom
+                                             {:event                  %
+                                              :layout-height          layout-height
+                                              :distance-atom          distance-atom
                                               :distance-from-list-top distance-from-list-top
-                                              :chat-screen-layout-calculations-complete?
-                                              chat-screen-layout-calculations-complete?})
+                                              :on-layout-done?        on-layout-done?})
         :scroll-enabled                    (not recording?)
         :content-inset-adjustment-behavior :never
         :scroll-indicator-insets           {:right 1}}]]]))
