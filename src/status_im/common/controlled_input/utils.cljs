@@ -4,6 +4,8 @@
     [status-im.contexts.wallet.common.utils :as wallet-utils]
     [utils.money :as money]))
 
+(def ^:private default-max-limit 12)
+
 (def init-state
   {:value       ""
    :error?      false
@@ -101,9 +103,8 @@
 (def ^:private dot ".")
 
 (defn- can-add-character?
-  [state character]
-  (let [max-length          12
-        current             (input-value state)
+  [state character max-length]
+  (let [current             (input-value state)
         length-overflow?    (>= (count current) max-length)
         extra-dot?          (and (= character dot) (string/includes? current dot))
         extra-leading-zero? (and (= current "0") (= "0" (str character)))
@@ -123,11 +124,13 @@
     (str value character)))
 
 (defn add-character
-  [state character]
-  (if (can-add-character? state character)
-    (set-input-value state
-                     (normalize-value-as-numeric (input-value state) character))
-    state))
+  ([state character]
+   (add-character state character default-max-limit))
+  ([state character max-length]
+   (if (can-add-character? state character max-length)
+     (set-input-value state
+                      (normalize-value-as-numeric (input-value state) character))
+     state)))
 
 (defn delete-last
   ([state]

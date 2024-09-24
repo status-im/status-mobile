@@ -93,4 +93,4 @@
   [token-decimals amount-text]
   (let [regex-pattern (str "^\\d*\\.?\\d{0," token-decimals "}$")
         regex         (re-pattern regex-pattern)]
-    (re-matches regex amount-text)))
+    (boolean (re-matches regex amount-text))))

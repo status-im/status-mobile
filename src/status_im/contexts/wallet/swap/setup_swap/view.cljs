@@ -1,6 +1,8 @@
 (ns status-im.contexts.wallet.swap.setup-swap.view
   (:require [clojure.string :as string]
             [quo.core :as quo]
+            [quo.foundations.colors :as colors]
+            [quo.theme :as quo.theme]
             [react-native.core :as rn]
             [react-native.platform :as platform]
             [react-native.safe-area :as safe-area]
@@ -9,7 +11,9 @@
             [status-im.constants :as constants]
             [status-im.contexts.wallet.common.account-switcher.view :as account-switcher]
             [status-im.contexts.wallet.common.utils :as utils]
+            [status-im.contexts.wallet.sheets.buy-token.view :as buy-token]
             [status-im.contexts.wallet.swap.setup-swap.style :as style]
+            [status-im.contexts.wallet.swap.utils :as swap-utils]
             [utils.debounce :as debounce]
             [utils.i18n :as i18n]
             [utils.money :as money]
@@ -35,7 +39,7 @@
                   {:clean-approval-transaction? clean-approval-transaction?}])))
 
 (defn- data-item
-  [{:keys [title subtitle size subtitle-icon loading?]}]
+  [{:keys [title subtitle size subtitle-icon subtitle-color loading?]}]
   [quo/data-item
    {:container-style style/detail-item
     :blur?           false
@@ -45,20 +49,27 @@
     :title           title
     :subtitle        subtitle
     :size            size
-    :icon            subtitle-icon}])
+    :icon            subtitle-icon
+    :subtitle-color  subtitle-color}])
 
 (defn- transaction-details
   []
-  (let [max-fees               (rf/sub [:wallet/wallet-swap-proposal-fee-fiat-formatted
+  (let [theme                  (quo.theme/use-theme)
+        max-fees               (rf/sub [:wallet/wallet-swap-proposal-fee-fiat-formatted
                                         constants/token-for-fees-symbol])
         max-slippage           (rf/sub [:wallet/swap-max-slippage])
-        loading-swap-proposal? (rf/sub [:wallet/swap-loading-swap-proposal?])]
+        loading-swap-proposal? (rf/sub [:wallet/swap-loading-swap-proposal?])
+        error-response         (rf/sub [:wallet/swap-error-response])]
     [rn/view {:style style/details-container}
      [data-item
-      {:title    (i18n/label :t/max-fees)
-       :subtitle max-fees
-       :loading? loading-swap-proposal?
-       :size     :small}]
+      (cond-> {:title    (i18n/label :t/max-fees)
+               :subtitle max-fees
+               :loading? loading-swap-proposal?
+               :size     :small}
+        error-response (assoc :subtitle-color
+                              (colors/theme-colors colors/danger-50
+                                                   colors/danger-60
+                                                   theme)))]
      [data-item
       {:title         (i18n/label :t/max-slippage)
        :subtitle      max-slippage
@@ -79,6 +90,7 @@
         approval-transaction-status      (rf/sub [:wallet/swap-approval-transaction-status])
         approval-transaction-id          (rf/sub [:wallet/swap-approval-transaction-id])
         approved-amount                  (rf/sub [:wallet/swap-approved-amount])
+        error-response                   (rf/sub [:wallet/swap-error-response])
         pay-input-num-value              (controlled-input/value-numeric input-state)
         pay-input-amount                 (controlled-input/input-value input-state)
         pay-token-symbol                 (:symbol asset-to-pay)
@@ -92,9 +104,10 @@
                                            {:currency currency
                                             :balance  (or pay-input-num-value 0)
                                             :token    asset-to-pay}))
-        available-crypto-limit           (number/remove-trailing-zeroes
-                                          (.toFixed (money/bignumber
-                                                     pay-token-balance-selected-chain)
+        available-crypto-limit           (money/bignumber
+                                          pay-token-balance-selected-chain)
+        available-crypto-limit-display   (number/remove-trailing-zeroes
+                                          (.toFixed available-crypto-limit
                                                     (min pay-token-decimals
                                                          constants/min-token-decimals-to-display)))
         approval-amount-required-num     (when approval-amount-required
@@ -102,11 +115,10 @@
                                                                    pay-token-decimals)))
         pay-input-error?                 (or (and (not (string/blank? pay-input-amount))
                                                   (money/greater-than
-                                                   (money/bignumber pay-input-num-value)
-                                                   (money/bignumber
-                                                    pay-token-balance-selected-chain)))
+                                                   (money/bignumber pay-input-amount)
+                                                   available-crypto-limit))
                                              (money/equal-to (money/bignumber
-                                                              available-crypto-limit)
+                                                              available-crypto-limit-display)
                                                              (money/bignumber 0)))
         valid-pay-input?                 (and
                                           (not (string/blank?
@@ -139,12 +151,12 @@
                               :else                                             :disabled)
       :currency-symbol      currency-symbol
       :on-token-press       on-token-press
-      :on-max-press         #(on-max-press available-crypto-limit)
+      :on-max-press         #(on-max-press (str available-crypto-limit))
       :on-input-focus       on-input-focus
       :value                pay-input-amount
       :fiat-value           pay-token-fiat-value
       :network-tag-props    {:title    (i18n/label :t/max-token
-                                                   {:number       available-crypto-limit
+                                                   {:number       available-crypto-limit-display
                                                     :token-symbol pay-token-symbol})
                              :networks [{:source (:source network)}]}
       :approval-label-props {:status              (case approval-transaction-status
@@ -153,7 +165,9 @@
                                                     :finalised :approved
                                                     :approve)
                              :token-value         (or approval-amount-required-num approved-amount)
-                             :button-props        {:on-press on-approve-press}
+                             :button-props        (merge {:on-press on-approve-press}
+                                                         (when error-response
+                                                           {:disabled? true}))
                              :customization-color account-color
                              :token-symbol        pay-token-symbol}}]))
 
@@ -204,10 +218,41 @@
       :fiat-value           receive-token-fiat-value
       :container-style      (style/receive-token-swap-input-container approval-required?)}]))
 
+(defn- alert-banner
+  [{:keys [pay-input-error?]}]
+  (let [error-response         (rf/sub [:wallet/swap-error-response])
+        error-response-code    (rf/sub [:wallet/swap-error-response-code])
+        error-response-details (rf/sub [:wallet/swap-error-response-details])
+        error-text             (if pay-input-error?
+                                 (i18n/label :t/insufficient-funds-for-swaps)
+                                 (swap-utils/error-message-from-code error-response-code
+                                                                     error-response-details))
+        props                  (cond-> {:container-style      style/alert-banner
+                                        :text-number-of-lines 0
+                                        :text                 error-text}
+                                 pay-input-error?
+                                 (merge {:action?         true
+                                         :on-button-press #(rf/dispatch [:show-bottom-sheet
+                                                                         {:content buy-token/view}])
+                                         :button-text     (i18n/label :t/buy-assets)})
+                                 (= error-response-code
+                                    constants/router-error-code-not-enough-native-balance)
+                                 (merge {:action?         true
+                                         :on-button-press #(rf/dispatch
+                                                            [:show-bottom-sheet
+                                                             {:content (fn []
+                                                                         [buy-token/view
+                                                                          {:title (i18n/label
+                                                                                   :t/buy-ethereum)}])}])
+                                         :button-text     (i18n/label :t/buy-eth)}))]
+    (when (or pay-input-error? error-response)
+      [quo/alert-banner props])))
+
 (defn- action-button
   [{:keys [on-press]}]
   (let [account-color               (rf/sub [:wallet/current-viewing-account-color])
         swap-proposal               (rf/sub [:wallet/swap-proposal-without-fees])
+        error-response              (rf/sub [:wallet/swap-error-response])
         loading-swap-proposal?      (rf/sub [:wallet/swap-loading-swap-proposal?])
         approval-required?          (rf/sub [:wallet/swap-proposal-approval-required])
         approval-transaction-status (rf/sub [:wallet/swap-approval-transaction-status])]
@@ -215,6 +260,7 @@
      {:actions          :one-action
       :button-one-label (i18n/label :t/review-swap)
       :button-one-props {:disabled?           (or (not swap-proposal)
+                                                  error-response
                                                   (and approval-required?
                                                        (not= approval-transaction-status :confirmed))
                                                   loading-swap-proposal?)
@@ -233,14 +279,13 @@
         network                                     (rf/sub [:wallet/swap-network])
         pay-input-amount                            (controlled-input/input-value pay-input-state)
         pay-token-decimals                          (:decimals asset-to-pay)
-        pay-input-num-value                         (controlled-input/value-numeric pay-input-state)
         pay-token-balance-selected-chain            (get-in asset-to-pay
                                                             [:balances-per-chain
                                                              (:chain-id network) :balance]
                                                             0)
         pay-input-error?                            (and (not (string/blank? pay-input-amount))
                                                          (money/greater-than
-                                                          (money/bignumber pay-input-num-value)
+                                                          (money/bignumber pay-input-amount)
                                                           (money/bignumber
                                                            pay-token-balance-selected-chain)))
         valid-pay-input?                            (and
@@ -263,7 +308,10 @@
                                                            new-text)]
                                                          (when valid-amount?
                                                            (set-pay-input-state
-                                                            #(controlled-input/add-character % c))))))
+                                                            #(controlled-input/add-character %
+                                                                                             c
+                                                                                             ##Inf)))))
+                                                     [pay-input-amount pay-token-decimals])
         on-long-press                               (rn/use-callback
                                                      (fn []
                                                        (set-pay-input-state controlled-input/delete-all)
@@ -371,10 +419,7 @@
         :on-token-press #(js/alert "Token Pressed")
         :on-input-focus #(set-pay-input-focused? false)}]]
      [rn/view {:style style/footer-container}
-      (when error-response
-        [quo/alert-banner
-         {:container-style style/alert-banner
-          :text            (i18n/label :t/something-went-wrong-please-try-again-later)}])
+      [alert-banner {:pay-input-error? pay-input-error?}]
       (when (or loading-swap-proposal? swap-proposal)
         [transaction-details])
       [action-button {:on-press on-review-swap-press}]]
