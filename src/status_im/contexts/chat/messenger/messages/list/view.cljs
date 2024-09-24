@@ -25,8 +25,8 @@
     [utils.re-frame :as rf]
     [utils.worklets.chat.messenger.messages :as worklets]))
 
-(defonce ^:const distance-from-last-message 4)
-(defonce ^:const loading-indicator-page-loading-height 100)
+(def ^:const distance-from-last-message 4)
+(def ^:const loading-indicator-page-loading-height 100)
 
 (defn list-key-fn [{:keys [message-id value]}] (or message-id value))
 (defn list-ref [ref] (reset! state/messages-list-ref ref))
