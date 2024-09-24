@@ -18,7 +18,7 @@
 
 (defn- refetch-transaction
   []
-  (rf/dispatch [:wallet-connect/process-eth-send-transaction true]))
+  (rf/dispatch [:wallet-connect/process-eth-send-transaction]))
 
 (def tabs-data
   [{:id :tab/data :label (i18n/label :t/data)}
