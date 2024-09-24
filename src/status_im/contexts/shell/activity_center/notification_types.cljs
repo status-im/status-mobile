@@ -28,7 +28,8 @@
 
 ;; TODO: Replace with correct enum values once status-go implements them.
 (def ^:const tx 66612)
-(def ^:const system 66614)
+(def ^:const system
+  #{new-installation-received new-installation-created})
 
 (def ^:const membership
   "Membership is like a logical group of notifications with different types, i.e.
