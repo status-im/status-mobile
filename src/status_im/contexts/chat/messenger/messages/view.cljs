@@ -19,57 +19,50 @@
     [utils.re-frame :as rf]))
 
 (defn- footer
-  [props]
+  [layout-height]
   (let [current-chat-id       (rf/sub [:chats/current-chat-id])
         able-to-send-message? (rf/sub [:chats/able-to-send-message?])]
     (when-not (string/blank? current-chat-id)
       (if able-to-send-message?
-        [composer/view props]
+        [composer/view layout-height]
         [contact-requests.bottom-drawer/view {:contact-id current-chat-id}]))))
 
 (defn- chat-screen
-  [{:keys [insets] :as props}]
+  [on-layout-done?]
   (let [theme                    (quo.theme/use-theme)
+        layout-height            (rn/use-ref-atom 0)
+        distance-from-list-top   (reanimated/use-shared-value 0)
+        chat-list-scroll-y       (reanimated/use-shared-value 0)
         alert-banners-top-margin (rf/sub [:alert-banners/top-margin])
-        chat-exist?              (rf/sub [:chats/current-chat-exist?])]
-    (when chat-exist?
-      [rn/keyboard-avoiding-view
-       {:style                    (style/keyboard-avoiding-container theme)
-        :keyboard-vertical-offset (- (if platform/ios? alert-banners-top-margin 0) (:bottom insets))}
-       [:<>
-        [list.view/messages-list-content props]
-        [scroll-to-bottom/button props]]
-       [messages.navigation/view props]
-       [footer props]])))
-
-(defn lazy-chat-screen
-  [chat-screen-layout-calculations-complete? *screen-loaded?*]
-  (let [screen-loaded?         (rf/sub [:shell/chat-screen-loaded?])
-        distance-from-list-top (reanimated/use-shared-value 0)
-        chat-list-scroll-y     (reanimated/use-shared-value 0)
-        props                  {:insets (safe-area/get-insets)
-                                :content-height (atom 0)
-                                :layout-height (atom 0)
-                                :distance-atom (atom 0)
-                                :distance-from-list-top distance-from-list-top
-                                :chat-list-scroll-y chat-list-scroll-y
-                                :chat-screen-layout-calculations-complete?
-                                chat-screen-layout-calculations-complete?}]
-    (when *screen-loaded?*
-      (rn/use-mount #(reset! *screen-loaded?* true)))
-    (when-not (if *screen-loaded?* @*screen-loaded?* screen-loaded?)
-      (reanimated/set-shared-value chat-screen-layout-calculations-complete? false)
-      (reanimated/set-shared-value distance-from-list-top 0)
-      (reanimated/set-shared-value chat-list-scroll-y 0))
-    (when (if *screen-loaded?* @*screen-loaded?* screen-loaded?)
-      [chat-screen props])))
+        insets                   (safe-area/get-insets)]
+    [rn/keyboard-avoiding-view
+     {:style                    (style/keyboard-avoiding-container theme)
+      :keyboard-vertical-offset (- (if platform/ios? alert-banners-top-margin 0)
+                                   (:bottom insets))}
+     [:<>
+      [list.view/messages-list-content
+       {:insets                 insets
+        :distance-from-list-top distance-from-list-top
+        :chat-list-scroll-y     chat-list-scroll-y
+        :layout-height          layout-height
+        :on-layout-done?        on-layout-done?}]
+      [scroll-to-bottom/button chat-list-scroll-y]]
+     [messages.navigation/view]
+     [footer layout-height]]))
 
 (defn chat
   []
-  (let [chat-screen-layout-calculations-complete? (reanimated/use-shared-value false)
-        jump-to-enabled?                          (ff/enabled? ::ff/shell.jump-to)
-        *screen-loaded?*                          (when-not jump-to-enabled?
-                                                    (reagent/atom false))]
-    [:<>
-     [lazy-chat-screen chat-screen-layout-calculations-complete? *screen-loaded?*]
-     [placeholder.view/view chat-screen-layout-calculations-complete?]]))
+  (let [on-layout-done?    (reagent/atom false)
+        first-render-done? (reagent/atom false)]
+    (fn []
+      (let [chat-exists?               (rf/sub [:chats/current-chat-exist?])
+            jump-to-enabled?           (ff/enabled? ::ff/shell.jump-to)
+            screen-loaded-for-jump-to? (rf/sub [:shell/chat-screen-loaded?])
+            screen-loaded?             (if jump-to-enabled?
+                                         screen-loaded-for-jump-to?
+                                         @first-render-done?)]
+        (rn/use-mount #(reset! first-render-done? true))
+        [:<>
+         (when (and chat-exists? screen-loaded?)
+           [chat-screen on-layout-done?])
+         [placeholder.view/view on-layout-done?]]))))

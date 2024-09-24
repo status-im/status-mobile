@@ -7,7 +7,7 @@
     [utils.worklets.chat.messenger.composer :as worklets]))
 
 (defn button
-  [{:keys [chat-list-scroll-y]}]
+  [chat-list-scroll-y]
   (let [{window-height :height}    (rn/get-window)
         scroll-down-button-opacity (worklets/scroll-down-button-opacity
                                     chat-list-scroll-y
