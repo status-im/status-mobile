@@ -148,7 +148,7 @@
                      colors/neutral-50)]
     [rn/pressable
      {:accessibility-label :data-item
-      :disabled            (not right-icon)
+      :disabled            (nil? on-press)
       :on-press            on-press
       :style               (merge (style/container {:size        size
                                                     :card?       card?
