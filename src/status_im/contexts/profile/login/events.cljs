@@ -142,7 +142,7 @@
                            (rf/dispatch [:chats-list/load-success result])
                            (rf/dispatch [:communities/get-user-requests-to-join])
                            (rf/dispatch [:profile.login/get-chats-callback]))}]
-           (when (:syncing/installation-id db)
+           (when (and (:syncing/fallback-flow? db) (:syncing/installation-id db))
              [:dispatch [:pairing/finish-seed-phrase-fallback-syncing]])
            (when-not new-account?
              [:dispatch [:universal-links/process-stored-event]])]})))
