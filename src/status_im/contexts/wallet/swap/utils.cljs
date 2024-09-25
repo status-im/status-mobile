@@ -1,7 +1,7 @@
 (ns status-im.contexts.wallet.swap.utils
   (:require [status-im.constants :as constants] 
-            [status-im.contexts.wallet.common.utils :as utils] 
-            [status-im.contexts.wallet.common.utils.networks :as network-utils]
+             [status-im.contexts.wallet.common.utils :as utils] 
+             [status-im.contexts.wallet.common.utils.networks :as network-utils]
             [utils.i18n :as i18n]))
 
 (defn error-message-from-code

@@ -29,7 +29,6 @@
                            (on-select token))
                          (rf/dispatch [:hide-bottom-sheet]))
      :network          network
-     :chain-ids        [(:chain-id network)]
      :hide-token-fn    hide-token-fn
      :disable-token-fn disable-token-fn}]])
 

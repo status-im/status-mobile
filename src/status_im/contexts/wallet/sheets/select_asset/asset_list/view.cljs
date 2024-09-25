@@ -14,7 +14,7 @@
     total-balance    :total-balance
     bridge-disabled? :bridge-disabled?
     :as              token}
-   {:keys [network currency currency-symbol on-token-press disable-token-fn preselected-token-symbol]}]
+   {:keys [currency currency-symbol on-token-press disable-token-fn preselected-token-symbol]}]
   (let [fiat-value       (utils/calculate-token-fiat-value
                           {:currency currency
                            :balance  total-balance
@@ -27,7 +27,7 @@
        :label       token-name
        :token-value (str crypto-formatted " " token-symbol)
        :fiat-value  fiat-formatted
-       :networks    [network]
+       :networks    (seq (:networks token))
        :on-press    #(on-token-press token)
        :state       (cond
                       (or bridge-disabled?
@@ -67,11 +67,11 @@
    title])
 
 (defn view
-  [{:keys [search-text on-token-press preselected-token-symbol network chain-ids hide-token-fn
+  [{:keys [search-text on-token-press preselected-token-symbol network hide-token-fn
            disable-token-fn]}]
   (let [my-tokens       (rf/sub [:wallet/current-viewing-account-tokens-filtered
                                  {:query         search-text
-                                  :chain-ids     chain-ids
+                                  :chain-ids     #{(:chain-id network)}
                                   :hide-token-fn hide-token-fn}])
         popular-tokens  (rf/sub [:wallet/tokens-filtered
                                  {:query         search-text
@@ -92,7 +92,6 @@
                                              popular-tokens)}))
         render-data     {:currency                 currency
                          :currency-symbol          currency-symbol
-                         :network                  network
                          :on-token-press           on-token-press
                          :preselected-token-symbol preselected-token-symbol
                          :disable-token-fn         disable-token-fn}]

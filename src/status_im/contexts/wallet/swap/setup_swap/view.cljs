@@ -274,15 +274,17 @@
 
 (defn- pay-token-bottom-sheet
   []
-  [select-asset/view
-   {:title            (i18n/label :t/select-asset-to-pay)
-    :on-select        (fn [token]
-                        (rf/dispatch [:wallet.swap/select-asset-to-pay {:token token}]))
-    :hide-token-fn    (fn [type _]
-                        (= type constants/swap-tokens-popular))
-    :disable-token-fn (fn [type {:keys [available-balance]}]
-                        (and (= type constants/swap-tokens-my)
-                             (= available-balance 0)))}])
+  (let [asset-to-receive (rf/sub [:wallet/swap-asset-to-receive])]
+    [select-asset/view
+     {:title            (i18n/label :t/select-asset-to-pay)
+      :on-select        (fn [token]
+                          (rf/dispatch [:wallet.swap/select-asset-to-pay {:token token}]))
+      :hide-token-fn    (fn [type {:keys [available-balance]}]
+                          (and (= type constants/swap-tokens-my)
+                               (= available-balance 0)))
+      :disable-token-fn (fn [_ token]
+                          (= (:symbol token)
+                             (:symbol asset-to-receive)))}]))
 
 (defn- receive-token-bottom-sheet
   []

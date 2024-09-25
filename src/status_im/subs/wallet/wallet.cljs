@@ -426,16 +426,22 @@
  (fn [[account networks send-data] [_ {:keys [query chain-ids hide-token-fn]}]]
    (let [tx-type       (:tx-type send-data)
          tokens        (->> (:tokens account)
-                            (map (fn [token]
-                                   (assoc token
-                                          :bridge-disabled?  (and (= tx-type :tx/bridge)
-                                                                  (send-utils/bridge-disabled? (:symbol
-                                                                                                token)))
-                                          :networks          (network-utils/network-list token networks)
-                                          :available-balance (utils/calculate-total-token-balance token)
-                                          :total-balance     (utils/calculate-total-token-balance
-                                                              token
-                                                              chain-ids))))
+                            (map
+                             (fn [token]
+                               (assoc token
+                                      :bridge-disabled?  (and (= tx-type :tx/bridge)
+                                                              (send-utils/bridge-disabled? (:symbol
+                                                                                            token)))
+                                      :networks          (cond->> (network-utils/network-list token
+                                                                                              networks)
+                                                           chain-ids
+                                                           (filter #(some #{(:chain-id %)} chain-ids)))
+                                      :available-balance (utils/calculate-total-token-balance token)
+                                      :total-balance     (utils/calculate-total-token-balance
+                                                          token
+                                                          chain-ids))))
+                            (filter (fn [{:keys [networks]}]
+                                      (pos? (count networks))))
                             (remove #(when hide-token-fn (hide-token-fn constants/swap-tokens-my %))))
          sorted-tokens (utils/sort-tokens tokens)]
      (if query
