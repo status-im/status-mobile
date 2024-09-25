@@ -1,7 +1,7 @@
-(ns status-im.contexts.wallet.wallet-connect.utils.signing-test
+(ns status-im.contexts.wallet.wallet-connect.utils.typed-data-test
   (:require
     [cljs.test :refer-macros [deftest is testing]]
-    [status-im.contexts.wallet.wallet-connect.utils.signing :as sut]))
+    [status-im.contexts.wallet.wallet-connect.utils.typed-data :as sut]))
 
 (deftest flatten-data-test
   (testing "correctly returns the fallback when key is not string/keyword/number"

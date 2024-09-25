@@ -9,6 +9,7 @@
             [status-im.contexts.wallet.wallet-connect.utils.networks :as networks]
             [status-im.contexts.wallet.wallet-connect.utils.signing :as signing]
             [status-im.contexts.wallet.wallet-connect.utils.transactions :as transactions]
+            [status-im.contexts.wallet.wallet-connect.utils.typed-data :as typed-data]
             [taoensso.timbre :as log]
             [utils.i18n :as i18n]
             [utils.transforms :as transforms]))
@@ -136,7 +137,7 @@
            typed-data         (-> raw-data
                                   transforms/js-parse
                                   transforms/js->clj)
-           data-chain-id      (signing/typed-data-chain-id typed-data)]
+           data-chain-id      (typed-data/get-chain-id typed-data)]
        (if (and data-chain-id
                 (not= session-chain-id data-chain-id))
          {:fx [[:dispatch
@@ -147,7 +148,7 @@
                          [:wallet-connect/current-request]
                          assoc
                          :address      (string/lower-case address)
-                         :display-data (signing/flatten-typed-data typed-data)
+                         :display-data (typed-data/flatten-typed-data typed-data)
                          :raw-data     raw-data)
           :fx [[:dispatch [:wallet-connect/show-request-modal]]]}))
      (catch js/Error err
