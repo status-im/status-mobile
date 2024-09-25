@@ -72,15 +72,21 @@
   [{:keys [db] :as cofx}]
   (let [{:keys [display-name seed-phrase password image-path color] :as profile}
         (:onboarding/profile db)
-        loading-screen (if (seq (:syncing/key-uid db))
+        syncing-account-recovered? (and (seq (:syncing/key-uid db))
+                                        (= (:syncing/key-uid db)
+                                           (get-in db [:onboarding/profile :key-uid])))
+        loading-screen (if syncing-account-recovered?
                          :screen/onboarding.preparing-status
                          :screen/onboarding.generating-keys)]
     (rf/merge cofx
-              {:dispatch       [:navigate-to-within-stack
-                                [loading-screen
-                                 (get db
-                                      :onboarding/navigated-to-enter-seed-phrase-from-screen
-                                      :screen/onboarding.new-to-status)]]
+              {:fx             [[:dispatch
+                                 [:navigate-to-within-stack
+                                  [loading-screen
+                                   (get db
+                                        :onboarding/navigated-to-enter-seed-phrase-from-screen
+                                        :screen/onboarding.new-to-status)]]]
+                                (when-not syncing-account-recovered?
+                                  [:dispatch [:syncing/clear-syncing-installation-id]])]
                :dispatch-later [{:ms       constants/onboarding-generating-keys-animation-duration-ms
                                  :dispatch [:navigate-to-within-stack
                                             [:screen/onboarding.enable-notifications
@@ -154,15 +160,14 @@
         :on-cancel           #(re-frame/dispatch [:pop-to-root :multiaccounts])}}
       {:db (-> db
                (assoc-in [:onboarding/profile :seed-phrase] seed-phrase)
+               (assoc-in [:onboarding/profile :key-uid] key-uid)
                (assoc-in [:onboarding/profile :color] constants/profile-default-color))
        :fx [[:dispatch
              [:navigate-to-within-stack
               [next-screen
                (get db
                     :onboarding/navigated-to-enter-seed-phrase-from-screen
-                    :screen/onboarding.new-to-status)]]]
-            (when-not syncing-account-recovered?
-              [:dispatch [:syncing/clear-syncing-data]])]})))
+                    :screen/onboarding.new-to-status)]]]]})))
 
 (rf/defn navigate-to-create-profile
   {:events [:onboarding/navigate-to-create-profile]}

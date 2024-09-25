@@ -39,11 +39,6 @@
                     {:type :negative
                      :text error}]))))
 
-(rf/defn initiate-pairing-process
-  {:events [:syncing/initiate-pairing-process]}
-  [{:keys [db]}]
-  {:db (assoc db :syncing/pairing-process-initiated? true)})
-
 (rf/defn set-syncing-installation-id
   {:events [:syncing/set-syncing-installation-id]}
   [{:keys [db]} installation-id key-uid]
@@ -51,15 +46,26 @@
               :syncing/key-uid         key-uid
               :syncing/installation-id installation-id)})
 
-(defn clear-syncing-data
+(defn clear-syncing-installation-id
   [{:keys [db]}]
   {:db (dissoc
         db
         :syncing/key-uid
-        :syncing/installation-id
-        :syncing/pairing-process-initiated?)})
+        :syncing/installation-id)})
 
-(re-frame/reg-event-fx :syncing/clear-syncing-data clear-syncing-data)
+(re-frame/reg-event-fx :syncing/clear-syncing-installation-id clear-syncing-installation-id)
+
+(defn set-syncing-fallback-flow
+  [{:keys [db]}]
+  {:db (assoc db :syncing/fallback-flow? true)})
+
+(re-frame/reg-event-fx :syncing/set-syncing-fallback-flow set-syncing-fallback-flow)
+
+(defn clear-syncing-fallback-flow
+  [{:keys [db]}]
+  {:db (dissoc db :syncing/fallback-flow?)})
+
+(re-frame/reg-event-fx :syncing/clear-syncing-fallback-flow clear-syncing-fallback-flow)
 
 (rf/defn preflight-outbound-check-for-local-pairing
   {:events [:syncing/preflight-outbound-check]}
@@ -95,7 +101,6 @@
                             (when (sync-utils/valid-connection-string? response)
                               (on-valid-connection-string response)
                               (rf/dispatch [:syncing/update-role constants/local-pairing-role-sender])
-                              (rf/dispatch [:syncing/initiate-pairing-process])
                               (rf/dispatch [:hide-bottom-sheet])))]
     (when-not (and error (string/blank? error))
       (let [key-uid    (get-in db [:profile/profile :key-uid])
