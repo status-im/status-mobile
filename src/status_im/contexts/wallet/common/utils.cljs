@@ -391,7 +391,7 @@
         approval-amount-required           (:approval-amount-required route)
         approval-amount-required-sanitized (-> approval-amount-required
                                                (utils.hex/normalize-hex)
-                                               (native-module/hex-to-number))
+                                               (money/from-hex))
         approval-contract-address          (:approval-contract-address route)
         data                               (native-module/encode-function-call
                                             constants/contract-function-signature-erc20-approve
