@@ -65,12 +65,8 @@
                    [:wallet :ui :swap]
                    #(-> %
                         (assoc :asset-to-receive token)
-                        (dissoc :last-request-uuid
-                                :swap-proposal
-                                :error-response
-                                :loading-swap-proposal?
-                                :approval-transaction-id
-                                :approved-amount)))}))
+                        (dissoc :error-response
+                                :loading-swap-proposal?)))}))
 
 (rf/reg-event-fx :wallet.swap/set-default-slippage
  (fn [{:keys [db]}]
