@@ -55,7 +55,8 @@
                       (string/join kv)
                       (str separator)
                       string/trim)]
-            [k v]))
+            {:label k
+             :value v}))
         data))
 
 (defn flatten-typed-data

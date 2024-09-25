@@ -130,16 +130,13 @@
  (fn [{:keys [db]}]
    (try
      (let [[address raw-data] (data-store/get-db-current-request-params db)
-           parsed-raw-data    (transforms/js-parse raw-data)
            session-chain-id   (-> (data-store/get-db-current-request-event db)
                                   (get-in [:params :chainId])
                                   networks/eip155->chain-id)
-           data-chain-id      (-> parsed-raw-data
-                                  transforms/js->clj
-                                  signing/typed-data-chain-id)
-           parsed-data        (-> parsed-raw-data
-                                  (transforms/js-dissoc :types :primaryType)
-                                  (transforms/js-stringify 2))]
+           typed-data         (-> raw-data
+                                  transforms/js-parse
+                                  transforms/js->clj)
+           data-chain-id      (signing/typed-data-chain-id typed-data)]
        (if (and data-chain-id
                 (not= session-chain-id data-chain-id))
          {:fx [[:dispatch
@@ -150,7 +147,7 @@
                          [:wallet-connect/current-request]
                          assoc
                          :address      (string/lower-case address)
-                         :display-data (or parsed-data raw-data)
+                         :display-data (signing/flatten-typed-data typed-data)
                          :raw-data     raw-data)
           :fx [[:dispatch [:wallet-connect/show-request-modal]]]}))
      (catch js/Error err

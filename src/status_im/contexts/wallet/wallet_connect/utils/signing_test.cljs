@@ -47,7 +47,7 @@
                                     :message {:to     {:address "0x"}
                                               :from   {:address "0x"}
                                               :amount "0x"}})
-           [["domain: chain-id:" 1]
-            ["message: to: address:" "0x"]
-            ["message: from: address:" "0x"]
-            ["message: amount:" "0x"]]))))
+           [{:label "domain: chain-id:" :value 1}
+            {:label "message: to: address:" :value "0x"}
+            {:label "message: from: address:" :value "0x"}
+            {:label "message: amount:" :value "0x"}]))))
