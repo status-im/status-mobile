@@ -65,8 +65,12 @@
                    [:wallet :ui :swap]
                    #(-> %
                         (assoc :asset-to-receive token)
-                        (dissoc :error-response
-                                :loading-swap-proposal?)))}))
+                        (dissoc :last-request-uuid
+                                :swap-proposal
+                                :error-response
+                                :loading-swap-proposal?
+                                :approval-transaction-id
+                                :approved-amount)))}))
 
 (rf/reg-event-fx :wallet.swap/set-default-slippage
  (fn [{:keys [db]}]
@@ -75,10 +79,6 @@
 (rf/reg-event-fx :wallet.swap/set-max-slippage
  (fn [{:keys [db]} [max-slippage]]
    {:db (assoc-in db [:wallet :ui :swap :max-slippage] (number/parse-float max-slippage))}))
-
-(rf/reg-event-fx :wallet.swap/select-asset-to-receive
- (fn [{:keys [db]} [{:keys [token]}]]
-   {:db (assoc-in db [:wallet :ui :swap :asset-to-receive] token)}))
 
 (rf/reg-event-fx :wallet/start-get-swap-proposal
  (fn [{:keys [db]} [{:keys [amount-in amount-out clean-approval-transaction?]}]]
