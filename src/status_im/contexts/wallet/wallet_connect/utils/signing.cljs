@@ -1,5 +1,6 @@
 (ns status-im.contexts.wallet.wallet-connect.utils.signing
-  (:require [native-module.core :as native-module]
+  (:require [clojure.string :as string]
+            [native-module.core :as native-module]
             [promesa.core :as promesa]
             [status-im.contexts.wallet.wallet-connect.utils.data-store :as
              data-store]
@@ -8,6 +9,61 @@
             [utils.hex :as hex]
             [utils.number :as number]
             [utils.transforms :as transforms]))
+
+(declare flatten-data)
+
+(defn- flatten-vec
+  [data prefix]
+  (->> data
+       (map-indexed vector)
+       (reduce (fn [acc [idx v]]
+                 (->> (str idx)
+                      (conj prefix)
+                      (flatten-data v acc)))
+               [])))
+
+(defn- format-flatten-prefix
+  [k]
+  (cond
+    (keyword? k) (name k)
+    (number? k)  (str k)
+    (string? k)  k
+    :else        "unsupported-key"))
+
+(defn- flatten-map
+  [data prefix]
+  (reduce-kv (fn [acc k v]
+               (->> (format-flatten-prefix k)
+                    (conj prefix)
+                    (flatten-data v acc)))
+             []
+             data))
+
+(defn flatten-data
+  ([value]
+   (flatten-data value [] []))
+  ([value acc prefix]
+   (cond
+     (map? value)    (into acc (flatten-map value prefix))
+     (vector? value) (into acc (flatten-vec value prefix))
+     :else           (conj acc [prefix value]))))
+
+(defn format-flat-keys
+  [data separator]
+  (mapv (fn [[kv v]]
+          (let [k (-> separator
+                      (string/join kv)
+                      (str separator)
+                      string/trim)]
+            [k v]))
+        data))
+
+(defn flatten-typed-data
+  [typed-data]
+  (-> typed-data
+      (select-keys [:domain :message])
+      flatten-data
+      (format-flat-keys ": ")))
 
 (defn typed-data-chain-id
   "Returns the `:chain-id` from typed data if it's present and if the EIP712 domain defines it. Without
