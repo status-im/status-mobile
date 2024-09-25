@@ -52,7 +52,7 @@
             {:eventName  "navigation"
              :platform   platform-os
              :appVersion app-version
-             :eventValue {:viewId "onboarding.create-profile"}}}
+             :eventValue {:viewId "onboarding.create-profile-info"}}}
            (tracking/track-view-id-event :screen/onboarding.create-profile)))
     (is (nil? (tracking/track-view-id-event :unknown-stack)))))
 
@@ -76,4 +76,10 @@
              :appVersion app-version
              :eventValue {:viewId "wallet-stack"}}}
            (tracking/metrics-event [:set-view-id :wallet-stack])))
-    (is (nil? (tracking/metrics-event [:unknown-event])))))
+    (is (nil? (tracking/metrics-event [:unknown-event])))
+    (is (= {:metric
+            {:eventName  "navigation"
+             :platform   platform-os
+             :appVersion app-version
+             :eventValue {:viewId "onboarding.intro"}}}
+           (tracking/metrics-event [:set-view-id :screen/onboarding.intro])))))

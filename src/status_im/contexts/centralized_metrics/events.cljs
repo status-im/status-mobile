@@ -17,7 +17,10 @@
   (when-let [event (tracking/metrics-event (interceptor/get-coeffect context :event))]
     (log/debug "tracking event" event)
     (when (push-event? (interceptor/get-coeffect context :db))
-      (native-module/add-centralized-metric event)))
+      (if (or (seq? event) (vector? event))
+        (doseq [e event]
+          (native-module/add-centralized-metric e))
+        (native-module/add-centralized-metric event))))
   context)
 
 (def interceptor
