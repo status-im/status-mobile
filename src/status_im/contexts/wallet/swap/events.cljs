@@ -46,11 +46,31 @@
 
 (rf/reg-event-fx :wallet.swap/select-asset-to-pay
  (fn [{:keys [db]} [{:keys [token]}]]
-   {:db (assoc-in db [:wallet :ui :swap :asset-to-pay] token)}))
+   {:db (update-in db
+                   [:wallet :ui :swap]
+                   #(-> %
+                        (assoc :asset-to-pay token)
+                        (dissoc :amount
+                                :amount-hex
+                                :last-request-uuid
+                                :swap-proposal
+                                :error-response
+                                :loading-swap-proposal?
+                                :approval-transaction-id
+                                :approved-amount)))}))
 
 (rf/reg-event-fx :wallet.swap/select-asset-to-receive
  (fn [{:keys [db]} [{:keys [token]}]]
-   {:db (assoc-in db [:wallet :ui :swap :asset-to-receive] token)}))
+   {:db (update-in db
+                   [:wallet :ui :swap]
+                   #(-> %
+                        (assoc :asset-to-receive token)
+                        (dissoc :last-request-uuid
+                                :swap-proposal
+                                :error-response
+                                :loading-swap-proposal?
+                                :approval-transaction-id
+                                :approved-amount)))}))
 
 (rf/reg-event-fx :wallet.swap/set-default-slippage
  (fn [{:keys [db]}]
