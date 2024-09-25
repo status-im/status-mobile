@@ -6,16 +6,6 @@
 
 (declare flatten-data)
 
-(defn- flatten-vec
-  [data prefix]
-  (->> data
-       (map-indexed vector)
-       (reduce (fn [acc [idx v]]
-                 (->> (str idx)
-                      (conj prefix)
-                      (flatten-data v acc)))
-               [])))
-
 (defn- format-flattened-key
   [k]
   (cond
@@ -25,40 +15,58 @@
     :else        "unsupported-key"))
 
 (defn- flatten-map
-  [data prefix]
+  [data path]
   (reduce-kv (fn [acc k v]
                (->> (format-flattened-key k)
-                    (conj prefix)
+                    (conj path)
                     (flatten-data v acc)))
              []
              data))
 
+(defn- flatten-vec
+  [data path]
+  (->> data
+       (map-indexed vector)
+       (reduce (fn [acc [idx v]]
+                 (->> (str idx)
+                      (conj path)
+                      (flatten-data v acc)))
+               [])))
+
 (defn flatten-data
+  "Recursively flatten a map or vector into a flat vector.
+
+  e.g. `[[[\"person\" \"first-name\"] \"Rich\"]
+        [[[\"person\" \"last-name\"] \"Hickey\"]]]`"
   ([value]
    (flatten-data value [] []))
-  ([value acc prefix]
+  ([value acc path]
    (cond
-     (map? value)    (into acc (flatten-map value prefix))
-     (vector? value) (into acc (flatten-vec value prefix))
-     :else           (conj acc [prefix value]))))
+     (map? value)    (into acc (flatten-map value path))
+     (vector? value) (into acc (flatten-vec value path))
+     :else           (conj acc [path value]))))
 
-(defn format-flat-keys
+(defn format-fields
+  "Format the fields into maps with `:label` & `:value`, where the label
+  is the flattened keys joined with a separator
+
+  e.g. `{:label \"person: first-name:\" :value \"Rich\"}`"
   [data separator]
   (mapv (fn [[kv v]]
-          (let [k (-> separator
+          {:label (-> separator
                       (string/join kv)
                       (str separator)
-                      string/trim)]
-            {:label k
-             :value v}))
+                      string/trim)
+           :value v})
         data))
 
 (defn flatten-typed-data
+  "Flatten typed data and prepare it for UI"
   [typed-data]
   (-> typed-data
       (select-keys [:domain :message])
       flatten-data
-      (format-flat-keys ": ")))
+      (format-fields ": ")))
 
 (defn get-chain-id
   "Returns the `:chain-id` from typed data if it's present and if the EIP712 domain defines it. Without

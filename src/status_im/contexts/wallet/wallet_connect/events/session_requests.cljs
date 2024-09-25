@@ -7,7 +7,6 @@
             [status-im.contexts.wallet.wallet-connect.utils.data-store :as
              data-store]
             [status-im.contexts.wallet.wallet-connect.utils.networks :as networks]
-            [status-im.contexts.wallet.wallet-connect.utils.signing :as signing]
             [status-im.contexts.wallet.wallet-connect.utils.transactions :as transactions]
             [status-im.contexts.wallet.wallet-connect.utils.typed-data :as typed-data]
             [taoensso.timbre :as log]
