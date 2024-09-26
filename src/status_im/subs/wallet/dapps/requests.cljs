@@ -17,6 +17,14 @@
  :-> :display-data)
 
 (rf/reg-sub
+ :wallet-connect/current-request-method
+ :<- [:wallet-connect/current-request]
+ (fn [request]
+   (-> request
+       :event
+       data-store/get-request-method)))
+
+(rf/reg-sub
  :wallet-connect/current-request-account-details
  :<- [:wallet-connect/current-request-address]
  :<- [:wallet/accounts-without-watched-accounts]

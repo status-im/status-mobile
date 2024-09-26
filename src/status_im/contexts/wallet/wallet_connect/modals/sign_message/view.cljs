@@ -3,6 +3,8 @@
             [react-native.core :as rn]
             [react-native.gesture :as gesture]
             [react-native.safe-area :as safe-area]
+            [status-im.common.raw-data-block.view :as data-block]
+            [status-im.constants :as constants]
             [status-im.contexts.wallet.wallet-connect.modals.common.fees-data-item.view :as
              fees-data-item]
             [status-im.contexts.wallet.wallet-connect.modals.common.footer.view :as footer]
@@ -12,7 +14,11 @@
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]))
 
-(defn data-field
+(def ^:constant typed-data-methods
+  #{constants/wallet-connect-eth-sign-typed-v4-method
+    constants/wallet-connect-eth-sign-typed-method})
+
+(defn typed-data-field
   [{:keys [label value]}]
   [quo/data-item
    {:card?           false
@@ -21,7 +27,7 @@
     :title           label
     :subtitle        value}])
 
-(defn data-list
+(defn typed-data-view
   []
   (let [display-data (rf/sub [:wallet-connect/current-request-display-data])]
     [gesture/flat-list
@@ -29,8 +35,21 @@
       :style                           style/data-border-container
       :over-scroll-mode                :never
       :content-container-style         {:padding-bottom 12}
-      :render-fn                       data-field
+      :render-fn                       typed-data-field
       :shows-vertical-scroll-indicator false}]))
+
+(defn message-data-view
+  []
+  (let [display-data (rf/sub [:wallet-connect/current-request-display-data])]
+    [data-block/view display-data]))
+
+(defn display-data-view
+  []
+  (let [typed-data? (->> (rf/sub [:wallet-connect/current-request-method])
+                         (contains? typed-data-methods))]
+    (if typed-data?
+      [typed-data-view]
+      [message-data-view])))
 
 (defn view
   []
@@ -49,7 +68,7 @@
         {:label   (i18n/label :t/wallet-connect-sign-message-header)
          :dapp    dapp
          :account account}]
-       [data-list]]
+       [display-data-view]]
       [footer/view
        {:warning-label     (i18n/label :t/wallet-connect-sign-warning)
         :slide-button-text (i18n/label :t/slide-to-sign)}
