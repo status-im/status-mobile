@@ -387,7 +387,7 @@
                                                              :clean-approval-transaction? false}))))
                                                      [valid-pay-input? loading-swap-proposal?
                                                       pay-input-amount])
-        on-asset-to-pay-change                      (fn []
+        refetch-swap-proposal                       (fn []
                                                       (when valid-pay-input?
                                                         (fetch-swap-proposal
                                                          {:amount                      pay-input-amount
@@ -421,8 +421,11 @@
                 (controlled-input/set-input-value
                  input-state
                  swap-amount)))
-             (on-asset-to-pay-change)))))
-     [asset-to-pay asset-to-receive])
+             (refetch-swap-proposal)))))
+     [asset-to-pay])
+    (rn/use-effect
+     refetch-swap-proposal
+     [asset-to-receive])
     [rn/view {:style style/container}
      [account-switcher/view
       {:on-press      on-close
