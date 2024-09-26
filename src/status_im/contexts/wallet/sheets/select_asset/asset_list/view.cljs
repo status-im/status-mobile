@@ -75,6 +75,7 @@
                                   :hide-token-fn hide-token-fn}])
         popular-tokens  (rf/sub [:wallet/tokens-filtered
                                  {:query         search-text
+                                  :chain-ids     #{(:chain-id network)}
                                   :hide-token-fn hide-token-fn}])
         currency        (rf/sub [:profile/currency])
         currency-symbol (rf/sub [:profile/currency-symbol])

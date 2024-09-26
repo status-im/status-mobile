@@ -306,6 +306,7 @@
         loading-swap-proposal?                      (rf/sub [:wallet/swap-loading-swap-proposal?])
         swap-proposal                               (rf/sub [:wallet/swap-proposal-without-fees])
         asset-to-pay                                (rf/sub [:wallet/swap-asset-to-pay])
+        asset-to-receive                            (rf/sub [:wallet/swap-asset-to-receive])
         network                                     (rf/sub [:wallet/swap-network])
         pay-input-amount                            (controlled-input/input-value pay-input-state)
         pay-token-decimals                          (:decimals asset-to-pay)
@@ -421,7 +422,7 @@
                  input-state
                  swap-amount)))
              (on-asset-to-pay-change)))))
-     [asset-to-pay])
+     [asset-to-pay asset-to-receive])
     [rn/view {:style style/container}
      [account-switcher/view
       {:on-press      on-close

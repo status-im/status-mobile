@@ -454,13 +454,16 @@
 (rf/reg-sub
  :wallet/tokens-filtered
  :<- [:wallet/tokens]
- (fn [{:keys [by-symbol market-values-per-token details-per-token]} [_ {:keys [query hide-token-fn]}]]
+ (fn [{:keys [by-symbol market-values-per-token details-per-token]}
+      [_ {:keys [query chain-ids hide-token-fn]}]]
    (let [tokens        (->> by-symbol
                             (map (fn [token]
                                    (-> token
                                        (assoc :market-values
                                               (get market-values-per-token (:symbol token)))
                                        (assoc :details (get details-per-token (:symbol token))))))
+                            (filter (fn [{:keys [chain-id]}]
+                                      (some #{chain-id} chain-ids)))
                             (remove #(when hide-token-fn
                                        (hide-token-fn constants/swap-tokens-popular %))))
          sorted-tokens (utils/sort-tokens-by-name tokens)]
