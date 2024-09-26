@@ -43,23 +43,19 @@
                                          :token-decimals token-decimals
                                          :native-token?  native-token?
                                          :receiver?      false})
-         from-network-values-for-ui    (send-utils/network-values-for-ui
-                                        from-network-amounts-by-chain)
          to-network-amounts-by-chain   (send-utils/network-amounts-by-chain
                                         {:route          chosen-route
                                          :token-decimals token-decimals
                                          :native-token?  native-token?
                                          :receiver?      true})
-         to-network-values-for-ui      (send-utils/network-values-for-ui
-                                        to-network-amounts-by-chain)
          sender-possible-chain-ids     (map :chain-id sender-network-values)
          sender-network-values         (if routes-available?
                                          (send-utils/network-amounts
                                           {:network-values
                                            (if (= tx-type :tx/bridge)
-                                             from-network-values-for-ui
+                                             from-network-amounts-by-chain
                                              (send-utils/add-zero-values-to-network-values
-                                              from-network-values-for-ui
+                                              from-network-amounts-by-chain
                                               sender-possible-chain-ids))
                                            :disabled-chain-ids disabled-from-chain-ids
                                            :receiver-networks receiver-networks
@@ -71,7 +67,7 @@
                                           sender-network-values))
          receiver-network-values       (if routes-available?
                                          (send-utils/network-amounts
-                                          {:network-values     to-network-values-for-ui
+                                          {:network-values     to-network-amounts-by-chain
                                            :disabled-chain-ids disabled-from-chain-ids
                                            :receiver-networks  receiver-networks
                                            :token-networks-ids token-networks-ids
@@ -91,8 +87,8 @@
                      assoc
                      :suggested-routes          suggested-routes-data
                      :route                     chosen-route
-                     :from-values-by-chain      from-network-values-for-ui
-                     :to-values-by-chain        to-network-values-for-ui
+                     :from-values-by-chain      from-network-amounts-by-chain
+                     :to-values-by-chain        to-network-amounts-by-chain
                      :sender-network-values     sender-network-values
                      :receiver-network-values   receiver-network-values
                      :network-links             network-links

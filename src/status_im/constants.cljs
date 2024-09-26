@@ -591,6 +591,7 @@
 (def ^:const slippages [0.1 0.5 1])
 (def ^:const default-slippage 0.5)
 (def ^:const max-recommended-slippage 5)
+(def ^:const max-slippage 30)
 (def ^:const max-slippage-decimal-places 2)
 (def ^:const swap-provider-paraswap
   {:name                     :paraswap

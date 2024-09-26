@@ -12,6 +12,7 @@
             [status-im.contexts.wallet.common.account-switcher.view :as account-switcher]
             [status-im.contexts.wallet.common.utils :as utils]
             [status-im.contexts.wallet.sheets.buy-token.view :as buy-token]
+            [status-im.contexts.wallet.sheets.slippage-settings.view :as slippage-settings]
             [status-im.contexts.wallet.swap.setup-swap.style :as style]
             [status-im.contexts.wallet.swap.utils :as swap-utils]
             [utils.debounce :as debounce]
@@ -39,7 +40,7 @@
                   {:clean-approval-transaction? clean-approval-transaction?}])))
 
 (defn- data-item
-  [{:keys [title subtitle size subtitle-icon subtitle-color loading?]}]
+  [{:keys [title subtitle size subtitle-icon subtitle-color on-press loading?]}]
   [quo/data-item
    {:container-style style/detail-item
     :blur?           false
@@ -50,7 +51,8 @@
     :subtitle        subtitle
     :size            size
     :icon            subtitle-icon
-    :subtitle-color  subtitle-color}])
+    :subtitle-color  subtitle-color
+    :on-press        on-press}])
 
 (defn- transaction-details
   []
@@ -72,9 +74,11 @@
                                                    theme)))]
      [data-item
       {:title         (i18n/label :t/max-slippage)
-       :subtitle      max-slippage
+       :subtitle      (str max-slippage "%")
        :subtitle-icon :i/edit
-       :size          :small}]]))
+       :size          :small
+       :on-press      #(rf/dispatch [:show-bottom-sheet
+                                     {:content slippage-settings/view}])}]]))
 
 (defn- pay-token-input
   [{:keys [input-state on-max-press on-input-focus on-token-press on-approve-press input-focused?]}]
