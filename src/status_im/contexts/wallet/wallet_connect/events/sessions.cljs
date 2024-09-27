@@ -10,16 +10,10 @@
  (fn [{:keys [db]} [{:keys [topic] :as event}]]
    (when (networks/event-should-be-handled? db event)
      (log/info "Received Wallet Connect session delete from the SDK: " event)
-     {:db (update db
-                  :wallet-connect/sessions
-                  (fn [sessions]
-                    (->> sessions
-                         (remove #(= (:topic %) topic))
-                         (into []))))
-      :fx [[:json-rpc/call
+     {:fx [[:json-rpc/call
             [{:method     "wallet_disconnectWalletConnectSession"
               :params     [topic]
-              :on-success #(log/info "Wallet Connect session disconnected")
+              :on-success #(rf/dispatch [:wallet-connect/delete-session topic])
               :on-error   #(log/info "Wallet Connect session persistence failed" %)}]]]})))
 
 (rf/reg-event-fx
@@ -33,7 +27,11 @@
               {:web3-wallet web3-wallet
                :topic       topic
                :on-fail     on-fail
-               :on-success  on-success}]]}
+               :on-success  (fn []
+                              (log/info "Successfully disconnected dApp session" topic)
+                              (rf/dispatch [:wallet-connect/delete-session topic])
+                              (when on-success
+                                (on-success)))}]]}
        {:fx [[:dispatch [:wallet-connect/no-internet-toast]]]}))))
 
 (rf/reg-event-fx
@@ -74,3 +72,13 @@
                   (->> new-session
                        sessions/sdk-session->db-session
                        (conj sessions))))}))
+
+(rf/reg-event-fx
+ :wallet-connect/delete-session
+ (fn [{:keys [db]} [topic]]
+   {:db (update db
+                :wallet-connect/sessions
+                (fn [sessions]
+                  (->> sessions
+                       (remove #(= (:topic %) topic))
+                       (into []))))}))

@@ -8,8 +8,7 @@
             [status-im.contexts.wallet.wallet-connect.utils.sessions :as sessions]
             [status-im.contexts.wallet.wallet-connect.utils.uri :as uri]
             [taoensso.timbre :as log]
-            [utils.i18n :as i18n]
-            [utils.transforms :as transforms]))
+            [utils.i18n :as i18n]))
 
 (rf/reg-event-fx
  :wallet-connect/pair
@@ -110,7 +109,6 @@
  (fn [{:keys [db]} [address]]
    {:db (assoc-in db [:wallet-connect/current-proposal :address] address)}))
 
-
 (rf/reg-event-fx
  :wallet-connect/approve-session
  (fn [{:keys [db]}]
@@ -144,13 +142,10 @@
 
 (rf/reg-event-fx :wallet-connect/approve-session-success
  (fn [_ [session]]
-   (let [redirect-url (-> session
-                          transforms/js->clj
-                          data-store/get-dapp-redirect-url)]
-     (log/info "Wallet Connect session approved")
-     {:fx [[:dispatch [:wallet-connect/on-new-session session]]
-           [:dispatch [:wallet-connect/reset-current-session-proposal]]
-           [:dispatch [:wallet-connect/redirect-to-dapp redirect-url]]]})))
+   (log/info "Wallet Connect session approved")
+   {:fx [[:dispatch [:wallet-connect/on-new-session session]]
+         [:dispatch [:wallet-connect/reset-current-session-proposal]]
+         [:dispatch [:wallet-connect/redirect-to-dapp (data-store/get-dapp-redirect-url session)]]]}))
 
 (rf/reg-event-fx :wallet-connect/approve-session-error
  (fn [_ [error]]

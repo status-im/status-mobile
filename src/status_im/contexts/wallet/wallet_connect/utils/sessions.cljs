@@ -130,16 +130,19 @@
   (let [{:keys [params id]} proposal-request
         accounts            (-> (partial networks/format-eip155-address address)
                                 (map session-networks))]
-    (-> (wallet-connect/approve-session
-         {:web3-wallet         web3-wallet
-          :id                  id
-          :approved-namespaces (->> {:eip155
-                                     {:chains   session-networks
-                                      :accounts accounts
-                                      :methods  constants/wallet-connect-supported-methods
-                                      :events   constants/wallet-connect-supported-events}}
-                                    (wallet-connect/build-approved-namespaces params))})
-        (promesa/then rpc/wallet-persist-session)
+    (-> (promesa/let [session
+                      (wallet-connect/approve-session
+                       {:web3-wallet         web3-wallet
+                        :id                  id
+                        :approved-namespaces (->>
+                                               {:eip155
+                                                {:chains   session-networks
+                                                 :accounts accounts
+                                                 :methods  constants/wallet-connect-supported-methods
+                                                 :events   constants/wallet-connect-supported-events}}
+                                               (wallet-connect/build-approved-namespaces params))})]
+          (rpc/wallet-persist-session session)
+          (transforms/js->clj session))
         (promesa/catch (fn [err]
                          (throw (ex-info "Failed to approve session"
                                          {:err  err
