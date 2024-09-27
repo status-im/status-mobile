@@ -94,10 +94,15 @@
    :optimism 2
    :arbitrum 3})
 
+(defn safe-add-type-edit
+  [network-values]
+  (if (or (empty? network-values) (some #(= (:type %) :edit) network-values))
+    network-values
+    (conj network-values {:type :edit})))
 
 (defn reset-loading-network-amounts-to-zero
   [network-amounts]
-  (map
+  (mapv
    (fn [network-amount]
      (cond-> network-amount
        (= (:type network-amount) :loading)
@@ -177,7 +182,7 @@
       (and receiver?
            routes-found?
            (not= tx-type :tx/bridge))
-      (conj {:type :edit}))))
+      safe-add-type-edit)))
 
 (defn loading-network-amounts
   [{:keys [valid-networks disabled-chain-ids receiver-networks token-networks-ids tx-type receiver?]}]

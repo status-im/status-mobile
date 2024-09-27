@@ -1,32 +1,18 @@
-Status, gizli bir mesajlaşma uygulaması, güvenli kripto cüzdanı ve Ethereum Web3 DApp tarayıcısını tek bir güçlü iletişim aracında birleştirir. Arkadaşlarınızla ve büyüyen topluluklarla sohbet edin. Dijital varlıkları satın alın,saklayın ve takas edin. Verileriniz istismar edilmeden merkezi olmayan internette gezinin.
+Status, gizlilik odaklı takma adla kullanılan bir mesajlaşma uygulaması ile güvenli bir kripto cüzdanını birleştirerek güçlü bir iletişim aracı sunar. Arkadaşlarınız ve büyüyen topluluklarla sohbet edin. Dijital varlıklar satın alın, saklayın ve değiştirin.
 
 Status, Ethereum için işletim sisteminizdir.
 
-GİZLİ MESAJLAŞMA UYGULAMASI
-İletişiminizde gereksiz aracılar olmadan gizli 1:1, özel grup ve genel sohbetler gönderin. Status, daha fazla gizlilik ve güvenli mesajlaşma için mesajlarınızdan merkezi tıkanma noktalarını kaldıran bir metin uygulamasıdır. Varsayılan olarak uçtan uca şifreleme ve gizlilik içeren şifreli bir mesajlaşma uygulaması, böylece siz ve hedeflenen alıcı dışında hiç kimse mesajlarınızı görüntüleyemez - Status bile.
+ÖZEL MESAJLAŞMA UYGULAMASI
+Özel 1:1 ve grup sohbetlerini kimsenin iletişiminizi gözetlemesine izin vermeden gönderin. Status, merkezi mesaj iletimini ortadan kaldırarak daha fazla gizlilik ve güvenli mesajlaşma sağlayan bir mesajlaşma uygulamasıdır. Tüm mesajlar uçtan uca şifreleme ile korunur. Ayrıca, hiçbir mesaj yazarın veya hedeflenen alıcının kim olduğunu ortaya çıkarmaz, bu yüzden kimse, hatta Status bile, kimin kiminle konuştuğunu veya ne konuşulduğunu bilmez.
 
+GÜVENLİ ETHEREUM CÜZDANI
+Status kripto cüzdanı, ETH, SNT, DAI gibi stabilcoinler ve koleksiyon gibi Ethereum varlıklarını güvenle göndermenize, saklamanıza ve değiştirmenize olanak tanır. Ana ağ, Arbitrum ve Optimism'i destekleyen çok zincirli Ethereum cüzdan uygulamamızla kripto paralarınız ve dijital varlıklarınız üzerinde güvenle kontrol sahibi olun. Status blok zinciri cüzdanı şu anda yalnızca ETH, ERC-20, ERC-721 ve ERC-1155 varlıklarını destekler; Bitcoin desteklenmemektedir.
 
-Sınırsız P2P ödemesi
-Status Messenger, kripto para cüzdanınızla sorunsuz bir şekilde çalışır, böylece sohbet penceresi aracılığıyla istediğiniz zaman dünyanın her yerinden insanlarla kripto para alışverişi yapabilirsiniz.
+DEFI İLE KAZANIN
+Kripto paralarınızı Maker, Aave, Uniswap, Synthetix, PoolTogether, Zerion, Kyber gibi en son merkeziyetsiz finans uygulamaları ve merkeziyetsiz borsalar (DEX) ile değerlendirin.
 
+TOPLULUĞUNUZLA BAĞLANTI KURUN
+Favori topluluklarınız ve arkadaşlarınızla keşfedin, bağlantı kurun ve sohbet edin. İster küçük bir arkadaş grubu, bir sanatçı kolektifi, kripto para tacirleri veya bir sonraki büyük organizasyon olsun - Status topluluklarıyla mesajlaşın ve iletişim kurun.
 
-GÜVENLİ ETHEREUM CÜZDAN
-Status kripto cüzdanı, ETH, SNT gibi ethereum varlıklarını, DAI gibi sabit paraları ve NFT'leri güvenli bir şekilde göndermenize, depolamanıza ve takas etmenize olanak tanır. Bu ethereum cüzdan uygulamasıyla kripto para biriminizin ve dijital varlıklarınızın kontrolünün güvenliğini ele alın. Status blok zinciri cüzdanı şu anda yalnızca ERC-20 ve ERC-721 varlıklarını desteklemektedir; Bitcoin'i desteklemez.
-
-DEFi'ye KATILIN
-Kripto paranızı en yeni merkezi olmayan finans uygulamaları ve Maker, Aave, Uniswap, Synthetix, PoolTogether, Zerion, Kyber ve daha fazlası gibi merkezi olmayan borsalarla (DEX) çalıştırın.
-
-WEB3 DAPP TARAYICI
-Güvenli tarayıcı ile güvenli web'e göz atın ve büyüyen merkezi olmayan uygulamalardan oluşan ekosisteme erişin. Status, DeFi'den daha fazlasına erişim sağlar - SuperRare, Gitcoin, Dragonereum, Axie Infinity, Open Sea, CryptoKitties, Decentraland ve daha fazlası gibi en yeni pazarları, koleksiyonları, oyunları ve sosyal ağları keşfedin.
-
-TOPLULUĞUNUZA BAĞLANIN
-En sevdiğiniz toplulukları ve arkadaşlarınızı keşfedin, bağlantı kurun ve onlarla sohbet edin. Küçük bir arkadaş grubu, bir sanatçı topluluğu, kripto tüccarları veya bir sonraki büyük organizasyon - Status topluluklarıyla mesajlaşın ve iletişim kurun.
-
-SOSYAL AKIŞ
-Aklınızdakileri son teknoloji merkezi olmayan bir sosyal ağda kişilerinizle paylaşın
-
-
-
-
-GİZLİ HESAP OLUŞTURMA
-Anonim hesap oluşturun ve gizli kalın. Ücretsiz hesabınızı oluştururken, ASLA bir telefon numarası, e-posta adresi veya banka hesabı girmeniz gerekmeyecek. Cüzdan özel anahtarlarınız, yalnızca paranıza ve finansal işlemlerinize erişebilmeniz için yerel olarak oluşturulur ve saklanır.
+ÖZEL HESAP OLUŞTURMA
+Takma adla hesap oluşturarak gizliliğinizi koruyun. Ücretsiz hesabınızı oluştururken asla telefon numarası, e-posta adresi veya banka hesabı girmenize gerek yoktur. Cüzdanınızın özel anahtarları yerel olarak oluşturulur ve yalnızca sizin fonlarınıza ve finansal işlemlerinize erişiminiz olmasını sağlamak için güvenli bir şekilde saklanır.
