@@ -151,6 +151,12 @@
   [^js bn]
   (str "0x" (to-string bn 16)))
 
+(defn from-hex
+  [hex-str]
+  (try
+    (new BigNumber hex-str 16)
+    (catch :default _ nil)))
+
 (defn wei->str
   ([unit n display-unit]
    (str (to-fixed (wei-> unit n)) " " display-unit))
