@@ -26,7 +26,8 @@
   (let [selected-tab          (or (rf/sub [:wallet/account-tab]) first-tab-id)
         {:keys [name color formatted-balance
                 watch-only?]} (rf/sub [:wallet/current-viewing-account])
-        customization-color   (rf/sub [:profile/customization-color])]
+        customization-color   (rf/sub [:profile/customization-color])
+        testnet-mode?         (rf/sub [:profile/test-networks-enabled?])]
     (hot-reload/use-safe-unmount (fn []
                                    (rf/dispatch [:wallet/close-account-page])
                                    (rf/dispatch [:wallet/clean-current-viewing-account])))
@@ -46,23 +47,25 @@
        [quo/wallet-graph {:time-frame :empty}])
      (when (not watch-only?)
        [quo/wallet-ctas
-        {:container-style style/cta-buttons
-         :send-action     (fn []
-                            (rf/dispatch [:wallet/clean-send-data])
-                            (rf/dispatch [:wallet/wizard-navigate-forward
-                                          {:start-flow? true
-                                           :flow-id     :wallet-send-flow}]))
-         :receive-action  #(rf/dispatch [:open-modal :screen/wallet.share-address
-                                         {:status :receive}])
-         :buy-action      #(rf/dispatch [:show-bottom-sheet
-                                         {:content buy-token/view}])
-         :bridge-action   (fn []
-                            (rf/dispatch [:wallet/clean-send-data])
-                            (rf/dispatch [:wallet/start-bridge]))
-         :swap-action     (when (ff/enabled? ::ff/wallet.swap)
-                            (fn []
-                              (rf/dispatch [:wallet.tokens/get-token-list])
-                              (rf/dispatch [:open-modal :screen/wallet.swap-select-asset-to-pay])))}])
+        {:container-style  style/cta-buttons
+         :send-action      (fn []
+                             (rf/dispatch [:wallet/clean-send-data])
+                             (rf/dispatch [:wallet/wizard-navigate-forward
+                                           {:start-flow? true
+                                            :flow-id     :wallet-send-flow}]))
+         :receive-action   #(rf/dispatch [:open-modal :screen/wallet.share-address
+                                          {:status :receive}])
+         :buy-action       #(rf/dispatch [:show-bottom-sheet
+                                          {:content buy-token/view}])
+         :bridge-action    (fn []
+                             (rf/dispatch [:wallet/clean-send-data])
+                             (rf/dispatch [:wallet/start-bridge]))
+         :swap-action      (when (ff/enabled? ::ff/wallet.swap)
+                             (fn []
+                               (rf/dispatch [:wallet.tokens/get-token-list])
+                               (rf/dispatch [:open-modal :screen/wallet.swap-select-asset-to-pay])))
+         :bridge-disabled? testnet-mode?
+         :swap-disabled?   testnet-mode?}])
      [quo/tabs
       {:style            style/tabs
        :size             32

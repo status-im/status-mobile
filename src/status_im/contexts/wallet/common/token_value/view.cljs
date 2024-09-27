@@ -37,20 +37,21 @@
                           #(rf/dispatch [:open-modal :screen/share-shell {:initial-tab :wallet}]))})
 
 (defn- action-bridge
-  [{:keys [bridge-disabled?] :as params}]
+  [{:keys [bridge-disabled? testnet-mode?] :as params}]
   {:icon                :i/bridge
    :accessibility-label :bridge
    :label               (i18n/label :t/bridge)
-   :disabled?           bridge-disabled?
+   :disabled?           (or testnet-mode? bridge-disabled?)
    :on-press            (fn []
                           (rf/dispatch [:hide-bottom-sheet])
                           (rf/dispatch [:wallet/bridge-select-token params]))})
 
 (defn- action-swap
-  [{:keys [token token-symbol]}]
+  [{:keys [token token-symbol testnet-mode?]}]
   {:icon                :i/swap
    :accessibility-label :swap
    :label               (i18n/label :t/swap)
+   :disabled?           testnet-mode?
    :on-press            (fn []
                           (rf/dispatch [:hide-bottom-sheet])
                           (rf/dispatch [:wallet.swap/start
@@ -79,8 +80,10 @@
                                          {:query token-symbol}]))
         selected-account (rf/sub [:wallet/current-viewing-account-address])
         token-owners     (rf/sub [:wallet/operable-addresses-with-token-symbol token-symbol])
-        params           (cond-> {:start-flow? true
-                                  :owners      token-owners}
+        testnet-mode?    (rf/sub [:profile/test-networks-enabled?])
+        params           (cond-> {:start-flow?   true
+                                  :owners        token-owners
+                                  :testnet-mode? testnet-mode?}
                            selected-account
                            (assoc :token        token-data
                                   :stack-id     :screen/wallet.accounts

@@ -3,28 +3,28 @@
     [quo.components.buttons.wallet-button.view :as wallet-button]
     [quo.components.buttons.wallet-ctas.style :as style]
     [quo.components.markdown.text :as text]
-    [quo.foundations.colors :as colors]
     [quo.theme :as quo.theme]
     [react-native.core :as rn]
     [utils.i18n :as i18n]))
 
 
 (defn action-button
-  [{:keys [icon text on-press theme accessibility-label]}]
+  [{:keys [icon text on-press theme accessibility-label disabled?]}]
   [rn/view
    {:style               style/button-container
     :accessibility-label accessibility-label}
    [wallet-button/view
-    {:icon     icon
-     :on-press on-press}]
+    {:icon      icon
+     :disabled? disabled?
+     :on-press  on-press}]
    [text/text
     {:weight :medium
      :size   :paragraph-2
-     :style  {:margin-top 4
-              :color      (colors/theme-colors colors/neutral-50 colors/neutral-40 theme)}} text]])
+     :style  (style/action-button-text theme disabled?)} text]])
 
 (defn view
-  [{:keys [buy-action send-action receive-action bridge-action swap-action container-style]}]
+  [{:keys [buy-action send-action receive-action bridge-action swap-action bridge-disabled?
+           swap-disabled? container-style]}]
   (let [theme (quo.theme/use-theme)]
     [rn/view {:style container-style}
      [rn/view {:style style/inner-container}
@@ -52,10 +52,12 @@
           :text                (i18n/label :t/swap)
           :on-press            swap-action
           :theme               theme
+          :disabled?           swap-disabled?
           :accessibility-label :swap}])
       [action-button
        {:icon                :i/bridge
         :text                (i18n/label :t/bridge)
         :on-press            bridge-action
         :theme               theme
+        :disabled?           bridge-disabled?
         :accessibility-label :bridge}]]]))
