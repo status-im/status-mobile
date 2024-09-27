@@ -119,7 +119,8 @@
     :icon-left           :i/communities}
    (i18n/label :t/request-to-join)])
 
-(defn token-gated-communities-info []
+(defn token-gated-communities-info
+  []
   [quo/documentation-drawers {:title (i18n/label :t/token-gated-communities)}
    [quo/text {:size :paragraph-2}
     (i18n/label :t/token-gated-communities-info)]])
