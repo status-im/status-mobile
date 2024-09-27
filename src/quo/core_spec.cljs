@@ -63,6 +63,7 @@
     quo.components.list-items.quiz-item.component-spec
     quo.components.list-items.saved-address.component-spec
     quo.components.list-items.saved-contact-address.component-spec
+    quo.components.list-items.token-info.component-spec
     quo.components.list-items.token-network.component-spec
     quo.components.list-items.token-value.component-spec
     quo.components.loaders.skeleton-list.component-spec

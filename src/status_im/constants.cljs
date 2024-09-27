@@ -601,6 +601,8 @@
    :terms-and-conditions-url "https://files.paraswap.io/tos_v4.pdf"})
 (def ^:const swap-providers
   {:paraswap swap-provider-paraswap})
+(def ^:const swap-tokens-my :my)
+(def ^:const swap-tokens-popular :popular)
 
 (def ^:const token-for-fees-symbol "ETH")
 

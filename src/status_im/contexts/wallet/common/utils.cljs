@@ -4,6 +4,7 @@
             [quo.foundations.resources :as resources]
             [status-im.common.qr-codes.view :as qr-codes]
             [status-im.constants :as constants]
+            [status-im.contexts.wallet.common.utils.networks :as network-utils]
             [utils.hex :as utils.hex]
             [utils.money :as money]
             [utils.number :as number]
@@ -478,3 +479,17 @@
    :toAsset     to-asset
    :fromAmount  amount-out
    :type        multi-transaction-type})
+
+(defn sort-tokens-by-name
+  [tokens]
+  (let [priority #(get constants/token-sort-priority (:symbol %) ##Inf)]
+    (sort-by (juxt :symbol priority) tokens)))
+
+(defn tokens-with-balance
+  [tokens networks chain-ids]
+  (map (fn [token]
+         (assoc token
+                :networks          (network-utils/network-list token networks)
+                :available-balance (calculate-total-token-balance token)
+                :total-balance     (calculate-total-token-balance token chain-ids)))
+       tokens))
