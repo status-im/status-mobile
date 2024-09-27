@@ -4,6 +4,7 @@
     [promesa.core :as promesa]
     [react-native.wallet-connect :as wallet-connect]
     [status-im.constants :as constants]
+    [status-im.contexts.wallet.wallet-connect.utils.networks :as networks]
     [status-im.contexts.wallet.wallet-connect.utils.rpc :as rpc]
     [taoensso.timbre :as log]
     [utils.transforms :as transforms]))
@@ -124,11 +125,22 @@
                                        {:err  err
                                         :code :error/wc-disconnect-dapp})))))))
 
-
-
-
-
-;; TODO:
-;; 2. approve session + add to persistance
-
-
+(defn approve
+  [{:keys [web3-wallet address session-networks proposal-request]}]
+  (let [{:keys [params id]} proposal-request
+        accounts            (-> (partial networks/format-eip155-address address)
+                                (map session-networks))]
+    (-> (wallet-connect/approve-session
+         {:web3-wallet         web3-wallet
+          :id                  id
+          :approved-namespaces (->> {:eip155
+                                     {:chains   session-networks
+                                      :accounts accounts
+                                      :methods  constants/wallet-connect-supported-methods
+                                      :events   constants/wallet-connect-supported-events}}
+                                    (wallet-connect/build-approved-namespaces params))})
+        (promesa/then rpc/wallet-persist-session)
+        (promesa/catch (fn [err]
+                         (throw (ex-info "Failed to approve session"
+                                         {:err  err
+                                          :code :error/wc-approve})))))))

@@ -68,3 +68,9 @@
      (wallet-get-persisted-sessions now)))
   ([expiry-timestamp]
    (rpc-events/call-async "wallet_getWalletConnectActiveSessions" false expiry-timestamp)))
+
+(defn wallet-persist-session
+  [session]
+  (->> session
+       transforms/clj->json
+       (rpc-events/call-async "wallet_addWalletConnectSession" false)))

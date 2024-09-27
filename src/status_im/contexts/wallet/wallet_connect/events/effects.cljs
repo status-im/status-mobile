@@ -49,26 +49,12 @@
 
 (rf/reg-fx
  :effects.wallet-connect/approve-session
- (fn [{:keys [web3-wallet proposal networks accounts on-success on-fail]}]
-   (let [{:keys [params id]} proposal
-         approved-namespaces (->> {:eip155
-                                   {:chains   networks
-                                    :accounts accounts
-                                    :methods  constants/wallet-connect-supported-methods
-                                    :events   constants/wallet-connect-supported-events}}
-                                  (wallet-connect/build-approved-namespaces
-                                   params))]
-     (-> (wallet-connect/approve-session
-          {:web3-wallet         web3-wallet
-           :id                  id
-           :approved-namespaces approved-namespaces})
-         (promesa/then on-success)
-         (promesa/catch on-fail)))))
-
-(rf/reg-fx
- :effects.wallet-connect/fetch-active-sessions
- (fn [{:keys [web3-wallet on-success on-fail]}]
-   (-> (wallet-connect/get-active-sessions web3-wallet)
+ (fn [{:keys [web3-wallet proposal-request session-networks address on-success on-fail]}]
+   (-> (sessions/approve
+        {:web3-wallet      web3-wallet
+         :proposal-request proposal-request
+         :address          address
+         :session-networks session-networks})
        (promesa/then on-success)
        (promesa/catch on-fail))))
 
