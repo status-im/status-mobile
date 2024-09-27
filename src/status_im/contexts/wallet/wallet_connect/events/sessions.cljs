@@ -13,7 +13,7 @@
      {:fx [[:json-rpc/call
             [{:method     "wallet_disconnectWalletConnectSession"
               :params     [topic]
-              :on-success #(rf/dispatch [:wallet-connect/delete-session topic])
+              :on-success [:wallet-connect/delete-session topic]
               :on-error   #(log/info "Wallet Connect session persistence failed" %)}]]]})))
 
 (rf/reg-event-fx
