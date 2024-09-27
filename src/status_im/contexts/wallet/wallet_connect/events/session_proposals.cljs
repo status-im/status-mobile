@@ -138,9 +138,8 @@
                  :accounts    accounts
                  :on-success  (fn [approved-session]
                                 (log/info "Wallet Connect session approved")
-                                (rf/dispatch [:wallet-connect/reset-current-session-proposal])
-                                (rf/dispatch [:wallet-connect/persist-session
-                                              approved-session]))
+                                (rf/dispatch [:wallet-connect/on-new-session approved-session])
+                                (rf/dispatch [:wallet-connect/reset-current-session-proposal]))
                  :on-fail     (fn [error]
                                 (log/error "Wallet Connect session approval failed"
                                            {:error error

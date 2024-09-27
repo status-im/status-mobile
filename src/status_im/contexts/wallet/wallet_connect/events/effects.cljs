@@ -5,6 +5,7 @@
     [react-native.wallet-connect :as wallet-connect]
     [status-im.config :as config]
     [status-im.constants :as constants]
+    [status-im.contexts.wallet.wallet-connect.utils.sessions :as sessions]
     [status-im.contexts.wallet.wallet-connect.utils.signing :as signing]
     [status-im.contexts.wallet.wallet-connect.utils.transactions :as transactions]
     [utils.i18n :as i18n]
@@ -41,10 +42,8 @@
 
 (rf/reg-fx
  :effects.wallet-connect/disconnect
- (fn [{:keys [web3-wallet topic reason on-success on-fail]}]
-   (-> (wallet-connect/disconnect-session {:web3-wallet web3-wallet
-                                           :topic       topic
-                                           :reason      reason})
+ (fn [{:keys [web3-wallet topic on-success on-fail]}]
+   (-> (sessions/disconnect web3-wallet topic)
        (promesa/then on-success)
        (promesa/catch on-fail))))
 
@@ -155,3 +154,10 @@
            :reason      reason})
          (promesa/then on-success)
          (promesa/catch on-error)))))
+
+(rf/reg-fx
+ :effects.wallet-connect/get-sessions
+ (fn [{:keys [web3-wallet addresses online? on-success on-error]}]
+   (-> (sessions/get-sessions web3-wallet addresses online?)
+       (promesa/then on-success)
+       (promesa/catch on-error))))

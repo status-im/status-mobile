@@ -2710,6 +2710,7 @@
   "wallet-connect-version-not-supported": "WalletConnect version {{version}} is not supported",
   "wallet-connect-via": "via",
   "wallet-connect-wrong-qr": "It’s not a WalletConnect QR",
+  "wallet-connect-connections-error": "Failed to get dApps connections",
   "wallet-insufficient-funds": "Insufficient funds",
   "wallet-insufficient-gas": "Not enough ETH for gas",
   "wallet-invalid-address": "Invalid address: \n {{data}}",

@@ -57,3 +57,7 @@
   [chain-id]
   (-> (rpc-events/call-async "wallet_getSuggestedFees" true chain-id)
       (promesa/then transforms/js->clj)))
+
+(defn disconnect-persisted-session
+  [topic]
+  (rpc-events/call-async "wallet_disconnectWalletConnectSession" true topic))
