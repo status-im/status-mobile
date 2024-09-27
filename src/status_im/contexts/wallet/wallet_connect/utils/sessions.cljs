@@ -3,7 +3,6 @@
     [clojure.string :as string]
     [promesa.core :as promesa]
     [react-native.wallet-connect :as wallet-connect]
-    [status-im.common.json-rpc.events :as rpc-events]
     [status-im.constants :as constants]
     [status-im.contexts.wallet.wallet-connect.utils.rpc :as rpc]
     [taoensso.timbre :as log]
@@ -70,14 +69,12 @@
 
 (defn get-persisted-sessions
   []
-  (let [now (-> (js/Date.) .getTime (quot 1000))]
-    ;; TODO: move to rpc ns
-    (-> (rpc-events/call-async "wallet_getWalletConnectActiveSessions" false now)
-        (promesa/then #(map parse-session-accounts %))
-        (promesa/catch (fn [err]
-                         (throw (ex-info "Failed to get persisted WalletConnect sessions"
-                                         {:error err
-                                          :code  :error/wc-get-persisted-sessions})))))))
+  (-> (rpc/wallet-get-persisted-sessions)
+      (promesa/then #(map parse-session-accounts %))
+      (promesa/catch (fn [err]
+                       (throw (ex-info "Failed to get persisted WalletConnect sessions"
+                                       {:error err
+                                        :code  :error/wc-get-persisted-sessions}))))))
 
 (defn get-active-sessions
   [web3-wallet addresses]
@@ -98,7 +95,7 @@
        (for [topic (find-inactive-sessions active-sessions
                                            persisted-sessions)]
          (do (log/info "Syncing disconnected session with persistance" topic)
-             (rpc/disconnect-persisted-session topic))))
+             (rpc/wallet-disconnect-persisted-session topic))))
       (promesa/catch (fn [err]
                        (throw (ex-info "Failed to synchronize persisted sessions"
                                        {:error err
@@ -121,7 +118,7 @@
         (wallet-connect/disconnect-session {:web3-wallet web3-wallet
                                             :topic       topic
                                             :reason      reason})
-        (rpc/disconnect-persisted-session topic))
+        (rpc/wallet-disconnect-persisted-session topic))
       (promesa/catch (fn [err]
                        (throw (ex-info "Failed to disconnect dapp"
                                        {:err  err
@@ -133,6 +130,5 @@
 
 ;; TODO:
 ;; 2. approve session + add to persistance
-;; 3. move rpc calls outside
 
 
