@@ -519,134 +519,203 @@
     :options   options/dark-screen
     :component wallet-scan-dapp/view}])
 
+;; ## Onboarding
+
+(def onboarding-intro
+  {:name      :screen/onboarding.intro
+   :metrics   {:flow   :onboarding
+               :track? true}
+   :options   {:theme :dark}
+   :on-focus  [:onboarding/overlay-dismiss]
+   :component intro/view})
+
+(def onboarding-new-to-status
+  {:name      :screen/onboarding.new-to-status
+   :metrics   {:flow   :onboarding
+               :track? true}
+   :options   {:theme                  :dark
+               :layout                 options/onboarding-transparent-layout
+               :animations             (merge
+                                        transitions/new-to-status-modal-animations
+                                        transitions/push-animations-for-transparent-background)
+               :popGesture             false
+               :modalPresentationStyle :overCurrentContext}
+   :component create-or-sync-profile/create-profile})
+
+(def onboarding-sync-or-recover-profile
+  {:name      :screen/onboarding.sync-or-recover-profile
+   :metrics   {:flow   :onboarding
+               :track? true}
+   :options   {:theme                  :dark
+               :layout                 options/onboarding-transparent-layout
+               :animations             (merge
+                                        transitions/new-to-status-modal-animations
+                                        transitions/push-animations-for-transparent-background)
+               :popGesture             false
+               :modalPresentationStyle :overCurrentContext}
+   :component create-or-sync-profile/sync-or-recover-profile})
+
+(def onboarding-create-profile
+  {:name      :screen/onboarding.create-profile
+   :metrics   {:flow   :onboarding
+               :track? true}
+   :options   {:theme      :dark
+               :layout     options/onboarding-transparent-layout
+               :animations transitions/push-animations-for-transparent-background
+               :popGesture false}
+   :component create-profile/create-profile})
+
+(def onboarding-create-profile-password
+  {:name      :screen/onboarding.create-profile-password
+   :metrics   {:flow   :onboarding
+               :track? true}
+   :options   {:theme      :dark
+               :insets     {:top false}
+               :layout     options/onboarding-transparent-layout
+               :animations transitions/push-animations-for-transparent-background
+               :popGesture false}
+   :component create-password/create-password})
+
+(def onboarding-enable-biometrics
+  {:name      :screen/onboarding.enable-biometrics
+   :metrics   {:flow   :onboarding
+               :track? true}
+   :options   {:theme                  :dark
+               :layout                 options/onboarding-transparent-layout
+               :animations             (merge
+                                        transitions/new-to-status-modal-animations
+                                        transitions/push-animations-for-transparent-background)
+               :popGesture             false
+               :modalPresentationStyle :overCurrentContext
+               :hardwareBackButton     {:dismissModalOnPress false
+                                        :popStackOnPress     false}}
+   :component enable-biometrics/view})
+
+(def onboarding-generating-keys
+  {:name      :screen/onboarding.generating-keys
+   :metrics   {:flow   :onboarding
+               :track? true}
+   :options   {:theme              :dark
+               :layout             options/onboarding-transparent-layout
+               :animations         transitions/push-animations-for-transparent-background
+               :popGesture         false
+               :hardwareBackButton {:dismissModalOnPress false
+                                    :popStackOnPress     false}}
+   :component generating-keys/view})
+
+(def onboarding-preparing-status
+  {:name      :screen/onboarding.preparing-status
+   :metrics   {:flow   :onboarding
+               :track? true}
+   :options   {:theme              :dark
+               :layout             options/onboarding-transparent-layout
+               :animations         transitions/push-animations-for-transparent-background
+               :popGesture         false
+               :hardwareBackButton {:dismissModalOnPress false
+                                    :popStackOnPress     false}}
+   :component preparing-status/view})
+
+(def onboarding-entering-seed-phrase
+  {:name      :screen/onboarding.enter-seed-phrase
+   :metrics   {:flow   :onboarding
+               :track? true}
+   :options   {:theme      :dark
+               :layout     options/onboarding-transparent-layout
+               :animations transitions/push-animations-for-transparent-background
+               :popGesture false}
+   :component enter-seed-phrase/view})
+
+(def onboarding-enable-notifications
+  {:name      :screen/onboarding.enable-notifications
+   :metrics   {:flow   :onboarding
+               :track? true}
+   :options   {:theme                  :dark
+               :layout                 options/onboarding-transparent-layout
+               :animations             transitions/push-animations-for-transparent-background
+               :popGesture             false
+               :modalPresentationStyle :overCurrentContext
+               :hardwareBackButton     {:dismissModalOnPress false
+                                        :popStackOnPress     false}}
+   :component enable-notifications/view})
+
+(def onboarding-identifiers
+  {:name      :screen/onboarding.identifiers
+   :metrics   {:flow   :onboarding
+               :track? true}
+   :component identifiers/view
+   :options   {:theme              :dark
+               :layout             options/onboarding-transparent-layout
+               :animations         transitions/push-animations-for-transparent-background
+               :popGesture         false
+               :hardwareBackButton {:dismissModalOnPress false
+                                    :popStackOnPress     false}}})
+
+(def onboarding-sign-in-intro
+  {:name      :screen/onboarding.sign-in-intro
+   :metrics   {:flow   :onboarding
+               :track? true}
+   :options   {:layout                 options/onboarding-transparent-layout
+               :animations             (merge
+                                        transitions/sign-in-modal-animations
+                                        transitions/push-animations-for-transparent-background)
+               :modalPresentationStyle :overCurrentContext}
+   :component sign-in/animated-view})
+
+(def onboarding-sign-in
+  {:name      :screen/onboarding.sign-in
+   :metrics   {:flow   :onboarding
+               :track? true}
+   :options   {:theme                  :dark
+               :modalPresentationStyle :overCurrentContext
+               :layout                 options/onboarding-layout}
+   :component sign-in/view})
+
+(def onboarding-syncing-progress
+  {:name      :screen/onboarding.syncing-progress
+   :metrics   {:flow   :onboarding
+               :track? true}
+   :options   (assoc options/dark-screen
+                     :popGesture
+                     false)
+   :component syncing-devices/view})
+
+(def onboarding-syncing-progress-intro
+  {:name      :screen/onboarding.syncing-progress-intro
+   :metrics   {:flow   :onboarding
+               :track? true}
+   :options   {:theme      :dark
+               :layout     options/onboarding-transparent-layout
+               :animations transitions/push-animations-for-transparent-background
+               :popGesture false}
+   :component syncing-devices/view-onboarding})
+
+(def onboarding-syncing-results
+  {:name      :screen/onboarding.syncing-results
+   :metrics   {:flow   :onboarding
+               :track? true}
+   :options   {:theme :dark}
+   :component syncing-results/view})
+
 (defn onboarding-screens
   []
-  [{:name      :screen/onboarding.intro
-    :options   {:theme :dark}
-    :on-focus  [:onboarding/overlay-dismiss]
-    :component intro/view}
+  [onboarding-intro
+   onboarding-new-to-status
+   onboarding-sync-or-recover-profile
+   onboarding-create-profile
+   onboarding-create-profile-password
+   onboarding-enable-biometrics
+   onboarding-generating-keys
+   onboarding-preparing-status
+   onboarding-entering-seed-phrase
+   onboarding-enable-notifications
+   onboarding-identifiers
+   onboarding-sign-in-intro
+   onboarding-sign-in
+   onboarding-syncing-progress
+   onboarding-syncing-progress-intro
+   onboarding-syncing-results])
 
-   {:name      :screen/onboarding.new-to-status
-    :options   {:theme                  :dark
-                :layout                 options/onboarding-transparent-layout
-                :animations             (merge
-                                         transitions/new-to-status-modal-animations
-                                         transitions/push-animations-for-transparent-background)
-                :popGesture             false
-                :modalPresentationStyle :overCurrentContext}
-    :component create-or-sync-profile/create-profile}
-
-   {:name      :screen/onboarding.sync-or-recover-profile
-    :options   {:theme                  :dark
-                :layout                 options/onboarding-transparent-layout
-                :animations             (merge
-                                         transitions/new-to-status-modal-animations
-                                         transitions/push-animations-for-transparent-background)
-                :popGesture             false
-                :modalPresentationStyle :overCurrentContext}
-    :component create-or-sync-profile/sync-or-recover-profile}
-
-   {:name      :screen/onboarding.create-profile
-    :options   {:theme      :dark
-                :layout     options/onboarding-transparent-layout
-                :animations transitions/push-animations-for-transparent-background
-                :popGesture false}
-    :component create-profile/create-profile}
-
-   {:name      :screen/onboarding.create-profile-password
-    :options   {:theme      :dark
-                :insets     {:top false}
-                :layout     options/onboarding-transparent-layout
-                :animations transitions/push-animations-for-transparent-background
-                :popGesture false}
-    :component create-password/create-password}
-
-   {:name      :screen/onboarding.enable-biometrics
-    :options   {:theme                  :dark
-                :layout                 options/onboarding-transparent-layout
-                :animations             (merge
-                                         transitions/new-to-status-modal-animations
-                                         transitions/push-animations-for-transparent-background)
-                :popGesture             false
-                :modalPresentationStyle :overCurrentContext
-                :hardwareBackButton     {:dismissModalOnPress false
-                                         :popStackOnPress     false}}
-    :component enable-biometrics/view}
-
-   {:name      :screen/onboarding.generating-keys
-    :options   {:theme              :dark
-                :layout             options/onboarding-transparent-layout
-                :animations         transitions/push-animations-for-transparent-background
-                :popGesture         false
-                :hardwareBackButton {:dismissModalOnPress false
-                                     :popStackOnPress     false}}
-    :component generating-keys/view}
-
-   {:name      :screen/onboarding.preparing-status
-    :options   {:theme              :dark
-                :layout             options/onboarding-transparent-layout
-                :animations         transitions/push-animations-for-transparent-background
-                :popGesture         false
-                :hardwareBackButton {:dismissModalOnPress false
-                                     :popStackOnPress     false}}
-    :component preparing-status/view}
-
-   {:name      :screen/onboarding.enter-seed-phrase
-    :options   {:theme      :dark
-                :layout     options/onboarding-transparent-layout
-                :animations transitions/push-animations-for-transparent-background
-                :popGesture false}
-    :component enter-seed-phrase/view}
-
-   {:name      :screen/onboarding.enable-notifications
-    :options   {:theme                  :dark
-                :layout                 options/onboarding-transparent-layout
-                :animations             transitions/push-animations-for-transparent-background
-                :popGesture             false
-                :modalPresentationStyle :overCurrentContext
-                :hardwareBackButton     {:dismissModalOnPress false
-                                         :popStackOnPress     false}}
-    :component enable-notifications/view}
-
-   {:name      :screen/onboarding.identifiers
-    :component identifiers/view
-    :options   {:theme              :dark
-                :layout             options/onboarding-transparent-layout
-                :animations         transitions/push-animations-for-transparent-background
-                :popGesture         false
-                :hardwareBackButton {:dismissModalOnPress false
-                                     :popStackOnPress     false}}}
-
-   {:name      :screen/onboarding.sign-in-intro
-    :options   {:layout                 options/onboarding-transparent-layout
-                :animations             (merge
-                                         transitions/sign-in-modal-animations
-                                         transitions/push-animations-for-transparent-background)
-                :modalPresentationStyle :overCurrentContext}
-    :component sign-in/animated-view}
-
-   {:name      :screen/onboarding.sign-in
-    :options   {:theme                  :dark
-                :modalPresentationStyle :overCurrentContext
-                :layout                 options/onboarding-layout}
-    :component sign-in/view}
-
-   {:name      :screen/onboarding.syncing-progress
-    :options   (assoc options/dark-screen
-                      :popGesture
-                      false)
-    :component syncing-devices/view}
-
-   {:name      :screen/onboarding.syncing-progress-intro
-    :options   {:theme      :dark
-                :layout     options/onboarding-transparent-layout
-                :animations transitions/push-animations-for-transparent-background
-                :popGesture false}
-    :component syncing-devices/view-onboarding}
-
-   {:name      :screen/onboarding.syncing-results
-    :options   {:theme :dark}
-    :component syncing-results/view}])
+;; ## All Screens
 
 (defn screens
   []
