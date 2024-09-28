@@ -31,7 +31,7 @@
       :appVersion build/app-short-version
       :eventValue (assoc event-data
                          :viewId   (name screen-id)
-                         :viewName (-> screen-id symbol str))}}))
+                         :screenId (-> screen-id symbol str))}}))
 
 (def ^:const app-started-event "app-started")
 
