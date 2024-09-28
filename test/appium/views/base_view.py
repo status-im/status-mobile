@@ -747,8 +747,8 @@ class BaseView(object):
         return items_in_logcat
 
     def find_values_in_geth(self, *args):
-        from tests.base_test_case import pull_geth
-        b64_log = pull_geth(self.driver)
+        from tests.base_test_case import pull_log_file
+        b64_log = pull_log_file(self.driver, log_file_name='geth')
         file = base64.b64decode(b64_log)
         result = False
         for value in args:
