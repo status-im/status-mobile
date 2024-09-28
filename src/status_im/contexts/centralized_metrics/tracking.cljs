@@ -1,7 +1,9 @@
 (ns status-im.contexts.centralized-metrics.tracking
   (:require
+    [clojure.string]
     [legacy.status-im.utils.build :as build]
-    [react-native.platform :as platform]))
+    [react-native.platform :as platform]
+    [status-im.navigation.screens :as screens]))
 
 (defn key-value-event
   [event-name val-key value]
@@ -19,36 +21,35 @@
   [view-id]
   (key-value-event "navigation" :viewId view-id))
 
+(defn screen-event
+  [screen event-data]
+  (let [screen-id (:name screen)
+        event-id  (get-in screen [:metrics :event :id] screen-id)]
+    {:metric
+     {:eventName  (name event-id)
+      :platform   platform/os
+      :appVersion build/app-short-version
+      :eventValue (assoc event-data
+                         :viewId   (name screen-id)
+                         :viewName (-> screen-id symbol str))}}))
+
 (def ^:const app-started-event "app-started")
 
 (def ^:const view-ids-to-track
   #{;; Tabs
     :communities-stack
     :chats-stack
-    :wallet-stack
-
-    ;; Onboarding
-    :screen/onboarding.intro
-    :screen/onboarding.new-to-status
-    :screen/onboarding.sync-or-recover-profile
-    :screen/onboarding.enter-seed-phrase
-    :screen/onboarding.create-profile
-    :screen/onboarding.create-profile-password
-    :screen/onboarding.enable-biometrics
-    :screen/onboarding.generating-keys
-    :screen/onboarding.enable-notifications
-    :screen/onboarding.preparing-status
-    :screen/onboarding.sign-in-intro
-    :screen/onboarding.sign-in
-    :screen/onboarding.syncing-progress
-    :screen/onboarding.syncing-progress-intro
-    :screen/onboarding.syncing-results
-    :screen/onboarding.welcome})
+    :wallet-stack})
 
 (defn track-view-id-event
   [view-id]
-  (when (contains? view-ids-to-track view-id)
-    (navigation-event (name view-id))))
+  (let [screens-by-name screens/onboarding-screens-by-name]
+    (if-let [screen (get screens-by-name view-id)]
+      (when (get-in screen [:metrics :track?] false)
+        [(navigation-event (name view-id))
+         (screen-event screen {})])
+      (when (contains? view-ids-to-track view-id)
+        (navigation-event (name view-id))))))
 
 (defn tracked-event
   [[event-name second-parameter]]

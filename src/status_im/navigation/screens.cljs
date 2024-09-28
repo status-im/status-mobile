@@ -1,6 +1,7 @@
 (ns status-im.navigation.screens
   (:require
     [legacy.status-im.ui.screens.screens :as old-screens]
+    [legacy.status-im.utils.core :as utils]
     [quo.foundations.colors :as colors]
     [status-im.common.emoji-picker.view :as emoji-picker]
     [status-im.common.enter-seed-phrase.view :as enter-seed-phrase]
@@ -532,6 +533,7 @@
 (def onboarding-new-to-status
   {:name      :screen/onboarding.new-to-status
    :metrics   {:flow   :onboarding
+               :event  {:id :onboarding.create-profile}
                :track? true}
    :options   {:theme                  :dark
                :layout                 options/onboarding-transparent-layout
@@ -714,6 +716,9 @@
    onboarding-syncing-progress
    onboarding-syncing-progress-intro
    onboarding-syncing-results])
+
+(def onboarding-screens-by-name
+  (utils/index-by :name (onboarding-screens)))
 
 ;; ## All Screens
 
