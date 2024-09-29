@@ -203,7 +203,13 @@
   [{db :db :as cofx} chat-id animation]
   (rf/merge cofx
             (when-not (:current-chat-id db)
-              {:dispatch [(if animation :shell/navigate-to :navigate-to) :chat chat-id animation]})
+              {:dispatch [(if animation :shell/navigate-to :navigate-to)
+                          (cond
+                            (community-chat? cofx chat-id) :community-chat
+                            (group-chat? cofx chat-id)     :group-chat
+                            :else                          :chat)
+                          chat-id
+                          animation]})
             (close-chat chat-id)
             (force-close-chat chat-id)
             (fn [{:keys [db]}]
