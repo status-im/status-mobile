@@ -533,7 +533,7 @@
 (def onboarding-new-to-status
   {:name      :screen/onboarding.new-to-status
    :metrics   {:flow   :onboarding
-               :event  {:id :onboarding.create-profile}
+               :event  {:id :onboarding.create-profile-intro}
                :track? true}
    :options   {:theme                  :dark
                :layout                 options/onboarding-transparent-layout
@@ -560,6 +560,7 @@
 (def onboarding-create-profile
   {:name      :screen/onboarding.create-profile
    :metrics   {:flow   :onboarding
+               :event  {:id :onboarding.create-profile-info}
                :track? true}
    :options   {:theme      :dark
                :layout     options/onboarding-transparent-layout
@@ -620,6 +621,7 @@
 (def onboarding-entering-seed-phrase
   {:name      :screen/onboarding.enter-seed-phrase
    :metrics   {:flow   :onboarding
+               :event  {:id :onboarding.sign-in-by-seed-phrase}
                :track? true}
    :options   {:theme      :dark
                :layout     options/onboarding-transparent-layout
@@ -655,6 +657,7 @@
 (def onboarding-sign-in-intro
   {:name      :screen/onboarding.sign-in-intro
    :metrics   {:flow   :onboarding
+               :event  {:id :onboarding.sign-in-by-syncing}
                :track? true}
    :options   {:layout                 options/onboarding-transparent-layout
                :animations             (merge
@@ -663,6 +666,7 @@
                :modalPresentationStyle :overCurrentContext}
    :component sign-in/animated-view})
 
+;; TODO(@seanstrom): Remove this definition if it is no longer needed
 (def onboarding-sign-in
   {:name      :screen/onboarding.sign-in
    :metrics   {:flow   :onboarding
@@ -672,9 +676,13 @@
                :layout                 options/onboarding-layout}
    :component sign-in/view})
 
+;; NOTE(@seanstrom):
+;; This screen seems to be accessible from settings when syncing.
+;; Should we consider this an onboarding screen?
 (def onboarding-syncing-progress
   {:name      :screen/onboarding.syncing-progress
    :metrics   {:flow   :onboarding
+               :event  {:id :onboarding.syncing-devices}
                :track? true}
    :options   (assoc options/dark-screen
                      :popGesture
@@ -684,6 +692,7 @@
 (def onboarding-syncing-progress-intro
   {:name      :screen/onboarding.syncing-progress-intro
    :metrics   {:flow   :onboarding
+               :event  {:id :onboarding.sign-in-by-syncing-started}
                :track? true}
    :options   {:theme      :dark
                :layout     options/onboarding-transparent-layout
@@ -694,6 +703,7 @@
 (def onboarding-syncing-results
   {:name      :screen/onboarding.syncing-results
    :metrics   {:flow   :onboarding
+               :event  {:id :onboarding.syncing-completed}
                :track? true}
    :options   {:theme :dark}
    :component syncing-results/view})
