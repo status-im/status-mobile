@@ -338,6 +338,9 @@
 (defn settings-screens
   []
   [{:name      :settings
+    :metrics   {:flow   :settings
+                :track? :true
+                :event  {:id :settings.profile-settings}}
     :options   options/transparent-screen-options
     :component settings/view}
 
@@ -346,30 +349,51 @@
     :component settings.keycard/view}
 
    {:name      :edit-profile
+    :metrics   {:flow   :settings
+                :track? :true
+                :event  {:id :settings.edit-profile}}
     :options   options/transparent-modal-screen-options
     :component edit-profile/view}
 
    {:name      :edit-accent-colour
+    :metrics   {:flow   :settings
+                :track? :true
+                :event  {:id :settings.edit-profile-accent-colour}}
     :options   options/transparent-modal-screen-options
     :component edit-accent-colour/view}
 
    {:name      :edit-name
+    :metrics   {:flow   :settings
+                :track? :true
+                :event  {:id :settings.edit-profile-name}}
     :options   options/transparent-modal-screen-options
     :component edit-name/view}
 
    {:name      :edit-bio
+    :metrics   {:flow   :settings
+                :track? :true
+                :event  {:id :settings.edit-profile-bio}}
     :options   options/transparent-modal-screen-options
     :component edit-bio/view}
 
    {:name      :screen/settings-password
+    :metrics   {:flow   :settings
+                :track? :true
+                :event  {:id :settings.password}}
     :options   options/transparent-modal-screen-options
     :component settings-password/view}
 
    {:name      :screen/change-password
+    :metrics   {:flow   :settings
+                :track? :true
+                :event  {:id :settings.change-password}}
     :options   (assoc options/transparent-modal-screen-options :theme :dark)
     :component change-password/view}
 
    {:name      :screen/change-password-loading
+    :metrics   {:flow   :settings
+                :track? :true
+                :event  {:id :settings.change-password-loading}}
     :options   (assoc
                 options/transparent-modal-screen-options
                 :theme              :dark
@@ -379,26 +403,44 @@
     :component change-password-loading/view}
 
    {:name      :screen/settings-messages
+    :metrics   {:flow   :settings
+                :track? :true
+                :event  {:id :settings.messages}}
     :options   options/transparent-modal-screen-options
     :component settings.messages/view}
 
    {:name      :screen/settings-blocked-users
+    :metrics   {:flow   :settings
+                :track? :true
+                :event  {:id :settings.blocked-users}}
     :options   options/transparent-modal-screen-options
     :component settings.blocked-users/view}
 
    {:name      :screen/settings-privacy-and-security
+    :metrics   {:flow   :settings
+                :track? :true
+                :event  {:id :settings.private-and-security}}
     :options   options/transparent-modal-screen-options
     :component settings.privacy-and-security/view}
 
    {:name      :screen/settings.share-usage-data
+    :metrics   {:flow   :settings
+                :track? :true
+                :event  {:id :settings.share-usage-data}}
     :options   options/transparent-modal-screen-options
     :component settings.share-usage/view}
 
    {:name      :screen/settings.language-and-currency
+    :metrics   {:flow   :settings
+                :track? :true
+                :event  {:id :settings.language-and-currency}}
     :options   options/transparent-modal-screen-options
     :component settings.language-and-currency/view}
 
    {:name      :screen/settings.currency-selection
+    :metrics   {:flow   :settings
+                :track? :true
+                :event  {:id :settings.currency-selection}}
     :options   options/transparent-modal-screen-options
     :component settings.currency-selection/view}
   ])
@@ -406,54 +448,93 @@
 (defn wallet-settings-screens
   []
   [{:name      :screen/settings.wallet
+    :metrics   {:flow   :settings
+                :track? :true
+                :event  {:id :settings.wallet}}
     :options   options/transparent-modal-screen-options
     :component wallet-options/view}
 
    {:name      :screen/settings.rename-keypair
+    :metrics   {:flow   :settings
+                :track? :true
+                :event  {:id :settings.wallet-rename-keypair}}
     :options   options/transparent-screen-options
     :component keypair-rename/view}
 
    {:name      :screen/settings.encrypted-keypair-qr
+    :metrics   {:flow   :settings
+                :track? :true
+                :event  {:id :settings.wallet-encrypted-keypair-qr}}
     :options   options/transparent-screen-options
     :component encrypted-keypair-qr/view}
 
    {:name      :screen/settings.saved-addresses
+    :metrics   {:flow   :settings
+                :track? :true
+                :event  {:id :settings.wallet-saved-addresses}}
     :options   options/transparent-modal-screen-options
     :component saved-addresses-settings/view}
 
    {:name      :screen/settings.keypairs-and-accounts
+    :metrics   {:flow   :settings
+                :track? :true
+                :event  {:id :settings.wallet-keypairs-and-accounts}}
     :options   options/transparent-modal-screen-options
     :component keypairs-and-accounts/view}
 
    {:name      :screen/settings.scan-keypair-qr
+    :metrics   {:flow   :settings
+                :track? :true
+                :event  {:id :settings.wallet-scan-keypair-qr}}
     :options   options/transparent-screen-options
     :component scan-keypair-qr/view}
 
    {:name      :screen/settings.missing-keypair.import-seed-phrase
+    :metrics   {:flow   :settings
+                :track? :true
+                :event  {:id :settings.wallet-missing-keypair-import-seed-phrase}}
     :options   options/transparent-screen-options
     :component missing-keypairs.import-seed-phrase/view}
 
    {:name      :screen/settings.missing-keypair-import-private-key
+    :metrics   {:flow   :settings
+                :track? :true
+                :event  {:id :settings.wallet-missing-keypair-import-private-key}}
     :options   options/transparent-screen-options
     :component missing-keypairs.import-private-key/view}
 
    {:name      :screen/settings.network-settings
+    :metrics   {:flow   :settings
+                :track? :true
+                :event  {:id :settings.wallet-network-settings}}
     :options   options/transparent-modal-screen-options
     :component network-settings/view}
 
    {:name      :screen/settings.save-address
+    :metrics   {:flow   :settings
+                :track? :true
+                :event  {:id :settings.wallet-saved-addresses}}
     :options   options/transparent-modal-screen-options
     :component wallet-save-address/view}
 
    {:name      :screen/settings.edit-saved-address
+    :metrics   {:flow   :settings
+                :track? :true
+                :event  {:id :settings.wallet-edit-saved-addresses}}
     :options   (assoc options/dark-screen :sheet? true)
     :component wallet-save-address/view}
 
    {:name      :screen/settings.add-address-to-save
+    :metrics   {:flow   :settings
+                :track? :true
+                :event  {:id :settings.wallet-add-saved-address}}
     :options   options/transparent-modal-screen-options
     :component wallet-add-address-to-save/view}
 
    {:name      :screen/settings.share-saved-address
+    :metrics   {:flow   :settings
+                :track? :true
+                :event  {:id :settings.wallet-share-saved-address}}
     :options   options/transparent-screen-options
     :component share-saved-address/view}])
 
