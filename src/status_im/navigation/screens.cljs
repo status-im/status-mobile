@@ -146,41 +146,68 @@
 (defn chat-screens
   []
   [{:name      :start-a-new-chat
+    :metrics   {:flow   :messenger
+                :track? :true
+                :event  {:id :messenger.new-chat}}
     :options   {:sheet? true}
     :component new-chat/view}
 
    {:name      :chat
+    :metrics   {:flow   :messenger
+                :track? :true
+                :event  {:id :messenger.chat}}
     :options   {:popGesture false
                 :animations transitions/stack-transition-from-bottom}
     :component chat/chat}
-   
+
    {:name      :group-chat
+    :metrics   {:flow   :messenger
+                :track? :true
+                :event  {:id :messenger.group-chat}}
     :options   {:popGesture false
                 :animations transitions/stack-transition-from-bottom}
     :component chat/chat}
 
    {:name      :group-create
+    :metrics   {:flow   :messenger
+                :track? :true
+                :event  {:id :messenger.new-group}}
     :options   {:sheet?           true
                 :skip-background? true}
     :component group-create/view}
 
    {:name      :group-details
+    :metrics   {:flow   :messenger
+                :track? :true
+                :event  {:id :messenger.group-details}}
     :component group-details/group-details}
 
    {:name      :group-add-manage-members
+    :metrics   {:flow   :messenger
+                :track? :true
+                :event  {:id :messenger.group-manage-members}}
     :options   {:sheet? true}
     :component group-details/add-manage-members}])
 
 (defn community-screens
   []
   [{:name      :discover-communities
+    :metrics   {:flow   :community
+                :track? :true
+                :event  {:id :community.discover}}
     :component communities.discover/view}
 
    {:name      :community-overview
+    :metrics   {:flow   :community
+                :track? :true
+                :event  {:id :community.overview}}
     :options   {:animations transitions/stack-transition-from-bottom}
     :component communities.overview/view}
-   
+
    {:name      :community-chat
+    :metrics   {:flow   :community
+                :track? :true
+                :event  {:id :community.channel}}
     :options   {:popGesture false
                 :animations transitions/stack-transition-from-bottom}
     :component chat/chat}
@@ -189,37 +216,64 @@
    ;; joining a community. The non-sheet screen is used when editing shared
    ;; addresses after the join request was sent.
    {:name      :community-account-selection-sheet
+    :metrics   {:flow   :community
+                :track? :true
+                :event  {:id :community.select-addresses-for-joining-community}}
     :options   {:sheet? true}
     :component communities.accounts-selection/view}
    {:name      :community-account-selection
+    :metrics   {:flow   :community
+                :track? :true
+                :event  {:id :community.select-addresses-for-community}}
     :options   {:insets {:top? true}}
     :component communities.accounts-selection/view}
 
    {:name      :community-requests-to-join
+    :metrics   {:flow   :community
+                :track? :true
+                :event  {:id :community.request-to-join}}
     :options   {:sheet? true}
     :component join-menu/view}
 
    {:name      :screen/share-community
+    :metrics   {:flow   :community
+                :track? :true
+                :event  {:id :community.share-community}}
     :options   options/transparent-screen-options
     :component share-community/view}
 
    {:name      :invite-people-community
+    :metrics   {:flow   :community
+                :track? :true
+                :event  {:id :community.invite-people}}
     :options   {:sheet? true}
     :component communities.invite/view}
 
    {:name      :share-community-channel
+    :metrics   {:flow   :community
+                :track? :true
+                :event  {:id :community.share-channel}}
     :options   options/transparent-screen-options
     :component share-community-channel/view}
 
    {:name      :screen/chat.view-channel-members-and-details
+    :metrics   {:flow   :community
+                :track? :true
+                :event  {:id :community.view-channel-members-and-details}}
     :options   {:insets {:top? true}}
     :component channel-view-channel-members-and-details/view}
 
    {:name      :addresses-for-permissions
+    :metrics   {:flow   :community
+                :track? :true
+                :event  {:id :community.choose-addresses-for-permissions}}
     :options   {:insets {:top? true}}
     :component addresses-for-permissions/view}
 
    {:name      :address-for-airdrop
+    :metrics   {:flow   :community
+                :track? :true
+                :event  {:id :community.choose-addresses-for-airdrop}}
     :options   {:insets {:top? true}}
     :component airdrop-addresses/view}
   ])
@@ -227,18 +281,30 @@
 (defn contact-screens
   []
   [{:name      :new-contact
+    :metrics   {:flow   :contact
+                :track? :true
+                :event  {:id :contact.new-contact}}
     :options   {:sheet? true}
     :component add-new-contact/new-contact}
 
    {:name      :scan-profile-qr-code
+    :metrics   {:flow   :contact
+                :track? :true
+                :event  {:id :contact.scan-profile-qr-code}}
     :options   options/dark-screen
     :component scan-profile-qr-page/view}
 
    {:name      :contact-profile
+    :metrics   {:flow   :contact
+                :track? :true
+                :event  {:id :contact.contact-profile}}
     :options   {:modalPresentationStyle :overCurrentContext}
     :component contact-profile/view}
 
    {:name      :share-contact
+    :metrics   {:flow   :contact
+                :track? :true
+                :event  {:id :contact.share-profile}}
     :options   options/transparent-screen-options
     :component share-contact/view}
   ])
