@@ -1038,44 +1038,65 @@
    (keycard-screens)
 
    [{:name      :activity-center
+     :metrics   {:flow   :app
+                 :track? true}
      :options   options/transparent-screen-options
      :component activity-center/view}
 
     {:name      :screen/share-shell
+     :metrics   {:flow   :app
+                 :track? true}
      :options   options/transparent-screen-options
      :component share/view}
 
     {:name      :shell-stack
+     :metrics   {:flow   :app
+                 :track? true}
      :component shell/shell-stack}
 
     {:name      :shell-qr-reader
+     :metrics   {:flow   :app
+                 :track? true}
      :options   options/dark-screen
      :component shell-qr-reader/view}
 
     {:name      :lightbox
+     :metrics   {:flow   :app
+                 :track? true}
      :options   options/lightbox
      :component lightbox/lightbox}
 
     {:name      :photo-selector
+     :metrics   {:flow   :app
+                 :track? true}
      :options   {:sheet? true}
      :component photo-selector/photo-selector}
 
     {:name      :camera-screen
+     :metrics   {:flow   :app
+                 :track? true}
      :options   {:navigationBar {:backgroundColor colors/black}
                  :theme         :dark}
      :component camera-screen/camera-screen}
 
     {:name      :emoji-picker
+     :metrics   {:flow   :app
+                 :track? true}
      :options   {:sheet? true}
      :component emoji-picker/view}
 
     {:name      :screen/profile.profiles
+     :metrics   {:flow   :app
+                 :track? true
+                 :event  {:id :app.profiles}}
      :options   {:theme  :dark
                  :layout options/onboarding-layout}
      :on-focus  [:onboarding/overlay-dismiss]
      :component profiles/view}]
 
    [{:name    :shell
+     :metrics {:flow   :app
+               :track? true}
      :options {:theme :dark}}]
 
    (when js/goog.DEBUG
