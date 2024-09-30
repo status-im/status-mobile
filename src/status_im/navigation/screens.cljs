@@ -796,8 +796,6 @@
     :options   options/dark-screen
     :component wallet-scan-dapp/view}])
 
-;; ## Onboarding
-
 (def onboarding-intro
   {:name      :screen/onboarding.intro
    :metrics   {:flow   :onboarding
@@ -1005,8 +1003,6 @@
 
 (def onboarding-screens-by-name
   (utils/index-by :name (onboarding-screens)))
-
-;; ## All Screens
 
 (defn keycard-screens
   []
