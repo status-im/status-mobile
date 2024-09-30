@@ -312,26 +312,30 @@
 (defn device-syncing-screens
   []
   [{:name      :how-to-pair
+    :metrics   {:flow   :syncing
+                :track? true
+                :event  {:id :syncing.how-to-pair}}
     :options   (assoc options/dark-screen :sheet? true)
     :component how-to-pair/view}
 
    {:name      :find-sync-code
+    :metrics   {:flow   :syncing
+                :track? true
+                :event  {:id :syncing.find-sync-code}}
     :options   (assoc options/dark-screen :sheet? true)
     :component find-sync-code/view}
 
-   {:name      :screen/settings.syncing
-    :options   options/transparent-modal-screen-options
-    :component settings.syncing/view}
-
-   {:name      :screen/paired-devices
-    :options   options/transparent-modal-screen-options
-    :component syncing-devices-list/view}
-
    {:name      :settings-setup-syncing
+    :metrics   {:flow   :syncing
+                :track? true
+                :event  {:id :syncing.setup-syncing}}
     :options   options/transparent-screen-options
     :component settings-setup-syncing/view}
 
    {:name      :scan-sync-code-page
+    :metrics   {:flow   :syncing
+                :track? true
+                :event  {:id :syncing.scan-sync-code}}
     :options   options/transparent-modal-screen-options
     :component scan-sync-code-page/view}
   ])
@@ -430,6 +434,20 @@
                 :event  {:id :settings.share-usage-data}}
     :options   options/transparent-modal-screen-options
     :component settings.share-usage/view}
+
+   {:name      :screen/settings.syncing
+    :metrics   {:flow   :settings
+                :track? true
+                :event  {:id :settings.syncing}}
+    :options   options/transparent-modal-screen-options
+    :component settings.syncing/view}
+
+   {:name      :screen/paired-devices
+    :metrics   {:flow   :settings
+                :track? true
+                :event  {:id :settings.paired-devices}}
+    :options   options/transparent-modal-screen-options
+    :component syncing-devices-list/view}
 
    {:name      :screen/settings.language-and-currency
     :metrics   {:flow   :settings
