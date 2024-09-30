@@ -1001,9 +1001,6 @@
    onboarding-syncing-progress-intro
    onboarding-syncing-results])
 
-(def onboarding-screens-by-name
-  (utils/index-by :name (onboarding-screens)))
-
 (defn keycard-screens
   []
   [{:name      :screen/keycard.check
@@ -1102,3 +1099,6 @@
      [{:name      :feature-flags
        :options   {:insets {:top? true}}
        :component feature-flags/view}])))
+
+(def screens-by-name
+  (utils/index-by :name (screens)))
