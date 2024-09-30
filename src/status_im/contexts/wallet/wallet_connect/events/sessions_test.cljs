@@ -4,6 +4,7 @@
     matcher-combinators.test
     [re-frame.db :as rf-db]
     status-im.contexts.wallet.wallet-connect.events.session-responses
+    status-im.contexts.wallet.wallet-connect.events.sessions
     [test-helpers.unit :as h]))
 
 (defn- find-fx
