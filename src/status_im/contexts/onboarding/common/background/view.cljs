@@ -58,7 +58,7 @@
       (reset! shell.state/screen-height height)
       (async-storage/set-item! :screen-height height))))
 
-(defn f-view
+(defn view
   [dark-overlay?]
   (let [view-id      (rf/sub [:view-id])
         animate?     (not dark-overlay?)
@@ -94,5 +94,3 @@
          :blur-radius   (if platform/android? 25 10)
          :blur-type     :transparent
          :overlay-color :transparent}])]))
-
-(defn view [dark-overlay?] [:f> f-view dark-overlay?])
