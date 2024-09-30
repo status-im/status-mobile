@@ -1,4 +1,5 @@
-(ns quo.components.buttons.wallet-ctas.style)
+(ns quo.components.buttons.wallet-ctas.style
+  (:require [quo.foundations.colors :as colors]))
 
 (def inner-container
   {:flex-direction  :row
@@ -10,3 +11,9 @@
    :width            77.75
    :justify-content  :center
    :align-items      :center})
+
+(defn action-button-text
+  [theme disabled?]
+  (cond-> {:margin-top 4
+           :color      (colors/theme-colors colors/neutral-50 colors/neutral-40 theme)}
+    disabled? (assoc :opacity 0.5)))
