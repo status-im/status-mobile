@@ -559,124 +559,221 @@
 (defn wallet-screens
   []
   [{:name      :screen/wallet.accounts
+    :metrics   {:flow   :wallet
+                :track? true
+                :event  {:id :wallet.account}}
     :options   {:insets {:top? true}}
     :component wallet-accounts/view}
 
-   {:name      :screen/wallet.edit-account
-    :component wallet-edit-account/view}
-
-   {:name      :screen/wallet.add-address-to-watch
-    :options   {:insets {:top? true}}
-    :component wallet-add-address-to-watch/view}
-
-   {:name      :screen/wallet.confirm-address-to-watch
-    :component wallet-confirm-address-to-watch/view}
-
-   {:name      :screen/wallet.bridge-select-asset
-    :options   {:insets                 {:top? true}
-                :modalPresentationStyle :overCurrentContext}
-    :component wallet-bridge-select-asset/view}
-
-   {:name      :screen/wallet.bridge-to
-    :options   {:insets                 {:top? true}
-                :modalPresentationStyle :overCurrentContext}
-    :component wallet-bridge-to/view}
-
-   {:name      :screen/wallet.bridge-input-amount
-    :options   {:insets {:top? true}}
-    :component wallet-bridge-input-amount/view}
-
-   {:name      :screen/wallet.edit-derivation-path
-    :component wallet-edit-derivation-path/view}
-
-   {:name      :screen/wallet.import-private-key
-    :options   {:insets {:top? true}}
-    :component wallet-import-private-key/view}
-
    {:name      :screen/wallet.collectible
+    :metrics   {:flow   :wallet
+                :track? true
+                :event  {:id :wallet.collectible}}
     :component wallet-collectible/view}
 
-   {:name      :screen/wallet.select-keypair
-    :options   {:insets {:top? true :bottom? true}}
-    :component wallet-select-keypair/view}
+   {:name      :screen/wallet.edit-account
+    :metrics   {:flow   :wallet
+                :track? true
+                :event  {:id :wallet.edit-account}}
+    :component wallet-edit-account/view}
 
    {:name      :screen/wallet.create-account
+    :metrics   {:flow   :wallet
+                :track? true
+                :event  {:id :wallet.create-account}}
     :options   {:insets {:top? true}}
     :component wallet-create-account/view}
 
+   {:name      :screen/wallet.select-keypair
+    :metrics   {:flow   :wallet
+                :track? true
+                :event  {:id :wallet.create-account-select-keypair}}
+    :options   {:insets {:top? true :bottom? true}}
+    :component wallet-select-keypair/view}
+
+   {:name      :screen/wallet.edit-derivation-path
+    :metrics   {:flow   :wallet
+                :track? true
+                :event  {:id :wallet.create-account-edit-derivation-path}}
+    :component wallet-edit-derivation-path/view}
+
    {:name      :screen/wallet.backup-recovery-phrase
+    :metrics   {:flow   :wallet
+                :track? true
+                :event  {:id :wallet.create-account-backup-new-keypair}}
     :options   {:insets {:top? true :bottom? true}}
     :component wallet-backup-recovery-phrase/view}
 
    {:name      :screen/wallet.confirm-backup
+    :metrics   {:flow   :wallet
+                :track? true
+                :event  {:id :wallet.create-account-backup-new-keypair-confirm}}
     :options   {:insets {:top? true :bottom? true}}
     :component wallet-confirm-backup/view}
 
    {:name      :screen/wallet.keypair-name
+    :metrics   {:flow   :wallet
+                :track? true
+                :event  {:id :wallet.create-account-add-new-keypair-name}}
     :options   {:insets {:top? true}}
     :component wallet-key-pair-name/view}
 
+   {:name      :screen/wallet.import-private-key
+    :metrics   {:flow   :wallet
+                :track? true
+                :event  {:id :wallet.create-account-import-keypair-by-private-key}}
+    :options   {:insets {:top? true}}
+    :component wallet-import-private-key/view}
+
    {:name      :screen/wallet.enter-seed-phrase
+    :metrics   {:flow   :wallet
+                :track? true
+                :event  {:id :wallet.create-account-import-keypair-by-seed-phrase}}
     :component enter-seed-phrase/view}
 
    {:name      :screen/wallet.share-address
+    :metrics   {:flow   :wallet
+                :track? true
+                :event  {:id :wallet.share-address}}
     :options   options/transparent-screen-options
     :component wallet-share-address/view}
 
-   {:name      :screen/wallet.send-input-amount
-    :options   {:modalPresentationStyle :overCurrentContext
-                :insets                 {:top?    true
-                                         :bottom? true}}
-    :component wallet-send-input-amount/view}
+   {:name      :screen/wallet.add-address-to-watch
+    :metrics   {:flow   :wallet
+                :track? true
+                :event  {:id :wallet.add-watched-address}}
+    :options   {:insets {:top? true}}
+    :component wallet-add-address-to-watch/view}
+
+   {:name      :screen/wallet.confirm-address-to-watch
+    :metrics   {:flow   :wallet
+                :track? true
+                :event  {:id :wallet.add-watched-address-profile}}
+    :component wallet-confirm-address-to-watch/view}
+
+   {:name      :screen/wallet.transaction-confirmation
+    :metrics   {:flow   :wallet
+                :track? true
+                :event  {:id :wallet.transaction-confirmation}}
+    :component wallet-transaction-confirmation/view}
+
+   {:name      :screen/wallet.transaction-progress
+    :metrics   {:flow   :wallet
+                :track? true
+                :event  {:id :wallet.transaction-progress}}
+    :component wallet-transaction-progress/view}])
+
+(defn wallet-send-screens
+  []
+  [{:name      :screen/wallet.scan-address
+    :metrics   {:flow   :wallet-send
+                :track? true
+                :event  {:id :wallet-send.scan-address}}
+    :options   options/dark-screen
+    :component wallet-scan-address/view}
 
    {:name      :screen/wallet.select-address
+    :metrics   {:flow   :wallet-send
+                :track? true
+                :event  {:id :wallet-send.select-destination-address}}
     :options   {:modalPresentationStyle :overCurrentContext
                 :insets                 {:top? true}}
     :component wallet-select-address/view}
 
    {:name      :screen/wallet.select-from
+    :metrics   {:flow   :wallet-send
+                :track? true
+                :event  {:id :wallet-send.select-source-address}}
     :options   {:modalPresentationStyle :overCurrentContext
                 :insets                 {:top? true}}
     :component wallet-select-from/view}
 
    {:name      :screen/wallet.select-asset
+    :metrics   {:flow   :wallet-send
+                :track? true
+                :event  {:id :wallet-send.select-asset}}
     :options   {:insets {:top? true}}
     :component wallet-select-asset/view}
 
-   {:name      :screen/wallet.transaction-confirmation
-    :component wallet-transaction-confirmation/view}
+   {:name      :screen/wallet.send-input-amount
+    :metrics   {:flow   :wallet-send
+                :track? true
+                :event  {:id :wallet-send.input-amount}}
+    :options   {:modalPresentationStyle :overCurrentContext
+                :insets                 {:top?    true
+                                         :bottom? true}}
+    :component wallet-send-input-amount/view}
 
    {:name      :screen/wallet.select-collectible-amount
+    :metrics   {:flow   :wallet-send
+                :track? true
+                :event  {:id :wallet-send.select-collectible-amount}}
     :options   {:insets {:top? true}}
     :component wallet-select-collectible-amount/view}
+  ])
 
-   {:name      :screen/wallet.transaction-progress
-    :component wallet-transaction-progress/view}
+(defn wallet-bridge-screens
+  []
+  [{:name      :screen/wallet.bridge-select-asset
+    :metrics   {:flow   :wallet-bridge
+                :track? true
+                :event  {:id :wallet-bridge.select-asset}}
+    :options   {:insets                 {:top? true}
+                :modalPresentationStyle :overCurrentContext}
+    :component wallet-bridge-select-asset/view}
 
-   {:name      :screen/wallet.scan-address
-    :options   options/dark-screen
-    :component wallet-scan-address/view}
+   {:name      :screen/wallet.bridge-to
+    :metrics   {:flow   :wallet-bridge
+                :track? true
+                :event  {:id :wallet-bridge.select-network}}
+    :options   {:insets                 {:top? true}
+                :modalPresentationStyle :overCurrentContext}
+    :component wallet-bridge-to/view}
 
-   {:name      :screen/wallet.swap-select-asset-to-pay
+   {:name      :screen/wallet.bridge-input-amount
+    :metrics   {:flow   :wallet-bridge
+                :track? true
+                :event  {:id :wallet-bridge.input-amount-to-bridge}}
+    :options   {:insets {:top? true}}
+    :component wallet-bridge-input-amount/view}])
+
+(defn wallet-swap-screens
+  []
+  [{:name      :screen/wallet.swap-select-asset-to-pay
+    :metrics   {:flow   :wallet-swap
+                :track? true
+                :event  {:id :wallet-swap.select-asset-to-pay}}
     :options   {:modalPresentationStyle :overCurrentContext
                 :insets                 {:top? true}}
     :component wallet-swap-select-asset-to-pay/view}
 
    {:name      :screen/wallet.setup-swap
+    :metrics   {:flow   :wallet-swap
+                :track? true
+                :event  {:id :wallet-swap.input-amount-to-swap}}
     :options   {:insets {:bottom? true}}
     :component wallet-swap-setup-swap/view}
 
    {:name      :screen/wallet.swap-propasal
+    :metrics   {:flow   :wallet-swap
+                :track? true
+                :event  {:id :wallet-swap.swap-proposal}}
     :options   {:insets {:top? true}}
     :component wallet-swap-propasal/view}
 
-   {:name      :screen/wallet.swap-confirmation
-    :options   {:modalPresentationStyle :overCurrentContext}
-    :component wallet-swap-confirmation/view}
-
    {:name      :screen/wallet.swap-set-spending-cap
+    :metrics   {:flow   :wallet-swap
+                :track? true
+                :event  {:id :wallet-swap.set-spending-cap}}
     :options   {:sheet? true}
-    :component wallet-swap-set-spending-cap/view}])
+    :component wallet-swap-set-spending-cap/view}
+
+   {:name      :screen/wallet.swap-confirmation
+    :metrics   {:flow   :wallet-swap
+                :track? true
+                :event  {:id :wallet-swap.swap-confirmation}}
+    :options   {:modalPresentationStyle :overCurrentContext}
+    :component wallet-swap-confirmation/view}])
 
 (defn wallet-connect-screens
   []
@@ -945,6 +1042,9 @@
    (settings-screens)
    (wallet-settings-screens)
    (wallet-screens)
+   (wallet-send-screens)
+   (wallet-bridge-screens)
+   (wallet-swap-screens)
    (wallet-connect-screens)
    (onboarding-screens)
    (keycard-screens)
