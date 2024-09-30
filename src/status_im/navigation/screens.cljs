@@ -159,14 +159,6 @@
                 :animations transitions/stack-transition-from-bottom}
     :component chat/chat}
 
-   {:name      :group-chat
-    :metrics   {:flow   :messenger
-                :track? :true
-                :event  {:id :messenger.group-chat}}
-    :options   {:popGesture false
-                :animations transitions/stack-transition-from-bottom}
-    :component chat/chat}
-
    {:name      :group-create
     :metrics   {:flow   :messenger
                 :track? :true
@@ -202,14 +194,6 @@
                 :event  {:id :community.overview}}
     :options   {:animations transitions/stack-transition-from-bottom}
     :component communities.overview/view}
-
-   {:name      :community-chat
-    :metrics   {:flow   :community
-                :track? :true
-                :event  {:id :community.channel}}
-    :options   {:popGesture false
-                :animations transitions/stack-transition-from-bottom}
-    :component chat/chat}
 
    ;; Note: the sheet screen is used when selecting addresses to share when
    ;; joining a community. The non-sheet screen is used when editing shared
