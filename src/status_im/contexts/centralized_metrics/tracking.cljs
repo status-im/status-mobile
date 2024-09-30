@@ -43,7 +43,7 @@
 
 (defn track-view-id-event
   [view-id]
-  (let [screens-by-name screens/onboarding-screens-by-name]
+  (let [screens-by-name screens/screens-by-name]
     (if-let [screen (get screens-by-name view-id)]
       (when (get-in screen [:metrics :track?] false)
         [(navigation-event (name view-id))
