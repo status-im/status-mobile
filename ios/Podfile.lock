@@ -23,15 +23,18 @@ PODS:
     - secp256k1
     - SSZipArchive
   - libevent (2.1.12)
-  - libwebp (1.2.4):
-    - libwebp/demux (= 1.2.4)
-    - libwebp/mux (= 1.2.4)
-    - libwebp/webp (= 1.2.4)
-  - libwebp/demux (1.2.4):
+  - libwebp (1.3.2):
+    - libwebp/demux (= 1.3.2)
+    - libwebp/mux (= 1.3.2)
+    - libwebp/sharpyuv (= 1.3.2)
+    - libwebp/webp (= 1.3.2)
+  - libwebp/demux (1.3.2):
     - libwebp/webp
-  - libwebp/mux (1.2.4):
+  - libwebp/mux (1.3.2):
     - libwebp/demux
-  - libwebp/webp (1.2.4)
+  - libwebp/sharpyuv (1.3.2)
+  - libwebp/webp (1.3.2):
+    - libwebp/sharpyuv
   - RCT-Folly (2022.05.16.00):
     - boost
     - DoubleConversion
@@ -1152,15 +1155,15 @@ PODS:
     - glog
     - RCT-Folly (= 2022.05.16.00)
     - React-Core
-  - RNImageCropPicker (0.40.0):
+  - RNImageCropPicker (0.41.2):
     - React-Core
     - React-RCTImage
-    - RNImageCropPicker/QBImagePickerController (= 0.40.0)
-    - TOCropViewController
-  - RNImageCropPicker/QBImagePickerController (0.40.0):
+    - RNImageCropPicker/QBImagePickerController (= 0.41.2)
+    - TOCropViewController (~> 2.7.4)
+  - RNImageCropPicker/QBImagePickerController (0.41.2):
     - React-Core
     - React-RCTImage
-    - TOCropViewController
+    - TOCropViewController (~> 2.7.4)
   - RNKeychain (8.1.2):
     - React-Core
   - RNLinearGradient (3.0.0-alpha.1):
@@ -1189,7 +1192,7 @@ PODS:
   - secp256k1 (0.1.6)
   - SocketRocket (0.6.1)
   - SSZipArchive (2.4.3)
-  - TOCropViewController (2.6.1)
+  - TOCropViewController (2.7.4)
   - Yoga (1.14.0)
 
 DEPENDENCIES:
@@ -1489,7 +1492,7 @@ CHECKOUT OPTIONS:
     :git: https://github.com/status-im/Keycard.swift.git
     :tag: 3.1.1
   secp256k1:
-    :commit: 46a1fa30d9b8babeae85ff519050f42394ab5fcc
+    :commit: 4ab977cc2b2d7319be858bcb30a5d189bb149884
     :git: https://github.com/status-im/secp256k1.swift.git
     :submodules: true
 
@@ -1506,7 +1509,7 @@ SPEC CHECKSUMS:
   HMSegmentedControl: 34c1f54d822d8308e7b24f5d901ec674dfa31352
   Keycard: 3bd24405b9a875b3b3cf1ab1be69b5c30c5f28bc
   libevent: 4049cae6c81cdb3654a443be001fb9bdceff7913
-  libwebp: f62cb61d0a484ba548448a4bd52aabf150ff6eef
+  libwebp: 1786c9f4ff8a279e4dac1e8f385004d5fc253009
   RCT-Folly: 7169b2b1c44399c76a47b5deaaba715eeeb476c0
   RCTRequired: 2544c0f1081a5fa12e108bb8cb40e5f4581ccd87
   RCTTypeSafety: 50efabe2b115c11ed03fbf3fd79e2f163ddb5d7c
@@ -1577,7 +1580,7 @@ SPEC CHECKSUMS:
   RNFastImage: 1f2cab428712a4baaf78d6169eaec7f622556dd7
   RNFS: 2bd9eb49dc82fa9676382f0585b992c424cd59df
   RNGestureHandler: 15c6ef51acba34c49ff03003806cf5dd6098f383
-  RNImageCropPicker: 486e2f7e2b0461ce24321f751410dce1b3b49e6d
+  RNImageCropPicker: 771e2ca319d2cf92e04ebf334ece892ee9a6728f
   RNKeychain: a65256b6ca6ba6976132cc4124b238a5b13b3d9c
   RNLinearGradient: ccaaebce083b54180da61d992e7fa56abfe000d6
   RNPermissions: 08e619529cced22695f4b6d0efcc0a233e278903
@@ -1590,9 +1593,9 @@ SPEC CHECKSUMS:
   secp256k1: f61d67e6fdcb85fd727acf1bf35ace6036db540c
   SocketRocket: f32cd54efbe0f095c4d7594881e52619cfe80b17
   SSZipArchive: fe6a26b2a54d5a0890f2567b5cc6de5caa600aef
-  TOCropViewController: edfd4f25713d56905ad1e0b9f5be3fbe0f59c863
+  TOCropViewController: 80b8985ad794298fb69d3341de183f33d1853654
   Yoga: a716eea57d0d3430219c0a5a233e1e93ee931eb7
 
-PODFILE CHECKSUM: 81a66b45adddb083171ade882c343deb4faf2a8b
+PODFILE CHECKSUM: 56d9f695324306d6db368d1172d211dfab55b7cb
 
 COCOAPODS: 1.15.2

@@ -51,7 +51,7 @@ in {
   yarn = super.yarn.override { nodejs = super.nodejs_20; };
   openjdk = super.openjdk17_headless;
   xcodeWrapper = callPackage ./pkgs/xcodeenv/compose-xcodewrapper.nix { } {
-    versions = ["15.1" "15.2" "15.3" "15.4"];
+    versions = ["16.0" "16.1" "16.2"];
   };
   go = super.go_1_21;
   clang = super.clang_15;
