@@ -2,7 +2,6 @@
   (:require [cljs-bean.core :as bean]
             [clojure.string :as string]
             [native-module.core :as native-module]
-            [re-frame.core :as rf]
             [status-im.constants :as constants]
             [status-im.contexts.wallet.wallet-connect.utils.data-store :as
              data-store]
@@ -11,6 +10,7 @@
             [status-im.contexts.wallet.wallet-connect.utils.transactions :as transactions]
             [taoensso.timbre :as log]
             [utils.i18n :as i18n]
+            [utils.re-frame :as rf]
             [utils.transforms :as transforms]))
 
 (rf/reg-event-fx
@@ -37,7 +37,9 @@
                 (assoc-in [:wallet-connect/current-request :response-sent?] false))
         :fx [(condp = method
                constants/wallet-connect-eth-send-transaction-method
-               [:dispatch [:wallet-connect/process-eth-send-transaction]]
+               [:dispatch
+                [:wallet-connect/process-eth-send-transaction
+                 {:on-success (fn [] (rf/dispatch [:wallet-connect/show-request-modal]))}]]
 
                constants/wallet-connect-eth-sign-method
                [:dispatch [:wallet-connect/process-eth-sign]]
@@ -94,22 +96,25 @@
                      :raw-data     prepared-tx
                      :transaction  tx
                      :chain-id     chain-id
-                     :display-data display-data)
-      :fx [[:dispatch [:wallet-connect/show-request-modal]]]})))
+                     :display-data display-data)})))
 
 (rf/reg-event-fx
  :wallet-connect/process-eth-send-transaction
- (fn [{:keys [db]}]
+ (fn [{:keys [db]} [{:keys [on-success]}]]
    (let [event    (data-store/get-db-current-request-event db)
          tx       (-> event data-store/get-request-params first)
          chain-id (-> event
                       (get-in [:params :chainId])
                       networks/eip155->chain-id)]
-     {:fx [[:effects.wallet-connect/prepare-transaction
-            {:tx         tx
-             :chain-id   chain-id
-             :on-success #(rf/dispatch [:wallet-connect/prepare-transaction-success % chain-id])
-             :on-error   #(rf/dispatch [:wallet-connect/on-processing-error %])}]]})))
+     (when tx
+       {:fx [[:effects.wallet-connect/prepare-transaction
+              {:tx         tx
+               :chain-id   chain-id
+               :on-success (fn [data]
+                             (rf/dispatch [:wallet-connect/prepare-transaction-success data chain-id])
+                             (when on-success
+                               (rf/call-continuation on-success)))
+               :on-error   #(rf/dispatch [:wallet-connect/on-processing-error %])}]]}))))
 
 (rf/reg-event-fx
  :wallet-connect/process-eth-sign-transaction

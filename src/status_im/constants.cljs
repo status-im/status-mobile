@@ -619,3 +619,12 @@
 (def router-error-code-not-enough-liquidity "WPP-038")
 (def router-error-code-price-impact-too-high "WPP-039")
 (def router-error-code-not-enough-native-balance "WR-002")
+
+(def ^:const wallet-transaction-estimation
+  {:unknown                 0
+   :less-than-one-minute    1
+   :less-than-three-minutes 2
+   :less-than-five-minutes  3
+   :more-than-five-minutes  4})
+
+(def ^:const wallet-connect-transaction-refresh-interval-ms 10000)
