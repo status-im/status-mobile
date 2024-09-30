@@ -274,8 +274,7 @@
                 :track? :true
                 :event  {:id :community.choose-addresses-for-airdrop}}
     :options   {:insets {:top? true}}
-    :component airdrop-addresses/view}
-  ])
+    :component airdrop-addresses/view}])
 
 (defn contact-screens
   []
@@ -305,8 +304,7 @@
                 :track? :true
                 :event  {:id :contact.share-profile}}
     :options   options/transparent-screen-options
-    :component share-contact/view}
-  ])
+    :component share-contact/view}])
 
 (defn device-syncing-screens
   []
@@ -336,8 +334,7 @@
                 :track? true
                 :event  {:id :syncing.scan-sync-code}}
     :options   options/transparent-modal-screen-options
-    :component scan-sync-code-page/view}
-  ])
+    :component scan-sync-code-page/view}])
 
 (defn settings-screens
   []
@@ -460,8 +457,7 @@
                 :track? :true
                 :event  {:id :settings.currency-selection}}
     :options   options/transparent-modal-screen-options
-    :component settings.currency-selection/view}
-  ])
+    :component settings.currency-selection/view}])
 
 (defn wallet-settings-screens
   []
@@ -709,8 +705,7 @@
                 :track? true
                 :event  {:id :wallet-send.select-collectible-amount}}
     :options   {:insets {:top? true}}
-    :component wallet-select-collectible-amount/view}
-  ])
+    :component wallet-select-collectible-amount/view}])
 
 (defn wallet-bridge-screens
   []
