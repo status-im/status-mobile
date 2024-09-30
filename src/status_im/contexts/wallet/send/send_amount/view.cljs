@@ -14,6 +14,7 @@
                              [:wallet/wallet-send-enabled-from-chain-ids])
     :from-enabled-networks  (rf/sub [:wallet/wallet-send-enabled-networks])
     :on-navigate-back       (fn []
+                              (rf/dispatch-sync [:wallet/stop-and-clean-suggested-routes])
                               (rf/dispatch [:wallet/clean-disabled-from-networks])
                               (rf/dispatch [:wallet/clean-from-locked-amounts])
                               (rf/dispatch [:wallet/clean-send-amount]))}])

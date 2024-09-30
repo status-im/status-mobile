@@ -591,15 +591,18 @@
 (def ^:const slippages [0.1 0.5 1])
 (def ^:const default-slippage 0.5)
 (def ^:const max-recommended-slippage 5)
+(def ^:const max-slippage 30)
 (def ^:const max-slippage-decimal-places 2)
 (def ^:const swap-provider-paraswap
   {:name                     :paraswap
-   :full-name                "Paraswap"
+   :full-name                "ParaSwap"
    :color                    :blue
    :contract-address         "0xdef171fe48cf0115b1d80b88dc8eab59176fee57"
    :terms-and-conditions-url "https://files.paraswap.io/tos_v4.pdf"})
 (def ^:const swap-providers
   {:paraswap swap-provider-paraswap})
+(def ^:const swap-tokens-my :my)
+(def ^:const swap-tokens-popular :popular)
 
 (def ^:const token-for-fees-symbol "ETH")
 
@@ -616,3 +619,12 @@
 (def router-error-code-not-enough-liquidity "WPP-038")
 (def router-error-code-price-impact-too-high "WPP-039")
 (def router-error-code-not-enough-native-balance "WR-002")
+
+(def ^:const wallet-transaction-estimation
+  {:unknown                 0
+   :less-than-one-minute    1
+   :less-than-three-minutes 2
+   :less-than-five-minutes  3
+   :more-than-five-minutes  4})
+
+(def ^:const wallet-connect-transaction-refresh-interval-ms 10000)

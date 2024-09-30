@@ -28,6 +28,7 @@
 
 (defn- navigate-to-enter-seed-phrase
   []
+  (rf/dispatch [:syncing/set-syncing-fallback-flow])
   (debounce/debounce-and-dispatch
    [:onboarding/navigate-to-sign-in-by-seed-phrase :screen/onboarding.sync-or-recover-profile]
    500))

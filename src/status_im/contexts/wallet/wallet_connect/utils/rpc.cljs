@@ -74,3 +74,8 @@
   (->> session
        transforms/clj->json
        (rpc-events/call-async "wallet_addWalletConnectSession" false)))
+
+(defn wallet-get-transaction-estimated-time
+  [chain-id max-fee-per-gas]
+  (-> (rpc-events/call-async "wallet_getTransactionEstimatedTime" true chain-id max-fee-per-gas)
+      (promesa/then transforms/js->clj)))

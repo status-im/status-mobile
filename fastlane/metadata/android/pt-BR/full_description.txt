@@ -1,27 +1,23 @@
-Status combina um messenger privado, uma carteira de criptomoedas segura e um Navegador Ethereum Web3 em uma ferramenta de comunicação poderosa. Converse com amigos e comunidades em crescimento. Compre, venda, guarde e troque seus ativos digitais. Navegue pela internet descentralizada sem ter seus dados coletados e explorados. 
+Status é um app de mensagem e uma carteira de criptomoedas focado em privacidade e anonimato. Você pode conversar com seus amigos e interagir com comunidades. Compre, armazene e troque ativos digitais.
 
 Status é o seu sistema operacional para Ethereum.
 
-MESSENGER PRIVADO
-Envie mensagens privadas 1:1, grupos privados, e chats públicos sem intermediários desnecessários na sua comunicação. Status é um app de chat que remove os servidores centralizados por melhor privacidade e segurança nas suas mensagens. Um app de mensagens com criptografia ponta-a-ponta e utilizando privacidade como um padrão, de forma que ninguém além de você e seu destinatário consiga ver suas mensagens. – nem mesmo a própria Status. Algumas pessoas consideram isso um messenger secreto.
+APP DE MENSAGEM PRIVADO
 
-PAGAMENTOS P2P (PEER-TO-PEER), SEM FRONTEIRAS
-Perfeitamente integrado com a carteira de criptomoedas, o Messenger Status possibilita que qualquer pessoa, em qualquer lugar, possa enviar pagamentos globais diretamente pelo chat.
+Envie mensagens privadas em chats 1:1 ou em grupos. Status é um aplicativo de mensagem descentralizado que foca em privacidade e anonimato. Todas as mensagens são protegidas com criptografia de ponta a ponta. Além disso, nenhuma mensagem revela quem é o(a) autor(a) ou o(a) destinatário(a) pretendido(a), então ninguém, nem mesmo a Status, sabe quem está conversando com quem ou o que foi dito.
 
-CARTEIRA ETHEREUM SEGURA
-A carteira de Criptomoedas da Status permite que você envie, guarde e troque de forma segura ativos ethereum como ETH, SNT, stable coins como DAI, bem como NFTs. Tome controle de suas criptomoedas e ativos digitais com este app de carteira para ethereum. A carteira da Status atualmente suporta apenas ativos ERC-20 e ERC-721; ela não suporta Bitcoin.
+CARTEIRA SEGURA DE ETHEREUM
 
-FATURE COM DEFI
-Coloque suas criptos para trabalhar com os mais atuais apps de finanças descentralizadas e corretoras descentralizadas (DEX) como Maker, Aave, Uniswap, Synthetic, PoolTogether, Zerion, Kyber e outros.
+A carteira de criptomoedas Status permite que você envie, armazene e troque ativos Ethereum, como ETH, SNT, stablecoins como DAI, além de colecionáveis, de forma segura. Controle com confiança suas criptomoedas e ativos digitais com nosso aplicativo de carteira Ethereum multichain, que suporta mainnet, Arbitrum e Optimism. A carteira blockchain da Status atualmente suporta apenas ativos ETH, ERC-20, ERC-721 e ERC-1155; não suporta Bitcoin.
 
-NAVEGADOR DE DAPPS WEB3
-Navegue pela web segura e acesse o crescente ecossistema de aplicações descentralizadas com o broser seguro. A Status possibilita acesso a mais do que apenas DeFi - explore os mais atuais marketplaces, colecionáveis, games, e mídias sociais como SuperRare, GitCoin, Dragonereum, Axie Infinity, Open Sea, CryptoKitties, Decentraland, e mais.
+MONETIZE COM DEFI E STAKING
 
-CONNECTE-SE COM A SUA COMUNIDADE
-Explore, connecte-se, e converse com sias comunidades favoritas e amigos. Seja apenas um pequeno grupo de amigos, uma entrevista com um artista, crypto traders, ou a próxima grande empresa - converse e se comunique com as comunidades da Status.
+Coloque suas criptomoedas para trabalhar (staking) com os mais recentes aplicativos de finanças descentralizadas e exchanges descentralizadas (DEX), como Maker, Aave, Uniswap, Synthetix, PoolTogether, Zerion, Kyber e mais.
 
-SOCIAL FEEDS
-Compartilhe o que está passando pela sua cabeça e publique atualizações com seus contatos em uma rede social descentralizada e realmente aberta.
+CONECTE-SE COM SUA COMUNIDADE
 
-CRIAÇÃO PRIVATIVA DE CONTA
-Mantenha a privacidade com a criação de conta pseudo-anônima. Quando criar sua conta grátis, nós NUNCA vamos pedir seu telefone, e-mail, ou conta bancária. As chaves privadas da sua carteira são geradas e guardadas localmente para garantir que apenas você tenha acesso aos seus fundos e transações financeiras.
+Explore, conecte-se e converse com seus amigos e comunidades favoritas. Seja um grupo de amigos, de artistas, de traders de criptomoedas ou a próxima grande empresa - envie textos e comunique-se através das comunidades da Status.
+
+CRIAÇÃO DE CONTA PRIVADA
+
+Mantenha sua privacidade com a criação de conta anônima. Ao criar sua conta gratuita, você NUNCA precisará inserir um número de telefone, endereço de e-mail ou conta bancária. Suas chaves privadas da carteira são geradas localmente e armazenadas com segurança para garantir que apenas você tenha acesso aos seus fundos e transações financeiras.

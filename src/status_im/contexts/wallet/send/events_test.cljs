@@ -269,25 +269,6 @@
                             :amount             10}}}})
     (is (match-strict? expected-db (:db (dispatch [event-id]))))))
 
-(h/deftest-event :wallet/clean-suggested-routes
-  [event-id dispatch]
-  (let [expected-db {:wallet {:ui {:send {:other-props :value}}}}]
-    (reset! rf-db/app-db
-      {:wallet {:ui {:send
-                     {:other-props               :value
-                      :suggested-routes          ["1" "2"]
-                      :route                     "1"
-                      :amount                    10
-                      :from-values-by-chain      [{:chain-id 1} {:chain-id 10} {:chain-id 42161}]
-                      :to-values-by-chain        [{:chain-id 1} {:chain-id 10} {:chain-id 42161}]
-                      :sender-network-values     [:eth :arb1]
-                      :receiver-network-values   [:eth :arb1]
-                      :network-links             [{:from-chain-id 1
-                                                   :to-chain-id   10
-                                                   :position-diff 1}]
-                      :loading-suggested-routes? false}}}})
-    (is (match-strict? expected-db (:db (dispatch [event-id]))))))
-
 (h/deftest-event :wallet/suggested-routes-error
   [event-id dispatch]
   (let [sender-network-amounts   [{:chain-id 1 :total-amount (money/bignumber "100") :type :loading}
@@ -545,7 +526,8 @@
                                           (send-utils/reset-loading-network-amounts-to-zero
                                            receiver-network-values)
 
-                                          (not= tx-type :tx/bridge) (conj {:type :edit})))
+                                          (not= tx-type :tx/bridge)
+                                          send-utils/safe-add-type-edit))
         sender-network-values         (if routes-available?
                                         (send-utils/network-amounts
                                          {:network-values
@@ -610,7 +592,9 @@
                                        :transactions (send-utils/map-multitransaction-by-ids
                                                       transaction-id
                                                       hashes)}}
-                         :fx [[:dispatch [:wallet/end-transaction-flow]]
+                         :fx [[:dispatch
+                               [:wallet/stop-and-clean-suggested-routes]]
+                              [:dispatch [:wallet/end-transaction-flow]]
                               [:dispatch-later
                                [{:ms       2000
                                  :dispatch [:wallet/clean-just-completed-transaction]}]]]}]
