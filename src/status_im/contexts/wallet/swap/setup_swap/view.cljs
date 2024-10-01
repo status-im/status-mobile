@@ -431,7 +431,10 @@
       {:on-press      on-close
        :icon-name     :i/arrow-left
        :margin-top    (safe-area/get-top)
-       :switcher-type :select-account}]
+       :switcher-type :select-account
+       :params        {:show-account-balances? true
+                       :asset-symbol           (:symbol asset-to-pay)
+                       :network                network}}]
      [rn/view {:style style/inputs-container}
       [pay-token-input
        {:input-state      pay-input-state

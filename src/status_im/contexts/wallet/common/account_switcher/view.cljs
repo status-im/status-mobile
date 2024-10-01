@@ -8,19 +8,20 @@
     [utils.re-frame :as rf]))
 
 (defn get-bottom-sheet-args
-  [switcher-type]
+  [switcher-type params]
   (case switcher-type
     :account-options {:content      account-options/view
                       :hide-handle? true}
-    :select-account  {:content select-account/view}
+    :select-account  {:content (fn []
+                                 [select-account/view params])}
     nil))
 
 (defn- on-dapps-press
-  [switcher-type]
-  (rf/dispatch [:show-bottom-sheet (get-bottom-sheet-args switcher-type)]))
+  [switcher-type params]
+  (rf/dispatch [:show-bottom-sheet (get-bottom-sheet-args switcher-type params)]))
 
 (defn view
-  [{:keys [type on-press accessibility-label icon-name switcher-type margin-top]
+  [{:keys [type on-press accessibility-label icon-name switcher-type margin-top params]
     :or   {icon-name           :i/close
            accessibility-label :top-bar
            switcher-type       :account-options
@@ -45,6 +46,6 @@
                             (when-not sending-collectible?
                               {:content-type        :account-switcher
                                :customization-color color
-                               :on-press            #(on-dapps-press switcher-type)
+                               :on-press            #(on-dapps-press switcher-type params)
                                :emoji               emoji
                                :type                (when watch-only? :watch-only)})]}]))
