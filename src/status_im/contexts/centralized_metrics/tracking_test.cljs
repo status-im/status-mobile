@@ -76,16 +76,12 @@
              :appVersion app-version
              :eventValue {:viewId "wallet-stack"}}}
            (tracking/tracked-event [:set-view-id :wallet-stack])))
-    (is (= [{:metric
-             {:eventName  "navigation"
-              :platform   platform-os
-              :appVersion app-version
-              :eventValue {:viewId "wallet-stack"}}}
-            {:metric
-             {:eventName  "onboarding.intro"
-              :platform   platform-os
-              :appVersion app-version
-              :eventValue {:viewId   "onboarding.intro"
-                           :screenId "screen/onboarding.intro"}}}]
+    (is (= {:metric
+            {:eventName  "navigation"
+             :platform   platform-os
+             :appVersion app-version
+             :eventValue {:viewId          "onboarding.intro"
+                          :screen-id       "screen/onboarding.intro"
+                          :metric-id-alias "onboarding.intro"}}}
            (tracking/tracked-event [:set-view-id :screen/onboarding.intro])))
     (is (nil? (tracking/tracked-event [:unknown-event])))))

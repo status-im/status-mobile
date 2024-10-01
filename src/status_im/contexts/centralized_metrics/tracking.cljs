@@ -26,13 +26,13 @@
   (let [screen-id (:name screen)
         event-id  (get-in screen [:metrics :event :id] screen-id)]
     {:metric
-     {:eventName  (name event-id)
+     {:eventName  "navigation"
       :platform   platform/os
       :appVersion build/app-short-version
       :eventValue (assoc event-data
-                         :viewId    (name screen-id)
-                         :screen-id (-> screen-id symbol str)
-                         :screenId  (-> screen-id symbol str))}}))
+                         :viewId          (name screen-id)
+                         :metric-id-alias (name event-id)
+                         :screen-name     (-> screen-id symbol str))}}))
 
 (def ^:const app-started-event "app-started")
 
@@ -46,8 +46,7 @@
   [view-id]
   (if-let [screen (get screens/screens-by-name view-id)]
     (when (get-in screen [:metrics :track?] false)
-      [(navigation-event (name view-id))
-       (screen-event screen {})])
+      (screen-event screen {}))
     (when (contains? view-ids-to-track view-id)
       (navigation-event (name view-id)))))
 
