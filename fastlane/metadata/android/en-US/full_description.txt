@@ -1,27 +1,18 @@
-Status combines a private messenger, secure crypto wallet, and Ethereum Web3 DApp browser into one powerful communication tool. Chat with friends and growing communities. Buy, sell, store, and exchange digital assets. Browse the decentralized internet without being exploited for your data.
+Status combines pseudonymous privacy-focused messenger and secure crypto wallet into one powerful communication tool. Chat with friends and growing communities. Buy, store, and exchange digital assets.
 
-Status is your operating system for Ethereum.
+Status is your Ethereum operating system.
 
 PRIVATE MESSENGER
-Send private 1:1, private group, and public chats without unnecessary middlemen in your communication. Status is a text app that removes centralized choke points from your messages for greater privacy and secure messaging. An encrypted messaging app with end-to-end encryption and privacy by default so nobody other than you and your intended recipient can view your messages – not even Status. Some consider it a secret messenger.
-
-PEER-TO-PEER, BORDERLESS PAYMENTS
-Seamlessly integrated with the cryptocurrency wallet, the Status Messenger enables anyone, anywhere to send global payments directly in a chat.
+Send private 1:1 and private group chats without anyone snooping on your communications. Status is a messenger app that eliminates centralized message relays for greater privacy and secure messaging. All messages are encrypted with end-to-end encryption. Additionally, no message exposes who the author or the intended recipient is, so nobody, not even Status, knows who is talking to who or what was said.
 
 SECURE ETHEREUM WALLET
-The Status crypto wallet allows you to securely send, store, trade, and exchange ethereum assets such as ETH, SNT, stable coins such as DAI, as well as NFTs. Confidently take control of your cryptocurrency and digital assets with this ethereum wallet app. The Status blockchain wallet currently only supports ERC-20 and ERC-721 assets; it does not support Bitcoin.
+The Status crypto wallet allows you to securely send, store, and exchange Ethereum assets such as ETH, SNT, stable coins such as DAI, as well as collectibles. Confidently take control of your cryptocurrency and digital assets with our multichain Ethereum wallet app, supporting mainnet, Arbitrum and Optimism. The Status blockchain wallet currently only supports ETH, ERC-20, ERC-721 and ERC-1155 assets; it does not support Bitcoin.
 
 EARN WITH DEFI
-Put your crypto to work with the latest decentralized finance apps and decentralized exchanges (DEX) such as Maker, Aave, Uniswap, Synthetix, PoolTogether, Zerion, Kyber and more.
-
-WEB3 DAPP BROWSER
-Browse the secure web and access the growing ecosystem of decentralized applications with the secure browser. Status enables access to more than just DeFi – explore the latest marketplaces, collectibles, games, and social networks such as SuperRare, Gitcoin, Dragonereum, Axie Infinity, Open Sea, CryptoKitties, Decentraland and more.
+Put your crypto to work with the latest decentralized finance apps and decentralized exchanges (DEX) such as Maker, Aave, Uniswap, Synthetix, PoolTogether, Zerion, Kyber, and more.
 
 CONNECT WITH YOUR COMMUNITY
 Explore, connect, and chat with your favorite communities and friends. Whether it is a small group of friends, an artist collective, crypto traders, or the next big organization - text and communicate with Status communities.
 
-SOCIAL FEEDS
-Share what’s on your mind and post updates with your contacts in a truly censorship resistant, state-of-the-art decentralized social network.
-
 PRIVATE ACCOUNT CREATION
-Stay private with pseudo-anonymous account creation. When creating your free account, you will NEVER have to enter a phone number, email address, or bank account. Your wallet private keys are locally generated and stored to ensure only you have access to your funds and financial transactions.
+Stay private with pseudo-anonymous account creation. When creating your free account, you will NEVER have to enter a phone number, email address, or bank account. Your wallet private keys are locally generated and securely stored to ensure only you have access to your funds and financial transactions.

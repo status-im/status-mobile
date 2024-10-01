@@ -12,6 +12,7 @@
             [status-im.contexts.wallet.common.account-switcher.view :as account-switcher]
             [status-im.contexts.wallet.common.utils :as utils]
             [status-im.contexts.wallet.sheets.buy-token.view :as buy-token]
+            [status-im.contexts.wallet.sheets.select-asset.view :as select-asset]
             [status-im.contexts.wallet.sheets.slippage-settings.view :as slippage-settings]
             [status-im.contexts.wallet.swap.setup-swap.style :as style]
             [status-im.contexts.wallet.swap.utils :as swap-utils]
@@ -271,6 +272,31 @@
                          :customization-color account-color
                          :on-press            on-press}}]))
 
+(defn- pay-token-bottom-sheet
+  []
+  (let [asset-to-receive (rf/sub [:wallet/swap-asset-to-receive])]
+    [select-asset/view
+     {:title            (i18n/label :t/select-asset-to-pay)
+      :on-select        (fn [token]
+                          (rf/dispatch [:wallet.swap/select-asset-to-pay {:token token}]))
+      :hide-token-fn    (fn [type {:keys [available-balance]}]
+                          (and (= type constants/swap-tokens-my)
+                               (= available-balance 0)))
+      :disable-token-fn (fn [_ token]
+                          (= (:symbol token)
+                             (:symbol asset-to-receive)))}]))
+
+(defn- receive-token-bottom-sheet
+  []
+  (let [asset-to-pay (rf/sub [:wallet/swap-asset-to-pay])]
+    [select-asset/view
+     {:title            (i18n/label :t/select-asset-to-receive)
+      :on-select        (fn [token]
+                          (rf/dispatch [:wallet.swap/select-asset-to-receive {:token token}]))
+      :disable-token-fn (fn [_ token]
+                          (= (:symbol token)
+                             (:symbol asset-to-pay)))}]))
+
 (defn view
   []
   (let [[pay-input-state set-pay-input-state]       (rn/use-state controlled-input/init-state)
@@ -280,6 +306,7 @@
         loading-swap-proposal?                      (rf/sub [:wallet/swap-loading-swap-proposal?])
         swap-proposal                               (rf/sub [:wallet/swap-proposal-without-fees])
         asset-to-pay                                (rf/sub [:wallet/swap-asset-to-pay])
+        asset-to-receive                            (rf/sub [:wallet/swap-asset-to-receive])
         network                                     (rf/sub [:wallet/swap-network])
         pay-input-amount                            (controlled-input/input-value pay-input-state)
         pay-token-decimals                          (:decimals asset-to-pay)
@@ -360,7 +387,7 @@
                                                              :clean-approval-transaction? false}))))
                                                      [valid-pay-input? loading-swap-proposal?
                                                       pay-input-amount])
-        on-asset-to-pay-change                      (fn []
+        refetch-swap-proposal                       (fn []
                                                       (when valid-pay-input?
                                                         (fetch-swap-proposal
                                                          {:amount                      pay-input-amount
@@ -394,8 +421,11 @@
                 (controlled-input/set-input-value
                  input-state
                  swap-amount)))
-             (on-asset-to-pay-change)))))
+             (refetch-swap-proposal)))))
      [asset-to-pay])
+    (rn/use-effect
+     refetch-swap-proposal
+     [asset-to-receive])
     [rn/view {:style style/container}
      [account-switcher/view
       {:on-press      on-close
@@ -407,7 +437,7 @@
        {:input-state      pay-input-state
         :on-max-press     on-max-press
         :input-focused?   pay-input-focused?
-        :on-token-press   #(js/alert "Token Pressed")
+        :on-token-press   #(rf/dispatch [:show-bottom-sheet {:content pay-token-bottom-sheet}])
         :on-approve-press #(rf/dispatch [:open-modal :screen/wallet.swap-set-spending-cap])
         :on-input-focus   (fn []
                             (when platform/android? (rf/dispatch [:dismiss-keyboard]))
@@ -420,7 +450,7 @@
                     (rf/dispatch [:wallet.swap/flip-assets]))}]
       [receive-token-input
        {:input-focused? (not pay-input-focused?)
-        :on-token-press #(js/alert "Token Pressed")
+        :on-token-press #(rf/dispatch [:show-bottom-sheet {:content receive-token-bottom-sheet}])
         :on-input-focus #(set-pay-input-focused? false)}]]
      [rn/view {:style style/footer-container}
       [alert-banner {:pay-input-error? pay-input-error?}]

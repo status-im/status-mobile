@@ -34,7 +34,7 @@
 (defn view
   [{:keys [content-container-style search-text on-token-press preselected-token-symbol]
     :or   {content-container-style {:padding-horizontal 8}}}]
-  (let [filtered-tokens (rf/sub [:wallet/current-viewing-account-tokens-filtered search-text])
+  (let [filtered-tokens (rf/sub [:wallet/current-viewing-account-tokens-filtered {:query search-text}])
         currency        (rf/sub [:profile/currency])
         currency-symbol (rf/sub [:profile/currency-symbol])]
     [gesture/flat-list

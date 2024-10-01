@@ -4,6 +4,7 @@
             [quo.foundations.resources :as resources]
             [status-im.common.qr-codes.view :as qr-codes]
             [status-im.constants :as constants]
+            [status-im.contexts.wallet.common.utils.networks :as network-utils]
             [utils.hex :as utils.hex]
             [utils.money :as money]
             [utils.number :as number]
@@ -390,7 +391,7 @@
         approval-amount-required           (:approval-amount-required route)
         approval-amount-required-sanitized (-> approval-amount-required
                                                (utils.hex/normalize-hex)
-                                               (native-module/hex-to-number))
+                                               (money/from-hex))
         approval-contract-address          (:approval-contract-address route)
         data                               (native-module/encode-function-call
                                             constants/contract-function-signature-erc20-approve
@@ -478,3 +479,27 @@
    :toAsset     to-asset
    :fromAmount  amount-out
    :type        multi-transaction-type})
+
+(defn sort-tokens-by-name
+  [tokens]
+  (let [priority #(get constants/token-sort-priority (:symbol %) ##Inf)]
+    (sort-by (juxt :symbol priority) tokens)))
+
+(defn tokens-with-balance
+  [tokens networks chain-ids]
+  (map (fn [token]
+         (assoc token
+                :networks          (network-utils/network-list token networks)
+                :available-balance (calculate-total-token-balance token)
+                :total-balance     (calculate-total-token-balance token chain-ids)))
+       tokens))
+
+(defn estimated-time-format
+  "Formats the estimated time for a transaction"
+  [estimated-time]
+  (condp = estimated-time
+    (:unknown constants/wallet-transaction-estimation)                 ">5"
+    (:less-than-one-minute constants/wallet-transaction-estimation)    "<1"
+    (:less-than-three-minutes constants/wallet-transaction-estimation) "1-3"
+    (:less-than-five-minutes constants/wallet-transaction-estimation)  "3-5"
+    ">5"))

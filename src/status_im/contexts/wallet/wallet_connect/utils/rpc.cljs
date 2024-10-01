@@ -57,3 +57,8 @@
   [chain-id]
   (-> (rpc-events/call-async "wallet_getSuggestedFees" true chain-id)
       (promesa/then transforms/js->clj)))
+
+(defn wallet-get-transaction-estimated-time
+  [chain-id max-fee-per-gas]
+  (-> (rpc-events/call-async "wallet_getTransactionEstimatedTime" true chain-id max-fee-per-gas)
+      (promesa/then transforms/js->clj)))

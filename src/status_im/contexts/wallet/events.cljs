@@ -15,6 +15,7 @@
     [status-im.contexts.wallet.db :as db]
     [status-im.contexts.wallet.item-types :as item-types]
     [status-im.contexts.wallet.tokens.events]
+    [status-im.feature-flags :as ff]
     [taoensso.timbre :as log]
     [utils.collection]
     [utils.ethereum.chain :as chain]
@@ -344,7 +345,9 @@
                            :Prod
                            data-store/rpc->network)
                      data)}]
-     {:db (assoc-in db [:wallet :networks] network-data)})))
+     {:fx [(when (ff/enabled? ::ff/wallet.swap)
+             [:dispatch [:wallet.tokens/get-token-list]])]
+      :db (assoc-in db [:wallet :networks] network-data)})))
 
 (rf/reg-event-fx
  :wallet/find-ens

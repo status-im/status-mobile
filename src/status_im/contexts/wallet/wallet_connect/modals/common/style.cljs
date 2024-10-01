@@ -34,3 +34,11 @@
    :border-width       1
    :border-color       colors/neutral-10
    :border-radius      16})
+
+(def data-item-container
+  {:padding       10
+   :margin-top    10.5
+   :margin-bottom 0
+   :border-width  1
+   :border-color  colors/neutral-10
+   :border-radius 16})

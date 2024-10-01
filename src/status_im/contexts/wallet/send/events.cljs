@@ -23,6 +23,11 @@
  (fn [{:keys [db]} [tab]]
    {:db (assoc-in db [:wallet :ui :send :select-address-tab] tab)}))
 
+(rf/reg-event-fx :wallet/stop-and-clean-suggested-routes
+ (fn []
+   {:fx [[:dispatch [:wallet/stop-get-suggested-routes]]
+         [:dispatch [:wallet/clean-suggested-routes]]]}))
+
 (rf/reg-event-fx :wallet/suggested-routes-success
  (fn [{:keys [db]} [suggested-routes-data]]
    (let [chosen-route                  (:best suggested-routes-data)
@@ -77,7 +82,8 @@
                                            (send-utils/reset-loading-network-amounts-to-zero
                                             receiver-network-values)
 
-                                           (not= tx-type :tx/bridge) (conj {:type :edit})))
+                                           (not= tx-type :tx/bridge)
+                                           send-utils/safe-add-type-edit))
          network-links                 (when routes-available?
                                          (send-utils/network-links chosen-route
                                                                    sender-network-values
@@ -111,21 +117,6 @@
              {:id   :send-transaction-error
               :type :negative
               :text error-message}]]]})))
-
-(rf/reg-event-fx :wallet/clean-suggested-routes
- (fn [{:keys [db]}]
-   {:db (update-in db
-                   [:wallet :ui :send]
-                   dissoc
-                   :suggested-routes
-                   :route
-                   :amount
-                   :from-values-by-chain
-                   :to-values-by-chain
-                   :sender-network-values
-                   :receiver-network-values
-                   :network-links
-                   :loading-suggested-routes?)}))
 
 (rf/reg-event-fx :wallet/clean-send-address
  (fn [{:keys [db]}]
@@ -211,7 +202,7 @@
                                               :token-display-name (:symbol token-data)))
               unique-owner (assoc-in [:wallet :current-viewing-account-address] unique-owner)
               entry-point  (assoc-in [:wallet :ui :send :entry-point] entry-point))
-        :fx [[:dispatch [:wallet/clean-suggested-routes]]
+        :fx [[:dispatch [:wallet/stop-and-clean-suggested-routes]]
              [:dispatch
               ;; ^:flush-dom allows us to make sure the re-frame DB state is always synced
               ;; before the navigation occurs, so the new screen is always rendered with
@@ -238,7 +229,7 @@
               (assoc-in [:wallet :ui :send :token-not-supported-in-receiver-networks?]
                         token-not-supported-in-receiver-networks?))
       :fx [[:dispatch [:hide-bottom-sheet]]
-           [:dispatch [:wallet/clean-suggested-routes]]
+           [:dispatch [:wallet/stop-and-clean-suggested-routes]]
            [:dispatch [:wallet/clean-from-locked-amounts]]]})))
 
 (rf/reg-event-fx :wallet/clean-selected-token
@@ -340,11 +331,11 @@
    {:db (update-in db [:wallet :ui :send] dissoc :bridge-to-chain-id)}))
 
 (rf/reg-event-fx
- :wallet/clean-routes-calculation
+ :wallet/clean-suggested-routes
  (fn [{:keys [db]}]
    (let [keys-to-remove [:to-values-by-chain :network-links :sender-network-values :route
                          :receiver-network-values :suggested-routes :from-values-by-chain
-                         :loading-suggested-routes?]]
+                         :loading-suggested-routes? :amount]]
      {:db (update-in db [:wallet :ui :send] #(apply dissoc % keys-to-remove))})))
 
 (rf/reg-event-fx :wallet/disable-from-networks
@@ -472,7 +463,7 @@
                                               :loading-suggested-routes? true
                                               :sender-network-values     sender-network-values
                                               :receiver-network-values   receiver-network-values)
-                                       (dissoc :network-links)
+                                       (dissoc :network-links :skip-processing-suggested-routes?)
                                        (cond-> token (assoc :token token))))
         :json-rpc/call [{:method   "wallet_getSuggestedRoutesAsync"
                          :params   params
@@ -484,14 +475,17 @@
                                                  :params params}))}]}))))
 
 (rf/reg-event-fx :wallet/stop-get-suggested-routes
- (fn []
-   {:fx            [[:dispatch [:wallet/clean-routes-calculation]]]
-    :json-rpc/call [{:method   "wallet_stopSuggestedRoutesAsyncCalculation"
-                     :params   []
-                     :on-error (fn [error]
-                                 (log/error "failed to stop suggested routes calculation"
-                                            {:event :wallet/stop-get-suggested-routes
-                                             :error error}))}]}))
+ (fn [{:keys [db]}]
+   ;; Adding a key to prevent processing route signals in the client until the routes generation is
+   ;; stopped. This is to ensure no route signals are processed when we make the RPC call
+   {:db (assoc-in db [:wallet :ui :send :skip-processing-suggested-routes?] true)
+    :fx [[:json-rpc/call
+          [{:method   "wallet_stopSuggestedRoutesAsyncCalculation"
+            :params   []
+            :on-error (fn [error]
+                        (log/error "failed to stop suggested routes calculation"
+                                   {:event :wallet/stop-get-suggested-routes
+                                    :error error}))}]]]}))
 
 (defn- bridge-amount-greater-than-bonder-fees?
   [{{token-decimals :decimals} :from-token
@@ -519,14 +513,21 @@
  :wallet/handle-suggested-routes
  (fn [{:keys [db]} [data]]
    (let [swap?                                     (get-in db [:wallet :ui :swap])
-         {:keys [code details] :as error-response} (-> data :ErrorResponse)]
+         {:keys [code details] :as error-response} (-> data :ErrorResponse)
+         skip-processing-suggested-routes?         (get-in db
+                                                           [:wallet :ui :send
+                                                            :skip-processing-suggested-routes?])
+         process-response?                         (and (not swap?)
+                                                        (not skip-processing-suggested-routes?))]
      (if (and (not swap?) error-response)
        (let [error-message (if (= code "0") "An error occurred" details)]
          (log/error "failed to get suggested routes (async)"
                     {:event :wallet/handle-suggested-routes
                      :error error-message})
-         {:fx [(if swap?
+         {:fx [(cond
+                 swap?
                  [:dispatch [:wallet/swap-proposal-error error-message]]
+                 process-response?
                  [:dispatch [:wallet/suggested-routes-error error-message]])]})
        (let [best-routes-fix (comp ->old-route-paths
                                    remove-invalid-bonder-fees-routes
@@ -537,8 +538,10 @@
                                  (data-store/rpc->suggested-routes)
                                  (update :best best-routes-fix)
                                  (update :candidates candidates-fix))]
-         {:fx [(if swap?
+         {:fx [(cond
+                 swap?
                  [:dispatch [:wallet/swap-proposal-success routes]]
+                 process-response?
                  [:dispatch [:wallet/suggested-routes-success routes]])]})))))
 
 (rf/reg-event-fx :wallet/add-authorized-transaction
@@ -552,7 +555,11 @@
               (assoc-in [:wallet :ui :send :just-completed-transaction?] true)
               (assoc-in [:wallet :transactions] transaction-details)
               (assoc-in [:wallet :ui :send :transaction-ids] transaction-ids))
-      :fx [[:dispatch
+      :fx [;; Remove wallet/stop-and-clean-suggested-routes event when we move to new transaction
+           ;; submission process as the routes as stopped by status-go
+           [:dispatch
+            [:wallet/stop-and-clean-suggested-routes]]
+           [:dispatch
             [:wallet/end-transaction-flow]]
            [:dispatch-later
             [{:ms       2000
@@ -704,17 +711,21 @@
 
 (rf/reg-event-fx
  :wallet/transaction-confirmation-navigate-back
- (fn [{db :db} [{:keys []}]]
-   (let [tx-type       (-> db :wallet :ui :send :tx-type)
-         keep-tx-data? (#{:account-collectible-tab :wallet-stack}
-                        (-> db :wallet :ui :send :entry-point))]
+ (fn [{db :db}]
+   (let [tx-type                     (-> db :wallet :ui :send :tx-type)
+         keep-tx-data?               (#{:account-collectible-tab :wallet-stack}
+                                      (-> db :wallet :ui :send :entry-point))
+         delete-data-for-erc-721-tx? (and (= tx-type :tx/collectible-erc-721) (not keep-tx-data?))
+         erc-1155-tx?                (= tx-type :tx/collectible-erc-1155)]
      {:db (cond-> db
-            (and (= tx-type :tx/collectible-erc-721) (not keep-tx-data?))
+            delete-data-for-erc-721-tx?
             (update-in [:wallet :ui :send] dissoc :tx-type :amount :route :suggested-routes)
 
-            (= tx-type :tx/collectible-erc-1155)
+            erc-1155-tx?
             (update-in [:wallet :ui :send] dissoc :route :suggested-routes))
-      :fx [[:dispatch [:navigate-back]]]})))
+      :fx [(when (or delete-data-for-erc-721-tx? erc-1155-tx?)
+             [:dispatch [:wallet/stop-and-clean-suggested-routes]])
+           [:dispatch [:navigate-back]]]})))
 
 (rf/reg-event-fx
  :wallet/collectible-amount-navigate-back

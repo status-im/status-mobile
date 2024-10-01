@@ -1,9 +1,10 @@
 (ns status-im.contexts.wallet.swap.swap-proposal.view
-  (:require [quo.core :as quo]
-            [react-native.core :as rn]
-            [status-im.contexts.wallet.sheets.slippage-settings.view :as slippage-settings]
-            [status-im.contexts.wallet.swap.swap-proposal.style :as style]
-            [utils.re-frame :as rf]))
+  (:require
+    [quo.core :as quo]
+    [react-native.core :as rn]
+    [status-im.contexts.wallet.sheets.slippage-settings.view :as slippage-settings]
+    [status-im.contexts.wallet.swap.swap-proposal.style :as style]
+    [utils.re-frame :as rf]))
 
 (defn view
   []
