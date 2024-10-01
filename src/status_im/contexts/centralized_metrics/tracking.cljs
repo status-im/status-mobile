@@ -30,8 +30,9 @@
       :platform   platform/os
       :appVersion build/app-short-version
       :eventValue (assoc event-data
-                         :viewId   (name screen-id)
-                         :screenId (-> screen-id symbol str))}}))
+                         :viewId    (name screen-id)
+                         :screen-id (-> screen-id symbol str)
+                         :screenId  (-> screen-id symbol str))}}))
 
 (def ^:const app-started-event "app-started")
 
@@ -43,13 +44,12 @@
 
 (defn track-view-id-event
   [view-id]
-  (let [screens-by-name screens/screens-by-name]
-    (if-let [screen (get screens-by-name view-id)]
-      (when (get-in screen [:metrics :track?] false)
-        [(navigation-event (name view-id))
-         (screen-event screen {})])
-      (when (contains? view-ids-to-track view-id)
-        (navigation-event (name view-id))))))
+  (if-let [screen (get screens/screens-by-name view-id)]
+    (when (get-in screen [:metrics :track?] false)
+      [(navigation-event (name view-id))
+       (screen-event screen {})])
+    (when (contains? view-ids-to-track view-id)
+      (navigation-event (name view-id)))))
 
 (defn tracked-event
   [[event-name second-parameter]]
