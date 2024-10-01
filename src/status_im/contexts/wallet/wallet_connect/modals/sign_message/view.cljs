@@ -4,7 +4,6 @@
             [react-native.gesture :as gesture]
             [react-native.safe-area :as safe-area]
             [status-im.common.raw-data-block.view :as data-block]
-            [status-im.constants :as constants]
             [status-im.contexts.wallet.wallet-connect.modals.common.fees-data-item.view :as
              fees-data-item]
             [status-im.contexts.wallet.wallet-connect.modals.common.footer.view :as footer]
@@ -13,10 +12,6 @@
             [status-im.contexts.wallet.wallet-connect.modals.common.style :as style]
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]))
-
-(def ^:constant typed-data-methods
-  #{constants/wallet-connect-eth-sign-typed-v4-method
-    constants/wallet-connect-eth-sign-typed-method})
 
 (defn typed-data-field
   [{:keys [label value]}]
@@ -45,8 +40,7 @@
 
 (defn display-data-view
   []
-  (let [typed-data? (->> (rf/sub [:wallet-connect/current-request-method])
-                         (contains? typed-data-methods))]
+  (let [typed-data? (rf/sub [:wallet-connect/typed-data-request?])]
     (if typed-data?
       [typed-data-view]
       [message-data-view])))

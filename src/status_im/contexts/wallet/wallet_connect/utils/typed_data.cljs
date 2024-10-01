@@ -1,5 +1,6 @@
 (ns status-im.contexts.wallet.wallet-connect.utils.typed-data
   (:require [clojure.string :as string]
+            [status-im.constants :as constants]
             [status-im.contexts.wallet.wallet-connect.utils.networks :as networks]
             [status-im.contexts.wallet.wallet-connect.utils.rpc :as rpc]
             [utils.number :as number]))
@@ -92,3 +93,10 @@
                                      password
                                      chain-id
                                      legacy?)))
+
+(defn typed-data-request?
+  [method]
+  (contains?
+   #{constants/wallet-connect-eth-sign-typed-v4-method
+     constants/wallet-connect-eth-sign-typed-method}
+   method))
