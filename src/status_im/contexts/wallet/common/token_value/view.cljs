@@ -102,8 +102,7 @@
                  (when (seq token-owners)
                    (action-send params entry-point))
                  (action-receive selected-account)
-                 (when (ff/enabled? ::ff/wallet.swap)
-                   (action-swap params))
+                 (action-swap params)
                  (when (seq token-owners)
                    (action-bridge (assoc params
                                          :bridge-disabled?
