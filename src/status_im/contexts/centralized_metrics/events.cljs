@@ -14,11 +14,18 @@
 
 (defn centralized-metrics-interceptor
   [context]
-  (when-let [event (tracking/tracked-event (interceptor/get-coeffect context :event))]
-    (log/debug "tracking event" event)
-    (when (push-event? (interceptor/get-coeffect context :db))
-      (native-module/add-centralized-metric event)))
-  context)
+  (let [rf-event           (interceptor/get-coeffect context :event)
+        rf-db              (interceptor/get-effect context :db)
+        metrics-event-data (get rf-db :centralized-metrics/event-data)
+        metrics-event      (tracking/tracked-event {:rf-event     rf-event
+                                                    :metrics-data metrics-event-data})]
+    (when metrics-event
+      (log/info "tracking event" metrics-event)
+      (when (push-event? rf-db)
+        (native-module/add-centralized-metric metrics-event)))
+    (interceptor/assoc-effect context
+                              :db
+                              (if metrics-event (dissoc rf-db :centralized-metrics/event-data) rf-db))))
 
 (def interceptor
   (interceptor/->interceptor

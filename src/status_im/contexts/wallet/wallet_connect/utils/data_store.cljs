@@ -73,3 +73,48 @@
   (-> db
       get-db-current-request-event
       get-request-params))
+
+(defn- find-networks
+  [current-request current-proposal request db]
+  (cond
+    current-request
+    (get-in current-request [:params :chainId])
+
+    current-proposal
+    (->> (get-in db [:wallet-connect/current-proposal :session-networks])
+         vec
+         (string/join ","))
+
+    request
+    (->> (or (get-in request [:params :requiredNamespaces :eip155 :chains])
+             (get-in request [:requiredNamespaces :eip155 :chains]))
+         vec
+         (string/join ","))
+
+    :else
+    []))
+
+(defn- find-url
+  [current-request current-proposal request]
+  (cond
+    current-request
+    (get-in current-request [:verifyContext :verified :origin])
+
+    current-proposal
+    (get-in current-proposal [:params :proposer :metadata :url])
+
+    request
+    (or (get-in request [:params :proposer :metadata :url])
+        (get-in request [:peer :metadata :url]))
+
+    :else
+    nil))
+
+(defn get-dapp-name-and-networks
+  [db & [request]]
+  (let [current-request  (get-in db [:wallet-connect/current-request :event])
+        current-proposal (get-in db [:wallet-connect/current-proposal :request])
+        session-networks (find-networks current-request current-proposal request db)
+        dapp-url         (find-url current-request current-proposal request)
+        dapp-name        (compute-dapp-name nil dapp-url)]
+    [dapp-name session-networks]))

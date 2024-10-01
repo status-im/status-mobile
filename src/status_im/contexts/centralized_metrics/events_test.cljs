@@ -17,8 +17,8 @@
   (testing "processes context correctly"
     (with-redefs [tracking/tracked-event (fn [_] {:metric "mocked-event"})
                   events/push-event?     (fn [_] true)]
-      (let [context {:coeffects {:event [:some-event]
-                                 :db    {:centralized-metrics/enabled? true}}}]
+      (let [context {:coeffects {:event [:some-event]}
+                     :effects   {:db {:centralized-metrics/enabled? true}}}]
         (is (= context (events/centralized-metrics-interceptor context)))))))
 
 (h/deftest-event :centralized-metrics/toggle-centralized-metrics

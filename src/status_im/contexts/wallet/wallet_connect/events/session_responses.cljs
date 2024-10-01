@@ -42,6 +42,16 @@
                constants/wallet-connect-eth-sign-typed-v4-method
                [:dispatch [:wallet-connect/respond-sign-typed-data password :v4]])]}))))
 
+(rf/reg-event-fx :wallet-connect/respond-sign-message-success
+ (fn [{:keys [db]} [result]]
+   (let [[dapp-name networks] (data-store/get-dapp-name-and-networks db)]
+     (log/info "Successfully signed Wallet Connect request")
+     {:db (assoc db
+                 :centralized-metrics/event-data
+                 {:dapp_name dapp-name
+                  :networks  networks})
+      :fx [[:dispatch [:wallet-connect/finish-session-request result]]]})))
+
 (rf/reg-event-fx
  :wallet-connect/respond-sign-message
  (fn [{:keys [db]} [password rpc-method]]
@@ -51,8 +61,8 @@
              :address    address
              :data       raw-data
              :rpc-method rpc-method
-             :on-error   #(rf/dispatch [:wallet-connect/on-sign-error %])
-             :on-success #(rf/dispatch [:wallet-connect/finish-session-request %])}]]})))
+             :on-error   [:wallet-connect/on-sign-error]
+             :on-success [:wallet-connect/respond-sign-message-success]}]]})))
 
 (rf/reg-event-fx
  :wallet-connect/respond-sign-typed-data
@@ -65,8 +75,32 @@
              :data       raw-data
              :chain-id   chain-id
              :version    typed-data-version
-             :on-error   #(rf/dispatch [:wallet-connect/on-sign-error %])
-             :on-success #(rf/dispatch [:wallet-connect/finish-session-request %])}]]})))
+             :on-error   [:wallet-connect/on-sign-error]
+             :on-success [:wallet-connect/respond-sign-message-success]}]]})))
+
+(rf/reg-event-fx :wallet-connect/respond-send-transaction-error
+ (fn [{:keys [db]}]
+   (let [[dapp-name networks] (data-store/get-dapp-name-and-networks db)]
+     (log/error "Failed to send transaction request to Wallet connect")
+     {:db (assoc db
+                 :centralized-metrics/event-data
+                 {:dapp_name dapp-name
+                  :networks  networks})
+      :fx [[:dispatch [:wallet-connect/dismiss-request-modal]]
+           [:dispatch
+            [:toasts/upsert
+             {:type :negative
+              :text (i18n/label :t/something-went-wrong)}]]]})))
+
+(rf/reg-event-fx :wallet-connect/respond-send-transaction-success
+ (fn [{:keys [db]} [result]]
+   (let [[dapp-name networks] (data-store/get-dapp-name-and-networks db)]
+     (log/info "Successfully sent transaction request to Wallet connect")
+     {:db (assoc db
+                 :centralized-metrics/event-data
+                 {:dapp_name dapp-name
+                  :networks  networks})
+      :fx [[:dispatch [:wallet-connect/finish-session-request result]]]})))
 
 (rf/reg-event-fx
  :wallet-connect/respond-send-transaction-data
@@ -79,8 +113,8 @@
              :chain-id   chain-id
              :tx-hash    tx-hash
              :tx-args    tx-args
-             :on-error   #(rf/dispatch [:wallet-connect/on-sign-error %])
-             :on-success #(rf/dispatch [:wallet-connect/finish-session-request %])}]]})))
+             :on-error   [:wallet-connect/respond-send-transaction-error]
+             :on-success [:wallet-connect/respond-send-transaction-success]}]]})))
 
 (rf/reg-event-fx
  :wallet-connect/respond-sign-transaction-data
@@ -93,14 +127,15 @@
              :chain-id   chain-id
              :tx-hash    tx-hash
              :tx-params  tx-args
-             :on-error   #(rf/dispatch [:wallet-connect/on-sign-error %])
-             :on-success #(rf/dispatch [:wallet-connect/finish-session-request %])}]]})))
+             :on-error   [:wallet-connect/on-sign-error]
+             :on-success [:wallet-connect/respond-sign-message-success]}]]})))
 
 (rf/reg-event-fx
  :wallet-connect/on-sign-error
  (fn [{:keys [db]} [error]]
    (let [{:keys [raw-data address event]} (get db :wallet-connect/current-request)
-         method                           (data-store/get-request-method event)]
+         method                           (data-store/get-request-method event)
+         [dapp-name networks]             (data-store/get-dapp-name-and-networks db)]
      (log/error "Failed to sign Wallet Connect request"
                 {:error                error
                  :address              address
@@ -108,7 +143,11 @@
                  :method               method
                  :wallet-connect-event event
                  :event                :wallet-connect/on-sign-error})
-     {:fx [[:dispatch [:wallet-connect/dismiss-request-modal]]
+     {:db (assoc db
+                 :centralized-metrics/event-data
+                 {:dapp_name dapp-name
+                  :networks  networks})
+      :fx [[:dispatch [:wallet-connect/dismiss-request-modal]]
            [:dispatch
             [:toasts/upsert
              {:type :negative

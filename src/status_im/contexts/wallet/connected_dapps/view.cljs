@@ -19,21 +19,9 @@
   (rf/dispatch [:hide-bottom-sheet])
   (rf/dispatch
    [:wallet-connect/disconnect-dapp
-    {:topic      topic
-     :on-success (fn []
-                   (rf/dispatch [:toasts/upsert
-                                 {:id   :dapp-disconnect-success
-                                  :type :positive
-                                  :text (i18n/label :t/disconnect-dapp-success
-                                                    {:dapp    name
-                                                     :account (:name wallet-account)})}]))
-     :on-fail    (fn []
-                   (rf/dispatch [:toasts/upsert
-                                 {:id   :dapp-disconnect-failure
-                                  :type :negative
-                                  :text (i18n/label :t/disconnect-dapp-fail
-                                                    {:dapp    name
-                                                     :account (:name wallet-account)})}]))}]))
+    {:topic          topic
+     :wallet-account wallet-account
+     :name           name}]))
 
 (defn- on-dapp-disconnect-press
   [wallet-account dapp]

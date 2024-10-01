@@ -1,5 +1,7 @@
 (ns status-im.contexts.wallet.wallet-connect.events.sessions
   (:require [re-frame.core :as rf]
+            [status-im.contexts.wallet.wallet-connect.utils.data-store :as
+             data-store]
             [status-im.contexts.wallet.wallet-connect.utils.networks :as networks]
             [status-im.contexts.wallet.wallet-connect.utils.sessions :as sessions]
             [taoensso.timbre :as log]
@@ -16,9 +18,39 @@
               :on-success [:wallet-connect/delete-session topic]
               :on-error   #(log/info "Wallet Connect session persistence failed" %)}]]]})))
 
+(rf/reg-event-fx :wallet-connect/disconnect-dapp-success
+ (fn [{:keys [db]} [wallet-account topic dapp-name]]
+   (log/info "Wallet Connect dApp session disconnected successfully")
+   {:db (assoc db
+               :centralized-metrics/event-data
+               {:dapp_name dapp-name})
+    :fx [[:dispatch
+          [:toasts/upsert
+           {:id   :dapp-disconnect-success
+            :type :positive
+            :text (i18n/label :t/disconnect-dapp-success
+                              {:dapp    dapp-name
+                               :account (:name wallet-account)})}]]
+         [:dispatch [:wallet-connect/delete-session topic]]]}))
+
+(rf/reg-event-fx :wallet-connect/disconnect-dapp-fail
+ (fn [{:keys [db]} [wallet-account topic dapp-name]]
+   (log/info "Wallet Connect dApp session disconnected failed")
+   {:db (assoc db
+               :centralized-metrics/event-data
+               {:dapp_name dapp-name})
+    :fx [[:dispatch
+          [:toasts/upsert
+           {:id   :dapp-disconnect-failure
+            :type :negative
+            :text (i18n/label :t/disconnect-dapp-fail
+                              {:dapp    dapp-name
+                               :account (:name wallet-account)})}]]
+         [:dispatch [:wallet-connect/disconnect-persisted-session topic]]]}))
+
 (rf/reg-event-fx
  :wallet-connect/disconnect-dapp
- (fn [{:keys [db]} [{:keys [topic on-success on-fail]}]]
+ (fn [{:keys [db]} [{:keys [wallet-account topic name]}]]
    (let [web3-wallet    (get db :wallet-connect/web3-wallet)
          network-status (:network/status db)]
      (log/info "Disconnecting dApp session" topic)
@@ -26,12 +58,8 @@
        {:fx [[:effects.wallet-connect/disconnect
               {:web3-wallet web3-wallet
                :topic       topic
-               :on-fail     on-fail
-               :on-success  (fn []
-                              (log/info "Successfully disconnected dApp session" topic)
-                              (rf/dispatch [:wallet-connect/delete-session topic])
-                              (when on-success
-                                (on-success)))}]]}
+               :on-fail     [:wallet-connect/disconnect-dapp-fail wallet-account topic name]
+               :on-success  [:wallet-connect/disconnect-dapp-success wallet-account topic name]}]]}
        {:fx [[:dispatch [:wallet-connect/no-internet-toast]]]}))))
 
 (rf/reg-event-fx
@@ -71,12 +99,22 @@
 (rf/reg-event-fx
  :wallet-connect/on-new-session
  (fn [{:keys [db]} [new-session]]
-   {:db (update db
-                :wallet-connect/sessions
-                (fn [sessions]
-                  (->> new-session
-                       sessions/sdk-session->db-session
-                       (conj sessions))))}))
+   (let [[dapp-name networks]  (data-store/get-dapp-name-and-networks db new-session)
+         total-connected-dapps (-> db
+                                   :wallet-connect/sessions
+                                   count
+                                   inc)]
+     {:db (-> db
+              (update
+               :wallet-connect/sessions
+               (fn [sessions]
+                 (->> new-session
+                      sessions/sdk-session->db-session
+                      (conj sessions))))
+              (assoc :centralized-metrics/event-data
+                     {:dapp_name             dapp-name
+                      :networks              networks
+                      :total_connected_dapps total-connected-dapps}))})))
 
 (rf/reg-event-fx
  :wallet-connect/delete-session

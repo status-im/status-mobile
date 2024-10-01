@@ -1,7 +1,6 @@
 (ns status-im.contexts.wallet.wallet-connect.events.effects
   (:require
     [promesa.core :as promesa]
-    [re-frame.core :as rf]
     [react-native.wallet-connect :as wallet-connect]
     [status-im.config :as config]
     [status-im.constants :as constants]
@@ -10,6 +9,7 @@
     [status-im.contexts.wallet.wallet-connect.utils.transactions :as transactions]
     [status-im.contexts.wallet.wallet-connect.utils.typed-data :as typed-data]
     [utils.i18n :as i18n]
+    [utils.re-frame :as rf]
     [utils.security.core :as security]))
 
 (rf/reg-fx
@@ -45,8 +45,8 @@
  :effects.wallet-connect/disconnect
  (fn [{:keys [web3-wallet topic on-success on-fail]}]
    (-> (sessions/disconnect web3-wallet topic)
-       (promesa/then on-success)
-       (promesa/catch on-fail))))
+       (promesa/then (partial rf/call-continuation on-success))
+       (promesa/catch (partial rf/call-continuation on-fail)))))
 
 (rf/reg-fx
  :effects.wallet-connect/approve-session
@@ -56,8 +56,8 @@
          :proposal-request proposal-request
          :address          address
          :session-networks session-networks})
-       (promesa/then on-success)
-       (promesa/catch on-fail))))
+       (promesa/then (partial rf/call-continuation on-success))
+       (promesa/catch (partial rf/call-continuation on-fail)))))
 
 (rf/reg-fx
  :effects.wallet-connect/sign-message
@@ -72,8 +72,8 @@
            (signing/eth-sign password address data)
 
            (signing/personal-sign password address data))
-         (promesa/then on-success)
-         (promesa/catch on-error)))))
+         (promesa/then (partial rf/call-continuation on-success))
+         (promesa/catch (partial rf/call-continuation on-error))))))
 
 (rf/reg-fx
  :effects.wallet-connect/prepare-transaction
@@ -103,8 +103,8 @@
                                       tx-hash
                                       tx-args
                                       chain-id)
-       (promesa/then on-success)
-       (promesa/catch on-error))))
+       (promesa/then (partial rf/call-continuation on-success))
+       (promesa/catch (partial rf/call-continuation on-error)))))
 
 (rf/reg-fx
  :effects.wallet-connect/sign-typed-data
@@ -114,8 +114,8 @@
                         data
                         chain-id
                         version)
-       (promesa/then on-success)
-       (promesa/catch on-error))))
+       (promesa/then (partial rf/call-continuation on-success))
+       (promesa/catch (partial rf/call-continuation on-error)))))
 
 (rf/reg-fx
  :effects.wallet-connect/respond-session-request
@@ -139,8 +139,8 @@
           {:web3-wallet web3-wallet
            :id          id
            :reason      reason})
-         (promesa/then on-success)
-         (promesa/catch on-error)))))
+         (promesa/then (partial rf/call-continuation on-success))
+         (promesa/catch (partial rf/call-continuation on-error))))))
 
 (rf/reg-fx
  :effects.wallet-connect/get-sessions

@@ -18,7 +18,7 @@
                        :platform   platform-os
                        :appVersion app-version
                        :eventValue {val-key value}}}]
-      (is (= expected (tracking/key-value-event event-name val-key value))))))
+      (is (= expected (tracking/key-value-event event-name {val-key value}))))))
 
 (deftest user-journey-event-test
   (testing "creates correct user journey event"
@@ -63,17 +63,17 @@
              :platform   platform-os
              :appVersion app-version
              :eventValue {:action tracking/app-started-event}}}
-           (tracking/tracked-event [:profile/get-profiles-overview-success])))
+           (tracking/tracked-event {:rf-event [:profile/get-profiles-overview-success]})))
     (is (= {:metric
             {:eventName  "events.metrics-enabled"
              :platform   platform-os
              :appVersion app-version
              :eventValue {:enabled true}}}
-           (tracking/tracked-event [:centralized-metrics/toggle-centralized-metrics true])))
+           (tracking/tracked-event {:rf-event [:centralized-metrics/toggle-centralized-metrics true]})))
     (is (= {:metric
             {:eventName  "navigation"
              :platform   platform-os
              :appVersion app-version
              :eventValue {:viewId "wallet-stack"}}}
-           (tracking/tracked-event [:set-view-id :wallet-stack])))
-    (is (nil? (tracking/tracked-event [:unknown-event])))))
+           (tracking/tracked-event {:rf-event [:set-view-id :wallet-stack]})))
+    (is (nil? (tracking/tracked-event {:rf-event [:unknown-event]})))))

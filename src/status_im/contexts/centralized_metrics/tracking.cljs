@@ -4,20 +4,20 @@
     [react-native.platform :as platform]))
 
 (defn key-value-event
-  [event-name val-key value]
+  [event-name event-value]
   {:metric
    {:eventName  event-name
     :platform   platform/os
     :appVersion build/app-short-version
-    :eventValue {val-key value}}})
+    :eventValue event-value}})
 
 (defn user-journey-event
   [action]
-  (key-value-event "user-journey" :action action))
+  (key-value-event "user-journey" {:action action}))
 
 (defn navigation-event
   [view-id]
-  (key-value-event "navigation" :viewId view-id))
+  (key-value-event "navigation" {:viewId view-id}))
 
 (def ^:const app-started-event "app-started")
 
@@ -51,15 +51,65 @@
     (navigation-event (name view-id))))
 
 (defn tracked-event
-  [[event-name second-parameter]]
-  (case event-name
-    :profile/get-profiles-overview-success
-    (user-journey-event app-started-event)
+  [{:keys [rf-event metrics-data]}]
+  (let [[event-name second-parameter] rf-event]
+    (case event-name
+      :profile/get-profiles-overview-success
+      (user-journey-event app-started-event)
 
-    :centralized-metrics/toggle-centralized-metrics
-    (key-value-event "events.metrics-enabled" :enabled second-parameter)
+      :centralized-metrics/toggle-centralized-metrics
+      (key-value-event "events.metrics-enabled" {:enabled second-parameter})
 
-    :set-view-id
-    (track-view-id-event second-parameter)
+      :set-view-id
+      (track-view-id-event second-parameter)
 
-    nil))
+      :wallet-connect/approve-session-success
+      (key-value-event "dapp-session"
+                       (merge metrics-data
+                              {:action :approved
+                               :result :success}))
+
+      :wallet-connect/approve-session-fail
+      (key-value-event "dapp-session"
+                       (merge metrics-data
+                              {:action :approved
+                               :result :fail}))
+
+      :wallet-connect/reject-session-proposal-success
+      (key-value-event "dapp-session"
+                       (merge metrics-data
+                              {:action :rejected
+                               :result :success}))
+
+      :wallet-connect/reject-session-proposal-fail
+      (key-value-event "dapp-session"
+                       (merge metrics-data
+                              {:action :rejected
+                               :result :fail}))
+
+      :wallet-connect/disconnect-dapp-success
+      (key-value-event "dapp-disconnected"
+                       (merge metrics-data
+                              {:result :success}))
+
+      :wallet-connect/disconnect-dapp-fail
+      (key-value-event "dapp-disconnected"
+                       (merge metrics-data
+                              {:result :fail}))
+
+      :wallet-connect/on-new-session
+      (key-value-event "dapp-connected" metrics-data)
+
+      :wallet-connect/respond-sign-message-success
+      (key-value-event "dapp-sign" (merge metrics-data {:result :success}))
+
+      :wallet-connect/on-sign-error
+      (key-value-event "dapp-sign" (merge metrics-data {:result :fail}))
+
+      :wallet-connect/respond-send-transaction-success
+      (key-value-event "dapp-send" (merge metrics-data {:result :success}))
+
+      :wallet-connect/respond-send-transaction-error
+      (key-value-event "dapp-send" (merge metrics-data {:result :fail}))
+
+      nil)))
