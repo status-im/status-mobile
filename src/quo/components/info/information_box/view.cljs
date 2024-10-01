@@ -65,7 +65,7 @@
                                                       :type            type
                                                       :include-button? include-button?})
                                     style)}
-       [icons/icon icon
+       [icons/icon (or icon :i/info)
         {:color           (style/get-color-by-type theme type :icon)
          :no-color        no-icon-color?
          :size            (or icon-size 16)
