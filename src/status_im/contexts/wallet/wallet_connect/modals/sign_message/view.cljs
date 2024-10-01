@@ -17,8 +17,7 @@
   [{:keys [label value]}]
   [quo/data-item
    {:card?           false
-    :container-style (merge style/data-item
-                            {:margin-bottom 4})
+    :container-style style/typed-data-item
     :title           label
     :subtitle        value}])
 
