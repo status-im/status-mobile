@@ -1,0 +1,9 @@
+{
+    "_comment": "THIS SHOULD NOT BE EDITED BY HAND.",
+    "_comment": "Instead use: scripts/update-status-go.sh <rev>",
+    "owner": "status-im",
+    "repo": "status-go",
+    "version": "fix/stop-syncing-last-opened-at",
+    "commit-sha1": "d18458767b50e886a114df3dadf7395ada4ff668",
+    "src-sha256": "0q2pmvvlhbn7526xkskws43drbkkd2f6swylxs78lxa2pfhnz64m"
+}
