@@ -119,38 +119,29 @@
     :icon-left           :i/communities}
    (i18n/label :t/request-to-join)])
 
-(defn- info-button-handler
+(defn token-gated-communities-info
   []
-  (rf/dispatch
-   [:show-bottom-sheet
-    {:content
-     (fn []
-       [quo/documentation-drawers
-        {:title        (i18n/label :t/token-gated-communities)
-         :show-button? true
-         :button-label (i18n/label :t/read-more)
-         :button-icon  :info}
-        [quo/text {:size :paragraph-2}
-         (i18n/label :t/token-gated-communities-info)]])}]))
+  [quo/documentation-drawers {:title (i18n/label :t/token-gated-communities)}
+   [quo/text {:size :paragraph-2}
+    (i18n/label :t/token-gated-communities-info)]])
 
 (defn- token-requirements
   [{:keys [id color role-permissions?]}]
-  (let [{:keys [can-request-access?
-                no-member-permission?
-                tokens
-                networks-not-supported?
-                highest-permission-role]} (rf/sub [:community/token-gated-overview id])
-        highest-role-text
-        (i18n/label
-         (communities.utils/role->translation-key highest-permission-role :t/member))
-        on-press (rn/use-callback (fn []
-                                    (if config/community-accounts-selection-enabled?
-                                      (rf/dispatch [:open-modal :community-account-selection-sheet
-                                                    {:community-id id}])
-                                      (rf/dispatch [:open-modal :community-requests-to-join
-                                                    {:id
-                                                     id}])))
-                                  [id])]
+  (let [{:keys [can-request-access? no-member-permission? networks-not-supported?
+                highest-permission-role
+                tokens]}  (rf/sub [:community/token-gated-overview id])
+        highest-role-text (i18n/label
+                           (communities.utils/role->translation-key highest-permission-role :t/member))
+        on-press          (rn/use-callback
+                           (fn []
+                             (if config/community-accounts-selection-enabled?
+                               (rf/dispatch [:open-modal :community-account-selection-sheet
+                                             {:community-id id}])
+                               (rf/dispatch [:open-modal :community-requests-to-join
+                                             {:id id}])))
+                           [id])
+        on-press-info     #(rf/dispatch
+                            [:show-bottom-sheet {:content token-gated-communities-info}])]
     (cond
       networks-not-supported?
       [network-not-supported]
@@ -160,13 +151,12 @@
 
       :else
       [quo/community-token-gating
-       {:role highest-role-text
-        :tokens tokens
+       {:role            highest-role-text
+        :tokens          tokens
         :community-color color
-        :satisfied? can-request-access?
-        :on-press on-press
-        :on-press-info
-        info-button-handler}])))
+        :satisfied?      can-request-access?
+        :on-press        on-press
+        :on-press-info   on-press-info}])))
 
 (defn- join-community
   [{:keys [id joined permissions] :as community}]
