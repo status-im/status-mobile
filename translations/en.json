@@ -2698,6 +2698,7 @@
   "wallet-connect": "Wallet Connect",
   "wallet-connect-2.0": "Wallet Connect 2.0",
   "wallet-connect-app-connected": "is connected",
+  "wallet-connect-connections-error": "Failed to get dApps connections",
   "wallet-connect-go-back": "Go back to your browser or dapp",
   "wallet-connect-label": "WalletConnect",
   "wallet-connect-networks-not-supported": "{{dapp}} requires an unsupported network.",

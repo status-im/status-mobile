@@ -109,7 +109,6 @@
  (fn [{:keys [db]} [address]]
    {:db (assoc-in db [:wallet-connect/current-proposal :address] address)}))
 
-
 (rf/reg-event-fx
  :wallet-connect/approve-session
  (fn [{:keys [db]}]
@@ -119,33 +118,51 @@
                                (map networks/chain-id->eip155)
                                vec)
          current-address  (get-in db [:wallet-connect/current-proposal :address])
-         accounts         (-> (partial networks/format-eip155-address current-address)
-                              (map session-networks))
          network-status   (:network/status db)
-         expiry           (get-in current-proposal [:params :expiryTimestamp])]
+         expired?         (-> current-proposal
+                              (get-in [:params :expiryTimestamp])
+                              uri/timestamp-expired?)]
      (if (= network-status :online)
        {:db (assoc-in db [:wallet-connect/current-proposal :response-sent?] true)
-        :fx [(if (uri/timestamp-expired? expiry)
+        :fx [(if expired?
                [:dispatch
                 [:toasts/upsert
                  {:id   :wallet-connect-proposal-expired
                   :type :negative
                   :text (i18n/label :t/wallet-connect-proposal-expired)}]]
                [:effects.wallet-connect/approve-session
-                {:web3-wallet web3-wallet
-                 :proposal    current-proposal
-                 :networks    session-networks
-                 :accounts    accounts
-                 :on-success  (fn [approved-session]
-                                (log/info "Wallet Connect session approved")
-                                (rf/dispatch [:wallet-connect/reset-current-session-proposal])
-                                (rf/dispatch [:wallet-connect/persist-session
-                                              approved-session]))
-                 :on-fail     (fn [error]
-                                (log/error "Wallet Connect session approval failed"
-                                           {:error error
-                                            :event :wallet-connect/approve-session})
-                                (rf/dispatch
-                                 [:wallet-connect/reset-current-session-proposal]))}])
+                {:web3-wallet      web3-wallet
+                 :proposal-request current-proposal
+                 :session-networks session-networks
+                 :address          current-address
+                 :on-success       #(rf/dispatch [:wallet-connect/approve-session-success %])
+                 :on-fail          #(rf/dispatch [:wallet-connect/approve-session-error %])}])
              [:dispatch [:dismiss-modal :screen/wallet.wallet-connect-session-proposal]]]}
        {:fx [[:dispatch [:wallet-connect/no-internet-toast]]]}))))
+
+(rf/reg-event-fx :wallet-connect/approve-session-success
+ (fn [_ [session]]
+   (log/info "Wallet Connect session approved")
+   {:fx [[:dispatch [:wallet-connect/on-new-session session]]
+         [:dispatch [:wallet-connect/reset-current-session-proposal]]
+         [:dispatch [:wallet-connect/redirect-to-dapp (data-store/get-dapp-redirect-url session)]]]}))
+
+(rf/reg-event-fx :wallet-connect/approve-session-error
+ (fn [_ [error]]
+   (log/error "Wallet Connect session approval failed"
+              {:error error
+               :event :wallet-connect/approve-session})
+   {:fx [[:dispatch [:wallet-connect/reset-current-session-proposal]]]}))
+
+(rf/reg-event-fx
+ :wallet-connect/reject-session-proposal
+ (fn [{:keys [db]} [proposal]]
+   (let [web3-wallet                      (get db :wallet-connect/web3-wallet)
+         {:keys [request response-sent?]} (:wallet-connect/current-proposal db)]
+     {:fx [(when-not response-sent?
+             [:effects.wallet-connect/reject-session-proposal
+              {:web3-wallet web3-wallet
+               :proposal    (or proposal request)
+               :on-success  #(log/info "Wallet Connect session proposal rejected")
+               :on-error    #(log/error "Wallet Connect unable to reject session proposal")}])
+           [:dispatch [:wallet-connect/reset-current-session-proposal]]]})))

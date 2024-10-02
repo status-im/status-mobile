@@ -5,6 +5,7 @@
     [react-native.wallet-connect :as wallet-connect]
     [status-im.config :as config]
     [status-im.constants :as constants]
+    [status-im.contexts.wallet.wallet-connect.utils.sessions :as sessions]
     [status-im.contexts.wallet.wallet-connect.utils.signing :as signing]
     [status-im.contexts.wallet.wallet-connect.utils.transactions :as transactions]
     [status-im.contexts.wallet.wallet-connect.utils.typed-data :as typed-data]
@@ -42,35 +43,19 @@
 
 (rf/reg-fx
  :effects.wallet-connect/disconnect
- (fn [{:keys [web3-wallet topic reason on-success on-fail]}]
-   (-> (wallet-connect/disconnect-session {:web3-wallet web3-wallet
-                                           :topic       topic
-                                           :reason      reason})
+ (fn [{:keys [web3-wallet topic on-success on-fail]}]
+   (-> (sessions/disconnect web3-wallet topic)
        (promesa/then on-success)
        (promesa/catch on-fail))))
 
 (rf/reg-fx
  :effects.wallet-connect/approve-session
- (fn [{:keys [web3-wallet proposal networks accounts on-success on-fail]}]
-   (let [{:keys [params id]} proposal
-         approved-namespaces (->> {:eip155
-                                   {:chains   networks
-                                    :accounts accounts
-                                    :methods  constants/wallet-connect-supported-methods
-                                    :events   constants/wallet-connect-supported-events}}
-                                  (wallet-connect/build-approved-namespaces
-                                   params))]
-     (-> (wallet-connect/approve-session
-          {:web3-wallet         web3-wallet
-           :id                  id
-           :approved-namespaces approved-namespaces})
-         (promesa/then on-success)
-         (promesa/catch on-fail)))))
-
-(rf/reg-fx
- :effects.wallet-connect/fetch-active-sessions
- (fn [{:keys [web3-wallet on-success on-fail]}]
-   (-> (wallet-connect/get-active-sessions web3-wallet)
+ (fn [{:keys [web3-wallet proposal-request session-networks address on-success on-fail]}]
+   (-> (sessions/approve
+        {:web3-wallet      web3-wallet
+         :proposal-request proposal-request
+         :address          address
+         :session-networks session-networks})
        (promesa/then on-success)
        (promesa/catch on-fail))))
 
@@ -156,3 +141,10 @@
            :reason      reason})
          (promesa/then on-success)
          (promesa/catch on-error)))))
+
+(rf/reg-fx
+ :effects.wallet-connect/get-sessions
+ (fn [{:keys [web3-wallet addresses online? on-success on-error]}]
+   (-> (sessions/get-sessions web3-wallet addresses online?)
+       (promesa/then on-success)
+       (promesa/catch on-error))))

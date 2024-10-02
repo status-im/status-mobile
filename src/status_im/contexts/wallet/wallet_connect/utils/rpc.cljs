@@ -58,6 +58,23 @@
   (-> (rpc-events/call-async "wallet_getSuggestedFees" true chain-id)
       (promesa/then transforms/js->clj)))
 
+(defn wallet-disconnect-persisted-session
+  [topic]
+  (rpc-events/call-async "wallet_disconnectWalletConnectSession" true topic))
+
+(defn wallet-get-persisted-sessions
+  ([]
+   (let [now (-> (js/Date.) .getTime (quot 1000))]
+     (wallet-get-persisted-sessions now)))
+  ([expiry-timestamp]
+   (rpc-events/call-async "wallet_getWalletConnectActiveSessions" false expiry-timestamp)))
+
+(defn wallet-persist-session
+  [session]
+  (->> session
+       transforms/clj->json
+       (rpc-events/call-async "wallet_addWalletConnectSession" false)))
+
 (defn wallet-get-transaction-estimated-time
   [chain-id max-fee-per-gas]
   (-> (rpc-events/call-async "wallet_getTransactionEstimatedTime" true chain-id max-fee-per-gas)

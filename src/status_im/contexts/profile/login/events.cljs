@@ -102,8 +102,6 @@
            [:dispatch-later [{:ms 1500 :dispatch [:profile.login/non-critical-initialization]}]]
            [:dispatch [:network/check-expensive-connection]]
            [:profile.settings/get-profile-picture key-uid]
-           (when (ff/enabled? ::ff/wallet.wallet-connect)
-             [:dispatch [:wallet-connect/init]])
            (when notifications-enabled?
              [:effects/push-notifications-enable])]})))
 
