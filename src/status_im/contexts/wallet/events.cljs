@@ -478,7 +478,9 @@
          [:dispatch [:wallet/get-ethereum-chains]]
          [:dispatch [:wallet/get-accounts]]
          [:dispatch [:wallet/get-keypairs]]
-         [:dispatch [:wallet/get-saved-addresses]]]}))
+         [:dispatch [:wallet/get-saved-addresses]]
+         (when (ff/enabled? ::ff/wallet.wallet-connect)
+           [:dispatch-later [{:ms 500 :dispatch [:wallet-connect/init]}]])]}))
 
 (rf/reg-event-fx :wallet/share-account
  (fn [_ [{:keys [content title]}]]

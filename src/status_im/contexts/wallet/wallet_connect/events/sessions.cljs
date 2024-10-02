@@ -41,12 +41,17 @@
                         vals
                         sessions/filter-operable-accounts
                         (map :address))]
-     {:fx [[:effects.wallet-connect/get-sessions
-            {:online?     (-> db :network/status (= :online))
-             :web3-wallet (get db :wallet-connect/web3-wallet)
-             :addresses   addresses
-             :on-success  #(rf/dispatch [:wallet-connect/get-sessions-success %])
-             :on-error    #(rf/dispatch [:wallet-connect/get-sessions-error %])}]]})))
+     (if (not (seq addresses))
+       ;; NOTE: Re-trying to get active sessions if accounts weren't loaded yet during
+       ;; initialization
+       ((log/info "Re-trying to fetch active WalletConnect sessions")
+        {:fx [[:dispatch-later [{:ms 500 :dispatch [:wallet-connect/get-sessions]}]]]})
+       {:fx [[:effects.wallet-connect/get-sessions
+              {:online?     (-> db :network/status (= :online))
+               :web3-wallet (get db :wallet-connect/web3-wallet)
+               :addresses   addresses
+               :on-success  #(rf/dispatch [:wallet-connect/get-sessions-success %])
+               :on-error    #(rf/dispatch [:wallet-connect/get-sessions-error %])}]]}))))
 
 (rf/reg-event-fx
  :wallet-connect/get-sessions-success
