@@ -212,6 +212,11 @@
             #(when (group-chat? cofx chat-id)
                (loading/load-chat % chat-id))))
 
+(rf/reg-event-fx
+ :chat/clear-current-chat-id
+ (fn [{:keys [db]}]
+   {:db (dissoc db :current-chat-id)}))
+
 (rf/defn pop-to-root-and-navigate-to-chat
   {:events [:chat/pop-to-root-and-navigate-to-chat]}
   [cofx chat-id animation]
