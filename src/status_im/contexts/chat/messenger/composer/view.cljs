@@ -35,7 +35,7 @@
         :default-value            default-value}])))
 
 (defn view
-  [props]
+  [layout-height]
   (let [theme     (quo.theme/use-theme)
         bottom    (safe-area/get-bottom)
         input-ref (rn/use-ref-atom nil)
@@ -43,7 +43,7 @@
                                      (rf/dispatch [:chat/set-input-ref value])
                                      (reset! input-ref value)))]
     [rn/view {:style {:margin-bottom bottom}}
-     [mentions/view props]
+     [mentions/view layout-height]
      [quo/separator]
      [rn/view {:style {:padding-horizontal 20 :padding-top 20}}
       [:<>
