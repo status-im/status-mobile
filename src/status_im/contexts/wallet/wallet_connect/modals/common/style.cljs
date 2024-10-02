@@ -21,9 +21,19 @@
 
 (def data-item
   {:flex             1
-   :background-color :transparent
-   :margin-bottom    8
-   :margin-top       2})
+   :background-color :transparent})
+
+(def typed-data-item
+  (assoc data-item :margin-bottom 4))
+
+(def data-border-container
+  {:padding-horizontal 12
+   :padding-top        8
+   :margin-top         10.5
+   :margin-bottom      0
+   :border-width       1
+   :border-color       colors/neutral-10
+   :border-radius      16})
 
 (def data-item-container
   {:padding       10
