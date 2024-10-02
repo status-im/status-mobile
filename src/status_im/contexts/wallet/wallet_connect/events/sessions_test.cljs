@@ -41,7 +41,7 @@
       (reset! rf-db/app-db {:profile/profile         {:test-networks-enabled? false}
                             :wallet-connect/sessions [{:topic  topic-1
                                                        :chains ["eip155:1"]}]})
-      (is (match? nil
+      (is (match? {:db nil}
                   (dispatch [event-id
                              {:topic  topic-2
                               :chains ["eip155:1"]}])))))
@@ -51,7 +51,7 @@
       (reset! rf-db/app-db {:profile/profile         {:test-networks-enabled? true}
                             :wallet-connect/sessions [{:topic  topic
                                                        :chains ["eip155:1"]}]})
-      (is (match? nil
+      (is (match? {:db nil}
                   (dispatch [event-id
                              {:topic  topic
                               :chains ["eip155:11155111"]}]))))))
