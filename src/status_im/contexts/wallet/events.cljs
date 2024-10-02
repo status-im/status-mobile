@@ -345,8 +345,7 @@
                            :Prod
                            data-store/rpc->network)
                      data)}]
-     {:fx [(when (ff/enabled? ::ff/wallet.swap)
-             [:dispatch [:wallet.tokens/get-token-list]])]
+     {:fx [[:dispatch [:wallet.tokens/get-token-list]]]
       :db (assoc-in db [:wallet :networks] network-data)})))
 
 (rf/reg-event-fx
