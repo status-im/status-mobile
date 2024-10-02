@@ -7,6 +7,7 @@
     [status-im.constants :as constants]
     [status-im.contexts.wallet.wallet-connect.utils.signing :as signing]
     [status-im.contexts.wallet.wallet-connect.utils.transactions :as transactions]
+    [status-im.contexts.wallet.wallet-connect.utils.typed-data :as typed-data]
     [utils.i18n :as i18n]
     [utils.security.core :as security]))
 
@@ -123,11 +124,11 @@
 (rf/reg-fx
  :effects.wallet-connect/sign-typed-data
  (fn [{:keys [password address data version chain-id on-success on-error]}]
-   (-> (signing/eth-sign-typed-data (security/safe-unmask-data password)
-                                    address
-                                    data
-                                    chain-id
-                                    version)
+   (-> (typed-data/sign (security/safe-unmask-data password)
+                        address
+                        data
+                        chain-id
+                        version)
        (promesa/then on-success)
        (promesa/catch on-error))))
 
