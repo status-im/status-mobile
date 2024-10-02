@@ -145,53 +145,53 @@
 (defn chat-screens
   []
   [{:name      :start-a-new-chat
-    :metrics   {:flow   :messenger
-                :track? :true
-                :event  {:id :messenger.new-chat}}
+    :metrics   {:track?    :true
+                :flow-type :messenger
+                :alias-id  :messenger.new-chat}
     :options   {:sheet? true}
     :component new-chat/view}
 
    {:name      :chat
-    :metrics   {:flow   :messenger
-                :track? :true
-                :event  {:id :messenger.chat}}
+    :metrics   {:track?    :true
+                :flow-type :messenger
+                :alias-id  :messenger.chat}
     :options   {:popGesture false
                 :animations transitions/stack-transition-from-bottom}
     :component chat/chat}
 
    {:name      :group-create
-    :metrics   {:flow   :messenger
-                :track? :true
-                :event  {:id :messenger.new-group}}
+    :metrics   {:track?    :true
+                :flow-type :messenger
+                :alias-id  :messenger.new-group}
     :options   {:sheet?           true
                 :skip-background? true}
     :component group-create/view}
 
    {:name      :group-details
-    :metrics   {:flow   :messenger
-                :track? :true
-                :event  {:id :messenger.group-details}}
+    :metrics   {:track?    :true
+                :flow-type :messenger
+                :alias-id  :messenger.group-details}
     :component group-details/group-details}
 
    {:name      :group-add-manage-members
-    :metrics   {:flow   :messenger
-                :track? :true
-                :event  {:id :messenger.group-manage-members}}
+    :metrics   {:track?   :true
+                :flow     :messenger
+                :alias-id :messenger.group-manage-members}
     :options   {:sheet? true}
     :component group-details/add-manage-members}])
 
 (defn community-screens
   []
   [{:name      :discover-communities
-    :metrics   {:flow   :community
-                :track? :true
-                :event  {:id :community.discover}}
+    :metrics   {:track?    :true
+                :flow-type :community
+                :alias-id  :community.discover}
     :component communities.discover/view}
 
    {:name      :community-overview
-    :metrics   {:flow   :community
-                :track? :true
-                :event  {:id :community.overview}}
+    :metrics   {:track?    :true
+                :flow-type :community
+                :alias-id  :community.overview}
     :options   {:animations transitions/stack-transition-from-bottom}
     :component communities.overview/view}
 
@@ -199,133 +199,133 @@
    ;; joining a community. The non-sheet screen is used when editing shared
    ;; addresses after the join request was sent.
    {:name      :community-account-selection-sheet
-    :metrics   {:flow   :community
-                :track? :true
-                :event  {:id :community.select-addresses-for-joining-community}}
+    :metrics   {:track?    :true
+                :flow-type :community
+                :alias-id  :community.select-addresses-for-joining-community}
     :options   {:sheet? true}
     :component communities.accounts-selection/view}
    {:name      :community-account-selection
-    :metrics   {:flow   :community
-                :track? :true
-                :event  {:id :community.select-addresses-for-community}}
+    :metrics   {:track?    :true
+                :flow-type :community
+                :alias-id  :community.select-addresses-for-community}
     :options   {:insets {:top? true}}
     :component communities.accounts-selection/view}
 
    {:name      :community-requests-to-join
-    :metrics   {:flow   :community
-                :track? :true
-                :event  {:id :community.request-to-join}}
+    :metrics   {:track?    :true
+                :flow-type :community
+                :alias-id  :community.request-to-join}
     :options   {:sheet? true}
     :component join-menu/view}
 
    {:name      :screen/share-community
-    :metrics   {:flow   :community
-                :track? :true
-                :event  {:id :community.share-community}}
+    :metrics   {:track?    :true
+                :flow-type :community
+                :alias-id  :community.share-community}
     :options   options/transparent-screen-options
     :component share-community/view}
 
    {:name      :invite-people-community
-    :metrics   {:flow   :community
-                :track? :true
-                :event  {:id :community.invite-people}}
+    :metrics   {:track?    :true
+                :flow-type :community
+                :alias-id  :community.invite-people}
     :options   {:sheet? true}
     :component communities.invite/view}
 
    {:name      :share-community-channel
-    :metrics   {:flow   :community
-                :track? :true
-                :event  {:id :community.share-channel}}
+    :metrics   {:track?    :true
+                :flow-type :community
+                :alias-id  :community.share-channel}
     :options   options/transparent-screen-options
     :component share-community-channel/view}
 
    {:name      :screen/chat.view-channel-members-and-details
-    :metrics   {:flow   :community
-                :track? :true
-                :event  {:id :community.view-channel-members-and-details}}
+    :metrics   {:track?    :true
+                :flow-type :community
+                :alias-id  :community.view-channel-members-and-details}
     :options   {:insets {:top? true}}
     :component channel-view-channel-members-and-details/view}
 
    {:name      :addresses-for-permissions
-    :metrics   {:flow   :community
-                :track? :true
-                :event  {:id :community.choose-addresses-for-permissions}}
+    :metrics   {:track?    :true
+                :flow-type :community
+                :alias-id  :community.choose-addresses-for-permissions}
     :options   {:insets {:top? true}}
     :component addresses-for-permissions/view}
 
    {:name      :address-for-airdrop
-    :metrics   {:flow   :community
-                :track? :true
-                :event  {:id :community.choose-addresses-for-airdrop}}
+    :metrics   {:track?    :true
+                :flow-type :community
+                :alias-id  :community.choose-addresses-for-airdrop}
     :options   {:insets {:top? true}}
     :component airdrop-addresses/view}])
 
 (defn contact-screens
   []
   [{:name      :new-contact
-    :metrics   {:flow   :contact
-                :track? :true
-                :event  {:id :contact.new-contact}}
+    :metrics   {:track?    :true
+                :flow-type :contact
+                :alias-id  :contact.new-contact}
     :options   {:sheet? true}
     :component add-new-contact/new-contact}
 
    {:name      :scan-profile-qr-code
-    :metrics   {:flow   :contact
-                :track? :true
-                :event  {:id :contact.scan-profile-qr-code}}
+    :metrics   {:track?    :true
+                :flow-type :contact
+                :alias-id  :contact.scan-profile-qr-code}
     :options   options/dark-screen
     :component scan-profile-qr-page/view}
 
    {:name      :contact-profile
-    :metrics   {:flow   :contact
-                :track? :true
-                :event  {:id :contact.contact-profile}}
+    :metrics   {:track?    :true
+                :flow-type :contact
+                :alias-id  :contact.contact-profile}
     :options   {:modalPresentationStyle :overCurrentContext}
     :component contact-profile/view}
 
    {:name      :share-contact
-    :metrics   {:flow   :contact
-                :track? :true
-                :event  {:id :contact.share-profile}}
+    :metrics   {:track?    :true
+                :flow-type :contact
+                :alias-id  :contact.share-profile}
     :options   options/transparent-screen-options
     :component share-contact/view}])
 
 (defn device-syncing-screens
   []
   [{:name      :how-to-pair
-    :metrics   {:flow   :syncing
-                :track? true
-                :event  {:id :syncing.how-to-pair}}
+    :metrics   {:track?    true
+                :flow-type :syncing
+                :alias-id  :syncing.how-to-pair}
     :options   (assoc options/dark-screen :sheet? true)
     :component how-to-pair/view}
 
    {:name      :find-sync-code
-    :metrics   {:flow   :syncing
-                :track? true
-                :event  {:id :syncing.find-sync-code}}
+    :metrics   {:track?    true
+                :flow-type :syncing
+                :alias-id  :syncing.find-sync-code}
     :options   (assoc options/dark-screen :sheet? true)
     :component find-sync-code/view}
 
    {:name      :settings-setup-syncing
-    :metrics   {:flow   :syncing
-                :track? true
-                :event  {:id :syncing.setup-syncing}}
+    :metrics   {:track?    true
+                :flow-type :syncing
+                :alias-id  :syncing.setup-syncing}
     :options   options/transparent-screen-options
     :component settings-setup-syncing/view}
 
    {:name      :scan-sync-code-page
-    :metrics   {:flow   :syncing
-                :track? true
-                :event  {:id :syncing.scan-sync-code}}
+    :metrics   {:track?    true
+                :flow-type :syncing
+                :alias-id  :syncing.scan-sync-code}
     :options   options/transparent-modal-screen-options
     :component scan-sync-code-page/view}])
 
 (defn settings-screens
   []
   [{:name      :settings
-    :metrics   {:flow   :settings
-                :track? :true
-                :event  {:id :settings.profile-settings}}
+    :metrics   {:track?    :true
+                :flow-type :settings
+                :alias-id  :settings.profile-settings}
     :options   options/transparent-screen-options
     :component settings/view}
 
@@ -334,51 +334,51 @@
     :component settings.keycard/view}
 
    {:name      :edit-profile
-    :metrics   {:flow   :settings
-                :track? :true
-                :event  {:id :settings.edit-profile}}
+    :metrics   {:track?    :true
+                :flow-type :settings
+                :alias-id  :settings.edit-profile}
     :options   options/transparent-modal-screen-options
     :component edit-profile/view}
 
    {:name      :edit-accent-colour
-    :metrics   {:flow   :settings
-                :track? :true
-                :event  {:id :settings.edit-profile-accent-colour}}
+    :metrics   {:track?    :true
+                :flow-type :settings
+                :alias-id  :settings.edit-profile-accent-colour}
     :options   options/transparent-modal-screen-options
     :component edit-accent-colour/view}
 
    {:name      :edit-name
-    :metrics   {:flow   :settings
-                :track? :true
-                :event  {:id :settings.edit-profile-name}}
+    :metrics   {:track?    :true
+                :flow-type :settings
+                :alias-id  :settings.edit-profile-name}
     :options   options/transparent-modal-screen-options
     :component edit-name/view}
 
    {:name      :edit-bio
-    :metrics   {:flow   :settings
-                :track? :true
-                :event  {:id :settings.edit-profile-bio}}
+    :metrics   {:track?    :true
+                :flow-type :settings
+                :alias-id  :settings.edit-profile-bio}
     :options   options/transparent-modal-screen-options
     :component edit-bio/view}
 
    {:name      :screen/settings-password
-    :metrics   {:flow   :settings
-                :track? :true
-                :event  {:id :settings.password}}
+    :metrics   {:track?    :true
+                :flow-type :settings
+                :alias-id  :settings.password}
     :options   options/transparent-modal-screen-options
     :component settings-password/view}
 
    {:name      :screen/change-password
-    :metrics   {:flow   :settings
-                :track? :true
-                :event  {:id :settings.change-password}}
+    :metrics   {:track?    :true
+                :flow-type :settings
+                :alias-id  :settings.change-password}
     :options   (assoc options/transparent-modal-screen-options :theme :dark)
     :component change-password/view}
 
    {:name      :screen/change-password-loading
-    :metrics   {:flow   :settings
-                :track? :true
-                :event  {:id :settings.change-password-loading}}
+    :metrics   {:track?    :true
+                :flow-type :settings
+                :alias-id  :settings.change-password-loading}
     :options   (assoc
                 options/transparent-modal-screen-options
                 :theme              :dark
@@ -388,411 +388,416 @@
     :component change-password-loading/view}
 
    {:name      :screen/settings-messages
-    :metrics   {:flow   :settings
-                :track? :true
-                :event  {:id :settings.messages}}
+    :metrics   {:track?    :true
+                :flow-type :settings
+                :alias-id  :settings.messages}
     :options   options/transparent-modal-screen-options
     :component settings.messages/view}
 
    {:name      :screen/settings-blocked-users
-    :metrics   {:flow   :settings
-                :track? :true
-                :event  {:id :settings.blocked-users}}
+    :metrics   {:track?    :true
+                :flow-type :settings
+                :alias-id  :settings.blocked-users}
     :options   options/transparent-modal-screen-options
     :component settings.blocked-users/view}
 
    {:name      :screen/settings-privacy-and-security
-    :metrics   {:flow   :settings
-                :track? :true
-                :event  {:id :settings.private-and-security}}
+    :metrics   {:track?    :true
+                :flow-type :settings
+                :alias-id  :settings.private-and-security}
     :options   options/transparent-modal-screen-options
     :component settings.privacy-and-security/view}
 
    {:name      :screen/settings.share-usage-data
-    :metrics   {:flow   :settings
-                :track? :true
-                :event  {:id :settings.share-usage-data}}
+    :metrics   {:track?    :true
+                :flow-type :settings}
     :options   options/transparent-modal-screen-options
     :component settings.share-usage/view}
 
    {:name      :screen/settings.syncing
-    :metrics   {:flow   :settings
-                :track? true
-                :event  {:id :settings.syncing}}
+    :metrics   {:track?    true
+                :flow-type :settings}
     :options   options/transparent-modal-screen-options
     :component settings.syncing/view}
 
    {:name      :screen/paired-devices
-    :metrics   {:flow   :settings
-                :track? true
-                :event  {:id :settings.paired-devices}}
+    :metrics   {:track?    true
+                :flow-type :settings
+                :alias-id  :settings.paired-devices}
     :options   options/transparent-modal-screen-options
     :component syncing-devices-list/view}
 
    {:name      :screen/settings.language-and-currency
-    :metrics   {:flow   :settings
-                :track? :true
-                :event  {:id :settings.language-and-currency}}
+    :metrics   {:track?    :true
+                :flow-type :settings}
     :options   options/transparent-modal-screen-options
     :component settings.language-and-currency/view}
 
    {:name      :screen/settings.currency-selection
-    :metrics   {:flow   :settings
-                :track? :true
-                :event  {:id :settings.currency-selection}}
+    :metrics   {:track?    :true
+                :flow-type :settings}
     :options   options/transparent-modal-screen-options
     :component settings.currency-selection/view}])
 
 (defn wallet-settings-screens
   []
   [{:name      :screen/settings.wallet
-    :metrics   {:flow   :settings
-                :track? :true
-                :event  {:id :settings.wallet}}
+    :metrics   {:track?    :true
+                :flow-type :settings}
     :options   options/transparent-modal-screen-options
     :component wallet-options/view}
 
    {:name      :screen/settings.rename-keypair
-    :metrics   {:flow   :settings
-                :track? :true
-                :event  {:id :settings.wallet-rename-keypair}}
+    :metrics   {:track?    :true
+                :flow-type :settings
+                :alias-id  :settings.wallet-rename-keypair}
     :options   options/transparent-screen-options
     :component keypair-rename/view}
 
    {:name      :screen/settings.encrypted-keypair-qr
-    :metrics   {:flow   :settings
-                :track? :true
-                :event  {:id :settings.wallet-encrypted-keypair-qr}}
+    :metrics   {:track?    :true
+                :flow-type :settings
+                :alias-id  :settings.wallet-encrypted-keypair-qr}
     :options   options/transparent-screen-options
     :component encrypted-keypair-qr/view}
 
    {:name      :screen/settings.saved-addresses
-    :metrics   {:flow   :settings
-                :track? :true
-                :event  {:id :settings.wallet-saved-addresses}}
+    :metrics   {:track?    :true
+                :flow-type :settings
+                :alias-id  :settings.wallet-saved-addresses}
     :options   options/transparent-modal-screen-options
     :component saved-addresses-settings/view}
 
    {:name      :screen/settings.keypairs-and-accounts
-    :metrics   {:flow   :settings
-                :track? :true
-                :event  {:id :settings.wallet-keypairs-and-accounts}}
+    :metrics   {:track?    :true
+                :flow-type :settings
+                :alias-id  :settings.wallet-keypairs-and-accounts}
     :options   options/transparent-modal-screen-options
     :component keypairs-and-accounts/view}
 
    {:name      :screen/settings.scan-keypair-qr
-    :metrics   {:flow   :settings
-                :track? :true
-                :event  {:id :settings.wallet-scan-keypair-qr}}
+    :metrics   {:track?    :true
+                :flow-type :settings
+                :alias-id  :settings.wallet-scan-keypair-qr}
     :options   options/transparent-screen-options
     :component scan-keypair-qr/view}
 
    {:name      :screen/settings.missing-keypair.import-seed-phrase
-    :metrics   {:flow   :settings
-                :track? :true
-                :event  {:id :settings.wallet-missing-keypair-import-seed-phrase}}
+    :metrics   {:track?    :true
+                :flow-type :settings
+                :alias-id  :settings.wallet-missing-keypair-import-seed-phrase}
     :options   options/transparent-screen-options
     :component missing-keypairs.import-seed-phrase/view}
 
    {:name      :screen/settings.missing-keypair-import-private-key
-    :metrics   {:flow   :settings
-                :track? :true
-                :event  {:id :settings.wallet-missing-keypair-import-private-key}}
+    :metrics   {:track?    :true
+                :flow-type :settings
+                :alias-id  :settings.wallet-missing-keypair-import-private-key}
     :options   options/transparent-screen-options
     :component missing-keypairs.import-private-key/view}
 
    {:name      :screen/settings.network-settings
-    :metrics   {:flow   :settings
-                :track? :true
-                :event  {:id :settings.wallet-network-settings}}
+    :metrics   {:track?    :true
+                :flow-type :settings
+                :alias-id  :settings.wallet-network-settings}
     :options   options/transparent-modal-screen-options
     :component network-settings/view}
 
    {:name      :screen/settings.save-address
-    :metrics   {:flow   :settings
-                :track? :true
-                :event  {:id :settings.wallet-saved-addresses}}
+    :metrics   {:track?    :true
+                :flow-type :settings
+                :alias-id  :settings.wallet-saved-addresses}
     :options   options/transparent-modal-screen-options
     :component wallet-save-address/view}
 
    {:name      :screen/settings.edit-saved-address
-    :metrics   {:flow   :settings
-                :track? :true
-                :event  {:id :settings.wallet-edit-saved-addresses}}
+    :metrics   {:track?    :true
+                :flow-type :settings
+                :alias-id  :settings.wallet-edit-saved-addresses}
     :options   (assoc options/dark-screen :sheet? true)
     :component wallet-save-address/view}
 
    {:name      :screen/settings.add-address-to-save
-    :metrics   {:flow   :settings
-                :track? :true
-                :event  {:id :settings.wallet-add-saved-address}}
+    :metrics   {:track?    :true
+                :flow-type :settings
+                :alias-id  :settings.wallet-add-saved-address}
     :options   options/transparent-modal-screen-options
     :component wallet-add-address-to-save/view}
 
    {:name      :screen/settings.share-saved-address
-    :metrics   {:flow   :settings
-                :track? :true
-                :event  {:id :settings.wallet-share-saved-address}}
+    :metrics   {:track?    :true
+                :flow-type :settings
+                :alias-id  :settings.wallet-share-saved-address}
     :options   options/transparent-screen-options
     :component share-saved-address/view}])
 
 (defn wallet-screens
   []
   [{:name      :screen/wallet.accounts
-    :metrics   {:flow   :wallet
-                :track? true
-                :event  {:id :wallet.account}}
+    :metrics   {:track?    true
+                :flow-type :wallet
+                :alias-id  :wallet.account}
     :options   {:insets {:top? true}}
     :component wallet-accounts/view}
 
    {:name      :screen/wallet.collectible
-    :metrics   {:flow   :wallet
-                :track? true
-                :event  {:id :wallet.collectible}}
+    :metrics   {:track?    true
+                :flow-type :wallet}
     :component wallet-collectible/view}
 
    {:name      :screen/wallet.edit-account
-    :metrics   {:flow   :wallet
-                :track? true
-                :event  {:id :wallet.edit-account}}
+    :metrics   {:track?    true
+                :flow-type :wallet}
     :component wallet-edit-account/view}
 
    {:name      :screen/wallet.create-account
-    :metrics   {:flow   :wallet
-                :track? true
-                :event  {:id :wallet.create-account}}
+    :metrics   {:track?    true
+                :flow-type :wallet
+                :alias-id  :wallet.create-account}
     :options   {:insets {:top? true}}
     :component wallet-create-account/view}
 
    {:name      :screen/wallet.select-keypair
-    :metrics   {:flow   :wallet
-                :track? true
-                :event  {:id :wallet.create-account-select-keypair}}
+    :metrics   {:track?    true
+                :flow-type :wallet
+                :alias-id  :wallet.create-account-select-keypair}
     :options   {:insets {:top? true :bottom? true}}
     :component wallet-select-keypair/view}
 
    {:name      :screen/wallet.edit-derivation-path
-    :metrics   {:flow   :wallet
-                :track? true
-                :event  {:id :wallet.create-account-edit-derivation-path}}
+    :metrics   {:track?    true
+                :flow-type :wallet
+                :alias-id  :wallet.create-account-edit-derivation-path}
     :component wallet-edit-derivation-path/view}
 
    {:name      :screen/wallet.backup-recovery-phrase
-    :metrics   {:flow   :wallet
-                :track? true
-                :event  {:id :wallet.create-account-backup-new-keypair}}
+    :metrics   {:track?    true
+                :flow-type :wallet
+                :alias-id  :wallet.create-account-backup-new-keypair}
     :options   {:insets {:top? true :bottom? true}}
     :component wallet-backup-recovery-phrase/view}
 
    {:name      :screen/wallet.confirm-backup
-    :metrics   {:flow   :wallet
-                :track? true
-                :event  {:id :wallet.create-account-backup-new-keypair-confirm}}
+    :metrics   {:track?    true
+                :flow-type :wallet
+                :alias-id  :wallet.create-account-backup-new-keypair-confirm}
     :options   {:insets {:top? true :bottom? true}}
     :component wallet-confirm-backup/view}
 
    {:name      :screen/wallet.keypair-name
-    :metrics   {:flow   :wallet
-                :track? true
-                :event  {:id :wallet.create-account-add-new-keypair-name}}
+    :metrics   {:track?    true
+                :flow-type :wallet
+                :alias-id  :wallet.create-account-add-new-keypair-name}
     :options   {:insets {:top? true}}
     :component wallet-key-pair-name/view}
 
    {:name      :screen/wallet.import-private-key
-    :metrics   {:flow   :wallet
-                :track? true
-                :event  {:id :wallet.create-account-import-keypair-by-private-key}}
+    :metrics   {:track?    true
+                :flow-type :wallet
+                :alias-id  :wallet.create-account-import-keypair-by-private-key}
     :options   {:insets {:top? true}}
     :component wallet-import-private-key/view}
 
    {:name      :screen/wallet.enter-seed-phrase
-    :metrics   {:flow   :wallet
-                :track? true
-                :event  {:id :wallet.create-account-import-keypair-by-seed-phrase}}
+    :metrics   {:track?    true
+                :flow-type :wallet
+                :alias-id  :wallet.create-account-import-keypair-by-seed-phrase}
     :component enter-seed-phrase/view}
 
    {:name      :screen/wallet.share-address
-    :metrics   {:flow   :wallet
-                :track? true
-                :event  {:id :wallet.share-address}}
+    :metrics   {:track?    true
+                :flow-type :wallet}
     :options   options/transparent-screen-options
     :component wallet-share-address/view}
 
    {:name      :screen/wallet.add-address-to-watch
-    :metrics   {:flow   :wallet
-                :track? true
-                :event  {:id :wallet.add-watched-address}}
+    :metrics   {:track?    true
+                :flow-type :wallet
+                :alias-id  :wallet.add-watched-address}
     :options   {:insets {:top? true}}
     :component wallet-add-address-to-watch/view}
 
    {:name      :screen/wallet.confirm-address-to-watch
-    :metrics   {:flow   :wallet
-                :track? true
-                :event  {:id :wallet.add-watched-address-profile}}
+    :metrics   {:track?    true
+                :flow-type :wallet
+                :alias-id  :wallet.add-watched-address-profile}
     :component wallet-confirm-address-to-watch/view}
 
    {:name      :screen/wallet.transaction-confirmation
-    :metrics   {:flow   :wallet
-                :track? true
-                :event  {:id :wallet.transaction-confirmation}}
+    :metrics   {:track?    true
+                :flow-type :wallet}
     :component wallet-transaction-confirmation/view}
 
    {:name      :screen/wallet.transaction-progress
-    :metrics   {:flow   :wallet
-                :track? true
-                :event  {:id :wallet.transaction-progress}}
+    :metrics   {:track?    true
+                :flow-type :wallet}
     :component wallet-transaction-progress/view}])
 
 (defn wallet-send-screens
   []
   [{:name      :screen/wallet.scan-address
-    :metrics   {:flow   :wallet-send
-                :track? true
-                :event  {:id :wallet-send.scan-address}}
+    :metrics   {:track?    true
+                :flow-type :wallet-send
+                :alias-id  :wallet-send.scan-address}
     :options   options/dark-screen
     :component wallet-scan-address/view}
 
    {:name      :screen/wallet.select-address
-    :metrics   {:flow   :wallet-send
-                :track? true
-                :event  {:id :wallet-send.select-destination-address}}
+    :metrics   {:track?    true
+                :flow-type :wallet-send
+                :alias-id  :wallet-send.select-destination-address}
     :options   {:modalPresentationStyle :overCurrentContext
                 :insets                 {:top? true}}
     :component wallet-select-address/view}
 
    {:name      :screen/wallet.select-from
-    :metrics   {:flow   :wallet-send
-                :track? true
-                :event  {:id :wallet-send.select-source-address}}
+    :metrics   {:track?    true
+                :flow-type :wallet-send
+                :alias-id  :wallet-send.select-source-address}
     :options   {:modalPresentationStyle :overCurrentContext
                 :insets                 {:top? true}}
     :component wallet-select-from/view}
 
    {:name      :screen/wallet.select-asset
-    :metrics   {:flow   :wallet-send
-                :track? true
-                :event  {:id :wallet-send.select-asset}}
+    :metrics   {:track?    true
+                :flow-type :wallet-send
+                :alias-id  :wallet-send.select-asset}
     :options   {:insets {:top? true}}
     :component wallet-select-asset/view}
 
    {:name      :screen/wallet.send-input-amount
-    :metrics   {:flow   :wallet-send
-                :track? true
-                :event  {:id :wallet-send.input-amount}}
+    :metrics   {:track?    true
+                :flow-type :wallet-send
+                :alias-id  :wallet-send.input-amount}
     :options   {:modalPresentationStyle :overCurrentContext
                 :insets                 {:top?    true
                                          :bottom? true}}
     :component wallet-send-input-amount/view}
 
    {:name      :screen/wallet.select-collectible-amount
-    :metrics   {:flow   :wallet-send
-                :track? true
-                :event  {:id :wallet-send.select-collectible-amount}}
+    :metrics   {:track?    true
+                :flow-type :wallet-send
+                :alias-id  :wallet-send.select-collectible-amount}
     :options   {:insets {:top? true}}
     :component wallet-select-collectible-amount/view}])
 
 (defn wallet-bridge-screens
   []
   [{:name      :screen/wallet.bridge-select-asset
-    :metrics   {:flow   :wallet-bridge
-                :track? true
-                :event  {:id :wallet-bridge.select-asset}}
+    :metrics   {:track?    true
+                :flow-type :wallet-bridge
+                :alias-id  :wallet-bridge.select-asset}
     :options   {:insets                 {:top? true}
                 :modalPresentationStyle :overCurrentContext}
     :component wallet-bridge-select-asset/view}
 
    {:name      :screen/wallet.bridge-to
-    :metrics   {:flow   :wallet-bridge
-                :track? true
-                :event  {:id :wallet-bridge.select-network}}
+    :metrics   {:track?    true
+                :flow-type :wallet-bridge
+                :alias-id  :wallet-bridge.select-network}
     :options   {:insets                 {:top? true}
                 :modalPresentationStyle :overCurrentContext}
     :component wallet-bridge-to/view}
 
    {:name      :screen/wallet.bridge-input-amount
-    :metrics   {:flow   :wallet-bridge
-                :track? true
-                :event  {:id :wallet-bridge.input-amount-to-bridge}}
+    :metrics   {:track?    true
+                :flow-type :wallet-bridge
+                :alias-id  :wallet-bridge.input-amount-to-bridge}
     :options   {:insets {:top? true}}
     :component wallet-bridge-input-amount/view}])
 
 (defn wallet-swap-screens
   []
   [{:name      :screen/wallet.swap-select-asset-to-pay
-    :metrics   {:flow   :wallet-swap
-                :track? true
-                :event  {:id :wallet-swap.select-asset-to-pay}}
+    :metrics   {:track?    true
+                :flow-type :wallet-swap
+                :alias-id  :wallet-swap.select-asset-to-pay}
     :options   {:modalPresentationStyle :overCurrentContext
                 :insets                 {:top? true}}
     :component wallet-swap-select-asset-to-pay/view}
 
    {:name      :screen/wallet.setup-swap
-    :metrics   {:flow   :wallet-swap
-                :track? true
-                :event  {:id :wallet-swap.input-amount-to-swap}}
+    :metrics   {:track?    true
+                :flow-type :wallet-swap
+                :alias-id  :wallet-swap.input-amount-to-swap}
     :options   {:insets {:bottom? true}}
     :component wallet-swap-setup-swap/view}
 
    {:name      :screen/wallet.swap-propasal
-    :metrics   {:flow   :wallet-swap
-                :track? true
-                :event  {:id :wallet-swap.swap-proposal}}
+    :metrics   {:track?    true
+                :flow-type :wallet-swap
+                :alias-id  :wallet-swap.swap-proposal}
     :options   {:insets {:top? true}}
     :component wallet-swap-propasal/view}
 
    {:name      :screen/wallet.swap-set-spending-cap
-    :metrics   {:flow   :wallet-swap
-                :track? true
-                :event  {:id :wallet-swap.set-spending-cap}}
+    :metrics   {:track?    true
+                :flow-type :wallet-swap
+                :alias-id  :wallet-swap.set-spending-cap}
     :options   {:sheet? true}
     :component wallet-swap-set-spending-cap/view}
 
    {:name      :screen/wallet.swap-confirmation
-    :metrics   {:flow   :wallet-swap
-                :track? true
-                :event  {:id :wallet-swap.swap-confirmation}}
+    :metrics   {:track?    true
+                :flow-type :wallet-swap
+                :alias-id  :wallet-swap.swap-confirmation}
     :options   {:modalPresentationStyle :overCurrentContext}
     :component wallet-swap-confirmation/view}])
 
 (defn wallet-connect-screens
   []
   [{:name      :screen/wallet.wallet-connect-session-proposal
+    :metrics   {:track?    true
+                :flow-type :wallet-connect
+                :alias-id  :wallet-connect.session-proposal}
     :options   {:sheet? true}
     :component wallet-connect-session-proposal/view}
 
    {:name      :screen/wallet-connect.sign-message
+    :metrics   {:track?    true
+                :flow-type :wallet-connect}
     :options   {:sheet? true}
     :component wallet-connect-sign-message/view}
 
    {:name      :screen/wallet-connect.sign-transaction
+    :metrics   {:track?    true
+                :flow-type :wallet-connect}
     :options   {:sheet? true}
     :component wallet-connect-sign-transaction/view}
 
    {:name      :screen/wallet-connect.send-transaction
+    :metrics   {:track?    true
+                :flow-type :wallet-connect}
     :options   {:sheet? true}
     :component wallet-connect-send-transaction/view}
 
    {:name      :screen/wallet.connected-dapps
+    :metrics   {:track?    true
+                :flow-type :wallet-connect
+                :alias-id  :wallet-connect.connected-dapps}
     :options   {:insets {:top? true}}
     :component wallet-connected-dapps/view}
 
    {:name      :screen/wallet.scan-dapp
+    :metrics   {:track?    true
+                :flow-type :wallet-connect
+                :alias-id  :wallet-connect.scan-dapp}
     :options   options/dark-screen
     :component wallet-scan-dapp/view}])
 
 (def onboarding-intro
   {:name      :screen/onboarding.intro
-   :metrics   {:flow   :onboarding
-               :track? true}
+   :metrics   {:track?    true
+               :flow-type :onboarding}
    :options   {:theme :dark}
    :on-focus  [:onboarding/overlay-dismiss]
    :component intro/view})
 
 (def onboarding-new-to-status
   {:name      :screen/onboarding.new-to-status
-   :metrics   {:flow   :onboarding
-               :event  {:id :onboarding.create-profile-intro}
-               :track? true}
+   :metrics   {:track?    true
+               :flow-type :onboarding
+               :alias-id  :onboarding.create-profile-intro}
    :options   {:theme                  :dark
                :layout                 options/onboarding-transparent-layout
                :animations             (merge
@@ -804,8 +809,8 @@
 
 (def onboarding-sync-or-recover-profile
   {:name      :screen/onboarding.sync-or-recover-profile
-   :metrics   {:flow   :onboarding
-               :track? true}
+   :metrics   {:track?    true
+               :flow-type :onboarding}
    :options   {:theme                  :dark
                :layout                 options/onboarding-transparent-layout
                :animations             (merge
@@ -817,9 +822,9 @@
 
 (def onboarding-create-profile
   {:name      :screen/onboarding.create-profile
-   :metrics   {:flow   :onboarding
-               :event  {:id :onboarding.create-profile-info}
-               :track? true}
+   :metrics   {:track?    true
+               :flow-type :onboarding
+               :alias-id  :onboarding.create-profile-info}
    :options   {:theme      :dark
                :layout     options/onboarding-transparent-layout
                :animations transitions/push-animations-for-transparent-background
@@ -828,8 +833,9 @@
 
 (def onboarding-create-profile-password
   {:name      :screen/onboarding.create-profile-password
-   :metrics   {:flow   :onboarding
-               :track? true}
+   :metrics   {:track?    true
+               :flow-type :onboarding
+               :alias-id  :onboarding.create-profile-password}
    :options   {:theme      :dark
                :insets     {:top false}
                :layout     options/onboarding-transparent-layout
@@ -839,8 +845,8 @@
 
 (def onboarding-enable-biometrics
   {:name      :screen/onboarding.enable-biometrics
-   :metrics   {:flow   :onboarding
-               :track? true}
+   :metrics   {:track?    true
+               :flow-type :onboarding}
    :options   {:theme                  :dark
                :layout                 options/onboarding-transparent-layout
                :animations             (merge
@@ -854,8 +860,8 @@
 
 (def onboarding-generating-keys
   {:name      :screen/onboarding.generating-keys
-   :metrics   {:flow   :onboarding
-               :track? true}
+   :metrics   {:track?    true
+               :flow-type :onboarding}
    :options   {:theme              :dark
                :layout             options/onboarding-transparent-layout
                :animations         transitions/push-animations-for-transparent-background
@@ -866,8 +872,8 @@
 
 (def onboarding-preparing-status
   {:name      :screen/onboarding.preparing-status
-   :metrics   {:flow   :onboarding
-               :track? true}
+   :metrics   {:track?    true
+               :flow-type :onboarding}
    :options   {:theme              :dark
                :layout             options/onboarding-transparent-layout
                :animations         transitions/push-animations-for-transparent-background
@@ -878,9 +884,9 @@
 
 (def onboarding-entering-seed-phrase
   {:name      :screen/onboarding.enter-seed-phrase
-   :metrics   {:flow   :onboarding
-               :event  {:id :onboarding.sign-in-by-seed-phrase}
-               :track? true}
+   :metrics   {:track?    true
+               :flow-type :onboarding
+               :alias-id  :onboarding.sign-in-by-seed-phrase}
    :options   {:theme      :dark
                :layout     options/onboarding-transparent-layout
                :animations transitions/push-animations-for-transparent-background
@@ -889,8 +895,8 @@
 
 (def onboarding-enable-notifications
   {:name      :screen/onboarding.enable-notifications
-   :metrics   {:flow   :onboarding
-               :track? true}
+   :metrics   {:track?    true
+               :flow-type :onboarding}
    :options   {:theme                  :dark
                :layout                 options/onboarding-transparent-layout
                :animations             transitions/push-animations-for-transparent-background
@@ -902,8 +908,8 @@
 
 (def onboarding-identifiers
   {:name      :screen/onboarding.identifiers
-   :metrics   {:flow   :onboarding
-               :track? true}
+   :metrics   {:track?    true
+               :flow-type :onboarding}
    :component identifiers/view
    :options   {:theme              :dark
                :layout             options/onboarding-transparent-layout
@@ -914,9 +920,9 @@
 
 (def onboarding-sign-in-intro
   {:name      :screen/onboarding.sign-in-intro
-   :metrics   {:flow   :onboarding
-               :event  {:id :onboarding.sign-in-by-syncing}
-               :track? true}
+   :metrics   {:track?    true
+               :flow-type :onboarding
+               :alias-id  :onboarding.sign-in-by-syncing}
    :options   {:layout                 options/onboarding-transparent-layout
                :animations             (merge
                                         transitions/sign-in-modal-animations
@@ -927,8 +933,8 @@
 ;; TODO(@seanstrom): Remove this definition if it is no longer needed
 (def onboarding-sign-in
   {:name      :screen/onboarding.sign-in
-   :metrics   {:flow   :onboarding
-               :track? true}
+   :metrics   {:track?    true
+               :flow-type :onboarding}
    :options   {:theme                  :dark
                :modalPresentationStyle :overCurrentContext
                :layout                 options/onboarding-layout}
@@ -939,9 +945,9 @@
 ;; Should we consider this an onboarding screen?
 (def onboarding-syncing-progress
   {:name      :screen/onboarding.syncing-progress
-   :metrics   {:flow   :onboarding
-               :event  {:id :onboarding.syncing-devices}
-               :track? true}
+   :metrics   {:track?    true
+               :flow-type :onboarding
+               :alias-id  :onboarding.syncing-devices}
    :options   (assoc options/dark-screen
                      :popGesture
                      false)
@@ -949,9 +955,9 @@
 
 (def onboarding-syncing-progress-intro
   {:name      :screen/onboarding.syncing-progress-intro
-   :metrics   {:flow   :onboarding
-               :event  {:id :onboarding.sign-in-by-syncing-started}
-               :track? true}
+   :metrics   {:track?    true
+               :flow-type :onboarding
+               :alias-id  :onboarding.sign-in-by-syncing-started}
    :options   {:theme      :dark
                :layout     options/onboarding-transparent-layout
                :animations transitions/push-animations-for-transparent-background
@@ -960,9 +966,9 @@
 
 (def onboarding-syncing-results
   {:name      :screen/onboarding.syncing-results
-   :metrics   {:flow   :onboarding
-               :event  {:id :onboarding.syncing-completed}
-               :track? true}
+   :metrics   {:track?    true
+               :flow-type :onboarding
+               :alias-id  :onboarding.syncing-completed}
    :options   {:theme :dark}
    :component syncing-results/view})
 
@@ -1022,65 +1028,65 @@
    (keycard-screens)
 
    [{:name      :activity-center
-     :metrics   {:flow   :app
-                 :track? true}
+     :metrics   {:track?    true
+                 :flow-type :app}
      :options   options/transparent-screen-options
      :component activity-center/view}
 
     {:name      :screen/share-shell
-     :metrics   {:flow   :app
-                 :track? true}
+     :metrics   {:track?    true
+                 :flow-type :app}
      :options   options/transparent-screen-options
      :component share/view}
 
     {:name      :shell-stack
-     :metrics   {:flow   :app
-                 :track? true}
+     :metrics   {:track?    true
+                 :flow-type :app}
      :component shell/shell-stack}
 
     {:name      :shell-qr-reader
-     :metrics   {:flow   :app
-                 :track? true}
+     :metrics   {:track?    true
+                 :flow-type :app}
      :options   options/dark-screen
      :component shell-qr-reader/view}
 
     {:name      :lightbox
-     :metrics   {:flow   :app
-                 :track? true}
+     :metrics   {:track?    true
+                 :flow-type :app}
      :options   options/lightbox
      :component lightbox/lightbox}
 
     {:name      :photo-selector
-     :metrics   {:flow   :app
-                 :track? true}
+     :metrics   {:track?    true
+                 :flow-type :app}
      :options   {:sheet? true}
      :component photo-selector/photo-selector}
 
     {:name      :camera-screen
-     :metrics   {:flow   :app
-                 :track? true}
+     :metrics   {:track?    true
+                 :flow-type :app}
      :options   {:navigationBar {:backgroundColor colors/black}
                  :theme         :dark}
      :component camera-screen/camera-screen}
 
     {:name      :emoji-picker
-     :metrics   {:flow   :app
-                 :track? true}
+     :metrics   {:track?    true
+                 :flow-type :app}
      :options   {:sheet? true}
      :component emoji-picker/view}
 
     {:name      :screen/profile.profiles
-     :metrics   {:flow   :app
-                 :track? true
-                 :event  {:id :app.profiles}}
+     :metrics   {:track?    true
+                 :flow-type :app
+                 :alias-id  :app.profiles}
      :options   {:theme  :dark
                  :layout options/onboarding-layout}
      :on-focus  [:onboarding/overlay-dismiss]
      :component profiles/view}]
 
    [{:name    :shell
-     :metrics {:flow   :app
-               :track? true}
+     :metrics {:track?    true
+               :flow-type :app}
      :options {:theme :dark}}]
 
    (when js/goog.DEBUG
