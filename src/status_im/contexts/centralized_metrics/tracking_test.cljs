@@ -80,8 +80,7 @@
             {:eventName  "navigation"
              :platform   platform-os
              :appVersion app-version
-             :eventValue {:viewId          "onboarding.intro"
-                          :screen-id       "screen/onboarding.intro"
-                          :metric-id-alias "onboarding.intro"}}}
+             :eventValue {:viewId      "onboarding.intro"
+                          :flowType    "onboarding"}}}
            (tracking/tracked-event [:set-view-id :screen/onboarding.intro])))
     (is (nil? (tracking/tracked-event [:unknown-event])))))

@@ -24,15 +24,16 @@
 (defn screen-event
   [screen event-data]
   (let [screen-id (:name screen)
-        event-id  (get-in screen [:metrics :event :id] screen-id)]
+        flow-type (get-in screen [:metrics :flow-type])
+        view-id   (get-in screen [:metrics :alias-id] screen-id)]
     {:metric
      {:eventName  "navigation"
       :platform   platform/os
       :appVersion build/app-short-version
-      :eventValue (assoc event-data
-                         :viewId          (name screen-id)
-                         :metric-id-alias (name event-id)
-                         :screen-name     (-> screen-id symbol str))}}))
+      :eventValue (cond->
+                    (assoc event-data :viewId (name view-id))
+                    flow-type
+                    (assoc :flowType (name flow-type)))}}))
 
 (def ^:const app-started-event "app-started")
 
@@ -45,7 +46,7 @@
 (defn track-view-id-event
   [view-id]
   (if-let [screen (get screens/screens-by-name view-id)]
-    (when (get-in screen [:metrics :track?] false)
+    (when (get-in screen [:metrics :track?])
       (screen-event screen {}))
     (when (contains? view-ids-to-track view-id)
       (navigation-event (name view-id)))))
