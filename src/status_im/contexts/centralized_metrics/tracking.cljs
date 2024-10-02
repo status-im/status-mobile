@@ -24,16 +24,12 @@
 (defn screen-event
   [screen event-data]
   (let [screen-id (:name screen)
-        flow-type (get-in screen [:metrics :flow-type])
         view-id   (get-in screen [:metrics :alias-id] screen-id)]
     {:metric
      {:eventName  "navigation"
       :platform   platform/os
       :appVersion build/app-short-version
-      :eventValue (cond->
-                    (assoc event-data :viewId (name view-id))
-                    flow-type
-                    (assoc :flowType (name flow-type)))}}))
+      :eventValue (assoc event-data :viewId (name view-id))}}))
 
 (def ^:const app-started-event "app-started")
 
