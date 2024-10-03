@@ -62,6 +62,7 @@
                         :chatId                    :chat-id
                         :contactVerificationStatus :contact-verification-status
                         :communityId               :community-id
+                        :installationId            :installation-id
                         :membershipStatus          :membership-status
                         :albumMessages             :album-messages})
       (update :last-message #(when % (messages/<-rpc %)))

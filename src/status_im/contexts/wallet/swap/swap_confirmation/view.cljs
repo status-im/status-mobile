@@ -7,6 +7,7 @@
     [status-im.common.floating-button-page.view :as floating-button-page]
     [status-im.common.standard-authentication.core :as standard-auth]
     [status-im.constants :as constants]
+    [status-im.contexts.wallet.send.utils :as send-utils]
     [status-im.contexts.wallet.swap.swap-confirmation.style :as style]
     [utils.address :as address-utils]
     [utils.i18n :as i18n]
@@ -76,7 +77,7 @@
      [quo/summary-info
       {:type        :token
        :networks?   true
-       :values      network-values
+       :values      (send-utils/network-values-for-ui network-values)
        :token-props {:token   token-symbol
                      :label   (str amount " " token-symbol)
                      :address (address-utils/get-shortened-compressed-key token-address)
@@ -157,12 +158,13 @@
 (defn- slide-button
   []
   (let [loading-swap-proposal? (rf/sub [:wallet/swap-loading-swap-proposal?])
-        swap-proposal          (rf/sub [:wallet/swap-proposal])
+        swap-proposal          (rf/sub [:wallet/swap-proposal-without-fees])
         account                (rf/sub [:wallet/current-viewing-account])
         account-color          (:color account)
-        on-auth-success        (rn/use-callback #(rf/dispatch
-                                                  [:wallet/swap-transaction
-                                                   (security/safe-unmask-data %)]))]
+        on-auth-success        (rn/use-callback (fn [data]
+                                                  (rf/dispatch [:wallet/stop-get-swap-proposal])
+                                                  (rf/dispatch [:wallet/swap-transaction
+                                                                (security/safe-unmask-data data)])))]
     [standard-auth/slide-button
      {:size                :size-48
       :track-text          (i18n/label :t/slide-to-swap)
@@ -175,7 +177,10 @@
 (defn footer
   []
   (let [provider (rf/sub [:wallet/swap-proposal-provider])
-        theme    (quo.theme/use-theme)]
+        theme    (quo.theme/use-theme)
+        on-press (rn/use-callback #(when provider
+                                     (rf/dispatch [:open-url (:terms-and-conditions-url provider)]))
+                                  [provider])]
     [:<>
      [transaction-details]
      [slide-button]
@@ -184,7 +189,12 @@
        {:size  :paragraph-2
         :style (style/swaps-powered-by theme)}
        (i18n/label :t/swaps-powered-by
-                   {:provider (if provider (:full-name provider) (i18n/label :t/unknown))})]]]))
+                   {:provider (if provider (:full-name provider) (i18n/label :t/unknown))})]
+      [quo/text
+       {:size     :paragraph-2
+        :style    (style/terms-and-conditions theme)
+        :on-press on-press}
+       (i18n/label :t/terms-and-conditions)]]]))
 
 (defn view
   []

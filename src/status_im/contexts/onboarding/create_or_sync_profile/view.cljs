@@ -23,6 +23,7 @@
 
 (defn- navigate-to-sign-in-by-syncing
   []
+  (rf/dispatch [:syncing/clear-syncing-fallback-flow])
   (debounce/throttle-and-dispatch
    [:onboarding/navigate-to-sign-in-by-syncing]
    1000))
@@ -37,6 +38,7 @@
 
 (defn- navigate-to-sign-in-by-seed-phrase
   [create-profile?]
+  (rf/dispatch [:syncing/clear-syncing-fallback-flow])
   (rf/dispatch [:onboarding/navigate-to-sign-in-by-seed-phrase
                 (if create-profile?
                   :screen/onboarding.new-to-status

@@ -396,8 +396,9 @@ class TestGroupChatMultipleDeviceMergedNewUI(MultipleSharedDeviceTestCase):
         self.chats[0].send_message(self.message_4)
         self.chats[0].pin_message(self.message_4, 'pin-to-chat')
         self.chats[0].view_pinned_messages_button.click_until_presence_of_element(self.chats[0].pinned_messages_list)
-        self.chats[0].pinned_messages_list.message_element_by_text(self.message_2).long_press_element()
         unpin_element = self.chats[0].element_by_translation_id('unpin-from-chat')
+        self.chats[0].pinned_messages_list.message_element_by_text(self.message_2).long_press_element(
+            element_to_release_on=unpin_element)
         unpin_element.click_until_absense_of_element(desired_element=unpin_element)
         self.chats[0].chat_element_by_text(self.message_4).click()
         self.chats[0].pin_message(self.message_4, 'pin-to-chat')

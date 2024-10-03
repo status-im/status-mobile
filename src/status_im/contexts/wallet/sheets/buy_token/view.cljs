@@ -9,7 +9,8 @@
 (defn- crypto-on-ramp-item
   [{:keys [name description fees logo-url site-url recurrent-site-url]} _ _ {:keys [tab]}]
   (let [open-url (rn/use-callback (fn []
-                                    (rn/open-url (if (= tab :recurrent) recurrent-site-url site-url)))
+                                    (rf/dispatch [:open-url
+                                                  (if (= tab :recurrent) recurrent-site-url site-url)]))
                                   [site-url recurrent-site-url tab])]
     [quo/settings-item
      {:title             name
@@ -34,7 +35,7 @@
 (def ^:private initial-tab (:id (first tabs)))
 
 (defn view
-  []
+  [{:keys [title]}]
   (rn/use-mount (fn []
                   (rf/dispatch [:wallet/get-crypto-on-ramps])))
   (let [crypto-on-ramps                 (rf/sub [:wallet/crypto-on-ramps])
@@ -44,7 +45,7 @@
                                          #(set-min-height
                                            (oops/oget % :nativeEvent :layout :height)))]
     [:<>
-     [quo/drawer-top {:title (i18n/label :t/buy-assets)}]
+     [quo/drawer-top {:title (or title (i18n/label :t/buy-assets))}]
      [quo/segmented-control
       {:size            32
        :container-style style/tabs

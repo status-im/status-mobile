@@ -163,8 +163,8 @@ class TestActivityCenterContactRequestMultipleDevicePR(MultipleSharedDeviceTestC
 
         def _device_1_creates_user():
             self.home_1.just_fyi("Device 1 creates a new user")
-            self.profile_1.driver.reset()
-            self.device_1.create_user(username=new_username_1)
+            self.home_1.reopen_app(sign_in=False)
+            self.device_1.create_user(username=new_username_1, first_user=False)
 
         def _device_2_sign_in():
             self.home_2.just_fyi("Device 2 sign in, user name is " + self.username_2)

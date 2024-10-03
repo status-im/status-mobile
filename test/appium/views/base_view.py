@@ -7,8 +7,8 @@ from datetime import datetime
 
 from appium.webdriver import WebElement
 from appium.webdriver.applicationstate import ApplicationState
-from appium.webdriver.common.touch_action import TouchAction
 from selenium.common.exceptions import NoSuchElementException, TimeoutException
+from selenium.webdriver import ActionChains
 from selenium.webdriver.support import expected_conditions
 from selenium.webdriver.support.wait import WebDriverWait
 
@@ -221,7 +221,7 @@ class AirplaneModeButton(Button):
         super().__init__(driver, accessibility_id="Airplane mode")
 
     def open_quick_action_menu(self):
-        action = TouchAction(self.driver)
+        action = ActionChains(self.driver)
         action.press(None, 200, 0).move_to(None, 200, 300).perform()
 
     def click(self):
@@ -713,7 +713,7 @@ class BaseView(object):
 
     def close_share_popup(self):
         self.driver.info("Closing share popup")
-        TouchAction(self.driver).tap(None, 255, 104, 1).perform()
+        ActionChains(self.driver).tap(None, 255, 104, 1).perform()
         time.sleep(3)
 
     def tap_mutual_cr_switcher(self):
@@ -855,8 +855,7 @@ class BaseView(object):
         send_transaction.sign_transaction(keycard=keycard)
 
     def tap_by_coordinates(self, x, y):
-        action = TouchAction(self.driver)
-        action.press(None, x, y).release().perform()
+        self.driver.tap(positions=[(x, y)])
 
     # Method-helper
     def write_page_source_to_file(self, full_path_to_file):

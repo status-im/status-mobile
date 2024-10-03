@@ -1,5 +1,8 @@
 (ns utils.number
-  (:require [clojure.string :as string]))
+  (:require [clojure.string :as string]
+            [native-module.core :as native-module]
+            [utils.hex :as utils.hex]
+            [utils.money :as utils.money]))
 
 (defn naive-round
   "Quickly and naively round number `n` up to `decimal-places`.
@@ -61,3 +64,16 @@
              (str "." (string/replace decimals #"0+$" ""))
              "")
            ""))))
+
+(defn hex->whole
+  [num decimals]
+  (-> num
+      utils.hex/normalize-hex
+      native-module/hex-to-number
+      (convert-to-whole-number decimals)))
+
+(defn to-fixed
+  [num decimals]
+  (-> num
+      (utils.money/to-fixed decimals)
+      remove-trailing-zeroes))

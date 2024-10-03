@@ -58,6 +58,11 @@
    (permissions/request-permissions options)))
 
 (re-frame/reg-fx
+ :request-notifications-fx
+ (fn [options]
+   (permissions/request-notifications options)))
+
+(re-frame/reg-fx
  :ui/show-error
  (fn [content]
    (utils/show-popup "Error" content)))
@@ -163,6 +168,12 @@
   {:events [:request-permissions]}
   [_ options]
   {:request-permissions-fx options})
+
+(rf/reg-event-fx
+ :request-notifications
+ (fn [_ [options]]
+   (prn options)
+   {:request-notifications-fx options}))
 
 (rf/defn update-window-dimensions
   {:events [:update-window-dimensions]}

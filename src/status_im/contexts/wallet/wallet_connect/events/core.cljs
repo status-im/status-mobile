@@ -21,8 +21,8 @@
            {:fx [[:effects.wallet-connect/init
                   {:on-success #(rf/dispatch [:wallet-connect/on-init-success %])
                    :on-fail    #(rf/dispatch [:wallet-connect/on-init-fail %])}]]})
-       ;; NOTE: when offline, fetching persistent sessions only
-       {:fx [[:dispatch [:wallet-connect/fetch-persisted-sessions]]]}))))
+       ;; NOTE: when offline, fetching persistent sessions without initializing WC
+       {:fx [[:dispatch [:wallet-connect/get-sessions]]]}))))
 
 (rf/reg-event-fx
  :wallet-connect/on-init-success
@@ -30,7 +30,7 @@
    (log/info "WalletConnect SDK initialisation successful")
    {:db (assoc db :wallet-connect/web3-wallet web3-wallet)
     :fx [[:dispatch [:wallet-connect/register-event-listeners]]
-         [:dispatch [:wallet-connect/fetch-persisted-sessions]]]}))
+         [:dispatch [:wallet-connect/get-sessions]]]}))
 
 (rf/reg-event-fx
  :wallet-connect/reload-on-network-change

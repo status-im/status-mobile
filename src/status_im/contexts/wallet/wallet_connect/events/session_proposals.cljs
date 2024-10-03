@@ -1,5 +1,6 @@
 (ns status-im.contexts.wallet.wallet-connect.events.session-proposals
-  (:require [re-frame.core :as rf]
+  (:require [clojure.string :as string]
+            [re-frame.core :as rf]
             [react-native.wallet-connect :as wallet-connect]
             [status-im.contexts.wallet.wallet-connect.utils.data-store :as
              data-store]
@@ -59,21 +60,30 @@
  :wallet-connect/on-session-proposal
  (fn [{:keys [db]} [proposal]]
    (log/info "Received Wallet Connect session proposal: " proposal)
-   (let [accounts                     (get-in db [:wallet :accounts])
-         current-viewing-address      (get-in db [:wallet :current-viewing-account-address])
-         available-accounts           (sessions/filter-operable-accounts (vals accounts))
-         networks                     (networks/get-networks-by-mode db)
-         session-networks             (networks/proposal-networks-intersection proposal networks)
-         required-networks-supported? (networks/required-networks-supported? proposal networks)]
+   (let [accounts                         (get-in db [:wallet :accounts])
+         current-viewing-address          (get-in db [:wallet :current-viewing-account-address])
+         sessions                         (get db :wallet-connect/sessions)
+         available-accounts               (sessions/filter-operable-accounts (vals accounts))
+         latest-connected-account-address (sessions/latest-connected-account-address sessions)
+         networks                         (networks/get-networks-by-mode db)
+         session-networks                 (networks/proposal-networks-intersection proposal networks)
+         required-networks-supported?     (networks/required-networks-supported? proposal networks)]
      (if (and (not-empty session-networks) required-networks-supported?)
        {:db (update db
                     :wallet-connect/current-proposal assoc
                     :request                         proposal
                     :session-networks                session-networks
-                    :address                         (or current-viewing-address
-                                                         (-> available-accounts
-                                                             first
-                                                             :address)))
+                    :address                         (cond
+                                                       (not (string/blank? current-viewing-address))
+                                                       current-viewing-address
+
+                                                       (not (string/blank?
+                                                             latest-connected-account-address))
+                                                       latest-connected-account-address
+
+                                                       :else (-> available-accounts
+                                                                 first
+                                                                 :address)))
         :fx [[:dispatch [:open-modal :screen/wallet.wallet-connect-session-proposal]]]}
        {:fx [[:dispatch [:wallet-connect/show-session-networks-unsupported-toast proposal]]
              [:dispatch [:wallet-connect/reject-session-proposal proposal]]]}))))
@@ -99,7 +109,6 @@
  (fn [{:keys [db]} [address]]
    {:db (assoc-in db [:wallet-connect/current-proposal :address] address)}))
 
-
 (rf/reg-event-fx
  :wallet-connect/approve-session
  (fn [{:keys [db]}]
@@ -109,33 +118,51 @@
                                (map networks/chain-id->eip155)
                                vec)
          current-address  (get-in db [:wallet-connect/current-proposal :address])
-         accounts         (-> (partial networks/format-eip155-address current-address)
-                              (map session-networks))
          network-status   (:network/status db)
-         expiry           (get-in current-proposal [:params :expiryTimestamp])]
+         expired?         (-> current-proposal
+                              (get-in [:params :expiryTimestamp])
+                              uri/timestamp-expired?)]
      (if (= network-status :online)
        {:db (assoc-in db [:wallet-connect/current-proposal :response-sent?] true)
-        :fx [(if (uri/timestamp-expired? expiry)
+        :fx [(if expired?
                [:dispatch
                 [:toasts/upsert
                  {:id   :wallet-connect-proposal-expired
                   :type :negative
                   :text (i18n/label :t/wallet-connect-proposal-expired)}]]
                [:effects.wallet-connect/approve-session
-                {:web3-wallet web3-wallet
-                 :proposal    current-proposal
-                 :networks    session-networks
-                 :accounts    accounts
-                 :on-success  (fn [approved-session]
-                                (log/info "Wallet Connect session approved")
-                                (rf/dispatch [:wallet-connect/reset-current-session-proposal])
-                                (rf/dispatch [:wallet-connect/persist-session
-                                              approved-session]))
-                 :on-fail     (fn [error]
-                                (log/error "Wallet Connect session approval failed"
-                                           {:error error
-                                            :event :wallet-connect/approve-session})
-                                (rf/dispatch
-                                 [:wallet-connect/reset-current-session-proposal]))}])
+                {:web3-wallet      web3-wallet
+                 :proposal-request current-proposal
+                 :session-networks session-networks
+                 :address          current-address
+                 :on-success       #(rf/dispatch [:wallet-connect/approve-session-success %])
+                 :on-fail          #(rf/dispatch [:wallet-connect/approve-session-error %])}])
              [:dispatch [:dismiss-modal :screen/wallet.wallet-connect-session-proposal]]]}
        {:fx [[:dispatch [:wallet-connect/no-internet-toast]]]}))))
+
+(rf/reg-event-fx :wallet-connect/approve-session-success
+ (fn [_ [session]]
+   (log/info "Wallet Connect session approved")
+   {:fx [[:dispatch [:wallet-connect/on-new-session session]]
+         [:dispatch [:wallet-connect/reset-current-session-proposal]]
+         [:dispatch [:wallet-connect/redirect-to-dapp (data-store/get-dapp-redirect-url session)]]]}))
+
+(rf/reg-event-fx :wallet-connect/approve-session-error
+ (fn [_ [error]]
+   (log/error "Wallet Connect session approval failed"
+              {:error error
+               :event :wallet-connect/approve-session})
+   {:fx [[:dispatch [:wallet-connect/reset-current-session-proposal]]]}))
+
+(rf/reg-event-fx
+ :wallet-connect/reject-session-proposal
+ (fn [{:keys [db]} [proposal]]
+   (let [web3-wallet                      (get db :wallet-connect/web3-wallet)
+         {:keys [request response-sent?]} (:wallet-connect/current-proposal db)]
+     {:fx [(when-not response-sent?
+             [:effects.wallet-connect/reject-session-proposal
+              {:web3-wallet web3-wallet
+               :proposal    (or proposal request)
+               :on-success  #(log/info "Wallet Connect session proposal rejected")
+               :on-error    #(log/error "Wallet Connect unable to reject session proposal")}])
+           [:dispatch [:wallet-connect/reset-current-session-proposal]]]})))

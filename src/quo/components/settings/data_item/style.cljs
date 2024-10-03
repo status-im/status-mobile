@@ -84,12 +84,13 @@
    :height 16})
 
 (defn description
-  [blur? theme]
-  {:color (if blur?
-            colors/white
-            (colors/theme-colors colors/neutral-100
-                                 colors/white
-                                 theme))})
+  [subtitle-color blur? theme]
+  {:color (or subtitle-color
+              (if blur?
+                colors/white
+                (colors/theme-colors colors/neutral-100
+                                     colors/white
+                                     theme)))})
 (def right-icon
   {:margin-left 12})
 

@@ -2,6 +2,7 @@
   (:require
     [clojure.string :as string]
     [native-module.core :as native-module]
+    [re-frame.core :as re-frame]
     [react-native.platform :as platform]
     [status-im.constants :as constants]
     [status-im.contexts.profile.config :as profile.config]
@@ -21,17 +22,50 @@
   {:events [:syncing/clear-states]}
   [{:keys [db]} role]
   {:db (dissoc db :syncing)})
+
 (defn- input-connection-string-callback
   [res]
   (log/info "[local-pairing] input-connection-string-for-bootstrapping callback"
             {:response res
              :event    :syncing/input-connection-string-for-bootstrapping})
-  (let [error (when (sync-utils/extract-error res)
-                (str "generic-error: " res))]
-    (when (some? error)
+  (let [response        (transforms/json->clj res)
+        installation-id (:installationId response)
+        key-uid         (:keyUID response)
+        error           (:error response)]
+    (when (seq installation-id)
+      (rf/dispatch [:syncing/set-syncing-installation-id installation-id key-uid]))
+    (when (seq error)
       (rf/dispatch [:toasts/upsert
                     {:type :negative
                      :text error}]))))
+
+(rf/defn set-syncing-installation-id
+  {:events [:syncing/set-syncing-installation-id]}
+  [{:keys [db]} installation-id key-uid]
+  {:db (assoc db
+              :syncing/key-uid         key-uid
+              :syncing/installation-id installation-id)})
+
+(defn clear-syncing-installation-id
+  [{:keys [db]}]
+  {:db (dissoc
+        db
+        :syncing/key-uid
+        :syncing/installation-id)})
+
+(re-frame/reg-event-fx :syncing/clear-syncing-installation-id clear-syncing-installation-id)
+
+(defn set-syncing-fallback-flow
+  [{:keys [db]}]
+  {:db (assoc db :syncing/fallback-flow? true)})
+
+(re-frame/reg-event-fx :syncing/set-syncing-fallback-flow set-syncing-fallback-flow)
+
+(defn clear-syncing-fallback-flow
+  [{:keys [db]}]
+  {:db (dissoc db :syncing/fallback-flow?)})
+
+(re-frame/reg-event-fx :syncing/clear-syncing-fallback-flow clear-syncing-fallback-flow)
 
 (rf/defn preflight-outbound-check-for-local-pairing
   {:events [:syncing/preflight-outbound-check]}

@@ -887,7 +887,7 @@
            (assoc :currencies currencies)
            (assoc-in [:profile/profile :currency] :usd)))
     (is (match? (count (rf/sub [sub-name ""])) 2))
-    (is (match? (count (rf/sub [sub-name "et"])) 1))))
+    (is (match? (count (rf/sub [sub-name "et"])) 2))))
 
 (h/deftest-sub :wallet/selected-networks->chain-ids
   [sub-name]

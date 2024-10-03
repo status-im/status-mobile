@@ -9,5 +9,6 @@
       [:text {:optional true} [:maybe string?]]
       [:container-style {:optional true} [:maybe :map]]
       [:button-text {:optional true} [:maybe string?]]
+      [:text-number-of-lines {:optional true} [:maybe number?]]
       [:on-button-press {:optional true} [:maybe fn?]]]]]
    :any])

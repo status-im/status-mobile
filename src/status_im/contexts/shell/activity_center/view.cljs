@@ -19,6 +19,7 @@
     [status-im.contexts.shell.activity-center.notification.membership.view :as membership]
     [status-im.contexts.shell.activity-center.notification.mentions.view :as mentions]
     [status-im.contexts.shell.activity-center.notification.reply.view :as reply]
+    [status-im.contexts.shell.activity-center.notification.syncing.view :as syncing]
     [status-im.contexts.shell.activity-center.style :as style]
     [status-im.contexts.shell.activity-center.tabs.empty-tab.view :as empty-tab]
     [utils.re-frame :as rf]))
@@ -47,6 +48,12 @@
 
        (= notification-type types/admin)
        [admin/view props]
+
+       (= notification-type types/new-installation-received)
+       [syncing/installation-received-view props]
+
+       (= notification-type types/new-installation-created)
+       [syncing/installation-created-view props]
 
        (types/membership notification-type)
        (condp = notification-type

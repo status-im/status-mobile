@@ -28,29 +28,31 @@ class BaseTestReport:
         file_name = "%s.json" % test_name
         return os.path.join(self.TEST_REPORT_DIR, file_name)
 
-    def save_geth(self, geth: dict):
-        geth_paths = {}
-        for log in geth.keys():
-            geth_path = os.path.join(self.TEST_REPORT_DIR, log)
-            result = open(geth_path, 'wb')
-            result.write(geth[log])
+    def save_logs(self, logs: dict):
+        logs_paths = {}
+        for log in logs.keys():
+            log_path = os.path.join(self.TEST_REPORT_DIR, log)
+            result = open(log_path, 'wb')
+            result.write(logs[log])
             result.close()
-            geth_paths[log] = geth_path
-        return geth_paths
+            logs_paths[log] = log_path
+        return logs_paths
 
-    def save_test(self, test, geth: dict = None):
-        if geth:
-            geth_paths = self.save_geth(geth)
-        else:
-            if hasattr(test, 'geth_paths'):
-                geth_paths = test.geth_paths
+    def save_test(self, test, geth: dict = None, requests_log: dict = None):
+        for log in geth, requests_log:
+            if log:
+                logs_paths = self.save_logs(log)
             else:
-                geth_paths = ''
+                if hasattr(test, 'logs_paths'):
+                    logs_paths = test.logs_paths
+                else:
+                    logs_paths = ''
+
         file_path = self.get_test_report_file_path(test.name)
         test_dict = {
             'testrail_case_id': test.testrail_case_id,
             'name': test.name,
-            'geth_paths': geth_paths,
+            'logs_paths': logs_paths,
             'testruns': list(),
             'group_name': test.group_name,
             'secured': test.secured
@@ -74,7 +76,7 @@ class BaseTestReport:
                     first_commands=testrun_data['first_commands'],
                     xfail=testrun_data['xfail']))
             tests.append(SingleTestData(name=test_data['name'],
-                                        geth_paths=test_data['geth_paths'],
+                                        logs_paths=test_data['logs_paths'],
                                         testruns=testruns,
                                         testrail_case_id=test_data['testrail_case_id'],
                                         grop_name=test_data['group_name'],

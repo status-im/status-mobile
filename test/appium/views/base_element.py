@@ -8,8 +8,8 @@ import emoji
 import imagehash
 from PIL import Image, ImageChops, ImageStat
 from appium.webdriver.common.mobileby import MobileBy
-from appium.webdriver.common.touch_action import TouchAction
 from selenium.common.exceptions import NoSuchElementException, StaleElementReferenceException, TimeoutException
+from selenium.webdriver import ActionChains
 from selenium.webdriver.support import expected_conditions
 from selenium.webdriver.support.wait import WebDriverWait
 
@@ -317,18 +317,25 @@ class BaseElement(object):
         x, y = location['x'], location['y']
         self.driver.swipe(start_x=x, start_y=y, end_x=x, end_y=depth)
 
-    def long_press_element(self):
+    def long_press_element(self, element_to_release_on=None):
         element = self.find_element()
         self.driver.info("Long press on `%s`" % self.name)
-        action = TouchAction(self.driver)
-        action.long_press(element).release().perform()
+        action = ActionChains(self.driver)
+        action.click_and_hold(element).perform()
+        time.sleep(2)
+        if element_to_release_on:
+            action.release(element_to_release_on.find_element()).perform()
+        else:
+            action.release(element).perform()
 
     def long_press_until_element_is_shown(self, expected_element):
         element = self.find_element()
         self.driver.info("Long press on `%s` until expected element is shown" % self.name)
-        action = TouchAction(self.driver)
+        action = ActionChains(self.driver)
         for _ in range(3):
-            action.long_press(element).release().perform()
+            action.click_and_hold(element).perform()
+            time.sleep(2)
+            action.release(element).perform()
             if expected_element.is_element_displayed():
                 return
 
@@ -338,8 +345,9 @@ class BaseElement(object):
         size = element.size
         x = int(location['x'] + size['width'] * rel_x)
         y = int(location['y'] + size['height'] * rel_y)
-        action = TouchAction(self.driver)
-        action.long_press(x=x, y=y).release().perform()
+        action = ActionChains(self.driver)
+        action.move_to_element_with_offset(to_element=element, xoffset=x, yoffset=y).click_and_hold().perform()
+        action.release(element).perform()
 
     def measure_time_before_element_appears(self, max_wait_time=30):
         def wrapper():
@@ -395,19 +403,24 @@ class EditBox(BaseElement):
         self.driver.info("Paste text from clipboard into `%s`" % self.name)
         self.long_press_element()
         time.sleep(2)
-        action = TouchAction(self.driver)
-        location = self.find_element().location
+        action = ActionChains(self.driver)
+        element = self.find_element()
+        location = element.location
         x, y = location['x'], location['y']
-        action.press(x=x + 25, y=y - 50).release().perform()
+        action.move_by_offset(xoffset=x + 25, yoffset=y - 50).click().perform()
+        action.release(element).perform()
 
     def cut_text(self):
         self.driver.info("Cut text in `%s`" % self.name)
-        location = self.find_element().location
+        element = self.find_element()
+        location = element.location
         x, y = location['x'], location['y']
-        action = TouchAction(self.driver)
-        action.long_press(x=x, y=y).release().perform()
+        action = ActionChains(self.driver)
+        action.move_by_offset(xoffset=x, yoffset=y).click_and_hold().perform()
+        action.release(element).perform()
         time.sleep(2)
-        action.press(x=x + 50, y=y - 50).release().perform()
+        action.move_by_offset(xoffset=x + 50, yoffset=y - 50).click().perform()
+        action.release(element).perform()
 
 
 class Text(BaseElement):

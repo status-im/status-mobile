@@ -18,7 +18,7 @@
 (defn <-js-map
   "Shallowly transforms JS Object keys/values with `key-fn`/`val-fn`.
 
-  Returns nil if `m` is not an instance of `js/Object`.
+  Returns m if `m` is not an instance of `js/Object`.
 
   Implementation taken from `js->clj`, but with the ability to customize how
   keys and/or values are transformed in one loop.
@@ -33,7 +33,8 @@
   ([^js m]
    (<-js-map m nil))
   ([^js m {:keys [key-fn val-fn]}]
-   (when (identical? (type m) js/Object)
+   (assert (or (nil? m) (identical? (type m) js/Object) (map? m)))
+   (if (identical? (type m) js/Object)
      (persistent!
       (reduce (fn [r k]
                 (let [v       (oops/oget+ m k)
@@ -41,7 +42,8 @@
                       new-val (if val-fn (val-fn k v) v)]
                   (assoc! r new-key new-val)))
               (transient {})
-              (js-keys m))))))
+              (js-keys m)))
+     m)))
 
 (defn js-stringify
   [js-object spaces]

@@ -4,6 +4,7 @@
             [status-im.contexts.wallet.wallet-connect.utils.data-store :as
              data-store]
             [status-im.contexts.wallet.wallet-connect.utils.networks :as networks]
+            [status-im.contexts.wallet.wallet-connect.utils.typed-data :as typed-data]
             [utils.string]))
 
 (rf/reg-sub
@@ -15,6 +16,14 @@
  :wallet-connect/current-request-display-data
  :<- [:wallet-connect/current-request]
  :-> :display-data)
+
+(rf/reg-sub
+ :wallet-connect/current-request-method
+ :<- [:wallet-connect/current-request]
+ (fn [request]
+   (-> request
+       :event
+       data-store/get-request-method)))
 
 (rf/reg-sub
  :wallet-connect/current-request-account-details
@@ -45,3 +54,8 @@
  :wallet-connect/current-request-network
  :<- [:wallet-connect/chain-id]
  networks/chain-id->network-details)
+
+(rf/reg-sub
+ :wallet-connect/typed-data-request?
+ :<- [:wallet-connect/current-request-method]
+ typed-data/typed-data-request?)

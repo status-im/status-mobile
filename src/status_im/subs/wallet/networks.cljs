@@ -21,14 +21,7 @@
  :wallet/network-details
  :<- [:wallet/networks-by-mode]
  (fn [networks]
-   (->> networks
-        (map
-         (fn [{:keys [chain-id related-chain-id layer]}]
-           (assoc (network-utils/get-network-details chain-id)
-                  :chain-id         chain-id
-                  :related-chain-id related-chain-id
-                  :layer            layer)))
-        (sort-by (juxt :layer :short-name)))))
+   (network-utils/sorted-networks-with-details networks)))
 
 (re-frame/reg-sub
  :wallet/network-details-by-network-name

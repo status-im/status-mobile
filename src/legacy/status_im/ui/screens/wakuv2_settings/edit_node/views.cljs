@@ -7,6 +7,7 @@
     [legacy.status-im.ui.components.topbar :as topbar]
     [legacy.status-im.ui.screens.wakuv2-settings.edit-node.styles :as styles]
     [re-frame.core :as re-frame]
+    [react-native.safe-area :as safe-area]
     [utils.i18n :as i18n])
   (:require-macros [legacy.status-im.utils.views :as views]))
 
@@ -33,39 +34,40 @@
       [react/keyboard-avoiding-view
        {:style         {:flex 1}
         :ignore-offset true}
-       [topbar/topbar {:title (i18n/label (if name :t/node-details :t/add-node))}]
-       [react/scroll-view {:keyboard-should-persist-taps :handled}
-        [react/view styles/edit-node-view
-         [react/view {:padding-vertical 8}
-          [quo/text-input
-           {:label               (i18n/label :t/name)
-            :placeholder         (i18n/label :t/specify-name)
-            :accessibility-label :node-name
-            :default-value       name
-            :on-change-text      #(re-frame/dispatch [:wakuv2.ui/input-changed :name %])
-            :auto-focus          true}]]
-         [react/view
-          {:flex             1
-           :padding-vertical 8}
-          [quo/text-input
-           (merge
-            {:label               (i18n/label :t/node-address)
-             :placeholder         (i18n/label :t/wakuv2-node-format)
-             :accessibility-label :node-address
-             :default-value       address
-             :show-cancel         false
-             :on-change-text      #(re-frame/dispatch [:wakuv2.ui/input-changed :address %])
-             :error               (when (and (not (string/blank? address)) invalid-address?)
-                                    (i18n/label :t/invalid-format
-                                                {:format (i18n/label :t/wakuv2-node-format)}))
-             :bottom-value        0})]]
-         (when-not new-node?
-           [delete-button id])]]
-       [toolbar/toolbar
-        {:right
-         [quo/button
-          {:type     :secondary
-           :after    :main-icon/next
-           :disabled (not is-valid?)
-           :on-press #(re-frame/dispatch [:wakuv2.ui/save-node-pressed])}
-          (i18n/label :t/save)]}]])))
+       [react/view {:flex 1 :padding-bottom (safe-area/get-bottom)}
+        [topbar/topbar {:title (i18n/label (if name :t/node-details :t/add-node))}]
+        [react/scroll-view {:keyboard-should-persist-taps :handled}
+         [react/view styles/edit-node-view
+          [react/view {:padding-vertical 8}
+           [quo/text-input
+            {:label               (i18n/label :t/name)
+             :placeholder         (i18n/label :t/specify-name)
+             :accessibility-label :node-name
+             :default-value       name
+             :on-change-text      #(re-frame/dispatch [:wakuv2.ui/input-changed :name %])
+             :auto-focus          true}]]
+          [react/view
+           {:flex             1
+            :padding-vertical 8}
+           [quo/text-input
+            (merge
+             {:label               (i18n/label :t/node-address)
+              :placeholder         (i18n/label :t/wakuv2-node-format)
+              :accessibility-label :node-address
+              :default-value       address
+              :show-cancel         false
+              :on-change-text      #(re-frame/dispatch [:wakuv2.ui/input-changed :address %])
+              :error               (when (and (not (string/blank? address)) invalid-address?)
+                                     (i18n/label :t/invalid-format
+                                                 {:format (i18n/label :t/wakuv2-node-format)}))
+              :bottom-value        0})]]
+          (when-not new-node?
+            [delete-button id])]]
+        [toolbar/toolbar
+         {:right
+          [quo/button
+           {:type     :secondary
+            :after    :main-icon/next
+            :disabled (not is-valid?)
+            :on-press #(re-frame/dispatch [:wakuv2.ui/save-node-pressed])}
+           (i18n/label :t/save)]}]]])))

@@ -28,6 +28,7 @@
    :notifications                 (js/require "../resources/images/ui2/notifications.png")
    :nfc-prompt                    (js/require "../resources/images/ui2/nfc-prompt.png")
    :nfc-success                   (js/require "../resources/images/ui2/nfc-success.png")
+   :preparing-status              (js/require "../resources/images/ui2/preparing-status.png")
    :syncing-devices               (js/require "../resources/images/ui2/syncing_devices.png")
    :syncing-wrong                 (js/require "../resources/images/ui2/syncing_wrong.png")})
 

@@ -212,7 +212,7 @@
 (defn- slide-button
   []
   (let [loading-swap-proposal? (rf/sub [:wallet/swap-loading-swap-proposal?])
-        swap-proposal          (rf/sub [:wallet/swap-proposal])
+        swap-proposal          (rf/sub [:wallet/swap-proposal-without-fees])
         account                (rf/sub [:wallet/current-viewing-account])
         on-auth-success        (rn/use-callback #(rf/dispatch
                                                   [:wallet/swap-transaction
@@ -228,9 +228,25 @@
 
 (defn- footer
   []
-  [rn/view {:style {:margin-bottom -10}}
-   [transaction-details]
-   [slide-button]])
+  (let [provider (rf/sub [:wallet/swap-proposal-provider])
+        theme    (quo.theme/use-theme)
+        on-press (rn/use-callback #(when provider
+                                     (rf/dispatch [:open-url (:terms-and-conditions-url provider)]))
+                                  [provider])]
+    [rn/view {:style (style/footer-container theme)}
+     [transaction-details]
+     [slide-button]
+     [rn/view {:style style/providers-container}
+      [quo/text
+       {:size  :paragraph-2
+        :style (style/swaps-powered-by theme)}
+       (i18n/label :t/swaps-powered-by
+                   {:provider (if provider (:full-name provider) (i18n/label :t/unknown))})]
+      [quo/text
+       {:size     :paragraph-2
+        :style    (style/terms-and-conditions theme)
+        :on-press on-press}
+       (i18n/label :t/terms-and-conditions)]]]))
 
 (defn view
   []
@@ -247,7 +263,7 @@
        :footer                   [footer]
        :gradient-cover?          true
        :customization-color      (:color account)}
-      [:<>
+      [rn/scroll-view {:style style/scroll-view-container}
        [swap-title]
        [spending-cap-section]
        [account-section]

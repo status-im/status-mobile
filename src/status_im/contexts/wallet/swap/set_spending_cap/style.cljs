@@ -10,6 +10,9 @@
    :height           36
    :background-color :transparent})
 
+(def scroll-view-container
+  {:padding-bottom 150})
+
 (def content-container
   {:padding-top        12
    :padding-horizontal 20
@@ -38,3 +41,20 @@
   [theme]
   {:margin-bottom 8
    :color         (colors/theme-colors colors/neutral-50 colors/neutral-40 theme)})
+
+(def providers-container
+  {:align-items :center
+   :margin-top  12})
+
+(defn swaps-powered-by
+  [theme]
+  {:color (colors/theme-colors colors/neutral-80-opa-40 colors/white-opa-70 theme)})
+
+(defn terms-and-conditions
+  [theme]
+  {:color (colors/theme-colors colors/neutral-100 colors/white theme)})
+
+(defn footer-container
+  [theme]
+  {:margin-bottom    -10
+   :background-color (colors/theme-colors colors/white colors/neutral-100 theme)})

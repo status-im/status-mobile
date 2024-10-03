@@ -11,7 +11,7 @@
             [schema.core :as schema]))
 
 (defn- view-internal
-  [{:keys [action? text button-text container-style on-button-press]}]
+  [{:keys [action? text button-text text-number-of-lines container-style on-button-press]}]
   (let [theme (quo.theme/use-theme)]
     [rn/view
      {:accessibility-label :alert-banner}
@@ -24,15 +24,17 @@
                  colors/danger-50-opa-10
                  theme)
                 colors/danger-50-opa-0]}
-      [icon/icon
-       :i/alert
-       {:color (colors/resolve-color :danger theme)
-        :size  16}]
-      [text/text
-       {:style           (style/label theme)
-        :size            :paragraph-2
-        :number-of-lines 1}
-       text]
+      [rn/view {:style style/content-container}
+       [icon/icon
+        :i/alert
+        {:color           (colors/resolve-color :danger theme)
+         :size            16
+         :container-style style/icon}]
+       [text/text
+        {:style           (style/label theme)
+         :size            :paragraph-2
+         :number-of-lines (or text-number-of-lines 1)}
+        text]]
       (when action?
         [button/button
          {:accessibility-label :button

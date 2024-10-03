@@ -22,32 +22,37 @@
   (testing "returns an empty set when no types have unread notifications"
     (swap! rf-db/app-db assoc-in
       [:activity-center :unread-counts-by-type]
-      {types/one-to-one-chat      0
-       types/private-group-chat   0
-       types/contact-verification 0
-       types/contact-request      0
-       types/mention              0
-       types/reply                0
-       types/admin                0})
+      {types/one-to-one-chat           0
+       types/private-group-chat        0
+       types/contact-verification      0
+       types/contact-request           0
+       types/mention                   0
+       types/reply                     0
+       types/admin                     0
+       types/new-installation-received 0
+       types/new-installation-created  0})
 
     (is (= #{} (rf/sub [sub-name]))))
 
   (testing "returns a set with all types containing positive unread counts"
     (swap! rf-db/app-db assoc-in
       [:activity-center :unread-counts-by-type]
-      {types/one-to-one-chat      1
-       types/private-group-chat   0
-       types/contact-verification 1
-       types/contact-request      0
-       types/mention              3
-       types/reply                0
-       types/admin                2})
+      {types/one-to-one-chat           1
+       types/private-group-chat        0
+       types/contact-verification      1
+       types/contact-request           0
+       types/mention                   3
+       types/reply                     0
+       types/admin                     2
+       types/new-installation-received 1
+       types/new-installation-created  0})
 
     (let [actual (rf/sub [sub-name])]
       (is (= #{types/one-to-one-chat
                types/contact-verification
                types/mention
-               types/admin}
+               types/admin
+               types/new-installation-received}
              actual))
       (is (set? actual)))))
 
@@ -55,15 +60,17 @@
   [sub-name]
   (swap! rf-db/app-db assoc-in
     [:activity-center :unread-counts-by-type]
-    {types/one-to-one-chat      1
-     types/private-group-chat   2
-     types/contact-verification 3
-     types/contact-request      4
-     types/mention              5
-     types/reply                6
-     types/admin                7})
+    {types/one-to-one-chat           1
+     types/private-group-chat        2
+     types/contact-verification      3
+     types/contact-request           4
+     types/mention                   5
+     types/reply                     6
+     types/admin                     7
+     types/new-installation-received 8
+     types/new-installation-created  9})
 
-  (is (= 28 (rf/sub [sub-name]))))
+  (is (= 45 (rf/sub [sub-name]))))
 
 (h/deftest-sub :activity-center/unread-indicator
   [sub-name]

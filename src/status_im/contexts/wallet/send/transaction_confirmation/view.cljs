@@ -9,6 +9,7 @@
     [status-im.common.standard-authentication.core :as standard-auth]
     [status-im.contexts.wallet.common.utils :as utils]
     [status-im.contexts.wallet.send.transaction-confirmation.style :as style]
+    [status-im.contexts.wallet.send.utils :as send-utils]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]
     [utils.security.core :as security]))
@@ -142,7 +143,7 @@
      [quo/summary-info
       {:type          summary-info-type
        :networks?     true
-       :values        network-values
+       :values        (send-utils/network-values-for-ui network-values)
        :account-props (cond-> account-props
                         (and account-to? (not bridge-tx?))
                         (assoc

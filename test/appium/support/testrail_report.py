@@ -8,7 +8,6 @@ from os import environ
 from sys import argv
 
 import emoji
-import pytest
 import requests
 
 from support.base_test_report import BaseTestReport
@@ -214,9 +213,9 @@ class TestrailReport(BaseTestReport):
                     if re.findall(pattern, res['comment']):
                         res_id = res['id']
                         try:
-                            for geth in test.geth_paths.keys():
+                            for log in test.logs_paths.keys():
                                 self.add_attachment(method='add_attachment_to_result/%s' % str(res_id),
-                                                    path=test.geth_paths[geth])
+                                                    path=test.logs_paths[log])
                         except (AttributeError, FileNotFoundError):
                             pass
                         break

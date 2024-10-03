@@ -54,20 +54,23 @@
  :<- [:profile/currency-symbol]
  (fn [[chain-id max-fees-wei transaction eth-token currency currency-symbol]]
    (when transaction
-     (let [max-fees-ether          (money/wei->ether max-fees-wei)
-           max-fees-fiat           (wallet-utils/calculate-token-fiat-value {:currency currency
-                                                                             :balance  max-fees-ether
-                                                                             :token    eth-token})
-           max-fees-fiat-formatted (-> (wallet-utils/get-standard-crypto-format eth-token max-fees-ether)
-                                       (wallet-utils/get-standard-fiat-format currency-symbol
-                                                                              max-fees-fiat))
-           balance                 (-> eth-token
-                                       (get-in [:balances-per-chain chain-id :raw-balance])
-                                       money/bignumber)
-           tx-value                (money/bignumber (:value transaction))
-           total-transaction-value (money/add max-fees-wei tx-value)]
+     (let [max-fees-ether           (money/wei->ether max-fees-wei)
+           max-fees-fiat            (wallet-utils/calculate-token-fiat-value {:currency currency
+                                                                              :balance  max-fees-ether
+                                                                              :token    eth-token})
+           max-fees-fiat-formatted  (-> (wallet-utils/get-standard-crypto-format eth-token
+                                                                                 max-fees-ether)
+                                        (wallet-utils/get-standard-fiat-format currency-symbol
+                                                                               max-fees-fiat))
+           balance                  (-> eth-token
+                                        (get-in [:balances-per-chain chain-id :raw-balance])
+                                        money/bignumber)
+           tx-value                 (money/bignumber (:value transaction))
+           total-transaction-value  (money/add max-fees-wei tx-value)
+           estimated-time-formatted (wallet-utils/estimated-time-format (:estimated-time transaction))]
        {:total-transaction-value total-transaction-value
         :balance                 balance
+        :estimated-time          estimated-time-formatted
         :max-fees                max-fees-wei
         :max-fees-fiat-value     max-fees-fiat
         :max-fees-fiat-formatted max-fees-fiat-formatted

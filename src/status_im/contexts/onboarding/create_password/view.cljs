@@ -209,9 +209,10 @@
        (when same-passwords?
          [rn/view {:style style/disclaimer-container}
           [quo/disclaimer
-           {:blur?     true
-            :on-change (partial set-accepts-disclaimer? not)
-            :checked?  accepts-disclaimer?}
+           {:blur?               true
+            :on-change           (partial set-accepts-disclaimer? not)
+            :checked?            accepts-disclaimer?
+            :customization-color user-color}
            (i18n/label :t/password-creation-disclaimer)]])
        (when (and (= focused-input :password) (not same-passwords?))
          [help

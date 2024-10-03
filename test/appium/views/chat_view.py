@@ -4,9 +4,9 @@ from datetime import datetime, timedelta
 from time import sleep
 
 import dateutil.parser
-from appium.webdriver.common.touch_action import TouchAction
 from selenium.common.exceptions import NoSuchElementException, TimeoutException, StaleElementReferenceException, \
     InvalidElementStateException
+from selenium.webdriver import ActionChains
 
 from tests import emojis, common_password
 from views.base_element import Button, EditBox, Text, BaseElement, SilentButton
@@ -711,17 +711,22 @@ class ChatMessageInput(EditBox):
         super().__init__(driver, accessibility_id="chat-message-input")
 
     def paste_text_from_clipboard(self):
-        action = TouchAction(self.driver)
-        location = self.find_element().location
+        action = ActionChains(self.driver)
+        element = self.find_element()
+        location = element.location
         x, y = location['x'], location['y']
-        action.long_press(x=x + 250, y=y).release().perform()  # long press
-        action.tap(x=x + 50, y=y - 50).release().perform()  # tap Paste
+        action.move_by_offset(xoffset=x + 250, yoffset=y).click_and_hold().perform()  # long press
+        action.release(element).perform()
+        action.move_by_offset(xoffset=x + 50, yoffset=y - 50).click().perform()  # tap Paste
+        action.release(element).perform()
 
     def click_inside(self):
-        action = TouchAction(self.driver)
-        location = self.find_element().location
-        x, y = location['x'], location['y']
-        action.tap(x=x + 250, y=y).release().perform()
+        action = ActionChains(self.driver)
+        element = self.find_element()
+        location = element.location
+        x, y = location['x'] + 250, location['y']
+        action.move_to_element_with_offset(to_element=element, xoffset=x, yoffset=y).click().perform()
+        action.release(element).perform()
 
 
 class ChatView(BaseView):
@@ -1193,9 +1198,6 @@ class ChatView(BaseView):
 
     def mention_user(self, user_name: str):
         self.driver.info("Mention user %s in the chat" % user_name)
-        # gboard = self.driver.available_ime_engines[0]
-        # self.driver.activate_ime_engine(gboard)  # workaround to get mentions list expanded
-        self.chat_message_input.click_inside()
         self.chat_message_input.send_keys("@")
         try:
             self.mentions_list.wait_for_element()

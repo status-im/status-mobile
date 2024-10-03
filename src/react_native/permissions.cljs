@@ -1,7 +1,10 @@
 (ns react-native.permissions
   (:require
-    ["react-native-permissions" :refer (check openSettings requestMultiple PERMISSIONS RESULTS)]
-    [react-native.platform :as platform]))
+    ["react-native-permissions" :refer
+     [check openSettings PERMISSIONS requestMultiple requestNotifications
+      RESULTS]]
+    [react-native.platform :as platform]
+    [taoensso.timbre :as log]))
 
 (def permissions-map
   {:read-external-storage  (cond
@@ -45,3 +48,20 @@
       (.catch #(on-error %))))
 
 (def open-settings openSettings)
+
+(defn request-notifications
+  "`notification-options` is only used on iOS.
+    A map with `:status` and `settings` (only for iOS) is passed to the callbacks.
+    See https://github.com/zoontek/react-native-permissions?tab=readme-ov-file#requestnotifications."
+  [{:keys [notification-options on-allowed on-denied]
+    :or   {notification-options #js ["alert"]}}]
+  (-> (requestNotifications notification-options)
+      (.then (fn [js-response]
+               (let [response (js->clj js-response :keywordize-keys true)]
+                 (if (= (:status response) "granted")
+                   (do
+                     (on-allowed response)
+                     (log/debug "Notification permission were allowed" response))
+                   (do
+                     (on-denied response)
+                     (log/debug "Notification permission were denied" response))))))))

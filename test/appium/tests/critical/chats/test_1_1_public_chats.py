@@ -147,8 +147,8 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
         url_message = 'Test with link: https://status.im/ here should be nothing unusual.'
         self.chat_1.send_message(url_message)
         self.chat_2.chat_element_by_text(url_message).wait_for_element(20)
-        self.chat_2.chat_element_by_text(url_message).long_press_element_by_coordinate(rel_x=0.8, rel_y=0.8)
-        self.chat_2.reply_message_button.click()
+        # self.chat_2.chat_element_by_text(url_message).long_press_element_by_coordinate(rel_x=0.8, rel_y=0.8)
+        self.chat_2.quote_message(url_message)
         self.chat_2.send_message(reply)
         replied_message = self.chat_1.chat_element_by_text(reply)
         if replied_message.replied_message_text != url_message:
@@ -231,9 +231,10 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
                 or self.chat_1.pinned_messages_list.message_element_by_text(self.message_4).is_element_displayed():
             self.errors.append("Can pin more than 3 messages in chat")
         else:
-            self.chat_1.pinned_messages_list.message_element_by_text(self.message_2).long_press_element()
-            self.home_1.just_fyi("Unpin one message so that another could be pinned")
             unpin_element = self.chat_1.element_by_translation_id('unpin-from-chat')
+            self.chat_1.pinned_messages_list.message_element_by_text(self.message_2).long_press_element(
+                element_to_release_on=unpin_element)
+            self.home_1.just_fyi("Unpin one message so that another could be pinned")
             unpin_element.click_until_absense_of_element(desired_element=unpin_element)
             self.chat_1.pin_message(self.message_4, 'pin-to-chat')
             if not (self.chat_1.chat_element_by_text(self.message_4).pinned_by_label.is_element_displayed(30) and
@@ -253,7 +254,7 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
         pinned_message = self.chat_1.pinned_messages_list.message_element_by_text(self.message_4)
 
         unpin_element = self.chat_1.element_by_translation_id("unpin-from-chat")
-        pinned_message.long_press_until_element_is_shown(unpin_element)
+        pinned_message.long_press_element(element_to_release_on=unpin_element)
         unpin_element.click_until_absense_of_element(unpin_element)
         # try:
         #     self.chat_2.chat_element_by_text(self.message_4).pinned_by_label.wait_for_invisibility_of_element()
@@ -266,7 +267,7 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
             except Failed:
                 self.errors.append(
                     "Pinned messages count is not 2 after unpinning the last pinned message for user %s" % (
-                                chat_number + 1)
+                            chat_number + 1)
                 )
         self.errors.verify_no_errors()
 

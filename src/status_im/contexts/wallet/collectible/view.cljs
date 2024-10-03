@@ -157,12 +157,10 @@
             set-title-ref                  (rn/use-callback #(reset! title-ref %))
             animation-shared-element-id    (rf/sub [:animation-shared-element-id])
             collectible                    (rf/sub [:wallet/collectible-details])
-            collectible-owner              (rf/sub [:wallet/collectible-details-owner collectible])
+            collectible-owner              (rf/sub [:wallet/current-viewing-account])
             aspect-ratio                   (rf/sub [:wallet/collectible-aspect-ratio])
             gradient-color                 (rf/sub [:wallet/collectible-gradient-color])
-            total-owned                    (rf/sub [:wallet/total-owned-collectible
-                                                    (:ownership collectible)
-                                                    (:address collectible-owner)])
+            total-owned                    (:total-owned collectible)
             {:keys [id
                     preview-url
                     collection-data

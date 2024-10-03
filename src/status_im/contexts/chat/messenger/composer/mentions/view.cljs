@@ -17,7 +17,7 @@
    user])
 
 (defn view
-  [{:keys [layout-height]}]
+  [layout-height]
   (let [suggestions                               (rf/sub [:chat/mention-suggestions])
         suggestions?                              (seq suggestions)
         theme                                     (quo.theme/use-theme)

@@ -102,10 +102,6 @@
            [:dispatch-later [{:ms 1500 :dispatch [:profile.login/non-critical-initialization]}]]
            [:dispatch [:network/check-expensive-connection]]
            [:profile.settings/get-profile-picture key-uid]
-           (when (ff/enabled? ::ff/wallet.wallet-connect)
-             [:dispatch [:wallet-connect/init]])
-           (when (ff/enabled? ::ff/wallet.swap)
-             [:dispatch [:wallet.tokens/get-token-list]])
            (when notifications-enabled?
              [:effects/push-notifications-enable])]})))
 
@@ -142,6 +138,8 @@
                            (rf/dispatch [:chats-list/load-success result])
                            (rf/dispatch [:communities/get-user-requests-to-join])
                            (rf/dispatch [:profile.login/get-chats-callback]))}]
+           (when (and (:syncing/fallback-flow? db) (:syncing/installation-id db))
+             [:dispatch [:pairing/finish-seed-phrase-fallback-syncing]])
            (when-not new-account?
              [:dispatch [:universal-links/process-stored-event]])]})))
 

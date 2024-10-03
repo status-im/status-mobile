@@ -1,26 +1,18 @@
-Status combina mensajería privada, monedero crypto seguro y un navegador Ethereum de Web3 para DApps en una potente herramienta de comunicación. Chatea con amigos y comunidades que crecen. Compra, vende, almacena e intercambia activos digitales. Navega por el Internet descentralizado sin abusos por tus datos.
+Status combina una mensajería centrada en la privacidad pseudónima y una billetera de criptomonedas segura en una poderosa herramienta de comunicación. Chatea con amigos y comunidades en crecimiento. Compra, almacena e intercambia activos digitales.
+
 Status es tu sistema operativo para Ethereum.
 
 MENSAJERÍA PRIVADA
-Envía chats privados 1 a 1, grupales tanto públicos como privados, sin intermediarios innecesarios en tu comunicación. Status es una aplicación de chat que elimina los intermediarios centralizados de tus mensajes para una mayor privacidad y seguridad. Una aplicación de mensajería cifrada con encriptación de extremo a extremo y privacidad por defecto, para que nadie más que tú y el destinatario puedan ver los mensajes. Ni siquiera Status puede hacerlo. Algunos lo consideran mensajería secreta.
+Envía chats privados 1:1 y chats grupales privados sin que nadie espíe tus comunicaciones. Status es una aplicación de mensajería que elimina los retransmisores de mensajes centralizados para ofrecer mayor privacidad y mensajería segura. Todos los mensajes están cifrados con cifrado de extremo a extremo. Además, ningún mensaje revela quién es el autor o el destinatario previsto, por lo que nadie, ni siquiera Status, sabe quién está hablando con quién o qué se dijo.
 
-PAGOS ENTRE PARES, SIN FRONTERAS
-Integrado a la perfección con la billetera de criptomonedas, la mensajería de Status permite a cualquier persona, en cualquier lugar, enviar pagos globales directamente en un chat.
-
-MONEDERO ETHEREUM SEGURO
-La criptobilletera Status te permite enviar, almacenar, comerciar e intercambiar de forma segura activos de Ethereum como ETH, SNT, monedas estables como DAI y también NFTs. Toma con confianza el control de tus criptomonedas y activos digitales con esta aplicación de monedero Ethereum. El monedero blockchain Status actualmente solo admite activos ERC-20 y ERC-721; no es compatible con Bitcoin.
+BILLETERA SEGURA DE CRIPTOMONEDAS
+La billetera de criptomonedas de Status te permite enviar, almacenar e intercambiar de forma segura activos de Ethereum como ETH, SNT, stablecoins como DAI, así como coleccionables digitales. Controla con confianza tus criptomonedas y activos digitales con nuestra aplicación de billetera multichain de Ethereum, que soporta mainnet, Arbitrum y Optimism. La billetera blockchain de Status actualmente solo soporta activos ETH, ERC-20, ERC-721 y ERC-1155; no soporta Bitcoin.
 
 GANA CON DEFI
-Pon tu crypto a trabajar con las últimas aplicaciones de finanzas descentralizadas e intercambios descentralizados (DEX) como Maker, Aave, Uniswap, Synthetix, PoolTogether, Zerion, Kyber y más.
-
-NAVEGADOR DE DAPPS WEB3
-Navega por la web segura y accede al creciente ecosistema de aplicaciones descentralizadas con un navegador seguro. Status permite el acceso a mucho más que DeFi: explora los últimos mercados, coleccionables, juegos y redes sociales como SuperRare, Gitcoin, Dragonereum, Axie Infinity, Open Sea, CryptoKitties, Decentraland y más.
+Pon tus criptomonedas a trabajar con las últimas aplicaciones de finanzas descentralizadas y exchanges descentralizados (DEX) como Maker, Aave, Uniswap, Synthetix, PoolTogether, Zerion, Kyber y más.
 
 CONECTA CON TU COMUNIDAD
-Explora, conéctate y chatea con tus comunidades y amigos favoritos. Ya sea un pequeño grupo de amigos, un colectivo de artistas, comerciantes de criptomonedas o la próxima gran organización. Envía mensajes de texto y comunícate con las comunidades de Status.
+Explora, conecta y chatea con tus comunidades y amigos favoritos. Ya sea un pequeño grupo de amigos, un colectivo de artistas, traders de criptomonedas o la próxima gran organización, envía mensajes y comunícate con las comunidades de Status.
 
-FEEDS SOCIALES
-Actualiza tu estado y comparte lo que piensas con tus contactos en una red social a la vanguardia en descentralización y verdaderamente abierta.
-
-CREACIÓN DE CUENTA PRIVADA
-Mantén tu privacidad con la creación de cuentas pseudoanónimas. Al crear tu cuenta gratuita, NUNCA tendrás que ingresar un número de teléfono, dirección de correo electrónico o cuenta bancaria. Las claves privadas de tu monedero se generan y almacenan localmente para garantizar que solo tú tengas acceso a tus fondos y transacciones financieras.
+CREACIÓN DE CUENTAS PRIVADAS
+Mantén tu privacidad con la creación de cuentas pseudónimas. Al crear tu cuenta gratuita, NUNCA tendrás que ingresar un número de teléfono, dirección de correo electrónico o cuenta bancaria. Las claves privadas de tu billetera se generan localmente y se almacenan de manera segura para garantizar que solo tú tengas acceso a tus fondos y transacciones financieras.

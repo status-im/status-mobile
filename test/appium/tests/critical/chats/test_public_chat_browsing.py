@@ -9,7 +9,7 @@ from selenium.common.exceptions import NoSuchElementException, TimeoutException,
 
 from tests import marks, run_in_parallel, pytest_config_global, transl
 from tests.base_test_case import create_shared_drivers, MultipleSharedDeviceTestCase
-from views.chat_view import CommunityView
+from views.chat_view import CommunityView, ChatView
 from views.dbs.waku_backup import user as waku_user
 from views.sign_in_view import SignInView
 
@@ -71,6 +71,7 @@ class TestCommunityOneDeviceMerged(MultipleSharedDeviceTestCase):
             self.home.get_to_community_channel_from_home(self.community_name)
         message_to_delete = "message to delete and undo"
         self.channel.send_message(message_to_delete)
+        self.channel.chat_element_by_text(message_to_delete).wait_for_sent_state()
         self.channel.delete_message_in_chat(message_to_delete)
         try:
             self.channel.element_by_text("Undo").click()
@@ -245,7 +246,7 @@ class TestCommunityOneDeviceMerged(MultipleSharedDeviceTestCase):
     @marks.testrail_id(703503)
     def test_community_discovery(self):
         try:
-            # workaround for case if a user is logged out in  the previous test
+            # workaround for case if a user is logged out in the previous test
             self.sign_in.get_user_profile_by_index(index=1).click()
             self.sign_in.sign_in()
         except NoSuchElementException:
@@ -284,9 +285,11 @@ class TestCommunityOneDeviceMerged(MultipleSharedDeviceTestCase):
                 # if community_name == 'Status':
                 self.home.just_fyi("Check Status community screen")
                 card.click()
+                self.community_view.join_button.save_new_screenshot_of_element('status_community_join_button_aaa.png')
                 if self.community_view.join_button.is_element_differs_from_template(
                         'status_community_join_button.png'):
                     self.errors.append("Status community Join button is different from expected template.")
+                self.community_view.community_logo.save_new_screenshot_of_element('status_community_logo_aaa.png')
                 if self.community_view.community_logo.is_element_differs_from_template('status_community_logo.png'):
                     self.errors.append("Status community logo is different from expected template.")
 
@@ -324,7 +327,8 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
         self.home_1.get_chat(self.username_2).wait_for_visibility_of_element()
         self.chat_1 = self.home_1.get_chat(self.username_2).click()
         self.chat_1.send_message('hey')
-        self.chat_2 = self.home_2.get_chat(self.username_1).click()
+        self.chat_2 = self.home_2.get_chat(self.username_1).click_until_presence_of_element(
+            ChatView(self.drivers[1]).chat_message_input)
         # self.chat_2.send_message(self.text_message)
         # [home.click_system_back_button_until_element_is_shown() for home in self.homes]
         self.home_1.navigate_back_to_home_view()
@@ -503,8 +507,9 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
         self.channel_2.navigate_back_to_chat_view()
 
         self.channel_2.just_fyi("Can reply to images")
-        self.channel_2.chat_element_by_text(image_description).long_press_element_by_coordinate(rel_x=0.8, rel_y=0.8)
-        self.channel_2.reply_message_button.click()
+        # self.channel_2.chat_element_by_text(image_description).long_press_element_by_coordinate(rel_x=0.8, rel_y=0.8)
+        # self.channel_2.reply_message_button.click()
+        self.channel_2.quote_message(image_description)
         message_text = 'reply to image'
         self.channel_2.chat_message_input.send_keys(message_text)
         self.channel_2.send_message_button.click()
@@ -908,7 +913,7 @@ class TestCommunityMultipleDeviceMergedTwo(MultipleSharedDeviceTestCase):
         self.device_2.just_fyi("Sender edits the message with a mention")
         chat_element = self.channel_2.chat_element_by_text(self.username_1)
         chat_element.wait_for_sent_state()
-        chat_element.long_press_element_by_coordinate()
+        chat_element.long_press_element()
         edit_done = False
         expected_message = ""
         try:

@@ -97,6 +97,7 @@
     quo.components.list-items.quiz-item.view
     quo.components.list-items.saved-address.view
     quo.components.list-items.saved-contact-address.view
+    quo.components.list-items.token-info.view
     quo.components.list-items.token-network.view
     quo.components.list-items.token-value.view
     quo.components.list-items.user
@@ -348,6 +349,7 @@
 (def quiz-item quo.components.list-items.quiz-item.view/view)
 (def saved-address quo.components.list-items.saved-address.view/view)
 (def saved-contact-address quo.components.list-items.saved-contact-address.view/view)
+(def token-info quo.components.list-items.token-info.view/view)
 (def token-network quo.components.list-items.token-network.view/view)
 (def token-value quo.components.list-items.token-value.view/view)
 (def user quo.components.list-items.user/user)

@@ -244,7 +244,10 @@
                                              first
                                              key)
          ownership-status            (get ownership-status-by-address owner-address)
-         collectibles                (data-store/rpc->collectibles collectibles)
+         collectibles                (->> collectibles
+                                          data-store/rpc->collectibles
+                                          (map #(update % :ownership distinct))
+                                          vec)
          pending-requests            (dec (get-in db [:wallet :ui :collectibles :pending-requests]))
          ;; check if collectibles are updating (never fetched and cached before) for this address
          updating-chains             (-> (select-keys
@@ -301,16 +304,20 @@
     old-value
     new-value))
 
-(def merge-skipping-empty-values (partial merge-with keep-not-empty-value))
-
 (rf/reg-event-fx
  :wallet/get-collectible-details-done
  (fn [{db :db} [{:keys [message]}]]
    (let [response                      (cske/transform-keys transforms/->kebab-case-keyword
                                                             (transforms/json->clj message))
-         {[collectible] :collectibles} response]
+         {[collectible] :collectibles} response
+         known-collectible-info        (get-in db [:wallet :ui :collectible :details])
+         merged-collectible            (as-> known-collectible-info c
+                                         (merge-with keep-not-empty-value
+                                                     c
+                                                     collectible)
+                                         (update c :ownership distinct))]
      (if collectible
-       {:db (update-in db [:wallet :ui :collectible :details] merge-skipping-empty-values collectible)}
+       {:db (assoc-in db [:wallet :ui :collectible :details] merged-collectible)}
        (log/error "failed to get collectible details"
                   {:event    :wallet/get-collectible-details-done
                    :response response})))))

@@ -10,12 +10,13 @@
 (rf/reg-event-fx
  :wallet.tokens/get-token-list
  (fn [{:keys [db]}]
-   {:db (assoc-in db [:wallet :ui :loading :token-list] true)
-    :fx [[:json-rpc/call
-          [{:method     "wallet_getTokenList"
-            :params     []
-            :on-success [:wallet.tokens/store-token-list]
-            :on-error   [:wallet.tokens/get-token-list-failed]}]]]}))
+   (when-not (get-in db [:wallet :tokens])
+     {:db (assoc-in db [:wallet :ui :loading :token-list] true)
+      :fx [[:json-rpc/call
+            [{:method     "wallet_getTokenList"
+              :params     []
+              :on-success [:wallet.tokens/store-token-list]
+              :on-error   [:wallet.tokens/get-token-list-failed]}]]]})))
 
 (defn store-token-list
   [{:keys [db]} [{:keys [data]}]]

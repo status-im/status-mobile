@@ -83,3 +83,10 @@
    1000001   "1M"
    10000000  "10M"
    100000000 "100M"))
+
+(deftest from-hex-test
+  (is (= (money/bignumber "2840425681744351250") (money/from-hex "276b381bbb44d012")))
+  (is (= (money/bignumber "0") (money/from-hex "0")))
+  (is (= (money/bignumber "255") (money/from-hex "ff")))
+  (is (= (money/bignumber "4294967295") (money/from-hex "ffffffff")))
+  (is (= (money/bignumber "12345678901234567890") (money/from-hex "ab54a98ceb1f0ad2"))))

@@ -8,6 +8,7 @@
     [legacy.status-im.ui.components.topbar :as topbar]
     [legacy.status-im.ui.screens.wakuv2-settings.styles :as styles]
     [re-frame.core :as re-frame]
+    [react-native.safe-area :as safe-area]
     [utils.i18n :as i18n]))
 
 (defn navigate-to-add-node
@@ -27,7 +28,7 @@
 (views/defview wakuv2-settings
   []
   (views/letsubs [nodes [:wakuv2-nodes/list]]
-    [:<>
+    [react/view {:flex 1 :padding-bottom (safe-area/get-bottom)}
      [topbar/topbar
       {:title (i18n/label :t/wakuv2-settings)
        :navigation :none

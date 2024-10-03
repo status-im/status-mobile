@@ -2,18 +2,23 @@
   (:require [clojure.string :as string]
             [quo.core :as quo]
             [react-native.core :as rn]
+            [react-native.platform :as platform]
             [status-im.constants :as constants]
             [status-im.contexts.wallet.sheets.slippage-settings.style :as style]
             [utils.i18n :as i18n]
-            [utils.number]
+            [utils.money :as money]
+            [utils.number :as number]
             [utils.re-frame :as rf]))
 
 (defn- validate-slippage
   [slippage]
-  (let [slippage-value (utils.number/parse-float slippage)]
+  (let [slippage-value (number/parse-float slippage)]
     (cond
       (<= slippage-value 0)
       {:message (i18n/label :t/slippage-should-be-more-than-0)
+       :type    :error}
+      (> slippage-value constants/max-slippage)
+      {:message (i18n/label :t/slippage-cant-be-more-than-30)
        :type    :error}
       (> (count (second (string/split slippage ".")))
          constants/max-slippage-decimal-places)
@@ -33,14 +38,37 @@
     (subs s 0 (dec (count s)))
     (str s k)))
 
+(defn- calculate-receive-amount
+  [asset-to-receive amount-out max-slippage]
+  (let [receive-token-decimals    (:decimals asset-to-receive)
+        amount-out-whole-number   (number/hex->whole amount-out receive-token-decimals)
+        amount-out-num            (number/to-fixed amount-out-whole-number
+                                                   (min constants/min-token-decimals-to-display
+                                                        receive-token-decimals))
+        slippage-num              (-> (money/bignumber amount-out-num)
+                                      (money/mul (money/bignumber max-slippage))
+                                      (money/div (money/bignumber 100)))
+        amount-out-minus-slippage (money/sub (money/bignumber amount-out-num) slippage-num)
+        receive-amount            (if (money/greater-than amount-out-minus-slippage
+                                                          (money/bignumber 0))
+                                    (str amount-out-minus-slippage)
+                                    0)]
+    receive-amount))
+
 (defn view
   []
   (let [current-slippage                (rf/sub [:wallet/swap-max-slippage])
         account-color                   (rf/sub [:wallet/current-viewing-account-color])
+        asset-to-receive                (rf/sub [:wallet/swap-asset-to-receive])
+        amount-out                      (rf/sub [:wallet/swap-proposal-amount-out])
         [max-slippage set-max-slippage] (rn/use-state (str current-slippage))
         [error set-error]               (rn/use-state nil)
         [custom? set-custom?]           (rn/use-state (not-any? #{current-slippage}
                                                                 constants/slippages))
+        receive-token-symbol            (:symbol asset-to-receive)
+        receive-amount                  (calculate-receive-amount asset-to-receive
+                                                                  amount-out
+                                                                  max-slippage)
         handle-slippage-change          (rn/use-callback
                                          (fn [value]
                                            (let [new-slippage (update-string-on-keypress value
@@ -50,7 +78,8 @@
                                          [max-slippage set-max-slippage set-error])
         on-select-slippage              (rn/use-callback (fn [slippage]
                                                            (set-max-slippage (str slippage))
-                                                           (set-custom? (not slippage)))
+                                                           (set-custom? (nil? slippage))
+                                                           (when slippage (set-error nil)))
                                                          [set-max-slippage set-custom?])
         save-disabled?                  (rn/use-memo (fn []
                                                        (or (= max-slippage (str current-slippage))
@@ -73,19 +102,23 @@
              [quo/drawer-action
               (cond-> {:title    (str slippage "%")
                        :on-press #(on-select-slippage slippage)}
-                (= (str slippage) max-slippage) (assoc :state :selected))])
+                (and (= (str slippage) max-slippage) (not custom?)) (assoc :state :selected))])
            constants/slippages)
       [quo/drawer-action
        (cond-> {:title       (i18n/label :t/custom)
                 :action      :input
                 :on-press    #(on-select-slippage nil)
-                :input-props {:auto-focus          true
-                              :customization-color account-color
-                              :placeholder         (i18n/label :t/type-slippage)
-                              :right-icon          {:icon-name :i/percentage
-                                                    :on-press  identity
-                                                    :style-fn  style/percentage-icon}
-                              :value               max-slippage}}
+                :input-props {:auto-focus               true
+                              :customization-color      account-color
+                              :placeholder              (i18n/label :t/type-slippage)
+                              :right-icon               {:icon-name :i/percentage
+                                                         :on-press  identity
+                                                         :style-fn  style/percentage-icon}
+                              :value                    max-slippage
+                              :show-soft-input-on-focus false
+                              :on-focus                 (fn []
+                                                          (when platform/android?
+                                                            (rf/dispatch [:dismiss-keyboard])))}}
          custom? (assoc :state :selected))]]
      (when (and custom? error)
        [quo/info-message
@@ -107,8 +140,8 @@
        :description          :top
        :context-tag-props    {:size   24
                               :type   :token
-                              :token  "USDT"
-                              :amount "99.97"} ;; will be replaced with real data later
+                              :token  receive-token-symbol
+                              :amount receive-amount}
        :description-top-text (i18n/label :t/receive-at-least)}]
      (when custom?
        [quo/numbered-keyboard

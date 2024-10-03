@@ -24,6 +24,8 @@ in mkShell {
       clojure maven watchman
       # other nice to have stuff
       yarn nodejs python310 maestro
+      # Required for /scripts/compress_image.sh script
+      imagemagick
     ] # and some special cases
       ++ lib.optionals   stdenv.isDarwin ([ cocoapods clang tcl idb-companion ] ++ appleSDKFrameworks)
       ++ lib.optionals (!stdenv.isDarwin) [ gcc8 ]
