@@ -1,7 +1,6 @@
 (ns status-im.navigation.screens
   (:require
     [legacy.status-im.ui.screens.screens :as old-screens]
-    [legacy.status-im.utils.core :as utils]
     [quo.foundations.colors :as colors]
     [status-im.common.emoji-picker.view :as emoji-picker]
     [status-im.common.enter-seed-phrase.view :as enter-seed-phrase]
@@ -141,7 +140,9 @@
     [status-im.contexts.wallet.wallet-connect.modals.sign-transaction.view :as
      wallet-connect-sign-transaction]
     [status-im.navigation.options :as options]
-    [status-im.navigation.transitions :as transitions]))
+    [status-im.navigation.transitions :as transitions]
+    [utils.collection]))
+   
 
 (defn chat-screens
   []
@@ -1004,4 +1005,4 @@
        :component feature-flags/view}])))
 
 (def screens-by-name
-  (utils/index-by :name (screens)))
+  (utils.collection/index-by :name (screens)))
