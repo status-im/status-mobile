@@ -74,24 +74,9 @@
       get-db-current-request-event
       get-request-params))
 
-(defn get-network-from-request
+(defn get-total-connected-dapps
   [db]
   (-> db
-      get-db-current-request-event
-      (get-in [:params :chainId])))
-
-(defn get-networks-from-proposal
-  "Find networks from current proposal as a string of comma separated values"
-  [db & [proposal]]
-  (let [current-proposal (get-in db [:wallet-connect/current-proposal :request])]
-    (cond
-      current-proposal
-      (->> (get-in db [:wallet-connect/current-proposal :session-networks])
-           vec
-           (string/join ","))
-
-      proposal
-      (->> (or (get-in proposal [:params :requiredNamespaces :eip155 :chains])
-               (get-in proposal [:requiredNamespaces :eip155 :chains]))
-           vec
-           (string/join ",")))))
+      :wallet-connect/sessions
+      count
+      inc))

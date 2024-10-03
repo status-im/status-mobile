@@ -26,25 +26,16 @@
     (let [session {:peer {:metadata {}}}]
       (is (nil? (sut/get-dapp-redirect-url session))))))
 
-(deftest get-network-from-request-test
-  (testing "returns the correct chainId from the request"
-    (let [db {:wallet-connect/current-request {:event {:params {:chainId "eip155:1"}}}}]
-      (is (= "eip155:1" (sut/get-network-from-request db)))))
+(deftest get-total-connected-dapps-test
+  (testing "returns the total number of connected dApps plus 1"
+    (let [db {:wallet-connect/sessions [{:url "https://dapp1.com"}
+                                        {:url "https://dapp2.com"}]}]
+      (is (= 3 (sut/get-total-connected-dapps db)))))
 
-  (testing "returns nil if chainId is not present in the request"
-    (let [db {:wallet-connect/current-request {:event {:params {}}}}]
-      (is (nil? (sut/get-network-from-request db))))))
+  (testing "returns 1 when there are no connected dApps"
+    (let [db {:wallet-connect/sessions []}]
+      (is (= 1 (sut/get-total-connected-dapps db)))))
 
-(deftest get-networks-from-proposal-test
-  (testing "returns session-networks as a comma-separated string when current-proposal exists"
-    (let [db {:wallet-connect/current-proposal {:request          {}
-                                                :session-networks ["eip155:1" "eip155:137"]}}]
-      (is (= "eip155:1,eip155:137" (sut/get-networks-from-proposal db)))))
-
-  (testing "returns required namespaces from proposal when proposal is provided"
-    (let [proposal {:params {:requiredNamespaces {:eip155 {:chains ["eip155:1" "eip155:10"]}}}}]
-      (is (= "eip155:1,eip155:10" (sut/get-networks-from-proposal nil proposal)))))
-
-  (testing "returns nil if no session-networks or requiredNamespaces are found"
-    (let [db {}]
-      (is (= nil (sut/get-networks-from-proposal db))))))
+  (testing "handles nil sessions correctly"
+    (let [db {:wallet-connect/sessions nil}]
+      (is (= 1 (sut/get-total-connected-dapps db))))))

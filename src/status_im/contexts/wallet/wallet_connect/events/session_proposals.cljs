@@ -135,60 +135,53 @@
                  :proposal-request current-proposal
                  :session-networks session-networks
                  :address          current-address
-                 :on-success       [:wallet-connect/approve-session-success current-proposal]
-                 :on-fail          [:wallet-connect/approve-session-error current-proposal]}])
+                 :on-success       [:wallet-connect/approve-session-success]
+                 :on-fail          [:wallet-connect/approve-session-error]}])
              [:dispatch [:dismiss-modal :screen/wallet.wallet-connect-session-proposal]]]}
        {:fx [[:dispatch [:wallet-connect/no-internet-toast]]]}))))
 
 (rf/reg-event-fx :wallet-connect/approve-session-success
- (fn [{:keys [db]} [proposal session]]
-   (let [networks              (data-store/get-networks-from-proposal db proposal)
-         total-connected-dapps (-> db
-                                   :wallet-connect/sessions
-                                   count
-                                   inc)]
+ (fn [{:keys [db]} [session]]
+   (let [total-connected-dapps (data-store/get-total-connected-dapps db)]
      {:fx [[:dispatch [:wallet-connect/on-new-session session]]
            [:dispatch [:wallet-connect/reset-current-session-proposal]]
            [:dispatch [:wallet-connect/redirect-to-dapp (data-store/get-dapp-redirect-url session)]]
            [:dispatch
             [:centralized-metrics/track :metric/dapp-session
-             {:networks networks
-              :action   :approved
-              :result   :success}]]
+             {:action :approved
+              :result :success}]]
            [:dispatch
             [:centralized-metrics/track :metric/dapp-connected
-             {:networks              networks
-              :total_connected_dapps total-connected-dapps}]]]})))
+             {:total_connected_dapps total-connected-dapps}]]]})))
 
 (rf/reg-event-fx :wallet-connect/approve-session-error
- (fn [{:keys [db]} [proposal error]]
-   (let [networks (data-store/get-networks-from-proposal db proposal)]
-     (log/error "Wallet Connect session approval failed"
-                {:error error
-                 :event :wallet-connect/approve-session})
-     {:fx [[:dispatch [:wallet-connect/reset-current-session-proposal]]
-           [:dispatch
-            [:centralized-metrics/track :metric/dapp-session
-             {:networks networks
-              :action   :approved
-              :result   :fail}]]]})))
+ (fn [_ [error]]
+   (log/error "Wallet Connect session approval failed"
+              {:error error
+               :event :wallet-connect/approve-session})
+   {:fx [[:dispatch [:wallet-connect/reset-current-session-proposal]]
+         [:dispatch
+          [:centralized-metrics/track :metric/dapp-session
+           {:action :approved
+            :result :fail}]]]}))
 
 (rf/reg-event-fx
  :wallet-connect/reject-session-proposal
  (fn [{:keys [db]} [proposal]]
    (let [web3-wallet                      (get db :wallet-connect/web3-wallet)
          {:keys [request response-sent?]} (:wallet-connect/current-proposal db)
-         networks                         (data-store/get-networks-from-proposal db proposal)]
+         networks                         (networks/get-proposal-networks (or proposal request))
+         rejected?                        (nil? proposal)]
      {:fx [(when-not response-sent?
              [:effects.wallet-connect/reject-session-proposal
               {:web3-wallet web3-wallet
                :proposal    (or proposal request)
                :on-success  [:centralized-metrics/track :metric/dapp-session
                              {:networks networks
-                              :action   :rejected
+                              :action   (if rejected? :rejected :not_supported)
                               :result   :success}]
                :on-error    [:centralized-metrics/track :metric/dapp-session
                              {:networks networks
-                              :action   :rejected
+                              :action   (if rejected? :rejected :not_supported)
                               :result   :fail}]}])
            [:dispatch [:wallet-connect/reset-current-session-proposal]]]})))

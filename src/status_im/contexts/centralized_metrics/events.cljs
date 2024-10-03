@@ -53,7 +53,7 @@
 (rf/reg-event-fx
  :centralized-metrics/track
  (fn [{:keys [db]} [event-name data]]
-   (let [event-id (keyword (name event-name))]
+   (let [event-id (name event-name)]
      (when (push-event? db)
        {:fx [[:effects.centralized-metrics/track
               (tracking/key-value-event event-id data)]]}))))
