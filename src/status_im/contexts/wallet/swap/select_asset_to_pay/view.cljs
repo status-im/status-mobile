@@ -20,10 +20,15 @@
 
 (defn- assets-view
   [search-text on-change-text]
-  (let [on-token-press (fn [token]
-                         (rf/dispatch [:wallet.swap/start
-                                       {:asset-to-pay     token
-                                        :open-new-screen? false}]))]
+  (let [snt-token      (rf/sub [:wallet/token-by-symbol "SNT"])
+        eth-token      (rf/sub [:wallet/token-by-symbol "ETH"])
+        on-token-press (fn [token]
+                         (let [pay-token-symbol (:symbol token)
+                               asset-to-receive (if (= pay-token-symbol "SNT") eth-token snt-token)]
+                           (rf/dispatch [:wallet.swap/start
+                                         {:asset-to-pay     token
+                                          :asset-to-receive asset-to-receive
+                                          :open-new-screen? false}])))]
     [:<>
      [search-input search-text on-change-text]
      [asset-list/view

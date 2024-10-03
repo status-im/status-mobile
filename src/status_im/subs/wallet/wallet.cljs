@@ -492,7 +492,7 @@
 
 (rf/reg-sub
  :wallet/token-by-symbol
- :<- [:wallet/current-viewing-account]
+ :<- [:wallet/current-viewing-account-or-default]
  :<- [:wallet/network-details]
  (fn [[{:keys [tokens]} networks] [_ token-symbol chain-ids]]
    (->> (utils/tokens-with-balance tokens networks chain-ids)
