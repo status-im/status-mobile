@@ -141,7 +141,7 @@
     [status-im.navigation.options :as options]
     [status-im.navigation.transitions :as transitions]
     [utils.collection]))
-   
+
 
 (defn chat-screens
   []
