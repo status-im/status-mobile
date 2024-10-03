@@ -298,14 +298,13 @@ class BaseView(object):
         self.deny_button = Button(self.driver, translation_id="deny", uppercase=True)
         self.continue_button = Button(self.driver, translation_id="continue", uppercase=True)
         self.ok_button = Button(self.driver, xpath="//*[@text='OK' or @text='Ok']")
-        self.next_button = Button(self.driver, translation_id="next")
         self.add_button = Button(self.driver, translation_id="add")
         self.save_button = Button(self.driver, translation_id="save")
-        self.done_button = Button(self.driver, translation_id="done")
+        self.done_button = Button(self.driver, accessibility_id="Done")
         self.delete_button = Button(self.driver, translation_id="delete", uppercase=True)
-        self.ok_continue_button = Button(self.driver, xpath="//*[@text='OK, CONTINUE' or @text='Okay, continue']")
+        self.ok_continue_button = Button(self.driver, accessibility_id="Okay, continue")
         self.discard_button = Button(self.driver, xpath="//*[@text='DISCARD']")
-        self.confirm_button = Button(self.driver, translation_id='confirm', uppercase=True)
+        self.confirm_button = Button(self.driver, accessibility_id='Confirm')
 
         self.cross_icon = Button(self.driver, xpath="(//android.widget.ImageView[@content-desc='icon'])[1]")
         self.close_sticker_view_icon = Button(self.driver, xpath="//androidx.appcompat.widget.LinearLayoutCompat")
@@ -314,7 +313,7 @@ class BaseView(object):
         self.navigate_up_button = Button(self.driver, accessibility_id="Navigate Up")
         self.show_roots_button = Button(self.driver, accessibility_id="Show roots")
         self.get_started_button = Button(self.driver, translation_id="get-started")
-        self.ok_got_it_button = Button(self.driver, translation_id="ok-got-it")
+        self.ok_got_it_button = Button(self.driver, accessibility_id="Okay, got it")
         self.cross_icon_inside_welcome_screen_button = Button(self.driver, accessibility_id='hide-home-button')
         self.status_in_background_button = Button(self.driver, xpath="//*[contains(@content-desc,'Status')]")
         self.cancel_button = Button(self.driver, translation_id="cancel", uppercase=True)
@@ -324,6 +323,7 @@ class BaseView(object):
         self.sign_in_phrase = SignInPhraseText(self.driver)
         self.toast_content_element = BaseElement(self.driver, accessibility_id="toast-content")
         self.next_button = Button(self.driver, accessibility_id="next-button")
+        self.native_alert_title = Text(self.driver, xpath="//*[@resource-id='android:id/alertTitle']")
 
         # share contact screen
         self.show_qr_code_button = Button(self.driver, accessibility_id="show-qr-button")
@@ -332,7 +332,8 @@ class BaseView(object):
         self.sharing_text_native = Text(self.driver, xpath="//*[@resource-id='android:id/content_preview_text']")
 
         # checkboxes and toggles
-        self.checkbox_button = CheckBox(self.driver, accessibility_id="checkbox-off")
+        self.checkbox_button = CheckBox(
+            self.driver, xpath="//*[@content-desc='checkbox-off'][@resource-id='checkbox-component']")
         self.slide_button_track = SlideButton(self.driver)
 
         # external browser
@@ -770,7 +771,7 @@ class BaseView(object):
         self.close_native_device_dialog("MmsService")
 
     def set_device_to_offline(self):
-        # setting network connection to data only and switching off wifi
+        # setting network connection to data only and switching off Wi-Fi
         self.driver.set_network_connection(2)
         self.driver.toggle_wifi()
 

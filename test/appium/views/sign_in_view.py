@@ -154,6 +154,11 @@ class SignInView(BaseView):
         self.create_profile_button = Button(self.driver, accessibility_id='new-to-status-button')
         self.not_now_button = Button(self.driver, xpath="//*[@text='Not now']")
         self.sync_or_recover_profile_button = Button(self.driver, accessibility_id='already-use-status-button')
+        self.scan_sync_code_button = Button(self.driver, accessibility_id="scan-sync-code-option-card")
+        self.enter_sync_code_button = Button(self.driver, accessibility_id="Enter sync code")
+        self.enter_sync_code_input = EditBox(self.driver, accessibility_id="enter-sync-code-input")
+        self.progress_screen_title = Text(self.driver, accessibility_id="progress-screen-title")
+        self.try_seed_phrase_button = Button(self.driver, accessibility_id="try-seed-phrase-button")
 
         self.migration_password_input = EditBox(self.driver, accessibility_id="enter-password-input")
         self.access_key_button = AccessKeyButton(self.driver)
@@ -215,6 +220,7 @@ class SignInView(BaseView):
         self.show_profiles_button = Button(self.driver, accessibility_id="show-profiles")
         self.plus_profiles_button = Button(self.driver, accessibility_id="show-new-account-options")
         self.create_new_profile_button = Button(self.driver, accessibility_id="create-new-profile")
+        self.sync_or_recover_new_profile_button = Button(self.driver, accessibility_id="multi-profile")
         self.remove_profile_button = Button(self.driver, accessibility_id="remove-profile")
 
     def set_password(self, password: str):
@@ -282,21 +288,24 @@ class SignInView(BaseView):
         return self.get_home_view()
 
     def recover_access(self, passphrase: str, password: str = common_password, keycard=False,
-                       enable_notifications=False, second_user=False, username='Restore user', set_image=False):
+                       enable_notifications=False, second_user=False, username='Restore user', set_image=False,
+                       after_sync_code=False):
         self.driver.info("## Recover access(password:%s, keycard:%s)" % (password, str(keycard)), device=False)
 
-        if not second_user:
-            self.terms_and_privacy_checkbox.click()
-            self.sync_or_recover_profile_button.click_until_presence_of_element(self.generate_keys_button)
-            self.not_now_button.wait_and_click()
-        else:
-            self.show_profiles_button.wait_and_click(20)
-            self.plus_profiles_button.click()
-            self.create_new_profile_button.click()
-        self.use_recovery_phrase_button.click()
+        if not after_sync_code:
+            if not second_user:
+                self.terms_and_privacy_checkbox.click()
+                self.sync_or_recover_profile_button.click_until_presence_of_element(self.generate_keys_button)
+                self.not_now_button.wait_and_click()
+            else:
+                self.show_profiles_button.wait_and_click(20)
+                self.plus_profiles_button.click()
+                self.create_new_profile_button.click()
+            self.use_recovery_phrase_button.click()
         self.passphrase_edit_box.send_keys(passphrase)
         self.continue_button.click_until_presence_of_element(self.profile_title_input)
-        self.set_profile(username, set_image)
+        if not after_sync_code:
+            self.set_profile(username, set_image)
         self.set_password(password)
         if enable_notifications:
             self.enable_notifications_button.wait_and_click()
@@ -317,6 +326,23 @@ class SignInView(BaseView):
         self.chats_tab.wait_for_visibility_of_element(30)
         self.driver.info("## Multiaccount is recovered successfully!", device=False)
         return self.get_home_view()
+
+    def sync_profile(self, sync_code: str, first_user: bool = True):
+        if first_user:
+            self.terms_and_privacy_checkbox.click()
+            self.sync_or_recover_profile_button.click()
+            self.not_now_button.click()
+        else:
+            self.show_profiles_button.click()
+            self.plus_profiles_button.click()
+            self.sync_or_recover_new_profile_button.click()
+        self.scan_sync_code_button.click()
+        for checkbox in self.checkbox_button.find_elements():
+            checkbox.click()
+        self.continue_button.click()
+        self.enter_sync_code_button.click()
+        self.enter_sync_code_input.send_keys(sync_code)
+        self.confirm_button.click()
 
     def sign_in(self, password=common_password):
         self.driver.info("## Sign in (password: %s)" % password, device=False)
