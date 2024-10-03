@@ -1,6 +1,6 @@
 (ns status-im.contexts.wallet.send.events-test
   (:require
-    [cljs.test :refer-macros [is testing run-tests]]
+    [cljs.test :refer-macros [is testing]]
     matcher-combinators.test
     [re-frame.db :as rf-db]
     [status-im.contexts.wallet.common.utils.networks :as network-utils]
@@ -710,5 +710,3 @@
                                 :stack-id       stack-id
                                 :start-flow?    start-flow?
                                 :netork-details network-details}])))))))
-
-(run-tests)
