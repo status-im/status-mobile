@@ -18,7 +18,7 @@
 
 (rf/reg-event-fx
  :wallet-connect/disconnect-dapp
- (fn [{:keys [db]} [{:keys [topic on-success on-fail]}]]
+ (fn [{:keys [db]} [{:keys [topic name on-success on-fail]}]]
    (let [web3-wallet    (get db :wallet-connect/web3-wallet)
          network-status (:network/status db)]
      (log/info "Disconnecting dApp session" topic)
@@ -26,10 +26,18 @@
        {:fx [[:effects.wallet-connect/disconnect
               {:web3-wallet web3-wallet
                :topic       topic
-               :on-fail     on-fail
+               :on-fail     (fn []
+                              (rf/dispatch [:centralized-metrics/track-event "dapp-disconnected"
+                                            {:dapp_name name
+                                             :result    :fail}])
+                              (when on-fail
+                                (on-fail)))
                :on-success  (fn []
                               (log/info "Successfully disconnected dApp session" topic)
                               (rf/dispatch [:wallet-connect/delete-session topic])
+                              (rf/dispatch [:centralized-metrics/track-event "dapp-disconnected"
+                                            {:dapp_name name
+                                             :result    :success}])
                               (when on-success
                                 (on-success)))}]]}
        {:fx [[:dispatch [:wallet-connect/no-internet-toast]]]}))))

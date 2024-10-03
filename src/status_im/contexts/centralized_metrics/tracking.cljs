@@ -4,20 +4,20 @@
     [react-native.platform :as platform]))
 
 (defn key-value-event
-  [event-name val-key value]
+  [event-name event-value]
   {:metric
    {:eventName  event-name
     :platform   platform/os
     :appVersion build/app-short-version
-    :eventValue {val-key value}}})
+    :eventValue event-value}})
 
 (defn user-journey-event
   [action]
-  (key-value-event "user-journey" :action action))
+  (key-value-event "user-journey" {:action action}))
 
 (defn navigation-event
   [view-id]
-  (key-value-event "navigation" :viewId view-id))
+  (key-value-event "navigation" {:viewId view-id}))
 
 (def ^:const app-started-event "app-started")
 
@@ -51,15 +51,18 @@
     (navigation-event (name view-id))))
 
 (defn tracked-event
-  [[event-name second-parameter]]
+  [[event-name second-parameter extra-data]]
   (case event-name
     :profile/get-profiles-overview-success
     (user-journey-event app-started-event)
 
     :centralized-metrics/toggle-centralized-metrics
-    (key-value-event "events.metrics-enabled" :enabled second-parameter)
+    (key-value-event "events.metrics-enabled" {:enabled second-parameter})
 
     :set-view-id
     (track-view-id-event second-parameter)
+
+    :centralized-metrics/track-event
+    (key-value-event second-parameter extra-data)
 
     nil))

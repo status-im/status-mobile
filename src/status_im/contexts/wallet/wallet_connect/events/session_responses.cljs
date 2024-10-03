@@ -1,5 +1,6 @@
 (ns status-im.contexts.wallet.wallet-connect.events.session-responses
-  (:require [re-frame.core :as rf]
+  (:require [clojure.string :as string]
+            [re-frame.core :as rf]
             [react-native.wallet-connect :as wallet-connect]
             [status-im.constants :as constants]
             [status-im.contexts.wallet.wallet-connect.utils.data-store :as
@@ -52,7 +53,7 @@
              :data       raw-data
              :rpc-method rpc-method
              :on-error   #(rf/dispatch [:wallet-connect/on-sign-error %])
-             :on-success #(rf/dispatch [:wallet-connect/finish-session-request %])}]]})))
+             :on-success #(rf/dispatch [:wallet-connect/respond-sign-message-success %])}]]})))
 
 (rf/reg-event-fx
  :wallet-connect/respond-sign-typed-data
@@ -66,7 +67,7 @@
              :chain-id   chain-id
              :version    typed-data-version
              :on-error   #(rf/dispatch [:wallet-connect/on-sign-error %])
-             :on-success #(rf/dispatch [:wallet-connect/finish-session-request %])}]]})))
+             :on-success #(rf/dispatch [:wallet-connect/respond-sign-message-success %])}]]})))
 
 (rf/reg-event-fx
  :wallet-connect/respond-send-transaction-data
@@ -79,8 +80,8 @@
              :chain-id   chain-id
              :tx-hash    tx-hash
              :tx-args    tx-args
-             :on-error   #(rf/dispatch [:wallet-connect/on-sign-error %])
-             :on-success #(rf/dispatch [:wallet-connect/finish-session-request %])}]]})))
+             :on-error   #(rf/dispatch [:wallet-connect/respond-send-transaction-error %])
+             :on-success #(rf/dispatch [:wallet-connect/respond-send-transaction-success %])}]]})))
 
 (rf/reg-event-fx
  :wallet-connect/respond-sign-transaction-data
@@ -94,13 +95,25 @@
              :tx-hash    tx-hash
              :tx-params  tx-args
              :on-error   #(rf/dispatch [:wallet-connect/on-sign-error %])
-             :on-success #(rf/dispatch [:wallet-connect/finish-session-request %])}]]})))
+             :on-success #(rf/dispatch [:wallet-connect/respond-sign-message-success %])}]]})))
+
+(rf/reg-event-fx :wallet-connect/respond-sign-message-success
+ (fn [{:keys [db]} [result]]
+   (let [[dapp-name networks] (data-store/get-dapp-name-and-networks db)]
+     (log/info "Successfully signed Wallet Connect request")
+     {:fx [[:dispatch [:wallet-connect/finish-session-request result]]
+           [:dispatch
+            [:centralized-metrics/track-event "dapp-sign"
+             {:dapp_name dapp-name
+              :networks  networks
+              :result    :success}]]]})))
 
 (rf/reg-event-fx
  :wallet-connect/on-sign-error
  (fn [{:keys [db]} [error]]
    (let [{:keys [raw-data address event]} (get db :wallet-connect/current-request)
-         method                           (data-store/get-request-method event)]
+         method                           (data-store/get-request-method event)
+         [dapp-name networks]             (data-store/get-dapp-name-and-networks db)]
      (log/error "Failed to sign Wallet Connect request"
                 {:error                error
                  :address              address
@@ -112,7 +125,39 @@
            [:dispatch
             [:toasts/upsert
              {:type :negative
-              :text (i18n/label :t/something-went-wrong)}]]]})))
+              :text (i18n/label :t/something-went-wrong)}]]
+           [:dispatch
+            [:centralized-metrics/track-event "dapp-sign"
+             {:dapp_name dapp-name
+              :networks  networks
+              :result    :fail}]]]})))
+
+(rf/reg-event-fx
+ :wallet-connect/respond-send-transaction-error
+ (fn [{:keys [db]}]
+   (let [[dapp-name networks] (data-store/get-dapp-name-and-networks db)]
+     (log/error "Failed to send transaction to Wallet Connect")
+     {:fx [[:dispatch [:wallet-connect/dismiss-request-modal]]
+           [:dispatch
+            [:toasts/upsert
+             {:type :negative
+              :text (i18n/label :t/something-went-wrong)}]]
+           [:dispatch
+            [:centralized-metrics/track-event "dapp-send"
+             {:dapp_name dapp-name
+              :networks  networks
+              :result    :fail}]]]})))
+
+(rf/reg-event-fx :wallet-connect/respond-send-transaction-success
+ (fn [{:keys [db]} [result]]
+   (let [[dapp-name networks] (data-store/get-dapp-name-and-networks db)]
+     (log/info "Successfully sent transaction request to Wallet connect")
+     {:fx [[:dispatch
+            [:centralized-metrics/track-event "dapp-send"
+             {:dapp_name dapp-name
+              :networks  networks
+              :result    :success}]]
+           [:dispatch [:wallet-connect/finish-session-request result]]]})))
 
 (rf/reg-event-fx
  :wallet-connect/send-response
@@ -176,9 +221,27 @@
 (rf/reg-event-fx
  :wallet-connect/on-request-modal-dismissed
  (fn [{:keys [db]}]
-   {:fx [(when-not (get-in db [:wallet-connect/current-request :response-sent?])
-           [:dispatch
-            [:wallet-connect/send-response
-             {:error (wallet-connect/get-sdk-error
-                      constants/wallet-connect-user-rejected-error-key)}]])
-         [:dispatch [:wallet-connect/reset-current-request]]]}))
+   (let [{:keys [response-sent? event]} (get db :wallet-connect/current-request)]
+     {:fx [(when-not response-sent?
+             (let [send-method?         (-> event
+                                            (data-store/get-request-method)
+                                            (string/includes? "send"))
+                   [dapp-name networks] (data-store/get-dapp-name-and-networks db)]
+               [:dispatch
+                [:wallet-connect/send-response
+                 {:error (wallet-connect/get-sdk-error
+                          constants/wallet-connect-user-rejected-error-key)}]]
+               (if send-method?
+                 [:dispatch
+                  [:centralized-metrics/track-event "dapp-send"
+                   {:dapp_name dapp-name
+                    :networks  networks
+                    :action    :rejected
+                    :result    :success}]]
+                 [:dispatch
+                  [:centralized-metrics/track-event "dapp-sign"
+                   {:dapp_name dapp-name
+                    :networks  networks
+                    :action    :rejected
+                    :result    :success}]])))
+           [:dispatch [:wallet-connect/reset-current-request]]]})))

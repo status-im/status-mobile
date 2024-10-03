@@ -45,3 +45,7 @@
                           #(rf/dispatch [:profile.login/login-with-biometric-if-available
                                          (get-in db [:profile/login :key-uid])]))
               :shell?   true}]]]})))
+
+(rf/reg-event-fx :centralized-metrics/track-event
+ "Track an event, :centralized-metrics/track-event event-name {:kebab_case_key value}"
+ (fn [_ _] {}))

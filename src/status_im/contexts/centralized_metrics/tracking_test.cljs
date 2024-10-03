@@ -18,7 +18,7 @@
                        :platform   platform-os
                        :appVersion app-version
                        :eventValue {val-key value}}}]
-      (is (= expected (tracking/key-value-event event-name val-key value))))))
+      (is (= expected (tracking/key-value-event event-name {val-key value}))))))
 
 (deftest user-journey-event-test
   (testing "creates correct user journey event"
