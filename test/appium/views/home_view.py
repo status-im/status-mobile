@@ -399,7 +399,7 @@ class HomeView(BaseView):
         if self.toast_content_element.is_element_displayed(10):
             self.toast_content_element.wait_for_invisibility_of_element()
         try:
-            self.notifications_unread_badge.wait_for_visibility_of_element(30)
+            self.notifications_unread_badge.wait_for_visibility_of_element(60)
         except TimeoutException:
             pass
         self.open_activity_center_button.click_until_presence_of_element(self.close_activity_centre)
