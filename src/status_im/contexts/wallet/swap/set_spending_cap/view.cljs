@@ -254,6 +254,7 @@
     [rn/view {:style style/container}
      [floating-button-page/view
       {:footer-container-padding 0
+       :content-container-style  style/floating-button-page-content-container
        :header                   [quo/page-nav
                                   {:icon-name           :i/close
                                    :on-press            events-helper/navigate-back
