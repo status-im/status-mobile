@@ -19,5 +19,5 @@
 Make sure to compress images before using into project.
 ```
 make shell
-./scrips/compress_image.sh image_path
+./scripts/compress_image.sh image_path
 ```
