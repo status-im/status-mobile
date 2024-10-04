@@ -158,16 +158,14 @@
         active-screen?                            (= view-id current-screen-id)
         bottom                                    (safe-area/get-bottom)
         [crypto-currency? set-crypto-currency]    (rn/use-state initial-crypto-currency?)
-        on-navigate-back                          on-navigate-back
         handle-on-confirm                         (fn [amount]
                                                     (rf/dispatch [:wallet/set-token-amount-to-send
                                                                   {:amount   amount
                                                                    :stack-id current-screen-id}]))
         {fiat-currency :currency}                 (rf/sub [:profile/profile])
-        {token-symbol :symbol
+        {token-symbol   :symbol
          token-networks :networks
-         :as
-         token}                                   (rf/sub [:wallet/wallet-send-token])
+         :as            token}                    (rf/sub [:wallet/wallet-send-token])
         send-from-locked-amounts                  (rf/sub [:wallet/wallet-send-from-locked-amounts])
         {:keys [total-balance]
          :as   token-by-symbol}                   (rf/sub [:wallet/token-by-symbol
@@ -196,10 +194,8 @@
                                                     (utils/cut-crypto-decimals-to-fit-usd-cents
                                                      token-balance
                                                      usd-conversion-rate)
-                                                    (-> (money/crypto->fiat
-                                                         token-balance
-                                                         conversion-rate)
-                                                        utils/cut-fiat-balance-to-two-decimals))
+                                                    (utils/cut-fiat-balance-to-two-decimals
+                                                     (money/crypto->fiat token-balance conversion-rate)))
         input-value                               (controlled-input/input-value input-state)
         valid-input?                              (not (or (controlled-input/empty-value? input-state)
                                                            (controlled-input/input-error input-state)))
@@ -389,7 +385,8 @@
        :button-one-label (if should-try-again?
                            (i18n/label :t/try-again)
                            button-one-label)
-       :button-one-props (merge (when-not should-try-again? button-one-props)
+       :button-one-props (merge (when-not should-try-again?
+                                  button-one-props)
                                 {:disabled? (or loading-routes?
                                                 (and (not should-try-again?) confirm-disabled?))
                                  :on-press  (cond
