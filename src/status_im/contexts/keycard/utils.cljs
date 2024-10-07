@@ -18,28 +18,31 @@
 (defn validate-application-info
   [profile-key-uid {:keys [key-uid paired? pin-retry-counter puk-retry-counter] :as application-info}]
   (let [profile-mismatch? (or (nil? profile-key-uid) (not= profile-key-uid key-uid))]
-    (log/debug "[keycard] login-with-keycard"
+    (log/debug "[keycard]"              "login-with-keycard"
                "empty application info" (empty? application-info)
                "no key-uid"             (empty? key-uid)
                "profile-mismatch?"      profile-mismatch?
                "no pairing"             paired?)
     (cond
       (empty? application-info)
-      :not-keycard
+      :keycard/error.not-keycard
 
       (empty? (:key-uid application-info))
-      :keycard-blank
+      :keycard/error.keycard-blank
 
       profile-mismatch?
-      :keycard-wrong
+      :keycard/error.keycard-wrong
 
       (not paired?)
-      :keycard-unpaired
+      :keycard/error.keycard-unpaired
 
       (and (zero? pin-retry-counter)
            (or (nil? puk-retry-counter)
                (pos? puk-retry-counter)))
-      nil
+      :keycard/error.keycard-frozen
+
+      (zero? puk-retry-counter)
+      :keycard/error.keycard-locked
 
       :else
       nil)))

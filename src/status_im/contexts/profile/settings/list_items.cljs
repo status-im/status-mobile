@@ -1,6 +1,7 @@
 (ns status-im.contexts.profile.settings.list-items
   (:require [status-im.common.not-implemented :as not-implemented]
             [status-im.config :as config]
+            [status-im.feature-flags :as ff]
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]))
 
@@ -54,9 +55,9 @@
        :image       :icon
        :blur?       true
        :action      :arrow})
-    (when config/show-not-implemented-features?
+    (when (ff/enabled? ::ff/keycard.migrate-profile)
       {:title       (i18n/label :t/keycard)
-       :on-press    not-implemented/alert
+       :on-press    #(rf/dispatch [:open-modal :screen/settings.keycard])
        :image-props :i/keycard
        :image       :icon
        :blur?       true
