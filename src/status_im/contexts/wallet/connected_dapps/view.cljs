@@ -20,7 +20,6 @@
   (rf/dispatch
    [:wallet-connect/disconnect-dapp
     {:topic      topic
-     :name       name
      :on-success (fn []
                    (rf/dispatch [:toasts/upsert
                                  {:id   :dapp-disconnect-success

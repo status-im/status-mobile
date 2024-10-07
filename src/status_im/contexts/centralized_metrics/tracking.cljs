@@ -51,7 +51,7 @@
     (navigation-event (name view-id))))
 
 (defn tracked-event
-  [[event-name second-parameter extra-data]]
+  [[event-name second-parameter]]
   (case event-name
     :profile/get-profiles-overview-success
     (user-journey-event app-started-event)
@@ -61,8 +61,5 @@
 
     :set-view-id
     (track-view-id-event second-parameter)
-
-    :centralized-metrics/track-event
-    (key-value-event second-parameter extra-data)
 
     nil))

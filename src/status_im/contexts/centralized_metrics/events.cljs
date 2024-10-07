@@ -46,6 +46,14 @@
                                          (get-in db [:profile/login :key-uid])]))
               :shell?   true}]]]})))
 
-(rf/reg-event-fx :centralized-metrics/track-event
- "Track an event, :centralized-metrics/track-event event-name {:kebab_case_key value}"
- (fn [_ _] {}))
+(rf/reg-fx :effects.centralized-metrics/track
+ (fn [event]
+   (native-module/add-centralized-metric event)))
+
+(rf/reg-event-fx
+ :centralized-metrics/track
+ (fn [{:keys [db]} [event-name data]]
+   (let [event-id (keyword (name event-name))]
+     (when (push-event? db)
+       {:fx [[:effects.centralized-metrics/track
+              (tracking/key-value-event event-id data)]]}))))
