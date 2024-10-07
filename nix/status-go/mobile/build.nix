@@ -1,5 +1,6 @@
 { callPackage, lib, buildGoPackage
 , androidPkgs, openjdk, gomobile, xcodeWrapper, removeReferencesTo
+, go-bindata, mockgen, protobuf3_20, protoc-gen-go
 , meta
 , source
 , platform ? "android"
@@ -15,7 +16,7 @@ let
   isAndroid = platform == "android";
   enforceXCodeAvailable = callPackage ./enforceXCodeAvailable.nix { };
 
-in buildGoPackage {
+in buildGoPackage rec {
   pname = source.repo;
   version = "${source.cleanVersion}-${source.shortRev}-${platform}";
 
@@ -27,8 +28,9 @@ in buildGoPackage {
   __noChroot = isIOS;
 
   extraSrcPaths = [ gomobile ];
-  nativeBuildInputs = [ gomobile removeReferencesTo ]
-    ++ optional isAndroid openjdk
+  nativeBuildInputs = [
+    gomobile removeReferencesTo go-bindata mockgen protoc-gen-go protobuf3_20
+  ] ++ optional isAndroid openjdk
     ++ optional isIOS xcodeWrapper;
 
   ldflags = goBuildLdFlags;
@@ -43,6 +45,13 @@ in buildGoPackage {
   # https://github.com/status-im/status-mobile/issues/19581
   # TODO: try removing when go is upgraded to 1.22
   GODEBUG = "netdns=cgo+2";
+
+  preBuild = ''
+    echo 'Generate static files'
+    pushd go/src/$goPackagePath
+    make generate SHELL=$SHELL GO111MODULE=on GO_GENERATE_CMD='go generate'
+    popd
+  '';
 
   buildPhase = ''
     runHook preBuild
