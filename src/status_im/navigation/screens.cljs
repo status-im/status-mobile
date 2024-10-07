@@ -143,8 +143,7 @@
     [utils.collection]))
 
 
-(defn chat-screens
-  []
+(def chat-screens
   [{:name      :start-a-new-chat
     :metrics   {:track?   :true
                 :alias-id :messenger.new-chat}
@@ -177,8 +176,7 @@
     :options   {:sheet? true}
     :component group-details/add-manage-members}])
 
-(defn community-screens
-  []
+(def community-screens
   [{:name      :discover-communities
     :metrics   {:track?   :true
                 :alias-id :community.discover}
@@ -246,8 +244,7 @@
     :options   {:insets {:top? true}}
     :component airdrop-addresses/view}])
 
-(defn contact-screens
-  []
+(def contact-screens
   [{:name      :new-contact
     :metrics   {:track?   :true
                 :alias-id :contact.new-contact}
@@ -272,8 +269,7 @@
     :options   options/transparent-screen-options
     :component share-contact/view}])
 
-(defn device-syncing-screens
-  []
+(def device-syncing-screens
   [{:name      :how-to-pair
     :metrics   {:track?   true
                 :alias-id :syncing.how-to-pair}
@@ -298,8 +294,7 @@
     :options   options/transparent-modal-screen-options
     :component scan-sync-code-page/view}])
 
-(defn settings-screens
-  []
+(def settings-screens
   [{:name      :settings
     :metrics   {:track?   :true
                 :alias-id :settings.profile-settings}
@@ -401,8 +396,7 @@
     :options   options/transparent-modal-screen-options
     :component settings.currency-selection/view}])
 
-(defn wallet-settings-screens
-  []
+(def wallet-settings-screens
   [{:name      :screen/settings.wallet
     :metrics   {:track? :true}
     :options   options/transparent-modal-screen-options
@@ -480,8 +474,7 @@
     :options   options/transparent-screen-options
     :component share-saved-address/view}])
 
-(defn wallet-screens
-  []
+(def wallet-screens
   [{:name      :screen/wallet.accounts
     :metrics   {:track?   true
                 :alias-id :wallet.account}
@@ -566,8 +559,7 @@
     :metrics   {:track? true}
     :component wallet-transaction-progress/view}])
 
-(defn wallet-send-screens
-  []
+(def wallet-send-screens
   [{:name      :screen/wallet.scan-address
     :metrics   {:track?   true
                 :alias-id :wallet-send.scan-address}
@@ -608,8 +600,7 @@
     :options   {:insets {:top? true}}
     :component wallet-select-collectible-amount/view}])
 
-(defn wallet-bridge-screens
-  []
+(def wallet-bridge-screens
   [{:name      :screen/wallet.bridge-select-asset
     :metrics   {:track?   true
                 :alias-id :wallet-bridge.select-asset}
@@ -630,8 +621,7 @@
     :options   {:insets {:top? true}}
     :component wallet-bridge-input-amount/view}])
 
-(defn wallet-swap-screens
-  []
+(def wallet-swap-screens
   [{:name      :screen/wallet.swap-select-asset-to-pay
     :metrics   {:track?   true
                 :alias-id :wallet-swap.select-asset-to-pay}
@@ -663,8 +653,7 @@
     :options   {:modalPresentationStyle :overCurrentContext}
     :component wallet-swap-confirmation/view}])
 
-(defn wallet-connect-screens
-  []
+(def wallet-connect-screens
   [{:name      :screen/wallet.wallet-connect-session-proposal
     :metrics   {:track?   true
                 :alias-id :wallet-connect.session-proposal}
@@ -869,8 +858,7 @@
    :options   {:theme :dark}
    :component syncing-results/view})
 
-(defn onboarding-screens
-  []
+(def onboarding-screens
   [onboarding-intro
    onboarding-new-to-status
    onboarding-sync-or-recover-profile
@@ -888,8 +876,7 @@
    onboarding-syncing-progress-intro
    onboarding-syncing-results])
 
-(defn keycard-screens
-  []
+(def keycard-screens
   [{:name      :screen/keycard.check
     :options   options/keycard-modal-screen-options
     :component keycard.check/view}
@@ -910,19 +897,19 @@
   []
   (concat
    (old-screens/screens)
-   (chat-screens)
-   (community-screens)
-   (contact-screens)
-   (device-syncing-screens)
-   (settings-screens)
-   (wallet-settings-screens)
-   (wallet-screens)
-   (wallet-send-screens)
-   (wallet-bridge-screens)
-   (wallet-swap-screens)
-   (wallet-connect-screens)
-   (onboarding-screens)
-   (keycard-screens)
+   chat-screens
+   community-screens
+   contact-screens
+   device-syncing-screens
+   settings-screens
+   wallet-settings-screens
+   wallet-screens
+   wallet-send-screens
+   wallet-bridge-screens
+   wallet-swap-screens
+   wallet-connect-screens
+   onboarding-screens
+   keycard-screens
 
    [{:name      :activity-center
      :metrics   {:track? true}
