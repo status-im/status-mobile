@@ -7,11 +7,20 @@
             [utils.re-frame :as rf]))
 
 (defn- crypto-on-ramp-item
-  [{:keys [name description fees logo-url site-url recurrent-site-url]} _ _ {:keys [tab]}]
-  (let [open-url (rn/use-callback (fn []
-                                    (rf/dispatch [:open-url
-                                                  (if (= tab :recurrent) recurrent-site-url site-url)]))
-                                  [site-url recurrent-site-url tab])]
+  [{:keys [name description fees logo-url site-url recurrent-site-url urls-need-parameters]
+    :as   provider}
+   _
+   _
+   {:keys [account tab]}]
+  (let [open-url (rn/use-callback
+                  (fn []
+                    (if urls-need-parameters
+                      (rf/dispatch [:wallet.buy-crypto/select-provider
+                                    {:account    account
+                                     :provider   provider
+                                     :recurrent? (= tab :recurrent)}])
+                      (rn/open-url (if (= tab :recurrent) recurrent-site-url site-url))))
+                  [site-url recurrent-site-url tab])]
     [quo/settings-item
      {:title             name
       :description       :text
@@ -39,6 +48,7 @@
   (rn/use-mount (fn []
                   (rf/dispatch [:wallet/get-crypto-on-ramps])))
   (let [crypto-on-ramps                 (rf/sub [:wallet/crypto-on-ramps])
+        account                         (rf/sub [:wallet/current-viewing-account-or-default])
         [selected-tab set-selected-tab] (rn/use-state initial-tab)
         [min-height set-min-height]     (rn/use-state 0)
         on-layout                       (rn/use-callback
@@ -58,5 +68,6 @@
                       (:one-time crypto-on-ramps))
        :on-layout   on-layout
        :style       (style/list-container min-height)
-       :render-data {:tab selected-tab}
+       :render-data {:tab     selected-tab
+                     :account account}
        :render-fn   crypto-on-ramp-item}]]))

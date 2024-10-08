@@ -34,9 +34,8 @@
 
 (defn tokens-by-symbol
   [props]
-  (tokens-by-key (assoc props
-                        :key-fn
-                        (fn [{:keys [address] :as token}]
-                          (if (get-in token [:communityData :id])
-                            address
-                            (:symbol token))))))
+  (tokens-by-key
+   (assoc props
+          :key-fn
+          (fn [{:keys [chainId address] :as token}]
+            (str chainId "-" (if (get-in token [:communityData :id]) address (:symbol token)))))))

@@ -274,23 +274,28 @@
 
 (defn- pay-token-bottom-sheet
   []
-  (let [asset-to-receive (rf/sub [:wallet/swap-asset-to-receive])]
+  (let [asset-to-receive (rf/sub [:wallet/swap-asset-to-receive])
+        network          (rf/sub [:wallet/swap-network])]
     [select-asset/view
      {:title            (i18n/label :t/select-asset-to-pay)
+      :network          network
       :on-select        (fn [token]
                           (rf/dispatch [:wallet.swap/select-asset-to-pay {:token token}]))
-      :hide-token-fn    (fn [type {:keys [available-balance]}]
-                          (and (= type constants/swap-tokens-my)
-                               (= available-balance 0)))
+      :hide-token-fn    (fn [type {:keys [balances-per-chain]}]
+                          (let [balance (get-in balances-per-chain [(:chain-id network) :balance] "0")]
+                            (and (= type constants/swap-tokens-my)
+                                 (= balance "0"))))
       :disable-token-fn (fn [_ token]
                           (= (:symbol token)
                              (:symbol asset-to-receive)))}]))
 
 (defn- receive-token-bottom-sheet
   []
-  (let [asset-to-pay (rf/sub [:wallet/swap-asset-to-pay])]
+  (let [asset-to-pay (rf/sub [:wallet/swap-asset-to-pay])
+        network      (rf/sub [:wallet/swap-network])]
     [select-asset/view
      {:title            (i18n/label :t/select-asset-to-receive)
+      :network          network
       :on-select        (fn [token]
                           (rf/dispatch [:wallet.swap/select-asset-to-receive {:token token}]))
       :disable-token-fn (fn [_ token]
