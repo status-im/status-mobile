@@ -1,5 +1,6 @@
 (ns status-im.contexts.wallet.wallet-connect.utils.rpc
-  (:require [oops.core :as oops]
+  (:require [cljs-bean.core :as bean]
+            [oops.core :as oops]
             [promesa.core :as promesa]
             [status-im.common.json-rpc.events :as rpc-events]
             [status-im.constants :as constants]
@@ -79,3 +80,9 @@
   [chain-id max-fee-per-gas]
   (-> (rpc-events/call-async "wallet_getTransactionEstimatedTime" true chain-id max-fee-per-gas)
       (promesa/then transforms/js->clj)))
+
+(defn wallet-get-transaction-details
+  [transaction]
+  (->> (transforms/js-stringify transaction 0)
+       (rpc-events/call-async "wallet_getTransactionMetadata" true)
+       (transforms/js->clj)))

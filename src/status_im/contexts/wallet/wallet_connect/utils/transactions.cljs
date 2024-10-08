@@ -1,5 +1,6 @@
 (ns status-im.contexts.wallet.wallet-connect.utils.transactions
   (:require [cljs-bean.core :as bean]
+            [cljs.pprint :as pprint]
             [clojure.string :as string]
             [native-module.core :as native-module]
             [promesa.core :as promesa]
@@ -128,9 +129,11 @@
                                                     (rpc/wallet-build-transaction chain-id))
                 estimated-time                    (rpc/wallet-get-transaction-estimated-time
                                                    chain-id
-                                                   (:maxPriorityFeePerGas suggested-fees))]
+                                                   (:maxPriorityFeePerGas suggested-fees))
+                details                           (rpc/wallet-get-transaction-details tx-args)]
     {:tx-args        tx-args
      :tx-hash        message-to-sign
+     :tx-details     details
      :suggested-fees suggested-fees
      :estimated-time estimated-time}))
 
@@ -157,3 +160,83 @@
                 (= k :MultiTransactionID)
                 (= k :Symbol)))
           data))
+
+
+(def tx-args
+  {:version 0
+   :from "0xb18ec1808bd8b84f244c6e34cbedee9b0cd7e1fb"
+   :to "0x744d70fdbe2ba4cf95131626614a1763df805b9e"
+   :gas "0x21563"
+   :gasPrice "0xda9a06de5"
+   :value "0x0"
+   :nonce "0x19"
+   :maxFeePerGas "0xda9a06de5"
+   :maxPriorityFeePerGas "0x5d56b25c"
+   :input "0x"
+   :data
+   "0xa9059cbb00000000000000000000000097654628dd47c2d88fc9b3d0cc38a92e46a32cd4000000000000000000000000000000000000000000000016ca63768fcf860000"
+   :multiTransactionID 0})
+
+(def tx-met
+  {:FunctionSelector "0xa9059cbb"
+   :FunctionName     "transfer"
+   :Recipient        "0x97654628dd47c2d88fc9b3d0cc38a92e46a32cd4"
+   :Amount           "420412000000000000000"
+   :TokenID          "<nil>"})
+
+(defrecord Transaction [params metadata]
+  Object
+    (beautify-params [this]
+      (-> this :params beautify-transaction))
+
+    (type [this]
+      (condp = (get-in this [:metadata :FunctionName])
+        ""         :transaction/eth-transfer
+        "transfer" :transaction/erc-20-transfer
+        "approve"  :transaction/approve
+        :else      :transaction/unknown))
+
+    (amount [this]
+      (let [metadata-amount (get-in this [:metadata :Amount])
+            params-amount   (get-in this [:params :value])]
+        (-> (condp =
+              (.type this)
+              :transaction/erc-20-transfer
+              metadata-amount
+              :transaction/approve
+              metadata-amount
+              :else
+              params-amount)
+            money/bignumber)))
+
+    (sender [this]
+      (-> this :params :from string/lower-case))
+
+    (recipient [this]
+      (let [metadata-recipient (get-in this [:metadata :Recipient])
+            params-recipient   (get-in this [:params :to])]
+        (-> (condp =
+              (.type this)
+              :transaction/erc-20-transfer
+              metadata-recipient
+              :transaction/approve
+              metadata-recipient
+              :else
+              params-recipient)
+            string/lower-case)))
+
+    (token-address [this]
+      (when (->> this
+                 .type
+                 (contains? #{:transaction/erc-20-transfer
+                              :transaction/approve}))
+        (-> this :params :to string/lower-case)))
+
+    (summary [this]
+      {:type          (.type this)
+       :amount        (.amount this)
+       :recipient     (.recipient this)
+       :sender        (.sender this)
+       :token-address (.token-address this)}))
+
+(def tx (->Transaction tx-args tx-met))
