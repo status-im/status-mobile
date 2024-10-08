@@ -85,7 +85,7 @@
   [{:keys [input-state on-max-press on-input-focus on-token-press on-approve-press input-focused?]}]
   (let [account-color                    (rf/sub [:wallet/current-viewing-account-color])
         network                          (rf/sub [:wallet/swap-network])
-        asset-to-pay                     (rf/sub [:wallet/swap-asset-to-pay])
+        pay-token-symbol                 (:symbol (rf/sub [:wallet/swap-asset-to-pay]))
         currency                         (rf/sub [:profile/currency])
         loading-swap-proposal?           (rf/sub [:wallet/swap-loading-swap-proposal?])
         swap-proposal                    (rf/sub [:wallet/swap-proposal-without-fees])
@@ -96,9 +96,9 @@
         approval-transaction-id          (rf/sub [:wallet/swap-approval-transaction-id])
         approved-amount                  (rf/sub [:wallet/swap-approved-amount])
         error-response                   (rf/sub [:wallet/swap-error-response])
+        asset-to-pay                     (rf/sub [:wallet/token-by-symbol pay-token-symbol])
         pay-input-num-value              (controlled-input/value-numeric input-state)
         pay-input-amount                 (controlled-input/input-value input-state)
-        pay-token-symbol                 (:symbol asset-to-pay)
         pay-token-decimals               (:decimals asset-to-pay)
         pay-token-balance-selected-chain (get-in asset-to-pay
                                                  [:balances-per-chain
