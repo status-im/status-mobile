@@ -141,7 +141,7 @@
        {:fx [[:dispatch [:wallet-connect/no-internet-toast]]]}))))
 
 (rf/reg-event-fx :wallet-connect/approve-session-success
- (fn [{:keys [db]} [session proposal]]
+ (fn [{:keys [db]} [proposal session]]
    (let [networks              (data-store/get-networks-from-proposal db proposal)
          total-connected-dapps (-> db
                                    :wallet-connect/sessions
@@ -161,7 +161,7 @@
               :total_connected_dapps total-connected-dapps}]]]})))
 
 (rf/reg-event-fx :wallet-connect/approve-session-error
- (fn [{:keys [db]} [error proposal]]
+ (fn [{:keys [db]} [proposal error]]
    (let [networks (data-store/get-networks-from-proposal db proposal)]
      (log/error "Wallet Connect session approval failed"
                 {:error error

@@ -142,10 +142,10 @@
            :reason      reason})
          (promesa/then (fn []
                          (log/debug "Wallet Connect session proposal rejected")
-                         (partial rf/call-continuation on-success)))
+                         (rf/call-continuation on-success)))
          (promesa/catch (fn []
                           (log/error "Wallet Connect unable to reject session proposal")
-                          (partial rf/call-continuation on-error)))))))
+                          (rf/call-continuation on-error)))))))
 
 (rf/reg-fx
  :effects.wallet-connect/get-sessions

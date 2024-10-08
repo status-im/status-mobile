@@ -104,6 +104,7 @@
            [:dispatch
             [:centralized-metrics/track :metric/dapp-sign
              {:network network
+              :action  :approved
               :result  :success}]]]})))
 
 (rf/reg-event-fx
@@ -127,6 +128,7 @@
            [:dispatch
             [:centralized-metrics/track :metric/dapp-sign
              {:network network
+              :action  :approved
               :result  :fail}]]]})))
 
 (rf/reg-event-fx
@@ -141,6 +143,7 @@
            [:dispatch
             [:centralized-metrics/track :metric/dapp-send
              {:network network
+              :action  :approved
               :result  :fail}]]]})))
 
 (rf/reg-event-fx :wallet-connect/respond-send-transaction-success
@@ -149,6 +152,7 @@
      {:fx [[:dispatch
             [:centralized-metrics/track :metric/dapp-send
              {:network network
+              :action  :approved
               :result  :success}]]
            [:dispatch [:wallet-connect/finish-session-request result]]]})))
 
