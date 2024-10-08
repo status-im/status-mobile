@@ -1,8 +1,10 @@
 (ns status-im.contexts.wallet.common.utils.networks
-  (:require [clojure.string :as string]
-            [quo.foundations.resources :as resources]
-            [status-im.constants :as constants]
-            [utils.number]))
+  (:require
+    [clojure.string :as string]
+    [quo.foundations.resources :as resources]
+    [status-im.constants :as constants]
+    [utils.money :as money]
+    [utils.number]))
 
 (def ^:private last-comma-followed-by-text-to-end-regex #",\s(?=[^,]+$)")
 
@@ -63,12 +65,14 @@
 
 (defn network-list
   [{:keys [balances-per-chain]} networks]
-  (into #{}
-        (mapv (fn [chain-id]
-                (first (filter #(or (= (:chain-id %) chain-id)
-                                    (= (:related-chain-id %) chain-id))
-                               networks)))
-              (keys balances-per-chain))))
+  (->> balances-per-chain
+       (filter #(-> % second :raw-balance (money/greater-than 0)))
+       keys
+       (map (fn [chain-id]
+              (first (filter #(or (= (:chain-id %) chain-id)
+                                  (= (:related-chain-id %) chain-id))
+                             networks))))
+       set))
 
 (defn get-default-chain-ids-by-mode
   [{:keys [test-networks-enabled? is-goerli-enabled?]}]
