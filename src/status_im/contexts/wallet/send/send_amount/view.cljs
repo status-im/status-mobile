@@ -10,8 +10,7 @@
   [input-amount/view
    {:current-screen-id      :screen/wallet.send-input-amount
     :button-one-label       (i18n/label :t/review-send)
-    :enabled-from-chain-ids (rf/sub
-                             [:wallet/wallet-send-enabled-from-chain-ids])
+    :enabled-from-chain-ids (rf/sub [:wallet/wallet-send-enabled-from-chain-ids])
     :from-enabled-networks  (rf/sub [:wallet/wallet-send-enabled-networks])
     :on-navigate-back       (fn []
                               (rf/dispatch-sync [:wallet/stop-and-clean-suggested-routes])

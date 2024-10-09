@@ -239,9 +239,12 @@
 
 (defn crypto->fiat
   [crypto fiat-price]
-  (when-let [^js bn (bignumber crypto)]
-    (-> (.times bn ^js (bignumber fiat-price))
-        (with-precision 2))))
+  (let [^js crypto-bn     (bignumber crypto)
+        ^js fiat-price-bn (bignumber fiat-price)]
+    (when (and crypto-bn fiat-price-bn)
+      (-> crypto-bn
+          (.times fiat-price-bn)
+          (with-precision 2)))))
 
 (defn sufficient-funds?
   [^js amount ^js balance]
