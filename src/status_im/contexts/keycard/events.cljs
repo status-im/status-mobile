@@ -72,22 +72,21 @@
 
 (rf/reg-event-fx :keycard/on-get-application-info-success
  (fn [{:keys [db]} [application-info {:keys [key-uid on-success-fx]}]]
-   (let [error (keycard.utils/validate-application-info key-uid application-info)]
-     (if error
-       (case error
-         :keycard/error.not-keycard
-         {:fx [[:dispatch [:keycard/disconnect]]
-               [:dispatch [:open-modal :screen/keycard.not-keycard]]]}
-         :keycard/error.keycard-blank
-         {:fx [[:dispatch [:keycard/disconnect]]
-               [:dispatch [:open-modal :screen/keycard.empty]]]}
-         {:db (assoc-in db [:keycard :application-info-error] error)
-          :fx [[:dispatch [:keycard/disconnect]]
-               [:dispatch [:open-modal :screen/keycard.error]]]})
-       {:db (-> db
-                (assoc-in [:keycard :application-info] application-info)
-                (assoc-in [:keycard :pin :status] :verifying))
-        :fx on-success-fx}))))
+   (if-let [error (keycard.utils/validate-application-info key-uid application-info)]
+     (case error
+       :keycard/error.not-keycard
+       {:fx [[:dispatch [:keycard/disconnect]]
+             [:dispatch [:open-modal :screen/keycard.not-keycard]]]}
+       :keycard/error.keycard-blank
+       {:fx [[:dispatch [:keycard/disconnect]]
+             [:dispatch [:open-modal :screen/keycard.empty]]]}
+       {:db (assoc-in db [:keycard :application-info-error] error)
+        :fx [[:dispatch [:keycard/disconnect]]
+             [:dispatch [:open-modal :screen/keycard.error]]]})
+     {:db (-> db
+              (assoc-in [:keycard :application-info] application-info)
+              (assoc-in [:keycard :pin :status] :verifying))
+      :fx on-success-fx})))
 
 (rf/reg-event-fx :keycard/get-application-info
  (fn [_ [{:keys [on-success on-failure]}]]

@@ -96,7 +96,7 @@
        (take 7)))
 
 (defn recovery-phrase-screen
-  [{:keys [banner-offset initial-insets keypair title recovering-keypair? render-controls]}]
+  [{:keys [banner-offset initial-insets keypair title on-success render-controls]}]
   (reagent/with-let [keyboard-shown?           (reagent/atom false)
                      keyboard-show-listener    (.addListener rn/keyboard
                                                              "keyboardDidShow"
@@ -120,14 +120,20 @@
                                                  (reset! seed-phrase new-phrase))
                      on-submit                 (fn []
                                                  (swap! seed-phrase clean-seed-phrase)
-                                                 (if recovering-keypair?
-                                                   (rf/dispatch [:wallet/seed-phrase-entered
-                                                                 (security/mask-data
-                                                                  @seed-phrase)
-                                                                 set-invalid-seed-phrase])
-                                                   (rf/dispatch [:onboarding/seed-phrase-entered
-                                                                 (security/mask-data @seed-phrase)
-                                                                 set-invalid-seed-phrase])))]
+                                                 (rf/dispatch
+                                                  [:profile.recover/validate-recovery-phrase
+                                                   (security/mask-data @seed-phrase)
+                                                   {:on-success (fn [mnemonic key-uid]
+                                                                  (if on-success
+                                                                    (on-success
+                                                                     {:key-uid key-uid
+                                                                      :phrase mnemonic
+                                                                      :on-error
+                                                                      set-invalid-seed-phrase})
+                                                                    (rf/dispatch
+                                                                     [:onboarding/seed-phrase-validated
+                                                                      mnemonic key-uid])))
+                                                    :on-error   set-invalid-seed-phrase}]))]
     (let [words-coll               (mnemonic/passphrase->words @seed-phrase)
           last-word                (peek words-coll)
           pick-suggested-word      (fn [pressed-word]
@@ -191,7 +197,7 @@
          [rn/view {:style style/keyboard-container}
           [quo/predictive-keyboard
            {:type     suggestions-state
-            :blur?    (not recovering-keypair?)
+            :blur?    (not on-success)
             :text     suggestions-text
             :words    (keyboard-suggestions last-word)
             :on-press pick-suggested-word}]])])
@@ -200,7 +206,7 @@
      (.remove keyboard-hide-listener))))
 
 (defn screen
-  [{:keys [title keypair navigation-icon recovering-keypair? render-controls]}]
+  [{:keys [title keypair navigation-icon on-success render-controls]}]
   (let [[insets _]    (rn/use-state (safe-area/get-insets))
         banner-offset (rf/sub [:alert-banners/top-margin])]
     [rn/view {:style style/full-layout}
@@ -209,21 +215,22 @@
        {:margin-top (:top insets)
         :background :blur
         :icon-name  (or navigation-icon
-                        (if recovering-keypair? :i/close :i/arrow-left))
+                        (if on-success :i/close :i/arrow-left))
         :on-press   #(rf/dispatch [:navigate-back])}]
       [recovery-phrase-screen
-       {:title               title
-        :keypair             keypair
-        :render-controls     render-controls
-        :banner-offset       banner-offset
-        :initial-insets      insets
-        :recovering-keypair? recovering-keypair?}]]]))
+       {:title           title
+        :keypair         keypair
+        :render-controls render-controls
+        :banner-offset   banner-offset
+        :initial-insets  insets
+        :on-success      on-success}]]]))
 
 (defn view
   []
-  (let [{:keys [recovering-keypair?]} (rf/sub [:get-screen-params])]
+  (let [{:keys [on-success]} (rf/sub [:get-screen-params])]
     (rn/use-unmount
-     #(rf/dispatch [:onboarding/clear-navigated-to-enter-seed-phrase-from-screen]))
+     (when-not on-success
+       #(rf/dispatch [:onboarding/clear-navigated-to-enter-seed-phrase-from-screen])))
     [screen
-     {:title               (i18n/label :t/use-recovery-phrase)
-      :recovering-keypair? recovering-keypair?}]))
+     {:title      (i18n/label :t/use-recovery-phrase)
+      :on-success on-success}]))

@@ -24,3 +24,7 @@
             :imagePath          (profile.config/strip-file-prefix image-path)
             :customizationColor (or color constants/profile-default-color)
             :fetchBackup        true)}))
+
+(rf/reg-event-fx :profile.recover/validate-recovery-phrase
+ (fn [_ [phrase {:keys [on-success on-error]}]]
+   {:effects.profile/validate-recovery-phrase [phrase on-success on-error]}))

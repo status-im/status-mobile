@@ -345,6 +345,12 @@
  (fn [{:keys [processing]}]
    processing))
 
+(re-frame/reg-sub
+ :profile/recovery-phrase-backed-up?
+ :<- [:profile/profile]
+ (fn [profile]
+   (not (boolean (seq (:mnemonic profile))))))
+
 ;; LINK PREVIEW
 ;; ========================================================================================================
 

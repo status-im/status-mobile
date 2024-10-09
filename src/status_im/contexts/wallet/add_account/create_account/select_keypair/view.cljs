@@ -16,13 +16,21 @@
    [[{:icon                :i/add
       :accessibility-label :generate-new-keypair
       :label               (i18n/label :t/generate-new-keypair)
-      :on-press            #(rf/dispatch [:navigate-to :screen/wallet.backup-recovery-phrase])}
+      :on-press            #(rf/dispatch [:navigate-to :screen/backup-recovery-phrase
+                                          {:on-success (fn [{:keys [masked-seed-phrase random-phrase]}]
+                                                         (rf/dispatch [:wallet/store-new-seed-phrase
+                                                                       {:seed-phrase masked-seed-phrase
+                                                                        :random-phrase
+                                                                        random-phrase}]))}])}
      {:icon                :i/seed
       :accessibility-label :import-using-phrase
       :label               (i18n/label :t/import-using-phrase)
       :add-divider?        true
-      :on-press            #(rf/dispatch [:navigate-to :screen/wallet.enter-seed-phrase
-                                          {:recovering-keypair? true}])}
+      :on-press            (fn []
+                             (rf/dispatch [:navigate-to :screen/use-recovery-phrase
+                                           {:on-success (fn [{:keys [key-uid phrase on-error]}]
+                                                          (rf/dispatch [:wallet/seed-phrase-validated
+                                                                        phrase key-uid on-error]))}]))}
      (when (ff/enabled? ::ff/wallet.import-private-key)
        {:icon                :i/key
         :accessibility-label :import-private-key

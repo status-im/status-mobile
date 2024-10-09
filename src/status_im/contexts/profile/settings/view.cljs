@@ -49,13 +49,14 @@
 
 (defn view
   []
-  (let [theme               (quo.theme/use-theme)
-        insets              (safe-area/get-insets)
-        customization-color (rf/sub [:profile/customization-color])
-        scroll-y            (reanimated/use-shared-value 0)
-        profile             (rf/sub [:profile/profile])
-        full-name           (profile.utils/displayed-name profile)
-        on-scroll           (rn/use-callback #(scroll-handler % scroll-y))]
+  (let [theme                      (quo.theme/use-theme)
+        insets                     (safe-area/get-insets)
+        customization-color        (rf/sub [:profile/customization-color])
+        scroll-y                   (reanimated/use-shared-value 0)
+        profile                    (rf/sub [:profile/profile])
+        recovery-phrase-backed-up? (rf/sub [:profile/recovery-phrase-backed-up?])
+        full-name                  (profile.utils/displayed-name profile)
+        on-scroll                  (rn/use-callback #(scroll-handler % scroll-y))]
     [quo/overlay {:type :shell}
      [rn/view
       {:style (style/navigation-wrapper {:customization-color customization-color
@@ -79,7 +80,7 @@
                                                                      profile)}}])}]}]]
      [rn/flat-list
       {:header                          [settings.header/view {:scroll-y scroll-y}]
-       :data                            (settings.items/items (boolean (seq (:mnemonic profile))))
+       :data                            (settings.items/items (not recovery-phrase-backed-up?))
        :shows-vertical-scroll-indicator false
        :render-fn                       settings-category-view
        :get-item-layout                 get-item-layout

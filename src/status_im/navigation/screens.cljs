@@ -47,6 +47,7 @@
     [status-im.contexts.preview.quo.component-preview.view :as component-preview]
     [status-im.contexts.preview.quo.main :as quo.preview]
     [status-im.contexts.preview.status-im.main :as status-im-preview]
+    [status-im.contexts.profile.backup-recovery-phrase.view :as backup-recovery-phrase]
     [status-im.contexts.profile.contact.share.view :as share-contact]
     [status-im.contexts.profile.contact.view :as contact-profile]
     [status-im.contexts.profile.edit.accent-colour.view :as edit-accent-colour]
@@ -107,8 +108,6 @@
      wallet-import-private-key]
     [status-im.contexts.wallet.add-account.create-account.key-pair-name.view :as
      wallet-key-pair-name]
-    [status-im.contexts.wallet.add-account.create-account.new-keypair.backup-recovery-phrase.view :as
-     wallet-backup-recovery-phrase]
     [status-im.contexts.wallet.add-account.create-account.new-keypair.confirm-backup.view :as
      wallet-confirm-backup]
     [status-im.contexts.wallet.add-account.create-account.select-keypair.view :as wallet-select-keypair]
@@ -476,9 +475,9 @@
      :options   {:insets {:top? true}}
      :component wallet-create-account/view}
 
-    {:name      :screen/wallet.backup-recovery-phrase
+    {:name      :screen/backup-recovery-phrase
      :options   {:insets {:top? true :bottom? true}}
-     :component wallet-backup-recovery-phrase/view}
+     :component backup-recovery-phrase/view}
 
     {:name      :screen/wallet.confirm-backup
      :options   {:insets {:top? true :bottom? true}}
@@ -488,7 +487,7 @@
      :options   {:insets {:top? true}}
      :component wallet-key-pair-name/view}
 
-    {:name      :screen/wallet.enter-seed-phrase
+    {:name      :screen/use-recovery-phrase
      :component enter-seed-phrase/view}
 
     {:name      :screen/wallet.share-address
