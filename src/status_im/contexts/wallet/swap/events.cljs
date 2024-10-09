@@ -14,7 +14,7 @@
             [utils.number :as number]))
 
 (rf/reg-event-fx :wallet.swap/start
- (fn [{:keys [db]} [{:keys [network open-new-screen?] :as data}]]
+ (fn [{:keys [db]} [{:keys [network asset-to-receive open-new-screen?] :as data}]]
    (let [{:keys [wallet]}       db
          test-networks-enabled? (get-in db [:profile/profile :test-networks-enabled?])
          account                (swap-utils/wallet-account wallet)
@@ -25,12 +25,6 @@
                                     :account                account
                                     :test-networks-enabled? test-networks-enabled?
                                     :token-symbol           (get-in data [:asset-to-pay :symbol])}))
-         asset-to-receive       (or (:asset-to-receive data)
-                                    (swap-utils/select-default-asset-to-receive
-                                     {:wallet                 wallet
-                                      :account                account
-                                      :test-networks-enabled? test-networks-enabled?
-                                      :asset-to-pay           asset-to-pay}))
          network'               (or network
                                     (swap-utils/select-network asset-to-pay))]
      {:db (-> db
@@ -137,8 +131,6 @@
                                       :amount                 amount
                                       :amount-hex             amount-in-hex
                                       :loading-swap-proposal? true)
-                                     :always
-                                     (dissoc :error-response)
                                      clean-approval-transaction?
                                      (dissoc :approval-transaction-id :approved-amount :swap-proposal)))
         :json-rpc/call [{:method   "wallet_getSuggestedRoutesAsync"
