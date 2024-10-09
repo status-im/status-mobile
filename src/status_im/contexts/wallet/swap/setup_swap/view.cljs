@@ -257,17 +257,15 @@
                                  (merge {:action?         true
                                          :on-button-press #(rf/dispatch [:show-bottom-sheet
                                                                          {:content buy-token/view}])
-                                         :button-text     (i18n/label :t/buy-assets)})
+                                         :button-text     (i18n/label :t/add-assets)})
                                  (= error-response-code
                                     constants/router-error-code-not-enough-native-balance)
                                  (merge {:action?         true
                                          :on-button-press #(rf/dispatch
                                                             [:show-bottom-sheet
                                                              {:content (fn []
-                                                                         [buy-token/view
-                                                                          {:title (i18n/label
-                                                                                   :t/buy-ethereum)}])}])
-                                         :button-text     (i18n/label :t/buy-eth)}))]
+                                                                         [buy-token/view])}])
+                                         :button-text     (i18n/label :t/add-eth)}))]
     (when (or pay-input-error? error-response)
       [quo/alert-banner props])))
 
