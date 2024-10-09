@@ -48,7 +48,7 @@
         :accessibility-label :receive}]
       (when swap-action
         [action-button
-         {:icon                :i/swap
+         {:icon                :i/transaction
           :text                (i18n/label :t/swap)
           :on-press            swap-action
           :theme               theme

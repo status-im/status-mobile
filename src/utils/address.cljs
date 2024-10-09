@@ -10,6 +10,7 @@
 (def regx-eip-3770-address #"^(?:(?:eth:|arb1:|oeth:)(?=:|))*0x[0-9a-fA-F]{40}$")
 (def regx-metamask-address #"^ethereum:(0x[0-9a-fA-F]{40})(?:@(0x1|0xa|0xa4b1))?$")
 (def regx-address-contains #"(?i)0x[a-fA-F0-9]{40}")
+(def zero-address "0x0000000000000000000000000000000000000000")
 
 (defn normalized-hex
   [hex]
@@ -137,3 +138,6 @@
     (metamask-address? address)
     (metamask-address->eth-address address)))
 
+(defn zero-address?
+  [address]
+  (= address zero-address))

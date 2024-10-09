@@ -23,7 +23,7 @@
 (def transaction-icon
   {:receive :i/receive
    :send    :i/send
-   :swap    :i/swap
+   :swap    :i/transaction
    :bridge  :i/bridge
    :buy     :i/buy
    :destroy :i/destroy

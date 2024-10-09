@@ -25,7 +25,7 @@
                                 :title       "floating button page"
                                 :description "press right icon to swap button type"
                                 :text-align  :left
-                                :right-side  [{:icon-name :i/swap
+                                :right-side  [{:icon-name :i/transaction
                                                :on-press  #(swap! slide? not)}]
                                 :background  :blur
                                 :icon-name   :i/close

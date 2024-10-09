@@ -48,7 +48,7 @@
 
 (defn- action-swap
   [{:keys [token asset-to-receive token-symbol testnet-mode?]}]
-  {:icon                :i/swap
+  {:icon                :i/transaction
    :accessibility-label :swap
    :label               (i18n/label :t/swap)
    :disabled?           testnet-mode?
