@@ -11,25 +11,23 @@
 
 (defn view
   [{:keys [contact-id]}]
-  (let [customization-color                          (rf/sub [:profile/customization-color])
-        [primary-name _]                             (rf/sub [:contacts/contact-two-names-by-identity
-                                                              contact-id])
-        {:keys [contact-request-state community-id]} (rf/sub [:chats/current-chat-chat-view])
-        chat-type                                    (rf/sub [:chats/chat-type])
-        community-chat?                              (= chat-type :community-chat)
-        joined                                       (when community-chat?
-                                                       (rf/sub [:communities/community-joined
-                                                                community-id]))
-        pending?                                     (when community-chat?
-                                                       (rf/sub [:communities/my-pending-request-to-join
-                                                                community-id]))
-        contact-request-send?                        (or (not contact-request-state)
-                                                         (= contact-request-state
-                                                            constants/contact-request-state-none))
-        contact-request-received?                    (= contact-request-state
-                                                        constants/contact-request-state-received)
-        contact-request-pending?                     (= contact-request-state
-                                                        constants/contact-request-state-sent)]
+  (let [customization-color       (rf/sub [:profile/customization-color])
+        [primary-name _]          (rf/sub [:contacts/contact-two-names-by-identity contact-id])
+        {:keys [contact-request-state
+                community-id]}    (rf/sub [:chats/current-chat-chat-view])
+        chat-type                 (rf/sub [:chats/chat-type])
+        community-chat?           (= chat-type :community-chat)
+        joined                    (when community-chat?
+                                    (rf/sub [:communities/community-joined community-id]))
+        pending?                  (when community-chat?
+                                    (rf/sub [:communities/my-pending-request-to-join community-id]))
+        contact-request-send?     (or (not contact-request-state)
+                                      (= contact-request-state
+                                         constants/contact-request-state-none))
+        contact-request-received? (= contact-request-state
+                                     constants/contact-request-state-received)
+        contact-request-pending?  (= contact-request-state
+                                     constants/contact-request-state-sent)]
     [rn/view {:style style/container}
      [quo/permission-context
       {:blur?        true
