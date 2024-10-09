@@ -30,11 +30,9 @@
        :button-one-label (i18n/label :t/continue)
        :button-one-props {:on-press #(if recovery-phrase-backed-up?
                                        (rf/dispatch [:open-modal :screen/use-recovery-phrase
-                                                     {:on-success (fn [{:keys [key-uid phrase
-                                                                               on-error]}])}])
+                                                     {:on-success (fn [])}])
                                        (rf/dispatch [:open-modal :screen/backup-recovery-phrase
-                                                     {:on-success (fn [{:keys [masked-seed-phrase
-                                                                               random-phrase]}])}]))}
+                                                     {:on-success (fn [])}]))}
        :button-two-label (i18n/label :t/cancel)
        :button-two-props {:type     :grey
                           :on-press #(rf/dispatch [:hide-bottom-sheet])}}]]))
