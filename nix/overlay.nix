@@ -51,7 +51,6 @@ in {
   };
 
   # Package version adjustments
-  gradle = super.gradle_8.override { java = super.openjdk17_headless; };
   nodejs = super.nodejs_20;
   ruby = super.ruby_3_1;
   yarn = super.yarn.override { nodejs = super.nodejs_20; };

@@ -14,16 +14,17 @@
          path            (get-in db [:wallet :accounts current-address :path])
          key-uid         (get-in db [:profile/profile :key-uid])]
      {:fx [[:dispatch
-            [:keycard/read-card
-             {:key-uid    key-uid
-              :on-read-fx [[:effects.keycard/sign
-                            {:pin pin-text
-                             :path path
-                             :hash (utils.address/naked-address tx-hash)
-                             :on-success
-                             #(do
-                                (rf/dispatch [:keycard/hide-connection-sheet])
-                                (rf/dispatch
-                                 [:wallet/proceed-with-transactions-signatures
-                                  (get-signature-map tx-hash %)]))
-                             :on-failure #(rf/dispatch [:keycard/on-action-with-pin-error %])}]]}]]]})))
+            [:keycard/connect
+             {:key-uid       key-uid
+              :on-success-fx [[:effects.keycard/sign
+                               {:pin pin-text
+                                :path path
+                                :hash (utils.address/naked-address tx-hash)
+                                :on-success
+                                #(do
+                                   (rf/dispatch [:keycard/disconnect])
+                                   (rf/dispatch
+                                    [:wallet/proceed-with-transactions-signatures
+                                     (get-signature-map tx-hash %)]))
+                                :on-failure #(rf/dispatch [:keycard/on-action-with-pin-error
+                                                           %])}]]}]]]})))

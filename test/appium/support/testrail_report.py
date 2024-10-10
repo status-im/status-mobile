@@ -125,6 +125,7 @@ class TestrailReport(BaseTestReport):
         test_cases['nightly']['activity_centre_contact_request'] = 50984
         test_cases['nightly']['activity_centre_other'] = 51005
         test_cases['nightly']['wallet'] = 59443
+        test_cases['nightly']['fallback'] = 63472
 
         ## Upgrade e2e
         # test_cases['upgrade']['general'] = 881

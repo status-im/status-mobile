@@ -32,7 +32,8 @@
     [rn/pressable
      (when-not disabled?
        {:on-press                on-press
-        :allow-multiple-presses? true})
+        :allow-multiple-presses? true
+        :hit-slop                12})
      [rn/view
       {:style                             outer-styles
        :needs-offscreen-alpha-compositing true

@@ -152,6 +152,14 @@ class ActivityCenterElement(SilentButton):
     def pending_status_tag(self):
         return Text(self.driver, xpath=self.locator + '//*[@content-desc="status-tag-pending"]')
 
+    @property
+    def review_pairing_request_button(self):
+        return Button(self.driver, accessibility_id='Review pairing request')
+
+    @property
+    def more_details_button(self):
+        return Button(self.driver, accessibility_id='More details')
+
     def handle_cr(self, element_accessibility: str):
         Button(
             self.driver,
@@ -399,7 +407,7 @@ class HomeView(BaseView):
         if self.toast_content_element.is_element_displayed(10):
             self.toast_content_element.wait_for_invisibility_of_element()
         try:
-            self.notifications_unread_badge.wait_for_visibility_of_element(30)
+            self.notifications_unread_badge.wait_for_visibility_of_element(60)
         except TimeoutException:
             pass
         self.open_activity_center_button.click_until_presence_of_element(self.close_activity_centre)
@@ -611,3 +619,8 @@ class HomeView(BaseView):
             xpath="//*[@content-desc='%s'][descendant::*[@content-desc='chat-name-text'][@text='%s']]" % (
                 self.community_card_item.accessibility_id, community_name)
         )
+
+    def get_new_device_installation_id(self):
+        element = Text(self.driver, accessibility_id='new-device-installation-id')
+        element.wait_for_visibility_of_element()
+        return element.text

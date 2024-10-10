@@ -374,6 +374,7 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
     def test_community_message_edit(self):
         message_before_edit, message_after_edit = 'Message BEFORE edit', "Message AFTER edit 2"
         self.channel_1.send_message(message_before_edit)
+        self.channel_1.chat_element_by_text(message_before_edit).wait_for_sent_state()
         self.channel_1.edit_message_in_chat(message_before_edit, message_after_edit)
         for channel in (self.channel_1, self.channel_2):
             if not channel.element_by_text_part(message_after_edit).is_element_displayed(60):
@@ -391,6 +392,7 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
         message_to_delete_everyone = 'delete for everyone'
         message_to_delete_for_me = 'delete for me'
         self.channel_2.send_message(message_to_delete_everyone)
+        self.channel_2.chat_element_by_text(message_to_delete_everyone).wait_for_sent_state()
         self.home_2.just_fyi('Delete for message everyone. Checking that message is deleted for all members')
         self.channel_2.delete_message_in_chat(message_to_delete_everyone)
         for channel in (self.channel_1, self.channel_2):

@@ -47,7 +47,7 @@
                           (rf/dispatch [:wallet/bridge-select-token params]))})
 
 (defn- action-swap
-  [{:keys [token token-symbol testnet-mode?]}]
+  [{:keys [token asset-to-receive token-symbol testnet-mode?]}]
   {:icon                :i/swap
    :accessibility-label :swap
    :label               (i18n/label :t/swap)
@@ -56,6 +56,7 @@
                           (rf/dispatch [:hide-bottom-sheet])
                           (rf/dispatch [:wallet.swap/start
                                         {:asset-to-pay     (or token {:symbol token-symbol})
+                                         :asset-to-receive asset-to-receive
                                          :open-new-screen? true}]))})
 
 (defn- action-manage-tokens
@@ -75,23 +76,26 @@
 
 (defn token-value-drawer
   [token watch-only? entry-point]
-  (let [token-symbol     (:token token)
-        token-data       (first (rf/sub [:wallet/current-viewing-account-tokens-filtered
-                                         {:query token-symbol}]))
-        selected-account (rf/sub [:wallet/current-viewing-account-address])
-        token-owners     (rf/sub [:wallet/operable-addresses-with-token-symbol token-symbol])
-        testnet-mode?    (rf/sub [:profile/test-networks-enabled?])
-        params           (cond-> {:start-flow?   true
-                                  :owners        token-owners
-                                  :testnet-mode? testnet-mode?}
-                           selected-account
-                           (assoc :token        token-data
-                                  :stack-id     :screen/wallet.accounts
-                                  :has-balance? (-> (get-in token [:values :fiat-unformatted-value])
-                                                    (money/greater-than (money/bignumber "0"))))
-                           (not selected-account)
-                           (assoc :token-symbol token-symbol
-                                  :stack-id     :wallet-stack))]
+  (let [token-symbol         (:token token)
+        token-data           (first (rf/sub [:wallet/current-viewing-account-tokens-filtered
+                                             {:query token-symbol}]))
+        selected-account     (rf/sub [:wallet/current-viewing-account-address])
+        token-owners         (rf/sub [:wallet/operable-addresses-with-token-symbol token-symbol])
+        testnet-mode?        (rf/sub [:profile/test-networks-enabled?])
+        receive-token-symbol (if (= token-symbol "SNT") "ETH" "SNT")
+        asset-to-receive     (rf/sub [:wallet/token-by-symbol receive-token-symbol])
+        params               (cond-> {:start-flow?      true
+                                      :owners           token-owners
+                                      :testnet-mode?    testnet-mode?
+                                      :asset-to-receive asset-to-receive}
+                               selected-account
+                               (assoc :token        token-data
+                                      :stack-id     :screen/wallet.accounts
+                                      :has-balance? (-> (get-in token [:values :fiat-unformatted-value])
+                                                        (money/greater-than (money/bignumber "0"))))
+                               (not selected-account)
+                               (assoc :token-symbol token-symbol
+                                      :stack-id     :wallet-stack))]
     [quo/action-drawer
      [(cond->> [(when (ff/enabled? ::ff/wallet.assets-modal-manage-tokens)
                   (action-manage-tokens watch-only?))

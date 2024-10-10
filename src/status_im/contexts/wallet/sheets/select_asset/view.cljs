@@ -51,14 +51,31 @@
     :network-name full-name
     :type         :network}])
 
+(defn- provider-view
+  [{:keys [name logo-url]}]
+  [quo/context-tag
+   {:size         24
+    :network-logo logo-url
+    :network-name name
+    :type         :network}])
+
 (defn- subheader-view
-  [{:keys [account network]}]
+  [{:keys [provider account network]}]
   [rn/view {:style style/subheader-container}
    [quo/text
     {:size   :paragraph-2
      :weight :medium}
     (i18n/label :t/select-asset-on)]
-   [account-view account]
+   (if provider
+     [provider-view provider]
+     [account-view account])
+   (when provider
+     [:<>
+      [quo/text
+       {:size   :paragraph-2
+        :weight :medium}
+       (i18n/label :t/to)]
+      [account-view account]])
    [quo/text
     {:size   :paragraph-2
      :weight :medium}
@@ -66,9 +83,8 @@
    [network-view network]])
 
 (defn view
-  [{:keys [title on-select hide-token-fn disable-token-fn]}]
-  (let [account                       (rf/sub [:wallet/current-viewing-account])
-        {:keys [network]}             (rf/sub [:wallet/swap])
+  [{:keys [title network provider on-select hide-token-fn disable-token-fn]}]
+  (let [account                       (rf/sub [:wallet/current-viewing-account-or-default])
         [search-text set-search-text] (rn/use-state "")
         window-height                 (:height (rn/get-window))]
     [rn/safe-area-view {:style (style/container window-height)}
@@ -81,8 +97,9 @@
       {:title                     title
        :title-accessibility-label :title-label}]
      [subheader-view
-      {:account account
-       :network network}]
+      {:account  account
+       :network  network
+       :provider provider}]
      [assets-view
       {:search-text      search-text
        :on-change-text   #(set-search-text %)

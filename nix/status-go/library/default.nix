@@ -1,4 +1,5 @@
-{ lib, stdenv, meta, source, buildGoPackage }:
+{ lib, stdenv, meta, source, buildGoPackage,
+  go-bindata, mockgen, protoc-gen-go, protobuf3_20 }:
 
 buildGoPackage {
   pname = source.repo;
@@ -6,6 +7,10 @@ buildGoPackage {
 
   inherit meta;
   inherit (source) src goPackagePath;
+
+  nativeBuildInputs = [
+    go-bindata mockgen protoc-gen-go protobuf3_20
+  ];
 
   phases = ["unpackPhase" "configurePhase" "buildPhase"];
 
@@ -22,6 +27,7 @@ buildGoPackage {
   preBuild = ''
     pushd go/src/$goPackagePath
     go run cmd/library/*.go > $NIX_BUILD_TOP/main.go
+    make generate SHELL=$SHELL GO111MODULE=on GO_GENERATE_CMD='go generate'
     popd
   '';
 

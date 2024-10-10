@@ -242,12 +242,13 @@
          {:on-complete
           (fn [pin-text]
             (rf/dispatch
-             [:keycard/read-card
-              {:key-uid    key-uid
-               :on-read-fx [[:effects.keycard/get-keys
-                             {:pin        pin-text
-                              :on-success #(rf/dispatch [:keycard.login/on-get-keys-success %])
-                              :on-failure #(rf/dispatch [:keycard/on-action-with-pin-error %])}]]}]))}]
+             [:keycard/connect
+              {:key-uid       key-uid
+               :on-success-fx [[:effects.keycard/get-keys
+                                {:pin        pin-text
+                                 :on-success #(rf/dispatch [:keycard.login/on-get-keys-success %])
+                                 :on-failure #(rf/dispatch [:keycard/on-action-with-pin-error
+                                                            %])}]]}]))}]
         [password-input])]
      (when-not keycard-pairing
        [quo/button

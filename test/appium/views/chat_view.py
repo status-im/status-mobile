@@ -1016,9 +1016,8 @@ class ChatView(BaseView):
 
     def edit_message_in_chat(self, message_to_edit, message_to_update):
         self.driver.info("Looking for message '%s' to edit it" % message_to_edit)
-        element = self.element_by_translation_id("edit-message")
-        self.chat_element_by_text(message_to_edit).message_body.long_press_until_element_is_shown(element)
-        element.click()
+        self.chat_element_by_text(message_to_edit).message_body.long_press_element()
+        self.element_by_translation_id("edit-message").click()
         self.chat_message_input.clear()
         self.chat_message_input.send_keys(message_to_update)
         self.send_message_button.click()
@@ -1029,7 +1028,6 @@ class ChatView(BaseView):
             delete_button = self.element_by_translation_id("delete-for-everyone")
         else:
             delete_button = self.element_by_translation_id("delete-for-me")
-        # self.chat_element_by_text(message).message_body.long_press_until_element_is_shown(delete_button)
         self.chat_element_by_text(message).message_body.long_press_element()
         delete_button.click()
 

@@ -36,3 +36,8 @@
  (fn [keycard]
    (:connection-sheet-opts keycard)))
 
+(rf/reg-sub
+ :keycard/application-info-error
+ :<- [:keycard]
+ (fn [keycard]
+   (:application-info-error keycard)))

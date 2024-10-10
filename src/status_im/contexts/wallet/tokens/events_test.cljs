@@ -75,7 +75,7 @@
                                             :image        nil})
                              :by-symbol  '({:address      "0x0000000000000000000000000000000000000000"
                                             :decimals     18
-                                            :key          "ETH"
+                                            :key          "1-ETH"
                                             :community-id nil
                                             :symbol       "ETH"
                                             :sources      ["native"]
@@ -86,7 +86,7 @@
                                             :image        nil}
                                            {:address      "0x0000000000000000000000000000000000000001"
                                             :decimals     18
-                                            :key          "SNT"
+                                            :key          "1-SNT"
                                             :community-id nil
                                             :symbol       "SNT"
                                             :sources      ["native"]
@@ -174,7 +174,7 @@
                         :image        nil})
          :by-symbol  '({:address      "0x0000000000000000000000000000000000000000"
                         :decimals     18
-                        :key          "ETH"
+                        :key          "1-ETH"
                         :community-id nil
                         :symbol       "ETH"
                         :sources      ["native"]
@@ -185,7 +185,7 @@
                         :image        nil}
                        {:address      "0x0000000000000000000000000000000000000001"
                         :decimals     18
-                        :key          "SNT"
+                        :key          "1-SNT"
                         :community-id nil
                         :symbol       "SNT"
                         :sources      ["native" "second"]
@@ -196,7 +196,7 @@
                         :image        nil}
                        {:address      "0x0000000000000000000000000000000000000002"
                         :decimals     18
-                        :key          "ANOTHER1"
+                        :key          "1-ANOTHER1"
                         :community-id nil
                         :symbol       "ANOTHER1"
                         :sources      ["second"]
@@ -253,7 +253,7 @@
                         :image        nil})
          :by-symbol  '({:address      "0x0000000000000000000000000000000000000000"
                         :decimals     18
-                        :key          "ETH"
+                        :key          "1-ETH"
                         :community-id nil
                         :symbol       "ETH"
                         :sources      ["native"]
@@ -264,7 +264,7 @@
                         :image        nil}
                        {:address      "0x0000000000000000000000000000000000000000"
                         :decimals     18
-                        :key          "ANOTHER1"
+                        :key          "1-ANOTHER1"
                         :community-id nil
                         :symbol       "ANOTHER1"
                         :sources      ["native" "second"]

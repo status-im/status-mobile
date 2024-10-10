@@ -327,6 +327,12 @@
    (profile.utils/photo profile)))
 
 (re-frame/reg-sub
+ :profile/name
+ :<- [:profile/profile]
+ (fn [profile]
+   (profile.utils/displayed-name profile)))
+
+(re-frame/reg-sub
  :profile/login-profile
  :<- [:profile/login]
  :<- [:profile/profiles-overview]

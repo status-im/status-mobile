@@ -11,7 +11,7 @@
     [status-im.common.bottom-sheet-screen.view :as bottom-sheet-screen]
     [status-im.common.bottom-sheet.view :as bottom-sheet]
     [status-im.common.toasts.view :as toasts]
-    [status-im.contexts.keycard.sheet.view :as keycard.sheet]
+    [status-im.contexts.keycard.nfc-sheet.view :as keycard.sheet]
     [status-im.navigation.screens :as screens]
     [status-im.setup.hot-reload :as reloader]
     [utils.re-frame :as rf]))
@@ -47,7 +47,7 @@
   (merge
    {:flex             1
     :margin-top       alert-banners-top-margin
-    :background-color (or background-color (colors/theme-colors colors/white colors/neutral-100 theme))}
+    :background-color (or background-color (colors/theme-colors colors/white colors/neutral-95 theme))}
    (when bottom?
      {:padding-bottom (safe-area/get-bottom)})
    (when top?

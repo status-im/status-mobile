@@ -10,10 +10,15 @@
 
 (defonce ^:private active-listeners (atom []))
 
-(defn register-card-events
+(defn unregister-card-events
   []
   (doseq [listener @active-listeners]
     (keycard/remove-event-listener listener))
+  (reset! active-listeners nil))
+
+(defn register-card-events
+  []
+  (unregister-card-events)
   (reset! active-listeners
     [(keycard/on-card-connected #(rf/dispatch [:keycard/on-card-connected]))
      (keycard/on-card-disconnected #(rf/dispatch [:keycard/on-card-disconnected]))
@@ -23,7 +28,9 @@
        (keycard/on-nfc-timeout #(rf/dispatch [:keycard.ios/on-nfc-timeout])))
      (keycard/on-nfc-enabled #(rf/dispatch [:keycard/on-check-nfc-enabled-success true]))
      (keycard/on-nfc-disabled #(rf/dispatch [:keycard/on-check-nfc-enabled-success false]))]))
+
 (rf/reg-fx :effects.keycard/register-card-events register-card-events)
+(rf/reg-fx :effects.keycard/unregister-card-events unregister-card-events)
 
 (defn check-nfc-enabled
   []

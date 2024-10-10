@@ -1,11 +1,11 @@
 (ns status-im.contexts.chat.messenger.messages.list.style
   (:require
     [quo.foundations.colors :as colors]
-    [quo.foundations.shadows :as shadows]
-    [react-native.reanimated :as reanimated]
+    [react-native.safe-area :as safe-area]
     [status-im.contexts.chat.messenger.messages.constants :as messages.constants]))
 
 (def permission-context-height 46)
+(def distance-from-last-message 4)
 
 (defn keyboard-avoiding-container
   [theme]
@@ -13,70 +13,13 @@
    :background-color (colors/theme-colors colors/white colors/neutral-95 theme)
    :z-index          2})
 
-(defn background-container
-  [background-color background-opacity top-margin]
-  (reanimated/apply-animations-to-style
-   {:opacity background-opacity}
-   {:background-color background-color
-    :position         :absolute
-    :top              0
-    :left             0
-    :right            0
-    :height           (+ top-margin messages.constants/header-container-radius)}))
+(def permission-context-sheet {:flex 3}) ; Pushes composer to bottom
 
-(defn header-bottom-container
-  [bottom top-margin]
-  (reanimated/apply-animations-to-style
-   {:bottom bottom}
-   {:margin-top top-margin}))
-
-(defn header-bottom-part
-  [theme]
-  {:background-color   (colors/theme-colors colors/white colors/neutral-95 theme)
-   :padding-horizontal 20
-   :border-radius      20})
-
-(defn header-bottom-shadow
-  [theme]
-  (assoc
-   (shadows/get 2 theme :inverted)
-   :left          0
-   :right         0
-   :height        40
-   :position      :absolute
-   :border-radius 20))
-
-(defn header-image
-  [scale top left theme]
-  (reanimated/apply-animations-to-style
-   {:transform [{:scale scale}]
-    :top       top
-    :left      left}
-   {:position         :absolute
-    :border-width     4
-    :border-radius    50
-    :background-color (colors/theme-colors colors/white colors/neutral-95 theme)
-    :border-color     (colors/theme-colors colors/white colors/neutral-95 theme)}))
-
-(defn user-name-container
-  [top left]
-  (reanimated/apply-animations-to-style
-   {:top  top
-    :left left}
-   {:z-index -1}))
-
-(def user-name
-  {:align-items    :center
-   :flex-direction :row
-   :margin-top     52})
-
-(defn bio-and-actions
-  [top]
-  (reanimated/apply-animations-to-style
-   {:top top}
-   {:row-gap 16}))
-
-(defn permission-context-sheet
-  [margin-bottom?]
-  {:flex          3 ;; Pushes composer to bottom
-   :margin-bottom (when margin-bottom? permission-context-height)})
+(defn list-paddings
+  [add-padding-bottom?]
+  (let [{:keys [top bottom]} (safe-area/get-insets)]
+    ;; WARNING: the flat-list is reversed, so the paddings are applied inverted
+    {:padding-top    (if add-padding-bottom?
+                       (+ distance-from-last-message permission-context-height bottom)
+                       distance-from-last-message)
+     :padding-bottom (+ top messages.constants/top-bar-height)}))

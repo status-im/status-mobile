@@ -15,13 +15,17 @@
   [full-name]
   (first (string/split full-name #" ")))
 
-(defn cut-fiat-balance-to-two-decimals
-  [balance]
+(defn cut-fiat-balance
+  [balance decimals]
   (let [valid-balance? (and balance
                             (or (number? balance) (.-toFixed balance)))]
     (as-> balance $
       (if valid-balance? $ 0)
-      (.toFixed $ 2))))
+      (.toFixed $ decimals))))
+
+(defn cut-fiat-balance-to-two-decimals
+  [balance]
+  (cut-fiat-balance balance 2))
 
 (defn prettify-balance
   [currency-symbol balance]
@@ -150,6 +154,10 @@
 (defn get-account-by-address
   [accounts address]
   (some #(when (= (:address %) address) %) accounts))
+
+(defn get-default-account
+  [accounts]
+  (some #(when (:default-account? %) %) accounts))
 
 (defn calculate-token-fiat-value
   "Returns the token fiat value for provided raw balance"

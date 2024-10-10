@@ -1,27 +1,29 @@
 (ns status-im.contexts.wallet.swap.setup-swap.view
-  (:require [clojure.string :as string]
-            [quo.core :as quo]
-            [quo.foundations.colors :as colors]
-            [quo.theme :as quo.theme]
-            [react-native.core :as rn]
-            [react-native.platform :as platform]
-            [react-native.safe-area :as safe-area]
-            [status-im.common.controlled-input.utils :as controlled-input]
-            [status-im.common.events-helper :as events-helper]
-            [status-im.constants :as constants]
-            [status-im.contexts.wallet.common.account-switcher.view :as account-switcher]
-            [status-im.contexts.wallet.common.utils :as utils]
-            [status-im.contexts.wallet.sheets.buy-token.view :as buy-token]
-            [status-im.contexts.wallet.sheets.select-asset.view :as select-asset]
-            [status-im.contexts.wallet.sheets.slippage-settings.view :as slippage-settings]
-            [status-im.contexts.wallet.swap.setup-swap.style :as style]
-            [status-im.contexts.wallet.swap.utils :as swap-utils]
-            [utils.debounce :as debounce]
-            [utils.i18n :as i18n]
-            [utils.money :as money]
-            [utils.number :as number]
-            [utils.re-frame :as rf]
-            [utils.string :as utils.string]))
+  (:require
+    [clojure.string :as string]
+    [oops.core :as oops]
+    [quo.core :as quo]
+    [quo.foundations.colors :as colors]
+    [quo.theme :as quo.theme]
+    [react-native.core :as rn]
+    [react-native.platform :as platform]
+    [react-native.safe-area :as safe-area]
+    [status-im.common.controlled-input.utils :as controlled-input]
+    [status-im.common.events-helper :as events-helper]
+    [status-im.constants :as constants]
+    [status-im.contexts.wallet.common.account-switcher.view :as account-switcher]
+    [status-im.contexts.wallet.common.utils :as utils]
+    [status-im.contexts.wallet.sheets.buy-token.view :as buy-token]
+    [status-im.contexts.wallet.sheets.select-asset.view :as select-asset]
+    [status-im.contexts.wallet.sheets.slippage-settings.view :as slippage-settings]
+    [status-im.contexts.wallet.swap.setup-swap.style :as style]
+    [status-im.contexts.wallet.swap.utils :as swap-utils]
+    [utils.debounce :as debounce]
+    [utils.i18n :as i18n]
+    [utils.money :as money]
+    [utils.number :as number]
+    [utils.re-frame :as rf]
+    [utils.string :as utils.string]))
 
 (def ^:private default-text-for-unfocused-input "0.00")
 
@@ -85,7 +87,7 @@
   [{:keys [input-state on-max-press on-input-focus on-token-press on-approve-press input-focused?]}]
   (let [account-color                    (rf/sub [:wallet/current-viewing-account-color])
         network                          (rf/sub [:wallet/swap-network])
-        asset-to-pay                     (rf/sub [:wallet/swap-asset-to-pay])
+        pay-token-symbol                 (:symbol (rf/sub [:wallet/swap-asset-to-pay]))
         currency                         (rf/sub [:profile/currency])
         loading-swap-proposal?           (rf/sub [:wallet/swap-loading-swap-proposal?])
         swap-proposal                    (rf/sub [:wallet/swap-proposal-without-fees])
@@ -96,14 +98,19 @@
         approval-transaction-id          (rf/sub [:wallet/swap-approval-transaction-id])
         approved-amount                  (rf/sub [:wallet/swap-approved-amount])
         error-response                   (rf/sub [:wallet/swap-error-response])
+        asset-to-pay                     (rf/sub [:wallet/token-by-symbol pay-token-symbol])
+        overlay-shown?                   (boolean (:sheets (rf/sub [:bottom-sheet])))
+        input-ref                        (rn/use-ref-atom nil)
+        set-input-ref                    (rn/use-callback (fn [ref] (reset! input-ref ref)))
         pay-input-num-value              (controlled-input/value-numeric input-state)
         pay-input-amount                 (controlled-input/input-value input-state)
-        pay-token-symbol                 (:symbol asset-to-pay)
         pay-token-decimals               (:decimals asset-to-pay)
-        pay-token-balance-selected-chain (get-in asset-to-pay
-                                                 [:balances-per-chain
-                                                  (:chain-id network) :balance]
-                                                 0)
+        pay-token-balance-selected-chain (number/convert-to-whole-number
+                                          (get-in asset-to-pay
+                                                  [:balances-per-chain
+                                                   (:chain-id network) :raw-balance]
+                                                  0)
+                                          pay-token-decimals)
         pay-token-fiat-value             (str
                                           (utils/calculate-token-fiat-value
                                            {:currency currency
@@ -111,10 +118,15 @@
                                             :token    asset-to-pay}))
         available-crypto-limit           (money/bignumber
                                           pay-token-balance-selected-chain)
+        display-decimals                 (min pay-token-decimals
+                                              constants/min-token-decimals-to-display)
         available-crypto-limit-display   (number/remove-trailing-zeroes
-                                          (.toFixed available-crypto-limit
-                                                    (min pay-token-decimals
-                                                         constants/min-token-decimals-to-display)))
+                                          (.toFixed available-crypto-limit display-decimals))
+        available-crypto-limit-display   (if (and (= available-crypto-limit-display "0")
+                                                  (money/greater-than available-crypto-limit
+                                                                      (money/bignumber 0)))
+                                           (number/small-number-threshold display-decimals)
+                                           available-crypto-limit-display)
         approval-amount-required-num     (when approval-amount-required
                                            (str (number/hex->whole approval-amount-required
                                                                    pay-token-decimals)))
@@ -122,8 +134,7 @@
                                                   (money/greater-than
                                                    (money/bignumber pay-input-amount)
                                                    available-crypto-limit))
-                                             (money/equal-to (money/bignumber
-                                                              available-crypto-limit-display)
+                                             (money/equal-to available-crypto-limit
                                                              (money/bignumber 0)))
         valid-pay-input?                 (and
                                           (not (string/blank?
@@ -141,8 +152,15 @@
      (fn []
        (request-fetch-swap-proposal))
      [pay-input-amount])
+    (rn/use-effect
+     (fn []
+       (when-not overlay-shown?
+         (some-> @input-ref
+                 (oops/ocall "focus"))))
+     [overlay-shown?])
     [quo/swap-input
-     {:type                 :pay
+     {:get-ref              set-input-ref
+      :type                 :pay
       :error?               pay-input-error?
       :token                pay-token-symbol
       :customization-color  :blue
@@ -156,7 +174,7 @@
                               :else                                             :disabled)
       :currency-symbol      currency-symbol
       :on-token-press       on-token-press
-      :on-max-press         #(on-max-press (str available-crypto-limit))
+      :on-max-press         #(on-max-press (str pay-token-balance-selected-chain))
       :on-input-focus       on-input-focus
       :value                pay-input-amount
       :fiat-value           pay-token-fiat-value
@@ -274,23 +292,28 @@
 
 (defn- pay-token-bottom-sheet
   []
-  (let [asset-to-receive (rf/sub [:wallet/swap-asset-to-receive])]
+  (let [asset-to-receive (rf/sub [:wallet/swap-asset-to-receive])
+        network          (rf/sub [:wallet/swap-network])]
     [select-asset/view
      {:title            (i18n/label :t/select-asset-to-pay)
+      :network          network
       :on-select        (fn [token]
                           (rf/dispatch [:wallet.swap/select-asset-to-pay {:token token}]))
-      :hide-token-fn    (fn [type {:keys [available-balance]}]
-                          (and (= type constants/swap-tokens-my)
-                               (= available-balance 0)))
+      :hide-token-fn    (fn [type {:keys [balances-per-chain]}]
+                          (let [balance (get-in balances-per-chain [(:chain-id network) :balance] "0")]
+                            (and (= type constants/swap-tokens-my)
+                                 (= balance "0"))))
       :disable-token-fn (fn [_ token]
                           (= (:symbol token)
                              (:symbol asset-to-receive)))}]))
 
 (defn- receive-token-bottom-sheet
   []
-  (let [asset-to-pay (rf/sub [:wallet/swap-asset-to-pay])]
+  (let [asset-to-pay (rf/sub [:wallet/swap-asset-to-pay])
+        network      (rf/sub [:wallet/swap-network])]
     [select-asset/view
      {:title            (i18n/label :t/select-asset-to-receive)
+      :network          network
       :on-select        (fn [token]
                           (rf/dispatch [:wallet.swap/select-asset-to-receive {:token token}]))
       :disable-token-fn (fn [_ token]
@@ -310,10 +333,12 @@
         network                                     (rf/sub [:wallet/swap-network])
         pay-input-amount                            (controlled-input/input-value pay-input-state)
         pay-token-decimals                          (:decimals asset-to-pay)
-        pay-token-balance-selected-chain            (get-in asset-to-pay
-                                                            [:balances-per-chain
-                                                             (:chain-id network) :balance]
-                                                            0)
+        pay-token-balance-selected-chain            (number/convert-to-whole-number
+                                                     (get-in asset-to-pay
+                                                             [:balances-per-chain
+                                                              (:chain-id network) :raw-balance]
+                                                             0)
+                                                     pay-token-decimals)
         pay-input-error?                            (and (not (string/blank? pay-input-amount))
                                                          (money/greater-than
                                                           (money/bignumber pay-input-amount)
@@ -415,13 +440,17 @@
            (when (and swap-amount refetch-interval)
              (js/clearTimeout @refetch-interval)
              (reset! refetch-interval nil))
-           (if (and swap-amount (not= swap-amount pay-input-amount))
-             (set-pay-input-state
-              (fn [input-state]
-                (controlled-input/set-input-value
-                 input-state
-                 swap-amount)))
-             (refetch-swap-proposal)))))
+           (cond (and swap-amount (not= swap-amount pay-input-amount))
+                 (set-pay-input-state
+                  (fn [input-state]
+                    (controlled-input/set-input-value
+                     input-state
+                     swap-amount)))
+                 (and pay-input-amount
+                      (not (number/valid-decimal-count? pay-input-amount (:decimals asset-to-pay))))
+                 (set-pay-input-state controlled-input/delete-all)
+                 :else
+                 (refetch-swap-proposal)))))
      [asset-to-pay])
     (rn/use-effect
      refetch-swap-proposal
@@ -431,7 +460,10 @@
       {:on-press      on-close
        :icon-name     :i/arrow-left
        :margin-top    (safe-area/get-top)
-       :switcher-type :select-account}]
+       :switcher-type :select-account
+       :params        {:show-account-balances? true
+                       :asset-symbol           (:symbol asset-to-pay)
+                       :network                network}}]
      [rn/view {:style style/inputs-container}
       [pay-token-input
        {:input-state      pay-input-state
@@ -453,7 +485,7 @@
         :on-token-press #(rf/dispatch [:show-bottom-sheet {:content receive-token-bottom-sheet}])
         :on-input-focus #(set-pay-input-focused? false)}]]
      [rn/view {:style style/footer-container}
-      [alert-banner {:pay-input-error? pay-input-error?}]
+      (when-not loading-swap-proposal? [alert-banner {:pay-input-error? pay-input-error?}])
       (when (or loading-swap-proposal? swap-proposal)
         [transaction-details])
       [action-button {:on-press on-review-swap-press}]]

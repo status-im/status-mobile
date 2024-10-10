@@ -10,11 +10,9 @@
     [react-native.hooks :as hooks]
     [react-native.platform :as platform]
     [react-native.reanimated :as reanimated]
-    [react-native.safe-area :as safe-area]
     [status-im.common.home.actions.view :as home.actions]
     [status-im.constants :as constants]
     [status-im.contexts.chat.messenger.composer.constants :as composer.constants]
-    [status-im.contexts.chat.messenger.messages.constants :as messages.constants]
     [status-im.contexts.chat.messenger.messages.content.view :as message]
     [status-im.contexts.chat.messenger.messages.list.state :as state]
     [status-im.contexts.chat.messenger.messages.list.style :as style]
@@ -24,7 +22,6 @@
     [utils.re-frame :as rf]
     [utils.worklets.chat.messenger.messages :as worklets]))
 
-(def ^:const distance-from-last-message 4)
 (def ^:const loading-indicator-page-loading-height 100)
 
 (defn list-key-fn [{:keys [message-id value]}] (or message-id value))
@@ -194,10 +191,9 @@
         context                  (rf/sub [:chats/current-chat-message-list-view-context])
         able-to-send-message?    (:able-to-send-message? context)
         messages                 (rf/sub [:chats/raw-chat-messages-stream chat-id])
-        margin-bottom?           (and community-channel? (not able-to-send-message?))
-        recording?               (rf/sub [:chats/recording?])
-        top-margin               (+ (safe-area/get-top) messages.constants/top-bar-height)]
-    [rn/view {:style (style/permission-context-sheet margin-bottom?)}
+        add-padding-bottom?      (and community-channel? (not able-to-send-message?))
+        recording?               (rf/sub [:chats/recording?])]
+    [rn/view {:style style/permission-context-sheet}
      [rn/view {:style {:flex-shrink 1}} ;; Keeps flat list on top
       [reanimated/flat-list
        {:key-fn                            list-key-fn
@@ -237,8 +233,7 @@
         :style                             {:background-color (colors/theme-colors colors/white
                                                                                    colors/neutral-95
                                                                                    theme)}
-        :content-container-style           {:padding-top    distance-from-last-message
-                                            :padding-bottom top-margin}
+        :content-container-style           (style/list-paddings add-padding-bottom?)
         :inverted                          true
         :on-layout                         #(on-layout
                                              {:event                  %

@@ -4,7 +4,7 @@ from selenium.common import NoSuchElementException
 
 from tests import common_password
 from tests.base_test_case import AbstractTestCase
-from views.base_element import Text, Button, EditBox, SilentButton
+from views.base_element import Text, Button, EditBox, SilentButton, BaseElement
 from views.base_view import BaseView
 
 
@@ -68,15 +68,6 @@ class AdvancedButton(Button):
         return self.navigate()
 
 
-class BackupRecoveryPhraseButton(Button):
-    def __init__(self, driver):
-        super().__init__(driver, accessibility_id="back-up-recovery-phrase-button")
-
-    def click(self):
-        self.scroll_to_element().click()
-        return self.navigate()
-
-
 class RecoveryPhraseTable(Text):
     def __init__(self, driver):
         super().__init__(driver, translation_id="your-recovery-phrase",
@@ -91,11 +82,6 @@ class RecoveryPhraseWordNumberText(Text):
     def number(self):
         time.sleep(1)
         return int(self.find_element().text.split('#')[1])
-
-
-class RecoveryPhraseWordInput(EditBox):
-    def __init__(self, driver):
-        super(RecoveryPhraseWordInput, self).__init__(driver, xpath="//android.widget.EditText")
 
 
 class HelpButton(Button):
@@ -235,10 +221,13 @@ class ProfileView(BaseView):
         self.show_profile_pictures_of = Button(self.driver, accessibility_id="show-profile-pictures")
         self.show_profile_pictures_to = Button(self.driver, accessibility_id="show-profile-pictures-to")
         ## Backup recovery phrase
-        self.backup_recovery_phrase_button = BackupRecoveryPhraseButton(self.driver)
+        self.backup_recovery_phrase_button = Button(
+            self.driver, accessibility_id="icon, Backup recovery phrase, label-component, icon")
+
         self.recovery_phrase_table = RecoveryPhraseTable(self.driver)
         self.recovery_phrase_word_number = RecoveryPhraseWordNumberText(self.driver)
-        self.recovery_phrase_word_input = RecoveryPhraseWordInput(self.driver)
+        self.recovery_phrase_next_button = Button(self.driver, accessibility_id="Next, icon")
+        self.recovery_phrase_word_input = EditBox(self.driver, xpath="//android.widget.EditText")
         ## Dapps permissions
         self.dapp_permissions_button = DappPermissionsButton(self.driver)
         self.revoke_access_button = Button(self.driver, translation_id="revoke-access")
@@ -290,8 +279,8 @@ class ProfileView(BaseView):
         self.advertise_device_button = Button(self.driver, accessibility_id="advertise-device")
         self.sync_all_button = Button(self.driver, translation_id="sync-all-devices")
         self.syncing_button = Button(self.driver, accessibility_id="icon, Syncing, label-component, icon")
-        self.paired_devices_button = Button(self.driver,
-                                            accessibility_id="icon, Paired devices, 0 devices, label-component, icon")
+        self.paired_devices_button = Button(
+            self.driver, xpath="//android.view.ViewGroup[contains(@content-desc,'icon, Paired devices,')]")
         self.sync_plus_button = Button(
             self.driver,
             xpath="//*[@text='Paired devices']/following-sibling::android.view.ViewGroup[@content-desc='icon']")
@@ -425,20 +414,20 @@ class ProfileView(BaseView):
         return dict(zip(map(int, text[::2]), text[1::2]))
 
     def backup_recovery_phrase(self):
-        self.driver.info("## Back up seed phrase", device=False)
+        self.just_fyi("Back up recovery phrase")
+        self.backup_recovery_phrase_button.click()
         self.ok_continue_button.click()
         recovery_phrase = self.get_recovery_phrase()
-        self.next_button.click()
+        self.recovery_phrase_next_button.click()
         word_number = self.recovery_phrase_word_number.number
         self.recovery_phrase_word_input.send_keys(recovery_phrase[word_number])
-        self.next_button.click()
+        self.recovery_phrase_next_button.click()
         word_number_1 = self.recovery_phrase_word_number.number
         self.recovery_phrase_word_input.send_keys(recovery_phrase[word_number_1])
         self.done_button.click()
         self.yes_button.click()
         self.ok_got_it_button.click()
-        self.driver.info("## Seed phrase is backed up!", device=False)
-        return recovery_phrase
+        return ' '.join(recovery_phrase.values())
 
     def edit_profile_picture(self, image_index: int, update_by="Gallery"):
         self.driver.info("## Setting custom profile image", device=False)
@@ -555,3 +544,25 @@ class ProfileView(BaseView):
         self.login_button.click()
         self.wait_for_staleness_of_element(password_input)
         return self.password_input.text
+
+    def get_current_device_name(self):
+        element = BaseElement(
+            self.driver,
+            xpath="//android.view.ViewGroup/android.view.ViewGroup[@content-desc='status-tag-positive']/..")
+        return element.attribute_value('content-desc').split(',')[1].strip()
+
+    def get_paired_device_by_name(self, device_name: str):
+
+        class PairedDeviceElement(BaseElement):
+            def __init__(self, driver, device_name):
+                super().__init__(driver, xpath="//*[@content-desc='icon, %s, label-component']" % device_name)
+
+            @property
+            def get_pair_button(self):
+                return Button(self.driver, xpath=self.locator + "//*[@content-desc='Pair']")
+
+            @property
+            def get_unpair_button(self):
+                return Button(self.driver, xpath=self.locator + "//*[@content-desc='Unpair']")
+
+        return PairedDeviceElement(self.driver, device_name)

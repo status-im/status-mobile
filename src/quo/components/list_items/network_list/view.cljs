@@ -1,6 +1,7 @@
 (ns quo.components.list-items.network-list.view
   (:require
     [clojure.string :as string]
+    [quo.components.icon :as icon]
     [quo.components.list-items.network-list.style :as style]
     [quo.components.markdown.text :as text]
     [quo.theme :as quo.theme]
@@ -42,8 +43,8 @@
      [:map {:closed true}
       [:network-image :int]
       [:label :string]
-      [:fiat-value :string]
-      [:token-value :string]
+      [:fiat-value {:optional true} [:maybe :string]]
+      [:token-value {:optional true} [:maybe :string]]
       [:container-style {:optional true} [:maybe :map]]
       [:customization-color {:optional true} [:maybe :schema.common/customization-color]]
       [:state {:optional true} [:enum :pressed :active :disabled :default]]
@@ -51,7 +52,7 @@
    :any])
 
 (defn- view-internal
-  [{:keys [on-press container-style state customization-color]
+  [{:keys [fiat-value token-value on-press container-style state customization-color]
     :as   props
     :or   {customization-color :blue}}]
   (let [theme                  (quo.theme/use-theme)
@@ -67,6 +68,8 @@
       :on-press            (when-not (= state :disabled) on-press)
       :accessibility-label :network-list}
      [info props]
-     [values props]]))
+     (if (or token-value fiat-value)
+       [values props]
+       [icon/icon :i/chevron-right])]))
 
 (def view (schema/instrument #'view-internal ?schema))

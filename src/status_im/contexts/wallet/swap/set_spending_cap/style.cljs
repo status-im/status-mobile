@@ -10,8 +10,12 @@
    :height           36
    :background-color :transparent})
 
+(def floating-button-page-content-container
+  {:margin-bottom 168})
+
 (def scroll-view-container
-  {:padding-bottom 150})
+  {:flex           1
+   :padding-bottom 20})
 
 (def content-container
   {:padding-top        12
@@ -56,5 +60,5 @@
 
 (defn footer-container
   [theme]
-  {:margin-bottom    -10
-   :background-color (colors/theme-colors colors/white colors/neutral-100 theme)})
+  {:margin-bottom    -12
+   :background-color (colors/theme-colors colors/white colors/neutral-95 theme)})

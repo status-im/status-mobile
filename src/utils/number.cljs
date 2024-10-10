@@ -2,7 +2,8 @@
   (:require [clojure.string :as string]
             [native-module.core :as native-module]
             [utils.hex :as utils.hex]
-            [utils.money :as utils.money]))
+            [utils.money :as utils.money]
+            [utils.money :as money]))
 
 (defn naive-round
   "Quickly and naively round number `n` up to `decimal-places`.
@@ -17,17 +18,6 @@
   (let [scale (Math/pow 10 decimal-places)]
     (/ (Math/round (* n scale))
        scale)))
-
-(defn convert-to-whole-number
-  "Converts a fractional `amount` to its corresponding whole number representation
-  by dividing it by 10 raised to the power of `decimals`. This is often used in financial
-  calculations where amounts are stored in their smallest units (e.g., cents) and need
-  to be converted to their whole number equivalents (e.g., dollars).
-
-  Example usage:
-  (convert-to-whole-number 12345 2) ; => 123.45"
-  [amount decimals]
-  (/ amount (Math/pow 10 decimals)))
 
 (defn parse-int
   "Parses `n` as an integer. Defaults to zero or `default` instead of NaN."
@@ -65,15 +55,44 @@
              "")
            ""))))
 
+(defn convert-to-whole-number
+  "Converts a fractional `amount` to its corresponding whole number representation
+  by dividing it by 10 raised to the power of `decimals`. This is often used in financial
+  calculations where amounts are stored in their smallest units (e.g., cents) and need
+  to be converted to their whole number equivalents (e.g., dollars).
+
+  Example usage:
+  (convert-to-whole-number 12345 2) ; => 123.45"
+  [amount decimals]
+  (-> amount
+      (/ (Math/pow 10 decimals))
+      (.toFixed decimals)
+      remove-trailing-zeroes))
+
 (defn hex->whole
   [num decimals]
   (-> num
       utils.hex/normalize-hex
       native-module/hex-to-number
-      (convert-to-whole-number decimals)))
+      (convert-to-whole-number decimals)
+      money/bignumber))
 
 (defn to-fixed
   [num decimals]
   (-> num
       (utils.money/to-fixed decimals)
       remove-trailing-zeroes))
+
+(defn small-number-threshold
+  "Receives a decimal count and returns a string like '<0.001' if the decimal count is 3,
+   '<0.000001' if the decimal count is 6, etc."
+  [decimal-count]
+  (if (> decimal-count 0)
+    (str "<0." (apply str (repeat (dec decimal-count) "0")) "1")
+    "0"))
+
+(defn valid-decimal-count?
+  "Returns false if the number has more decimals than the decimal count, otherwise true."
+  [num decimal-count]
+  (let [decimal-part (second (string/split (str num) #"\."))]
+    (or (nil? decimal-part) (<= (count decimal-part) decimal-count))))

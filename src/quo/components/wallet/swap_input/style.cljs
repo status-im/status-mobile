@@ -75,3 +75,16 @@
 
 (def fiat-amount
   {:color colors/neutral-50})
+
+(def gradient-common
+  {:width    64
+   :position :absolute
+   :top      0
+   :bottom   0
+   :z-index  1})
+
+(def gradient-start
+  (assoc gradient-common :left 0))
+
+(def gradient-end
+  (assoc gradient-common :right 0))

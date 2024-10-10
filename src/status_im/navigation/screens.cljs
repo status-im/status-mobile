@@ -26,6 +26,10 @@
     [status-im.contexts.communities.actions.share-community.view :as share-community]
     [status-im.contexts.communities.discover.view :as communities.discover]
     [status-im.contexts.communities.overview.view :as communities.overview]
+    [status-im.contexts.keycard.check.view :as keycard.check]
+    [status-im.contexts.keycard.empty.view :as keycard.empty]
+    [status-im.contexts.keycard.error.view :as keycard.error]
+    [status-im.contexts.keycard.not-keycard.view :as keycard.not-keycard]
     [status-im.contexts.onboarding.create-or-sync-profile.view :as create-or-sync-profile]
     [status-im.contexts.onboarding.create-password.view :as create-password]
     [status-im.contexts.onboarding.create-profile.view :as create-profile]
@@ -58,6 +62,7 @@
     [status-im.contexts.profile.settings.screens.password.view :as settings-password]
     [status-im.contexts.profile.settings.screens.syncing.view :as settings.syncing]
     [status-im.contexts.profile.settings.view :as settings]
+    [status-im.contexts.settings.keycard.view :as settings.keycard]
     [status-im.contexts.settings.language-and-currency.currency.view :as settings.currency-selection]
     [status-im.contexts.settings.language-and-currency.view :as settings.language-and-currency]
     [status-im.contexts.settings.privacy-and-security.share-usage.view :as settings.share-usage]
@@ -584,6 +589,10 @@
      :options   options/transparent-modal-screen-options
      :component wallet-options/view}
 
+    {:name      :screen/settings.keycard
+     :options   options/keycard-modal-screen-options
+     :component settings.keycard/view}
+
     {:name      :screen/settings.rename-keypair
      :options   options/transparent-screen-options
      :component keypair-rename/view}
@@ -671,7 +680,24 @@
                  :popGesture         false
                  :hardwareBackButton {:dismissModalOnPress false
                                       :popStackOnPress     false})
-     :component change-password-loading/view}]
+     :component change-password-loading/view}
+
+    ;; Keycard
+    {:name      :screen/keycard.check
+     :options   options/keycard-modal-screen-options
+     :component keycard.check/view}
+
+    {:name      :screen/keycard.empty
+     :options   options/keycard-modal-screen-options
+     :component keycard.empty/view}
+
+    {:name      :screen/keycard.error
+     :options   options/keycard-modal-screen-options
+     :component keycard.error/view}
+
+    {:name      :screen/keycard.not-keycard
+     :options   options/keycard-modal-screen-options
+     :component keycard.not-keycard/view}]
 
    [{:name    :shell
      :options {:theme :dark}}]

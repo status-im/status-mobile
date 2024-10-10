@@ -256,9 +256,10 @@
   {:events [:pairing/pair-and-sync]}
   [cofx installation-id]
   {:fx [[:json-rpc/call
-         [{:method     "wakuext_enableInstallationAndSync"
-           :params     [{:installationId installation-id}]
-           :on-success #(log/debug "successfully synced devices")}]]]})
+         [{:method      "wakuext_enableInstallationAndSync"
+           :params      [{:installationId installation-id}]
+           :js-response true
+           :on-success  [:sanitize-messages-and-process-response]}]]]})
 
 (rf/defn enable-installation-success
   {:events [:pairing.callback/enable-installation-success]}
