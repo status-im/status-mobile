@@ -11,7 +11,7 @@
         [first-pin set-first-pin] (rn/use-state "")
         [error? set-error]        (rn/use-state false)
         [stage set-stage]         (rn/use-state :create)
-        empty?                    (string/blank? pin)
+        pin-empty?                (string/blank? pin)
         on-delete                 (rn/use-callback
                                    (fn []
                                      (set-error false)
@@ -50,6 +50,6 @@
         :error?                error?
         :info                  (when error? (i18n/label :t/pin-not-match))}]]
      [quo/numbered-keyboard
-      {:delete-key? (not empty?)
+      {:delete-key? (not pin-empty?)
        :on-delete   on-delete
        :on-press    on-press}]]))
