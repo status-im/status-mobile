@@ -1,9 +1,9 @@
 (ns status-im.contexts.keycard.pin.create.view
-  (:require [quo.core :as quo]
+  (:require [clojure.string :as string]
+            [quo.core :as quo]
             [react-native.core :as rn]
             [status-im.constants :as constants]
-            [utils.i18n :as i18n]
-            [clojure.string :as string]))
+            [utils.i18n :as i18n]))
 
 (defn view
   [{:keys [on-complete]}]
