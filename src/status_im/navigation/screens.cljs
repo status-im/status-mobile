@@ -26,6 +26,7 @@
     [status-im.contexts.communities.actions.share-community.view :as share-community]
     [status-im.contexts.communities.discover.view :as communities.discover]
     [status-im.contexts.communities.overview.view :as communities.overview]
+    [status-im.contexts.keycard.authorise.view :as keycard.authorise]
     [status-im.contexts.keycard.check.view :as keycard.check]
     [status-im.contexts.keycard.empty.view :as keycard.empty]
     [status-im.contexts.keycard.error.view :as keycard.error]
@@ -697,7 +698,11 @@
 
     {:name      :screen/keycard.not-keycard
      :options   options/keycard-modal-screen-options
-     :component keycard.not-keycard/view}]
+     :component keycard.not-keycard/view}
+
+    {:name      :screen/keycard.authorise
+     :options   options/keycard-modal-screen-options
+     :component keycard.authorise/view}]
 
    [{:name    :shell
      :options {:theme :dark}}]
