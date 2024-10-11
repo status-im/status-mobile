@@ -10,7 +10,7 @@ let
   # https://github.com/NixOS/nixpkgs/releases/tag/24.05
   nixpkgsSrc = builtins.fetchTarball {
     url = "https://github.com/NixOS/nixpkgs/archive/df27247e6f3e636c119e2610bf12d38b5e98cc79.tar.gz";
-    sha256 = "sha256:0zynbk52khdfhg4qfv26h3r5156xff5p0cga2cin7b07i7lqminh";
+    sha256 = "sha256:0bbvimk7xb7akrx106mmsiwf9nzxnssisqmqffla03zz51d0kz2n";
   };
 
   # FIXME: remove this additional source when nixpkgs includes gradle 8.8 in stable channel
