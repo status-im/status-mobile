@@ -180,17 +180,17 @@
         },
         "shards.staging": {
             "tcp/p2p/waku/boot": {
-                "boot-01.do-ams3.shards.staging": "/dns4/boot-01.do-ams3.shards.staging.status.im/tcp/30303/p2p/16Uiu2HAmEqqio4UR1SWqAc7KY19t6qyDvtmyjreZpzUBJvb4u65R",
+                "boot-01.do-ams3.shards.staging": "/dns4/boot-01.do-ams3.shards.staging.status.im/tcp/30303/p2p/16Uiu2HAmQE7FXQc6iZHdBzYfw3qCSDa9dLc1wsBJKoP4aZvztq2d",
                 "boot-01.gc-us-central1-a.shards.staging": "/dns4/boot-01.gc-us-central1-a.shards.staging.status.im/tcp/30303/p2p/16Uiu2HAmGAA54bBTE78MYidSy3P7Q9yAWFNTAEReJYD69VRvtL5r",
                 "boot-01.ac-cn-hongkong-c.shards.staging": "/dns4/boot-01.ac-cn-hongkong-c.shards.staging.status.im/tcp/30303/p2p/16Uiu2HAmNTpGnyZ8W1BK2sXEmgSCNWiyDKgRU3NBR2DXST2HzxRU"
             },
             "enr/p2p/waku/boot": {
-                "boot-01.do-ams3.shards.staging": "enr:-QEQuEDsh6FgAb_36cReaX7W4gWx_7_GNpsUki7bXMoMrrrWij5pDEyV3guR-urDW_6GJTAzpQiJV61F-CfNn_NxPbY-AYJpZIJ2NIJpcISPxvrpim11bHRpYWRkcnO4YAAtNihib290LTAxLmRvLWFtczMuc2hhcmRzLnN0YWdpbmcuc3RhdHVzLmltBnZfAC82KGJvb3QtMDEuZG8tYW1zMy5zaGFyZHMuc3RhZ2luZy5zdGF0dXMuaW0GAbveA4Jyc40AEAUAAQAgAEAAgAEAiXNlY3AyNTZrMaEDIH8BcuEzgnmwPQTu7BPYyg4u4om7K9qekKA2gT_H2wSDdGNwgnZfg3VkcIIjKIV3YWt1Mg0",
+                "boot-01.do-ams3.shards.staging": "enr:-QEQuEBuiQgFlJNcv255042zwyl4pOBOivakX8N30Dr9vaaEU2q8-7N4GVY4Hk87iEKELjlIXTpE9Wj6EQq1lrBuc7ayAYJpZIJ2NIJpcISPxvrpim11bHRpYWRkcnO4YAAtNihib290LTAxLmRvLWFtczMuc3RhdHVzLnN0YWdpbmcuc3RhdHVzLmltBnZfAC82KGJvb3QtMDEuZG8tYW1zMy5zdGF0dXMuc3RhZ2luZy5zdGF0dXMuaW0GAbveA4Jyc40AEAUAAQAgAEAAgAEAiXNlY3AyNTZrMaEDq-yGgpuoUG6NKkbIDRmrMiT-bEVzFlpWLEK_rF3yKUaDdGNwgnZfg3VkcIIjKIV3YWt1Mg0",
                 "boot-01.gc-us-central1-a.shards.staging": "enr:-QEiuECWCuk1CoefbPYUV_cff27t-471k_QhJ_MvgOUQmRE4vgI6h9fD4LgXy7TZNSFXeBBP9haWJB7lx8Wujx-LPmhrAYJpZIJ2NIJpcIRoxQVgim11bHRpYWRkcnO4cgA2NjFib290LTAxLmdjLXVzLWNlbnRyYWwxLWEuc2hhcmRzLnN0YWdpbmcuc3RhdHVzLmltBnZfADg2MWJvb3QtMDEuZ2MtdXMtY2VudHJhbDEtYS5zaGFyZHMuc3RhZ2luZy5zdGF0dXMuaW0GAbveA4Jyc40AEAUAAQAgAEAAgAEAiXNlY3AyNTZrMaEDNAvlGjekD1YV4WpmjwArGAH2g9kHFJnMRfgUhcIkoA2DdGNwgnZfg3VkcIIjKIV3YWt1Mg0",
                 "boot-01.ac-cn-hongkong-c.shards.staging": "enr:-QEiuEAcHWW7aNBtJhigTCAnKu9-H1b98SWpBJkGm3PAxth5QjJA0kdiabOfou4HgCD6RuyZEnFE5L8ymahouw3kWRiWAYJpZIJ2NIJpcIQvTKi6im11bHRpYWRkcnO4cgA2NjFib290LTAxLmFjLWNuLWhvbmdrb25nLWMuc2hhcmRzLnN0YWdpbmcuc3RhdHVzLmltBnZfADg2MWJvb3QtMDEuYWMtY24taG9uZ2tvbmctYy5zaGFyZHMuc3RhZ2luZy5zdGF0dXMuaW0GAbveA4Jyc40AEAUAAQAgAEAAgAEAiXNlY3AyNTZrMaEDkbgV7oqPNmFtX5FzSPi9WH8kkmrPB1R3n9xRXge91M-DdGNwgnZfg3VkcIIjKIV3YWt1Mg0"
             },
             "wss/p2p/waku/boot": {
-                "boot-01.do-ams3.shards.staging": "/dns4/boot-01.do-ams3.shards.staging.status.im/tcp/443/wss/p2p/16Uiu2HAmEqqio4UR1SWqAc7KY19t6qyDvtmyjreZpzUBJvb4u65R",
+                "boot-01.do-ams3.shards.staging": "/dns4/boot-01.do-ams3.shards.staging.status.im/tcp/443/wss/p2p/16Uiu2HAmQE7FXQc6iZHdBzYfw3qCSDa9dLc1wsBJKoP4aZvztq2d",
                 "boot-01.gc-us-central1-a.shards.staging": "/dns4/boot-01.gc-us-central1-a.shards.staging.status.im/tcp/443/wss/p2p/16Uiu2HAmGAA54bBTE78MYidSy3P7Q9yAWFNTAEReJYD69VRvtL5r",
                 "boot-01.ac-cn-hongkong-c.shards.staging": "/dns4/boot-01.ac-cn-hongkong-c.shards.staging.status.im/tcp/443/wss/p2p/16Uiu2HAmNTpGnyZ8W1BK2sXEmgSCNWiyDKgRU3NBR2DXST2HzxRU"
             },
