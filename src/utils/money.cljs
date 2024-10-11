@@ -47,11 +47,10 @@
   (if (bignumber? n) n (bignumber n)))
 
 (defn ->bignumbers
-  [n1 n2]
-  (when-let [bn1 (->bignumber n1)]
-    (when-let [bn2 (->bignumber n2)]
-      (when (and (bignumber? bn1) (bignumber? bn2))
-        [bn1 bn2]))))
+  [& numbers]
+  (let [transformed-numbers (map ->bignumber numbers)]
+    (when (every? bignumber? transformed-numbers)
+      transformed-numbers)))
 
 (defn greater-than-or-equals
   [^js n1 ^js n2]
