@@ -148,11 +148,8 @@
            [:dispatch [:wallet-connect/redirect-to-dapp (data-store/get-dapp-redirect-url session)]]
            [:dispatch
             [:centralized-metrics/track :metric/dapp-session
-             {:action :approved
-              :result :success}]]
-           [:dispatch
-            [:centralized-metrics/track :metric/dapp-connected
-             {:total_connected_dapps total-connected-dapps}]]]})))
+             {:action                :approved
+              :total_connected_dapps total-connected-dapps}]]]})))
 
 (rf/reg-event-fx :wallet-connect/approve-session-error
  (fn [_ [error]]
@@ -163,7 +160,7 @@
          [:dispatch
           [:centralized-metrics/track :metric/dapp-session
            {:action :approved
-            :result :fail}]]]}))
+            :error  (aget error "code")}]]]}))
 
 (rf/reg-event-fx
  :wallet-connect/reject-session-proposal
@@ -178,10 +175,9 @@
                :proposal    (or proposal request)
                :on-success  [:centralized-metrics/track :metric/dapp-session
                              {:networks networks
-                              :action   (if rejected? :rejected :not_supported)
-                              :result   :success}]
+                              :action   (if rejected? :rejected :not_supported)}]
                :on-error    [:centralized-metrics/track :metric/dapp-session
                              {:networks networks
                               :action   (if rejected? :rejected :not_supported)
-                              :result   :fail}]}])
+                              :error    true}]}])
            [:dispatch [:wallet-connect/reset-current-session-proposal]]]})))

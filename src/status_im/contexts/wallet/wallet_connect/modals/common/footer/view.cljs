@@ -18,6 +18,7 @@
   [{:keys [warning-label slide-button-text error-state]} & children]
   (let [{:keys [customization-color]} (rf/sub [:wallet-connect/current-request-account-details])
         offline?                      (rf/sub [:network/offline?])
+        view-id                       (rf/sub [:view-id])
         theme                         (quo.theme/use-theme)]
     [:<>
      (when (or offline? error-state)
@@ -32,8 +33,13 @@
                                           :not-enough-assets
                                           :t/not-enough-assets-for-transaction)))
          :button-text     (i18n/label :t/add-eth)
-         :on-button-press #(rf/dispatch [:show-bottom-sheet
-                                         {:content buy-token/view}])}])
+         :on-button-press (rn/use-callback (fn []
+                                             (rf/dispatch [:centralized-metrics/track
+                                                           :metric/button-press
+                                                           {:key     :add_eth
+                                                            :view_id view-id}])
+                                             (rf/dispatch [:show-bottom-sheet
+                                                           {:content buy-token/view}])))}])
      [rn/view {:style style/content-container}
       (into [rn/view
              {:style style/data-items-container}]

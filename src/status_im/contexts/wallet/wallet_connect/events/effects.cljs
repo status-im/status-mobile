@@ -73,8 +73,8 @@
            (signing/eth-sign password address data)
 
            (signing/personal-sign password address data))
-         (promesa/then on-success)
-         (promesa/catch on-error)))))
+         (promesa/then (partial rf/call-continuation on-success))
+         (promesa/catch (partial rf/call-continuation on-error))))))
 
 (rf/reg-fx
  :effects.wallet-connect/prepare-transaction
@@ -93,8 +93,8 @@
                                       tx-hash
                                       tx-args
                                       chain-id)
-       (promesa/then on-success)
-       (promesa/catch on-error))))
+       (promesa/then (partial rf/call-continuation on-success))
+       (promesa/catch (partial rf/call-continuation on-error)))))
 
 (rf/reg-fx
  :effects.wallet-connect/send-transaction
@@ -104,8 +104,8 @@
                                       tx-hash
                                       tx-args
                                       chain-id)
-       (promesa/then on-success)
-       (promesa/catch on-error))))
+       (promesa/then (partial rf/call-continuation on-success))
+       (promesa/catch (partial rf/call-continuation on-error)))))
 
 (rf/reg-fx
  :effects.wallet-connect/sign-typed-data
@@ -115,8 +115,8 @@
                         data
                         chain-id
                         version)
-       (promesa/then on-success)
-       (promesa/catch on-error))))
+       (promesa/then (partial rf/call-continuation on-success))
+       (promesa/catch (partial rf/call-continuation on-error)))))
 
 (rf/reg-fx
  :effects.wallet-connect/respond-session-request
