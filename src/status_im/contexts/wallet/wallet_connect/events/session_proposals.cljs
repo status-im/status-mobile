@@ -147,7 +147,7 @@
            [:dispatch [:wallet-connect/reset-current-session-proposal]]
            [:dispatch [:wallet-connect/redirect-to-dapp (data-store/get-dapp-redirect-url session)]]
            [:dispatch
-            [:centralized-metrics/track :metric/dapp-session
+            [:centralized-metrics/track :metric/dapp-session-proposal
              {:action                :approved
               :total_connected_dapps total-connected-dapps}]]]})))
 
@@ -156,11 +156,7 @@
    (log/error "Wallet Connect session approval failed"
               {:error error
                :event :wallet-connect/approve-session})
-   {:fx [[:dispatch [:wallet-connect/reset-current-session-proposal]]
-         [:dispatch
-          [:centralized-metrics/track :metric/dapp-session
-           {:action :approved
-            :error  (aget error "code")}]]]}))
+   {:fx [[:dispatch [:wallet-connect/reset-current-session-proposal]]]}))
 
 (rf/reg-event-fx
  :wallet-connect/reject-session-proposal
@@ -169,15 +165,12 @@
          {:keys [request response-sent?]} (:wallet-connect/current-proposal db)
          networks                         (networks/get-proposal-networks (or proposal request))
          rejected?                        (nil? proposal)]
-     {:fx [(when-not response-sent?
-             [:effects.wallet-connect/reject-session-proposal
+     {:fx (if-not response-sent?
+            [[:effects.wallet-connect/reject-session-proposal
               {:web3-wallet web3-wallet
-               :proposal    (or proposal request)
-               :on-success  [:centralized-metrics/track :metric/dapp-session
-                             {:networks networks
-                              :action   (if rejected? :rejected :not_supported)}]
-               :on-error    [:centralized-metrics/track :metric/dapp-session
-                             {:networks networks
-                              :action   (if rejected? :rejected :not_supported)
-                              :error    true}]}])
-           [:dispatch [:wallet-connect/reset-current-session-proposal]]]})))
+               :proposal    (or proposal request)}]
+             [:dispatch
+              [:centralized-metrics/track :metric/dapp-session-proposal
+               {:action   (if rejected? :rejected :not_supported)
+                :networks networks}]]]
+            [[:dispatch [:wallet-connect/reset-current-session-proposal]]])})))

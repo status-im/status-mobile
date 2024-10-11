@@ -27,15 +27,14 @@
               {:web3-wallet web3-wallet
                :topic       topic
                :on-fail     (fn []
-                              (rf/dispatch [:centralized-metrics/track :metric/dapp-disconnected
-                                            {:result :fail}])
                               (when on-fail
                                 (on-fail)))
                :on-success  (fn []
                               (log/info "Successfully disconnected dApp session" topic)
                               (rf/dispatch [:wallet-connect/delete-session topic])
-                              (rf/dispatch [:centralized-metrics/track :metric/dapp-disconnected
-                                            {:result :success}])
+                              (rf/dispatch [:dispatch
+                                            [:centralized-metrics/track
+                                             :metric/dapp-session-disconnected]])
                               (when on-success
                                 (on-success)))}]]}
        {:fx [[:dispatch [:wallet-connect/no-internet-toast]]]}))))
