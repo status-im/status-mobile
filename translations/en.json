@@ -163,6 +163,7 @@
   "audio-recorder-max-ms-reached": "Maximum recording time reached",
   "audio-recorder-permissions-error": "You have to give permission to send audio messages",
   "aug": "Aug",
+  "authorise-with-password": "Authorise with password",
   "authorize": "Authorize",
   "available": "Available",
   "available-participants": {
@@ -1568,6 +1569,7 @@
   "messages-from-contacts-only-subtitle": "Only people you added as contacts can start a new chat with you or invite you to a group",
   "messages-gap-warning": "Some messages might be missing",
   "might-break": "Might break some ÐApps",
+  "migrate-key-pair-authorise": "To migrate profile key pair to Keycard you need to authorise with profile password.",
   "migrate-key-pair-keycard": "Migrate profile key pair to Keycard",
   "migrate-key-pair-keycard-default-key": "{{name}} is your default Status key pair. Migrating this key pair to Keycard will require you to use your Keycard to login to Status and to transact with the key pair’s derived accounts on all synced devices.\n\nKey pair will be removed from device and stored on Keycard.",
   "migrate-key-pair-keycard-info": "Re-encrypting your data with your new Keycard login method may take some time, during which you won’t be able to use the app.",
@@ -2340,6 +2342,7 @@
   "signing-phrase": "Signing phrase",
   "simple": "Simple",
   "skip": "Skip",
+  "slide-to-authorise": "Slide to authorise",
   "slide-to-bridge": "Slide to bridge",
   "slide-to-create-account": "Slide to create account",
   "slide-to-import": "Slide to import",
