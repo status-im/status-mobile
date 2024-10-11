@@ -2,13 +2,13 @@
   (:require
     [re-frame.core :as re-frame]
     [re-frame.std-interceptors :as std-interceptors]
-    [status-im.contexts.centralized-metrics.events :as centralized-metrics]
+    [status-im.setup.interceptor-metrics :as interceptor-metrics]
     [utils.re-frame :as rf]))
 
 (defn register-global-interceptors
   []
   (re-frame/reg-global-interceptor rf/debug-handlers-names)
-  (re-frame/reg-global-interceptor centralized-metrics/interceptor)
+  (interceptor-metrics/setup-centralized-metrics-interceptor)
   (re-frame/reg-global-interceptor (re-frame/inject-cofx :now))
 
   ;; Interceptor `trim-v` removes the first element of the event vector.
