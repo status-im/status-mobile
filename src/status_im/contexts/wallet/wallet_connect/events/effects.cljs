@@ -8,7 +8,6 @@
     [status-im.contexts.wallet.wallet-connect.utils.signing :as signing]
     [status-im.contexts.wallet.wallet-connect.utils.transactions :as transactions]
     [status-im.contexts.wallet.wallet-connect.utils.typed-data :as typed-data]
-    [taoensso.timbre :as log]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]
     [utils.security.core :as security]))
@@ -140,12 +139,8 @@
           {:web3-wallet web3-wallet
            :id          id
            :reason      reason})
-         (promesa/then (fn []
-                         (log/debug "Wallet Connect session proposal rejected")
-                         (rf/call-continuation on-success)))
-         (promesa/catch (fn []
-                          (log/error "Wallet Connect unable to reject session proposal")
-                          (rf/call-continuation on-error)))))))
+         (promesa/then on-success)
+         (promesa/catch on-error)))))
 
 (rf/reg-fx
  :effects.wallet-connect/get-sessions

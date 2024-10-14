@@ -32,9 +32,8 @@
                :on-success  (fn []
                               (log/info "Successfully disconnected dApp session" topic)
                               (rf/dispatch [:wallet-connect/delete-session topic])
-                              (rf/dispatch [:dispatch
-                                            [:centralized-metrics/track
-                                             :metric/dapp-session-disconnected]])
+                              (rf/dispatch [:centralized-metrics/track
+                                            :metric/dapp-session-disconnected])
                               (when on-success
                                 (on-success)))}]]}
        {:fx [[:dispatch [:wallet-connect/no-internet-toast]]]}))))

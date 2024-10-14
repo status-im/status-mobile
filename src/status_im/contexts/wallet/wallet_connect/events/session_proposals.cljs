@@ -168,7 +168,9 @@
      {:fx (if-not response-sent?
             [[:effects.wallet-connect/reject-session-proposal
               {:web3-wallet web3-wallet
-               :proposal    (or proposal request)}]
+               :proposal    (or proposal request)
+               :on-success  #(log/info "Wallet Connect session proposal rejected")
+               :on-error    #(log/error "Wallet Connect unable to reject session proposal")}]
              [:dispatch
               [:centralized-metrics/track :metric/dapp-session-proposal
                {:action   (if rejected? :rejected :not_supported)
