@@ -31,7 +31,7 @@
 
                                           :not-enough-assets
                                           :t/not-enough-assets-for-transaction)))
-         :button-text     (i18n/label :t/buy-eth)
+         :button-text     (i18n/label :t/add-eth)
          :on-button-press #(rf/dispatch [:show-bottom-sheet
                                          {:content buy-token/view}])}])
      [rn/view {:style style/content-container}
