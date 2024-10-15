@@ -54,8 +54,8 @@
         {:size  :paragraph-2
          :style (style/message theme)}
         (i18n/label (status-message status)
-                    {:amount token-value
-                     :symbol token-symbol})]]
+                    {:token-amount token-value
+                     :token-symbol token-symbol})]]
       (when (and button-props
                  (or (= status :approve)
                      (and (not= status :approve) show-view-button?)))

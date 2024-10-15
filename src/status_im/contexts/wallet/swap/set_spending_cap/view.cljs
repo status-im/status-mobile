@@ -64,7 +64,7 @@
   []
   (let [theme            (quo.theme/use-theme)
         asset-to-pay     (rf/sub [:wallet/swap-asset-to-pay])
-        pay-amount       (rf/sub [:wallet/swap-pay-amount])
+        pay-amount       (rf/sub [:wallet/swap-pay-amount-raw])
         pay-token-symbol (:symbol asset-to-pay)]
     [rn/view {:style style/summary-section-container}
      [quo/text

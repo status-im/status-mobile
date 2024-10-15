@@ -10,7 +10,8 @@
        :customization-color :blue
        :token-value         "100"
        :token-symbol        "SNT"}])
-    (h/is-truthy (h/get-by-translation-text :t/approve-amount-symbol {:amount "100" :symbol "SNT"})))
+    (h/is-truthy (h/get-by-translation-text :t/approve-amount-symbol
+                                            {:token-amount "100" :token-symbol "SNT"})))
 
   (h/test "with :approving status"
     (h/render-with-theme-provider
@@ -19,7 +20,8 @@
        :customization-color :blue
        :token-value         "50"
        :token-symbol        "DAI"}])
-    (h/is-truthy (h/get-by-translation-text :t/approving-amount-symbol {:amount "50" :symbol "DAI"})))
+    (h/is-truthy (h/get-by-translation-text :t/approving-amount-symbol
+                                            {:token-amount "50" :token-symbol "DAI"})))
 
   (h/test "with :approved status"
     (h/render-with-theme-provider
@@ -28,7 +30,8 @@
        :customization-color :blue
        :token-value         "5"
        :token-symbol        "ETH"}])
-    (h/is-truthy (h/get-by-translation-text :t/approved-amount-symbol {:amount "5" :symbol "ETH"})))
+    (h/is-truthy (h/get-by-translation-text :t/approved-amount-symbol
+                                            {:token-amount "5" :token-symbol "ETH"})))
 
   (h/test "on-press event is called when button is pressed"
     (let [mock-fn (h/mock-fn)]
