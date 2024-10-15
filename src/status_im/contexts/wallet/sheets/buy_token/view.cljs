@@ -55,7 +55,7 @@
                                          #(set-min-height
                                            (oops/oget % :nativeEvent :layout :height)))]
     [:<>
-     [quo/drawer-top {:title (or title (i18n/label :t/buy-assets))}]
+     [quo/drawer-top {:title (or title (i18n/label :t/ways-to-buy-assets))}]
      [quo/segmented-control
       {:size            32
        :container-style style/tabs
