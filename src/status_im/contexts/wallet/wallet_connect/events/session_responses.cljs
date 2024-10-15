@@ -184,14 +184,15 @@
  (fn [{:keys [db]}]
    (let [{:keys [response-sent? event]} (get db :wallet-connect/current-request)
          method                         (data-store/get-request-method event)]
-     {:fx (if-not response-sent?
-            [[:dispatch
-              [:centralized-metrics/track :metric/dapp-session-response
-               {:method   method
-                :approved false}]]
-             [:dispatch
-              [:wallet-connect/send-response
-               {:request event
-                :error   (wallet-connect/get-sdk-error
-                          constants/wallet-connect-user-rejected-error-key)}]]]
-            [[:dispatch [:wallet-connect/reset-current-request]]])})))
+     {:fx (concat
+           (when-not response-sent?
+             [[:dispatch
+               [:centralized-metrics/track :metric/dapp-session-response
+                {:method   method
+                 :approved false}]]
+              [:dispatch
+               [:wallet-connect/send-response
+                {:request event
+                 :error   (wallet-connect/get-sdk-error
+                           constants/wallet-connect-user-rejected-error-key)}]]])
+           [[:dispatch [:wallet-connect/reset-current-request]]])})))
