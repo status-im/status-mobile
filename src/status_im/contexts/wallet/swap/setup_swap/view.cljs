@@ -26,6 +26,7 @@
     [utils.string :as utils.string]))
 
 (def ^:private default-text-for-unfocused-input "0.00")
+(def ^:private default-token-symbol "ETH")
 
 (defn- on-close
   []
@@ -98,7 +99,8 @@
         approval-transaction-id          (rf/sub [:wallet/swap-approval-transaction-id])
         approved-amount                  (rf/sub [:wallet/swap-approved-amount])
         error-response                   (rf/sub [:wallet/swap-error-response])
-        asset-to-pay                     (rf/sub [:wallet/token-by-symbol pay-token-symbol])
+        asset-to-pay                     (rf/sub [:wallet/token-by-symbol
+                                                  (or pay-token-symbol default-token-symbol)])
         overlay-shown?                   (boolean (:sheets (rf/sub [:bottom-sheet])))
         input-ref                        (rn/use-ref-atom nil)
         set-input-ref                    (rn/use-callback (fn [ref] (reset! input-ref ref)))
@@ -111,11 +113,11 @@
                                                    (:chain-id network) :raw-balance]
                                                   0)
                                           pay-token-decimals)
-        pay-token-fiat-value             (str
-                                          (utils/calculate-token-fiat-value
-                                           {:currency currency
-                                            :balance  (or pay-input-num-value 0)
-                                            :token    asset-to-pay}))
+        pay-token-fiat-value             (utils/formatted-token-fiat-value
+                                          {:currency        currency
+                                           :currency-symbol currency-symbol
+                                           :balance         (or pay-input-num-value 0)
+                                           :token           asset-to-pay})
         available-crypto-limit           (money/bignumber
                                           pay-token-balance-selected-chain)
         display-decimals                 (min pay-token-decimals
@@ -128,8 +130,14 @@
                                            (number/small-number-threshold display-decimals)
                                            available-crypto-limit-display)
         approval-amount-required-num     (when approval-amount-required
-                                           (str (number/hex->whole approval-amount-required
-                                                                   pay-token-decimals)))
+                                           (number/to-fixed (number/hex->whole
+                                                             approval-amount-required
+                                                             pay-token-decimals)
+                                                            pay-token-decimals))
+        approval-label-token-value       (when (or approval-amount-required-num approved-amount)
+                                           (utils/sanitized-token-amount-to-display
+                                            (or approval-amount-required-num approved-amount)
+                                            display-decimals))
         pay-input-error?                 (or (and (not (string/blank? pay-input-amount))
                                                   (money/greater-than
                                                    (money/bignumber pay-input-amount)
@@ -173,7 +181,6 @@
                               (and loading-swap-proposal? (not input-focused?)) :loading
                               input-focused?                                    :typing
                               :else                                             :disabled)
-      :currency-symbol      currency-symbol
       :on-token-press       on-token-press
       :on-max-press         #(on-max-press (str pay-token-balance-selected-chain))
       :on-input-focus       on-input-focus
@@ -188,7 +195,7 @@
                                                     :confirmed :approved
                                                     :finalised :approved
                                                     :approve)
-                             :token-value         (or approval-amount-required-num approved-amount)
+                             :token-value         approval-label-token-value
                              :button-props        (merge {:on-press on-approve-press}
                                                          (when error-response
                                                            {:disabled? true}))
@@ -218,10 +225,11 @@
         amount-out-num           (if amount-out-whole-number
                                    (number/to-fixed amount-out-whole-number receive-token-decimals)
                                    default-text-for-unfocused-input)
-        receive-token-fiat-value (str (utils/calculate-token-fiat-value
-                                       {:currency currency
-                                        :balance  (or amount-out-whole-number 0)
-                                        :token    asset-to-receive}))]
+        receive-token-fiat-value (utils/formatted-token-fiat-value
+                                  {:currency        currency
+                                   :currency-symbol currency-symbol
+                                   :balance         (or amount-out-whole-number 0)
+                                   :token           asset-to-receive})]
     [quo/swap-input
      {:type                 :receive
       :error?               false
@@ -235,7 +243,6 @@
                               (and loading-swap-proposal? (not input-focused?)) :loading
                               input-focused?                                    :typing
                               :else                                             :disabled)
-      :currency-symbol      currency-symbol
       :on-token-press       on-token-press
       :on-input-focus       on-input-focus
       :value                amount-out-num
