@@ -97,6 +97,8 @@ nix-purge: ##@nix Completely remove Nix setup, including /nix directory
 	nix/scripts/purge.sh
 
 nix-update-gradle: export TARGET := gradle
+nix-update-gradle: export ORG_GRADLE_PROJECT_hermesEnabled := false
+nix-update-gradle: export ORG_GRADLE_PROJECT_universalApk := false
 nix-update-gradle: ##@nix Update maven nix expressions based on current gradle setup
 	nix/deps/gradle/generate.sh
 
