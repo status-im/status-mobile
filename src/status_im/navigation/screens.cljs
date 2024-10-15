@@ -5,6 +5,7 @@
     [status-im.common.emoji-picker.view :as emoji-picker]
     [status-im.common.enter-seed-phrase.view :as enter-seed-phrase]
     [status-im.common.lightbox.view :as lightbox]
+    [status-im.common.pdf-viewer.view :as pdf-viewer]
     [status-im.config :as config]
     [status-im.contexts.chat.group-create.view :as group-create]
     [status-im.contexts.chat.group-details.view :as group-details]
@@ -681,6 +682,11 @@
                  :hardwareBackButton {:dismissModalOnPress false
                                       :popStackOnPress     false})
      :component change-password-loading/view}
+
+    {:name      :screen/pdf-viewer
+     :options   {:insets                 {:top? true}
+                 :modalPresentationStyle :overCurrentContext}
+     :component pdf-viewer/view}
 
     ;; Keycard
     {:name      :screen/keycard.check

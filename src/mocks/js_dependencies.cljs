@@ -371,6 +371,8 @@
     :LineChart        #js {}
     :LineChartBicolor #js {}})
 
+(def react-native-pdf #js {:default {}})
+
 (def worklet-factory
   #js {:applyAnimationsToStyle (fn [])})
 
@@ -421,6 +423,7 @@
     "react-native-transparent-video"                   react-native-transparent-video
     "react-native-orientation-locker"                  react-native-orientation-locker
     "react-native-gifted-charts"                       react-native-gifted-charts
+    "react-native-pdf"                                 react-native-pdf
     "@walletconnect/react-native-compat"               #js {}
     "../resources/data/emojis/en.json"                 (js/JSON.parse
                                                         (slurp
