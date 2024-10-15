@@ -41,6 +41,8 @@
                                                     :mixedcase-address "0x7bcDfc75c431"
                                                     :public-key "0x04371e2d9d66b82f056bc128064"
                                                     :removed false}
+   :wallet/current-viewing-account-color           :purple
+   :wallet/wallet-send-enough-assets?              true
    :wallet/wallet-send-token                       {:symbol                     :eth
                                                     :networks                   [{:source 879
                                                                                   :short-name "eth"

@@ -153,12 +153,12 @@
         input-at-max-owned-amount? (money/equal-to
                                     (controlled-input/value-bn input-state)
                                     (controlled-input/upper-limit-bn input-state))
-        exceeded-input             (if eth-selected?
+        exceeded-input?             (if eth-selected?
                                      input-at-max-owned-amount?
                                      zero-owned-eth?)]
     (and (or no-routes-found? limit-exceeded?)
          (seq sender-network-values)
-         (or exceeded-input (not enough-assets?)))))
+         (or exceeded-input? (not enough-assets?)))))
 
 (defn view
   ;; crypto-decimals, limit-crypto and initial-crypto-currency? args are needed
