@@ -73,3 +73,10 @@
   (-> db
       get-db-current-request-event
       get-request-params))
+
+(defn get-total-connected-dapps
+  [db]
+  (-> db
+      :wallet-connect/sessions
+      count
+      inc))

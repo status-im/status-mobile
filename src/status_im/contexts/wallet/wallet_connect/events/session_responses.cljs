@@ -51,8 +51,8 @@
              :address    address
              :data       raw-data
              :rpc-method rpc-method
-             :on-error   #(rf/dispatch [:wallet-connect/on-sign-error %])
-             :on-success #(rf/dispatch [:wallet-connect/finish-session-request %])}]]})))
+             :on-error   [:wallet-connect/on-sign-error]
+             :on-success [:wallet-connect/finish-session-request]}]]})))
 
 (rf/reg-event-fx
  :wallet-connect/respond-sign-typed-data
@@ -65,8 +65,8 @@
              :data       raw-data
              :chain-id   chain-id
              :version    typed-data-version
-             :on-error   #(rf/dispatch [:wallet-connect/on-sign-error %])
-             :on-success #(rf/dispatch [:wallet-connect/finish-session-request %])}]]})))
+             :on-error   [:wallet-connect/on-sign-error]
+             :on-success [:wallet-connect/finish-session-request]}]]})))
 
 (rf/reg-event-fx
  :wallet-connect/respond-send-transaction-data
@@ -79,8 +79,8 @@
              :chain-id   chain-id
              :tx-hash    tx-hash
              :tx-args    tx-args
-             :on-error   #(rf/dispatch [:wallet-connect/on-sign-error %])
-             :on-success #(rf/dispatch [:wallet-connect/finish-session-request %])}]]})))
+             :on-error   [:wallet-connect/on-sign-error]
+             :on-success [:wallet-connect/finish-session-request]}]]})))
 
 (rf/reg-event-fx
  :wallet-connect/respond-sign-transaction-data
@@ -93,8 +93,8 @@
              :chain-id   chain-id
              :tx-hash    tx-hash
              :tx-params  tx-args
-             :on-error   #(rf/dispatch [:wallet-connect/on-sign-error %])
-             :on-success #(rf/dispatch [:wallet-connect/finish-session-request %])}]]})))
+             :on-error   [:wallet-connect/on-sign-error]
+             :on-success [:wallet-connect/finish-session-request]}]]})))
 
 (rf/reg-event-fx
  :wallet-connect/on-sign-error
@@ -161,9 +161,15 @@
 
 (rf/reg-event-fx
  :wallet-connect/finish-session-request
- (fn [_ [result]]
-   {:fx [[:dispatch [:wallet-connect/send-response {:result result}]]
-         [:dispatch [:wallet-connect/dismiss-request-modal]]]}))
+ (fn [{:keys [db]} [result]]
+   (let [event  (get-in db [:wallet-connect/current-request :event])
+         method (data-store/get-request-method event)]
+     {:fx [[:dispatch
+            [:centralized-metrics/track :metric/dapp-session-response
+             {:method   method
+              :approved true}]]
+           [:dispatch [:wallet-connect/send-response {:result result}]]
+           [:dispatch [:wallet-connect/dismiss-request-modal]]]})))
 
 ;; NOTE: Currently we only reject a session if the user dismissed a modal
 ;; without accepting the session first.
@@ -176,9 +182,17 @@
 (rf/reg-event-fx
  :wallet-connect/on-request-modal-dismissed
  (fn [{:keys [db]}]
-   {:fx [(when-not (get-in db [:wallet-connect/current-request :response-sent?])
-           [:dispatch
-            [:wallet-connect/send-response
-             {:error (wallet-connect/get-sdk-error
-                      constants/wallet-connect-user-rejected-error-key)}]])
-         [:dispatch [:wallet-connect/reset-current-request]]]}))
+   (let [{:keys [response-sent? event]} (get db :wallet-connect/current-request)
+         method                         (data-store/get-request-method event)]
+     {:fx (concat
+           (when-not response-sent?
+             [[:dispatch
+               [:centralized-metrics/track :metric/dapp-session-response
+                {:method   method
+                 :approved false}]]
+              [:dispatch
+               [:wallet-connect/send-response
+                {:request event
+                 :error   (wallet-connect/get-sdk-error
+                           constants/wallet-connect-user-rejected-error-key)}]]])
+           [[:dispatch [:wallet-connect/reset-current-request]]])})))

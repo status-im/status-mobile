@@ -14,7 +14,10 @@
             [{:method     "wallet_disconnectWalletConnectSession"
               :params     [topic]
               :on-success [:wallet-connect/delete-session topic]
-              :on-error   #(log/info "Wallet Connect session persistence failed" %)}]]]})))
+              :on-error   #(log/info "Wallet Connect session persistence failed" %)}]]
+           [:dispatch
+            [:centralized-metrics/track
+             :metric/dapp-session-disconnected]]]})))
 
 (rf/reg-event-fx
  :wallet-connect/disconnect-dapp
@@ -26,10 +29,14 @@
        {:fx [[:effects.wallet-connect/disconnect
               {:web3-wallet web3-wallet
                :topic       topic
-               :on-fail     on-fail
+               :on-fail     (fn []
+                              (when on-fail
+                                (on-fail)))
                :on-success  (fn []
                               (log/info "Successfully disconnected dApp session" topic)
                               (rf/dispatch [:wallet-connect/delete-session topic])
+                              (rf/dispatch [:centralized-metrics/track
+                                            :metric/dapp-session-disconnected])
                               (when on-success
                                 (on-success)))}]]}
        {:fx [[:dispatch [:wallet-connect/no-internet-toast]]]}))))

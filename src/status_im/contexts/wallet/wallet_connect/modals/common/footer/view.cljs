@@ -32,8 +32,11 @@
                                           :not-enough-assets
                                           :t/not-enough-assets-for-transaction)))
          :button-text     (i18n/label :t/add-eth)
-         :on-button-press #(rf/dispatch [:show-bottom-sheet
-                                         {:content buy-token/view}])}])
+         :on-button-press (rn/use-callback (fn []
+                                             (rf/dispatch [:centralized-metrics/track
+                                                           :metric/dapp-buy-eth])
+                                             (rf/dispatch [:show-bottom-sheet
+                                                           {:content buy-token/view}])))}])
      [rn/view {:style style/content-container}
       (into [rn/view
              {:style style/data-items-container}]
