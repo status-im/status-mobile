@@ -160,7 +160,7 @@
 
 (defn wallet-validate-seed-phrase
   [_ [seed-phrase on-success on-error]]
-  {:fx [[:multiaccount/validate-mnemonic [seed-phrase on-success on-error]]]})
+  {:fx [[:effects.profile/validate-recovery-phrase [seed-phrase on-success on-error]]]})
 
 (rf/reg-event-fx :wallet/validate-seed-phrase wallet-validate-seed-phrase)
 

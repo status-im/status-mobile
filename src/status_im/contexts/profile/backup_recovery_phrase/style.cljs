@@ -1,4 +1,4 @@
-(ns status-im.contexts.wallet.add-account.create-account.new-keypair.backup-recovery-phrase.style
+(ns status-im.contexts.profile.backup-recovery-phrase.style
   (:require
     [quo.foundations.colors :as colors]
     [react-native.platform :as platform]))

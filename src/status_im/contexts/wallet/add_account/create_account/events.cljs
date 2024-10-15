@@ -61,16 +61,6 @@
 
 (rf/reg-event-fx :wallet/seed-phrase-validated seed-phrase-validated)
 
-(defn seed-phrase-entered
-  [_ [seed-phrase on-error]]
-  {:fx [[:multiaccount/validate-mnemonic
-         [seed-phrase
-          (fn [mnemonic key-uid]
-            (rf/dispatch [:wallet/seed-phrase-validated mnemonic key-uid on-error]))
-          on-error]]]})
-
-(rf/reg-event-fx :wallet/seed-phrase-entered seed-phrase-entered)
-
 (defn store-account-generated-with-mnemonic
   [{:keys [db]} [{:keys [new-account-data keypair-name]}]]
   (let [new-account (update new-account-data :mnemonic security/mask-data)]
