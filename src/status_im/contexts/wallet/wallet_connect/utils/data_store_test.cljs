@@ -25,3 +25,17 @@
   (testing "returns nil if no redirect URL is found"
     (let [session {:peer {:metadata {}}}]
       (is (nil? (sut/get-dapp-redirect-url session))))))
+
+(deftest get-total-connected-dapps-test
+  (testing "returns the total number of connected dApps plus 1"
+    (let [db {:wallet-connect/sessions [{:url "https://dapp1.com"}
+                                        {:url "https://dapp2.com"}]}]
+      (is (= 3 (sut/get-total-connected-dapps db)))))
+
+  (testing "returns 1 when there are no connected dApps"
+    (let [db {:wallet-connect/sessions []}]
+      (is (= 1 (sut/get-total-connected-dapps db)))))
+
+  (testing "handles nil sessions correctly"
+    (let [db {:wallet-connect/sessions nil}]
+      (is (= 1 (sut/get-total-connected-dapps db))))))

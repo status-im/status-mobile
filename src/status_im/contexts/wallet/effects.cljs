@@ -4,6 +4,7 @@
     [native-module.core :as native-module]
     [promesa.core :as promesa]
     [status-im.common.json-rpc.events :as json-rpc]
+    [status-im.contexts.profile.recover.effects :as profile.recover.effects]
     [taoensso.timbre :as log]
     [utils.re-frame :as rf]
     [utils.security.core :as security]
@@ -25,26 +26,6 @@
       {:MnemonicPhrase phrase
        :paths          paths}
       on-success))))
-
-(defn validate-mnemonic
-  [mnemonic]
-  (-> mnemonic
-      (security/safe-unmask-data)
-      (native-module/validate-mnemonic)
-      (promesa/then (fn [result]
-                      (let [{:keys [keyUID]} (transforms/json->clj result)]
-                        {:key-uid keyUID})))))
-
-(rf/reg-fx
- :multiaccount/validate-mnemonic
- (fn [[mnemonic on-success on-error]]
-   (-> (validate-mnemonic mnemonic)
-       (promesa/then (fn [{:keys [key-uid]}]
-                       (when (fn? on-success)
-                         (on-success mnemonic key-uid))))
-       (promesa/catch (fn [error]
-                        (when (and error (fn? on-error))
-                          (on-error error)))))))
 
 (defn create-account-from-private-key
   [private-key]
@@ -81,7 +62,7 @@
 
 (defn import-missing-keypair-by-seed-phrase
   [keypair-key-uid seed-phrase password]
-  (-> (validate-mnemonic seed-phrase)
+  (-> (profile.recover.effects/validate-mnemonic seed-phrase)
       (promesa/then
        (fn [{:keys [key-uid]}]
          (if (not= keypair-key-uid key-uid)

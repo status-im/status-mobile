@@ -135,17 +135,21 @@
                  :proposal-request current-proposal
                  :session-networks session-networks
                  :address          current-address
-                 :on-success       #(rf/dispatch [:wallet-connect/approve-session-success %])
-                 :on-fail          #(rf/dispatch [:wallet-connect/approve-session-error %])}])
+                 :on-success       [:wallet-connect/approve-session-success]
+                 :on-fail          [:wallet-connect/approve-session-error]}])
              [:dispatch [:dismiss-modal :screen/wallet.wallet-connect-session-proposal]]]}
        {:fx [[:dispatch [:wallet-connect/no-internet-toast]]]}))))
 
 (rf/reg-event-fx :wallet-connect/approve-session-success
- (fn [_ [session]]
-   (log/info "Wallet Connect session approved")
-   {:fx [[:dispatch [:wallet-connect/on-new-session session]]
-         [:dispatch [:wallet-connect/reset-current-session-proposal]]
-         [:dispatch [:wallet-connect/redirect-to-dapp (data-store/get-dapp-redirect-url session)]]]}))
+ (fn [{:keys [db]} [session]]
+   (let [total-connected-dapps (data-store/get-total-connected-dapps db)]
+     {:fx [[:dispatch [:wallet-connect/on-new-session session]]
+           [:dispatch [:wallet-connect/reset-current-session-proposal]]
+           [:dispatch [:wallet-connect/redirect-to-dapp (data-store/get-dapp-redirect-url session)]]
+           [:dispatch
+            [:centralized-metrics/track :metric/dapp-session-proposal
+             {:action                :approved
+              :total_connected_dapps total-connected-dapps}]]]})))
 
 (rf/reg-event-fx :wallet-connect/approve-session-error
  (fn [_ [error]]
@@ -158,11 +162,18 @@
  :wallet-connect/reject-session-proposal
  (fn [{:keys [db]} [proposal]]
    (let [web3-wallet                      (get db :wallet-connect/web3-wallet)
-         {:keys [request response-sent?]} (:wallet-connect/current-proposal db)]
-     {:fx [(when-not response-sent?
-             [:effects.wallet-connect/reject-session-proposal
-              {:web3-wallet web3-wallet
-               :proposal    (or proposal request)
-               :on-success  #(log/info "Wallet Connect session proposal rejected")
-               :on-error    #(log/error "Wallet Connect unable to reject session proposal")}])
-           [:dispatch [:wallet-connect/reset-current-session-proposal]]]})))
+         {:keys [request response-sent?]} (:wallet-connect/current-proposal db)
+         networks                         (networks/get-proposal-networks (or proposal request))
+         rejected?                        (nil? proposal)]
+     {:fx (concat
+           (when-not response-sent?
+             [[:effects.wallet-connect/reject-session-proposal
+               {:web3-wallet web3-wallet
+                :proposal    (or proposal request)
+                :on-success  #(log/info "Wallet Connect session proposal rejected")
+                :on-error    #(log/error "Wallet Connect unable to reject session proposal")}]
+              [:dispatch
+               [:centralized-metrics/track :metric/dapp-session-proposal
+                {:action   (if rejected? :rejected :not_supported)
+                 :networks networks}]]])
+           [[:dispatch [:wallet-connect/reset-current-session-proposal]]])})))

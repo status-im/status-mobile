@@ -101,7 +101,7 @@
         seed-phrase-masked (security/mask-data "seed phrase")
         on-success         #(prn "success")
         on-error           #(prn "error")
-        expected           {:fx [[:multiaccount/validate-mnemonic
+        expected           {:fx [[:effects.profile/validate-recovery-phrase
                                   [seed-phrase-masked on-success on-error]]]}]
     (is (= expected
            (sut/wallet-validate-seed-phrase

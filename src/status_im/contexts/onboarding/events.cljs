@@ -131,15 +131,6 @@
                  [:open-modal :screen/onboarding.enable-biometrics]
                  [:open-modal :screen/onboarding.enable-notifications])}))
 
-(rf/defn seed-phrase-entered
-  {:events [:onboarding/seed-phrase-entered]}
-  [_ seed-phrase on-error]
-  {:multiaccount/validate-mnemonic [seed-phrase
-                                    (fn [mnemonic key-uid]
-                                      (re-frame/dispatch [:onboarding/seed-phrase-validated
-                                                          mnemonic key-uid]))
-                                    on-error]})
-
 (rf/defn seed-phrase-validated
   {:events [:onboarding/seed-phrase-validated]}
   [{:keys [db]} seed-phrase key-uid]

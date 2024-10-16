@@ -45,3 +45,15 @@
                           #(rf/dispatch [:profile.login/login-with-biometric-if-available
                                          (get-in db [:profile/login :key-uid])]))
               :shell?   true}]]]})))
+
+(rf/reg-fx :effects.centralized-metrics/track
+ (fn [event]
+   (native-module/add-centralized-metric event)))
+
+(rf/reg-event-fx
+ :centralized-metrics/track
+ (fn [{:keys [db]} [event-name data]]
+   (let [event-id (name event-name)]
+     (when (push-event? db)
+       {:fx [[:effects.centralized-metrics/track
+              (tracking/key-value-event event-id data)]]}))))

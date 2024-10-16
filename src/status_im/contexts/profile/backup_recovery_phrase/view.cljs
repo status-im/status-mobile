@@ -1,4 +1,4 @@
-(ns status-im.contexts.wallet.add-account.create-account.new-keypair.backup-recovery-phrase.view
+(ns status-im.contexts.profile.backup-recovery-phrase.view
   (:require
     [clojure.string :as string]
     [native-module.core :as native-module]
@@ -6,8 +6,7 @@
     [quo.theme :as quo.theme]
     [react-native.core :as rn]
     [reagent.core :as reagent]
-    [status-im.contexts.wallet.add-account.create-account.new-keypair.backup-recovery-phrase.style :as
-     style]
+    [status-im.contexts.profile.backup-recovery-phrase.style :as style]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]
     [utils.security.core :as security]))
@@ -45,20 +44,20 @@
 
 (defn view
   []
-  (let [step-labels         [:t/backup-step-1 :t/backup-step-2 :t/backup-step-3
-                             :t/backup-step-4]
-        checked?            (reagent/atom
-                             {:0 false
-                              :1 false
-                              :2 false
-                              :3 false})
-        revealed?           (reagent/atom false)
-        customization-color (rf/sub [:profile/customization-color])
-        seed-phrase         (reagent/atom [])
-        random-phrase       (reagent/atom [])]
+  (let [step-labels          [:t/backup-step-1 :t/backup-step-2 :t/backup-step-3
+                              :t/backup-step-4]
+        checked?             (reagent/atom
+                              {:0 false
+                               :1 false
+                               :2 false
+                               :3 false})
+        revealed?            (reagent/atom false)
+        customization-color  (rf/sub [:profile/customization-color])
+        {:keys [on-success]} (rf/sub [:get-screen-params])
+        seed-phrase          (reagent/atom [])
+        random-phrase        (reagent/atom [])]
     (fn []
       (let [theme (quo.theme/use-theme)]
-
         (rn/use-mount
          (fn []
            (native-module/get-random-mnemonic #(reset! seed-phrase (string/split % #"\s")))
@@ -107,10 +106,10 @@
               :button-one-label (i18n/label :t/i-have-written)
               :button-one-props {:disabled?           (some false? (vals @checked?))
                                  :customization-color customization-color
-                                 :on-press            #(rf/dispatch [:wallet/store-new-seed-phrase
-                                                                     {:seed-phrase   (security/mask-data
-                                                                                      @seed-phrase)
-                                                                      :random-phrase @random-phrase}])}}]
+                                 :on-press            #(on-success {:masked-seed-phrase
+                                                                    (security/mask-data
+                                                                     @seed-phrase)
+                                                                    :random-phrase @random-phrase})}}]
             [quo/text
              {:size  :paragraph-2
               :style (style/description-text theme)}
