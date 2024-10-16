@@ -240,12 +240,10 @@ class TestWalletOneDevice(MultipleSharedDeviceTestCase):
             real_balance = {}
             for asset in expected_balances[network]:
                 real_balance[asset] = self.wallet_view.get_asset(asset).get_amount()
-            self.wallet_view.just_fyi("real on %s %s" % (network, str(real_balance)))
-            self.wallet_view.just_fyi("real on %s %s" % (network, str(expected_balances[network])))
             for asset in expected_balances[network]:
                 if real_balance[asset] != expected_balances[network][asset]:
                     self.errors.append("For the %s the wrong value %s is shown, expected %s on %s" %
-                                       (asset, real_balance[asset], self.total_balance[asset], network))
+                                       (asset, real_balance[asset], expected_balances[network][asset], network))
             self.wallet_view.select_network(network)
 
         self.errors.verify_no_errors()
