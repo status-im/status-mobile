@@ -305,6 +305,7 @@ class ProfileView(BaseView):
                                           suffix="/following-sibling::*[1]/android.widget.EditText")
         self.specify_network_id_input = EditBox(self.driver, translation_id="specify-network-id")
         self.connect_button = Button(self.driver, accessibility_id="network-connect-button")
+
         ## Toggles
         self.transaction_management_enabled_toggle = Button(self.driver,
                                                             accessibility_id="transactions-management-enabled")
@@ -360,6 +361,7 @@ class ProfileView(BaseView):
         self.confirm_testnet_mode_change_button = Button(self.driver, accessibility_id="confirm-testnet-mode-change")
 
     def switch_network(self):
+        self.driver.info("Toggling test mode")
         self.profile_wallet_button.click()
         self.network_settings_button.click()
         self.testnet_mode_toggle.click()

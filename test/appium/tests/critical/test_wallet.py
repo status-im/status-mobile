@@ -4,7 +4,6 @@ import time
 import pytest
 from _pytest.outcomes import Failed
 from selenium.common import TimeoutException, NoSuchElementException
-
 from base_test_case import MultipleSharedDeviceTestCase, create_shared_drivers
 from support.api.network_api import NetworkApi
 from tests import marks, run_in_parallel
@@ -192,6 +191,7 @@ class TestWalletMultipleDevice(MultipleSharedDeviceTestCase):
 
 @pytest.mark.xdist_group(name="new_one_2")
 @marks.nightly
+@marks.secured
 @marks.smoke
 class TestWalletOneDevice(MultipleSharedDeviceTestCase):
 
@@ -199,9 +199,56 @@ class TestWalletOneDevice(MultipleSharedDeviceTestCase):
         self.network_api = NetworkApi()
         self.drivers, self.loop = create_shared_drivers(1)
         self.sign_in_view = SignInView(self.drivers[0])
-        self.sign_in_view.create_user()
+        self.sender, self.receiver = transaction_senders['ETH_1'], transaction_senders['ETH_2']
+        self.total_balance = {'Ether': 0.0052, 'USDCoin': 5.0, 'Status': 10.0, 'Uniswap': 0.627, 'Dai Stablecoin': 0.0}
+        self.mainnet_balance = {'Ether': 0.005, 'USDCoin': 0.0, 'Status': 10.0, 'Uniswap': 0.127, 'Dai Stablecoin': 0.0}
+        self.optimizm_balance = {'Ether': 0.0001, 'USDCoin': 5.0, 'Status': 0, 'Uniswap': 0, 'Dai Stablecoin': 0.0}
+        self.arb_balance = {'Ether': 0.0001, 'USDCoin': 0.0, 'Status': 0.0, 'Uniswap': 0.5, 'Dai Stablecoin': 0.0}
+        self.sender['wallet_address'] = '0x' + self.sender['address']
+        self.receiver['wallet_address'] = '0x' + self.receiver['address']
+        self.sender_username, self.receiver_username = 'sender', 'receiver'
+        self.sign_in_view.recover_access(passphrase=self.sender['passphrase'], username=self.sender_username)
+
         self.home_view = self.sign_in_view.get_home_view()
         self.wallet_view = self.home_view.wallet_tab.click()
+
+    @marks.testrail_id(740490)
+    def test_wallet_balance_mainnet(self):
+        self.profile_view = self.home_view.profile_button.click()
+        self.profile_view.switch_network()
+        self.sign_in_view.sign_in()
+        self.sign_in_view.wallet_tab.click()
+
+        self.wallet_view.just_fyi("Checking total balance")
+        real_balance = {}
+        for asset in self.total_balance:
+            real_balance[asset] = self.wallet_view.get_asset(asset).get_amount()
+
+        for asset in self.total_balance:
+            if real_balance[asset] != self.total_balance[asset]:
+                self.errors.append("For the %s the wrong value %s is shown, expected %s in total" %
+                                   (asset, real_balance[asset], self.total_balance[asset]))
+        expected_balances = {
+            'Mainnet': self.mainnet_balance,
+            'Arbitrum': self.arb_balance,
+            'Optimism': self.optimizm_balance
+        }
+
+        for network in expected_balances:
+            self.wallet_view.just_fyi("Checking total balance on %s network" % network)
+            self.wallet_view.select_network(network)
+            real_balance = {}
+            for asset in expected_balances[network]:
+                real_balance[asset] = self.wallet_view.get_asset(asset).get_amount()
+            self.wallet_view.just_fyi("real on %s %s" % (network, str(real_balance)))
+            self.wallet_view.just_fyi("real on %s %s" % (network, str(expected_balances[network])))
+            for asset in expected_balances[network]:
+                if real_balance[asset] != expected_balances[network][asset]:
+                    self.errors.append("For the %s the wrong value %s is shown, expected %s on %s" %
+                                       (asset, real_balance[asset], self.total_balance[asset], network))
+            self.wallet_view.select_network(network)
+
+        self.errors.verify_no_errors()
 
     @marks.testrail_id(727231)
     def test_wallet_add_remove_regular_account(self):
