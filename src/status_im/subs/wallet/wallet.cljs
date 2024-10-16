@@ -127,17 +127,22 @@
  :-> :route)
 
 (rf/reg-sub
+ :wallet/wallet-send-enough-assets?
+ :<- [:wallet/wallet-send]
+ :-> :enough-assets?)
+
+(rf/reg-sub
  :wallet/wallet-send-token
  :<- [:wallet/wallet-send]
  :<- [:wallet/network-details]
  :<- [:wallet/wallet-send-disabled-from-chain-ids]
  (fn [[wallet-send networks disabled-from-chain-ids]]
-   (let [token                  (:token wallet-send)
-         enabled-from-chain-ids (->> networks
-                                     (filter #(not (contains? (set disabled-from-chain-ids)
-                                                              (:chain-id %))))
-                                     (map :chain-id)
-                                     set)]
+   (let [token                    (:token wallet-send)
+         disabled-from-chain-ids? (set disabled-from-chain-ids)
+         enabled-from-chain-ids   (->> networks
+                                       (map :chain-id)
+                                       (remove disabled-from-chain-ids?)
+                                       set)]
      (some-> token
              (assoc :networks          (network-utils/network-list token networks)
                     :available-balance (utils/calculate-total-token-balance token)
