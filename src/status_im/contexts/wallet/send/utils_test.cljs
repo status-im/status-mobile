@@ -82,6 +82,61 @@
       (doseq [[chain-id exp-value] expected]
         (is (money/equal-to (get result chain-id) exp-value))))))
 
+(deftest estimated-received-by-chain-test
+  (testing "Correctly calculates the estimated received amount with native token"
+    (let [chain-id       1
+          route          [{:estimated-received "0x1bc16d674ec80000"
+                           :to                 {:chain-id chain-id}}]
+          token-decimals 18
+          native-token?  true
+          result         (utils/estimated-received-by-chain {:route          route
+                                                             :token-decimals token-decimals
+                                                             :native-token?  native-token?})
+          expected       (money/bignumber "2")]
+      (is (money/equal-to (get result chain-id) expected))))
+
+  (testing "Correctly calculates the estimated received amount with non-native token"
+    (let [chain-id       10
+          route          [{:estimated-received "0x1bc16d674ec80000"
+                           :to                 {:chain-id chain-id}}]
+          token-decimals 18
+          native-token?  false
+          result         (utils/estimated-received-by-chain {:route          route
+                                                             :token-decimals token-decimals
+                                                             :native-token?  native-token?})
+          expected       (money/bignumber "2")]
+      (is (money/equal-to (get result chain-id) expected))))
+
+  (testing
+    "Correctly calculates the estimated received amount with multiple routes on different networks"
+    (let [route          [{:estimated-received "0x1bc16d674ec80000"
+                           :to                 {:chain-id 1}}
+                          {:estimated-received "0xde0b6b3a7640000"
+                           :to                 {:chain-id 10}}]
+          token-decimals 18
+          native-token?  false
+          result         (utils/estimated-received-by-chain {:route          route
+                                                             :token-decimals token-decimals
+                                                             :native-token?  native-token?})
+          expected       {10 (money/bignumber "1")
+                          1  (money/bignumber "2")}]
+      (doseq [[chain-id exp-value] expected]
+        (is (money/equal-to (get result chain-id) exp-value)))))
+
+  (testing "Correctly calculates the estimated received amount with multiple routes on the same network"
+    (let [chain-id       10
+          route          [{:estimated-received "0x1bc16d674ec80000"
+                           :to                 {:chain-id chain-id}}
+                          {:estimated-received "0x1bc16d674ec80000"
+                           :to                 {:chain-id chain-id}}]
+          token-decimals 18
+          native-token?  false
+          result         (utils/estimated-received-by-chain {:route          route
+                                                             :token-decimals token-decimals
+                                                             :native-token?  native-token?})
+          expected       (money/bignumber "4")]
+      (is (money/equal-to (get result chain-id) expected)))))
+
 (deftest network-values-for-ui-test
   (testing "Sanitizes values correctly for display"
     (let [amounts  {1     (money/bignumber "0")
