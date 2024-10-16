@@ -17,7 +17,7 @@
 
 (def transaction-icon
   {:send   :i/send
-   :swap   :i/swap
+   :swap   :i/transaction
    :bridge :i/bridge})
 
 (defn transaction-header

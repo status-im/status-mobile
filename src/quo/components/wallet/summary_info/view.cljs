@@ -60,7 +60,8 @@
 
 (defn- view-internal
   [{:keys [type account-props token-props networks? values]}]
-  (let [theme (quo.theme/use-theme)]
+  (let [theme   (quo.theme/use-theme)
+        address (or (:address account-props) (:address token-props))]
     [rn/view
      {:style (style/container networks? theme)}
      [rn/view
@@ -89,12 +90,13 @@
             (get-in account-props [:status-account :name])]
            [rn/view
             {:style (style/dot-divider theme)}]])
-        [text/text
-         {:size   (when (not= type :account) :paragraph-2)
-          :weight (when (= type :account) :semi-bold)
-          :style  {:color (when (not= type :account)
-                            (colors/theme-colors colors/neutral-50 colors/neutral-40 theme))}}
-         (or (:address account-props) (:address token-props))]]]]
+        (when address
+          [text/text
+           {:size   (when (not= type :account) :paragraph-2)
+            :weight (when (= type :account) :semi-bold)
+            :style  {:color (when (not= type :account)
+                              (colors/theme-colors colors/neutral-50 colors/neutral-40 theme))}}
+           address])]]]
      (when networks?
        [:<>
         [rn/view

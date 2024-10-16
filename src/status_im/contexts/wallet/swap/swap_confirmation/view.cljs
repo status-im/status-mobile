@@ -80,7 +80,8 @@
        :values      (send-utils/network-values-for-ui network-values)
        :token-props {:token   token-symbol
                      :label   (str amount " " token-symbol)
-                     :address (address-utils/get-shortened-compressed-key token-address)
+                     :address (when token-address
+                                (address-utils/get-shortened-compressed-key token-address))
                      :size    32}}]]))
 
 (defn- pay-section
@@ -98,7 +99,8 @@
       :label                     (i18n/label :t/pay)
       :token-symbol              pay-token-symbol
       :amount                    pay-amount
-      :token-address             pay-token-address
+      :token-address             (when-not (address-utils/zero-address? pay-token-address)
+                                   pay-token-address)
       :network                   network-name
       :theme                     theme}]))
 
@@ -117,7 +119,8 @@
       :label                     (i18n/label :t/receive)
       :token-symbol              receive-token-symbol
       :amount                    receive-amount
-      :token-address             receive-token-address
+      :token-address             (when-not (address-utils/zero-address? receive-token-address)
+                                   receive-token-address)
       :network                   network-name
       :theme                     theme}]))
 
