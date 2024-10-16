@@ -3,11 +3,8 @@
     [quo.core :as quo]
     [react-native.core :as rn]
     [react-native.pdf-viewer :as pdf-viewer]
+    [status-im.common.events-helper :as events-helper]
     [utils.re-frame :as rf]))
-
-(defn- on-close
-  []
-  (rf/dispatch [:navigate-back]))
 
 (defn view
   []
@@ -15,7 +12,7 @@
     [rn/view {:style {:flex 1}}
      [quo/page-nav
       {:icon-name           :i/close
-       :on-press            on-close
+       :on-press            events-helper/navigate-back
        :accessibility-label :pdf-viewer-nav}]
      [pdf-viewer/view
       (merge {:source {:uri uri}
