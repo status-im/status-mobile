@@ -19,7 +19,7 @@ class AssetElement(Button):
 
     def get_amount(self):
         element = Text(self.driver, xpath=self.locator + "/../android.widget.TextView[3]")
-        element.scroll_to_element(down_start_y=0.89, down_end_y=0.8)
+        element.scroll_to_element()
         try:
             amount = element.text.split()[0]
             if '<' in amount:
