@@ -6,24 +6,21 @@
     [react-native.platform :as platform]
     [status-im.constants :as constants]
     [status-im.contexts.settings.wallet.saved-addresses.sheets.remove-address.view :as remove-address]
-    [status-im.contexts.wallet.common.utils :as utils]
-    [status-im.contexts.wallet.common.utils.networks :as network-utils]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
 (defn view
-  [{:keys [name full-address chain-short-names address] :as opts}]
-  (let [[_ splitted-address]           (network-utils/split-network-full-address address)
-        open-send-flow                 (rn/use-callback
+  [{:keys [name full-address chain-short-names address customization-color] :as opts}]
+  (let [open-send-flow                 (rn/use-callback
                                         (fn []
                                           (rf/dispatch [:hide-bottom-sheet])
                                           (rf/dispatch [:pop-to-root :shell-stack])
                                           (js/setTimeout #(rf/dispatch [:wallet/select-send-address
                                                                         {:address full-address
                                                                          :recipient
-                                                                         {:label
-                                                                          (utils/get-shortened-address
-                                                                           splitted-address)
+                                                                         {:label name
+                                                                          :customization-color
+                                                                          customization-color
                                                                           :recipient-type :saved-address}
                                                                          :stack-id :wallet-select-address
                                                                          :start-flow? true}])
