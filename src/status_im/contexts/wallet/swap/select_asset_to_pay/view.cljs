@@ -26,7 +26,7 @@
                          (let [pay-token-symbol (:symbol token)
                                asset-to-receive (if (= pay-token-symbol "SNT") eth-token snt-token)]
                            (rf/dispatch [:wallet.swap/start
-                                         {:asset-to-pay     token
+                                         {:asset-to-pay     {:symbol pay-token-symbol}
                                           :asset-to-receive asset-to-receive
                                           :open-new-screen? false}])))]
     [:<>
