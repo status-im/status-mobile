@@ -62,13 +62,13 @@
        :goerli-enabled?  goerli-enabled?}))))
 
 (defn network-list
-  [{:keys [balances-per-chain]} networks]
+  [chain-ids networks]
   (into #{}
         (mapv (fn [chain-id]
                 (first (filter #(or (= (:chain-id %) chain-id)
                                     (= (:related-chain-id %) chain-id))
                                networks)))
-              (keys balances-per-chain))))
+              chain-ids)))
 
 (defn get-default-chain-ids-by-mode
   [{:keys [test-networks-enabled? is-goerli-enabled?]}]
