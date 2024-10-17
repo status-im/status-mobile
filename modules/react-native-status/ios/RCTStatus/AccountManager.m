@@ -102,7 +102,18 @@ RCT_EXPORT_METHOD(deleteMultiaccount:(NSString *)keyUID
     NSLog(@"DeleteMultiaccount() method called");
 #endif
     NSURL *multiaccountKeystoreDir = [Utils getKeyStoreDirForKeyUID:keyUID];
-    NSString *result = StatusgoDeleteMultiaccount(keyUID, multiaccountKeystoreDir.path);
+    NSDictionary *params = @{
+        @"keyUID": keyUID,
+        @"keyStoreDir": multiaccountKeystoreDir.path
+    };
+    NSError *error;
+    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:params options:0 error:&error];
+    if (error) {
+        NSLog(@"Error creating JSON: %@", error);
+        return;
+    }
+    NSString *jsonString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+    NSString *result = StatusgoDeleteMultiaccountV2(jsonString);
     callback(@[result]);
 }
 
@@ -173,15 +184,23 @@ RCT_EXPORT_METHOD(verify:(NSString *)address
         password:(NSString *)password
         callback:(RCTResponseSenderBlock)callback) {
 #if DEBUG
-    NSLog(@"VerifyAccountPassword() method called");
+    NSLog(@"VerifyAccountPasswordV2() method called");
 #endif
     NSFileManager *fileManager = [NSFileManager defaultManager];
     NSURL *rootUrl =[[fileManager
             URLsForDirectory:NSLibraryDirectory inDomains:NSUserDomainMask]
             lastObject];
     NSURL *absKeystoreUrl = [rootUrl URLByAppendingPathComponent:@"keystore"];
-
-    NSString *result = StatusgoVerifyAccountPassword(absKeystoreUrl.path, address, password);
+    
+    NSDictionary *params = @{
+        @"keyStoreDir": absKeystoreUrl.path,
+        @"address": address,
+        @"password": password
+    };
+    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:params options:0 error:nil];
+    NSString *jsonString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+    
+    NSString *result = StatusgoVerifyAccountPasswordV2(jsonString);
     callback(@[result]);
 }
 
@@ -189,9 +208,16 @@ RCT_EXPORT_METHOD(verifyDatabasePassword:(NSString *)keyUID
         password:(NSString *)password
         callback:(RCTResponseSenderBlock)callback) {
 #if DEBUG
-    NSLog(@"VerifyDatabasePassword() method called");
+    NSLog(@"VerifyDatabasePasswordV2() method called");
 #endif
-    NSString *result = StatusgoVerifyDatabasePassword(keyUID, password);
+    NSDictionary *params = @{
+        @"keyUID": keyUID,
+        @"password": password
+    };
+    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:params options:0 error:nil];
+    NSString *jsonString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+    
+    NSString *result = StatusgoVerifyDatabasePasswordV2(jsonString);
     callback(@[result]);
 }
 

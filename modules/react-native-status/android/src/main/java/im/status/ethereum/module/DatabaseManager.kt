@@ -9,6 +9,8 @@ import com.facebook.react.bridge.ReactContextBaseJavaModule
 import com.facebook.react.bridge.ReactMethod
 import statusgo.Statusgo
 import java.io.File
+import org.json.JSONObject
+import org.json.JSONException
 
 class DatabaseManager(private val reactContext: ReactApplicationContext) : ReactContextBaseJavaModule(reactContext) {
 
@@ -23,16 +25,34 @@ class DatabaseManager(private val reactContext: ReactApplicationContext) : React
 
     @ReactMethod
     fun exportUnencryptedDatabase(accountData: String, password: String, callback: Callback) {
-        Log.d(TAG, "login")
+        Log.d(TAG, "exportUnencryptedDatabase")
 
         val newFile = getExportDBFile()
 
         utils.migrateKeyStoreDir(accountData, password)
-        val result = Statusgo.exportUnencryptedDatabase(accountData, password, newFile.absolutePath)
-        if (result.startsWith("{\"error\":\"\"")) {
-            Log.d(TAG, "Login result: $result")
-        } else {
-            Log.e(TAG, "Login failed: $result")
+        
+        try {
+            val accountJson = JSONObject(accountData)
+            
+            val params = JSONObject().apply {
+                put("account", accountJson)
+                put("password", password)
+                put("databasePath", newFile.absolutePath)
+            }
+            
+            val jsonParams = params.toString()
+            
+            val result = Statusgo.exportUnencryptedDatabaseV2(jsonParams)
+            if (result.startsWith("{\"error\":\"\"")) {
+                Log.d(TAG, "Export result: $result")
+            } else {
+                Log.e(TAG, "Export failed: $result")
+            }
+
+            callback.invoke(newFile.absolutePath)
+
+        } catch (e: JSONException) {
+            Log.e(TAG, "Error parsing account data: ${e.message}")
         }
     }
 
@@ -43,11 +63,26 @@ class DatabaseManager(private val reactContext: ReactApplicationContext) : React
         val newFile = getExportDBFile()
 
         utils.migrateKeyStoreDir(accountData, password)
-        val result = Statusgo.importUnencryptedDatabase(accountData, password, newFile.absolutePath)
-        if (result.startsWith("{\"error\":\"\"")) {
-            Log.d(TAG, "import result: $result")
-        } else {
-            Log.e(TAG, "import failed: $result")
+
+        try {
+            val accountJson = JSONObject(accountData)
+            
+            val params = JSONObject().apply {
+                put("account", accountJson)
+                put("password", password)
+                put("databasePath", newFile.absolutePath)
+            }
+            
+            val jsonParams = params.toString()
+            
+            val result = Statusgo.importUnencryptedDatabaseV2(jsonParams)
+            if (result.startsWith("{\"error\":\"\"")) {
+                Log.d(TAG, "Import result: $result")
+            } else {
+                Log.e(TAG, "Import failed: $result")
+            }
+        } catch (e: JSONException) {
+            Log.e(TAG, "Error parsing account data: ${e.message}")
         }
     }
 
