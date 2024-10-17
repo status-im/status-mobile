@@ -35,7 +35,26 @@ RCT_EXPORT_METHOD(inputConnectionStringForBootstrapping:(NSString *)cs
         configJSON:(NSString *)configJSON
         callback:(RCTResponseSenderBlock)callback) {
 
-    NSString *result = StatusgoInputConnectionStringForBootstrapping(cs, configJSON);
+    NSData *configData = [configJSON dataUsingEncoding:NSUTF8StringEncoding];
+    NSError *jsonError;
+    NSDictionary *configDict = [NSJSONSerialization JSONObjectWithData:configData options:0 error:&jsonError];
+    if (jsonError) {
+        NSLog(@"Error parsing JSON: %@", jsonError);
+        return;
+    }
+
+    NSDictionary *params = @{
+        @"connectionString": cs,
+        @"receiverClientConfig": configDict
+    };
+    NSError *error;
+    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:params options:0 error:&error];
+    if (error) {
+        NSLog(@"Error creating JSON: %@", error);
+        return;
+    }
+    NSString *jsonString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+    NSString *result = StatusgoInputConnectionStringForBootstrappingV2(jsonString);
     callback(@[result]);
 }
 
@@ -55,9 +74,28 @@ RCT_EXPORT_METHOD(sendTransaction:(NSString *)txArgsJSON
         password:(NSString *)password
         callback:(RCTResponseSenderBlock)callback) {
 #if DEBUG
-    NSLog(@"SendTransaction() method called");
+    NSLog(@"SendTransactionV2() method called");
 #endif
-    NSString *result = StatusgoSendTransaction(txArgsJSON, password);
+    NSData *txArgsData = [txArgsJSON dataUsingEncoding:NSUTF8StringEncoding];
+    NSError *jsonError;
+    NSDictionary *txArgsDict = [NSJSONSerialization JSONObjectWithData:txArgsData options:0 error:&jsonError];
+    if (jsonError) {
+        NSLog(@"Error parsing JSON: %@", jsonError);
+        return;
+    }
+
+    NSDictionary *params = @{
+        @"txArgs": txArgsDict,
+        @"password": password
+    };
+    NSError *error;
+    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:params options:0 error:&error];
+    if (error) {
+        NSLog(@"Error creating JSON: %@", error);
+        return;
+    }
+    NSString *jsonString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+    NSString *result = StatusgoSendTransactionV2(jsonString);
     callback(@[result]);
 }
 
@@ -125,7 +163,14 @@ RCT_EXPORT_METHOD(inputConnectionStringForImportingKeypairsKeystores:(NSString *
 
     [receiverConfig setValue:keystoreDir forKey:@"keystorePath"];
     NSString *modifiedConfigJSON = [Utils jsonStringWithPrettyPrint:NO fromDictionary:configDict];
-    NSString *result = StatusgoInputConnectionStringForImportingKeypairsKeystores(cs, modifiedConfigJSON);
+    
+    NSDictionary *params = @{
+        @"connectionString": cs,
+        @"keystoreFilesReceiverClientConfig": modifiedConfigJSON
+    };
+    NSString *paramsJSON = [Utils jsonStringWithPrettyPrint:NO fromDictionary:params];
+    
+    NSString *result = StatusgoInputConnectionStringForImportingKeypairsKeystoresV2(paramsJSON);
     callback(@[result]);
 }
 
