@@ -77,8 +77,7 @@
 (defn token-value-drawer
   [token watch-only? entry-point]
   (let [token-symbol         (:token token)
-        token-data           (first (rf/sub [:wallet/current-viewing-account-tokens-filtered
-                                             {:query token-symbol}]))
+        token-data           (rf/sub [:wallet/token-by-symbol token-symbol])
         selected-account     (rf/sub [:wallet/current-viewing-account-address])
         token-owners         (rf/sub [:wallet/operable-addresses-with-token-symbol token-symbol])
         testnet-mode?        (rf/sub [:profile/test-networks-enabled?])
