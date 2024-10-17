@@ -644,7 +644,8 @@
     (testing "when tx-type is :tx/bridge and token-symbol is not nil"
       (let [flow-id         :wallet-bridge-flow
             tx-type         :tx/bridge
-            tokens          [{:symbol             "ETH"
+            token-symbol    "ETH"
+            tokens          [{:symbol             token-symbol
                               :chain-id           1
                               :balances-per-chain {1     {:raw-balance (money/bignumber 100)}
                                                    10    {:raw-balance (money/bignumber 200)}
@@ -655,12 +656,15 @@
                               {:chain-id 42161}}
             expected-result {:db {:wallet {:ui       {:send {:to-address   address
                                                              :tx-type      tx-type
-                                                             :token-symbol "ETH"
+                                                             :token-symbol token-symbol
                                                              :token        (assoc (first tokens)
                                                                                   :networks #{nil}
                                                                                   :total-balance
                                                                                   (money/bignumber 6))}}
-                                           :accounts {address {:tokens tokens}}}}
+                                           :accounts {address {:tokens tokens}}
+                                           :tokens   {:supported-chains-by-symbol {token-symbol
+                                                                                   #{1 10
+                                                                                     42161}}}}}
                              :fx [[:dispatch [:wallet/switch-current-viewing-account address]]
                                   [:dispatch
                                    [:wallet/wizard-navigate-forward
@@ -668,8 +672,10 @@
                                      :start-flow?    start-flow?
                                      :flow-id        flow-id}]]]}]
         (reset! rf-db/app-db {:wallet {:ui       {:send {:tx-type      tx-type
-                                                         :token-symbol "ETH"}}
-                                       :accounts {address {:tokens tokens}}}})
+                                                         :token-symbol token-symbol}}
+                                       :accounts {address {:tokens tokens}}
+                                       :tokens   {:supported-chains-by-symbol {token-symbol #{1 10
+                                                                                              42161}}}}})
         (is (match? expected-result
                     (dispatch [event-id
                                {:address        address
@@ -679,7 +685,8 @@
     (testing "when tx-type is not :tx/bridge and token-symbol is not nil"
       (let [flow-id         :wallet-send-flow
             tx-type         :tx/collectible-erc-721
-            tokens          [{:symbol             "ETH"
+            token-symbol    "ETH"
+            tokens          [{:symbol             token-symbol
                               :chain-id           1
                               :balances-per-chain {1     {:raw-balance (money/bignumber 100)}
                                                    10    {:raw-balance (money/bignumber 200)}
@@ -689,12 +696,15 @@
                               {:chain-id 10}
                               {:chain-id 42161}}
             expected-result {:db {:wallet {:ui       {:send {:tx-type      tx-type
-                                                             :token-symbol "ETH"
+                                                             :token-symbol token-symbol
                                                              :token        (assoc (first tokens)
                                                                                   :networks #{nil}
                                                                                   :total-balance
                                                                                   (money/bignumber 6))}}
-                                           :accounts {address {:tokens tokens}}}}
+                                           :accounts {address {:tokens tokens}}
+                                           :tokens   {:supported-chains-by-symbol {token-symbol
+                                                                                   #{1 10
+                                                                                     42161}}}}}
                              :fx [[:dispatch [:wallet/switch-current-viewing-account address]]
                                   [:dispatch
                                    [:wallet/wizard-navigate-forward
@@ -702,8 +712,10 @@
                                      :start-flow?    start-flow?
                                      :flow-id        flow-id}]]]}]
         (reset! rf-db/app-db {:wallet {:ui       {:send {:tx-type      tx-type
-                                                         :token-symbol "ETH"}}
-                                       :accounts {address {:tokens tokens}}}})
+                                                         :token-symbol token-symbol}}
+                                       :accounts {address {:tokens tokens}}
+                                       :tokens   {:supported-chains-by-symbol {token-symbol #{1 10
+                                                                                              42161}}}}})
         (is (match? expected-result
                     (dispatch [event-id
                                {:address        address

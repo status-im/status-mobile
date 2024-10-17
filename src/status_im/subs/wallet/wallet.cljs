@@ -45,6 +45,11 @@
  :-> :tokens)
 
 (rf/reg-sub
+ :wallet/tokens-supported-chains
+ :<- [:wallet/tokens]
+ :-> :supported-chains-by-symbol)
+
+(rf/reg-sub
  :wallet/tokens-loading
  :<- [:wallet/ui]
  :-> :tokens-loading)
@@ -135,8 +140,9 @@
  :wallet/wallet-send-token
  :<- [:wallet/wallet-send]
  :<- [:wallet/network-details]
+ :<- [:wallet/tokens-supported-chains]
  :<- [:wallet/wallet-send-disabled-from-chain-ids]
- (fn [[wallet-send networks disabled-from-chain-ids]]
+ (fn [[wallet-send networks token-supported-chains disabled-from-chain-ids]]
    (let [token                    (:token wallet-send)
          disabled-from-chain-ids? (set disabled-from-chain-ids)
          enabled-from-chain-ids   (->> networks
@@ -144,7 +150,9 @@
                                        (remove disabled-from-chain-ids?)
                                        set)]
      (some-> token
-             (assoc :networks          (network-utils/network-list token networks)
+             (assoc :networks          (network-utils/network-list
+                                        (get token-supported-chains (:symbol token))
+                                        networks)
                     :available-balance (utils/calculate-total-token-balance token)
                     :total-balance     (utils/calculate-total-token-balance
                                         token
@@ -443,27 +451,31 @@
  :wallet/current-viewing-account-tokens-filtered
  :<- [:wallet/current-viewing-account-or-default]
  :<- [:wallet/network-details]
+ :<- [:wallet/tokens-supported-chains]
  :<- [:wallet/wallet-send]
- (fn [[account networks send-data] [_ {:keys [query chain-ids hide-token-fn]}]]
+ (fn [[account networks token-supported-chains send-data] [_ {:keys [query chain-ids hide-token-fn]}]]
    (let [tx-type       (:tx-type send-data)
-         tokens        (->> (:tokens account)
-                            (map
-                             (fn [token]
-                               (assoc token
-                                      :bridge-disabled?  (and (= tx-type :tx/bridge)
-                                                              (send-utils/bridge-disabled? (:symbol
-                                                                                            token)))
-                                      :networks          (cond->> (network-utils/network-list token
-                                                                                              networks)
-                                                           chain-ids
-                                                           (filter #(some #{(:chain-id %)} chain-ids)))
-                                      :available-balance (utils/calculate-total-token-balance token)
-                                      :total-balance     (utils/calculate-total-token-balance
-                                                          token
-                                                          chain-ids))))
-                            (filter (fn [{:keys [networks]}]
-                                      (pos? (count networks))))
-                            (remove #(when hide-token-fn (hide-token-fn constants/swap-tokens-my %))))
+         tokens        (->>
+                         (:tokens account)
+                         (map
+                          (fn [token]
+                            (assoc token
+                                   :bridge-disabled?  (and (= tx-type :tx/bridge)
+                                                           (send-utils/bridge-disabled? (:symbol
+                                                                                         token)))
+                                   :networks          (cond->> (network-utils/network-list
+                                                                (get token-supported-chains
+                                                                     (:symbol token))
+                                                                networks)
+                                                        chain-ids
+                                                        (filter #(some #{(:chain-id %)} chain-ids)))
+                                   :available-balance (utils/calculate-total-token-balance token)
+                                   :total-balance     (utils/calculate-total-token-balance
+                                                       token
+                                                       chain-ids))))
+                         (filter (fn [{:keys [networks]}]
+                                   (pos? (count networks))))
+                         (remove #(when hide-token-fn (hide-token-fn constants/swap-tokens-my %))))
          sorted-tokens (utils/sort-tokens tokens)]
      (if query
        (let [query-string (string/lower-case query)]
@@ -504,8 +516,9 @@
  :wallet/token-by-symbol
  :<- [:wallet/current-viewing-account-or-default]
  :<- [:wallet/network-details]
- (fn [[{:keys [tokens]} networks] [_ token-symbol chain-ids]]
-   (->> (utils/tokens-with-balance tokens networks chain-ids)
+ :<- [:wallet/tokens-supported-chains]
+ (fn [[{:keys [tokens]} networks token-supported-chains] [_ token-symbol chain-ids]]
+   (->> (utils/tokens-with-balance tokens networks token-supported-chains chain-ids)
         (filter #(= (string/lower-case (:symbol %))
                     (string/lower-case token-symbol)))
         first)))

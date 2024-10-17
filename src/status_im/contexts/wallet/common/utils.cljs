@@ -494,10 +494,12 @@
     (sort-by (juxt :symbol priority) tokens)))
 
 (defn tokens-with-balance
-  [tokens networks chain-ids]
+  [tokens networks token-supported-chains chain-ids]
   (map (fn [token]
          (assoc token
-                :networks          (network-utils/network-list token networks)
+                :networks          (network-utils/network-list
+                                    (get token-supported-chains (:symbol token))
+                                    networks)
                 :available-balance (calculate-total-token-balance token)
                 :total-balance     (calculate-total-token-balance token chain-ids)))
        tokens))
@@ -511,3 +513,19 @@
     (:less-than-three-minutes constants/wallet-transaction-estimation) "1-3"
     (:less-than-five-minutes constants/wallet-transaction-estimation)  "3-5"
     ">5"))
+
+(defn add-missing-balance-per-chain-values
+  "Adds any missing chain balance (0) to the balance-per-chain map based on token supported chains as
+   status-go returns balance for that chain only if the balance is positive."
+  [{:keys [balances-per-chain token-supported-chains]}]
+  (reduce
+   (fn [result chain-id]
+     (if (contains? result chain-id)
+       result
+       (assoc result
+              chain-id
+              {:chain-id    chain-id
+               :raw-balance (money/->bignumber 0)
+               :balance     "0"})))
+   balances-per-chain
+   token-supported-chains))

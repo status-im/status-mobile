@@ -42,6 +42,14 @@
          :operable                  :partially
          :address                   "0x2"}})
 
+(def token-supported-chains-by-symbol
+  {"ETH" #{constants/ethereum-mainnet-chain-id constants/optimism-mainnet-chain-id
+           constants/arbitrum-mainnet-chain-id}
+   "SNT" #{constants/ethereum-mainnet-chain-id constants/optimism-mainnet-chain-id
+           constants/arbitrum-mainnet-chain-id}
+   "DAI" #{constants/ethereum-mainnet-chain-id constants/optimism-mainnet-chain-id
+           constants/arbitrum-mainnet-chain-id}})
+
 (def tokens-0x1
   [{:decimals                   1
     :symbol                     "ETH"
@@ -883,6 +891,7 @@
       #(-> %
            (assoc-in [:wallet :accounts] accounts)
            (assoc-in [:wallet :networks] network-data)
+           (assoc-in [:wallet :tokens :supported-chains-by-symbol] token-supported-chains-by-symbol)
            (assoc-in [:wallet :current-viewing-account-address] "0x2")
            (assoc :currencies currencies)
            (assoc-in [:profile/profile :currency] :usd)))

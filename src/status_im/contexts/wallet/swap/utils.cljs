@@ -59,13 +59,16 @@
    That happens when token is being selected on the home screen and 
    it basically indicates that no account pre-selection was made."
   [{:keys [wallet account test-networks-enabled? token-symbol]}]
-  (let [networks (-> (get-in wallet [:networks (if test-networks-enabled? :test :prod)])
-                     (network-utils/sorted-networks-with-details))
-        token    (->> account
-                      :tokens
-                      (filter #(= token-symbol (:symbol %)))
-                      first)]
-    (assoc token :networks (network-utils/network-list token networks))))
+  (let [networks         (-> (get-in wallet [:networks (if test-networks-enabled? :test :prod)])
+                             (network-utils/sorted-networks-with-details))
+        token            (->> account
+                              :tokens
+                              (filter #(= token-symbol (:symbol %)))
+                              first)
+        supported-chains (get-in wallet [:tokens :supported-chains-by-symbol token-symbol])]
+    (assoc token
+           :networks
+           (network-utils/network-list supported-chains networks))))
 
 (defn select-default-asset-to-receive
   "Selects an asset to receive if it was not provided explicitly.
@@ -73,9 +76,10 @@
    whole list, remove the currently selected `asset-to-pay` from it, and choose
    the first one of what's left."
   [{:keys [wallet account test-networks-enabled? asset-to-pay]}]
-  (let [networks (-> (get-in wallet [:networks (if test-networks-enabled? :test :prod)])
-                     (network-utils/sorted-networks-with-details))]
-    (->> (utils/tokens-with-balance (:tokens account) networks nil)
+  (let [networks                (-> (get-in wallet [:networks (if test-networks-enabled? :test :prod)])
+                                    (network-utils/sorted-networks-with-details))
+        tokens-supported-chains (get-in wallet [:tokens :supported-chains-by-symbol])]
+    (->> (utils/tokens-with-balance (:tokens account) networks tokens-supported-chains nil)
          (remove #(= (:symbol %) (:symbol asset-to-pay)))
          first)))
 

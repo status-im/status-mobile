@@ -390,18 +390,21 @@
                  receiver-networks disabled-from-chain-ids
                  from-locked-amounts bridge-to-chain-id]
           :or   {token updated-token}} (get-in db [:wallet :ui :send])
+         bridge-tx? (= tx-type :tx/bridge)
          test-networks-enabled? (get-in db [:profile/profile :test-networks-enabled?])
          networks (get-in db [:wallet :networks (if test-networks-enabled? :test :prod)])
          network-chain-ids (map :chain-id networks)
          token-decimal (when token (:decimals token))
          token-id (utils/format-token-id token collectible)
+         token-supported-chains (get-in db
+                                        [:wallet :tokens :supported-chains-by-symbol (:symbol token)])
          to-token-id ""
          gas-rates constants/gas-rate-medium
          to-hex (fn [v] (send-utils/amount-in-hex v (if token token-decimal 0)))
          amount-in (to-hex amount)
          amount-out (to-hex amount-out)
          from-address wallet-address
-         disabled-to-chain-ids (if (= tx-type :tx/bridge)
+         disabled-to-chain-ids (if bridge-tx?
                                  (filter #(not= % bridge-to-chain-id) network-chain-ids)
                                  (filter (fn [chain-id]
                                            (not (some #(= chain-id %)
@@ -423,14 +426,16 @@
          receiver-token-available-networks-for-suggested-routes
          (when token
            (send-utils/token-available-networks-for-suggested-routes
-            {:balances-per-chain balances-per-chain
+            {:balances-per-chain (utils/add-missing-balance-per-chain-values
+                                  {:balances-per-chain     balances-per-chain
+                                   :token-supported-chains token-supported-chains})
              :disabled-chain-ids disabled-from-chain-ids
              :only-with-balance? false}))
          token-networks-ids (when token (map #(:chain-id %) (:networks token)))
          sender-network-values (when sender-token-available-networks-for-suggested-routes
                                  (send-utils/loading-network-amounts
                                   {:valid-networks
-                                   (if (= tx-type :tx/bridge)
+                                   (if bridge-tx?
                                      (remove #(= bridge-to-chain-id %)
                                              sender-token-available-networks-for-suggested-routes)
                                      sender-token-available-networks-for-suggested-routes)
@@ -442,7 +447,7 @@
          receiver-network-values (when receiver-token-available-networks-for-suggested-routes
                                    (send-utils/loading-network-amounts
                                     {:valid-networks
-                                     (if (= tx-type :tx/bridge)
+                                     (if bridge-tx?
                                        (filter
                                         #(= bridge-to-chain-id %)
                                         receiver-token-available-networks-for-suggested-routes)
@@ -706,9 +711,17 @@
                              ;; When this flow has started in the wallet home page, we know the
                              ;; token or collectible to send, but we don't know from which
                              ;; account, so we extract the token data from the picked account.
-                             (let [token (utils/get-token-from-account db token-symbol address)]
+                             (let [token                  (utils/get-token-from-account db
+                                                                                        token-symbol
+                                                                                        address)
+                                   token-supported-chains (get-in db
+                                                                  [:wallet :tokens
+                                                                   :supported-chains-by-symbol
+                                                                   token-symbol])]
                                (assoc token
-                                      :networks      (network-utils/network-list token network-details)
+                                      :networks      (network-utils/network-list
+                                                      token-supported-chains
+                                                      network-details)
                                       :total-balance (utils/calculate-total-token-balance token))))
          bridge-tx?        (= tx-type :tx/bridge)
          flow-id           (if bridge-tx?
