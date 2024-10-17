@@ -56,7 +56,11 @@ class StatusModule(private val reactContext: ReactApplicationContext, private va
     @ReactMethod
     fun connectionChange(type: String, isExpensive: Boolean) {
         Log.d(TAG, "ConnectionChange: $type, is expensive $isExpensive")
-        Statusgo.connectionChange(type, if (isExpensive) 1 else 0)
+        val params = JSONObject().apply {
+            put("type", type)
+            put("expensive", isExpensive)
+        }
+        Statusgo.connectionChangeV2(params.toString())
     }
 
     @ReactMethod
@@ -89,7 +93,13 @@ class StatusModule(private val reactContext: ReactApplicationContext, private va
     @ReactMethod
     fun deleteImportedKey(keyUID: String, address: String, password: String, callback: Callback) {
         val keyStoreDir = utils.getKeyStorePath(keyUID)
-        utils.executeRunnableStatusGoMethod({ Statusgo.deleteImportedKey(address, password, keyStoreDir) }, callback)
+        val params = JSONObject().apply {
+            put("address", address)
+            put("password", password)
+            put("keyStoreDir", keyStoreDir)
+        }
+        val jsonString = params.toString()
+        utils.executeRunnableStatusGoMethod({ Statusgo.deleteImportedKeyV2(jsonString) }, callback)
     }
 
     @ReactMethod(isBlockingSynchronousMethod = true)
