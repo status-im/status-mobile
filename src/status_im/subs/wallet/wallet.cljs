@@ -578,6 +578,14 @@
          addresses-tokens)))
 
 (rf/reg-sub
+ :wallet/current-account-owns-token
+ (fn [[_ token-symbol]]
+   [(rf/subscribe [:wallet/current-viewing-account-address])
+    (rf/subscribe [:wallet/operable-addresses-with-token-symbol token-symbol])])
+ (fn [[address addresses-with-token]]
+   (-> addresses-with-token set (contains? address))))
+
+(rf/reg-sub
  :wallet/account-tab
  :<- [:wallet/ui]
  (fn [ui]
