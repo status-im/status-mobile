@@ -39,8 +39,22 @@ RCT_EXPORT_METHOD(reEncryptDbAndKeystore:(NSString *)keyUID
 #if DEBUG
     NSLog(@"reEncryptDbAndKeystore() method called");
 #endif
-    // changes password and re-encrypts keystore
-    NSString *result = StatusgoChangeDatabasePassword(keyUID, currentPassword, newPassword);
+    // Construct params into JSON string
+    NSDictionary *params = @{
+        @"keyUID": keyUID,
+        @"oldPassword": currentPassword,
+        @"newPassword": newPassword
+    };
+    NSError *error;
+    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:params options:0 error:&error];
+    if (error) {
+        NSLog(@"Error creating JSON: %@", error);
+        return;
+    }
+    NSString *jsonString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+    
+    // Call ChangeDatabasePasswordV2 with JSON string param
+    NSString *result = StatusgoChangeDatabasePasswordV2(jsonString);
     callback(@[result]);
 }
 
@@ -56,18 +70,60 @@ RCT_EXPORT_METHOD(convertToKeycardAccount:(NSString *)keyUID
 #endif
     NSURL *multiaccountKeystoreDir = [Utils getKeyStoreDirForKeyUID:keyUID];
     StatusgoInitKeystore(multiaccountKeystoreDir.path);
-    NSString *result = StatusgoConvertToKeycardAccount(accountData, settings, keycardUID, currentPassword, newPassword);
+    
+    NSDictionary *params = @{
+        @"keyUID": keyUID,
+        @"account": [NSJSONSerialization JSONObjectWithData:[accountData dataUsingEncoding:NSUTF8StringEncoding] options:0 error:nil],
+        @"settings": [NSJSONSerialization JSONObjectWithData:[settings dataUsingEncoding:NSUTF8StringEncoding] options:0 error:nil],
+        @"keycardUID": keycardUID,
+        @"oldPassword": currentPassword,
+        @"newPassword": newPassword
+    };
+    
+    NSError *error;
+    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:params options:0 error:&error];
+    
+    if (error) {
+        NSLog(@"Error creating JSON: %@", [error localizedDescription]);
+        return;
+    }
+    
+    NSString *jsonString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+    
+    NSString *result = StatusgoConvertToKeycardAccountV2(jsonString);
     callback(@[result]);
 }
 
 RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(encodeTransfer:(NSString *)to
         value:(NSString *)value) {
-    return StatusgoEncodeTransfer(to,value);
+    NSDictionary *params = @{
+        @"to": to,
+        @"value": value
+    };
+    NSError *error;
+    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:params options:0 error:&error];
+    if (error) {
+        NSLog(@"Error creating JSON: %@", [error localizedDescription]);
+        return nil;
+    }
+    NSString *jsonString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+    return StatusgoEncodeTransferV2(jsonString);
 }
 
 RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(encodeFunctionCall:(NSString *)method
         paramsJSON:(NSString *)paramsJSON) {
-    return StatusgoEncodeFunctionCall(method,paramsJSON);
+    NSDictionary *params = @{
+        @"method": method,
+        @"paramsJSON": paramsJSON
+    };
+    NSError *error;
+    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:params options:0 error:&error];
+    if (error) {
+        NSLog(@"Error creating JSON: %@", [error localizedDescription]);
+        return nil;
+    }
+    NSString *jsonString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+    return StatusgoEncodeFunctionCallV2(jsonString);
 }
 
 RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(decodeParameters:(NSString *)decodeParamJSON) {
@@ -136,7 +192,18 @@ RCT_EXPORT_METHOD(localPairingPreflightOutboundCheck:(RCTResponseSenderBlock)cal
 RCT_EXPORT_METHOD(multiformatDeserializePublicKey:(NSString *)multiCodecKey
         base58btc:(NSString *)base58btc
         callback:(RCTResponseSenderBlock)callback) {
-    NSString *result = StatusgoMultiformatDeserializePublicKey(multiCodecKey,base58btc);
+    NSDictionary *params = @{
+        @"key": multiCodecKey,
+        @"outBase": base58btc
+    };
+    NSError *error;
+    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:params options:0 error:&error];
+    if (error) {
+        NSLog(@"Error creating JSON: %@", error);
+        return;
+    }
+    NSString *jsonString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+    NSString *result = StatusgoMultiformatDeserializePublicKeyV2(jsonString);
     callback(@[result]);
 }
 
