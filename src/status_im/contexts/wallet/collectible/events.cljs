@@ -43,10 +43,18 @@
 
 (defn flush-collectibles
   [{:keys [db]}]
-  (let [collectibles-per-account (get-in db [:wallet :ui :collectibles :fetched])]
+  (let [collectibles-per-account (get-in db [:wallet :ui :collectibles :fetched])
+        updated-accounts         (move-collectibles-to-accounts (get-in db [:wallet :accounts])
+                                                                collectibles-per-account)
+        has-collectibles?        (some (fn [account]
+                                         (pos? (count (:collectibles account))))
+                                       (vals updated-accounts))]
     {:db (-> db
              (update-in [:wallet :ui :collectibles] dissoc :pending-requests :fetched)
-             (update-in [:wallet :accounts] move-collectibles-to-accounts collectibles-per-account))}))
+             (assoc-in [:wallet :accounts] updated-accounts))
+     :fx [[:dispatch
+           [:centralized-metrics/track :metric/wallet-collectibles-fetched
+            {:has-collectibles? has-collectibles?}]]]}))
 
 (rf/reg-event-fx :wallet/flush-collectibles-fetched flush-collectibles)
 
