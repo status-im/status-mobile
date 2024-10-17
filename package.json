@@ -58,6 +58,7 @@
     "react-native-lottie-splash-screen": "^1.0.1",
     "react-native-navigation": "7.39.0",
     "react-native-orientation-locker": "^1.5.0",
+    "react-native-pdf": "^6.7.5",
     "react-native-permissions": "4.1.5",
     "react-native-reanimated": "3.6.1",
     "react-native-redash": "18.1.0",

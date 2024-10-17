@@ -182,7 +182,8 @@
   (let [provider (rf/sub [:wallet/swap-proposal-provider])
         theme    (quo.theme/use-theme)
         on-press (rn/use-callback #(when provider
-                                     (rf/dispatch [:open-url (:terms-and-conditions-url provider)]))
+                                     (rf/dispatch [:open-modal :screen/pdf-viewer
+                                                   {:uri (:terms-and-conditions-url provider)}]))
                                   [provider])]
     [:<>
      [transaction-details]
