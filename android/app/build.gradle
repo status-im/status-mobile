@@ -54,6 +54,9 @@ react {
     //
     //   The list of flags to pass to the Hermes compiler. By default is "-O", "-output-source-map"
     // hermesFlags = ["-O", "-output-source-map"]
+
+    /* Autolinking */
+    autolinkLibrariesWithApp()
 }
 
 /**
@@ -297,7 +300,7 @@ dependencies {
     implementation("com.facebook.fresco:fresco:2.5.0")
     implementation("com.facebook.fresco:animated-gif:2.5.0")
     implementation("com.squareup.okhttp3:okhttp-tls:4.11.0")
-    implementation("com.google.prefab:cli:2.0.0")
+    implementation("com.google.prefab:cli:2.1.0")
     implementation("com.android.tools.build:aapt2:8.1.1-10154469")
 }
 
@@ -333,5 +336,3 @@ task hemroidBuild(type: Exec) {
 }
 
 preBuild.dependsOn hemroidBuild
-
-apply from: file("../../node_modules/@react-native-community/cli-platform-android/native_modules.gradle"); applyNativeModulesAppBuildGradle(project)

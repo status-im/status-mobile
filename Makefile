@@ -97,6 +97,8 @@ nix-purge: ##@nix Completely remove Nix setup, including /nix directory
 	nix/scripts/purge.sh
 
 nix-update-gradle: export TARGET := gradle
+nix-update-gradle: export ORG_GRADLE_PROJECT_hermesEnabled := false
+nix-update-gradle: export ORG_GRADLE_PROJECT_universalApk := false
 nix-update-gradle: ##@nix Update maven nix expressions based on current gradle setup
 	nix/deps/gradle/generate.sh
 
@@ -475,6 +477,10 @@ android-install: export TARGET := android-sdk
 android-install: export BUILD_TYPE ?= release
 android-install: ##@other Install APK on device using adb
 	adb install result/app-$(BUILD_TYPE).apk
+
+generate-autolink-android: export TARGET := clojure
+generate-autolink-android: ##@other Generate autolinking.json
+	@scripts/generate_autolink_android.sh
 
 _list: SHELL := /bin/sh
 _list:

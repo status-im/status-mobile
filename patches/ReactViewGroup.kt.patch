@@ -1,0 +1,9 @@
+--- /tmp/tmp-status-mobile-65370082b/tmp.QyEZywPVH8/ReactViewGroup.kt	2024-09-17 08:39:24.686748000 +0530
++++ ./node_modules/react-native-navigation/lib/android/app/src/main/java/com/reactnativenavigation/utils/ReactViewGroup.kt	2024-09-17 08:40:47.117817983 +0530
+@@ -4,4 +4,4 @@
+ import com.facebook.react.views.view.ReactViewGroup
+ 
+ val ReactViewGroup.borderRadius: Float
+-    get() = (background as? ReactViewBackgroundDrawable)?.fullBorderRadius ?: 0f
+\ No newline at end of file
++    get() = (background as? ReactViewBackgroundDrawable)?.fullBorderWidth ?: 0f
