@@ -65,7 +65,16 @@
 
 (rf/reg-event-fx :wallet/switch-current-viewing-account
  (fn [{:keys [db]} [address]]
-   {:db (assoc-in db [:wallet :current-viewing-account-address] address)}))
+   {:db (-> db
+            (assoc-in [:wallet :current-viewing-account-address] address)
+            (update-in [:wallet :ui :swap]
+                       dissoc
+                       :last-request-uuid
+                       :swap-proposal
+                       :error-response
+                       :loading-swap-proposal?
+                       :approval-transaction-id
+                       :approved-amount))}))
 
 (rf/reg-event-fx :wallet/clean-current-viewing-account
  (fn [{:keys [db]} [ignore-just-completed-transaction?]]

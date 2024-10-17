@@ -328,12 +328,15 @@
         loading-swap-proposal?                      (rf/sub [:wallet/swap-loading-swap-proposal?])
         swap-proposal                               (rf/sub [:wallet/swap-proposal-without-fees])
         asset-to-pay                                (rf/sub [:wallet/swap-asset-to-pay])
+        asset-to-pay-with-acc-balance               (rf/sub [:wallet/token-by-symbol
+                                                             (or (:symbol asset-to-pay) "ETH")])
         asset-to-receive                            (rf/sub [:wallet/swap-asset-to-receive])
         network                                     (rf/sub [:wallet/swap-network])
+        current-account-address                     (rf/sub [:wallet/current-viewing-account-address])
         pay-input-amount                            (controlled-input/input-value pay-input-state)
         pay-token-decimals                          (:decimals asset-to-pay)
         pay-token-balance-selected-chain            (number/convert-to-whole-number
-                                                     (get-in asset-to-pay
+                                                     (get-in asset-to-pay-with-acc-balance
                                                              [:balances-per-chain
                                                               (:chain-id network) :raw-balance]
                                                              0)
@@ -427,6 +430,13 @@
                           on-refresh-swap-proposal
                           constants/swap-proposal-refresh-interval-ms))))
                    [swap-proposal error-response])
+    (rn/use-effect (fn []
+                     (rf/dispatch [:wallet/stop-get-suggested-routes])
+                     (when @refetch-interval
+                       (js/clearInterval @refetch-interval)
+                       (reset! refetch-interval nil))
+                     (js/setTimeout refetch-swap-proposal))
+                   [current-account-address])
     (rn/use-unmount (fn []
                       (rf/dispatch [:wallet/clean-swap-proposal {:clean-approval-transaction? true}])
                       (when @refetch-interval
