@@ -35,7 +35,18 @@ RCT_EXPORT_METHOD(inputConnectionStringForBootstrapping:(NSString *)cs
         configJSON:(NSString *)configJSON
         callback:(RCTResponseSenderBlock)callback) {
 
-    NSString *result = StatusgoInputConnectionStringForBootstrapping(cs, configJSON);
+    NSDictionary *params = @{
+        @"connectionString": cs,
+        @"receiverClientConfig": configJSON
+    };
+    NSError *error;
+    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:params options:0 error:&error];
+    if (error) {
+        NSLog(@"Error creating JSON: %@", error);
+        return;
+    }
+    NSString *jsonString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+    NSString *result = StatusgoInputConnectionStringForBootstrappingV2(jsonString);
     callback(@[result]);
 }
 
@@ -55,9 +66,20 @@ RCT_EXPORT_METHOD(sendTransaction:(NSString *)txArgsJSON
         password:(NSString *)password
         callback:(RCTResponseSenderBlock)callback) {
 #if DEBUG
-    NSLog(@"SendTransaction() method called");
+    NSLog(@"SendTransactionV2() method called");
 #endif
-    NSString *result = StatusgoSendTransaction(txArgsJSON, password);
+    NSDictionary *params = @{
+        @"txArgs": txArgsJSON,
+        @"password": password
+    };
+    NSError *error;
+    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:params options:0 error:&error];
+    if (error) {
+        NSLog(@"Error creating JSON: %@", error);
+        return;
+    }
+    NSString *jsonString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+    NSString *result = StatusgoSendTransactionV2(jsonString);
     callback(@[result]);
 }
 
@@ -125,7 +147,14 @@ RCT_EXPORT_METHOD(inputConnectionStringForImportingKeypairsKeystores:(NSString *
 
     [receiverConfig setValue:keystoreDir forKey:@"keystorePath"];
     NSString *modifiedConfigJSON = [Utils jsonStringWithPrettyPrint:NO fromDictionary:configDict];
-    NSString *result = StatusgoInputConnectionStringForImportingKeypairsKeystores(cs, modifiedConfigJSON);
+    
+    NSDictionary *params = @{
+        @"connectionString": cs,
+        @"keystoreFilesReceiverClientConfig": modifiedConfigJSON
+    };
+    NSString *paramsJSON = [Utils jsonStringWithPrettyPrint:NO fromDictionary:params];
+    
+    NSString *result = StatusgoInputConnectionStringForImportingKeypairsKeystoresV2(paramsJSON);
     callback(@[result]);
 }
 

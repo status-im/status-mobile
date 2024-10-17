@@ -224,16 +224,25 @@ class AccountManager(private val reactContext: ReactApplicationContext) : ReactC
         val absRootDirPath = utils.getNoBackupDirectory()
         val newKeystoreDir = utils.pathCombine(absRootDirPath, "keystore")
 
+        val jsonParams = JSONObject()
+        jsonParams.put("keyStoreDir", newKeystoreDir)
+        jsonParams.put("address", address) 
+        jsonParams.put("password", password)
+
         utils.executeRunnableStatusGoMethod(
-            { Statusgo.verifyAccountPassword(newKeystoreDir, address, password) },
+            { Statusgo.verifyAccountPasswordV2(jsonParams.toString()) },
             callback
         )
     }
 
     @ReactMethod
     fun verifyDatabasePassword(keyUID: String, password: String, callback: Callback) {
+        val jsonParams = JSONObject()
+        jsonParams.put("keyUID", keyUID)
+        jsonParams.put("password", password)
+
         utils.executeRunnableStatusGoMethod(
-            { Statusgo.verifyDatabasePassword(keyUID, password) },
+            { Statusgo.verifyDatabasePasswordV2(jsonParams.toString()) },
             callback
         )
     }
@@ -306,7 +315,12 @@ class AccountManager(private val reactContext: ReactApplicationContext) : ReactC
     @ReactMethod
     fun deleteMultiaccount(keyUID: String, callback: Callback) {
         val keyStoreDir = utils.getKeyStorePath(keyUID)
-        utils.executeRunnableStatusGoMethod({ Statusgo.deleteMultiaccount(keyUID, keyStoreDir) }, callback)
+        val params = JSONObject().apply {
+            put("keyUID", keyUID)
+            put("keyStoreDir", keyStoreDir)
+        }
+        val jsonString = params.toString()
+        utils.executeRunnableStatusGoMethod({ Statusgo.deleteMultiaccountV2(jsonString) }, callback)
     }
 
     @ReactMethod

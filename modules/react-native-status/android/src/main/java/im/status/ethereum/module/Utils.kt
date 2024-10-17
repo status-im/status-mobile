@@ -69,7 +69,12 @@ class Utils(private val reactContext: ReactApplicationContext) : ReactContextBas
             val keydirFile = File(keydir)
             if (!keydirFile.exists() || keydirFile.list().isEmpty()) {
                 Log.d(TAG, "migrateKeyStoreDir")
-                Statusgo.migrateKeyStoreDir(accountData, password, commonKeydir, keydir)
+                val jsonParams = JSONObject()
+                jsonParams.put("account", JSONObject(accountData)) // Remove 'new' keyword
+                jsonParams.put("password", password)
+                jsonParams.put("oldDir", commonKeydir)
+                jsonParams.put("newDir", keydir)
+                Statusgo.migrateKeyStoreDirV2(jsonParams.toString())
                 Statusgo.initKeystore(keydir)
             }
         } catch (e: JSONException) {
@@ -115,7 +120,9 @@ class Utils(private val reactContext: ReactApplicationContext) : ReactContextBas
 
     @ReactMethod
     fun validateMnemonic(seed: String, callback: Callback) {
-        executeRunnableStatusGoMethod({ Statusgo.validateMnemonic(seed) }, callback)
+        val jsonParams = JSONObject()
+        jsonParams.put("mnemonic", seed)
+        executeRunnableStatusGoMethod({ Statusgo.validateMnemonicV2(jsonParams.toString()) }, callback)
     }
 
     fun is24Hour(): Boolean {
