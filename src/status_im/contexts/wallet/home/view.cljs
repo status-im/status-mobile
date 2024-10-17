@@ -8,6 +8,7 @@
     [status-im.common.refreshable-flat-list.view :as refreshable-flat-list]
     [status-im.contexts.wallet.home.style :as style]
     [status-im.contexts.wallet.home.tabs.view :as tabs]
+    [status-im.contexts.wallet.send.transaction-details.view :as transaction-details]
     [status-im.contexts.wallet.sheets.network-filter.view :as network-filter]
     [status-im.feature-flags :as ff]
     [utils.i18n :as i18n]
@@ -93,14 +94,18 @@
                                   :tint-color colors/neutral-40
                                   :on-refresh #(rf/dispatch [:wallet/get-accounts])}]
        :header                  [rn/view {:style (style/header-container theme)}
-                                 [quo/wallet-overview
-                                  {:state             (if tokens-loading? :loading :default)
-                                   :time-frame        :none
-                                   :metrics           :none
-                                   :balance           formatted-balance
-                                   :networks          networks
-                                   :dropdown-on-press #(rf/dispatch [:show-bottom-sheet
-                                                                     {:content network-filter/view}])}]
+                                 [rn/pressable
+                                  {:on-press #(rf/dispatch
+                                               [:show-bottom-sheet
+                                                {:content transaction-details/sheet}])}
+                                  [quo/wallet-overview
+                                   {:state             (if tokens-loading? :loading :default)
+                                    :time-frame        :none
+                                    :metrics           :none
+                                    :balance           formatted-balance
+                                    :networks          networks
+                                    :dropdown-on-press #(rf/dispatch [:show-bottom-sheet
+                                                                      {:content network-filter/view}])}]]
                                  (when (ff/enabled? ::ff/wallet.graph)
                                    [quo/wallet-graph {:time-frame :empty}])
                                  [render-cards cards account-list-ref]

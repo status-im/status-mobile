@@ -9,6 +9,7 @@
     [status-im.common.standard-authentication.core :as standard-auth]
     [status-im.contexts.wallet.common.utils :as utils]
     [status-im.contexts.wallet.send.transaction-confirmation.style :as style]
+    [status-im.contexts.wallet.send.transaction-details.view :as transaction-details]
     [status-im.contexts.wallet.send.utils :as send-utils]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]
@@ -178,6 +179,17 @@
        [rn/activity-indicator {:style {:flex 1}}]
        route-loaded?
        [:<>
+        [quo/button
+         {:icon-only?          true
+          :type                :outline
+          :size                32
+          :inner-style         {:opacity 1}
+          :accessibility-label :advanced-button
+          :container-style     {:margin-right 8}
+          :on-press            #(rf/dispatch
+                                 [:show-bottom-sheet
+                                  {:content transaction-details/sheet}])}
+         :i/advanced]
         [data-item
          {:title    (i18n/label :t/est-time)
           :subtitle (i18n/label :t/time-in-mins {:minutes (str estimated-time-min)})}]
@@ -270,33 +282,37 @@
            :gradient-cover?          true
            :customization-color      (:color account)}
           [rn/view
-           [transaction-title
-            {:token-display-name token-symbol
-             :amount             amount
-             :account            account
-             :type               type
-             :recipient          recipient
-             :route              route
-             :to-network         bridge-to-network
-             :image-url          image-url
-             :transaction-type   transaction-type
-             :collectible?       collectible?}]
-           [user-summary
-            {:summary-type        :status-account
-             :accessibility-label :summary-from-label
-             :label               (i18n/label :t/from-capitalized)
-             :account-props       from-account-props
-             :theme               theme}]
-           [user-summary
-            {:summary-type        (if (= transaction-type :tx/bridge)
-                                    :status-account
-                                    :account)
-             :accessibility-label :summary-to-label
-             :label               (i18n/label :t/to-capitalized)
-             :account-props       (if (= transaction-type :tx/bridge)
-                                    from-account-props
-                                    user-props)
-             :recipient           recipient
-             :bridge-tx?          (= transaction-type :tx/bridge)
-             :account-to?         true
-             :theme               theme}]]]]))))
+           [rn/pressable
+            {:on-press #(rf/dispatch [:navigate-to-within-stack
+                                      [:screen/wallet.transaction-details
+                                       :screen/wallet.transaction-confirmation]])}
+            [transaction-title
+             {:token-display-name token-symbol
+              :amount             amount
+              :account            account
+              :type               type
+              :recipient          recipient
+              :route              route
+              :to-network         bridge-to-network
+              :image-url          image-url
+              :transaction-type   transaction-type
+              :collectible?       collectible?}]
+            [user-summary
+             {:summary-type        :status-account
+              :accessibility-label :summary-from-label
+              :label               (i18n/label :t/from-capitalized)
+              :account-props       from-account-props
+              :theme               theme}]
+            [user-summary
+             {:summary-type        (if (= transaction-type :tx/bridge)
+                                     :status-account
+                                     :account)
+              :accessibility-label :summary-to-label
+              :label               (i18n/label :t/to-capitalized)
+              :account-props       (if (= transaction-type :tx/bridge)
+                                     from-account-props
+                                     user-props)
+              :recipient           recipient
+              :bridge-tx?          (= transaction-type :tx/bridge)
+              :account-to?         true
+              :theme               theme}]]]]]))))
