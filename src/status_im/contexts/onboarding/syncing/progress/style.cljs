@@ -1,6 +1,7 @@
 (ns status-im.contexts.onboarding.syncing.progress.style
   (:require
-    [quo.foundations.colors :as colors]))
+   [quo.foundations.colors :as colors]
+   [react-native.safe-area :as safe-area]))
 
 (def absolute-fill
   {:position :absolute
@@ -11,14 +12,16 @@
 
 (defn page-container
   [in-onboarding?]
-  {:flex             1
-   :position         :absolute
-   :top              0
-   :bottom           0
-   :left             0
-   :right            0
-   :padding-bottom   20
-   :background-color (when-not in-onboarding? colors/neutral-80-opa-80-blur)})
+  (let [{:keys [top bottom]} (safe-area/get-insets)]
+    {:flex             1
+     :position         :absolute
+     :top              0
+     :bottom           0
+     :left             0
+     :right            0
+     :padding-top      top
+     :padding-bottom   bottom
+     :background-color (when-not in-onboarding? colors/neutral-80-opa-80-blur)}))
 
 (defn page-illustration
   [width]
