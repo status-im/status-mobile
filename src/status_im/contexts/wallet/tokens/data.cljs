@@ -29,15 +29,13 @@
   [props]
   (tokens-by-key (assoc props
                         :key-fn
-                        (fn [{:keys [address]}]
-                          address))))
+                        (fn [{:keys [chainId address]}]
+                          (str chainId "-" address)))))
 
 (defn tokens-by-symbol
   [props]
   (tokens-by-key
    (assoc props
           :key-fn
-          (fn [{:keys [address] :as token}]
-            (if (get-in token [:communityData :id])
-              address
-              (:symbol token))))))
+          (fn [{:keys [chainId address] :as token}]
+            (str chainId "-" (if (get-in token [:communityData :id]) address (:symbol token)))))))

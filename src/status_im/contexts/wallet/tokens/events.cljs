@@ -20,35 +20,40 @@
 
 (defn store-token-list
   [{:keys [db]} [{:keys [data]}]]
-  (let [tokens (reduce (fn [{:keys [by-address by-symbol] :as data}
+  (let [chain-ids (chain/chain-ids db)
+        tokens    (reduce (fn [{:keys [by-address by-symbol] :as data}
                                {:keys [name source version tokens]}]
-                         (-> data
-                             (update :sources
-                                     conj
-                                     {:name         name
-                                      :source       source
-                                      :version      version
-                                      :tokens-count (count tokens)})
-                             (update :by-address
-                                     merge
-                                     (tokens-data/tokens-by-address
-                                      {:added-tokens by-address
-                                       :source-name  name
-                                       :tokens       tokens}))
-                             (update :by-symbol
-                                     merge
-                                     (tokens-data/tokens-by-symbol
-                                      {:added-tokens by-symbol
-                                       :source-name  name
-                                       :tokens       tokens}))))
-                       {:sources    []
-                        :by-address {}
-                        :by-symbol  {}}
-                       data)
-        symbols (->> tokens
-                     :by-symbol
-                     keys
-                     (remove utils.address/address?))]
+                            (-> data
+                                (update :sources
+                                        conj
+                                        {:name         name
+                                         :source       source
+                                         :version      version
+                                         :tokens-count (count tokens)})
+                                (update :by-address
+                                        merge
+                                        (tokens-data/tokens-by-address
+                                         {:added-tokens by-address
+                                          :source-name  name
+                                          :tokens       tokens
+                                          :chain-ids    chain-ids}))
+                                (update :by-symbol
+                                        merge
+                                        (tokens-data/tokens-by-symbol
+                                         {:added-tokens by-symbol
+                                          :source-name  name
+                                          :tokens       tokens
+                                          :chain-ids    chain-ids}))))
+                          {:sources    []
+                           :by-address {}
+                           :by-symbol  {}}
+                          data)
+        symbols   (->> tokens
+                       :by-symbol
+                       vals
+                       (map :symbol)
+                       set
+                       vec)]
     {:fx [[:effects.wallet.tokens/fetch-market-values
            {:symbols    symbols
             :currency   constants/profile-default-currency
