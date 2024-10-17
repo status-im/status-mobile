@@ -43,23 +43,38 @@
     :screen/onboarding.syncing-progress
     :screen/onboarding.syncing-progress-intro
     :screen/onboarding.syncing-results
-    :screen/onboarding.welcome})
+    :screen/onboarding.welcome
+
+    ;; Collectibles
+    :screen/wallet.collectible})
 
 (defn track-view-id-event
   [view-id]
   (when (contains? view-ids-to-track view-id)
     (navigation-event (name view-id))))
 
-(defn tracked-event
-  [[event-name second-parameter]]
-  (case event-name
+(defn navigated-to-collectibles-tab-event
+  [location]
+  (key-value-event "navigated-to-collectibles-tab" {:location location}))
+
+(defn metrics-event
+  [[rf-event-name rf-event-parameter]]
+  (case rf-event-name
     :profile/get-profiles-overview-success
     (user-journey-event app-started-event)
 
     :centralized-metrics/toggle-centralized-metrics
-    (key-value-event "events.metrics-enabled" {:enabled second-parameter})
+    (key-value-event "events.metrics-enabled" {:enabled rf-event-parameter})
 
     :set-view-id
-    (track-view-id-event second-parameter)
+    (track-view-id-event rf-event-parameter)
+
+    :wallet/select-account-tab
+    (when (= rf-event-parameter :collectibles)
+      (navigated-to-collectibles-tab-event :account))
+
+    :wallet/select-home-tab
+    (when (= rf-event-parameter :collectibles)
+      (navigated-to-collectibles-tab-event :home))
 
     nil))
