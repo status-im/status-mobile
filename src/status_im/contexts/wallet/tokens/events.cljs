@@ -50,8 +50,10 @@
                           data)
         symbols   (->> tokens
                        :by-symbol
-                       keys
-                       (remove utils.address/address?))]
+                       vals
+                       (map :symbol)
+                       set
+                       vec)]
     {:fx [[:effects.wallet.tokens/fetch-market-values
            {:symbols    symbols
             :currency   constants/profile-default-currency
