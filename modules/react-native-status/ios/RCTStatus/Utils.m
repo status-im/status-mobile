@@ -74,13 +74,22 @@ RCT_EXPORT_MODULE();
             URLsForDirectory:NSLibraryDirectory inDomains:NSUserDomainMask]
             lastObject];
 
-    NSURL *keyUID = [self getKeyStoreDirForKeyUID:accountData];
+    NSString *keyUID = [self getKeyUID:accountData];
     NSURL *oldKeystoreDir = [rootUrl URLByAppendingPathComponent:@"keystore"];
-    NSURL *multiaccountKeystoreDir = [self getKeyStoreDirForKeyUID:keyUID.path];
+    NSURL *multiaccountKeystoreDir = [self getKeyStoreDirForKeyUID:keyUID];
 
     NSArray *keys = [fileManager contentsOfDirectoryAtPath:multiaccountKeystoreDir.path error:nil];
     if (keys.count == 0) {
-        NSString *migrationResult = StatusgoMigrateKeyStoreDir(accountData, password, oldKeystoreDir.path, multiaccountKeystoreDir.path);
+        NSDictionary *params = @{
+            @"account": accountData,
+            @"password": password,
+            @"oldDir": oldKeystoreDir.path,
+            @"newDir": multiaccountKeystoreDir.path
+        };
+        NSData *jsonData = [NSJSONSerialization dataWithJSONObject:params options:0 error:nil];
+        NSString *jsonString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+        
+        NSString *migrationResult = StatusgoMigrateKeyStoreDirV2(jsonString);
         NSLog(@"keystore migration result %@", migrationResult);
 
         NSString *initKeystoreResult = StatusgoInitKeystore(multiaccountKeystoreDir.path);
@@ -110,9 +119,18 @@ RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(keystoreDir) {
 RCT_EXPORT_METHOD(validateMnemonic:(NSString *)seed
     callback:(RCTResponseSenderBlock)callback) {
     #if DEBUG
-        NSLog(@"validateMnemonic() method called");
+        NSLog(@"validateMnemonicV2() method called");
     #endif
-    NSString *result = StatusgoValidateMnemonic(seed);
+    NSDictionary *params = @{@"mnemonic": seed};
+    NSError *error;
+    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:params options:0 error:&error];
+    if (error) {
+        NSLog(@"Error creating JSON: %@", error);
+        callback(@[@"Error creating JSON"]);
+        return;
+    }
+    NSString *jsonString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+    NSString *result = StatusgoValidateMnemonicV2(jsonString);
     callback(@[result]);
 }
 
