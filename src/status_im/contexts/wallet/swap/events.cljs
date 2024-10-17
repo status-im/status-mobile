@@ -278,16 +278,11 @@
                                      (when result
                                        (let [receive-token-decimals (:decimals asset-to-receive)
                                              amount-out (:amount-out swap-proposal)
-                                             decimals-to-display
-                                             (min
-                                              receive-token-decimals
-                                              constants/min-token-decimals-to-display)
-                                             receive-amount (when amount-out
-                                                              (number/remove-trailing-zeroes
-                                                               (.toFixed (number/hex->whole
-                                                                          amount-out
-                                                                          receive-token-decimals)
-                                                                         decimals-to-display)))]
+                                             receive-amount
+                                             (when amount-out
+                                               (-> amount-out
+                                                   (number/hex->whole receive-token-decimals)
+                                                   (money/to-fixed receive-token-decimals)))]
                                          (rf/dispatch [:wallet.swap/add-authorized-transaction
                                                        (cond-> {:transaction result
                                                                 :approval-transaction?
@@ -368,12 +363,12 @@
                     :type (if transaction-confirmed? :positive :negative)
                     :text (if transaction-confirmed?
                             (i18n/label :t/spending-cap-set
-                                        {:amount        amount
+                                        {:token-amount  amount
                                          :token-symbol  token-symbol
                                          :provider-name provider-name
                                          :account-name  account-name})
                             (i18n/label :t/spending-cap-failed
-                                        {:amount        amount
+                                        {:token-amount  amount
                                          :token-symbol  token-symbol
                                          :provider-name provider-name
                                          :account-name  account-name}))}]]]}

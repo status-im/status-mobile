@@ -86,10 +86,12 @@
 (defn small-number-threshold
   "Receives a decimal count and returns a string like '<0.001' if the decimal count is 3,
    '<0.000001' if the decimal count is 6, etc."
-  [decimal-count]
-  (if (> decimal-count 0)
-    (str "<0." (apply str (repeat (dec decimal-count) "0")) "1")
-    "0"))
+  ([decimal-count]
+   (small-number-threshold decimal-count ""))
+  ([decimal-count currency-symbol]
+   (if (> decimal-count 0)
+     (str "<" currency-symbol "0." (apply str (repeat (dec decimal-count) "0")) "1")
+     (str currency-symbol "0"))))
 
 (defn valid-decimal-count?
   "Returns false if the number has more decimals than the decimal count, otherwise true."

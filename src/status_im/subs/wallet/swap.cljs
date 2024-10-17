@@ -143,14 +143,30 @@
  :<- [:wallet/swap-asset-to-receive]
  (fn [[amount-out asset-to-receive]]
    (let [receive-token-decimals (:decimals asset-to-receive)
-         receive-amount         (when amount-out
+         amount-out-whole       (when amount-out
                                   (number/hex->whole amount-out receive-token-decimals))
-         receive-amount         (when amount-out
-                                  (number/remove-trailing-zeroes
-                                   (.toFixed receive-amount
-                                             (min receive-token-decimals
-                                                  constants/min-token-decimals-to-display))))]
+         amount-out-num         (when amount-out-whole
+                                  (number/to-fixed amount-out-whole
+                                                   receive-token-decimals))
+         display-decimals       (min receive-token-decimals
+                                     constants/min-token-decimals-to-display)
+         receive-amount         (when amount-out-num
+                                  (utils/sanitized-token-amount-to-display amount-out-num
+                                                                           display-decimals))]
      (or receive-amount 0))))
+
+(rf/reg-sub
+ :wallet/swap-receive-amount-raw
+ :<- [:wallet/swap-proposal-amount-out]
+ :<- [:wallet/swap-asset-to-receive]
+ (fn [[amount-out asset-to-receive]]
+   (let [receive-token-decimals (:decimals asset-to-receive)
+         amount-out-whole       (when amount-out
+                                  (number/hex->whole amount-out receive-token-decimals))
+         amount-out-num         (when amount-out-whole
+                                  (number/to-fixed amount-out-whole
+                                                   receive-token-decimals))]
+     (or amount-out-num 0))))
 
 (rf/reg-sub
  :wallet/swap-pay-amount
@@ -158,14 +174,30 @@
  :<- [:wallet/swap-asset-to-pay]
  (fn [[amount-in asset-to-pay]]
    (let [pay-token-decimals (:decimals asset-to-pay)
-         pay-amount         (when amount-in
+         amount-in-whole    (when amount-in
                               (number/hex->whole amount-in pay-token-decimals))
-         pay-amount         (when amount-in
-                              (number/remove-trailing-zeroes
-                               (.toFixed pay-amount
-                                         (min pay-token-decimals
-                                              constants/min-token-decimals-to-display))))]
+         amount-in-num      (when amount-in-whole
+                              (number/to-fixed amount-in-whole
+                                               pay-token-decimals))
+         display-decimals   (min pay-token-decimals
+                                 constants/min-token-decimals-to-display)
+         pay-amount         (when amount-in-num
+                              (utils/sanitized-token-amount-to-display amount-in-num
+                                                                       display-decimals))]
      (or pay-amount 0))))
+
+(rf/reg-sub
+ :wallet/swap-pay-amount-raw
+ :<- [:wallet/swap-proposal-amount-in]
+ :<- [:wallet/swap-asset-to-pay]
+ (fn [[amount-in asset-to-pay]]
+   (let [pay-token-decimals (:decimals asset-to-pay)
+         amount-in-whole    (when amount-in
+                              (number/hex->whole amount-in pay-token-decimals))
+         amount-in-num      (when amount-in-whole
+                              (number/to-fixed amount-in-whole
+                                               pay-token-decimals))]
+     (or amount-in-num 0))))
 
 (rf/reg-sub
  :wallet/swap-proposal-provider
