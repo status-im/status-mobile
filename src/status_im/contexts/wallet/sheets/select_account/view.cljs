@@ -2,10 +2,12 @@
   (:require [quo.core :as quo]
             quo.theme
             [react-native.gesture :as gesture]
-            [status-im.contexts.wallet.common.utils :as wallet.utils]
+            [status-im.contexts.wallet.common.utils :as utils]
             [status-im.contexts.wallet.sheets.select-account.style :as style]
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]))
+
+(def ^:private rounding-decimals 4)
 
 (defn list-item
   [{:keys [account selected-account-address]}]
@@ -25,12 +27,14 @@
         token                          (->> tokens
                                             (filter #(= (:symbol %) asset-symbol))
                                             first)
-        token-balance                  (get-in token [:balances-per-chain (:chain-id network) :balance])]
+        chain-id                       (:chain-id network)
+        token-balance-display          (utils/token-balance-display-for-network token
+                                                                                chain-id
+                                                                                rounding-decimals)]
     [quo/account-item
      {:type                (if (= address selected-account-address) :default :tag)
       :token-props         {:symbol asset-symbol
-                            :value  (wallet.utils/cut-fiat-balance (or (js/parseFloat token-balance) 0)
-                                                                   4)}
+                            :value  token-balance-display}
       :account-props       (assoc account :customization-color color)
       :customization-color color
       :state               (if (= address selected-account-address) :selected :default)

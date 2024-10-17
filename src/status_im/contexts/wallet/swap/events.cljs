@@ -247,13 +247,12 @@
 
 (rf/reg-event-fx
  :wallet/clean-swap-proposal
- (fn [{:keys [db]} [{:keys [clean-approval-transaction?]}]]
-   (let [keys-to-dissoc (cond-> [:amount
-                                 :amount-hex
-                                 :last-request-uuid
+ (fn [{:keys [db]} [{:keys [clean-amounts? clean-approval-transaction?]}]]
+   (let [keys-to-dissoc (cond-> [:last-request-uuid
                                  :swap-proposal
                                  :error-response
                                  :loading-swap-proposal?]
+                          clean-amounts?              (conj :amount :amount-hex)
                           clean-approval-transaction? (conj :approval-transaction-id :approved-amount))]
      {:db (apply update-in db [:wallet :ui :swap] dissoc keys-to-dissoc)
       :fx [[:dispatch [:wallet/stop-get-swap-proposal]]]})))

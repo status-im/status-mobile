@@ -26,13 +26,14 @@
     [utils.string :as utils.string]))
 
 (def ^:private default-text-for-unfocused-input "0.00")
-(def ^:private default-token-symbol "ETH")
 
 (defn- on-close
   [start-point]
   (when (= start-point :action-menu)
     (rf/dispatch [:centralized-metrics/track :metric/swap-closed]))
-  (rf/dispatch [:wallet/clean-swap-proposal {:clean-approval-transaction? true}])
+  (rf/dispatch [:wallet/clean-swap-proposal
+                {:clean-amounts?              true
+                 :clean-approval-transaction? true}])
   (events-helper/navigate-back))
 
 (defn- fetch-swap-proposal
@@ -43,7 +44,8 @@
                                       :clean-approval-transaction? clean-approval-transaction?}]
                                     100)
     (rf/dispatch [:wallet/clean-swap-proposal
-                  {:clean-approval-transaction? clean-approval-transaction?}])))
+                  {:clean-amounts?              true
+                   :clean-approval-transaction? clean-approval-transaction?}])))
 
 (defn- data-item
   [{:keys [title subtitle size subtitle-icon subtitle-color on-press loading?]}]
@@ -90,47 +92,31 @@
   [{:keys [input-state on-max-press on-input-focus on-token-press on-approve-press input-focused?]}]
   (let [account-color                    (rf/sub [:wallet/current-viewing-account-color])
         network                          (rf/sub [:wallet/swap-network])
-        pay-token-symbol                 (:symbol (rf/sub [:wallet/swap-asset-to-pay]))
-        currency                         (rf/sub [:profile/currency])
+        pay-token-symbol                 (rf/sub [:wallet/swap-asset-to-pay-symbol])
+        pay-token-decimals               (rf/sub [:wallet/swap-asset-to-pay-decimals])
         loading-swap-proposal?           (rf/sub [:wallet/swap-loading-swap-proposal?])
         swap-proposal                    (rf/sub [:wallet/swap-proposal-without-fees])
         approval-required                (rf/sub [:wallet/swap-proposal-approval-required])
         approval-amount-required         (rf/sub [:wallet/swap-proposal-approval-amount-required])
-        currency-symbol                  (rf/sub [:profile/currency-symbol])
         approval-transaction-status      (rf/sub [:wallet/swap-approval-transaction-status])
         approval-transaction-id          (rf/sub [:wallet/swap-approval-transaction-id])
         approved-amount                  (rf/sub [:wallet/swap-approved-amount])
         error-response                   (rf/sub [:wallet/swap-error-response])
-        asset-to-pay                     (rf/sub [:wallet/token-by-symbol
-                                                  (or pay-token-symbol default-token-symbol)])
         overlay-shown?                   (boolean (:sheets (rf/sub [:bottom-sheet])))
         input-ref                        (rn/use-ref-atom nil)
         set-input-ref                    (rn/use-callback (fn [ref] (reset! input-ref ref)))
         pay-input-num-value              (controlled-input/value-numeric input-state)
         pay-input-amount                 (controlled-input/input-value input-state)
-        pay-token-decimals               (:decimals asset-to-pay)
-        pay-token-balance-selected-chain (number/convert-to-whole-number
-                                          (get-in asset-to-pay
-                                                  [:balances-per-chain
-                                                   (:chain-id network) :raw-balance]
-                                                  0)
-                                          pay-token-decimals)
-        pay-token-fiat-value             (utils/formatted-token-fiat-value
-                                          {:currency        currency
-                                           :currency-symbol currency-symbol
-                                           :balance         (or pay-input-num-value 0)
-                                           :token           asset-to-pay})
+        pay-token-balance-selected-chain (rf/sub [:wallet/swap-asset-to-pay-balance-for-chain
+                                                  (:chain-id network)])
+        pay-token-fiat-value             (rf/sub [:wallet/swap-asset-to-pay-amount-in-fiat
+                                                  pay-input-num-value])
         available-crypto-limit           (money/bignumber
                                           pay-token-balance-selected-chain)
         display-decimals                 (min pay-token-decimals
                                               constants/min-token-decimals-to-display)
-        available-crypto-limit-display   (number/remove-trailing-zeroes
-                                          (.toFixed available-crypto-limit display-decimals))
-        available-crypto-limit-display   (if (and (= available-crypto-limit-display "0")
-                                                  (money/greater-than available-crypto-limit
-                                                                      (money/bignumber 0)))
-                                           (number/small-number-threshold display-decimals)
-                                           available-crypto-limit-display)
+        available-crypto-limit-display   (rf/sub [:wallet/swap-asset-to-pay-balance-for-chain-ui
+                                                  (:chain-id network)])
         approval-amount-required-num     (when approval-amount-required
                                            (number/to-fixed (number/hex->whole
                                                              approval-amount-required
@@ -345,15 +331,12 @@
         asset-to-pay                                (rf/sub [:wallet/swap-asset-to-pay])
         asset-to-receive                            (rf/sub [:wallet/swap-asset-to-receive])
         network                                     (rf/sub [:wallet/swap-network])
+        pay-token-balance-selected-chain            (rf/sub [:wallet/swap-asset-to-pay-balance-for-chain
+                                                             (:chain-id network)])
         start-point                                 (rf/sub [:wallet/swap-start-point])
+        current-account-address                     (rf/sub [:wallet/current-viewing-account-address])
         pay-input-amount                            (controlled-input/input-value pay-input-state)
         pay-token-decimals                          (:decimals asset-to-pay)
-        pay-token-balance-selected-chain            (number/convert-to-whole-number
-                                                     (get-in asset-to-pay
-                                                             [:balances-per-chain
-                                                              (:chain-id network) :raw-balance]
-                                                             0)
-                                                     pay-token-decimals)
         pay-input-error?                            (and (not (string/blank? pay-input-amount))
                                                          (money/greater-than
                                                           (money/bignumber pay-input-amount)
@@ -392,7 +375,8 @@
                                                        (set-pay-input-state
                                                         controlled-input/delete-last)
                                                        (rf/dispatch [:wallet/clean-swap-proposal
-                                                                     {:clean-approval-transaction?
+                                                                     {:clean-amounts? true
+                                                                      :clean-approval-transaction?
                                                                       true}])))
         on-max-press                                (rn/use-callback
                                                      (fn [max-value]
@@ -443,8 +427,19 @@
                           on-refresh-swap-proposal
                           constants/swap-proposal-refresh-interval-ms))))
                    [swap-proposal error-response])
+    (rn/use-effect (fn []
+                     (rf/dispatch [:wallet/clean-swap-proposal
+                                   {:clean-amounts?              false
+                                    :clean-approval-transaction? true}])
+                     (when @refetch-interval
+                       (js/clearInterval @refetch-interval)
+                       (reset! refetch-interval nil))
+                     (refetch-swap-proposal))
+                   [current-account-address])
     (rn/use-unmount (fn []
-                      (rf/dispatch [:wallet/clean-swap-proposal {:clean-approval-transaction? true}])
+                      (rf/dispatch [:wallet/clean-swap-proposal
+                                    {:clean-amounts?              true
+                                     :clean-approval-transaction? true}])
                       (when @refetch-interval
                         (js/clearInterval @refetch-interval)
                         (reset! refetch-interval nil))))
