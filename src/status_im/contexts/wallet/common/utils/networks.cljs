@@ -66,13 +66,20 @@
 (defn network-list
   [{:keys [balances-per-chain]} networks]
   (->> balances-per-chain
-       (filter #(-> % second :raw-balance (money/greater-than 0)))
        keys
        (map (fn [chain-id]
               (first (filter #(or (= (:chain-id %) chain-id)
                                   (= (:related-chain-id %) chain-id))
                              networks))))
        set))
+
+(defn network-list-with-positive-balance
+  "Same as `network-list`, but only returns the networks that have a positive token balance"
+  [{:keys [balances-per-chain] :as token} networks]
+  (as-> balances-per-chain $
+    (filter #(-> % second :raw-balance (money/greater-than 0)) $)
+    (assoc token :balances-per-chain $)
+    (network-list $ networks)))
 
 (defn get-default-chain-ids-by-mode
   [{:keys [test-networks-enabled? is-goerli-enabled?]}]
