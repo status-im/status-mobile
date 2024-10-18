@@ -16,7 +16,7 @@
   "
   [{:keys [holder-name locked?]}]
   (let [theme (quo.theme/use-theme)
-        label (if (boolean holder-name)
+        label (if holder-name
                 (i18n/label :t/user-keycard {:name holder-name})
                 (i18n/label :t/empty-keycard))]
     [rn/view {:style (style/card-container locked? theme)}
