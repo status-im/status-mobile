@@ -74,6 +74,14 @@ RCT_EXPORT_MODULE();
             URLsForDirectory:NSLibraryDirectory inDomains:NSUserDomainMask]
             lastObject];
 
+    NSData *jsonData = [accountData dataUsingEncoding:NSUTF8StringEncoding];
+    NSError *error;
+    NSDictionary *accountJson = [NSJSONSerialization JSONObjectWithData:jsonData options:0 error:&error];
+    if (error) {
+        NSLog(@"Error parsing accountData: %@", error);
+        return;
+    }
+
     NSString *keyUID = [self getKeyUID:accountData];
     NSURL *oldKeystoreDir = [rootUrl URLByAppendingPathComponent:@"keystore"];
     NSURL *multiaccountKeystoreDir = [self getKeyStoreDirForKeyUID:keyUID];
@@ -81,13 +89,17 @@ RCT_EXPORT_MODULE();
     NSArray *keys = [fileManager contentsOfDirectoryAtPath:multiaccountKeystoreDir.path error:nil];
     if (keys.count == 0) {
         NSDictionary *params = @{
-            @"account": accountData,
+            @"account": accountJson,
             @"password": password,
             @"oldDir": oldKeystoreDir.path,
             @"newDir": multiaccountKeystoreDir.path
         };
-        NSData *jsonData = [NSJSONSerialization dataWithJSONObject:params options:0 error:nil];
-        NSString *jsonString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+        NSData *paramsJsonData = [NSJSONSerialization dataWithJSONObject:params options:0 error:&error];
+        if (error) {
+            NSLog(@"Error creating params JSON: %@", error);
+            return;
+        }
+        NSString *jsonString = [[NSString alloc] initWithData:paramsJsonData encoding:NSUTF8StringEncoding];
         
         NSString *migrationResult = StatusgoMigrateKeyStoreDirV2(jsonString);
         NSLog(@"keystore migration result %@", migrationResult);
