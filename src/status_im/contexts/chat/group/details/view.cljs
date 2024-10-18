@@ -1,4 +1,4 @@
-(ns status-im.contexts.chat.group-details.view
+(ns status-im.contexts.chat.group.details.view
   (:require
     [quo.core :as quo]
     [quo.foundations.colors :as colors]
@@ -11,7 +11,7 @@
     [status-im.common.contact-list.view :as contact-list]
     [status-im.common.home.actions.view :as actions]
     [status-im.constants :as constants]
-    [status-im.contexts.chat.group-details.style :as style]
+    [status-im.contexts.chat.group.details.style :as style]
     [status-im.feature-flags :as ff]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
@@ -123,9 +123,9 @@
   [_]
   [rn/view {:style {:height 8}}])
 
-(defn group-details
+(defn view
   []
-  (let [chat-id         (rf/sub [:get-screen-params :group-details])
+  (let [chat-id         (rf/sub [:get-screen-params :screen/group-details])
         {:keys [admins chat-id chat-name color muted contacts image]
          :as   group}   (rf/sub [:chats/chat-by-id chat-id])
         members         (rf/sub [:contacts/group-members-sections chat-id])

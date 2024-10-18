@@ -6,8 +6,9 @@
     [status-im.common.enter-seed-phrase.view :as enter-seed-phrase]
     [status-im.common.lightbox.view :as lightbox]
     [status-im.config :as config]
-    [status-im.contexts.chat.group-create.view :as group-create]
-    [status-im.contexts.chat.group-details.view :as group-details]
+    [status-im.contexts.chat.group.create.view :as group.create]
+    [status-im.contexts.chat.group.details.view :as group.details]
+    [status-im.contexts.chat.group.update.view :as group.update]
     [status-im.contexts.chat.home.add-new-contact.scan.scan-profile-qr-page :as scan-profile-qr-page]
     [status-im.contexts.chat.home.add-new-contact.views :as add-new-contact]
     [status-im.contexts.chat.home.new-chat.view :as new-chat]
@@ -172,15 +173,20 @@
 
     {:name      :group-add-manage-members
      :options   {:sheet? true}
-     :component group-details/add-manage-members}
+     :component group.details/add-manage-members}
 
-    {:name      :group-create
+    {:name      :screen/group-create
      :options   {:sheet?           true
                  :skip-background? true}
-     :component group-create/view}
+     :component group.create/view}
 
-    {:name      :group-details
-     :component group-details/group-details}
+    {:name      :screen/group-update
+     :options   {:sheet?           true
+                 :skip-background? true}
+     :component group.update/view}
+
+    {:name      :screen/group-details
+     :component group.details/view}
 
     {:name      :community-requests-to-join
      :options   {:sheet? true}
