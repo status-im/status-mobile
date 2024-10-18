@@ -15,13 +15,14 @@
 
 (defn page-title
   [pairing-progress?]
-  [quo/page-top {:title            (i18n/label (if pairing-progress?
-                                                 :t/sync-devices-title
-                                                 :t/sync-devices-error-title))
-                 :description      :text
-                 :description-text (i18n/label (if pairing-progress?
-                                                 :t/sync-devices-sub-title
-                                                 :t/sync-devices-error-sub-title))}])
+  [quo/page-top
+   {:title            (i18n/label (if pairing-progress?
+                                    :t/sync-devices-title
+                                    :t/sync-devices-error-title))
+    :description      :text
+    :description-text (i18n/label (if pairing-progress?
+                                    :t/sync-devices-sub-title
+                                    :t/sync-devices-error-sub-title))}])
 
 (defn- navigate-to-enter-seed-phrase
   []
@@ -61,9 +62,10 @@
                                  :button-one-props recovery-phrase-props
                                  :button-two-label try-again-label
                                  :button-two-props try-again-props})]
-    [quo/bottom-actions (assoc buttons
-                          :actions number-of-actions
-                          :blur? true)]))
+    [quo/bottom-actions
+     (assoc buttons
+            :actions number-of-actions
+            :blur?   true)]))
 
 (defn- illustration
   [pairing-progress?]

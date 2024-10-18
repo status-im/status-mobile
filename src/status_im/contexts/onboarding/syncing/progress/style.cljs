@@ -1,7 +1,7 @@
 (ns status-im.contexts.onboarding.syncing.progress.style
   (:require
-   [quo.foundations.colors :as colors]
-   [react-native.safe-area :as safe-area]))
+    [quo.foundations.colors :as colors]
+    [react-native.safe-area :as safe-area]))
 
 (def absolute-fill
   {:position :absolute
