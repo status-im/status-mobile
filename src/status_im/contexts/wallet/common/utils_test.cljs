@@ -168,3 +168,30 @@
           expected-order ["DAI" "ETH" "SNT"]]
       (is (= expected-order sorted-tokens)))))
 
+(deftest formatted-token-fiat-value-test
+  (testing "formatted-token-fiat-value function"
+    (let [default-params {:currency        "USD"
+                          :currency-symbol "$"
+                          :balance         0.5
+                          :token           {:market-values-per-currency {:usd {:price 2000}}}}]
+      (is (= (utils/formatted-token-fiat-value default-params) "$1000"))
+      (is (= (utils/formatted-token-fiat-value (assoc default-params :balance 0)) "$0"))
+      (is (= (utils/formatted-token-fiat-value (assoc default-params :balance 0.000001)) "<$0.01"))
+      (is (= (utils/formatted-token-fiat-value (assoc default-params :balance nil)) "$0"))
+      (is (= (utils/formatted-token-fiat-value
+              (assoc default-params :balance 1 :token {:market-values-per-currency {:usd {:price nil}}}))
+             "$0"))
+      (is (= (utils/formatted-token-fiat-value
+              (assoc default-params :balance 1 :token {:market-values-per-currency {:usd {:price 0}}}))
+             "$0")))))
+
+(deftest sanitized-token-amount-to-display-test
+  (testing "sanitized-token-amount-to-display function"
+    (is (= (utils/sanitized-token-amount-to-display 1.2345 2) "1.23"))
+    (is (= (utils/sanitized-token-amount-to-display 0.0001 3) "<0.001"))
+    (is (= (utils/sanitized-token-amount-to-display 0.00001 3) "<0.001"))
+    (is (= (utils/sanitized-token-amount-to-display 0 2) "0"))
+    (is (= (utils/sanitized-token-amount-to-display 123.456789 4) "123.4568"))
+    (is (= (utils/sanitized-token-amount-to-display 0.00000123 6) "0.000001"))
+    (is (= (utils/sanitized-token-amount-to-display nil 2) "0"))
+    (is (= (utils/sanitized-token-amount-to-display "invalid" 2) "0"))))

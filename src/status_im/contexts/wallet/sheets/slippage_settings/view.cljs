@@ -4,6 +4,7 @@
             [react-native.core :as rn]
             [react-native.platform :as platform]
             [status-im.constants :as constants]
+            [status-im.contexts.wallet.common.utils :as utils]
             [status-im.contexts.wallet.sheets.slippage-settings.style :as style]
             [utils.i18n :as i18n]
             [utils.money :as money]
@@ -43,15 +44,18 @@
   (let [receive-token-decimals    (:decimals asset-to-receive)
         amount-out-whole-number   (number/hex->whole amount-out receive-token-decimals)
         amount-out-num            (number/to-fixed amount-out-whole-number
-                                                   (min constants/min-token-decimals-to-display
-                                                        receive-token-decimals))
+                                                   receive-token-decimals)
         slippage-num              (-> (money/bignumber amount-out-num)
                                       (money/mul (money/bignumber max-slippage))
                                       (money/div (money/bignumber 100)))
         amount-out-minus-slippage (money/sub (money/bignumber amount-out-num) slippage-num)
+        display-decimals          (min receive-token-decimals
+                                       constants/min-token-decimals-to-display)
         receive-amount            (if (money/greater-than amount-out-minus-slippage
                                                           (money/bignumber 0))
-                                    (str amount-out-minus-slippage)
+                                    (str (utils/sanitized-token-amount-to-display
+                                          amount-out-minus-slippage
+                                          display-decimals))
                                     0)]
     receive-amount))
 
