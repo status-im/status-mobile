@@ -1,4 +1,4 @@
-(ns status-im.contexts.keycard.nfc-sheet.view
+(ns status-im.contexts.keycard.nfc.sheets.view
   (:require [quo.foundations.colors :as colors]
             quo.theme
             [react-native.core :as rn]
