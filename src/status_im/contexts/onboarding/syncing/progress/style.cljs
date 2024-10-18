@@ -12,16 +12,15 @@
 
 (defn page-container
   [in-onboarding?]
-  (let [{:keys [top bottom]} (safe-area/get-insets)]
-    {:flex             1
-     :position         :absolute
-     :top              0
-     :bottom           0
-     :left             0
-     :right            0
-     :padding-top      top
-     :padding-bottom   bottom
-     :background-color (when-not in-onboarding? colors/neutral-80-opa-80-blur)}))
+  {:flex             1
+   :position         :absolute
+   :top              0
+   :bottom           0
+   :left             0
+   :right            0
+   :padding-top      (safe-area/get-top)
+   :padding-bottom   20
+   :background-color (when-not in-onboarding? colors/neutral-80-opa-80-blur)})
 
 (defn page-illustration
   [width]

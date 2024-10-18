@@ -39,8 +39,7 @@
 
 (defn try-again-button
   [profile-color logged-in?]
-  (let [logged-in? false
-        number-of-actions     (if logged-in? :one-action :two-actions)
+  (let [number-of-actions     (if logged-in? :one-action :two-actions)
         try-again-label       (i18n/label :t/try-again)
         try-again-props       {:type                (if logged-in? :primary :grey)
                                :accessibility-label :try-again-later-button
@@ -79,7 +78,7 @@
   [in-onboarding?]
   (let [pairing-status    (rf/sub [:pairing/pairing-status])
         logged-in?        (rf/sub [:multiaccount/logged-in?])
-        pairing-progress? false ;(pairing-progress pairing-status)
+        pairing-progress? (pairing-progress pairing-status)
         profile-color     (or (:color (rf/sub [:onboarding/profile]))
                               (rf/sub [:profile/customization-color]))]
     [rn/view {:style (style/page-container in-onboarding?)}
