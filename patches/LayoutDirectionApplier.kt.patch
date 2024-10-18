@@ -1,0 +1,21 @@
+--- /tmp/tmp-status-mobile-65370082b/tmp.XzSnIl2ZkE/LayoutDirectionApplier.kt	2024-09-16 22:59:38.120152000 +0530
++++ ./node_modules/react-native-navigation/lib/android/app/src/main/java/com/reactnativenavigation/viewcontrollers/viewcontroller/LayoutDirectionApplier.kt	2024-09-16 22:59:43.857140365 +0530
+@@ -6,10 +6,12 @@
+ 
+ class LayoutDirectionApplier {
+     fun apply(root: ViewController<*>, options: Options, instanceManager: ReactInstanceManager) {
+-        if (options.layout.direction.hasValue() && instanceManager.currentReactContext != null) {
+-            root.activity.window.decorView.layoutDirection = options.layout.direction.get()
+-            I18nUtil.getInstance().allowRTL(instanceManager.currentReactContext, options.layout.direction.isRtl)
+-            I18nUtil.getInstance().forceRTL(instanceManager.currentReactContext, options.layout.direction.isRtl)
++        if (options.layout.direction.hasValue()) {
++            instanceManager.currentReactContext?.let { context ->
++                root.activity.window.decorView.layoutDirection = options.layout.direction.get()
++                I18nUtil.getInstance().allowRTL(context, options.layout.direction.isRtl)
++                I18nUtil.getInstance().forceRTL(context, options.layout.direction.isRtl)
++            }
+         }
+     }
+-}
+\ No newline at end of file
++}

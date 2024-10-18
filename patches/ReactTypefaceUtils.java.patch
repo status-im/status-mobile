@@ -1,0 +1,25 @@
+--- /tmp/tmp-status-mobile-65370082b/tmp.RFxwFry0k1/ReactTypefaceUtils.java	2024-09-17 09:52:39.699257000 +0530
++++ ./node_modules/react-native-navigation/lib/android/app/src/main/java/com/reactnativenavigation/utils/ReactTypefaceUtils.java	2024-09-17 09:53:01.232883405 +0530
+@@ -20,6 +20,7 @@
+ import com.facebook.react.bridge.ReadableArray;
+ import com.facebook.react.views.text.ReactFontManager;
+ import com.facebook.react.views.text.ReactTextShadowNode;
++import com.facebook.react.common.ReactConstants;
+ import java.util.ArrayList;
+ import java.util.List;
+
+@@ -96,12 +97,12 @@
+
+     int want = 0;
+     if ((weight == Typeface.BOLD)
+-        || ((oldStyle & Typeface.BOLD) != 0 && weight == ReactTextShadowNode.UNSET)) {
++        || ((oldStyle & Typeface.BOLD) != 0 && weight == ReactConstants.UNSET)) {
+       want |= Typeface.BOLD;
+     }
+
+     if ((style == Typeface.ITALIC)
+-        || ((oldStyle & Typeface.ITALIC) != 0 && style == ReactTextShadowNode.UNSET)) {
++        || ((oldStyle & Typeface.ITALIC) != 0 && style == ReactConstants.UNSET)) {
+       want |= Typeface.ITALIC;
+     }
+
