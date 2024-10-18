@@ -59,6 +59,10 @@
  (fn [{:keys [db]} [tab]]
    {:db (assoc-in db [:wallet :ui :account-page :active-tab] tab)}))
 
+(rf/reg-event-fx :wallet/select-home-tab
+ (fn [{:keys [db]} [tab]]
+   {:db (assoc-in db [:wallet :ui :active-tab] tab)}))
+
 (rf/reg-event-fx :wallet/clear-account-tab
  (fn [{:keys [db]}]
    {:db (assoc-in db [:wallet :ui :account-page :active-tab] nil)}))
