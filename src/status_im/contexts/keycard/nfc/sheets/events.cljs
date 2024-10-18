@@ -1,4 +1,4 @@
-(ns status-im.contexts.keycard.nfc-sheet.events
+(ns status-im.contexts.keycard.nfc.sheets.events
   (:require [re-frame.core :as rf]
             [react-native.platform :as platform]
             [taoensso.timbre :as log]))

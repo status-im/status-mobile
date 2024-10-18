@@ -1,5 +1,6 @@
 (ns status-im.contexts.profile.profiles.view
   (:require
+    [clojure.string :as string]
     [native-module.core :as native-module]
     [quo.core :as quo]
     [react-native.core :as rn]
@@ -182,7 +183,7 @@
        :render-fn               profile-card}]]))
 
 (defn password-input
-  []
+  [processing error]
   (let [auth-method         (rf/sub [:auth-method])
         on-press-biometrics (fn []
                               (rf/dispatch [:biometric/authenticate
@@ -193,18 +194,31 @@
                                                             %])}]))]
 
     [standard-authentication/password-input
-     {:shell?              true
+     {:processing          processing
+      :error               error
+      :shell?              true
       :blur?               true
       :on-press-biometrics (when (= auth-method constants/auth-method-biometric) on-press-biometrics)}]))
 
+(defn- get-error-message
+  [error]
+  (if (and (some? error)
+           (or (= error "file is not a database")
+               (string/starts-with? (string/lower-case error) "failed")))
+    (i18n/label :t/oops-wrong-password)
+    error))
+
 (defn login-section
   [{:keys [show-profiles]}]
-  (let [processing                    (rf/sub [:profile/login-processing])
-        {:keys [key-uid name keycard-pairing
+  (let [{:keys [key-uid name keycard-pairing
                 customization-color]} (rf/sub [:profile/login-profile])
         sign-in-enabled?              (rf/sub [:sign-in-enabled?])
         profile-picture               (rf/sub [:profile/login-profiles-picture key-uid])
-        login-multiaccount            (rn/use-callback #(rf/dispatch [:profile.login/login]))]
+        {:keys [error processing]}    (rf/sub [:profile/login])
+        error-message                 (rn/use-memo #(get-error-message error) [error])
+        error                         {:error?        (boolean (seq error-message))
+                                       :error-message error-message}
+        login-profile                 (rn/use-callback #(rf/dispatch [:profile.login/login]))]
     [rn/keyboard-avoiding-view
      {:style                    style/login-container
       :keyboard-vertical-offset (- (safe-area/get-bottom))}
@@ -239,17 +253,20 @@
         :card-style          style/login-profile-card}]
       (if keycard-pairing
         [keycard.pin/auth
-         {:on-complete
-          (fn [pin-text]
+         {:error error
+          :on-complete
+          (fn [pin]
             (rf/dispatch
              [:keycard/connect
-              {:key-uid       key-uid
-               :on-success-fx [[:effects.keycard/get-keys
-                                {:pin        pin-text
-                                 :on-success #(rf/dispatch [:keycard.login/on-get-keys-success %])
-                                 :on-failure #(rf/dispatch [:keycard/on-action-with-pin-error
-                                                            %])}]]}]))}]
-        [password-input])]
+              {:key-uid key-uid
+               :on-success
+               (fn []
+                 (rf/dispatch
+                  [:keycard/get-keys
+                   {:pin        pin
+                    :on-success #(rf/dispatch [:keycard.login/on-get-keys-success %])
+                    :on-failure #(rf/dispatch [:keycard/on-action-with-pin-error %])}]))}]))}]
+        [password-input processing error])]
      (when-not keycard-pairing
        [quo/button
         {:size                40
@@ -258,7 +275,7 @@
          :accessibility-label :login-button
          :icon-left           :i/unlocked
          :disabled?           (or (not sign-in-enabled?) processing)
-         :on-press            login-multiaccount
+         :on-press            login-profile
          :container-style     {:margin-bottom (+ (safe-area/get-bottom) 12)}}
         (i18n/label :t/log-in)])]))
 

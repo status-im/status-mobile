@@ -69,12 +69,6 @@
                  transitions/new-to-status-modal-animations
                  transitions/push-animations-for-transparent-background)}))
 
-(def keycard-modal-screen-options
-  (assoc transparent-modal-screen-options
-         :layout nil
-         :theme  :dark
-         :insets {:top? true :bottom? true}))
-
 (def sheet-options
   {:layout                 {:componentBackgroundColor :transparent
                             :orientation              ["portrait"]

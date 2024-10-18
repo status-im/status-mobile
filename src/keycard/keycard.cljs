@@ -3,8 +3,7 @@
     ["react-native" :as rn]
     ["react-native-status-keycard" :default status-keycard]
     [react-native.platform :as platform]
-    [taoensso.timbre :as log]
-    [utils.address :as address]))
+    [taoensso.timbre :as log]))
 
 (defonce event-emitter
   (if platform/ios?
@@ -94,22 +93,14 @@
   [{:keys [on-success on-failure]}]
   (.. status-keycard
       (getApplicationInfo)
-      (then (fn [response]
-              (let [info (-> response
-                             (js->clj :keywordize-keys true)
-                             (update :key-uid address/normalized-hex))]
-                (on-success info))))
+      (then on-success)
       (catch on-failure)))
 
 (defn factory-reset
   [{:keys [on-success on-failure]}]
   (.. status-keycard
       (factoryReset)
-      (then (fn [response]
-              (let [info (-> response
-                             (js->clj :keywordize-keys true)
-                             (update :key-uid address/normalized-hex))]
-                (on-success info))))
+      (then on-success)
       (catch on-failure)))
 
 (defn install-applet
@@ -152,6 +143,13 @@
   [{:keys [mnemonic pin on-success on-failure]}]
   (.. status-keycard
       (generateAndLoadKey mnemonic pin)
+      (then on-success)
+      (catch on-failure)))
+
+(defn save-mnemonic
+  [{:keys [mnemonic pin on-success on-failure]}]
+  (.. status-keycard
+      (saveMnemonic mnemonic pin)
       (then on-success)
       (catch on-failure)))
 

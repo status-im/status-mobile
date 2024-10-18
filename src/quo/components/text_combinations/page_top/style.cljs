@@ -8,8 +8,7 @@
 
 (def header
   {:flex-direction  :row
-   :justify-content :space-between
-   :height          32})
+   :justify-content :space-between})
 
 (def header-title
   {:flex           1
