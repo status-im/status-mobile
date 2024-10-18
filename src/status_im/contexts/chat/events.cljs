@@ -9,7 +9,7 @@
     [status-im.constants :as constants]
     [status-im.contexts.chat.contacts.events :as contacts-store]
     status-im.contexts.chat.effects
-    status-im.contexts.chat.group-create.events
+    status-im.contexts.chat.group.events
     [status-im.contexts.chat.messenger.composer.link-preview.events :as link-preview]
     status-im.contexts.chat.messenger.messages.content.reactions.events
     [status-im.contexts.chat.messenger.messages.delete-message-for-me.events :as delete-for-me]
