@@ -7,6 +7,7 @@ import com.facebook.react.bridge.Callback;
 import android.util.Log;
 import statusgo.Statusgo;
 import org.json.JSONException;
+import org.json.JSONObject;
 import java.util.function.Function;
 import android.app.Activity;
 import android.view.WindowManager;

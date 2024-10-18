@@ -70,7 +70,7 @@ class Utils(private val reactContext: ReactApplicationContext) : ReactContextBas
             if (!keydirFile.exists() || keydirFile.list().isEmpty()) {
                 Log.d(TAG, "migrateKeyStoreDir")
                 val jsonParams = JSONObject()
-                jsonParams.put("account", new JSONObject(accountData))
+                jsonParams.put("account", JSONObject(accountData)) // Remove 'new' keyword
                 jsonParams.put("password", password)
                 jsonParams.put("oldDir", commonKeydir)
                 jsonParams.put("newDir", keydir)

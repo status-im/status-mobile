@@ -9,6 +9,7 @@ import statusgo.SignalHandler
 import statusgo.Statusgo
 import org.json.JSONException
 import android.view.WindowManager
+import org.json.JSONObject
 
 class StatusModule(private val reactContext: ReactApplicationContext, private val rootedDevice: Boolean) : ReactContextBaseJavaModule(reactContext), LifecycleEventListener, SignalHandler {
 
