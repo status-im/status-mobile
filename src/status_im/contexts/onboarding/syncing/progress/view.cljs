@@ -39,7 +39,8 @@
 
 (defn try-again-button
   [profile-color logged-in?]
-  (let [number-of-actions     (if logged-in? :one-action :two-actions)
+  (let [logged-in? false
+        number-of-actions     (if logged-in? :one-action :two-actions)
         try-again-label       (i18n/label :t/try-again)
         try-again-props       {:type                (if logged-in? :primary :grey)
                                :accessibility-label :try-again-later-button
