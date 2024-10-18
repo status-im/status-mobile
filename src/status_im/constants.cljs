@@ -579,6 +579,7 @@
 (def ^:const sheet-screen-handle-height 20)
 
 (def ^:const status-hostname "status.app")
+(def ^:const get-keycard-url "https://get.keycard.tech/")
 
 (def ^:const community-joined-notification-type "communityJoined")
 
