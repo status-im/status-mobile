@@ -294,10 +294,7 @@
                                                                  :receive-token-symbol token-id-to
                                                                  :receive-amount receive-amount}))])
                                          (rf/dispatch [:hide-bottom-sheet])
-                                         (rf/dispatch [:dismiss-modal
-                                                       (if approval-required?
-                                                         :screen/wallet.swap-set-spending-cap
-                                                         :screen/wallet.swap-confirmation)])
+                                         (rf/dispatch [:wallet/end-swap-flow])
                                          (when-not approval-required?
                                            (debounce/debounce-and-dispatch
                                             [:toasts/upsert
@@ -424,3 +421,11 @@
                                   :last-request-uuid
                                   :approved-amount
                                   :approval-transaction-id)))})))
+
+(rf/reg-event-fx :wallet/end-swap-flow
+ (fn [{:keys [db]}]
+   (let [address (get-in db [:wallet :current-viewing-account-address])]
+     {:fx [[:dispatch [:dismiss-modal :screen/wallet.swap-select-asset-to-pay]]
+           [:dispatch [:wallet/navigate-to-account-within-stack address]]
+           [:dispatch [:wallet/fetch-activities-for-current-account]]
+           [:dispatch [:wallet/select-account-tab :activity]]]})))
