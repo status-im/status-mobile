@@ -36,7 +36,7 @@
      {:holes     [{:x                       0
                    :y                       0
                    :height                  style/top-hole-view-height
-                   :width                   container-width
+                   :width                   (int container-width)
                    :borderBottomStartRadius 16
                    :borderBottomEndRadius   16}]
       :style     {:margin-top (- style/top-hole-view-height)}
