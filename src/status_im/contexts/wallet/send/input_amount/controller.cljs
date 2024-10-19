@@ -3,6 +3,7 @@
     [status-im.common.controlled-input.utils :as controlled-input]
     [status-im.contexts.wallet.common.utils :as utils]
     [utils.money :as money]
+    [utils.number :as number]
     [utils.re-frame :as rf]))
 
 ;; notes
@@ -82,16 +83,59 @@
           conversion-rate)
          utils/cut-fiat-balance-to-two-decimals))))
 
+(rf/reg-sub
+ :send-input-amount-screen/amount-in-crypto
+ :<- [:send-input-amount-screen/controller]
+ :<- [:send-input-amount-screen/currency-information]
+ (fn [[{:keys [crypto-currency? input-state]}
+       {:keys [conversion-rate token-decimals]}]]
+   (let [input-value (controlled-input/input-value input-state)]
+     (if crypto-currency?
+       input-value
+       (number/remove-trailing-zeroes
+        (.toFixed (/ input-value conversion-rate)
+                  token-decimals))))))
+
+(rf/reg-sub
+ :send-input-amount-screen/token-input-converted-value
+ :<- [:send-input-amount-screen/controller]
+ :<- [:send-input-amount-screen/currency-information]
+ (fn [[{:keys [crypto-currency? input-state]}
+       {:keys [conversion-rate currency-symbol token-symbol]}]]
+   (let [input-value (controlled-input/input-value input-state)]
+     (if crypto-currency?
+       (utils/prettify-balance
+        currency-symbol
+        (money/crypto->fiat input-value
+                            conversion-rate))
+       (utils/prettify-crypto-balance
+        (or (clj->js token-symbol) "")
+        (money/fiat->crypto input-value
+                            conversion-rate)
+        conversion-rate)))))
+
 
 
 (rf/reg-sub
  :send-input-amount-screen/data
  :<- [:send-input-amount-screen/controller]
  :<- [:send-input-amount-screen/max-limit]
- (fn [[{:keys [crypto-currency? input-state] :as controller} max-limit]]
-   {:crypto-currency? crypto-currency?
-    :max-limit        max-limit
-    :input-state      input-state
+ :<- [:send-input-amount-screen/amount-in-crypto]
+ :<- [:send-input-amount-screen/token-input-converted-value]
+ (fn [[{:keys [crypto-currency? input-state] :as controller}
+       max-limit
+       amount-in-crypto
+       token-input-converted-value]]
+   {:crypto-currency?            crypto-currency?
+    :max-limit                   max-limit
+    :input-state                 input-state
+    :input-value                 (controlled-input/input-value input-state)
+    :input-error                 (controlled-input/input-error input-state)
+    :valid-input?                (not (or (controlled-input/empty-value? input-state)
+                                          (controlled-input/input-error input-state)))
+    :limit-exceeded?             (controlled-input/upper-limit-exceeded? input-state)
+    :amount-in-crypto            amount-in-crypto
+    :token-input-converted-value token-input-converted-value
    }))
 
 
@@ -102,6 +146,7 @@
  :send-input-amount-screen/swap-between-fiat-and-crypto
  (fn [{:keys [db]}]
    {:db (update-in db [:layers :ui :send :input-amount-screen :controller :crypto-currency?] not)}))
+
 
 (rf/reg-event-fx
  :send-input-amount-screen/set-input-state
@@ -114,6 +159,7 @@
 (comment
   (rf/dispatch [:send-input-amount-screen/swap-between-fiat-and-crypto])
   (rf/sub [:send-input-amount-screen/max-limit])
+  (rf/sub [:send-input-amount-screen/amount-in-crypto])
   (rf/sub [:send-input-amount-screen/data])
   (rf/sub [:send-input-amount-screen/controller])
 
@@ -124,27 +170,3 @@
          :token           (:token (rf/sub [:send-input-amount-screen/currency-information]))})
 
 )
-
-#_(rf/reg-sub
-   :wallet/wallet-send-enough-assets?
-   :<- [:wallet/wallet-send]
-   :-> :enough-assets?)
-
-#_(rf/reg-sub
-   :wallet/wallet-send-token
-   :<- [:wallet/wallet-send]
-   :<- [:wallet/network-details]
-   :<- [:wallet/wallet-send-disabled-from-chain-ids]
-   (fn [[wallet-send networks disabled-from-chain-ids]]
-     (let [token                    (:token wallet-send)
-           disabled-from-chain-ids? (set disabled-from-chain-ids)
-           enabled-from-chain-ids   (->> networks
-                                         (map :chain-id)
-                                         (remove disabled-from-chain-ids?)
-                                         set)]
-       (some-> token
-               (assoc :networks          (network-utils/network-list token networks)
-                      :available-balance (utils/calculate-total-token-balance token)
-                      :total-balance     (utils/calculate-total-token-balance
-                                          token
-                                          enabled-from-chain-ids))))))

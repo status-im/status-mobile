@@ -11,6 +11,7 @@
     [status-im.contexts.wallet.common.account-switcher.view :as account-switcher]
     [status-im.contexts.wallet.common.asset-list.view :as asset-list]
     [status-im.contexts.wallet.common.utils :as utils]
+    [status-im.contexts.wallet.send.input-amount.controller]
     [status-im.contexts.wallet.send.input-amount.style :as style]
     [status-im.contexts.wallet.send.routes.view :as routes]
     [status-im.contexts.wallet.sheets.buy-token.view :as buy-token]
@@ -227,7 +228,13 @@
     from-enabled-networks  :from-enabled-networks}]
   (let [{:keys [crypto-currency?
                 max-limit
-                input-state]
+                input-state
+                input-value
+                input-error
+                valid-input?
+                limit-exceeded?
+                amount-in-crypto
+                token-input-converted-value]
          :as   state} (rf/sub [:send-input-amount-screen/data])
         view-id (rf/sub [:view-id])
         active-screen? (= view-id current-screen-id)
@@ -262,17 +269,10 @@
                          [:wallet/wallet-send-loading-suggested-routes?])
         route (rf/sub [:wallet/wallet-send-route])
         on-confirm (or default-on-confirm handle-on-confirm)
-        input-value (controlled-input/input-value input-state)
-        valid-input? (not (or (controlled-input/empty-value? input-state)
-                              (controlled-input/input-error input-state)))
+
         confirm-disabled? (or (nil? route)
                               (empty? route)
                               (not valid-input?))
-        amount-in-crypto (if crypto-currency?
-                           input-value
-                           (number/remove-trailing-zeroes
-                            (.toFixed (/ input-value conversion-rate)
-                                      token-decimals)))
         total-amount-receiver (rf/sub [:wallet/total-amount true])
         amount-text (str (number/remove-trailing-zeroes
                           (.toFixed total-amount-receiver
@@ -318,8 +318,6 @@
                                                          receiver-preferred-networks-set
                                                          receiver-selected-network))
                                                       receiver-networks))
-        input-error (controlled-input/input-error input-state)
-        limit-exceeded? (controlled-input/upper-limit-exceeded? input-state)
         should-try-again? (and (not limit-exceeded?) no-routes-found?)
         current-address (rf/sub [:wallet/current-viewing-account-address])
         owned-eth-token (rf/sub [:wallet/token-by-symbol
@@ -394,7 +392,7 @@
     [rn/view
      {:style               style/screen
       :accessibility-label (str "container"
-                                (when (controlled-input/input-error input-state) "-error"))}
+                                (when input-error "-error"))}
      [account-switcher/view
       {:icon-name     :i/arrow-left
        :on-press      #(rf/dispatch [:navigate-back])
@@ -405,18 +403,9 @@
        :value           input-value
        :on-swap         swap-between-fiat-and-crypto
        :on-token-press  show-select-asset-sheet
-       :error?          (controlled-input/input-error input-state)
+       :error?          input-error
        :currency-symbol (if crypto-currency? token-symbol fiat-currency)
-       :converted-value (if crypto-currency?
-                          (utils/prettify-balance
-                           currency-symbol
-                           (money/crypto->fiat input-value
-                                               conversion-rate))
-                          (utils/prettify-crypto-balance
-                           (or (clj->js token-symbol) "")
-                           (money/fiat->crypto input-value
-                                               conversion-rate)
-                           conversion-rate))
+       :converted-value token-input-converted-value
        :hint-component  [quo/network-tags
                          {:networks (seq from-enabled-networks)
                           :title    (i18n/label
