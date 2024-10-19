@@ -43,4 +43,9 @@
    :stickers/packs-pending             #{}
    :settings/change-password           {}
    :keycard                            {}
-   :theme                              :light})
+   :theme                              :light
+   :layers                             {:ui
+                                        {:send
+                                         {:input-amount-screen
+                                          {:controller
+                                           {:crypto-currency? true}}}}}})

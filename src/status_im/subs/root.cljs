@@ -196,3 +196,5 @@
 
 ;;keycard
 (reg-root-key-sub :keycard :keycard)
+
+(reg-root-key-sub :layers :layers)
