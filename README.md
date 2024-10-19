@@ -1,5 +1,6 @@
 # Status - a Mobile Ethereum Operating System
 
+[<img src="https://help.opportunitynetwork.com/hs-fs/hubfs/apple.png" alt="Get it on Apple App Store" height="82"/>](https://apps.apple.com/us/app/status-gateway-to-ethereum/id1178893006)
 [<img src="https://play.google.com/intl/en_us/badges/images/generic/en-play-badge.png" alt="Get it on Google Play" height="80"/>](https://play.google.com/store/apps/details?id=im.status.ethereum)
 [<img src="https://fdroid.gitlab.io/artwork/badge/get-it-on.png" alt="Get it on F-Droid" height="80"/>](https://f-droid.org/packages/im.status.ethereum/)
 
