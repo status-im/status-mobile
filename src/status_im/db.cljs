@@ -2,6 +2,7 @@
   (:require
     [legacy.status-im.fleet.core :as fleet]
     [react-native.core :as rn]
+    [status-im.common.controlled-input.utils :as controlled-input]
     [status-im.contexts.shell.activity-center.events :as activity-center]
     [status-im.contexts.wallet.db :as wallet]))
 
@@ -48,4 +49,5 @@
                                         {:send
                                          {:input-amount-screen
                                           {:controller
-                                           {:crypto-currency? true}}}}}})
+                                           {:crypto-currency? true
+                                            :input-state      controlled-input/init-state}}}}}})

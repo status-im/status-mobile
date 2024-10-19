@@ -11,7 +11,6 @@
     [status-im.contexts.wallet.common.account-switcher.view :as account-switcher]
     [status-im.contexts.wallet.common.asset-list.view :as asset-list]
     [status-im.contexts.wallet.common.utils :as utils]
-    [status-im.contexts.wallet.send.input-amount.controller :as c]
     [status-im.contexts.wallet.send.input-amount.style :as style]
     [status-im.contexts.wallet.send.routes.view :as routes]
     [status-im.contexts.wallet.sheets.buy-token.view :as buy-token]
@@ -219,18 +218,17 @@
 (defn view
   ;; crypto-decimals, limit-crypto and initial-crypto-currency? args are needed
   ;; for component tests only
-  [{default-on-confirm       :on-confirm
-    default-limit-crypto     :limit-crypto
-    default-crypto-decimals  :crypto-decimals
-    on-navigate-back         :on-navigate-back
-    button-one-label         :button-one-label
-    button-one-props         :button-one-props
-    current-screen-id        :current-screen-id
-    initial-crypto-currency? :initial-crypto-currency?
-    enabled-from-chain-ids   :enabled-from-chain-ids
-    from-enabled-networks    :from-enabled-networks
-    :or                      {initial-crypto-currency? true}}]
-  (let [{:keys [crypto-currency?] :as state} (rf/sub [:screen-data/send-input-amount-screen])
+  [{default-on-confirm     :on-confirm
+    on-navigate-back       :on-navigate-back
+    button-one-label       :button-one-label
+    button-one-props       :button-one-props
+    current-screen-id      :current-screen-id
+    enabled-from-chain-ids :enabled-from-chain-ids
+    from-enabled-networks  :from-enabled-networks}]
+  (let [{:keys [crypto-currency?
+                max-limit
+                input-state]
+         :as   state} (rf/sub [:send-input-amount-screen/data])
         view-id (rf/sub [:view-id])
         active-screen? (= view-id current-screen-id)
         bottom (safe-area/get-bottom)
@@ -245,12 +243,9 @@
          :as
          token} (rf/sub [:wallet/wallet-send-token])
         send-from-locked-amounts (rf/sub [:wallet/wallet-send-from-locked-amounts])
-        {:keys [total-balance]
-         :as   token-by-symbol} (rf/sub [:wallet/token-by-symbol
-                                         (str token-symbol)
-                                         enabled-from-chain-ids])
-        token-balance (or default-limit-crypto total-balance)
-        usd-conversion-rate (utils/token-usd-price token)
+        token-by-symbol (rf/sub [:wallet/token-by-symbol
+                                 (str token-symbol)
+                                 enabled-from-chain-ids])
         currency (rf/sub [:profile/currency])
         conversion-rate (-> token
                             :market-values-per-currency
@@ -260,22 +255,13 @@
                            utils/token-usd-price
                            utils/one-cent-value
                            utils/calc-max-crypto-decimals)
-        [input-state set-input-state] (rn/use-state controlled-input/init-state)
-        clear-input! #(set-input-state controlled-input/delete-all)
+        clear-input! #(rf/dispatch [:send-input-amount-screen/set-input-state
+                                    controlled-input/delete-all])
         currency-symbol (rf/sub [:profile/currency-symbol])
         loading-routes? (rf/sub
                          [:wallet/wallet-send-loading-suggested-routes?])
         route (rf/sub [:wallet/wallet-send-route])
         on-confirm (or default-on-confirm handle-on-confirm)
-        crypto-decimals (or token-decimals default-crypto-decimals)
-        max-limit (if crypto-currency?
-                    (utils/cut-crypto-decimals-to-fit-usd-cents
-                     token-balance
-                     usd-conversion-rate)
-                    (-> (money/crypto->fiat
-                         token-balance
-                         conversion-rate)
-                        utils/cut-fiat-balance-to-two-decimals))
         input-value (controlled-input/input-value input-state)
         valid-input? (not (or (controlled-input/empty-value? input-state)
                               (controlled-input/input-error input-state)))
@@ -286,7 +272,7 @@
                            input-value
                            (number/remove-trailing-zeroes
                             (.toFixed (/ input-value conversion-rate)
-                                      crypto-decimals)))
+                                      token-decimals)))
         total-amount-receiver (rf/sub [:wallet/total-amount true])
         amount-text (str (number/remove-trailing-zeroes
                           (.toFixed total-amount-receiver
@@ -366,10 +352,11 @@
                                                               (some? routes))}))
         swap-between-fiat-and-crypto (fn []
                                        (if crypto-currency?
-                                         (set-input-state
-                                          #(controlled-input/->fiat % conversion-rate))
-                                         (set-input-state
-                                          #(controlled-input/->crypto % conversion-rate)))
+                                         (rf/dispatch [:send-input-amount-screen/set-input-state
+                                                       #(controlled-input/->fiat % conversion-rate)])
+                                         (rf/dispatch [:send-input-amount-screen/set-input-state
+                                                       #(controlled-input/->crypto % conversion-rate)])
+                                       )
                                        (rf/dispatch
                                         [:send-input-amount-screen/swap-between-fiat-and-crypto]))]
     (rn/use-effect
@@ -385,7 +372,8 @@
     (hot-reload/use-safe-unmount on-navigate-back)
     (rn/use-effect
      (fn []
-       (set-input-state #(controlled-input/set-upper-limit % max-limit)))
+       (rf/dispatch [:send-input-amount-screen/set-input-state
+                     #(controlled-input/set-upper-limit % max-limit)]))
      [max-limit])
     (rn/use-effect
      (fn []
@@ -486,18 +474,21 @@
        :delete-key?          true
        :on-press             (fn [c]
                                (let [new-text      (str input-value c)
-                                     max-decimals  (if crypto-currency? crypto-decimals 2)
+                                     max-decimals  (if crypto-currency? token-decimals 2)
                                      regex-pattern (str "^\\d*\\.?\\d{0," max-decimals "}$")
                                      regex         (re-pattern regex-pattern)]
                                  (when (re-matches regex new-text)
                                    (debounce/clear-all)
-                                   (set-input-state #(controlled-input/add-character % c)))))
+                                   (rf/dispatch [:send-input-amount-screen/set-input-state
+                                                 #(controlled-input/add-character % c)]))))
        :on-delete            (fn []
                                (debounce/clear-all)
-                               (set-input-state controlled-input/delete-last)
+                               (rf/dispatch [:send-input-amount-screen/set-input-state
+                                             controlled-input/delete-last])
                                (rf/dispatch-sync [:wallet/stop-and-clean-suggested-routes]))
        :on-long-press-delete (fn []
                                (debounce/clear-all)
-                               (set-input-state controlled-input/delete-all)
+                               (rf/dispatch [:send-input-amount-screen/set-input-state
+                                             controlled-input/delete-all])
                                (rf/dispatch-sync [:wallet/stop-and-clean-suggested-routes]))}]]))
 
