@@ -33,8 +33,8 @@
    (multi-user-chat? (get-chat cofx chat-id))))
 
 (defn public-chat?
-  ([chat]
-   (:public? chat))
+  ([{:keys [chat-type]}]
+   (= chat-type constants/public-chat-type))
   ([cofx chat-id]
    (public-chat? (get-chat cofx chat-id))))
 
@@ -52,7 +52,7 @@
 (defn group-chat?
   ([chat]
    (and (multi-user-chat? chat)
-        (not (public-chat? chat))))
+        (not (:public? chat))))
   ([cofx chat-id]
    (group-chat? (get-chat cofx chat-id))))
 
