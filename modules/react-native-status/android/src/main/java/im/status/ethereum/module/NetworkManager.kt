@@ -35,10 +35,10 @@ class NetworkManager(private val reactContext: ReactApplicationContext) : ReactC
 
     @ReactMethod
     fun inputConnectionStringForBootstrapping(connectionString: String, configJSON: String, callback: Callback) {
-        val jsonConfig = JSONObject(configJSON)
+        val receiverClientConfig = JSONObject(configJSON)
         val params = JSONObject().apply {
             put("connectionString", connectionString)
-            put("configJSON", jsonConfig)
+            put("receiverClientConfig", receiverClientConfig)
         }
         val jsonString = params.toString()
         utils.executeRunnableStatusGoMethod(
@@ -95,14 +95,14 @@ class NetworkManager(private val reactContext: ReactApplicationContext) : ReactC
 
     @ReactMethod
     fun inputConnectionStringForImportingKeypairsKeystores(connectionString: String, configJSON: String, callback: Callback) {
-        val jsonConfig = JSONObject(configJSON)
-        val receiverConfig = jsonConfig.getJSONObject("receiverConfig")
+        val keystoreFilesReceiverClientConfig = JSONObject(configJSON)
+        val receiverConfig = keystoreFilesReceiverClientConfig.getJSONObject("receiverConfig")
         val keyStorePath = utils.pathCombine(utils.getNoBackupDirectory(), "/keystore")
         receiverConfig.put("keystorePath", keyStorePath)
 
         val params = JSONObject().apply {
             put("connectionString", connectionString)
-            put("configJSON", jsonConfig)
+            put("keystoreFilesReceiverClientConfig", keystoreFilesReceiverClientConfig)
         }
 
         utils.executeRunnableStatusGoMethod(

@@ -37,7 +37,7 @@ RCT_EXPORT_METHOD(inputConnectionStringForBootstrapping:(NSString *)cs
 
     NSDictionary *params = @{
         @"connectionString": cs,
-        @"configJSON": configJSON
+        @"receiverClientConfig": configJSON
     };
     NSError *error;
     NSData *jsonData = [NSJSONSerialization dataWithJSONObject:params options:0 error:&error];
@@ -150,7 +150,7 @@ RCT_EXPORT_METHOD(inputConnectionStringForImportingKeypairsKeystores:(NSString *
     
     NSDictionary *params = @{
         @"connectionString": cs,
-        @"configJSON": modifiedConfigJSON
+        @"keystoreFilesReceiverClientConfig": modifiedConfigJSON
     };
     NSString *paramsJSON = [Utils jsonStringWithPrettyPrint:NO fromDictionary:params];
     
