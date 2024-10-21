@@ -1,4 +1,4 @@
-(ns status-im.contexts.chat.group-create.style
+(ns status-im.contexts.chat.group.common.style
   (:require [quo.foundations.colors :as colors]))
 
 (def avatar {:width 88 :margin-top 12 :margin-left 20})

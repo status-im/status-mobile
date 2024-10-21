@@ -1,4 +1,4 @@
-(ns status-im.contexts.chat.group-details.style
+(ns status-im.contexts.chat.group.details.style
   (:require
     [quo.foundations.colors :as colors]))
 
