@@ -951,6 +951,7 @@
      :component emoji-picker/view}
 
     {:name      :screen/pdf-viewer
+     :metrics   {:track? true}
      :options   {:insets                 {:top? true}
                  :modalPresentationStyle :overCurrentContext}
      :component pdf-viewer/view}
