@@ -156,7 +156,7 @@
                                               :valid-input?                valid-pay-input?
                                               :clean-approval-transaction? true}))
                                           [pay-input-amount])]
-    (rn/use-unmount #(rf/dispatch [:wallet/on-swap-done]))
+    (rn/use-unmount #(rf/dispatch [:wallet/clean-swap]))
     (rn/use-effect
      (fn []
        (request-fetch-swap-proposal))
