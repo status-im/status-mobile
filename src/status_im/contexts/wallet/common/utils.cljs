@@ -495,9 +495,7 @@
                     :TokenIDTo          token-id-to
                     :SlippagePercentage slippage-percentage))
 
-      (not (or (= bridge-name constants/bridge-name-erc-721-transfer)
-               (= bridge-name constants/bridge-name-transfer)
-               (= bridge-name constants/bridge-name-hop)))
+      (= bridge-name constants/bridge-name-celer)
       (assoc :CbridgeTx
              (assoc tx-data
                     :ChainID   to-chain-id

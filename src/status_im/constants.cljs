@@ -566,6 +566,7 @@
 (def ^:const bridge-name-erc-1155-transfer "ERC1155Transfer")
 (def ^:const bridge-name-hop "Hop")
 (def ^:const bridge-name-paraswap "Paraswap")
+(def ^:const bridge-name-celer "CBridge")
 
 (def ^:const bridge-assets #{"ETH" "USDT" "USDC" "DAI"})
 
