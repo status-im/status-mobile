@@ -61,6 +61,22 @@
    {}
    route))
 
+(defn estimated-received-by-chain
+  [{:keys [route token-decimals native-token?]}]
+  (reduce
+   (fn [acc path]
+     (let [estimated-received (:estimated-received path)
+           amount             (money/with-precision
+                               (if native-token?
+                                 (money/wei->ether estimated-received)
+                                 (money/token->unit estimated-received
+                                                    token-decimals))
+                               6)
+           chain-id           (get-in path [:to :chain-id])]
+       (update acc chain-id money/add amount)))
+   {}
+   route))
+
 (defn network-values-for-ui
   [amounts]
   (reduce-kv (fn [acc k v]

@@ -212,13 +212,15 @@
 
 (defn new->old-route-path
   [new-path]
-  (let [bonder-fees (:tx-bonder-fees new-path)
-        token-fees  (+ (money/wei->ether bonder-fees)
-                       (money/wei->ether (:tx-token-fees new-path)))]
+  (let [bonder-fees        (:tx-bonder-fees new-path)
+        estimated-received (- (:amount-in new-path) (:tx-token-fees new-path))
+        token-fees         (+ (money/wei->ether bonder-fees)
+                              (money/wei->ether (:tx-token-fees new-path)))]
     {:from                      (:from-chain new-path)
      :amount-in-locked          (:amount-in-locked new-path)
      :amount-in                 (:amount-in new-path)
-     :max-amount-in             "0x0"
+     :estimated-received        estimated-received
+     :max-amount-in             (:max-amount-in new-path)
      :gas-fees                  {:gas-price                "0"
                                  :base-fee                 (send-utils/convert-to-gwei (:tx-base-fee
                                                                                         new-path)

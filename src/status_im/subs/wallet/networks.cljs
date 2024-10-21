@@ -78,8 +78,10 @@
 (re-frame/reg-sub
  :wallet/total-amount
  :<- [:wallet/wallet-send]
- (fn [{:keys [from-values-by-chain to-values-by-chain]} [_ to-values?]]
-   (let [network-values (if to-values? to-values-by-chain from-values-by-chain)]
+ (fn [{:keys [from-values-by-chain estimated-received-by-chain]} [_ to-values?]]
+   (let [network-values (if to-values?
+                          estimated-received-by-chain
+                          from-values-by-chain)]
      (reduce
       (fn [acc amount]
         (if (money/bignumber? amount)
