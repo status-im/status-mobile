@@ -237,11 +237,17 @@
 
 (defn chat-item
   [{:keys [chat-id group-chat color name last-message timestamp muted image
-           unviewed-messages-count]
+           chat-type unviewed-messages-count]
     :as   item}]
   (let [[primary-name secondary-name]
-        (if group-chat
+        (cond
+          group-chat
           [name ""]
+
+          (= chat-type constants/public-chat-type)
+          [(str "#" name) ""]
+
+          :else
           (rf/sub [:contacts/contact-two-names-by-identity chat-id]))
         {:keys [ens-verified added?] :as contact} (when-not group-chat
                                                     (rf/sub [:contacts/contact-by-address chat-id]))

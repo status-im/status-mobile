@@ -398,10 +398,11 @@
           :chevron?            false}))
 
 (defn destructive-actions
-  [{:keys [group-chat] :as item} inside-chat?]
+  [{:keys [group-chat chat-type] :as item} inside-chat?]
   [(when (not group-chat)
-     (close-chat-entry item inside-chat? (not group-chat)))
-   (clear-history-entry item group-chat)
+     (close-chat-entry item inside-chat? (not= chat-type constants/public-chat-type)))
+   (when-not (= chat-type constants/public-chat-type)
+     (clear-history-entry item group-chat))
    (when group-chat
      (leave-group-entry item nil))])
 
@@ -438,6 +439,11 @@
     (notification-actions item inside-chat? true)
     (destructive-actions item inside-chat?)]])
 
+(defn public-chat-actions
+  [item inside-chat?]
+  [quo/action-drawer
+   [(destructive-actions item inside-chat?)]])
+
 (defn private-group-chat-actions
   [item inside-chat?]
   [quo/action-drawer
@@ -473,6 +479,8 @@
      [one-to-one-actions chat inside-chat?]
      constants/private-group-chat-type
      [private-group-chat-actions chat inside-chat?]
+     constants/public-chat-type
+     [public-chat-actions chat inside-chat?]
      constants/community-chat-type
      [communities-chat-actions/actions chat inside-chat? hide-show-members?]
      nil))
