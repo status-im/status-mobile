@@ -10,10 +10,8 @@
   []
   [:<>
    [quo/page-nav
-    {:key        :header
-     :background :blur
-     :icon-name  :i/arrow-left
-     :on-press   events-helper/navigate-back}]
+    {:icon-name :i/arrow-left
+     :on-press  events-helper/navigate-back}]
    [quo/page-top
     {:title            (i18n/label :t/check-keycard)
      :description      :text
@@ -31,6 +29,6 @@
      {:container-style {:padding-bottom 25}
       :description     (i18n/label :t/keep-card-steady)}]]
    [quo/button
-    {:on-press        #(rf/dispatch [:keycard/connect])
+    {:on-press        #(rf/dispatch [:keycard/migration.check-empty-card])
      :container-style {:margin-horizontal 20}}
     (i18n/label :t/ready-to-scan)]])
