@@ -1,5 +1,5 @@
 #!/usr/bin/env groovy
-library 'status-jenkins-lib@v1.9.10'
+library 'status-jenkins-lib@v1.9.12'
 
 pipeline {
   agent {

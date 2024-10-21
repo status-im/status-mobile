@@ -89,7 +89,7 @@
   (let [theme             (quo.theme/use-theme)
         asset-to-pay      (rf/sub [:wallet/swap-asset-to-pay])
         network           (rf/sub [:wallet/swap-network])
-        pay-amount        (rf/sub [:wallet/swap-pay-amount])
+        pay-amount        (rf/sub [:wallet/swap-pay-amount-raw])
         network-chain-id  (:chain-id network)
         network-name      (:network-name network)
         pay-token-symbol  (:symbol asset-to-pay)
@@ -109,7 +109,7 @@
   (let [theme                 (quo.theme/use-theme)
         asset-to-receive      (rf/sub [:wallet/swap-asset-to-receive])
         network               (rf/sub [:wallet/swap-network])
-        receive-amount        (rf/sub [:wallet/swap-receive-amount])
+        receive-amount        (rf/sub [:wallet/swap-receive-amount-raw])
         network-chain-id      (:chain-id network)
         network-name          (:network-name network)
         receive-token-symbol  (:symbol asset-to-receive)
@@ -182,7 +182,8 @@
   (let [provider (rf/sub [:wallet/swap-proposal-provider])
         theme    (quo.theme/use-theme)
         on-press (rn/use-callback #(when provider
-                                     (rf/dispatch [:open-url (:terms-and-conditions-url provider)]))
+                                     (rf/dispatch [:open-modal :screen/pdf-viewer
+                                                   {:uri (:terms-and-conditions-url provider)}]))
                                   [provider])]
     [:<>
      [transaction-details]
