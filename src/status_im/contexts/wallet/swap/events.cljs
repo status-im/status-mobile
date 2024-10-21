@@ -204,12 +204,6 @@
  (fn [{:keys [db]}]
    {:db (update-in db [:wallet :ui] dissoc :swap)}))
 
-(rf/reg-event-fx
- :wallet/on-swap-done
- (fn [_]
-   {:fx [[:dispatch [:wallet/select-account-tab :activity]]
-         [:dispatch [:wallet/clean-swap]]]}))
-
 (rf/reg-event-fx :wallet/swap-transaction
  (fn [{:keys [db]} [sha3-pwd]]
    (let [wallet-address         (get-in db
@@ -299,6 +293,7 @@
                                                          :screen/wallet.swap-set-spending-cap
                                                          :screen/wallet.swap-confirmation)])
                                          (when-not approval-required?
+                                           (rf/dispatch [:wallet/select-account-tab :activity])
                                            (debounce/debounce-and-dispatch
                                             [:toasts/upsert
                                              {:id   :swap-transaction-pending
