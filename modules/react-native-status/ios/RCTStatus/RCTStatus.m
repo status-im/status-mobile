@@ -170,18 +170,23 @@ RCT_EXPORT_METHOD(connectionChange:(NSString *)type
 #endif
     NSDictionary *params = @{
         @"type": type,
-        @"expensive": isExpensive ? @YES : @NO
+        @"expensive": @(isExpensive)
     };
     NSError *error;
     NSData *jsonData = [NSJSONSerialization dataWithJSONObject:params 
                                                        options:0
                                                          error:&error];
-    if (!jsonData) {
+    if (error) {
         NSLog(@"Error creating JSON: %@", error);
         return;
     }
-    NSString *jsonString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
-    StatusgoConnectionChangeV2(jsonString);
+    
+    if (jsonData) {
+        NSString *jsonString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+        StatusgoConnectionChangeV2(jsonString);
+    } else {
+        NSLog(@"Failed to create JSON data");
+    }
 }
 
 RCT_EXPORT_METHOD(appStateChange:(NSString *)type) {
