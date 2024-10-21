@@ -28,9 +28,6 @@
     (not has-master-key?)
     :keycard/error.keycard-blank
 
-    (and (nil? profile-key-uid) (not= profile-key-uid key-uid))
-    :keycard/error.keycard-not-blank
-
     (not= profile-key-uid key-uid)
     :keycard/error.keycard-wrong-profile
 

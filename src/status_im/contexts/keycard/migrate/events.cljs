@@ -98,7 +98,7 @@
    {:db (assoc-in db
          [:keycard :migration :masked-phrase]
          (security/mask-data (get-in db [:profile/profile :mnemonic])))
-    :fx [;;TODO uncomment [:dispatch [:profile.settings/profile-update :mnemonic nil]]
+    :fx [[:dispatch [:profile.settings/profile-update :mnemonic nil]]
          [:dispatch [:navigate-back]]
          [:dispatch
           [:open-modal :screen/keycard.authorise
