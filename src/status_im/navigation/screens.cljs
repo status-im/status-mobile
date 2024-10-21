@@ -944,17 +944,19 @@
      :metrics   {:track? true}
      :options   {:sheet? true}
      :component emoji-picker/view}
-    
+
     {:name      :screen/pdf-viewer
      :options   {:insets                 {:top? true}
                  :modalPresentationStyle :overCurrentContext}
      :component pdf-viewer/view}
-    
+
     {:name      :screen/backup-recovery-phrase
+     :metrics   {:track? true}
      :options   {:insets {:top? true :bottom? true}}
      :component backup-recovery-phrase/view}
 
     {:name      :screen/use-recovery-phrase
+     :metrics   {:track? true}
      :component enter-seed-phrase/view}
 
     {:name      :screen/profile.profiles
