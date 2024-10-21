@@ -119,10 +119,12 @@
 (rf/reg-sub
  :send-input-amount-screen/data
  :<- [:send-input-amount-screen/controller]
+ :<- [:send-input-amount-screen/currency-information]
  :<- [:send-input-amount-screen/max-limit]
  :<- [:send-input-amount-screen/amount-in-crypto]
  :<- [:send-input-amount-screen/token-input-converted-value]
  (fn [[{:keys [crypto-currency? input-state] :as controller}
+       {:keys [conversion-rate]}
        max-limit
        amount-in-crypto
        token-input-converted-value]]
@@ -136,6 +138,7 @@
     :limit-exceeded?             (controlled-input/upper-limit-exceeded? input-state)
     :amount-in-crypto            amount-in-crypto
     :token-input-converted-value token-input-converted-value
+    :conversion-rate             conversion-rate
    }))
 
 
@@ -143,15 +146,20 @@
 ;; events
 
 (rf/reg-event-fx
- :send-input-amount-screen/swap-between-fiat-and-crypto
- (fn [{:keys [db]}]
-   {:db (update-in db [:layers :ui :send :input-amount-screen :controller :crypto-currency?] not)}))
-
-
-(rf/reg-event-fx
  :send-input-amount-screen/set-input-state
  (fn [{:keys [db]} [f]]
    {:db (update-in db [:layers :ui :send :input-amount-screen :controller :input-state] f)}))
+
+(rf/reg-event-fx
+ :send-input-amount-screen/swap-between-fiat-and-crypto
+ (fn [{:keys [db]} [crypto-currency? conversion-rate]]
+   {:db (update-in db [:layers :ui :send :input-amount-screen :controller :crypto-currency?] not)
+    :fx (if crypto-currency?
+          [[:dispatch
+            [:send-input-amount-screen/set-input-state #(controlled-input/->fiat % conversion-rate)]]]
+          [[:dispatch
+            [:send-input-amount-screen/set-input-state
+             #(controlled-input/->crypto % conversion-rate)]]])}))
 
 
 
