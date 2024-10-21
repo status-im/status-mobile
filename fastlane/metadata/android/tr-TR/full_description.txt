@@ -1,0 +1,18 @@
+Status, gizlilik odaklı takma adla kullanılan bir mesajlaşma uygulaması ile güvenli bir kripto cüzdanını birleştirerek güçlü bir iletişim aracı sunar. Arkadaşlarınız ve büyüyen topluluklarla sohbet edin. Dijital varlıklar satın alın, saklayın ve değiştirin.
+
+Status, Ethereum için işletim sisteminizdir.
+
+ÖZEL MESAJLAŞMA UYGULAMASI
+Özel 1:1 ve grup sohbetlerini kimsenin iletişiminizi gözetlemesine izin vermeden gönderin. Status, merkezi mesaj iletimini ortadan kaldırarak daha fazla gizlilik ve güvenli mesajlaşma sağlayan bir mesajlaşma uygulamasıdır. Tüm mesajlar uçtan uca şifreleme ile korunur. Ayrıca, hiçbir mesaj yazarın veya hedeflenen alıcının kim olduğunu ortaya çıkarmaz, bu yüzden kimse, hatta Status bile, kimin kiminle konuştuğunu veya ne konuşulduğunu bilmez.
+
+GÜVENLİ ETHEREUM CÜZDANI
+Status kripto cüzdanı, ETH, SNT, DAI gibi stabilcoinler ve koleksiyon gibi Ethereum varlıklarını güvenle göndermenize, saklamanıza ve değiştirmenize olanak tanır. Ana ağ, Arbitrum ve Optimism'i destekleyen çok zincirli Ethereum cüzdan uygulamamızla kripto paralarınız ve dijital varlıklarınız üzerinde güvenle kontrol sahibi olun. Status blok zinciri cüzdanı şu anda yalnızca ETH, ERC-20, ERC-721 ve ERC-1155 varlıklarını destekler; Bitcoin desteklenmemektedir.
+
+DEFI İLE KAZANIN
+Kripto paralarınızı Maker, Aave, Uniswap, Synthetix, PoolTogether, Zerion, Kyber gibi en son merkeziyetsiz finans uygulamaları ve merkeziyetsiz borsalar (DEX) ile değerlendirin.
+
+TOPLULUĞUNUZLA BAĞLANTI KURUN
+Favori topluluklarınız ve arkadaşlarınızla keşfedin, bağlantı kurun ve sohbet edin. İster küçük bir arkadaş grubu, bir sanatçı kolektifi, kripto para tacirleri veya bir sonraki büyük organizasyon olsun - Status topluluklarıyla mesajlaşın ve iletişim kurun.
+
+ÖZEL HESAP OLUŞTURMA
+Takma adla hesap oluşturarak gizliliğinizi koruyun. Ücretsiz hesabınızı oluştururken asla telefon numarası, e-posta adresi veya banka hesabı girmenize gerek yoktur. Cüzdanınızın özel anahtarları yerel olarak oluşturulur ve yalnızca sizin fonlarınıza ve finansal işlemlerinize erişiminiz olmasını sağlamak için güvenli bir şekilde saklanır.
