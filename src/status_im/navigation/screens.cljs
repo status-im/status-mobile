@@ -868,24 +868,29 @@
 
 (def keycard-screens
   [{:name      :screen/keycard.check
+    :metrics   {:track? true}
     :options   options/keycard-modal-screen-options
     :component keycard.check/view}
 
    {:name      :screen/keycard.empty
+    :metrics   {:track? true}
     :options   options/keycard-modal-screen-options
     :component keycard.empty/view}
 
    {:name      :screen/keycard.error
+    :metrics   {:track? true}
     :options   options/keycard-modal-screen-options
     :component keycard.error/view}
 
    {:name      :screen/keycard.not-keycard
+    :metrics   {:track? true}
     :options   options/keycard-modal-screen-options
     :component keycard.not-keycard/view}
 
    {:name      :screen/keycard.authorise
-     :options   options/keycard-modal-screen-options
-     :component keycard.authorise/view}])
+    :metrics   {:track? true}
+    :options   options/keycard-modal-screen-options
+    :component keycard.authorise/view}])
 
 (defn screens
   []
