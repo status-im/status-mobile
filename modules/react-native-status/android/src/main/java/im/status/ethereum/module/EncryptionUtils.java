@@ -7,6 +7,7 @@ import com.facebook.react.bridge.Callback;
 import android.util.Log;
 import statusgo.Statusgo;
 import org.json.JSONException;
+import org.json.JSONObject;
 import java.util.function.Function;
 import android.app.Activity;
 import android.view.WindowManager;
@@ -44,27 +45,58 @@ public class EncryptionUtils extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void reEncryptDbAndKeystore(final String keyUID, final String password, final String newPassword, final Callback callback) throws JSONException {
-        this.utils.executeRunnableStatusGoMethod(() -> Statusgo.changeDatabasePassword(keyUID, password, newPassword), callback);
+        JSONObject params = new JSONObject();
+        params.put("keyUID", keyUID);
+        params.put("oldPassword", password);
+        params.put("newPassword", newPassword);
+        String jsonParams = params.toString();
+        this.utils.executeRunnableStatusGoMethod(() -> Statusgo.changeDatabasePasswordV2(jsonParams), callback);
     }
 
     @ReactMethod
     public void convertToKeycardAccount(final String keyUID, final String accountData, final String options, final String keycardUID, final String password,
                                         final String newPassword, final Callback callback) throws JSONException {
         final String keyStoreDir = this.utils.getKeyStorePath(keyUID);
+        JSONObject params = new JSONObject();
+        params.put("keyUID", keyUID);
+        params.put("account", new JSONObject(accountData));
+        params.put("settings", new JSONObject(options));
+        params.put("keycardUID", keycardUID);
+        params.put("oldPassword", password);
+        params.put("newPassword", newPassword);
+        final String jsonParams = params.toString();
         this.utils.executeRunnableStatusGoMethod(() -> {
             Statusgo.initKeystore(keyStoreDir);
-            return Statusgo.convertToKeycardAccount(accountData, options, keycardUID, password, newPassword);
+            return Statusgo.convertToKeycardAccountV2(jsonParams);
         }, callback);
     }
 
     @ReactMethod(isBlockingSynchronousMethod = true)
     public String encodeTransfer(final String to, final String value) {
-        return Statusgo.encodeTransfer(to, value);
+        try {
+            JSONObject params = new JSONObject();
+            params.put("to", to);
+            params.put("value", value);
+            String jsonParams = params.toString();
+            return Statusgo.encodeTransferV2(jsonParams);
+        } catch (JSONException e) {
+            Log.e(TAG, "Error creating JSON for encodeTransfer: " + e.getMessage());
+            return null;
+        }
     }
 
     @ReactMethod(isBlockingSynchronousMethod = true)
     public String encodeFunctionCall(final String method, final String paramsJSON) {
-        return Statusgo.encodeFunctionCall(method, paramsJSON);
+        try {
+            JSONObject params = new JSONObject();
+            params.put("method", method);
+            params.put("paramsJSON", new JSONObject(paramsJSON));
+            String jsonString = params.toString();
+            return Statusgo.encodeFunctionCallV2(jsonString);
+        } catch (JSONException e) {
+            Log.e(TAG, "Error creating JSON for encodeFunctionCall: " + e.getMessage());
+            return null;
+        }
     }
 
     @ReactMethod(isBlockingSynchronousMethod = true)
@@ -140,7 +172,11 @@ public class EncryptionUtils extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void multiformatDeserializePublicKey(final String multiCodecKey, final String base58btc, final Callback callback) throws JSONException {
-        this.utils.executeRunnableStatusGoMethod(() -> Statusgo.multiformatDeserializePublicKey(multiCodecKey,base58btc), callback);
+        JSONObject params = new JSONObject();
+        params.put("key", multiCodecKey);
+        params.put("outBase", base58btc);
+        String jsonParams = params.toString();
+        this.utils.executeRunnableStatusGoMethod(() -> Statusgo.multiformatDeserializePublicKeyV2(jsonParams), callback);
     }
 
     @ReactMethod

@@ -73,10 +73,12 @@ RCT_EXPORT_METHOD(deleteImportedKey:(NSString *)keyUID
                   password:(NSString *)password
                   callback:(RCTResponseSenderBlock)callback) {
 #if DEBUG
-    NSLog(@"DeleteImportedKey() method called");
+    NSLog(@"DeleteImportedKeyV2() method called");
 #endif
     NSURL *multiaccountKeystoreDir = [Utils getKeyStoreDirForKeyUID:keyUID];
-    NSString *result = StatusgoDeleteImportedKey(address, password, multiaccountKeystoreDir.path);
+    NSString *jsonParams = [NSString stringWithFormat:@"{\"address\":\"%@\",\"password\":\"%@\",\"keyStoreDir\":\"%@\"}", 
+                            address, password, multiaccountKeystoreDir.path];
+    NSString *result = StatusgoDeleteImportedKeyV2(jsonParams);
     callback(@[result]);
 }
 
@@ -166,7 +168,25 @@ RCT_EXPORT_METHOD(connectionChange:(NSString *)type
 #if DEBUG
     NSLog(@"ConnectionChange() method called");
 #endif
-    StatusgoConnectionChange(type, isExpensive ? 1 : 0);
+    NSDictionary *params = @{
+        @"type": type,
+        @"expensive": @(isExpensive)
+    };
+    NSError *error;
+    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:params 
+                                                       options:0
+                                                         error:&error];
+    if (error) {
+        NSLog(@"Error creating JSON: %@", error);
+        return;
+    }
+    
+    if (jsonData) {
+        NSString *jsonString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+        StatusgoConnectionChangeV2(jsonString);
+    } else {
+        NSLog(@"Failed to create JSON data");
+    }
 }
 
 RCT_EXPORT_METHOD(appStateChange:(NSString *)type) {
