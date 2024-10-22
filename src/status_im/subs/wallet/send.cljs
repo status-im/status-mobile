@@ -3,6 +3,7 @@
     [re-frame.core :as rf]
     [status-im.contexts.wallet.common.activity-tab.constants :as constants]
     [status-im.contexts.wallet.send.utils :as send-utils]
+    [utils.money :as money]
     [utils.number]))
 
 (rf/reg-sub
@@ -20,6 +21,11 @@
  :wallet/send-recipient
  :<- [:wallet/wallet-send]
  :-> :recipient)
+
+(rf/reg-sub
+ :wallet/send-route
+ :<- [:wallet/wallet-send]
+ :-> :route)
 
 (rf/reg-sub
  :wallet/send-transaction-ids
@@ -91,3 +97,31 @@
            (when (not= (:chain-id network) bridge-to-chain-id)
              (:chain-id network)))
          networks)))
+
+(rf/reg-sub
+ :wallet/send-token-decimals
+ :<- [:wallet/wallet-send]
+ (fn [{:keys [token collectible]}]
+   (if collectible 0 (:decimals token))))
+
+(rf/reg-sub
+ :wallet/send-native-token?
+ :<- [:wallet/wallet-send]
+ (fn [{:keys [token token-display-name]}]
+   (and token (= token-display-name "ETH"))))
+
+(rf/reg-sub
+ :wallet/total-amount
+ :<- [:wallet/send-route]
+ :<- [:wallet/send-token-decimals]
+ :<- [:wallet/send-native-token?]
+ (fn [[route token-decimals native-token?]]
+   (let [default-amount (money/bignumber 0)]
+     (if route
+       (->> (send-utils/estimated-received-by-chain
+             route
+             token-decimals
+             native-token?)
+            vals
+            (reduce money/add default-amount))
+       default-amount))))
