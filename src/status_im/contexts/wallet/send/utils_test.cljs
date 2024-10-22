@@ -114,9 +114,7 @@
                            :to          {:chain-id 1}}]
           token-decimals 18
           native-token?  true
-          result         (utils/estimated-received-by-chain {:route          route
-                                                             :token-decimals token-decimals
-                                                             :native-token?  native-token?})
+          result         (utils/estimated-received-by-chain route token-decimals native-token?)
           expected       (money/bignumber "0.99977")]
       (is (money/equal-to (get result chain-id) expected))))
 
@@ -126,9 +124,7 @@
                            :to         {:chain-id chain-id}}]
           token-decimals 18
           native-token?  true
-          result         (utils/estimated-received-by-chain {:route          route
-                                                             :token-decimals token-decimals
-                                                             :native-token?  native-token?})
+          result         (utils/estimated-received-by-chain route token-decimals native-token?)
           expected       (money/bignumber "2")]
       (is (money/equal-to (get result chain-id) expected))))
 
@@ -138,9 +134,7 @@
                            :to         {:chain-id chain-id}}]
           token-decimals 18
           native-token?  false
-          result         (utils/estimated-received-by-chain {:route          route
-                                                             :token-decimals token-decimals
-                                                             :native-token?  native-token?})
+          result         (utils/estimated-received-by-chain route token-decimals native-token?)
           expected       (money/bignumber "2")]
       (is (money/equal-to (get result chain-id) expected))))
 
@@ -152,9 +146,7 @@
                            :to         {:chain-id 10}}]
           token-decimals 18
           native-token?  false
-          result         (utils/estimated-received-by-chain {:route          route
-                                                             :token-decimals token-decimals
-                                                             :native-token?  native-token?})
+          result         (utils/estimated-received-by-chain route token-decimals native-token?)
           expected       {10 (money/bignumber "1")
                           1  (money/bignumber "2")}]
       (doseq [[chain-id exp-value] expected]
@@ -168,9 +160,7 @@
                            :to         {:chain-id chain-id}}]
           token-decimals 18
           native-token?  false
-          result         (utils/estimated-received-by-chain {:route          route
-                                                             :token-decimals token-decimals
-                                                             :native-token?  native-token?})
+          result         (utils/estimated-received-by-chain route token-decimals native-token?)
           expected       (money/bignumber "4")]
       (is (money/equal-to (get result chain-id) expected)))))
 
