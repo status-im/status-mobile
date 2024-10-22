@@ -5,6 +5,7 @@
     [quo.components.common.notification-dot.view :as notification-dot]
     [quo.components.counter.counter.view :as counter]
     [quo.components.navigation.top-nav.style :as style]
+    [quo.components.tags.network-status-tag.view :as network-status-tag]
     [quo.theme :as quo.theme]
     [react-native.core :as rn]
     [react-native.hole-view :as hole-view]))
@@ -101,6 +102,8 @@
                                                       :jump-to? jump-to?
                                                       :blur?    blur?})]
     [rn/view {:style style/right-section}
+     [rn/view {:style {:justify-content :center}}
+      [network-status-tag/view {:label "Updated 5 min ago"}]]
      [button/button
       (assoc button-common-props :accessibility-label :open-scanner-button :on-press scan-on-press)
       :i/scan]

@@ -68,3 +68,9 @@
      {:db (-> db
               (update-in [:wallet :ui :activity-tab :request] dissoc requestId)
               (update-in [:wallet :activities address] nested-merge activities-indexed))})))
+
+(rf/reg-event-fx
+ :wallet/health-changed
+ (fn [{:keys [db]} data]
+   (js/console.log "ALWX DATA" (clj->js data))
+   {:db db}))

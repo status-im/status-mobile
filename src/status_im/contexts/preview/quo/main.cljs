@@ -180,6 +180,7 @@
     [status-im.contexts.preview.quo.tabs.tabs :as tabs]
     [status-im.contexts.preview.quo.tags.collectible-tag :as collectible-tag]
     [status-im.contexts.preview.quo.tags.context-tags :as context-tags]
+    [status-im.contexts.preview.quo.tags.network-status-tag :as network-status-tag]
     [status-im.contexts.preview.quo.tags.network-tags :as network-tags]
     [status-im.contexts.preview.quo.tags.number-tag :as number-tag]
     [status-im.contexts.preview.quo.tags.permission-tag :as permission-tag]
@@ -520,6 +521,8 @@
                         :component collectible-tag/view}
                        {:name      :context-tags
                         :component context-tags/view}
+                       {:name      :network-status-tag
+                        :component network-status-tag/view}
                        {:name      :network-tags
                         :component network-tags/view}
                        {:name      :number-tag
