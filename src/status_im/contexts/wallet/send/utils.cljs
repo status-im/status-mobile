@@ -74,26 +74,33 @@
                       (get-in path [:to :chain-id])
                       (get-in path [:from :chain-id]))]
        (as-> amount $
-         (convert-wei-to-eth $ token-decimals native-token?)
+         (convert-wei-to-eth $ native-token? token-decimals)
          (update acc chain-id money/add $))))
    {}
    route))
 
 (defn path-estimated-received
+  "Calculates the (`bignumber`) estimated received token amount. For
+  bridge transactions, the amount is the difference between the
+  `amount-in` and the `token-fees`."
   [path]
-  (-> path
-      :amount-in
-      money/from-hex
-      (money/sub (:token-fees path))))
+  (if (-> path :bridge-name (= "Hop"))
+    (-> path
+        :amount-in
+        money/from-hex
+        (money/sub (:token-fees path)))
+    (-> path
+        :amount-out
+        money/from-hex)))
 
 (defn estimated-received-by-chain
-  [{:keys [route token-decimals native-token?]}]
+  [route token-decimals native-token?]
   (reduce
    (fn [acc path]
      (let [chain-id           (get-in path [:to :chain-id])
            estimated-received (-> path
                                   path-estimated-received
-                                  (convert-wei-to-eth token-decimals native-token?))]
+                                  (convert-wei-to-eth native-token? token-decimals))]
        (update acc chain-id money/add estimated-received)))
    {}
    route))
