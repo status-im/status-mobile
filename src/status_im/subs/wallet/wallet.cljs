@@ -154,7 +154,8 @@
 (rf/reg-sub
  :wallet/wallet-send-token-symbol
  :<- [:wallet/wallet-send]
- :-> :token-symbol)
+ (fn [{:keys [token-symbol token]}]
+   (or token-symbol (:symbol token))))
 
 (rf/reg-sub
  :wallet/wallet-send-disabled-from-chain-ids
