@@ -1,9 +1,7 @@
 (ns status-im.contexts.wallet.send.utils
   (:require
-    [native-module.core :as native-module]
     [status-im.constants :as constants]
     [status-im.contexts.wallet.common.utils.networks :as network-utils]
-    [utils.hex :as utils.hex]
     [utils.money :as money]))
 
 (defn amount-in-hex
@@ -43,36 +41,60 @@
   [route]
   (money/wei->ether (reduce money/add (map calculate-gas-fee route))))
 
+(defn- path-amount-in
+  [path]
+  (-> path :amount-in money/from-hex))
+
+(defn- path-amount-out
+  [path]
+  (if (-> path :bridge-name (= "Hop"))
+    (let [{:keys [token-fees bonder-fees amount-in]} path]
+      (-> amount-in
+          money/from-hex
+          (money/sub token-fees)
+          (money/add bonder-fees)))
+    (-> path :amount-out money/from-hex)))
+
+(defn- convert-wei-to-eth
+  [amount native-token? token-decimals]
+  (money/with-precision
+   (if native-token?
+     (money/wei->ether amount)
+     (money/token->unit amount token-decimals))
+   constants/token-display-precision))
+
 (defn network-amounts-by-chain
   [{:keys [route token-decimals native-token? receiver?]}]
   (reduce
    (fn [acc path]
-     (let [amount-hex   (if receiver? (:amount-out path) (:amount-in path))
-           amount-units (native-module/hex-to-number
-                         (utils.hex/normalize-hex amount-hex))
-           amount       (money/with-precision
-                         (if native-token?
-                           (money/wei->ether amount-units)
-                           (money/token->unit amount-units
-                                              token-decimals))
-                         constants/token-display-precision)
-           chain-id     (if receiver? (get-in path [:to :chain-id]) (get-in path [:from :chain-id]))]
-       (update acc chain-id money/add amount)))
+     (let [amount   (if receiver?
+                      (path-amount-out path)
+                      (path-amount-in path))
+           chain-id (if receiver?
+                      (get-in path [:to :chain-id])
+                      (get-in path [:from :chain-id]))]
+       (as-> amount $
+         (convert-wei-to-eth $ token-decimals native-token?)
+         (update acc chain-id money/add $))))
    {}
    route))
+
+(defn path-estimated-received
+  [path]
+  (-> path
+      :amount-in
+      money/from-hex
+      (money/sub (:token-fees path))))
 
 (defn estimated-received-by-chain
   [{:keys [route token-decimals native-token?]}]
   (reduce
    (fn [acc path]
-     (let [amount   (as-> path $
-                      (:estimated-received $)
-                      (if native-token?
-                        (money/wei->ether $)
-                        (money/token->unit $ token-decimals))
-                      (money/with-precision $ constants/token-display-precision))
-           chain-id (get-in path [:to :chain-id])]
-       (update acc chain-id money/add amount)))
+     (let [chain-id           (get-in path [:to :chain-id])
+           estimated-received (-> path
+                                  path-estimated-received
+                                  (convert-wei-to-eth token-decimals native-token?))]
+       (update acc chain-id money/add estimated-received)))
    {}
    route))
 
