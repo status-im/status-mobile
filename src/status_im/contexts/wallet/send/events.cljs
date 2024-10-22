@@ -561,7 +561,7 @@
                        :error error-message}))
          {:fx [[:dispatch
                 (cond
-                  (and failure? swap?) [:wallet/swap-proposal-error error-message]
+                  (and failure? swap?) [:wallet/swap-proposal-error error]
                   failure?             [:wallet/suggested-routes-error error-message]
                   swap?                [:wallet/swap-proposal-success (fix-routes data)]
                   :else                [:wallet/suggested-routes-success (fix-routes data)

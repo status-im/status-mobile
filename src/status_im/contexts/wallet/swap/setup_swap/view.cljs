@@ -29,7 +29,9 @@
 (def ^:private default-token-symbol "ETH")
 
 (defn- on-close
-  []
+  [start-point]
+  (when (= start-point :action-menu)
+    (rf/dispatch [:centralized-metrics/track :metric/swap-closed]))
   (rf/dispatch [:wallet/clean-swap-proposal {:clean-approval-transaction? true}])
   (events-helper/navigate-back))
 
@@ -263,16 +265,22 @@
                                         :text                 error-text}
                                  pay-input-error?
                                  (merge {:action?         true
-                                         :on-button-press #(rf/dispatch [:show-bottom-sheet
-                                                                         {:content buy-token/view}])
+                                         :on-button-press (fn []
+                                                            (rf/dispatch [:centralized-metrics/track
+                                                                          :metric/swap-buy-assets])
+                                                            (rf/dispatch [:show-bottom-sheet
+                                                                          {:content buy-token/view}]))
                                          :button-text     (i18n/label :t/add-assets)})
                                  (= error-response-code
                                     constants/router-error-code-not-enough-native-balance)
                                  (merge {:action?         true
-                                         :on-button-press #(rf/dispatch
-                                                            [:show-bottom-sheet
-                                                             {:content (fn []
-                                                                         [buy-token/view])}])
+                                         :on-button-press (fn []
+                                                            (rf/dispatch [:centralized-metrics/track
+                                                                          :metric/swap-buy-eth])
+                                                            (rf/dispatch
+                                                             [:show-bottom-sheet
+                                                              {:content (fn []
+                                                                          [buy-token/view])}]))
                                          :button-text     (i18n/label :t/add-eth)}))]
     (when (or pay-input-error? error-response)
       [quo/alert-banner props])))
@@ -337,6 +345,7 @@
         asset-to-pay                                (rf/sub [:wallet/swap-asset-to-pay])
         asset-to-receive                            (rf/sub [:wallet/swap-asset-to-receive])
         network                                     (rf/sub [:wallet/swap-network])
+        start-point                                 (rf/sub [:wallet/swap-start-point])
         pay-input-amount                            (controlled-input/input-value pay-input-state)
         pay-token-decimals                          (:decimals asset-to-pay)
         pay-token-balance-selected-chain            (number/convert-to-whole-number
@@ -463,7 +472,7 @@
      [asset-to-receive])
     [rn/view {:style style/container}
      [account-switcher/view
-      {:on-press      on-close
+      {:on-press      #(on-close start-point)
        :icon-name     :i/arrow-left
        :margin-top    (safe-area/get-top)
        :switcher-type :select-account
