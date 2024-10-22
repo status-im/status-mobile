@@ -11,43 +11,16 @@
     [status-im.contexts.wallet.common.account-switcher.view :as account-switcher]
     [status-im.contexts.wallet.common.asset-list.view :as asset-list]
     [status-im.contexts.wallet.common.utils :as utils]
+    [status-im.contexts.wallet.send.input-amount.estimated-fees :as estimated-fees]
     [status-im.contexts.wallet.send.input-amount.style :as style]
     [status-im.contexts.wallet.send.routes.view :as routes]
     [status-im.contexts.wallet.sheets.buy-token.view :as buy-token]
     [status-im.contexts.wallet.sheets.unpreferred-networks-alert.view :as unpreferred-networks-alert]
-    [status-im.feature-flags :as ff]
     [status-im.setup.hot-reload :as hot-reload]
     [utils.debounce :as debounce]
     [utils.i18n :as i18n]
     [utils.money :as money]
     [utils.re-frame :as rf]))
-
-(defn- estimated-fees
-  [{:keys [loading-routes? fees amount]}]
-  [rn/view {:style style/estimated-fees-container}
-   (when (ff/enabled? ::ff/wallet.advanced-sending)
-     [rn/view {:style style/estimated-fees-content-container}
-      [quo/button
-       {:icon-only?          true
-        :type                :outline
-        :size                32
-        :inner-style         {:opacity 1}
-        :accessibility-label :advanced-button
-        :disabled?           loading-routes?
-        :on-press            #(js/alert "Not implemented yet")}
-       :i/advanced]])
-   [quo/data-item
-    {:container-style style/fees-data-item
-     :status          (if loading-routes? :loading :default)
-     :size            :small
-     :title           (i18n/label :t/fees)
-     :subtitle        fees}]
-   [quo/data-item
-    {:container-style style/amount-data-item
-     :status          (if loading-routes? :loading :default)
-     :size            :small
-     :title           (i18n/label :t/recipient-gets)
-     :subtitle        amount}]])
 
 (defn- every-network-value-is-zero?
   [sender-network-values]
@@ -219,10 +192,6 @@
                                            input-value
                                            (rf/sub [:wallet/send-amount-formatted
                                                     (/ input-value conversion-rate)]))
-        total-amount-receiver            (rf/sub [:wallet/total-amount])
-        amount-text                      (-> (rf/sub [:wallet/send-amount-formatted
-                                                      total-amount-receiver])
-                                             (str " " token-symbol))
         show-select-asset-sheet          #(rf/dispatch
                                            [:show-bottom-sheet
                                             {:content (fn []
@@ -375,10 +344,9 @@
        [not-enough-asset])
      (when (or (and (not no-routes-found?) (or loading-routes? route))
                not-enough-asset?)
-       [estimated-fees
+       [estimated-fees/view
         {:loading-routes? loading-routes?
-         :fees            fee-formatted
-         :amount          amount-text}])
+         :fees            fee-formatted}])
      (when show-no-routes?
        [no-routes-found])
      [quo/bottom-actions
