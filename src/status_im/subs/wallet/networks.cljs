@@ -1,7 +1,6 @@
 (ns status-im.subs.wallet.networks
   (:require [re-frame.core :as re-frame]
-            [status-im.contexts.wallet.common.utils.networks :as network-utils]
-            [utils.money :as money]))
+            [status-im.contexts.wallet.common.utils.networks :as network-utils]))
 
 (def max-network-prefixes 2)
 
@@ -74,18 +73,3 @@
                  {:amount amount :token-symbol token-symbol})))
       {}
       network-values))))
-
-(re-frame/reg-sub
- :wallet/total-amount
- :<- [:wallet/wallet-send]
- (fn [{:keys [from-values-by-chain estimated-received-by-chain]} [_ to-values?]]
-   (let [network-values (if to-values?
-                          estimated-received-by-chain
-                          from-values-by-chain)]
-     (reduce
-      (fn [acc amount]
-        (if (money/bignumber? amount)
-          (money/add acc amount)
-          acc))
-      (money/bignumber 0)
-      (vals network-values)))))

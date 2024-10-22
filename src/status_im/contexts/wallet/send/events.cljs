@@ -66,10 +66,6 @@
                                            :token-decimals token-decimals
                                            :native-token?  native-token?
                                            :receiver?      true})
-           estimated-received-values     (send-utils/estimated-received-by-chain
-                                          {:route          chosen-route
-                                           :token-decimals token-decimals
-                                           :native-token?  native-token?})
            sender-possible-chain-ids     (map :chain-id sender-network-values)
            sender-network-values         (if routes-available?
                                            (send-utils/network-amounts
@@ -108,16 +104,15 @@
        {:db (update-in db
                        [:wallet :ui :send]
                        assoc
-                       :suggested-routes            suggested-routes-data
-                       :route                       chosen-route
-                       :from-values-by-chain        from-network-amounts-by-chain
-                       :to-values-by-chain          to-network-amounts-by-chain
-                       :estimated-received-by-chain estimated-received-values
-                       :sender-network-values       sender-network-values
-                       :receiver-network-values     receiver-network-values
-                       :network-links               network-links
-                       :loading-suggested-routes?   false
-                       :enough-assets?              true)}))))
+                       :suggested-routes          suggested-routes-data
+                       :route                     chosen-route
+                       :from-values-by-chain      from-network-amounts-by-chain
+                       :to-values-by-chain        to-network-amounts-by-chain
+                       :sender-network-values     sender-network-values
+                       :receiver-network-values   receiver-network-values
+                       :network-links             network-links
+                       :loading-suggested-routes? false
+                       :enough-assets?            true)}))))
 
 (rf/reg-event-fx
  :wallet/suggested-routes-error

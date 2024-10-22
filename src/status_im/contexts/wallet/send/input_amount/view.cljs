@@ -224,7 +224,7 @@
                                            (number/remove-trailing-zeroes
                                             (.toFixed (/ input-value conversion-rate)
                                                       crypto-decimals)))
-        total-amount-receiver            (rf/sub [:wallet/total-amount true])
+        total-amount-receiver            (rf/sub [:wallet/total-amount])
         amount-text                      (str (number/remove-trailing-zeroes
                                                (.toFixed total-amount-receiver
                                                          (min token-decimals 6)))
