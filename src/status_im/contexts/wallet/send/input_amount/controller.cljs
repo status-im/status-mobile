@@ -5,7 +5,8 @@
     [status-im.contexts.wallet.send.input-amount.controlled-input-logic :as controlled-input-logic]
     [utils.money :as money]
     [utils.number :as number]
-    [utils.re-frame :as rf]))
+    [utils.re-frame :as rf]
+    [status-im.common.router :as router]))
 
 ;; notes
 ;; token-by-symbol and token looks very similar but they have difference in market values data
@@ -35,13 +36,17 @@
  :<- [:wallet/wallet-send-token]
  :<- [:profile/currency]
  :<- [:profile/currency-symbol]
+ :<- [:profile/profile]
  (fn [[{token-symbol :symbol
         total-balance :total-balance
         :as
         token}
-       currency currency-symbol]]
+       currency
+       currency-symbol
+       {fiat-currency :currency}]]
    {:usd-conversion-rate (utils/token-usd-price token)
     :currency            currency
+    :fiat-currency       fiat-currency
     :currency-symbol     currency-symbol
     :token-symbol        token-symbol
     :conversion-rate     (-> token
@@ -54,6 +59,37 @@
                              utils/calc-max-crypto-decimals)
     :token               token
     :total-balance       total-balance}))
+
+(rf/reg-sub :send-input-amount-screen/routes-information
+ :<- [:wallet/wallet-send-route]
+ :<- [:wallet/wallet-send-sender-network-values]
+ :<- [:wallet/wallet-send-receiver-network-values]
+ :<- [:wallet/wallet-send-suggested-routes]
+ :<- [:wallet/wallet-send-loading-suggested-routes?]
+ (fn [[route
+       sender-network-values
+       receiver-network-values
+       suggested-routes
+       loading-routes?]]
+   {:route                   route
+    :sender-network-values   sender-network-values
+    :receiver-network-values receiver-network-values
+    :suggested-routes        suggested-routes
+    :loading-routes?         loading-routes?
+    :routes                  (when suggested-routes
+                               (or (:best suggested-routes) []))}))
+
+(rf/reg-sub :send-input-amount-screen/networks-information
+ :<- [:wallet/wallet-send-token]
+ :<- [:wallet/wallet-send-receiver-networks]
+ :<- [:wallet/wallet-send-receiver-preferred-networks]
+ (fn [[{token-networks :networks}
+       receiver-networks
+       receiver-preferred-networks
+      ]]
+   {:token-networks              token-networks
+    :receiver-networks           receiver-networks
+    :receiver-preferred-networks receiver-preferred-networks}))
 
 (rf/reg-sub :send-input-amount-screen/token-by-symbol
  :<- [:wallet/wallet-send-enabled-from-chain-ids]
@@ -88,6 +124,17 @@
      (number/remove-trailing-zeroes
       (.toFixed (/ token-input-value conversion-rate)
                 token-decimals)))))
+
+(rf/reg-sub
+ :send-input-amount-screen/token-not-supported-in-receiver-networks?
+ :<- [:wallet/wallet-send-tx-type]
+ :<- [:send-input-amount-screen/routes-information]
+ (fn [[tx-type
+       {:keys [receiver-network-values]}]]
+   (and (not= tx-type :tx/bridge)
+        (->> receiver-network-values
+             (remove #(= (:type %) :add))
+             (every? #(= (:type %) :not-available))))))
 
 (defn- fiat->crypto
   [value conversion-rate]
@@ -147,33 +194,59 @@
 
 (rf/reg-sub :send-input-amount-screen/data
  :<- [:send-input-amount-screen/controller]
+ :<- [:send-input-amount-screen/currency-information]
  :<- [:send-input-amount-screen/upper-limit]
  :<- [:send-input-amount-screen/amount-in-crypto]
  :<- [:send-input-amount-screen/token-input-converted-value]
  :<- [:send-input-amount-screen/token-input-converted-value-prettified]
  :<- [:send-input-amount-screen/value-out-of-limits?]
  :<- [:send-input-amount-screen/upper-limit-prettified]
- (fn [[{:keys [crypto-currency? token-input-value] :as controller}
-       upper-limit
-       amount-in-crypto
-       token-input-converted-value
-       token-input-converted-value-prettified
-       value-out-of-limits?
-       upper-limit-prettified]]
-   {:crypto-currency?                       crypto-currency?
-    :upper-limit                            upper-limit
-    :upper-limit-prettified                 upper-limit-prettified
-    :input-value                            token-input-value
-    :value-out-of-limits?                   value-out-of-limits?
-    :valid-input?                           (not (or (controlled-input-logic/empty-value?
-                                                      token-input-value)
-                                                     value-out-of-limits?))
-    :upper-limit-exceeded?                  (controlled-input-logic/upper-limit-exceeded?
-                                             token-input-value
-                                             upper-limit)
-    :amount-in-crypto                       amount-in-crypto
-    :token-input-converted-value            token-input-converted-value
-    :token-input-converted-value-prettified token-input-converted-value-prettified}))
+ :<- [:send-input-amount-screen/routes-information]
+ :<- [:send-input-amount-screen/token-not-supported-in-receiver-networks?]
+ :<- [:send-input-amount-screen/networks-information]
+ (fn
+   [[{:keys [crypto-currency? token-input-value] :as controller}
+     {:keys [fiat-currency token-symbol token] :as currency-information}
+     upper-limit
+     amount-in-crypto
+     token-input-converted-value
+     token-input-converted-value-prettified
+     value-out-of-limits?
+     upper-limit-prettified
+     {:keys [route
+             routes
+             sender-network-values
+             loading-routes?]
+      :as   routes-information}
+     token-not-supported-in-receiver-networks?
+     {:keys [token-networks
+             receiver-networks
+             receiver-preferred-networks]}]]
+   {:crypto-currency?                          crypto-currency?
+    :fiat-currency                             fiat-currency
+    :token                                     token
+    :token-symbol                              token-symbol
+    :upper-limit                               upper-limit
+    :upper-limit-prettified                    upper-limit-prettified
+    :input-value                               token-input-value
+    :value-out-of-limits?                      value-out-of-limits?
+    :valid-input?                              (not (or (controlled-input-logic/empty-value?
+                                                         token-input-value)
+                                                        value-out-of-limits?))
+    :upper-limit-exceeded?                     (controlled-input-logic/upper-limit-exceeded?
+                                                token-input-value
+                                                upper-limit)
+    :amount-in-crypto                          amount-in-crypto
+    :token-input-converted-value               token-input-converted-value
+    :token-input-converted-value-prettified    token-input-converted-value-prettified
+    :route                                     route
+    :routes                                    routes
+    :sender-network-values                     sender-network-values
+    :loading-routes?                           loading-routes?
+    :token-not-supported-in-receiver-networks? token-not-supported-in-receiver-networks?
+    :token-networks                            token-networks
+    :receiver-networks                         receiver-networks
+    :receiver-preferred-networks               receiver-preferred-networks}))
 
 
 
