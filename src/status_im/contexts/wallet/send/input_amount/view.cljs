@@ -20,7 +20,6 @@
     [utils.debounce :as debounce]
     [utils.i18n :as i18n]
     [utils.money :as money]
-    [utils.number :as number]
     [utils.re-frame :as rf]))
 
 (defn- estimated-fees
@@ -199,10 +198,7 @@
                                              :market-values-per-currency
                                              currency
                                              :price)
-        token-decimals                   (-> token
-                                             utils/token-usd-price
-                                             utils/one-cent-value
-                                             utils/calc-max-crypto-decimals)
+        token-decimals                   (rf/sub [:wallet/send-display-token-decimals])
         [input-state set-input-state]    (rn/use-state controlled-input/init-state)
         clear-input!                     #(set-input-state controlled-input/delete-all)
         currency-symbol                  (rf/sub [:profile/currency-symbol])
@@ -221,15 +217,12 @@
                                                   (controlled-input/input-error input-state)))
         amount-in-crypto                 (if crypto-currency?
                                            input-value
-                                           (number/remove-trailing-zeroes
-                                            (.toFixed (/ input-value conversion-rate)
-                                                      crypto-decimals)))
+                                           (rf/sub [:wallet/send-amount-formatted
+                                                    (/ input-value conversion-rate)]))
         total-amount-receiver            (rf/sub [:wallet/total-amount])
-        amount-text                      (str (number/remove-trailing-zeroes
-                                               (.toFixed total-amount-receiver
-                                                         (min token-decimals 6)))
-                                              " "
-                                              token-symbol)
+        amount-text                      (-> (rf/sub [:wallet/send-amount-formatted
+                                                      total-amount-receiver])
+                                             (str " " token-symbol))
         show-select-asset-sheet          #(rf/dispatch
                                            [:show-bottom-sheet
                                             {:content (fn []

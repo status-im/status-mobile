@@ -1,10 +1,12 @@
 (ns status-im.subs.wallet.send
   (:require
     [re-frame.core :as rf]
-    [status-im.contexts.wallet.common.activity-tab.constants :as constants]
+    [status-im.constants :as constants]
+    [status-im.contexts.wallet.common.activity-tab.constants :as activity-constants]
+    [status-im.contexts.wallet.common.utils :as common-utils]
     [status-im.contexts.wallet.send.utils :as send-utils]
     [utils.money :as money]
-    [utils.number]))
+    [utils.number :as number]))
 
 (rf/reg-sub
  :wallet/send-tab
@@ -26,6 +28,11 @@
  :wallet/send-route
  :<- [:wallet/wallet-send]
  :-> :route)
+
+(rf/reg-sub
+ :wallet/send-token
+ :<- [:wallet/wallet-send]
+ :-> :token)
 
 (rf/reg-sub
  :wallet/send-transaction-ids
@@ -70,7 +77,7 @@
      (->> address-activity
           (sort :timestamp)
           (keep (fn [{:keys [activity-type recipient]}]
-                  (when (= constants/wallet-activity-type-send activity-type)
+                  (when (= activity-constants/wallet-activity-type-send activity-type)
                     recipient)))
           (distinct)))))
 
@@ -105,6 +112,18 @@
    (if collectible 0 (:decimals token))))
 
 (rf/reg-sub
+ :wallet/send-display-token-decimals
+ :<- [:wallet/wallet-send]
+ (fn [{:keys [token collectible]}]
+   (if collectible
+     0
+     (-> token
+         common-utils/token-usd-price
+         common-utils/one-cent-value
+         common-utils/calc-max-crypto-decimals
+         (min constants/min-token-decimals-to-display)))))
+
+(rf/reg-sub
  :wallet/send-native-token?
  :<- [:wallet/wallet-send]
  (fn [{:keys [token token-display-name]}]
@@ -125,3 +144,12 @@
             vals
             (reduce money/add default-amount))
        default-amount))))
+
+(rf/reg-sub
+ :wallet/send-amount-formatted
+ :<- [:wallet/send-display-token-decimals]
+ (fn [token-decimals [_ amount]]
+   (-> amount
+       (money/to-fixed token-decimals)
+       money/to-string
+       number/remove-trailing-zeroes)))
