@@ -592,6 +592,12 @@
    (get-in ui [:account-page :active-tab])))
 
 (rf/reg-sub
+ :wallet/home-tab
+ :<- [:wallet/ui]
+ (fn [ui]
+   (:active-tab ui)))
+
+(rf/reg-sub
  :wallet/aggregated-tokens
  :<- [:wallet/accounts-without-watched-accounts]
  (fn [accounts]
