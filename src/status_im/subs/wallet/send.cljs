@@ -6,7 +6,8 @@
     [status-im.contexts.wallet.common.utils :as common-utils]
     [status-im.contexts.wallet.send.utils :as send-utils]
     [utils.money :as money]
-    [utils.number :as number]))
+    [utils.number :as number]
+    [quo.components.utilities.token.view :as token]))
 
 (rf/reg-sub
  :wallet/send-tab
@@ -146,10 +147,28 @@
        default-amount))))
 
 (rf/reg-sub
+ :wallet/send-total-amount-formatted
+ :<- [:wallet/total-amount]
+ :<- [:wallet/send-display-token-decimals]
+ :<- [:wallet/wallet-send-token-symbol]
+ (fn [[amount token-decimals token-symbol]]
+   (-> amount
+       (number/to-fixed token-decimals)
+       (str " " token-symbol))))
+
+(rf/reg-sub
  :wallet/send-amount-formatted
  :<- [:wallet/send-display-token-decimals]
  (fn [token-decimals [_ amount]]
-   (-> amount
-       (money/to-fixed token-decimals)
-       money/to-string
-       number/remove-trailing-zeroes)))
+   (number/to-fixed amount token-decimals)))
+
+(rf/reg-sub
+ :wallet/bridge-to-network-details
+ :<- [:wallet/wallet-send]
+ :<- [:wallet/network-details]
+ (fn [[{:keys [bridge-to-chain-id]} networks]]
+   (some (fn [network]
+           (when
+             (= (:chain-id network) bridge-to-chain-id)
+             network))
+         networks)))
