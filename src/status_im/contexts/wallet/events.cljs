@@ -1,6 +1,7 @@
 (ns status-im.contexts.wallet.events
   (:require
     [camel-snake-kebab.extras :as cske]
+    [cljs-time.coerce :as time-coerce]
     [clojure.set]
     [clojure.string :as string]
     [react-native.platform :as platform]
@@ -224,7 +225,8 @@
              {:error  error
               :event  :wallet/get-wallet-token-for-account
               :params address})
-   {:db (assoc-in db [:wallet :ui :tokens-loading address] false)}))
+   {:fx [[:dispatch [:wallet/get-last-wallet-token-update-if-needed]]]
+    :db (assoc-in db [:wallet :ui :tokens-loading address] false)}))
 
 (rf/reg-event-fx
  :wallet/store-wallet-token
@@ -240,9 +242,33 @@
                                                  accounts))
                                              stored-accounts
                                              tokens-per-account))]
-     {:db (-> db
+     {:fx [[:dispatch [:wallet/get-last-wallet-token-update-if-needed]]]
+      :db (-> db
               (update-in [:wallet :accounts] add-tokens tokens)
               (assoc-in [:wallet :ui :tokens-loading address] false))})))
+
+(rf/reg-event-fx
+ :wallet/get-last-wallet-token-update-if-needed
+ (fn [{:keys [db]}]
+   (let [all-tokens-loaded? (->> (get-in db [:wallet :ui :tokens-loading])
+                                 vals
+                                 (every? false?))]
+     (when all-tokens-loaded?
+       {:fx [[:json-rpc/call
+              [{:method     "wallet_getLastWalletTokenUpdate"
+                :params     []
+                :on-success [:wallet/get-last-wallet-token-update-success]
+                :on-error   [:wallet/log-rpc-error
+                             {:event :wallet/get-last-wallet-token-update-if-needed}]}]]]}))))
+
+(rf/reg-event-fx
+ :wallet/get-last-wallet-token-update-success
+ (fn [{:keys [db]} [data]]
+   (let [last-updates (reduce (fn [acc [k v]]
+                                (assoc acc k (time-coerce/from-long (* 1000 v))))
+                              {}
+                              data)]
+     {:db (assoc-in db [:wallet :ui :last-updates-per-address] last-updates)})))
 
 (rf/defn scan-address-success
   {:events [:wallet/scan-address-success]}
@@ -653,3 +679,10 @@
                    new-account-addresses)))))
 
 (rf/reg-event-fx :wallet/reconcile-keypairs reconcile-keypairs)
+
+(rf/reg-event-fx
+ :wallet/blockchain-health-changed
+ (fn [{:keys [db]} [{:keys [message]}]]
+   (let [full-status (cske/transform-keys message transforms/->kebab-case-keyword)]
+     {:db (assoc-in db [:wallet :blockchain] full-status)})))
+

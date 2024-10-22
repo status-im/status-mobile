@@ -94,13 +94,16 @@
            notification-count
            activity-center-on-press
            scan-on-press
-           qr-code-on-press]
+           qr-code-on-press
+           right-section-content]
     :as   props}]
   (let [theme               (quo.theme/use-theme)
         button-common-props (get-button-common-props {:theme    theme
                                                       :jump-to? jump-to?
                                                       :blur?    blur?})]
     [rn/view {:style style/right-section}
+     (when right-section-content
+       right-section-content)
      [button/button
       (assoc button-common-props :accessibility-label :open-scanner-button :on-press scan-on-press)
       :i/scan]
@@ -137,6 +140,7 @@
    :qr-code-on-press callback
    :notification-count number
    :max-unread-notifications used to specify max number for counter
+   :right-section-content 
    "
   [{:keys [avatar-on-press avatar-props customization-color container-style] :as props}]
   [rn/view {:style (merge style/top-nav-container container-style)}
