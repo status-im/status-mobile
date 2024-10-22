@@ -160,7 +160,7 @@
  :wallet/send-amount-formatted
  :<- [:wallet/send-display-token-decimals]
  (fn [token-decimals [_ amount]]
-   (number/to-fixed amount token-decimals)))
+   (number/to-fixed (money/->bignumber amount) token-decimals)))
 
 (rf/reg-sub
  :wallet/bridge-to-network-details

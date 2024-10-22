@@ -47,7 +47,7 @@
 
 (defn- path-amount-out
   [path]
-  (if (-> path :bridge-name (= "Hop"))
+  (if (-> path :bridge-name (= constants/bridge-name-hop))
     (let [{:keys [token-fees bonder-fees amount-in]} path]
       (-> amount-in
           money/from-hex
@@ -84,7 +84,7 @@
   bridge transactions, the amount is the difference between the
   `amount-in` and the `token-fees`."
   [path]
-  (if (-> path :bridge-name (= "Hop"))
+  (if (-> path :bridge-name (= constants/bridge-name-hop))
     (-> path
         :amount-in
         money/from-hex
