@@ -27,12 +27,20 @@
   [balance]
   (cut-fiat-balance balance 2))
 
-(defn prettify-balance
-  [currency-symbol balance]
+(defn prepend-curency-symbol-to-fiat-balance
+  [fiat-balance currency-symbol]
   (let [formatted-symbol (if (> (count currency-symbol) 1)
                            (str currency-symbol " ")
                            currency-symbol)]
-    (str formatted-symbol (cut-fiat-balance-to-two-decimals balance))))
+    (str formatted-symbol fiat-balance))
+)
+
+(defn prettify-balance
+  [currency-symbol fiat-balance]
+  (-> fiat-balance
+      cut-fiat-balance-to-two-decimals
+      (prepend-curency-symbol-to-fiat-balance currency-symbol)
+  ))
 
 (defn get-derivation-path
   [number-of-accounts]
@@ -104,11 +112,15 @@
       :else                          (number/remove-trailing-zeroes
                                       (.toFixed token-units standardized-decimals-count)))))
 
+(defn add-token-symbol-to-crypto-balance
+  [crypto-balance token-symbol]
+  (str crypto-balance " " (string/upper-case token-symbol)))
+
 (defn prettify-crypto-balance
   [token-symbol crypto-balance conversion-rate]
-  (str (cut-crypto-decimals-to-fit-usd-cents crypto-balance conversion-rate)
-       " "
-       (string/upper-case token-symbol)))
+  (-> crypto-balance
+      (cut-crypto-decimals-to-fit-usd-cents conversion-rate)
+      (add-token-symbol-to-crypto-balance token-symbol)))
 
 (defn get-standard-crypto-format
   "For full details: https://github.com/status-im/status-mobile/issues/18225"

@@ -49,5 +49,5 @@
                                         {:send
                                          {:input-amount-screen
                                           {:controller
-                                           {:crypto-currency? true
-                                            :input-state      controlled-input/init-state}}}}}})
+                                           {:crypto-currency?  true
+                                            :token-input-value ""}}}}}})

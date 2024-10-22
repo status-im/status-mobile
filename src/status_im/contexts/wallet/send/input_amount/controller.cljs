@@ -2,6 +2,7 @@
   (:require
     [status-im.common.controlled-input.utils :as controlled-input]
     [status-im.contexts.wallet.common.utils :as utils]
+    [status-im.contexts.wallet.send.input-amount.controlled-input-logic :as controlled-input-logic]
     [utils.money :as money]
     [utils.number :as number]
     [utils.re-frame :as rf]))
@@ -14,28 +15,23 @@
 
 ;; subs
 
-(rf/reg-sub
- :layers/ui
+(rf/reg-sub :layers/ui
  :<- [:layers]
  :-> :ui)
 
-(rf/reg-sub
- :ui/send
+(rf/reg-sub :ui/send
  :<- [:layers/ui]
  :-> :send)
 
-(rf/reg-sub
- :ui/send-input-amount-screen
+(rf/reg-sub :ui/send-input-amount-screen
  :<- [:ui/send]
  :-> :input-amount-screen)
 
-(rf/reg-sub
- :send-input-amount-screen/controller
+(rf/reg-sub :send-input-amount-screen/controller
  :<- [:ui/send-input-amount-screen]
  :-> :controller)
 
-(rf/reg-sub
- :send-input-amount-screen/currency-information
+(rf/reg-sub :send-input-amount-screen/currency-information
  :<- [:wallet/wallet-send-token]
  :<- [:profile/currency]
  :<- [:profile/currency-symbol]
@@ -59,8 +55,7 @@
     :token               token
     :total-balance       total-balance}))
 
-(rf/reg-sub
- :send-input-amount-screen/token-by-symbol
+(rf/reg-sub :send-input-amount-screen/token-by-symbol
  :<- [:wallet/wallet-send-enabled-from-chain-ids]
  :<- [:send-input-amount-screen/currency-information]
  (fn [[enabled-from-chain-ids {:keys [token-symbol]}]]
@@ -68,8 +63,7 @@
             (str token-symbol)
             enabled-from-chain-ids])))
 
-(rf/reg-sub
- :send-input-amount-screen/max-limit
+(rf/reg-sub :send-input-amount-screen/upper-limit
  :<- [:send-input-amount-screen/controller]
  :<- [:send-input-amount-screen/currency-information]
  (fn [[{:keys [crypto-currency?]}
@@ -87,94 +81,144 @@
  :send-input-amount-screen/amount-in-crypto
  :<- [:send-input-amount-screen/controller]
  :<- [:send-input-amount-screen/currency-information]
- (fn [[{:keys [crypto-currency? input-state]}
+ (fn [[{:keys [crypto-currency? token-input-value]}
        {:keys [conversion-rate token-decimals]}]]
-   (let [input-value (controlled-input/input-value input-state)]
-     (if crypto-currency?
-       input-value
-       (number/remove-trailing-zeroes
-        (.toFixed (/ input-value conversion-rate)
-                  token-decimals))))))
+   (if crypto-currency?
+     token-input-value
+     (number/remove-trailing-zeroes
+      (.toFixed (/ token-input-value conversion-rate)
+                token-decimals)))))
 
-(rf/reg-sub
- :send-input-amount-screen/token-input-converted-value
+(defn- fiat->crypto
+  [value conversion-rate]
+  (-> value
+      (money/fiat->crypto conversion-rate)
+      (utils/cut-crypto-decimals-to-fit-usd-cents conversion-rate)))
+
+(defn- crypto->fiat
+  [value conversion-rate]
+  (-> value
+      (money/crypto->fiat conversion-rate)
+      (utils/cut-fiat-balance-to-two-decimals)))
+
+(rf/reg-sub :send-input-amount-screen/token-input-converted-value
  :<- [:send-input-amount-screen/controller]
  :<- [:send-input-amount-screen/currency-information]
- (fn [[{:keys [crypto-currency? input-state]}
-       {:keys [conversion-rate currency-symbol token-symbol]}]]
-   (let [input-value (controlled-input/input-value input-state)]
-     (if crypto-currency?
-       (utils/prettify-balance
-        currency-symbol
-        (money/crypto->fiat input-value
-                            conversion-rate))
-       (utils/prettify-crypto-balance
-        (or (clj->js token-symbol) "")
-        (money/fiat->crypto input-value
-                            conversion-rate)
-        conversion-rate)))))
+ (fn [[{:keys [crypto-currency? token-input-value]}
+       {:keys [conversion-rate]}]]
+   (if crypto-currency?
+     (crypto->fiat token-input-value conversion-rate)
+     (fiat->crypto token-input-value conversion-rate))))
 
+(rf/reg-sub :send-input-amount-screen/token-input-converted-value-prettified
+ :<- [:send-input-amount-screen/controller]
+ :<- [:send-input-amount-screen/token-input-converted-value]
+ :<- [:send-input-amount-screen/currency-information]
+ (fn [[{:keys [crypto-currency?]}
+       token-input-converted-value
+       {:keys [currency-symbol token-symbol]}]]
+   (if crypto-currency?
+     (utils/prepend-curency-symbol-to-fiat-balance token-input-converted-value currency-symbol)
+     (utils/add-token-symbol-to-crypto-balance token-input-converted-value
+                                               (or (clj->js token-symbol) "")))))
 
-
-(rf/reg-sub
- :send-input-amount-screen/data
+(rf/reg-sub :send-input-amount-screen/upper-limit-prettified
  :<- [:send-input-amount-screen/controller]
  :<- [:send-input-amount-screen/currency-information]
- :<- [:send-input-amount-screen/max-limit]
+ :<- [:send-input-amount-screen/upper-limit]
+ (fn [[{:keys [crypto-currency?]}
+       {:keys [currency-symbol token-symbol conversion-rate]}
+       upper-limit]]
+   (if crypto-currency?
+     (utils/prettify-crypto-balance
+      (or (clj->js token-symbol) "")
+      (money/bignumber upper-limit)
+      conversion-rate)
+     (utils/prettify-balance currency-symbol
+                             (money/bignumber upper-limit)))
+ ))
+
+(rf/reg-sub :send-input-amount-screen/value-out-of-limits?
+ :<- [:send-input-amount-screen/controller]
+ :<- [:send-input-amount-screen/upper-limit]
+ (fn [[{:keys [token-input-value]}
+       upper-limit]]
+   (controlled-input-logic/value-out-of-limits? token-input-value upper-limit 0)))
+
+(rf/reg-sub :send-input-amount-screen/data
+ :<- [:send-input-amount-screen/controller]
+ :<- [:send-input-amount-screen/upper-limit]
  :<- [:send-input-amount-screen/amount-in-crypto]
  :<- [:send-input-amount-screen/token-input-converted-value]
- (fn [[{:keys [crypto-currency? input-state] :as controller}
-       {:keys [conversion-rate]}
-       max-limit
+ :<- [:send-input-amount-screen/token-input-converted-value-prettified]
+ :<- [:send-input-amount-screen/value-out-of-limits?]
+ :<- [:send-input-amount-screen/upper-limit-prettified]
+ (fn [[{:keys [crypto-currency? token-input-value] :as controller}
+       upper-limit
        amount-in-crypto
-       token-input-converted-value]]
-   {:crypto-currency?            crypto-currency?
-    :max-limit                   max-limit
-    :input-state                 input-state
-    :input-value                 (controlled-input/input-value input-state)
-    :input-error                 (controlled-input/input-error input-state)
-    :valid-input?                (not (or (controlled-input/empty-value? input-state)
-                                          (controlled-input/input-error input-state)))
-    :limit-exceeded?             (controlled-input/upper-limit-exceeded? input-state)
-    :amount-in-crypto            amount-in-crypto
-    :token-input-converted-value token-input-converted-value
-    :conversion-rate             conversion-rate
-   }))
+       token-input-converted-value
+       token-input-converted-value-prettified
+       value-out-of-limits?
+       upper-limit-prettified]]
+   {:crypto-currency?                       crypto-currency?
+    :upper-limit                            upper-limit
+    :upper-limit-prettified                 upper-limit-prettified
+    :input-value                            token-input-value
+    :value-out-of-limits?                   value-out-of-limits?
+    :valid-input?                           (not (or (controlled-input-logic/empty-value?
+                                                      token-input-value)
+                                                     value-out-of-limits?))
+    :upper-limit-exceeded?                  (controlled-input-logic/upper-limit-exceeded?
+                                             token-input-value
+                                             upper-limit)
+    :amount-in-crypto                       amount-in-crypto
+    :token-input-converted-value            token-input-converted-value
+    :token-input-converted-value-prettified token-input-converted-value-prettified}))
 
 
 
 ;; events
+(def token-input-value-path [:layers :ui :send :input-amount-screen :controller :token-input-value])
 
-(rf/reg-event-fx
- :send-input-amount-screen/set-input-state
+(rf/reg-event-fx :send-input-amount-screen/set-input-state
  (fn [{:keys [db]} [f]]
    {:db (update-in db [:layers :ui :send :input-amount-screen :controller :input-state] f)}))
 
-(rf/reg-event-fx
- :send-input-amount-screen/swap-between-fiat-and-crypto
- (fn [{:keys [db]} [crypto-currency? conversion-rate]]
-   {:db (update-in db [:layers :ui :send :input-amount-screen :controller :crypto-currency?] not)
-    :fx (if crypto-currency?
-          [[:dispatch
-            [:send-input-amount-screen/set-input-state #(controlled-input/->fiat % conversion-rate)]]]
-          [[:dispatch
-            [:send-input-amount-screen/set-input-state
-             #(controlled-input/->crypto % conversion-rate)]]])}))
+(rf/reg-event-fx :send-input-amount-screen/set-token-input-value
+ (fn [{:keys [db]} [v]]
+   {:db (assoc-in db token-input-value-path v)}))
 
+
+(rf/reg-event-fx :send-input-amount-screen/swap-between-fiat-and-crypto
+ (fn [{:keys [db]} [token-input-converted-value]]
+   {:db (update-in db [:layers :ui :send :input-amount-screen :controller :crypto-currency?] not)
+    :fx [[:dispatch
+          [:send-input-amount-screen/set-token-input-value token-input-converted-value]]]}))
+
+
+(rf/reg-event-fx :send-input-amount-screen/token-input-add-character
+ (fn [{:keys [db]} [c]]
+   {:db (update-in db token-input-value-path #(controlled-input-logic/add-character % c))}))
+
+(rf/reg-event-fx :send-input-amount-screen/token-input-delete-last
+ (fn [{:keys [db]}]
+   {:db (update-in db token-input-value-path controlled-input-logic/delete-last)}))
+
+(rf/reg-event-fx :send-input-amount-screen/token-input-delete-all
+ (fn [{:keys [db]}]
+   {:db (assoc-in db token-input-value-path "")}))
 
 
 
 (comment
   (rf/dispatch [:send-input-amount-screen/swap-between-fiat-and-crypto])
-  (rf/sub [:send-input-amount-screen/max-limit])
+  (rf/sub [:send-input-amount-screen/upper-limit])
   (rf/sub [:send-input-amount-screen/amount-in-crypto])
   (rf/sub [:send-input-amount-screen/data])
   (rf/sub [:send-input-amount-screen/controller])
 
-  (rf/dispatch [:send-input-amount-screen/set-input-state #(controlled-input/add-character % "1")])
   (rf/dispatch [:send-input-amount-screen/set-input-state])
 
   (tap> {:token-by-symbol (rf/sub [:send-input-amount-screen/token-by-symbol])
          :token           (:token (rf/sub [:send-input-amount-screen/currency-information]))})
-
 )

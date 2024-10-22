@@ -6,7 +6,6 @@
     [quo.theme]
     [react-native.core :as rn]
     [react-native.safe-area :as safe-area]
-    [status-im.common.controlled-input.utils :as controlled-input]
     [status-im.constants :as constants]
     [status-im.contexts.wallet.common.account-switcher.view :as account-switcher]
     [status-im.contexts.wallet.common.asset-list.view :as asset-list]
@@ -227,15 +226,15 @@
     enabled-from-chain-ids :enabled-from-chain-ids
     from-enabled-networks  :from-enabled-networks}]
   (let [{:keys [crypto-currency?
-                max-limit
-                input-state
+                upper-limit
+                upper-limit-prettified
                 input-value
-                input-error
+                value-out-of-limits?
                 valid-input?
-                limit-exceeded?
+                upper-limit-exceeded?
                 amount-in-crypto
                 token-input-converted-value
-                conversion-rate]
+                token-input-converted-value-prettified]
          :as   state}                             (rf/sub [:send-input-amount-screen/data])
         view-id                                   (rf/sub [:view-id])
         active-screen?                            (= view-id current-screen-id)
@@ -259,9 +258,7 @@
                                                       utils/one-cent-value
                                                       utils/calc-max-crypto-decimals)
         clear-input!                              #(rf/dispatch
-                                                    [:send-input-amount-screen/set-input-state
-                                                     controlled-input/delete-all])
-        currency-symbol                           (rf/sub [:profile/currency-symbol])
+                                                    [:send-input-amount-screen/token-input-delete-all])
         loading-routes?                           (rf/sub
                                                    [:wallet/wallet-send-loading-suggested-routes?])
         route                                     (rf/sub [:wallet/wallet-send-route])
@@ -315,26 +312,26 @@
                                                                   receiver-preferred-networks-set
                                                                   receiver-selected-network))
                                                                receiver-networks))
-        should-try-again?                         (and (not limit-exceeded?) no-routes-found?)
+        should-try-again?                         (and (not upper-limit-exceeded?) no-routes-found?)
         current-address                           (rf/sub [:wallet/current-viewing-account-address])
         owned-eth-token                           (rf/sub [:wallet/token-by-symbol
                                                            (string/upper-case
                                                             constants/mainnet-short-name)
                                                            enabled-from-chain-ids])
         not-enough-asset?                         (and
-                                                   (or no-routes-found? limit-exceeded?)
+                                                   (or no-routes-found? upper-limit-exceeded?)
                                                    (not-empty sender-network-values)
                                                    (if (= token-symbol
                                                           (string/upper-case
                                                            constants/mainnet-short-name))
                                                      (money/equal-to
-                                                      (controlled-input/value-bn input-state)
-                                                      (controlled-input/upper-limit-bn input-state))
+                                                      (money/bignumber input-value)
+                                                      (money/bignumber upper-limit))
                                                      (money/equal-to (:total-balance
                                                                       owned-eth-token)
                                                                      0)))
         show-no-routes?                           (and
-                                                   (or no-routes-found? limit-exceeded?)
+                                                   (or no-routes-found? upper-limit-exceeded?)
                                                    (not-empty sender-network-values)
                                                    (not not-enough-asset?))
         request-fetch-routes                      (fn [bounce-duration-ms]
@@ -343,9 +340,8 @@
                                                       :valid-input?           valid-input?
                                                       :bounce-duration-ms     bounce-duration-ms
                                                       :token                  token
-                                                      :reset-amounts-to-zero? (and limit-exceeded?
-                                                                                   (some? routes))}))
-       ]
+                                                      :reset-amounts-to-zero? (and upper-limit-exceeded?
+                                                                                   (some? routes))}))]
     (rn/use-effect
      (fn []
        (when active-screen?
@@ -359,15 +355,10 @@
     (hot-reload/use-safe-unmount on-navigate-back)
     (rn/use-effect
      (fn []
-       (rf/dispatch [:send-input-amount-screen/set-input-state
-                     #(controlled-input/set-upper-limit % max-limit)]))
-     [max-limit])
-    (rn/use-effect
-     (fn []
-       (when input-error
+       (when value-out-of-limits?
          (rf/dispatch [:wallet/stop-get-suggested-routes])
          (debounce/clear-all)))
-     [input-error])
+     [value-out-of-limits?])
     (rn/use-effect
      (fn []
        (clear-input!)
@@ -381,7 +372,7 @@
     [rn/view
      {:style               style/screen
       :accessibility-label (str "container"
-                                (when input-error "-error"))}
+                                (when value-out-of-limits? "-error"))}
      [account-switcher/view
       {:icon-name     :i/arrow-left
        :on-press      #(rf/dispatch [:navigate-back])
@@ -391,24 +382,17 @@
        :token-symbol    token-symbol
        :value           input-value
        :on-swap         #(rf/dispatch [:send-input-amount-screen/swap-between-fiat-and-crypto
-                                       crypto-currency? conversion-rate])
+                                       token-input-converted-value])
        :on-token-press  show-select-asset-sheet
-       :error?          input-error
+       :error?          value-out-of-limits?
        :currency-symbol (if crypto-currency? token-symbol fiat-currency)
-       :converted-value token-input-converted-value
+       :converted-value token-input-converted-value-prettified
        :hint-component  [quo/network-tags
                          {:networks (seq from-enabled-networks)
                           :title    (i18n/label
                                      :t/send-limit
-                                     {:limit (if crypto-currency?
-                                               (utils/prettify-crypto-balance
-                                                (or (clj->js token-symbol) "")
-                                                (controlled-input/upper-limit-bn input-state)
-                                                conversion-rate)
-                                               (utils/prettify-balance currency-symbol
-                                                                       (controlled-input/upper-limit-bn
-                                                                        input-state)))})
-                          :status   (when (controlled-input/input-error input-state) :error)}]}]
+                                     {:limit upper-limit-prettified})
+                          :status   (when value-out-of-limits? :error)}]}]
      [routes/view
       {:token                                     token-by-symbol
        :send-amount-in-crypto                     amount-in-crypto
@@ -458,16 +442,14 @@
                                      regex         (re-pattern regex-pattern)]
                                  (when (re-matches regex new-text)
                                    (debounce/clear-all)
-                                   (rf/dispatch [:send-input-amount-screen/set-input-state
-                                                 #(controlled-input/add-character % c)]))))
+                                   (rf/dispatch [:send-input-amount-screen/token-input-add-character
+                                                 c]))))
        :on-delete            (fn []
                                (debounce/clear-all)
-                               (rf/dispatch [:send-input-amount-screen/set-input-state
-                                             controlled-input/delete-last])
+                               (rf/dispatch [:send-input-amount-screen/token-input-delete-last])
                                (rf/dispatch-sync [:wallet/stop-and-clean-suggested-routes]))
        :on-long-press-delete (fn []
                                (debounce/clear-all)
-                               (rf/dispatch [:send-input-amount-screen/set-input-state
-                                             controlled-input/delete-all])
+                               (rf/dispatch [:send-input-amount-screen/token-input-delete-all])
                                (rf/dispatch-sync [:wallet/stop-and-clean-suggested-routes]))}]]))
 
