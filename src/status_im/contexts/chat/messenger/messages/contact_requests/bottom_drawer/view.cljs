@@ -12,10 +12,13 @@
 (defn view
   [{:keys [contact-id]}]
   (let [customization-color       (rf/sub [:profile/customization-color])
-        [primary-name _]          (rf/sub [:contacts/contact-two-names-by-identity contact-id])
         {:keys [contact-request-state
-                community-id]}    (rf/sub [:chats/current-chat-chat-view])
+                community-id
+                chat-name]}       (rf/sub [:chats/current-chat-chat-view])
         chat-type                 (rf/sub [:chats/chat-type])
+        [primary-name _]          (if (= chat-type :public-chat)
+                                    [(str "#" chat-name) ""]
+                                    (rf/sub [:contacts/contact-two-names-by-identity contact-id]))
         community-chat?           (= chat-type :community-chat)
         joined                    (when community-chat?
                                     (rf/sub [:communities/community-joined community-id]))

@@ -125,7 +125,8 @@
  :<- [:contacts/blocked-set]
  :<- [:contacts/contacts-raw]
  :<- [:chat/inputs]
- (fn [[{:keys [group-chat chat-id] :as current-chat} my-public-key community blocked-users-set contacts
+ (fn [[{:keys [group-chat chat-id chat-name name] :as current-chat} my-public-key community
+       blocked-users-set contacts
        inputs]]
    (when current-chat
      (cond-> current-chat
@@ -139,6 +140,9 @@
             (group-chats.db/member? my-public-key current-chat))
        (assoc :able-to-send-message? true
               :member?               true)
+
+       (not chat-name)
+       (assoc :chat-name name)
 
        (not group-chat)
        (assoc
@@ -164,6 +168,7 @@
    (condp apply [current-chat]
      chat.events/community-chat? :community-chat
      chat.events/group-chat?     :group-chat
+     chat.events/public-chat?    :public-chat
      :chat)))
 
 (re-frame/reg-sub
