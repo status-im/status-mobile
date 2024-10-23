@@ -137,7 +137,6 @@
   ;; for component tests only
   [{default-on-confirm       :on-confirm
     default-limit-crypto     :limit-crypto
-    default-crypto-decimals  :crypto-decimals
     on-navigate-back         :on-navigate-back
     button-one-label         :button-one-label
     button-one-props         :button-one-props
@@ -178,7 +177,6 @@
         loading-routes?                  (rf/sub [:wallet/wallet-send-loading-suggested-routes?])
         route                            (rf/sub [:wallet/wallet-send-route])
         on-confirm                       (or default-on-confirm handle-on-confirm)
-        crypto-decimals                  (or token-decimals default-crypto-decimals)
         max-limit                        (if crypto-currency?
                                            (utils/cut-crypto-decimals-to-fit-usd-cents
                                             token-balance
@@ -378,7 +376,7 @@
        :delete-key?          true
        :on-press             (fn [c]
                                (let [new-text      (str input-value c)
-                                     max-decimals  (if crypto-currency? crypto-decimals 2)
+                                     max-decimals  (if crypto-currency? token-decimals 2)
                                      regex-pattern (str "^\\d*\\.?\\d{0," max-decimals "}$")
                                      regex         (re-pattern regex-pattern)]
                                  (when (re-matches regex new-text)
