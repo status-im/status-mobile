@@ -95,7 +95,8 @@
                             ;; otherwise sometimes you'll get weird errors when
                             ;; instrumenting functions.
                             :static-fns         false
-                            :infer-externs      true}
+                            :infer-externs      true
+                            :reader-features    #{:mobile}}
          ;; if you want to use a real device, set your local ip
          ;; in the SHADOW_HOST env variable to make sure that
          ;; it will use the right interface
@@ -129,7 +130,8 @@
                        :static-fns         true
                        :fn-invoke-direct   true
                        :optimizations      :advanced
-                       :js-options         {:js-provider :closure}}}}
+                       :js-options         {:js-provider :closure}
+                       :reader-features    #{:mobile}}}}
   ;; the tests are ran with node, react-native dependencies are mocked
   ;; by using node --require override.js, which uses the node-library
   ;; produced by the target :mocks below and redefines node require
@@ -169,12 +171,13 @@
    {;; needed because we override require and it
     ;; messes with source-map which reports callstack
     ;; exceeded exceptions instead of real issues
-    :source-map    false
+    :source-map      false
     ;; needed because we use deref in tests
-    :static-fns    false
-    :optimizations :simple
-    :warnings      {:fn-deprecated false}
-    :infer-externs true}}
+    :static-fns      false
+    :optimizations   :simple
+    :warnings        {:fn-deprecated false}
+    :infer-externs   true
+    :reader-features #{:mobile}}}
 
   ;; mock.js-dependencies is mocking the react-native libraries
   ;; we build it as a node library so that it can be required by
