@@ -541,7 +541,8 @@
      :component wallet-swap-select-asset-to-pay/view}
 
     {:name      :screen/wallet.setup-swap
-     :options   {:insets {:bottom? true}}
+     :options   {:modalPresentationStyle :overCurrentContext
+                 :insets                 {:bottom? true}}
      :component wallet-swap-setup-swap/view}
 
     {:name      :screen/wallet.swap-propasal
