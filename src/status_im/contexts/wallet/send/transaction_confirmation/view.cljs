@@ -221,9 +221,8 @@
             bridge-to-network         (when bridge-to-chain-id
                                         (rf/sub [:wallet/network-details-by-chain-id
                                                  bridge-to-chain-id]))
-            loading-suggested-routes? (rf/sub
-                                       [:wallet/wallet-send-loading-suggested-routes?])
-            total-amount-receiver     (rf/sub [:wallet/total-amount true])
+            loading-suggested-routes? (rf/sub [:wallet/wallet-send-loading-suggested-routes?])
+            total-amount-receiver     (rf/sub [:wallet/total-amount-in-to-chains])
             from-account-props        {:customization-color account-color
                                        :size                32
                                        :emoji               (:emoji account)

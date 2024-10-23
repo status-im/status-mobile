@@ -1,12 +1,10 @@
 (ns status-im.contexts.wallet.send.input-amount.controller
   (:require
-    [status-im.common.controlled-input.utils :as controlled-input]
     [status-im.contexts.wallet.common.utils :as utils]
     [status-im.contexts.wallet.send.input-amount.controlled-input-logic :as controlled-input-logic]
     [utils.money :as money]
     [utils.number :as number]
-    [utils.re-frame :as rf]
-    [status-im.common.router :as router]))
+    [utils.re-frame :as rf]))
 
 ;; notes
 ;; token-by-symbol and token looks very similar but they have difference in market values data
@@ -38,7 +36,6 @@
  :<- [:profile/currency-symbol]
  :<- [:profile/profile]
  (fn [[{token-symbol :symbol
-        total-balance :total-balance
         :as
         token}
        currency
@@ -57,8 +54,44 @@
                              utils/token-usd-price
                              utils/one-cent-value
                              utils/calc-max-crypto-decimals)
-    :token               token
-    :total-balance       total-balance}))
+    :token               token}))
+
+(rf/reg-sub :send-input-amount-screen/max-decimals
+ :<- [:send-input-amount-screen/controller]
+ :<- [:send-input-amount-screen/currency-information]
+ :<- [:wallet/wallet-send-receiver-preferred-networks]
+ (fn [[{:keys [crypto-currency?]}
+       {:keys [token-decimals]}]]
+   (if crypto-currency? token-decimals 2)))
+
+(rf/reg-sub :send-input-amount-screen/enabled-from-chain-ids
+ :<- [:wallet/wallet-send-tx-type]
+ :<- [:wallet/wallet-send-enabled-from-chain-ids]
+ :<- [:wallet/bridge-from-chain-ids]
+ (fn [[tx-type send-chain-ids bridge-chain-ids]]
+   (if (= tx-type :tx/bridge)
+     bridge-chain-ids
+     send-chain-ids)))
+
+(rf/reg-sub :send-input-amount-screen/from-enabled-networks
+ :<- [:wallet/wallet-send-tx-type]
+ :<- [:wallet/wallet-send-enabled-networks]
+ :<- [:wallet/bridge-from-networks]
+ (fn [[tx-type send-enabled-networks bridge-enabled-networks]]
+   (if (= tx-type :tx/bridge)
+     bridge-enabled-networks
+     send-enabled-networks)))
+
+
+(defn- every-network-value-is-zero?
+  [sender-network-values]
+  (every? (fn [{:keys [total-amount]}]
+            (and
+             total-amount
+             (money/bignumber? total-amount)
+             (money/equal-to total-amount
+                             (money/bignumber "0"))))
+          sender-network-values))
 
 (rf/reg-sub :send-input-amount-screen/routes-information
  :<- [:wallet/wallet-send-route]
@@ -66,18 +99,32 @@
  :<- [:wallet/wallet-send-receiver-network-values]
  :<- [:wallet/wallet-send-suggested-routes]
  :<- [:wallet/wallet-send-loading-suggested-routes?]
+ :<- [:wallet/wallet-send-tx-type]
  (fn [[route
        sender-network-values
        receiver-network-values
        suggested-routes
-       loading-routes?]]
-   {:route                   route
-    :sender-network-values   sender-network-values
-    :receiver-network-values receiver-network-values
-    :suggested-routes        suggested-routes
-    :loading-routes?         loading-routes?
-    :routes                  (when suggested-routes
-                               (or (:best suggested-routes) []))}))
+       loading-routes?
+       tx-type]]
+   (let [token-not-supported-in-receiver-networks? (and (not= tx-type :tx/bridge)
+                                                        (->> receiver-network-values
+                                                             (remove #(= (:type %) :add))
+                                                             (every? #(= (:type %) :not-available))))
+         routes                                    (when suggested-routes
+                                                     (or (:best suggested-routes) []))]
+     {:route                                     route
+      :sender-network-values                     sender-network-values
+      :receiver-network-values                   receiver-network-values
+      :suggested-routes                          suggested-routes
+      :loading-routes?                           loading-routes?
+      :routes                                    routes
+      :token-not-supported-in-receiver-networks? token-not-supported-in-receiver-networks?
+      :no-routes-found?                          (and
+                                                  (every-network-value-is-zero?
+                                                   sender-network-values)
+                                                  (not (nil? routes))
+                                                  (not loading-routes?)
+                                                  (not token-not-supported-in-receiver-networks?))})))
 
 (rf/reg-sub :send-input-amount-screen/networks-information
  :<- [:wallet/wallet-send-token]
@@ -85,25 +132,35 @@
  :<- [:wallet/wallet-send-receiver-preferred-networks]
  (fn [[{token-networks :networks}
        receiver-networks
-       receiver-preferred-networks
-      ]]
-   {:token-networks              token-networks
-    :receiver-networks           receiver-networks
-    :receiver-preferred-networks receiver-preferred-networks}))
+       receiver-preferred-networks]]
+   {:token-networks                   token-networks
+    :receiver-networks                receiver-networks
+    :sending-to-unpreferred-networks? (not (every? (fn [receiver-selected-network]
+                                                     (contains?
+                                                      (set receiver-preferred-networks)
+                                                      receiver-selected-network))
+                                                   receiver-networks))}))
 
 (rf/reg-sub :send-input-amount-screen/token-by-symbol
- :<- [:wallet/wallet-send-enabled-from-chain-ids]
+ :<- [:send-input-amount-screen/enabled-from-chain-ids]
  :<- [:send-input-amount-screen/currency-information]
  (fn [[enabled-from-chain-ids {:keys [token-symbol]}]]
    (rf/sub [:wallet/token-by-symbol
             (str token-symbol)
             enabled-from-chain-ids])))
 
+(rf/reg-sub :send-input-amount-screen/total-balance
+ :<- [:send-input-amount-screen/token-by-symbol]
+ (fn [{:keys [total-balance]}]
+   total-balance))
+
 (rf/reg-sub :send-input-amount-screen/upper-limit
  :<- [:send-input-amount-screen/controller]
  :<- [:send-input-amount-screen/currency-information]
+ :<- [:send-input-amount-screen/total-balance]
  (fn [[{:keys [crypto-currency?]}
-       {:keys [total-balance usd-conversion-rate conversion-rate]}]]
+       {:keys [usd-conversion-rate conversion-rate]}
+       total-balance]]
    (if crypto-currency?
      (utils/cut-crypto-decimals-to-fit-usd-cents
       total-balance
@@ -124,17 +181,6 @@
      (number/remove-trailing-zeroes
       (.toFixed (/ token-input-value conversion-rate)
                 token-decimals)))))
-
-(rf/reg-sub
- :send-input-amount-screen/token-not-supported-in-receiver-networks?
- :<- [:wallet/wallet-send-tx-type]
- :<- [:send-input-amount-screen/routes-information]
- (fn [[tx-type
-       {:keys [receiver-network-values]}]]
-   (and (not= tx-type :tx/bridge)
-        (->> receiver-network-values
-             (remove #(= (:type %) :add))
-             (every? #(= (:type %) :not-available))))))
 
 (defn- fiat->crypto
   [value conversion-rate]
@@ -192,6 +238,35 @@
        upper-limit]]
    (controlled-input-logic/value-out-of-limits? token-input-value upper-limit 0)))
 
+(rf/reg-sub :send-input-amount-screen/recipient-gets-amount
+ :<- [:send-input-amount-screen/currency-information]
+ :<- [:wallet/total-amount-in-to-chains]
+ (fn [[{:keys [conversion-rate token-symbol]}
+       total-amount-receiver]]
+   (utils/prettify-crypto-balance
+    token-symbol
+    total-amount-receiver
+    conversion-rate)))
+
+#_(rf/reg-sub :send-input-amount-screen/owned-eth-balance-is-zero?
+   :<- [:send-input-amount-screen/currency-information]
+   :<- [:wallet/total-amount-in-to-chains]
+   (fn [[{:keys [conversion-rate token-symbol]}
+         total-amount-receiver]]
+     (let [owned-eth-token (rf/sub [:wallet/token-by-symbol
+                                    (string/upper-case
+                                     constants/mainnet-short-name)
+                                    enabled-from-chain-ids])])
+   ))
+
+(rf/reg-sub :send-input-amount-screen/fee-formatted
+ :<- [:send-input-amount-screen/routes-information]
+ (fn [{:keys [route]}]
+   (let [native-currency-symbol (when-not (or (nil? route) (empty? route))
+                                  (get-in (first route)
+                                          [:from :native-currency-symbol]))]
+     (rf/sub [:wallet/wallet-send-fee-fiat-formatted native-currency-symbol]))))
+
 (rf/reg-sub :send-input-amount-screen/data
  :<- [:send-input-amount-screen/controller]
  :<- [:send-input-amount-screen/currency-information]
@@ -202,8 +277,13 @@
  :<- [:send-input-amount-screen/value-out-of-limits?]
  :<- [:send-input-amount-screen/upper-limit-prettified]
  :<- [:send-input-amount-screen/routes-information]
- :<- [:send-input-amount-screen/token-not-supported-in-receiver-networks?]
  :<- [:send-input-amount-screen/networks-information]
+ :<- [:send-input-amount-screen/token-by-symbol]
+ :<- [:send-input-amount-screen/recipient-gets-amount]
+ :<- [:send-input-amount-screen/max-decimals]
+ :<- [:send-input-amount-screen/fee-formatted]
+ :<- [:send-input-amount-screen/enabled-from-chain-ids]
+ :<- [:send-input-amount-screen/from-enabled-networks]
  (fn
    [[{:keys [crypto-currency? token-input-value] :as controller}
      {:keys [fiat-currency token-symbol token] :as currency-information}
@@ -216,12 +296,19 @@
      {:keys [route
              routes
              sender-network-values
-             loading-routes?]
+             loading-routes?
+             token-not-supported-in-receiver-networks?
+             no-routes-found?]
       :as   routes-information}
-     token-not-supported-in-receiver-networks?
      {:keys [token-networks
              receiver-networks
-             receiver-preferred-networks]}]]
+             sending-to-unpreferred-networks?]}
+     token-by-symbol
+     recipient-gets-amount
+     max-decimals
+     fee-formatted
+     enabled-from-chain-ids
+     from-enabled-networks]]
    {:crypto-currency?                          crypto-currency?
     :fiat-currency                             fiat-currency
     :token                                     token
@@ -246,7 +333,14 @@
     :token-not-supported-in-receiver-networks? token-not-supported-in-receiver-networks?
     :token-networks                            token-networks
     :receiver-networks                         receiver-networks
-    :receiver-preferred-networks               receiver-preferred-networks}))
+    :token-by-symbol                           token-by-symbol
+    :recipient-gets-amount                     recipient-gets-amount
+    :max-decimals                              max-decimals
+    :fee-formatted                             fee-formatted
+    :sending-to-unpreferred-networks?          sending-to-unpreferred-networks?
+    :no-routes-found?                          no-routes-found?
+    :enabled-from-chain-ids                    enabled-from-chain-ids
+    :from-enabled-networks                     from-enabled-networks}))
 
 
 
@@ -270,8 +364,13 @@
 
 
 (rf/reg-event-fx :send-input-amount-screen/token-input-add-character
- (fn [{:keys [db]} [c]]
-   {:db (update-in db token-input-value-path #(controlled-input-logic/add-character % c))}))
+ (fn [{:keys [db]} [c max-decimals]]
+   (let [input-value   (get-in db token-input-value-path)
+         new-text      (str input-value c)
+         regex-pattern (str "^\\d*\\.?\\d{0," max-decimals "}$")
+         regex         (re-pattern regex-pattern)]
+     (when (re-matches regex new-text)
+       {:db (update-in db token-input-value-path #(controlled-input-logic/add-character % c))}))))
 
 (rf/reg-event-fx :send-input-amount-screen/token-input-delete-last
  (fn [{:keys [db]}]
@@ -282,16 +381,3 @@
    {:db (assoc-in db token-input-value-path "")}))
 
 
-
-(comment
-  (rf/dispatch [:send-input-amount-screen/swap-between-fiat-and-crypto])
-  (rf/sub [:send-input-amount-screen/upper-limit])
-  (rf/sub [:send-input-amount-screen/amount-in-crypto])
-  (rf/sub [:send-input-amount-screen/data])
-  (rf/sub [:send-input-amount-screen/controller])
-
-  (rf/dispatch [:send-input-amount-screen/set-input-state])
-
-  (tap> {:token-by-symbol (rf/sub [:send-input-amount-screen/token-by-symbol])
-         :token           (:token (rf/sub [:send-input-amount-screen/currency-information]))})
-)

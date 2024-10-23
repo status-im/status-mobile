@@ -75,15 +75,13 @@
       {}
       network-values))))
 
-(re-frame/reg-sub
- :wallet/total-amount
+(re-frame/reg-sub :wallet/total-amount-in-to-chains
  :<- [:wallet/wallet-send]
- (fn [{:keys [from-values-by-chain to-values-by-chain]} [_ to-values?]]
-   (let [network-values (if to-values? to-values-by-chain from-values-by-chain)]
-     (reduce
-      (fn [acc amount]
-        (if (money/bignumber? amount)
-          (money/add acc amount)
-          acc))
-      (money/bignumber 0)
-      (vals network-values)))))
+ (fn [{:keys [to-values-by-chain]}]
+   (reduce
+    (fn [acc amount]
+      (if (money/bignumber? amount)
+        (money/add acc amount)
+        acc))
+    (money/bignumber 0)
+    (vals to-values-by-chain))))
