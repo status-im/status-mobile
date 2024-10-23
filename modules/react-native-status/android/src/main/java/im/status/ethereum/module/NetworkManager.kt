@@ -35,9 +35,14 @@ class NetworkManager(private val reactContext: ReactApplicationContext) : ReactC
 
     @ReactMethod
     fun inputConnectionStringForBootstrapping(connectionString: String, configJSON: String, callback: Callback) {
-        val jsonConfig = JSONObject(configJSON)
+        val receiverClientConfig = JSONObject(configJSON)
+        val params = JSONObject().apply {
+            put("connectionString", connectionString)
+            put("receiverClientConfig", receiverClientConfig)
+        }
+        val jsonString = params.toString()
         utils.executeRunnableStatusGoMethod(
-            { Statusgo.inputConnectionStringForBootstrapping(connectionString, jsonConfig.toString()) },
+            { Statusgo.inputConnectionStringForBootstrappingV2(jsonString) },
             callback
         )
     }
@@ -52,7 +57,12 @@ class NetworkManager(private val reactContext: ReactApplicationContext) : ReactC
 
     @ReactMethod
     fun sendTransaction(txArgsJSON: String, password: String, callback: Callback) {
-        utils.executeRunnableStatusGoMethod({ Statusgo.sendTransaction(txArgsJSON, password) }, callback)
+        val jsonParams = JSONObject().apply {
+            put("txArgs", txArgsJSON)
+            put("password", password)
+        }
+        val jsonString = jsonParams.toString()
+        utils.executeRunnableStatusGoMethod({ Statusgo.sendTransactionV2(jsonString) }, callback)
     }
 
     @ReactMethod
@@ -85,13 +95,18 @@ class NetworkManager(private val reactContext: ReactApplicationContext) : ReactC
 
     @ReactMethod
     fun inputConnectionStringForImportingKeypairsKeystores(connectionString: String, configJSON: String, callback: Callback) {
-        val jsonConfig = JSONObject(configJSON)
-        val receiverConfig = jsonConfig.getJSONObject("receiverConfig")
+        val keystoreFilesReceiverClientConfig = JSONObject(configJSON)
+        val receiverConfig = keystoreFilesReceiverClientConfig.getJSONObject("receiverConfig")
         val keyStorePath = utils.pathCombine(utils.getNoBackupDirectory(), "/keystore")
         receiverConfig.put("keystorePath", keyStorePath)
 
+        val params = JSONObject().apply {
+            put("connectionString", connectionString)
+            put("keystoreFilesReceiverClientConfig", keystoreFilesReceiverClientConfig)
+        }
+
         utils.executeRunnableStatusGoMethod(
-                { Statusgo.inputConnectionStringForImportingKeypairsKeystores(connectionString, jsonConfig.toString()) },
+                { Statusgo.inputConnectionStringForImportingKeypairsKeystoresV2(params.toString()) },
                 callback
         )
     }
