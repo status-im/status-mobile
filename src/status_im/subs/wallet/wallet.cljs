@@ -144,11 +144,12 @@
                                        (remove disabled-from-chain-ids?)
                                        set)]
      (some-> token
-             (assoc :networks          (network-utils/network-list token networks)
-                    :available-balance (utils/calculate-total-token-balance token)
-                    :total-balance     (utils/calculate-total-token-balance
-                                        token
-                                        enabled-from-chain-ids))))))
+             (assoc :networks           (network-utils/network-list-with-positive-balance token networks)
+                    :supported-networks (network-utils/network-list token networks)
+                    :available-balance  (utils/calculate-total-token-balance token)
+                    :total-balance      (utils/calculate-total-token-balance
+                                         token
+                                         enabled-from-chain-ids))))))
 
 (rf/reg-sub
  :wallet/wallet-send-token-symbol
@@ -459,6 +460,7 @@
                                                    networks)
                                                   chain-ids
                                                   (filter #(some #{(:chain-id %)} chain-ids)))
+                                      :supported-networks (network-utils/network-list token networks)
                                       :available-balance (utils/calculate-total-token-balance token)
                                       :total-balance (utils/calculate-total-token-balance
                                                       token

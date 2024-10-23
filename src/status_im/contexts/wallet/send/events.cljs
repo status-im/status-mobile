@@ -53,7 +53,7 @@
            token-decimals                (if collectible 0 (:decimals token))
            native-token?                 (and token (= token-display-name "ETH"))
            routes-available?             (pos? (count chosen-route))
-           token-networks                (:networks token)
+           token-networks                (:supported-networks token)
            token-networks-ids            (when token-networks
                                            (map #(:chain-id %) token-networks))
            from-network-amounts-by-chain (send-utils/network-amounts-by-chain
@@ -230,7 +230,7 @@
 (rf/reg-event-fx
  :wallet/edit-token-to-send
  (fn [{:keys [db]} [token]]
-   (let [{token-networks :networks
+   (let [{token-networks :supported-networks
           token-symbol   :symbol}                  token
          receiver-networks                         (get-in db [:wallet :ui :send :receiver-networks])
          token-networks-ids                        (map :chain-id token-networks)
@@ -426,7 +426,7 @@
             {:balances-per-chain balances-per-chain
              :disabled-chain-ids disabled-from-chain-ids
              :only-with-balance? false}))
-         token-networks-ids (when token (map #(:chain-id %) (:networks token)))
+         token-networks-ids (when token (map #(:chain-id %) (:supported-networks token)))
          sender-network-values (when sender-token-available-networks-for-suggested-routes
                                  (send-utils/loading-network-amounts
                                   {:valid-networks
@@ -708,7 +708,11 @@
                              ;; account, so we extract the token data from the picked account.
                              (let [token (utils/get-token-from-account db token-symbol address)]
                                (assoc token
-                                      :networks      (network-utils/network-list token network-details)
+                                      :networks (network-utils/network-list-with-positive-balance
+                                                 token
+                                                 network-details)
+                                      :supported-networks (network-utils/network-list token
+                                                                                      network-details)
                                       :total-balance (utils/calculate-total-token-balance token))))
          bridge-tx?        (= tx-type :tx/bridge)
          flow-id           (if bridge-tx?
