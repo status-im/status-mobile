@@ -1,5 +1,7 @@
 (ns status-im.contexts.wallet.send.input-amount.controller
   (:require
+    [clojure.string :as string]
+    [status-im.constants :as constants]
     [status-im.contexts.wallet.common.utils :as utils]
     [status-im.contexts.wallet.send.input-amount.controlled-input-logic :as controlled-input-logic]
     [utils.money :as money]
@@ -82,6 +84,14 @@
      bridge-enabled-networks
      send-enabled-networks)))
 
+
+#_(comment
+    (inc 1)
+    (rf/sub [:wallet/wallet-send])
+    (rf/sub [:send-input-amount-screen/from-enabled-networks])
+    (rf/sub [:wallet/wallet-send-tx-type])
+    (rf/sub [:wallet/wallet-send-enabled-networks])
+    (rf/sub [:wallet/bridge-from-networks]))
 
 (defn- every-network-value-is-zero?
   [sender-network-values]
@@ -248,16 +258,15 @@
     total-amount-receiver
     conversion-rate)))
 
-#_(rf/reg-sub :send-input-amount-screen/owned-eth-balance-is-zero?
-   :<- [:send-input-amount-screen/currency-information]
-   :<- [:wallet/total-amount-in-to-chains]
-   (fn [[{:keys [conversion-rate token-symbol]}
-         total-amount-receiver]]
-     (let [owned-eth-token (rf/sub [:wallet/token-by-symbol
-                                    (string/upper-case
-                                     constants/mainnet-short-name)
-                                    enabled-from-chain-ids])])
-   ))
+(rf/reg-sub :send-input-amount-screen/owned-eth-balance-is-zero?
+ :<- [:send-input-amount-screen/enabled-from-chain-ids]
+ (fn [enabled-from-chain-ids
+     ]
+   (let [owned-eth-token (rf/sub [:wallet/token-by-symbol
+                                  (string/upper-case
+                                   constants/mainnet-short-name)
+                                  enabled-from-chain-ids])]
+     (money/equal-to (:total-balance owned-eth-token) 0))))
 
 (rf/reg-sub :send-input-amount-screen/fee-formatted
  :<- [:send-input-amount-screen/routes-information]
@@ -282,8 +291,8 @@
  :<- [:send-input-amount-screen/recipient-gets-amount]
  :<- [:send-input-amount-screen/max-decimals]
  :<- [:send-input-amount-screen/fee-formatted]
- :<- [:send-input-amount-screen/enabled-from-chain-ids]
  :<- [:send-input-amount-screen/from-enabled-networks]
+ :<- [:send-input-amount-screen/owned-eth-balance-is-zero?]
  (fn
    [[{:keys [crypto-currency? token-input-value] :as controller}
      {:keys [fiat-currency token-symbol token] :as currency-information}
@@ -307,8 +316,8 @@
      recipient-gets-amount
      max-decimals
      fee-formatted
-     enabled-from-chain-ids
-     from-enabled-networks]]
+     from-enabled-networks
+     owned-eth-balance-is-zero?]]
    {:crypto-currency?                          crypto-currency?
     :fiat-currency                             fiat-currency
     :token                                     token
@@ -339,8 +348,8 @@
     :fee-formatted                             fee-formatted
     :sending-to-unpreferred-networks?          sending-to-unpreferred-networks?
     :no-routes-found?                          no-routes-found?
-    :enabled-from-chain-ids                    enabled-from-chain-ids
-    :from-enabled-networks                     from-enabled-networks}))
+    :from-enabled-networks                     from-enabled-networks
+    :owned-eth-balance-is-zero?                owned-eth-balance-is-zero?}))
 
 
 

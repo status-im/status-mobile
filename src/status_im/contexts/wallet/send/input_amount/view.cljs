@@ -9,7 +9,6 @@
     [status-im.constants :as constants]
     [status-im.contexts.wallet.common.account-switcher.view :as account-switcher]
     [status-im.contexts.wallet.common.asset-list.view :as asset-list]
-    [status-im.contexts.wallet.common.utils :as utils]
     [status-im.contexts.wallet.send.input-amount.controller]
     [status-im.contexts.wallet.send.input-amount.style :as style]
     [status-im.contexts.wallet.send.routes.view :as routes]
@@ -20,7 +19,6 @@
     [utils.debounce :as debounce]
     [utils.i18n :as i18n]
     [utils.money :as money]
-    [utils.number :as number]
     [utils.re-frame :as rf]))
 
 #_{:navigation-system           [view-id
@@ -242,9 +240,10 @@
                 fee-formatted
                 sending-to-unpreferred-networks?
                 no-routes-found?
-                enabled-from-chain-ids
-                from-enabled-networks]
+                from-enabled-networks
+                owned-eth-balance-is-zero?]
          :as   state}           (rf/sub [:send-input-amount-screen/data])
+        ;; from-enabled-networks   (rf/sub [:wallet/wallet-send-enabled-networks])
         view-id                 (rf/sub [:view-id])
         active-screen?          (= view-id current-screen-id)
         bottom                  (safe-area/get-bottom)
@@ -254,10 +253,6 @@
                                    {:content (fn [] [select-asset-bottom-sheet])}])
         should-try-again?       (and (not upper-limit-exceeded?) no-routes-found?)
         current-address         (rf/sub [:wallet/current-viewing-account-address])
-        owned-eth-token         (rf/sub [:wallet/token-by-symbol
-                                         (string/upper-case
-                                          constants/mainnet-short-name)
-                                         enabled-from-chain-ids])
         not-enough-asset?       (and
                                  (or no-routes-found? upper-limit-exceeded?)
                                  (not-empty sender-network-values)
@@ -267,9 +262,7 @@
                                    (money/equal-to
                                     (money/bignumber input-value)
                                     (money/bignumber upper-limit))
-                                   (money/equal-to (:total-balance
-                                                    owned-eth-token)
-                                                   0)))
+                                   owned-eth-balance-is-zero?))
         show-no-routes?         (and
                                  (or no-routes-found? upper-limit-exceeded?)
                                  (not-empty sender-network-values)
@@ -314,6 +307,7 @@
       {:icon-name     :i/arrow-left
        :on-press      #(rf/dispatch [:navigate-back])
        :switcher-type :select-account}]
+     (tap> from-enabled-networks)
      [quo/token-input
       {:container-style style/input-container
        :token-symbol    token-symbol
