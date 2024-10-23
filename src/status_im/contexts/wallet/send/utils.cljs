@@ -47,7 +47,7 @@
 
 (defn- path-amount-out
   [path]
-  (if (-> path :bridge-name (= constants/bridge-name-hop))
+  (if (= (:bridge-name path) constants/bridge-name-hop)
     (let [{:keys [token-fees bonder-fees amount-in]} path]
       (-> amount-in
           money/from-hex

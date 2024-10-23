@@ -3,6 +3,7 @@
     [quo.core :as quo]
     [quo.theme]
     [react-native.core :as rn]
+    [status-im.common.not-implemented :as not-implemented]
     [status-im.contexts.wallet.send.input-amount.style :as style]
     [status-im.feature-flags :as ff]
     [utils.i18n :as i18n]
@@ -55,7 +56,7 @@
         :inner-style         {:opacity 1}
         :accessibility-label :advanced-button
         :disabled?           loading-routes?
-        :on-press            #(js/alert "Not implemented yet")}
+        :on-press            not-implemented/alert}
        :i/advanced]])
    [quo/data-item
     {:container-style style/fees-data-item
