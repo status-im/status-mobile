@@ -232,12 +232,11 @@
       :sub-label           nil
       :chevron?            false})))
 
-;; TODO(OmarBasem): Requires design input.
 (defn edit-name-image-entry
-  []
+  [chat-id]
   (entry {:icon                :i/edit
           :label               (i18n/label :t/edit-name-and-image)
-          :on-press            #(js/alert "TODO: to be implemented, requires design input")
+          :on-press            #(rf/dispatch [:open-modal :screen/group-update chat-id])
           :danger?             false
           :accessibility-label :edit-name-and-image
           :sub-label           nil
@@ -359,7 +358,7 @@
                                  (rf/dispatch [:chats-list/load-chat chat-id])
                                  (rf/dispatch [:pin-message/load-pin-messages chat-id])
                                  (rf/dispatch [:hide-bottom-sheet])
-                                 (rf/dispatch [:navigate-to :group-details chat-id]))
+                                 (rf/dispatch [:navigate-to :screen/group-details chat-id]))
           :danger?             false
           :accessibility-label :group-details
           :sub-label           nil
@@ -369,18 +368,17 @@
   [chat-id admin?]
   (entry {:icon                :i/add-user
           :label               (i18n/label (if admin? :t/manage-members :t/add-members))
-          :on-press            #(rf/dispatch [:open-modal :group-add-manage-members chat-id])
+          :on-press            #(rf/dispatch [:open-modal :screen/group-add-manage-members chat-id])
           :danger?             false
           :accessibility-label :manage-members
           :sub-label           nil
           :chevron?            false}))
 
-;; TODO(OmarBasem): to be implemented.
 (defn edit-group-entry
-  []
+  [chat-id]
   (entry {:icon                :i/edit
           :label               (i18n/label :t/edit-name-and-image)
-          :on-press            #(js/alert "TODO: to be implemented")
+          :on-press            #(rf/dispatch [:open-modal :screen/group-update chat-id])
           :danger?             false
           :accessibility-label :edit-group
           :sub-label           nil
@@ -398,10 +396,11 @@
           :chevron?            false}))
 
 (defn destructive-actions
-  [{:keys [group-chat] :as item} inside-chat?]
+  [{:keys [group-chat chat-type] :as item} inside-chat?]
   [(when (not group-chat)
-     (close-chat-entry item inside-chat? (not group-chat)))
-   (clear-history-entry item group-chat)
+     (close-chat-entry item inside-chat? (not= chat-type constants/public-chat-type)))
+   (when-not (= chat-type constants/public-chat-type)
+     (clear-history-entry item group-chat))
    (when group-chat
      (leave-group-entry item nil))])
 
@@ -425,8 +424,7 @@
      (when inside-chat?
        (add-manage-members-entry chat-id admin?))
      (when (and admin? inside-chat?)
-       (when config/show-not-implemented-features?
-         (edit-group-entry)))
+       (edit-group-entry chat-id))
      (when (and admin? inside-chat?)
        (when config/show-not-implemented-features?
          (group-privacy-entry)))]))
@@ -437,6 +435,11 @@
    [[(view-profile-entry chat-id)]
     (notification-actions item inside-chat? true)
     (destructive-actions item inside-chat?)]])
+
+(defn public-chat-actions
+  [item inside-chat?]
+  [quo/action-drawer
+   [(destructive-actions item inside-chat?)]])
 
 (defn private-group-chat-actions
   [item inside-chat?]
@@ -473,6 +476,8 @@
      [one-to-one-actions chat inside-chat?]
      constants/private-group-chat-type
      [private-group-chat-actions chat inside-chat?]
+     constants/public-chat-type
+     [public-chat-actions chat inside-chat?]
      constants/community-chat-type
      [communities-chat-actions/actions chat inside-chat? hide-show-members?]
      nil))
@@ -480,13 +485,12 @@
    (chat-actions chat inside-chat? nil)))
 
 (defn group-details-actions
-  [{:keys [admins] :as group}]
+  [{:keys [chat-id admins] :as group}]
   (let [current-pub-key (rf/sub [:multiaccount/public-key])
         admin?          (get admins current-pub-key)]
     [quo/action-drawer
      [(when admin?
-        [(when config/show-not-implemented-features?
-           (edit-name-image-entry))])
+        [(edit-name-image-entry chat-id)])
       [(when config/show-not-implemented-features?
          (notifications-entry admin?))]
       (destructive-actions group false)]]))

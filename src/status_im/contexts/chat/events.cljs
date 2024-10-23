@@ -9,7 +9,7 @@
     [status-im.constants :as constants]
     [status-im.contexts.chat.contacts.events :as contacts-store]
     status-im.contexts.chat.effects
-    status-im.contexts.chat.group-create.events
+    status-im.contexts.chat.group.events
     [status-im.contexts.chat.messenger.composer.link-preview.events :as link-preview]
     status-im.contexts.chat.messenger.messages.content.reactions.events
     [status-im.contexts.chat.messenger.messages.delete-message-for-me.events :as delete-for-me]
@@ -33,8 +33,8 @@
    (multi-user-chat? (get-chat cofx chat-id))))
 
 (defn public-chat?
-  ([chat]
-   (:public? chat))
+  ([{:keys [chat-type]}]
+   (= chat-type constants/public-chat-type))
   ([cofx chat-id]
    (public-chat? (get-chat cofx chat-id))))
 
@@ -52,7 +52,7 @@
 (defn group-chat?
   ([chat]
    (and (multi-user-chat? chat)
-        (not (public-chat? chat))))
+        (not (:public? chat))))
   ([cofx chat-id]
    (group-chat? (get-chat cofx chat-id))))
 

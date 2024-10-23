@@ -77,12 +77,13 @@
 (defn token-value-drawer
   [token watch-only? entry-point]
   (let [token-symbol         (:token token)
-        token-data           (first (rf/sub [:wallet/current-viewing-account-tokens-filtered
-                                             {:query token-symbol}]))
+        token-data           (rf/sub [:wallet/token-by-symbol token-symbol])
         selected-account     (rf/sub [:wallet/current-viewing-account-address])
         token-owners         (rf/sub [:wallet/operable-addresses-with-token-symbol token-symbol])
         testnet-mode?        (rf/sub [:profile/test-networks-enabled?])
+        account-owns-token?  (rf/sub [:wallet/current-account-owns-token token-symbol])
         receive-token-symbol (if (= token-symbol "SNT") "ETH" "SNT")
+        token-owned?         (if selected-account account-owns-token? (seq token-owners))
         asset-to-receive     (rf/sub [:wallet/token-by-symbol receive-token-symbol])
         params               (cond-> {:start-flow?      true
                                       :owners           token-owners
@@ -103,11 +104,12 @@
                   (action-hide))]
         (not watch-only?)
         (concat [(action-buy)
-                 (when (seq token-owners)
+                 (when token-owned?
                    (action-send params entry-point))
                  (action-receive selected-account)
-                 (action-swap params)
-                 (when (seq token-owners)
+                 (when token-owned?
+                   (action-swap params))
+                 (when token-owned?
                    (action-bridge (assoc params
                                          :bridge-disabled?
                                          (send-utils/bridge-disabled? token-symbol))))]))]]))
