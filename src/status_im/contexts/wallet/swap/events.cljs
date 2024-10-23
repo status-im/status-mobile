@@ -17,6 +17,7 @@
  (fn [{:keys [db]} [{:keys [network asset-to-receive open-new-screen?] :as data}]]
    (let [{:keys [wallet]}       db
          test-networks-enabled? (get-in db [:profile/profile :test-networks-enabled?])
+         view-id                (:view-id db)
          account                (swap-utils/wallet-account wallet)
          asset-to-pay           (if (get-in data [:asset-to-pay :networks])
                                   (:asset-to-pay data)
@@ -30,12 +31,13 @@
      {:db (-> db
               (assoc-in [:wallet :ui :swap :asset-to-pay] asset-to-pay)
               (assoc-in [:wallet :ui :swap :asset-to-receive] asset-to-receive)
-              (assoc-in [:wallet :ui :swap :network] network'))
+              (assoc-in [:wallet :ui :swap :network] network')
+              (assoc-in [:wallet :ui :swap :launch-screen] view-id))
       :fx (if network'
             [[:dispatch [:wallet/switch-current-viewing-account (:address account)]]
              [:dispatch
               (if open-new-screen?
-                [:navigate-to :screen/wallet.setup-swap]
+                [:open-modal :screen/wallet.setup-swap]
                 [:navigate-to-within-stack
                  [:screen/wallet.setup-swap :screen/wallet.swap-select-asset-to-pay]])]
              [:dispatch [:wallet.swap/set-default-slippage]]]
@@ -293,7 +295,7 @@
                                                          :screen/wallet.swap-set-spending-cap
                                                          :screen/wallet.swap-confirmation)])
                                          (when-not approval-required?
-                                           (rf/dispatch [:wallet/select-account-tab :activity])
+                                           (rf/dispatch [:wallet/end-swap-flow])
                                            (debounce/debounce-and-dispatch
                                             [:toasts/upsert
                                              {:id   :swap-transaction-pending
@@ -419,3 +421,12 @@
                                   :last-request-uuid
                                   :approved-amount
                                   :approval-transaction-id)))})))
+
+(rf/reg-event-fx :wallet/end-swap-flow
+ (fn [{:keys [db]}]
+   (let [launch-screen (get-in db [:wallet :ui :swap :launch-screen])
+         address       (get-in db [:wallet :current-viewing-account-address])]
+     {:fx [(when (= launch-screen :wallet-stack)
+             [:dispatch [:wallet/navigate-to-account-within-stack address]])
+           [:dispatch [:wallet/fetch-activities-for-current-account]]
+           [:dispatch [:wallet/select-account-tab :activity]]]})))
