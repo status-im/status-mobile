@@ -79,6 +79,12 @@
                           (types/clj->json request)
                           #(callback (types/json->clj %))))
 
+(defn accept-terms
+  ([]
+   (native-utils/promisify-native-module-call accept-terms))
+  ([callback]
+   (.acceptTerms ^js (account-manager) callback)))
+
 (defn prepare-dir-and-update-config
   [key-uid config callback]
   (log/debug "[native-module] prepare-dir-and-update-config")

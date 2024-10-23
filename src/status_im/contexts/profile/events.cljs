@@ -4,10 +4,12 @@
     [legacy.status-im.multiaccounts.update.core :as multiaccounts.update]
     [native-module.core :as native-module]
     [status-im.config :as config]
+    [status-im.contexts.profile.data-store :as profile.data-store]
     [status-im.contexts.profile.edit.accent-colour.events]
     [status-im.contexts.profile.edit.bio.events]
     [status-im.contexts.profile.edit.header.events]
     [status-im.contexts.profile.edit.name.events]
+    status-im.contexts.profile.effects
     status-im.contexts.profile.login.events
     [status-im.contexts.profile.rpc :as profile.rpc]
     [utils.re-frame :as rf]))
@@ -42,26 +44,27 @@
 (rf/reg-event-fx
  :profile/get-profiles-overview-success
  (fn [{:keys [db]} [{:keys [accounts] {:keys [userConfirmed enabled]} :centralizedMetricsInfo}]]
-   (let [db-with-settings (assoc db
-                                 :centralized-metrics/user-confirmed? userConfirmed
-                                 :centralized-metrics/enabled?        enabled)]
-     (if (seq accounts)
-       (let [profiles          (reduce-profiles accounts)
-             {:keys [key-uid]} (first (sort-by :timestamp > (vals profiles)))]
-         {:db (if key-uid
-                (-> db-with-settings
-                    (assoc :profile/profiles-overview profiles)
-                    (update :profile/login #(select-profile % key-uid)))
-                db-with-settings)
-          :fx [[:dispatch [:update-theme-and-init-root :screen/profile.profiles]]
-               (when (and key-uid userConfirmed)
-                 [:effects.biometric/check-if-available
-                  {:key-uid    key-uid
-                   :on-success (fn [auth-method]
-                                 (rf/dispatch [:profile.login/check-biometric-success key-uid
-                                               auth-method]))}])]})
-       {:db db-with-settings
-        :fx [[:dispatch [:update-theme-and-init-root :screen/onboarding.intro]]]}))))
+   (let [db-with-settings  (assoc db
+                                  :centralized-metrics/user-confirmed? userConfirmed
+                                  :centralized-metrics/enabled?        enabled)
+         profiles          (reduce-profiles accounts)
+         {:keys [key-uid]} (first (sort-by :timestamp > (vals profiles)))
+         new-db            (cond-> db-with-settings
+                             (seq profiles)
+                             (assoc :profile/profiles-overview profiles)
+
+                             key-uid
+                             (update :profile/login #(select-profile % key-uid)))]
+     {:db new-db
+      :fx (if (profile.data-store/accepted-terms? accounts)
+            [[:dispatch [:update-theme-and-init-root :screen/profile.profiles]]
+             (when (and key-uid userConfirmed)
+               [:effects.biometric/check-if-available
+                {:key-uid    key-uid
+                 :on-success (fn [auth-method]
+                               (rf/dispatch [:profile.login/check-biometric-success key-uid
+                                             auth-method]))}])]
+            [[:dispatch [:update-theme-and-init-root :screen/onboarding.intro]]])})))
 
 (rf/reg-event-fx
  :profile/update-setting-from-backup
@@ -82,3 +85,8 @@
     :messages-from-contacts-only
     (not (get-in db [:profile/profile :messages-from-contacts-only]))
     {})))
+
+(rf/reg-event-fx :profile/explore-new-status
+ (fn []
+   {:fx [[:effects.profile/accept-terms
+          {:on-success [:navigate-to :screen/profile.profiles]}]]}))

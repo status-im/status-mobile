@@ -761,6 +761,26 @@ void _Logout(const FunctionCallbackInfo<Value>& args) {
 
 }
 
+void _AcceptTerms(const FunctionCallbackInfo<Value>& args) {
+	Isolate* isolate = args.GetIsolate();
+
+	if (args.Length() != 0) {
+		// Throw an Error that is passed back to JavaScript
+		isolate->ThrowException(Exception::TypeError(
+			String::NewFromUtf8Literal(isolate, "Wrong number of arguments for AcceptTerms")));
+		return;
+	}
+
+	// Check the argument types
+
+	// Call exported Go function, which returns a C string
+	char *c = AcceptTerms();
+
+	Local<String> ret = String::NewFromUtf8(isolate, c).ToLocalChecked();
+	args.GetReturnValue().Set(ret);
+	delete c;
+}
+
 void _HashMessage(const FunctionCallbackInfo<Value>& args) {
 	Isolate* isolate = args.GetIsolate();
         Local<Context> context = isolate->GetCurrentContext();
@@ -1998,6 +2018,7 @@ void init(Local<Object> exports) {
 	NODE_SET_METHOD(exports, "multiAccountStoreAccount", _MultiAccountStoreAccount);
 	NODE_SET_METHOD(exports, "initKeystore", _InitKeystore);
 	NODE_SET_METHOD(exports, "initializeApplication", _InitializeApplication);
+	NODE_SET_METHOD(exports, "acceptTerms", _AcceptTerms);
 	NODE_SET_METHOD(exports, "fleets", _Fleets);
 	NODE_SET_METHOD(exports, "stopCPUProfiling", _StopCPUProfiling);
 	NODE_SET_METHOD(exports, "encodeTransfer", _EncodeTransfer);
