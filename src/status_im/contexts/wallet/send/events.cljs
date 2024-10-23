@@ -190,17 +190,21 @@
    ;; `token` is a map extracted from the sender, but in the wallet home page we don't know the
    ;; sender yet, so we only provide the `token-symbol`, later in
    ;; `:wallet/select-from-account` the `token` key will be set.
-   (let [{:keys [networks]}  token
-         receiver-networks   (get-in db [:wallet :ui :send :receiver-networks])
-         token-networks-ids  (map :chain-id networks)
-         unsupported-token?  (not-any? (set receiver-networks) token-networks-ids)
-         unique-owner        (when (= (count owners) 1)
-                               (first owners))
-         unique-owner-tokens (get-in db [:wallet :accounts unique-owner :tokens])
-         token-data          (or token
-                                 (when (and token-symbol unique-owner)
-                                   (some #(when (= (:symbol %) token-symbol) %)
-                                         unique-owner-tokens)))]
+   (let [{:keys [networks]}     token
+         receiver-networks      (get-in db [:wallet :ui :send :receiver-networks])
+         token-networks-ids     (map :chain-id networks)
+         unsupported-token?     (not-any? (set receiver-networks) token-networks-ids)
+         unique-owner           (when (= (count owners) 1)
+                                  (first owners))
+         unique-owner-tokens    (get-in db [:wallet :accounts unique-owner :tokens])
+         token-data             (or token
+                                    (when (and token-symbol unique-owner)
+                                      (some #(when (= (:symbol %) token-symbol) %)
+                                            unique-owner-tokens)))
+         test-networks-enabled? (get-in db [:profile/profile :test-networks-enabled?])
+         network-details        (-> (get-in db
+                                            [:wallet :networks (if test-networks-enabled? :test :prod)])
+                                    (network-utils/sorted-networks-with-details))]
      (when (or token-data token-symbol)
        {:db (cond-> db
               :always      (update-in [:wallet :ui :send]
@@ -211,7 +215,11 @@
               token-symbol (assoc-in [:wallet :ui :send :token-symbol] token-symbol)
               token-data   (update-in [:wallet :ui :send]
                                       #(assoc %
-                                              :token              token-data
+                                              :token              (assoc token-data
+                                                                         :supported-networks
+                                                                         (network-utils/network-list
+                                                                          token-data
+                                                                          network-details))
                                               :token-display-name (:symbol token-data)))
               unique-owner (assoc-in [:wallet :current-viewing-account-address] unique-owner)
               entry-point  (assoc-in [:wallet :ui :send :entry-point] entry-point))
