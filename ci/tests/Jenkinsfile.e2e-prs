@@ -115,6 +115,11 @@ pipeline {
             usernameVariable: 'SAUCE_USERNAME',
             passwordVariable: 'SAUCE_ACCESS_KEY'
           ),
+          usernamePassword(
+            credentialsId:  'lambda-test-api',
+            usernameVariable: 'LAMBDA_TEST_USERNAME',
+            passwordVariable: 'LAMBDA_TEST_ACCESS_KEY'
+          ),
           string(
             credentialsId: 'etherscan-api-key',
             variable: 'ETHERSCAN_API_KEY'

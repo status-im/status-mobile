@@ -14,6 +14,7 @@ from views.sign_in_view import SignInView
 
 @pytest.mark.xdist_group(name="new_one_2")
 @marks.nightly
+@marks.lt
 class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
 
     def prepare_devices(self):
