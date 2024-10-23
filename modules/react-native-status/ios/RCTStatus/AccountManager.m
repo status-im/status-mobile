@@ -204,6 +204,14 @@ RCT_EXPORT_METHOD(initializeApplication:(NSString *)request
     callback(@[result]);
 }
 
+RCT_EXPORT_METHOD(acceptTerms:(RCTResponseSenderBlock)callback) {
+#if DEBUG
+    NSLog(@"acceptTerms() method called");
+#endif
+    NSString *result = StatusgoAcceptTerms();
+    callback(@[result]);
+}
+
 RCT_EXPORT_METHOD(openAccounts:(RCTResponseSenderBlock)callback) {
 #if DEBUG
     NSLog(@"OpenAccounts() method called");

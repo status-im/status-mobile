@@ -253,6 +253,11 @@ class AccountManager(private val reactContext: ReactApplicationContext) : ReactC
         utils.executeRunnableStatusGoMethod({ Statusgo.initializeApplication(request) }, callback)
     }
 
+    @ReactMethod
+    private fun acceptTerms(callback: Callback) {
+        Log.d(TAG, "acceptTerms")
+        utils.executeRunnableStatusGoMethod({ Statusgo.acceptTerms() }, callback)
+    }
 
     @ReactMethod
     fun logout() {
