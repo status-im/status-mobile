@@ -716,5 +716,3 @@
           expected             [{:from-chain-id 1 :to-chain-id 42161 :position-diff -2}]
           result               (utils/network-links route from-values-by-chain to-values-by-chain)]
       (is (= expected result)))))
-
-(cljs.test/run-tests)

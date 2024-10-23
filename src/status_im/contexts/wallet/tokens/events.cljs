@@ -1,6 +1,5 @@
 (ns status-im.contexts.wallet.tokens.events
-  (:require [cljs.pprint :as pprint]
-            [re-frame.core :as rf]
+  (:require [re-frame.core :as rf]
             [status-im.constants :as constants]
             [status-im.contexts.wallet.tokens.data :as tokens-data]
             [status-im.contexts.wallet.tokens.effects]
