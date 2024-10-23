@@ -156,7 +156,7 @@
        (str " " token-symbol))))
 
 (rf/reg-sub
- :wallet/send-amount-formatted
+ :wallet/send-amount-fixed
  :<- [:wallet/send-display-token-decimals]
  (fn [token-decimals [_ amount]]
    (number/to-fixed (money/->bignumber amount) token-decimals)))
@@ -166,8 +166,9 @@
  :<- [:wallet/wallet-send]
  :<- [:wallet/network-details]
  (fn [[{:keys [bridge-to-chain-id]} networks]]
-   (some (fn [network]
-           (when
-             (= (:chain-id network) bridge-to-chain-id)
-             network))
-         networks)))
+   (when bridge-to-chain-id
+     (some (fn [network]
+             (when
+               (= (:chain-id network) bridge-to-chain-id)
+               network))
+           networks))))

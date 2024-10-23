@@ -107,7 +107,7 @@
    :wallet/send-total-amount-formatted             "250 ETH"
    :wallet/total-amount                            (money/bignumber "250")
    :wallet/bridge-to-network-details               nil
-   :wallet/send-amount-formatted                   ""
+   :wallet/send-amount-fixed                       ""
    :wallet/send-display-token-decimals             5})
 
 (h/describe "Send > input amount screen"

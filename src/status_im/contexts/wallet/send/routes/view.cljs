@@ -254,7 +254,7 @@
                                                (= network-value-type :not-available)
                                                :disabled
                                                :else network-value-type)
-                        amount-formatted (-> (rf/sub [:wallet/send-amount-formatted total-amount])
+                        amount-formatted (-> (rf/sub [:wallet/send-amount-fixed total-amount])
                                              (str " " token-symbol))]
                     [rn/view
                      {:key   (str (if receiver? "to" "from") "-" chain-id)

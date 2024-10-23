@@ -188,7 +188,7 @@
                                                   (controlled-input/input-error input-state)))
         amount-in-crypto                 (if crypto-currency?
                                            input-value
-                                           (rf/sub [:wallet/send-amount-formatted
+                                           (rf/sub [:wallet/send-amount-fixed
                                                     (/ input-value conversion-rate)]))
         show-select-asset-sheet          #(rf/dispatch
                                            [:show-bottom-sheet
