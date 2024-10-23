@@ -5,7 +5,6 @@
  (fn [{:keys [db]} [data]]
    (let [{:keys [key-uid encryption-public-key
                  whisper-private-key]} data
-         key-uid                       (str "0x" key-uid)
          profile                       (get-in db [:profile/profiles-overview key-uid])]
      {:db
       (-> db

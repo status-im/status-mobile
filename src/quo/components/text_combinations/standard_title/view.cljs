@@ -59,7 +59,6 @@
   [rn/view {:style (merge style/container container-style)}
    [text/text
     {:size                :heading-1
-     :number-of-lines     1
      :weight              :semi-bold
      :style               style/text
      :accessibility-label accessibility-label}

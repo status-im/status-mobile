@@ -508,17 +508,16 @@
                               new-password-hashed
                               callback))))
 
-(defn convert-to-keycard-account
-  [{:keys [key-uid] :as multiaccount-data} settings current-password# new-password callback]
-  (log/debug "[native-module] convert-to-keycard-account")
+(defn convert-to-keycard-profile
+  [{:keys [key-uid] :as profile} settings password new-password callback]
   (.convertToKeycardAccount ^js (encryption)
                             key-uid
-                            (types/clj->json multiaccount-data)
+                            (types/clj->json profile)
                             (types/clj->json settings)
-                            ""
-                            current-password#
+                            (:keycard-instance-uid settings)
+                            password
                             new-password
-                            callback))
+                            #(when callback (callback (types/json->clj %)))))
 
 (defn backup-disabled-data-dir
   []

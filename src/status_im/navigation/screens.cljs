@@ -32,6 +32,10 @@
     [status-im.contexts.keycard.check.view :as keycard.check]
     [status-im.contexts.keycard.empty.view :as keycard.empty]
     [status-im.contexts.keycard.error.view :as keycard.error]
+    [status-im.contexts.keycard.migrate.fail.view :as keycard.migrate.fail]
+    [status-im.contexts.keycard.migrate.re-encrypting.view :as keycard.re-encrypting]
+    [status-im.contexts.keycard.migrate.success.view :as keycard.migrate.success]
+    [status-im.contexts.keycard.migrate.view :as keycard.migrate]
     [status-im.contexts.keycard.not-keycard.view :as keycard.not-keycard]
     [status-im.contexts.onboarding.create-or-sync-profile.view :as create-or-sync-profile]
     [status-im.contexts.onboarding.create-password.view :as create-password]
@@ -598,7 +602,7 @@
      :component wallet-options/view}
 
     {:name      :screen/settings.keycard
-     :options   options/keycard-modal-screen-options
+     :options   {:insets {:top? true :bottom? true}}
      :component settings.keycard/view}
 
     {:name      :screen/settings.rename-keypair
@@ -697,24 +701,49 @@
 
     ;; Keycard
     {:name      :screen/keycard.check
-     :options   options/keycard-modal-screen-options
+     :options   {:insets {:top? true :bottom? true}}
      :component keycard.check/view}
 
     {:name      :screen/keycard.empty
-     :options   options/keycard-modal-screen-options
+     :options   {:insets {:top? true :bottom? true}}
      :component keycard.empty/view}
 
     {:name      :screen/keycard.error
-     :options   options/keycard-modal-screen-options
+     :options   {:insets {:top? true :bottom? true}}
      :component keycard.error/view}
 
     {:name      :screen/keycard.not-keycard
-     :options   options/keycard-modal-screen-options
+     :options   {:insets {:top? true :bottom? true}}
      :component keycard.not-keycard/view}
 
     {:name      :screen/keycard.authorise
-     :options   options/keycard-modal-screen-options
-     :component keycard.authorise/view}]
+     :options   {:insets {:top? true :bottom? true}}
+     :component keycard.authorise/view}
+
+    {:name      :screen/keycard.migrate
+     :options   {:insets {:top? true :bottom? true}}
+     :component keycard.migrate/view}
+
+    {:name      :screen/keycard.re-encrypting
+     :options   {:insets             {:top? true :bottom? true}
+                 :popGesture         false
+                 :hardwareBackButton {:dismissModalOnPress false
+                                      :popStackOnPress     false}}
+     :component keycard.re-encrypting/view}
+
+    {:name      :screen/keycard.migrate.success
+     :options   {:insets             {:top? true :bottom? true}
+                 :popGesture         false
+                 :hardwareBackButton {:dismissModalOnPress false
+                                      :popStackOnPress     false}}
+     :component keycard.migrate.success/view}
+
+    {:name      :screen/keycard.migrate.fail
+     :options   {:insets             {:top? true :bottom? true}
+                 :popGesture         false
+                 :hardwareBackButton {:dismissModalOnPress false
+                                      :popStackOnPress     false}}
+     :component keycard.migrate.fail/view}]
 
    [{:name    :shell
      :options {:theme :dark}}]
@@ -740,3 +769,4 @@
      [{:name      :feature-flags
        :options   {:insets {:top? true}}
        :component feature-flags/view}])))
+
