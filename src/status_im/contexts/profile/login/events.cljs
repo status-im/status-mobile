@@ -56,7 +56,7 @@
                   [{:method     "wakuext_startMessenger"
                     :on-success [:profile.login/messenger-started]
                     :on-error   #(log/error "failed to start messenger" %)}]]
-                 [:dispatch [:community/fetch]]
+                 ;[:dispatch [:community/fetch]]
 
                  ;; Wallet initialization can be delayed a little bit because we
                  ;; need to free the queue for heavier events first, such as
