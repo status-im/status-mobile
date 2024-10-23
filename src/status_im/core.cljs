@@ -40,7 +40,30 @@
 
 (def adjust-resize 16)
 
-(defn is-hermes
+(defonce ws (js/WebSocket. "ws://localhost:9050/signals"))
+
+(set! (.-onopen ws) (fn []
+                      (js/alert "WS Connection opened!")))
+
+(set! (.-onmessage ws) (fn [e]
+                         (js/alert "WS Message arrived")
+                         (def --m e)
+                         ))
+
+(set! (.-onerror ws) (fn [e]
+                       (js/alert "WS ERROR")
+                       (def --e e)
+                       ))
+
+(set! (.-onclose ws) (fn [e]
+                       (js/alert "WS Connection closed")
+                       (js/console.info (.-code e) (.-reason e))
+                       ))
+
+(defn fetch [url params]
+  (js/fetch url (clj->js params)))
+
+(defn hermes?
   []
   (boolean (.-HermesInternal js/global)))
 
@@ -68,7 +91,7 @@
     (ff/load-flags))
 
   (dev/setup)
-  (log/info "hermesEnabled ->" (is-hermes))
+  (log/info "hermesEnabled ->" (hermes?))
 
   (re-frame/dispatch-sync [:app-started])
 
@@ -76,3 +99,44 @@
   ;; https://github.com/WalletConnect/walletconnect-monorepo/issues/3235#issuecomment-1645767800
   (when-not (.-BigInt js/global)
     (set! js/BigInt (js/require "big-integer"))))
+
+(comment
+ ;; STEP 1
+ #_(-> (fetch "http://localhost:9050/statusgo/InitializeApplication"
+              (clj->js
+               {:method  :POST
+                :headers {"Accept"       "application/json"
+                          "Content-Type" "application/json"}
+                :body    (-> {:dataDir       "/home/ulises/p/status-go/test-db"
+                              :mixpanelAppId config/mixpanel-app-id
+                              :mixpanelToken config/mixpanel-token}
+                             (clj->js)
+                             (js/JSON.stringify))}))
+       (.then (fn [response]
+                (.json response)))
+       (.then (fn [json]
+                (js/alert (str "HTTP-RESPONSE:\n" (js->clj json)))))
+       )
+ ;; STEP 2
+ (let [body (-> (status-im.contexts.profile.config/create)
+                (assoc :displayName "Sonic"
+                       :password (native-module/sha3 (utils.security.core/safe-unmask-data "Hola1234.,"))
+                       :imagePath nil
+                       :customizationColor :army)
+                (clj->js)
+                (js/JSON.stringify))]
+
+   (-> (fetch "http://localhost:9050/statusgo/CreateAccountAndLogin"
+              (clj->js
+               {:method  :POST
+                :headers {"Accept"       "application/json"
+                          "Content-Type" "application/json"}
+                :body    body}))
+       (.then (fn [response]
+                (.json response)))
+       (.then (fn [json]
+                (js/alert (str "HTTP-RESPONSE:\n" (js->clj json)))))
+       (.catch (fn [json]
+                 (js/alert (str "HTTP-RESPONSE-ERROR!:\n" (js->clj json)))))))
+
+ )

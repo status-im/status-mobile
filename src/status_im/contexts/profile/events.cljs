@@ -29,6 +29,9 @@
 (rf/reg-fx
  :profile/get-profiles-overview
  (fn [callback]
+   (def --init {:dataDir       (native-module/backup-disabled-data-dir)
+                :mixpanelAppId config/mixpanel-app-id
+                :mixpanelToken config/mixpanel-token})
    (native-module/initialize-application {:dataDir       (native-module/backup-disabled-data-dir)
                                           :mixpanelAppId config/mixpanel-app-id
                                           :mixpanelToken config/mixpanel-token}
@@ -41,7 +44,8 @@
 
 (rf/reg-event-fx
  :profile/get-profiles-overview-success
- (fn [{:keys [db]} [{:keys [accounts] {:keys [userConfirmed enabled]} :centralizedMetricsInfo}]]
+ (fn [{:keys [db]} [{:keys [accounts] {:keys [userConfirmed enabled]} :centralizedMetricsInfo :as x}]]
+   (def --x x)
    (let [db-with-settings (assoc db
                                  :centralized-metrics/user-confirmed? userConfirmed
                                  :centralized-metrics/enabled?        enabled)]

@@ -516,7 +516,8 @@
 
 (defn backup-disabled-data-dir
   []
-  (.backupDisabledDataDir ^js (utils)))
+  (.backupDisabledDataDir ^js (utils))
+  "/home/ulises/p/status-go/test-db")
 
 (defn fleets
   []
