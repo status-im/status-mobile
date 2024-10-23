@@ -6,8 +6,7 @@
     [status-im.contexts.wallet.common.utils :as common-utils]
     [status-im.contexts.wallet.send.utils :as send-utils]
     [utils.money :as money]
-    [utils.number :as number]
-    [quo.components.utilities.token.view :as token]))
+    [utils.number :as number]))
 
 (rf/reg-sub
  :wallet/send-tab
