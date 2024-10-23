@@ -1,0 +1,11 @@
+appId: im.status.ethereum.debug
+---
+- runFlow: # to run onboarding flow only when device is in onboarding state
+      when:
+        visible: "I’m new to Status"
+      file: onboarding.yaml
+
+- runFlow: # to run login flow only when device is on login screen
+      when:
+        visible: "Profile password"
+      file: login.yaml
