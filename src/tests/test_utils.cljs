@@ -70,6 +70,9 @@
    {:initializeApplication
     (fn [request callback]
       (callback (.initializeApplication native-status request)))
+    :acceptTerms
+    (fn [callback]
+      (callback (.acceptTerms native-status)))
     :createAccountAndLogin
     (fn [request] (.createAccountAndLogin native-status request))
     :restoreAccountAndLogin
