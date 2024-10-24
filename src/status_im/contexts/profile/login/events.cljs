@@ -151,6 +151,7 @@
  :profile.login/login-node-signal
  (fn [{{:onboarding/keys [recovered-account? new-account?] :as db} :db}
       [{:keys [settings account ensUsernames error]}]]
+   ;; (js/alert "NODE.LOGIN ARRIVED!!")
    (log/debug "[signals] node.login" "error" error)
    (if error
      {:db (update db :profile/login #(-> % (dissoc :processing) (assoc :error error)))}

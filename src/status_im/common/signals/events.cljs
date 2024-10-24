@@ -31,8 +31,8 @@
   (let [^js data     (.parse js/JSON event-str)
         ^js event-js (.-event data)
         type         (.-type data)]
-    (log/debug "Signal received" {:type type})
-    (log/trace "Signal received" {:payload event-str})
+    ;(log/debug "Signal received" {:type type})
+    ;(log/trace "Signal received" {:payload event-str})
     (case type
       "wallet"
       {:fx [[:dispatch [:wallet/signal-received event-js]]]}
@@ -108,4 +108,6 @@
       "backup.performed"
       {:db (assoc-in db [:profile/profile :last-backup] (oops/oget event-js :lastBackup))}
 
-      (log/debug "Event " type " not handled"))))
+      (do
+        #_(log/debug "Event " type " not handled")
+        nil))))

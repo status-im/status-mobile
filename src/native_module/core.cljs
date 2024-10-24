@@ -4,7 +4,7 @@
     [clojure.string :as string]
     [native-module.utils :as native-utils]
     [react-native.platform :as platform]
-    [status-backend.config :as status-backend]
+    [status-im.setup.status-backend.config :as status-backend]
     [taoensso.timbre :as log]
     [utils.transforms :as types]))
 
@@ -18,42 +18,56 @@
   (if false
     (when (exists? (.-NativeModules react-native))
       (.-AccountManager ^js (.-NativeModules react-native)))
-    status-backend/backend-obj))
+    status-backend/request-obj))
 
 (defn encryption
   []
-  (when (exists? (.-NativeModules react-native))
-    (.-EncryptionUtils ^js (.-NativeModules react-native))))
+  (if false
+    (when (exists? (.-NativeModules react-native))
+      (.-EncryptionUtils ^js (.-NativeModules react-native)))
+    status-backend/request-obj))
 
 (defn database
   []
-  (when (exists? (.-NativeModules react-native))
-    (.-DatabaseManager ^js (.-NativeModules react-native))))
+  (if false
+    (when (exists? (.-NativeModules react-native))
+      (.-DatabaseManager ^js (.-NativeModules react-native)))
+    status-backend/request-obj))
 
 (defn ui-helper
   []
-  (when (exists? (.-NativeModules react-native))
-    (.-UIHelper ^js (.-NativeModules react-native))))
+  (if false
+    (when (exists? (.-NativeModules react-native))
+      (.-UIHelper ^js (.-NativeModules react-native)))
+    status-backend/request-obj))
 
 (defn log-manager
   []
-  (when (exists? (.-NativeModules react-native))
-    (.-LogManager ^js (.-NativeModules react-native))))
+  (if false
+    (when (exists? (.-NativeModules react-native))
+     (.-LogManager ^js (.-NativeModules react-native)))
+    status-backend/request-obj))
 
 (defn utils
   []
-  (when (exists? (.-NativeModules react-native))
-    (.-Utils ^js (.-NativeModules react-native))))
+  (if false
+    (when (exists? (.-NativeModules react-native))
+     (.-Utils ^js (.-NativeModules react-native)))
+    status-backend/request-obj))
 
 (defn network
   []
-  (when (exists? (.-NativeModules react-native))
-    (.-NetworkManager ^js (.-NativeModules react-native))))
+  (if false
+    (when (exists? (.-NativeModules react-native))
+      (.-NetworkManager ^js (.-NativeModules react-native)))
+    status-backend/request-obj))
 
 (defn mail-manager
   []
-  (when (exists? (.-NativeModules react-native))
-    (.-MailManager ^js (.-NativeModules react-native))))
+  (if false
+    (when (exists? (.-NativeModules react-native))
+      (.-MailManager ^js (.-NativeModules react-native)))
+    status-backend/request-obj))
 
 (defn mail
   [opts callback]
@@ -61,7 +75,9 @@
 
 (defn init
   [handler]
-  (.addListener ^js (.-DeviceEventEmitter ^js react-native) "gethEvent" #(handler (.-jsonEvent ^js %))))
+  (if false
+    (.addListener ^js (.-DeviceEventEmitter ^js react-native) "gethEvent" #(handler (.-jsonEvent ^js %)))
+    status-backend/init-ws))
 
 (defn clear-web-data
   []
@@ -185,7 +201,9 @@
 
 (defn call-private-rpc
   [payload callback]
-  (.callPrivateRPC ^js (network) payload callback))
+  (if false
+    (.callPrivateRPC ^js (network) payload callback)
+    (status-backend/call-private-rpc payload callback)))
 
 (defn hash-transaction
   "used for keycard"
@@ -441,7 +459,8 @@
 
 (defn add-centralized-metric
   [metric]
-  (.addCentralizedMetric ^js (status) (types/clj->json metric) #(log/debug "pushed metric" % metric)))
+  (.addCentralizedMetric ^js (status) (types/clj->json metric)
+                         (fn []) #_(log/debug "pushed metric" % metric)))
 
 (defn address?
   [address]
@@ -519,8 +538,9 @@
 
 (defn backup-disabled-data-dir
   []
-  (.backupDisabledDataDir ^js (utils))
-  "/home/ulises/p/status-go/test-db")
+  (if false ;; Check for not use of status-backend
+    (.backupDisabledDataDir ^js (utils))
+    "/home/ulises/p/status-go/test-db"))
 
 (defn fleets
   []
@@ -536,7 +556,15 @@
 
 (defn init-status-go-logging
   [{:keys [enable? mobile-system? log-level log-request-go? callback]}]
-  (.initLogging ^js (log-manager) enable? mobile-system? log-level log-request-go? callback))
+  (if false
+    (.initLogging ^js (log-manager) enable? mobile-system? log-level log-request-go? callback)
+    (.initLogging ^js (log-manager)
+                  {:Enabled        enable?
+                   :MobileSystem   mobile-system?
+                   :Level          log-level
+                   :LogRequestGo   log-request-go?
+                   :LogRequestFile (str "/home/ulises/p/status-go/test-db" "/request.log")}
+                  callback)))
 
 (defn get-random-mnemonic
   [callback]

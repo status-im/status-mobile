@@ -47,6 +47,7 @@
 (defn init
   []
   (navigation/init)
+  ;;(status-backend/init-ws #(re-frame/dispatch [:signals/signal-received %]))
   (native-module/init #(re-frame/dispatch [:signals/signal-received %]))
   (when platform/android?
     (native-module/set-soft-input-mode adjust-resize))

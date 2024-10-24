@@ -21,8 +21,10 @@
              (when js/goog.DEBUG
                (reset! handler-nesting-level 0))
              (when rf.interop/debug-enabled?
-               (log/debug "Handling re-frame event: "
-                          (first (interceptor/get-coeffect context :event))))
+               (do
+                 #_(log/debug "Handling re-frame event: "
+                            (first (interceptor/get-coeffect context :event)))
+                 nil))
              context)))
 
 (defn- update-db
