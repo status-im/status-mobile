@@ -111,13 +111,11 @@ def get_app_path():
     return app_path
 
 
-def pull_geth(driver):
-    result = driver.pull_file(get_app_path() + 'geth.log')
-    return base64.b64decode(result)
+log_file_names = ['geth', 'requests', 'Status']
 
 
-def pull_requests_log(driver):
-    result = driver.pull_file(get_app_path() + 'requests.log')
+def pull_log_file(driver, log_file_name):
+    result = driver.pull_file(get_app_path() + '%s.log' % log_file_name)
     return base64.b64decode(result)
 
 
@@ -216,7 +214,7 @@ class SingleDeviceTestCase(AbstractTestCase):
             self.print_sauce_lab_info(self.driver)
         try:
             self.add_alert_text_to_report(self.driver)
-            geth_content = pull_geth(self.driver)
+            geth_content = pull_log_file(self.driver, 'geth')
             self.driver.quit()
             if pytest_config_global['docker']:
                 appium_container.stop_container()
@@ -279,7 +277,7 @@ class SauceMultipleDeviceTestCase(AbstractTestCase):
                 self.add_alert_text_to_report(self.drivers[driver])
                 geth_names.append(
                     '%s_geth%s.log' % (test_suite_data.current_test.name, str(self.drivers[driver].number)))
-                geth_contents.append(pull_geth(self.drivers[driver]))
+                geth_contents.append(pull_log_file(self.drivers[driver], log_file_name='geth'))
                 self.drivers[driver].quit()
             except (WebDriverException, AttributeError):
                 pass
@@ -383,14 +381,12 @@ class SauceSharedMultipleDeviceTestCase(AbstractTestCase):
             try:
                 self.print_sauce_lab_info(self.drivers[driver])
                 self.add_alert_text_to_report(self.drivers[driver])
-                log_names.append(
-                    '%s_geth%s.log' % (test_suite_data.current_test.name, str(self.drivers[driver].number)))
-                log_contents.append(pull_geth(self.drivers[driver]))
-                log_names.append(
-                    '%s_requests%s.log' % (test_suite_data.current_test.name, str(self.drivers[driver].number)))
-                log_contents.append(pull_requests_log(self.drivers[driver]))
-            except (WebDriverException, AttributeError, RemoteDisconnected, ProtocolError):
-                pass
+                for log in log_file_names:
+                    log_names.append(
+                        '%s_%s%s.log' % (test_suite_data.current_test.name, log, str(self.drivers[driver].number)))
+                    log_contents.append(pull_log_file(self.drivers[driver], log_file_name=log))
+            except (WebDriverException, AttributeError, RemoteDisconnected, ProtocolError) as e:
+                raise e
             finally:
                 try:
                     logs = {log_names[i]: log_contents[i] for i in range(len(log_names))}
@@ -420,15 +416,14 @@ class SauceSharedMultipleDeviceTestCase(AbstractTestCase):
         try:
             for i, driver in cls.drivers.items():
                 if group_setup_failed:
-                    log_contents.append(pull_geth(driver=driver))
-                    log_names.append('%s_geth%s.log' % (cls.__name__, i))
-                    log_contents.append(pull_requests_log(driver=driver))
-                    log_names.append('%s_requests%s.log' % (cls.__name__, i))
+                    for log in log_file_names:
+                        log_contents.append(pull_log_file(driver=driver, log_file_name=log))
+                        log_names.append('%s_%s%s.log' % (cls.__name__, log, i))
                 session_id = driver.session_id
                 try:
                     sauce.jobs.update_job(username=sauce_username, job_id=session_id, name=cls.__name__)
-                except (RemoteDisconnected, SauceException, requests.exceptions.ConnectionError):
-                    pass
+                except (RemoteDisconnected, SauceException, requests.exceptions.ConnectionError) as e:
+                    raise e
                 try:
                     driver.quit()
                 except WebDriverException:
