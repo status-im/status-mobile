@@ -187,6 +187,40 @@
       :current-screen-id                         current-screen-id
       :request-fetch-routes                      request-fetch-routes}]))
 
+(defn bottom-actions
+  [on-confirm button-one-label button-one-props]
+  (let [{:keys [valid-input?
+                amount-in-crypto
+                route
+                loading-routes?
+                token-by-symbol
+                sending-to-unpreferred-networks?
+                should-try-again?]
+         :as   state} (rf/sub [:send-input-amount-screen/bottom-actions-subs])]
+    [quo/bottom-actions
+     {:actions          :one-action
+      :button-one-label (if should-try-again?
+                          (i18n/label :t/try-again)
+                          button-one-label)
+      :button-one-props (merge (when-not should-try-again? button-one-props)
+                               {:disabled? (or loading-routes?
+                                               (and (not should-try-again?)
+                                                    (or (nil? route)
+                                                        (empty? route)
+                                                        (not valid-input?))))
+                                :on-press  (cond
+                                             should-try-again?
+                                             #(rf/dispatch [:wallet/start-get-suggested-routes
+                                                            {:amount        amount-in-crypto
+                                                             :updated-token token-by-symbol}])
+                                             sending-to-unpreferred-networks?
+                                             #(show-unpreferred-networks-alert on-confirm)
+                                             :else
+                                             #(on-confirm amount-in-crypto))}
+                               (when should-try-again?
+                                 {:type :grey}))}])
+)
+
 (defn view
   ;; crypto-decimals, limit-crypto and initial-crypto-currency? args are needed
   ;; for component tests only
@@ -195,34 +229,18 @@
     button-one-label  :button-one-label
     button-one-props  :button-one-props
     current-screen-id :current-screen-id}]
-  (let [{:keys [crypto-currency?
-                upper-limit
-                upper-limit-prettified
-                input-value
-                value-out-of-limits?
-                valid-input?
-                upper-limit-exceeded?
-                amount-in-crypto
-                token-input-converted-value
-                token-input-converted-value-prettified
+  (let [{:keys [value-out-of-limits?
                 route
-                routes
                 sender-network-values
                 loading-routes?
                 token-not-supported-in-receiver-networks?
-                fiat-currency
                 token-networks
                 receiver-networks
-                token
                 token-symbol
-                token-by-symbol
                 recipient-gets-amount
                 max-decimals
                 fee-formatted
-                sending-to-unpreferred-networks?
                 no-routes-found?
-                from-enabled-networks
-                should-try-again?
                 current-address
                 not-enough-asset?
                 show-no-routes?]
@@ -277,28 +295,7 @@
      (cond
        show-no-routes?   [no-routes-found]
        not-enough-asset? [not-enough-asset])
-     [quo/bottom-actions
-      {:actions          :one-action
-       :button-one-label (if should-try-again?
-                           (i18n/label :t/try-again)
-                           button-one-label)
-       :button-one-props (merge (when-not should-try-again? button-one-props)
-                                {:disabled? (or loading-routes?
-                                                (and (not should-try-again?)
-                                                     (or (nil? route)
-                                                         (empty? route)
-                                                         (not valid-input?))))
-                                 :on-press  (cond
-                                              should-try-again?
-                                              #(rf/dispatch [:wallet/start-get-suggested-routes
-                                                             {:amount        amount-in-crypto
-                                                              :updated-token token-by-symbol}])
-                                              sending-to-unpreferred-networks?
-                                              #(show-unpreferred-networks-alert on-confirm)
-                                              :else
-                                              #(on-confirm amount-in-crypto))}
-                                (when should-try-again?
-                                  {:type :grey}))}]
+     [bottom-actions on-confirm button-one-label button-one-props]
      [quo/numbered-keyboard
       {:container-style      (style/keyboard-container bottom)
        :left-action          :dot
