@@ -2,7 +2,7 @@
 name: Bug Report
 about: Bug Report
 title: ''
-labels: ['bug', ':1234: low prio']
+type: 'Bug'
 assignees: ''
 
 ---
