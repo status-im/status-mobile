@@ -11,44 +11,16 @@
     [status-im.contexts.wallet.common.account-switcher.view :as account-switcher]
     [status-im.contexts.wallet.common.asset-list.view :as asset-list]
     [status-im.contexts.wallet.common.utils :as utils]
+    [status-im.contexts.wallet.send.input-amount.estimated-fees :as estimated-fees]
     [status-im.contexts.wallet.send.input-amount.style :as style]
     [status-im.contexts.wallet.send.routes.view :as routes]
     [status-im.contexts.wallet.sheets.buy-token.view :as buy-token]
     [status-im.contexts.wallet.sheets.unpreferred-networks-alert.view :as unpreferred-networks-alert]
-    [status-im.feature-flags :as ff]
     [status-im.setup.hot-reload :as hot-reload]
     [utils.debounce :as debounce]
     [utils.i18n :as i18n]
     [utils.money :as money]
-    [utils.number :as number]
     [utils.re-frame :as rf]))
-
-(defn- estimated-fees
-  [{:keys [loading-routes? fees amount]}]
-  [rn/view {:style style/estimated-fees-container}
-   (when (ff/enabled? ::ff/wallet.advanced-sending)
-     [rn/view {:style style/estimated-fees-content-container}
-      [quo/button
-       {:icon-only?          true
-        :type                :outline
-        :size                32
-        :inner-style         {:opacity 1}
-        :accessibility-label :advanced-button
-        :disabled?           loading-routes?
-        :on-press            #(js/alert "Not implemented yet")}
-       :i/advanced]])
-   [quo/data-item
-    {:container-style style/fees-data-item
-     :status          (if loading-routes? :loading :default)
-     :size            :small
-     :title           (i18n/label :t/fees)
-     :subtitle        fees}]
-   [quo/data-item
-    {:container-style style/amount-data-item
-     :status          (if loading-routes? :loading :default)
-     :size            :small
-     :title           (i18n/label :t/recipient-gets)
-     :subtitle        amount}]])
 
 (defn- every-network-value-is-zero?
   [sender-network-values]
@@ -165,7 +137,6 @@
   ;; for component tests only
   [{default-on-confirm       :on-confirm
     default-limit-crypto     :limit-crypto
-    default-crypto-decimals  :crypto-decimals
     on-navigate-back         :on-navigate-back
     button-one-label         :button-one-label
     button-one-props         :button-one-props
@@ -199,17 +170,13 @@
                                              :market-values-per-currency
                                              currency
                                              :price)
-        token-decimals                   (-> token
-                                             utils/token-usd-price
-                                             utils/one-cent-value
-                                             utils/calc-max-crypto-decimals)
+        token-decimals                   (rf/sub [:wallet/send-display-token-decimals])
         [input-state set-input-state]    (rn/use-state controlled-input/init-state)
         clear-input!                     #(set-input-state controlled-input/delete-all)
         currency-symbol                  (rf/sub [:profile/currency-symbol])
         loading-routes?                  (rf/sub [:wallet/wallet-send-loading-suggested-routes?])
         route                            (rf/sub [:wallet/wallet-send-route])
         on-confirm                       (or default-on-confirm handle-on-confirm)
-        crypto-decimals                  (or token-decimals default-crypto-decimals)
         max-limit                        (if crypto-currency?
                                            (utils/cut-crypto-decimals-to-fit-usd-cents
                                             token-balance
@@ -221,15 +188,8 @@
                                                   (controlled-input/input-error input-state)))
         amount-in-crypto                 (if crypto-currency?
                                            input-value
-                                           (number/remove-trailing-zeroes
-                                            (.toFixed (/ input-value conversion-rate)
-                                                      crypto-decimals)))
-        total-amount-receiver            (rf/sub [:wallet/total-amount true])
-        amount-text                      (str (number/remove-trailing-zeroes
-                                               (.toFixed total-amount-receiver
-                                                         (min token-decimals 6)))
-                                              " "
-                                              token-symbol)
+                                           (rf/sub [:wallet/send-amount-fixed
+                                                    (/ input-value conversion-rate)]))
         show-select-asset-sheet          #(rf/dispatch
                                            [:show-bottom-sheet
                                             {:content (fn []
@@ -382,10 +342,9 @@
        [not-enough-asset])
      (when (or (and (not no-routes-found?) (or loading-routes? route))
                not-enough-asset?)
-       [estimated-fees
+       [estimated-fees/view
         {:loading-routes? loading-routes?
-         :fees            fee-formatted
-         :amount          amount-text}])
+         :fees            fee-formatted}])
      (when show-no-routes?
        [no-routes-found])
      [quo/bottom-actions
@@ -417,7 +376,7 @@
        :delete-key?          true
        :on-press             (fn [c]
                                (let [new-text      (str input-value c)
-                                     max-decimals  (if crypto-currency? crypto-decimals 2)
+                                     max-decimals  (if crypto-currency? token-decimals 2)
                                      regex-pattern (str "^\\d*\\.?\\d{0," max-decimals "}$")
                                      regex         (re-pattern regex-pattern)]
                                  (when (re-matches regex new-text)

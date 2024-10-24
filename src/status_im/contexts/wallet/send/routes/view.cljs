@@ -247,20 +247,22 @@
                      {chain-id           :chain-id
                       network-value-type :type
                       total-amount       :total-amount}]
-                  (let [status (cond (and (= network-value-type :not-available)
-                                          loading-routes?
-                                          token-not-supported-in-receiver-networks?)
-                                     :loading
-                                     (= network-value-type :not-available)
-                                     :disabled
-                                     :else network-value-type)]
+                  (let [status           (cond (and (= network-value-type :not-available)
+                                                    loading-routes?
+                                                    token-not-supported-in-receiver-networks?)
+                                               :loading
+                                               (= network-value-type :not-available)
+                                               :disabled
+                                               :else network-value-type)
+                        amount-formatted (-> (rf/sub [:wallet/send-amount-fixed total-amount])
+                                             (str " " token-symbol))]
                     [rn/view
                      {:key   (str (if receiver? "to" "from") "-" chain-id)
                       :style {:margin-top (if (pos? index) 11 7.5)}}
                      [quo/network-bridge
                       {:amount        (if (= network-value-type :not-available)
                                         (i18n/label :t/not-available)
-                                        (str total-amount " " token-symbol))
+                                        amount-formatted)
                        :network       (network-utils/id->network chain-id)
                        :status        status
                        :on-press      #(when (not loading-routes?)

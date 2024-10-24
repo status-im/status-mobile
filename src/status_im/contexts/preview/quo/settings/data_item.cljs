@@ -26,6 +26,12 @@
               {:key   nil
                :value "None"}]}
    {:type    :select
+    :key     :title-icon
+    :options [{:key :i/chevron-right}
+              {:key :i/copy}
+              {:key   nil
+               :value "None"}]}
+   {:type    :select
     :key     :right-content
     :options [{:key   nil
                :value "None"}
