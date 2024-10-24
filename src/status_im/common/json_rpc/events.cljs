@@ -64,6 +64,7 @@
         on-error (or on-error
                      (on-error-retry call arg)
                      #(log/warn :json-rpc/error method :error % :params params))]
+    (log/info :json-rpc/call method :params params :id id)
     (native-module/call-private-rpc
      (transforms/clj->json {:jsonrpc "2.0"
                             :id      (or id 1)
@@ -82,13 +83,19 @@
                  (rf/dispatch (conj on-error error))
                  (on-error error)))
              (when on-success
+               (log/debug :json-rpc/call-success method :params params :id id)
                (let [result     (if js-response
                                   (.-result response-js)
                                   (transforms/js->clj (.-result response-js)))
                      request-id (.-id response-js)]
                  (if (vector? on-success)
-                   (rf/dispatch (conj on-success result request-id))
-                   (on-success result request-id)))))))))))
+                   (do
+                     (log/debug :json-rpc/call-success-dispatch method :params params :id id)
+                     (rf/dispatch (conj on-success result request-id)))
+                   (do
+                     (log/debug :json-rpc/call-success-on-success-start method :params params :id id)
+                     (on-success result request-id)
+                     (log/debug :json-rpc/call-success-on-success-end method :params params :id id))))))))))))
 
 (defn call-async
   "Helper to handle RPC calls to status-go as promises"
