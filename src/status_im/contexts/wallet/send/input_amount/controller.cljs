@@ -423,91 +423,60 @@
     :current-address                           current-address
     :not-enough-asset?                         not-enough-asset?
     :show-no-routes?                           show-no-routes?}))
-
 (rf/reg-sub :send-input-amount-screen/token-input-subs
  :<- [:send-input-amount-screen/controller]
  :<- [:send-input-amount-screen/currency-information]
- :<- [:send-input-amount-screen/upper-limit]
- :<- [:send-input-amount-screen/amount-in-crypto]
  :<- [:send-input-amount-screen/token-input-converted-value]
  :<- [:send-input-amount-screen/token-input-converted-value-prettified]
  :<- [:send-input-amount-screen/value-out-of-limits?]
  :<- [:send-input-amount-screen/upper-limit-prettified]
- :<- [:send-input-amount-screen/routes-information]
- :<- [:send-input-amount-screen/networks-information]
- :<- [:send-input-amount-screen/token-by-symbol]
- :<- [:send-input-amount-screen/recipient-gets-amount]
- :<- [:send-input-amount-screen/max-decimals]
- :<- [:send-input-amount-screen/fee-formatted]
  :<- [:send-input-amount-screen/from-enabled-networks]
- :<- [:send-input-amount-screen/upper-limit-exceeded?]
- :<- [:send-input-amount-screen/should-try-again?]
- :<- [:wallet/current-viewing-account-address]
- :<- [:send-input-amount-screen/not-enough-asset?]
- :<- [:send-input-amount-screen/show-no-routes?]
  (fn
    [[{:keys [crypto-currency? token-input-value] :as controller}
-     {:keys [fiat-currency token-symbol token] :as currency-information}
-     upper-limit
-     amount-in-crypto
+     {:keys [fiat-currency token-symbol] :as currency-information}
      token-input-converted-value
      token-input-converted-value-prettified
      value-out-of-limits?
      upper-limit-prettified
-     {:keys [route
-             routes
-             sender-network-values
-             loading-routes?
-             token-not-supported-in-receiver-networks?
-             no-routes-found?]
+     from-enabled-networks]]
+   {:crypto-currency?                       crypto-currency?
+    :fiat-currency                          fiat-currency
+    :token-symbol                           token-symbol
+    :upper-limit-prettified                 upper-limit-prettified
+    :input-value                            token-input-value
+    :value-out-of-limits?                   value-out-of-limits?
+    :token-input-converted-value            token-input-converted-value
+    :token-input-converted-value-prettified token-input-converted-value-prettified
+    :from-enabled-networks                  from-enabled-networks}))
+
+(rf/reg-sub :send-input-amount-screen/routes-subs
+ :<- [:send-input-amount-screen/controller]
+ :<- [:send-input-amount-screen/currency-information]
+ :<- [:send-input-amount-screen/amount-in-crypto]
+ :<- [:send-input-amount-screen/value-out-of-limits?]
+ :<- [:send-input-amount-screen/routes-information]
+ :<- [:send-input-amount-screen/token-by-symbol]
+ :<- [:send-input-amount-screen/upper-limit-exceeded?]
+
+ (fn
+   [[{:keys [token-input-value] :as controller}
+     {:keys [token] :as currency-information}
+     amount-in-crypto
+     value-out-of-limits?
+     {:keys [routes
+             token-not-supported-in-receiver-networks?]
       :as   routes-information}
-     {:keys [token-networks
-             receiver-networks
-             sending-to-unpreferred-networks?]}
      token-by-symbol
-     recipient-gets-amount
-     max-decimals
-     fee-formatted
-     from-enabled-networks
-     upper-limit-exceeded?
-     should-try-again?
-     current-address
-     not-enough-asset?
-     show-no-routes?]]
-   {:crypto-currency?                          crypto-currency?
-    :fiat-currency                             fiat-currency
-    :token                                     token
-    :token-symbol                              token-symbol
-    :upper-limit                               upper-limit
-    :upper-limit-prettified                    upper-limit-prettified
-    :input-value                               token-input-value
-    :value-out-of-limits?                      value-out-of-limits?
+     upper-limit-exceeded?]]
+   {:token                                     token
     :valid-input?                              (not (or (controlled-input-logic/empty-value?
                                                          token-input-value)
                                                         value-out-of-limits?))
     :upper-limit-exceeded?                     upper-limit-exceeded?
     :amount-in-crypto                          amount-in-crypto
-    :token-input-converted-value               token-input-converted-value
-    :token-input-converted-value-prettified    token-input-converted-value-prettified
-    :route                                     route
     :routes                                    routes
-    :sender-network-values                     sender-network-values
-    :loading-routes?                           loading-routes?
     :token-not-supported-in-receiver-networks? token-not-supported-in-receiver-networks?
-    :token-networks                            token-networks
-    :receiver-networks                         receiver-networks
-    :token-by-symbol                           token-by-symbol
-    :recipient-gets-amount                     recipient-gets-amount
-    :max-decimals                              max-decimals
-    :fee-formatted                             fee-formatted
-    :sending-to-unpreferred-networks?          sending-to-unpreferred-networks?
-    :no-routes-found?                          no-routes-found?
-    :from-enabled-networks                     from-enabled-networks
-    :should-try-again?                         should-try-again?
-    :current-address                           current-address
-    :not-enough-asset?                         not-enough-asset?
-    :show-no-routes?                           show-no-routes?}))
-
+    :token-by-symbol                           token-by-symbol}))
 
 
 ;; events
