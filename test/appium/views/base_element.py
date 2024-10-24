@@ -10,6 +10,9 @@ from PIL import Image, ImageChops, ImageStat
 from appium.webdriver.common.mobileby import MobileBy
 from selenium.common.exceptions import NoSuchElementException, StaleElementReferenceException, TimeoutException
 from selenium.webdriver import ActionChains
+from selenium.webdriver.common.actions import interaction
+from selenium.webdriver.common.actions.action_builder import ActionBuilder
+from selenium.webdriver.common.actions.pointer_input import PointerInput
 from selenium.webdriver.support import expected_conditions
 from selenium.webdriver.support.wait import WebDriverWait
 
@@ -324,9 +327,21 @@ class BaseElement(object):
         action.click_and_hold(element).perform()
         time.sleep(2)
         if element_to_release_on:
-            action.release(element_to_release_on.find_element()).perform()
+            action.release(element_to_release_on.find_element())
+            action.perform()
         else:
-            action.release(element).perform()
+            action.release(element)
+            action.perform()
+
+        # actions = ActionChains(self.driver)
+        # actions.w3c_actions = ActionBuilder(self, mouse=PointerInput(interaction.POINTER_TOUCH, "touch"))
+        # actions.w3c_actions.pointer_action.click_and_hold(element)
+        # actions.w3c_actions.pointer_action.release()
+        # actions.perform()
+
+    def long_press_without_release(self):
+        action = ActionChains(self.driver)
+        action.click_and_hold(self.find_element()).perform()
 
     def long_press_until_element_is_shown(self, expected_element):
         element = self.find_element()

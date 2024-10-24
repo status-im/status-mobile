@@ -15,6 +15,7 @@ from views.sign_in_view import SignInView
 @marks.nightly
 @marks.secured
 @marks.smoke
+@marks.lt
 class TestWalletMultipleDevice(MultipleSharedDeviceTestCase):
 
     def prepare_devices(self):
@@ -193,6 +194,7 @@ class TestWalletMultipleDevice(MultipleSharedDeviceTestCase):
 @marks.nightly
 @marks.secured
 @marks.smoke
+@marks.lt
 class TestWalletOneDevice(MultipleSharedDeviceTestCase):
 
     def prepare_devices(self):

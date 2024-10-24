@@ -26,3 +26,8 @@ def update_session(session_id, session_name, status):
         }
     )
     assert resp.status_code == 200
+
+def get_session_info(session_id):
+    resp = session.get(url="https://mobile-api.lambdatest.com/mobile-automation/api/v1/sessions/%s" % session_id)
+    assert resp.status_code == 200
+    return resp.json()['data']

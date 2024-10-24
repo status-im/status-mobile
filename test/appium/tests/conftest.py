@@ -308,8 +308,8 @@ def pytest_configure(config):
         )
 
 
-def pytest_configure_node(node):
-    node.workerinput['lambda_test_apk_url'] = node.config.option.lambda_test_apk_url
+# def pytest_configure_node(node):
+#     node.workerinput['lambda_test_apk_url'] = node.config.option.lambda_test_apk_url
 
 
 def pytest_unconfigure(config):

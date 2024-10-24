@@ -88,14 +88,13 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
         message_sender.emojis_below_message(emoji="love").wait_for_element_text(2)
 
         self.device_1.just_fyi("Check emojis info")
-        message_sender.emojis_below_message(emoji="love").long_press_until_element_is_shown(
-            self.chat_1.authors_for_reaction(emoji="love"))
+        message_sender.emojis_below_message(emoji="love").long_press_without_release()
         if not self.chat_1.user_list_element_by_name(
                 self.username_1).is_element_displayed() or not self.chat_1.user_list_element_by_name(
             self.username_2).is_element_displayed():
             self.errors.append("Incorrect users are shown for 'love' reaction.")
 
-        self.chat_1.authors_for_reaction(emoji="thumbs-up").click()
+        self.chat_1.authors_for_reaction(emoji="thumbs-up").double_click()
         if not self.chat_1.user_list_element_by_name(
                 self.username_1).is_element_displayed() or self.chat_1.user_list_element_by_name(
             self.username_2).is_element_displayed():
@@ -255,7 +254,7 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
         pinned_message = self.chat_1.pinned_messages_list.message_element_by_text(self.message_4)
 
         unpin_element = self.chat_1.element_by_translation_id("unpin-from-chat")
-        pinned_message.long_press_element(element_to_release_on=unpin_element)
+        pinned_message.long_press_without_release()
         unpin_element.click_until_absense_of_element(unpin_element)
         # try:
         #     self.chat_2.chat_element_by_text(self.message_4).pinned_by_label.wait_for_invisibility_of_element()
@@ -537,6 +536,7 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
 
 @pytest.mark.xdist_group(name="new_six_2")
 @marks.nightly
+@marks.lt
 class TestOneToOneChatMultipleSharedDevicesNewUiTwo(MultipleSharedDeviceTestCase):
 
     def prepare_devices(self):

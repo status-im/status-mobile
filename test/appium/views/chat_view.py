@@ -1011,7 +1011,7 @@ class ChatView(BaseView):
     def pin_message(self, message, action="pin"):
         self.driver.info("Looking for message '%s' pin" % message)
         element = self.element_by_translation_id(action)
-        self.chat_element_by_text(message).long_press_until_element_is_shown(element)
+        self.chat_element_by_text(message).long_press_without_release()
         element.click_until_absense_of_element(element)
 
     def edit_message_in_chat(self, message_to_edit, message_to_update):
@@ -1041,24 +1041,18 @@ class ChatView(BaseView):
         self.driver.info("Quoting '%s' message" % message)
         element = self.chat_element_by_text(message)
         element.wait_for_sent_state()
-        element.long_press_until_element_is_shown(self.reply_message_button)
-        self.reply_message_button.click()
+        element.long_press_without_release()
+        self.reply_message_button.double_click()
 
     def set_reaction(self, message: str, emoji: str = 'thumbs-up', emoji_message=False):
         self.driver.info("Setting '%s' reaction" % emoji)
-        # Audio message is obvious should be tapped not on audio-scroll-line
-        # so we tap on its below element as exception here (not the case for link/tag message!)
         element = Button(self.driver, accessibility_id='reaction-%s' % emoji)
-        if message == 'audio':
-            self.audio_message_in_chat_timer.long_press_element()
+        if emoji_message:
+            self.element_by_text_part(message).long_press_without_release()
         else:
-            if not emoji_message:
-                self.chat_element_by_text(message).long_press_until_element_is_shown(element)
-            else:
-                self.element_by_text_part(message).long_press_until_element_is_shown(element)
-        # old UI
-        # element = Button(self.driver, accessibility_id='pick-emoji-%s' % key)
-        element.click()
+            self.chat_element_by_text(message).long_press_without_release()
+        element.wait_for_element()
+        element.double_click()
         element.wait_for_invisibility_of_element()
 
     def add_remove_same_reaction(self, message: str, emoji: str = 'thumbs-up'):
