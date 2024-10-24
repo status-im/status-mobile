@@ -84,15 +84,6 @@
      bridge-enabled-networks
      send-enabled-networks)))
 
-
-#_(comment
-    (inc 1)
-    (rf/sub [:wallet/wallet-send])
-    (rf/sub [:send-input-amount-screen/from-enabled-networks])
-    (rf/sub [:wallet/wallet-send-tx-type])
-    (rf/sub [:wallet/wallet-send-enabled-networks])
-    (rf/sub [:wallet/bridge-from-networks]))
-
 (defn- every-network-value-is-zero?
   [sender-network-values]
   (every? (fn [{:keys [total-amount]}]
