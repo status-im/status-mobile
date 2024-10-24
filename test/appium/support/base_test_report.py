@@ -5,6 +5,7 @@ import re
 import urllib
 from hashlib import md5
 
+from support.lambda_test import get_session_info
 from support.test_data import SingleTestData
 
 
@@ -96,17 +97,12 @@ class BaseTestReport:
                     failed.append(test)
         return passed, failed, xfailed
 
-    def get_sauce_token(self, job_id):
-        return hmac.new(bytes(self.sauce_username + ":" + self.sauce_access_key, 'latin-1'),
-                        bytes(job_id, 'latin-1'), md5).hexdigest()
+    # def get_sauce_token(self, job_id):
+    #     return hmac.new(bytes(self.sauce_username + ":" + self.sauce_access_key, 'latin-1'),
+    #                     bytes(job_id, 'latin-1'), md5).hexdigest()
 
-    def get_sauce_job_url(self, job_id, first_command=0):
-        token = self.get_sauce_token(job_id)
-        from tests.conftest import apibase
-        url = 'https://%s/jobs/%s?auth=%s' % (apibase, job_id, token)
-        if first_command > 0:
-            url += "#%s" % first_command
-        return url
+    def get_lambda_test_job_url(self, job_id, first_command=0):
+        return "https://appautomation.lambdatest.com/test?testID=" + get_session_info(job_id)['test_id']
 
     @staticmethod
     def get_jenkins_link_to_rerun_e2e(branch_name="develop", pr_id="", tr_case_ids=""):

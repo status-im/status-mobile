@@ -19,9 +19,11 @@ from urllib3.exceptions import MaxRetryError, ProtocolError
 
 from support.api.network_api import NetworkApi
 from tests import test_suite_data, start_threads, appium_container, pytest_config_global, transl
-from tests.conftest import sauce_username, sauce_access_key, apibase, github_report, run_name
+from tests.conftest import sauce_username, sauce_access_key, apibase, github_report, run_name, option, \
+    lambda_test_username, lambda_test_access_key
 
 executor_sauce_lab = 'https://%s:%s@ondemand.%s:443/wd/hub' % (sauce_username, sauce_access_key, apibase)
+executor_lambda_test = 'https://%s:%s@mobile-hub.lambdatest.com/wd/hub' % (lambda_test_username, lambda_test_access_key)
 
 executor_local = 'http://localhost:4723/wd/hub'
 
@@ -88,7 +90,6 @@ def get_capabilities_sauce_lab():
     caps['sauce:options']['name'] = test_suite_data.current_test.name
     caps['sauce:options']['maxDuration'] = 3600
     caps['sauce:options']['idleTimeout'] = 1000
-    # caps['sauce:options']['android.gpu.mode'] = 'hardware'
 
     options = AppiumOptions()
     options.load_capabilities(caps)
@@ -96,10 +97,53 @@ def get_capabilities_sauce_lab():
     return options
 
 
-# def update_capabilities_sauce_lab(new_capabilities: dict):
-#     caps = get_capabilities_sauce_lab().copy()
-#     caps.update(new_capabilities)
-#     return caps
+def get_lambda_test_capabilities_real_device():
+    capabilities = {
+        "lt:options": {
+            "w3c": True,
+            "platformName": "android",
+            "deviceName": "Pixel 8",
+            "platformVersion": "14",
+            "app": "lt://APP10160471311729636675434695",  # lambda_test_apk_url,
+            "devicelog": True,
+            "visual": True,
+            # "network": True,
+            "video": True,
+            "build": run_name,
+            "name": test_suite_data.current_test.group_name,
+            "idleTimeout": 1000,
+            "isRealMobile": True
+        }
+    }
+    options = AppiumOptions()
+    options.load_capabilities(capabilities)
+    return options
+
+
+def get_lambda_test_capabilities_emulator():
+    capabilities = {
+        "lt:options": {
+            "w3c": True,
+            "platformName": "android",
+            "deviceName": "Pixel 6",
+            "appiumVersion": "2.11.0",
+            "platformVersion": "14",
+            "app": "lt://APP10160522181729681886587724",  # option.lambda_test_apk_url,
+            "devicelog": True,
+            "visual": True,
+            "video": True,
+            "build": run_name,
+            "name": test_suite_data.current_test.group_name,
+            "idleTimeout": 1000
+        },
+        "appium:options": {
+            "automationName": "UiAutomator2",
+            "enforceXPath1": True
+        }
+    }
+    options = AppiumOptions()
+    options.load_capabilities(capabilities)
+    return options
 
 
 def get_app_path():
@@ -124,9 +168,9 @@ def pull_requests_log(driver):
 class AbstractTestCase:
     __metaclass__ = ABCMeta
 
-    def print_sauce_lab_info(self, driver):
+    def print_lt_session_info(self, driver):
         sys.stdout = sys.stderr
-        print("SauceOnDemandSessionID=%s job-name=%s" % (driver.session_id, run_name))
+        print("LambdaTestSessionID=%s job-name=%s" % (driver.session_id, run_name))
 
     def get_translation_by_key(self, key):
         return transl[key]
@@ -179,6 +223,16 @@ class Driver(webdriver.Remote):
     def fail(self, text: str):
         pytest.fail('Device %s: %s' % (self.number, text))
 
+    def update_lt_session_status(self, index, status):
+        data = {
+            "action": "setTestStatus",
+            "arguments": {
+                "status": status,
+                "remark": "Device %s" % index
+            }
+        }
+        self.execute_script("lambda-hook: %s" % str(data).replace("'", "\""))
+
 
 class Errors(object):
     def __init__(self):
@@ -213,7 +267,7 @@ class SingleDeviceTestCase(AbstractTestCase):
 
     def teardown_method(self, method):
         if self.environment == 'sauce':
-            self.print_sauce_lab_info(self.driver)
+            self.print_lt_session_info(self.driver)
         try:
             self.add_alert_text_to_report(self.driver)
             geth_content = pull_geth(self.driver)
@@ -275,7 +329,7 @@ class SauceMultipleDeviceTestCase(AbstractTestCase):
         geth_names, geth_contents = [], []
         for driver in self.drivers:
             try:
-                self.print_sauce_lab_info(self.drivers[driver])
+                self.print_lt_session_info(self.drivers[driver])
                 self.add_alert_text_to_report(self.drivers[driver])
                 geth_names.append(
                     '%s_geth%s.log' % (test_suite_data.current_test.name, str(self.drivers[driver].number)))
@@ -305,14 +359,14 @@ def create_shared_drivers(quantity):
     else:
         loop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
-        print('SC Executor: %s' % executor_sauce_lab)
+        print('LT Executor: %s' % executor_lambda_test)
         try:
             drivers = loop.run_until_complete(start_threads(test_suite_data.current_test.name,
                                                             quantity,
                                                             Driver,
                                                             drivers,
-                                                            command_executor=executor_sauce_lab,
-                                                            options=get_capabilities_sauce_lab()))
+                                                            command_executor=executor_lambda_test,
+                                                            options=get_lambda_test_capabilities_emulator()))
             if len(drivers) < quantity:
                 test_suite_data.current_test.testruns[-1].error = "Not all %s drivers are created" % quantity
 
@@ -322,8 +376,9 @@ def create_shared_drivers(quantity):
             return drivers, loop
         except (MaxRetryError, AttributeError) as e:
             test_suite_data.current_test.testruns[-1].error = str(e)
-            for _, driver in drivers.items():
+            for i, driver in drivers.items():
                 try:
+                    driver.update_lt_session_status(i, "failed")
                     driver.quit()
                 except (WebDriverException, AttributeError):
                     pass
@@ -369,7 +424,7 @@ class SauceSharedMultipleDeviceTestCase(AbstractTestCase):
         if not self.drivers:
             pytest.fail(test_suite_data.current_test.testruns[-1].error)
         for _, driver in self.drivers.items():
-            driver.execute_script("sauce:context=Started %s" % method.__name__)
+            driver.log_event("appium", "Started %s" % method.__name__)
         jobs = test_suite_data.current_test.testruns[-1].jobs
         if not jobs:
             for index, driver in self.drivers.items():
@@ -381,7 +436,7 @@ class SauceSharedMultipleDeviceTestCase(AbstractTestCase):
         log_names, log_contents = [], []
         for driver in self.drivers:
             try:
-                self.print_sauce_lab_info(self.drivers[driver])
+                self.print_lt_session_info(self.drivers[driver])
                 self.add_alert_text_to_report(self.drivers[driver])
                 log_names.append(
                     '%s_geth%s.log' % (test_suite_data.current_test.name, str(self.drivers[driver].number)))
@@ -400,6 +455,7 @@ class SauceSharedMultipleDeviceTestCase(AbstractTestCase):
 
     @pytest.fixture(scope='class', autouse=True)
     def prepare(self, request):
+        test_suite_data.current_test.group_name = request.cls.__name__
         try:
             request.cls.prepare_devices(request)
         finally:
@@ -408,9 +464,8 @@ class SauceSharedMultipleDeviceTestCase(AbstractTestCase):
 
     @classmethod
     def teardown_class(cls):
-        from tests.conftest import sauce
         requests_session = requests.Session()
-        requests_session.auth = (sauce_username, sauce_access_key)
+        requests_session.auth = (lambda_test_username, lambda_test_access_key)
         if test_suite_data.tests[0].testruns[-1].error and 'setup failed' in test_suite_data.tests[0].testruns[
             -1].error:
             group_setup_failed = True
@@ -424,29 +479,29 @@ class SauceSharedMultipleDeviceTestCase(AbstractTestCase):
                     log_names.append('%s_geth%s.log' % (cls.__name__, i))
                     log_contents.append(pull_requests_log(driver=driver))
                     log_names.append('%s_requests%s.log' % (cls.__name__, i))
-                session_id = driver.session_id
+                    lt_session_status = "failed"
+                else:
+                    lt_session_status = "passed"
+                from support.lambda_test import update_session
                 try:
-                    sauce.jobs.update_job(username=sauce_username, job_id=session_id, name=cls.__name__)
-                except (RemoteDisconnected, SauceException, requests.exceptions.ConnectionError):
-                    pass
-                try:
+                    driver.update_lt_session_status(i, lt_session_status)
                     driver.quit()
-                except WebDriverException:
+                except (WebDriverException, RemoteDisconnected):
                     pass
-                url = 'https://api.%s/rest/v1/%s/jobs/%s/assets/%s' % (apibase, sauce_username, session_id, "log.json")
-                try:
-                    WebDriverWait(driver, 60, 2).until(lambda _: requests_session.get(url).status_code == 200)
-                    commands = requests_session.get(url).json()
-                    for command in commands:
-                        try:
-                            if command['message'].startswith("Started "):
-                                for test in test_suite_data.tests:
-                                    if command['message'] == "Started %s" % test.name:
-                                        test.testruns[-1].first_commands[session_id] = commands.index(command) + 1
-                        except KeyError:
-                            continue
-                except (RemoteDisconnected, requests.exceptions.ConnectionError, TimeoutException):
-                    pass
+                # url = 'https://api.%s/rest/v1/%s/jobs/%s/assets/%s' % (apibase, sauce_username, session_id, "log.json")
+                # try:
+                #     WebDriverWait(driver, 60, 2).until(lambda _: requests_session.get(url).status_code == 200)
+                #     commands = requests_session.get(url).json()
+                #     for command in commands:
+                #         try:
+                #             if command['message'].startswith("Started "):
+                #                 for test in test_suite_data.tests:
+                #                     if command['message'] == "Started %s" % test.name:
+                #                         test.testruns[-1].first_commands[session_id] = commands.index(command) + 1
+                #         except KeyError:
+                #             continue
+                # except (RemoteDisconnected, requests.exceptions.ConnectionError, TimeoutException):
+                #     pass
         except AttributeError:
             pass
         finally:

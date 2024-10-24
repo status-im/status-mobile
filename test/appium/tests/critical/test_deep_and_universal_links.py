@@ -7,6 +7,7 @@ from views.sign_in_view import SignInView
 
 @pytest.mark.xdist_group(name="new_one_1")
 @marks.nightly
+@marks.lt
 class TestDeepLinksOneDevice(MultipleSharedDeviceTestCase):
 
     def prepare_devices(self):

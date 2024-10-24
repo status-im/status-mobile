@@ -20,6 +20,10 @@ from tests import test_suite_data, appium_container
 
 sauce_username = environ.get('SAUCE_USERNAME')
 sauce_access_key = environ.get('SAUCE_ACCESS_KEY')
+
+lambda_test_username = environ.get('LAMBDA_TEST_USERNAME')
+lambda_test_access_key = environ.get('LAMBDA_TEST_ACCESS_KEY')
+
 github_token = environ.get('GIT_HUB_TOKEN')
 
 
@@ -141,6 +145,7 @@ def pytest_addoption(parser):
 @dataclass
 class Option:
     datacenter: str = None
+    lambda_test_apk_url: str = None
 
 
 option = Option()
@@ -151,15 +156,19 @@ sauce = None
 run_name = None
 
 
+# lambda_test_apk_url = None
+
+
 def is_master(config):
     return not hasattr(config, 'workerinput')
 
 
 def is_uploaded():
-    stored_files = sauce.storage.files()
-    for i in range(len(stored_files)):
-        if stored_files[i].name == test_suite_data.apk_name:
-            return True
+    return False  # ToDo: add verification
+    # stored_files = sauce.storage.files()
+    # for i in range(len(stored_files)):
+    #     if stored_files[i].name == test_suite_data.apk_name:
+    #         return True
 
 
 @contextmanager
@@ -182,21 +191,22 @@ class UploadApkException(Exception):
 
 
 def _upload_and_check_response(apk_file_path):
+    from support.lambda_test import upload_apk
     with _upload_time_limit(1000):
-        resp = sauce.storage.upload(apk_file_path)
-
-    try:
-        if resp.name != test_suite_data.apk_name:
-            raise UploadApkException("Incorrect apk was uploaded to Sauce storage, response:\n%s" % resp)
-    except AttributeError:
-        raise UploadApkException("Error when uploading apk to Sauce storage, response:\n%s" % resp)
+        #     # resp = sauce.storage.upload(apk_file_path)
+        return upload_apk(apk_file_path)
+    # try:
+    #     if resp.name != test_suite_data.apk_name:
+    #         raise UploadApkException("Incorrect apk was uploaded to Sauce storage, response:\n%s" % resp)
+    # except AttributeError:
+    #     raise UploadApkException("Error when uploading apk to Sauce storage, response:\n%s" % resp)
 
 
 def _upload_and_check_response_with_retries(apk_file_path, retries=3):
     for _ in range(retries):
         try:
-            _upload_and_check_response(apk_file_path)
-            break
+            return _upload_and_check_response(apk_file_path)
+            # break
         except (ConnectionError, RemoteDisconnected, c_er):
             time.sleep(10)
 
@@ -254,8 +264,8 @@ def pytest_configure(config):
     else:
         raise NotImplementedError("Unknown SauceLabs datacenter")
 
-    global sauce
-    sauce = SauceLab('https://api.' + apibase + '/', sauce_username, sauce_access_key)
+    # global sauce
+    # sauce = SauceLab('https://api.' + apibase + '/', sauce_username, sauce_access_key)
     if config.getoption('log_steps'):
         import logging
         logging.basicConfig(level=logging.INFO)
@@ -271,6 +281,18 @@ def pytest_configure(config):
     else:
         run_name = get_run_name(config, new_one=False)
 
+    if is_master(config):
+        apk_src = config.getoption('apk')
+        if apk_src.startswith('http'):
+            apk_path = _download_apk(apk_src)
+        else:
+            apk_path = apk_src
+
+        # global lambda_test_apk_url
+        option.lambda_test_apk_url = _upload_and_check_response(apk_path)
+        if apk_src.startswith('http'):
+            os.remove(apk_path)
+
     if not is_master(config):
         return
 
@@ -285,16 +307,9 @@ def pytest_configure(config):
             description='e2e tests are running'
         )
 
-    if config.getoption('env') == 'sauce' and not is_uploaded():
-        apk_src = config.getoption('apk')
-        if apk_src.startswith('http'):
-            apk_path = _download_apk(apk_src)
-        else:
-            apk_path = apk_src
 
-        _upload_and_check_response_with_retries(apk_path)
-        if apk_src.startswith('http'):
-            os.remove(apk_path)
+# def pytest_configure_node(node):
+#     node.workerinput['lambda_test_apk_url'] = node.config.option.lambda_test_apk_url
 
 
 def pytest_unconfigure(config):
@@ -365,10 +380,10 @@ def pytest_runtest_makereport(item, call):
                 test_suite_data.current_test.group_name = item.instance.__class__.__name__
                 error = catch_error()
                 final_error = '%s %s' % (error_intro, error)
-                if is_sauce_env:
-                    update_sauce_jobs(test_suite_data.current_test.group_name,
-                                      test_suite_data.current_test.testruns[-1].jobs,
-                                      report.passed)
+                # if is_sauce_env:
+                #     update_sauce_jobs(test_suite_data.current_test.group_name,
+                #                       test_suite_data.current_test.testruns[-1].jobs,
+                #                       report.passed)
         if error:
             test_suite_data.current_test.testruns[-1].error = final_error
             github_report.save_test(test_suite_data.current_test)
@@ -383,8 +398,8 @@ def pytest_runtest_makereport(item, call):
             current_test.testruns[-1].xfail = report.wasxfail
             if error:
                 current_test.testruns[-1].error = '%s [[%s]]' % (error, report.wasxfail)
-        if is_sauce_env:
-            update_sauce_jobs(current_test.name, current_test.testruns[-1].jobs, report.passed)
+        # if is_sauce_env:
+        #     update_sauce_jobs(current_test.name, current_test.testruns[-1].jobs, report.passed)
         if item.config.getoption('docker'):
             device_stats = appium_container.get_device_stats()
             if item.config.getoption('bugreport'):
@@ -447,35 +462,3 @@ def pytest_runtest_protocol(item, nextitem):
                 break  # rerun
         else:
             return True  # no need to rerun
-
-
-# @pytest.fixture(scope="session", autouse=False)
-# def faucet_for_senders():
-#     network_api = NetworkApi()
-#     for user in transaction_senders.values():
-#         network_api.faucet(address=user['address'])
-
-
-@pytest.fixture
-def messages_number(request):
-    return int(request.config.getoption('messages_number'))
-
-
-@pytest.fixture
-def message_wait_time(request):
-    return int(request.config.getoption('message_wait_time'))
-
-
-@pytest.fixture
-def participants_number(request):
-    return int(request.config.getoption('participants_number'))
-
-
-@pytest.fixture
-def chat_name(request):
-    return request.config.getoption('chat_name')
-
-
-@pytest.fixture
-def user_public_key(request):
-    return request.config.getoption('user_public_key')

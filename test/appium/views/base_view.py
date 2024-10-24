@@ -410,7 +410,8 @@ class BaseView(object):
 
     def just_fyi(self, some_str):
         self.driver.info('# STEP: %s' % some_str, device=False)
-        self.driver.execute_script("sauce:context=STEP: %s" % some_str)
+        # self.driver.execute_script("sauce:context=STEP: %s" % some_str)
+        self.driver.log_event("appium", "STEP: %s" % some_str)
 
     def hide_keyboard_if_shown(self):
         if self.driver.is_keyboard_shown():
