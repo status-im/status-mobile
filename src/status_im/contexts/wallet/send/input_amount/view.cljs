@@ -112,7 +112,7 @@
   [quo/alert-banner
    {:action?         true
     :text            (i18n/label :t/not-enough-assets-to-pay-gas-fees)
-    :button-text     (i18n/label :t/buy-eth)
+    :button-text     (i18n/label :t/add-eth)
     :on-button-press #(rf/dispatch [:show-bottom-sheet
                                     {:content buy-token/view}])}])
 
@@ -130,6 +130,60 @@
     (rf/dispatch [:wallet/reset-network-amounts-to-zero])
 
     :else (rf/dispatch [:wallet/stop-and-clean-suggested-routes])))
+
+(defn token-input
+  []
+  (let [{:keys [crypto-currency?
+                upper-limit
+                upper-limit-prettified
+                input-value
+                value-out-of-limits?
+                valid-input?
+                upper-limit-exceeded?
+                amount-in-crypto
+                token-input-converted-value
+                token-input-converted-value-prettified
+                route
+                routes
+                sender-network-values
+                loading-routes?
+                token-not-supported-in-receiver-networks?
+                fiat-currency
+                token-networks
+                receiver-networks
+                token
+                token-symbol
+                token-by-symbol
+                recipient-gets-amount
+                max-decimals
+                fee-formatted
+                sending-to-unpreferred-networks?
+                no-routes-found?
+                from-enabled-networks
+                should-try-again?
+                current-address
+                not-enough-asset?
+                show-no-routes?]
+         :as   state}           (rf/sub [:send-input-amount-screen/token-input-subs])
+        show-select-asset-sheet #(rf/dispatch
+                                  [:show-bottom-sheet
+                                   {:content (fn [] [select-asset-bottom-sheet])}])]
+    [quo/token-input
+     {:container-style style/input-container
+      :token-symbol    token-symbol
+      :value           input-value
+      :on-swap         #(rf/dispatch [:send-input-amount-screen/swap-between-fiat-and-crypto
+                                      token-input-converted-value])
+      :on-token-press  show-select-asset-sheet
+      :error?          value-out-of-limits?
+      :currency-symbol (if crypto-currency? token-symbol fiat-currency)
+      :converted-value token-input-converted-value-prettified
+      :hint-component  [quo/network-tags
+                        {:networks (seq from-enabled-networks)
+                         :title    (i18n/label
+                                    :t/send-limit
+                                    {:limit upper-limit-prettified})
+                         :status   (when value-out-of-limits? :error)}]}]))
 
 (defn view
   ;; crypto-decimals, limit-crypto and initial-crypto-currency? args are needed
@@ -168,28 +222,22 @@
                 from-enabled-networks
                 should-try-again?
                 current-address
-                not-enough-asset?]
-         :as   state}           (rf/sub [:send-input-amount-screen/data])
+                not-enough-asset?
+                show-no-routes?]
+         :as   state}        (rf/sub [:send-input-amount-screen/view-subs])
         ;; from-enabled-networks   (rf/sub [:wallet/wallet-send-enabled-networks])
-        view-id                 (rf/sub [:view-id])
-        active-screen?          (= view-id current-screen-id)
-        bottom                  (safe-area/get-bottom)
-        on-navigate-back        on-navigate-back
-        show-select-asset-sheet #(rf/dispatch
-                                  [:show-bottom-sheet
-                                   {:content (fn [] [select-asset-bottom-sheet])}])
-        show-no-routes?         (and
-                                 (or no-routes-found? upper-limit-exceeded?)
-                                 (not-empty sender-network-values)
-                                 (not not-enough-asset?))
-        request-fetch-routes    (fn [bounce-duration-ms]
-                                  (fetch-routes
-                                   {:amount                 amount-in-crypto
-                                    :valid-input?           valid-input?
-                                    :bounce-duration-ms     bounce-duration-ms
-                                    :token                  token
-                                    :reset-amounts-to-zero? (and upper-limit-exceeded?
-                                                                 (some? routes))}))]
+        view-id              (rf/sub [:view-id])
+        active-screen?       (= view-id current-screen-id)
+        bottom               (safe-area/get-bottom)
+        on-navigate-back     on-navigate-back
+        request-fetch-routes (fn [bounce-duration-ms]
+                               (fetch-routes
+                                {:amount                 amount-in-crypto
+                                 :valid-input?           valid-input?
+                                 :bounce-duration-ms     bounce-duration-ms
+                                 :token                  token
+                                 :reset-amounts-to-zero? (and upper-limit-exceeded?
+                                                              (some? routes))}))]
     (rn/use-effect
      (fn []
        (when active-screen?
@@ -222,23 +270,8 @@
       {:icon-name     :i/arrow-left
        :on-press      #(rf/dispatch [:navigate-back])
        :switcher-type :select-account}]
-     (tap> from-enabled-networks)
-     [quo/token-input
-      {:container-style style/input-container
-       :token-symbol    token-symbol
-       :value           input-value
-       :on-swap         #(rf/dispatch [:send-input-amount-screen/swap-between-fiat-and-crypto
-                                       token-input-converted-value])
-       :on-token-press  show-select-asset-sheet
-       :error?          value-out-of-limits?
-       :currency-symbol (if crypto-currency? token-symbol fiat-currency)
-       :converted-value token-input-converted-value-prettified
-       :hint-component  [quo/network-tags
-                         {:networks (seq from-enabled-networks)
-                          :title    (i18n/label
-                                     :t/send-limit
-                                     {:limit upper-limit-prettified})
-                          :status   (when value-out-of-limits? :error)}]}]
+     [token-input]
+
      [routes/view
       {:token                                     token-by-symbol
        :send-amount-in-crypto                     amount-in-crypto
