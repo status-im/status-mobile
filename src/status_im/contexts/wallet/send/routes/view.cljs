@@ -27,7 +27,7 @@
              receiver-preferred-networks              (rf/sub
                                                        [:wallet/wallet-send-receiver-preferred-networks])
              {token-symbol   :symbol
-              token-networks :networks}               (rf/sub [:wallet/wallet-send-token])
+              token-networks :supported-networks}     (rf/sub [:wallet/wallet-send-token])
              token-chain-ids-set                      (set (mapv #(:chain-id %) token-networks))
              [selected-receiver-networks
               set-selected-receiver-networks]         (rn/use-state receiver-networks)

@@ -15,7 +15,7 @@
 
 (defn- bridge-token-component
   []
-  (fn [{:keys [chain-id network-name]} {:keys [networks] :as token}]
+  (fn [{:keys [chain-id network-name]} {:keys [supported-networks] :as token}]
     (let [network                     (rf/sub [:wallet/network-details-by-chain-id chain-id])
           currency                    (rf/sub [:profile/currency])
           currency-symbol             (rf/sub [:profile/currency-symbol])
@@ -28,7 +28,8 @@
           fiat-formatted              (utils/get-standard-fiat-format crypto-value
                                                                       currency-symbol
                                                                       fiat-value)
-          token-available-on-network? (network-utils/token-available-on-network? networks chain-id)]
+          token-available-on-network? (network-utils/token-available-on-network? supported-networks
+                                                                                 chain-id)]
       [quo/network-list
        {:label         (name network-name)
         :network-image (quo.resources/get-network (:network-name network))
@@ -49,7 +50,10 @@
         mainnet          (first network-details)
         layer-2-networks (rest network-details)
         account-token    (some #(when (= token-symbol (:symbol %)) %) tokens)
-        account-token    (when account-token (assoc account-token :networks (:networks token)))
+        account-token    (when account-token
+                           (assoc account-token
+                                  :networks           (:networks token)
+                                  :supported-networks (:supported-networks token)))
         bridge-to-title  (i18n/label :t/bridge-to
                                      {:name (string/upper-case (str token-symbol))})]
 
