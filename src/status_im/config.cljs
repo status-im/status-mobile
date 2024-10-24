@@ -1,10 +1,10 @@
 (ns status-im.config
   (:require
-    [clojure.string :as string]
-    [react-native.config :as react-native-config]
-    [status-im.constants :as constants]
-    [utils.ens.core :as utils.ens]
-    [utils.ethereum.chain :as chain]))
+   [clojure.string :as string]
+   [react-native.config :as react-native-config]
+   [status-im.constants :as constants]
+   [utils.ens.core :as utils.ens]
+   [utils.ethereum.chain :as chain]))
 
 (def get-config react-native-config/get-config)
 
@@ -12,8 +12,8 @@
 
 (goog-define INFURA_TOKEN "")
 (goog-define POKT_TOKEN "3ef2018191814b7e1009b8d9")
-(goog-define STATUS_BUILD_PROXY_USER "dev")
-(goog-define STATUS_BUILD_PROXY_PASSWORD "Crypto_is_a_scam")
+(goog-define STATUS_BUILD_PROXY_USER "")
+(goog-define STATUS_BUILD_PROXY_PASSWORD "")
 (goog-define OPENSEA_API_KEY "")
 (goog-define RARIBLE_MAINNET_API_KEY "")
 (goog-define RARIBLE_TESTNET_API_KEY "")
