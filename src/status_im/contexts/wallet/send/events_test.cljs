@@ -79,11 +79,14 @@
 (h/deftest-event :wallet/edit-token-to-send
   [event-id dispatch]
   (let [token-symbol      "ETH"
-        token             {:symbol   "ETH"
-                           :name     "Ether"
-                           :networks #{{:chain-id 421614}
-                                       {:chain-id 11155420}
-                                       {:chain-id 11155111}}}
+        token             {:symbol             "ETH"
+                           :name               "Ether"
+                           :networks           #{{:chain-id 421614}
+                                                 {:chain-id 11155420}
+                                                 {:chain-id 11155111}}
+                           :supported-networks #{{:chain-id 421614}
+                                                 {:chain-id 11155420}
+                                                 {:chain-id 11155111}}}
         receiver-networks [421614 11155420]]
     (testing "can be called with :token"
       (let [initial-db  {:wallet {:ui {:send {:receiver-networks receiver-networks

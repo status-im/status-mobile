@@ -229,14 +229,17 @@
 (rf/reg-event-fx
  :wallet/store-wallet-token
  (fn [{:keys [db]} [address raw-tokens-data]]
-   (let [tokens     (data-store/rpc->tokens raw-tokens-data)
-         add-tokens (fn [stored-accounts tokens-per-account]
-                      (reduce-kv (fn [accounts address tokens-data]
-                                   (if (contains? accounts address)
-                                     (update accounts address assoc :tokens tokens-data)
-                                     accounts))
-                                 stored-accounts
-                                 tokens-per-account))]
+   (let [supported-chains-by-token-symbol (get-in db [:wallet :tokens :supported-chains-by-symbol])
+         tokens                           (data-store/rpc->tokens raw-tokens-data
+                                                                  supported-chains-by-token-symbol)
+         add-tokens                       (fn [stored-accounts tokens-per-account]
+                                            (reduce-kv
+                                             (fn [accounts address tokens-data]
+                                               (if (contains? accounts address)
+                                                 (update accounts address assoc :tokens tokens-data)
+                                                 accounts))
+                                             stored-accounts
+                                             tokens-per-account))]
      {:db (-> db
               (update-in [:wallet :accounts] add-tokens tokens)
               (assoc-in [:wallet :ui :tokens-loading address] false))})))

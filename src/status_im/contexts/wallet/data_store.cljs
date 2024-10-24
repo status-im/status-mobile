@@ -72,11 +72,32 @@
       (update :testPreferredChainIds chain-ids-set->string)
       (dissoc :watch-only? :default-account? :operable? :tokens :collectibles)))
 
+(defn add-missing-balance-per-chain-values
+  "Adds any missing chain balance (0) to the balance-per-chain map based on token supported chains as
+   status-go returns balance for that chain only if the balance is positive."
+  [balances-per-chain supported-chains]
+  (let [zero-balance-per-chain (fn [chain-id]
+                                 {:chain-id    chain-id
+                                  :raw-balance (money/->bignumber 0)
+                                  :balance     "0"})]
+    (reduce
+     (fn [result chain-id]
+       (if (contains? result chain-id)
+         result
+         (assoc result chain-id (zero-balance-per-chain chain-id))))
+     balances-per-chain
+     supported-chains)))
+
 (defn- rpc->balances-per-chain
-  [token]
+  [token supported-chains]
   (-> token
       (update :balances-per-chain update-vals #(update % :raw-balance money/bignumber))
-      (update :balances-per-chain update-keys (comp utils.number/parse-int name))))
+      (update :balances-per-chain update-keys (comp utils.number/parse-int name))
+      (update :balances-per-chain #(add-missing-balance-per-chain-values % supported-chains))))
+
+(defn- update-balances-per-chain
+  [tokens supported-chains-by-token-symbol]
+  (mapv #(rpc->balances-per-chain % (get supported-chains-by-token-symbol (:symbol %))) tokens))
 
 (defn- remove-tokens-with-empty-values
   [tokens]
@@ -85,12 +106,12 @@
    tokens))
 
 (defn rpc->tokens
-  [tokens]
+  [tokens supported-chains-by-token-symbol]
   (-> tokens
       (update-keys name)
       (update-vals #(cske/transform-keys transforms/->kebab-case-keyword %))
       (update-vals remove-tokens-with-empty-values)
-      (update-vals #(mapv rpc->balances-per-chain %))))
+      (update-vals #(update-balances-per-chain % supported-chains-by-token-symbol))))
 
 (defn rpc->network
   [network]
