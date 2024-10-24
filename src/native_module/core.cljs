@@ -4,6 +4,7 @@
     [clojure.string :as string]
     [native-module.utils :as native-utils]
     [react-native.platform :as platform]
+    [status-backend.config :as status-backend]
     [taoensso.timbre :as log]
     [utils.transforms :as types]))
 
@@ -14,8 +15,10 @@
 
 (defn account-manager
   []
-  (when (exists? (.-NativeModules react-native))
-    (.-AccountManager ^js (.-NativeModules react-native))))
+  (if false
+    (when (exists? (.-NativeModules react-native))
+      (.-AccountManager ^js (.-NativeModules react-native)))
+    status-backend/backend-obj))
 
 (defn encryption
   []
