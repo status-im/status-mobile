@@ -46,7 +46,7 @@
 (def day (* 24 hour))
 (def week (* 7 day))
 (defn weeks [w] (* w week))
-(def units
+(def default-units
   [{:name :t/datetime-second-short :limit 60 :in-second 1}
    {:name :t/datetime-minute-short :limit 3600 :in-second 60}
    {:name :t/datetime-hour-short :limit 86400 :in-second 3600}
@@ -272,27 +272,29 @@
   (let [diff (seconds-ago date-time)
         unit (first (drop-while #(and (>= diff (:limit %))
                                       (:limit %))
-                                units))]
+                                default-units))]
     (-> (/ diff (:in-second unit))
         Math/floor
         int
         (format-time-ago unit))))
 
 (defn time-ago-long
-  [date-time]
-  (let [time-ago-seconds (seconds-ago date-time)
-        unit             (first (drop-while #(and (>= time-ago-seconds (:limit %))
-                                                  (:limit %))
-                                            units))
-        diff             (-> (/ time-ago-seconds (:in-second unit))
-                             Math/floor
-                             int)
+  ([date-time units]
+   (let [time-ago-seconds (seconds-ago date-time)
+         unit             (first (drop-while #(and (>= time-ago-seconds (:limit %))
+                                                   (:limit %))
+                                             units))
+         diff             (-> (/ time-ago-seconds (:in-second unit))
+                              Math/floor
+                              int)
 
-        name             (i18n/label-pluralize diff (:name unit))]
-    (i18n/label :t/datetime-ago-format
-                {:ago            (i18n/label :t/datetime-ago)
-                 :number         diff
-                 :time-intervals name})))
+         name             (i18n/label-pluralize diff (:name unit))]
+     (i18n/label :t/datetime-ago-format
+                 {:ago            (i18n/label :t/datetime-ago)
+                  :number         diff
+                  :time-intervals name})))
+  ([date-time]
+   (time-ago-long date-time default-units)))
 
 (defn to-date
   [ms]

@@ -1,5 +1,6 @@
 (ns status-im.subs.wallet.wallet
-  (:require [clojure.string :as string]
+  (:require [cljs-time.core :as t]
+            [clojure.string :as string]
             [re-frame.core :as rf]
             [status-im.constants :as constants]
             [status-im.contexts.wallet.common.utils :as utils]
@@ -38,6 +39,29 @@
  :wallet/scanned-address
  :<- [:wallet/ui]
  :-> :scanned-address)
+
+(rf/reg-sub
+ :wallet/last-updates-per-address
+ :<- [:wallet/ui]
+ :-> :last-updates-per-address)
+
+(rf/reg-sub
+ :wallet/latest-update
+ :<- [:wallet/last-updates-per-address]
+ (fn [last-updates-per-address]
+   (->> last-updates-per-address
+        vals
+        (reduce (fn [earliest-time last-update-time]
+                  (if (or (nil? earliest-time)
+                          (t/before? last-update-time earliest-time))
+                    last-update-time
+                    earliest-time))))))
+
+(rf/reg-sub
+ :wallet/fully-operable-keypairs-list
+ :<- [:wallet/keypairs-list]
+ (fn [keypairs]
+   (filter #(and (= :fully (:lowest-operability %)) (not-empty (:derived-from %))) keypairs)))
 
 (rf/reg-sub
  :wallet/tokens

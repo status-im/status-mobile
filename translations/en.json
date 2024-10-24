@@ -687,9 +687,17 @@
     "one": "H",
     "other": "H"
   },
+  "datetime-hour-short-lowercase": {
+    "one": "h",
+    "other": "h"
+  },
   "datetime-minute": {
     "one": "minute",
     "other": "minutes"
+  },
+  "datetime-minute-mid": {
+    "one": "min",
+    "other": "min"
   },
   "datetime-minute-short": {
     "one": "M",
@@ -2769,6 +2777,7 @@
   "wallet-settings": "Wallet settings",
   "wallet-total-value": "Total value",
   "wallet-transaction-total-fee": "Total Fee",
+  "wallet-updated-at": "Updated {{at}}",
   "wants-to-access-profile": "wants to access to your profile",
   "wants-to-join": "wants to join",
   "warning": "Warning",

@@ -70,7 +70,9 @@
               (update-in [:wallet :activities address] nested-merge activities-indexed))})))
 
 (rf/reg-event-fx
- :wallet/health-changed
- (fn [{:keys [db]} data]
-   (js/console.log "ALWX DATA" (clj->js data))
-   {:db db}))
+ :wallet/blockchain-health-changed
+ (fn [{:keys [db]} [{:keys [message]}]]
+   (let [full-status (->> message
+                          (transforms/json->clj)
+                          (cske/transform-keys transforms/->kebab-case-keyword))]
+     {:db (assoc-in db [:wallet :blockchain] full-status)})))

@@ -1,5 +1,6 @@
 (ns quo.components.navigation.top-nav.view
   (:require
+    [cljs-time.core :as t]
     [quo.components.avatars.user-avatar.view :as user-avatar]
     [quo.components.buttons.button.view :as button]
     [quo.components.common.notification-dot.view :as notification-dot]
@@ -8,7 +9,9 @@
     [quo.components.tags.network-status-tag.view :as network-status-tag]
     [quo.theme :as quo.theme]
     [react-native.core :as rn]
-    [react-native.hole-view :as hole-view]))
+    [react-native.hole-view :as hole-view]
+    [utils.datetime :as datetime]
+    [utils.i18n :as i18n]))
 
 (def notification-dot-hole
   [{:x            37
@@ -88,6 +91,18 @@
              :size                :small}
             avatar-props)]]])
 
+(defn- network-status-label
+  [now wallet-latest-update]
+  (when (t/after? now
+                  (t/plus wallet-latest-update (t/minutes 1)))
+    (let [units    [{:name :t/datetime-second-short :limit 60 :in-second 1}
+                    {:name :t/datetime-minute-mid :limit 3600 :in-second 60}
+                    {:name :t/datetime-hour-short-lowercase :limit 86400 :in-second 3600}
+                    {:name :t/datetime-day :limit nil :in-second 86400}]
+          time-ago (datetime/time-ago-long wallet-latest-update units)]
+      [rn/view {:style {:justify-content :center}}
+       [network-status-tag/view {:label (i18n/label :t/wallet-updated-at {:at time-ago})}]])))
+
 (defn- right-section
   [{:keys [jump-to?
            blur?
@@ -95,15 +110,16 @@
            notification-count
            activity-center-on-press
            scan-on-press
-           qr-code-on-press]
+           qr-code-on-press
+           wallet-latest-update]
     :as   props}]
   (let [theme               (quo.theme/use-theme)
         button-common-props (get-button-common-props {:theme    theme
                                                       :jump-to? jump-to?
                                                       :blur?    blur?})]
     [rn/view {:style style/right-section}
-     [rn/view {:style {:justify-content :center}}
-      [network-status-tag/view {:label "Updated 5 min ago"}]]
+     (when wallet-latest-update
+       [network-status-label (t/now) wallet-latest-update])
      [button/button
       (assoc button-common-props :accessibility-label :open-scanner-button :on-press scan-on-press)
       :i/scan]
@@ -140,6 +156,7 @@
    :qr-code-on-press callback
    :notification-count number
    :max-unread-notifications used to specify max number for counter
+   :wallet-latest-update indicates time of the latest update of account balance
    "
   [{:keys [avatar-on-press avatar-props customization-color container-style] :as props}]
   [rn/view {:style (merge style/top-nav-container container-style)}

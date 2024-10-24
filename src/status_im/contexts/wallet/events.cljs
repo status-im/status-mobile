@@ -1,6 +1,7 @@
 (ns status-im.contexts.wallet.events
   (:require
     [camel-snake-kebab.extras :as cske]
+    [cljs-time.format :as t.format]
     [clojure.set]
     [clojure.string :as string]
     [react-native.platform :as platform]
@@ -220,7 +221,8 @@
              {:error  error
               :event  :wallet/get-wallet-token-for-account
               :params address})
-   {:db (assoc-in db [:wallet :ui :tokens-loading address] false)}))
+   {:fx [[:dispatch [:wallet/get-last-wallet-token-update-if-needed]]]
+    :db (assoc-in db [:wallet :ui :tokens-loading address] false)}))
 
 (rf/reg-event-fx
  :wallet/store-wallet-token
@@ -233,9 +235,31 @@
                                      accounts))
                                  stored-accounts
                                  tokens-per-account))]
-     {:db (-> db
+     {:fx [[:dispatch [:wallet/get-last-wallet-token-update-if-needed]]]
+      :db (-> db
               (update-in [:wallet :accounts] add-tokens tokens)
               (assoc-in [:wallet :ui :tokens-loading address] false))})))
+
+(rf/reg-event-fx
+ :wallet/get-last-wallet-token-update-if-needed
+ (fn [{:keys [db]}]
+   (when (->> (get-in db [:wallet :ui :tokens-loading])
+              vals
+              (every? false?))
+     {:fx [[:json-rpc/call
+            [{:method     "wallet_getLastWalletTokenUpdate"
+              :params     []
+              :on-success [:wallet/get-last-wallet-token-update-success]
+              :on-error   [:wallet/log-rpc-error {:event :wallet/get-accounts}]}]]]})))
+
+(rf/reg-event-fx
+ :wallet/get-last-wallet-token-update-success
+ (fn [{:keys [db]} [data]]
+   (let [last-updates (reduce (fn [acc [k v]]
+                                (assoc acc k (t.format/parse (t.format/formatters :date-time-no-ms) v)))
+                              {}
+                              data)]
+     {:db (assoc-in db [:wallet :ui :last-updates-per-address] last-updates)})))
 
 (rf/defn scan-address-success
   {:events [:wallet/scan-address-success]}

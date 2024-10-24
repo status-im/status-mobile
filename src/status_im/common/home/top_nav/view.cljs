@@ -17,6 +17,7 @@
         online?                          (rf/sub [:visibility-status-updates/online?
                                                   public-key])
         customization-color              (rf/sub [:profile/customization-color])
+        wallet-latest-update             (rf/sub [:wallet/latest-update])
         avatar                           {:online?         online?
                                           :full-name       (profile.utils/displayed-name profile)
                                           :profile-picture (profile.utils/photo profile)}
@@ -37,6 +38,7 @@
      {:avatar-on-press          #(rf/dispatch [:open-modal :settings])
       :scan-on-press            #(rf/dispatch [:open-modal :shell-qr-reader])
       :activity-center-on-press #(rf/dispatch [:activity-center/open])
+      :wallet-latest-update     wallet-latest-update
       :qr-code-on-press         #(rf/dispatch [:open-modal :screen/share-shell
                                                {:initial-tab initial-share-tab}])
       :container-style          (merge style/top-nav-container container-style)

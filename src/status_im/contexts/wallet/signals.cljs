@@ -94,7 +94,7 @@
                            (transforms/js->clj event-js)]}]]]}
 
        "wallet-blockchain-health-changed"
-       {:fx [[:dispatch [:wallet/health-changed (transforms/js->clj event-js)]]]}
+       {:fx [[:dispatch [:wallet/blockchain-health-changed (transforms/js->clj event-js)]]]}
 
        "wallet-activity-filtering-done"
        {:fx

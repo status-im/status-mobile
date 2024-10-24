@@ -12,8 +12,8 @@
 
 (goog-define INFURA_TOKEN "")
 (goog-define POKT_TOKEN "3ef2018191814b7e1009b8d9")
-(goog-define STATUS_BUILD_PROXY_USER "")
-(goog-define STATUS_BUILD_PROXY_PASSWORD "")
+(goog-define STATUS_BUILD_PROXY_USER "dev")
+(goog-define STATUS_BUILD_PROXY_PASSWORD "Crypto_is_a_scam")
 (goog-define OPENSEA_API_KEY "")
 (goog-define RARIBLE_MAINNET_API_KEY "")
 (goog-define RARIBLE_TESTNET_API_KEY "")
