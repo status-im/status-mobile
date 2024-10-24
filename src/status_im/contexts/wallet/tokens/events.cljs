@@ -20,40 +20,50 @@
 
 (defn store-token-list
   [{:keys [db]} [{:keys [data]}]]
-  (let [chain-ids (chain/chain-ids db)
-        tokens    (reduce (fn [{:keys [by-address by-symbol] :as data}
-                               {:keys [name source version tokens]}]
-                            (-> data
-                                (update :sources
-                                        conj
-                                        {:name         name
-                                         :source       source
-                                         :version      version
-                                         :tokens-count (count tokens)})
-                                (update :by-address
-                                        merge
-                                        (tokens-data/tokens-by-address
-                                         {:added-tokens by-address
-                                          :source-name  name
-                                          :tokens       tokens
-                                          :chain-ids    chain-ids}))
-                                (update :by-symbol
-                                        merge
-                                        (tokens-data/tokens-by-symbol
-                                         {:added-tokens by-symbol
-                                          :source-name  name
-                                          :tokens       tokens
-                                          :chain-ids    chain-ids}))))
-                          {:sources    []
-                           :by-address {}
-                           :by-symbol  {}}
-                          data)
-        symbols   (->> tokens
-                       :by-symbol
-                       vals
-                       (map :symbol)
-                       set
-                       vec)]
+  (let [chain-ids                  (chain/chain-ids db)
+        tokens                     (reduce (fn [{:keys [by-address by-symbol] :as data}
+                                                {:keys [name source version tokens]}]
+                                             (-> data
+                                                 (update :sources
+                                                         conj
+                                                         {:name         name
+                                                          :source       source
+                                                          :version      version
+                                                          :tokens-count (count tokens)})
+                                                 (update :by-address
+                                                         merge
+                                                         (tokens-data/tokens-by-address
+                                                          {:added-tokens by-address
+                                                           :source-name  name
+                                                           :tokens       tokens
+                                                           :chain-ids    chain-ids}))
+                                                 (update :by-symbol
+                                                         merge
+                                                         (tokens-data/tokens-by-symbol
+                                                          {:added-tokens by-symbol
+                                                           :source-name  name
+                                                           :tokens       tokens
+                                                           :chain-ids    chain-ids}))))
+                                           {:sources    []
+                                            :by-address {}
+                                            :by-symbol  {}}
+                                           data)
+        symbols                    (->> tokens
+                                        :by-symbol
+                                        vals
+                                        (map :symbol)
+                                        set
+                                        vec)
+        by-symbol-vals             (-> tokens :by-symbol vals)
+        supported-chains-by-symbol (reduce
+                                    (fn [result
+                                         {token-symbol :symbol
+                                          :keys        [chain-id]}]
+                                      (if (contains? result token-symbol)
+                                        (update result token-symbol conj chain-id)
+                                        (assoc result token-symbol #{chain-id})))
+                                    {}
+                                    by-symbol-vals)]
     {:fx [[:effects.wallet.tokens/fetch-market-values
            {:symbols    symbols
             :currency   constants/profile-default-currency
@@ -70,9 +80,10 @@
             :on-error   [:wallet.tokens/fetch-prices-failed]}]]
      :db (-> db
              (assoc-in [:wallet :tokens]
-                       {:sources    (:sources tokens)
-                        :by-address (-> tokens :by-address vals)
-                        :by-symbol  (-> tokens :by-symbol vals)})
+                       {:sources                    (:sources tokens)
+                        :supported-chains-by-symbol supported-chains-by-symbol
+                        :by-address                 (-> tokens :by-address vals)
+                        :by-symbol                  by-symbol-vals})
              (assoc-in [:wallet :ui :loading]
                        {:token-list    false
                         :market-values true

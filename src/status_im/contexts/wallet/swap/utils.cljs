@@ -65,7 +65,11 @@
                       :tokens
                       (filter #(= token-symbol (:symbol %)))
                       first)]
-    (assoc token :networks (network-utils/network-list token networks))))
+    (assoc token
+           :networks
+           (network-utils/network-list-with-positive-balance
+            token
+            networks))))
 
 (defn select-default-asset-to-receive
   "Selects an asset to receive if it was not provided explicitly.

@@ -522,9 +522,10 @@
   [tokens networks chain-ids]
   (map (fn [token]
          (assoc token
-                :networks          (network-utils/network-list token networks)
-                :available-balance (calculate-total-token-balance token)
-                :total-balance     (calculate-total-token-balance token chain-ids)))
+                :networks           (network-utils/network-list-with-positive-balance token networks)
+                :supported-networks (network-utils/network-list token networks)
+                :available-balance  (calculate-total-token-balance token)
+                :total-balance      (calculate-total-token-balance token chain-ids)))
        tokens))
 
 (defn estimated-time-format
