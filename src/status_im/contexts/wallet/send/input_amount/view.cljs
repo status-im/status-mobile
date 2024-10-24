@@ -21,81 +21,6 @@
     [utils.money :as money]
     [utils.re-frame :as rf]))
 
-#_{:navigation-system           [view-id
-                                 active-screen?]
-
-   :current-screen-ui-and-state [bottom
-                                 handle-on-confirm
-                                 on-navigate-back
-                                 [crypto-currency? set-crypto-currency]
-                                 [input-state set-input-state]
-                                 send-from-locked-amounts
-                                 clear-input!
-                                 on-confirm
-                                 input-value
-                                 valid-input?
-                                 confirm-disabled?
-                                 swap-between-fiat-and-crypto
-                                 show-select-asset-sheet
-                                 input-error
-                                 limit-exceeded?
-                                 show-no-routes?]
-
-   :currency-and-tokens         [usd-conversion-rate
-                                 conversion-rate
-                                 token-decimals
-                                 {token-symbol :symbol
-                                  token-networks :networks
-                                  :as
-                                  token}
-                                 currency-symbol
-                                 crypto-decimals
-                                 amount-in-crypto
-                                 fee-formatted]
-
-   :user-profie                 [{fiat-currency :currency}
-                                 currency]
-
-   :accounts                    [token-balance
-                                 {:keys [total-balance]
-                                  :as   token-by-symbol}
-                                 max-limit
-                                 current-address]
-
-   :backend-data                [loading-routes?
-                                 route
-                                 first-route
-                                 routes
-                                 suggested-routes
-                                 no-routes-found?
-                                 request-fetch-routes
-                                 sender-network-values
-                                 receiver-network-values
-                                 total-amount-receiver
-                                 native-currency-symbol
-                                 tx-type
-                                 token-not-supported-in-receiver-networks?
-                                 receiver-networks
-                                 receiver-preferred-networks
-                                 receiver-preferred-networks-set
-                                 sending-to-unpreferred-networks?
-                                 should-try-again?
-                                 owned-eth-token
-                                 not-enough-asset?]
-  }
-
-#_[ui
-   business-logic
-
-   status-go-backend
-  ]
-
-#_[]
-
-
-
-
-
 (defn- estimated-fees
   [{:keys [loading-routes? fees recipient-gets-amount]}]
   [rn/view {:style style/estimated-fees-container}
@@ -241,7 +166,9 @@
                 sending-to-unpreferred-networks?
                 no-routes-found?
                 from-enabled-networks
-                owned-eth-balance-is-zero?]
+                should-try-again?
+                current-address
+                not-enough-asset?]
          :as   state}           (rf/sub [:send-input-amount-screen/data])
         ;; from-enabled-networks   (rf/sub [:wallet/wallet-send-enabled-networks])
         view-id                 (rf/sub [:view-id])
@@ -251,18 +178,6 @@
         show-select-asset-sheet #(rf/dispatch
                                   [:show-bottom-sheet
                                    {:content (fn [] [select-asset-bottom-sheet])}])
-        should-try-again?       (and (not upper-limit-exceeded?) no-routes-found?)
-        current-address         (rf/sub [:wallet/current-viewing-account-address])
-        not-enough-asset?       (and
-                                 (or no-routes-found? upper-limit-exceeded?)
-                                 (not-empty sender-network-values)
-                                 (if (= token-symbol
-                                        (string/upper-case
-                                         constants/mainnet-short-name))
-                                   (money/equal-to
-                                    (money/bignumber input-value)
-                                    (money/bignumber upper-limit))
-                                   owned-eth-balance-is-zero?))
         show-no-routes?         (and
                                  (or no-routes-found? upper-limit-exceeded?)
                                  (not-empty sender-network-values)

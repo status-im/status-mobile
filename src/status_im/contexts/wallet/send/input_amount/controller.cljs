@@ -260,8 +260,7 @@
 
 (rf/reg-sub :send-input-amount-screen/owned-eth-balance-is-zero?
  :<- [:send-input-amount-screen/enabled-from-chain-ids]
- (fn [enabled-from-chain-ids
-     ]
+ (fn [enabled-from-chain-ids]
    (let [owned-eth-token (rf/sub [:wallet/token-by-symbol
                                   (string/upper-case
                                    constants/mainnet-short-name)
@@ -275,6 +274,61 @@
                                   (get-in (first route)
                                           [:from :native-currency-symbol]))]
      (rf/sub [:wallet/wallet-send-fee-fiat-formatted native-currency-symbol]))))
+
+(rf/reg-sub :send-input-amount-screen/upper-limit-exceeded?
+ :<- [:send-input-amount-screen/controller]
+ :<- [:send-input-amount-screen/upper-limit]
+ (fn [[{:keys [token-input-value]}
+       upper-limit]]
+   (controlled-input-logic/upper-limit-exceeded?
+    token-input-value
+    upper-limit)))
+
+(rf/reg-sub :send-input-amount-screen/upper-limit-equals-input-value?
+ :<- [:send-input-amount-screen/controller]
+ :<- [:send-input-amount-screen/upper-limit]
+ (fn [[{:keys [token-input-value]}
+       upper-limit]]
+   (money/equal-to
+    (money/bignumber token-input-value)
+    (money/bignumber upper-limit))))
+
+(rf/reg-sub :send-input-amount-screen/should-try-again?
+ :<- [:send-input-amount-screen/upper-limit-exceeded?]
+ :<- [:send-input-amount-screen/routes-information]
+ (fn [[upper-limit-exceeded?
+       {:keys [no-routes-found?]}]]
+   (and (not upper-limit-exceeded?) no-routes-found?)))
+
+(rf/reg-sub :send-input-amount-screen/not-enough-asset?
+ :<- [:send-input-amount-screen/upper-limit-exceeded?]
+ :<- [:send-input-amount-screen/upper-limit-equals-input-value?]
+ :<- [:send-input-amount-screen/routes-information]
+ :<- [:send-input-amount-screen/currency-information]
+ :<- [:send-input-amount-screen/routes-information]
+ :<- [:send-input-amount-screen/owned-eth-balance-is-zero?]
+ (fn [[upper-limit-exceeded?
+       upper-limit-equals-input-value?
+       {:keys [no-routes-found?]}
+       {:keys [sender-network-values]}
+       {:keys [token-symbol]}
+       owned-eth-balance-is-zero?]]
+   (and
+    (or no-routes-found? upper-limit-exceeded?)
+    (not-empty sender-network-values)
+    (if (= token-symbol
+           (string/upper-case
+            constants/mainnet-short-name))
+      upper-limit-equals-input-value?
+      owned-eth-balance-is-zero?))))
+
+(comment
+  (rf/sub [:send-input-amount-screen/not-enough-asset?])
+  (rf/sub [:send-input-amount-screen/upper-limit-equals-input-value?])
+  (:no-routes-found? (rf/sub [:send-input-amount-screen/routes-information]))
+  (:sender-network-values (rf/sub [:send-input-amount-screen/currency-information]))
+  (rf/sub [:send-input-amount-screen/not-enough-asset?]))
+
 
 (rf/reg-sub :send-input-amount-screen/data
  :<- [:send-input-amount-screen/controller]
@@ -292,7 +346,10 @@
  :<- [:send-input-amount-screen/max-decimals]
  :<- [:send-input-amount-screen/fee-formatted]
  :<- [:send-input-amount-screen/from-enabled-networks]
- :<- [:send-input-amount-screen/owned-eth-balance-is-zero?]
+ :<- [:send-input-amount-screen/upper-limit-exceeded?]
+ :<- [:send-input-amount-screen/should-try-again?]
+ :<- [:wallet/current-viewing-account-address]
+ :<- [:send-input-amount-screen/not-enough-asset?]
  (fn
    [[{:keys [crypto-currency? token-input-value] :as controller}
      {:keys [fiat-currency token-symbol token] :as currency-information}
@@ -317,7 +374,10 @@
      max-decimals
      fee-formatted
      from-enabled-networks
-     owned-eth-balance-is-zero?]]
+     upper-limit-exceeded?
+     should-try-again?
+     current-address
+     not-enough-asset?]]
    {:crypto-currency?                          crypto-currency?
     :fiat-currency                             fiat-currency
     :token                                     token
@@ -329,9 +389,7 @@
     :valid-input?                              (not (or (controlled-input-logic/empty-value?
                                                          token-input-value)
                                                         value-out-of-limits?))
-    :upper-limit-exceeded?                     (controlled-input-logic/upper-limit-exceeded?
-                                                token-input-value
-                                                upper-limit)
+    :upper-limit-exceeded?                     upper-limit-exceeded?
     :amount-in-crypto                          amount-in-crypto
     :token-input-converted-value               token-input-converted-value
     :token-input-converted-value-prettified    token-input-converted-value-prettified
@@ -349,7 +407,9 @@
     :sending-to-unpreferred-networks?          sending-to-unpreferred-networks?
     :no-routes-found?                          no-routes-found?
     :from-enabled-networks                     from-enabled-networks
-    :owned-eth-balance-is-zero?                owned-eth-balance-is-zero?}))
+    :should-try-again?                         should-try-again?
+    :current-address                           current-address
+    :not-enough-asset?                         not-enough-asset?}))
 
 
 
