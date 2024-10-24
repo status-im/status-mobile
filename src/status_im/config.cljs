@@ -1,10 +1,10 @@
 (ns status-im.config
   (:require
-   [clojure.string :as string]
-   [react-native.config :as react-native-config]
-   [status-im.constants :as constants]
-   [utils.ens.core :as utils.ens]
-   [utils.ethereum.chain :as chain]))
+    [clojure.string :as string]
+    [react-native.config :as react-native-config]
+    [status-im.constants :as constants]
+    [utils.ens.core :as utils.ens]
+    [utils.ethereum.chain :as chain]))
 
 (def get-config react-native-config/get-config)
 
