@@ -71,7 +71,7 @@
 ;; Note: If account creation fails, user will get stuck on loading screen
 ;; TODO: Show error screen in case account creation/restoration fails
 (rf/reg-event-fx :onboarding/account-creation-complete
- (fn [{:keys [db]} {:keys [opts]}]
+ (fn [{:keys [db]} [opts]]
    (let [loading-animation-complete? (or (:loading-animation-complete? opts)
                                          (:onboarding/loading-animation-complete? db))
          loading-screen              (or (:loading-screen opts) (:onboarding/loading-screen db))
