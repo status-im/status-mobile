@@ -15,16 +15,14 @@
 
 (defn page-title
   [pairing-progress?]
-  [quo/text-combinations
-   {:container-style                 {:margin-top 56 :margin-horizontal 20}
-    :title                           (i18n/label (if pairing-progress?
-                                                   :t/sync-devices-title
-                                                   :t/sync-devices-error-title))
-    :description                     (i18n/label (if pairing-progress?
-                                                   :t/sync-devices-sub-title
-                                                   :t/sync-devices-error-sub-title))
-    :title-accessibility-label       :progress-screen-title
-    :description-accessibility-label :progress-screen-sub-title}])
+  [quo/page-top
+   {:title            (i18n/label (if pairing-progress?
+                                    :t/sync-devices-title
+                                    :t/sync-devices-error-title))
+    :description      :text
+    :description-text (i18n/label (if pairing-progress?
+                                    :t/sync-devices-sub-title
+                                    :t/sync-devices-error-sub-title))}])
 
 (defn- navigate-to-enter-seed-phrase
   []
@@ -42,32 +40,41 @@
 
 (defn try-again-button
   [profile-color logged-in?]
-  [quo/bottom-actions
-   {:actions (if logged-in? :one-action :two-actions)
-    :blur? true
-    :button-one-label (i18n/label :t/recovery-phrase)
-    :button-one-props {:type                :primary
-                       :accessibility-label :try-seed-phrase-button
-                       :customization-color profile-color
-                       :container-style     {:flex 1}
-                       :size                40
-                       :on-press            navigate-to-enter-seed-phrase}
-    (if logged-in? :button-one-label :button-two-label)
-    (i18n/label :t/try-again)
-    (if logged-in? :button-one-props :button-two-props)
-    {:type                (if logged-in? :primary :grey)
-     :accessibility-label :try-again-later-button
-     :customization-color profile-color
-     :container-style     {:flex 1}
-     :size                40
-     :on-press            #(try-again logged-in?)}}])
+  (let [number-of-actions     (if logged-in? :one-action :two-actions)
+        try-again-label       (i18n/label :t/try-again)
+        try-again-props       {:type                (if logged-in? :primary :grey)
+                               :accessibility-label :try-again-later-button
+                               :customization-color profile-color
+                               :container-style     {:flex 1}
+                               :size                40
+                               :on-press            #(try-again logged-in?)}
+        recovery-phrase-label (i18n/label :t/recovery-phrase)
+        recovery-phrase-props {:type                :primary
+                               :accessibility-label :try-seed-phrase-button
+                               :customization-color profile-color
+                               :container-style     {:flex 1}
+                               :size                40
+                               :on-press            navigate-to-enter-seed-phrase}
+        buttons               (if logged-in?
+                                {:button-one-label try-again-label
+                                 :button-one-props try-again-props}
+                                {:button-one-label recovery-phrase-label
+                                 :button-one-props recovery-phrase-props
+                                 :button-two-label try-again-label
+                                 :button-two-props try-again-props})]
+    [quo/bottom-actions
+     (assoc buttons
+            :actions number-of-actions
+            :blur?   true)]))
 
 (defn- illustration
   [pairing-progress?]
   [rn/image
    {:resize-mode :contain
     :style       (style/page-illustration (:width (rn/get-window)))
-    :source      (resources/get-image (if pairing-progress? :syncing-devices :syncing-wrong))}])
+    :source      (resources/get-image (if pairing-progress?
+                                        :syncing-devices
+                                        :syncing-wrong))}])
 
 (defn view
   [in-onboarding?]
@@ -83,7 +90,7 @@
      [quo/page-nav {:type :no-title :background :blur}]
      [page-title pairing-progress?]
      [illustration pairing-progress?]
-     (when-not (pairing-progress pairing-status)
+     (when-not pairing-progress?
        [try-again-button profile-color logged-in?])]))
 
 (defn view-onboarding
