@@ -15,6 +15,8 @@
   # Disabled for debug builds to avoid 'maximum call stack exceeded' errors.
   # https://github.com/status-im/status-mobile/issues/18493
   hermesEnabled ? lib.getEnvWithDefault "ORG_GRADLE_PROJECT_hermesEnabled" "true",
+  # enabling new architecture requires hermes to be enabled
+  newArchEnabled ? lib.getEnvWithDefault "ORG_GRADLE_PROJECT_newArchEnabled" "true",
   buildUrl ? lib.getEnvWithDefault "ORG_GRADLE_PROJECT_buildUrl" null,
   statusGoSrcOverride ? lib.getEnvWithDefault "STATUS_GO_SRC_OVERRIDE" null,
   reactMetroPort ? lib.getEnvWithDefault "RCT_METRO_PORT" 8081,
@@ -91,6 +93,8 @@ in stdenv.mkDerivation rec {
   ORG_GRADLE_PROJECT_buildUrl = buildUrl;
   ORG_GRADLE_PROJECT_hermesEnabled = hermesEnabled;
   ORG_GRADLE_PROJECT_universalApk = universalApk;
+  # enabling new architecture requires hermes to be enabled
+  ORG_GRADLE_PROJECT_newArchEnabled = newArchEnabled;
 
   # Fix for ERR_OSSL_EVP_UNSUPPORTED error.
   NODE_OPTIONS = "--openssl-legacy-provider";

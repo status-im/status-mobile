@@ -277,8 +277,10 @@ run-re-frisk: ##@run Start re-frisk server
 run-android: export TARGET := android
 # Disabled for debug builds to avoid 'maximum call stack exceeded' errors.
 # https://github.com/status-im/status-mobile/issues/18493
-run-android: export ORG_GRADLE_PROJECT_hermesEnabled := false
 run-android: export ORG_GRADLE_PROJECT_universalApk := false
+run-android: export ORG_GRADLE_PROJECT_hermesEnabled := true
+# enabling new architecture requires hermes to be enabled
+run-android: export ORG_GRADLE_PROJECT_newArchEnabled := true
 run-android: ##@run Build Android APK and start it on the device
 	@scripts/run-android.sh
 
