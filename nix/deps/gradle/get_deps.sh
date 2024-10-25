@@ -7,6 +7,7 @@
 set -Eeuo pipefail
 
 GIT_ROOT=$(cd "${BASH_SOURCE%/*}" && git rev-parse --show-toplevel)
+GRADLE_REPORTS_DIR="${GIT_ROOT}/android/build/reports/dependency-graph-snapshots"
 # Gradle needs to be run in 'android' subfolder.
 cd "${GIT_ROOT}/android"
 
@@ -15,23 +16,11 @@ GRADLE_LOG_FILE='/tmp/gradle.log'
 function show_gradle_log() { cat "${GRADLE_LOG_FILE}" >&2; }
 trap show_gradle_log ERR
 
-# Run the gradle command for a project:
-# - ':buildEnvironment' to get build tools
-# - ':dependencies' to get direct deps limited those by
-#   implementation config to avoid test dependencies
-DEPS=("${@}")
-declare -a BUILD_DEPS
-declare -a NORMAL_DEPS
-for i in "${!DEPS[@]}"; do
-    BUILD_DEPS[${i}]="${DEPS[${i}]}:buildEnvironment"
-    NORMAL_DEPS[${i}]="${DEPS[${i}]}:dependencies"
-done
+./gradlew -I init.gradle \
+  --dependency-verification=off \
+  --no-configuration-cache --no-configure-on-demand \
+ :ForceDependencyResolutionPlugin_resolveAllDependencies > "${GRADLE_LOG_FILE}" 2>&1
 
-# And clean up the output using AWK script.
-AWK_SCRIPT="${GIT_ROOT}/nix/deps/gradle/gradle_parser.awk"
-
-./gradlew --no-daemon --console plain \
-    "${BUILD_DEPS[@]}" \
-    "${NORMAL_DEPS[@]}" \
-    | tee "${GRADLE_LOG_FILE}" \
-    | awk -f "${AWK_SCRIPT}"
+# skip org.webkit:android-jsc, its provided by react-native
+# remove when new architecture is enabled
+jq -r '.[].dependency | select(startswith("org.webkit:android-jsc") | not)' "${GRADLE_REPORTS_DIR}/dependency-resolution.json"
