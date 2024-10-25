@@ -1,12 +1,10 @@
 (ns status-im.contexts.wallet.send.input-amount.view
   (:require
-    [clojure.string :as string]
     [quo.core :as quo]
     [quo.foundations.colors :as colors]
     [quo.theme]
     [react-native.core :as rn]
     [react-native.safe-area :as safe-area]
-    [status-im.constants :as constants]
     [status-im.contexts.wallet.common.account-switcher.view :as account-switcher]
     [status-im.contexts.wallet.common.asset-list.view :as asset-list]
     [status-im.contexts.wallet.send.input-amount.controller]
@@ -18,7 +16,6 @@
     [status-im.setup.hot-reload :as hot-reload]
     [utils.debounce :as debounce]
     [utils.i18n :as i18n]
-    [utils.money :as money]
     [utils.re-frame :as rf]))
 
 (defn- estimated-fees
@@ -161,7 +158,7 @@
                                     :t/send-limit
                                     {:limit upper-limit-prettified})
                          :status   (when value-out-of-limits? :error)}]}]))
-(defn routes-component
+(defn routes-view
   [current-screen-id]
   (let [{:keys [valid-input?
                 upper-limit-exceeded?
@@ -169,16 +166,15 @@
                 routes
                 token-not-supported-in-receiver-networks?
                 token
-                token-by-symbol]
-         :as   state}        (rf/sub [:send-input-amount-screen/routes-subs])
-        request-fetch-routes (fn [bounce-duration-ms]
-                               (fetch-routes
-                                {:amount                 amount-in-crypto
-                                 :valid-input?           valid-input?
-                                 :bounce-duration-ms     bounce-duration-ms
-                                 :token                  token
-                                 :reset-amounts-to-zero? (and upper-limit-exceeded?
-                                                              (some? routes))}))]
+                token-by-symbol]} (rf/sub [:send-input-amount-screen/routes-subs])
+        request-fetch-routes      (fn [bounce-duration-ms]
+                                    (fetch-routes
+                                     {:amount                 amount-in-crypto
+                                      :valid-input?           valid-input?
+                                      :bounce-duration-ms     bounce-duration-ms
+                                      :token                  token
+                                      :reset-amounts-to-zero? (and upper-limit-exceeded?
+                                                                   (some? routes))}))]
     [routes/view
      {:token                                     token-by-symbol
       :send-amount-in-crypto                     amount-in-crypto
@@ -195,8 +191,7 @@
                 loading-routes?
                 token-by-symbol
                 sending-to-unpreferred-networks?
-                should-try-again?]
-         :as   state} (rf/sub [:send-input-amount-screen/bottom-actions-subs])]
+                should-try-again?]} (rf/sub [:send-input-amount-screen/bottom-actions-subs])]
     [quo/bottom-actions
      {:actions          :one-action
       :button-one-label (if should-try-again?
@@ -245,7 +240,6 @@
                 not-enough-asset?
                 show-no-routes?]
          :as   state}    (rf/sub [:send-input-amount-screen/view-subs])
-        ;; from-enabled-networks   (rf/sub [:wallet/wallet-send-enabled-networks])
         view-id          (rf/sub [:view-id])
         active-screen?   (= view-id current-screen-id)
         bottom           (safe-area/get-bottom)
@@ -282,7 +276,7 @@
        :on-press      #(rf/dispatch [:navigate-back])
        :switcher-type :select-account}]
      [token-input]
-     [routes-component current-screen-id]
+     [routes-view current-screen-id]
      (when (and (not loading-routes?)
                 sender-network-values
                 token-not-supported-in-receiver-networks?)

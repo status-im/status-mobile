@@ -340,15 +340,11 @@
   (let [token-symbol (:symbol token)
         nav-current-screen-id (rf/sub [:view-id])
         active-screen? (= nav-current-screen-id current-screen-id)
-        loading-routes? (rf/sub
-                         [:wallet/wallet-send-loading-suggested-routes?])
-        sender-network-values (rf/sub
-                               [:wallet/wallet-send-sender-network-values])
-        receiver-network-values (rf/sub
-                                 [:wallet/wallet-send-receiver-network-values])
+        loading-routes? (rf/sub [:wallet/wallet-send-loading-suggested-routes?])
+        sender-network-values (rf/sub [:wallet/wallet-send-sender-network-values])
+        receiver-network-values (rf/sub [:wallet/wallet-send-receiver-network-values])
         network-links (rf/sub [:wallet/wallet-send-network-links])
-        disabled-from-chain-ids (rf/sub
-                                 [:wallet/wallet-send-disabled-from-chain-ids])
+        disabled-from-chain-ids (rf/sub [:wallet/wallet-send-disabled-from-chain-ids])
         {token-balances-per-chain :balances-per-chain} (rf/sub [:wallet/wallet-send-token])
         token-available-networks-for-suggested-routes
         (send-utils/token-available-networks-for-suggested-routes
