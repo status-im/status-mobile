@@ -104,7 +104,7 @@
    :wallet/wallet-send-tx-type                     :tx/send
    :wallet/wallet-send-fee-fiat-formatted          "$5,00"
    :wallet/sending-collectible?                    false
-   :wallet/total-amount                            (money/bignumber "250")})
+   :wallet/total-amount-in-to-chains               (money/bignumber "250")})
 
 (h/describe "Send > input amount screen"
   (h/setup-restorable-re-frame)
