@@ -155,7 +155,7 @@
       (money/crypto->fiat conversion-rate)
       (utils/cut-fiat-balance-to-two-decimals)))
 
-(rf/reg-sub :send-input-amount-screen/token-input-converted-value
+(rf/reg-sub :send-input-amount-screen/input-value-converted
  :<- [:send-input-amount-screen/state]
  :<- [:send-input-amount-screen/conversion-rate]
  (fn [[{:keys [crypto-currency? input-value]}
@@ -164,9 +164,9 @@
      (crypto->fiat input-value conversion-rate)
      (fiat->crypto input-value conversion-rate))))
 
-(rf/reg-sub :send-input-amount-screen/token-input-converted-value-prettified
+(rf/reg-sub :send-input-amount-screen/converted-value-prettified
  :<- [:send-input-amount-screen/state]
- :<- [:send-input-amount-screen/token-input-converted-value]
+ :<- [:send-input-amount-screen/input-value-converted]
  :<- [:profile/currency-symbol]
  :<- [:wallet/wallet-send-token]
  (fn [[{:keys [crypto-currency?]}
@@ -337,12 +337,25 @@
    (when (or (not confirm-disabled?) not-enough-asset?)
      (get-fee-formatted route))))
 
-(comment
-  (inc 1)
-  (rf/sub [:send-input-amount-screen/state])
-  (rf/sub [:send-input-amount-screen/max-decimals])
-  (rf/sub [:send-input-amount-screen/enabled-from-chain-ids])
-  (rf/sub [:send-input-amount-screen/from-enabled-networks])
-  (rf/sub [:send-input-amount-screen/token-by-symbol])
-  (rf/sub [:view-id])
-)
+(rf/reg-sub :send-input-amount-screen/show-estimated-fees?
+ :<- [:wallet/wallet-send-route]
+ :<- [:send-input-amount-screen/no-routes-found?]
+ :<- [:send-input-amount-screen/not-enough-asset?]
+ :<- [:wallet/wallet-send-loading-suggested-routes?]
+ (fn [[route
+       no-routes-found?
+       not-enough-asset?
+       loading-routes?]]
+   (or (and (not no-routes-found?) (or loading-routes? route))
+       not-enough-asset?)))
+
+(rf/reg-sub :send-input-amount-screen/token-not-available?
+ :<- [:wallet/wallet-send-sender-network-values]
+ :<- [:send-input-amount-screen/unsupported-token-in-receiver?]
+ :<- [:wallet/wallet-send-loading-suggested-routes?]
+ (fn [[sender-network-values unsupported-token-in-receiver?
+       loading-routes?]]
+   (and (not loading-routes?)
+        sender-network-values
+        unsupported-token-in-receiver?)))
+
