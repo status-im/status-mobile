@@ -169,10 +169,10 @@
          :as            token} (rf/sub [:wallet/wallet-send-token])
         send-from-locked-amounts (rf/sub [:wallet/wallet-send-from-locked-amounts])
         token-by-symbol (rf/sub [:send-input-amount-screen/token-by-symbol])
-        conversion-rate (rf/sub [:send-input-amount-screen/conversion-rate])
         token-input-converted-value (rf/sub [:send-input-amount-screen/token-input-converted-value])
+        token-input-converted-value-prettified
+        (rf/sub [:send-input-amount-screen/token-input-converted-value-prettified])
         max-decimals (rf/sub [:send-input-amount-screen/max-decimals])
-        currency-symbol (rf/sub [:profile/currency-symbol])
         loading-routes? (rf/sub [:wallet/wallet-send-loading-suggested-routes?])
         route (rf/sub [:wallet/wallet-send-route])
         valid-input? (rf/sub [:send-input-amount-screen/valid-input?])
@@ -248,16 +248,7 @@
        :on-token-press  show-select-asset-sheet
        :error?          value-out-of-limits?
        :currency-symbol (if crypto-currency? token-symbol fiat-currency)
-       :converted-value (if crypto-currency?
-                          (utils/prettify-balance
-                           currency-symbol
-                           (money/crypto->fiat input-value
-                                               conversion-rate))
-                          (utils/prettify-crypto-balance
-                           (or (clj->js token-symbol) "")
-                           (money/fiat->crypto input-value
-                                               conversion-rate)
-                           conversion-rate))
+       :converted-value token-input-converted-value-prettified
        :hint-component  [quo/network-tags
                          {:networks (seq from-enabled-networks)
                           :title    (i18n/label

@@ -164,6 +164,20 @@
      (crypto->fiat input-value conversion-rate)
      (fiat->crypto input-value conversion-rate))))
 
+(rf/reg-sub :send-input-amount-screen/token-input-converted-value-prettified
+ :<- [:send-input-amount-screen/state]
+ :<- [:send-input-amount-screen/token-input-converted-value]
+ :<- [:profile/currency-symbol]
+ :<- [:wallet/wallet-send-token]
+ (fn [[{:keys [crypto-currency?]}
+       token-input-converted-value
+       currency-symbol
+       {token-symbol :symbol}]]
+   (if crypto-currency?
+     (utils/prepend-curency-symbol-to-fiat-balance token-input-converted-value currency-symbol)
+     (utils/add-token-symbol-to-crypto-balance token-input-converted-value
+                                               (or (clj->js token-symbol) "")))))
+
 (rf/reg-sub :send-input-amount-screen/amount-in-crypto
  :<- [:send-input-amount-screen/state]
  :<- [:send-input-amount-screen/conversion-rate]
