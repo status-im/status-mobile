@@ -11,4 +11,7 @@
         ;; in and the device is offline, versus re-fetching when offline and
         ;; tokens already exist in the app-db.
         :tokens-loading nil
-        :active-tab     :assets}})
+        :active-tab     :assets
+        :send           {:input-amount-screen
+                         {:crypto-currency?  true
+                          :token-input-value ""}}}})
