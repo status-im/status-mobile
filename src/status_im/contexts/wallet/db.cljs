@@ -12,6 +12,6 @@
         ;; tokens already exist in the app-db.
         :tokens-loading nil
         :active-tab     :assets
-        :send           {:input-amount-screen
-                         {:crypto-currency?  true
-                          :token-input-value ""}}}})
+        :screens        {:input-amount-screen
+                         {:crypto-currency? true
+                          :input-value      ""}}}})

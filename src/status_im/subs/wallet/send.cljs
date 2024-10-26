@@ -17,6 +17,11 @@
  :-> :send)
 
 (rf/reg-sub
+ :wallet/wallet-screens
+ :<- [:wallet/ui]
+ :-> :screens)
+
+(rf/reg-sub
  :wallet/send-recipient
  :<- [:wallet/wallet-send]
  :-> :recipient)
