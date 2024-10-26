@@ -107,8 +107,7 @@
       (money/bignumber upper-limit)
       conversion-rate)
      (utils/prettify-balance currency-symbol
-                             (money/bignumber upper-limit)))
- ))
+                             (money/bignumber upper-limit)))))
 
 (rf/reg-sub :send-input-amount-screen/upper-limit-exceeded?
  :<- [:send-input-amount-screen/state]

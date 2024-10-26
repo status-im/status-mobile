@@ -166,23 +166,22 @@
                          :status   (when value-out-of-limits? :error)}]}]))
 (defn routes-view
   [current-screen-id]
-  (let [token-by-symbol (rf/sub [:send-input-amount-screen/token-by-symbol])
-        token (rf/sub [:wallet/wallet-send-token])
-        routes (rf/sub [:send-input-amount-screen/routes])
-        valid-input? (rf/sub [:send-input-amount-screen/valid-input?])
-        amount-in-crypto (rf/sub [:send-input-amount-screen/amount-in-crypto])
-        limit-exceeded? (rf/sub [:send-input-amount-screen/upper-limit-exceeded?])
+  (let [token-by-symbol                (rf/sub [:send-input-amount-screen/token-by-symbol])
+        token                          (rf/sub [:wallet/wallet-send-token])
+        routes                         (rf/sub [:send-input-amount-screen/routes])
+        valid-input?                   (rf/sub [:send-input-amount-screen/valid-input?])
+        amount-in-crypto               (rf/sub [:send-input-amount-screen/amount-in-crypto])
+        limit-exceeded?                (rf/sub [:send-input-amount-screen/upper-limit-exceeded?])
         unsupported-token-in-receiver? (rf/sub
                                         [:send-input-amount-screen/unsupported-token-in-receiver?])
-        request-fetch-routes
-        (fn [bounce-duration-ms]
-          (fetch-routes
-           {:amount                 amount-in-crypto
-            :valid-input?           valid-input?
-            :bounce-duration-ms     bounce-duration-ms
-            :token                  token
-            :reset-amounts-to-zero? (and limit-exceeded?
-                                         (some? routes))}))]
+        request-fetch-routes           (fn [bounce-duration-ms]
+                                         (fetch-routes
+                                          {:amount                 amount-in-crypto
+                                           :valid-input?           valid-input?
+                                           :bounce-duration-ms     bounce-duration-ms
+                                           :token                  token
+                                           :reset-amounts-to-zero? (and limit-exceeded?
+                                                                        (some? routes))}))]
     [routes/view
      {:token                                     token-by-symbol
       :send-amount-in-crypto                     amount-in-crypto
