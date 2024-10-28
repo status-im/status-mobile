@@ -24,14 +24,9 @@
        {:resize-mode :contain
         :source      (resources/get-image :keycard-migration-failed)}]]
      [quo/divider-label (i18n/label :t/what-you-can-do)]
-     [rn/view {:style {:padding-horizontal 10}}
-      [quo/markdown-list
-       {:container-style {:padding-vertical 10}
-        :description     (i18n/label :t/log-out-remove-profile)}]
-      [quo/markdown-list
-       {:container-style {:padding-bottom 25}
-        :description     (i18n/label :t/recover-status-profile)}]]
-     [quo/button
-      {:on-press        #(rf/dispatch [:logout])
-       :container-style {:margin-horizontal 20}}
-      (i18n/label :t/log-out-remove)]]))
+     [quo/markdown-list {:description (i18n/label :t/log-out-remove-profile)}]
+     [quo/markdown-list {:description (i18n/label :t/recover-status-profile)}]
+     [quo/bottom-actions
+      {:actions          :one-action
+       :button-one-label (i18n/label :t/log-out-remove)
+       :button-one-props {:on-press #(rf/dispatch [:logout])}}]]))

@@ -26,14 +26,9 @@
        {:resize-mode :contain
         :source      (resources/get-image :keycard-migration)}]]
      [quo/divider-label (i18n/label :t/tips-scan-keycard)]
-     [rn/view {:style {:padding-horizontal 10}}
-      [quo/markdown-list
-       {:container-style {:padding-vertical 10}
-        :description     (i18n/label :t/remove-phone-case)}]
-      [quo/markdown-list
-       {:container-style {:padding-bottom 25}
-        :description     (i18n/label :t/keep-card-steady)}]]
-     [quo/button
-      {:on-press        #(rf/dispatch [:keycard/migration.start])
-       :container-style {:margin-horizontal 20}}
-      (i18n/label :t/scan-keycard)]]))
+     [quo/markdown-list {:description (i18n/label :t/remove-phone-case)}]
+     [quo/markdown-list {:description (i18n/label :t/keep-card-steady)}]
+     [quo/bottom-actions
+      {:actions          :one-action
+       :button-one-label (i18n/label :t/scan-keycard)
+       :button-one-props {:on-press #(rf/dispatch [:keycard/migration.start])}}]]))
