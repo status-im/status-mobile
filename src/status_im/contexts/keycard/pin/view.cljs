@@ -11,6 +11,7 @@
         {:keys [text status]}          (rf/sub [:keycard/pin])
         pin-retry-counter              (rf/sub [:keycard/pin-retry-counter])
         error?                         (or error? (= status :error))]
+    (rn/use-unmount #(rf/dispatch [:keycard.pin/clear]))
     [rn/view {:padding-bottom 12 :flex 1}
      [rn/view {:flex 1 :justify-content :center :align-items :center :padding 34}
       [quo/pin-input
