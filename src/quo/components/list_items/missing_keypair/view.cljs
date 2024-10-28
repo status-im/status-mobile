@@ -28,7 +28,6 @@
                   :seed :i/seed
                   :key  :i/password
                   nil)
-       :color   :neutral
        :blur?   true
        :border? true}]
      [rn/view
