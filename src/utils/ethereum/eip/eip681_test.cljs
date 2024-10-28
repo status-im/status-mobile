@@ -111,9 +111,9 @@
                                                            :name "Status Network Token"
                                                            :symbol :SNT
                                                            :decimals 18}}
-   :goerli  {"0x3d6afaa395c31fcd391fe3d562e75fe9e8ec7e6a"
+   :sepolia {"0xE452027cdEF746c7Cd3DB31CB700428b16cD8E51"
              {:address
-              "0x3d6afaa395c31fcd391fe3d562e75fe9e8ec7e6a"
+              "0xE452027cdEF746c7Cd3DB31CB700428b16cD8E51"
               :name "Status Test Token"
               :symbol :STT
               :decimals 18}}})

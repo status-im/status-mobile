@@ -29,7 +29,6 @@
                            (update network :full-name #(str % " " testnet-name)))]
     (condp #(contains? %1 %2) (:chain-id network)
       constants/sepolia-chain-ids (add-testnet-name constants/sepolia-full-name)
-      constants/goerli-chain-ids  (add-testnet-name constants/goerli-full-name)
       network)))
 
 (defn chain-id->network-details
@@ -47,7 +46,7 @@
                                   js/parseInt))
                             chains))]
     (if testnet-mode?
-      (set/subset? chain-ids (set/union constants/sepolia-chain-ids constants/goerli-chain-ids))
+      (set/subset? chain-ids constants/sepolia-chain-ids)
       (set/subset? chain-ids constants/mainnet-chain-ids))))
 
 (defn get-proposal-networks

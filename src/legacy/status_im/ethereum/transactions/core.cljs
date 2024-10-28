@@ -15,12 +15,12 @@
 
 (def etherscan-supported?
   #{(chain/chain-keyword->chain-id :mainnet)
-    (chain/chain-keyword->chain-id :goerli)})
+    (chain/chain-keyword->chain-id :sepolia)})
 
 (def binance-mainnet-chain-id (chain/chain-keyword->chain-id :bsc))
 (def binance-testnet-chain-id (chain/chain-keyword->chain-id :bsc-testnet))
 
-(def network->subdomain {5 "goerli"})
+(def network->subdomain {11155111 "sepolia"})
 
 (defn get-transaction-details-url
   [chain-id tx-hash]

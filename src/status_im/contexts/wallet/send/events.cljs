@@ -152,11 +152,9 @@
  (fn [{:keys [db]} [{:keys [address recipient stack-id start-flow?]}]]
    (let [[prefix to-address] (utils/split-prefix-and-address address)
          testnet-enabled?    (get-in db [:profile/profile :test-networks-enabled?])
-         goerli-enabled?     (get-in db [:profile/profile :is-goerli-enabled?])
          receiver-networks   (network-utils/resolve-receiver-networks
                               {:prefix           prefix
-                               :testnet-enabled? testnet-enabled?
-                               :goerli-enabled?  goerli-enabled?})
+                               :testnet-enabled? testnet-enabled?})
          collectible-tx?     (send-utils/tx-type-collectible?
                               (-> db :wallet :ui :send :tx-type))
          collectible         (when collectible-tx?

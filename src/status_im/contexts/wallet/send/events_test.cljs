@@ -357,11 +357,9 @@
     (testing "testing when collectible balance is more than 1"
       (let [collectible       (collectible-with-balance 2)
             testnet-enabled?  false
-            goerli-enabled?   false
             receiver-networks (network-utils/resolve-receiver-networks
                                {:prefix           prefix
-                                :testnet-enabled? testnet-enabled?
-                                :goerli-enabled?  goerli-enabled?})
+                                :testnet-enabled? testnet-enabled?})
             expected-result   {:db {:wallet          {:ui {:send {:other-props :value
                                                                   :recipient recipient
                                                                   :to-address to-address
@@ -371,8 +369,7 @@
                                                                   :receiver-networks receiver-networks
                                                                   :tx-type tx-type
                                                                   :collectible collectible}}}
-                                    :profile/profile {:test-networks-enabled? false
-                                                      :is-goerli-enabled?     false}}
+                                    :profile/profile {:test-networks-enabled? false}}
                                :fx [nil
                                     [:dispatch
                                      [:wallet/wizard-navigate-forward
@@ -383,8 +380,7 @@
           {:wallet          {:ui {:send {:other-props :value
                                          :tx-type     tx-type
                                          :collectible collectible}}}
-           :profile/profile {:test-networks-enabled? testnet-enabled?
-                             :is-goerli-enabled?     goerli-enabled?}})
+           :profile/profile {:test-networks-enabled? testnet-enabled?}})
         (is (match? expected-result
                     (dispatch [event-id
                                {:address     address
@@ -394,11 +390,9 @@
     (testing "testing when collectible balance is 1"
       (let [collectible       (collectible-with-balance 1)
             testnet-enabled?  false
-            goerli-enabled?   false
             receiver-networks (network-utils/resolve-receiver-networks
                                {:prefix           prefix
-                                :testnet-enabled? testnet-enabled?
-                                :goerli-enabled?  goerli-enabled?})
+                                :testnet-enabled? testnet-enabled?})
             expected-result   {:db {:wallet          {:ui {:send {:other-props :value
                                                                   :recipient recipient
                                                                   :to-address to-address
@@ -408,8 +402,7 @@
                                                                   :receiver-networks receiver-networks
                                                                   :tx-type tx-type
                                                                   :collectible collectible}}}
-                                    :profile/profile {:test-networks-enabled? false
-                                                      :is-goerli-enabled?     false}}
+                                    :profile/profile {:test-networks-enabled? false}}
                                :fx [[:dispatch [:wallet/start-get-suggested-routes {:amount 1}]]
                                     [:dispatch
                                      [:wallet/wizard-navigate-forward
@@ -420,8 +413,7 @@
           {:wallet          {:ui {:send {:other-props :value
                                          :tx-type     tx-type
                                          :collectible collectible}}}
-           :profile/profile {:test-networks-enabled? testnet-enabled?
-                             :is-goerli-enabled?     goerli-enabled?}})
+           :profile/profile {:test-networks-enabled? testnet-enabled?}})
         (is (match? expected-result
                     (dispatch [event-id
                                {:address     address

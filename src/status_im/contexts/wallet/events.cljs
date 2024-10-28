@@ -502,10 +502,8 @@
                                                   (for [[k v] chains :when (= v "down")] k))
                                      keys)
          test-networks-enabled?  (get-in db [:profile/profile :test-networks-enabled?])
-         is-goerli-enabled?      (get-in db [:profile/profile :is-goerli-enabled?])
          chain-ids-by-mode       (network-utils/get-default-chain-ids-by-mode
-                                  {:test-networks-enabled? test-networks-enabled?
-                                   :is-goerli-enabled?     is-goerli-enabled?})
+                                  {:test-networks-enabled? test-networks-enabled?})
          chains-filtered-by-mode (remove #(not (contains? chain-ids-by-mode %)) down-chain-ids)
          chains-down?            (and (network.data-store/online? db) (seq chains-filtered-by-mode))
          chain-names             (when chains-down?
@@ -518,8 +516,7 @@
      (when (seq down-chain-ids)
        (log/info "[wallet] Chain(s) down: " down-chain-ids)
        (log/info "[wallet] Chain name(s) down: " chain-names)
-       (log/info "[wallet] Test network enabled: " (boolean test-networks-enabled?))
-       (log/info "[wallet] Goerli network enabled: " (boolean is-goerli-enabled?)))
+       (log/info "[wallet] Test network enabled: " (boolean test-networks-enabled?)))
 
      ;; NOTE <shivekkhurana>: We used to show an error toast, but disabled it because the down
      ;; signal is sent randomly. Needs to be investigated and enabled again !

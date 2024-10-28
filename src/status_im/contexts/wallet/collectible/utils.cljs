@@ -33,17 +33,11 @@
   (when (> total 1) (str "x" total)))
 
 (defn- get-opensea-network-name
-  [chain-id test-networks-enabled? is-goerli-enabled?]
+  [chain-id test-networks-enabled?]
   (let [network-kw   (network-utils/id->network chain-id)
         network-name (name network-kw)
         mainnet?     (= :mainnet network-kw)]
-    (cond (and test-networks-enabled? is-goerli-enabled? mainnet?)
-          (:goerli constants/opensea-url-names)
-
-          (and test-networks-enabled? is-goerli-enabled?)
-          (str network-name "-" (:goerli constants/opensea-url-names))
-
-          (and test-networks-enabled? mainnet?)
+    (cond (and test-networks-enabled? mainnet?)
           (:sepolia constants/opensea-url-names)
 
           test-networks-enabled?
@@ -63,11 +57,10 @@
 
 (defn get-opensea-collectible-url
   [{:keys [chain-id token-id contract-address
-           test-networks-enabled? is-goerli-enabled?]}]
+           test-networks-enabled?]}]
   (let [base-link            (get-opensea-base-url test-networks-enabled?)
         opensea-network-name (get-opensea-network-name chain-id
-                                                       test-networks-enabled?
-                                                       is-goerli-enabled?)]
+                                                       test-networks-enabled?)]
     (str base-link "/assets/" opensea-network-name "/" contract-address "/" token-id)))
 
 (defn get-collectible-unique-id

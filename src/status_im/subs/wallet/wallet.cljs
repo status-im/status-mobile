@@ -253,12 +253,10 @@
  :wallet/selected-networks->chain-ids
  :<- [:wallet/selected-networks]
  :<- [:profile/test-networks-enabled?]
- :<- [:profile/is-goerli-enabled?]
- (fn [[selected-networks testnet-enabled? goerli-enabled?]]
+ (fn [[selected-networks testnet-enabled?]]
    (set (map #(network-utils/network->chain-id
                {:network          %
-                :testnet-enabled? testnet-enabled?
-                :goerli-enabled?  goerli-enabled?})
+                :testnet-enabled? testnet-enabled?})
              selected-networks))))
 
 (defn- format-settings-keypair-accounts

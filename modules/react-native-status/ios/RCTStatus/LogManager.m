@@ -34,25 +34,25 @@ RCT_EXPORT_METHOD(sendLogs:(NSString *)dbJson
 
     NSURL *dbFile = [logsFolderName URLByAppendingPathComponent:@"db.json"];
     NSURL *jsLogsFile = [logsFolderName URLByAppendingPathComponent:@"Status.log"];
-#if DEBUG
-    NSString *networkDirPath = @"ethereum/mainnet_rpc_dev";
-#else
-    NSString *networkDirPath = @"ethereum/mainnet_rpc";
-#endif
+// #if DEBUG
+//     NSString *networkDirPath = @"ethereum/mainnet_rpc_dev";
+// #else
+//     NSString *networkDirPath = @"ethereum/mainnet_rpc";
+// #endif
 
-#if DEBUG
-    NSString *goerliNetworkDirPath = @"ethereum/goerli_rpc_dev";
-#else
-    NSString *goerliNetworkDirPath = @"ethereum/goerli_rpc";
-#endif
+// #if DEBUG
+//     NSString *goerliNetworkDirPath = @"ethereum/goerli_rpc_dev";
+// #else
+//     NSString *goerliNetworkDirPath = @"ethereum/goerli_rpc";
+// #endif
 
-    NSURL *networkDir = [rootUrl URLByAppendingPathComponent:networkDirPath];
-    NSURL *originalGethLogsFile = [networkDir URLByAppendingPathComponent:@"geth.log"];
-    NSURL *gethLogsFile = [logsFolderName URLByAppendingPathComponent:@"mainnet_geth.log"];
+    // NSURL *networkDir = [rootUrl URLByAppendingPathComponent:networkDirPath];
+    // NSURL *originalGethLogsFile = [networkDir URLByAppendingPathComponent:@"geth.log"];
+    // NSURL *gethLogsFile = [logsFolderName URLByAppendingPathComponent:@"mainnet_geth.log"];
 
-    NSURL *goerliNetworkDir = [rootUrl URLByAppendingPathComponent:goerliNetworkDirPath];
-    NSURL *goerliGethLogsFile = [goerliNetworkDir URLByAppendingPathComponent:@"geth.log"];
-    NSURL *goerliLogsFile = [logsFolderName URLByAppendingPathComponent:@"goerli_geth.log"];
+    // NSURL *goerliNetworkDir = [rootUrl URLByAppendingPathComponent:goerliNetworkDirPath];
+    // NSURL *goerliGethLogsFile = [goerliNetworkDir URLByAppendingPathComponent:@"geth.log"];
+    // NSURL *goerliLogsFile = [logsFolderName URLByAppendingPathComponent:@"goerli_geth.log"];
 
     NSURL *mainGethLogsFile = [rootUrl URLByAppendingPathComponent:@"geth.log"];
     NSURL *mainLogsFile = [logsFolderName URLByAppendingPathComponent:@"geth.log"];
@@ -64,8 +64,8 @@ RCT_EXPORT_METHOD(sendLogs:(NSString *)dbJson
 
     //NSString* gethLogs = StatusgoExportNodeLogs();
     //[gethLogs writeToFile:gethLogsFile.path atomically:YES encoding:NSUTF8StringEncoding error:nil];
-    [fileManager copyItemAtPath:originalGethLogsFile.path toPath:gethLogsFile.path error:nil];
-    [fileManager copyItemAtPath:goerliGethLogsFile.path toPath:goerliLogsFile.path error:nil];
+    // [fileManager copyItemAtPath:originalGethLogsFile.path toPath:gethLogsFile.path error:nil];
+    // [fileManager copyItemAtPath:goerliGethLogsFile.path toPath:goerliLogsFile.path error:nil];
     [fileManager copyItemAtPath:mainGethLogsFile.path toPath:mainLogsFile.path error:nil];
     
     if ([fileManager fileExistsAtPath:requestsLogFile.path]) {

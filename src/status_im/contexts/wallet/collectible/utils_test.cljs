@@ -43,26 +43,4 @@
                                                :contract-address contract-address
                                                :token-id token-id
                                                :test-networks-enabled? true})
-           "https://testnets.opensea.io/assets/optimism-sepolia/0xC/0xT")))
-  (testing "get-opensea-collectible-url goerli"
-    (is (= (utils/get-opensea-collectible-url {:chain-id               constants/ethereum-goerli-chain-id
-                                               :contract-address       contract-address
-                                               :token-id               token-id
-                                               :test-networks-enabled? true
-                                               :is-goerli-enabled?     true})
-           "https://testnets.opensea.io/assets/goerli/0xC/0xT")))
-  (testing "get-opensea-collectible-url goerli arbitrum"
-    (is (= (utils/get-opensea-collectible-url {:chain-id               constants/arbitrum-goerli-chain-id
-                                               :contract-address       contract-address
-                                               :token-id               token-id
-                                               :test-networks-enabled? true
-                                               :is-goerli-enabled?     true})
-           "https://testnets.opensea.io/assets/arbitrum-goerli/0xC/0xT")))
-
-  (testing "get-opensea-collectible-url goerli optimism"
-    (is (= (utils/get-opensea-collectible-url {:chain-id               constants/optimism-goerli-chain-id
-                                               :contract-address       contract-address
-                                               :token-id               token-id
-                                               :test-networks-enabled? true
-                                               :is-goerli-enabled?     true})
-           "https://testnets.opensea.io/assets/optimism-goerli/0xC/0xT"))))
+           "https://testnets.opensea.io/assets/optimism-sepolia/0xC/0xT"))))
