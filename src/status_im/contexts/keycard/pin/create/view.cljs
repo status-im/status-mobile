@@ -2,9 +2,9 @@
   (:require [clojure.string :as string]
             [quo.core :as quo]
             [react-native.core :as rn]
+            [status-im.common.events-helper :as events-helper]
             [status-im.constants :as constants]
             [utils.i18n :as i18n]
-            [status-im.common.events-helper :as events-helper]
             [utils.re-frame :as rf]))
 
 (defn view

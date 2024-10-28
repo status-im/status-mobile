@@ -1,6 +1,5 @@
 (ns status-im.contexts.keycard.migrate.events
   (:require [clojure.string :as string]
-            [status-im.contexts.keycard.pin.create.view :as pin.create]
             [status-im.contexts.keycard.pin.view :as keycard.pin]
             [utils.re-frame :as rf]
             [utils.security.core :as security]))

@@ -2,9 +2,9 @@
   (:require [quo.core :as quo]
             [react-native.core :as rn]
             [status-im.common.resources :as resources]
+            [status-im.constants :as constants]
             [utils.i18n :as i18n]
-            [utils.re-frame :as rf]
-            [status-im.constants :as constants]))
+            [utils.re-frame :as rf]))
 
 (defn view
   []
