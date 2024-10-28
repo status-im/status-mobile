@@ -98,7 +98,7 @@
    {:db (assoc-in db
          [:keycard :migration :masked-phrase]
          (security/mask-data (get-in db [:profile/profile :mnemonic])))
-    :fx [[:dispatch [:profile.settings/profile-update :mnemonic nil]]
+    :fx [;;TODO uncomment [:dispatch [:profile.settings/profile-update :mnemonic nil]]
          [:dispatch [:navigate-back]]
          [:dispatch
           [:open-modal :screen/keycard.authorise
@@ -108,15 +108,18 @@
  (fn [{:keys [db]} [masked-password]]
    (let [{:keys [initialized?]} (get-in db [:keycard :application-info])]
      {:db (assoc-in db [:keycard :migration :masked-password] masked-password)
-      :fx [[:dispatch
-            [:show-bottom-sheet
-             {:content (if initialized?
-                         (fn []
+      :fx [[:dispatch [:navigate-back]]
+           (if initialized?
+             [:dispatch
+              [:show-bottom-sheet
+               {:content (fn []
                            [keycard.pin/auth
-                            {:on-complete #(rf/dispatch [:keycard/migration.pin-created %])}])
-                         (fn []
-                           [pin.create/view
-                            {:on-complete #(rf/dispatch [:keycard/migration.pin-created %])}]))}]]]})))
+                            {:on-complete #(rf/dispatch [:keycard/migration.pin-created %])}])}]]
+             [:dispatch
+              [:open-modal :screen/keycard.pin.create
+               {:on-complete (fn [new-pin]
+                               (rf/dispatch [:navigate-back])
+                               (rf/dispatch [:keycard/migration.pin-created new-pin]))}]])]})))
 
 (rf/reg-event-fx :keycard/migration.pin-created
  (fn [{:keys [db]} [pin]]
