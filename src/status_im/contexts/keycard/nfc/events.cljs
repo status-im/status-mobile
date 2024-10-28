@@ -3,7 +3,7 @@
 
 (rf/reg-event-fx :keycard.ios/start-nfc
  (fn [_]
-   {:effects.keycard.ios/start-nfc nil}))
+   {:fx [[:effects.keycard.ios/start-nfc]]}))
 
 (rf/reg-event-fx :keycard.ios/on-start-nfc-success
  (fn [{:keys [db]} [{:keys [on-cancel-event-vector]}]]

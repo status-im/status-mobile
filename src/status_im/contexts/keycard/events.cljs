@@ -98,10 +98,11 @@
                        (on-error error)
                        (rf/dispatch [:keycard/on-application-info-error error]))
                      (when on-success (on-success app-info))))
-     :on-error   #(if on-error
-                    (on-error :keycard/error.not-keycard)
-                    (rf/dispatch [:keycard/on-application-info-error
-                                  :keycard/error.not-keycard]))}}))
+     :on-error   (fn []
+                   (if on-error
+                     (on-error :keycard/error.not-keycard)
+                     (rf/dispatch [:keycard/on-application-info-error
+                                   :keycard/error.not-keycard])))}}))
 
 (rf/reg-event-fx :keycard/connect
  (fn [{:keys [db]} [{:keys [key-uid on-success on-error on-connect-event-vector]}]]

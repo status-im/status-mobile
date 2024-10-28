@@ -3,7 +3,8 @@
             [react-native.core :as rn]
             [status-im.common.resources :as resources]
             [utils.i18n :as i18n]
-            [utils.re-frame :as rf]))
+            [utils.re-frame :as rf]
+            [status-im.constants :as constants]))
 
 (defn view
   []
@@ -17,7 +18,7 @@
        :context-tag     {:full-name           profile-name
                          :profile-picture     profile-picture
                          :customization-color customization-color}
-       :container-style {:margin-top 56}}]
+       :container-style {:margin-top constants/page-nav-height}}]
      [quo/text {:style {:padding-horizontal 20}}
       (i18n/label :t/use-keycard-for-status)]
      [rn/view {:style {:flex 1 :align-items :center :justify-content :center}}
