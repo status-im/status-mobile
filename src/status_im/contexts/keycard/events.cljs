@@ -41,19 +41,15 @@
  (fn [{:keys [db]} [error]]
    (let [tag-was-lost?     (keycard.utils/tag-lost? (:error error))
          pin-retries-count (keycard.utils/pin-retries (:error error))]
-     (if tag-was-lost?
+     (if (or tag-was-lost? (nil? pin-retries-count))
        {:db (assoc-in db [:keycard :pin :status] nil)}
-       (if (nil? pin-retries-count)
-         {:fx [[:dispatch
+       {:db (-> db
+                (assoc-in [:keycard :application-info :pin-retry-counter] pin-retries-count)
+                (assoc-in [:keycard :pin :status] :error))
+        :fx [(when (zero? pin-retries-count)
+               [:dispatch
                 [:keycard/on-application-info-error
-                 :keycard/error.keycard-wrong-profile]]]}
-         {:db (-> db
-                  (assoc-in [:keycard :application-info :pin-retry-counter] pin-retries-count)
-                  (assoc-in [:keycard :pin :status] :error))
-          :fx [(when (zero? pin-retries-count)
-                 [:dispatch
-                  [:keycard/on-application-info-error
-                   :keycard/error.keycard-locked]])]})))))
+                 :keycard/error.keycard-locked]])]}))))
 
 (rf/reg-event-fx :keycard/get-keys
  (fn [_ [data]]
