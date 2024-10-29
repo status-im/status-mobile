@@ -40,6 +40,7 @@
   (let [[search-text set-search-text] (rn/use-state "")
         on-change-text                #(set-search-text %)
         on-close                      (fn []
+                                        (rf/dispatch [:centralized-metrics/track :metric/swap-closed])
                                         (rf/dispatch [:wallet/clean-swap])
                                         (rf/dispatch [:navigate-back]))]
     [rn/safe-area-view {:style style/container}
