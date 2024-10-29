@@ -186,8 +186,7 @@
 (defn- transaction-details
   []
   (let [network                (rf/sub [:wallet/swap-network])
-        max-fees               (rf/sub [:wallet/wallet-swap-proposal-fee-fiat-formatted
-                                        constants/token-for-fees-symbol])
+        approval-fees          (rf/sub [:wallet/approval-gas-fees-formatted])
         loading-swap-proposal? (rf/sub [:wallet/swap-loading-swap-proposal?])
         estimated-time         (rf/sub [:wallet/swap-proposal-estimated-time])]
     [rn/view {:style style/details-container}
@@ -198,7 +197,7 @@
         :network-image (:source network)}]
       [data-item
        {:title    (i18n/label :t/max-fees)
-        :subtitle (if (and estimated-time max-fees) max-fees (i18n/label :t/unknown))
+        :subtitle (if (and estimated-time approval-fees) approval-fees (i18n/label :t/unknown))
         :loading? loading-swap-proposal?
         :size     :small}]
       [data-item

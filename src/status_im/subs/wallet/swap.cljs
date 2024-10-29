@@ -302,3 +302,27 @@
      :currency-symbol currency-symbol
      :balance         (or amount 0)
      :token           asset-to-pay-with-current-account-balance})))
+
+(rf/reg-sub
+ :wallet/approval-gas-fees-formatted
+ :<- [:wallet/current-viewing-account]
+ :<- [:wallet/swap-proposal]
+ :<- [:profile/currency]
+ :<- [:profile/currency-symbol]
+ (fn [[account {:keys [approval-gas-fees]} currency currency-symbol]]
+   (let [tokens                  (:tokens account)
+         token-for-fees          (first (filter #(= (string/lower-case (:symbol %))
+                                                    (string/lower-case constants/token-for-fees-symbol))
+                                                tokens))
+         fee-in-crypto-formatted (utils/get-standard-crypto-format
+                                  token-for-fees
+                                  approval-gas-fees)
+         fee-in-fiat             (utils/calculate-token-fiat-value
+                                  {:currency currency
+                                   :balance  approval-gas-fees
+                                   :token    token-for-fees})
+         fee-formatted           (utils/get-standard-fiat-format
+                                  fee-in-crypto-formatted
+                                  currency-symbol
+                                  fee-in-fiat)]
+     fee-formatted)))
