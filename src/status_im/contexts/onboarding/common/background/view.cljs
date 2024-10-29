@@ -37,24 +37,21 @@
 (defonce is-dragging? (atom nil))
 (defonce drag-amount (atom nil))
 
+;; Layout height calculation
+;; 1. Always prefer on-layout height over window height, as some devices include status bar height in
+;; the window while others do not.
+;; https://github.com/status-im/status-mobile/issues/14633#issuecomment-1366191478
+;; 2. This preference is unless on-layout is triggered with a random value.
+;; https://github.com/status-im/status-mobile/issues/14849
+;; To ensure that on-layout height falls within the actual height range, a difference between window
+;; height and the maximum possible status bar height is allowed (assumed to be 60, as the Pixel emulator
+;; has a height of 52).
 (defn store-screen-height
   [evt]
-  (let [window-height (:height (rn/get-window))
-        height        (or (oget evt "nativeEvent" "layout" "height") 0)
-        width         (or (oget evt "nativeEvent" "layout" "width") 0)]
-    ;; Layout height calculation
-    ;; 1. Make sure height is more than width, and on-layout is not fired while the
-    ;; screen is horizontal
-    ;; 2. Initialize values with 0 in case of nil
-    ;; 3. In the case of notch devices, the dimensions height will be smaller than
-    ;; on-layout,
-    ;; (without status bar height included)
-    ;; https://github.com/status-im/status-mobile/issues/14633
-    ;; 4. In the case of devices without a notch, both heights should be the same,
-    ;; but actual values differ in some pixels, so arbitrary 5 pixels is allowed
-    (when (and (> height width)
-               (>= (+ height 5) (or window-height 0))
-               (not= height @shell.state/screen-height))
+  (let [window-height (or (:height (rn/get-window)) 0)
+        height        (or (oget evt "nativeEvent" "layout" "height") 0)]
+    (when (and (not= height @shell.state/screen-height)
+               (< (Math/abs (- window-height height)) 60))
       (reset! shell.state/screen-height height)
       (async-storage/set-item! :screen-height height))))
 
