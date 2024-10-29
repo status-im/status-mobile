@@ -251,9 +251,9 @@
       (str $ address))
     address))
 
-(defn get-standard-fiat-format
-  [crypto-value currency-symbol fiat-value]
-  (if (string/includes? crypto-value "<")
+(defn fiat-formatted-for-ui
+  [currency-symbol fiat-value]
+  (if (money/less-than fiat-value 0.01)
     (str "<" currency-symbol "0.01")
     (prettify-balance currency-symbol fiat-value)))
 
@@ -281,9 +281,8 @@
         formatted-token-price             (prettify-balance currency-symbol price)
         percentage-change                 (prettify-percentage-change change-pct-24hour)
         crypto-value                      (get-standard-crypto-format token balance)
-        fiat-value                        (get-standard-fiat-format crypto-value
-                                                                    currency-symbol
-                                                                    fiat-unformatted-value)]
+        fiat-value                        (fiat-formatted-for-ui currency-symbol
+                                                                 fiat-unformatted-value)]
     {:token               (:symbol token)
      :token-name          (:name token)
      :state               :default

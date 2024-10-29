@@ -25,9 +25,8 @@
                                        {:currency currency
                                         :balance  balance
                                         :token    token})
-          fiat-formatted              (utils/get-standard-fiat-format crypto-value
-                                                                      currency-symbol
-                                                                      fiat-value)
+          fiat-formatted              (utils/fiat-formatted-for-ui currency-symbol
+                                                                   fiat-value)
           token-available-on-network? (network-utils/token-available-on-network? supported-networks
                                                                                  chain-id)]
       [quo/network-list

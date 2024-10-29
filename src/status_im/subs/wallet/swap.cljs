@@ -90,9 +90,8 @@
                               :balance  total-balance
                               :token    token})
          crypto-formatted   (utils/get-standard-crypto-format token total-balance)
-         fiat-formatted     (utils/get-standard-fiat-format crypto-formatted
-                                                            currency-symbol
-                                                            fiat-value)]
+         fiat-formatted     (utils/fiat-formatted-for-ui currency-symbol
+                                                         fiat-value)]
      {:crypto (str crypto-formatted " " token-symbol)
       :fiat   fiat-formatted})))
 
@@ -246,22 +245,18 @@
  :<- [:profile/currency-symbol]
  (fn [[account swap-proposal currency currency-symbol] [_ token-symbol-for-fees]]
    (when token-symbol-for-fees
-     (let [tokens                  (:tokens account)
-           token-for-fees          (first (filter #(= (string/lower-case (:symbol %))
-                                                      (string/lower-case token-symbol-for-fees))
-                                                  tokens))
-           fee-in-native-token     (send-utils/calculate-full-route-gas-fee [swap-proposal])
-           fee-in-crypto-formatted (utils/get-standard-crypto-format
-                                    token-for-fees
-                                    fee-in-native-token)
-           fee-in-fiat             (utils/calculate-token-fiat-value
-                                    {:currency currency
-                                     :balance  fee-in-native-token
-                                     :token    token-for-fees})
-           fee-formatted           (utils/get-standard-fiat-format
-                                    fee-in-crypto-formatted
-                                    currency-symbol
-                                    fee-in-fiat)]
+     (let [tokens              (:tokens account)
+           token-for-fees      (first (filter #(= (string/lower-case (:symbol %))
+                                                  (string/lower-case token-symbol-for-fees))
+                                              tokens))
+           fee-in-native-token (send-utils/calculate-full-route-gas-fee [swap-proposal])
+           fee-in-fiat         (utils/calculate-token-fiat-value
+                                {:currency currency
+                                 :balance  fee-in-native-token
+                                 :token    token-for-fees})
+           fee-formatted       (utils/fiat-formatted-for-ui
+                                currency-symbol
+                                fee-in-fiat)]
        fee-formatted))))
 
 (rf/reg-sub
@@ -310,19 +305,15 @@
  :<- [:profile/currency]
  :<- [:profile/currency-symbol]
  (fn [[account {:keys [approval-gas-fees]} currency currency-symbol]]
-   (let [tokens                  (:tokens account)
-         token-for-fees          (first (filter #(= (string/lower-case (:symbol %))
-                                                    (string/lower-case constants/token-for-fees-symbol))
-                                                tokens))
-         fee-in-crypto-formatted (utils/get-standard-crypto-format
-                                  token-for-fees
-                                  approval-gas-fees)
-         fee-in-fiat             (utils/calculate-token-fiat-value
-                                  {:currency currency
-                                   :balance  approval-gas-fees
-                                   :token    token-for-fees})
-         fee-formatted           (utils/get-standard-fiat-format
-                                  fee-in-crypto-formatted
-                                  currency-symbol
-                                  fee-in-fiat)]
+   (let [tokens         (:tokens account)
+         token-for-fees (first (filter #(= (string/lower-case (:symbol %))
+                                           (string/lower-case constants/token-for-fees-symbol))
+                                       tokens))
+         fee-in-fiat    (utils/calculate-token-fiat-value
+                         {:currency currency
+                          :balance  approval-gas-fees
+                          :token    token-for-fees})
+         fee-formatted  (utils/fiat-formatted-for-ui
+                         currency-symbol
+                         fee-in-fiat)]
      fee-formatted)))
