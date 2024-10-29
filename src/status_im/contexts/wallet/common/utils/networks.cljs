@@ -18,11 +18,8 @@
 
 (defn- get-chain-id
   [{:keys [mainnet-chain-id sepolia-chain-id testnet-enabled?]}]
-  (cond
-    testnet-enabled?
+  (if testnet-enabled?
     sepolia-chain-id
-
-    :else
     mainnet-chain-id))
 
 (defn network->chain-id
@@ -70,11 +67,8 @@
 
 (defn get-default-chain-ids-by-mode
   [{:keys [test-networks-enabled?]}]
-  (cond
-    test-networks-enabled?
+  (if test-networks-enabled?
     constants/sepolia-chain-ids
-
-    :else
     constants/mainnet-chain-ids))
 
 (defn resolve-receiver-networks
