@@ -68,6 +68,10 @@
   [session]
   (get-in session [:peer :metadata :redirect :native]))
 
+(defn get-dapp-name
+  [session]
+  (get-in session [:peer :metadata :name]))
+
 (defn get-db-current-request-params
   [db]
   (-> db

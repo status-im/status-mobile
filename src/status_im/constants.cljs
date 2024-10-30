@@ -290,6 +290,14 @@
 (def ^:const wallet-connect-user-rejected-error-key "USER_REJECTED")
 (def ^:const wallet-connect-user-disconnected-reason-key "USER_DISCONNECTED")
 (def ^:const wallet-connect-user-rejected-chains-error-key "USER_REJECTED_CHAINS")
+(def ^:const wallet-connect-message-signing-methods
+  #{wallet-connect-personal-sign-method
+    wallet-connect-eth-sign-typed-method
+    wallet-connect-eth-sign-method
+    wallet-connect-eth-sign-typed-v4-method})
+(def ^:const wallet-connect-transaction-methods
+  #{wallet-connect-eth-send-transaction-method
+    wallet-connect-eth-sign-transaction-method})
 
 (def ^:const transaction-pending-type-wallet-connect-transfer "WalletConnectTransfer")
 
