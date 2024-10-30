@@ -1,6 +1,7 @@
 (ns utils.network.core
   (:require
-    [clojure.string :as string]))
+    [clojure.string :as string]
+    [taoensso.timbre :as log]))
 
 (def url-regex
   #"https?://(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}(\.[a-z]{2,6})?\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)")
@@ -41,7 +42,12 @@
        (map :error)
        (not-any? identity)))
 
-(defn chain-id-available?
-  [current-networks network]
-  (let [chain-id (get-in network [:config :NetworkId])]
-    (every? #(not= chain-id (get-in % [1 :config :NetworkId])) current-networks)))
+(defn fetch [url {:keys [body] :as params} callback]
+  (let [js-params (cond-> params
+                    (map? body) (update :body (comp js/JSON.stringify clj->js))
+                    :always     clj->js)]
+    (-> (js/fetch url js-params)
+        (.then (fn [response]
+                 (.text response)))
+        (.then callback)
+        (.catch #(log/error (str "Error while fetching: " url) %)))))

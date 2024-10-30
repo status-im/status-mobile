@@ -29,6 +29,12 @@
 (goog-define WALLET_CONNECT_PROJECT_ID "87815d72a81d739d2a7ce15c2cfdefb3")
 (goog-define MIXPANEL_APP_ID "3350627")
 (goog-define MIXPANEL_TOKEN "5c73bda2d36a9f688a5ee45641fb6775")
+(goog-define STATUS_BACKEND_ENABLED false)
+;; Warn: <STATUS_BACKEND_STORAGE_DIR>/data musts exist before running the app if
+;; `STATUS_BACKEND_ENABLED` is true.
+(goog-define STATUS_BACKEND_STORAGE_DIR "")
+(goog-define STATUS_BACKEND_PORT 9050)
+(goog-define STATUS_BACKEND_ADDRESS "localhost")
 
 (def mainnet-rpc-url (str "https://eth-archival.rpc.grove.city/v1/" POKT_TOKEN))
 (def goerli-rpc-url (str "https://goerli-archival.gateway.pokt.network/v1/lb/" POKT_TOKEN))

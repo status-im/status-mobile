@@ -82,7 +82,12 @@
           status-im.config/ALCHEMY_ARBITRUM_SEPOLIA_TOKEN #shadow/env "ALCHEMY_ARBITRUM_SEPOLIA_TOKEN"
           status-im.config/ALCHEMY_OPTIMISM_MAINNET_TOKEN #shadow/env "ALCHEMY_OPTIMISM_MAINNET_TOKEN"
           status-im.config/ALCHEMY_OPTIMISM_GOERLI_TOKEN  #shadow/env "ALCHEMY_OPTIMISM_GOERLI_TOKEN"
-          status-im.config/ALCHEMY_OPTIMISM_SEPOLIA_TOKEN #shadow/env "ALCHEMY_OPTIMISM_SEPOLIA_TOKEN"}
+          status-im.config/ALCHEMY_OPTIMISM_SEPOLIA_TOKEN #shadow/env "ALCHEMY_OPTIMISM_SEPOLIA_TOKEN"
+          status-im.config/STATUS_BACKEND_ENABLED         #shadow/env "STATUS_BACKEND_ENABLED"
+          ;; The dir <STATUS_BACKEND_STORAGE_DIR>/data musts exist before running the app.
+          status-im.config/STATUS_BACKEND_STORAGE_DIR     #shadow/env "STATUS_BACKEND_STORAGE_DIR"
+          status-im.config/STATUS_BACKEND_PORT            #shadow/env "STATUS_BACKEND_PORT"
+          status-im.config/STATUS_BACKEND_ADDRESS         #shadow/env "STATUS_BACKEND_ADDRESS"}
          :compiler-options {:output-feature-set :es5
                             ;; We disable `:fn-deprecated` warnings because we
                             ;; are managing deprecation via clj-kondo and we
@@ -121,7 +126,8 @@
      status-im.config/ALCHEMY_ARBITRUM_SEPOLIA_TOKEN #shadow/env "ALCHEMY_ARBITRUM_SEPOLIA_TOKEN"
      status-im.config/ALCHEMY_OPTIMISM_MAINNET_TOKEN #shadow/env "ALCHEMY_OPTIMISM_MAINNET_TOKEN"
      status-im.config/ALCHEMY_OPTIMISM_GOERLI_TOKEN  #shadow/env "ALCHEMY_OPTIMISM_GOERLI_TOKEN"
-     status-im.config/ALCHEMY_OPTIMISM_SEPOLIA_TOKEN #shadow/env "ALCHEMY_OPTIMISM_SEPOLIA_TOKEN"}
+     status-im.config/ALCHEMY_OPTIMISM_SEPOLIA_TOKEN #shadow/env "ALCHEMY_OPTIMISM_SEPOLIA_TOKEN"
+     status-im.config/STATUS_BACKEND_ENABLED         false}
     :compiler-options {:output-feature-set :es6
                        ;;disable for android build as there
                        ;;is an intermittent warning with deftype

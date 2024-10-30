@@ -3,54 +3,30 @@
     ["react-native" :as react-native]
     [clojure.string :as string]
     [native-module.utils :as native-utils]
+    [oops.core :as oops]
     [react-native.platform :as platform]
+    [status-backend.config :as status-backend.config]
+    [status-backend.core :as status-backend]
+    [status-im.config]
     [taoensso.timbre :as log]
     [utils.transforms :as types]))
 
-(defn status
-  []
-  (when (exists? (.-NativeModules react-native))
-    (.-Status ^js (.-NativeModules react-native))))
+(defn- extract-from-native-modules [module]
+  (if status-im.config/STATUS_BACKEND_ENABLED
+    status-backend/fetch-js-obj
+    (some-> react-native
+      (oops/gobj-get "NativeModules")
+      (oops/gobj-get module))))
 
-(defn account-manager
-  []
-  (when (exists? (.-NativeModules react-native))
-    (.-AccountManager ^js (.-NativeModules react-native))))
-
-(defn encryption
-  []
-  (when (exists? (.-NativeModules react-native))
-    (.-EncryptionUtils ^js (.-NativeModules react-native))))
-
-(defn database
-  []
-  (when (exists? (.-NativeModules react-native))
-    (.-DatabaseManager ^js (.-NativeModules react-native))))
-
-(defn ui-helper
-  []
-  (when (exists? (.-NativeModules react-native))
-    (.-UIHelper ^js (.-NativeModules react-native))))
-
-(defn log-manager
-  []
-  (when (exists? (.-NativeModules react-native))
-    (.-LogManager ^js (.-NativeModules react-native))))
-
-(defn utils
-  []
-  (when (exists? (.-NativeModules react-native))
-    (.-Utils ^js (.-NativeModules react-native))))
-
-(defn network
-  []
-  (when (exists? (.-NativeModules react-native))
-    (.-NetworkManager ^js (.-NativeModules react-native))))
-
-(defn mail-manager
-  []
-  (when (exists? (.-NativeModules react-native))
-    (.-MailManager ^js (.-NativeModules react-native))))
+(defn status [] (extract-from-native-modules "Status"))
+(defn account-manager [] (extract-from-native-modules "AccountManager"))
+(defn encryption [] (extract-from-native-modules "EncryptionUtils"))
+(defn database [] (extract-from-native-modules "DatabaseManager"))
+(defn ui-helper [] (extract-from-native-modules "UIHelper"))
+(defn log-manager [] (extract-from-native-modules "LogManager"))
+(defn utils [] (extract-from-native-modules "Utils"))
+(defn network [] (extract-from-native-modules "NetworkManager"))
+(defn mail-manager [] (extract-from-native-modules "MailManager"))
 
 (defn mail
   [opts callback]
@@ -58,7 +34,9 @@
 
 (defn init
   [handler]
-  (.addListener ^js (.-DeviceEventEmitter ^js react-native) "gethEvent" #(handler (.-jsonEvent ^js %))))
+  (if status-im.config/STATUS_BACKEND_ENABLED
+    (status-backend/init-web-socket handler)
+    (.addListener ^js (.-DeviceEventEmitter ^js react-native) "gethEvent" #(handler (.-jsonEvent ^js %)))))
 
 (defn clear-web-data
   []
@@ -521,7 +499,9 @@
 
 (defn backup-disabled-data-dir
   []
-  (.backupDisabledDataDir ^js (utils)))
+  (if status-im.config/STATUS_BACKEND_ENABLED
+    status-backend.config/data-dir-path
+    (.backupDisabledDataDir ^js (utils))))
 
 (defn fleets
   []
@@ -529,15 +509,27 @@
 
 (defn keystore-dir
   []
-  (.keystoreDir ^js (utils)))
+  (if status-im.config/STATUS_BACKEND_ENABLED
+    status-backend.config/keystore-dir-path
+    (.keystoreDir ^js (utils))))
 
 (defn log-file-directory
   []
-  (.logFileDirectory ^js (log-manager)))
+  (if status-im.config/STATUS_BACKEND_ENABLED
+    status-backend.config/log-dir-path
+    (.logFileDirectory ^js (log-manager))))
 
 (defn init-status-go-logging
   [{:keys [enable? mobile-system? log-level log-request-go? callback]}]
-  (.initLogging ^js (log-manager) enable? mobile-system? log-level log-request-go? callback))
+  (if status-im.config/STATUS_BACKEND_ENABLED
+    (.initLogging ^js (log-manager)
+                  {:Enabled        enable?
+                   :MobileSystem   mobile-system?
+                   :Level          log-level
+                   :LogRequestGo   log-request-go?
+                   :LogRequestFile status-backend.config/log-request-file-path}
+                  callback)
+    (.initLogging ^js (log-manager) enable? mobile-system? log-level log-request-go? callback)))
 
 (defn get-random-mnemonic
   [callback]
