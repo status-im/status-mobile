@@ -54,6 +54,7 @@
   (assoc session
          :accounts
          (-> sessionJson
+             transforms/json->clj
              :namespaces
              :eip155
              :accounts)))
@@ -93,10 +94,10 @@
 (defn sync-persisted-sessions
   [active-sessions persisted-sessions]
   (-> (promesa/all
-       (for [topic (find-inactive-sessions active-sessions
-                                           persisted-sessions)]
-         (do (log/info "Syncing disconnected session with persistance" topic)
-             (rpc/wallet-disconnect-persisted-session topic))))
+       (for [session (find-inactive-sessions active-sessions
+                                             persisted-sessions)]
+         (do (log/info "Syncing disconnected session with persistance" session)
+             (rpc/wallet-disconnect-persisted-session (:topic session)))))
       (promesa/catch (fn [err]
                        (throw (ex-info "Failed to synchronize persisted sessions"
                                        {:error err
