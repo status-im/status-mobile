@@ -142,6 +142,7 @@
 
 (rf/reg-event-fx :wallet-connect/approve-session-success
  (fn [{:keys [db]} [session]]
+   (log/info "Successfully approved WalletConnect session" session)
    (let [total-connected-dapps (data-store/get-total-connected-dapps db)]
      {:fx [[:dispatch [:wallet-connect/on-new-session session]]
            [:dispatch [:wallet-connect/reset-current-session-proposal]]

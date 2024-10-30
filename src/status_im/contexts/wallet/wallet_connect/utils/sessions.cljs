@@ -54,6 +54,7 @@
   (assoc session
          :accounts
          (-> sessionJson
+             transforms/json->clj
              :namespaces
              :eip155
              :accounts)))
@@ -93,10 +94,10 @@
 (defn sync-persisted-sessions
   [active-sessions persisted-sessions]
   (-> (promesa/all
-       (for [topic (find-inactive-sessions active-sessions
-                                           persisted-sessions)]
-         (do (log/info "Syncing disconnected session with persistance" topic)
-             (rpc/wallet-disconnect-persisted-session topic))))
+       (for [session (find-inactive-sessions active-sessions
+                                             persisted-sessions)]
+         (do (log/info "Syncing disconnected session with persistance" session)
+             (rpc/wallet-disconnect-persisted-session (:topic session)))))
       (promesa/catch (fn [err]
                        (throw (ex-info "Failed to synchronize persisted sessions"
                                        {:error err
@@ -107,7 +108,11 @@
   (promesa/let [persisted-sessions (get-persisted-sessions)]
     (if online?
       (promesa/let [active-sessions (get-active-sessions web3-wallet addresses)]
-        (sync-persisted-sessions active-sessions persisted-sessions)
+        (log/info "Got active Wallet Connect sessions" (map :topic active-sessions))
+        ;; NOTE: handling the error here, so that if persistance fails, it doesn't affect the active
+        ;; sessions
+        (-> (sync-persisted-sessions active-sessions persisted-sessions)
+            (promesa/catch #(log/error %)))
         active-sessions)
       persisted-sessions)))
 
