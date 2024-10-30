@@ -7,7 +7,7 @@
        ":"
        status-im.config/STATUS_BACKEND_PORT))
 
-(def ^:private data-dir-path
+(def data-dir-path
   (str status-im.config/STATUS_BACKEND_STORAGE_DIR "/data"))
 
 (def ^:private public-storage-dir

@@ -42,7 +42,8 @@
        (map :error)
        (not-any? identity)))
 
-(defn fetch [url {:keys [body] :as params} callback]
+(defn fetch
+  [url {:keys [body] :as params} callback]
   (let [js-params (cond-> params
                     (map? body) (update :body (comp js/JSON.stringify clj->js))
                     :always     clj->js)]

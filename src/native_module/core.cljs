@@ -11,12 +11,13 @@
     [taoensso.timbre :as log]
     [utils.transforms :as types]))
 
-(defn- extract-from-native-modules [module]
+(defn- extract-from-native-modules
+  [module]
   (if status-im.config/STATUS_BACKEND_ENABLED
     status-backend/fetch-js-obj
     (some-> react-native
-      (oops/gobj-get "NativeModules")
-      (oops/gobj-get module))))
+            (oops/gobj-get "NativeModules")
+            (oops/gobj-get module))))
 
 (defn status [] (extract-from-native-modules "Status"))
 (defn account-manager [] (extract-from-native-modules "AccountManager"))
@@ -36,7 +37,9 @@
   [handler]
   (if status-im.config/STATUS_BACKEND_ENABLED
     (status-backend/init-web-socket handler)
-    (.addListener ^js (.-DeviceEventEmitter ^js react-native) "gethEvent" #(handler (.-jsonEvent ^js %)))))
+    (.addListener ^js (.-DeviceEventEmitter ^js react-native)
+                  "gethEvent"
+                  #(handler (.-jsonEvent ^js %)))))
 
 (defn clear-web-data
   []
