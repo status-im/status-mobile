@@ -7,7 +7,6 @@
     [status-im.common.events-helper :as events-helper]
     [status-im.common.floating-button-page.view :as floating-button-page]
     [status-im.common.standard-authentication.core :as standard-auth]
-    [status-im.constants :as constants]
     [status-im.contexts.wallet.common.utils.external-links :as external-links]
     [status-im.contexts.wallet.swap.set-spending-cap.style :as style]
     [utils.address :as address-utils]
