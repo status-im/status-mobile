@@ -108,7 +108,11 @@
   (promesa/let [persisted-sessions (get-persisted-sessions)]
     (if online?
       (promesa/let [active-sessions (get-active-sessions web3-wallet addresses)]
-        (sync-persisted-sessions active-sessions persisted-sessions)
+        (log/info "Got active Wallet Connect sessions" (map :topic active-sessions))
+        ;; NOTE: handling the error here, so that if persistance fails, it doesn't affect the active
+        ;; sessions
+        (-> (sync-persisted-sessions active-sessions persisted-sessions)
+            (promesa/catch #(log/error %)))
         active-sessions)
       persisted-sessions)))
 
