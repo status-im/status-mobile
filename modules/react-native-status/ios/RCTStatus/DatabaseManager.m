@@ -3,7 +3,7 @@
 #import "React/RCTEventDispatcher.h"
 #import "Statusgo.h"
 #import "Utils.h"
-
+#import "StatusBackendClient.h"
 @implementation DatabaseManager
 
 RCT_EXPORT_MODULE();
@@ -34,7 +34,12 @@ RCT_EXPORT_METHOD(exportUnencryptedDatabase:(NSString *)accountData
     
     NSString *jsonString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
     
-    StatusgoExportUnencryptedDatabaseV2(jsonString);
+    [StatusBackendClient executeStatusGoRequestWithCallback:@"ExportUnencryptedDatabaseV2"
+                                                     body:jsonString
+                                        statusgoFunction:^NSString *{
+        return StatusgoExportUnencryptedDatabaseV2(jsonString);
+    }
+                                                 callback:nil];
     
     callback(@[filePath]);
 }
@@ -44,9 +49,14 @@ RCT_EXPORT_METHOD(importUnencryptedDatabase:(NSString *)accountData
 #if DEBUG
     NSLog(@"importUnencryptedDatabase() method called");
 #endif
+    
+    NSString *filePath = [Utils getExportDbFilePath];
+    [Utils migrateKeystore:accountData password:password];
+    
     NSDictionary *params = @{
         @"account": [NSJSONSerialization JSONObjectWithData:[accountData dataUsingEncoding:NSUTF8StringEncoding] options:0 error:nil],
-        @"password": password
+        @"password": password,
+        @"databasePath": filePath
     };
     
     NSError *error;
@@ -59,7 +69,11 @@ RCT_EXPORT_METHOD(importUnencryptedDatabase:(NSString *)accountData
     
     NSString *jsonString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
     
-    StatusgoImportUnencryptedDatabaseV2(jsonString);
+    [StatusBackendClient executeStatusGoRequest:@"ImportUnencryptedDatabaseV2"
+                                         body:jsonString
+                             statusgoFunction:^NSString *{
+        return StatusgoImportUnencryptedDatabaseV2(jsonString);
+    }];
 }
 
 

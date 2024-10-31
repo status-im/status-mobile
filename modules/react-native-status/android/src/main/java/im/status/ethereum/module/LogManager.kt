@@ -206,7 +206,12 @@ class LogManager(private val reactContext: ReactApplicationContext) : ReactConte
             put("LogRequestFile", getRequestLogFile().absolutePath)
         }
         val config = jsonConfig.toString()
-        utils.executeRunnableStatusGoMethod({ Statusgo.initLogging(config) }, callback)
+        StatusBackendClient.executeStatusGoRequestWithCallback(
+            endpoint = "InitLogging",
+            requestBody = config,
+            statusgoFunction = { Statusgo.initLogging(config) },
+            callback = callback
+        )
     }
 
     @ReactMethod(isBlockingSynchronousMethod = true)

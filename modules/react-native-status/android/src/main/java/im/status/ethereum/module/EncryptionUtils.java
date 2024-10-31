@@ -40,7 +40,12 @@ public class EncryptionUtils extends ReactContextBaseJavaModule {
         final String commonKeydir = this.utils.pathCombine(this.utils.getNoBackupDirectory(), "/keystore");
         final String keydir = this.utils.pathCombine(commonKeydir, keyUID);
 
-        this.utils.executeRunnableStatusGoMethod(() -> Statusgo.initKeystore(keydir), callback);
+        StatusBackendClient.executeStatusGoRequestWithCallback(
+            "InitKeystore",
+            keydir,
+            () -> Statusgo.initKeystore(keydir),
+            callback
+        );
     }
 
     @ReactMethod
@@ -50,7 +55,12 @@ public class EncryptionUtils extends ReactContextBaseJavaModule {
         params.put("oldPassword", password);
         params.put("newPassword", newPassword);
         String jsonParams = params.toString();
-        this.utils.executeRunnableStatusGoMethod(() -> Statusgo.changeDatabasePasswordV2(jsonParams), callback);
+        StatusBackendClient.executeStatusGoRequestWithCallback(
+            "ChangeDatabasePasswordV2",
+            jsonParams,
+            () -> Statusgo.changeDatabasePasswordV2(jsonParams),
+            callback
+        );
     }
 
     @ReactMethod
@@ -65,10 +75,17 @@ public class EncryptionUtils extends ReactContextBaseJavaModule {
         params.put("oldPassword", password);
         params.put("newPassword", newPassword);
         final String jsonParams = params.toString();
-        this.utils.executeRunnableStatusGoMethod(() -> {
-            Statusgo.initKeystore(keyStoreDir);
-            return Statusgo.convertToKeycardAccountV2(jsonParams);
-        }, callback);
+        StatusBackendClient.executeStatusGoRequest(
+            "InitKeystore",
+            keyStoreDir,
+            () -> Statusgo.initKeystore(keyStoreDir)
+        );
+        StatusBackendClient.executeStatusGoRequestWithCallback(
+            "ConvertToKeycardAccountV2",
+            jsonParams,
+            () -> Statusgo.convertToKeycardAccountV2(jsonParams),
+            callback
+        );
     }
 
     @ReactMethod(isBlockingSynchronousMethod = true)
@@ -78,7 +95,11 @@ public class EncryptionUtils extends ReactContextBaseJavaModule {
             params.put("to", to);
             params.put("value", value);
             String jsonParams = params.toString();
-            return Statusgo.encodeTransferV2(jsonParams);
+            return StatusBackendClient.executeStatusGoRequestWithResult(
+                "EncodeTransferV2",
+                jsonParams,
+                () -> Statusgo.encodeTransferV2(jsonParams)
+            );
         } catch (JSONException e) {
             Log.e(TAG, "Error creating JSON for encodeTransfer: " + e.getMessage());
             return null;
@@ -92,7 +113,11 @@ public class EncryptionUtils extends ReactContextBaseJavaModule {
             params.put("method", method);
             params.put("paramsJSON", new JSONObject(paramsJSON));
             String jsonString = params.toString();
-            return Statusgo.encodeFunctionCallV2(jsonString);
+            return StatusBackendClient.executeStatusGoRequestWithResult(
+                "EncodeFunctionCallV2",
+                jsonString,
+                () -> Statusgo.encodeFunctionCallV2(jsonString)
+            );
         } catch (JSONException e) {
             Log.e(TAG, "Error creating JSON for encodeFunctionCall: " + e.getMessage());
             return null;
@@ -101,37 +126,65 @@ public class EncryptionUtils extends ReactContextBaseJavaModule {
 
     @ReactMethod(isBlockingSynchronousMethod = true)
     public String decodeParameters(final String decodeParamJSON) {
-        return Statusgo.decodeParameters(decodeParamJSON);
+        return StatusBackendClient.executeStatusGoRequestWithResult(
+            "DecodeParameters",
+            decodeParamJSON,
+            () -> Statusgo.decodeParameters(decodeParamJSON)
+        );
     }
 
     @ReactMethod(isBlockingSynchronousMethod = true)
     public String hexToNumber(final String hex) {
-        return Statusgo.hexToNumber(hex);
+        return StatusBackendClient.executeStatusGoRequestWithResult(
+            "HexToNumber",
+            hex,
+            () -> Statusgo.hexToNumber(hex)
+        );
     }
 
     @ReactMethod(isBlockingSynchronousMethod = true)
     public String numberToHex(final String numString) {
-        return Statusgo.numberToHex(numString);
+        return StatusBackendClient.executeStatusGoRequestWithResult(
+            "NumberToHex",
+            numString,
+            () -> Statusgo.numberToHex(numString)
+        );
     }
 
     @ReactMethod(isBlockingSynchronousMethod = true)
     public String sha3(final String str) {
-        return Statusgo.sha3(str);
+        return StatusBackendClient.executeStatusGoRequestWithResult(
+            "Sha3",
+            str,
+            () -> Statusgo.sha3(str)
+        );
     }
 
     @ReactMethod(isBlockingSynchronousMethod = true)
     public String utf8ToHex(final String str) {
-        return Statusgo.utf8ToHex(str);
+        return StatusBackendClient.executeStatusGoRequestWithResult(
+            "Utf8ToHex",
+            str,
+            () -> Statusgo.utf8ToHex(str)
+        );
     }
 
     @ReactMethod(isBlockingSynchronousMethod = true)
     public String hexToUtf8(final String str) {
-        return Statusgo.hexToUtf8(str);
+        return StatusBackendClient.executeStatusGoRequestWithResult(
+            "HexToUtf8",
+            str,
+            () -> Statusgo.hexToUtf8(str)
+        );
     }
 
     @ReactMethod(isBlockingSynchronousMethod = true)
     public String serializeLegacyKey(final String publicKey) {
-	return Statusgo.serializeLegacyKey(publicKey);
+        return StatusBackendClient.executeStatusGoRequestWithResult(
+            "SerializeLegacyKey",
+            publicKey,
+            () -> Statusgo.serializeLegacyKey(publicKey)
+        );
     }
 
     @ReactMethod
@@ -162,12 +215,22 @@ public class EncryptionUtils extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void hashTransaction(final String txArgsJSON, final Callback callback) throws JSONException {
-        this.utils.executeRunnableStatusGoMethod(() -> Statusgo.hashTransaction(txArgsJSON), callback);
+        StatusBackendClient.executeStatusGoRequestWithCallback(
+            "HashTransaction",
+            txArgsJSON,
+            () -> Statusgo.hashTransaction(txArgsJSON),
+            callback
+        );
     }
 
     @ReactMethod
     public void hashMessage(final String message, final Callback callback) throws JSONException {
-        this.utils.executeRunnableStatusGoMethod(() -> Statusgo.hashMessage(message), callback);
+        StatusBackendClient.executeStatusGoRequestWithCallback(
+            "HashMessage",
+            message,
+            () -> Statusgo.hashMessage(message),
+            callback
+        );
     }
 
     @ReactMethod
@@ -176,12 +239,22 @@ public class EncryptionUtils extends ReactContextBaseJavaModule {
         params.put("key", multiCodecKey);
         params.put("outBase", base58btc);
         String jsonParams = params.toString();
-        this.utils.executeRunnableStatusGoMethod(() -> Statusgo.multiformatDeserializePublicKeyV2(jsonParams), callback);
+        StatusBackendClient.executeStatusGoRequestWithCallback(
+            "MultiformatDeserializePublicKeyV2",
+            jsonParams,
+            () -> Statusgo.multiformatDeserializePublicKeyV2(jsonParams),
+            callback
+        );
     }
 
     @ReactMethod
     public void deserializeAndCompressKey(final String desktopKey, final Callback callback) throws JSONException {
-        this.utils.executeRunnableStatusGoMethod(() -> Statusgo.deserializeAndCompressKey(desktopKey), callback);
+        StatusBackendClient.executeStatusGoRequestWithCallback(
+            "DeserializeAndCompressKey",
+            desktopKey,
+            () -> Statusgo.deserializeAndCompressKey(desktopKey),
+            callback
+        );
     }
 
     @ReactMethod
@@ -196,7 +269,12 @@ public class EncryptionUtils extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void signMessage(final String rpcParams, final Callback callback) throws JSONException {
-        this.utils.executeRunnableStatusGoMethod(() -> Statusgo.signMessage(rpcParams), callback);
+        StatusBackendClient.executeStatusGoRequestWithCallback(
+            "SignMessage",
+            rpcParams,
+            () -> Statusgo.signMessage(rpcParams),
+            callback
+        );
     }
 
     @ReactMethod

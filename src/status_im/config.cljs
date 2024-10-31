@@ -134,3 +134,10 @@
 ;; Alert banners are disabled for debug builds because alert banners overlay
 ;; interfere with react-native debug tools, such as inspector and Perf monitor
 (def enable-alert-banner? (enabled? (get-config :ENABLE_ALERT_BANNER "0")))
+
+(goog-define STATUS_BACKEND_ENABLED "0")
+;; e.g. 127.0.0.1:58935
+(goog-define STATUS_BACKEND_SERVER_HOST "")
+;; /path/to/root/data/dir
+;; make sure it exists
+(goog-define STATUS_BACKEND_SERVER_ROOT_DATA_DIR "")

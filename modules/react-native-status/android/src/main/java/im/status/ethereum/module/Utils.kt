@@ -25,6 +25,11 @@ class Utils(private val reactContext: ReactApplicationContext) : ReactContextBas
     }
 
     fun getNoBackupDirectory(): String {
+        StatusBackendClient.getInstance()?.let { client ->
+            if (client.enabled && client.rootDataDir != null) {
+                return client.rootDataDir!!
+            }
+        }
         return reactContext.noBackupFilesDir.absolutePath
     }
 
@@ -34,6 +39,11 @@ class Utils(private val reactContext: ReactApplicationContext) : ReactContextBas
     }
 
     fun getPublicStorageDirectory(): File? {
+        StatusBackendClient.getInstance()?.let { client ->
+            if (client.enabled && client.rootDataDir != null) {
+                return File(client.rootDataDir!!)
+            }
+        }
         // Environment.getExternalStoragePublicDirectory doesn't work as expected on Android Q
         // https://developer.android.com/reference/android/os/Environment#getExternalStoragePublicDirectory(java.lang.String)
         return reactContext.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS)
@@ -74,8 +84,17 @@ class Utils(private val reactContext: ReactApplicationContext) : ReactContextBas
                 jsonParams.put("password", password)
                 jsonParams.put("oldDir", commonKeydir)
                 jsonParams.put("newDir", keydir)
-                Statusgo.migrateKeyStoreDirV2(jsonParams.toString())
-                Statusgo.initKeystore(keydir)
+
+                StatusBackendClient.executeStatusGoRequest(
+                    endpoint = "MigrateKeyStoreDirV2",
+                    requestBody = jsonParams.toString(),
+                    statusgoFunction = { Statusgo.migrateKeyStoreDirV2(jsonParams.toString()) }
+                )
+                StatusBackendClient.executeStatusGoRequest(
+                    endpoint = "InitKeystore",
+                    requestBody = keydir,
+                    statusgoFunction = { Statusgo.initKeystore(keydir) }
+                )
             }
         } catch (e: JSONException) {
             Log.e(TAG, "JSON conversion failed: ${e.message}")
@@ -104,15 +123,15 @@ class Utils(private val reactContext: ReactApplicationContext) : ReactContextBas
         return false
     }
 
-    fun executeRunnableStatusGoMethod(method: Supplier<String>, callback: Callback) {
+    fun executeRunnableStatusGoMethod(method: Supplier<String>, callback: Callback?) {
         if (!checkAvailability()) {
-            callback.invoke(false)
+            callback?.invoke(false)
             return
         }
 
         val runnableTask = Runnable {
             val res = method.get()
-            callback.invoke(res)
+            callback?.invoke(res)
         }
 
         StatusThreadPoolExecutor.getInstance().execute(runnableTask)
@@ -122,7 +141,13 @@ class Utils(private val reactContext: ReactApplicationContext) : ReactContextBas
     fun validateMnemonic(seed: String, callback: Callback) {
         val jsonParams = JSONObject()
         jsonParams.put("mnemonic", seed)
-        executeRunnableStatusGoMethod({ Statusgo.validateMnemonicV2(jsonParams.toString()) }, callback)
+        val jsonString = jsonParams.toString()
+        StatusBackendClient.executeStatusGoRequestWithCallback(
+            endpoint = "ValidateMnemonicV2",
+            requestBody = jsonString,
+            statusgoFunction = { Statusgo.validateMnemonicV2(jsonString) },
+            callback
+        )
     }
 
     fun is24Hour(): Boolean {
@@ -131,17 +156,29 @@ class Utils(private val reactContext: ReactApplicationContext) : ReactContextBas
 
     @ReactMethod(isBlockingSynchronousMethod = true)
     fun checkAddressChecksum(address: String): String {
-        return Statusgo.checkAddressChecksum(address)
+        return StatusBackendClient.executeStatusGoRequestWithResult(
+            endpoint = "CheckAddressChecksum",
+            requestBody = address,
+            statusgoFunction = { Statusgo.checkAddressChecksum(address) }
+        )
     }
 
     @ReactMethod(isBlockingSynchronousMethod = true)
     fun isAddress(address: String): String {
-        return Statusgo.isAddress(address)
+        return StatusBackendClient.executeStatusGoRequestWithResult(
+            endpoint = "IsAddress",
+            requestBody = address,
+            statusgoFunction = { Statusgo.isAddress(address) }
+        )
     }
 
     @ReactMethod(isBlockingSynchronousMethod = true)
     fun toChecksumAddress(address: String): String {
-        return Statusgo.toChecksumAddress(address)
+        return StatusBackendClient.executeStatusGoRequestWithResult(
+            endpoint = "ToChecksumAddress",
+            requestBody = address,
+            statusgoFunction = { Statusgo.toChecksumAddress(address) }
+        )
     }
 
     fun readableArrayToStringArray(r: ReadableArray): Array<String> {
@@ -157,6 +194,19 @@ class Utils(private val reactContext: ReactApplicationContext) : ReactContextBas
 
     @ReactMethod(isBlockingSynchronousMethod = true)
     fun validateConnectionString(connectionString: String): String {
-        return Statusgo.validateConnectionString(connectionString)
+        return StatusBackendClient.executeStatusGoRequestWithResult(
+            endpoint = "ValidateConnectionString",
+            requestBody = connectionString,
+            statusgoFunction = { Statusgo.validateConnectionString(connectionString) }
+        )
+    }
+
+    fun handleStatusGoResponse(response: String, source: String) {
+        //TODO(frank) we should remove sensitive data from the response
+        if (response.startsWith("{\"error\":\"\"")) {
+            Log.d(TAG, "$source success: $response")
+        } else {
+            Log.e(TAG, "$source failed: $response")
+        }
     }
 }

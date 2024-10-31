@@ -3,10 +3,27 @@
 #import "React/RCTEventDispatcher.h"
 #import "Statusgo.h"
 #import "Utils.h"
+#import "StatusBackendClient.h"
 
 @implementation Utils
 
 RCT_EXPORT_MODULE();
+
+#pragma mark - Private Methods
+
++ (NSURL *)getRootUrl {
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    NSURL *rootUrl;
+    
+    StatusBackendClient *client = [StatusBackendClient sharedInstance];
+    if (client.enabled && client.rootDataDir) {
+        rootUrl = [NSURL fileURLWithPath:client.rootDataDir];
+    } else {
+        rootUrl = [[fileManager URLsForDirectory:NSLibraryDirectory inDomains:NSUserDomainMask] lastObject];
+    }
+    
+    return rootUrl;
+}
 
 + (NSString *)jsonStringWithPrettyPrint:(BOOL)prettyPrint fromDictionary:(NSDictionary *)dictionary {
     NSError *error;
@@ -38,7 +55,7 @@ RCT_EXPORT_MODULE();
 
 + (NSURL *)getKeyStoreDirForKeyUID:(NSString *)keyUID {
     NSFileManager *fileManager = [NSFileManager defaultManager];
-    NSURL *rootUrl = [[fileManager URLsForDirectory:NSLibraryDirectory inDomains:NSUserDomainMask] lastObject];
+    NSURL *rootUrl = [self getRootUrl];
 
     NSURL *oldKeystoreDir = [rootUrl URLByAppendingPathComponent:@"keystore"];
     NSURL *multiaccountKeystoreDir = [oldKeystoreDir URLByAppendingPathComponent:keyUID];
@@ -57,6 +74,11 @@ RCT_EXPORT_MODULE();
 }
 
 + (NSString *) getExportDbFilePath {
+    StatusBackendClient *client = [StatusBackendClient sharedInstance];
+    if (client.enabled && client.rootDataDir) {
+        return [client.rootDataDir stringByAppendingPathComponent:@"export.db"];
+    }
+
     NSString *filePath = [NSTemporaryDirectory() stringByAppendingPathComponent:@"export.db"];
     NSFileManager *fileManager = [NSFileManager defaultManager];
 
@@ -70,9 +92,7 @@ RCT_EXPORT_MODULE();
 + (void) migrateKeystore:(NSString *)accountData
                 password:(NSString *)password {
     NSFileManager *fileManager = [NSFileManager defaultManager];
-    NSURL *rootUrl =[[fileManager
-            URLsForDirectory:NSLibraryDirectory inDomains:NSUserDomainMask]
-            lastObject];
+    NSURL *rootUrl =[self getRootUrl];
 
     NSData *jsonData = [accountData dataUsingEncoding:NSUTF8StringEncoding];
     NSError *error;
@@ -110,18 +130,19 @@ RCT_EXPORT_MODULE();
 }
 
 RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(backupDisabledDataDir) {
+    StatusBackendClient *client = [StatusBackendClient sharedInstance];
+    if (client.enabled && client.rootDataDir) {
+        return client.rootDataDir;
+    }
+    
     NSFileManager *fileManager = [NSFileManager defaultManager];
-    NSURL *rootUrl =[[fileManager
-            URLsForDirectory:NSLibraryDirectory inDomains:NSUserDomainMask]
-            lastObject];
+    NSURL *rootUrl = [Utils getRootUrl];
     return rootUrl.path;
 }
 
 RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(keystoreDir) {
     NSFileManager *fileManager = [NSFileManager defaultManager];
-    NSURL *rootUrl =[[fileManager
-            URLsForDirectory:NSLibraryDirectory inDomains:NSUserDomainMask]
-            lastObject];
+    NSURL *rootUrl =[Utils getRootUrl];
 
     NSURL *commonKeystoreDir = [rootUrl URLByAppendingPathComponent:@"keystore"];
 
@@ -159,6 +180,19 @@ RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(toChecksumAddress:(NSString *)address) {
 
 RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(validateConnectionString:(NSString *)cs) {
     return StatusgoValidateConnectionString(cs);
+}
+
++ (void)handleStatusGoResponse:(NSString *)response source:(NSString *)source error:(NSError *)error {
+    if (error) {
+        NSLog(@"%@ failed: %@", source, error);
+        return;
+    }
+    
+    if ([response hasPrefix:@"{\"error\":\"\""]) {
+        NSLog(@"%@ success: %@", source, response);
+    } else {
+        NSLog(@"%@ failed: %@", source, response);
+    }
 }
 
 @end
