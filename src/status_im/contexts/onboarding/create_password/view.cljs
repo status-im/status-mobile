@@ -40,7 +40,7 @@
       [quo/info-message
        {:status status
         :size   :default
-        :icon   (if (= status :success) :i/positive-state :i/info)
+        :icon   (if (= status :success) :i/check-circle :i/info)
         :color  (when (= status :default)
                   colors/white-70-blur)}
        text])]])

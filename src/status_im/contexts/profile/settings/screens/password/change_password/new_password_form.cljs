@@ -27,7 +27,7 @@
        (cond-> {:status status
                 :size   :default}
          (not= :success status) (assoc :icon :i/info)
-         (= :success status)    (assoc :icon :i/positive-state)
+         (= :success status)    (assoc :icon :i/check-circle)
          (= :default status)    (assoc :color colors/white-70-blur))
        text])]])
 
