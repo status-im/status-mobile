@@ -701,3 +701,25 @@
    (let [full-status (cske/transform-keys message transforms/->kebab-case-keyword)]
      {:db (assoc-in db [:wallet :blockchain] full-status)})))
 
+(rf/reg-event-fx
+ :wallet/sign-transactions-signal-received
+ (fn [{:keys [db]} [data]]
+   (let [type (if (or (= (get-in data [:sendDetails :fromToken])
+                         (get-in data [:sendDetails :toToken]))
+                      (string/blank? (get-in data [:sendDetails :toToken])))
+                :send
+                :swap)]
+     {:db (assoc-in db [:wallet :ui type :transaction-for-signing] data)})))
+
+(rf/reg-event-fx
+ :wallet/transactions-sent-signal-received
+ (fn [{:keys [db]}
+      [{sent-transactions :sentTransactions
+        send-details      :sendDetails}]]
+   (if (get-in db [:wallet :ui :swap])
+     {:fx [(if-let [error-response (:errorResponse send-details)]
+             [:dispatch [:wallet.swap/transaction-failure error-response]]
+             [:dispatch [:wallet.swap/transaction-success sent-transactions]])]}
+     {:fx [(if-let [error-response (:errorResponse send-details)]
+             [:dispatch [:wallet/transaction-failure error-response]]
+             [:dispatch [:wallet/transaction-success sent-transactions]])]})))

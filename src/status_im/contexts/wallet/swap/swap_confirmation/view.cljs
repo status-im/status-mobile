@@ -12,8 +12,7 @@
     [status-im.contexts.wallet.swap.swap-confirmation.style :as style]
     [utils.address :as address-utils]
     [utils.i18n :as i18n]
-    [utils.re-frame :as rf]
-    [utils.security.core :as security]))
+    [utils.re-frame :as rf]))
 
 (defn- on-close-action
   []
@@ -165,22 +164,23 @@
 
 (defn- slide-button
   []
-  (let [loading-swap-proposal? (rf/sub [:wallet/swap-loading-swap-proposal?])
-        swap-proposal          (rf/sub [:wallet/swap-proposal-without-fees])
-        account                (rf/sub [:wallet/current-viewing-account])
-        account-color          (:color account)
-        on-auth-success        (rn/use-callback (fn [data]
-                                                  (rf/dispatch [:wallet/stop-get-swap-proposal])
-                                                  (rf/dispatch [:wallet/swap-transaction
-                                                                (security/safe-unmask-data data)])))]
+  (let [loading-swap-proposal?  (rf/sub [:wallet/swap-loading-swap-proposal?])
+        transaction-for-signing (rf/sub [:wallet/swap-transaction-for-signing])
+        swap-proposal           (rf/sub [:wallet/swap-proposal-without-fees])
+        account                 (rf/sub [:wallet/current-viewing-account])
+        account-color           (:color account)]
     [standard-auth/slide-button
      {:size                :size-48
       :track-text          (i18n/label :t/slide-to-swap)
       :container-style     {:z-index 2}
       :customization-color account-color
-      :disabled?           (or loading-swap-proposal? (not swap-proposal))
+      :disabled?           (or loading-swap-proposal?
+                               (not swap-proposal)
+                               (not transaction-for-signing))
       :auth-button-label   (i18n/label :t/confirm)
-      :on-auth-success     on-auth-success}]))
+      :on-auth-success     (fn [data]
+                             (rf/dispatch [:wallet/stop-get-swap-proposal])
+                             (rf/dispatch [:wallet/prepare-signatures-for-transactions :swap data]))}]))
 
 (defn footer
   []

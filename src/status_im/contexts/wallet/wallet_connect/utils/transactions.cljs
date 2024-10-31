@@ -4,9 +4,10 @@
             [native-module.core :as native-module]
             [promesa.core :as promesa]
             [status-im.constants :as constants]
+            [status-im.contexts.wallet.rpc :as wallet-rpc]
             [status-im.contexts.wallet.wallet-connect.utils.data-store :as
              data-store]
-            [status-im.contexts.wallet.wallet-connect.utils.rpc :as rpc]
+            [status-im.contexts.wallet.wallet-connect.utils.rpc :as wallet-connect-rpc]
             [utils.money :as money]
             [utils.transforms :as transforms]))
 
@@ -119,16 +120,17 @@
   "Formats and builds the incoming transaction, adding the missing properties and returning the final
   transaction, along with the transaction hash and the suggested fees"
   [tx chain-id tx-priority]
-  (promesa/let [suggested-fees                    (rpc/wallet-get-suggested-fees chain-id)
+  (promesa/let [suggested-fees (wallet-rpc/get-suggested-fees chain-id)
                 {:keys [tx-args message-to-sign]} (->>
                                                     (prepare-transaction-fees tx
                                                                               tx-priority
                                                                               suggested-fees)
                                                     prepare-transaction-for-rpc
-                                                    (rpc/wallet-build-transaction chain-id))
-                estimated-time                    (rpc/wallet-get-transaction-estimated-time
-                                                   chain-id
-                                                   (:maxPriorityFeePerGas suggested-fees))]
+                                                    (wallet-rpc/build-transaction
+                                                     chain-id))
+                estimated-time (wallet-connect-rpc/wallet-get-transaction-estimated-time
+                                chain-id
+                                (:maxPriorityFeePerGas suggested-fees))]
     {:tx-args        tx-args
      :tx-hash        message-to-sign
      :suggested-fees suggested-fees
@@ -137,15 +139,15 @@
 (defn sign-transaction
   [password address tx-hash tx-args chain-id]
   (promesa/let
-    [signature (rpc/wallet-sign-message tx-hash address password)
-     raw-tx    (rpc/wallet-build-raw-transaction chain-id tx-args signature)]
+    [signature (wallet-rpc/sign-message tx-hash address password)
+     raw-tx    (wallet-rpc/build-raw-transaction chain-id tx-args signature)]
     raw-tx))
 
 (defn send-transaction
   [password address tx-hash tx-args chain-id]
   (promesa/let
-    [signature (rpc/wallet-sign-message tx-hash address password)
-     tx        (rpc/wallet-send-transaction-with-signature chain-id
+    [signature (wallet-rpc/sign-message tx-hash address password)
+     tx        (wallet-rpc/send-transaction-with-signature chain-id
                                                            tx-args
                                                            signature)]
     tx))

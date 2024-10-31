@@ -361,9 +361,7 @@
                                                      (not pay-input-error?))
         on-review-swap-press                        (rn/use-callback
                                                      (fn []
-                                                       (rf/dispatch [:navigate-to-within-stack
-                                                                     [:screen/wallet.swap-confirmation
-                                                                      :screen/wallet.setup-swap]])))
+                                                       (rf/dispatch [:wallet.swap/review-swap])))
         on-press                                    (rn/use-callback
                                                      (fn [c]
                                                        (let

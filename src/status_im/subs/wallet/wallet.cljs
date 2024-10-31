@@ -221,6 +221,11 @@
  :-> :loading-suggested-routes?)
 
 (rf/reg-sub
+ :wallet/wallet-send-transaction-for-signing
+ :<- [:wallet/wallet-send]
+ :-> :transaction-for-signing)
+
+(rf/reg-sub
  :wallet/wallet-send-suggested-routes
  :<- [:wallet/wallet-send]
  :-> :suggested-routes)

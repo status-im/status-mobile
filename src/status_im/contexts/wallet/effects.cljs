@@ -5,6 +5,7 @@
     [promesa.core :as promesa]
     [status-im.common.json-rpc.events :as json-rpc]
     [status-im.contexts.profile.recover.effects :as profile.recover.effects]
+    [status-im.contexts.wallet.rpc :as wallet-rpc]
     [taoensso.timbre :as log]
     [utils.re-frame :as rf]
     [utils.security.core :as security]
@@ -103,3 +104,20 @@
    (-> (verify-private-key-for-keypair keypair-key-uid private-key)
        (promesa/then (partial rf/call-continuation on-success))
        (promesa/catch (partial rf/call-continuation on-error)))))
+
+(defn sign-transaction-hashes
+  [hashes address password]
+  (-> (promesa/all
+       (for [h hashes]
+         (wallet-rpc/sign-message h address password)))
+      (promesa/catch (fn [err]
+                       (throw (ex-info "Failed to sign transaction hashes"
+                                       {:error err
+                                        :code  :error/sign-transaction-hashes}))))))
+
+(rf/reg-fx
+ :effects.wallet/sign-transaction-hashes
+ (fn [{:keys [hashes address password on-success on-error]}]
+   (-> (sign-transaction-hashes hashes address password)
+       (promesa/then on-success)
+       (promesa/catch on-error))))

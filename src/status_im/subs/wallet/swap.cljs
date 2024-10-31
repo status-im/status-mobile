@@ -144,6 +144,11 @@
  :-> :loading-swap-proposal?)
 
 (rf/reg-sub
+ :wallet/swap-transaction-for-signing
+ :<- [:wallet/swap]
+ :-> :transaction-for-signing)
+
+(rf/reg-sub
  :wallet/swap-proposal-amount-out
  :<- [:wallet/swap-proposal]
  :-> :amount-out)

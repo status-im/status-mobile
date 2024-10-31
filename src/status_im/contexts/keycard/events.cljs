@@ -7,7 +7,6 @@
             status-im.contexts.keycard.nfc.events
             status-im.contexts.keycard.nfc.sheets.events
             status-im.contexts.keycard.pin.events
-            status-im.contexts.keycard.sign.events
             [status-im.contexts.keycard.utils :as keycard.utils]
             utils.datetime))
 

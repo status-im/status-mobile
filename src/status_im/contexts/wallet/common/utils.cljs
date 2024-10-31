@@ -565,6 +565,18 @@
     (:less-than-five-minutes constants/wallet-transaction-estimation)  "3-5"
     ">5"))
 
+(defn transactions->hash-to-transaction-map
+  [transactions]
+  (reduce
+   (fn [acc {to-chain :toChain tx-hash :hash}]
+     (assoc acc
+            tx-hash
+            {:status   :pending
+             :id       tx-hash
+             :chain-id to-chain}))
+   {}
+   transactions))
+
 (defn get-accounts-with-token-balance
   [accounts token]
   (let [operable-account                       (filter :operable? (vals accounts))

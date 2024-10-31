@@ -13,8 +13,7 @@
     [status-im.contexts.wallet.send.utils :as send-utils]
     [status-im.feature-flags :as ff]
     [utils.i18n :as i18n]
-    [utils.re-frame :as rf]
-    [utils.security.core :as security]))
+    [utils.re-frame :as rf]))
 
 (defn- transaction-title
   [{:keys [token-display-name amount account route to-network image-url transaction-type
@@ -238,6 +237,7 @@
                                                  bridge-to-chain-id]))
             loading-suggested-routes? (rf/sub
                                        [:wallet/wallet-send-loading-suggested-routes?])
+            transaction-for-signing   (rf/sub [:wallet/wallet-send-transaction-for-signing])
             from-account-props        {:customization-color account-color
                                        :size                32
                                        :emoji               (:emoji account)
@@ -268,17 +268,21 @@
                                         :transaction-type   transaction-type}]
                                       (when (and (not loading-suggested-routes?) route (seq route))
                                         [standard-auth/slide-button
-                                         {:keycard-supported?  true
-                                          :size                :size-48
-                                          :track-text          (if (= transaction-type :tx/bridge)
-                                                                 (i18n/label :t/slide-to-bridge)
-                                                                 (i18n/label :t/slide-to-send))
-                                          :container-style     {:z-index 2}
+                                         {:keycard-supported? (get-in transaction-for-signing
+                                                                      [:signingDetails :signOnKeycard])
+                                          :size :size-48
+                                          :track-text (if (= transaction-type :tx/bridge)
+                                                        (i18n/label :t/slide-to-bridge)
+                                                        (i18n/label :t/slide-to-send))
+                                          :container-style {:z-index 2}
+                                          :disabled? (not transaction-for-signing)
                                           :customization-color account-color
-                                          :on-auth-success     #(rf/dispatch
-                                                                 [:wallet/send-transaction
-                                                                  (security/safe-unmask-data %)])
-                                          :auth-button-label   (i18n/label :t/confirm)}])]
+                                          :on-auth-success
+                                          (fn [data]
+                                            (rf/dispatch
+                                             [:wallet/prepare-signatures-for-transactions
+                                              :send data]))
+                                          :auth-button-label (i18n/label :t/confirm)}])]
            :gradient-cover?          true
            :customization-color      (:color account)}
           [rn/view

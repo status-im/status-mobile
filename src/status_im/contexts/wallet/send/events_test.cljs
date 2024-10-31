@@ -575,28 +575,43 @@
                             :from-locked-amounts             {}}}}})
     (is (match? expected-db (:db (dispatch [event-id suggested-routes timestamp]))))))
 
-(h/deftest-event :wallet/add-authorized-transaction
+(h/deftest-event :wallet/transactions-sent-signal-received
   [event-id dispatch]
-  (let [hashes          {:chain-1 ["tx-1" "tx-2" "tx-3"]
-                         :chain-2 ["tx-4" "tx-5"]
-                         :chain-3 ["tx-6" "tx-7" "tx-8" "tx-9"]}
-        transaction-id  "txid-1"
-        expected-result {:db {:wallet {:ui           {:send {:transaction-ids ["tx-1" "tx-2" "tx-3"
-                                                                               "tx-4" "tx-5" "tx-6"
-                                                                               "tx-7" "tx-8" "tx-9"]}}
-                                       :transactions (send-utils/map-multitransaction-by-ids
-                                                      transaction-id
-                                                      hashes)}}
-                         :fx [[:dispatch
-                               [:wallet/stop-and-clean-suggested-routes]]
-                              [:dispatch [:wallet/end-transaction-flow]]
-                              [:dispatch-later
-                               [{:ms       2000
-                                 :dispatch [:wallet/clean-just-completed-transaction]}]]]}]
+  (let [sent-transactions [{:amount      "0x0"
+                            :fromAddress "0x1"
+                            :fromChain   1
+                            :fromToken   "SNT"
+                            :hash        "0x112233"
+                            :toAddress   "0x2"
+                            :toChain     1
+                            :toToken     "SNT"}
+                           {:amount      "0x0"
+                            :fromAddress "0x1"
+                            :fromChain   1
+                            :fromToken   "SNT"
+                            :hash        "0x445566"
+                            :toAddress   "0x2"
+                            :toChain     2
+                            :toToken     "SNT"}]
+        expected-result   {:db {:wallet {:ui           {:send                        {:transaction-ids
+                                                                                      ["0x112233"
+                                                                                       "0x445566"]}
+                                                        :just-completed-transaction? true}
+                                         :transactions [{:status   :pending
+                                                         :id       "0x112233"
+                                                         :chain-id 1}
+                                                        {:status   :pending
+                                                         :id       "0x445566"
+                                                         :chain-id 2}]}}
+                           :fx [[:dispatch [:wallet/end-transaction-flow]]
+                                [:dispatch-later
+                                 [{:ms       2000
+                                   :dispatch [:wallet/stop-and-clean-suggested-routes]}]]
+                                [:dispatch-later
+                                 [{:ms       2000
+                                   :dispatch [:wallet/clean-just-completed-transaction]}]]]}]
     (is (match? expected-result
-                (dispatch [event-id
-                           {:id     transaction-id
-                            :hashes hashes}])))))
+                (dispatch [event-id {:sentTransactions sent-transactions}])))))
 
 (h/deftest-event :wallet/select-from-account
   [event-id dispatch]

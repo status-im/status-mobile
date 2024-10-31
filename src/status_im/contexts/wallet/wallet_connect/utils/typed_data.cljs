@@ -1,8 +1,8 @@
 (ns status-im.contexts.wallet.wallet-connect.utils.typed-data
   (:require [clojure.string :as string]
             [status-im.constants :as constants]
+            [status-im.contexts.wallet.rpc :as wallet-rpc]
             [status-im.contexts.wallet.wallet-connect.utils.networks :as networks]
-            [status-im.contexts.wallet.wallet-connect.utils.rpc :as rpc]
             [utils.number :as number]))
 
 (declare flatten-data)
@@ -88,7 +88,7 @@
   [password address data chain-id-eip155 version]
   (let [legacy?  (= version :v1)
         chain-id (networks/eip155->chain-id chain-id-eip155)]
-    (rpc/wallet-safe-sign-typed-data data
+    (wallet-rpc/safe-sign-typed-data data
                                      address
                                      password
                                      chain-id

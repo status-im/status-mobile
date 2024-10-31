@@ -12,8 +12,7 @@
     [status-im.contexts.wallet.swap.set-spending-cap.style :as style]
     [utils.address :as address-utils]
     [utils.i18n :as i18n]
-    [utils.re-frame :as rf]
-    [utils.security.core :as security]))
+    [utils.re-frame :as rf]))
 
 (defn- swap-title
   []
@@ -221,9 +220,8 @@
   (let [loading-swap-proposal? (rf/sub [:wallet/swap-loading-swap-proposal?])
         swap-proposal          (rf/sub [:wallet/swap-proposal-without-fees])
         account                (rf/sub [:wallet/current-viewing-account])
-        on-auth-success        (rn/use-callback #(rf/dispatch
-                                                  [:wallet/swap-transaction
-                                                   (security/safe-unmask-data %)]))]
+        on-auth-success        (rn/use-callback
+                                #(rf/dispatch [:wallet/prepare-signatures-for-transactions :swap %]))]
     [standard-auth/slide-button
      {:size                :size-48
       :track-text          (i18n/label :t/slide-to-sign)

@@ -1,7 +1,6 @@
 (ns status-im.contexts.wallet.send.events
   (:require
     [clojure.string :as string]
-    [native-module.core :as native-module]
     [status-im.constants :as constants]
     [status-im.contexts.wallet.collectible.utils :as collectible.utils]
     [status-im.contexts.wallet.common.utils :as utils]
@@ -9,11 +8,10 @@
     [status-im.contexts.wallet.data-store :as data-store]
     [status-im.contexts.wallet.send.utils :as send-utils]
     [taoensso.timbre :as log]
-    [utils.address :as address]
-    [utils.hex :as utils.hex]
     [utils.money :as utils.money]
     [utils.number]
-    [utils.re-frame :as rf]))
+    [utils.re-frame :as rf]
+    [utils.security.core :as security]))
 
 (rf/reg-event-fx :wallet/clean-send-data
  (fn [{:keys [db]}]
@@ -327,22 +325,30 @@
 (rf/reg-event-fx
  :wallet/set-token-amount-to-send
  (fn [{:keys [db]} [{:keys [amount stack-id start-flow?]}]]
-   {:db (assoc-in db [:wallet :ui :send :amount] amount)
-    :fx [[:dispatch
-          [:wallet/wizard-navigate-forward
-           {:current-screen stack-id
-            :start-flow?    start-flow?
-            :flow-id        :wallet-send-flow}]]]}))
+   (let [last-request-uuid (get-in db [:wallet :ui :send :last-request-uuid])]
+     {:db (-> db
+              (assoc-in [:wallet :ui :send :amount] amount)
+              (update-in [:wallet :ui :send] dissoc :transaction-for-signing))
+      :fx [[:dispatch [:wallet/build-transactions-from-route {:request-uuid last-request-uuid}]]
+           [:dispatch
+            [:wallet/wizard-navigate-forward
+             {:current-screen stack-id
+              :start-flow?    start-flow?
+              :flow-id        :wallet-send-flow}]]]})))
 
 (rf/reg-event-fx
  :wallet/set-token-amount-to-bridge
  (fn [{:keys [db]} [{:keys [amount stack-id start-flow?]}]]
-   {:db (assoc-in db [:wallet :ui :send :amount] amount)
-    :fx [[:dispatch
-          [:wallet/wizard-navigate-forward
-           {:current-screen stack-id
-            :start-flow?    start-flow?
-            :flow-id        :wallet-bridge-flow}]]]}))
+   (let [last-request-uuid (get-in db [:wallet :ui :send :last-request-uuid])]
+     {:db (-> db
+              (assoc-in [:wallet :ui :send :amount] amount)
+              (update-in [:wallet :ui :send] dissoc :transaction-for-signing))
+      :fx [[:dispatch [:wallet/build-transactions-from-route {:request-uuid last-request-uuid}]]
+           [:dispatch
+            [:wallet/wizard-navigate-forward
+             {:current-screen stack-id
+              :start-flow?    start-flow?
+              :flow-id        :wallet-bridge-flow}]]]})))
 
 (rf/reg-event-fx
  :wallet/clean-bridge-to-selection
@@ -458,7 +464,8 @@
                                      :token-networks-ids token-networks-ids
                                      :tx-type tx-type
                                      :receiver? true}))
-         params [{:uuid                 (str (random-uuid))
+         request-uuid (str (random-uuid))
+         params [{:uuid                 request-uuid
                   :sendType             send-type
                   :addrFrom             from-address
                   :addrTo               to-address
@@ -477,7 +484,8 @@
        {:db            (update-in db
                                   [:wallet :ui :send]
                                   #(-> %
-                                       (assoc :amount                    amount
+                                       (assoc :last-request-uuid         request-uuid
+                                              :amount                    amount
                                               :loading-suggested-routes? true
                                               :sender-network-values     sender-network-values
                                               :receiver-network-values   receiver-network-values)
@@ -565,26 +573,38 @@
                   :else                [:wallet/suggested-routes-success (fix-routes data)
                                         enough-assets?])]]})))))
 
-(rf/reg-event-fx :wallet/add-authorized-transaction
- (fn [{:keys [db]} [transaction]]
-   (let [transaction-batch-id (:id transaction)
-         transaction-hashes   (:hashes transaction)
-         transaction-ids      (flatten (vals transaction-hashes))
-         transaction-details  (send-utils/map-multitransaction-by-ids transaction-batch-id
-                                                                      transaction-hashes)]
+(rf/reg-event-fx
+ :wallet/transaction-success
+ (fn [{:keys [db]} [sent-transactions]]
+   (let [wallet-transactions (get-in db [:wallet :transactions] {})
+         transactions        (utils/transactions->hash-to-transaction-map sent-transactions)
+         transaction-ids     (->> transactions
+                                  vals
+                                  (map :hash))]
      {:db (-> db
               (assoc-in [:wallet :ui :send :just-completed-transaction?] true)
-              (assoc-in [:wallet :transactions] transaction-details)
-              (assoc-in [:wallet :ui :send :transaction-ids] transaction-ids))
-      :fx [;; Remove wallet/stop-and-clean-suggested-routes event when we move to new transaction
-           ;; submission process as the routes as stopped by status-go
-           [:dispatch
-            [:wallet/stop-and-clean-suggested-routes]]
-           [:dispatch
-            [:wallet/end-transaction-flow]]
+              (assoc-in [:wallet :ui :send :transaction-ids] transaction-ids)
+              (assoc-in [:wallet :transactions] (merge wallet-transactions transactions)))
+      :fx [[:dispatch [:wallet/end-transaction-flow]]
+           [:dispatch-later
+            [{:ms       2000
+              :dispatch [:wallet/stop-and-clean-suggested-routes]}]]
            [:dispatch-later
             [{:ms       2000
               :dispatch [:wallet/clean-just-completed-transaction]}]]]})))
+
+(rf/reg-event-fx
+ :wallet/transaction-failure
+ (fn [_ [{:keys [details]}]]
+   {:fx [[:dispatch [:wallet/end-transaction-flow]]
+         [:dispatch-later
+          [{:ms       2000
+            :dispatch [:wallet/stop-and-clean-suggested-routes]}]]
+         [:dispatch
+          [:toasts/upsert
+           {:id   :send-transaction-failure
+            :type :negative
+            :text (or details "An error occured")}]]]}))
 
 (rf/reg-event-fx :wallet/clean-just-completed-transaction
  (fn [{:keys [db]}]
@@ -609,99 +629,64 @@
             [{:ms       20
               :dispatch [:wallet/clean-up-transaction-flow]}]]]})))
 
-(rf/reg-event-fx :wallet/send-transaction
- (fn [{:keys [db]} [sha3-pwd]]
-   (let [routes (get-in db [:wallet :ui :send :route])
-         first-route (first routes)
-         from-address (get-in db [:wallet :current-viewing-account-address])
-         transaction-type (get-in db [:wallet :ui :send :tx-type])
-         multi-transaction-type (if (= :tx/bridge transaction-type)
-                                  constants/multi-transaction-type-bridge
-                                  constants/multi-transaction-type-send)
-         token (get-in db [:wallet :ui :send :token])
-         collectible (get-in db [:wallet :ui :send :collectible])
-         first-route-from-chain-id (get-in first-route [:from :chain-id])
-         token-id (if token
-                    (:symbol token)
-                    (get-in collectible [:id :token-id]))
-         erc20-transfer? (and token (not= token-id "ETH"))
-         eth-transfer? (and token (not erc20-transfer?))
-         token-address (cond collectible
-                             (get-in collectible
-                                     [:id :contract-id :address])
-                             erc20-transfer?
-                             (get-in token [:balances-per-chain first-route-from-chain-id :address]))
-         to-address (get-in db [:wallet :ui :send :to-address])
-         transaction-paths (into []
-                                 (mapcat
-                                  (fn [route]
-                                    (let [approval-required? (:approval-required route)
-                                          data               (when erc20-transfer?
-                                                               (native-module/encode-transfer
-                                                                (address/normalized-hex to-address)
-                                                                (:amount-in route)))
-                                          base-path          (utils/transaction-path
-                                                              {:to-address    to-address
-                                                               :from-address  from-address
-                                                               :route         route
-                                                               :token-address token-address
-                                                               :token-id-from (if collectible
-                                                                                (utils.hex/number-to-hex
-                                                                                 token-id)
-                                                                                token-id)
-                                                               :data          data
-                                                               :eth-transfer? eth-transfer?})]
-                                      (if approval-required?
-                                        [(utils/approval-path {:route         route
-                                                               :token-address token-address
-                                                               :from-address  from-address
-                                                               :to-address    to-address})
-                                         base-path]
-                                        [base-path]))))
-                                 routes)
-         request-params
-         [(utils/multi-transaction-command
-           {:from-address           from-address
-            :to-address             to-address
-            :from-asset             token-id
-            :to-asset               token-id
-            :amount-out             (if eth-transfer? (:amount-out first-route) "0x0")
-            :multi-transaction-type multi-transaction-type})
-          transaction-paths
-          sha3-pwd]]
-     (log/info "multi transaction called")
-     {:json-rpc/call [{:method     "wallet_createMultiTransaction"
-                       :params     request-params
-                       :on-success (fn [result]
-                                     (when result
-                                       (rf/dispatch [:wallet/add-authorized-transaction result])
-                                       (rf/dispatch [:hide-bottom-sheet])))
+(rf/reg-event-fx
+ :wallet/build-transactions-from-route
+ (fn [_ [{:keys [request-uuid slippage] :or {slippage constants/default-slippage}}]]
+   {:json-rpc/call [{:method   "wallet_buildTransactionsFromRoute"
+                     :params   [{:uuid               request-uuid
+                                 :slippagePercentage slippage}]
+                     :on-error (fn [error]
+                                 (log/error "failed to build transactions from route"
+                                            {:event :wallet/build-transactions-from-route
+                                             :error error})
+                                 (rf/dispatch [:toasts/upsert
+                                               {:id   :build-transactions-from-route-error
+                                                :type :negative
+                                                :text (:message error)}]))}]}))
+
+(rf/reg-event-fx
+ :wallet/prepare-signatures-for-transactions
+ (fn [{:keys [db]} [type sha3-pwd]]
+   (let [transaction-for-signing (get-in db [:wallet :ui type :transaction-for-signing])]
+     {:fx [[:effects.wallet/sign-transaction-hashes
+            {:hashes     (get-in transaction-for-signing [:signingDetails :hashes])
+             :address    (get-in transaction-for-signing [:signingDetails :address])
+             :password   (security/safe-unmask-data sha3-pwd)
+             :on-success (fn [signatures]
+                           (rf/dispatch [:wallet/send-router-transactions-with-signatures type
+                                         signatures]))
+             :on-error   (fn [error]
+                           (log/error "failed to prepare signatures for transactions"
+                                      {:event :wallet/prepare-signatures-for-transactions
+                                       :error error})
+                           (rf/dispatch [:toasts/upsert
+                                         {:id   :prepare-signatures-for-transactions-error
+                                          :type :negative
+                                          :text (:message error)}]))}]]})))
+
+(rf/reg-event-fx
+ :wallet/send-router-transactions-with-signatures
+ (fn [{:keys [db]} [type signatures]]
+   (let [transaction-for-signing (get-in db [:wallet :ui type :transaction-for-signing])
+         signatures-map          (reduce (fn [acc {:keys [message signature]}]
+                                           (assoc acc
+                                                  message
+                                                  (send-utils/signature-rsv signature)))
+                                         {}
+                                         signatures)]
+     {:json-rpc/call [{:method     "wallet_sendRouterTransactionsWithSignatures"
+                       :params     [{:uuid       (get-in transaction-for-signing [:sendDetails :uuid])
+                                     :signatures signatures-map}]
+                       :on-success (fn []
+                                     (rf/dispatch [:hide-bottom-sheet]))
                        :on-error   (fn [error]
-                                     (log/error "failed to send transaction"
-                                                {:event  :wallet/send-transaction
-                                                 :error  error
-                                                 :params request-params})
+                                     (log/error "failed to send router transactions with signatures"
+                                                {:event :wallet/send-router-transactions-with-signatures
+                                                 :error error})
                                      (rf/dispatch [:toasts/upsert
-                                                   {:id   :send-transaction-error
+                                                   {:id   :send-router-transactions-with-signatures-error
                                                     :type :negative
                                                     :text (:message error)}]))}]})))
-
-(rf/reg-event-fx :wallet/proceed-with-transactions-signatures
- (fn [_ [signatures]]
-   {:json-rpc/call [{:method     "wallet_proceedWithTransactionsSignatures"
-                     :params     [signatures]
-                     :on-success (fn [result]
-                                   (when result
-                                     (rf/dispatch [:wallet/add-authorized-transaction result])
-                                     (rf/dispatch [:hide-bottom-sheet])))
-                     :on-error   (fn [error]
-                                   (log/error "failed to proceed-with-transactions-signatures"
-                                              {:event :wallet/proceed-with-transactions-signatures
-                                               :error error})
-                                   (rf/dispatch [:toasts/upsert
-                                                 {:id   :send-transaction-error
-                                                  :type :negative
-                                                  :text (:message error)}]))}]}))
 
 (rf/reg-event-fx
  :wallet/select-from-account
