@@ -46,7 +46,8 @@
        {:db (-> db
                 (assoc-in [:keycard :application-info :pin-retry-counter] pin-retries-count)
                 (assoc-in [:keycard :pin :status] :error))
-        :fx [(when (zero? pin-retries-count)
+        :fx [[:dispatch [:keycard/disconnect]]
+             (when (zero? pin-retries-count)
                [:dispatch
                 [:keycard/on-application-info-error
                  :keycard/error.keycard-locked]])]}))))
@@ -57,9 +58,7 @@
 
 (rf/reg-event-fx :keycard/cancel-connection
  (fn [{:keys [db]}]
-   {:db (-> db
-            (assoc-in [:keycard :on-card-connected-event-vector] nil)
-            (assoc-in [:keycard :on-nfc-cancelled-event-vector] nil))}))
+   {:db (update db :keycard dissoc :on-card-connected-event-vector :on-nfc-cancelled-event-vector)}))
 
 (rf/reg-event-fx :keycard/disconnect
  (fn [_ _]
@@ -78,9 +77,11 @@
 
 (rf/reg-event-fx :keycard/update-application-info
  (fn [{:keys [db]} [app-info]]
-   {:db (-> db
-            (assoc-in [:keycard :application-info] app-info)
-            (assoc-in [:keycard :application-info-error] nil))}))
+   {:db (update db
+                :keycard
+                #(-> %
+                     (assoc :application-info app-info)
+                     (dissoc :application-info-error)))}))
 
 (rf/reg-event-fx :keycard/get-application-info
  (fn [_ [{:keys [key-uid on-success on-error]}]]

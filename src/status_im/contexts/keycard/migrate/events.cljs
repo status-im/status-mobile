@@ -40,25 +40,31 @@
  (fn [{:keys [db]}]
    (let [key-uid                                (get-in db [:profile/profile :key-uid])
          {:keys [initialized? has-master-key?]} (get-in db [:keycard :application-info])
-         {:keys [masked-phrase pin]}            (get-in db [:keycard :migration])]
+         {:keys [masked-phrase pin]}            (get-in db [:keycard :migration])
+         on-failure                             (fn []
+                                                  (rf/dispatch [:keycard/disconnect])
+                                                  (rf/dispatch [:navigate-to
+                                                                :screen/keycard.migrate.fail]))]
      (cond
 
        (not initialized?)
        {:fx [[:keycard/init-card
               {:pin        pin
-               :on-success #(get-application-info-and-continue key-uid)}]]}
+               :on-success #(get-application-info-and-continue key-uid)
+               :on-failure on-failure}]]}
 
        (not has-master-key?)
        {:fx [[:effects.keycard/generate-and-load-key
               {:mnemonic   (security/safe-unmask-data masked-phrase)
                :pin        pin
-               :on-success #(get-application-info-and-continue key-uid)}]]}
+               :on-success #(get-application-info-and-continue key-uid)
+               :on-failure on-failure}]]}
 
        :else
        {:fx [[:effects.keycard/get-keys
               {:pin        pin
                :on-success #(rf/dispatch [:keycard/migration.convert-to-keycard-profile %])
-               :on-failure #()}]]}))))
+               :on-failure on-failure}]]}))))
 
 (rf/reg-event-fx :keycard/migration.start
  (fn [{:keys [db]}]
@@ -123,5 +129,4 @@
 (rf/reg-event-fx :keycard/migration.pin-created
  (fn [{:keys [db]} [pin]]
    {:db (assoc-in db [:keycard :migration :pin] pin)
-    :fx [[:dispatch [:navigate-back]]
-         [:dispatch [:open-modal :screen/keycard.migrate]]]}))
+    :fx [[:dispatch [:open-modal :screen/keycard.migrate]]]}))

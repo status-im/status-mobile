@@ -315,7 +315,8 @@
     :component settings/view}
 
    {:name      :screen/settings.keycard
-    :metrics   {:track? :true}
+    :metrics   {:track?   :true
+                :alias-id :settings.keycard}
     :options   {:insets {:top? true :bottom? true}}
     :component settings.keycard/view}
 
@@ -882,30 +883,44 @@
 
 (def keycard-screens
   [{:name      :screen/keycard.check
+    :metrics   {:track?   :true
+                :alias-id :keycard.check}
     :options   {:insets {:top? true :bottom? true}}
     :component keycard.check/view}
 
    {:name      :screen/keycard.empty
+    :metrics   {:track?   :true
+                :alias-id :keycard.empty}
     :options   {:insets {:top? true :bottom? true}}
     :component keycard.empty/view}
 
    {:name      :screen/keycard.error
+    :metrics   {:track?   :true
+                :alias-id :keycard.error}
     :options   {:insets {:top? true :bottom? true}}
     :component keycard.error/view}
 
    {:name      :screen/keycard.not-keycard
+    :metrics   {:track?   :true
+                :alias-id :keycard.not-keycard}
     :options   {:insets {:top? true :bottom? true}}
     :component keycard.not-keycard/view}
 
    {:name      :screen/keycard.authorise
+    :metrics   {:track?   :true
+                :alias-id :keycard.authorise}
     :options   {:insets {:top? true :bottom? true}}
     :component keycard.authorise/view}
 
    {:name      :screen/keycard.migrate
+    :metrics   {:track?   :true
+                :alias-id :keycard.migrate}
     :options   {:insets {:top? true :bottom? true}}
     :component keycard.migrate/view}
 
    {:name      :screen/keycard.re-encrypting
+    :metrics   {:track?   :true
+                :alias-id :keycard.re-encrypting}
     :options   {:insets             {:top? true :bottom? true}
                 :popGesture         false
                 :hardwareBackButton {:dismissModalOnPress false
@@ -913,6 +928,8 @@
     :component keycard.re-encrypting/view}
 
    {:name      :screen/keycard.migrate.success
+    :metrics   {:track?   :true
+                :alias-id :keycard.migrate.success}
     :options   {:insets             {:top? true :bottom? true}
                 :popGesture         false
                 :hardwareBackButton {:dismissModalOnPress false
@@ -920,6 +937,8 @@
     :component keycard.migrate.success/view}
 
    {:name      :screen/keycard.migrate.fail
+    :metrics   {:track?   :true
+                :alias-id :keycard.migrate.fail}
     :options   {:insets             {:top? true :bottom? true}
                 :popGesture         false
                 :hardwareBackButton {:dismissModalOnPress false
@@ -927,6 +946,8 @@
     :component keycard.migrate.fail/view}
 
    {:name      :screen/keycard.pin.create
+    :metrics   {:track?   :true
+                :alias-id :keycard.pin.create}
     :options   {:insets {:top? true :bottom? true}}
     :component pin.create/view}])
 

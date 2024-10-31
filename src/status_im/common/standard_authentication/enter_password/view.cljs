@@ -1,13 +1,13 @@
 (ns status-im.common.standard-authentication.enter-password.view
   (:require
+    [clojure.string :as string]
     [quo.core :as quo]
     [react-native.core :as rn]
+    [status-im.common.standard-authentication.core :as standard-authentication]
     [status-im.common.standard-authentication.enter-password.style :as style]
     [status-im.contexts.profile.utils :as profile.utils]
     [utils.i18n :as i18n]
-    [utils.re-frame :as rf]
-    [status-im.common.standard-authentication.core :as standard-authentication]
-    [clojure.string :as string]))
+    [utils.re-frame :as rf]))
 
 (defn view
   [{:keys [on-enter-password on-press-biometrics button-label button-icon-left]}]
