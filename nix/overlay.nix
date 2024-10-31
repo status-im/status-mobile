@@ -44,11 +44,6 @@ in {
     doCheck = false;
   });
 
-  # Downgrade watchman in attempt to fix "too many files open issue"
-  watchman = callPackage ./pkgs/watchman {
-    inherit (super.darwin.apple_sdk.frameworks) CoreServices;
-    autoconf = super.buildPackages.autoconf269;
-  };
 
   # Package version adjustments
   nodejs = super.nodejs_20;
