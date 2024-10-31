@@ -30,7 +30,8 @@
     [status-im.setup.global-error :as global-error]
     [status-im.setup.interceptors :as interceptors]
     status-im.subs.root
-    [utils.i18n :as i18n]))
+    [utils.i18n :as i18n]
+    [status-im.setup.status-backend-client :as status-backend-client]))
 
 ;;;; re-frame RN setup
 (set! interop/next-tick js/setTimeout)
@@ -46,6 +47,7 @@
 
 (defn init
   []
+  (status-backend-client/init)
   (navigation/init)
   (native-module/init #(re-frame/dispatch [:signals/signal-received %]))
   (when platform/android?

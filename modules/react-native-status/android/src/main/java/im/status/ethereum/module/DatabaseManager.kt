@@ -19,6 +19,11 @@ class DatabaseManager(private val reactContext: ReactApplicationContext) : React
     override fun getName() = "DatabaseManager"
 
     private fun getExportDBFile(): File {
+        StatusBackendClient.getInstance()?.let {
+            if (it.serverEnabled) {
+                return File(it.rootDataDir, exportDBFileName)
+            }
+        }
         val pubDirectory = reactContext.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS)
         return File(pubDirectory, exportDBFileName)
     }
@@ -41,14 +46,12 @@ class DatabaseManager(private val reactContext: ReactApplicationContext) : React
             }
             
             val jsonParams = params.toString()
-            
-            val result = Statusgo.exportUnencryptedDatabaseV2(jsonParams)
-            if (result.startsWith("{\"error\":\"\"")) {
-                Log.d(TAG, "Export result: $result")
-            } else {
-                Log.e(TAG, "Export failed: $result")
-            }
-
+            StatusBackendClient.executeStatusGoRequestWithCallback(
+                endpoint = "ExportUnencryptedDatabaseV2",
+                requestBody = jsonParams,
+                statusgoFunction = { Statusgo.exportUnencryptedDatabaseV2(jsonParams) },
+                callback = null
+            )
             callback.invoke(newFile.absolutePath)
 
         } catch (e: JSONException) {
@@ -75,12 +78,11 @@ class DatabaseManager(private val reactContext: ReactApplicationContext) : React
             
             val jsonParams = params.toString()
             
-            val result = Statusgo.importUnencryptedDatabaseV2(jsonParams)
-            if (result.startsWith("{\"error\":\"\"")) {
-                Log.d(TAG, "Import result: $result")
-            } else {
-                Log.e(TAG, "Import failed: $result")
-            }
+            StatusBackendClient.executeStatusGoRequest(
+                endpoint = "ImportUnencryptedDatabaseV2",
+                requestBody = jsonParams,
+                statusgoFunction = { Statusgo.importUnencryptedDatabaseV2(jsonParams) }
+            )
         } catch (e: JSONException) {
             Log.e(TAG, "Error parsing account data: ${e.message}")
         }
