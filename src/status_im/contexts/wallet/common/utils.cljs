@@ -275,7 +275,7 @@
     {:token               (:symbol token)
      :token-name          (:name token)
      :state               :default
-     :metrics?            true
+     :metrics?            (money/has-funds? balance)
      :status              (cond
                             (pos? change-pct-24hour) :positive
                             (neg? change-pct-24hour) :negative
