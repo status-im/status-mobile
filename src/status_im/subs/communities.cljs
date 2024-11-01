@@ -194,7 +194,8 @@
   (cond
     (:joined community)         :joined
     (boolean (get requests id)) :pending
-    :else                       :opened))
+    (:spectated community)      :opened
+    :else                       :other))
 
 (re-frame/reg-sub
  :communities/grouped-by-status
