@@ -1,6 +1,8 @@
 {
     "ignore_dirs": [
         "android/build",
-        "target"
+        "target",
+	".clj-kondo",
+	".shadow-cljs"
     ]
 }
