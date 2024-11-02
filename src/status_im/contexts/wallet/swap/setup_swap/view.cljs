@@ -26,6 +26,7 @@
     [utils.string :as utils.string]))
 
 (def ^:private default-text-for-unfocused-input "0.00")
+(def ^:private swap-proposal-debounce-time-ms 1000)
 
 (defn- on-close
   [start-point]
@@ -36,13 +37,20 @@
                  :clean-approval-transaction? true}])
   (events-helper/navigate-back))
 
+(defn- start-get-swap-proposal
+  [amount clean-approval-transaction?]
+  (rf/dispatch [:wallet/stop-get-swap-proposal])
+  (rf/dispatch [:wallet.swap/set-loading-swap-proposal])
+  (debounce/debounce-and-dispatch [:wallet/start-get-swap-proposal
+                                   {:amount-in                   amount
+                                    :clean-approval-transaction? clean-approval-transaction?}]
+                                  swap-proposal-debounce-time-ms))
+
 (defn- fetch-swap-proposal
   [{:keys [amount valid-input? clean-approval-transaction?]}]
+  (debounce/clear-all)
   (if valid-input?
-    (debounce/debounce-and-dispatch [:wallet/start-get-swap-proposal
-                                     {:amount-in                   amount
-                                      :clean-approval-transaction? clean-approval-transaction?}]
-                                    100)
+    (start-get-swap-proposal amount clean-approval-transaction?)
     (rf/dispatch [:wallet/clean-swap-proposal
                   {:clean-amounts?              true
                    :clean-approval-transaction? clean-approval-transaction?}])))
