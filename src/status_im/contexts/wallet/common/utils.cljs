@@ -445,7 +445,7 @@
 (defn transaction-path
   [{:keys [from-address to-address token-id-from token-address token-id-to route data
            slippage-percentage eth-transfer?]}]
-  (let [{:keys [bridge-name amount-in bonder-fees from
+  (let [{:keys [bridge-name amount-in from
                 to]}  route
         tx-data       (transaction-data {:from-address  from-address
                                          :to-address    to-address
@@ -453,6 +453,7 @@
                                          :route         route
                                          :data          data
                                          :eth-transfer? eth-transfer?})
+        bonder-fees   (-> route :bounder-fees money/to-string)
         to-chain-id   (:chain-id to)
         from-chain-id (:chain-id from)]
     (cond-> {:BridgeName bridge-name
