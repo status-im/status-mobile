@@ -49,7 +49,7 @@
                            (i18n/label :t/create-keycard-pin)
                            (i18n/label :t/repeat-keycard-pin))
        :description      :text
-       :description-text "You’ll need this PIN to login and sign transactions"}]
+       :description-text (i18n/label :t/pin-needed-login-sign)}]
      [rn/view {:style {:flex 1 :justify-content :center :align-items :center :padding-vertical 34}}
       [quo/pin-input
        {:blur?                 false
