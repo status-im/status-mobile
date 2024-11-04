@@ -133,6 +133,7 @@
 (def ^:const min-password-length 6)
 (def ^:const pincode-length 6)
 (def ^:const new-password-min-length 10)
+(def ^:const new-password-max-length 100)
 (def ^:const max-group-chat-participants 20)
 (def ^:const max-group-chat-name-length 24)
 (def ^:const default-number-of-messages 20)

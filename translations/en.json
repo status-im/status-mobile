@@ -1900,6 +1900,7 @@
   "password-creation-dont-match": "Passwords do not match",
   "password-creation-hint": "Minimum 10 characters",
   "password-creation-match": "Passwords match",
+  "password-creation-max-length-hint": "Maximum 100 characters",
   "password-creation-placeholder-1": "Type password",
   "password-creation-placeholder-2": "Repeat password",
   "password-creation-subtitle": "To log in to Status and sign transactions",

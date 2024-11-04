@@ -7,8 +7,7 @@
 
 (defn view
   [{{:keys [text status shown?]} :hint :as input-props}]
-  (tap> shown?)
-  [rn/view
+  [:<>
    [quo/input
     (-> input-props
         (dissoc :hint)
