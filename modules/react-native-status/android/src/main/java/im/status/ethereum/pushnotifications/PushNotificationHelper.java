@@ -873,7 +873,7 @@ public class PushNotificationHelper {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             context.startForegroundService(serviceIntent);
         } else {
-            context.startService (serviceIntent);
+            context.startService(serviceIntent);
         }
         this.registerBroadcastReceiver();
     }
