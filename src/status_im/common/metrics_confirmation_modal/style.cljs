@@ -7,8 +7,7 @@
    :margin-bottom     8})
 
 (def item-text
-  {:margin-top  10
-   :margin-left -4})
+  {:margin-left -24})
 
 (def info-text
   {:margin-top -5})

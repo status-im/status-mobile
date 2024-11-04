@@ -1,6 +1,5 @@
 (ns status-im.common.standard-authentication.password-input.view
   (:require
-    [clojure.string :as string]
     [quo.core :as quo]
     [quo.foundations.colors :as colors]
     [quo.theme :as quo.theme]
@@ -11,14 +10,6 @@
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]
     [utils.security.core :as security]))
-
-(defn- get-error-message
-  [error]
-  (if (and (some? error)
-           (or (= error "file is not a database")
-               (string/starts-with? (string/lower-case error) "failed")))
-    (i18n/label :t/oops-wrong-password)
-    error))
 
 (defn- error-info
   [error-message processing shell?]
@@ -49,21 +40,21 @@
        (i18n/label :t/forgot-password)]]]))
 
 (defn view
-  [{:keys [shell? on-press-biometrics blur?]}]
-  (let [{:keys [error processing]} (rf/sub [:profile/login])
-        error-message              (rn/use-memo #(get-error-message error) [error])
-        error?                     (boolean (seq error-message))
-        default-value              (rn/use-ref-atom "") ;;bug on Android
-                                                        ;;https://github.com/status-im/status-mobile/issues/19004
-        theme                      (quo.theme/use-theme)
-        on-change-password         (rn/use-callback
-                                    (fn [entered-password]
-                                      (reset! default-value entered-password)
-                                      (debounce/debounce-and-dispatch [:profile/on-password-input-changed
-                                                                       {:password (security/mask-data
-                                                                                   entered-password)
-                                                                        :error    ""}]
-                                                                      100)))]
+  [{:keys [shell? on-press-biometrics blur? processing error]}]
+  (let [{:keys [error?
+                error-message]} error
+        default-value           (rn/use-ref-atom "") ;;bug on Android
+                                                     ;;https://github.com/status-im/status-mobile/issues/19004
+        theme                   (quo.theme/use-theme)
+        on-change-password      (rn/use-callback
+                                 (fn [entered-password]
+                                   (reset! default-value entered-password)
+                                   (debounce/debounce-and-dispatch
+                                    [:profile/on-password-input-changed
+                                     {:password (security/mask-data
+                                                 entered-password)
+                                      :error    ""}]
+                                    100)))]
     [:<>
      [rn/view {:style {:flex-direction :row}}
       [quo/input

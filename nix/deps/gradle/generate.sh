@@ -42,22 +42,10 @@ function gen_deps_list() {
 # https://github.com/status-im/status-mobile/issues/15447
 function add_deps_hack() {
     echo -n \
-'com.android.tools.build:gradle:1.3.1
-com.squareup.okio:okio:1.13.0
-com.squareup.okio:okio:1.15.0
-com.squareup.okhttp3:okhttp:3.12.1
-org.jetbrains.kotlin.jvm:org.jetbrains.kotlin.jvm.gradle.plugin:1.7.22
-org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.2
-org.jetbrains.kotlin.jvm:org.jetbrains.kotlin.jvm.gradle.plugin:1.9.0
-org.gradle.toolchains.foojay-resolver-convention:org.gradle.toolchains.foojay-resolver-convention.gradle.plugin:0.5.0
+'org.gradle.toolchains.foojay-resolver-convention:org.gradle.toolchains.foojay-resolver-convention.gradle.plugin:0.5.0
 org.jetbrains.kotlin.jvm:org.jetbrains.kotlin.jvm.gradle.plugin:1.8.0
-com.android.tools.build:gradle:8.1.1
-com.google.errorprone:error_prone_annotations:2.7.1
-com.android.tools.lint:lint-gradle:31.1.1
-org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.8.0
 com.android.tools.build:gradle:3.5.4
-androidx.annotation:annotation:1.6.0
-androidx.annotation:annotation-jvm:1.6.0
+com.android.tools.lint:lint-gradle:31.1.1
 com.facebook.react:hermes-android:0.73.5' \
         >> "${DEPS_LIST}"
 }

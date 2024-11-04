@@ -13,3 +13,7 @@
 (rf/reg-fx :effects.profile/enable-local-notifications
  (fn []
    (native-module/start-local-notifications)))
+
+(rf/reg-fx :effects.profile/convert-to-keycard-profile
+ (fn [{:keys [profile settings password new-password callback]}]
+   (native-module/convert-to-keycard-profile profile settings password new-password callback)))

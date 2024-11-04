@@ -45,7 +45,7 @@
     :or   {type :bullet}}]
   (let [theme (quo.theme/use-theme)]
     [rn/view {:style (style/container container-style)}
-     [rn/view {:style style/index}
+     [rn/view
       (case type
         :step
         [step/view

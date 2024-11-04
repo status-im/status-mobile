@@ -28,6 +28,11 @@
  :-> :network)
 
 (rf/reg-sub
+ :wallet/swap-start-point
+ :<- [:wallet/swap]
+ :-> :start-point)
+
+(rf/reg-sub
  :wallet/swap-error-response
  :<- [:wallet/swap]
  :-> :error-response)

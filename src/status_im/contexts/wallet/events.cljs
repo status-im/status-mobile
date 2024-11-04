@@ -387,23 +387,14 @@
                                 (rf/dispatch [:wallet/set-ens-address nil ens])
                                 (on-error-fn))))}]]]})))
 
-(defn- resolved-address->prefixed-address
-  [address networks]
-  (let [prefixes (->> networks
-                      (map network-utils/network->short-name)
-                      network-utils/short-names->network-preference-prefix)]
-    (str prefixes (eip55/address->checksum address))))
-
 (rf/reg-event-fx
  :wallet/set-ens-address
  (fn [{:keys [db]} [result ens]]
-   (let [networks   [constants/ethereum-network-name constants/optimism-network-name]
-         suggestion (if result
+   (let [suggestion (if result
                       [{:type         item-types/address
                         :ens          ens
                         :address      (eip55/address->checksum result)
-                        :networks     networks
-                        :full-address (resolved-address->prefixed-address result networks)}]
+                        :full-address (eip55/address->checksum result)}]
                       [])]
      {:db (-> db
               (assoc-in [:wallet :ui :search-address :local-suggestions] suggestion)

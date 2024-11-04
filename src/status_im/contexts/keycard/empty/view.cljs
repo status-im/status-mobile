@@ -3,7 +3,7 @@
             [react-native.core :as rn]
             [status-im.common.events-helper :as events-helper]
             [status-im.common.resources :as resources]
-            [status-im.contexts.keycard.sheets.migrate.view :as sheets.migrate]
+            [status-im.contexts.keycard.migrate.sheets.view :as sheets.migrate]
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]))
 
@@ -11,10 +11,8 @@
   []
   [:<>
    [quo/page-nav
-    {:key        :header
-     :background :blur
-     :icon-name  :i/arrow-left
-     :on-press   events-helper/navigate-back}]
+    {:icon-name :i/close
+     :on-press  events-helper/navigate-back}]
    [quo/page-top
     {:title            (i18n/label :t/keycard-empty)
      :description      :text
@@ -26,10 +24,15 @@
       :subtitle            (i18n/label :t/use-keycard-login-sign)
       :button-label        (i18n/label :t/import-profile-key-pair)
       :accessibility-label :get-keycard
-      :image               (resources/get-image :generate-keys)
-      :on-press            #(rf/dispatch [:show-bottom-sheet
-                                          {:theme   :dark
-                                           :content (fn [] [sheets.migrate/view])}])}]]
+      :image               (resources/get-image :keycard-buy)
+      :on-press            (fn []
+                             (rf/dispatch
+                              [:show-bottom-sheet
+                               {:theme   :dark
+                                :content (fn []
+                                           [sheets.migrate/view
+                                            {:on-continue #(rf/dispatch
+                                                            [:keycard/migration.get-phrase])}])}]))}]]
    [quo/information-box
     {:type  :default
      :style {:margin-top 32 :margin-horizontal 28}}

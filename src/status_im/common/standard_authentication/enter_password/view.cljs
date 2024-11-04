@@ -1,9 +1,10 @@
 (ns status-im.common.standard-authentication.enter-password.view
   (:require
+    [clojure.string :as string]
     [quo.core :as quo]
     [react-native.core :as rn]
+    [status-im.common.standard-authentication.core :as standard-authentication]
     [status-im.common.standard-authentication.enter-password.style :as style]
-    [status-im.common.standard-authentication.password-input.view :as password-input]
     [status-im.contexts.profile.utils :as profile.utils]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
@@ -31,11 +32,12 @@
           :full-name           (profile.utils/displayed-name profile)
           :customization-color customization-color
           :size                24}]]
-       [password-input/view
+       [standard-authentication/password-input
         {:on-press-biometrics on-press-biometrics
          :blur?               true
          :processing          processing
-         :error               error
+         :error               {:error?        (not (string/blank? error))
+                               :error-message error}
          :default-password    password
          :sign-in-enabled?    sign-in-enabled?}]
        [quo/button

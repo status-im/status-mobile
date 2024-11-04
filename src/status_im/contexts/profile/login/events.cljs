@@ -83,7 +83,8 @@
                   [[:dispatch [:update-theme-and-init-root :screen/onboarding.syncing-results]]]
 
                   (get db :onboarding/new-account?)
-                  [[:dispatch [:onboarding/finalize-setup]]]
+                  [[:dispatch [:onboarding/finalize-setup]]
+                   [:dispatch [:onboarding/account-creation-complete {:login-signal-received? true}]]]
 
                   :else
                   [[:dispatch [:update-theme-and-init-root :shell-stack]]

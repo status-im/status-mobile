@@ -23,3 +23,7 @@
                 (assoc-in [:keycard :pin :status] nil))
         :fx [(when (and on-complete (= (dec max-numbers) (count pin)))
                [:effects.keycard.pin/dispatch-on-complete [on-complete new-pin]])]}))))
+
+(rf/reg-event-fx :keycard.pin/clear
+ (fn [{:keys [db]}]
+   {:db (assoc-in db [:keycard :pin] nil)}))

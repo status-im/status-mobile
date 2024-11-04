@@ -2,12 +2,15 @@
   (:require [clojure.string :as string]
             [quo.core :as quo]
             [react-native.core :as rn]
+            [status-im.common.events-helper :as events-helper]
             [status-im.constants :as constants]
-            [utils.i18n :as i18n]))
+            [utils.i18n :as i18n]
+            [utils.re-frame :as rf]))
 
 (defn view
-  [{:keys [on-complete]}]
-  (let [[pin set-pin]             (rn/use-state "")
+  []
+  (let [{:keys [on-complete]}     (rf/sub [:get-screen-params])
+        [pin set-pin]             (rn/use-state "")
         [first-pin set-first-pin] (rn/use-state "")
         [error? set-error]        (rn/use-state false)
         [stage set-stage]         (rn/use-state :create)
@@ -38,10 +41,15 @@
                                                (set-stage :repeat)))))))
                                    [pin stage first-pin])]
     [rn/view {:style {:padding-bottom 12 :flex 1}}
-     [quo/drawer-top
-      {:title (if (= :create stage)
-                (i18n/label :t/create-keycard-pin)
-                (i18n/label :t/repeat-keycard-pin))}]
+     [quo/page-nav
+      {:icon-name :i/close
+       :on-press  events-helper/navigate-back}]
+     [quo/page-top
+      {:title            (if (= :create stage)
+                           (i18n/label :t/create-keycard-pin)
+                           (i18n/label :t/repeat-keycard-pin))
+       :description      :text
+       :description-text "You’ll need this PIN to login and sign transactions"}]
      [rn/view {:style {:flex 1 :justify-content :center :align-items :center :padding-vertical 34}}
       [quo/pin-input
        {:blur?                 false

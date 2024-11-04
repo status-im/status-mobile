@@ -41,10 +41,9 @@
                        (for [label points]
                          ^{:key label}
                          [quo/markdown-list
-                          {:description     (i18n/label label)
-                           :blur?           true
-                           :type            (when lock? :lock)
-                           :container-style {:padding-top 8}}])]})
+                          {:description (i18n/label label)
+                           :blur?       true
+                           :type        (when lock? :lock)}])]})
 
 (defn- on-privacy-policy-press
   []

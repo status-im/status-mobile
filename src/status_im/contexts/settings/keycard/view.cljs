@@ -4,6 +4,7 @@
             [react-native.core :as rn]
             [status-im.common.events-helper :as events-helper]
             [status-im.common.resources :as resources]
+            [status-im.constants :as constants]
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]))
 
@@ -27,11 +28,11 @@
           :subtitle            (i18n/label :t/secure-wallet-card)
           :button-label        (i18n/label :t/buy-keycard)
           :accessibility-label :get-keycard
-          :image               (resources/get-image :generate-keys)
-          :on-press            #()}]
+          :image               (resources/get-image :keycard-buy)
+          :on-press            #(rf/dispatch [:browser.ui/open-url constants/get-keycard-url])}]
         [rn/view {:style {:margin-top 24}}
          [quo/text
-          {:style  {:margin-bottom 12
+          {:style  {:margin-bottom 1
                     :color         colors/white-opa-70}
            :size   :paragraph-2
            :weight :medium}

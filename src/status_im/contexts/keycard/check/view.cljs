@@ -10,10 +10,8 @@
   []
   [:<>
    [quo/page-nav
-    {:key        :header
-     :background :blur
-     :icon-name  :i/arrow-left
-     :on-press   events-helper/navigate-back}]
+    {:icon-name :i/arrow-left
+     :on-press  events-helper/navigate-back}]
    [quo/page-top
     {:title            (i18n/label :t/check-keycard)
      :description      :text
@@ -23,14 +21,9 @@
      {:resize-mode :contain
       :source      (resources/get-image :check-your-keycard)}]]
    [quo/divider-label (i18n/label :t/tips-scan-keycard)]
-   [rn/view {:style {:padding-horizontal 10}}
-    [quo/markdown-list
-     {:container-style {:padding-vertical 10}
-      :description     (i18n/label :t/remove-phone-case)}]
-    [quo/markdown-list
-     {:container-style {:padding-bottom 25}
-      :description     (i18n/label :t/keep-card-steady)}]]
-   [quo/button
-    {:on-press        #(rf/dispatch [:keycard/connect])
-     :container-style {:margin-horizontal 20}}
-    (i18n/label :t/ready-to-scan)]])
+   [quo/markdown-list {:description (i18n/label :t/remove-phone-case)}]
+   [quo/markdown-list {:description (i18n/label :t/keep-card-steady)}]
+   [quo/bottom-actions
+    {:actions          :one-action
+     :button-one-label (i18n/label :t/ready-to-scan)
+     :button-one-props {:on-press #(rf/dispatch [:keycard/migration.check-empty-card])}}]])

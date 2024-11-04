@@ -1,116 +1,117 @@
 (ns status-im.contexts.keycard.events
   (:require [re-frame.core :as rf]
             status-im.contexts.keycard.login.events
-            status-im.contexts.keycard.nfc-sheet.events
+            status-im.contexts.keycard.migrate.events
+            status-im.contexts.keycard.migrate.re-encrypting.events
+            status-im.contexts.keycard.nfc.events
+            status-im.contexts.keycard.nfc.sheets.events
             status-im.contexts.keycard.pin.events
             status-im.contexts.keycard.sign.events
             [status-im.contexts.keycard.utils :as keycard.utils]
-            [taoensso.timbre :as log]))
-
-(rf/reg-event-fx :keycard/on-check-nfc-enabled-success
- (fn [{:keys [db]} [nfc-enabled?]]
-   {:db (assoc-in db [:keycard :nfc-enabled?] nfc-enabled?)}))
-
-(rf/reg-event-fx :keycard.ios/on-nfc-user-cancelled
- (fn [{:keys [db]}]
-   (log/debug "[keycard] nfc user cancelled")
-   {:db (-> db
-            (assoc-in [:keycard :pin :status] nil)
-            (assoc-in [:keycard :on-nfc-cancelled-event-vector] nil))
-    :fx [(when-let [on-nfc-cancelled-event-vector (get-in db [:keycard :on-nfc-cancelled-event-vector])]
-           [:dispatch on-nfc-cancelled-event-vector])]}))
+            utils.datetime))
 
 (rf/reg-event-fx :keycard/on-card-connected
  (fn [{:keys [db]} _]
-   (log/debug "[keycard] card globally connected")
    {:db (assoc-in db [:keycard :card-connected?] true)
     :fx [(when-let [event (get-in db [:keycard :on-card-connected-event-vector])]
            [:dispatch event])]}))
 
 (rf/reg-event-fx :keycard/on-card-disconnected
  (fn [{:keys [db]} _]
-   (log/debug "[keycard] card disconnected")
    {:db (assoc-in db [:keycard :card-connected?] false)
     :fx [(when-let [event (get-in db [:keycard :on-card-disconnected-event-vector])]
            [:dispatch event])]}))
-
-(rf/reg-event-fx :keycard.ios/start-nfc
- (fn [_]
-   {:effects.keycard.ios/start-nfc nil}))
-
-(rf/reg-event-fx :keycard.ios/on-nfc-timeout
- (fn [{:keys [db]} _]
-   (log/debug "[keycard] nfc timeout")
-   {:db (assoc-in db [:keycard :card-connected?] false)
-    :fx [[:dispatch-later [{:ms 500 :dispatch [:keycard.ios/start-nfc]}]]]}))
 
 (rf/reg-event-fx :keycard/on-retrieve-pairings-success
  (fn [{:keys [db]} [pairings]]
    {:db (assoc-in db [:keycard :pairings] pairings)
     :fx [[:effects.keycard/set-pairing-to-keycard pairings]]}))
 
-(rf/reg-event-fx :keycard.ios/on-start-nfc-success
- (fn [{:keys [db]} [{:keys [on-cancel-event-vector]}]]
-   (log/debug "[keycard] nfc started success")
-   {:db (assoc-in db [:keycard :on-nfc-cancelled-event-vector] on-cancel-event-vector)}))
+(rf/reg-event-fx :keycard/update-pairings
+ (fn [{:keys [db]} [instance-uid pairing]]
+   (let [pairings     (get-in db [:keycard :pairings])
+         new-pairings (assoc pairings
+                             instance-uid
+                             {:pairing   pairing
+                              :paired-on (utils.datetime/timestamp)})]
+     {:db                       (assoc-in db [:keycard :pairings] new-pairings)
+      :keycard/persist-pairings new-pairings})))
 
 (rf/reg-event-fx :keycard/on-action-with-pin-error
  (fn [{:keys [db]} [error]]
-   (log/debug "[keycard] on-action-with-pin-error: " error)
    (let [tag-was-lost?     (keycard.utils/tag-lost? (:error error))
          pin-retries-count (keycard.utils/pin-retries (:error error))]
-     (if tag-was-lost?
+     (if (or tag-was-lost? (nil? pin-retries-count))
        {:db (assoc-in db [:keycard :pin :status] nil)}
-       (if (nil? pin-retries-count)
-         {:effects.utils/show-popup {:title "wrong-keycard"}}
-         {:db (-> db
-                  (assoc-in [:keycard :application-info :pin-retry-counter] pin-retries-count)
-                  (assoc-in [:keycard :pin :status] :error))
-          :fx [[:dispatch [:keycard/disconnect]]
-               (when (zero? pin-retries-count)
-                 [:effects.utils/show-popup {:title "frozen-keycard"}])]})))))
-
-(rf/reg-event-fx :keycard/on-get-application-info-success
- (fn [{:keys [db]} [application-info {:keys [key-uid on-success-fx]}]]
-   (if-let [error (keycard.utils/validate-application-info key-uid application-info)]
-     (case error
-       :keycard/error.not-keycard
-       {:fx [[:dispatch [:keycard/disconnect]]
-             [:dispatch [:open-modal :screen/keycard.not-keycard]]]}
-       :keycard/error.keycard-blank
-       {:fx [[:dispatch [:keycard/disconnect]]
-             [:dispatch [:open-modal :screen/keycard.empty]]]}
-       {:db (assoc-in db [:keycard :application-info-error] error)
+       {:db (-> db
+                (assoc-in [:keycard :application-info :pin-retry-counter] pin-retries-count)
+                (assoc-in [:keycard :pin :status] :error))
         :fx [[:dispatch [:keycard/disconnect]]
-             [:dispatch [:open-modal :screen/keycard.error]]]})
-     {:db (-> db
-              (assoc-in [:keycard :application-info] application-info)
-              (assoc-in [:keycard :pin :status] :verifying))
-      :fx on-success-fx})))
+             (when (zero? pin-retries-count)
+               [:dispatch
+                [:keycard/on-application-info-error
+                 :keycard/error.keycard-locked]])]}))))
 
-(rf/reg-event-fx :keycard/get-application-info
- (fn [_ [{:keys [on-success on-failure]}]]
-   {:effects.keycard/get-application-info {:on-success on-success :on-failure on-failure}}))
+(rf/reg-event-fx :keycard/get-keys
+ (fn [_ [data]]
+   {:effects.keycard/get-keys data}))
 
 (rf/reg-event-fx :keycard/cancel-connection
  (fn [{:keys [db]}]
-   {:db (-> db
-            (assoc-in [:keycard :on-card-connected-event-vector] nil)
-            (assoc-in [:keycard :on-nfc-cancelled-event-vector] nil))}))
+   {:db (update db :keycard dissoc :on-card-connected-event-vector :on-nfc-cancelled-event-vector)}))
 
 (rf/reg-event-fx :keycard/disconnect
  (fn [_ _]
    {:fx [[:dispatch [:keycard/cancel-connection]]
          [:dispatch [:keycard/hide-connection-sheet]]]}))
 
+(rf/reg-event-fx :keycard/on-application-info-error
+ (fn [{:keys [db]} [error]]
+   {:db (assoc-in db [:keycard :application-info-error] error)
+    :fx [[:dispatch [:keycard/disconnect]]
+         [:dispatch
+          [:open-modal
+           (if (= :keycard/error.not-keycard error)
+             :screen/keycard.not-keycard
+             :screen/keycard.error)]]]}))
+
+(rf/reg-event-fx :keycard/update-application-info
+ (fn [{:keys [db]} [app-info]]
+   {:db (update db
+                :keycard
+                #(-> %
+                     (assoc :application-info app-info)
+                     (dissoc :application-info-error)))}))
+
+(rf/reg-event-fx :keycard/get-application-info
+ (fn [_ [{:keys [key-uid on-success on-error]}]]
+   {:effects.keycard/get-application-info
+    {:on-success (fn [{:keys [instance-uid new-pairing] :as app-info}]
+                   (rf/dispatch [:keycard/update-application-info app-info])
+                   (when (and instance-uid new-pairing)
+                     (rf/dispatch [:keycard/update-pairings instance-uid new-pairing]))
+                   (if-let [error (keycard.utils/validate-application-info key-uid app-info)]
+                     (if on-error
+                       (on-error error)
+                       (rf/dispatch [:keycard/on-application-info-error error]))
+                     (when on-success (on-success app-info))))
+     :on-error   (fn []
+                   (if on-error
+                     (on-error :keycard/error.not-keycard)
+                     (rf/dispatch [:keycard/on-application-info-error
+                                   :keycard/error.not-keycard])))}}))
+
 (rf/reg-event-fx :keycard/connect
- (fn [{:keys [db]} [args]]
-   (let [connected?   (get-in db [:keycard :card-connected?])
-         event-vector [:keycard/get-application-info
-                       {:on-success #(rf/dispatch [:keycard/on-get-application-info-success % args])}]]
+ (fn [{:keys [db]} [{:keys [key-uid on-success on-error on-connect-event-vector]}]]
+   (let [event-vector
+         (or on-connect-event-vector
+             [:keycard/get-application-info
+              {:key-uid    key-uid
+               :on-success on-success
+               :on-error   on-error}])]
      {:db (assoc-in db [:keycard :on-card-connected-event-vector] event-vector)
       :fx [[:dispatch
             [:keycard/show-connection-sheet
              {:on-cancel-event-vector [:keycard/cancel-connection]}]]
-           (when connected?
+           (when (get-in db [:keycard :card-connected?])
              [:dispatch event-vector])]})))

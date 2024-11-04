@@ -1,5 +1,7 @@
 (ns status-im.contexts.keycard.utils
-  (:require [taoensso.timbre :as log]))
+  (:require [clojure.string :as string]
+            [utils.address :as address]
+            [utils.transforms :as transforms]))
 
 (def pin-mismatch-error #"Unexpected error SW, 0x63C(\d+)|wrongPIN\(retryCounter: (\d+)\)")
 
@@ -16,33 +18,55 @@
    (re-matches #".*NFCError:100.*" error)))
 
 (defn validate-application-info
-  [profile-key-uid {:keys [key-uid paired? pin-retry-counter puk-retry-counter] :as application-info}]
-  (let [profile-mismatch? (or (nil? profile-key-uid) (not= profile-key-uid key-uid))]
-    (log/debug "[keycard]"              "login-with-keycard"
-               "empty application info" (empty? application-info)
-               "no key-uid"             (empty? key-uid)
-               "profile-mismatch?"      profile-mismatch?
-               "no pairing"             paired?)
-    (cond
-      (empty? application-info)
-      :keycard/error.not-keycard
+  [profile-key-uid
+   {:keys [key-uid has-master-key? paired? pin-retry-counter puk-retry-counter] :as application-info}]
 
-      (empty? (:key-uid application-info))
-      :keycard/error.keycard-blank
+  (cond
+    (empty? application-info)
+    :keycard/error.not-keycard
 
-      profile-mismatch?
-      :keycard/error.keycard-wrong
+    (not has-master-key?)
+    :keycard/error.keycard-blank
 
-      (not paired?)
-      :keycard/error.keycard-unpaired
+    (not= profile-key-uid key-uid)
+    :keycard/error.keycard-wrong-profile
 
-      (and (zero? pin-retry-counter)
-           (or (nil? puk-retry-counter)
-               (pos? puk-retry-counter)))
-      :keycard/error.keycard-frozen
+    (not paired?)
+    :keycard/error.keycard-unpaired
 
-      (zero? puk-retry-counter)
-      :keycard/error.keycard-locked
+    (and (zero? pin-retry-counter)
+         (or (nil? puk-retry-counter)
+             (pos? puk-retry-counter)))
+    :keycard/error.keycard-frozen
 
-      :else
-      nil)))
+    (zero? puk-retry-counter)
+    :keycard/error.keycard-locked
+
+    :else
+    nil))
+
+(defn- error-object->map
+  [^js object]
+  {:code  (.-code object)
+   :error (.-message object)})
+
+(defn normalize-key-uid
+  [{:keys [key-uid] :as data}]
+  (if (string/blank? key-uid)
+    data
+    (update data :key-uid address/normalized-hex)))
+
+(defn get-on-success
+  [{:keys [on-success]}]
+  #(when on-success (on-success (normalize-key-uid (transforms/js->clj %)))))
+
+(defn get-on-failure
+  [{:keys [on-failure]}]
+  #(when on-failure (on-failure (error-object->map %))))
+
+(defn wrap-handlers
+  [args]
+  (assoc
+   args
+   :on-success (get-on-success args)
+   :on-failure (get-on-failure args)))
