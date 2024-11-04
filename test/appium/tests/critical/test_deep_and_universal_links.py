@@ -75,6 +75,7 @@ class TestDeepLinksOneDevice(MultipleSharedDeviceTestCase):
         self.errors.verify_no_errors()
 
     @marks.testrail_id(739307)
+    @marks.xfail(run=False, reason="Skipped due to waku issue on staging fleet")
     def test_deep_links_communities(self):
         closed_community_name, snt_community_name = "closed community", "SNT community"
         self.home.navigate_back_to_home_view()
