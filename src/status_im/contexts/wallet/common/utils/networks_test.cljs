@@ -6,19 +6,17 @@
 
 (deftest network->chain-id-test
   (testing "network->chain-id function"
-    (is (= (utils/network->chain-id {:network :mainnet :testnet-enabled? false :goerli-enabled? false})
+    (is (= (utils/network->chain-id {:network :mainnet :testnet-enabled? false})
            constants/ethereum-mainnet-chain-id))
-    (is (= (utils/network->chain-id {:network :eth :testnet-enabled? true :goerli-enabled? false})
+    (is (= (utils/network->chain-id {:network :eth :testnet-enabled? true})
            constants/ethereum-sepolia-chain-id))
-    (is (= (utils/network->chain-id {:network "optimism" :testnet-enabled? true :goerli-enabled? false})
+    (is (= (utils/network->chain-id {:network "optimism" :testnet-enabled? true})
            constants/optimism-sepolia-chain-id))
-    (is (= (utils/network->chain-id {:network "oeth" :testnet-enabled? false :goerli-enabled? true})
+    (is (= (utils/network->chain-id {:network "oeth" :testnet-enabled? false})
            constants/optimism-mainnet-chain-id))
-    (is (= (utils/network->chain-id {:network :oeth :testnet-enabled? true :goerli-enabled? true})
-           constants/optimism-goerli-chain-id))
-    (is (= (utils/network->chain-id {:network :arb1 :testnet-enabled? false :goerli-enabled? false})
+    (is (= (utils/network->chain-id {:network :arb1 :testnet-enabled? false})
            constants/arbitrum-mainnet-chain-id))
-    (is (= (utils/network->chain-id {:network :arbitrum :testnet-enabled? true :goerli-enabled? false})
+    (is (= (utils/network->chain-id {:network :arbitrum :testnet-enabled? true})
            constants/arbitrum-sepolia-chain-id))))
 
 (deftest short-names->network-preference-prefix-test

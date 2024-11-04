@@ -1103,7 +1103,6 @@
   "glossary": "Glossary",
   "go-to": "Go to",
   "go-to-settings": "Go to Settings...",
-  "goerli-testnet-toggle-confirmation": "Are you sure you want to toggle Goerli? This will log you out and you will have to login again.",
   "got-it": "Got it",
   "grant-face-id-permissions": "To grant the required Face ID permission, please go to your system settings and make sure that Status > Face ID is selected",
   "grant-fingerprints-permissions": "To grant the required fingerprints permission, please go to your system settings and make sure that Status > Fingerprints is selected",

@@ -20,9 +20,9 @@
    {:mainnet     {:name     "Ether"
                   :symbol   :ETH
                   :decimals 18}
-    :goerli      {:name           "Goerli Ether"
+    :sepolia     {:name           "Sepolia Ether"
                   :symbol         :ETH
-                  :symbol-display :ETHgo
+                  :symbol-display :ETH
                   :decimals       18}
     :xdai        {:name            "xDAI"
                   :symbol          :ETH

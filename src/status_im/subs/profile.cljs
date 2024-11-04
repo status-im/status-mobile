@@ -137,12 +137,6 @@
    (:universal-profile-url profile)))
 
 (re-frame/reg-sub
- :profile/is-goerli-enabled?
- :<- [:profile/profile]
- (fn [profile]
-   (:is-goerli-enabled? profile)))
-
-(re-frame/reg-sub
  :profile/peer-syncing-enabled?
  :<- [:profile/profile]
  (fn [profile]

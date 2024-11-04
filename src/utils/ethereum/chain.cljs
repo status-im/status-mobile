@@ -7,7 +7,7 @@
 (def chains
   {:mainnet     {:id 1 :name "Mainnet"}
    :xdai        {:id 100 :name "xDai"}
-   :goerli      {:id 5 :name "Goerli"}
+   :sepolia     {:id 11155111 :name "Sepolia"}
    :bsc         {:id   BSC-mainnet-chain-id
                  :name "BSC"}
    :bsc-testnet {:id   BSC-testnet-chain-id
@@ -37,7 +37,7 @@
 
 (defn testnet?
   [id]
-  (contains? #{(chain-keyword->chain-id :goerli)
+  (contains? #{(chain-keyword->chain-id :sepolia)
                (chain-keyword->chain-id :bsc-testnet)}
              id))
 
