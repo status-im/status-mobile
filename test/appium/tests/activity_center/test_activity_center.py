@@ -239,6 +239,7 @@ class TestActivityCenterContactRequestMultipleDevicePR(MultipleSharedDeviceTestC
 
 @pytest.mark.xdist_group(name="new_four_2")
 @marks.nightly
+@marks.xfail(run=False, reason="Skipped due to waku issue on staging fleet")
 class TestActivityMultipleDevicePR(MultipleSharedDeviceTestCase):
 
     def prepare_devices(self):
@@ -379,6 +380,7 @@ class TestActivityMultipleDevicePR(MultipleSharedDeviceTestCase):
 
 @pytest.mark.xdist_group(name="new_six_2")
 @marks.nightly
+@marks.xfail(run=False, reason="Skipped due to waku issue on staging fleet")
 class TestActivityMultipleDevicePRTwo(MultipleSharedDeviceTestCase):
 
     def prepare_devices(self):

@@ -155,7 +155,7 @@ class TestCommunityOneDeviceMerged(MultipleSharedDeviceTestCase):
 
     @marks.testrail_id(703133)
     @marks.smoke
-    def test_restore_multiaccount_with_waku_backup_remove_switch(self):
+    def test_restore_multiaccount_with_waku_backup_remove_profile_switch(self):
         self.home.reopen_app(sign_in=False)
         self.home.just_fyi("Restore user with predefined communities and contacts")
         self.sign_in.recover_access(passphrase=waku_user.seed, second_user=True)
@@ -237,6 +237,9 @@ class TestCommunityOneDeviceMerged(MultipleSharedDeviceTestCase):
 
         self.home.just_fyi("Check that removed user is not shown in the list anymore")
         self.home.reopen_app(sign_in=False)
+        if self.sign_in.terms_and_privacy_checkbox.is_element_displayed(5):
+            self.sign_in.terms_and_privacy_checkbox.click()
+            self.sign_in.explore_new_status_button.click_until_presence_of_element(self.sign_in.show_profiles_button)
         self.sign_in.show_profiles_button.wait_and_click()
         if self.sign_in.element_by_text(self.username).is_element_displayed():
             self.errors.append("Removed user is re-appeared after relogin!")
@@ -271,7 +274,7 @@ class TestCommunityOneDeviceMerged(MultipleSharedDeviceTestCase):
             self.home.just_fyi("Check %s community tags in the Discover communities screen" % community_name)
             card = self.home.get_discover_community_card_by_name(community_name=community_name)
             try:
-                card.wait_for_visibility_of_element(30)
+                card.wait_for_visibility_of_element(90)
                 # if community_name == 'Status':
                 #     card.swipe_to_web_element()
                 missing_tags = list()
@@ -305,6 +308,7 @@ class TestCommunityOneDeviceMerged(MultipleSharedDeviceTestCase):
 
 @pytest.mark.xdist_group(name="new_three_2")
 @marks.nightly
+@marks.xfail(run=False, reason="Skipped due to waku issue on staging fleet")
 class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
 
     def prepare_devices(self):
@@ -835,6 +839,7 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
 
 @pytest.mark.xdist_group(name="new_five_2")
 @marks.nightly
+@marks.xfail(run=False, reason="Skipped due to waku issue on staging fleet")
 class TestCommunityMultipleDeviceMergedTwo(MultipleSharedDeviceTestCase):
 
     def prepare_devices(self):
