@@ -125,8 +125,7 @@
         available-crypto-limit-display   (number/remove-trailing-zeroes
                                           (.toFixed available-crypto-limit display-decimals))
         available-crypto-limit-display   (if (and (= available-crypto-limit-display "0")
-                                                  (money/greater-than available-crypto-limit
-                                                                      (money/bignumber 0)))
+                                                  (money/above-zero? available-crypto-limit))
                                            (number/small-number-threshold display-decimals)
                                            available-crypto-limit-display)
         approval-amount-required-num     (when approval-amount-required

@@ -245,7 +245,7 @@
           (.times fiat-price-bn)
           (with-precision 2)))))
 
-(defn has-funds?
+(defn above-zero?
   [^js balance]
   (when balance
     (->> 0

@@ -93,7 +93,7 @@
                                (assoc :token        token-data
                                       :stack-id     :screen/wallet.accounts
                                       :has-balance? (-> (get-in token [:values :fiat-unformatted-value])
-                                                        (money/greater-than (money/bignumber "0"))))
+                                                        money/above-zero?))
                                (not selected-account)
                                (assoc :token-symbol token-symbol
                                       :stack-id     :wallet-stack))]
