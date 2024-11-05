@@ -37,6 +37,9 @@
     constants/optimism-mainnet-chain-id
     config/optimism-mainnet-tx-details-base-link
 
+    constants/base-mainnet-chain-id
+    config/base-mainnet-tx-details-base-link
+
     constants/ethereum-sepolia-chain-id
     config/mainnet-sepolia-tx-details-base-link
 
@@ -45,6 +48,9 @@
 
     constants/optimism-sepolia-chain-id
     config/optimism-sepolia-tx-details-base-link
+
+    constants/base-sepolia-chain-id
+    config/base-sepolia-tx-details-base-link
 
     config/mainnet-tx-details-base-link))
 

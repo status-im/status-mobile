@@ -279,9 +279,7 @@
  (fn [{:keys [db]} [{:keys [sent-transactions swap-data approval-transaction?]}]]
    (let [wallet-transactions  (get-in db [:wallet :transactions] {})
          transactions         (utils/transactions->hash-to-transaction-map sent-transactions)
-         transaction-ids      (->> transactions
-                                   vals
-                                   (map :hash))
+         transaction-ids      (keys transactions)
          transaction-id       (first transaction-ids)
          transaction-details  (cond-> transactions
                                 :always   (assoc-in [transaction-id :tx-type] :swap)

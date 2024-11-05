@@ -15,7 +15,9 @@
    constants/optimism-mainnet-chain-id constants/optimism-network-name
    constants/optimism-sepolia-chain-id constants/optimism-network-name
    constants/arbitrum-mainnet-chain-id constants/arbitrum-network-name
-   constants/arbitrum-sepolia-chain-id constants/arbitrum-network-name})
+   constants/arbitrum-sepolia-chain-id constants/arbitrum-network-name
+   constants/base-mainnet-chain-id     constants/base-network-name
+   constants/base-sepolia-chain-id     constants/base-network-name})
 
 (defn- get-chain-id
   [{:keys [mainnet-chain-id sepolia-chain-id testnet-enabled?]}]
@@ -46,6 +48,12 @@
      (get-chain-id
       {:mainnet-chain-id constants/arbitrum-mainnet-chain-id
        :sepolia-chain-id constants/arbitrum-sepolia-chain-id
+       :testnet-enabled? testnet-enabled?})
+
+     #{constants/base-network-name (keyword constants/base-short-name)}
+     (get-chain-id
+      {:mainnet-chain-id constants/base-mainnet-chain-id
+       :sepolia-chain-id constants/base-sepolia-chain-id
        :testnet-enabled? testnet-enabled?}))))
 
 (defn network-list
@@ -76,12 +84,14 @@
   {constants/mainnet-network-name  constants/mainnet-short-name
    constants/optimism-network-name constants/optimism-short-name
    constants/arbitrum-network-name constants/arbitrum-short-name
-   constants/ethereum-network-name constants/ethereum-short-name})
+   constants/ethereum-network-name constants/ethereum-short-name
+   constants/base-network-name     constants/base-short-name})
 
 (def short-name->network
   {constants/mainnet-short-name  constants/mainnet-network-name
    constants/optimism-short-name constants/optimism-network-name
-   constants/arbitrum-short-name constants/arbitrum-network-name})
+   constants/arbitrum-short-name constants/arbitrum-network-name
+   constants/base-short-name     constants/base-network-name})
 
 (defn short-names->network-preference-prefix
   [short-names]
@@ -152,6 +162,15 @@
    :view-on-block-explorer-label :t/view-on-oeth
    :link-to-block-explorer-label :t/share-link-to-oeth})
 
+(def base-network-details
+  {:source                       (resources/get-network constants/base-network-name)
+   :short-name                   constants/base-short-name
+   :full-name                    constants/base-full-name
+   :network-name                 constants/base-network-name
+   :abbreviated-name             constants/base-abbreviated-name
+   :view-on-block-explorer-label :t/view-on-base
+   :link-to-block-explorer-label :t/share-link-to-base})
+
 (defn get-network-details
   [chain-id]
   (as-> chain-id $
@@ -164,6 +183,9 @@
 
       #{constants/optimism-mainnet-chain-id constants/optimism-sepolia-chain-id}
       optimism-network-details
+
+      #{constants/base-mainnet-chain-id constants/base-sepolia-chain-id}
+      base-network-details
 
       nil)
     (when $

@@ -135,7 +135,8 @@
 (def ^:private network-priority-score
   {:ethereum 1
    :optimism 2
-   :arbitrum 3})
+   :arbitrum 3
+   :base     4})
 
 (defn reset-loading-network-amounts-to-zero
   [network-amounts]

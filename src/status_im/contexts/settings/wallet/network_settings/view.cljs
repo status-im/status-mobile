@@ -45,6 +45,9 @@
                     [{:details       (:optimism networks)
                       :testnet-mode? testnet-mode?
                       :testnet-label (i18n/label :t/sepolia-active)}
+                     {:details       (:base networks)
+                      :testnet-mode? testnet-mode?
+                      :testnet-label (i18n/label :t/sepolia-active)}
                      {:details       (:arbitrum networks)
                       :testnet-mode? testnet-mode?
                       :testnet-label (i18n/label :t/sepolia-active)}])

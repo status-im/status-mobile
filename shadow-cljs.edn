@@ -87,7 +87,9 @@
      status-im.config/ALCHEMY_ARBITRUM_MAINNET_TOKEN #shadow/env "ALCHEMY_ARBITRUM_MAINNET_TOKEN"
      status-im.config/ALCHEMY_ARBITRUM_SEPOLIA_TOKEN #shadow/env "ALCHEMY_ARBITRUM_SEPOLIA_TOKEN"
      status-im.config/ALCHEMY_OPTIMISM_MAINNET_TOKEN #shadow/env "ALCHEMY_OPTIMISM_MAINNET_TOKEN"
-     status-im.config/ALCHEMY_OPTIMISM_SEPOLIA_TOKEN #shadow/env "ALCHEMY_OPTIMISM_SEPOLIA_TOKEN"}
+     status-im.config/ALCHEMY_OPTIMISM_SEPOLIA_TOKEN #shadow/env "ALCHEMY_OPTIMISM_SEPOLIA_TOKEN"
+     status-im.config/ALCHEMY_BASE_MAINNET_TOKEN #shadow/env "ALCHEMY_BASE_MAINNET_TOKEN"
+     status-im.config/ALCHEMY_BASE_SEPOLIA_TOKEN #shadow/env "ALCHEMY_BASE_SEPOLIA_TOKEN"}
     :compiler-options {:output-feature-set :es5
                        ;; We disable `:fn-deprecated` warnings because we
                        ;; are managing deprecation via clj-kondo and we
@@ -123,7 +125,9 @@
      status-im.config/ALCHEMY_ARBITRUM_MAINNET_TOKEN #shadow/env "ALCHEMY_ARBITRUM_MAINNET_TOKEN"
      status-im.config/ALCHEMY_ARBITRUM_SEPOLIA_TOKEN #shadow/env "ALCHEMY_ARBITRUM_SEPOLIA_TOKEN"
      status-im.config/ALCHEMY_OPTIMISM_MAINNET_TOKEN #shadow/env "ALCHEMY_OPTIMISM_MAINNET_TOKEN"
-     status-im.config/ALCHEMY_OPTIMISM_SEPOLIA_TOKEN #shadow/env "ALCHEMY_OPTIMISM_SEPOLIA_TOKEN"}
+     status-im.config/ALCHEMY_OPTIMISM_SEPOLIA_TOKEN #shadow/env "ALCHEMY_OPTIMISM_SEPOLIA_TOKEN"
+     status-im.config/ALCHEMY_BASE_MAINNET_TOKEN     #shadow/env "ALCHEMY_BASE_MAINNET_TOKEN"
+     status-im.config/ALCHEMY_BASE_SEPOLIA_TOKEN     #shadow/env "ALCHEMY_BASE_SEPOLIA_TOKEN"}
     :compiler-options {:output-feature-set :es6
                        ;;disable for android build as there
                        ;;is an intermittent warning with deftype
@@ -165,6 +169,8 @@
     status-im.config/ALCHEMY_ARBITRUM_SEPOLIA_TOKEN #shadow/env "ALCHEMY_ARBITRUM_SEPOLIA_TOKEN"
     status-im.config/ALCHEMY_OPTIMISM_MAINNET_TOKEN #shadow/env "ALCHEMY_OPTIMISM_MAINNET_TOKEN"
     status-im.config/ALCHEMY_OPTIMISM_SEPOLIA_TOKEN #shadow/env "ALCHEMY_OPTIMISM_SEPOLIA_TOKEN"
+    status-im.config/ALCHEMY_BASE_MAINNET_TOKEN     #shadow/env "ALCHEMY_BASE_MAINNET_TOKEN"
+    status-im.config/ALCHEMY_BASE_SEPOLIA_TOKEN     #shadow/env "ALCHEMY_BASE_SEPOLIA_TOKEN"
     status-im.config/WALLET_CONNECT_PROJECT_ID      #shadow/env "WALLET_CONNECT_PROJECT_ID"}
    :compiler-options
    {;; needed because we override require and it
