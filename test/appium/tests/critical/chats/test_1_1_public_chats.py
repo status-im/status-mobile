@@ -104,6 +104,7 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
         self.errors.verify_no_errors()
 
     @marks.testrail_id(702782)
+    # TODO: too complex, should be splitted
     def test_1_1_chat_emoji_send_reply_and_open_link(self):
         self.chat_1.navigate_back_to_chat_view()
         self.chat_2.navigate_back_to_chat_view()
@@ -146,7 +147,7 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
         reply = 'reply to link'
         url_message = 'Test with link: https://status.im/ here should be nothing unusual.'
         self.chat_1.send_message(url_message)
-        self.chat_2.chat_element_by_text(url_message).wait_for_element(20)
+        self.chat_2.chat_element_by_text(url_message).wait_for_element(60)
         # self.chat_2.chat_element_by_text(url_message).long_press_element_by_coordinate(rel_x=0.8, rel_y=0.8)
         self.chat_2.quote_message(url_message)
         self.chat_2.send_message(reply)

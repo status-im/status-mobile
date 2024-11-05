@@ -75,13 +75,10 @@
           status-im.config/RARIBLE_MAINNET_API_KEY        #shadow/env "RARIBLE_MAINNET_API_KEY"
           status-im.config/RARIBLE_TESTNET_API_KEY        #shadow/env "RARIBLE_TESTNET_API_KEY"
           status-im.config/ALCHEMY_ETHEREUM_MAINNET_TOKEN #shadow/env "ALCHEMY_ETHEREUM_MAINNET_TOKEN"
-          status-im.config/ALCHEMY_ETHEREUM_GOERLI_TOKEN  #shadow/env "ALCHEMY_ETHEREUM_GOERLI_TOKEN"
           status-im.config/ALCHEMY_ETHEREUM_SEPOLIA_TOKEN #shadow/env "ALCHEMY_ETHEREUM_SEPOLIA_TOKEN"
           status-im.config/ALCHEMY_ARBITRUM_MAINNET_TOKEN #shadow/env "ALCHEMY_ARBITRUM_MAINNET_TOKEN"
-          status-im.config/ALCHEMY_ARBITRUM_GOERLI_TOKEN  #shadow/env "ALCHEMY_ARBITRUM_GOERLI_TOKEN"
           status-im.config/ALCHEMY_ARBITRUM_SEPOLIA_TOKEN #shadow/env "ALCHEMY_ARBITRUM_SEPOLIA_TOKEN"
           status-im.config/ALCHEMY_OPTIMISM_MAINNET_TOKEN #shadow/env "ALCHEMY_OPTIMISM_MAINNET_TOKEN"
-          status-im.config/ALCHEMY_OPTIMISM_GOERLI_TOKEN  #shadow/env "ALCHEMY_OPTIMISM_GOERLI_TOKEN"
           status-im.config/ALCHEMY_OPTIMISM_SEPOLIA_TOKEN #shadow/env "ALCHEMY_OPTIMISM_SEPOLIA_TOKEN"}
          :compiler-options {:output-feature-set :es5
                             ;; We disable `:fn-deprecated` warnings because we
@@ -114,13 +111,10 @@
      status-im.config/RARIBLE_MAINNET_API_KEY        #shadow/env "RARIBLE_MAINNET_API_KEY"
      status-im.config/RARIBLE_TESTNET_API_KEY        #shadow/env "RARIBLE_TESTNET_API_KEY"
      status-im.config/ALCHEMY_ETHEREUM_MAINNET_TOKEN #shadow/env "ALCHEMY_ETHEREUM_MAINNET_TOKEN"
-     status-im.config/ALCHEMY_ETHEREUM_GOERLI_TOKEN  #shadow/env "ALCHEMY_ETHEREUM_GOERLI_TOKEN"
      status-im.config/ALCHEMY_ETHEREUM_SEPOLIA_TOKEN #shadow/env "ALCHEMY_ETHEREUM_SEPOLIA_TOKEN"
      status-im.config/ALCHEMY_ARBITRUM_MAINNET_TOKEN #shadow/env "ALCHEMY_ARBITRUM_MAINNET_TOKEN"
-     status-im.config/ALCHEMY_ARBITRUM_GOERLI_TOKEN  #shadow/env "ALCHEMY_ARBITRUM_GOERLI_TOKEN"
      status-im.config/ALCHEMY_ARBITRUM_SEPOLIA_TOKEN #shadow/env "ALCHEMY_ARBITRUM_SEPOLIA_TOKEN"
      status-im.config/ALCHEMY_OPTIMISM_MAINNET_TOKEN #shadow/env "ALCHEMY_OPTIMISM_MAINNET_TOKEN"
-     status-im.config/ALCHEMY_OPTIMISM_GOERLI_TOKEN  #shadow/env "ALCHEMY_OPTIMISM_GOERLI_TOKEN"
      status-im.config/ALCHEMY_OPTIMISM_SEPOLIA_TOKEN #shadow/env "ALCHEMY_OPTIMISM_SEPOLIA_TOKEN"}
     :compiler-options {:output-feature-set :es6
                        ;;disable for android build as there
@@ -158,13 +152,10 @@
     status-im.config/RARIBLE_MAINNET_API_KEY        #shadow/env "RARIBLE_MAINNET_API_KEY"
     status-im.config/RARIBLE_TESTNET_API_KEY        #shadow/env "RARIBLE_TESTNET_API_KEY"
     status-im.config/ALCHEMY_ETHEREUM_MAINNET_TOKEN #shadow/env "ALCHEMY_ETHEREUM_MAINNET_TOKEN"
-    status-im.config/ALCHEMY_ETHEREUM_GOERLI_TOKEN  #shadow/env "ALCHEMY_ETHEREUM_GOERLI_TOKEN"
     status-im.config/ALCHEMY_ETHEREUM_SEPOLIA_TOKEN #shadow/env "ALCHEMY_ETHEREUM_SEPOLIA_TOKEN"
     status-im.config/ALCHEMY_ARBITRUM_MAINNET_TOKEN #shadow/env "ALCHEMY_ARBITRUM_MAINNET_TOKEN"
-    status-im.config/ALCHEMY_ARBITRUM_GOERLI_TOKEN  #shadow/env "ALCHEMY_ARBITRUM_GOERLI_TOKEN"
     status-im.config/ALCHEMY_ARBITRUM_SEPOLIA_TOKEN #shadow/env "ALCHEMY_ARBITRUM_SEPOLIA_TOKEN"
     status-im.config/ALCHEMY_OPTIMISM_MAINNET_TOKEN #shadow/env "ALCHEMY_OPTIMISM_MAINNET_TOKEN"
-    status-im.config/ALCHEMY_OPTIMISM_GOERLI_TOKEN  #shadow/env "ALCHEMY_OPTIMISM_GOERLI_TOKEN"
     status-im.config/ALCHEMY_OPTIMISM_SEPOLIA_TOKEN #shadow/env "ALCHEMY_OPTIMISM_SEPOLIA_TOKEN"
     status-im.config/WALLET_CONNECT_PROJECT_ID      #shadow/env "WALLET_CONNECT_PROJECT_ID"}
    :compiler-options

@@ -10,58 +10,42 @@
 
 (def id->network
   {constants/ethereum-mainnet-chain-id constants/mainnet-network-name
-   constants/ethereum-goerli-chain-id  constants/mainnet-network-name
    constants/ethereum-sepolia-chain-id constants/mainnet-network-name
    constants/optimism-mainnet-chain-id constants/optimism-network-name
-   constants/optimism-goerli-chain-id  constants/optimism-network-name
    constants/optimism-sepolia-chain-id constants/optimism-network-name
    constants/arbitrum-mainnet-chain-id constants/arbitrum-network-name
-   constants/arbitrum-goerli-chain-id  constants/arbitrum-network-name
    constants/arbitrum-sepolia-chain-id constants/arbitrum-network-name})
 
 (defn- get-chain-id
-  [{:keys [mainnet-chain-id sepolia-chain-id goerli-chain-id testnet-enabled? goerli-enabled?]}]
-  (cond
-    (and testnet-enabled? goerli-enabled?)
-    goerli-chain-id
-
-    testnet-enabled?
+  [{:keys [mainnet-chain-id sepolia-chain-id testnet-enabled?]}]
+  (if testnet-enabled?
     sepolia-chain-id
-
-    :else
     mainnet-chain-id))
 
 (defn network->chain-id
   ([db network]
-   (let [{:keys [test-networks-enabled? is-goerli-enabled?]} (:profile/profile db)]
+   (let [{:keys [test-networks-enabled?]} (:profile/profile db)]
      (network->chain-id {:network          network
-                         :testnet-enabled? test-networks-enabled?
-                         :goerli-enabled?  is-goerli-enabled?})))
-  ([{:keys [network testnet-enabled? goerli-enabled?]}]
+                         :testnet-enabled? test-networks-enabled?})))
+  ([{:keys [network testnet-enabled?]}]
    (condp contains? (keyword network)
      #{constants/mainnet-network-name (keyword constants/mainnet-short-name)}
      (get-chain-id
       {:mainnet-chain-id constants/ethereum-mainnet-chain-id
        :sepolia-chain-id constants/ethereum-sepolia-chain-id
-       :goerli-chain-id  constants/ethereum-goerli-chain-id
-       :testnet-enabled? testnet-enabled?
-       :goerli-enabled?  goerli-enabled?})
+       :testnet-enabled? testnet-enabled?})
 
      #{constants/optimism-network-name (keyword constants/optimism-short-name)}
      (get-chain-id
       {:mainnet-chain-id constants/optimism-mainnet-chain-id
        :sepolia-chain-id constants/optimism-sepolia-chain-id
-       :goerli-chain-id  constants/optimism-goerli-chain-id
-       :testnet-enabled? testnet-enabled?
-       :goerli-enabled?  goerli-enabled?})
+       :testnet-enabled? testnet-enabled?})
 
      #{constants/arbitrum-network-name (keyword constants/arbitrum-short-name)}
      (get-chain-id
       {:mainnet-chain-id constants/arbitrum-mainnet-chain-id
        :sepolia-chain-id constants/arbitrum-sepolia-chain-id
-       :goerli-chain-id  constants/arbitrum-goerli-chain-id
-       :testnet-enabled? testnet-enabled?
-       :goerli-enabled?  goerli-enabled?}))))
+       :testnet-enabled? testnet-enabled?}))))
 
 (defn network-list
   [{:keys [balances-per-chain]} networks]
@@ -82,19 +66,13 @@
     (network-list $ networks)))
 
 (defn get-default-chain-ids-by-mode
-  [{:keys [test-networks-enabled? is-goerli-enabled?]}]
-  (cond
-    (and test-networks-enabled? is-goerli-enabled?)
-    constants/goerli-chain-ids
-
-    test-networks-enabled?
+  [{:keys [test-networks-enabled?]}]
+  (if test-networks-enabled?
     constants/sepolia-chain-ids
-
-    :else
     constants/mainnet-chain-ids))
 
 (defn resolve-receiver-networks
-  [{:keys [prefix testnet-enabled? goerli-enabled?]}]
+  [{:keys [prefix testnet-enabled?]}]
   (let [prefix     (if (string/blank? prefix)
                      constants/default-multichain-address-prefix
                      prefix)
@@ -104,8 +82,7 @@
          (mapv
           #(network->chain-id
             {:network          %
-             :testnet-enabled? testnet-enabled?
-             :goerli-enabled?  goerli-enabled?})))))
+             :testnet-enabled? testnet-enabled?})))))
 
 (def network->short-name
   {constants/mainnet-network-name  constants/mainnet-short-name
@@ -185,16 +162,13 @@
   [chain-id]
   (as-> chain-id $
     (condp contains? $
-      #{constants/ethereum-mainnet-chain-id constants/ethereum-goerli-chain-id
-        constants/ethereum-sepolia-chain-id}
+      #{constants/ethereum-mainnet-chain-id constants/ethereum-sepolia-chain-id}
       mainnet-network-details
 
-      #{constants/arbitrum-mainnet-chain-id constants/arbitrum-goerli-chain-id
-        constants/arbitrum-sepolia-chain-id}
+      #{constants/arbitrum-mainnet-chain-id constants/arbitrum-sepolia-chain-id}
       arbitrum-network-details
 
-      #{constants/optimism-mainnet-chain-id constants/optimism-goerli-chain-id
-        constants/optimism-sepolia-chain-id}
+      #{constants/optimism-mainnet-chain-id constants/optimism-sepolia-chain-id}
       optimism-network-details
 
       nil)

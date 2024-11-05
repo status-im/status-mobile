@@ -3,12 +3,12 @@
 
 (def inner-container
   {:flex-direction  :row
-   :justify-content :center
+   :justify-content :space-between
    :flex            1})
 
 (def button-container
   {:padding-vertical 8
-   :width            77.75
+   :flex             1
    :justify-content  :center
    :align-items      :center})
 

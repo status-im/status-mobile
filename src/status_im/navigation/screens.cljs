@@ -33,11 +33,13 @@
     [status-im.contexts.keycard.empty.view :as keycard.empty]
     [status-im.contexts.keycard.error.view :as keycard.error]
     [status-im.contexts.keycard.migrate.fail.view :as keycard.migrate.fail]
+    [status-im.contexts.keycard.migrate.profile-keys.view :as keycard.migrate.profile-keys]
     [status-im.contexts.keycard.migrate.re-encrypting.view :as keycard.re-encrypting]
     [status-im.contexts.keycard.migrate.success.view :as keycard.migrate.success]
     [status-im.contexts.keycard.migrate.view :as keycard.migrate]
     [status-im.contexts.keycard.not-keycard.view :as keycard.not-keycard]
-    [status-im.contexts.keycard.pin.create.view :as pin.create]
+    [status-im.contexts.keycard.pin.create.view :as keycard.pin.create]
+    [status-im.contexts.keycard.pin.enter.view :as keycard.pin.enter]
     [status-im.contexts.onboarding.create-or-sync-profile.view :as create-or-sync-profile]
     [status-im.contexts.onboarding.create-password.view :as create-password]
     [status-im.contexts.onboarding.create-profile.view :as create-profile]
@@ -883,44 +885,37 @@
 
 (def keycard-screens
   [{:name      :screen/keycard.check
-    :metrics   {:track?   :true
-                :alias-id :keycard.check}
+    :metrics   {:track? :true}
     :options   {:insets {:top? true :bottom? true}}
     :component keycard.check/view}
 
    {:name      :screen/keycard.empty
-    :metrics   {:track?   :true
-                :alias-id :keycard.empty}
+    :metrics   {:track? :true}
     :options   {:insets {:top? true :bottom? true}}
     :component keycard.empty/view}
 
    {:name      :screen/keycard.error
-    :metrics   {:track?   :true
-                :alias-id :keycard.error}
+    :metrics   {:track? :true}
     :options   {:insets {:top? true :bottom? true}}
     :component keycard.error/view}
 
    {:name      :screen/keycard.not-keycard
-    :metrics   {:track?   :true
-                :alias-id :keycard.not-keycard}
+    :metrics   {:track? :true}
     :options   {:insets {:top? true :bottom? true}}
     :component keycard.not-keycard/view}
 
    {:name      :screen/keycard.authorise
-    :metrics   {:track?   :true
-                :alias-id :keycard.authorise}
+    :metrics   {:track? :true}
     :options   {:insets {:top? true :bottom? true}}
     :component keycard.authorise/view}
 
    {:name      :screen/keycard.migrate
-    :metrics   {:track?   :true
-                :alias-id :keycard.migrate}
+    :metrics   {:track? :true}
     :options   {:insets {:top? true :bottom? true}}
     :component keycard.migrate/view}
 
    {:name      :screen/keycard.re-encrypting
-    :metrics   {:track?   :true
-                :alias-id :keycard.re-encrypting}
+    :metrics   {:track? :true}
     :options   {:insets             {:top? true :bottom? true}
                 :popGesture         false
                 :hardwareBackButton {:dismissModalOnPress false
@@ -928,8 +923,7 @@
     :component keycard.re-encrypting/view}
 
    {:name      :screen/keycard.migrate.success
-    :metrics   {:track?   :true
-                :alias-id :keycard.migrate.success}
+    :metrics   {:track? :true}
     :options   {:insets             {:top? true :bottom? true}
                 :popGesture         false
                 :hardwareBackButton {:dismissModalOnPress false
@@ -937,8 +931,7 @@
     :component keycard.migrate.success/view}
 
    {:name      :screen/keycard.migrate.fail
-    :metrics   {:track?   :true
-                :alias-id :keycard.migrate.fail}
+    :metrics   {:track? :true}
     :options   {:insets             {:top? true :bottom? true}
                 :popGesture         false
                 :hardwareBackButton {:dismissModalOnPress false
@@ -946,10 +939,19 @@
     :component keycard.migrate.fail/view}
 
    {:name      :screen/keycard.pin.create
-    :metrics   {:track?   :true
-                :alias-id :keycard.pin.create}
+    :metrics   {:track? :true}
     :options   {:insets {:top? true :bottom? true}}
-    :component pin.create/view}])
+    :component keycard.pin.create/view}
+
+   {:name      :screen/keycard.pin.enter
+    :metrics   {:track? :true}
+    :options   {:insets {:top? true :bottom? true}}
+    :component keycard.pin.enter/view}
+
+   {:name      :screen/keycard.profile-keys
+    :metrics   {:track? :true}
+    :options   {:insets {:top? true :bottom? true}}
+    :component keycard.migrate.profile-keys/view}])
 
 (defn screens
   []

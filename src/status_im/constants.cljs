@@ -473,29 +473,21 @@
 
 ;; wallet
 (def ^:const ethereum-mainnet-chain-id 1)
-(def ^:const ethereum-goerli-chain-id 5)
 (def ^:const ethereum-sepolia-chain-id 11155111)
 (def ^:const arbitrum-mainnet-chain-id 42161)
-(def ^:const arbitrum-goerli-chain-id 421613)
 (def ^:const arbitrum-sepolia-chain-id 421614)
 (def ^:const optimism-mainnet-chain-id 10)
-(def ^:const optimism-goerli-chain-id 420)
 (def ^:const optimism-sepolia-chain-id 11155420)
 
 (def opensea-url-names
   {:ethereum "ethereum"
-   :sepolia  "sepolia"
-   :goerli   "goerli"})
+   :sepolia  "sepolia"})
 
 (def ^:const ethereum "ethereum")
 (def ^:const sepolia "sepolia")
-(def ^:const goerli "goerli")
 
 (def ^:const mainnet-chain-ids
   #{ethereum-mainnet-chain-id arbitrum-mainnet-chain-id optimism-mainnet-chain-id})
-
-(def ^:const goerli-chain-ids
-  #{ethereum-goerli-chain-id arbitrum-goerli-chain-id optimism-goerli-chain-id})
 
 (def ^:const sepolia-chain-ids
   #{ethereum-sepolia-chain-id arbitrum-sepolia-chain-id optimism-sepolia-chain-id})
@@ -516,7 +508,6 @@
 (def ^:const arbitrum-full-name "Arbitrum")
 
 (def ^:const sepolia-full-name "Sepolia")
-(def ^:const goerli-full-name "Goerli")
 
 (def ^:const mainnet-network-name :mainnet)
 (def ^:const ethereum-network-name :ethereum)

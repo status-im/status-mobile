@@ -122,10 +122,6 @@
                              :ens-name        "test.eth"
                              :chain-id        constants/ethereum-mainnet-chain-id
                              :expected-result "0xeefb13c7d42efcc655e528da6d6f7bbcf9a2251d"}
-                            {:description     "Test on Goerli testnet"
-                             :ens-name        "qoqobolo.stateofus.eth"
-                             :chain-id        constants/ethereum-goerli-chain-id
-                             :expected-result "0xf8f4f6b5c73f4fb561eb2676326d81b7aba180b0"}
                             {:description     "Test on Sepolia testnet"
                              :ens-name        "code.eth"
                              :chain-id        constants/ethereum-sepolia-chain-id

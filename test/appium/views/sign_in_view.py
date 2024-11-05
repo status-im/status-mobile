@@ -151,6 +151,7 @@ class SignInView(BaseView):
 
         self.terms_and_privacy_checkbox = Button(
             self.driver, xpath="//*[@content-desc='terms-privacy-checkbox-container']/*[@content-desc='checkbox-off']")
+        self.explore_new_status_button = Button(self.driver, accessibility_id="explore-new-status")
         self.create_profile_button = Button(self.driver, accessibility_id='new-to-status-button')
         self.not_now_button = Button(self.driver, xpath="//*[@text='Not now']")
         self.sync_or_recover_profile_button = Button(self.driver, accessibility_id='already-use-status-button')
@@ -269,17 +270,14 @@ class SignInView(BaseView):
         # self.identifiers_button.wait_and_click(30)
         if enable_notifications:
             self.enable_notifications_button.wait_and_click()
-            self.cancel_button.click_if_shown()  # TODO: remove when issue 20806 is fixed
             for _ in range(3):
                 self.allow_button.click_if_shown(sec=10)
-                self.cancel_button.click_if_shown()  # TODO: remove when issue 20806 is fixed
                 self.enable_notifications_button.click_if_shown()
                 if self.chats_tab.is_element_displayed():
                     break
         else:
             self.maybe_later_button.wait_and_click()
             for _ in range(3):
-                self.cancel_button.click_if_shown()  # TODO: remove when issue 20806 is fixed
                 self.maybe_later_button.click_if_shown()
                 if self.chats_tab.is_element_displayed():
                     break
@@ -309,17 +307,14 @@ class SignInView(BaseView):
         self.set_password(password)
         if enable_notifications:
             self.enable_notifications_button.wait_and_click()
-            self.cancel_button.click_if_shown()  # TODO: remove when issue 20806 is fixed
             for _ in range(3):
                 self.allow_button.click_if_shown(sec=10)
-                self.cancel_button.click_if_shown()  # TODO: remove when issue 20806 is fixed
                 self.enable_notifications_button.click_if_shown()
                 if self.chats_tab.is_element_displayed():
                     break
         else:
             self.maybe_later_button.wait_and_click()
             for _ in range(3):
-                self.cancel_button.click_if_shown()  # TODO: remove when issue 20806 is fixed
                 self.maybe_later_button.click_if_shown()
                 if self.chats_tab.is_element_displayed():
                     break

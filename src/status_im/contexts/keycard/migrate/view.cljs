@@ -10,7 +10,8 @@
   []
   (let [profile-name        (rf/sub [:profile/name])
         profile-picture     (rf/sub [:profile/image])
-        customization-color (rf/sub [:profile/customization-color])]
+        customization-color (rf/sub [:profile/customization-color])
+        initialized?        (rf/sub [:keycard/initialized?])]
     [:<>
      [quo/page-nav
       {:icon-name :i/close
@@ -30,5 +31,13 @@
      [quo/markdown-list {:description (i18n/label :t/keep-card-steady)}]
      [quo/bottom-actions
       {:actions          :one-action
-       :button-one-label (i18n/label :t/scan-keycard)
-       :button-one-props {:on-press #(rf/dispatch [:keycard/migration.start])}}]]))
+       :button-one-label (if initialized? (i18n/label :t/enter-keycard-pin) (i18n/label :t/scan-keycard))
+       :button-one-props {:on-press
+                          (fn []
+                            (if initialized?
+                              (do
+                                (rf/dispatch [:navigate-back])
+                                (rf/dispatch [:open-modal :screen/keycard.pin.enter
+                                              {:on-complete #(rf/dispatch
+                                                              [:keycard/migration.pin-entered %])}]))
+                              (rf/dispatch [:keycard/migration.start])))}}]]))
