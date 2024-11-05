@@ -34,7 +34,8 @@
 
 (defn view
   []
-  (let [accounts (rf/sub [:wallet/accounts-with-balances])]
+  (let [asset-to-pay (rf/sub [:wallet/swap-asset-to-pay])
+        accounts     (rf/sub [:wallet/accounts-with-balances asset-to-pay])]
     [floating-button-page/view
      {:footer-container-padding 0
       :header                   [quo/page-nav

@@ -56,12 +56,12 @@
 (re-frame/reg-sub
  :wallet/network-values
  :<- [:wallet/wallet-send]
- :<- [:wallet/send-display-token-decimals]
- (fn [[{:keys [from-values-by-chain to-values-by-chain token-display-name] :as send-data} token-decimals]
+ (fn [{:keys [from-values-by-chain to-values-by-chain token-display-name token] :as send-data}
       [_ to-values?]]
    (let [network-values (if to-values? to-values-by-chain from-values-by-chain)
          token-symbol   (or token-display-name
-                            (-> send-data :token :symbol))]
+                            (-> send-data :token :symbol))
+         token-decimals (:decimals token)]
      (reduce-kv
       (fn [acc chain-id amount]
         (let [network-name (network-utils/id->network chain-id)

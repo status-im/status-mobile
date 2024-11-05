@@ -32,6 +32,7 @@ class TestWalletMultipleDevice(MultipleSharedDeviceTestCase):
         self.wallet_1, self.wallet_2 = self.sign_in_1.get_wallet_view(), self.sign_in_2.get_wallet_view()
         self.wallet_1.wallet_tab.click()
         self.wallet_2.wallet_tab.click()
+        self.network = "Arbitrum"
 
     def _get_balances_before_tx(self):
         sender_balance = self.network_api.get_balance(self.sender['wallet_address'])
@@ -85,8 +86,8 @@ class TestWalletMultipleDevice(MultipleSharedDeviceTestCase):
                              (self.home_2.reopen_app, {'user_name': self.receiver_username}))))
         self.wallet_1.wallet_tab.wait_and_click()
         self.wallet_2.wallet_tab.wait_and_click()
-        self.wallet_1.select_network(network_name='Arbitrum')
-        self.wallet_2.select_network(network_name='Arbitrum')
+        self.wallet_1.set_network_in_wallet(network_name=self.network)
+        self.wallet_2.set_network_in_wallet(network_name=self.network)
         self.loop.run_until_complete(
             run_in_parallel(((wait_for_wallet_balance_to_update, {'wallet_view': self.wallet_1,
                                                                   'user_name': self.sender_username,
@@ -123,8 +124,8 @@ class TestWalletMultipleDevice(MultipleSharedDeviceTestCase):
 
     @marks.testrail_id(727229)
     def test_wallet_send_eth(self):
-        self.wallet_1.select_network(network_name='Arbitrum')
-        self.wallet_2.select_network(network_name='Arbitrum')
+        self.wallet_1.set_network_in_wallet(network_name=self.network)
+        self.wallet_2.set_network_in_wallet(network_name=self.network)
         sender_balance, receiver_balance, eth_amount_sender, eth_amount_receiver = self._get_balances_before_tx()
 
         self.wallet_2.close_account_button.click()
@@ -135,7 +136,8 @@ class TestWalletMultipleDevice(MultipleSharedDeviceTestCase):
         device_time_before_sending = self.wallet_1.driver.device_time
         self.wallet_1.send_asset(address='arb1:' + self.receiver['wallet_address'],
                                  asset_name='Ether',
-                                 amount=amount_to_send)
+                                 amount=amount_to_send,
+                                 network_name=self.network)
         self.network_api.wait_for_confirmation_of_transaction(address=self.sender['wallet_address'],
                                                               tx_time=device_time_before_sending)
 
@@ -167,7 +169,8 @@ class TestWalletMultipleDevice(MultipleSharedDeviceTestCase):
         device_time_before_sending = self.wallet_1.driver.device_time
         self.wallet_1.send_asset_from_drawer(address='arb1:' + self.receiver['wallet_address'],
                                              asset_name='Ether',
-                                             amount=amount_to_send)
+                                             amount=amount_to_send,
+                                             network_name=self.network)
         self.network_api.wait_for_confirmation_of_transaction(address=self.sender['wallet_address'],
                                                               tx_time=device_time_before_sending)
         device_time_after_sending = self.wallet_1.driver.device_time
@@ -234,7 +237,7 @@ class TestWalletOneDevice(MultipleSharedDeviceTestCase):
 
         for network in expected_balances:
             self.wallet_view.just_fyi("Checking total balance on %s network" % network)
-            self.wallet_view.select_network(network)
+            self.wallet_view.set_network_in_wallet(network)
             real_balance = {}
             for asset in expected_balances[network]:
                 real_balance[asset] = self.wallet_view.get_asset(asset).get_amount()
@@ -242,7 +245,7 @@ class TestWalletOneDevice(MultipleSharedDeviceTestCase):
                 if real_balance[asset] != expected_balances[network][asset]:
                     self.errors.append("For the %s the wrong value %s is shown, expected %s on %s" %
                                        (asset, real_balance[asset], expected_balances[network][asset], network))
-            self.wallet_view.select_network(network)
+            self.wallet_view.set_network_in_wallet(network)
 
         self.errors.verify_no_errors()
 

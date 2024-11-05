@@ -153,19 +153,9 @@
  :-> :to-address)
 
 (rf/reg-sub
- :wallet/wallet-send-address-prefix
- :<- [:wallet/wallet-send]
- :-> :address-prefix)
-
-(rf/reg-sub
  :wallet/wallet-send-receiver-networks
  :<- [:wallet/wallet-send]
  :-> :receiver-networks)
-
-(rf/reg-sub
- :wallet/wallet-send-receiver-preferred-networks
- :<- [:wallet/wallet-send]
- :-> :receiver-preferred-networks)
 
 (rf/reg-sub
  :wallet/wallet-send-route
@@ -181,14 +171,11 @@
  :wallet/wallet-send-token
  :<- [:wallet/wallet-send]
  :<- [:wallet/network-details]
- :<- [:wallet/wallet-send-disabled-from-chain-ids]
- (fn [[wallet-send networks disabled-from-chain-ids]]
-   (let [token                    (:token wallet-send)
-         disabled-from-chain-ids? (set disabled-from-chain-ids)
-         enabled-from-chain-ids   (->> networks
-                                       (map :chain-id)
-                                       (remove disabled-from-chain-ids?)
-                                       set)]
+ (fn [[wallet-send networks]]
+   (let [token                  (:token wallet-send)
+         enabled-from-chain-ids (->> networks
+                                     (map :chain-id)
+                                     set)]
      (some-> token
              (assoc :networks           (network-utils/network-list-with-positive-balance token networks)
                     :supported-networks (network-utils/network-list token networks)
@@ -202,16 +189,6 @@
  :<- [:wallet/wallet-send]
  (fn [{:keys [token-symbol token]}]
    (or token-symbol (:symbol token))))
-
-(rf/reg-sub
- :wallet/wallet-send-disabled-from-chain-ids
- :<- [:wallet/wallet-send]
- :-> :disabled-from-chain-ids)
-
-(rf/reg-sub
- :wallet/wallet-send-from-locked-amounts
- :<- [:wallet/wallet-send]
- :-> :from-locked-amounts)
 
 (rf/reg-sub
  :wallet/wallet-send-from-values-by-chain
@@ -579,6 +556,28 @@
         first)))
 
 (rf/reg-sub
+ :wallet/token-by-symbol-from-first-available-account-with-balance
+ :<- [:wallet/accounts]
+ :<- [:wallet/current-viewing-account-or-default]
+ :<- [:wallet/network-details]
+ (fn [[accounts {:keys [tokens]} networks] [_ token-symbol chain-ids]]
+   (when token-symbol
+     (or
+      (->> (utils/tokens-with-balance tokens networks chain-ids)
+           (filter #(and (= (string/lower-case (:symbol %))
+                            (string/lower-case token-symbol))
+                         (money/greater-than (:total-balance %) 0)))
+           first)
+      (some
+       (fn [{:keys [tokens]}]
+         (->> (utils/tokens-with-balance tokens networks chain-ids)
+              (filter #(and (= (string/lower-case (:symbol %))
+                               (string/lower-case token-symbol))
+                            (money/greater-than (:total-balance %) 0)))
+              first))
+       accounts)))))
+
+(rf/reg-sub
  :wallet/accounts-without-current-viewing-account
  :<- [:wallet/accounts]
  :<- [:wallet/current-viewing-account-address]
@@ -832,22 +831,6 @@
  :-> :public-address)
 
 (rf/reg-sub
- :wallet/wallet-send-enabled-networks
- :<- [:wallet/wallet-send-token]
- :<- [:wallet/wallet-send-disabled-from-chain-ids]
- (fn [[{:keys [networks]} disabled-from-chain-ids]]
-   (->> networks
-        (filter #(not (contains? (set disabled-from-chain-ids)
-                                 (:chain-id %))))
-        set)))
-
-(rf/reg-sub
- :wallet/wallet-send-enabled-from-chain-ids
- :<- [:wallet/wallet-send-enabled-networks]
- (fn [send-enabled-networks]
-   (map :chain-id send-enabled-networks)))
-
-(rf/reg-sub
  :wallet/wallet-send-fee-fiat-formatted
  :<- [:wallet/current-viewing-account]
  :<- [:wallet/wallet-send-route]
@@ -909,3 +892,23 @@
  :<- [:wallet/accounts-without-current-viewing-account]
  (fn [accounts]
    (get-emoji-and-colors-from-accounts accounts)))
+
+(rf/reg-sub
+ :wallet/accounts-with-balances
+ :<- [:wallet/operable-accounts]
+ (fn [accounts [_ token]]
+   (let [token-symbol (:symbol token)]
+     (map
+      (fn [account]
+        (let [tokens            (:tokens account)
+              filtered-tokens   (filter #(= (:symbol %) token-symbol) tokens)
+              asset-pay-balance (utils/calculate-total-token-balance filtered-tokens)
+              formatted-address (network-utils/format-address (:address account)
+                                                              (:network-preferences-names account))]
+          (assoc account
+                 :formatted-address formatted-address
+                 :asset-pay-balance (utils/sanitized-token-amount-to-display
+                                     asset-pay-balance
+                                     constants/min-token-decimals-to-display)
+                 :asset-pay-symbol  token-symbol)))
+      accounts))))

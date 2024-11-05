@@ -1,13 +1,14 @@
 (ns status-im.contexts.wallet.send.from.view
   (:require
+    [clojure.string :as string]
     [quo.core :as quo]
     [react-native.core :as rn]
     [react-native.safe-area :as safe-area]
     [status-im.common.floating-button-page.view :as floating-button-page]
     [status-im.contexts.wallet.common.account-switcher.view :as account-switcher]
     [status-im.contexts.wallet.send.from.style :as style]
-    [status-im.setup.hot-reload :as hot-reload]
     [utils.i18n :as i18n]
+    [utils.money :as money]
     [utils.re-frame :as rf]))
 
 (defn- on-account-press
@@ -15,27 +16,29 @@
   (rf/dispatch [:wallet/select-from-account
                 {:address         address
                  :network-details network-details
-                 :stack-id        :screen/wallet.select-from}]))
-
-(defn- on-close
-  []
-  (rf/dispatch [:wallet/clean-current-viewing-account]))
+                 :stack-id        :screen/wallet.select-from
+                 :start-flow?     true}]))
 
 (defn- render-fn
   [item _ _ {:keys [network-details]}]
-  (let [transformed-address (rf/sub [:wallet/account-address (:address item)
-                                     (:network-preferences-names item)])]
+  (let [has-balance (money/above-zero? (string/replace-first (:asset-pay-balance item) "<" ""))]
     [quo/account-item
-     {:on-press      #(on-account-press (:address item) network-details)
+     {:type          (if has-balance :tag :default)
+      :on-press      #(on-account-press (:address item) network-details)
+      :state         (if has-balance :default :disabled)
+      :token-props   {:symbol (:asset-pay-symbol item)
+                      :value  (:asset-pay-balance item)}
       :account-props (assoc item
-                            :address       transformed-address
+                            :address       (:formatted-address item)
                             :full-address? true)}]))
 
 (defn view
   []
-  (let [accounts        (rf/sub [:wallet/accounts-with-current-asset])
+  (let [token-symbol    (rf/sub [:wallet/send-token-symbol])
+        token           (rf/sub [:wallet/token-by-symbol-from-first-available-account-with-balance
+                                 token-symbol])
+        accounts        (rf/sub [:wallet/accounts-with-balances token])
         network-details (rf/sub [:wallet/network-details])]
-    (hot-reload/use-safe-unmount on-close)
     [floating-button-page/view
      {:footer-container-padding 0
       :header                   [account-switcher/view

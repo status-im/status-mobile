@@ -226,7 +226,7 @@ class TestFallbackMultipleDevice(MultipleSharedDeviceTestCase):
         self.profile_2.click_system_back_button(times=3)
 
         wallet_2.just_fyi("Device 2: check wallet balance")
-        wallet_2.select_network(network_name='Arbitrum')
+        wallet_2.set_network_in_wallet(network_name='Arbitrum')
         expected_balance = self.network_api.get_balance(key_pair_account_address)
         shown_balance = wallet_2.get_asset(asset_name='Ether').get_amount()
         if shown_balance != round(expected_balance, 5):

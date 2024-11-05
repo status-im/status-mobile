@@ -10,11 +10,13 @@
     [status-im.contexts.settings.wallet.effects]
     [status-im.contexts.settings.wallet.events]
     [status-im.contexts.wallet.common.activity-tab.events]
+    [status-im.contexts.wallet.common.utils :as utils]
     [status-im.contexts.wallet.common.utils.external-links :as external-links]
     [status-im.contexts.wallet.common.utils.networks :as network-utils]
     [status-im.contexts.wallet.data-store :as data-store]
     [status-im.contexts.wallet.db :as db]
     [status-im.contexts.wallet.item-types :as item-types]
+    [status-im.contexts.wallet.sheets.network-selection.view :as network-selection]
     [status-im.contexts.wallet.tokens.events]
     [status-im.feature-flags :as ff]
     [taoensso.timbre :as log]
@@ -355,19 +357,79 @@
 (rf/reg-event-fx :wallet/get-keypairs get-keypairs)
 
 (rf/reg-event-fx :wallet/bridge-select-token
- (fn [{:keys [db]} [{:keys [token token-symbol stack-id start-flow?]}]]
-   (let [missing-recipient? (-> db :wallet :ui :send :to-address nil?)
-         to-address         (-> db :wallet :current-viewing-account-address)]
+ (fn [{:keys [db]}
+      [{:keys [token token-symbol stack-id network owners network-details start-flow?] :as params}]]
+   (let [{:keys [wallet]}             db
+         unique-owner                 (when (= (count owners) 1)
+                                        (first owners))
+         token                        (if (and unique-owner (nil? token))
+                                        (let [token (utils/get-token-from-account db
+                                                                                  token-symbol
+                                                                                  unique-owner)]
+                                          (utils/token-with-balance token network-details))
+                                        token)
+         missing-recipient?           (-> db :wallet :ui :send :to-address nil?)
+         to-address                   (or unique-owner
+                                          (-> db :wallet :current-viewing-account-address)
+                                          (utils/get-default-account (-> db :wallet :accounts)))
+         view-id                      (:view-id db)
+         root-screen?                 (or (= view-id :wallet-stack) (nil? view-id))
+         multi-account-balance?       (-> (utils/get-accounts-with-token-balance (:accounts wallet)
+                                                                                 token)
+                                          (count)
+                                          (> 1))
+         account-not-defined?         (and (not unique-owner) multi-account-balance?)
+         networks-with-balance        (when (and token (:balances-per-chain token))
+                                        (filter #(not= (:balance %) "0")
+                                                (vals (:balances-per-chain token))))
+         balance-in-only-one-network? (when networks-with-balance (= (count networks-with-balance) 1))
+         test-networks-enabled?       (get-in db [:profile/profile :test-networks-enabled?])
+         network-details              (-> (get-in db
+                                                  [:wallet :networks
+                                                   (if test-networks-enabled? :test :prod)])
+                                          (network-utils/sorted-networks-with-details))
+         network                      (if balance-in-only-one-network?
+                                        (first (filter #(= (:chain-id %)
+                                                           (:chain-id (first networks-with-balance)))
+                                                       network-details))
+                                        network)]
      {:db (cond-> db
             :always            (assoc-in [:wallet :ui :send :tx-type] :tx/bridge)
             token              (assoc-in [:wallet :ui :send :token] token)
             token-symbol       (assoc-in [:wallet :ui :send :token-symbol] token-symbol)
+            network            (assoc-in [:wallet :ui :send :network] network)
             missing-recipient? (assoc-in [:wallet :ui :send :to-address] to-address))
-      :fx [[:dispatch
-            [:wallet/wizard-navigate-forward
-             {:current-screen stack-id
-              :start-flow?    start-flow?
-              :flow-id        :wallet-bridge-flow}]]]})))
+      :fx (cond
+            ;; If the token has a balance in more than one account and this was dispatched from the
+            ;; general wallet screen, open the account selection screen.
+            (and account-not-defined? root-screen?)
+            [[:dispatch [:open-modal :screen/wallet.select-from]]]
+
+            ;; If the token has a balance in only one account (or this was dispatched from the
+            ;; account screen) and the network is already set, navigate forward in the bridge flow.
+            (some? network)
+            [[:dispatch
+              [:wallet/wizard-navigate-forward
+               {:current-screen stack-id
+                :start-flow?    start-flow?
+                :flow-id        :wallet-bridge-flow}]]]
+
+            ;; If we know which account to bridge the token from but the network is not set yet,
+            ;; show the network selection drawer.
+            :else
+            [[:dispatch [:wallet/switch-current-viewing-account to-address]]
+             [:dispatch
+              [:show-bottom-sheet
+               {:content (fn []
+                           [network-selection/view
+                            {:title             (i18n/label :t/select-network-to-bridge-from)
+                             :token-symbol      (or token-symbol (:symbol token))
+                             :source            :bridge
+                             :on-select-network (fn [network]
+                                                  (rf/dispatch [:hide-bottom-sheet])
+                                                  (rf/dispatch
+                                                   [:wallet/bridge-select-token
+                                                    (assoc params :network network)]))}])}]]])})))
 
 (rf/reg-event-fx :wallet/start-bridge
  (fn [{:keys [db]}]

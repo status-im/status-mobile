@@ -77,24 +77,31 @@
 (defn token-value-drawer
   [token watch-only? entry-point]
   (let [token-symbol         (:token token)
-        token-data           (rf/sub [:wallet/token-by-symbol token-symbol])
+        token-data           (rf/sub [:wallet/token-by-symbol-from-first-available-account-with-balance
+                                      token-symbol])
         selected-account     (rf/sub [:wallet/current-viewing-account-address])
         token-owners         (rf/sub [:wallet/operable-addresses-with-token-symbol token-symbol])
         testnet-mode?        (rf/sub [:profile/test-networks-enabled?])
         account-owns-token?  (rf/sub [:wallet/current-account-owns-token token-symbol])
+        network-details      (rf/sub [:wallet/network-details])
         receive-token-symbol (if (= token-symbol "SNT") "ETH" "SNT")
         token-owned?         (if selected-account account-owns-token? (seq token-owners))
         asset-to-receive     (rf/sub [:wallet/token-by-symbol receive-token-symbol])
-        params               (cond-> {:start-flow?      true
-                                      :owners           token-owners
-                                      :testnet-mode?    testnet-mode?
-                                      :asset-to-receive asset-to-receive}
+        unique-owner?        (= (count token-owners) 1)
+        params               (cond-> {:start-flow?   true
+                                      :owners        token-owners
+                                      :testnet-mode? testnet-mode?}
                                selected-account
                                (assoc :token        token-data
                                       :stack-id     :screen/wallet.accounts
                                       :has-balance? (-> (get-in token [:values :fiat-unformatted-value])
                                                         money/above-zero?))
-                               (not selected-account)
+                               (and (not selected-account) unique-owner?)
+                               (assoc :token-symbol token-symbol
+                                      :token        token-data
+                                      :stack-id     :wallet-stack)
+
+                               (and (not selected-account) (not unique-owner?))
                                (assoc :token-symbol token-symbol
                                       :stack-id     :wallet-stack))]
     [quo/action-drawer
@@ -108,9 +115,13 @@
                    (action-send params entry-point))
                  (action-receive selected-account)
                  (when token-owned?
-                   (action-swap params))
+                   (action-swap (assoc params
+                                       :asset-to-receive
+                                       asset-to-receive)))
                  (when token-owned?
                    (action-bridge (assoc params
+                                         :network-details
+                                         network-details
                                          :bridge-disabled?
                                          (send-utils/bridge-disabled? token-symbol))))]))]]))
 
@@ -120,7 +131,11 @@
    (cond-> item
      (or (not watch-only?) (ff/enabled? ::ff/wallet.long-press-watch-only-asset))
      (assoc :on-long-press
-            #(rf/dispatch
-              [:show-bottom-sheet
-               {:content       (fn [] [token-value-drawer item watch-only? entry-point])
-                :selected-item (fn [] [quo/token-value item])}])))])
+            (fn []
+              (when (= entry-point :wallet-stack)
+                (rf/dispatch [:wallet/close-account-page])
+                (rf/dispatch [:wallet/clean-current-viewing-account]))
+              (rf/dispatch
+               [:show-bottom-sheet
+                {:content       (fn [] [token-value-drawer item watch-only? entry-point])
+                 :selected-item (fn [] [quo/token-value item])}]))))])

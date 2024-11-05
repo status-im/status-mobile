@@ -25,10 +25,9 @@
    :height      40})
 
 (def fees-data-item
-  {:flex              1
-   :height            40
-   :margin-horizontal 16
-   :background-color  :transparent})
+  {:flex             1
+   :height           40
+   :background-color :transparent})
 
 (def amount-data-item
   {:flex             1

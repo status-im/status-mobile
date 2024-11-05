@@ -546,14 +546,20 @@
   (let [priority #(get constants/token-sort-priority (:symbol %) ##Inf)]
     (sort-by (juxt :symbol priority) tokens)))
 
+(defn token-with-balance
+  ([token networks]
+   (token-with-balance token networks nil))
+  ([token networks chain-ids]
+   (assoc token
+          :networks           (network-utils/network-list-with-positive-balance token networks)
+          :supported-networks (network-utils/network-list token networks)
+          :available-balance  (calculate-total-token-balance token)
+          :total-balance      (calculate-total-token-balance token chain-ids))))
+
 (defn tokens-with-balance
   [tokens networks chain-ids]
   (map (fn [token]
-         (assoc token
-                :networks           (network-utils/network-list-with-positive-balance token networks)
-                :supported-networks (network-utils/network-list token networks)
-                :available-balance  (calculate-total-token-balance token)
-                :total-balance      (calculate-total-token-balance token chain-ids)))
+         (token-with-balance token networks chain-ids))
        tokens))
 
 (defn estimated-time-format

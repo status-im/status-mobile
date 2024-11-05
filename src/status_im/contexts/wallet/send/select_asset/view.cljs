@@ -78,7 +78,7 @@
        :on-press      on-close
        :switcher-type :select-account}]
      [quo/page-top
-      {:title                     (i18n/label :t/select-asset)
+      {:title                     (i18n/label :t/select-token)
        :title-accessibility-label :title-label}]
      [quo/segmented-control
       {:size            32

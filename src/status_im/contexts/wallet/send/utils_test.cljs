@@ -85,11 +85,9 @@
   (testing "Correctly calculates network (out) amounts for bridge transaction"
     (let [route          [{:bridge-name "Hop"
                            :amount-in   "0xde0b6b3a7640000"
-                           :bonder-fees (money/bignumber "200000000000000")
                            :token-fees  (money/bignumber "230000000000000")
                            :to          {:chain-id 1}}
                           {:bridge-name "Hop"
-                           :bonder-fees (money/bignumber "300000000000000")
                            :token-fees  (money/bignumber "410000000000000")
                            :amount-in   "0xde0b6b3a7640000"
                            :to          {:chain-id 10}}]
@@ -100,8 +98,8 @@
                                                           :token-decimals token-decimals
                                                           :native-token?  native-token?
                                                           :receiver?      receiver?})
-          expected       {1  (money/bignumber "0.99997")
-                          10 (money/bignumber "0.99989")}]
+          expected       {1  (money/bignumber "0.99977")
+                          10 (money/bignumber "0.99959")}]
       (doseq [[chain-id exp-value] expected]
         (is (money/equal-to (get result chain-id) exp-value))))))
 
@@ -350,171 +348,12 @@
       (is (every? identity comparisons)))))
 
 (deftest network-amounts-test
-  (testing "Handles disabled and receiver networks correctly when receiver? is true"
-    (let [network-values     {10 (money/bignumber "200")}
-          disabled-chain-ids [1]
-          receiver-networks  [10]
-          token-networks-ids [1 10 42161]
-          receiver?          true
-          expected           [{:chain-id     10
-                               :total-amount (money/bignumber "200")
-                               :type         :default}
-                              {:type :edit}]
-          tx-type            :tx/send
-          result             (utils/network-amounts {:network-values     network-values
-                                                     :disabled-chain-ids disabled-chain-ids
-                                                     :receiver-networks  receiver-networks
-                                                     :token-networks-ids token-networks-ids
-                                                     :tx-type            tx-type
-                                                     :receiver?          receiver?})]
-      (is (every? identity (map #(map/deep-compare %1 %2) expected result)))))
-
-  (testing "Adds default amount for non-disabled non-receiver networks when receiver? is false"
-    (let [network-values     {1 (money/bignumber "100")}
-          disabled-chain-ids [10]
-          receiver-networks  []
-          token-networks-ids [1 10 42161]
-          receiver?          false
-          expected           [{:chain-id     1
-                               :total-amount (money/bignumber "100")
-                               :type         :default}
-                              {:chain-id     10
-                               :total-amount (money/bignumber "0")
-                               :type         :disabled}]
-          tx-type            :tx/send
-          result             (utils/network-amounts {:network-values     network-values
-                                                     :disabled-chain-ids disabled-chain-ids
-                                                     :receiver-networks  receiver-networks
-                                                     :token-networks-ids token-networks-ids
-                                                     :tx-type            tx-type
-                                                     :receiver?          receiver?})]
-      (is (every? identity (map #(map/deep-compare %1 %2) expected result)))))
-
-  (testing "Handles empty inputs correctly"
-    (let [network-values     {}
-          disabled-chain-ids []
-          receiver-networks  []
-          token-networks-ids []
-          receiver?          true
-          expected           []
-          tx-type            :tx/send
-          result             (utils/network-amounts {:network-values     network-values
-                                                     :disabled-chain-ids disabled-chain-ids
-                                                     :receiver-networks  receiver-networks
-                                                     :token-networks-ids token-networks-ids
-                                                     :tx-type            tx-type
-                                                     :receiver?          receiver?})]
-      (is (= expected result))))
-
-  (testing "Processes case with multiple network interactions"
-    (let [network-values     {1     (money/bignumber "300")
-                              10    (money/bignumber "400")
-                              42161 (money/bignumber "500")}
-          disabled-chain-ids [1 42161]
-          receiver-networks  [10]
-          token-networks-ids [1 10 42161]
-          receiver?          true
-          expected           [{:chain-id     1
-                               :total-amount (money/bignumber "300")
-                               :type         :default}
-                              {:chain-id     10
-                               :total-amount (money/bignumber "400")
-                               :type         :default}
-                              {:chain-id     42161
-                               :total-amount (money/bignumber "500")
-                               :type         :default}
-                              {:type :edit}]
-          tx-type            :tx/send
-          result             (utils/network-amounts {:network-values     network-values
-                                                     :disabled-chain-ids disabled-chain-ids
-                                                     :receiver-networks  receiver-networks
-                                                     :token-networks-ids token-networks-ids
-                                                     :tx-type            tx-type
-                                                     :receiver?          receiver?})]
-      (is (every? identity (map #(map/deep-compare %1 %2) expected result)))))
-
-  (testing "Does not assign :not-available type when receiver? is false"
-    (let [network-values     {1 (money/bignumber "100")}
-          disabled-chain-ids [10]
-          receiver-networks  [1]
-          token-networks-ids [1 10]
-          receiver?          false
-          expected           [{:chain-id     1
-                               :total-amount (money/bignumber "100")
-                               :type         :default}
-                              {:chain-id     10
-                               :total-amount (money/bignumber "0")
-                               :type         :disabled}]
-          tx-type            :tx/send
-          result             (utils/network-amounts {:network-values     network-values
-                                                     :disabled-chain-ids disabled-chain-ids
-                                                     :receiver-networks  receiver-networks
-                                                     :token-networks-ids token-networks-ids
-                                                     :tx-type            tx-type
-                                                     :receiver?          receiver?})]
-      (is (every? identity (map #(map/deep-compare %1 %2) expected result)))))
-
-  (testing
-    "Assigns :not-available type to networks not available in token-networks-ids when receiver? is true"
-    (let [network-values     {1 (money/bignumber "100")}
-          disabled-chain-ids []
-          receiver-networks  [1 10]
-          token-networks-ids [1]
-          receiver?          false
-          expected           [{:chain-id     1
-                               :total-amount (money/bignumber "100")
-                               :type         :default}
-                              {:chain-id     10
-                               :total-amount nil
-                               :type         :not-available}]
-          tx-type            :tx/send
-          result             (utils/network-amounts {:network-values     network-values
-                                                     :disabled-chain-ids disabled-chain-ids
-                                                     :receiver-networks  receiver-networks
-                                                     :token-networks-ids token-networks-ids
-                                                     :tx-type            tx-type
-                                                     :receiver?          receiver?})]
-      (is (every? identity (map #(map/deep-compare %1 %2) expected result)))))
-
-  (testing
-    "Handles disabled and receiver networks correctly when receiver? is false and tx-type is :tx/bridge"
-    (let [network-values     {10 (money/bignumber "200")}
-          disabled-chain-ids [1]
-          receiver-networks  [10]
-          token-networks-ids [1 10]
-          tx-type            :tx/bridge
-          receiver?          false
-          expected           [{:chain-id     1
-                               :total-amount (money/bignumber "0")
-                               :type         :disabled}
-                              {:chain-id     10
-                               :total-amount (money/bignumber "200")
-                               :type         :default}]
-          result             (utils/network-amounts {:network-values     network-values
-                                                     :disabled-chain-ids disabled-chain-ids
-                                                     :receiver-networks  receiver-networks
-                                                     :token-networks-ids token-networks-ids
-                                                     :tx-type            tx-type
-                                                     :receiver?          receiver?})]
-      (is (every? identity (map #(map/deep-compare %1 %2) expected result)))))
-
-  (testing
-    "Handles disabled and receiver networks correctly when receiver? is true and tx-type is :tx/bridge"
-    (let [network-values     {10 (money/bignumber "200")}
-          disabled-chain-ids [1]
-          receiver-networks  [10]
-          token-networks-ids [1 10]
-          tx-type            :tx/bridge
-          receiver?          true
-          expected           [{:chain-id     10
-                               :total-amount (money/bignumber "200")
-                               :type         :default}]
-          result             (utils/network-amounts {:network-values     network-values
-                                                     :disabled-chain-ids disabled-chain-ids
-                                                     :receiver-networks  receiver-networks
-                                                     :token-networks-ids token-networks-ids
-                                                     :tx-type            tx-type
-                                                     :receiver?          receiver?})]
+  (testing "Handles network values with one chain"
+    (let [network-values {10 (money/bignumber "200")}
+          expected       [{:chain-id     10
+                           :total-amount (money/bignumber "200")
+                           :type         :default}]
+          result         (utils/network-amounts network-values)]
       (is (every? identity (map #(map/deep-compare %1 %2) expected result))))))
 
 (deftest loading-network-amounts-test
@@ -526,27 +365,6 @@
           receiver?          true
           expected           [{:chain-id 1 :type :loading}
                               {:chain-id 10 :type :loading}]
-          tx-type            :tx/send
-          result             (utils/loading-network-amounts {:valid-networks     valid-networks
-                                                             :disabled-chain-ids disabled-chain-ids
-                                                             :receiver-networks  receiver-networks
-                                                             :token-networks-ids token-networks-ids
-                                                             :tx-type            tx-type
-                                                             :receiver?          receiver?})
-          comparisons        (map #(map/deep-compare %1 %2)
-                                  expected
-                                  result)]
-      (is (every? identity comparisons))))
-
-  (testing "Assigns :disabled type with zero total-amount to disabled networks when receiver? is false"
-    (let [valid-networks     [1 10 42161]
-          disabled-chain-ids [10 42161]
-          receiver-networks  [1]
-          token-networks-ids [1 10 42161]
-          receiver?          false
-          expected           [{:chain-id 1 :type :loading}
-                              {:chain-id 10 :type :disabled :total-amount (money/bignumber "0")}
-                              {:chain-id 42161 :type :disabled :total-amount (money/bignumber "0")}]
           tx-type            :tx/send
           result             (utils/loading-network-amounts {:valid-networks     valid-networks
                                                              :disabled-chain-ids disabled-chain-ids

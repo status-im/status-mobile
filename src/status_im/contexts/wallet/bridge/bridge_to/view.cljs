@@ -1,6 +1,5 @@
 (ns status-im.contexts.wallet.bridge.bridge-to.view
   (:require
-    [clojure.string :as string]
     [quo.core :as quo]
     [quo.foundations.resources :as quo.resources]
     [quo.theme]
@@ -16,27 +15,34 @@
 (defn- bridge-token-component
   []
   (fn [{:keys [chain-id network-name]} {:keys [supported-networks] :as token}]
-    (let [network                     (rf/sub [:wallet/network-details-by-chain-id chain-id])
-          currency                    (rf/sub [:profile/currency])
-          currency-symbol             (rf/sub [:profile/currency-symbol])
-          prices-per-token            (rf/sub [:wallet/prices-per-token])
-          balance                     (utils/calculate-total-token-balance token [chain-id])
-          crypto-value                (utils/get-standard-crypto-format token balance prices-per-token)
-          fiat-value                  (utils/calculate-token-fiat-value
-                                       {:currency         currency
-                                        :balance          balance
-                                        :token            token
-                                        :prices-per-token prices-per-token})
-          fiat-formatted              (utils/fiat-formatted-for-ui currency-symbol
-                                                                   fiat-value)
-          token-available-on-network? (network-utils/token-available-on-network? supported-networks
-                                                                                 chain-id)]
+    (let [network                               (rf/sub [:wallet/network-details-by-chain-id chain-id])
+          currency                              (rf/sub [:profile/currency])
+          currency-symbol                       (rf/sub [:profile/currency-symbol])
+          prices-per-token                      (rf/sub [:wallet/prices-per-token])
+          selected-network                      (rf/sub [:wallet/send-network])
+          {selected-network-chain-id :chain-id} selected-network
+          balance                               (utils/calculate-total-token-balance token [chain-id])
+          crypto-value                          (utils/get-standard-crypto-format token
+                                                                                  balance
+                                                                                  prices-per-token)
+          fiat-value                            (utils/calculate-token-fiat-value
+                                                 {:currency         currency
+                                                  :balance          balance
+                                                  :token            token
+                                                  :prices-per-token prices-per-token})
+          fiat-formatted                        (utils/fiat-formatted-for-ui currency-symbol
+                                                                             fiat-value)
+          token-available-on-network?           (network-utils/token-available-on-network?
+                                                 supported-networks
+                                                 chain-id)]
       [quo/network-list
        {:label         (name network-name)
         :network-image (quo.resources/get-network (:network-name network))
         :token-value   (str crypto-value " " (:symbol token))
         :fiat-value    fiat-formatted
-        :state         (if token-available-on-network? :default :disabled)
+        :state         (if (and token-available-on-network? (not= chain-id selected-network-chain-id))
+                         :default
+                         :disabled)
         :on-press      #(rf/dispatch [:wallet/select-bridge-network
                                       {:network-chain-id chain-id
                                        :stack-id         :screen/wallet.bridge-to}])}])))
@@ -55,8 +61,7 @@
                            (assoc account-token
                                   :networks           (:networks token)
                                   :supported-networks (:supported-networks token)))
-        bridge-to-title  (i18n/label :t/bridge-to
-                                     {:name (string/upper-case (str token-symbol))})]
+        bridge-to-title  (i18n/label :t/select-network-to-receive)]
 
     (hot-reload/use-safe-unmount #(rf/dispatch [:wallet/clean-bridge-to-selection]))
 

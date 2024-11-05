@@ -113,7 +113,7 @@ class WalletView(BaseView):
         self.key_pair_name_input = EditBox(
             self.driver, xpath="//*[@text='Key pair name']/..//following-sibling::*/*[@content-desc='input']")
 
-    def select_network(self, network_name: str):
+    def set_network_in_wallet(self, network_name: str):
         self.network_drop_down.click()
         Button(self.driver, accessibility_id="%s, label-component" % network_name.capitalize()).click()
         self.network_drop_down.click()
@@ -127,8 +127,12 @@ class WalletView(BaseView):
         return element
 
     def select_asset(self, asset_name: str):
-        return Button(driver=self.driver,
-                      xpath="//*[@content-desc='token-network']/android.widget.TextView[@text='%s']" % asset_name)
+        Button(driver=self.driver,
+               xpath="//*[@content-desc='token-network']/android.widget.TextView[@text='%s']" % asset_name).click()
+
+    def select_network(self, network_name: str):
+        Button(driver=self.driver,
+               xpath="//*[@content-desc='network-list']/*[@text='%s']" % network_name).click()
 
     def slide_and_confirm_with_password(self):
         self.slide_button_track.slide()
@@ -148,27 +152,23 @@ class WalletView(BaseView):
         for i in '{:f}'.format(amount).rstrip('0'):
             Button(self.driver, accessibility_id='keyboard-key-%s' % i).click()
 
-    def disable_mainnet_in_from_network(self):
-        if self.from_network_text.text == 'Mainnet':
-            self.from_network_text.click()
-
-    def send_asset(self, address: str, asset_name: str, amount: float):
+    def send_asset(self, address: str, asset_name: str, amount: float, network_name: str):
         self.send_button.click()
         self.address_text_input.send_keys(address)
         self.continue_button.click()
-        self.select_asset(asset_name).click()
+        self.select_asset(asset_name)
+        self.select_network(network_name)
         self.set_amount(amount)
-        self.disable_mainnet_in_from_network()
         self.confirm_transaction()
 
-    def send_asset_from_drawer(self, address: str, asset_name: str, amount: float):
+    def send_asset_from_drawer(self, address: str, asset_name: str, amount: float, network_name: str):
         asset_element = self.get_asset(asset_name)
         asset_element.long_press_element()
         self.send_from_drawer_button.click()
+        self.select_network(network_name)
         self.address_text_input.send_keys(address)
         self.continue_button.click()
         self.set_amount(amount)
-        self.disable_mainnet_in_from_network()
         self.confirm_transaction()
 
     def add_regular_account(self, account_name: str):

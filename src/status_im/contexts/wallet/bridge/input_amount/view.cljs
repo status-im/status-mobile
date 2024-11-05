@@ -21,5 +21,4 @@
                                               :stack-id :screen/wallet.bridge-input-amount}]))
      :on-navigate-back       (fn []
                                (rf/dispatch-sync [:wallet/stop-and-clean-suggested-routes])
-                               (rf/dispatch [:wallet/clean-disabled-from-networks])
                                (rf/dispatch [:wallet/clean-send-amount]))}]])

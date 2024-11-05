@@ -2,7 +2,7 @@
   (:require
     [re-frame.core :as rf]
     [status-im.constants :as constants]
-    [status-im.contexts.wallet.common.activity-tab.constants :as activity-constants]
+    [status-im.contexts.wallet.common.activity-tab.constants :as activity-tab-constants]
     [status-im.contexts.wallet.common.utils :as common-utils]
     [status-im.contexts.wallet.send.utils :as send-utils]
     [utils.money :as money]
@@ -35,6 +35,11 @@
  :-> :token)
 
 (rf/reg-sub
+ :wallet/send-token-symbol
+ :<- [:wallet/wallet-send]
+ :-> :token-symbol)
+
+(rf/reg-sub
  :wallet/send-transaction-ids
  :<- [:wallet/wallet-send]
  :-> :transaction-ids)
@@ -53,6 +58,11 @@
  :wallet/send-tx-type
  :<- [:wallet/wallet-send]
  :-> :tx-type)
+
+(rf/reg-sub
+ :wallet/send-network
+ :<- [:wallet/wallet-send]
+ :-> :network)
 
 (rf/reg-sub
  :wallet/sending-collectible?
@@ -77,7 +87,7 @@
      (->> address-activity
           (sort :timestamp)
           (keep (fn [{:keys [activity-type recipient]}]
-                  (when (= activity-constants/wallet-activity-type-send activity-type)
+                  (when (= activity-tab-constants/wallet-activity-type-send activity-type)
                     recipient)))
           (distinct)))))
 
@@ -173,3 +183,39 @@
                (= (:chain-id network) bridge-to-chain-id)
                network))
            networks))))
+
+(rf/reg-sub
+ :wallet/send-token-grouped-networks
+ :<- [:wallet/wallet-send-token]
+ (fn [token]
+   (let [{token-networks :networks} token
+         grouped-networks           (group-by :layer
+                                              token-networks)
+         mainnet-network            (first (get grouped-networks constants/layer-1-network))
+         layer-2-networks           (get grouped-networks constants/layer-2-network)]
+     {:mainnet-network  mainnet-network
+      :layer-2-networks layer-2-networks})))
+
+(rf/reg-sub
+ :wallet/send-token-network-balance
+ :<- [:wallet/wallet-send-token]
+ :<- [:profile/currency]
+ :<- [:profile/currency-symbol]
+ :<- [:wallet/prices-per-token]
+ (fn [[token currency currency-symbol prices-per-token] [_ chain-id]]
+   (let [{:keys [balances-per-chain
+                 decimals]} token
+         balance-for-chain  (get balances-per-chain chain-id)
+         total-balance      (money/token->unit (:raw-balance balance-for-chain) decimals)
+         fiat-value         (common-utils/calculate-token-fiat-value
+                             {:currency         currency
+                              :balance          total-balance
+                              :token            token
+                              :prices-per-token prices-per-token})
+         crypto-formatted   (common-utils/get-standard-crypto-format token
+                                                                     total-balance
+                                                                     prices-per-token)
+         fiat-formatted     (common-utils/fiat-formatted-for-ui currency-symbol
+                                                                fiat-value)]
+     {:crypto (str crypto-formatted " " (:symbol token))
+      :fiat   fiat-formatted})))
