@@ -27,7 +27,7 @@
        (cond-> {:status status
                 :size   :default}
          (not= :success status) (assoc :icon :i/info)
-         (= :success status)    (assoc :icon :i/positive-state)
+         (= :success status)    (assoc :icon :i/check-circle)
          (= :default status)    (assoc :color colors/white-70-blur))
        text])]])
 
@@ -141,9 +141,10 @@
       (when same-passwords?
         [rn/view {:style style/disclaimer-container}
          [quo/disclaimer
-          {:blur?     true
-           :on-change on-disclaimer-change
-           :checked?  disclaimer-accepted?}
+          {:blur?               true
+           :customization-color customization-color
+           :on-change           on-disclaimer-change
+           :checked?            disclaimer-accepted?}
           (i18n/label :t/password-creation-disclaimer)]])
       (when (and focused? (not same-passwords?))
         [help

@@ -870,7 +870,11 @@ public class PushNotificationHelper {
     public void start() {
         Log.e(LOG_TAG, "Starting Foreground Service");
         Intent serviceIntent = new Intent(context, ForegroundService.class);
-        context.startService(serviceIntent);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            context.startForegroundService(serviceIntent);
+        } else {
+            context.startService(serviceIntent);
+        }
         this.registerBroadcastReceiver();
     }
 

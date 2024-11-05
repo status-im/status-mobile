@@ -41,3 +41,9 @@
  :<- [:keycard]
  (fn [keycard]
    (:application-info-error keycard)))
+
+(rf/reg-sub
+ :keycard/initialized?
+ :<- [:keycard]
+ (fn [keycard]
+   (get-in keycard [:application-info :initialized?])))
