@@ -12,8 +12,9 @@
         scroll-down-button-opacity (worklets/scroll-down-button-opacity
                                     chat-list-scroll-y
                                     false
-                                    window-height)]
-    [rn/view {:style style/shell-button-container}
+                                    window-height)
+        able-to-send-message?      (rf/sub [:chats/able-to-send-message?])]
+    [rn/view {:style (style/shell-button-container able-to-send-message?)}
      [quo/floating-shell-button
       {:scroll-to-bottom {:on-press #(rf/dispatch [:chat.ui/scroll-to-bottom])}}
       style/scroll-to-bottom-button
