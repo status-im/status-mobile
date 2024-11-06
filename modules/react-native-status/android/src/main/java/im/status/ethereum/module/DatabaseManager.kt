@@ -20,7 +20,7 @@ class DatabaseManager(private val reactContext: ReactApplicationContext) : React
 
     private fun getExportDBFile(): File {
         StatusBackendClient.getInstance()?.let {
-            if (it.enabled) {
+            if (it.serverEnabled) {
                 return File(it.rootDataDir, exportDBFileName)
             }
         }

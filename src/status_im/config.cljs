@@ -135,9 +135,13 @@
 ;; interfere with react-native debug tools, such as inspector and Perf monitor
 (def enable-alert-banner? (enabled? (get-config :ENABLE_ALERT_BANNER "0")))
 
-(goog-define STATUS_BACKEND_ENABLED "0")
-;; e.g. 127.0.0.1:58935
+;; enable using status backend server or not, otherwise it will use built-in status-go library
+;; see doc/use-status-backend-server.md for more details
+(goog-define STATUS_BACKEND_SERVER_ENABLED "0")
+;; The host should contain an IP address and a port separated by a colon. 
+;; The port comes from your running status backend server. 
+;; If you run it by PORT=60000 make run-status-backend , then host will likely be 127.0.0.1:60000
 (goog-define STATUS_BACKEND_SERVER_HOST "")
 ;; /path/to/root/data/dir
-;; make sure it exists
+;; make sure it exists, it should be in absolute path
 (goog-define STATUS_BACKEND_SERVER_ROOT_DATA_DIR "")

@@ -26,7 +26,7 @@ class Utils(private val reactContext: ReactApplicationContext) : ReactContextBas
 
     fun getNoBackupDirectory(): String {
         StatusBackendClient.getInstance()?.let { client ->
-            if (client.enabled && client.rootDataDir != null) {
+            if (client.serverEnabled && client.rootDataDir != null) {
                 return client.rootDataDir!!
             }
         }
@@ -40,7 +40,7 @@ class Utils(private val reactContext: ReactApplicationContext) : ReactContextBas
 
     fun getPublicStorageDirectory(): File? {
         StatusBackendClient.getInstance()?.let { client ->
-            if (client.enabled && client.rootDataDir != null) {
+            if (client.serverEnabled && client.rootDataDir != null) {
                 return File(client.rootDataDir!!)
             }
         }

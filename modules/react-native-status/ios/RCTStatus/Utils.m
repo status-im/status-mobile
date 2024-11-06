@@ -16,7 +16,7 @@ RCT_EXPORT_MODULE();
     NSURL *rootUrl;
     
     StatusBackendClient *client = [StatusBackendClient sharedInstance];
-    if (client.enabled && client.rootDataDir) {
+    if (client.serverEnabled && client.rootDataDir) {
         rootUrl = [NSURL fileURLWithPath:client.rootDataDir];
     } else {
         rootUrl = [[fileManager URLsForDirectory:NSLibraryDirectory inDomains:NSUserDomainMask] lastObject];
@@ -75,7 +75,7 @@ RCT_EXPORT_MODULE();
 
 + (NSString *) getExportDbFilePath {
     StatusBackendClient *client = [StatusBackendClient sharedInstance];
-    if (client.enabled && client.rootDataDir) {
+    if (client.serverEnabled && client.rootDataDir) {
         return [client.rootDataDir stringByAppendingPathComponent:@"export.db"];
     }
 
@@ -131,7 +131,7 @@ RCT_EXPORT_MODULE();
 
 RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(backupDisabledDataDir) {
     StatusBackendClient *client = [StatusBackendClient sharedInstance];
-    if (client.enabled && client.rootDataDir) {
+    if (client.serverEnabled && client.rootDataDir) {
         return client.rootDataDir;
     }
     

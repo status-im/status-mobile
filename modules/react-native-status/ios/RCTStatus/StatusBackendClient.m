@@ -4,7 +4,7 @@
 
 @implementation StatusBackendClient {
     NSURLSessionWebSocketTask *_webSocket;
-    BOOL _enabled;
+    BOOL _serverEnabled;
     NSString *_statusGoEndpoint;
     NSString *_signalEndpoint;
     NSString *_rootDataDir;
@@ -35,7 +35,7 @@ RCT_EXPORT_MODULE();
     dispatch_once(&onceToken, ^{
         sharedInstance = [super init];
         if (sharedInstance) {
-            sharedInstance->_enabled = NO;
+            sharedInstance->_serverEnabled = NO;
             sharedInstance->_statusGoEndpoint = nil;
             sharedInstance->_signalEndpoint = nil;
             sharedInstance->_rootDataDir = nil;
@@ -49,8 +49,8 @@ RCT_EXPORT_MODULE();
     return self;
 }
 
-- (BOOL)enabled {
-    return _enabled;
+- (BOOL)serverEnabled {
+    return _serverEnabled;
 }
 
 - (NSString *)statusGoEndpoint {
@@ -66,7 +66,7 @@ RCT_EXPORT_MODULE();
 }
 
 - (void)connectWebSocket {
-    if (!self.enabled || !self.signalEndpoint) {
+    if (!self.serverEnabled || !self.signalEndpoint) {
         return;
     }
     
@@ -145,23 +145,23 @@ RCT_EXPORT_MODULE();
     [task resume];
 }
 
-RCT_EXPORT_METHOD(configStatusBackendServer:(BOOL)enabled
+RCT_EXPORT_METHOD(configStatusBackendServer:(BOOL)serverEnabled
                   statusGoEndpoint:(NSString *)statusGoEndpoint
                   signalEndpoint:(NSString *)signalEndpoint
                   rootDataDir:(NSString *)rootDataDir) {
-    [self configureWithEnabled:enabled
+    [self configureWithEnabled:serverEnabled
                statusGoEndpoint:statusGoEndpoint
                 signalEndpoint:signalEndpoint
                   rootDataDir:rootDataDir];
 }
 
-- (void)configureWithEnabled:(BOOL)enabled
+- (void)configureWithEnabled:(BOOL)serverEnabled
               statusGoEndpoint:(NSString *)statusGoEndpoint
                signalEndpoint:(NSString *)signalEndpoint
                  rootDataDir:(NSString *)rootDataDir {
-    _enabled = enabled;
+    _serverEnabled = serverEnabled;
     
-    if (enabled) {
+    if (serverEnabled) {
         _statusGoEndpoint = statusGoEndpoint;
         _signalEndpoint = signalEndpoint;
         _rootDataDir = rootDataDir;
@@ -178,7 +178,7 @@ RCT_EXPORT_METHOD(configStatusBackendServer:(BOOL)enabled
                          body:(NSString *)body
              statusgoFunction:(NSString * (^)(void))statusgoFunction {
     StatusBackendClient *client = [StatusBackendClient sharedInstance];
-    if (client.enabled) {
+    if (client.serverEnabled) {
         [client request:endpoint body:body callback:^(NSString *response, NSError *error) {
             [Utils handleStatusGoResponse:response source:endpoint error:error];
         }];
@@ -193,7 +193,7 @@ RCT_EXPORT_METHOD(configStatusBackendServer:(BOOL)enabled
                         statusgoFunction:(NSString * (^)(void))statusgoFunction
                               callback:(RCTResponseSenderBlock)callback {
     StatusBackendClient *client = [StatusBackendClient sharedInstance];
-    if (client.enabled) {
+    if (client.serverEnabled) {
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
             [client request:endpoint body:body callback:^(NSString *response, NSError *error) {
                 if (error) {
@@ -222,7 +222,7 @@ RCT_EXPORT_METHOD(configStatusBackendServer:(BOOL)enabled
                                         body:(NSString *)body
                             statusgoFunction:(NSString * (^)(void))statusgoFunction {
     StatusBackendClient *client = [StatusBackendClient sharedInstance];
-    if (client.enabled) {
+    if (client.serverEnabled) {
         dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
         __block NSString *resultString = @"";
         

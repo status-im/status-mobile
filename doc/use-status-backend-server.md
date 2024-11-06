@@ -1,13 +1,13 @@
 ## Solution to use Status Backend Server
-`StatusBackendClient` is the entry point to use Status Backend Server. Whether it's enabled or not is controlled by `STATUS_BACKEND_ENABLED` environment variable. We need always to call `status-im.setup.status-backend-client/init` whether `STATUS_BACKEND_ENABLED` is `1` or not. If it's not enabled, the invocation to functions in `native-module.core` will be delegated to built-in status-go library, otherwise it will be delegated to status-go running in status-backend server. Currently, all functions has usages in `native-module.core` should be supported delegated to.
+`StatusBackendClient` is the entry point to use Status Backend Server. We need always to call `status-im.setup.status-backend-client/init` whether `STATUS_BACKEND_SERVER_ENABLED` is `1` or not. If it's not enabled, the invocation to functions in `native-module.core` will be delegated to built-in status-go library, otherwise it will be delegated to status-go running in status-backend server. Currently, all functions has usages in `native-module.core` should be supported delegated to.
 
 related [PR](https://github.com/status-im/status-mobile/pull/21550)
 
 ## Usage
 ### Add environment variables to your local machine:
 ```shell
-# enable using status backend server or not
-export STATUS_BACKEND_ENABLED=1
+# enable using status backend server or not, otherwise it will use built-in status-go library
+export STATUS_BACKEND_SERVER_ENABLED=1
 
 #The host should contain an IP address and a port separated by a colon. 
 #The port comes from your running status backend server. 

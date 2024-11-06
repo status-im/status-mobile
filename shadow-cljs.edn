@@ -69,7 +69,7 @@
      status-im.config/INFURA_TOKEN                        #shadow/env "INFURA_TOKEN"
      status-im.config/STATUS_BUILD_PROXY_USER             #shadow/env "STATUS_BUILD_PROXY_USER"
      status-im.config/STATUS_BUILD_PROXY_PASSWORD         #shadow/env "STATUS_BUILD_PROXY_PASSWORD"
-     status-im.config/STATUS_BACKEND_ENABLED              #shadow/env "STATUS_BACKEND_ENABLED"
+     status-im.config/STATUS_BACKEND_SERVER_ENABLED              #shadow/env "STATUS_BACKEND_SERVER_ENABLED"
      status-im.config/STATUS_BACKEND_SERVER_HOST          #shadow/env "STATUS_BACKEND_SERVER_HOST"
      status-im.config/STATUS_BACKEND_SERVER_ROOT_DATA_DIR #shadow/env
                                                            "STATUS_BACKEND_SERVER_ROOT_DATA_DIR"

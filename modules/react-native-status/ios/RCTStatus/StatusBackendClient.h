@@ -3,7 +3,7 @@
 
 @interface StatusBackendClient : NSObject <RCTBridgeModule>
 
-@property (nonatomic) BOOL enabled;
+@property (nonatomic) BOOL serverEnabled;
 @property (nonatomic, strong) NSString *statusGoEndpoint;
 @property (nonatomic, strong) NSString *signalEndpoint;
 @property (nonatomic, strong) NSString *rootDataDir;

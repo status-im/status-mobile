@@ -33,7 +33,7 @@ class StatusBackendClient(private val reactContext: ReactApplicationContext) : R
             statusgoFunction: () -> String
         ) {
             val statusBackendClient = getInstance()
-            if (statusBackendClient?.enabled == true) {
+            if (statusBackendClient?.serverEnabled == true) {
                 val result = statusBackendClient.request(endpoint, requestBody)
                 result.onSuccess { response ->
                     utils.handleStatusGoResponse(response, endpoint)
@@ -54,7 +54,7 @@ class StatusBackendClient(private val reactContext: ReactApplicationContext) : R
             callback: Callback?
         ) {
             val statusBackendClient = getInstance()
-            if (statusBackendClient?.enabled == true) {
+            if (statusBackendClient?.serverEnabled == true) {
                 val runnable = Runnable {
                     val result = statusBackendClient.request(endpoint, requestBody)
                     result.onSuccess { response ->
@@ -77,7 +77,7 @@ class StatusBackendClient(private val reactContext: ReactApplicationContext) : R
             statusgoFunction: () -> String
         ): String {
             val statusBackendClient = getInstance()
-            return if (statusBackendClient?.enabled == true) {
+            return if (statusBackendClient?.serverEnabled == true) {
                 val result = statusBackendClient.request(endpoint, requestBody)
                 result.getOrElse { error ->
                     Log.e(TAG, "request to $endpoint failed", error)
@@ -109,32 +109,32 @@ class StatusBackendClient(private val reactContext: ReactApplicationContext) : R
 
     private var webSocket: WebSocket? = null
     
-    @Volatile var enabled = false
+    @Volatile var serverEnabled = false
     @Volatile private var statusGoEndpoint: String? = null
     @Volatile private var signalEndpoint: String? = null
     @Volatile var rootDataDir: String? = null
 
     @ReactMethod
     fun configStatusBackendServer(
-        enabled: Boolean,
+        serverEnabled: Boolean,
         statusGoEndpoint: String,
         signalEndpoint: String,
         rootDataDir: String
     ) {
-        configure(enabled, statusGoEndpoint, signalEndpoint, rootDataDir)
+        configure(serverEnabled, statusGoEndpoint, signalEndpoint, rootDataDir)
     }
 
     private fun configure(
-        enabled: Boolean,
+        serverEnabled: Boolean,
         statusGoEndpoint: String,
         signalEndpoint: String,
         rootDataDir: String
     ) {
-        Log.d(TAG, "configure: enabled=$enabled, statusGoEndpoint=$statusGoEndpoint, " +
+        Log.d(TAG, "configure: serverEnabled=$serverEnabled, statusGoEndpoint=$statusGoEndpoint, " +
                    "signalEndpoint=$signalEndpoint, rootDataDir=$rootDataDir")
         
-        this.enabled = enabled
-        if (enabled) {
+        this.serverEnabled = serverEnabled
+        if (serverEnabled) {
             this.statusGoEndpoint = statusGoEndpoint
             this.signalEndpoint = signalEndpoint
             this.rootDataDir = rootDataDir
@@ -148,7 +148,7 @@ class StatusBackendClient(private val reactContext: ReactApplicationContext) : R
     }
 
     private fun connectWebSocket() {
-        if (!enabled || signalEndpoint == null) {
+        if (!serverEnabled || signalEndpoint == null) {
             return
         }
 
@@ -173,8 +173,8 @@ class StatusBackendClient(private val reactContext: ReactApplicationContext) : R
     }
 
     fun request(endpoint: String, body: String): Result<String> {
-        if (!enabled || statusGoEndpoint == null) {
-            return Result.failure(IllegalStateException("Status backend is not enabled"))
+        if (!serverEnabled || statusGoEndpoint == null) {
+            return Result.failure(IllegalStateException("Status backend server is not enabled"))
         }
 
         val fullUrl = "$statusGoEndpoint$endpoint"
