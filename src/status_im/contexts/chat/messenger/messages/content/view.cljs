@@ -211,45 +211,44 @@
   (let [show-delivery-state? (reagent/atom false)]
     (fn [{:keys [message-data context keyboard-shown? hide-reactions?
                  in-reaction-or-action-menu? show-user-info?]}]
-      (let [theme                                       (quo.theme/use-theme)
-            {:keys [content-type quoted-message content outgoing outgoing-status pinned-by pinned
-                    bridge-message
-                    last-in-group? message-id chat-id]} message-data
-            {:keys [disable-message-long-press?]}       context
-            first-image                                 (first (:album message-data))
-            outgoing-status                             (if (= content-type
-                                                               constants/content-type-album)
-                                                          (:outgoing-status first-image)
-                                                          outgoing-status)
-            outgoing                                    (if (= content-type
-                                                               constants/content-type-album)
-                                                          (:outgoing first-image)
-                                                          outgoing)
-            context                                     (assoc context
-                                                               :on-long-press
-                                                               #(on-long-press message-data
-                                                                               context
-                                                                               keyboard-shown?))
-            response-to                                 (:response-to content)
-            height                                      (rf/sub [:dimensions/window-height])
+      (let [theme                  (quo.theme/use-theme)
+            {:keys [content-type quoted-message content outgoing outgoing-status pinned-by
+                    pinned bridge-message last-in-group? message-id
+                    chat-id]}      message-data
+            first-image            (first (:album message-data))
+            outgoing-status        (if (= content-type
+                                          constants/content-type-album)
+                                     (:outgoing-status first-image)
+                                     outgoing-status)
+            outgoing               (if (= content-type
+                                          constants/content-type-album)
+                                     (:outgoing first-image)
+                                     outgoing)
+            context                (assoc context
+                                          :on-long-press
+                                          #(on-long-press message-data
+                                                          context
+                                                          keyboard-shown?))
+            response-to            (:response-to content)
+            height                 (rf/sub [:dimensions/window-height])
             {window-width :width
-             window-scale :scale}                       (rn/get-window)
-            message-container-data                      {:window-width           window-width
-                                                         :padding-right          20
-                                                         :padding-left           20
-                                                         :avatar-container-width 32
-                                                         :message-margin-left    8}
-            reactions                                   (rf/sub [:chats/message-reactions message-id
-                                                                 chat-id])
-            six-reactions?                              (-> reactions
-                                                            count
-                                                            (= 6))
-            content-type                                (if (and
-                                                             (= content-type
-                                                                constants/content-type-bridge-message)
-                                                             (seq (:parsed-text content)))
-                                                          constants/content-type-text
-                                                          content-type)]
+             window-scale :scale}  (rn/get-window)
+            message-container-data {:window-width           window-width
+                                    :padding-right          20
+                                    :padding-left           20
+                                    :avatar-container-width 32
+                                    :message-margin-left    8}
+            reactions              (rf/sub [:chats/message-reactions message-id
+                                            chat-id])
+            six-reactions?         (-> reactions
+                                       count
+                                       (= 6))
+            content-type           (if (and
+                                        (= content-type
+                                           constants/content-type-bridge-message)
+                                        (seq (:parsed-text content)))
+                                     constants/content-type-text
+                                     content-type)]
         [rn/touchable-highlight
          {:accessibility-label (if (and outgoing (= outgoing-status :sending))
                                  :message-sending
@@ -274,7 +273,7 @@
                                      (reset! show-delivery-state? true)
                                      (js/setTimeout #(reset! show-delivery-state? false)
                                                     delivery-state-showing-time-ms))))
-          :on-long-press       (when-not disable-message-long-press?
+          :on-long-press       (when-not (:disable-message-long-press? context)
                                  #(on-long-press message-data context keyboard-shown?))}
          [:<>
           (when pinned-by
@@ -351,21 +350,20 @@
   (rf/dispatch [:dismiss-keyboard])
   (rf/dispatch
    [:show-bottom-sheet
-    {:content (drawers/reactions-and-actions message-data context)
+    {:content       (drawers/reactions-and-actions message-data context)
      :border-radius 16
-     :selected-item
-     (if (or deleted? deleted-for-me?)
-       (fn [] [content.deleted/deleted-message message-data])
-       (fn []
-         [rn/view
-          {:pointer-events :none
-           :style          style/drawer-message-container}
-          [user-message-content
-           {:message-data                message-data
-            :context                     context
-            :keyboard-shown?             keyboard-shown?
-            :in-reaction-or-action-menu? true
-            :show-user-info?             false}]]))}]))
+     :selected-item (if (or deleted? deleted-for-me?)
+                      (fn [] [content.deleted/deleted-message message-data])
+                      (fn []
+                        [rn/view
+                         {:pointer-events :none
+                          :style          style/drawer-message-container}
+                         [user-message-content
+                          {:message-data                message-data
+                           :context                     context
+                           :keyboard-shown?             keyboard-shown?
+                           :in-reaction-or-action-menu? true
+                           :show-user-info?             false}]]))}]))
 
 (defn check-if-system-message?
   [content-type]
