@@ -6,7 +6,7 @@
   [tx-hash signature]
   {tx-hash {:r (subs signature 0 64)
             :s (subs signature 64 128)
-            :v (str (js/parseInt (subs signature 128 130) 16))}})
+            :v (subs signature 128 130)}})
 
 (rf/reg-event-fx :keycard/sign
  (fn [_ [data]]
