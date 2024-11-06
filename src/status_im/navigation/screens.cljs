@@ -319,7 +319,8 @@
    {:name      :screen/settings.keycard
     :metrics   {:track?   :true
                 :alias-id :settings.keycard}
-    :options   {:insets {:top? true :bottom? true}}
+    :options   {:theme  :dark
+                :insets {:top? true :bottom? true}}
     :component settings.keycard/view}
 
    {:name      :edit-profile
@@ -886,37 +887,44 @@
 (def keycard-screens
   [{:name      :screen/keycard.check
     :metrics   {:track? :true}
-    :options   {:insets {:top? true :bottom? true}}
+    :options   {:theme  :dark
+                :insets {:top? true :bottom? true}}
     :component keycard.check/view}
 
    {:name      :screen/keycard.empty
     :metrics   {:track? :true}
-    :options   {:insets {:top? true :bottom? true}}
+    :options   {:theme  :dark
+                :insets {:top? true :bottom? true}}
     :component keycard.empty/view}
 
    {:name      :screen/keycard.error
     :metrics   {:track? :true}
-    :options   {:insets {:top? true :bottom? true}}
+    :options   {:theme  :dark
+                :insets {:top? true :bottom? true}}
     :component keycard.error/view}
 
    {:name      :screen/keycard.not-keycard
     :metrics   {:track? :true}
-    :options   {:insets {:top? true :bottom? true}}
+    :options   {:theme  :dark
+                :insets {:top? true :bottom? true}}
     :component keycard.not-keycard/view}
 
    {:name      :screen/keycard.authorise
     :metrics   {:track? :true}
-    :options   {:insets {:top? true :bottom? true}}
+    :options   {:theme  :dark
+                :insets {:top? true :bottom? true}}
     :component keycard.authorise/view}
 
    {:name      :screen/keycard.migrate
     :metrics   {:track? :true}
-    :options   {:insets {:top? true :bottom? true}}
+    :options   {:theme  :dark
+                :insets {:top? true :bottom? true}}
     :component keycard.migrate/view}
 
    {:name      :screen/keycard.re-encrypting
     :metrics   {:track? :true}
-    :options   {:insets             {:top? true :bottom? true}
+    :options   {:theme              :dark
+                :insets             {:top? true :bottom? true}
                 :popGesture         false
                 :hardwareBackButton {:dismissModalOnPress false
                                      :popStackOnPress     false}}
@@ -924,7 +932,8 @@
 
    {:name      :screen/keycard.migrate.success
     :metrics   {:track? :true}
-    :options   {:insets             {:top? true :bottom? true}
+    :options   {:theme              :dark
+                :insets             {:top? true :bottom? true}
                 :popGesture         false
                 :hardwareBackButton {:dismissModalOnPress false
                                      :popStackOnPress     false}}
@@ -932,7 +941,8 @@
 
    {:name      :screen/keycard.migrate.fail
     :metrics   {:track? :true}
-    :options   {:insets             {:top? true :bottom? true}
+    :options   {:theme              :dark
+                :insets             {:top? true :bottom? true}
                 :popGesture         false
                 :hardwareBackButton {:dismissModalOnPress false
                                      :popStackOnPress     false}}
@@ -940,17 +950,20 @@
 
    {:name      :screen/keycard.pin.create
     :metrics   {:track? :true}
-    :options   {:insets {:top? true :bottom? true}}
+    :options   {:theme  :dark
+                :insets {:top? true :bottom? true}}
     :component keycard.pin.create/view}
 
    {:name      :screen/keycard.pin.enter
     :metrics   {:track? :true}
-    :options   {:insets {:top? true :bottom? true}}
+    :options   {:theme  :dark
+                :insets {:top? true :bottom? true}}
     :component keycard.pin.enter/view}
 
    {:name      :screen/keycard.profile-keys
     :metrics   {:track? :true}
-    :options   {:insets {:top? true :bottom? true}}
+    :options   {:theme  :dark
+                :insets {:top? true :bottom? true}}
     :component keycard.migrate.profile-keys/view}])
 
 (defn screens
@@ -1022,8 +1035,19 @@
      :options   {:insets {:top? true :bottom? true}}
      :component backup-recovery-phrase/view}
 
+    {:name      :screen/backup-recovery-phrase-dark
+     :metrics   {:track? true}
+     :options   {:theme  :dark
+                 :insets {:top? true :bottom? true}}
+     :component backup-recovery-phrase/view}
+
     {:name      :screen/use-recovery-phrase
      :metrics   {:track? true}
+     :component enter-seed-phrase/view}
+
+    {:name      :screen/use-recovery-phrase-dark
+     :metrics   {:track? true}
+     :options   {:theme :dark}
      :component enter-seed-phrase/view}
 
     {:name      :screen/profile.profiles

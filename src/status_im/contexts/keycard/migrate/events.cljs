@@ -75,15 +75,15 @@
     :fx [[:dispatch [:navigate-back]]
          (if (string/blank? (get-in db [:profile/profile :mnemonic]))
            [:dispatch
-            [:open-modal :screen/use-recovery-phrase
+            [:open-modal :screen/use-recovery-phrase-dark
              {:on-success #(rf/dispatch [:keycard/migration.phrase-entered %])}]]
            [:dispatch
-            [:open-modal :screen/backup-recovery-phrase
+            [:open-modal :screen/backup-recovery-phrase-dark
              {:on-success #(rf/dispatch [:keycard/migration.phrase-backed-up %])}]])]}))
 
 (rf/reg-event-fx :keycard/migration.phrase-entered
  (fn [{:keys [db]} [{:keys [phrase]}]]
-   {:db (assoc-in db [:keycard :migration :masked-phrase] (security/mask-data phrase))
+   {:db (assoc-in db [:keycard :migration :masked-phrase] phrase)
     :fx [[:dispatch [:navigate-back]]
          [:dispatch
           [:open-modal :screen/keycard.authorise
