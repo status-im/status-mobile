@@ -299,6 +299,8 @@ dependencies {
     implementation("com.squareup.okhttp3:okhttp-tls:4.11.0")
     implementation("com.google.prefab:cli:2.0.0")
     implementation("com.android.tools.build:aapt2:8.1.1-10154469")
+    implementation "com.github.bumptech.glide:okhttp3-integration:4.12.0"
+    annotationProcessor "com.github.bumptech.glide:compiler:4.12.0"
 }
 
 
