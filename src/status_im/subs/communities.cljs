@@ -183,10 +183,6 @@
 
 (def memo-communities-stack-items (atom nil))
 
-(defn- merge-opened-communities
-  [{:keys [joined pending] :as assorted-communities}]
-  (update assorted-communities :opened concat joined pending))
-
 (defn- group-communities-by-status
   [requests
    {:keys [id]
@@ -194,7 +190,8 @@
   (cond
     (:joined community)         :joined
     (boolean (get requests id)) :pending
-    :else                       :opened))
+    (:spectated community)      :opened
+    :else                       :other))
 
 (re-frame/reg-sub
  :communities/grouped-by-status
@@ -216,7 +213,6 @@
                                     ;; any key.
                                     (map #(dissoc % :members :chats :token-permissions :tokens-metadata))
                                     (group-by #(group-communities-by-status requests %))
-                                    merge-opened-communities
                                     (map (fn [[k v]]
                                            {k (sort-by (fn [{:keys [requested-to-join-at last-opened-at
                                                                     joined-at]}]
