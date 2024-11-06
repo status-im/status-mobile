@@ -1,7 +1,9 @@
 (ns status-im.contexts.wallet.common.utils-test
   (:require
     [cljs.test :refer [deftest is testing]]
+    [clojure.string :as string]
     [status-im.contexts.wallet.common.utils :as utils]
+    [status-im.contexts.wallet.common.utils.networks :as network-utils]
     [utils.money :as money]))
 
 (deftest get-first-name-test
@@ -269,3 +271,21 @@
           expected          "0"]
       (is (= (utils/token-balance-display-for-network token chain-id rounding-decimals)
              expected)))))
+
+(deftest get-account-by-session-test
+  (testing "get-account-by-session function"
+    (let [db      {:wallet {:accounts {"0x123" {:address "0x123"}
+                                       "0x456" {:address "0x456"}
+                                       "0x789" {:address "0x789"}}}}
+          session {:accounts ["network:0x456"]}]
+      (with-redefs [network-utils/split-network-full-address (fn [addr]
+                                                               (string/split addr #":"))]
+        (is (= (utils/get-account-by-session db session) {:address "0x456"}))))
+
+    (let [db      {:wallet {:accounts {"0x123" {:address "0x123"}
+                                       "0x456" {:address "0x456"}
+                                       "0x789" {:address "0x789"}}}}
+          session {:accounts ["network:0x999"]}]
+      (with-redefs [network-utils/split-network-full-address (fn [addr]
+                                                               (string/split addr #":"))]
+        (is (= (utils/get-account-by-session db session) nil))))))

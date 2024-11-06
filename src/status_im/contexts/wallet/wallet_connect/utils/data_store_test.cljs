@@ -39,3 +39,26 @@
   (testing "handles nil sessions correctly"
     (let [db {:wallet-connect/sessions nil}]
       (is (= 1 (sut/get-total-connected-dapps db))))))
+
+(deftest get-session-by-topic-test
+  (testing "returns the correct session based on the topic"
+    (let [db    {:wallet-connect/sessions [{:topic "topic1" :url "https://dapp1.com"}
+                                           {:topic "topic2" :url "https://dapp2.com"}]}
+          topic "topic1"]
+      (is (= {:topic "topic1" :url "https://dapp1.com"}
+             (sut/get-session-by-topic db topic)))))
+
+  (testing "returns nil if no matching session is found"
+    (let [db    {:wallet-connect/sessions [{:topic "topic1" :url "https://dapp1.com"}]}
+          topic "topic2"]
+      (is (nil? (sut/get-session-by-topic db topic)))))
+
+  (testing "handles nil sessions correctly"
+    (let [db    {:wallet-connect/sessions nil}
+          topic "topic1"]
+      (is (nil? (sut/get-session-by-topic db topic)))))
+
+  (testing "handles empty sessions correctly"
+    (let [db    {:wallet-connect/sessions []}
+          topic "topic1"]
+      (is (nil? (sut/get-session-by-topic db topic))))));

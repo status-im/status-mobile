@@ -84,3 +84,10 @@
       :wallet-connect/sessions
       count
       inc))
+
+(defn get-session-by-topic
+  [db topic]
+  (->> db
+       :wallet-connect/sessions
+       (filter #(= (:topic %) topic))
+       first))

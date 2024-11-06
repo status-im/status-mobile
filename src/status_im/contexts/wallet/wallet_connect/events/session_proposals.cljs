@@ -149,13 +149,13 @@
            [:dispatch [:wallet-connect/reset-current-session-proposal]]
            [:dispatch [:wallet-connect/redirect-to-dapp (data-store/get-dapp-redirect-url session)]]
            [:dispatch
-            [:centralized-metrics/track :metric/dapp-session-proposal
-             {:action                :approved
-              :total_connected_dapps total-connected-dapps}]]
-           [:dispatch
             [:toasts/upsert
              {:type :positive
-              :text (i18n/label :t/wallet-connect-proposal-approved-toast {:dapp dapp-name})}]]]})))
+              :text (i18n/label :t/wallet-connect-proposal-approved-toast {:dapp dapp-name})}]]
+           [:dispatch
+            [:centralized-metrics/track :metric/dapp-session-proposal
+             {:action                :approved
+              :total_connected_dapps total-connected-dapps}]]]})))
 
 (rf/reg-event-fx :wallet-connect/approve-session-error
  (fn [_ [error]]
