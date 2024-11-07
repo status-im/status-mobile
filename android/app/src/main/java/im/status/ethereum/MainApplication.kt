@@ -15,8 +15,10 @@ import cl.json.RNSharePackage
 import com.reactnativecommunity.blurview.BlurViewPackage
 import im.status.ethereum.keycard.RNStatusKeycardPackage
 import im.status.ethereum.module.StatusPackage
+import im.status.ethereum.module.StatusBackendClient
 import im.status.ethereum.pushnotifications.PushNotificationPackage
 import im.status.ethereum.StatusOkHttpClientFactory
+import android.util.Log
 
 class MainApplication : NavigationApplication() {
 
@@ -39,6 +41,26 @@ class MainApplication : NavigationApplication() {
         override val isNewArchEnabled: Boolean = BuildConfig.IS_NEW_ARCHITECTURE_ENABLED
 
         override val isHermesEnabled: Boolean = BuildConfig.IS_HERMES_ENABLED
+
+        override fun createReactInstanceManager() = 
+            super.createReactInstanceManager().apply {
+                addReactInstanceEventListener {
+                    val serverEnabledEnv = true
+                    val statusGoEndpointEnv = "127.0.0.1:60000"
+                    val rootDataDirEnv = "/Users/frank/Downloads/tmp"
+                    val statusGoEndpoint = "http://${statusGoEndpointEnv}/statusgo/"
+                    val signalEndpoint = "ws://${statusGoEndpointEnv}/signals"
+                    Log.d("MainApplication", "Configuring StatusBackendServer with serverEnabled=$serverEnabledEnv, statusGoEndpoint=$statusGoEndpoint, signalEndpoint=$signalEndpoint, rootDataDir=$rootDataDirEnv")
+                    StatusBackendClient.getInstance()?.configStatusBackendServer(
+                        serverEnabled = serverEnabledEnv,
+                        statusGoEndpoint = statusGoEndpoint,
+                        signalEndpoint = signalEndpoint,
+                        rootDataDir = rootDataDirEnv
+                    )
+                    OkHttpClientProvider.setOkHttpClientFactory(StatusOkHttpClientFactory())
+                    Log.d("MainApplication", "StatusBackendServer configured")
+                }
+            }
     }
 
     override val reactNativeHost: ReactNativeHost
@@ -47,7 +69,7 @@ class MainApplication : NavigationApplication() {
     override fun onCreate() {
         super.onCreate()
 
-        OkHttpClientProvider.setOkHttpClientFactory(StatusOkHttpClientFactory())
+        //OkHttpClientProvider.setOkHttpClientFactory(StatusOkHttpClientFactory())
 
         WebView.setWebContentsDebuggingEnabled(BuildConfig.DEBUG_WEBVIEW == "1")
 

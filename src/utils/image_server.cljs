@@ -213,16 +213,18 @@
 (defn get-image-uri
   [{:keys [type options]}
    profile-picture-options]
-  ((case type
-     :account  get-account-image-uri
-     :contact  get-contact-image-uri
-     :initials get-initials-avatar-uri
-     str)
-   (-> (merge options profile-picture-options)
-       (assoc :ring?
-              (if (nil? (:override-ring? options))
-                (:ring? profile-picture-options)
-                (:override-ring? options))))))
+  (let [uri ((case type
+               :account  get-account-image-uri
+               :contact  get-contact-image-uri
+               :initials get-initials-avatar-uri
+               str)
+             (-> (merge options profile-picture-options)
+                 (assoc :ring?
+                        (if (nil? (:override-ring? options))
+                          (:ring? profile-picture-options)
+                          (:override-ring? options)))))]
+    (println "Image URI:" uri)
+    uri))
 
 (schema/=> get-image-uri
   [:=>

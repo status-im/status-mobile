@@ -24,6 +24,8 @@ class StatusBackendClient(private val reactContext: ReactApplicationContext) : R
         @Volatile private var instance: StatusBackendClient? = null
         private lateinit var utils: Utils
         
+        private val initializationCallbacks = mutableListOf<() -> Unit>()
+        
         fun getInstance(): StatusBackendClient? = instance
 
         @JvmStatic
@@ -84,7 +86,21 @@ class StatusBackendClient(private val reactContext: ReactApplicationContext) : R
                     ""
                 }
             } else {
+                if (endpoint == "ImageServerTLSCert") {
+                    Log.i(TAG, "ImageServerTLSCert endpoint called without server enabled - " +
+                        "stacktrace: ${Thread.currentThread().stackTrace.joinToString("\n")}")
+                }
                 statusgoFunction()
+            }
+        }
+
+        fun addInitializationCallback(callback: () -> Unit) {
+            if (instance?.initialized == true) {
+                Log.d(TAG, "Executing initialization callback immediately")
+                callback()
+            } else {
+                Log.d(TAG, "Adding initialization callback")
+                initializationCallbacks.add(callback)
             }
         }
     }
@@ -109,10 +125,11 @@ class StatusBackendClient(private val reactContext: ReactApplicationContext) : R
 
     private var webSocket: WebSocket? = null
     
-    @Volatile var serverEnabled = false
+    @Volatile var serverEnabled = true
     @Volatile private var statusGoEndpoint: String? = null
     @Volatile private var signalEndpoint: String? = null
     @Volatile var rootDataDir: String? = null
+    @Volatile var initialized = false
 
     @ReactMethod
     fun configStatusBackendServer(
@@ -122,6 +139,11 @@ class StatusBackendClient(private val reactContext: ReactApplicationContext) : R
         rootDataDir: String
     ) {
         configure(serverEnabled, statusGoEndpoint, signalEndpoint, rootDataDir)
+        this.initialized = true
+        // Execute callbacks
+        initializationCallbacks.forEach { it() }
+        initializationCallbacks.clear()
+        Log.d(TAG, "StatusBackendClient initialized")
     }
 
     private fun configure(
