@@ -2,6 +2,8 @@
   (:require
     [clojure.string :as string]
     [status-im.constants :as constants]
+    [status-im.contexts.wallet.common.utils :as wallet-utils]
+    [status-im.contexts.wallet.common.utils.networks :as network-utils]
     utils.string
     [utils.transforms :as transforms]))
 
@@ -91,3 +93,10 @@
        :wallet-connect/sessions
        (filter #(= (:topic %) topic))
        first))
+
+(defn get-account-by-session
+  [db session]
+  (let [accounts                (get-in db [:wallet :accounts])
+        session-account-address (first (:accounts session))
+        [_ address]             (network-utils/split-network-full-address session-account-address)]
+    (wallet-utils/get-account-by-address (vals accounts) address)))

@@ -549,10 +549,3 @@
     (:less-than-three-minutes constants/wallet-transaction-estimation) "1-3"
     (:less-than-five-minutes constants/wallet-transaction-estimation)  "3-5"
     ">5"))
-
-(defn get-account-by-session
-  [db session]
-  (let [accounts                (get-in db [:wallet :accounts])
-        session-account-address (first (:accounts session))
-        [_ address]             (network-utils/split-network-full-address session-account-address)]
-    (get-account-by-address (vals accounts) address)))

@@ -1,6 +1,5 @@
 (ns status-im.contexts.wallet.wallet-connect.events.sessions
   (:require [re-frame.core :as rf]
-            [status-im.contexts.wallet.common.utils :as wallet-utils]
             [status-im.contexts.wallet.wallet-connect.utils.data-store :as
              data-store]
             [status-im.contexts.wallet.wallet-connect.utils.networks :as networks]
@@ -12,7 +11,7 @@
  :wallet-connect/on-session-delete
  (fn [{:keys [db]} [{:keys [topic] :as event}]]
    (let [session      (data-store/get-session-by-topic db topic)
-         account-name (-> (wallet-utils/get-account-by-session db session)
+         account-name (-> (data-store/get-account-by-session db session)
                           :name)]
      (when (networks/event-should-be-handled? db event)
        (log/info "Received Wallet Connect session delete from the SDK: " event)
