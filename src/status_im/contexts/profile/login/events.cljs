@@ -53,9 +53,10 @@
             pairing-completed?
             (dissoc :syncing))
       :fx (into [[:json-rpc/call
-                  [{:method     "wakuext_startMessenger"
-                    :on-success [:profile.login/messenger-started]
-                    :on-error   #(log/error "failed to start messenger" %)}]]
+                  [{:method      "wakuext_startMessenger"
+                    :js-response true
+                    :on-success  [:profile.login/messenger-started]
+                    :on-error    #(log/error "failed to start messenger" %)}]]
                  [:dispatch [:community/fetch]]
 
                  ;; Wallet initialization can be delayed a little bit because we
