@@ -30,8 +30,7 @@
    ::wallet.long-press-watch-only-asset (enabled-in-env? :FLAG_LONG_PRESS_WATCH_ONLY_ASSET_ENABLED)
    ::wallet.saved-addresses             (enabled-in-env? :WALLET_SAVED_ADDRESSES)
    ::wallet.wallet-connect              (enabled-in-env? :FLAG_WALLET_CONNECT_ENABLED)
-   ::wallet.custom-network-amounts      (enabled-in-env? :FLAG_WALLET_CUSTOM_NETWORK_AMOUNTS_ENABLED)
-   ::keycard.migrate-profile            false})
+   ::wallet.custom-network-amounts      (enabled-in-env? :FLAG_WALLET_CUSTOM_NETWORK_AMOUNTS_ENABLED)})
 
 (defonce ^:private feature-flags-config
   (reagent/atom initial-flags))

@@ -43,4 +43,8 @@
           :subtitle            (i18n/label :t/ready-keycard)
           :accessibility-label :setup-keycard
           :image               (resources/get-image :use-keycard)
-          :on-press            #(rf/dispatch [:open-modal :screen/keycard.check])}]])]))
+          :on-press            (fn []
+                                 (rf/dispatch [:open-modal :screen/keycard.check
+                                               {:on-press
+                                                #(rf/dispatch
+                                                  [:keycard/migration.check-empty-card])}]))}]])]))

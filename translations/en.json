@@ -2010,6 +2010,7 @@
   "profile-deleted-keycard": "You can now restore another key pair on your Keycard",
   "profile-deleted-title": "Profile deleted",
   "profile-details": "Profile details",
+  "profile-keys-on-keycard": "If your profile keys are stored on a Keycard",
   "profile-name": "Profile name",
   "profile-name-is-too-long": "Profile name is too long",
   "profile-not-found": "Profile not found",
