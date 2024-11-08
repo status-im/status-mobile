@@ -7,12 +7,12 @@
     [react-native.safe-area :as safe-area]
     [status-im.common.floating-button-page.view :as floating-button]
     [status-im.common.password-with-hint.view :as password-with-hint]
+    [status-im.common.validation.password :as password]
     [status-im.constants :as constants]
     [status-im.contexts.onboarding.create-password.style :as style]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]
-    [utils.security.core :as security]
-    [utils.string :as utils.string]))
+    [utils.security.core :as security]))
 
 (defn header
   []
@@ -82,18 +82,6 @@
     [quo/tips {:completed? symbols?}
      (i18n/label :t/password-creation-tips-4)]]])
 
-(defn validate-password
-  [password]
-  (let [validations (juxt utils.string/has-lower-case?
-                          utils.string/has-upper-case?
-                          utils.string/has-numbers?
-                          utils.string/has-symbols?
-                          #(utils.string/at-least-n-chars? % constants/new-password-min-length)
-                          #(utils.string/at-most-n-chars? % constants/new-password-max-length))]
-    (->> password
-         validations
-         (zipmap (conj constants/password-tips :long-enough? :short-enough?)))))
-
 (defn calc-password-strength
   [validations]
   (->> (vals validations)
@@ -105,7 +93,7 @@
   (rn/use-memo
    (fn []
      (let [{:keys [long-enough? short-enough?]
-            :as   validations} (validate-password password)]
+            :as   validations} (password/validate password)]
        {:password-long-enough?  long-enough?
         :password-short-enough? short-enough?
         :password-validations   validations

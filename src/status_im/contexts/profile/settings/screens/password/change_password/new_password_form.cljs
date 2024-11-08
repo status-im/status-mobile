@@ -4,14 +4,14 @@
     [quo.core :as quo]
     [react-native.core :as rn]
     [status-im.common.password-with-hint.view :as password-with-hint]
+    [status-im.common.validation.password :as password]
     [status-im.constants :as constant]
     [status-im.contexts.profile.settings.screens.password.change-password.events]
     [status-im.contexts.profile.settings.screens.password.change-password.header :as header]
     [status-im.contexts.profile.settings.screens.password.change-password.style :as style]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]
-    [utils.security.core :as security]
-    [utils.string :as utils.string]))
+    [utils.security.core :as security]))
 
 (defn- calc-password-strength
   [validations]
@@ -36,12 +36,7 @@
       [quo/tips {:completed? symbols?}
        (i18n/label :t/password-creation-tips-4)]]]))
 
-(defn- password-validations
-  [password]
-  {:lower-case? (utils.string/has-lower-case? password)
-   :upper-case? (utils.string/has-upper-case? password)
-   :numbers?    (utils.string/has-numbers? password)
-   :symbols?    (utils.string/has-symbols? password)})
+(def not-blank? (complement string/blank?))
 
 (defn view
   []
@@ -52,15 +47,8 @@
         [focused? set-focused]                         (rn/use-state false)
         [show-validation? set-show-validation]         (rn/use-state false)
 
-        ;; validations
-        not-blank?                                     (complement string/blank?)
-        validations                                    (password-validations password)
-        long-enough?                                   (utils.string/at-least-n-chars?
-                                                        password
-                                                        constant/new-password-min-length)
-        short-enough?                                  (utils.string/at-most-n-chars?
-                                                        password
-                                                        constant/new-password-max-length)
+        {:keys [long-enough? short-enough?]
+         :as   validations}                            (password/validate password)
         empty-password?                                (string/blank? password)
         same-passwords?                                (and (not empty-password?)
                                                             (= password repeat-password))
