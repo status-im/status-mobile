@@ -5,7 +5,6 @@
     [oops.core :as oops]
     [schema.core :as schema]
     [status-im.constants :as constants]
-    [status-im.contexts.chat.messenger.messages.link-preview.events :as link-preview.events]
     status-im.contexts.communities.actions.accounts-selection.events
     status-im.contexts.communities.actions.addresses-for-permissions.events
     status-im.contexts.communities.actions.airdrop-addresses.events
@@ -228,10 +227,7 @@
   (when community-js
     {:db (update db :communities/fetching-communities dissoc community-id)
      :fx [[:dispatch [:communities/handle-community community-js]]
-          [:dispatch [:chat.ui/spectate-community community-id]]
-          [:dispatch
-           [:chat.ui/cache-link-preview-data (link-preview.events/community-link community-id)
-            (data-store.communities/<-rpc community-js)]]]}))
+          [:dispatch [:chat.ui/spectate-community community-id]]]}))
 
 (rf/reg-event-fx :chat.ui/community-fetched community-fetched)
 
