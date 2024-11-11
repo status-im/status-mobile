@@ -99,7 +99,7 @@
     :as   message-data}
    {:keys [able-to-send-message? community? community-member? can-delete-message-for-everyone?
            message-pin-enabled group-chat group-admin?]}]
-  (let [edit-message?        (and community-member?
+  (let [edit-message?        (and (or community-member? (not community?))
                                   outgoing
                                   (not (or deleted? deleted-for-me?))
                                   ;; temporarily disable edit image message until
@@ -116,23 +116,17 @@
         pin-message?         (and message-pin-enabled
                                   (not= content-type constants/content-type-image)
                                   (or community-member? (not community?)))
-        delete-for-me?       (and community-member?
+        delete-for-me?       (and (or community-member? (not community?))
                                   (not (or deleted? deleted-for-me? bridge-message)))
-        delete-for-everyone? (and community-member?
-                                  (or (not deleted?)
-                                      outgoing
-                                      (and community? can-delete-message-for-everyone?)
-                                      (and group-chat group-admin?)
-                                      (not bridge-message)))]
+        delete-for-everyone? (and (or community-member? (not community?))
+                                  (cond
+                                    deleted?       false
+                                    outgoing       true
+                                    community?     can-delete-message-for-everyone?
+                                    group-chat     group-admin?
+                                    bridge-message false
+                                    :else          false))]
     (cond-> []
-      edit-message?
-      (conj {:type                :main
-             :on-press            #(rf/dispatch [:chat.ui/edit-message message-data])
-             :label               (i18n/label :t/edit-message)
-             :icon                :i/edit
-             :accessibility-label :edit-message
-             :id                  :edit})
-
       reply?
       (conj {:type                :main
              :on-press            #(rf/dispatch [:chat.ui/reply-to-message message-data])
@@ -140,6 +134,14 @@
              :icon                :i/reply
              :accessibility-label :reply-message
              :id                  :reply})
+
+      edit-message?
+      (conj {:type                :main
+             :on-press            #(rf/dispatch [:chat.ui/edit-message message-data])
+             :label               (i18n/label :t/edit-message)
+             :icon                :i/edit
+             :accessibility-label :edit-message
+             :id                  :edit})
 
       copy-text?
       (conj {:type                :main
@@ -223,7 +225,7 @@
            (rf/dispatch [:hide-bottom-sheet]))}])]))
 
 (defn reactions-and-actions
-  [message-data {:keys [chat-id community-member?] :as context}]
+  [message-data {:keys [chat-id community? community-member?] :as context}]
   (fn []
     (let [data                    (if (contains? message-data :album-id)
                                     (first (:album message-data))
@@ -238,7 +240,7 @@
            admin-actions  :admin} (group-by :type actions)]
       [:<>
        ;; REACTIONS
-       (when (and (or community-member?)
+       (when (and (or community-member? (not community?))
                   (not= outgoing-status :sending)
                   (not (or deleted? deleted-for-me?)))
          [reactions {:chat-id chat-id :message-id message-id}])
