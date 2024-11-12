@@ -5,14 +5,13 @@
 
 (defn validate-short-enough?
   [password]
-  (utils.string/at-least-n-chars? password
-                                  constants/new-password-min-length))
+  (utils.string/at-most-n-chars? password
+                                 constants/new-password-max-length))
 
 (defn validate-long-enough?
   [password]
-  (and (validate-short-enough? password)
-       (utils.string/at-most-n-chars? password
-                                      constants/new-password-max-length)))
+  (utils.string/at-least-n-chars? password
+                                  constants/new-password-min-length))
 
 (defn validate
   [password]
@@ -21,8 +20,17 @@
                      utils.string/has-upper-case?
                      utils.string/has-numbers?
                      utils.string/has-symbols?
-                     validate-short-enough?
-                     validate-long-enough?)]
+                     validate-long-enough?
+                     validate-short-enough?)]
     (->> password
          validations
-         (zipmap constants/password-tips))))
+         (zipmap (conj constants/password-tips
+                       :long-enough?
+                       :short-enough?)))))
+
+(defn strength
+  [validations]
+  (->> (select-keys validations constants/password-tips)
+       (vals)
+       (filter true?)
+       count))

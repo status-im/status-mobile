@@ -143,9 +143,7 @@
   [:lower-case?
    :upper-case?
    :numbers?
-   :symbols?
-   :long-enough?
-   :short-enough?])
+   :symbols?])
 
 (def ^:const strength-status
   {1 :very-weak

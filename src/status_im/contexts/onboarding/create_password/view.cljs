@@ -82,12 +82,6 @@
     [quo/tips {:completed? symbols?}
      (i18n/label :t/password-creation-tips-4)]]])
 
-(defn calc-password-strength
-  [validations]
-  (->> (vals validations)
-       (filter true?)
-       count))
-
 (defn- use-password-checks
   [password]
   (rn/use-memo
@@ -97,7 +91,7 @@
        {:password-long-enough?  long-enough?
         :password-short-enough? short-enough?
         :password-validations   validations
-        :password-strength      (calc-password-strength validations)
+        :password-strength      (password/strength validations)
         :empty-password?        (empty? password)}))
    [password]))
 

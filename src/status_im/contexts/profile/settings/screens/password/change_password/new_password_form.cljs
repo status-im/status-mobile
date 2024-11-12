@@ -13,16 +13,10 @@
     [utils.re-frame :as rf]
     [utils.security.core :as security]))
 
-(defn- calc-password-strength
-  [validations]
-  (->> (vals validations)
-       (filter true?)
-       count))
-
 (defn- help
   [{:keys [validations]}]
   (let [{:keys [lower-case? upper-case? numbers? symbols?]} validations
-        password-strength                                   (calc-password-strength validations)]
+        password-strength                                   (password/strength validations)]
     [rn/view
      [quo/strength-divider {:type (constant/strength-status password-strength :info)}
       (i18n/label :t/password-creation-tips-title)]
