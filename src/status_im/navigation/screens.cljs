@@ -134,6 +134,7 @@
     [status-im.contexts.wallet.send.send-amount.view :as wallet-send-input-amount]
     [status-im.contexts.wallet.send.transaction-confirmation.view :as wallet-transaction-confirmation]
     [status-im.contexts.wallet.send.transaction-progress.view :as wallet-transaction-progress]
+    [status-im.contexts.wallet.swap.from.view :as wallet-swap-from]
     [status-im.contexts.wallet.swap.select-asset-to-pay.view :as wallet-swap-select-asset-to-pay]
     [status-im.contexts.wallet.swap.set-spending-cap.view :as wallet-swap-set-spending-cap]
     [status-im.contexts.wallet.swap.setup-swap.view :as wallet-swap-setup-swap]
@@ -634,6 +635,12 @@
     :options   {:modalPresentationStyle :overCurrentContext
                 :insets                 {:top? true}}
     :component wallet-swap-select-asset-to-pay/view}
+
+   {:name      :screen/wallet.swap-from
+    :metrics   {:track? true}
+    :options   {:modalPresentationStyle :overCurrentContext
+                :insets                 {:bottom? true}}
+    :component wallet-swap-from/view}
 
    {:name      :screen/wallet.setup-swap
     :metrics   {:track?   true

@@ -193,7 +193,7 @@
 
 (defn token-balance-display-for-network
   "Formats a token balance for a specific chain and rounds it to a specified number of decimals.
-  If the balance is less than the smallest representable value based on rounding decimals, 
+  If the balance is less than the smallest representable value based on rounding decimals,
   a threshold value is displayed instead."
   [token chain-id rounding-decimals]
   (let [token-decimals   (:decimals token)
@@ -548,3 +548,7 @@
     (:less-than-three-minutes constants/wallet-transaction-estimation) "1-3"
     (:less-than-five-minutes constants/wallet-transaction-estimation)  "3-5"
     ">5"))
+
+(defn multi-account?
+  [{:keys [accounts]}]
+  (> (count accounts) 1))

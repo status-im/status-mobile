@@ -14,11 +14,11 @@
             [utils.number :as number]))
 
 (rf/reg-event-fx :wallet.swap/start
- (fn [{:keys [db]} [{:keys [network asset-to-receive open-new-screen?] :as data}]]
+ (fn [{:keys [db]} [{:keys [network asset-to-receive open-new-screen? from-account] :as data}]]
    (let [{:keys [wallet]}       db
          test-networks-enabled? (get-in db [:profile/profile :test-networks-enabled?])
          view-id                (:view-id db)
-         account                (swap-utils/wallet-account wallet)
+         account                (or from-account (swap-utils/wallet-account wallet))
          asset-to-pay           (if (get-in data [:asset-to-pay :networks])
                                   (:asset-to-pay data)
                                   (swap-utils/select-asset-to-pay-by-symbol
@@ -26,6 +26,7 @@
                                     :account                account
                                     :test-networks-enabled? test-networks-enabled?
                                     :token-symbol           (get-in data [:asset-to-pay :symbol])}))
+         multi-account?         (utils/multi-account? wallet)
          network'               (or network
                                     (swap-utils/select-network asset-to-pay))
          start-point            (if open-new-screen? :action-menu :swap-button)]
@@ -35,34 +36,38 @@
               (assoc-in [:wallet :ui :swap :network] network')
               (assoc-in [:wallet :ui :swap :launch-screen] view-id)
               (assoc-in [:wallet :ui :swap :start-point] start-point))
-      :fx (if network'
-            [[:dispatch [:wallet/switch-current-viewing-account (:address account)]]
-             [:dispatch
-              (if open-new-screen?
-                [:open-modal :screen/wallet.setup-swap]
-                [:navigate-to-within-stack
-                 [:screen/wallet.setup-swap :screen/wallet.swap-select-asset-to-pay]])]
-             [:dispatch
-              [:centralized-metrics/track :metric/swap-start
-               {:network       (:chain-id network)
-                :pay_token     (:symbol asset-to-pay)
-                :receive_token (:symbol asset-to-receive)
-                :start_point   start-point
-                :launch_screen view-id}]]
-             [:dispatch [:wallet.swap/set-default-slippage]]]
-            [[:dispatch
-              [:show-bottom-sheet
-               {:content (fn []
-                           [network-selection/view
-                            {:token-symbol      (:symbol asset-to-pay)
-                             :on-select-network (fn [network]
-                                                  (rf/dispatch [:hide-bottom-sheet])
-                                                  (rf/dispatch
-                                                   [:wallet.swap/start
-                                                    {:asset-to-pay     asset-to-pay
-                                                     :asset-to-receive asset-to-receive
-                                                     :network          network
-                                                     :open-new-screen? open-new-screen?}]))}])}]]])})))
+      :fx (if (and multi-account? (= view-id :wallet-stack) (not from-account))
+            [[:dispatch [:open-modal :screen/wallet.swap-from]]]
+            (if network'
+              [[:dispatch [:wallet/switch-current-viewing-account (:address account)]]
+               [:dispatch
+                (if open-new-screen?
+                  [:open-modal :screen/wallet.setup-swap]
+                  [:navigate-to-within-stack
+                   [:screen/wallet.setup-swap :screen/wallet.swap-select-asset-to-pay]])]
+               [:dispatch
+                [:centralized-metrics/track :metric/swap-start
+                 {:network       (:chain-id network)
+                  :pay_token     (:symbol asset-to-pay)
+                  :receive_token (:symbol asset-to-receive)
+                  :start_point   start-point
+                  :launch_screen view-id}]]
+               [:dispatch [:wallet.swap/set-default-slippage]]]
+              [[:dispatch
+                [:show-bottom-sheet
+                 {:content (fn []
+                             [network-selection/view
+                              {:token-symbol      (:symbol asset-to-pay)
+                               :on-select-network (fn [network]
+                                                    (rf/dispatch [:hide-bottom-sheet])
+                                                    (rf/dispatch
+                                                     [:wallet.swap/start
+                                                      {:asset-to-pay asset-to-pay
+                                                       :asset-to-receive asset-to-receive
+                                                       :network network
+                                                       :open-new-screen?
+                                                       open-new-screen?
+                                                       :from-account from-account}]))}])}]]]))})))
 
 (rf/reg-event-fx :wallet.swap/select-asset-to-pay
  (fn [{:keys [db]} [{:keys [token]}]]
@@ -527,3 +532,15 @@
              [:dispatch [:wallet/navigate-to-account-within-stack address]])
            [:dispatch [:wallet/fetch-activities-for-current-account]]
            [:dispatch [:wallet/select-account-tab :activity]]]})))
+
+(rf/reg-event-fx :wallet.swap/start-from-account
+ (fn [{:keys [db]} [account]]
+   (let [asset-to-pay     (get-in db [:wallet :ui :swap :asset-to-pay])
+         asset-to-receive (get-in db [:wallet :ui :swap :asset-to-receive])]
+     {:fx [[:dispatch [:navigate-back]]
+           [:dispatch
+            [:wallet.swap/start
+             {:asset-to-pay     asset-to-pay
+              :asset-to-receive asset-to-receive
+              :open-new-screen? true
+              :from-account     account}]]]})))
