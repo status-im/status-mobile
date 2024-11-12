@@ -67,7 +67,7 @@
      (fn []
        (reanimated/set-shared-value @paused? (not= view-id :screen/onboarding.intro))
        (fn []
-         (when (= view-id :screen/onboarding.generating-keys)
+         (when (= view-id :screen/onboarding.preparing-status)
            (carousel.animation/cleanup-animation progress paused?))))
      [view-id])
 

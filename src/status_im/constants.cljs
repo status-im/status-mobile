@@ -450,7 +450,6 @@
 (def ^:const biometrics-type-touch-id :TouchID)
 (def ^:const biometrics-type-face-id :FaceID)
 
-(def ^:const onboarding-generating-keys-animation-duration-ms 7000)
 (def ^:const onboarding-generating-keys-navigation-retry-ms 3000)
 
 (def ^:const image-description-in-lightbox? false)

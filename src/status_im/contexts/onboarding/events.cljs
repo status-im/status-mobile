@@ -67,28 +67,6 @@
  (fn [_ [error]]
    {:dispatch [:biometric/show-message (ex-cause error)]}))
 
-;; Navigate to next screen once onboarding animation and account creation both are complete
-;; Note: If account creation fails, user will get stuck on loading screen
-;; TODO: Show error screen in case account creation/restoration fails
-(rf/reg-event-fx :onboarding/account-creation-complete
- (fn [{:keys [db]} [opts]]
-   (let [loading-animation-complete? (or (:loading-animation-complete? opts)
-                                         (:onboarding/loading-animation-complete? db))
-         loading-screen              (or (:loading-screen opts) (:onboarding/loading-screen db))
-         login-signal-received?      (or (:login-signal-received? opts)
-                                         (:onboarding/login-signal-received? db))]
-     (if (and loading-animation-complete? login-signal-received?)
-       {:db (-> db
-                (dissoc :onboarding/loading-screen)
-                (dissoc :onboarding/loading-animation-complete?)
-                (dissoc :onboarding/login-signal-received?))
-        :fx [[:dispatch
-              [:navigate-to-within-stack [:screen/onboarding.enable-notifications loading-screen]]]]}
-       {:db (-> db
-                (assoc :onboarding/loading-screen loading-screen)
-                (assoc :onboarding/loading-animation-complete? loading-animation-complete?)
-                (assoc :onboarding/login-signal-received? login-signal-received?))}))))
-
 (rf/defn create-account-and-login
   {:events [:onboarding/create-account-and-login]}
   [{:keys [db] :as cofx}]
@@ -96,27 +74,20 @@
         (:onboarding/profile db)
         syncing-account-recovered? (and (seq (:syncing/key-uid db))
                                         (= (:syncing/key-uid db)
-                                           (get-in db [:onboarding/profile :key-uid])))
-        loading-screen (if syncing-account-recovered?
-                         :screen/onboarding.preparing-status
-                         :screen/onboarding.generating-keys)]
+                                           (get-in db [:onboarding/profile :key-uid])))]
     (rf/merge cofx
-              {:fx             [[:dispatch
-                                 [:navigate-to-within-stack
-                                  [loading-screen
-                                   (get db
-                                        :onboarding/navigated-to-enter-seed-phrase-from-screen
-                                        :screen/onboarding.new-to-status)]]]
-                                (when-not syncing-account-recovered?
-                                  [:dispatch [:syncing/clear-syncing-installation-id]])]
-               :dispatch-later [{:ms       constants/onboarding-generating-keys-animation-duration-ms
-                                 :dispatch [:onboarding/account-creation-complete
-                                            {:loading-animation-complete? true
-                                             :loading-screen              loading-screen}]}]
-               :db             (-> db
-                                   (dissoc :profile/login)
-                                   (dissoc :auth-method)
-                                   (assoc :onboarding/new-account? true))}
+              {:fx [[:dispatch
+                     [:navigate-to-within-stack
+                      [:screen/onboarding.preparing-status
+                       (get db
+                            :onboarding/navigated-to-enter-seed-phrase-from-screen
+                            :screen/onboarding.new-to-status)]]]
+                    (when-not syncing-account-recovered?
+                      [:dispatch [:syncing/clear-syncing-installation-id]])]
+               :db (-> db
+                       (dissoc :profile/login)
+                       (dissoc :auth-method)
+                       (assoc :onboarding/new-account? true))}
               (if seed-phrase
                 (profile.recover/recover-profile-and-login profile)
                 (profile.create/create-profile-and-login profile)))))

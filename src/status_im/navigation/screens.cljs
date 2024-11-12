@@ -45,7 +45,6 @@
     [status-im.contexts.onboarding.create-profile.view :as create-profile]
     [status-im.contexts.onboarding.enable-biometrics.view :as enable-biometrics]
     [status-im.contexts.onboarding.enable-notifications.view :as enable-notifications]
-    [status-im.contexts.onboarding.generating-keys.view :as generating-keys]
     [status-im.contexts.onboarding.identifiers.view :as identifiers]
     [status-im.contexts.onboarding.intro.view :as intro]
     [status-im.contexts.onboarding.preparing-status.view :as preparing-status]
@@ -761,17 +760,6 @@
                                         :popStackOnPress     false}}
    :component enable-biometrics/view})
 
-(def onboarding-generating-keys
-  {:name      :screen/onboarding.generating-keys
-   :metrics   {:track? true}
-   :options   {:theme              :dark
-               :layout             options/onboarding-transparent-layout
-               :animations         transitions/push-animations-for-transparent-background
-               :popGesture         false
-               :hardwareBackButton {:dismissModalOnPress false
-                                    :popStackOnPress     false}}
-   :component generating-keys/view})
-
 (def onboarding-preparing-status
   {:name      :screen/onboarding.preparing-status
    :metrics   {:track? true}
@@ -872,7 +860,6 @@
    onboarding-create-profile
    onboarding-create-profile-password
    onboarding-enable-biometrics
-   onboarding-generating-keys
    onboarding-preparing-status
    onboarding-entering-seed-phrase
    onboarding-enable-notifications
