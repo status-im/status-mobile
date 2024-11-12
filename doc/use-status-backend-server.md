@@ -45,7 +45,7 @@ Basically, you don't have to run `make generate` again and again, just run it on
 
 If you're using ios simulator, you can skip above issues!
 
-## Details for issue#3 if you're interested
+## Details for issue#1 if you're interested
 - we use `react-native-fast-image` which use okhttpclient behind
 - we were using custom cert for https
 - we fetch the custom cert through endpoint `ImageServerTLSCert`
