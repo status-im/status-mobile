@@ -139,3 +139,5 @@
 ;; /path/to/root/data/dir
 ;; make sure it exists, it should be in absolute path
 (goog-define STATUS_BACKEND_SERVER_ROOT_DATA_DIR "")
+;; if you're using android simulator, I suggest set the env variable to "http://10.0.2.2:"
+(goog-define STATUS_BACKEND_SERVER_IMAGE_SERVER_URI_PREFIX "https://localhost:")

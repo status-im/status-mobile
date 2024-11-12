@@ -4,9 +4,10 @@
     [react-native.fs :as utils.fs]
     [react-native.platform :as platform]
     [schema.core :as schema]
+    [status-im.config :as config]
     [utils.datetime :as datetime]))
 
-(def ^:const image-server-uri-prefix "https://localhost:")
+(def ^:const image-server-uri-prefix config/STATUS_BACKEND_SERVER_IMAGE_SERVER_URI_PREFIX)
 (def ^:const account-images-action "/accountImages")
 (def ^:const account-initials-action "/accountInitials")
 (def ^:const contact-images-action "/contactImages")
