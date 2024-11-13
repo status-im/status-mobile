@@ -112,6 +112,7 @@
                              :pressed?            pressed?})
       :on-press-in         on-press-in
       :on-press            on-press
+      :disabled            (= state :disabled)
       :on-press-out        on-press-out
       :accessibility-label :container}
      [account-view props]

@@ -12,12 +12,13 @@
         :else :transparent))
 
 (defn container
-  [props]
+  [{:keys [state] :as props}]
   {:height             56
    :border-radius      12
    :background-color   (background-color props)
    :flex-direction     :row
    :align-items        :center
+   :opacity            (if (= state :disabled) 0.3 1)
    :padding-horizontal 12
    :padding-vertical   6
    :justify-content    :space-between})

@@ -6,7 +6,6 @@
     [status-im.common.events-helper :as events-helper]
     [status-im.common.floating-button-page.view :as floating-button-page]
     [status-im.contexts.wallet.swap.from.style :as style]
-    [status-im.setup.hot-reload :as hot-reload]
     [utils.i18n :as i18n]
     [utils.money :as money]
     [utils.re-frame :as rf]))
@@ -21,7 +20,7 @@
     [quo/account-item
      {:type          (if has-balance :tag :default)
       :on-press      #(on-account-press item)
-      :state         (if has-balance :default :active)
+      :state         (if has-balance :default :disabled)
       :token-props   {:symbol (:asset-pay-symbol item)
                       :value  (:asset-pay-balance item)}
       :account-props (assoc item
@@ -30,18 +29,18 @@
 
 (defn- on-close
   []
-  (rf/dispatch [:wallet/clean-current-viewing-account]))
+  (rf/dispatch [:wallet/clean-current-viewing-account])
+  (events-helper/navigate-back))
 
 (defn view
   []
   (let [accounts (rf/sub [:wallet/accounts-with-balances])]
-    (hot-reload/use-safe-unmount on-close)
     [floating-button-page/view
      {:footer-container-padding 0
       :header                   [quo/page-nav
                                  {:margin-top (safe-area/get-top)
                                   :icon-name  :i/close
-                                  :on-press   events-helper/navigate-back}]}
+                                  :on-press   on-close}]}
      [quo/page-top
       {:title                     (i18n/label :t/from-label)
        :title-accessibility-label :title-label}]

@@ -23,7 +23,7 @@
   [:map
    [:type {:optional true}
     [:enum :default :tag :action :balance-neutral :balance-negative :balance-positive]]
-   [:state {:optional true} [:enum :default :selected :active]]
+   [:state {:optional true} [:enum :default :selected :active :disabled]]
    [:blur? {:optional true} [:maybe :boolean]]
    [:customization-color {:optional true} [:maybe :schema.common/customization-color]]
    [:on-press {:optional true} [:maybe fn?]]
