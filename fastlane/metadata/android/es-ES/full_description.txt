@@ -1,18 +1,18 @@
-Status combina una mensajería centrada en la privacidad pseudónima y una billetera de criptomonedas segura en una poderosa herramienta de comunicación. Chatea con amigos y comunidades en crecimiento. Compra, almacena e intercambia activos digitales.
+Status combina una mensajería seudónima centrada en la privacidad y una Billetera de criptomonedas segura en una poderosa herramienta de comunicación. Chatea con amigos y comunidades en crecimiento. Compra, almacena e intercambia activos digitales.
 
-Status es tu sistema operativo para Ethereum.
+Status es tu sistema operativo Ethereum.
+
+BILLETERA ETHEREUM SEGURA
+La Billetera de criptomonedas Status te permite enviar, almacenar e intercambiar de forma segura activos Ethereum como ETH, SNT, stablecoins como DAI, así como coleccionables. Toma el control de tu criptomoneda y activos digitales con confianza con nuestra Billetera multicadena, compatible con Ethereum Mainnet, Arbitrum y Optimism. La Billetera Status actualmente solo admite activos ETH, ERC-20, ERC-721 y ERC-1155; no admite Bitcoin.
 
 MENSAJERÍA PRIVADA
-Envía chats privados 1:1 y chats grupales privados sin que nadie espíe tus comunicaciones. Status es una aplicación de mensajería que elimina los retransmisores de mensajes centralizados para ofrecer mayor privacidad y mensajería segura. Todos los mensajes están cifrados con cifrado de extremo a extremo. Además, ningún mensaje revela quién es el autor o el destinatario previsto, por lo que nadie, ni siquiera Status, sabe quién está hablando con quién o qué se dijo.
-
-BILLETERA SEGURA DE CRIPTOMONEDAS
-La billetera de criptomonedas de Status te permite enviar, almacenar e intercambiar de forma segura activos de Ethereum como ETH, SNT, stablecoins como DAI, así como coleccionables digitales. Controla con confianza tus criptomonedas y activos digitales con nuestra aplicación de billetera multichain de Ethereum, que soporta mainnet, Arbitrum y Optimism. La billetera blockchain de Status actualmente solo soporta activos ETH, ERC-20, ERC-721 y ERC-1155; no soporta Bitcoin.
+Envía chats privados 1:1 y grupales sin que nadie espíe tus comunicaciones. Status es una aplicación de mensajería que elimina los servidores de mensajes centralizados para una mayor privacidad y una mensajería segura. Todos los mensajes están encriptados de extremo a extremo. Además, ningún mensaje expone quién es el autor o el destinatario previsto, por lo que nadie, ni siquiera Status, sabe quién está hablando con quién o qué se dijo.
 
 GANA CON DEFI
-Pon tus criptomonedas a trabajar con las últimas aplicaciones de finanzas descentralizadas y exchanges descentralizados (DEX) como Maker, Aave, Uniswap, Synthetix, PoolTogether, Zerion, Kyber y más.
+Pon tus criptomonedas a trabajar con las últimas aplicaciones financieras descentralizadas y plataformas de intercambio descentralizadas (DEX) como Maker, Aave, Uniswap, Synthetix, PoolTogether, Zerion, Kyber y más.
 
 CONECTA CON TU COMUNIDAD
-Explora, conecta y chatea con tus comunidades y amigos favoritos. Ya sea un pequeño grupo de amigos, un colectivo de artistas, traders de criptomonedas o la próxima gran organización, envía mensajes y comunícate con las comunidades de Status.
+Explora, conéctate y chatea con tus comunidades y amigos. Ya sea un pequeño grupo de amigos, un colectivo de artistas, traders de criptomonedas o la próxima gran organización, envía mensajes de texto y comunícate con las comunidades de Status.
 
 CREACIÓN DE CUENTAS PRIVADAS
-Mantén tu privacidad con la creación de cuentas pseudónimas. Al crear tu cuenta gratuita, NUNCA tendrás que ingresar un número de teléfono, dirección de correo electrónico o cuenta bancaria. Las claves privadas de tu billetera se generan localmente y se almacenan de manera segura para garantizar que solo tú tengas acceso a tus fondos y transacciones financieras.
+Mantén la privacidad con la creación de cuentas seudónimas. Al crear tu cuenta gratuita, NUNCA tendrás que compartir tu número de teléfono, tu dirección de correo electrónico o una cuenta bancaria. Las claves privadas de tu billetera se generan localmente y se almacenan de forma segura para garantizar que solo tú tienes acceso a tus fondos y transacciones financieras.

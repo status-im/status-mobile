@@ -18,6 +18,16 @@
  :-> :asset-to-pay)
 
 (rf/reg-sub
+ :wallet/swap-asset-to-pay-decimals
+ :<- [:wallet/swap-asset-to-pay]
+ :-> :decimals)
+
+(rf/reg-sub
+ :wallet/swap-asset-to-pay-symbol
+ :<- [:wallet/swap-asset-to-pay]
+ :-> :symbol)
+
+(rf/reg-sub
  :wallet/swap-asset-to-receive
  :<- [:wallet/swap]
  :-> :asset-to-receive)
@@ -253,3 +263,42 @@
                                     currency-symbol
                                     fee-in-fiat)]
        fee-formatted))))
+
+(rf/reg-sub
+ :wallet/swap-asset-to-pay-balance-for-chain-data
+ :<- [:wallet/swap-asset-to-pay]
+ (fn [asset-to-pay]
+   (let [token-symbol (or (:symbol asset-to-pay) constants/token-for-fees-symbol)]
+     @(rf/subscribe [:wallet/token-by-symbol token-symbol]))))
+
+(rf/reg-sub
+ :wallet/swap-asset-to-pay-balance-for-chain
+ :<- [:wallet/swap-asset-to-pay-balance-for-chain-data]
+ (fn [asset-to-pay-with-current-account-balance [_ chain-id]]
+   (let [pay-token-decimals               (:decimals asset-to-pay-with-current-account-balance)
+         pay-token-balance-selected-chain (-> (get-in asset-to-pay-with-current-account-balance
+                                                      [:balances-per-chain chain-id :raw-balance]
+                                                      0)
+                                              (number/convert-to-whole-number pay-token-decimals))]
+     pay-token-balance-selected-chain)))
+
+(rf/reg-sub
+ :wallet/swap-asset-to-pay-balance-for-chain-ui
+ :<- [:wallet/swap-asset-to-pay-balance-for-chain-data]
+ (fn [asset-to-pay-with-current-account-balance [_ chain-id]]
+   (utils/token-balance-display-for-network
+    asset-to-pay-with-current-account-balance
+    chain-id
+    constants/min-token-decimals-to-display)))
+
+(rf/reg-sub
+ :wallet/swap-asset-to-pay-amount-in-fiat
+ :<- [:wallet/swap-asset-to-pay-balance-for-chain-data]
+ :<- [:profile/currency]
+ :<- [:profile/currency-symbol]
+ (fn [[asset-to-pay-with-current-account-balance currency currency-symbol] [_ amount]]
+   (utils/formatted-token-fiat-value
+    {:currency        currency
+     :currency-symbol currency-symbol
+     :balance         (or amount 0)
+     :token           asset-to-pay-with-current-account-balance})))

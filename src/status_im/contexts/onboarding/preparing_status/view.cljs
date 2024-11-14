@@ -4,7 +4,7 @@
     [react-native.core :as rn]
     [react-native.safe-area :as safe-area]
     [status-im.common.resources :as resources]
-    [status-im.contexts.onboarding.generating-keys.style :as style]
+    [status-im.contexts.onboarding.preparing-status.style :as style]
     [utils.i18n :as i18n]))
 
 (defn title
@@ -16,7 +16,7 @@
    [quo/text-combinations
     {:container-style {:margin-horizontal 20
                        :margin-vertical   12}
-     :title           (i18n/label :t/preparing-app-for-you)
+     :title           (i18n/label :t/preparing-status-for-you)
      :description     (i18n/label :t/hang-in-there)}]])
 
 (defn content

@@ -237,9 +237,7 @@ class TestCommunityOneDeviceMerged(MultipleSharedDeviceTestCase):
 
         self.home.just_fyi("Check that removed user is not shown in the list anymore")
         self.home.reopen_app(sign_in=False)
-        if self.sign_in.terms_and_privacy_checkbox.is_element_displayed(5):
-            self.sign_in.terms_and_privacy_checkbox.click()
-            self.sign_in.explore_new_status_button.click_until_presence_of_element(self.sign_in.show_profiles_button)
+        self.sign_in.explore_new_status_button.click_until_presence_of_element(self.sign_in.show_profiles_button)
         self.sign_in.show_profiles_button.wait_and_click()
         if self.sign_in.element_by_text(self.username).is_element_displayed():
             self.errors.append("Removed user is re-appeared after relogin!")

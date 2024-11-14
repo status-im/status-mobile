@@ -133,12 +133,18 @@
 (def ^:const min-password-length 6)
 (def ^:const pincode-length 6)
 (def ^:const new-password-min-length 10)
+(def ^:const new-password-max-length 100)
 (def ^:const max-group-chat-participants 20)
 (def ^:const max-group-chat-name-length 24)
 (def ^:const default-number-of-messages 20)
 (def ^:const default-number-of-pin-messages 3)
 
-(def ^:const password-tips [:lower-case? :upper-case? :numbers? :symbols?])
+(def ^:const password-tips
+  [:lower-case?
+   :upper-case?
+   :numbers?
+   :symbols?])
+
 (def ^:const strength-status
   {1 :very-weak
    2 :weak
@@ -290,6 +296,14 @@
 (def ^:const wallet-connect-user-rejected-error-key "USER_REJECTED")
 (def ^:const wallet-connect-user-disconnected-reason-key "USER_DISCONNECTED")
 (def ^:const wallet-connect-user-rejected-chains-error-key "USER_REJECTED_CHAINS")
+(def ^:const wallet-connect-message-signing-methods
+  #{wallet-connect-personal-sign-method
+    wallet-connect-eth-sign-typed-method
+    wallet-connect-eth-sign-method
+    wallet-connect-eth-sign-typed-v4-method})
+(def ^:const wallet-connect-transaction-methods
+  #{wallet-connect-eth-send-transaction-method
+    wallet-connect-eth-sign-transaction-method})
 
 (def ^:const transaction-pending-type-wallet-connect-transfer "WalletConnectTransfer")
 
@@ -452,7 +466,6 @@
 (def ^:const biometrics-type-touch-id :TouchID)
 (def ^:const biometrics-type-face-id :FaceID)
 
-(def ^:const onboarding-generating-keys-animation-duration-ms 7000)
 (def ^:const onboarding-generating-keys-navigation-retry-ms 3000)
 
 (def ^:const image-description-in-lightbox? false)

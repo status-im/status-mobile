@@ -20,20 +20,13 @@
   (rf/dispatch [:show-bottom-sheet {:content privacy/privacy-statement :shell? true}]))
 
 (defn- terms
-  [terms-accepted? set-terms-accepted?]
+  []
   [rn/view {:style style/terms-privacy-container}
-   [rn/view
-    {:accessibility-label :terms-privacy-checkbox-container}
-    [quo/selectors
-     {:type      :checkbox
-      :blur?     true
-      :checked?  terms-accepted?
-      :on-change #(set-terms-accepted? not)}]]
-   [rn/view {:style style/text-container}
-    [quo/text
-     {:style style/plain-text
-      :size  :paragraph-2}
-     (str (i18n/label :t/accept-status-tos-prefix) " ")]
+   [quo/text
+    {:style style/plain-text
+     :size  :paragraph-2}
+    (str (i18n/label :t/accept-status-tos-prefix))]
+   [rn/view {:style {:flex-direction :row}}
     [quo/text
      {:on-press show-terms-of-use
       :style    style/highlighted-text
@@ -69,35 +62,31 @@
 
 (defn view
   []
-  (let [[terms-accepted? set-terms-accepted?] (rn/use-state false)
-        has-profiles-and-unaccepted-terms?    (rf/sub [:profile/has-profiles-and-unaccepted-terms?])]
+  (let [has-profiles-and-unaccepted-terms? (rf/sub [:profile/has-profiles-and-unaccepted-terms?])]
     [rn/view {:style style/page-container}
      [background/view false]
      [quo/bottom-actions
       (cond->
-        {:container-style      (style/bottom-actions-container (safe-area/get-bottom))
-         :actions              :two-vertical-actions
-         :description          :top
-         :description-top-text [terms terms-accepted? set-terms-accepted?]}
+        {:container-style  (style/bottom-actions-container (safe-area/get-bottom))
+         :actions          :two-vertical-actions
+         :description      :bottom
+         :description-text [terms]}
 
         has-profiles-and-unaccepted-terms?
         (assoc
          :actions          :one-action
          :button-one-label (i18n/label :t/explore-the-new-status)
-         :button-one-props {:disabled?           (not terms-accepted?)
-                            :accessibility-label :explore-new-status
+         :button-one-props {:accessibility-label :explore-new-status
                             :on-press            explore-new-status})
 
         (not has-profiles-and-unaccepted-terms?)
         (assoc
          :actions          :two-vertical-actions
-         :button-one-label (i18n/label :t/sync-or-recover-profile)
+         :button-one-label (i18n/label :t/log-in)
          :button-one-props {:type                :dark-grey
-                            :disabled?           (not terms-accepted?)
-                            :accessibility-label :already-use-status-button
+                            :accessibility-label :log-in
                             :on-press            sync-or-recover-profile}
          :button-two-label (i18n/label :t/create-profile)
          :button-two-props {:accessibility-label :new-to-status-button
-                            :disabled?           (not terms-accepted?)
                             :on-press            create-profile}))]
      [overlay/view]]))

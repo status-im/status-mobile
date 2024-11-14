@@ -1,7 +1,10 @@
 (ns status-im.contexts.wallet.wallet-connect.utils.data-store-test
   (:require
     [cljs.test :refer-macros [deftest is testing]]
-    [status-im.contexts.wallet.wallet-connect.utils.data-store :as sut]))
+    [clojure.string :as string]
+    [status-im.contexts.wallet.common.utils.networks :as network-utils]
+    [status-im.contexts.wallet.wallet-connect.utils.data-store :as sut]
+    [utils.string]))
 
 (deftest get-current-request-dapp-test
   (testing "returns the correct dapp based on the request's origin"
@@ -39,3 +42,44 @@
   (testing "handles nil sessions correctly"
     (let [db {:wallet-connect/sessions nil}]
       (is (= 1 (sut/get-total-connected-dapps db))))))
+
+(deftest get-session-by-topic-test
+  (testing "returns the correct session based on the topic"
+    (let [db    {:wallet-connect/sessions [{:topic "topic1" :url "https://dapp1.com"}
+                                           {:topic "topic2" :url "https://dapp2.com"}]}
+          topic "topic1"]
+      (is (= {:topic "topic1" :url "https://dapp1.com"}
+             (sut/get-session-by-topic db topic)))))
+
+  (testing "returns nil if no matching session is found"
+    (let [db    {:wallet-connect/sessions [{:topic "topic1" :url "https://dapp1.com"}]}
+          topic "topic2"]
+      (is (nil? (sut/get-session-by-topic db topic)))))
+
+  (testing "handles nil sessions correctly"
+    (let [db    {:wallet-connect/sessions nil}
+          topic "topic1"]
+      (is (nil? (sut/get-session-by-topic db topic)))))
+
+  (testing "handles empty sessions correctly"
+    (let [db    {:wallet-connect/sessions []}
+          topic "topic1"]
+      (is (nil? (sut/get-session-by-topic db topic))))));
+
+(deftest get-account-by-session-test
+  (testing "get-account-by-session function"
+    (let [db      {:wallet {:accounts {"0x123" {:address "0x123"}
+                                       "0x456" {:address "0x456"}
+                                       "0x789" {:address "0x789"}}}}
+          session {:accounts ["network:0x456"]}]
+      (with-redefs [network-utils/split-network-full-address (fn [addr]
+                                                               (string/split addr #":"))]
+        (is (= (sut/get-account-by-session db session) {:address "0x456"}))))
+
+    (let [db      {:wallet {:accounts {"0x123" {:address "0x123"}
+                                       "0x456" {:address "0x456"}
+                                       "0x789" {:address "0x789"}}}}
+          session {:accounts ["network:0x999"]}]
+      (with-redefs [network-utils/split-network-full-address (fn [addr]
+                                                               (string/split addr #":"))]
+        (is (= (sut/get-account-by-session db session) nil))))))

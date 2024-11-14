@@ -4,7 +4,6 @@
     [legacy.status-im.visibility-status-updates.core :as visibility-status-updates]
     [oops.core :as oops]
     [status-im.common.pairing.events :as pairing]
-    [status-im.contexts.chat.messenger.messages.link-preview.events :as link-preview]
     [status-im.contexts.chat.messenger.messages.transport.events :as messages.transport]
     [status-im.contexts.communities.discover.events]
     [status-im.contexts.profile.push-notifications.local.events :as local-notifications]
@@ -73,10 +72,7 @@
 
       "community.found"
       (let [community (transforms/js->clj event-js)]
-        {:fx [[:dispatch
-               [:chat.ui/cache-link-preview-data (link-preview/community-link (:id community))
-                community]]
-              [:dispatch [:discover-community/maybe-found-unknown-contract-community community]]]})
+        {:fx [[:dispatch [:discover-community/maybe-found-unknown-contract-community community]]]})
 
       "status.updates.timedout"
       (visibility-status-updates/handle-visibility-status-updates cofx (transforms/js->clj event-js))

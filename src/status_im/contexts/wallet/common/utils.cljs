@@ -192,6 +192,18 @@
       (number/small-number-threshold display-decimals)
       (str amount-fixed-decimals))))
 
+(defn token-balance-display-for-network
+  "Formats a token balance for a specific chain and rounds it to a specified number of decimals.
+  If the balance is less than the smallest representable value based on rounding decimals, 
+  a threshold value is displayed instead."
+  [token chain-id rounding-decimals]
+  (let [token-decimals   (:decimals token)
+        display-decimals (min token-decimals rounding-decimals)]
+    (-> (get-in token [:balances-per-chain chain-id :raw-balance] 0)
+        (number/convert-to-whole-number token-decimals)
+        money/bignumber
+        (sanitized-token-amount-to-display display-decimals))))
+
 (defn calculate-balance-from-tokens
   [{:keys [currency tokens chain-ids]}]
   (->> tokens
