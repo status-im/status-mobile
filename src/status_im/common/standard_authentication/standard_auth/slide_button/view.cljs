@@ -3,6 +3,7 @@
     [quo.core :as quo]
     [quo.theme :as quo.theme]
     [react-native.core :as rn]
+    [status-im.common.biometric.utils :as biometric]
     [status-im.constants :as constants]
     [utils.re-frame :as rf]))
 
@@ -26,12 +27,15 @@
                                           :on-auth-success       on-auth-success
                                           :on-auth-fail          on-auth-fail
                                           :auth-button-label     auth-button-label}]))
-                         (vec (conj dependencies on-auth-success on-auth-fail)))]
+                         (vec (conj dependencies on-auth-success on-auth-fail)))
+        biometric-type  (rf/sub [:biometrics/supported-type])]
     [quo/slide-button
      {:container-style     container-style
       :size                size
       :customization-color customization-color
       :on-complete         on-complete
-      :track-icon          (if biometric-auth? :i/face-id :password)
+      :track-icon          (if biometric-auth?
+                             (biometric/get-icon-by-type biometric-type)
+                             :password)
       :track-text          track-text
       :disabled?           disabled?}]))
