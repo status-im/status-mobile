@@ -30,6 +30,7 @@
     [status-im.contexts.communities.overview.view :as communities.overview]
     [status-im.contexts.keycard.authorise.view :as keycard.authorise]
     [status-im.contexts.keycard.check.view :as keycard.check]
+    [status-im.contexts.keycard.create.view :as keycard.create]
     [status-im.contexts.keycard.empty.view :as keycard.empty]
     [status-im.contexts.keycard.error.view :as keycard.error]
     [status-im.contexts.keycard.migrate.fail.view :as keycard.migrate.fail]
@@ -891,6 +892,11 @@
                 :insets {:top? true :bottom? true}}
     :component keycard.empty/view}
 
+   {:name      :screen/keycard.empty-create
+    :metrics   {:track? :true}
+    :options   {:insets {:top? true :bottom? true}}
+    :component keycard.empty/create}
+
    {:name      :screen/keycard.error
     :metrics   {:track? :true}
     :options   {:theme  :dark
@@ -958,7 +964,17 @@
     :metrics   {:track? :true}
     :options   {:theme  :dark
                 :insets {:top? true :bottom? true}}
-    :component keycard.migrate.profile-keys/view}])
+    :component keycard.migrate.profile-keys/view}
+
+   {:name      :screen/keycard.create-profile
+    :metrics   {:track? :true}
+    :options   {:insets {:top? true :bottom? true}}
+    :component keycard.create/view}
+
+   {:name      :screen/keycard.create.ready-to-add
+    :metrics   {:track? :true}
+    :options   {:insets {:top? true :bottom? true}}
+    :component keycard.create/ready-to-add}])
 
 (defn screens
   []
