@@ -1,3 +1,6 @@
+;; Exception here as referrenced status-im.config, the implementation related to the image
+;; server and the qr components leave something to be desired. Added an exception to the lint
+;; rule as quick fix. Feel free to improve it if you're a brave soul refactor
 (ns utils.image-server
   (:require
     [quo.foundations.colors :as colors]
