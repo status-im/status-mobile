@@ -14,7 +14,7 @@
        cofx
        :log-level
        log-level
-       {:on-success #(re-frame/dispatch [:logout])}))))
+       {:on-success #(re-frame/dispatch [:profile.logout/logout])}))))
 
 (rf/defn show-change-log-level-confirmation
   {:events [:log-level.ui/log-level-selected]}

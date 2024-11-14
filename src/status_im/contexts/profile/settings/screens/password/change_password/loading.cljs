@@ -12,7 +12,7 @@
 
 (defn- handle-logout
   []
-  (rf/dispatch [:multiaccounts.logout.ui/logout-pressed])
+  (rf/dispatch [:profile.settings/ask-logout])
   (rf/dispatch [:change-password/reset]))
 
 (defn view

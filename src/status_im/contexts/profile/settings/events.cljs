@@ -147,3 +147,14 @@
  (fn [_ [currency]]
    {:fx [[:dispatch [:profile.settings/profile-update :currency currency]]
          [:dispatch [:wallet/get-wallet-token-for-all-accounts]]]}))
+
+;; Logout process
+(rf/reg-event-fx
+ :profile.settings/ask-logout
+ (fn [_ _]
+   {:fx [[:ui/show-confirmation
+          {:title               (i18n/label :t/logout-title)
+           :content             (i18n/label :t/logout-are-you-sure)
+           :confirm-button-text (i18n/label :t/logout)
+           :on-accept           #(rf/dispatch [:profile.logout/logout])
+           :on-cancel           nil}]]}))
