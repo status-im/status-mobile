@@ -36,10 +36,11 @@
   "Same as rn/image but cache the image source in a js/Set, so the image won't
   flicker when re-render on android"
   [props]
-  (let [[loaded-source set-loaded-source] (rn/use-state nil)
-        on-source-loaded                  (rn/use-callback #(set-loaded-source %))]
+  (let [[loaded-source set-loaded-source] (rn/use-state nil)]
     (if platform/ios?
       [rn/image props]
       [:<>
-       [rn/image (assoc props :source loaded-source)]
-       [caching-image props on-source-loaded]])))
+       [rn/image
+        (cond-> props
+          loaded-source (assoc :source loaded-source))]
+       [caching-image props set-loaded-source]])))
