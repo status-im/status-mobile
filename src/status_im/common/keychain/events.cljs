@@ -75,7 +75,9 @@
   (-> (str key-uid "-auth")
       (keychain/get-credentials)
       (.then (fn [value]
-               (if value (oops/oget value "password") auth-method-none)))
+               (if value
+                 (oops/oget value "password")
+                 auth-method-none)))
       (.catch (constantly auth-method-none))))
 
 (defn save-user-password!
@@ -86,10 +88,10 @@
   [key-uid callback]
   (keychain/get-credentials key-uid
                             (fn [value]
-                              (callback (when value
-                                          (-> value
-                                              (oops/oget "password")
-                                              (security/mask-data)))))))
+                              (some-> value
+                                      (oops/oget "password")
+                                      (security/mask-data)
+                                      (callback)))))
 
 (re-frame/reg-fx
  :keychain/get-user-password

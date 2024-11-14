@@ -157,10 +157,8 @@
                           (pop-animation-fn)))
                       (reset! push-animation-fn-atom nil)
                       (reset! pop-animation-fn-atom nil))))
-    [reanimated/view
-     {:style (style/profiles-container translate-x)}
-     [rn/view
-      {:style style/profiles-header}
+    [reanimated/view {:style (style/profiles-container translate-x)}
+     [rn/view {:style style/profiles-header}
       [quo/text
        {:size   :heading-1
         :weight :semi-bold
