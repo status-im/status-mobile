@@ -1,12 +1,16 @@
+;; Exception here as referrenced status-im.config, the implementation related to the image
+;; server and the qr components leave something to be desired. Added an exception to the lint
+;; rule as quick fix. Feel free to improve it if you're a brave soul refactor
 (ns utils.image-server
   (:require
     [quo.foundations.colors :as colors]
     [react-native.fs :as utils.fs]
     [react-native.platform :as platform]
     [schema.core :as schema]
+    [status-im.config :as config]
     [utils.datetime :as datetime]))
 
-(def ^:const image-server-uri-prefix "https://localhost:")
+(def ^:const image-server-uri-prefix config/STATUS_BACKEND_SERVER_IMAGE_SERVER_URI_PREFIX)
 (def ^:const account-images-action "/accountImages")
 (def ^:const account-initials-action "/accountInitials")
 (def ^:const contact-images-action "/contactImages")
