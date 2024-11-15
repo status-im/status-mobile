@@ -65,15 +65,24 @@
 (defn- transaction-details
   []
   (let [theme                  (quo.theme/use-theme)
-        max-fees               (rf/sub [:wallet/wallet-swap-proposal-fee-fiat-formatted
+        swap-proposal-fee      (rf/sub [:wallet/wallet-swap-proposal-fee-fiat
                                         constants/token-for-fees-symbol])
+        approval-gas-fee       (rf/sub [:wallet/approval-gas-fees])
         max-slippage           (rf/sub [:wallet/swap-max-slippage])
         loading-swap-proposal? (rf/sub [:wallet/swap-loading-swap-proposal?])
+        currency-symbol        (rf/sub [:profile/currency-symbol])
+        approval-required      (rf/sub [:wallet/swap-proposal-approval-required])
+        max-fee                (if approval-required
+                                 (money/add approval-gas-fee swap-proposal-fee)
+                                 swap-proposal-fee)
+        max-fee-formatted      (utils/fiat-formatted-for-ui
+                                currency-symbol
+                                max-fee)
         error-response         (rf/sub [:wallet/swap-error-response])]
     [rn/view {:style style/details-container}
      [data-item
       (cond-> {:title    (i18n/label :t/max-fees)
-               :subtitle max-fees
+               :subtitle max-fee-formatted
                :loading? loading-swap-proposal?
                :size     :small}
         error-response (assoc :subtitle-color

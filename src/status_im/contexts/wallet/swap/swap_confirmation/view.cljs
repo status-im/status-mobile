@@ -7,6 +7,7 @@
     [status-im.common.floating-button-page.view :as floating-button-page]
     [status-im.common.standard-authentication.core :as standard-auth]
     [status-im.constants :as constants]
+    [status-im.contexts.wallet.common.utils :as utils]
     [status-im.contexts.wallet.send.utils :as send-utils]
     [status-im.contexts.wallet.swap.swap-confirmation.style :as style]
     [utils.address :as address-utils]
@@ -137,8 +138,12 @@
 
 (defn- transaction-details
   []
-  (let [max-fees               (rf/sub [:wallet/wallet-swap-proposal-fee-fiat-formatted
+  (let [max-fees               (rf/sub [:wallet/wallet-swap-proposal-fee-fiat
                                         constants/token-for-fees-symbol])
+        currency-symbol        (rf/sub [:profile/currency-symbol])
+        max-fees-formatted     (utils/fiat-formatted-for-ui
+                                currency-symbol
+                                max-fees)
         estimated-time         (rf/sub [:wallet/swap-proposal-estimated-time])
         loading-swap-proposal? (rf/sub [:wallet/swap-loading-swap-proposal?])
         max-slippage           (rf/sub [:wallet/swap-max-slippage])]
@@ -152,7 +157,7 @@
         :loading? loading-swap-proposal?}]
       [data-item
        {:title    (i18n/label :t/max-fees)
-        :subtitle (if (and estimated-time max-fees) max-fees (i18n/label :t/unknown))
+        :subtitle (if (and estimated-time max-fees-formatted) max-fees-formatted (i18n/label :t/unknown))
         :loading? loading-swap-proposal?}]
       [data-item
        {:title    (i18n/label :t/max-slippage)
