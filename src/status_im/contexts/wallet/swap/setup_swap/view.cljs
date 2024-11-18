@@ -71,8 +71,9 @@
         max-slippage           (rf/sub [:wallet/swap-max-slippage])
         loading-swap-proposal? (rf/sub [:wallet/swap-loading-swap-proposal?])
         currency-symbol        (rf/sub [:profile/currency-symbol])
-        approval-required      (rf/sub [:wallet/swap-proposal-approval-required])
-        max-fee                (if approval-required
+        approval-required?     (rf/sub [:wallet/swap-proposal-approval-required])
+        approval-status        (rf/sub [:wallet/swap-approval-transaction-status])
+        max-fee                (if (and approval-required? (not= approval-status :confirmed))
                                  (money/add approval-gas-fee swap-proposal-fee)
                                  swap-proposal-fee)
         max-fee-formatted      (utils/fiat-formatted-for-ui
