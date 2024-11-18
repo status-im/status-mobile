@@ -148,10 +148,12 @@
 
 (defn- spender-contract-section
   []
-  (let [theme            (quo.theme/use-theme)
-        network          (rf/sub [:wallet/swap-network])
-        provider         (rf/sub [:wallet/swap-proposal-provider])
-        network-chain-id (:chain-id network)]
+  (let [theme                    (quo.theme/use-theme)
+        network                  (rf/sub [:wallet/swap-network])
+        provider                 (rf/sub [:wallet/swap-proposal-provider])
+        spender-contract-address (or (rf/sub [:wallet/swap-proposal-approval-contract-address])
+                                     (:contract-address provider))
+        network-chain-id         (:chain-id network)]
     [rn/view {:style style/summary-section-container}
      [quo/text
       {:size                :paragraph-2
@@ -164,10 +166,10 @@
         {:type            :token-contract
          :option-icon     :i/options
          :on-option-press #(on-option-press {:chain-id         network-chain-id
-                                             :contract-address (:contract-address provider)})
+                                             :contract-address spender-contract-address})
          :unlimited-icon? false
          :label           (:full-name provider)
-         :description     (address-utils/get-short-wallet-address (:contract-address provider))
+         :description     (address-utils/get-short-wallet-address spender-contract-address)
          :avatar-props    {:image (resources/get-network (:name provider))}}])]))
 
 (defn- data-item

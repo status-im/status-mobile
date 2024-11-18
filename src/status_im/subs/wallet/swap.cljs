@@ -228,6 +228,11 @@
  :-> :approval-required)
 
 (rf/reg-sub
+ :wallet/swap-proposal-approval-contract-address
+ :<- [:wallet/swap-proposal]
+ :-> :approval-contract-address)
+
+(rf/reg-sub
  :wallet/swap-proposal-approval-amount-required
  :<- [:wallet/swap-proposal]
  :-> :approval-amount-required)

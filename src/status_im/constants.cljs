@@ -605,7 +605,7 @@
   {:name                     :paraswap
    :full-name                "ParaSwap"
    :color                    :blue
-   :contract-address         "0xdef171fe48cf0115b1d80b88dc8eab59176fee57"
+   :contract-address         "0x6a000f20005980200259b80c5102003040001068"
    :terms-and-conditions-url "https://files.paraswap.io/tos_v4.pdf"})
 (def ^:const swap-providers
   {:paraswap swap-provider-paraswap})
