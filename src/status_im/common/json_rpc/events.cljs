@@ -95,7 +95,9 @@
                    (do
                      (log/debug :json-rpc/call-success-on-success-start method :params params :id id)
                      (on-success result request-id)
-                     (log/debug :json-rpc/call-success-on-success-end method :params params :id id))))))))))))
+                     (log/debug :json-rpc/call-success-on-success-end method
+                                :params                               params
+                                :id                                   id))))))))))))
 
 (defn call-async
   "Helper to handle RPC calls to status-go as promises"

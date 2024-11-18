@@ -136,7 +136,12 @@
 (re-frame/reg-fx :fetch-chats-preview
  (fn [{:keys [on-success]}]
    (json-rpc/call {:method      "wakuext_chatsPreview"
-                   :params      []
+                   :params      [false]
+                   :js-response true
+                   :on-success  #(on-success ^js %)
+                   :on-error    #(log/error "failed to fetch chats" 0 -1 %)})
+   (json-rpc/call {:method      "wakuext_chatsPreview"
+                   :params      [true]
                    :js-response true
                    :on-success  #(on-success ^js %)
                    :on-error    #(log/error "failed to fetch chats" 0 -1 %)})))
