@@ -134,9 +134,9 @@
       unmarshal-members))
 
 (re-frame/reg-fx :fetch-chats-preview
- (fn [{:keys [on-success]}]
+ (fn [{:keys [on-success chat-preview-type]}]
    (json-rpc/call {:method      "wakuext_chatsPreview"
-                   :params      []
+                   :params      [chat-preview-type]
                    :js-response true
                    :on-success  #(on-success ^js %)
                    :on-error    #(log/error "failed to fetch chats" 0 -1 %)})))
