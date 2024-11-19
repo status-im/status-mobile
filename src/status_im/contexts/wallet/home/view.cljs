@@ -99,7 +99,7 @@
                                  [rn/pressable
                                   {:on-press #(rf/dispatch
                                                [:show-bottom-sheet
-                                                {:content transaction-settings/sheet}])}
+                                                {:content transaction-settings/custom-settings-sheet}])}
                                   [quo/wallet-overview
                                    {:state             (if tokens-loading? :loading :default)
                                     :time-frame        :none

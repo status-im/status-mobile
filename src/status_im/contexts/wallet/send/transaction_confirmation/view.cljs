@@ -189,7 +189,7 @@
           :container-style     {:margin-right 8}
           :on-press            #(rf/dispatch
                                  [:show-bottom-sheet
-                                  {:content transaction-settings/sheet}])}
+                                  {:content transaction-settings/settings-sheet}])}
          :i/advanced]
         [data-item
          {:title    (i18n/label :t/est-time)

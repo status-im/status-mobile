@@ -5,55 +5,102 @@
     [react-native.core :as rn]
     [utils.i18n :as i18n]))
 
-(defn sheet
+
+(defn settings-sheet
+  [_]
+  (let [[selected-id set-selected-id] (rn/use-state :normal)]
+    [rn/view
+     [quo/drawer-top
+      {:title "Transaction settings"}]
+     [quo/category
+      {:list-type :settings
+       :data      [{:title             "Normal ~60s"
+                    :image-props       :i/placeholder
+                    :description-props {:text "€1.45"}
+                    :image             :icon
+                    :description       :text
+                    :action            :selector
+                    :action-props      {:type     :radio
+                                        :checked? (= :normal selected-id)}
+                    :on-press          #(set-selected-id :normal)
+                    :label             :text
+                    :preview-size      :size-32}
+                   {:title             "Fast ~40s"
+                    :image-props       :i/placeholder
+                    :description-props {:text "€1.65"}
+                    :image             :icon
+                    :description       :text
+                    :action            :selector
+                    :action-props      {:type     :radio
+                                        :checked? (= :fast selected-id)}
+                    :on-press          #(set-selected-id :fast)
+                    :label             :text
+                    :preview-size      :size-32}
+                   {:title             "Urgent ~15s"
+                    :image-props       :i/placeholder
+                    :description-props {:text "€1.85"}
+                    :image             :icon
+                    :description       :text
+                    :action            :selector
+                    :action-props      {:type     :radio
+                                        :checked? (= :urgent selected-id)}
+                    :on-press          #(set-selected-id :urgent)
+                    :label             :text
+                    :preview-size      :size-32}
+                   {:title             "Custom"
+                    :image-props       :i/edit
+                    :description-props {:text "Set your own fees and nonce"}
+                    :image             :icon
+                    :description       :text
+                    :action            :arrow
+                    :on-press          #()
+                    :label             :text
+                    :preview-size      :size-32}]}]
+     [quo/bottom-actions
+      {:actions          :one-action
+       :button-one-props {:on-press #()}
+       :button-one-label (i18n/label :t/confirm)}]]))
+
+(defn custom-settings-sheet
   [_]
   [rn/view
    [quo/drawer-top
-    {:title "Transaction settings"}]
+    {:title "Custom"}]
    [quo/category
     {:list-type :settings
-     :data      [{:title             "Normal ~60s"
-                  :image             :icon
-                  :image-props       :i/placeholder
+     :data      [{:title             "Max base fee"
+                  :description-props {:text "8.2 GWEI - €1.45"}
+                  :image             :none
                   :description       :text
-                  :description-props {:text "€1.45"}
+                  :action            :arrow
                   :on-press          #()
-                  :action            :selector
-                  :action-props      {:type :radio}
                   :label             :text
                   :preview-size      :size-32}
-                 {:title             "Fast ~40s"
-                  :image             :icon
-                  :image-props       :i/placeholder
+                 {:title             "Priority fee"
+                  :description-props {:text "0.06 GWEI - €0.03"}
+                  :image             :none
                   :description       :text
-                  :description-props {:text "€1.65"}
+                  :action            :arrow
                   :on-press          #()
-                  :action            :selector
-                  :action-props      {:type :radio}
                   :label             :text
                   :preview-size      :size-32}
-                 {:title             "Urgent ~15s"
-                  :image             :icon
-                  :image-props       :i/DAO
+                 {:title             "Gas amount"
+                  :description-props {:text "31,500 UNITS"}
+                  :image             :none
                   :description       :text
-                  :description-props {:text "€1.85"}
+                  :action            :arrow
                   :on-press          #()
-                  :action            :selector
-                  :action-props      {:type :radio}
                   :label             :text
                   :preview-size      :size-32}
-                 {:title             "Custom"
-                  :image             :icon
-                  :image-props       :i/edit
+                 {:title             "Nonce"
+                  :description-props {:text "22"}
+                  :image             :none
                   :description       :text
-                  :description-props {:text "Set your own fees and nonce"}
+                  :action            :arrow
                   :on-press          #()
-                  :action            :selector
-                  :action-props      {:type :radio}
                   :label             :text
                   :preview-size      :size-32}]}]
    [quo/bottom-actions
     {:actions          :one-action
      :button-one-props {:on-press #()}
      :button-one-label (i18n/label :t/confirm)}]])
-
