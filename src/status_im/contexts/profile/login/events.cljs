@@ -35,22 +35,20 @@
 
 ;; login phase 1: we want to load and show chats faster, so we split login into 2 phases
 (rf/reg-event-fx :profile.login/login-existing-profile
- (fn [{:keys [db]} [settings account]]
-   (let [{:networks/keys [_current-network _networks]
-          :as            settings}
-         (data-store.settings/rpc->settings settings)
-         profile-overview (profile.rpc/rpc->profiles-overview account)
-         log-level (or (:log-level settings) config/log-level)
-         pairing-completed? (= (get-in db [:syncing :pairing-status]) :completed)]
-     {:db (cond-> (-> db
-                      (assoc :chats/loading?  true
-                             :profile/profile (merge profile-overview
-                                                     settings
-                                                     {:log-level log-level}))
-                      (assoc-in [:activity-center :loading?] true)
-                      (dissoc :centralized-metrics/onboarding-enabled?))
-            pairing-completed?
-            (dissoc :syncing))
+ (fn [{:keys [db]} [settings-data account]]
+   (let [settings           (data-store.settings/rpc->settings settings-data)
+         profile-overview   (profile.rpc/rpc->profiles-overview account)
+         log-level          (or (:log-level settings) config/log-level)
+         pairing-completed? (= (get-in db [:syncing :pairing-status]) :completed)
+         new-db             (-> db
+                                (assoc :chats/loading?  true
+                                       :profile/profile (merge profile-overview
+                                                               settings
+                                                               {:log-level log-level}))
+                                (assoc-in [:activity-center :loading?] true)
+                                (dissoc :centralized-metrics/onboarding-enabled?))]
+     {:db (cond-> new-db
+            pairing-completed? (dissoc :syncing))
       :fx (into [[:json-rpc/call
                   [{:method      "wakuext_startMessenger"
                     :js-response true
@@ -201,11 +199,11 @@
  (fn [{:keys [db]}]
    (let [key-uid  (get-in db [:profile/login :key-uid])
          keycard? (get-in db [:profile/profiles-overview key-uid :keycard-pairing])]
-     (if keycard?
-       {:keychain/get-keycard-keys
-        [key-uid #(rf/dispatch [:keycard.login/on-get-keys-from-keychain-success key-uid %])]}
-       {:keychain/get-user-password
-        [key-uid #(rf/dispatch [:profile.login/get-user-password-success %])]}))))
+     {:fx [(if keycard?
+             [:keychain/get-keycard-keys
+              [key-uid #(rf/dispatch [:keycard.login/on-get-keys-from-keychain-success key-uid %])]]
+             [:keychain/get-user-password
+              [key-uid #(rf/dispatch [:profile.login/get-user-password-success %])]])]})))
 
 (rf/reg-event-fx
  :profile.login/biometric-auth-fail

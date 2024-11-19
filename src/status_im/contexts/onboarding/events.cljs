@@ -81,8 +81,8 @@
 (rf/defn create-account-and-login
   {:events [:onboarding/create-account-and-login]}
   [{:keys [db] :as cofx}]
-  (let [{:keys [display-name seed-phrase password image-path color] :as profile}
-        (:onboarding/profile db)
+  (let [{:keys [seed-phrase]
+         :as   profile}            (:onboarding/profile db)
         syncing-account-recovered? (and (seq (:syncing/key-uid db))
                                         (= (:syncing/key-uid db)
                                            (get-in db [:onboarding/profile :key-uid])))]
@@ -112,20 +112,21 @@
      (when-not (seq multiaccounts)
        {:dispatch [:update-theme-and-init-root :screen/onboarding.intro]}))))
 
-(rf/defn password-set
-  {:events [:onboarding/password-set]}
-  [{:keys [db]} password]
-  (let [supported-type (get-in db [:biometrics :supported-type])]
-    {:db       (-> db
-                   (assoc-in [:onboarding/profile :password] password)
-                   (assoc-in [:onboarding/profile :auth-method] constants/auth-method-password))
-     :dispatch (if supported-type
-                 [:navigate-to-within-stack
-                  [:screen/onboarding.enable-biometrics
-                   (get db
-                        :onboarding/navigated-to-enter-seed-phrase-from-screen
-                        :screen/onboarding.new-to-status)]]
-                 [:onboarding/create-account-and-login])}))
+(rf/reg-event-fx
+ :onboarding/password-set
+ (fn [{:keys [db]} [masked-password]]
+   (let [biometric-supported-type (get-in db [:biometrics :supported-type])]
+     {:db (-> db
+              (assoc-in [:onboarding/profile :password] masked-password)
+              (assoc-in [:onboarding/profile :auth-method] constants/auth-method-password))
+      :fx [[:dispatch
+            (if biometric-supported-type
+              [:navigate-to-within-stack
+               [:screen/onboarding.enable-biometrics
+                (get db
+                     :onboarding/navigated-to-enter-seed-phrase-from-screen
+                     :screen/onboarding.new-to-status)]]
+              [:onboarding/create-account-and-login])]]})))
 
 (rf/defn navigate-to-enable-biometrics
   {:events [:onboarding/navigate-to-enable-biometrics]}
@@ -190,8 +191,7 @@
         key-uid            (get-in db [:profile/profile :key-uid])
         syncing?           (get-in db [:onboarding/profile :syncing?])
         auth-method        (get-in db [:onboarding/profile :auth-method])
-        biometric-enabled? (= auth-method
-                              constants/auth-method-biometric)]
+        biometric-enabled? (= auth-method constants/auth-method-biometric)]
     (cond-> {:db (assoc db :onboarding/generated-keys? true)}
       biometric-enabled?
       (assoc :keychain/save-password-and-auth-method
