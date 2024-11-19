@@ -1,11 +1,11 @@
-(ns status-im.contexts.wallet.swap.from.view
+(ns status-im.contexts.wallet.swap.select-account.view
   (:require
     [quo.core :as quo]
     [react-native.core :as rn]
     [react-native.safe-area :as safe-area]
     [status-im.common.events-helper :as events-helper]
     [status-im.common.floating-button-page.view :as floating-button-page]
-    [status-im.contexts.wallet.swap.from.style :as style]
+    [status-im.contexts.wallet.swap.select-account.style :as style]
     [utils.i18n :as i18n]
     [utils.money :as money]
     [utils.re-frame :as rf]))
@@ -16,7 +16,7 @@
 
 (defn- render-fn
   [item _ _]
-  (let [has-balance (money/greater-than (:asset-pay-balance item) (money/bignumber "0"))]
+  (let [has-balance (money/above-zero? (:asset-pay-balance item))]
     [quo/account-item
      {:type          (if has-balance :tag :default)
       :on-press      #(on-account-press item)

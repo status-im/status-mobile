@@ -548,7 +548,3 @@
     (:less-than-three-minutes constants/wallet-transaction-estimation) "1-3"
     (:less-than-five-minutes constants/wallet-transaction-estimation)  "3-5"
     ">5"))
-
-(defn multi-account?
-  [{:keys [accounts]}]
-  (> (count accounts) 1))

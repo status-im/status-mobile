@@ -26,7 +26,7 @@
                                     :account                account
                                     :test-networks-enabled? test-networks-enabled?
                                     :token-symbol           (get-in data [:asset-to-pay :symbol])}))
-         multi-account?         (utils/multi-account? wallet)
+         multi-account?         (> (count (:accounts wallet)) 1)
          network'               (or network
                                     (swap-utils/select-network asset-to-pay))
          start-point            (if open-new-screen? :action-menu :swap-button)]
@@ -37,7 +37,7 @@
               (assoc-in [:wallet :ui :swap :launch-screen] view-id)
               (assoc-in [:wallet :ui :swap :start-point] start-point))
       :fx (if (and multi-account? (= view-id :wallet-stack) (not from-account))
-            [[:dispatch [:open-modal :screen/wallet.swap-from]]]
+            [[:dispatch [:open-modal :screen/wallet.swap-select-account]]]
             (if network'
               [[:dispatch [:wallet/switch-current-viewing-account (:address account)]]
                [:dispatch
