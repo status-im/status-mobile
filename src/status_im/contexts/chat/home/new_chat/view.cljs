@@ -86,7 +86,7 @@
      item]))
 
 (defn view
-  [{:keys [scroll-enabled? on-scroll close]}]
+  [{:keys [on-scroll close]}]
   (let [theme                             (quo.theme/use-theme)
         contacts                          (rf/sub [:contacts/sorted-and-grouped-by-first-letter])
         selected-contacts-count           (rf/sub [:selected-contacts-count])
@@ -137,7 +137,6 @@
          :render-section-footer-fn contact-list/contacts-section-footer
          :content-container-style  {:padding-bottom 70}
          :render-fn                render-fn
-         :scroll-enabled           @scroll-enabled?
          :on-scroll                on-scroll}])
      (when contacts-selected?
        [rn/view
