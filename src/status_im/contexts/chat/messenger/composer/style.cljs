@@ -3,9 +3,7 @@
     [quo.foundations.colors :as colors]
     [quo.foundations.typography :as typography]
     [react-native.reanimated :as reanimated]
-    [status-im.contexts.chat.messenger.composer.constants :as constants]
-    [status-im.contexts.shell.jump-to.constants :as shell.constants]
-    [status-im.feature-flags :as ff]))
+    [status-im.contexts.chat.messenger.composer.constants :as constants]))
 
 (def border-top-radius 20)
 
@@ -40,13 +38,6 @@
    {:transform [{:translate-y translate-y}]
     :opacity   opacity}
    {}))
-
-(defn shell-button-container
-  []
-  {:z-index 1
-   :top     (if (ff/enabled? ::ff/shell.jump-to)
-              0
-              (- shell.constants/floating-shell-button-height))})
 
 (def scroll-to-bottom-button
   {:position :absolute

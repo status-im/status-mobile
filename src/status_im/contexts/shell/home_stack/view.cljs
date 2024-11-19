@@ -1,16 +1,15 @@
-(ns status-im.contexts.shell.jump-to.components.home-stack.view
+(ns status-im.contexts.shell.home-stack.view
   (:require
     [legacy.status-im.ui.screens.browser.stack :as browser.stack]
     [quo.theme :as quo.theme]
+    [react-native.core :as rn]
     [react-native.reanimated :as reanimated]
     [status-im.contexts.chat.home.view :as chat]
     [status-im.contexts.communities.home.view :as communities]
-    [status-im.contexts.shell.jump-to.components.home-stack.style :as style]
-    [status-im.contexts.shell.jump-to.constants :as shell.constants]
-    [status-im.contexts.shell.jump-to.state :as state]
-    [status-im.contexts.shell.jump-to.utils :as utils]
-    [status-im.contexts.wallet.home.view :as wallet]
-    [utils.re-frame :as rf]))
+    [status-im.contexts.shell.constants :as shell.constants]
+    [status-im.contexts.shell.home-stack.style :as style]
+    [status-im.contexts.shell.state :as state]
+    [status-im.contexts.wallet.home.view :as wallet]))
 
 (defn load-stack?
   [stack-id]
@@ -41,18 +40,10 @@
   (when (load-stack? stack-id)
     [:f> f-stack-view stack-id shared-values]))
 
-(defn f-home-stack
-  []
-  (let [shared-values            @state/shared-values-atom
-        theme                    (quo.theme/use-theme)
-        {:keys [width height]}   (utils/dimensions)
-        alert-banners-top-margin (rf/sub [:alert-banners/top-margin])]
-    [reanimated/view
-     {:style (style/home-stack
-              shared-values
-              {:theme  theme
-               :width  width
-               :height (- height alert-banners-top-margin)})}
+(defn view
+  [shared-values]
+  (let [theme (quo.theme/use-theme)]
+    [rn/view {:style (style/home-stack theme)}
      [lazy-screen :communities-stack shared-values]
      [lazy-screen :chats-stack shared-values]
      [lazy-screen :browser-stack shared-values]

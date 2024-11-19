@@ -20,8 +20,6 @@
     [status-im.common.universal-links :as universal-links]
     [status-im.config :as config]
     [status-im.contexts.profile.push-notifications.events :as notifications]
-    [status-im.contexts.shell.jump-to.state :as shell.state]
-    [status-im.contexts.shell.jump-to.utils :as shell.utils]
     [status-im.feature-flags :as ff]
     [status-im.navigation.core :as navigation]
     status-im.contexts.wallet.signals
@@ -63,8 +61,7 @@
   (interceptors/register-global-interceptors)
 
   ;; Shell
-  (async-storage/get-item :selected-stack-id #(shell.utils/change-selected-stack-id % nil nil))
-  (async-storage/get-item :screen-height #(reset! shell.state/screen-height %))
+  (async-storage/get-item :selected-stack-id #(re-frame/dispatch [:shell/change-tab %]))
 
   (when config/quo-preview-enabled?
     (ff/load-flags))

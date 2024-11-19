@@ -4,15 +4,12 @@
     [react-native.core :as rn]
     [status-im.constants :as constants]
     [status-im.contexts.chat.messenger.messages.contact-requests.bottom-drawer.style :as style]
-    [status-im.contexts.shell.jump-to.constants :as jump-to.constants]
-    [status-im.feature-flags :as ff]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
 (defn view
   [{:keys [contact-id]}]
-  (let [customization-color       (rf/sub [:profile/customization-color])
-        {:keys [contact-request-state
+  (let [{:keys [contact-request-state
                 community-id
                 chat-name]}       (rf/sub [:chats/current-chat-chat-view])
         chat-type                 (rf/sub [:chats/chat-type])
@@ -68,12 +65,4 @@
                        (i18n/label :t/contact-request-chat-received {:name primary-name})
 
                        contact-request-pending?
-                       (i18n/label :t/contact-request-chat-pending))}]
-     (when (ff/enabled? ::ff/shell.jump-to)
-       [quo/floating-shell-button
-        {:jump-to
-         {:on-press            #(rf/dispatch [:shell/navigate-to-jump-to])
-          :customization-color customization-color
-          :label               (i18n/label :t/jump-to)}}
-        {:position :absolute
-         :top      (- jump-to.constants/floating-shell-button-height)}])]))
+                       (i18n/label :t/contact-request-chat-pending))}]]))

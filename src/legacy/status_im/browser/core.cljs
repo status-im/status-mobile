@@ -306,13 +306,13 @@
       {:dispatch [:universal-links/handle-url normalized-url]}
       (if config/show-not-implemented-features?
         (rf/merge cofx
-                  {:db (assoc db
-                              :browser/options
-                              {:browser-id (:browser-id browser)}
-                              :browser/screen-id :browser)}
+                  {:db         (assoc db
+                                      :browser/options
+                                      {:browser-id (:browser-id browser)}
+                                      :browser/screen-id :browser)
+                   :dispatch-n [[:shell/change-tab :browser-stack]]}
                   (navigation/pop-to-root :shell-stack)
                   (chat.events/close-chat (:current-chat-id db))
-                  (navigation/change-tab :browser-stack)
                   (update-browser browser)
                   (resolve-url nil))
         {:linking/open-url url}))))
@@ -323,20 +323,20 @@
   [{:keys [db] :as cofx} browser-id]
   (let [browser (get-in db [:browser/browsers browser-id])]
     (rf/merge cofx
-              {:db (assoc db
-                          :browser/options
-                          {:browser-id browser-id}
-                          :browser/screen-id :browser)}
+              {:db         (assoc db
+                                  :browser/options
+                                  {:browser-id browser-id}
+                                  :browser/screen-id :browser)
+               :dispatch-n [[:shell/change-tab :browser-stack]]}
               (update-browser browser)
-              (navigation/change-tab :browser-stack)
               (resolve-url nil))))
 
 (rf/defn open-browser-tabs
   {:events [:browser.ui/open-browser-tabs]}
   [{:keys [db] :as cofx}]
   (rf/merge cofx
-            {:db (assoc db :browser/screen-id :browser-tabs)}
-            (navigation/change-tab :browser-stack)))
+            {:db         (assoc db :browser/screen-id :browser-tabs)
+             :dispatch-n [[:shell/change-tab :browser-stack]]}))
 
 (rf/defn web3-error-callback
   {:events [:browser.dapp/transaction-on-error]}

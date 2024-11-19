@@ -25,9 +25,8 @@
   "[top-nav props]
   props
   {:blur? true/false
-   :jump-to? true/false
    :container-style passed to outer view of component}"
-  [{:keys [container-style blur? jump-to?]}]
+  [{:keys [container-style blur?]}]
   (let [{:keys [public-key] :as profile} (rf/sub [:profile/profile-with-image])
         online?                          (rf/sub [:visibility-status-updates/online?
                                                   public-key])
@@ -61,7 +60,6 @@
                                                {:initial-tab initial-share-tab}])
       :container-style          (merge style/top-nav-container container-style)
       :blur?                    blur?
-      :jump-to?                 jump-to?
       :customization-color      customization-color
       :avatar-props             avatar
       :max-unread-notifications constants/activity-center-max-unread-count

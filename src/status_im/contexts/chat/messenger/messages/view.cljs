@@ -15,7 +15,6 @@
     [status-im.contexts.chat.messenger.messages.navigation.view :as messages.navigation]
     [status-im.contexts.chat.messenger.messages.scroll-to-bottom.view :as scroll-to-bottom]
     [status-im.contexts.chat.messenger.placeholder.view :as placeholder.view]
-    [status-im.feature-flags :as ff]
     [utils.re-frame :as rf]))
 
 (defn- footer
@@ -55,14 +54,9 @@
   (let [on-layout-done?    (reagent/atom false)
         first-render-done? (reagent/atom false)]
     (fn []
-      (let [chat-exists?               (rf/sub [:chats/current-chat-exist?])
-            jump-to-enabled?           (ff/enabled? ::ff/shell.jump-to)
-            screen-loaded-for-jump-to? (rf/sub [:shell/chat-screen-loaded?])
-            screen-loaded?             (if jump-to-enabled?
-                                         screen-loaded-for-jump-to?
-                                         @first-render-done?)]
+      (let [chat-exists? (rf/sub [:chats/current-chat-exist?])]
         (rn/use-mount #(reset! first-render-done? true))
         [:<>
-         (when (and chat-exists? screen-loaded?)
+         (when (and chat-exists? @first-render-done?)
            [chat-screen on-layout-done?])
          [placeholder.view/view on-layout-done?]]))))

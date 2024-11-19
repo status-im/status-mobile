@@ -5,10 +5,21 @@
     [status-im.constants :as constants]
     [status-im.contexts.profile.create.events :as profile.create]
     [status-im.contexts.profile.recover.events :as profile.recover]
+    [status-im.contexts.shell.constants :as shell.constants]
     [taoensso.timbre :as log]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]
     [utils.security.core :as security]))
+
+(rf/reg-event-fx
+ :onboarding/finish-onboarding
+ (fn [_ [notifications-enabled?]]
+   {:fx [(when notifications-enabled?
+           [:dispatch [:push-notifications/switch true]])
+         [:dispatch [:shell/change-tab shell.constants/default-selected-stack]]
+         [:dispatch [:update-theme-and-init-root :shell-stack]]
+         [:dispatch [:profile/show-testnet-mode-banner-if-enabled]]
+         [:dispatch [:universal-links/process-stored-event]]]}))
 
 (rf/reg-event-fx
  :onboarding/profile-data-set

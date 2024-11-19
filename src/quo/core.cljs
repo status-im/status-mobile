@@ -149,7 +149,6 @@
     quo.components.share.qr-code.view
     quo.components.share.share-qr-code.view
     quo.components.slideshow.slider-bar.view
-    quo.components.switchers.group-messaging-card.view
     quo.components.tabs.account-selector
     quo.components.tabs.segmented-tab
     quo.components.tabs.tabs.view
@@ -425,9 +424,6 @@
 
 ;;;; Slideshow
 (def slider-bar quo.components.slideshow.slider-bar.view/view)
-
-;;;; SWITCHER
-(def group-messaging-card quo.components.switchers.group-messaging-card.view/view)
 
 ;;;; Tabs
 (def tabs quo.components.tabs.tabs.view/view)

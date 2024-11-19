@@ -35,6 +35,8 @@
     status-im.contexts.profile.settings.events
     status-im.contexts.settings.language-and-currency.events
     status-im.contexts.settings.wallet.saved-addresses.events
+    status-im.contexts.shell.effects
+    status-im.contexts.shell.events
     status-im.contexts.shell.qr-reader.events
     status-im.contexts.shell.share.events
     status-im.contexts.syncing.events

@@ -203,7 +203,7 @@
   [{db :db :as cofx} chat-id animation]
   (rf/merge cofx
             (when-not (:current-chat-id db)
-              {:dispatch [(if animation :shell/navigate-to :navigate-to) :chat chat-id animation]})
+              {:dispatch [:navigate-to :chat {:animation animation}]})
             (close-chat chat-id)
             (force-close-chat chat-id)
             (fn [{:keys [db]}]
@@ -270,9 +270,7 @@
   {:events [:chat.ui/close-and-remove-chat]}
   [{:keys [db now] :as cofx} chat-id]
   (rf/merge cofx
-            {:effects/push-notifications-clear-message-notifications [chat-id]
-             :dispatch                                               [:shell/close-switcher-card
-                                                                      chat-id]}
+            {:effects/push-notifications-clear-message-notifications [chat-id]}
             (deactivate-chat chat-id)
             (offload-messages chat-id)))
 

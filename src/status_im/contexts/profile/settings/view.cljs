@@ -11,7 +11,6 @@
             [status-im.contexts.profile.utils :as profile.utils]
             [status-im.feature-flags :as ff]
             [utils.debounce :as debounce]
-            [utils.i18n :as i18n]
             [utils.re-frame :as rf]))
 
 (defn show-settings-item?
@@ -88,11 +87,4 @@
        :scroll-event-throttle           16
        :on-scroll                       on-scroll
        :bounces                         false
-       :over-scroll-mode                :never}]
-     (when (ff/enabled? ::ff/shell.jump-to)
-       [quo/floating-shell-button
-        {:jump-to
-         {:on-press            #(rf/dispatch [:shell/navigate-to-jump-to])
-          :customization-color customization-color
-          :label               (i18n/label :t/jump-to)}}
-        (style/floating-shell-button-style insets)])]))
+       :over-scroll-mode                :never}]]))

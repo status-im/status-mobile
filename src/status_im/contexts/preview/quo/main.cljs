@@ -172,9 +172,6 @@
     [status-im.contexts.preview.quo.share.share-qr-code :as share-qr-code]
     [status-im.contexts.preview.quo.slideshow.slider-bar :as slider-bar]
     [status-im.contexts.preview.quo.style :as style]
-    [status-im.contexts.preview.quo.switcher.group-messaging-card :as
-     group-messaging-card]
-    [status-im.contexts.preview.quo.switcher.switcher-cards :as switcher-cards]
     [status-im.contexts.preview.quo.tabs.account-selector :as account-selector]
     [status-im.contexts.preview.quo.tabs.segmented-tab :as segmented]
     [status-im.contexts.preview.quo.tabs.tabs :as tabs]
@@ -507,10 +504,6 @@
                         :component share-qr-code/view}]
    :slideshow         [{:name      :slider-bar
                         :component slider-bar/view}]
-   :switchers         [{:name      :group-messaging-card
-                        :component group-messaging-card/view}
-                       {:name      :switcher-cards
-                        :component switcher-cards/view}]
    :tabs              [{:name      :segmented
                         :component segmented/view}
                        {:name      :tabs

@@ -1,8 +1,6 @@
 (ns status-im.contexts.onboarding.common.background.view
   (:require
-    [oops.core :refer [oget]]
     [quo.core :as quo]
-    [react-native.async-storage :as async-storage]
     [react-native.core :as rn]
     [react-native.platform :as platform]
     [react-native.reanimated :as reanimated]
@@ -10,7 +8,6 @@
     [status-im.contexts.onboarding.common.background.style :as style]
     [status-im.contexts.onboarding.common.carousel.animation :as carousel.animation]
     [status-im.contexts.onboarding.common.carousel.view :as carousel]
-    [status-im.contexts.shell.jump-to.state :as shell.state]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
@@ -37,24 +34,6 @@
 (defonce is-dragging? (atom nil))
 (defonce drag-amount (atom nil))
 
-;; Layout height calculation
-;; 1. Always prefer on-layout height over window height, as some devices include status bar height in
-;; the window while others do not.
-;; https://github.com/status-im/status-mobile/issues/14633#issuecomment-1366191478
-;; 2. This preference is unless on-layout is triggered with a random value.
-;; https://github.com/status-im/status-mobile/issues/14849
-;; To ensure that on-layout height falls within the actual height range, a difference between window
-;; height and the maximum possible status bar height is allowed (assumed to be 60, as the Pixel emulator
-;; has a height of 52).
-(defn store-screen-height
-  [evt]
-  (let [window-height (or (:height (rn/get-window)) 0)
-        height        (or (oget evt "nativeEvent" "layout" "height") 0)]
-    (when (and (not= height @shell.state/screen-height)
-               (< (Math/abs (- window-height height)) 60))
-      (reset! shell.state/screen-height height)
-      (async-storage/set-item! :screen-height height))))
-
 (defn view
   [dark-overlay?]
   (let [view-id      (rf/sub [:view-id])
@@ -72,8 +51,7 @@
      [view-id])
 
     [rn/view
-     {:style     style/background-container
-      :on-layout store-screen-height}
+     {:style style/background-container}
      [carousel/view
       {:animate?          animate?
        :progress          progress

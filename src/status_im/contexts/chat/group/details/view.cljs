@@ -12,7 +12,6 @@
     [status-im.common.home.actions.view :as actions]
     [status-im.constants :as constants]
     [status-im.contexts.chat.group.details.style :as style]
-    [status-im.feature-flags :as ff]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
@@ -131,7 +130,6 @@
         members         (rf/sub [:contacts/group-members-sections chat-id])
         pinned-messages (rf/sub [:chats/pinned chat-id])
         current-pk      (rf/sub [:multiaccount/public-key])
-        profile-color   (rf/sub [:profile/customization-color])
         admin?          (get admins current-pk)]
     [:<>
      [quo/gradient-cover
@@ -188,10 +186,4 @@
        :render-data                    {:chat-id chat-id
                                         :admin?  admin?}
        :render-fn                      contact-item-render
-       :separator                      [rn/view {:style {:height 4}}]}]
-     (when (ff/enabled? ::ff/shell.jump-to)
-       [quo/floating-shell-button
-        {:jump-to {:on-press            #(rf/dispatch [:shell/navigate-to-jump-to])
-                   :customization-color profile-color
-                   :label               (i18n/label :t/jump-to)}}
-        style/floating-shell-button])]))
+       :separator                      [rn/view {:style {:height 4}}]}]]))

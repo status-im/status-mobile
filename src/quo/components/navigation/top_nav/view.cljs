@@ -34,12 +34,11 @@
       [])))
 
 (defn- get-button-common-props
-  [{:keys [jump-to? theme blur?]}]
+  [{:keys [theme blur?]}]
   {:icon-only?      true
    :size            32
    :container-style {:margin-left 12}
    :type            (cond
-                      jump-to?                          :black
                       (and (not blur?) (= :dark theme)) :dark-grey
                       :else                             :grey)
    :background      (when blur? :blur)})
@@ -88,8 +87,7 @@
             avatar-props)]]])
 
 (defn- right-section
-  [{:keys [jump-to?
-           blur?
+  [{:keys [blur?
            notification
            notification-count
            activity-center-on-press
@@ -98,9 +96,8 @@
            right-section-content]
     :as   props}]
   (let [theme               (quo.theme/use-theme)
-        button-common-props (get-button-common-props {:theme    theme
-                                                      :jump-to? jump-to?
-                                                      :blur?    blur?})]
+        button-common-props (get-button-common-props {:theme theme
+                                                      :blur? blur?})]
     [rn/view {:style style/right-section}
      (when right-section-content
        right-section-content)
@@ -130,7 +127,6 @@
   ":container-style style map merged with outer view for margins/paddings
    :customization-color custom colors
    :blur? true/false
-   :jump-to? true/false
    :theme :light/:dark
    :notification :mention/:seen/:notification (TODO :mention-seen temporarily used while resolving https://github.com/status-im/status-mobile/issues/17102 )
    :avatar-props qu2/user-avatar props

@@ -1,6 +1,6 @@
 (ns status-im.contexts.communities.discover.style
   (:require
-    [status-im.contexts.shell.jump-to.constants :as jump-to.constants]))
+    [status-im.contexts.shell.constants :as shell.constants]))
 
 (def header-height 56)
 
@@ -36,7 +36,7 @@
 
 (def other-communities-container
   {:flex              1
-   :padding-bottom    (+ jump-to.constants/floating-shell-button-height 34)
+   :padding-bottom    (+ shell.constants/floating-shell-button-height 34)
    :margin-horizontal 20})
 
 (defn discover-communities-segments
@@ -74,7 +74,3 @@
    :justify-content    :center
    :flex               1
    :background-color   :transparent})
-
-(def floating-shell-button
-  {:position :absolute
-   :bottom   34})

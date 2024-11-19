@@ -28,8 +28,6 @@
     [dynamic-button-view :search dynamic-buttons
      {:position :absolute
       :right    8}]]
-   ;; Mid Section (jump-to)
-   [dynamic-button-view :jump-to dynamic-buttons nil]
    ;; Right Section
    [section
     [rn/view

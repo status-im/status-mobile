@@ -6,7 +6,6 @@
     [status-im.config :as config]
     status-im.contexts.profile.login.effects
     [status-im.contexts.profile.rpc :as profile.rpc]
-    [status-im.feature-flags :as ff]
     [taoensso.timbre :as log]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]
@@ -119,8 +118,6 @@
            [:logging/initialize-web3-client-version]
            [:group-chats/get-group-chat-invitations]
            [:profile.settings/blank-preview-flag-changed preview-privacy?]
-           (when (ff/enabled? ::ff/shell.jump-to)
-             [:switcher-cards/fetch])
            [:visibility-status-updates/fetch]
            [:dispatch [:universal-links/generate-profile-url]]
            [:push-notifications/load-preferences]

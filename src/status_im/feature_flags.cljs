@@ -18,8 +18,6 @@
    ::profile-pictures-visibility        (enabled-in-env? :FLAG_PROFILE_PICTURES_VISIBILITY_ENABLED)
    ::settings.import-all-keypairs       (enabled-in-env?
                                          :FLAG_WALLET_SETTINGS_IMPORT_ALL_KEYPAIRS)
-   ::shell.jump-to                      (enabled-in-env? :ENABLE_JUMP_TO)
-
    ::wallet.add-watched-address         (enabled-in-env? :FLAG_ADD_WATCHED_ADDRESS)
    ::wallet.advanced-sending            (enabled-in-env? :FLAG_ADVANCED_SENDING)
    ::wallet.assets-modal-hide           (enabled-in-env? :FLAG_ASSETS_MODAL_HIDE)

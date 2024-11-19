@@ -1,6 +1,6 @@
 (ns status-im.contexts.chat.messenger.messages.scroll-to-bottom.style
   (:require [react-native.safe-area :as safe-area]
-            [status-im.contexts.shell.jump-to.constants :as shell.constants]))
+            [status-im.contexts.shell.constants :as shell.constants]))
 
 (def ^:private bottom-drawer-height 46)
 
