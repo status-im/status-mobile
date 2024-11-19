@@ -537,7 +537,7 @@
  (fn [{:keys [db]} [account]]
    (let [asset-to-pay     (get-in db [:wallet :ui :swap :asset-to-pay])
          asset-to-receive (get-in db [:wallet :ui :swap :asset-to-receive])]
-     {:fx [[:dispatch [:navigate-back]]
+     {:fx [[:dispatch [:dismiss-modal :screen/wallet.swap-select-account]]
            [:dispatch
             [:wallet.swap/start
              {:asset-to-pay     asset-to-pay

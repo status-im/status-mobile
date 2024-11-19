@@ -3,6 +3,7 @@
             [re-frame.core :as rf]
             [status-im.constants :as constants]
             [status-im.contexts.wallet.common.utils :as utils]
+            [status-im.contexts.wallet.common.utils.networks :as network-utils]
             [status-im.contexts.wallet.send.utils :as send-utils]
             [utils.money :as money]
             [utils.number :as number]))
@@ -326,8 +327,8 @@
         (let [tokens            (:tokens account)
               filtered-tokens   (filter #(= (:symbol %) token-symbol) tokens)
               asset-pay-balance (utils/calculate-total-token-balance filtered-tokens)
-              formatted-address @(rf/subscribe [:wallet/account-address (:address account)
-                                                (:network-preferences-names account)])]
+              formatted-address (network-utils/format-address (:address account)
+                                                              (:network-preferences-names account))]
           (assoc account
                  :formatted-address formatted-address
                  :asset-pay-balance (utils/sanitized-token-amount-to-display

@@ -4,8 +4,6 @@
             [utils.money :as money]
             [utils.number :as number]))
 
-(def max-network-prefixes 2)
-
 (re-frame/reg-sub
  :wallet/networks
  :<- [:wallet]
@@ -53,12 +51,7 @@
 (re-frame/reg-sub
  :wallet/account-address
  (fn [_ [_ address network-preferences]]
-   (let [short-names         (map network-utils/network->short-name network-preferences)
-         prefix              (when (<= (count short-names) max-network-prefixes)
-                               (network-utils/short-names->network-preference-prefix
-                                short-names))
-         transformed-address (str prefix address)]
-     transformed-address)))
+   (network-utils/format-address address network-preferences)))
 
 (re-frame/reg-sub
  :wallet/network-values

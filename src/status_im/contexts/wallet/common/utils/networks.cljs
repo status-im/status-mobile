@@ -7,6 +7,7 @@
     [utils.number]))
 
 (def ^:private last-comma-followed-by-text-to-end-regex #",\s(?=[^,]+$)")
+(def ^:private max-network-prefixes 2)
 
 (def id->network
   {constants/ethereum-mainnet-chain-id constants/mainnet-network-name
@@ -185,3 +186,11 @@
                  :related-chain-id related-chain-id
                  :layer            layer)))
        (sort-by (juxt :layer :short-name))))
+
+(defn format-address
+  [address network-preferences]
+  (let [short-names         (map network->short-name network-preferences)
+        prefix              (when (<= (count short-names) max-network-prefixes)
+                              (short-names->network-preference-prefix short-names))
+        transformed-address (str prefix address)]
+    transformed-address))
