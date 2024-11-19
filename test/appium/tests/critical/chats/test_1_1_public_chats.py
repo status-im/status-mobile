@@ -687,7 +687,7 @@ class TestOneToOneChatMultipleSharedDevicesNewUiTwo(MultipleSharedDeviceTestCase
         chat = self.home_2.get_chat_from_home_view(self.username_1)
         if chat.is_element_displayed():
             self.errors.append("Deleted '%s' chat is shown, but the chat has been deleted" % self.username_1)
-        self.home_2.reopen_app()
+        self.home_2.reopen_app(user_name=self.username_2)
         if chat.is_element_displayed(15):
             self.errors.append(
                 "Deleted chat '%s' is shown after re-login, but the chat has been deleted" % self.username_1)

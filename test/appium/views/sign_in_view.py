@@ -269,7 +269,6 @@ class SignInView(BaseView):
                 self.create_profile_button.click_until_presence_of_element(self.generate_keys_button)
                 self.not_now_button.wait_and_click()
             else:
-                self.show_profiles_button.wait_and_click(20)
                 self.plus_profiles_button.click()
                 self.create_new_profile_button.click()
             self.use_recovery_phrase_button.click()
@@ -302,8 +301,9 @@ class SignInView(BaseView):
         self.enter_sync_code_input.send_keys(sync_code)
         self.confirm_button.click()
 
-    def sign_in(self, password=common_password):
+    def sign_in(self, user_name, password=common_password):
         self.driver.info("## Sign in (password: %s)" % password, device=False)
+        self.get_user_profile_by_name(user_name).click()
         self.password_input.wait_for_visibility_of_element(10)
         self.password_input.send_keys(password)
         self.login_button.click()

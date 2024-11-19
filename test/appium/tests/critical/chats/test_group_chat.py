@@ -186,7 +186,7 @@ class TestGroupChatMultipleDeviceMergedNewUI(MultipleSharedDeviceTestCase):
         )))
 
         self.chats[0].just_fyi("Admin relogins")
-        self.chats[0].reopen_app()
+        self.chats[0].reopen_app(user_name=self.usernames[0])
         self.homes[0].get_chat(self.chat_name).click()
 
         self.chats[0].just_fyi("Admin checks reactions count after relogin")
@@ -277,7 +277,7 @@ class TestGroupChatMultipleDeviceMergedNewUI(MultipleSharedDeviceTestCase):
         # workaround for app closed after navigating back from gallery
         if not self.chats[2].chat_message_input.is_element_displayed():
             self.drivers[2].activate_app(app_package)
-            SignInView(self.drivers[2]).sign_in()
+            SignInView(self.drivers[2]).sign_in(user_name=self.usernames[2])
             self.homes[2].chats_tab.click()
             self.homes[2].get_chat(self.chat_name).click()
 
@@ -291,7 +291,7 @@ class TestGroupChatMultipleDeviceMergedNewUI(MultipleSharedDeviceTestCase):
         # workaround for app closed after navigating back from gallery
         if not self.chats[2].chats_tab.is_element_displayed():
             self.drivers[2].activate_app(app_package)
-            SignInView(self.drivers[2]).sign_in()
+            SignInView(self.drivers[2]).sign_in(user_name=self.usernames[2])
         self.homes[2].chats_tab.click()
 
         self.errors.verify_no_errors()
@@ -331,7 +331,7 @@ class TestGroupChatMultipleDeviceMergedNewUI(MultipleSharedDeviceTestCase):
         # workaround for app closed after opening notifications
         if not self.homes[0].chats_tab.is_element_displayed():
             self.drivers[0].activate_app(app_package)
-            SignInView(self.drivers[0]).sign_in()
+            SignInView(self.drivers[0]).sign_in(user_name=self.usernames[0])
         self.homes[0].chats_tab.click()
         self.homes[0].get_chat(self.chat_name).click()
 

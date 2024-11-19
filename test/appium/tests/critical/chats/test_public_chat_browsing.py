@@ -42,7 +42,7 @@ class TestCommunityOneDeviceMerged(MultipleSharedDeviceTestCase):
 
         self.channel.send_message(text_message)
         self.channel.chat_element_by_text(text_message).wait_for_visibility_of_element()
-        self.channel.reopen_app()
+        self.channel.reopen_app(user_name=self.username)
         if not self.channel.chat_element_by_text(text_message).is_element_displayed(30):
             self.drivers[0].fail("Not navigated to channel view after reopening app")
 
@@ -158,7 +158,8 @@ class TestCommunityOneDeviceMerged(MultipleSharedDeviceTestCase):
     def test_restore_multiaccount_with_waku_backup_remove_profile_switch(self):
         self.home.reopen_app(sign_in=False)
         self.home.just_fyi("Restore user with predefined communities and contacts")
-        self.sign_in.recover_access(passphrase=waku_user.seed, second_user=True)
+        recover_user_name = 'Recover user'
+        self.sign_in.recover_access(passphrase=waku_user.seed, second_user=True, username=recover_user_name)
 
         self.home.just_fyi("Check contacts/blocked users")
         self.home.chats_tab.click()
@@ -216,10 +217,7 @@ class TestCommunityOneDeviceMerged(MultipleSharedDeviceTestCase):
             profile.perform_backup_button.click()
 
         self.home.just_fyi("Check that can login with different user")
-        self.home.reopen_app(sign_in=False)
-        self.sign_in.show_profiles_button.wait_and_click()
-        self.sign_in.element_by_text(self.username).click()
-        self.sign_in.sign_in()
+        self.home.reopen_app(user_name=self.username)
         self.home.navigate_back_to_home_view()
         self.home.communities_tab.click()
         if self.home.element_by_text(waku_user.communities['admin_open']).is_element_displayed(30):
@@ -227,7 +225,6 @@ class TestCommunityOneDeviceMerged(MultipleSharedDeviceTestCase):
 
         self.home.just_fyi("Check that can remove user from logged out state")
         self.home.reopen_app(sign_in=False)
-        self.sign_in.show_profiles_button.wait_and_click()
         user_card = self.sign_in.get_user_profile_by_name(username=self.username)
         user_card.open_user_options()
         self.sign_in.remove_profile_button.click()
@@ -237,8 +234,6 @@ class TestCommunityOneDeviceMerged(MultipleSharedDeviceTestCase):
 
         self.home.just_fyi("Check that removed user is not shown in the list anymore")
         self.home.reopen_app(sign_in=False)
-        self.sign_in.explore_new_status_button.click_until_presence_of_element(self.sign_in.show_profiles_button)
-        self.sign_in.show_profiles_button.wait_and_click()
         if self.sign_in.element_by_text(self.username).is_element_displayed():
             self.errors.append("Removed user is re-appeared after relogin!")
 
@@ -248,15 +243,14 @@ class TestCommunityOneDeviceMerged(MultipleSharedDeviceTestCase):
     def test_community_discovery(self):
         try:
             # workaround for case if a user is logged out in the previous test
-            self.sign_in.get_user_profile_by_index(index=1).click()
-            self.sign_in.sign_in()
+            self.sign_in.sign_in(user_name=self.username)
         except NoSuchElementException:
             pass
         self.home.navigate_back_to_home_view()
         self.home.just_fyi("Turn off testnet in the profile settings")
         profile = self.home.profile_button.click()
         profile.switch_network()
-        self.sign_in.sign_in()
+        self.sign_in.sign_in(user_name=self.username)
 
         self.home.just_fyi("Check Discover Communities content")
         self.home.communities_tab.click()
@@ -1192,7 +1186,7 @@ class TestCommunityMultipleDeviceMergedTwo(MultipleSharedDeviceTestCase):
 
         self.home_1.just_fyi("Device 1 goes back online")
         self.home_1.driver.activate_app(app_package)
-        self.device_1.sign_in()
+        self.device_1.sign_in(user_name=self.username_1)
 
         self.home_2.just_fyi("Device 2 checks that he's joined the community")
         exp_text = "You joined “%s”" % community_name
