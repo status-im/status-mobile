@@ -1,14 +1,14 @@
 (ns status-im.contexts.chat.messenger.composer.mentions.view
   (:require
-   [quo.theme]
-   [react-native.core :as rn]
-   [react-native.reanimated :as reanimated]
-   [react-native.safe-area :as safe-area]
-   [status-im.common.contact-list-item.view :as contact-list-item]
-   [status-im.contexts.chat.messenger.composer.constants :as constants]
-   [status-im.contexts.chat.messenger.composer.mentions.style :as style]
-   [status-im.contexts.chat.messenger.messages.constants :as messages.constants]
-   [utils.re-frame :as rf]))
+    [quo.theme]
+    [react-native.core :as rn]
+    [react-native.reanimated :as reanimated]
+    [react-native.safe-area :as safe-area]
+    [status-im.common.contact-list-item.view :as contact-list-item]
+    [status-im.contexts.chat.messenger.composer.constants :as constants]
+    [status-im.contexts.chat.messenger.composer.mentions.style :as style]
+    [status-im.contexts.chat.messenger.messages.constants :as messages.constants]
+    [utils.re-frame :as rf]))
 
 (defn mention-item
   [user]
