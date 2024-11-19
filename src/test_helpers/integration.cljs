@@ -95,7 +95,7 @@
 (defn logout
   []
   (log/info (str "==== before dispatch logout ===="))
-  (rf/dispatch [:profile.logout/logout]))
+  (rf/dispatch [:profile/logout]))
 
 (defn log-headline
   [test-name]

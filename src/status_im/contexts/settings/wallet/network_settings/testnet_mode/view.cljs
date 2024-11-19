@@ -11,7 +11,7 @@
 
 (defn logout
   []
-  (rf/dispatch [:profile.logout/logout]))
+  (rf/dispatch [:profile/logout]))
 
 (defn on-confirm-change
   [enable?]

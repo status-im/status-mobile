@@ -46,7 +46,7 @@
              :on-accept (fn []
                           (rf/dispatch [:profile.settings/profile-update :test-networks-enabled?
                                         test-networks-disabled?
-                                        {:on-success #(rf/dispatch [:profile.logout/logout])}]))
+                                        {:on-success #(rf/dispatch [:profile/logout])}]))
              :on-cancel nil}]]})))
 
 (rf/reg-event-fx :profile.settings/change-preview-privacy
@@ -152,5 +152,5 @@
           {:title               (i18n/label :t/logout-title)
            :content             (i18n/label :t/logout-are-you-sure)
            :confirm-button-text (i18n/label :t/logout)
-           :on-accept           #(rf/dispatch [:profile.logout/logout])
+           :on-accept           #(rf/dispatch [:profile/logout])
            :on-cancel           nil}]]}))
