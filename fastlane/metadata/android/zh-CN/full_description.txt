@@ -2,11 +2,11 @@ Status 将保护匿名私密的消息应用，与安全的加密货币钱包结�
 
 Status 是你的以太坊操作系统。
 
+安全的以太坊钱包
+Status 加密货币钱包支持安全地发送、存储和交换以太坊资产（例如 ETH、SNT）、稳定币（例如 DAI）以及数字藏品。Status 多链以太坊钱包支持主网、Arbitrum 和 Optimism，让您安心掌控加密货币和数字资产。Status 区块链钱包目前仅支持 ETH、ERC-20、ERC-721 和 ERC-1155 资产；不支持 Bitcoin。
+
 私密通信
 一对一或同多人发送私密消息，没有人能窥探你的通信内容。Status 不使用中心化消息中继，提升消息的隐私和安全。所有消息都经过端到端加密。此外，消息不含发送或接收者的身份信息，包括 Status 在内的任何人都无法获知消息内容或交流者身份。
-
-安全的以太坊钱包
-Status 加密货币钱包支持安全地发送、存储和交换以太坊上的资产，如 ETH、SNT，DAI 等稳定币以及数字藏品。Status 多链以太坊钱包支持主网、Arbitrum 和 Optimism，让您安心掌控加密货币和数字资产。Status 区块链钱包目前仅支持 ETH、ERC-20、ERC-721 和 ERC-1155 资产；不支持 Bitcoin。
 
 赚取 DeFi 收益
 使用最新的去中心化金融应用和去中心化交易所 (DEX)，如 Maker、Aave、Uniswap、Synthetix、PoolTogether、Zerion、Kyber 等，充分发挥加密货币的作用。

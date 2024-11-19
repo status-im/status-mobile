@@ -55,26 +55,36 @@
                                                      theme))}])]))
 
 (defn- left-title
-  [{:keys [title blur?]}]
+  [{:keys [title blur? title-icon]}]
   (let [theme (quo.theme/use-theme)]
     [rn/view {:style style/title-container}
      [text/text
       {:weight :regular
        :size   :paragraph-2
        :style  (style/title blur? theme)}
-      title]]))
+      title]
+     (when title-icon
+       [icons/icon title-icon
+        {:accessibility-label :title-icon
+         :size                12
+         :color               (if blur?
+                                colors/neutral-40
+                                (colors/theme-colors colors/neutral-50
+                                                     colors/neutral-40
+                                                     theme))}])]))
 
 (defn- left-side
   "The description can either be given as a string `subtitle-type` or a component `custom-subtitle`"
   [{:keys [title status size blur? custom-subtitle icon subtitle subtitle-type subtitle-color icon-color
-           customization-color network-image emoji]
+           customization-color network-image emoji title-icon]
     :as   props}]
   (let [theme (quo.theme/use-theme)]
     [rn/view {:style style/left-side}
-     [left-title
-      {:title title
-       :blur? blur?
-       :theme theme}]
+     [rn/view
+      [left-title
+       {:title      title
+        :title-icon title-icon
+        :blur?      blur?}]]
      (if (= status :loading)
        [left-loading
         {:size  size
@@ -132,6 +142,7 @@
       [:subtitle {:optional true} [:maybe [:or :string :double]]]
       [:custom-subtitle {:optional true} [:maybe fn?]]
       [:icon {:optional true} [:maybe :keyword]]
+      [:title-icon {:optional true} [:maybe :keyword]]
       [:emoji {:optional true} [:maybe :string]]
       [:customization-color {:optional true} [:maybe :schema.common/customization-color]]
       [:network-image {:optional true} [:maybe :schema.common/image-source]]

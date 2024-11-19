@@ -110,7 +110,7 @@
        :to-values-by-chain   {42161 100}
        :token-display-name   "ETH"})
     (is
-     (match? {:ethereum {:amount 100 :token-symbol "ETH"}} (rf/sub [sub-name false]))))
+     (match? {:ethereum {:amount "100" :token-symbol "ETH"}} (rf/sub [sub-name false]))))
 
   (testing "network values for the to account are returned correctly"
     (swap! rf-db/app-db assoc-in
@@ -119,4 +119,4 @@
        :to-values-by-chain   {42161 100}
        :token-display-name   "ARB1"})
     (is
-     (match? {:arbitrum {:amount 100 :token-symbol "ARB1"}} (rf/sub [sub-name true])))))
+     (match? {:arbitrum {:amount "100" :token-symbol "ARB1"}} (rf/sub [sub-name true])))))

@@ -257,7 +257,7 @@
       swap-data)
     (is (match? "0x10000" (rf/sub [sub-name])))))
 
-(h/deftest-sub :wallet/wallet-swap-proposal-fee-fiat-formatted
+(h/deftest-sub :wallet/wallet-swap-proposal-fee-fiat
   [sub-name]
   (testing "wallet send fee calculated and formatted in fiat"
     (swap! rf-db/app-db
@@ -266,9 +266,8 @@
            (assoc-in [:wallet :current-viewing-account-address] "0x1")
            (assoc-in [:wallet :ui :swap] swap-data)
            (assoc-in [:currencies] currencies)
-           (assoc-in [:profile/profile :currency] :usd)
-           (assoc-in [:profile/profile :currency-symbol] "$")))
+           (assoc-in [:profile/profile :currency] :usd)))
 
     (let [token-symbol-for-fees "ETH"
           result                (rf/sub [sub-name token-symbol-for-fees])]
-      (is (match? result "$1.00")))))
+      (is (match? result 1)))))

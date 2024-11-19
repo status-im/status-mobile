@@ -192,6 +192,18 @@
       (number/small-number-threshold display-decimals)
       (str amount-fixed-decimals))))
 
+(defn token-balance-display-for-network
+  "Formats a token balance for a specific chain and rounds it to a specified number of decimals.
+  If the balance is less than the smallest representable value based on rounding decimals, 
+  a threshold value is displayed instead."
+  [token chain-id rounding-decimals]
+  (let [token-decimals   (:decimals token)
+        display-decimals (min token-decimals rounding-decimals)]
+    (-> (get-in token [:balances-per-chain chain-id :raw-balance] 0)
+        (number/convert-to-whole-number token-decimals)
+        money/bignumber
+        (sanitized-token-amount-to-display display-decimals))))
+
 (defn calculate-balance-from-tokens
   [{:keys [currency tokens chain-ids]}]
   (->> tokens
@@ -239,9 +251,9 @@
       (str $ address))
     address))
 
-(defn get-standard-fiat-format
-  [crypto-value currency-symbol fiat-value]
-  (if (string/includes? crypto-value "<")
+(defn fiat-formatted-for-ui
+  [currency-symbol fiat-value]
+  (if (money/less-than fiat-value 0.01)
     (str "<" currency-symbol "0.01")
     (prettify-balance currency-symbol fiat-value)))
 
@@ -269,9 +281,8 @@
         formatted-token-price             (prettify-balance currency-symbol price)
         percentage-change                 (prettify-percentage-change change-pct-24hour)
         crypto-value                      (get-standard-crypto-format token balance)
-        fiat-value                        (get-standard-fiat-format crypto-value
-                                                                    currency-symbol
-                                                                    fiat-unformatted-value)]
+        fiat-value                        (fiat-formatted-for-ui currency-symbol
+                                                                 fiat-unformatted-value)]
     {:token               (:symbol token)
      :token-name          (:name token)
      :state               :default
@@ -445,7 +456,7 @@
 (defn transaction-path
   [{:keys [from-address to-address token-id-from token-address token-id-to route data
            slippage-percentage eth-transfer?]}]
-  (let [{:keys [bridge-name amount-in bonder-fees from
+  (let [{:keys [bridge-name amount-in from
                 to]}  route
         tx-data       (transaction-data {:from-address  from-address
                                          :to-address    to-address
@@ -453,6 +464,7 @@
                                          :route         route
                                          :data          data
                                          :eth-transfer? eth-transfer?})
+        bonder-fees   (-> route :bounder-fees money/to-string)
         to-chain-id   (:chain-id to)
         from-chain-id (:chain-id from)]
     (cond-> {:BridgeName bridge-name

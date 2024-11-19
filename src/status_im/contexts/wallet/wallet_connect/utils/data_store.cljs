@@ -2,6 +2,8 @@
   (:require
     [clojure.string :as string]
     [status-im.constants :as constants]
+    [status-im.contexts.wallet.common.utils :as wallet-utils]
+    [status-im.contexts.wallet.common.utils.networks :as network-utils]
     utils.string
     [utils.transforms :as transforms]))
 
@@ -68,6 +70,10 @@
   [session]
   (get-in session [:peer :metadata :redirect :native]))
 
+(defn get-dapp-name
+  [session]
+  (get-in session [:peer :metadata :name]))
+
 (defn get-db-current-request-params
   [db]
   (-> db
@@ -80,3 +86,17 @@
       :wallet-connect/sessions
       count
       inc))
+
+(defn get-session-by-topic
+  [db topic]
+  (->> db
+       :wallet-connect/sessions
+       (filter #(= (:topic %) topic))
+       first))
+
+(defn get-account-by-session
+  [db session]
+  (let [accounts                (get-in db [:wallet :accounts])
+        session-account-address (first (:accounts session))
+        [_ address]             (network-utils/split-network-full-address session-account-address)]
+    (wallet-utils/get-account-by-address (vals accounts) address)))

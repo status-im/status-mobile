@@ -1,7 +1,8 @@
 (ns status-im.subs.wallet.networks
   (:require [re-frame.core :as re-frame]
             [status-im.contexts.wallet.common.utils.networks :as network-utils]
-            [utils.money :as money]))
+            [utils.money :as money]
+            [utils.number :as number]))
 
 (def max-network-prefixes 2)
 
@@ -62,28 +63,18 @@
 (re-frame/reg-sub
  :wallet/network-values
  :<- [:wallet/wallet-send]
- (fn [{:keys [from-values-by-chain to-values-by-chain token-display-name] :as send-data} [_ to-values?]]
+ :<- [:wallet/send-display-token-decimals]
+ (fn [[{:keys [from-values-by-chain to-values-by-chain token-display-name] :as send-data} token-decimals]
+      [_ to-values?]]
    (let [network-values (if to-values? to-values-by-chain from-values-by-chain)
          token-symbol   (or token-display-name
                             (-> send-data :token :symbol))]
      (reduce-kv
       (fn [acc chain-id amount]
-        (let [network-name (network-utils/id->network chain-id)]
+        (let [network-name (network-utils/id->network chain-id)
+              amount-fixed (number/to-fixed (money/->bignumber amount) token-decimals)]
           (assoc acc
                  (if (= network-name :mainnet) :ethereum network-name)
-                 {:amount amount :token-symbol token-symbol})))
+                 {:amount amount-fixed :token-symbol token-symbol})))
       {}
       network-values))))
-
-(re-frame/reg-sub
- :wallet/total-amount
- :<- [:wallet/wallet-send]
- (fn [{:keys [from-values-by-chain to-values-by-chain]} [_ to-values?]]
-   (let [network-values (if to-values? to-values-by-chain from-values-by-chain)]
-     (reduce
-      (fn [acc amount]
-        (if (money/bignumber? amount)
-          (money/add acc amount)
-          acc))
-      (money/bignumber 0)
-      (vals network-values)))))
