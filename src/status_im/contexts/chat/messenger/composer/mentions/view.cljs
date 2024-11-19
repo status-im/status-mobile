@@ -1,14 +1,14 @@
 (ns status-im.contexts.chat.messenger.composer.mentions.view
   (:require
-    [quo.theme]
-    [react-native.core :as rn]
-    [react-native.reanimated :as reanimated]
-    [react-native.safe-area :as safe-area]
-    [status-im.common.contact-list-item.view :as contact-list-item]
-    [status-im.contexts.chat.messenger.composer.constants :as constants]
-    [status-im.contexts.chat.messenger.composer.mentions.style :as style]
-    [status-im.contexts.chat.messenger.messages.constants :as messages.constants]
-    [utils.re-frame :as rf]))
+   [quo.theme]
+   [react-native.core :as rn]
+   [react-native.reanimated :as reanimated]
+   [react-native.safe-area :as safe-area]
+   [status-im.common.contact-list-item.view :as contact-list-item]
+   [status-im.contexts.chat.messenger.composer.constants :as constants]
+   [status-im.contexts.chat.messenger.composer.mentions.style :as style]
+   [status-im.contexts.chat.messenger.messages.constants :as messages.constants]
+   [utils.re-frame :as rf]))
 
 (defn mention-item
   [user]
@@ -35,10 +35,9 @@
          (set-suggestions-state suggestions)
          (js/setTimeout #(set-suggestions-state suggestions) 300))
        (reanimated/animate opacity (if suggestions? 1 0)))
-     [suggestions?])
-    [reanimated/view
-     {:style (style/container opacity top theme)}
-     [rn/flat-list
+     [suggestions])
+    [reanimated/view {:style (style/container opacity top theme)}
+     [reanimated/flat-list
       {:keyboard-should-persist-taps :always
        :data                         (vals suggestions-state)
        :key-fn                       :key
