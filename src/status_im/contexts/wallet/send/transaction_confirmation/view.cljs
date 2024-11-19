@@ -9,7 +9,7 @@
     [status-im.common.standard-authentication.core :as standard-auth]
     [status-im.contexts.wallet.common.utils :as utils]
     [status-im.contexts.wallet.send.transaction-confirmation.style :as style]
-    [status-im.contexts.wallet.send.transaction-details.view :as transaction-details]
+    [status-im.contexts.wallet.send.transaction-settings.view :as transaction-settings]
     [status-im.contexts.wallet.send.utils :as send-utils]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]
@@ -189,7 +189,7 @@
           :container-style     {:margin-right 8}
           :on-press            #(rf/dispatch
                                  [:show-bottom-sheet
-                                  {:content transaction-details/sheet}])}
+                                  {:content transaction-settings/sheet}])}
          :i/advanced]
         [data-item
          {:title    (i18n/label :t/est-time)

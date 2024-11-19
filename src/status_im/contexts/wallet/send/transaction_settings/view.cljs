@@ -1,4 +1,4 @@
-(ns status-im.contexts.wallet.send.transaction-details.view
+(ns status-im.contexts.wallet.send.transaction-settings.view
   (:require
     [quo.core :as quo]
     [quo.theme :as quo.theme]
@@ -32,11 +32,21 @@
                   :action-props      {:type :radio}
                   :label             :text
                   :preview-size      :size-32}
-                 {:title             "Urget ~15s"
+                 {:title             "Urgent ~15s"
                   :image             :icon
-                  :image-props       :i/placeholder
+                  :image-props       :i/DAO
                   :description       :text
                   :description-props {:text "€1.85"}
+                  :on-press          #()
+                  :action            :selector
+                  :action-props      {:type :radio}
+                  :label             :text
+                  :preview-size      :size-32}
+                 {:title             "Custom"
+                  :image             :icon
+                  :image-props       :i/edit
+                  :description       :text
+                  :description-props {:text "Set your own fees and nonce"}
                   :on-press          #()
                   :action            :selector
                   :action-props      {:type :radio}

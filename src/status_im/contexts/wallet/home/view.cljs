@@ -8,7 +8,7 @@
     [status-im.common.refreshable-flat-list.view :as refreshable-flat-list]
     [status-im.contexts.wallet.home.style :as style]
     [status-im.contexts.wallet.home.tabs.view :as tabs]
-    [status-im.contexts.wallet.send.transaction-details.view :as transaction-details]
+    [status-im.contexts.wallet.send.transaction-settings.view :as transaction-settings]
     [status-im.contexts.wallet.sheets.network-filter.view :as network-filter]
     [status-im.feature-flags :as ff]
     [utils.i18n :as i18n]
@@ -99,7 +99,7 @@
                                  [rn/pressable
                                   {:on-press #(rf/dispatch
                                                [:show-bottom-sheet
-                                                {:content transaction-details/sheet}])}
+                                                {:content transaction-settings/sheet}])}
                                   [quo/wallet-overview
                                    {:state             (if tokens-loading? :loading :default)
                                     :time-frame        :none

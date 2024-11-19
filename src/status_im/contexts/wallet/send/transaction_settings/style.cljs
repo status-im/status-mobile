@@ -1,4 +1,4 @@
-(ns status-im.contexts.wallet.send.transaction-details.style
+(ns status-im.contexts.wallet.send.transaction-settings.style
   (:require
     [quo.foundations.colors :as colors]))
 
