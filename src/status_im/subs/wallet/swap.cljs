@@ -18,6 +18,16 @@
  :-> :asset-to-pay)
 
 (rf/reg-sub
+ :wallet/swap-asset-to-pay-decimals
+ :<- [:wallet/swap-asset-to-pay]
+ :-> :decimals)
+
+(rf/reg-sub
+ :wallet/swap-asset-to-pay-symbol
+ :<- [:wallet/swap-asset-to-pay]
+ :-> :symbol)
+
+(rf/reg-sub
  :wallet/swap-asset-to-receive
  :<- [:wallet/swap]
  :-> :asset-to-receive)
@@ -80,9 +90,8 @@
                               :balance  total-balance
                               :token    token})
          crypto-formatted   (utils/get-standard-crypto-format token total-balance)
-         fiat-formatted     (utils/get-standard-fiat-format crypto-formatted
-                                                            currency-symbol
-                                                            fiat-value)]
+         fiat-formatted     (utils/fiat-formatted-for-ui currency-symbol
+                                                         fiat-value)]
      {:crypto (str crypto-formatted " " token-symbol)
       :fiat   fiat-formatted})))
 
@@ -229,27 +238,75 @@
  :-> :estimated-time)
 
 (rf/reg-sub
- :wallet/wallet-swap-proposal-fee-fiat-formatted
+ :wallet/wallet-swap-proposal-fee-fiat
  :<- [:wallet/current-viewing-account]
  :<- [:wallet/swap-proposal]
  :<- [:profile/currency]
- :<- [:profile/currency-symbol]
- (fn [[account swap-proposal currency currency-symbol] [_ token-symbol-for-fees]]
+ (fn [[account swap-proposal currency] [_ token-symbol-for-fees]]
    (when token-symbol-for-fees
-     (let [tokens                  (:tokens account)
-           token-for-fees          (first (filter #(= (string/lower-case (:symbol %))
-                                                      (string/lower-case token-symbol-for-fees))
-                                                  tokens))
-           fee-in-native-token     (send-utils/calculate-full-route-gas-fee [swap-proposal])
-           fee-in-crypto-formatted (utils/get-standard-crypto-format
-                                    token-for-fees
-                                    fee-in-native-token)
-           fee-in-fiat             (utils/calculate-token-fiat-value
-                                    {:currency currency
-                                     :balance  fee-in-native-token
-                                     :token    token-for-fees})
-           fee-formatted           (utils/get-standard-fiat-format
-                                    fee-in-crypto-formatted
-                                    currency-symbol
-                                    fee-in-fiat)]
-       fee-formatted))))
+     (let [tokens              (:tokens account)
+           token-for-fees      (first (filter #(= (string/lower-case (:symbol %))
+                                                  (string/lower-case token-symbol-for-fees))
+                                              tokens))
+           fee-in-native-token (send-utils/calculate-full-route-gas-fee [swap-proposal])
+           fee-in-fiat         (utils/calculate-token-fiat-value
+                                {:currency currency
+                                 :balance  fee-in-native-token
+                                 :token    token-for-fees})]
+       fee-in-fiat))))
+
+(rf/reg-sub
+ :wallet/swap-asset-to-pay-balance-for-chain-data
+ :<- [:wallet/swap-asset-to-pay]
+ (fn [asset-to-pay]
+   (let [token-symbol (or (:symbol asset-to-pay) constants/token-for-fees-symbol)]
+     @(rf/subscribe [:wallet/token-by-symbol token-symbol]))))
+
+(rf/reg-sub
+ :wallet/swap-asset-to-pay-balance-for-chain
+ :<- [:wallet/swap-asset-to-pay-balance-for-chain-data]
+ (fn [asset-to-pay-with-current-account-balance [_ chain-id]]
+   (let [pay-token-decimals               (:decimals asset-to-pay-with-current-account-balance)
+         pay-token-balance-selected-chain (-> (get-in asset-to-pay-with-current-account-balance
+                                                      [:balances-per-chain chain-id :raw-balance]
+                                                      0)
+                                              (number/convert-to-whole-number pay-token-decimals))]
+     pay-token-balance-selected-chain)))
+
+(rf/reg-sub
+ :wallet/swap-asset-to-pay-balance-for-chain-ui
+ :<- [:wallet/swap-asset-to-pay-balance-for-chain-data]
+ (fn [asset-to-pay-with-current-account-balance [_ chain-id]]
+   (utils/token-balance-display-for-network
+    asset-to-pay-with-current-account-balance
+    chain-id
+    constants/min-token-decimals-to-display)))
+
+(rf/reg-sub
+ :wallet/swap-asset-to-pay-amount-in-fiat
+ :<- [:wallet/swap-asset-to-pay-balance-for-chain-data]
+ :<- [:profile/currency]
+ :<- [:profile/currency-symbol]
+ (fn [[asset-to-pay-with-current-account-balance currency currency-symbol] [_ amount]]
+   (utils/formatted-token-fiat-value
+    {:currency        currency
+     :currency-symbol currency-symbol
+     :balance         (or amount 0)
+     :token           asset-to-pay-with-current-account-balance})))
+
+(rf/reg-sub
+ :wallet/approval-gas-fees
+ :<- [:wallet/current-viewing-account]
+ :<- [:wallet/swap-proposal]
+ :<- [:profile/currency]
+ (fn [[account {:keys [approval-gas-fees]} currency]]
+   (let [tokens         (:tokens account)
+         token-for-fees (first (filter #(= (string/lower-case (:symbol %))
+                                           (string/lower-case constants/token-for-fees-symbol))
+                                       tokens))
+         fee-in-fiat    (utils/calculate-token-fiat-value
+                         {:currency currency
+                          :balance  approval-gas-fees
+                          :token    token-for-fees})]
+     fee-in-fiat)))
+

@@ -20,7 +20,6 @@
     status-im.contexts.chat.events
     [status-im.contexts.chat.home.add-new-contact.events]
     status-im.contexts.chat.messenger.composer.events
-    status-im.contexts.chat.messenger.messages.link-preview.events
     status-im.contexts.chat.messenger.photo-selector.events
     status-im.contexts.communities.events
     status-im.contexts.communities.overview.events

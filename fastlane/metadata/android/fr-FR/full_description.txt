@@ -1,0 +1,18 @@
+Status combine une messagerie pseudonyme axée sur la confidentialité et un portefeuille cryptographique sécurisé en un seul outil de communication puissant. Discutez avec des amis et des communautés en pleine croissance. Achetez, stockez et échangez des actifs numériques.
+
+Status est votre système d'exploitation Ethereum.
+
+PORTEFEUILLE ETHEREUM SÉCURISÉ
+Le portefeuille cryptographique Status vous permet d'envoyer, de stocker et d'échanger en toute sécurité des actifs Ethereum tels que ETH, SNT, des pièces stables telles que DAI, ainsi que des objets de collection. Prenez le contrôle en toute confiance de votre cryptomonnaie et de vos actifs numériques avec notre application de portefeuille Ethereum multichaîne, prenant en charge le réseau principal, Arbitrum et Optimism. Le portefeuille blockchain Status ne prend actuellement en charge que les actifs ETH, ERC-20, ERC-721 et ERC-1155 ; il ne prend pas en charge Bitcoin.
+
+MESSAGERIE PRIVÉE
+Envoyez des conversations privées en tête-à-tête et en groupe sans que personne ne surveille vos communications. Status est une application de messagerie qui élimine les relais de messages centralisés pour une plus grande confidentialité et une messagerie sécurisée. Tous les messages sont cryptés avec un cryptage de bout en bout. De plus, aucun message n'expose l'identité de l'auteur ou du destinataire prévu, de sorte que personne, pas même Status, ne sait qui parle à qui ou ce qui a été dit.
+
+GAGNEZ DE L'ARGENT AVEC DEFI
+Mettez votre crypto au travail avec les dernières applications financières décentralisées et les échanges décentralisés (DEX) tels que Maker, Aave, Uniswap, Synthetix, PoolTogether, Zerion, Kyber, et plus encore.
+
+CONNECTEZ-VOUS AVEC VOTRE COMMUNAUTÉ
+Explorez, connectez-vous et discutez avec vos communautés et amis préférés. Qu'il s'agisse d'un petit groupe d'amis, d'un collectif d'artistes, de traders de crypto-monnaies ou de la prochaine grande organisation, envoyez des SMS et communiquez avec les communautés Status.
+
+CRÉATION DE COMPTE PRIVÉ
+Restez privé grâce à la création de compte pseudo-anonyme. Lors de la création de votre compte gratuit, vous n'aurez JAMAIS besoin de saisir un numéro de téléphone, une adresse e-mail ou un compte bancaire. Les clés privées de votre portefeuille sont générées localement et stockées en toute sécurité pour garantir que vous seul avez accès à vos fonds et à vos transactions financières.

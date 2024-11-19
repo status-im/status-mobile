@@ -42,6 +42,10 @@
   [s n]
   (>= (count s) n))
 
+(defn at-most-n-chars?
+  [s n]
+  (<= (count s) n))
+
 (defn safe-trim
   [s]
   (when (string? s)

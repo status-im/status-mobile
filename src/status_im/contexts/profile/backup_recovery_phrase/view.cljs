@@ -44,24 +44,28 @@
 
 (defn view
   []
-  (let [step-labels          [:t/backup-step-1 :t/backup-step-2 :t/backup-step-3
-                              :t/backup-step-4]
-        checked?             (reagent/atom
-                              {:0 false
-                               :1 false
-                               :2 false
-                               :3 false})
-        revealed?            (reagent/atom false)
-        customization-color  (rf/sub [:profile/customization-color])
-        {:keys [on-success]} (rf/sub [:get-screen-params])
-        seed-phrase          (reagent/atom [])
-        random-phrase        (reagent/atom [])]
+  (let [step-labels                             [:t/backup-step-1 :t/backup-step-2 :t/backup-step-3
+                                                 :t/backup-step-4]
+        checked?                                (reagent/atom
+                                                 {:0 false
+                                                  :1 false
+                                                  :2 false
+                                                  :3 false})
+        revealed?                               (reagent/atom false)
+        customization-color                     (rf/sub [:profile/customization-color])
+        {:keys [on-success masked-seed-phrase]} (rf/sub [:get-screen-params])
+        seed-phrase                             (reagent/atom (if masked-seed-phrase
+                                                                (->
+                                                                  (security/safe-unmask-data
+                                                                   masked-seed-phrase)
+                                                                  (string/split #"\s"))
+                                                                []))]
     (fn []
       (let [theme (quo.theme/use-theme)]
         (rn/use-mount
          (fn []
-           (native-module/get-random-mnemonic #(reset! seed-phrase (string/split % #"\s")))
-           (native-module/get-random-mnemonic #(reset! random-phrase (string/split % #"\s")))))
+           (when-not masked-seed-phrase
+             (native-module/get-random-mnemonic #(reset! seed-phrase (string/split % #"\s"))))))
         [rn/view {:style {:flex 1}}
          [quo/page-nav
           {:icon-name           :i/close
@@ -106,10 +110,7 @@
               :button-one-label (i18n/label :t/i-have-written)
               :button-one-props {:disabled?           (some false? (vals @checked?))
                                  :customization-color customization-color
-                                 :on-press            #(on-success {:masked-seed-phrase
-                                                                    (security/mask-data
-                                                                     @seed-phrase)
-                                                                    :random-phrase @random-phrase})}}]
+                                 :on-press            #(on-success (security/mask-data @seed-phrase))}}]
             [quo/text
              {:size  :paragraph-2
               :style (style/description-text theme)}

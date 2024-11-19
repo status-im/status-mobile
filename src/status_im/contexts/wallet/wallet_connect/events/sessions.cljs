@@ -1,5 +1,7 @@
 (ns status-im.contexts.wallet.wallet-connect.events.sessions
   (:require [re-frame.core :as rf]
+            [status-im.contexts.wallet.wallet-connect.utils.data-store :as
+             data-store]
             [status-im.contexts.wallet.wallet-connect.utils.networks :as networks]
             [status-im.contexts.wallet.wallet-connect.utils.sessions :as sessions]
             [taoensso.timbre :as log]
@@ -8,16 +10,26 @@
 (rf/reg-event-fx
  :wallet-connect/on-session-delete
  (fn [{:keys [db]} [{:keys [topic] :as event}]]
-   (when (networks/event-should-be-handled? db event)
-     (log/info "Received Wallet Connect session delete from the SDK: " event)
-     {:fx [[:json-rpc/call
-            [{:method     "wallet_disconnectWalletConnectSession"
-              :params     [topic]
-              :on-success [:wallet-connect/delete-session topic]
-              :on-error   #(log/info "Wallet Connect session persistence failed" %)}]]
-           [:dispatch
-            [:centralized-metrics/track
-             :metric/dapp-session-disconnected]]]})))
+   (let [session      (data-store/get-session-by-topic db topic)
+         account-name (-> (data-store/get-account-by-session db session)
+                          :name)]
+     (when (networks/event-should-be-handled? db event)
+       (log/info "Received Wallet Connect session delete from the SDK: " event)
+       {:fx [[:json-rpc/call
+              [{:method     "wallet_disconnectWalletConnectSession"
+                :params     [topic]
+                :on-success [:wallet-connect/delete-session topic]
+                :on-error   #(log/info "Wallet Connect session persistence failed" %)}]]
+             [:dispatch
+              [:toasts/upsert
+               {:id   :dapp-disconnect-success
+                :type :positive
+                :text (i18n/label :t/disconnect-dapp-success
+                                  {:dapp    (:name session)
+                                   :account account-name})}]]
+             [:dispatch
+              [:centralized-metrics/track
+               :metric/dapp-session-disconnected]]]}))))
 
 (rf/reg-event-fx
  :wallet-connect/disconnect-dapp

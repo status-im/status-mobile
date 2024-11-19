@@ -17,11 +17,10 @@
       :accessibility-label :generate-new-keypair
       :label               (i18n/label :t/generate-new-keypair)
       :on-press            #(rf/dispatch [:navigate-to :screen/backup-recovery-phrase
-                                          {:on-success (fn [{:keys [masked-seed-phrase random-phrase]}]
+                                          {:on-success (fn [masked-seed-phrase]
                                                          (rf/dispatch [:wallet/store-new-seed-phrase
-                                                                       {:seed-phrase masked-seed-phrase
-                                                                        :random-phrase
-                                                                        random-phrase}]))}])}
+                                                                       {:seed-phrase
+                                                                        masked-seed-phrase}]))}])}
      {:icon                :i/seed
       :accessibility-label :import-using-phrase
       :label               (i18n/label :t/import-using-phrase)

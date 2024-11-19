@@ -6,12 +6,13 @@
     [react-native.platform :as platform]
     [react-native.safe-area :as safe-area]
     [status-im.common.floating-button-page.view :as floating-button]
+    [status-im.common.password-with-hint.view :as password-with-hint]
+    [status-im.common.validation.password :as password]
     [status-im.constants :as constants]
     [status-im.contexts.onboarding.create-password.style :as style]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]
-    [utils.security.core :as security]
-    [utils.string :as utils.string]))
+    [utils.security.core :as security]))
 
 (defn header
   []
@@ -27,27 +28,9 @@
      :size   :paragraph-1}
     (i18n/label :t/password-creation-subtitle)]])
 
-(defn password-with-hint
-  [{{:keys [text status shown]} :hint :as input-props}]
-  [rn/view
-   [quo/input
-    (-> input-props
-        (dissoc :hint)
-        (assoc :type  :password
-               :blur? true))]
-   [rn/view {:style style/info-message}
-    (when shown
-      [quo/info-message
-       {:status status
-        :size   :default
-        :icon   (if (= status :success) :i/check-circle :i/info)
-        :color  (when (= status :default)
-                  colors/white-70-blur)}
-       text])]])
-
 (defn password-inputs
   [{:keys [passwords-match? on-change-password on-change-repeat-password on-input-focus
-           password-long-enough? empty-password? show-password-validation?
+           password-long-enough? password-short-enough? empty-password? show-password-validation?
            on-blur-repeat-password]}]
   (let [hint-1-status (if password-long-enough? :success :default)
         hint-2-status (if passwords-match? :success :error)
@@ -58,19 +41,24 @@
                            (not passwords-match?)
                            (not empty-password?))]
     [:<>
-     [password-with-hint
-      {:hint           {:text   (i18n/label :t/password-creation-hint)
-                        :status hint-1-status
-                        :shown  true}
+     [password-with-hint/view
+      {:hint           (if (not password-short-enough?)
+                         {:text   (i18n/label
+                                   :t/password-creation-max-length-hint)
+                          :status :error
+                          :shown? true}
+                         {:text   (i18n/label :t/password-creation-hint)
+                          :status hint-1-status
+                          :shown? true})
        :placeholder    (i18n/label :t/password-creation-placeholder-1)
        :on-change-text on-change-password
        :on-focus       on-input-focus
        :auto-focus     true}]
      [rn/view {:style style/space-between-inputs}]
-     [password-with-hint
+     [password-with-hint/view
       {:hint           {:text   hint-2-text
                         :status hint-2-status
-                        :shown  (and (not empty-password?)
+                        :shown? (and (not empty-password?)
                                      show-password-validation?)}
        :error?         error?
        :placeholder    (i18n/label :t/password-creation-placeholder-2)
@@ -94,33 +82,17 @@
     [quo/tips {:completed? symbols?}
      (i18n/label :t/password-creation-tips-4)]]])
 
-(defn validate-password
-  [password]
-  (let [validations (juxt utils.string/has-lower-case?
-                          utils.string/has-upper-case?
-                          utils.string/has-numbers?
-                          utils.string/has-symbols?
-                          #(utils.string/at-least-n-chars? % constants/new-password-min-length))]
-    (->> password
-         validations
-         (zipmap (conj constants/password-tips :long-enough?)))))
-
-(defn calc-password-strength
-  [validations]
-  (->> (vals validations)
-       (filter true?)
-       count))
-
 (defn- use-password-checks
   [password]
   (rn/use-memo
    (fn []
-     (let [{:keys [long-enough?]
-            :as   validations} (validate-password password)]
-       {:password-long-enough? long-enough?
-        :password-validations  validations
-        :password-strength     (calc-password-strength validations)
-        :empty-password?       (empty? password)}))
+     (let [{:keys [long-enough? short-enough?]
+            :as   validations} (password/validate password)]
+       {:password-long-enough?  long-enough?
+        :password-short-enough? short-enough?
+        :password-validations   validations
+        :password-strength      (password/strength validations)
+        :empty-password?        (empty? password)}))
    [password]))
 
 (defn- use-repeat-password-checks
@@ -174,20 +146,18 @@
 
 
         {:keys [password-long-enough?
+                password-short-enough?
                 password-validations password-strength
                 empty-password?]}                       (use-password-checks password)
 
         {:keys [same-password-length? same-passwords?]} (use-repeat-password-checks password
                                                                                     repeat-password)
 
-        meet-requirements?                              (rn/use-memo
-                                                         #(and (not empty-password?)
-                                                               (utils.string/at-least-n-chars? password
-                                                                                               10)
-                                                               same-passwords?
-                                                               accepts-disclaimer?)
-                                                         [password repeat-password
-                                                          accepts-disclaimer?])]
+        meet-requirements?                              (and (not empty-password?)
+                                                             password-long-enough?
+                                                             password-short-enough?
+                                                             same-passwords?
+                                                             accepts-disclaimer?)]
 
     [floating-button/view
      {:header [page-nav]
@@ -231,6 +201,7 @@
       [header]
       [password-inputs
        {:password-long-enough?     password-long-enough?
+        :password-short-enough?    password-short-enough?
         :passwords-match?          same-passwords?
         :empty-password?           empty-password?
         :show-password-validation? show-password-validation?

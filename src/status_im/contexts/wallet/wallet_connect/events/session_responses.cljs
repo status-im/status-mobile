@@ -112,7 +112,7 @@
            [:dispatch
             [:toasts/upsert
              {:type :negative
-              :text (i18n/label :t/something-went-wrong)}]]]})))
+              :text (i18n/label :t/wallet-connect-something-went-wrong)}]]]})))
 
 (rf/reg-event-fx
  :wallet-connect/send-response
@@ -162,14 +162,24 @@
 (rf/reg-event-fx
  :wallet-connect/finish-session-request
  (fn [{:keys [db]} [result]]
-   (let [event  (get-in db [:wallet-connect/current-request :event])
-         method (data-store/get-request-method event)]
+   (let [event      (get-in db [:wallet-connect/current-request :event])
+         method     (data-store/get-request-method event)
+         toast-text (condp contains? method
+                      constants/wallet-connect-message-signing-methods
+                      (i18n/label :t/wallet-connect-message-request-success-toast)
+
+                      constants/wallet-connect-transaction-methods
+                      (i18n/label :t/wallet-connect-transaction-request-success-toast))]
      {:fx [[:dispatch
             [:centralized-metrics/track :metric/dapp-session-response
              {:method   method
               :approved true}]]
            [:dispatch [:wallet-connect/send-response {:result result}]]
-           [:dispatch [:wallet-connect/dismiss-request-modal]]]})))
+           [:dispatch [:wallet-connect/dismiss-request-modal]]
+           [:dispatch
+            [:toasts/upsert
+             {:type :positive
+              :text toast-text}]]]})))
 
 ;; NOTE: Currently we only reject a session if the user dismissed a modal
 ;; without accepting the session first.
@@ -182,8 +192,11 @@
 (rf/reg-event-fx
  :wallet-connect/on-request-modal-dismissed
  (fn [{:keys [db]}]
-   (let [{:keys [response-sent? event]} (get db :wallet-connect/current-request)
-         method                         (data-store/get-request-method event)]
+   (let [{:keys [response-sent? event] :as request} (get db :wallet-connect/current-request)
+         method                                     (data-store/get-request-method event)
+         dapp                                       (->> (get db :wallet-connect/sessions)
+                                                         (data-store/get-current-request-dapp request)
+                                                         :name)]
      {:fx (concat
            (when-not response-sent?
              [[:dispatch
@@ -194,5 +207,10 @@
                [:wallet-connect/send-response
                 {:request event
                  :error   (wallet-connect/get-sdk-error
-                           constants/wallet-connect-user-rejected-error-key)}]]])
+                           constants/wallet-connect-user-rejected-error-key)}]]
+              [:dispatch
+               [:toasts/upsert
+                {:type :positive
+                 :text (i18n/label :t/wallet-connect-sign-request-rejected-toast
+                                   {:dapp dapp})}]]])
            [[:dispatch [:wallet-connect/reset-current-request]]])})))

@@ -30,12 +30,12 @@
 (rf/reg-event-fx :wallet/confirm-account-origin confirm-account-origin)
 
 (defn store-new-seed-phrase
-  [{:keys [db]} [{:keys [seed-phrase random-phrase]}]]
+  [{:keys [db]} [{:keys [seed-phrase]}]]
   {:db (update-in db
                   [:wallet :ui :create-account :new-keypair]
                   assoc
-                  :seed-phrase   seed-phrase
-                  :random-phrase random-phrase)
+                  :seed-phrase
+                  seed-phrase)
    :fx [[:dispatch-later
          [{:ms       20
            :dispatch [:navigate-to :screen/wallet.confirm-backup]}]]]})

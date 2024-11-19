@@ -15,12 +15,12 @@
     [utils.re-frame :as rf]))
 
 (def header-text
-  [{:text     (i18n/label :t/join-decentralised-communities)
-    :sub-text (i18n/label :t/participate-in-the-metaverse)}
+  [{:text     (i18n/label :t/own-your-crypto)
+    :sub-text (i18n/label :t/use-the-multichain-wallet)}
+   {:text     (i18n/label :t/store-your-asets-on-keycard)
+    :sub-text (i18n/label :t/be-safe-with-secure-cold-wallet)}
    {:text     (i18n/label :t/chat-with-friends)
     :sub-text (i18n/label :t/with-full-encryption)}
-   {:text     (i18n/label :t/own-your-crypto)
-    :sub-text (i18n/label :t/use-the-multichain-wallet)}
    {:text     (i18n/label :t/discover-web3)
     :sub-text (i18n/label :t/explore-the-decentralized-web)}])
 
@@ -67,7 +67,7 @@
      (fn []
        (reanimated/set-shared-value @paused? (not= view-id :screen/onboarding.intro))
        (fn []
-         (when (= view-id :screen/onboarding.generating-keys)
+         (when (= view-id :screen/onboarding.preparing-status)
            (carousel.animation/cleanup-animation progress paused?))))
      [view-id])
 

@@ -7,7 +7,7 @@
     [status-im.common.events-helper :as events-helper]
     [status-im.common.floating-button-page.view :as floating-button-page]
     [status-im.common.standard-authentication.core :as standard-auth]
-    [status-im.constants :as constants]
+    [status-im.contexts.wallet.common.utils :as utils]
     [status-im.contexts.wallet.common.utils.external-links :as external-links]
     [status-im.contexts.wallet.swap.set-spending-cap.style :as style]
     [utils.address :as address-utils]
@@ -185,11 +185,14 @@
 
 (defn- transaction-details
   []
-  (let [network                (rf/sub [:wallet/swap-network])
-        max-fees               (rf/sub [:wallet/wallet-swap-proposal-fee-fiat-formatted
-                                        constants/token-for-fees-symbol])
-        loading-swap-proposal? (rf/sub [:wallet/swap-loading-swap-proposal?])
-        estimated-time         (rf/sub [:wallet/swap-proposal-estimated-time])]
+  (let [network                 (rf/sub [:wallet/swap-network])
+        approval-fees           (rf/sub [:wallet/approval-gas-fees])
+        currency-symbol         (rf/sub [:profile/currency-symbol])
+        approval-fees-formatted (utils/fiat-formatted-for-ui
+                                 currency-symbol
+                                 approval-fees)
+        loading-swap-proposal?  (rf/sub [:wallet/swap-loading-swap-proposal?])
+        estimated-time          (rf/sub [:wallet/swap-proposal-estimated-time])]
     [rn/view {:style style/details-container}
      [:<>
       [data-item
@@ -198,7 +201,9 @@
         :network-image (:source network)}]
       [data-item
        {:title    (i18n/label :t/max-fees)
-        :subtitle (if (and estimated-time max-fees) max-fees (i18n/label :t/unknown))
+        :subtitle (if (and estimated-time approval-fees-formatted)
+                    approval-fees-formatted
+                    (i18n/label :t/unknown))
         :loading? loading-swap-proposal?
         :size     :small}]
       [data-item

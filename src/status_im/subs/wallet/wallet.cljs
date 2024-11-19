@@ -154,7 +154,8 @@
 (rf/reg-sub
  :wallet/wallet-send-token-symbol
  :<- [:wallet/wallet-send]
- :-> :token-symbol)
+ (fn [{:keys [token-symbol token]}]
+   (or token-symbol (:symbol token))))
 
 (rf/reg-sub
  :wallet/wallet-send-disabled-from-chain-ids
@@ -767,22 +768,18 @@
  :<- [:profile/currency-symbol]
  (fn [[account route currency currency-symbol] [_ token-symbol-for-fees]]
    (when token-symbol-for-fees
-     (let [tokens                  (:tokens account)
-           token-for-fees          (first (filter #(= (string/lower-case (:symbol %))
-                                                      (string/lower-case token-symbol-for-fees))
-                                                  tokens))
-           fee-in-native-token     (send-utils/calculate-full-route-gas-fee route)
-           fee-in-crypto-formatted (utils/get-standard-crypto-format
-                                    token-for-fees
-                                    fee-in-native-token)
-           fee-in-fiat             (utils/calculate-token-fiat-value
-                                    {:currency currency
-                                     :balance  fee-in-native-token
-                                     :token    token-for-fees})
-           fee-formatted           (utils/get-standard-fiat-format
-                                    fee-in-crypto-formatted
-                                    currency-symbol
-                                    fee-in-fiat)]
+     (let [tokens              (:tokens account)
+           token-for-fees      (first (filter #(= (string/lower-case (:symbol %))
+                                                  (string/lower-case token-symbol-for-fees))
+                                              tokens))
+           fee-in-native-token (send-utils/calculate-full-route-gas-fee route)
+           fee-in-fiat         (utils/calculate-token-fiat-value
+                                {:currency currency
+                                 :balance  fee-in-native-token
+                                 :token    token-for-fees})
+           fee-formatted       (utils/fiat-formatted-for-ui
+                                currency-symbol
+                                fee-in-fiat)]
        fee-formatted))))
 
 (rf/reg-sub
