@@ -225,7 +225,8 @@
                                              distance-from-list-top
                                              chat-list-scroll-y
                                              (on-scroll-fn distance-atom layout-height)))
-        :style                             {:background-color (colors/theme-colors colors/white
+        :style                             {:height           "100%"
+                                            :background-color (colors/theme-colors colors/white
                                                                                    colors/neutral-95
                                                                                    theme)}
         :content-container-style           (style/list-paddings add-padding-bottom?)
