@@ -35,8 +35,9 @@
      #(rf/dispatch [:wallet/fetch-activities-for-current-account]))
     [rn/view {:style {:flex 1}}
      [account-switcher/view
-      {:type     :wallet-networks
-       :on-press #(rf/dispatch [:pop-to-root :shell-stack])}]
+      {:type               :wallet-networks
+       :show-dapps-button? true
+       :on-press           #(rf/dispatch [:pop-to-root :shell-stack])}]
      [quo/account-overview
       {:container-style     style/account-overview
        :current-value       formatted-balance

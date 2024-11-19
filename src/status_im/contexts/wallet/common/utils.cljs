@@ -187,8 +187,7 @@
                                   (money/bignumber 0))
         amount-fixed-decimals (number/to-fixed number display-decimals)]
     (if (and (= amount-fixed-decimals "0")
-             (money/greater-than amount
-                                 (money/bignumber 0)))
+             (money/above-zero? amount))
       (number/small-number-threshold display-decimals)
       (str amount-fixed-decimals))))
 
@@ -286,7 +285,7 @@
     {:token               (:symbol token)
      :token-name          (:name token)
      :state               :default
-     :metrics?            true
+     :metrics?            (money/above-zero? balance)
      :status              (cond
                             (pos? change-pct-24hour) :positive
                             (neg? change-pct-24hour) :negative

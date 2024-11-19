@@ -130,7 +130,7 @@
                         (or (not only-with-balance?)
                             (and only-with-balance?
                                  (money/bignumber? raw-balance)
-                                 (money/greater-than raw-balance (money/bignumber "0")))))))
+                                 (money/above-zero? raw-balance))))))
          (map first))))
 
 (def ^:private network-priority-score
@@ -220,7 +220,7 @@
                (fn [network-amount]
                  (or (and receiver?
                           (or (contains? receiver-networks-set (:chain-id network-amount))
-                              (money/greater-than (:total-amount network-amount) (money/bignumber "0"))))
+                              (money/above-zero? (:total-amount network-amount))))
                      (not receiver?))))
               (vec))
       (and receiver?

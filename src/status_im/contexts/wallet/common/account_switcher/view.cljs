@@ -16,15 +16,17 @@
                                  [select-account/view params])}
     nil))
 
-(defn- on-dapps-press
+(defn- on-switcher-press
   [switcher-type params]
   (rf/dispatch [:show-bottom-sheet (get-bottom-sheet-args switcher-type params)]))
 
 (defn view
-  [{:keys [type on-press accessibility-label icon-name switcher-type margin-top params]
+  [{:keys [type on-press accessibility-label icon-name switcher-type margin-top params
+           show-dapps-button?]
     :or   {icon-name           :i/close
            accessibility-label :top-bar
            switcher-type       :account-options
+           show-dapps-button?  false
            type                :no-title}}]
   (let [{:keys [color emoji watch-only?]} (rf/sub [:wallet/current-viewing-account])
         networks                          (rf/sub [:wallet/selected-network-details])
@@ -40,12 +42,13 @@
       :align-center?       true
       :networks-on-press   #(rf/dispatch [:show-bottom-sheet {:content network-filter/view}])
       :right-side          [(when (and (ff/enabled? ::ff/wallet.wallet-connect)
-                                       (not watch-only?))
+                                       (not watch-only?)
+                                       show-dapps-button?)
                               {:icon-name :i/dapps
                                :on-press  #(rf/dispatch [:navigate-to :screen/wallet.connected-dapps])})
                             (when-not sending-collectible?
                               {:content-type        :account-switcher
                                :customization-color color
-                               :on-press            #(on-dapps-press switcher-type params)
+                               :on-press            #(on-switcher-press switcher-type params)
                                :emoji               emoji
                                :type                (when watch-only? :watch-only)})]}]))
