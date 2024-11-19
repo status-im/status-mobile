@@ -85,8 +85,9 @@
              [:dispatch [:update-theme-and-init-root :screen/profile.profiles]]
              [:dispatch [:update-theme-and-init-root :screen/onboarding.intro]])
            ;; dispatch-later makes sure that the logout button subscribed is always disabled
-           [:dispatch-later {:ms       100
-                             :dispatch [:profile/set-already-logged-out]}]]})))
+           [:dispatch-later
+            {:ms       100
+             :dispatch [:profile/set-already-logged-out]}]]})))
 
 (rf/reg-event-fx
  :profile/update-setting-from-backup
