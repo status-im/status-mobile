@@ -37,9 +37,10 @@
 
 (rf/reg-event-fx
  :profile/logout
- (fn [_]
-   ;; We need to disable notifications before starting the logout process
-   {:fx [[:dispatch [:profile.logout/disable-notifications]]
+ (fn [{db :db}]
+   {:db (assoc db :profile/logging-out? true)
+    ;; We need to disable notifications before starting the logout process
+    :fx [[:dispatch [:profile.logout/disable-notifications]]
          [:dispatch-later
           {:ms       100
            :dispatch [:profile.logout/reset-state]}]]}))

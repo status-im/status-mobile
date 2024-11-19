@@ -61,6 +61,11 @@
      {:fx (map auth-method-fx key-uids)})))
 
 (rf/reg-event-fx
+ :profile/set-already-logged-out
+ (fn [{:keys [db]}]
+   {:db (dissoc db :profile/logging-out?)}))
+
+(rf/reg-event-fx
  :profile/get-profiles-overview-success
  (fn [{:keys [db]}
       [{accounts                        :accounts
@@ -70,8 +75,7 @@
          new-db            (cond-> db
                              :always
                              (assoc :centralized-metrics/user-confirmed? userConfirmed
-                                    :centralized-metrics/enabled?        enabled
-                                    :profile/logging-out?                false)
+                                    :centralized-metrics/enabled?        enabled)
 
                              (seq profiles)
                              (assoc :profile/profiles-overview profiles))]
@@ -79,7 +83,10 @@
       :fx [[:dispatch [:profile/get-profiles-auth-method profiles-key-uids]]
            (if (profile.data-store/accepted-terms? accounts)
              [:dispatch [:update-theme-and-init-root :screen/profile.profiles]]
-             [:dispatch [:update-theme-and-init-root :screen/onboarding.intro]])]})))
+             [:dispatch [:update-theme-and-init-root :screen/onboarding.intro]])
+           ;; dispatch-later makes sure that the logout button subscribed is always disabled
+           [:dispatch-later {:ms       100
+                             :dispatch [:profile/set-already-logged-out]}]]})))
 
 (rf/reg-event-fx
  :profile/update-setting-from-backup
