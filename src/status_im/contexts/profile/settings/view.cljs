@@ -39,8 +39,11 @@
 (defn- footer
   [{:keys [bottom]}]
   (rn/delay-render
-   [rn/view {:style (style/footer-container bottom)}
-    [quo/logout-button {:on-press logout-press}]]))
+   (let [logging-out? (rf/sub [:profile/logging-out?])]
+     [rn/view {:style (style/footer-container bottom)}
+      [quo/logout-button
+       {:on-press  logout-press
+        :disabled? logging-out?}]])))
 
 (defn- get-item-layout
   [_ index]

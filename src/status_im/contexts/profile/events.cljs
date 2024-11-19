@@ -70,7 +70,8 @@
          new-db            (cond-> db
                              :always
                              (assoc :centralized-metrics/user-confirmed? userConfirmed
-                                    :centralized-metrics/enabled?        enabled)
+                                    :centralized-metrics/enabled?        enabled
+                                    :profile/logging-out?                false)
 
                              (seq profiles)
                              (assoc :profile/profiles-overview profiles))]

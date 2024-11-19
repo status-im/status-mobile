@@ -1,9 +1,7 @@
 (ns status-im.contexts.profile.logout.events
-  (:require [native-module.core :as native-module]
+  (:require [status-im.contexts.profile.logout.effects]
             [status-im.db :as db]
             [utils.re-frame :as rf]))
-
-(rf/reg-fx :profile.logout/native-module native-module/logout)
 
 (rf/reg-event-fx
  :profile.logout/disable-notifications
@@ -18,6 +16,7 @@
     network-type :network/network-type
     :as          _db}]
   (assoc db/app-db
+         :profile/logging-out?                true
          :centralized-metrics/user-confirmed? user-confirmed?
          :network/type                        network-type
          :network/status                      status
@@ -31,15 +30,13 @@
  :profile.logout/reset-state
  (fn [{db :db}]
    {:db (restart-app-db db)
-    :fx [[:dispatch [:update-theme-and-init-root :progress]]
-         [:effects.shell/reset-state nil]
-         [:hide-popover nil]
-         [:profile.logout/native-module nil]
+    :fx [[:hide-popover nil]
+         [:effects.profile/logout nil]
          [:profile.settings/webview-debug-changed false]
          [:profile/get-profiles-overview #(rf/dispatch [:profile/get-profiles-overview-success %])]]}))
 
 (rf/reg-event-fx
- :profile.logout/logout
+ :profile/logout
  (fn [_]
    ;; We need to disable notifications before starting the logout process
    {:fx [[:dispatch [:profile.logout/disable-notifications]]
