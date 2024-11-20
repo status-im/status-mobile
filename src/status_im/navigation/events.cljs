@@ -3,6 +3,7 @@
     [clojure.string :as string]
     [re-frame.core :as re-frame]
     [react-native.core :as react]
+    [react-native.platform :as platform]
     [utils.re-frame :as rf]
     [utils.url :as url]))
 
@@ -50,7 +51,8 @@
   {:events [:navigate-back]}
   [{:keys [db]}]
   {:fx [[:navigate-back nil]
-        (when (= (:view-id db) :chat)
+        ;; Required for navigating back using the Android hardware back button
+        (when (and platform/android? (= (:view-id db) :chat))
           [:dispatch [:chat/close]])]})
 
 (rf/defn navigate-back-to

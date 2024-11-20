@@ -74,7 +74,7 @@
   (cond
     (and public-key (own-public-key? db public-key))
     (rf/merge cofx
-              {:pop-to-root-fx :shell-stack}
+              (navigation/pop-to-root :shell-stack)
               (navigation/navigate-to :settings nil))
 
     public-key

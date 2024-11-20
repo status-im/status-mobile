@@ -62,7 +62,7 @@
     (cond
       (and public-key own)
       (rf/merge cofx
-                {:pop-to-root-fx :shell-stack}
+                (navigation/pop-to-root :shell-stack)
                 (navigation/navigate-to :my-profile nil))
 
       (and public-key (not own))

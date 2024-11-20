@@ -103,7 +103,13 @@
         :background          :blur
         :size                32
         :accessibility-label :back-button
-        :on-press            #(rf/dispatch [:navigate-back])}
+        :on-press            (fn []
+                               (rf/dispatch [:navigate-back])
+                               ;; In IOS view-id might be incorrect (if screen closed using swipe),
+                               ;; so we can't rely on `:navigate-back` to close the chat.
+                               ;; https://github.com/status-im/status-mobile/pull/21643#issuecomment-248896204451
+                               (when platform/ios?
+                                 (rf/dispatch [:chat/close])))}
        (if (= chat-type constants/community-chat-type) :i/arrow-left :i/close)]
       [header-content-container chat]
       [quo/button
