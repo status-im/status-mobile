@@ -172,14 +172,12 @@
     [status-im.contexts.preview.quo.share.share-qr-code :as share-qr-code]
     [status-im.contexts.preview.quo.slideshow.slider-bar :as slider-bar]
     [status-im.contexts.preview.quo.style :as style]
-    [status-im.contexts.preview.quo.switcher.group-messaging-card :as
-     group-messaging-card]
-    [status-im.contexts.preview.quo.switcher.switcher-cards :as switcher-cards]
     [status-im.contexts.preview.quo.tabs.account-selector :as account-selector]
     [status-im.contexts.preview.quo.tabs.segmented-tab :as segmented]
     [status-im.contexts.preview.quo.tabs.tabs :as tabs]
     [status-im.contexts.preview.quo.tags.collectible-tag :as collectible-tag]
     [status-im.contexts.preview.quo.tags.context-tags :as context-tags]
+    [status-im.contexts.preview.quo.tags.network-status-tag :as network-status-tag]
     [status-im.contexts.preview.quo.tags.network-tags :as network-tags]
     [status-im.contexts.preview.quo.tags.number-tag :as number-tag]
     [status-im.contexts.preview.quo.tags.permission-tag :as permission-tag]
@@ -506,10 +504,6 @@
                         :component share-qr-code/view}]
    :slideshow         [{:name      :slider-bar
                         :component slider-bar/view}]
-   :switchers         [{:name      :group-messaging-card
-                        :component group-messaging-card/view}
-                       {:name      :switcher-cards
-                        :component switcher-cards/view}]
    :tabs              [{:name      :segmented
                         :component segmented/view}
                        {:name      :tabs
@@ -520,6 +514,8 @@
                         :component collectible-tag/view}
                        {:name      :context-tags
                         :component context-tags/view}
+                       {:name      :network-status-tag
+                        :component network-status-tag/view}
                        {:name      :network-tags
                         :component network-tags/view}
                        {:name      :number-tag

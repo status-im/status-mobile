@@ -431,7 +431,6 @@
     "../src/js/worklets/core.js"                       worklet-factory
     "../src/js/worklets/shell/bottom_tabs.js"          #js {}
     "../src/js/worklets/shell/home_stack.js"           #js {}
-    "../src/js/worklets/shell/floating_screen.js"      #js {}
     "../src/js/worklets/bottom_sheet.js"               #js {}
     "../src/js/worklets/record_audio.js"               #js {}
     "../src/js/worklets/scroll_view.js"                #js {}

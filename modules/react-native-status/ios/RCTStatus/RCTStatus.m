@@ -2,12 +2,21 @@
 #import "React/RCTBridge.h"
 #import "React/RCTEventDispatcher.h"
 #import "Statusgo.h"
-
+#import "StatusBackendClient.h"
 #import "Utils.h"
 
 static RCTBridge *bridge;
 
 @implementation Status
+
++ (Status *)sharedInstance {
+    static Status *sharedInstance = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        sharedInstance = [[self alloc] init];
+    });
+    return sharedInstance;
+}
 
 - (instancetype)init {
     self = [super init];
@@ -73,74 +82,17 @@ RCT_EXPORT_METHOD(deleteImportedKey:(NSString *)keyUID
                   password:(NSString *)password
                   callback:(RCTResponseSenderBlock)callback) {
 #if DEBUG
-    NSLog(@"DeleteImportedKey() method called");
+    NSLog(@"DeleteImportedKeyV2() method called");
 #endif
     NSURL *multiaccountKeystoreDir = [Utils getKeyStoreDirForKeyUID:keyUID];
-    NSString *result = StatusgoDeleteImportedKey(address, password, multiaccountKeystoreDir.path);
-    callback(@[result]);
-}
-
-RCT_EXPORT_METHOD(multiAccountGenerateAndDeriveAddresses:(NSString *)json
-                  callback:(RCTResponseSenderBlock)callback) {
-#if DEBUG
-    NSLog(@"MultiAccountGenerateAndDeriveAddresses() method called");
-#endif
-    NSString *result = StatusgoMultiAccountGenerateAndDeriveAddresses(json);
-    callback(@[result]);
-}
-
-RCT_EXPORT_METHOD(multiAccountStoreAccount:(NSString *)json
-                  callback:(RCTResponseSenderBlock)callback) {
-#if DEBUG
-    NSLog(@"MultiAccountStoreAccount() method called");
-#endif
-    NSString *result = StatusgoMultiAccountStoreAccount(json);
-    callback(@[result]);
-}
-
-RCT_EXPORT_METHOD(multiAccountLoadAccount:(NSString *)json
-                  callback:(RCTResponseSenderBlock)callback) {
-#if DEBUG
-    NSLog(@"MultiAccountLoadAccount() method called");
-#endif
-    NSString *result = StatusgoMultiAccountLoadAccount(json);
-    callback(@[result]);
-}
-
-RCT_EXPORT_METHOD(multiAccountStoreDerived:(NSString *)json
-                  callback:(RCTResponseSenderBlock)callback) {
-#if DEBUG
-    NSLog(@"MultiAccountStoreDerived() method called");
-#endif
-    NSString *result = StatusgoMultiAccountStoreDerivedAccounts(json);
-    callback(@[result]);
-}
-
-RCT_EXPORT_METHOD(multiAccountImportPrivateKey:(NSString *)json
-                  callback:(RCTResponseSenderBlock)callback) {
-#if DEBUG
-    NSLog(@"MultiAccountImportPrivateKey() method called");
-#endif
-    NSString *result = StatusgoMultiAccountImportPrivateKey(json);
-    callback(@[result]);
-}
-
-RCT_EXPORT_METHOD(multiAccountImportMnemonic:(NSString *)json
-                  callback:(RCTResponseSenderBlock)callback) {
-#if DEBUG
-    NSLog(@"MultiAccountImportMnemonic() method called");
-#endif
-    NSString *result = StatusgoMultiAccountImportMnemonic(json);
-    callback(@[result]);
-}
-
-RCT_EXPORT_METHOD(multiAccountDeriveAddresses:(NSString *)json
-                  callback:(RCTResponseSenderBlock)callback) {
-#if DEBUG
-    NSLog(@"MultiAccountDeriveAddresses() method called");
-#endif
-    NSString *result = StatusgoMultiAccountDeriveAddresses(json);
-    callback(@[result]);
+    NSString *jsonParams = [NSString stringWithFormat:@"{\"address\":\"%@\",\"password\":\"%@\",\"keyStoreDir\":\"%@\"}", 
+                            address, password, multiaccountKeystoreDir.path];
+    [StatusBackendClient executeStatusGoRequestWithCallback:@"DeleteImportedKeyV2"
+                                                     body:jsonParams
+                                         statusgoFunction:^NSString *{
+        return StatusgoDeleteImportedKeyV2(jsonParams);
+    }
+                                               callback:callback];
 }
 
 #pragma mark - GetNodeConfig
@@ -149,12 +101,20 @@ RCT_EXPORT_METHOD(getNodeConfig:(RCTResponseSenderBlock)callback) {
 #if DEBUG
     NSLog(@"GetNodeConfig() method called");
 #endif
-    NSString *result = StatusgoGetNodeConfig();
-    callback(@[result]);
+    [StatusBackendClient executeStatusGoRequestWithCallback:@"GetNodeConfig"
+                                                     body:@""
+                                         statusgoFunction:^NSString *{
+        return StatusgoGetNodeConfig();
+    }
+                                               callback:callback];
 }
 
 RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(fleets) {
-  return StatusgoFleets();
+    return [StatusBackendClient executeStatusGoRequestWithResult:@"Fleets"
+                                                         body:@""
+                                             statusgoFunction:^NSString *{
+        return StatusgoFleets();
+    }];
 }
 
 RCT_EXPORT_METHOD(closeApplication) {
@@ -166,14 +126,55 @@ RCT_EXPORT_METHOD(connectionChange:(NSString *)type
 #if DEBUG
     NSLog(@"ConnectionChange() method called");
 #endif
-    StatusgoConnectionChange(type, isExpensive ? 1 : 0);
+    NSDictionary *params = @{
+        @"type": type,
+        @"expensive": @(isExpensive)
+    };
+    NSError *error;
+    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:params 
+                                                       options:0
+                                                         error:&error];
+    if (error) {
+        NSLog(@"Error creating JSON: %@", error);
+        return;
+    }
+    
+    if (jsonData) {
+        NSString *jsonString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+        [StatusBackendClient executeStatusGoRequest:@"ConnectionChangeV2"
+                                             body:jsonString
+                                 statusgoFunction:^NSString *{
+            return StatusgoConnectionChangeV2(jsonString);
+        }];
+    } else {
+        NSLog(@"Failed to create JSON data");
+    }
 }
 
-RCT_EXPORT_METHOD(appStateChange:(NSString *)type) {
+RCT_EXPORT_METHOD(appStateChange:(NSString *)state) {
 #if DEBUG
     NSLog(@"AppStateChange() method called");
 #endif
-    StatusgoAppStateChange(type);
+    NSDictionary *params = @{@"state": state};
+    NSError *error;
+    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:params 
+                                                       options:0
+                                                         error:&error];
+    if (error) {
+        NSLog(@"Error creating JSON: %@", error);
+        return;
+    }
+    
+    if (jsonData) {
+        NSString *jsonString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+        [StatusBackendClient executeStatusGoRequest:@"AppStateChangeV2"
+                                                         body:jsonString
+                                             statusgoFunction:^NSString *{
+            return StatusgoAppStateChangeV2(jsonString);
+        }];
+    } else {
+        NSLog(@"Failed to create JSON data");
+    }
 }
 
 RCT_EXPORT_METHOD(addCentralizedMetric:(NSString *)request
@@ -181,8 +182,12 @@ RCT_EXPORT_METHOD(addCentralizedMetric:(NSString *)request
 #if DEBUG
     NSLog(@"addCentralizedMetric() method called");
 #endif
-    NSString *result = StatusgoAddCentralizedMetric(request);
-    callback(@[result]);
+    [StatusBackendClient executeStatusGoRequestWithCallback:@"AddCentralizedMetric"
+                                                     body:request
+                                         statusgoFunction:^NSString *{
+        return StatusgoAddCentralizedMetric(request);
+    }
+                                               callback:callback];
 }
 
 RCT_EXPORT_METHOD(toggleCentralizedMetrics:(NSString *)request
@@ -190,15 +195,23 @@ RCT_EXPORT_METHOD(toggleCentralizedMetrics:(NSString *)request
 #if DEBUG
     NSLog(@"toggleCentralizedMetrics() method called");
 #endif
-    NSString *result = StatusgoToggleCentralizedMetrics(request);
-    callback(@[result]);
+    [StatusBackendClient executeStatusGoRequestWithCallback:@"ToggleCentralizedMetrics"
+                                                     body:request
+                                         statusgoFunction:^NSString *{
+        return StatusgoToggleCentralizedMetrics(request);
+    }
+                                               callback:callback];
 }
 
 RCT_EXPORT_METHOD(startLocalNotifications) {
 #if DEBUG
     NSLog(@"StartLocalNotifications() method called");
 #endif
-StatusgoStartLocalNotifications();
+    [StatusBackendClient executeStatusGoRequest:@"StartLocalNotifications"
+                                         body:@""
+                             statusgoFunction:^NSString *{
+        return StatusgoStartLocalNotifications();
+    }];
 }
 
 #pragma mark - deviceinfo

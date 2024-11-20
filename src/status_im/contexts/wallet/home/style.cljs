@@ -2,7 +2,7 @@
   (:require
     [quo.foundations.colors :as colors]
     [react-native.safe-area :as safe-area]
-    [status-im.contexts.shell.jump-to.constants :as constants]))
+    [status-im.contexts.shell.constants :as constants]))
 
 (def tabs
   {:padding-horizontal 20

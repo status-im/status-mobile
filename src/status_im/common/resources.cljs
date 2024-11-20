@@ -54,8 +54,6 @@
    :keycard-chip
    {:light (js/require "../resources/images/ui2/keycard-chip-light.png")
     :dark  (js/require "../resources/images/ui2/keycard-chip-dark.png")}
-   :jump-to
-   {:dark (js/require "../resources/images/ui2/jump-to-dark.png")}
    :no-group-chats
    {:light (js/require "../resources/images/ui2/no-group-chats-light.png")
     :dark  (js/require "../resources/images/ui2/no-group-chats-dark.png")}

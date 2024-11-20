@@ -149,12 +149,12 @@
     quo.components.share.qr-code.view
     quo.components.share.share-qr-code.view
     quo.components.slideshow.slider-bar.view
-    quo.components.switchers.group-messaging-card.view
     quo.components.tabs.account-selector
     quo.components.tabs.segmented-tab
     quo.components.tabs.tabs.view
     quo.components.tags.collectible-tag.view
     quo.components.tags.context-tag.view
+    quo.components.tags.network-status-tag.view
     quo.components.tags.network-tags.view
     quo.components.tags.number-tag.view
     quo.components.tags.permission-tag
@@ -425,9 +425,6 @@
 ;;;; Slideshow
 (def slider-bar quo.components.slideshow.slider-bar.view/view)
 
-;;;; SWITCHER
-(def group-messaging-card quo.components.switchers.group-messaging-card.view/view)
-
 ;;;; Tabs
 (def tabs quo.components.tabs.tabs.view/view)
 (def segmented-control quo.components.tabs.segmented-tab/segmented-control)
@@ -438,6 +435,7 @@
 (def context-tag quo.components.tags.context-tag.view/view)
 (def network-tags quo.components.tags.network-tags.view/view)
 (def number-tag quo.components.tags.number-tag.view/view)
+(def network-status-tag quo.components.tags.network-status-tag.view/view)
 (def permission-tag quo.components.tags.permission-tag/tag)
 (def status-tag quo.components.tags.status-tags/status-tag)
 (def summary-tag quo.components.tags.summary-tag.view/view)

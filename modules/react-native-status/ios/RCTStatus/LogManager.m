@@ -4,6 +4,7 @@
 #import "Statusgo.h"
 #import "Utils.h"
 #import "SSZipArchive.h"
+#import "StatusBackendClient.h"
 
 @implementation LogManager
 
@@ -19,9 +20,7 @@ RCT_EXPORT_METHOD(sendLogs:(NSString *)dbJson
 #endif
     NSFileManager *fileManager = [NSFileManager defaultManager];
     NSError *error = nil;
-    NSURL *rootUrl =[[fileManager
-                      URLsForDirectory:NSLibraryDirectory inDomains:NSUserDomainMask]
-                     lastObject];
+    NSURL *rootUrl =[Utils getRootUrl];
 
     NSURL *zipFile = [rootUrl URLByAppendingPathComponent:@"logs.zip"];
     [fileManager removeItemAtPath:zipFile.path error:nil];
@@ -64,37 +63,36 @@ RCT_EXPORT_METHOD(initLogging:(BOOL)enabled
     NSString *logFilePath = [logDirectory stringByAppendingPathComponent:@"geth.log"];
     NSString *logRequestFilePath = [logDirectory stringByAppendingPathComponent:@"requests.log"];
 
-    NSMutableDictionary *jsonConfig = [NSMutableDictionary dictionary];
-    jsonConfig[@"Enabled"] = @(enabled);
-    jsonConfig[@"MobileSystem"] = @(mobileSystem);
-    jsonConfig[@"Level"] = logLevel;
-    jsonConfig[@"File"] = logFilePath;
-    jsonConfig[@"LogRequestGo"] = @(logRequestGo);
-    jsonConfig[@"LogRequestFile"] = logRequestFilePath;
-    NSError *error = nil;
-    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:jsonConfig options:0 error:&error];
-
+    NSDictionary *config = @{
+        @"Enabled": @(enabled),
+        @"MobileSystem": @(mobileSystem),
+        @"Level": logLevel,
+        @"File": logFilePath,
+        @"LogRequestGo": @(logRequestGo),
+        @"LogRequestFile": logRequestFilePath
+    };
+    
+    NSError *error;
+    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:config options:0 error:&error];
+    
     if (error) {
-        // Handle JSON serialization error
-        callback(@[error.localizedDescription]);
+        NSLog(@"Error creating JSON: %@", [error localizedDescription]);
         return;
     }
+    
+    NSString *configJson = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
 
-    NSString *config = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
-
-    // Call your native logging initialization method here
-    NSString *initResult = StatusgoInitLogging(config);
-
-    callback(@[initResult]);
+    [StatusBackendClient executeStatusGoRequestWithCallback:@"InitLogging"
+                                                     body:configJson
+                                         statusgoFunction:^NSString *{
+        return StatusgoInitLogging(configJson);
+    }
+                                                 callback:callback];
 }
 
 RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(logFileDirectory) {
-    NSFileManager *fileManager = [NSFileManager defaultManager];
-    NSURL *rootUrl =[[fileManager
-                      URLsForDirectory:NSLibraryDirectory inDomains:NSUserDomainMask]
-                     lastObject];
+    NSURL *rootUrl = [Utils getRootUrl];
     return rootUrl.path;
 }
-
 
 @end

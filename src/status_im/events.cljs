@@ -20,7 +20,6 @@
     status-im.contexts.chat.events
     [status-im.contexts.chat.home.add-new-contact.events]
     status-im.contexts.chat.messenger.composer.events
-    status-im.contexts.chat.messenger.messages.link-preview.events
     status-im.contexts.chat.messenger.photo-selector.events
     status-im.contexts.communities.events
     status-im.contexts.communities.overview.events
@@ -36,6 +35,8 @@
     status-im.contexts.profile.settings.events
     status-im.contexts.settings.language-and-currency.events
     status-im.contexts.settings.wallet.saved-addresses.events
+    status-im.contexts.shell.effects
+    status-im.contexts.shell.events
     status-im.contexts.shell.qr-reader.events
     status-im.contexts.shell.share.events
     status-im.contexts.syncing.events

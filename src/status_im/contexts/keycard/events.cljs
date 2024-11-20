@@ -41,8 +41,7 @@
  (fn [{:keys [db]} [error]]
    (let [tag-was-lost?     (keycard.utils/tag-lost? (:error error))
          pin-retries-count (keycard.utils/pin-retries (:error error))]
-     (if (or tag-was-lost? (nil? pin-retries-count))
-       {:db (assoc-in db [:keycard :pin :status] nil)}
+     (when-not (or tag-was-lost? (nil? pin-retries-count))
        {:db (-> db
                 (assoc-in [:keycard :application-info :pin-retry-counter] pin-retries-count)
                 (assoc-in [:keycard :pin :status] :error))
@@ -56,9 +55,22 @@
  (fn [_ [data]]
    {:effects.keycard/get-keys data}))
 
+(rf/reg-event-fx :keycard/get-more-keys
+ (fn [_ [data]]
+   {:effects.keycard/get-more-keys data}))
+
+(rf/reg-event-fx :keycard/export-key
+ (fn [_ [data]]
+   {:effects.keycard/export-key data}))
+
 (rf/reg-event-fx :keycard/cancel-connection
  (fn [{:keys [db]}]
-   {:db (update db :keycard dissoc :on-card-connected-event-vector :on-nfc-cancelled-event-vector)}))
+   {:db (update db
+                :keycard
+                dissoc
+                :card-connected?
+                :on-card-connected-event-vector
+                :on-nfc-cancelled-event-vector)}))
 
 (rf/reg-event-fx :keycard/disconnect
  (fn [_ _]
@@ -95,11 +107,12 @@
                        (on-error error)
                        (rf/dispatch [:keycard/on-application-info-error error]))
                      (when on-success (on-success app-info))))
-     :on-error   (fn []
-                   (if on-error
-                     (on-error :keycard/error.not-keycard)
-                     (rf/dispatch [:keycard/on-application-info-error
-                                   :keycard/error.not-keycard])))}}))
+     :on-failure (fn [error]
+                   (when-not (keycard.utils/tag-lost? (:error error))
+                     (if on-error
+                       (on-error :keycard/error.not-keycard)
+                       (rf/dispatch [:keycard/on-application-info-error
+                                     :keycard/error.not-keycard]))))}}))
 
 (rf/reg-event-fx :keycard/connect
  (fn [{:keys [db]} [{:keys [key-uid on-success on-error on-connect-event-vector]}]]

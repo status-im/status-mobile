@@ -8,7 +8,6 @@
             [status-im.common.home.actions.view :as home.actions]
             [status-im.constants :as constants]
             [status-im.contexts.communities.actions.channel-view-details.style :as style]
-            [status-im.feature-flags :as ff]
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]))
 
@@ -87,12 +86,6 @@
     (rn/use-mount (fn []
                     (rf/dispatch [:pin-message/load-pin-messages chat-id])))
     [:<>
-     (when (ff/enabled? ::ff/shell.jump-to)
-       [quo/floating-shell-button
-        {:jump-to {:on-press            #(rf/dispatch [:shell/navigate-to-jump-to])
-                   :customization-color color
-                   :label               (i18n/label :t/jump-to)}}
-        style/floating-shell-button])
      [quo/gradient-cover {:customization-color color :opacity 0.4}]
      [quo/page-nav
       {:background :blur

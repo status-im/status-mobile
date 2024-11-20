@@ -29,6 +29,8 @@
 #import <Security/Security.h>
 #import <react/config/ReactNativeConfig.h>
 
+#import "StatusBackendClient.h"
+
 //TODO: properly import the framework
 extern "C" NSString* StatusgoImageServerTLSCert();
 
@@ -188,7 +190,12 @@ didReceiveNotificationResponse:(UNNotificationResponse *)response
   NSURLSessionAuthChallengeDisposition disposition = NSURLSessionAuthChallengeCancelAuthenticationChallenge;
   __block NSURLCredential *credential = nil;
 
-  NSString *pemCert = StatusgoImageServerTLSCert();
+  NSString *pemCert = [StatusBackendClient executeStatusGoRequestWithResult:@"ImageServerTLSCert" 
+                                                             body:@""
+                                                 statusgoFunction:^NSString *{
+        return StatusgoImageServerTLSCert();
+    }];
+
   pemCert = [pemCert stringByReplacingOccurrencesOfString:@"-----BEGIN CERTIFICATE-----\n" withString:@""];
   pemCert = [pemCert stringByReplacingOccurrencesOfString:@"\n-----END CERTIFICATE-----" withString:@""];
   NSData *derCert = [[NSData alloc] initWithBase64EncodedString:pemCert options:NSDataBase64DecodingIgnoreUnknownCharacters];

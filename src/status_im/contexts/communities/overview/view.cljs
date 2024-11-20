@@ -17,7 +17,6 @@
     [status-im.contexts.communities.actions.community-options.view :as options]
     [status-im.contexts.communities.overview.style :as style]
     [status-im.contexts.communities.utils :as communities.utils]
-    [status-im.feature-flags :as ff]
     [utils.debounce :as debounce]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
@@ -373,13 +372,6 @@
 
 (defn view
   [id]
-  (let [id                  (or id (rf/sub [:get-screen-params :community-overview]))
-        customization-color (rf/sub [:profile/customization-color])]
+  (let [id (or id (rf/sub [:get-screen-params :community-overview]))]
     [rn/view {:style style/community-overview-container}
-     [community-card-page-view id]
-     (when (ff/enabled? ::ff/shell.jump-to)
-       [quo/floating-shell-button
-        {:jump-to {:on-press            #(rf/dispatch [:shell/navigate-to-jump-to])
-                   :customization-color customization-color
-                   :label               (i18n/label :t/jump-to)}}
-        style/floating-shell-button])]))
+     [community-card-page-view id]]))

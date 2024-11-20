@@ -6,7 +6,7 @@
     [react-native.core :as rn]
     [status-im.common.resources :as resources]
     [status-im.constants :as constants]
-    [status-im.contexts.shell.jump-to.constants :as jump-to.constants]
+    [status-im.contexts.shell.constants :as shell.constants]
     [status-im.contexts.wallet.common.empty-tab.view :as empty-tab]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
@@ -152,6 +152,6 @@
          :sticky-section-headers-enabled false
          :style                          {:flex               1
                                           :padding-horizontal 8}
-         :content-container-style        {:padding-bottom jump-to.constants/floating-shell-button-height}
+         :content-container-style        {:padding-bottom shell.constants/floating-shell-button-height}
          :render-fn                      activity-item
          :render-section-header-fn       section-header}])]))

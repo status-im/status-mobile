@@ -40,6 +40,14 @@
  (fn [args]
    (keycard/get-keys (keycard.utils/wrap-handlers args))))
 
+(rf/reg-fx :effects.keycard/get-more-keys
+ (fn [args]
+   (keycard/import-keys (keycard.utils/wrap-handlers args))))
+
+(rf/reg-fx :effects.keycard/export-key
+ (fn [args]
+   (keycard/export-key (keycard.utils/wrap-handlers args))))
+
 (rf/reg-fx :effects.keycard/sign
  (fn [args]
    (keycard/sign (keycard.utils/wrap-handlers args))))

@@ -15,6 +15,7 @@
   (or
    (= error "Tag was lost.")
    (= error "NFCError:100")
+   (= error "Malformed card response")
    (re-matches #".*NFCError:100.*" error)))
 
 (defn validate-application-info
@@ -28,12 +29,6 @@
     (not has-master-key?)
     :keycard/error.keycard-blank
 
-    (not= profile-key-uid key-uid)
-    :keycard/error.keycard-wrong-profile
-
-    (not paired?)
-    :keycard/error.keycard-unpaired
-
     (and (zero? pin-retry-counter)
          (or (nil? puk-retry-counter)
              (pos? puk-retry-counter)))
@@ -41,6 +36,12 @@
 
     (zero? puk-retry-counter)
     :keycard/error.keycard-locked
+
+    (not paired?)
+    :keycard/error.keycard-unpaired
+
+    (not= profile-key-uid key-uid)
+    :keycard/error.keycard-wrong-profile
 
     :else
     nil))

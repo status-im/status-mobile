@@ -6,17 +6,10 @@
   {:flex            1
    :justify-content :flex-end})
 
-(def text-container
-  {:flex           1
-   :flex-direction :row
-   :flex-wrap      :wrap
-   :align-self     :flex-start})
-
 (def terms-privacy-container
-  {:flex-direction     :row
-   :padding-horizontal 20
+  {:padding-horizontal 20
    :padding-vertical   8
-   :gap                8})
+   :align-items        :center})
 
 (def plain-text
   {:color colors/white-opa-70})

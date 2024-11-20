@@ -20,7 +20,7 @@
                            :balance  total-balance
                            :token    token})
         crypto-formatted (utils/get-standard-crypto-format token total-balance)
-        fiat-formatted   (utils/get-standard-fiat-format crypto-formatted currency-symbol fiat-value)]
+        fiat-formatted   (utils/fiat-formatted-for-ui currency-symbol fiat-value)]
     [rn/view {:style {:padding-horizontal 8}}
      [quo/token-network
       {:token       token-symbol

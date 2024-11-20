@@ -51,8 +51,7 @@
         amount-out-minus-slippage (money/sub (money/bignumber amount-out-num) slippage-num)
         display-decimals          (min receive-token-decimals
                                        constants/min-token-decimals-to-display)
-        receive-amount            (if (money/greater-than amount-out-minus-slippage
-                                                          (money/bignumber 0))
+        receive-amount            (if (money/above-zero? amount-out-minus-slippage)
                                     (str (utils/sanitized-token-amount-to-display
                                           amount-out-minus-slippage
                                           display-decimals))

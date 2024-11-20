@@ -9,7 +9,7 @@
 
 (defn- get-button-color
   [{:keys [type pressed? customization-color theme]}]
-  (if (#{:jump-to :mention} type)
+  (if (= type :mention)
     (if pressed?
       (colors/theme-colors
        (colors/custom-color customization-color 60)
@@ -25,7 +25,7 @@
 
 (defn- get-icon-and-text-color
   [type theme]
-  (if (#{:jump-to :mention} type)
+  (if (= type :mention)
     colors/white
     (colors/theme-colors colors/white colors/neutral-100 theme)))
 
@@ -33,7 +33,6 @@
   [type theme]
   [icon/icon
    (case type
-     :jump-to           :i/jump-to
      :mention           :i/mention
      :notification-down :i/arrow-down
      :notification-up   :i/arrow-up
@@ -47,10 +46,10 @@
 (defn view
   "[dynamic-button opts]
    opts
-   {:type                :jump-to/:mention/:notification-down/:notification-up/:search/:search-with-label/:scroll-to-bottom
+   {:type                :mention/:notification-down/:notification-up/:search/:search-with-label/:scroll-to-bottom
     :on-press            fn
     :count               mentions or notifications count
-    :customization-color customize jump-to and mention button color}"
+    :customization-color customize and mention button color}"
   [{:keys [type label on-press customization-color style] :as args}]
   (let [theme                  (quo.theme/use-theme)
         [pressed? set-pressed] (rn/use-state false)
@@ -78,14 +77,13 @@
                style)}
       (when (#{:mention :search :search-with-label :scroll-to-bottom} type)
         [icon-view type theme])
-      (when (#{:jump-to :mention :notification-down :notification-up :search-with-label} type)
+      (when (#{:mention :notification-down :notification-up :search-with-label} type)
         [text/text
          {:weight :medium
           :size   :paragraph-2
           :style  (assoc (style/text type) :color (get-icon-and-text-color type theme))}
          (case type
-           :jump-to                                       label
            :search-with-label                             label
            (:mention :notification-down :notification-up) (str (:count args)))])
-      (when (#{:jump-to :notification-down :notification-up} type)
+      (when (#{:notification-down :notification-up} type)
         [icon-view type theme])]]))

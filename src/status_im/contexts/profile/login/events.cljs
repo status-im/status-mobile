@@ -6,7 +6,6 @@
     [status-im.config :as config]
     status-im.contexts.profile.login.effects
     [status-im.contexts.profile.rpc :as profile.rpc]
-    [status-im.feature-flags :as ff]
     [taoensso.timbre :as log]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]
@@ -53,9 +52,10 @@
             pairing-completed?
             (dissoc :syncing))
       :fx (into [[:json-rpc/call
-                  [{:method     "wakuext_startMessenger"
-                    :on-success [:profile.login/messenger-started]
-                    :on-error   #(log/error "failed to start messenger" %)}]]
+                  [{:method      "wakuext_startMessenger"
+                    :js-response true
+                    :on-success  [:profile.login/messenger-started]
+                    :on-error    #(log/error "failed to start messenger" %)}]]
                  [:dispatch [:community/fetch]]
 
                  ;; Wallet initialization can be delayed a little bit because we
@@ -84,7 +84,10 @@
 
                   (get db :onboarding/new-account?)
                   [[:dispatch [:onboarding/finalize-setup]]
-                   [:dispatch [:onboarding/account-creation-complete {:login-signal-received? true}]]]
+                   [:dispatch
+                    [:navigate-to-within-stack
+                     [:screen/onboarding.enable-notifications
+                      :screen/onboarding.preparing-status]]]]
 
                   :else
                   [[:dispatch [:update-theme-and-init-root :shell-stack]]
@@ -115,8 +118,6 @@
            [:logging/initialize-web3-client-version]
            [:group-chats/get-group-chat-invitations]
            [:profile.settings/blank-preview-flag-changed preview-privacy?]
-           (when (ff/enabled? ::ff/shell.jump-to)
-             [:switcher-cards/fetch])
            [:visibility-status-updates/fetch]
            [:dispatch [:universal-links/generate-profile-url]]
            [:push-notifications/load-preferences]

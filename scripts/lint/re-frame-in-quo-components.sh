@@ -9,7 +9,8 @@ if test -n "$INVALID_CHANGES"; then
     exit 1
 fi
 
-INVALID_CHANGES2=$(grep -E -r '(status-im\.)' --include '*.cljs' --include '*.clj' './src/utils')
+# Add exception for status-im.config in the utils package check
+INVALID_CHANGES2=$(grep -E -r '(status-im\.)' --include '*.cljs' --include '*.clj' './src/utils' | grep -v 'status-im.config')
 
 if test -n "$INVALID_CHANGES2"; then
     echo "WARNING: status-im are not allowed in utils package"

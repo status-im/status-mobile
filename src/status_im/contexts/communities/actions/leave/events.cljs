@@ -37,7 +37,6 @@
    (let [community-chat-ids (map #(str community-id %)
                                  (keys (get-in db [:communities community-id :chats])))]
      {:effects/push-notifications-clear-message-notifications community-chat-ids
-      :dispatch [:shell/close-switcher-card community-id]
       :json-rpc/call
       [{:method      "wakuext_leaveCommunity"
         :params      [community-id]

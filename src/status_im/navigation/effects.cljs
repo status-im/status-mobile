@@ -5,8 +5,7 @@
     [react-native.navigation :as navigation]
     [react-native.platform :as platform]
     [react-native.share :as share]
-    [status-im.contexts.shell.jump-to.constants :as shell.constants]
-    [status-im.contexts.shell.jump-to.utils :as jump-to.utils]
+    [status-im.contexts.shell.constants :as shell.constants]
     [status-im.navigation.options :as options]
     [status-im.navigation.roots :as roots]
     [status-im.navigation.state :as state]
@@ -19,9 +18,7 @@
   (let [theme            (or (get-in views/screens [view-id :options :theme])
                              theme)
         status-bar-theme (if (or (= theme :dark)
-                                 @state/alert-banner-shown?
-                                 (and (= view-id :shell-stack)
-                                      (not (jump-to.utils/home-stack-open?))))
+                                 @state/alert-banner-shown?)
                            :light
                            :dark)
         home-stack?      (some #(= view-id %) shell.constants/stacks-ids)
@@ -31,11 +28,7 @@
                                  (= theme :dark))
                            colors/neutral-100
                            colors/white)
-        comp-id          (if (or home-stack?
-                                 (jump-to.utils/shell-navigation? view-id)
-                                 (= view-id :shell))
-                           :shell-stack
-                           view-id)]
+        comp-id          (if (some #(= view-id %) shell.constants/stacks-ids) :shell-stack view-id)]
     [status-bar-theme nav-bar-color comp-id]))
 
 (defn reload-status-nav-color-fx

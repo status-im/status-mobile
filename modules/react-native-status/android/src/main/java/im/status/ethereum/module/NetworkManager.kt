@@ -16,7 +16,12 @@ class NetworkManager(private val reactContext: ReactApplicationContext) : ReactC
 
     @ReactMethod
     fun startSearchForLocalPairingPeers(callback: Callback) {
-        utils.executeRunnableStatusGoMethod({ Statusgo.startSearchForLocalPairingPeers() }, callback)
+        StatusBackendClient.executeStatusGoRequestWithCallback(
+            endpoint = "StartSearchForLocalPairingPeers",
+            requestBody = "",
+            statusgoFunction = { Statusgo.startSearchForLocalPairingPeers() },
+            callback = callback
+        )
     }
 
     @ReactMethod
@@ -26,48 +31,85 @@ class NetworkManager(private val reactContext: ReactApplicationContext) : ReactC
         val keyUID = senderConfig.getString("keyUID")
         val keyStorePath = utils.getKeyStorePath(keyUID)
         senderConfig.put("keystorePath", keyStorePath)
+        val jsonString = jsonConfig.toString()
 
-        utils.executeRunnableStatusGoMethod(
-            { Statusgo.getConnectionStringForBootstrappingAnotherDevice(jsonConfig.toString()) },
+        StatusBackendClient.executeStatusGoRequestWithCallback(
+            endpoint = "GetConnectionStringForBootstrappingAnotherDevice",
+            requestBody = jsonString,
+            statusgoFunction = { Statusgo.getConnectionStringForBootstrappingAnotherDevice(jsonString) },
             callback
         )
     }
 
     @ReactMethod
     fun inputConnectionStringForBootstrapping(connectionString: String, configJSON: String, callback: Callback) {
-        val jsonConfig = JSONObject(configJSON)
-        utils.executeRunnableStatusGoMethod(
-            { Statusgo.inputConnectionStringForBootstrapping(connectionString, jsonConfig.toString()) },
+        val receiverClientConfig = JSONObject(configJSON)
+        val params = JSONObject().apply {
+            put("connectionString", connectionString)
+            put("receiverClientConfig", receiverClientConfig)
+        }
+        val jsonString = params.toString()
+        StatusBackendClient.executeStatusGoRequestWithCallback(
+            endpoint = "InputConnectionStringForBootstrappingV2",
+            requestBody = jsonString,
+            statusgoFunction = { Statusgo.inputConnectionStringForBootstrappingV2(jsonString) },
             callback
         )
     }
 
     @ReactMethod
     fun sendTransactionWithSignature(txArgsJSON: String, signature: String, callback: Callback) {
-        utils.executeRunnableStatusGoMethod(
-            { Statusgo.sendTransactionWithSignature(txArgsJSON, signature) },
+        StatusBackendClient.executeStatusGoRequestWithCallback(
+            endpoint = "SendTransactionWithSignature",
+            requestBody = txArgsJSON,
+            statusgoFunction = { Statusgo.sendTransactionWithSignature(txArgsJSON, signature) },
             callback
         )
     }
 
     @ReactMethod
     fun sendTransaction(txArgsJSON: String, password: String, callback: Callback) {
-        utils.executeRunnableStatusGoMethod({ Statusgo.sendTransaction(txArgsJSON, password) }, callback)
+        val jsonParams = JSONObject().apply {
+            put("txArgs", JSONObject(txArgsJSON))
+            put("password", password)
+        }
+        val jsonString = jsonParams.toString()
+        StatusBackendClient.executeStatusGoRequestWithCallback(
+            endpoint = "SendTransactionV2",
+            requestBody = jsonString,
+            statusgoFunction = { Statusgo.sendTransactionV2(jsonString) },
+            callback
+        )
     }
 
     @ReactMethod
     fun callRPC(payload: String, callback: Callback) {
-        utils.executeRunnableStatusGoMethod({ Statusgo.callRPC(payload) }, callback)
+        StatusBackendClient.executeStatusGoRequestWithCallback(
+            endpoint = "CallRPC",
+            requestBody = payload,
+            statusgoFunction = { Statusgo.callRPC(payload) },
+            callback = callback
+        )
     }
 
     @ReactMethod
     fun callPrivateRPC(payload: String, callback: Callback) {
-        utils.executeRunnableStatusGoMethod({ Statusgo.callPrivateRPC(payload) }, callback)
+        StatusBackendClient.executeStatusGoRequestWithCallback(
+            endpoint = "CallPrivateRPC",
+            requestBody = payload,
+            statusgoFunction = { Statusgo.callPrivateRPC(payload) },
+            callback = callback
+        )
     }
 
     @ReactMethod
     fun recover(rpcParams: String, callback: Callback) {
-        utils.executeRunnableStatusGoMethod({ Statusgo.recover(rpcParams) }, callback)
+        StatusBackendClient.executeStatusGoRequestWithCallback(
+            endpoint = "Recover",
+            requestBody = rpcParams,
+            statusgoFunction = { Statusgo.recover(rpcParams) },
+            callback
+        )
     }
 
     @ReactMethod
@@ -77,22 +119,33 @@ class NetworkManager(private val reactContext: ReactApplicationContext) : ReactC
         val keyUID = senderConfig.getString("loggedInKeyUid")
         val keyStorePath = utils.getKeyStorePath(keyUID)
         senderConfig.put("keystorePath", keyStorePath)
+        val jsonString = jsonConfig.toString()
 
-        utils.executeRunnableStatusGoMethod(
-                { Statusgo.getConnectionStringForExportingKeypairsKeystores(jsonConfig.toString()) },
-                callback)
+        StatusBackendClient.executeStatusGoRequestWithCallback(
+            endpoint = "GetConnectionStringForExportingKeypairsKeystores",
+            requestBody = jsonString,
+            statusgoFunction = { Statusgo.getConnectionStringForExportingKeypairsKeystores(jsonString) },
+            callback = callback
+        )
     }
 
     @ReactMethod
     fun inputConnectionStringForImportingKeypairsKeystores(connectionString: String, configJSON: String, callback: Callback) {
-        val jsonConfig = JSONObject(configJSON)
-        val receiverConfig = jsonConfig.getJSONObject("receiverConfig")
+        val keystoreFilesReceiverClientConfig = JSONObject(configJSON)
+        val receiverConfig = keystoreFilesReceiverClientConfig.getJSONObject("receiverConfig")
         val keyStorePath = utils.pathCombine(utils.getNoBackupDirectory(), "/keystore")
         receiverConfig.put("keystorePath", keyStorePath)
 
-        utils.executeRunnableStatusGoMethod(
-                { Statusgo.inputConnectionStringForImportingKeypairsKeystores(connectionString, jsonConfig.toString()) },
-                callback
+        val params = JSONObject().apply {
+            put("connectionString", connectionString)
+            put("keystoreFilesReceiverClientConfig", keystoreFilesReceiverClientConfig)
+        }
+        val jsonString = params.toString()
+        StatusBackendClient.executeStatusGoRequestWithCallback(
+            endpoint = "InputConnectionStringForImportingKeypairsKeystoresV2",
+            requestBody = jsonString,
+            statusgoFunction = { Statusgo.inputConnectionStringForImportingKeypairsKeystoresV2(jsonString) },
+            callback = callback
         )
     }
 }

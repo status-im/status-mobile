@@ -165,10 +165,11 @@
     :subtitle        subtitle}])
 
 (defn- transaction-details
-  [{:keys [estimated-time-min max-fees token-display-name amount to-network route
+  [{:keys [estimated-time-min max-fees to-network route
            transaction-type]}]
   (let [route-loaded?             (and route (seq route))
-        loading-suggested-routes? (rf/sub [:wallet/wallet-send-loading-suggested-routes?])]
+        loading-suggested-routes? (rf/sub [:wallet/wallet-send-loading-suggested-routes?])
+        amount                    (rf/sub [:wallet/send-total-amount-formatted])]
     [rn/view
      {:style (style/details-container
               {:loading-suggested-routes? loading-suggested-routes?
@@ -189,7 +190,7 @@
                       (i18n/label :t/bridged-to
                                   {:network (:abbreviated-name to-network)})
                       (i18n/label :t/recipient-gets))
-          :subtitle (str amount " " token-display-name)}]]
+          :subtitle amount}]]
        :else
        [quo/text {:style {:align-self :center}}
         (i18n/label :t/no-routes-found-confirmation)])]))
@@ -223,7 +224,6 @@
                                                  bridge-to-chain-id]))
             loading-suggested-routes? (rf/sub
                                        [:wallet/wallet-send-loading-suggested-routes?])
-            total-amount-receiver     (rf/sub [:wallet/total-amount true])
             from-account-props        {:customization-color account-color
                                        :size                32
                                        :emoji               (:emoji account)
@@ -248,8 +248,6 @@
                                       [transaction-details
                                        {:estimated-time-min estimated-time-min
                                         :max-fees           fee-formatted
-                                        :token-display-name token-symbol
-                                        :amount             total-amount-receiver
                                         :to-network         bridge-to-network
                                         :theme              theme
                                         :route              route

@@ -6,7 +6,6 @@
     legacy.status-im.browser.permissions
     legacy.status-im.chat.models.loading
     legacy.status-im.data-store.chats
-    legacy.status-im.data-store.switcher-cards
     legacy.status-im.data-store.visibility-status-updates
     legacy.status-im.fleet.core
     legacy.status-im.group-chats.core
@@ -43,7 +42,6 @@
     status-im.contexts.onboarding.events
     status-im.contexts.shell.activity-center.events
     status-im.contexts.shell.activity-center.notification.contact-requests.events
-    status-im.contexts.shell.jump-to.events
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 

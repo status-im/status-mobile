@@ -3,10 +3,27 @@
 #import "React/RCTEventDispatcher.h"
 #import "Statusgo.h"
 #import "Utils.h"
+#import "StatusBackendClient.h"
 
 @implementation Utils
 
 RCT_EXPORT_MODULE();
+
+#pragma mark - Private Methods
+
++ (NSURL *)getRootUrl {
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    NSURL *rootUrl;
+    
+    StatusBackendClient *client = [StatusBackendClient sharedInstance];
+    if (client.serverEnabled && client.rootDataDir) {
+        rootUrl = [NSURL fileURLWithPath:client.rootDataDir];
+    } else {
+        rootUrl = [[fileManager URLsForDirectory:NSLibraryDirectory inDomains:NSUserDomainMask] lastObject];
+    }
+    
+    return rootUrl;
+}
 
 + (NSString *)jsonStringWithPrettyPrint:(BOOL)prettyPrint fromDictionary:(NSDictionary *)dictionary {
     NSError *error;
@@ -38,7 +55,7 @@ RCT_EXPORT_MODULE();
 
 + (NSURL *)getKeyStoreDirForKeyUID:(NSString *)keyUID {
     NSFileManager *fileManager = [NSFileManager defaultManager];
-    NSURL *rootUrl = [[fileManager URLsForDirectory:NSLibraryDirectory inDomains:NSUserDomainMask] lastObject];
+    NSURL *rootUrl = [self getRootUrl];
 
     NSURL *oldKeystoreDir = [rootUrl URLByAppendingPathComponent:@"keystore"];
     NSURL *multiaccountKeystoreDir = [oldKeystoreDir URLByAppendingPathComponent:keyUID];
@@ -57,6 +74,11 @@ RCT_EXPORT_MODULE();
 }
 
 + (NSString *) getExportDbFilePath {
+    StatusBackendClient *client = [StatusBackendClient sharedInstance];
+    if (client.serverEnabled && client.rootDataDir) {
+        return [client.rootDataDir stringByAppendingPathComponent:@"export.db"];
+    }
+
     NSString *filePath = [NSTemporaryDirectory() stringByAppendingPathComponent:@"export.db"];
     NSFileManager *fileManager = [NSFileManager defaultManager];
 
@@ -70,17 +92,36 @@ RCT_EXPORT_MODULE();
 + (void) migrateKeystore:(NSString *)accountData
                 password:(NSString *)password {
     NSFileManager *fileManager = [NSFileManager defaultManager];
-    NSURL *rootUrl =[[fileManager
-            URLsForDirectory:NSLibraryDirectory inDomains:NSUserDomainMask]
-            lastObject];
+    NSURL *rootUrl =[self getRootUrl];
 
-    NSURL *keyUID = [self getKeyStoreDirForKeyUID:accountData];
+    NSData *jsonData = [accountData dataUsingEncoding:NSUTF8StringEncoding];
+    NSError *error;
+    NSDictionary *accountJson = [NSJSONSerialization JSONObjectWithData:jsonData options:0 error:&error];
+    if (error) {
+        NSLog(@"Error parsing accountData: %@", error);
+        return;
+    }
+
+    NSString *keyUID = [self getKeyUID:accountData];
     NSURL *oldKeystoreDir = [rootUrl URLByAppendingPathComponent:@"keystore"];
-    NSURL *multiaccountKeystoreDir = [self getKeyStoreDirForKeyUID:keyUID.path];
+    NSURL *multiaccountKeystoreDir = [self getKeyStoreDirForKeyUID:keyUID];
 
     NSArray *keys = [fileManager contentsOfDirectoryAtPath:multiaccountKeystoreDir.path error:nil];
     if (keys.count == 0) {
-        NSString *migrationResult = StatusgoMigrateKeyStoreDir(accountData, password, oldKeystoreDir.path, multiaccountKeystoreDir.path);
+        NSDictionary *params = @{
+            @"account": accountJson,
+            @"password": password,
+            @"oldDir": oldKeystoreDir.path,
+            @"newDir": multiaccountKeystoreDir.path
+        };
+        NSData *paramsJsonData = [NSJSONSerialization dataWithJSONObject:params options:0 error:&error];
+        if (error) {
+            NSLog(@"Error creating params JSON: %@", error);
+            return;
+        }
+        NSString *jsonString = [[NSString alloc] initWithData:paramsJsonData encoding:NSUTF8StringEncoding];
+        
+        NSString *migrationResult = StatusgoMigrateKeyStoreDirV2(jsonString);
         NSLog(@"keystore migration result %@", migrationResult);
 
         NSString *initKeystoreResult = StatusgoInitKeystore(multiaccountKeystoreDir.path);
@@ -89,18 +130,19 @@ RCT_EXPORT_MODULE();
 }
 
 RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(backupDisabledDataDir) {
+    StatusBackendClient *client = [StatusBackendClient sharedInstance];
+    if (client.serverEnabled && client.rootDataDir) {
+        return client.rootDataDir;
+    }
+    
     NSFileManager *fileManager = [NSFileManager defaultManager];
-    NSURL *rootUrl =[[fileManager
-            URLsForDirectory:NSLibraryDirectory inDomains:NSUserDomainMask]
-            lastObject];
+    NSURL *rootUrl = [Utils getRootUrl];
     return rootUrl.path;
 }
 
 RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(keystoreDir) {
     NSFileManager *fileManager = [NSFileManager defaultManager];
-    NSURL *rootUrl =[[fileManager
-            URLsForDirectory:NSLibraryDirectory inDomains:NSUserDomainMask]
-            lastObject];
+    NSURL *rootUrl =[Utils getRootUrl];
 
     NSURL *commonKeystoreDir = [rootUrl URLByAppendingPathComponent:@"keystore"];
 
@@ -110,9 +152,17 @@ RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(keystoreDir) {
 RCT_EXPORT_METHOD(validateMnemonic:(NSString *)seed
     callback:(RCTResponseSenderBlock)callback) {
     #if DEBUG
-        NSLog(@"validateMnemonic() method called");
+        NSLog(@"validateMnemonicV2() method called");
     #endif
-    NSString *result = StatusgoValidateMnemonic(seed);
+    NSDictionary *params = @{@"mnemonic": seed};
+    NSError *error;
+    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:params options:0 error:&error];
+    if (error) {
+        NSLog(@"Error creating JSON: %@", error);
+        return;
+    }
+    NSString *jsonString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+    NSString *result = StatusgoValidateMnemonicV2(jsonString);
     callback(@[result]);
 }
 
@@ -130,6 +180,19 @@ RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(toChecksumAddress:(NSString *)address) {
 
 RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(validateConnectionString:(NSString *)cs) {
     return StatusgoValidateConnectionString(cs);
+}
+
++ (void)handleStatusGoResponse:(NSString *)response source:(NSString *)source error:(NSError *)error {
+    if (error) {
+        NSLog(@"%@ failed: %@", source, error);
+        return;
+    }
+    
+    if ([response hasPrefix:@"{\"error\":\"\""]) {
+        NSLog(@"%@ success: %@", source, response);
+    } else {
+        NSLog(@"%@ failed: %@", source, response);
+    }
 }
 
 @end

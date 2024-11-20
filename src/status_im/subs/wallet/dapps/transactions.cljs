@@ -58,10 +58,8 @@
            max-fees-fiat            (wallet-utils/calculate-token-fiat-value {:currency currency
                                                                               :balance  max-fees-ether
                                                                               :token    eth-token})
-           max-fees-fiat-formatted  (-> (wallet-utils/get-standard-crypto-format eth-token
-                                                                                 max-fees-ether)
-                                        (wallet-utils/get-standard-fiat-format currency-symbol
-                                                                               max-fees-fiat))
+           max-fees-fiat-formatted  (wallet-utils/fiat-formatted-for-ui currency-symbol
+                                                                        max-fees-fiat)
            balance                  (-> eth-token
                                         (get-in [:balances-per-chain chain-id :raw-balance])
                                         money/bignumber)

@@ -153,6 +153,7 @@ class SignInView(BaseView):
             self.driver, xpath="//*[@content-desc='terms-privacy-checkbox-container']/*[@content-desc='checkbox-off']")
         self.explore_new_status_button = Button(self.driver, accessibility_id="explore-new-status")
         self.create_profile_button = Button(self.driver, accessibility_id='new-to-status-button')
+        self.log_in_button = Button(self.driver, accessibility_id='log-in')
         self.not_now_button = Button(self.driver, xpath="//*[@text='Not now']")
         self.sync_or_recover_profile_button = Button(self.driver, accessibility_id='already-use-status-button')
         self.scan_sync_code_button = Button(self.driver, accessibility_id="scan-sync-code-option-card")
@@ -244,7 +245,6 @@ class SignInView(BaseView):
         self.driver.info("## Creating new multiaccount (password:'%s', keycard:'%s', enable_notification: '%s')" %
                          (password, str(keycard), str(enable_notifications)), device=False)
         if first_user:
-            self.terms_and_privacy_checkbox.click()
             self.create_profile_button.click_until_presence_of_element(self.generate_keys_button)
             self.not_now_button.wait_and_click()
         else:
@@ -292,8 +292,7 @@ class SignInView(BaseView):
 
         if not after_sync_code:
             if not second_user:
-                self.terms_and_privacy_checkbox.click()
-                self.sync_or_recover_profile_button.click_until_presence_of_element(self.generate_keys_button)
+                self.create_profile_button.click_until_presence_of_element(self.generate_keys_button)
                 self.not_now_button.wait_and_click()
             else:
                 self.show_profiles_button.wait_and_click(20)
@@ -324,11 +323,10 @@ class SignInView(BaseView):
 
     def sync_profile(self, sync_code: str, first_user: bool = True):
         if first_user:
-            self.terms_and_privacy_checkbox.click()
-            self.sync_or_recover_profile_button.click()
+            self.log_in_button.click()
             self.not_now_button.click()
         else:
-            self.show_profiles_button.click()
+            self.show_profiles_button.wait_and_click()
             self.plus_profiles_button.click()
             self.sync_or_recover_new_profile_button.click()
         self.scan_sync_code_button.click()

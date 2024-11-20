@@ -9,12 +9,17 @@ import statusgo.SignalHandler
 import statusgo.Statusgo
 import org.json.JSONException
 import android.view.WindowManager
+import org.json.JSONObject
 
 class StatusModule(private val reactContext: ReactApplicationContext, private val rootedDevice: Boolean) : ReactContextBaseJavaModule(reactContext), LifecycleEventListener, SignalHandler {
 
     companion object {
         private const val TAG = "StatusModule"
         private var module: StatusModule? = null
+
+        fun getInstance(): StatusModule? {
+            return module
+        }
     }
 
     private val utils: Utils = Utils(reactContext)
@@ -56,45 +61,97 @@ class StatusModule(private val reactContext: ReactApplicationContext, private va
     @ReactMethod
     fun connectionChange(type: String, isExpensive: Boolean) {
         Log.d(TAG, "ConnectionChange: $type, is expensive $isExpensive")
-        Statusgo.connectionChange(type, if (isExpensive) 1 else 0)
+        val params = JSONObject().apply {
+            put("type", type)
+            put("expensive", isExpensive)
+        }
+
+        val jsonString = params.toString()
+        StatusBackendClient.executeStatusGoRequest(
+            endpoint = "ConnectionChangeV2",
+            requestBody = jsonString,
+            statusgoFunction = { Statusgo.connectionChangeV2(jsonString) }
+        )
     }
 
     @ReactMethod
-    fun appStateChange(type: String) {
-        Log.d(TAG, "AppStateChange: $type")
-        Statusgo.appStateChange(type)
+    fun appStateChange(state: String) {
+        Log.d(TAG, "AppStateChange: $state")
+        val params = JSONObject().apply {
+            put("state", state)
+        }
+        val jsonString = params.toString()
+        StatusBackendClient.executeStatusGoRequest(
+            endpoint = "AppStateChangeV2",
+            requestBody = jsonString,
+            statusgoFunction = { Statusgo.appStateChangeV2(jsonString) }
+        )
     }
 
     @ReactMethod
     fun startLocalNotifications() {
         Log.d(TAG, "startLocalNotifications")
-        Statusgo.startLocalNotifications()
+        StatusBackendClient.executeStatusGoRequest(
+            endpoint = "StartLocalNotifications",
+            requestBody = "",
+            statusgoFunction = { Statusgo.startLocalNotifications() }
+        )
     }
 
     @ReactMethod
     fun getNodeConfig(callback: Callback) {
-        utils.executeRunnableStatusGoMethod({ Statusgo.getNodeConfig() }, callback)
+        StatusBackendClient.executeStatusGoRequestWithCallback(
+            endpoint = "GetNodeConfig",
+            requestBody = "",
+            statusgoFunction = { Statusgo.getNodeConfig() },
+            callback = callback
+        )
     }
 
     @ReactMethod
     fun addCentralizedMetric(request: String, callback: Callback) {
-        utils.executeRunnableStatusGoMethod({ Statusgo.addCentralizedMetric(request) }, callback)
+        StatusBackendClient.executeStatusGoRequestWithCallback(
+            endpoint = "AddCentralizedMetric",
+            requestBody = request,
+            statusgoFunction = { Statusgo.addCentralizedMetric(request) },
+            callback
+        )
     }
 
     @ReactMethod
     fun toggleCentralizedMetrics(request: String, callback: Callback) {
-        utils.executeRunnableStatusGoMethod({ Statusgo.toggleCentralizedMetrics(request) }, callback)
+        StatusBackendClient.executeStatusGoRequestWithCallback(
+            endpoint = "ToggleCentralizedMetrics",
+            requestBody = request,
+            statusgoFunction = { Statusgo.toggleCentralizedMetrics(request) },
+            callback
+        )
     }
 
     @ReactMethod
     fun deleteImportedKey(keyUID: String, address: String, password: String, callback: Callback) {
         val keyStoreDir = utils.getKeyStorePath(keyUID)
-        utils.executeRunnableStatusGoMethod({ Statusgo.deleteImportedKey(address, password, keyStoreDir) }, callback)
+        val params = JSONObject().apply {
+            put("address", address)
+            put("password", password)
+            put("keyStoreDir", keyStoreDir)
+        }
+        val jsonString = params.toString()
+        StatusBackendClient.executeStatusGoRequestWithCallback(
+            endpoint = "DeleteImportedKeyV2",
+            requestBody = jsonString,
+            statusgoFunction = { Statusgo.deleteImportedKeyV2(jsonString) },
+            callback
+        )
     }
 
     @ReactMethod(isBlockingSynchronousMethod = true)
     fun fleets(): String {
-        return Statusgo.fleets()
+        return StatusBackendClient.executeStatusGoRequestWithResult(
+            endpoint = "Fleets",
+            requestBody = "",
+            statusgoFunction = { Statusgo.fleets() }
+        )
     }
 
     override fun getConstants(): Map<String, Any>? {

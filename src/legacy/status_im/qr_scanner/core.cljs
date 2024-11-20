@@ -78,8 +78,8 @@
 (rf/defn handle-eip681
   [cofx data]
   (rf/merge cofx
-            {:dispatch [:wallet-legacy/parse-eip681-uri-and-resolve-ens data]}
-            (navigation/change-tab :wallet-stack)
+            {:dispatch-n [[:shell/change-tab :wallet-stack]
+                          [:wallet-legacy/parse-eip681-uri-and-resolve-ens data]]}
             (navigation/pop-to-root :shell-stack)))
 
 (rf/defn handle-local-pairing

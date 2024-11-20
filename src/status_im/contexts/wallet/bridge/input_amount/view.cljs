@@ -12,7 +12,6 @@
    [input-amount/view
     {:current-screen-id      :screen/wallet.bridge-input-amount
      :button-one-label       (i18n/label :t/review-bridge)
-     :button-one-props       {:icon-left :i/bridge}
      :enabled-from-chain-ids (rf/sub
                               [:wallet/bridge-from-chain-ids])
      :from-enabled-networks  (rf/sub [:wallet/bridge-from-networks])

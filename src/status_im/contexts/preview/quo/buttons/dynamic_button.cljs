@@ -8,8 +8,7 @@
 (def descriptor
   [{:key     :type
     :type    :select
-    :options [{:key :jump-to}
-              {:key :mention}
+    :options [{:key :mention}
               {:key :notification-down}
               {:key :notification-up}
               {:key :search}
@@ -21,9 +20,8 @@
 (defn view
   []
   (let [state (reagent/atom {:count  "5"
-                             :type   :jump-to
-                             :labels {:jump-to           (i18n/label :t/jump-to)
-                                      :search-with-label (i18n/label :t/back)}})]
+                             :type   :search-with-label
+                             :labels {:search-with-label (i18n/label :t/back)}})]
     (fn []
       [preview/preview-container
        {:state                     state

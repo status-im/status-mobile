@@ -12,7 +12,7 @@
     [status-im.config :as config]
     [status-im.contexts.communities.actions.community-options.view :as options]
     [status-im.contexts.communities.actions.home-plus.view :as actions.home-plus]
-    [status-im.contexts.shell.jump-to.constants :as jump-to.constants]
+    [status-im.contexts.shell.constants :as shell.constants]
     [utils.debounce :as debounce]
     [utils.i18n :as i18n]
     [utils.number]
@@ -114,7 +114,7 @@
          :data                              selected-items
          :scroll-event-throttle             8
          :content-container-style           {:padding-bottom
-                                             jump-to.constants/floating-shell-button-height}
+                                             shell.constants/floating-shell-button-height}
          :on-scroll                         on-scroll}])
      [common.banner/animated-banner
       {:content             banner-data

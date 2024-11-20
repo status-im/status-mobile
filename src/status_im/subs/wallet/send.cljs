@@ -1,9 +1,12 @@
 (ns status-im.subs.wallet.send
   (:require
     [re-frame.core :as rf]
-    [status-im.contexts.wallet.common.activity-tab.constants :as constants]
+    [status-im.constants :as constants]
+    [status-im.contexts.wallet.common.activity-tab.constants :as activity-constants]
+    [status-im.contexts.wallet.common.utils :as common-utils]
     [status-im.contexts.wallet.send.utils :as send-utils]
-    [utils.number]))
+    [utils.money :as money]
+    [utils.number :as number]))
 
 (rf/reg-sub
  :wallet/send-tab
@@ -20,6 +23,16 @@
  :wallet/send-recipient
  :<- [:wallet/wallet-send]
  :-> :recipient)
+
+(rf/reg-sub
+ :wallet/send-route
+ :<- [:wallet/wallet-send]
+ :-> :route)
+
+(rf/reg-sub
+ :wallet/send-token
+ :<- [:wallet/wallet-send]
+ :-> :token)
 
 (rf/reg-sub
  :wallet/send-transaction-ids
@@ -64,7 +77,7 @@
      (->> address-activity
           (sort :timestamp)
           (keep (fn [{:keys [activity-type recipient]}]
-                  (when (= constants/wallet-activity-type-send activity-type)
+                  (when (= activity-constants/wallet-activity-type-send activity-type)
                     recipient)))
           (distinct)))))
 
@@ -91,3 +104,71 @@
            (when (not= (:chain-id network) bridge-to-chain-id)
              (:chain-id network)))
          networks)))
+
+(rf/reg-sub
+ :wallet/send-token-decimals
+ :<- [:wallet/wallet-send]
+ (fn [{:keys [token collectible]}]
+   (if collectible 0 (:decimals token))))
+
+(rf/reg-sub
+ :wallet/send-display-token-decimals
+ :<- [:wallet/wallet-send]
+ (fn [{:keys [token collectible]}]
+   (if collectible
+     0
+     (-> token
+         common-utils/token-usd-price
+         common-utils/one-cent-value
+         common-utils/calc-max-crypto-decimals
+         (min constants/min-token-decimals-to-display)))))
+
+(rf/reg-sub
+ :wallet/send-native-token?
+ :<- [:wallet/wallet-send]
+ (fn [{:keys [token token-display-name]}]
+   (and token (= token-display-name "ETH"))))
+
+(rf/reg-sub
+ :wallet/total-amount
+ :<- [:wallet/send-route]
+ :<- [:wallet/send-token-decimals]
+ :<- [:wallet/send-native-token?]
+ (fn [[route token-decimals native-token?]]
+   (let [default-amount (money/bignumber 0)]
+     (if route
+       (->> (send-utils/estimated-received-by-chain
+             route
+             token-decimals
+             native-token?)
+            vals
+            (reduce money/add default-amount))
+       default-amount))))
+
+(rf/reg-sub
+ :wallet/send-total-amount-formatted
+ :<- [:wallet/total-amount]
+ :<- [:wallet/send-display-token-decimals]
+ :<- [:wallet/wallet-send-token-symbol]
+ (fn [[amount token-decimals token-symbol]]
+   (-> amount
+       (number/to-fixed token-decimals)
+       (str " " token-symbol))))
+
+(rf/reg-sub
+ :wallet/send-amount-fixed
+ :<- [:wallet/send-display-token-decimals]
+ (fn [token-decimals [_ amount]]
+   (number/to-fixed (money/->bignumber amount) token-decimals)))
+
+(rf/reg-sub
+ :wallet/bridge-to-network-details
+ :<- [:wallet/wallet-send]
+ :<- [:wallet/network-details]
+ (fn [[{:keys [bridge-to-chain-id]} networks]]
+   (when bridge-to-chain-id
+     (some (fn [network]
+             (when
+               (= (:chain-id network) bridge-to-chain-id)
+               network))
+           networks))))

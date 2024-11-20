@@ -1,9 +1,8 @@
 (ns status-im.contexts.communities.events-test
-  (:require [cljs.test :refer [deftest is testing]]
-            [legacy.status-im.data-store.communities :as data-store.communities]
-            matcher-combinators.test
-            [status-im.contexts.chat.messenger.messages.link-preview.events :as link-preview.events]
-            [status-im.contexts.communities.events :as events]))
+  (:require
+    [cljs.test :refer [deftest is testing]]
+    matcher-combinators.test
+    [status-im.contexts.communities.events :as events]))
 
 (def community-id "community-id")
 
@@ -37,50 +36,40 @@
                    [:db :communities/fetching-communities community-id]))))))
 
 (deftest community-fetched-test
-  (with-redefs [link-preview.events/community-link (fn [id] (str "community-link+" id))]
-    (testing "given a community"
-      (let [cofx {:db {:communities/fetching-communities {community-id true}}}
-            arg  [community-id {:id community-id}]]
-        (testing "remove community id from fetching indicator in db"
-          (is (match?
-               nil
-               (get-in (events/community-fetched cofx arg)
-                       [:db :communities/fetching-communities community-id]))))
-        (testing "dispatch fxs"
-          (is (match?
-               {:fx [[:dispatch [:communities/handle-community {:id community-id}]]
-                     [:dispatch [:chat.ui/spectate-community community-id]]
-                     [:dispatch
-                      [:chat.ui/cache-link-preview-data "community-link+community-id"
-                       (data-store.communities/<-rpc #js {"id" community-id})]]]}
-               (events/community-fetched cofx arg))))))
-    (testing "given a joined community"
-      (let [cofx {:db {:communities/fetching-communities {community-id true}}}
-            arg  [community-id {:id community-id :joined true}]]
-        (testing "dispatch fxs, do not spectate community"
-          (is (match?
-               {:fx [[:dispatch [:communities/handle-community {:id community-id}]]
-                     [:dispatch [:chat.ui/spectate-community community-id]]
-                     [:dispatch
-                      [:chat.ui/cache-link-preview-data "community-link+community-id"
-                       (data-store.communities/<-rpc #js {"id" community-id})]]]}
-               (events/community-fetched cofx arg))))))
-    (testing "given a token-gated community"
-      (let [cofx {:db {:communities/fetching-communities {community-id true}}}
-            arg  [community-id {:id community-id :tokenPermissions [1]}]]
-        (testing "dispatch fxs, do not spectate community"
-          (is (match?
-               {:fx [[:dispatch [:communities/handle-community {:id community-id}]]
-                     [:dispatch [:chat.ui/spectate-community community-id]]
-                     [:dispatch
-                      [:chat.ui/cache-link-preview-data "community-link+community-id"
-                       (data-store.communities/<-rpc #js {"id" community-id})]]]}
-               (events/community-fetched cofx arg))))))
-    (testing "given nil community"
-      (testing "do nothing"
+  (testing "given a community"
+    (let [cofx {:db {:communities/fetching-communities {community-id true}}}
+          arg  [community-id {:id community-id}]]
+      (testing "remove community id from fetching indicator in db"
         (is (match?
              nil
-             (events/community-fetched {} [community-id nil])))))))
+             (get-in (events/community-fetched cofx arg)
+                     [:db :communities/fetching-communities community-id]))))
+      (testing "dispatch fxs"
+        (is (match?
+             {:fx [[:dispatch [:communities/handle-community {:id community-id}]]
+                   [:dispatch [:chat.ui/spectate-community community-id]]]}
+             (events/community-fetched cofx arg))))))
+  (testing "given a joined community"
+    (let [cofx {:db {:communities/fetching-communities {community-id true}}}
+          arg  [community-id {:id community-id :joined true}]]
+      (testing "dispatch fxs, do not spectate community"
+        (is (match?
+             {:fx [[:dispatch [:communities/handle-community {:id community-id}]]
+                   [:dispatch [:chat.ui/spectate-community community-id]]]}
+             (events/community-fetched cofx arg))))))
+  (testing "given a token-gated community"
+    (let [cofx {:db {:communities/fetching-communities {community-id true}}}
+          arg  [community-id {:id community-id :tokenPermissions [1]}]]
+      (testing "dispatch fxs, do not spectate community"
+        (is (match?
+             {:fx [[:dispatch [:communities/handle-community {:id community-id}]]
+                   [:dispatch [:chat.ui/spectate-community community-id]]]}
+             (events/community-fetched cofx arg))))))
+  (testing "given nil community"
+    (testing "do nothing"
+      (is (match?
+           nil
+           (events/community-fetched {} [community-id nil]))))))
 
 (deftest spectate-community-test
   (testing "given a joined community"

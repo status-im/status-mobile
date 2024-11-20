@@ -1,5 +1,6 @@
 (ns status-im.contexts.keycard.pin.view
-  (:require [quo.core :as quo]
+  (:require [clojure.string :as string]
+            [quo.core :as quo]
             [react-native.core :as rn]
             [status-im.constants :as constants]
             [utils.i18n :as i18n]
@@ -20,7 +21,7 @@
         :number-of-filled-pins (count text)
         :error?                error?
         :info                  (when error?
-                                 (if error-message
+                                 (if (not (string/blank? error-message))
                                    error-message
                                    (i18n/label :t/pin-retries-left {:number pin-retry-counter})))}]]
      [quo/numbered-keyboard

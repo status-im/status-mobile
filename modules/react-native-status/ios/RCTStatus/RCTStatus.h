@@ -5,5 +5,6 @@
 #import "RCTLog.h"
 
 @interface Status : NSObject <RCTBridgeModule, StatusgoSignalHandler>
++ (Status *)sharedInstance;
 - (void)handleSignal:(NSString *)signal;
 @end

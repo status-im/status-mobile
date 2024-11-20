@@ -1,6 +1,6 @@
 (ns status-im.contexts.communities.overview.style
   (:require
-    [status-im.contexts.shell.jump-to.constants :as jump-to.constants]))
+    [status-im.contexts.shell.constants :as shell.constants]))
 
 (def screen-horizontal-padding 20)
 
@@ -35,12 +35,8 @@
    :right    0
    :bottom   0})
 
-(def floating-shell-button
-  {:position :absolute
-   :bottom   21})
-
 (defn channel-list-component
   []
   {:margin-top    8
-   :margin-bottom (+ 21 jump-to.constants/floating-shell-button-height)
+   :margin-bottom (+ 21 shell.constants/floating-shell-button-height)
    :flex          1})

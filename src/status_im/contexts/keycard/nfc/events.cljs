@@ -20,8 +20,6 @@
 
 (rf/reg-event-fx :keycard.ios/on-nfc-user-cancelled
  (fn [{:keys [db]}]
-   {:db (-> db
-            (assoc-in [:keycard :pin :status] nil)
-            (assoc-in [:keycard :on-nfc-cancelled-event-vector] nil))
+   {:db (assoc-in db [:keycard :on-nfc-cancelled-event-vector] nil)
     :fx [(when-let [on-nfc-cancelled-event-vector (get-in db [:keycard :on-nfc-cancelled-event-vector])]
            [:dispatch on-nfc-cancelled-event-vector])]}))

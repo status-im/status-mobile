@@ -9,7 +9,12 @@ import statusgo.Statusgo
 class StatusPackage(private val rootedDevice: Boolean) : ReactPackage {
 
     companion object {
-        fun getImageTLSCert(): String = Statusgo.imageServerTLSCert()
+        fun getImageTLSCert(): String = 
+            StatusBackendClient.executeStatusGoRequestWithResult(
+                endpoint = "ImageServerTLSCert",
+                requestBody = "",
+                statusgoFunction = { Statusgo.imageServerTLSCert() }
+            )
     }
 
     override fun createNativeModules(reactContext: ReactApplicationContext): List<NativeModule> {
@@ -26,6 +31,7 @@ class StatusPackage(private val rootedDevice: Boolean) : ReactPackage {
             add(NetworkManager(reactContext))
             add(MailManager(reactContext))
             add(RNSelectableTextInputModule(reactContext))
+            add(StatusBackendClient(reactContext))
         }
 
         return modules

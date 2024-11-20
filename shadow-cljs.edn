@@ -51,53 +51,59 @@
    ;; the target files (a.k.a hot reload). When false, you can manually
    ;; reload by calling `shadow.cljs.devtools.api/watch-compile-all!`.
    :devtools {:autobuild #shadow/env ["SHADOW_AUTOBUILD_ENABLED" :default true :as :bool]}
-   :dev {:devtools {:before-load-async status-im.setup.hot-reload/before-reload
-                    :after-load-async  status-im.setup.hot-reload/reload
-                    :build-notify      status-im.setup.hot-reload/build-notify
-                    :preloads          [;; The official recommendation is to
-                                        ;; load the debugger preload first.
-                                        flow-storm.api
-                                        re-frisk-remote.preload
-                                        status-im.setup.schema-preload
-                                        ;; In order to use component test helpers in the REPL we
-                                        ;; need to preload namespaces that are not normally required
-                                        ;; by production code, such as
-                                        ;; @testing-library/react-native.
-                                        test-helpers.component]}
-         :closure-defines
-         {status-im.config/POKT_TOKEN                     #shadow/env "POKT_TOKEN"
-          status-im.config/INFURA_TOKEN                   #shadow/env "INFURA_TOKEN"
-          status-im.config/STATUS_BUILD_PROXY_USER        #shadow/env "STATUS_BUILD_PROXY_USER"
-          status-im.config/STATUS_BUILD_PROXY_PASSWORD    #shadow/env "STATUS_BUILD_PROXY_PASSWORD"
-          status-im.config/MIXPANEL_APP_ID                #shadow/env "MIXPANEL_APP_ID"
-          status-im.config/MIXPANEL_TOKEN                 #shadow/env "MIXPANEL_TOKEN"
-          status-im.config/OPENSEA_API_KEY                #shadow/env "OPENSEA_API_KEY"
-          status-im.config/RARIBLE_MAINNET_API_KEY        #shadow/env "RARIBLE_MAINNET_API_KEY"
-          status-im.config/RARIBLE_TESTNET_API_KEY        #shadow/env "RARIBLE_TESTNET_API_KEY"
-          status-im.config/ALCHEMY_ETHEREUM_MAINNET_TOKEN #shadow/env "ALCHEMY_ETHEREUM_MAINNET_TOKEN"
-          status-im.config/ALCHEMY_ETHEREUM_SEPOLIA_TOKEN #shadow/env "ALCHEMY_ETHEREUM_SEPOLIA_TOKEN"
-          status-im.config/ALCHEMY_ARBITRUM_MAINNET_TOKEN #shadow/env "ALCHEMY_ARBITRUM_MAINNET_TOKEN"
-          status-im.config/ALCHEMY_ARBITRUM_SEPOLIA_TOKEN #shadow/env "ALCHEMY_ARBITRUM_SEPOLIA_TOKEN"
-          status-im.config/ALCHEMY_OPTIMISM_MAINNET_TOKEN #shadow/env "ALCHEMY_OPTIMISM_MAINNET_TOKEN"
-          status-im.config/ALCHEMY_OPTIMISM_SEPOLIA_TOKEN #shadow/env "ALCHEMY_OPTIMISM_SEPOLIA_TOKEN"}
-         :compiler-options {:output-feature-set :es5
-                            ;; We disable `:fn-deprecated` warnings because we
-                            ;; are managing deprecation via clj-kondo and we
-                            ;; don't want the terminal output to be littered
-                            ;; with warnings on every code reload.
-                            :warnings           {:fn-deprecated false}
-                            :closure-defines    {re-frame.trace/trace-enabled? true}
-                            :source-map         false
-                            ;; This seems to be necessary while using the REPL,
-                            ;; otherwise sometimes you'll get weird errors when
-                            ;; instrumenting functions.
-                            :static-fns         false
-                            :infer-externs      true
-                            :reader-features    #{:mobile}}
-         ;; if you want to use a real device, set your local ip
-         ;; in the SHADOW_HOST env variable to make sure that
-         ;; it will use the right interface
-         :local-ip #shadow/env "SHADOW_HOST"}
+   :dev
+   {:devtools {:before-load-async status-im.setup.hot-reload/before-reload
+               :after-load-async  status-im.setup.hot-reload/reload
+               :build-notify      status-im.setup.hot-reload/build-notify
+               :preloads          [;; The official recommendation is to
+                                   ;; load the debugger preload first.
+                                   flow-storm.api
+                                   re-frisk-remote.preload
+                                   status-im.setup.schema-preload
+                                   ;; In order to use component test helpers in the REPL we need to
+                                   ;; preload namespaces that are not normally required by
+                                   ;; production code, such as @testing-library/react-native.
+                                   test-helpers.component]}
+    :closure-defines
+    {status-im.config/POKT_TOKEN #shadow/env "POKT_TOKEN"
+     status-im.config/INFURA_TOKEN #shadow/env "INFURA_TOKEN"
+     status-im.config/STATUS_BUILD_PROXY_USER #shadow/env "STATUS_BUILD_PROXY_USER"
+     status-im.config/STATUS_BUILD_PROXY_PASSWORD #shadow/env "STATUS_BUILD_PROXY_PASSWORD"
+     status-im.config/STATUS_BACKEND_SERVER_ENABLED #shadow/env "STATUS_BACKEND_SERVER_ENABLED"
+     status-im.config/STATUS_BACKEND_SERVER_HOST #shadow/env "STATUS_BACKEND_SERVER_HOST"
+     status-im.config/STATUS_BACKEND_SERVER_IMAGE_SERVER_URI_PREFIX
+     #shadow/env "STATUS_BACKEND_SERVER_IMAGE_SERVER_URI_PREFIX"
+     status-im.config/STATUS_BACKEND_SERVER_ROOT_DATA_DIR #shadow/env
+                                                           "STATUS_BACKEND_SERVER_ROOT_DATA_DIR"
+     status-im.config/MIXPANEL_APP_ID #shadow/env "MIXPANEL_APP_ID"
+     status-im.config/MIXPANEL_TOKEN #shadow/env "MIXPANEL_TOKEN"
+     status-im.config/OPENSEA_API_KEY #shadow/env "OPENSEA_API_KEY"
+     status-im.config/RARIBLE_MAINNET_API_KEY #shadow/env "RARIBLE_MAINNET_API_KEY"
+     status-im.config/RARIBLE_TESTNET_API_KEY #shadow/env "RARIBLE_TESTNET_API_KEY"
+     status-im.config/ALCHEMY_ETHEREUM_MAINNET_TOKEN #shadow/env "ALCHEMY_ETHEREUM_MAINNET_TOKEN"
+     status-im.config/ALCHEMY_ETHEREUM_SEPOLIA_TOKEN #shadow/env "ALCHEMY_ETHEREUM_SEPOLIA_TOKEN"
+     status-im.config/ALCHEMY_ARBITRUM_MAINNET_TOKEN #shadow/env "ALCHEMY_ARBITRUM_MAINNET_TOKEN"
+     status-im.config/ALCHEMY_ARBITRUM_SEPOLIA_TOKEN #shadow/env "ALCHEMY_ARBITRUM_SEPOLIA_TOKEN"
+     status-im.config/ALCHEMY_OPTIMISM_MAINNET_TOKEN #shadow/env "ALCHEMY_OPTIMISM_MAINNET_TOKEN"
+     status-im.config/ALCHEMY_OPTIMISM_SEPOLIA_TOKEN #shadow/env "ALCHEMY_OPTIMISM_SEPOLIA_TOKEN"}
+    :compiler-options {:output-feature-set :es5
+                       ;; We disable `:fn-deprecated` warnings because we
+                       ;; are managing deprecation via clj-kondo and we
+                       ;; don't want the terminal output to be littered
+                       ;; with warnings on every code reload.
+                       :warnings           {:fn-deprecated false}
+                       :closure-defines    {re-frame.trace/trace-enabled? true}
+                       :source-map         false
+                       ;; This seems to be necessary while using the REPL,
+                       ;; otherwise sometimes you'll get weird errors when
+                       ;; instrumenting functions.
+                       :static-fns         false
+                       :infer-externs      true
+                       :reader-features    #{:mobile}}
+    ;; if you want to use a real device, set your local ip
+    ;; in the SHADOW_HOST env variable to make sure that
+    ;; it will use the right interface
+    :local-ip #shadow/env "SHADOW_HOST"}
    :chunks {:fleets legacy.status-im.fleet.default-fleet/default-fleets}
    :release
    {:closure-defines

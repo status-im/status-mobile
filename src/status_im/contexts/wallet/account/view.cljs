@@ -26,7 +26,6 @@
   (let [selected-tab          (or (rf/sub [:wallet/account-tab]) first-tab-id)
         {:keys [name color formatted-balance
                 watch-only?]} (rf/sub [:wallet/current-viewing-account])
-        customization-color   (rf/sub [:profile/customization-color])
         testnet-mode?         (rf/sub [:profile/test-networks-enabled?])]
     (hot-reload/use-safe-unmount (fn []
                                    (rf/dispatch [:wallet/close-account-page])
@@ -35,8 +34,9 @@
      #(rf/dispatch [:wallet/fetch-activities-for-current-account]))
     [rn/view {:style {:flex 1}}
      [account-switcher/view
-      {:type     :wallet-networks
-       :on-press #(rf/dispatch [:pop-to-root :shell-stack])}]
+      {:type               :wallet-networks
+       :show-dapps-button? true
+       :on-press           #(rf/dispatch [:pop-to-root :shell-stack])}]
      [quo/account-overview
       {:container-style     style/account-overview
        :current-value       formatted-balance
@@ -73,11 +73,4 @@
        :on-change        change-tab
        :scrollable?      true
        :scroll-on-press? true}]
-     [tabs/view {:selected-tab selected-tab}]
-     (when (ff/enabled? ::ff/shell.jump-to)
-       [quo/floating-shell-button
-        {:jump-to
-         {:on-press            #(rf/dispatch [:shell/navigate-to-jump-to])
-          :customization-color customization-color
-          :label               (i18n/label :t/jump-to)}}
-        style/shell-button])]))
+     [tabs/view {:selected-tab selected-tab}]]))

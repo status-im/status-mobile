@@ -16,8 +16,6 @@
     [status-im.contexts.chat.messenger.messages.content.view :as message]
     [status-im.contexts.chat.messenger.messages.list.state :as state]
     [status-im.contexts.chat.messenger.messages.list.style :as style]
-    [status-im.contexts.shell.jump-to.constants :as jump-to.constants]
-    [status-im.feature-flags :as ff]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]
     [utils.worklets.chat.messenger.messages :as worklets]))
@@ -72,9 +70,6 @@
   [{:keys [insets able-to-send-message? images reply edit link-previews? input-content-height]}]
   (if able-to-send-message?
     (cond-> composer.constants/composer-default-height
-      (ff/enabled? ::ff/shell.jump-to)
-      (+ jump-to.constants/floating-shell-button-height)
-
       (seq images)
       (+ composer.constants/images-container-height)
 

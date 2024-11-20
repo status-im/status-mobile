@@ -99,76 +99,92 @@
     :as   message-data}
    {:keys [able-to-send-message? community? community-member? can-delete-message-for-everyone?
            message-pin-enabled group-chat group-admin?]}]
-  (concat
-   (when (and outgoing
-              (not (or deleted? deleted-for-me?))
-              ;; temporarily disable edit image message until
-              ;; https://github.com/status-im/status-mobile/issues/15298 is implemented
-              (not= content-type constants/content-type-image)
-              (not= content-type constants/content-type-audio))
-     [{:type                :main
-       :on-press            #(rf/dispatch [:chat.ui/edit-message message-data])
-       :label               (i18n/label :t/edit-message)
-       :icon                :i/edit
-       :accessibility-label :edit-message
-       :id                  :edit}])
-   (when (and able-to-send-message? (not= outgoing-status :sending) (not (or deleted? deleted-for-me?)))
-     [{:type                :main
-       :on-press            #(rf/dispatch [:chat.ui/reply-to-message message-data])
-       :label               (i18n/label :t/message-reply)
-       :icon                :i/reply
-       :accessibility-label :reply-message
-       :id                  :reply}])
-   (when (and (not (or deleted? deleted-for-me?))
-              (not= content-type constants/content-type-audio))
-     [{:type                :main
-       :on-press            #(clipboard/set-string
-                              (reply/get-quoted-text-with-mentions
-                               (get content :parsed-text)))
-       :label               (i18n/label :t/copy-text)
-       :accessibility-label :copy-text
-       :icon                :i/copy
-       :id                  :copy}])
-   ;; pinning images are temporarily disabled
-   (when (and message-pin-enabled
-              (not= content-type constants/content-type-image)
-              (or community-member? (not community?)))
-     [{:type                :main
-       :on-press            #(pin-message message-data)
-       :label               (i18n/label (if pinned-by
-                                          (if community? :t/unpin-from-channel :t/unpin-from-chat)
-                                          (if community? :t/pin-to-channel :t/pin-to-chat)))
-       :accessibility-label (if pinned-by :unpin-message :pin-message)
-       :icon                :i/pin
-       :id                  (if pinned-by :unpin :pin)}])
-   (when-not (or deleted? deleted-for-me? bridge-message)
-     [{:type                :danger
-       :on-press            (fn []
-                              (rf/dispatch
-                               [:hide-bottom-sheet])
-                              (rf/dispatch [:chat.ui/delete-message-for-me message-data
-                                            config/delete-message-for-me-undo-time-limit-ms]))
+  (let [edit-message?        (and (or community-member? (not community?))
+                                  outgoing
+                                  (not (or deleted? deleted-for-me?))
+                                  ;; temporarily disable edit image message until
+                                  ;; https://github.com/status-im/status-mobile/issues/15298 is
+                                  ;; implemented
+                                  (not= content-type constants/content-type-image)
+                                  (not= content-type constants/content-type-audio))
+        reply?               (and able-to-send-message?
+                                  (not= outgoing-status :sending)
+                                  (not (or deleted? deleted-for-me?)))
+        copy-text?           (and (not (or deleted? deleted-for-me?))
+                                  (not= content-type constants/content-type-audio))
+        ;; pinning images are temporarily disabled
+        pin-message?         (and message-pin-enabled
+                                  (not= content-type constants/content-type-image)
+                                  (or community-member? (not community?)))
+        delete-for-me?       (and (or community-member? (not community?))
+                                  (not (or deleted? deleted-for-me? bridge-message)))
+        delete-for-everyone? (and (or community-member? (not community?))
+                                  (cond
+                                    deleted?       false
+                                    outgoing       true
+                                    community?     can-delete-message-for-everyone?
+                                    group-chat     group-admin?
+                                    bridge-message false
+                                    :else          false))]
+    (cond-> []
+      reply?
+      (conj {:type                :main
+             :on-press            #(rf/dispatch [:chat.ui/reply-to-message message-data])
+             :label               (i18n/label :t/message-reply)
+             :icon                :i/reply
+             :accessibility-label :reply-message
+             :id                  :reply})
 
-       :label               (i18n/label :t/delete-for-me)
-       :accessibility-label :delete-for-me
-       :icon                :i/delete
-       :id                  :delete-for-me}])
-   (when (cond
-           deleted?       false
-           outgoing       true
-           community?     can-delete-message-for-everyone?
-           group-chat     group-admin?
-           bridge-message false
-           :else          false)
-     [{:type                :danger
-       :on-press            (fn []
-                              (rf/dispatch [:hide-bottom-sheet])
-                              (rf/dispatch [:chat.ui/delete-message message-data
-                                            config/delete-message-undo-time-limit-ms]))
-       :label               (i18n/label :t/delete-for-everyone)
-       :accessibility-label :delete-for-everyone
-       :icon                :i/delete
-       :id                  :delete-for-all}])))
+      edit-message?
+      (conj {:type                :main
+             :on-press            #(rf/dispatch [:chat.ui/edit-message message-data])
+             :label               (i18n/label :t/edit-message)
+             :icon                :i/edit
+             :accessibility-label :edit-message
+             :id                  :edit})
+
+      copy-text?
+      (conj {:type                :main
+             :on-press            #(clipboard/set-string
+                                    (reply/get-quoted-text-with-mentions
+                                     (get content :parsed-text)))
+             :label               (i18n/label :t/copy-text)
+             :accessibility-label :copy-text
+             :icon                :i/copy
+             :id                  :copy})
+
+      pin-message?
+      (conj {:type                :main
+             :on-press            #(pin-message message-data)
+             :label               (i18n/label (if pinned-by
+                                                (if community? :t/unpin-from-channel :t/unpin-from-chat)
+                                                (if community? :t/pin-to-channel :t/pin-to-chat)))
+             :accessibility-label (if pinned-by :unpin-message :pin-message)
+             :icon                :i/pin
+             :id                  (if pinned-by :unpin :pin)})
+
+      delete-for-me?
+      (conj {:type                :danger
+             :on-press            (fn []
+                                    (rf/dispatch [:hide-bottom-sheet])
+                                    (rf/dispatch [:chat.ui/delete-message-for-me message-data
+                                                  config/delete-message-for-me-undo-time-limit-ms]))
+
+             :label               (i18n/label :t/delete-for-me)
+             :accessibility-label :delete-for-me
+             :icon                :i/delete
+             :id                  :delete-for-me})
+
+      delete-for-everyone?
+      (conj {:type                :danger
+             :on-press            (fn []
+                                    (rf/dispatch [:hide-bottom-sheet])
+                                    (rf/dispatch [:chat.ui/delete-message message-data
+                                                  config/delete-message-undo-time-limit-ms]))
+             :label               (i18n/label :t/delete-for-everyone)
+             :accessibility-label :delete-for-everyone
+             :icon                :i/delete
+             :id                  :delete-for-all}))))
 
 (defn extract-id
   [reactions id]
@@ -209,21 +225,24 @@
            (rf/dispatch [:hide-bottom-sheet]))}])]))
 
 (defn reactions-and-actions
-  [message-data
-   {:keys [chat-id] :as context}]
+  [message-data {:keys [chat-id community? community-member?] :as context}]
   (fn []
-    (let [data                                          (if (contains? message-data :album-id)
-                                                          (first (:album message-data))
-                                                          message-data)
-          {:keys [message-id deleted? deleted-for-me?]} data
-          outgoing-status                               (:outgoing-status data)
-          actions                                       (get-actions data context)
-          main-actions                                  (filter #(= (:type %) :main) actions)
-          danger-actions                                (filter #(= (:type %) :danger) actions)
-          admin-actions                                 (filter #(= (:type %) :admin) actions)]
+    (let [data                    (if (contains? message-data :album-id)
+                                    (first (:album message-data))
+                                    message-data)
+          {:keys [deleted-for-me?
+                  outgoing-status
+                  deleted?
+                  message-id]}    data
+          actions                 (get-actions data context)
+          {main-actions   :main
+           danger-actions :danger
+           admin-actions  :admin} (group-by :type actions)]
       [:<>
        ;; REACTIONS
-       (when (and (not= outgoing-status :sending) (not (or deleted? deleted-for-me?)))
+       (when (and (or community-member? (not community?))
+                  (not= outgoing-status :sending)
+                  (not (or deleted? deleted-for-me?)))
          [reactions {:chat-id chat-id :message-id message-id}])
        ;; MAIN ACTIONS
        [rn/view {:style {:padding-horizontal 8}}

@@ -2,12 +2,10 @@
   (:require
     [quo.core :as quo]
     [reagent.core :as reagent]
-    [status-im.contexts.preview.quo.preview :as preview]
-    [utils.i18n :as i18n]))
+    [status-im.contexts.preview.quo.preview :as preview]))
 
 (def descriptor
-  [{:key :show-jump-to? :type :boolean}
-   {:key :show-search? :type :boolean}
+  [{:key :show-search? :type :boolean}
    {:key :show-mention? :type :boolean}
    {:key     :scroll-type
     :type    :select
@@ -16,10 +14,8 @@
               {:key :scroll-to-bottom}]}])
 
 (defn mock-data
-  [{:keys [show-jump-to? show-search? show-mention? scroll-type]}]
+  [{:keys [show-search? show-mention? scroll-type]}]
   (cond-> {}
-    show-jump-to?
-    (assoc :jump-to {:on-press #() :label (i18n/label :t/jump-to)})
     show-search?
     (assoc :search {:on-press #()})
     show-mention?
@@ -33,8 +29,7 @@
 
 (defn view
   []
-  (let [state (reagent/atom {:show-jump-to? true
-                             :scroll-type   :notification-down})]
+  (let [state (reagent/atom {:scroll-type :notification-down})]
     (fn []
       [preview/preview-container
        {:state                     state

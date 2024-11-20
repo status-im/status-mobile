@@ -104,16 +104,19 @@
    :wallet/wallet-send-tx-type                     :tx/send
    :wallet/wallet-send-fee-fiat-formatted          "$5,00"
    :wallet/sending-collectible?                    false
-   :wallet/total-amount                            (money/bignumber "250")})
+   :wallet/send-total-amount-formatted             "250 ETH"
+   :wallet/total-amount                            (money/bignumber "250")
+   :wallet/bridge-to-network-details               nil
+   :wallet/send-amount-fixed                       ""
+   :wallet/send-display-token-decimals             5})
 
 (h/describe "Send > input amount screen"
   (h/setup-restorable-re-frame)
 
   (h/test "Default render"
-    (h/setup-subs sub-mocks)
+    (h/setup-subs (assoc sub-mocks :wallet/send-display-token-decimals 2))
     (h/render-with-theme-provider [input-amount/view
-                                   {:crypto-decimals          2
-                                    :limit-crypto             (money/bignumber 250)
+                                   {:limit-crypto             (money/bignumber 250)
                                     :initial-crypto-currency? false}])
     (h/is-truthy (h/get-by-text "0"))
     (h/is-truthy (h/get-by-text "USD"))
@@ -122,12 +125,11 @@
     (h/is-disabled (h/get-by-label-text :button-one)))
 
   (h/test "Fill token input and confirm"
-    (h/setup-subs sub-mocks)
+    (h/setup-subs (assoc sub-mocks :wallet/send-display-token-decimals 10))
 
     (let [on-confirm (h/mock-fn)]
       (h/render-with-theme-provider [input-amount/view
-                                     {:crypto-decimals          10
-                                      :limit-crypto             (money/bignumber 1000)
+                                     {:limit-crypto             (money/bignumber 1000)
                                       :on-confirm               on-confirm
                                       :initial-crypto-currency? true}])
 
@@ -147,10 +149,9 @@
                      (h/was-called on-confirm)))))))
 
   (h/test "Try to fill more than limit"
-    (h/setup-subs sub-mocks)
+    (h/setup-subs (assoc sub-mocks :wallet/send-display-token-decimals 1))
     (h/render-with-theme-provider [input-amount/view
-                                   {:crypto-decimals 1
-                                    :limit-crypto    (money/bignumber 1)}])
+                                   {:limit-crypto (money/bignumber 1)}])
 
     (h/fire-event :press (h/query-by-label-text :keyboard-key-2))
     (h/fire-event :press (h/query-by-label-text :keyboard-key-9))
@@ -159,11 +160,10 @@
     (h/is-truthy (h/get-by-label-text :container-error)))
 
   (h/test "Switch from crypto to fiat and check limit"
-    (h/setup-subs sub-mocks)
+    (h/setup-subs (assoc sub-mocks :wallet/send-display-token-decimals 1))
     (h/render-with-theme-provider [input-amount/view
-                                   {:crypto-decimals 1
-                                    :limit-crypto    (money/bignumber 10)
-                                    :on-confirm      #()}])
+                                   {:limit-crypto (money/bignumber 10)
+                                    :on-confirm   #()}])
 
     (h/fire-event :press (h/query-by-label-text :keyboard-key-9))
     (h/fire-event :press (h/query-by-label-text :keyboard-key-9))

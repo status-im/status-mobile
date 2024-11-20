@@ -195,3 +195,77 @@
     (is (= (utils/sanitized-token-amount-to-display 0.00000123 6) "0.000001"))
     (is (= (utils/sanitized-token-amount-to-display nil 2) "0"))
     (is (= (utils/sanitized-token-amount-to-display "invalid" 2) "0"))))
+
+(deftest token-balance-display-for-network-test
+  (testing "Standard balance with rounding decimals"
+    (let [token             {:decimals           18
+                             :balances-per-chain {1 {:raw-balance "1000000000000000000"}}}
+          chain-id          1
+          rounding-decimals 2
+          expected          "1"]
+      (is (= (utils/token-balance-display-for-network token chain-id rounding-decimals)
+             expected))))
+
+  (testing "Balance with more decimals than specified rounding"
+    (let [token             {:decimals           18
+                             :balances-per-chain {1 {:raw-balance "123456789000000000"}}}
+          chain-id          1
+          rounding-decimals 3
+          expected          "0.123"]
+      (is (= (utils/token-balance-display-for-network token chain-id rounding-decimals)
+             expected))))
+
+  (testing "Very small balance displayed as threshold (<0.000001)"
+    (let [token             {:decimals           18
+                             :balances-per-chain {1 {:raw-balance "1"}}}
+          chain-id          1
+          rounding-decimals 6
+          expected          "<0.000001"]
+      (is (= (utils/token-balance-display-for-network token chain-id rounding-decimals)
+             expected))))
+
+  (testing
+    "Very small balance displayed without threshold when token decimals are equal than reounding decimals"
+    (let [token             {:decimals           18
+                             :balances-per-chain {1 {:raw-balance "1"}}}
+          chain-id          1
+          rounding-decimals 18
+          expected          "0.000000000000000001"]
+      (is (= (utils/token-balance-display-for-network token chain-id rounding-decimals)
+             expected))))
+
+  (testing
+    "Very small balance displayed without threshold when token decimals are lower than reounding decimals"
+    (let [token             {:decimals           18
+                             :balances-per-chain {1 {:raw-balance "1"}}}
+          chain-id          1
+          rounding-decimals 21
+          expected          "0.000000000000000001"]
+      (is (= (utils/token-balance-display-for-network token chain-id rounding-decimals)
+             expected))))
+
+  (testing "Zero balance displayed correctly"
+    (let [token             {:decimals           18
+                             :balances-per-chain {1 {:raw-balance "0"}}}
+          chain-id          1
+          rounding-decimals 2
+          expected          "0"]
+      (is (= (utils/token-balance-display-for-network token chain-id rounding-decimals)
+             expected))))
+
+  (testing "Balance with trailing zeroes removed"
+    (let [token             {:decimals           8
+                             :balances-per-chain {1 {:raw-balance "123400000"}}}
+          chain-id          1
+          rounding-decimals 6
+          expected          "1.234"]
+      (is (= (utils/token-balance-display-for-network token chain-id rounding-decimals)
+             expected))))
+
+  (testing "Balance when chain data is missing"
+    (let [token             {:decimals 18}
+          chain-id          1
+          rounding-decimals 2
+          expected          "0"]
+      (is (= (utils/token-balance-display-for-network token chain-id rounding-decimals)
+             expected)))))

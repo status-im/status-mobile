@@ -3,14 +3,18 @@
 #import "React/RCTEventDispatcher.h"
 #import "Statusgo.h"
 #import "Utils.h"
-
+#import "StatusBackendClient.h"
 @implementation NetworkManager
 
 RCT_EXPORT_MODULE();
 
 RCT_EXPORT_METHOD(startSearchForLocalPairingPeers:(RCTResponseSenderBlock)callback) {
-    NSString *result = StatusgoStartSearchForLocalPairingPeers();
-    callback(@[result]);
+    [StatusBackendClient executeStatusGoRequestWithCallback:@"StartSearchForLocalPairingPeers" 
+                                                     body:@""
+                                         statusgoFunction:^NSString *{
+        return StatusgoStartSearchForLocalPairingPeers();
+    }
+                                               callback:callback];
 }
 
 RCT_EXPORT_METHOD(getConnectionStringForBootstrappingAnotherDevice:(NSString *)configJSON
@@ -19,6 +23,11 @@ RCT_EXPORT_METHOD(getConnectionStringForBootstrappingAnotherDevice:(NSString *)c
     NSData *configData = [configJSON dataUsingEncoding:NSUTF8StringEncoding];
     NSError *error;
     NSMutableDictionary *configDict = [NSJSONSerialization JSONObjectWithData:configData options:NSJSONReadingMutableContainers error:&error];
+    if (error) {
+        NSLog(@"Error parsing JSON: %@", error);
+        return;
+    }
+
     NSMutableDictionary *senderConfig = configDict[@"senderConfig"];
     NSString *keyUID = senderConfig[@"keyUID"];
     NSURL *multiaccountKeystoreDir = [Utils getKeyStoreDirForKeyUID:keyUID];
@@ -27,16 +36,43 @@ RCT_EXPORT_METHOD(getConnectionStringForBootstrappingAnotherDevice:(NSString *)c
     [senderConfig setValue:keystoreDir forKey:@"keystorePath"];
     NSString *modifiedConfigJSON = [Utils jsonStringWithPrettyPrint:NO fromDictionary:configDict];
 
-    NSString *result = StatusgoGetConnectionStringForBootstrappingAnotherDevice(modifiedConfigJSON);
-    callback(@[result]);
+    [StatusBackendClient executeStatusGoRequestWithCallback:@"GetConnectionStringForBootstrappingAnotherDevice"
+                                                     body:modifiedConfigJSON
+                                         statusgoFunction:^NSString *{
+        return StatusgoGetConnectionStringForBootstrappingAnotherDevice(modifiedConfigJSON);
+    }
+                                               callback:callback];
 }
 
 RCT_EXPORT_METHOD(inputConnectionStringForBootstrapping:(NSString *)cs
         configJSON:(NSString *)configJSON
         callback:(RCTResponseSenderBlock)callback) {
 
-    NSString *result = StatusgoInputConnectionStringForBootstrapping(cs, configJSON);
-    callback(@[result]);
+    NSData *configData = [configJSON dataUsingEncoding:NSUTF8StringEncoding];
+    NSError *jsonError;
+    NSDictionary *configDict = [NSJSONSerialization JSONObjectWithData:configData options:0 error:&jsonError];
+    if (jsonError) {
+        NSLog(@"Error parsing JSON: %@", jsonError);
+        return;
+    }
+
+    NSDictionary *params = @{
+        @"connectionString": cs,
+        @"receiverClientConfig": configDict
+    };
+    NSError *error;
+    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:params options:0 error:&error];
+    if (error) {
+        NSLog(@"Error creating JSON: %@", error);
+        return;
+    }
+    NSString *jsonString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+    [StatusBackendClient executeStatusGoRequestWithCallback:@"InputConnectionStringForBootstrappingV2"
+                                                     body:jsonString
+                                         statusgoFunction:^NSString *{
+        return StatusgoInputConnectionStringForBootstrappingV2(jsonString);
+    }
+                                               callback:callback];
 }
 
 RCT_EXPORT_METHOD(sendTransactionWithSignature:(NSString *)txArgsJSON
@@ -45,8 +81,12 @@ RCT_EXPORT_METHOD(sendTransactionWithSignature:(NSString *)txArgsJSON
 #if DEBUG
     NSLog(@"sendTransactionWithSignature() method called");
 #endif
-    NSString *result = StatusgoSendTransactionWithSignature(txArgsJSON, signature);
-    callback(@[result]);
+    [StatusBackendClient executeStatusGoRequestWithCallback:@"SendTransactionWithSignature"
+                                                     body:txArgsJSON
+                                         statusgoFunction:^NSString *{
+        return StatusgoSendTransactionWithSignature(txArgsJSON, signature);
+    }
+                                               callback:callback];
 }
 
 #pragma mark - SendTransaction
@@ -55,30 +95,53 @@ RCT_EXPORT_METHOD(sendTransaction:(NSString *)txArgsJSON
         password:(NSString *)password
         callback:(RCTResponseSenderBlock)callback) {
 #if DEBUG
-    NSLog(@"SendTransaction() method called");
+    NSLog(@"SendTransactionV2() method called");
 #endif
-    NSString *result = StatusgoSendTransaction(txArgsJSON, password);
-    callback(@[result]);
+    NSData *txArgsData = [txArgsJSON dataUsingEncoding:NSUTF8StringEncoding];
+    NSError *jsonError;
+    NSDictionary *txArgsDict = [NSJSONSerialization JSONObjectWithData:txArgsData options:0 error:&jsonError];
+    if (jsonError) {
+        NSLog(@"Error parsing JSON: %@", jsonError);
+        return;
+    }
+
+    NSDictionary *params = @{
+        @"txArgs": txArgsDict,
+        @"password": password
+    };
+    NSError *error;
+    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:params options:0 error:&error];
+    if (error) {
+        NSLog(@"Error creating JSON: %@", error);
+        return;
+    }
+    NSString *jsonString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+    [StatusBackendClient executeStatusGoRequestWithCallback:@"SendTransactionV2"
+                                                     body:jsonString
+                                         statusgoFunction:^NSString *{
+        return StatusgoSendTransactionV2(jsonString);
+    }
+                                               callback:callback];
 }
 
 RCT_EXPORT_METHOD(callRPC:(NSString *)payload
         callback:(RCTResponseSenderBlock)callback) {
-    dispatch_async( dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        NSString *result = StatusgoCallRPC(payload);
-        dispatch_async(dispatch_get_main_queue(), ^{
-            callback(@[result]);
-        });
-    });
+    [StatusBackendClient executeStatusGoRequestWithCallback:@"CallRPC"
+                                                     body:payload
+                                         statusgoFunction:^NSString *{
+        return StatusgoCallRPC(payload);
+    }
+                                               callback:callback];
 }
 
 RCT_EXPORT_METHOD(callPrivateRPC:(NSString *)payload
         callback:(RCTResponseSenderBlock)callback) {
-    dispatch_async( dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        NSString *result = StatusgoCallPrivateRPC(payload);
-        dispatch_async(dispatch_get_main_queue(), ^{
-            callback(@[result]);
-        });
-    });
+    [StatusBackendClient executeStatusGoRequestWithCallback:@"CallPrivateRPC"
+                                                     body:payload
+                                         statusgoFunction:^NSString *{
+        return StatusgoCallPrivateRPC(payload);
+    }
+                                               callback:callback];
 }
 
 #pragma mark - Recover
@@ -88,8 +151,12 @@ RCT_EXPORT_METHOD(recover:(NSString *)message
 #if DEBUG
     NSLog(@"Recover() method called");
 #endif
-    NSString *result = StatusgoRecover(message);
-    callback(@[result]);
+    [StatusBackendClient executeStatusGoRequestWithCallback:@"Recover"
+                                                     body:message
+                                         statusgoFunction:^NSString *{
+        return StatusgoRecover(message);
+    }
+                                               callback:callback];
 }
 
 RCT_EXPORT_METHOD(getConnectionStringForExportingKeypairsKeystores:(NSString *)configJSON
@@ -106,8 +173,12 @@ RCT_EXPORT_METHOD(getConnectionStringForExportingKeypairsKeystores:(NSString *)c
     [senderConfig setValue:keystoreDir forKey:@"keystorePath"];
     NSString *modifiedConfigJSON = [Utils jsonStringWithPrettyPrint:NO fromDictionary:configDict];
 
-    NSString *result = StatusgoGetConnectionStringForExportingKeypairsKeystores(modifiedConfigJSON);
-    callback(@[result]);
+    [StatusBackendClient executeStatusGoRequestWithCallback:@"GetConnectionStringForExportingKeypairsKeystores"
+                                                     body:modifiedConfigJSON
+                                         statusgoFunction:^NSString *{
+        return StatusgoGetConnectionStringForExportingKeypairsKeystores(modifiedConfigJSON);
+    }
+                                               callback:callback];
 }
 
 RCT_EXPORT_METHOD(inputConnectionStringForImportingKeypairsKeystores:(NSString *)cs
@@ -119,14 +190,25 @@ RCT_EXPORT_METHOD(inputConnectionStringForImportingKeypairsKeystores:(NSString *
     NSMutableDictionary *configDict = [NSJSONSerialization JSONObjectWithData:configData options:NSJSONReadingMutableContainers error:&error];
     NSMutableDictionary *receiverConfig = configDict[@"receiverConfig"];
     NSFileManager *fileManager = [NSFileManager defaultManager];
-    NSURL *rootUrl =[[fileManager URLsForDirectory:NSLibraryDirectory inDomains:NSUserDomainMask] lastObject];
+    NSURL *rootUrl =[Utils getRootUrl];
     NSURL *multiaccountKeystoreDir = [rootUrl URLByAppendingPathComponent:@"keystore"];
     NSString *keystoreDir = multiaccountKeystoreDir.path;
 
     [receiverConfig setValue:keystoreDir forKey:@"keystorePath"];
     NSString *modifiedConfigJSON = [Utils jsonStringWithPrettyPrint:NO fromDictionary:configDict];
-    NSString *result = StatusgoInputConnectionStringForImportingKeypairsKeystores(cs, modifiedConfigJSON);
-    callback(@[result]);
+    
+    NSDictionary *params = @{
+        @"connectionString": cs,
+        @"keystoreFilesReceiverClientConfig": modifiedConfigJSON
+    };
+    NSString *paramsJSON = [Utils jsonStringWithPrettyPrint:NO fromDictionary:params];
+    
+    [StatusBackendClient executeStatusGoRequestWithCallback:@"InputConnectionStringForImportingKeypairsKeystoresV2"
+                                                     body:paramsJSON
+                                         statusgoFunction:^NSString *{
+        return StatusgoInputConnectionStringForImportingKeypairsKeystoresV2(paramsJSON);
+    }
+                                               callback:callback];
 }
 
 @end

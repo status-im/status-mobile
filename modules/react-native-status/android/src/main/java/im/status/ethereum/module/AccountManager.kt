@@ -24,25 +24,23 @@ class AccountManager(private val reactContext: ReactApplicationContext) : ReactC
     @ReactMethod
     fun createAccountAndLogin(createAccountRequest: String) {
         Log.d(TAG, "createAccountAndLogin")
-        val result = Statusgo.createAccountAndLogin(createAccountRequest)
-        if (result.startsWith("{\"error\":\"\"")) {
-            Log.d(TAG, "createAccountAndLogin success: $result")
-            Log.d(TAG, "Geth node started")
-        } else {
-            Log.e(TAG, "createAccountAndLogin failed: $result")
-        }
+        
+        StatusBackendClient.executeStatusGoRequest(
+            endpoint = "CreateAccountAndLogin",
+            requestBody = createAccountRequest,
+            statusgoFunction = { Statusgo.createAccountAndLogin(createAccountRequest) }
+        )
     }
 
     @ReactMethod
     fun restoreAccountAndLogin(restoreAccountRequest: String) {
         Log.d(TAG, "restoreAccountAndLogin")
-        val result = Statusgo.restoreAccountAndLogin(restoreAccountRequest)
-        if (result.startsWith("{\"error\":\"\"")) {
-            Log.d(TAG, "restoreAccountAndLogin success: $result")
-            Log.d(TAG, "Geth node started")
-        } else {
-            Log.e(TAG, "restoreAccountAndLogin failed: $result")
-        }
+
+        StatusBackendClient.executeStatusGoRequest(
+            endpoint = "RestoreAccountAndLogin",
+            requestBody = restoreAccountRequest,
+            statusgoFunction = { Statusgo.restoreAccountAndLogin(restoreAccountRequest) }
+        )
     }
 
     private fun updateConfig(jsonConfigString: String, absRootDirPath: String, keystoreDirPath: String): String {
@@ -173,12 +171,7 @@ class AccountManager(private val reactContext: ReactApplicationContext) : ReactC
                 accountsData,
                 chatKey
             )
-            if (result.startsWith("{\"error\":\"\"")) {
-                Log.d(TAG, "saveAccountAndLoginWithKeycard result: $result")
-                Log.d(TAG, "Geth node started")
-            } else {
-                Log.e(TAG, "saveAccountAndLoginWithKeycard failed: $result")
-            }
+            utils.handleStatusGoResponse(result, "saveAccountAndLoginWithKeycard")
         } catch (e: JSONException) {
             Log.e(TAG, "JSON conversion failed: ${e.message}")
         }
@@ -189,11 +182,7 @@ class AccountManager(private val reactContext: ReactApplicationContext) : ReactC
         Log.d(TAG, "loginWithKeycard")
         utils.migrateKeyStoreDir(accountData, password)
         val result = Statusgo.loginWithKeycard(accountData, password, chatKey, nodeConfigJSON)
-        if (result.startsWith("{\"error\":\"\"")) {
-            Log.d(TAG, "LoginWithKeycard result: $result")
-        } else {
-            Log.e(TAG, "LoginWithKeycard failed: $result")
-        }
+        utils.handleStatusGoResponse(result, "loginWithKeycard")
     }
 
     @ReactMethod
@@ -201,22 +190,17 @@ class AccountManager(private val reactContext: ReactApplicationContext) : ReactC
         Log.d(TAG, "loginWithConfig")
         utils.migrateKeyStoreDir(accountData, password)
         val result = Statusgo.loginWithConfig(accountData, password, configJSON)
-        if (result.startsWith("{\"error\":\"\"")) {
-            Log.d(TAG, "LoginWithConfig result: $result")
-        } else {
-            Log.e(TAG, "LoginWithConfig failed: $result")
-        }
+        utils.handleStatusGoResponse(result, "loginWithConfig")
     }
 
     @ReactMethod
     fun loginAccount(request: String) {
         Log.d(TAG, "loginAccount")
-        val result = Statusgo.loginAccount(request)
-        if (result.startsWith("{\"error\":\"\"")) {
-            Log.d(TAG, "loginAccount result: $result")
-        } else {
-            Log.e(TAG, "loginAccount failed: $result")
-        }
+        StatusBackendClient.executeStatusGoRequest(
+            endpoint = "LoginAccount",
+            requestBody = request,
+            statusgoFunction = { Statusgo.loginAccount(request) }
+        )
     }
 
     @ReactMethod
@@ -224,16 +208,31 @@ class AccountManager(private val reactContext: ReactApplicationContext) : ReactC
         val absRootDirPath = utils.getNoBackupDirectory()
         val newKeystoreDir = utils.pathCombine(absRootDirPath, "keystore")
 
-        utils.executeRunnableStatusGoMethod(
-            { Statusgo.verifyAccountPassword(newKeystoreDir, address, password) },
+        val jsonParams = JSONObject()
+        jsonParams.put("keyStoreDir", newKeystoreDir)
+        jsonParams.put("address", address) 
+        jsonParams.put("password", password)
+
+        StatusBackendClient.executeStatusGoRequestWithCallback(
+            endpoint = "VerifyAccountPasswordV2",
+            requestBody = jsonParams.toString(),
+            statusgoFunction = { Statusgo.verifyAccountPasswordV2(jsonParams.toString()) },
             callback
         )
     }
 
     @ReactMethod
     fun verifyDatabasePassword(keyUID: String, password: String, callback: Callback) {
-        utils.executeRunnableStatusGoMethod(
-            { Statusgo.verifyDatabasePassword(keyUID, password) },
+        val jsonParams = JSONObject()
+        jsonParams.put("keyUID", keyUID)
+        jsonParams.put("password", password)
+
+        val jsonString = jsonParams.toString()
+
+        StatusBackendClient.executeStatusGoRequestWithCallback(
+            endpoint = "VerifyDatabasePasswordV2",
+            requestBody = jsonString,
+            statusgoFunction = { Statusgo.verifyDatabasePasswordV2(jsonString) },
             callback
         )
     }
@@ -249,79 +248,136 @@ class AccountManager(private val reactContext: ReactApplicationContext) : ReactC
     @ReactMethod
     private fun initializeApplication(request: String, callback: Callback) {
         Log.d(TAG, "initializeApplication")
-        Log.d(TAG, "[Initializing application $request")
-        utils.executeRunnableStatusGoMethod({ Statusgo.initializeApplication(request) }, callback)
+        StatusBackendClient.executeStatusGoRequestWithCallback(
+            "InitializeApplication",
+            request,
+            { Statusgo.initializeApplication(request) },
+            callback
+        )
     }
 
     @ReactMethod
     private fun acceptTerms(callback: Callback) {
         Log.d(TAG, "acceptTerms")
-        utils.executeRunnableStatusGoMethod({ Statusgo.acceptTerms() }, callback)
+        StatusBackendClient.executeStatusGoRequestWithCallback(
+            "AcceptTerms",
+            "",
+            { Statusgo.acceptTerms() },
+            callback
+        )
     }
 
     @ReactMethod
     fun logout() {
         Log.d(TAG, "logout")
-        val runnable = Runnable {
-            val result = Statusgo.logout()
-            if (result.startsWith("{\"error\":\"\"")) {
-                Log.d(TAG, "Logout result: $result")
-            } else {
-                Log.e(TAG, "Logout failed: $result")
-            }
-        }
-        StatusThreadPoolExecutor.getInstance().execute(runnable)
+        StatusBackendClient.executeStatusGoRequest(
+            endpoint = "Logout",
+            requestBody = "",
+            statusgoFunction = { Statusgo.logout() }
+        )
     }
 
     @ReactMethod
     fun multiAccountStoreAccount(json: String, callback: Callback) {
-        utils.executeRunnableStatusGoMethod({ Statusgo.multiAccountStoreAccount(json) }, callback)
+        StatusBackendClient.executeStatusGoRequestWithCallback(
+            endpoint = "MultiAccountStoreAccount",
+            requestBody = json,
+            statusgoFunction = { Statusgo.multiAccountStoreAccount(json) },
+            callback = callback
+        )
     }
 
     @ReactMethod
     fun multiAccountLoadAccount(json: String, callback: Callback) {
-        utils.executeRunnableStatusGoMethod({ Statusgo.multiAccountLoadAccount(json) }, callback)
+        StatusBackendClient.executeStatusGoRequestWithCallback(
+            endpoint = "MultiAccountLoadAccount",
+            requestBody = json,
+            statusgoFunction = { Statusgo.multiAccountLoadAccount(json) },
+            callback = callback
+        )
     }
 
     @ReactMethod
     fun multiAccountDeriveAddresses(json: String, callback: Callback) {
-        utils.executeRunnableStatusGoMethod({ Statusgo.multiAccountDeriveAddresses(json) }, callback)
+        StatusBackendClient.executeStatusGoRequestWithCallback(
+            endpoint = "MultiAccountDeriveAddresses",
+            requestBody = json,
+            statusgoFunction = { Statusgo.multiAccountDeriveAddresses(json) },
+            callback = callback
+        )
     }
 
     @ReactMethod
     fun multiAccountGenerateAndDeriveAddresses(json: String, callback: Callback) {
-        utils.executeRunnableStatusGoMethod({ Statusgo.multiAccountGenerateAndDeriveAddresses(json) }, callback)
+        StatusBackendClient.executeStatusGoRequestWithCallback(
+            endpoint = "MultiAccountGenerateAndDeriveAddresses",
+            requestBody = json,
+            statusgoFunction = { Statusgo.multiAccountGenerateAndDeriveAddresses(json) },
+            callback = callback
+        )
     }
 
     @ReactMethod
     fun multiAccountStoreDerived(json: String, callback: Callback) {
-        utils.executeRunnableStatusGoMethod({ Statusgo.multiAccountStoreDerivedAccounts(json) }, callback)
+        StatusBackendClient.executeStatusGoRequestWithCallback(
+            endpoint = "MultiAccountStoreDerivedAccounts",
+            requestBody = json,
+            statusgoFunction = { Statusgo.multiAccountStoreDerivedAccounts(json) },
+            callback = callback
+        )
     }
 
     @ReactMethod
     fun multiAccountImportMnemonic(json: String, callback: Callback) {
-        utils.executeRunnableStatusGoMethod({ Statusgo.multiAccountImportMnemonic(json) }, callback)
+        StatusBackendClient.executeStatusGoRequestWithCallback(
+            endpoint = "MultiAccountImportMnemonic",
+            requestBody = json,
+            statusgoFunction = { Statusgo.multiAccountImportMnemonic(json) },
+            callback = callback
+        )
     }
 
     @ReactMethod
     fun multiAccountImportPrivateKey(json: String, callback: Callback) {
-        utils.executeRunnableStatusGoMethod({ Statusgo.multiAccountImportPrivateKey(json) }, callback)
+        StatusBackendClient.executeStatusGoRequestWithCallback(
+            endpoint = "MultiAccountImportPrivateKey",
+            requestBody = json,
+            statusgoFunction = { Statusgo.multiAccountImportPrivateKey(json) },
+            callback = callback
+        )
     }
 
     @ReactMethod
     fun deleteMultiaccount(keyUID: String, callback: Callback) {
         val keyStoreDir = utils.getKeyStorePath(keyUID)
-        utils.executeRunnableStatusGoMethod({ Statusgo.deleteMultiaccount(keyUID, keyStoreDir) }, callback)
+        val params = JSONObject().apply {
+            put("keyUID", keyUID)
+            put("keyStoreDir", keyStoreDir)
+        }
+        val jsonString = params.toString()
+        StatusBackendClient.executeStatusGoRequestWithCallback(
+            endpoint = "DeleteMultiaccountV2",
+            requestBody = jsonString,
+            statusgoFunction = { Statusgo.deleteMultiaccountV2(jsonString) },
+            callback
+        )
     }
 
     @ReactMethod
     fun getRandomMnemonic(callback: Callback) {
-        utils.executeRunnableStatusGoMethod({ Statusgo.getRandomMnemonic() }, callback)
+        StatusBackendClient.executeStatusGoRequestWithCallback(
+            "GetRandomMnemonic",
+            "",
+            { Statusgo.getRandomMnemonic() },
+            callback
+        )
     }
 
     @ReactMethod
     fun createAccountFromMnemonicAndDeriveAccountsForPaths(mnemonic: String, callback: Callback) {
-        utils.executeRunnableStatusGoMethod(
+        StatusBackendClient.executeStatusGoRequestWithCallback(
+            "CreateAccountFromMnemonicAndDeriveAccountsForPaths",
+            mnemonic,
             { Statusgo.createAccountFromMnemonicAndDeriveAccountsForPaths(mnemonic) },
             callback
         )
@@ -329,7 +385,12 @@ class AccountManager(private val reactContext: ReactApplicationContext) : ReactC
 
     @ReactMethod
     fun createAccountFromPrivateKey(json: String, callback: Callback) {
-        utils.executeRunnableStatusGoMethod({ Statusgo.createAccountFromPrivateKey(json) }, callback)
+        StatusBackendClient.executeStatusGoRequestWithCallback(
+            endpoint = "CreateAccountFromPrivateKey",
+            requestBody = json,
+            statusgoFunction = { Statusgo.createAccountFromPrivateKey(json) },
+            callback = callback
+        )
     }
 
     companion object {

@@ -20,10 +20,9 @@
     (chat.events/pop-to-root-and-navigate-to-chat cofx chat-id nil)))
 
 (re-frame/reg-event-fx :chat-removed
- (fn [{:keys [db]} [response chat-id]]
+ (fn [{:keys [db]} [response]]
    {:db (dissoc db :current-chat-id)
-    :fx [[:dispatch [:shell/close-switcher-card chat-id]]
-         [:dispatch [:sanitize-messages-and-process-response response]]
+    :fx [[:dispatch [:sanitize-messages-and-process-response response]]
          [:dispatch [:pop-to-root :shell-stack]]
          [:activity-center.notifications/fetch-unread-count]]}))
 

@@ -11,7 +11,6 @@
     [status-im.config :as config]
     [status-im.contexts.communities.actions.community-options.view :as options]
     [status-im.contexts.communities.discover.style :as style]
-    [status-im.feature-flags :as ff]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
@@ -233,18 +232,11 @@
 (defn view
   []
   (let [theme                (quo.theme/use-theme)
-        featured-communities (rf/sub [:communities/featured-contract-communities])
-        customization-color  (rf/sub [:profile/customization-color])]
+        featured-communities (rf/sub [:communities/featured-contract-communities])]
     (rn/use-mount #(rf/dispatch [:fetch-contract-communities]))
     [rn/view
      {:style (style/discover-screen-container (colors/theme-colors
                                                colors/white
                                                colors/neutral-95
                                                theme))}
-     [discover-screen-content featured-communities theme]
-     (when (ff/enabled? ::ff/shell.jump-to)
-       [quo/floating-shell-button
-        {:jump-to {:on-press            #(rf/dispatch [:shell/navigate-to-jump-to])
-                   :customization-color customization-color
-                   :label               (i18n/label :t/jump-to)}}
-        style/floating-shell-button])]))
+     [discover-screen-content featured-communities theme]]))

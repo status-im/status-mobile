@@ -1,5 +1,6 @@
 (ns status-im.subs.wallet.wallet
-  (:require [clojure.string :as string]
+  (:require [cljs-time.core :as t]
+            [clojure.string :as string]
             [re-frame.core :as rf]
             [status-im.constants :as constants]
             [status-im.contexts.wallet.common.utils :as utils]
@@ -38,6 +39,33 @@
  :wallet/scanned-address
  :<- [:wallet/ui]
  :-> :scanned-address)
+
+(rf/reg-sub
+ :wallet/last-updates-per-address
+ :<- [:wallet/ui]
+ :-> :last-updates-per-address)
+
+(rf/reg-sub
+ :wallet/latest-update
+ :<- [:wallet/last-updates-per-address]
+ (fn [last-updates-per-address]
+   (->> last-updates-per-address
+        vals
+        (reduce (fn [earliest-time last-update-time]
+                  (if (or (nil? earliest-time)
+                          (t/before? last-update-time earliest-time))
+                    last-update-time
+                    earliest-time))))))
+
+(rf/reg-sub
+ :wallet/blockchain
+ :<- [:wallet]
+ :-> :blockchain)
+
+(rf/reg-sub
+ :wallet/blockchain-status
+ :<- [:wallet/blockchain]
+ :-> :status)
 
 (rf/reg-sub
  :wallet/tokens
@@ -154,7 +182,8 @@
 (rf/reg-sub
  :wallet/wallet-send-token-symbol
  :<- [:wallet/wallet-send]
- :-> :token-symbol)
+ (fn [{:keys [token-symbol token]}]
+   (or token-symbol (:symbol token))))
 
 (rf/reg-sub
  :wallet/wallet-send-disabled-from-chain-ids
@@ -767,22 +796,18 @@
  :<- [:profile/currency-symbol]
  (fn [[account route currency currency-symbol] [_ token-symbol-for-fees]]
    (when token-symbol-for-fees
-     (let [tokens                  (:tokens account)
-           token-for-fees          (first (filter #(= (string/lower-case (:symbol %))
-                                                      (string/lower-case token-symbol-for-fees))
-                                                  tokens))
-           fee-in-native-token     (send-utils/calculate-full-route-gas-fee route)
-           fee-in-crypto-formatted (utils/get-standard-crypto-format
-                                    token-for-fees
-                                    fee-in-native-token)
-           fee-in-fiat             (utils/calculate-token-fiat-value
-                                    {:currency currency
-                                     :balance  fee-in-native-token
-                                     :token    token-for-fees})
-           fee-formatted           (utils/get-standard-fiat-format
-                                    fee-in-crypto-formatted
-                                    currency-symbol
-                                    fee-in-fiat)]
+     (let [tokens              (:tokens account)
+           token-for-fees      (first (filter #(= (string/lower-case (:symbol %))
+                                                  (string/lower-case token-symbol-for-fees))
+                                              tokens))
+           fee-in-native-token (send-utils/calculate-full-route-gas-fee route)
+           fee-in-fiat         (utils/calculate-token-fiat-value
+                                {:currency currency
+                                 :balance  fee-in-native-token
+                                 :token    token-for-fees})
+           fee-formatted       (utils/fiat-formatted-for-ui
+                                currency-symbol
+                                fee-in-fiat)]
        fee-formatted))))
 
 (rf/reg-sub

@@ -245,6 +245,13 @@
           (.times fiat-price-bn)
           (with-precision 2)))))
 
+(defn above-zero?
+  [^js balance]
+  (when balance
+    (->> 0
+         bignumber
+         (greater-than balance))))
+
 (defn sufficient-funds?
   [^js amount ^js balance]
   (when (and amount balance)

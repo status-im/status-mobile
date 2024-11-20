@@ -6,7 +6,6 @@
     [react-native.safe-area :as safe-area]
     [status-im.common.check-before-syncing.view :as check-before-syncing]
     [status-im.common.metrics-confirmation-modal.view :as metrics-modal]
-    [status-im.common.not-implemented :as not-implemented]
     [status-im.common.resources :as resources]
     [status-im.config :as config]
     [status-im.contexts.onboarding.create-or-sync-profile.style :as style]
@@ -109,14 +108,17 @@
         :image               (resources/get-image :ethereum-address)
         :on-press            nav-to-seed-phrase-with-cur-screen}]
       [rn/view {:style style/space-between-suboptions}]
-      (when config/show-not-implemented-features?
-        [quo/small-option-card
-         {:variant             :icon
-          :title               (i18n/label :t/use-keycard)
-          :subtitle            (i18n/label :t/use-keycard-subtitle)
-          :accessibility-label :use-keycard-option-card
-          :image               (resources/get-image :use-keycard)
-          :on-press            status-im.common.not-implemented/alert}])]]))
+      [quo/small-option-card
+       {:variant             :icon
+        :title               (i18n/label :t/use-keycard)
+        :subtitle            (i18n/label :t/profile-keys-on-keycard)
+        :accessibility-label :use-keycard-option-card
+        :image               (resources/get-image :use-keycard)
+        :on-press            (fn []
+                               (rf/dispatch [:open-modal :screen/keycard.check
+                                             {:on-press
+                                              #(rf/dispatch
+                                                [:keycard.login/check-card])}]))}]]]))
 
 (defn- navigate-back
   []

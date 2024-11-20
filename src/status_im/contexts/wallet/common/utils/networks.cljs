@@ -61,7 +61,7 @@
   "Same as `network-list`, but only returns the networks that have a positive token balance"
   [{:keys [balances-per-chain] :as token} networks]
   (as-> balances-per-chain $
-    (filter #(-> % second :raw-balance (money/greater-than 0)) $)
+    (filter #(-> % second :raw-balance money/above-zero?) $)
     (assoc token :balances-per-chain $)
     (network-list $ networks)))
 

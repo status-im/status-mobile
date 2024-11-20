@@ -82,11 +82,6 @@
 (reg-root-key-sub :onboarding/new-account? :onboarding/new-account?)
 (reg-root-key-sub :onboarding/profile :onboarding/profile)
 
-;;shell
-(reg-root-key-sub :shell/switcher-cards :shell/switcher-cards)
-(reg-root-key-sub :shell/floating-screens :shell/floating-screens)
-(reg-root-key-sub :shell/loaded-screens :shell/loaded-screens)
-
 ;;my profile
 (reg-root-key-sub :my-profile/seed :my-profile/seed)
 ;;profiles

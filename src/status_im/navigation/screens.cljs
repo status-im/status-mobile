@@ -45,7 +45,6 @@
     [status-im.contexts.onboarding.create-profile.view :as create-profile]
     [status-im.contexts.onboarding.enable-biometrics.view :as enable-biometrics]
     [status-im.contexts.onboarding.enable-notifications.view :as enable-notifications]
-    [status-im.contexts.onboarding.generating-keys.view :as generating-keys]
     [status-im.contexts.onboarding.identifiers.view :as identifiers]
     [status-im.contexts.onboarding.intro.view :as intro]
     [status-im.contexts.onboarding.preparing-status.view :as preparing-status]
@@ -97,9 +96,9 @@
     [status-im.contexts.settings.wallet.saved-addresses.view :as saved-addresses-settings]
     [status-im.contexts.settings.wallet.wallet-options.view :as wallet-options]
     [status-im.contexts.shell.activity-center.view :as activity-center]
-    [status-im.contexts.shell.jump-to.view :as shell]
     [status-im.contexts.shell.qr-reader.view :as shell-qr-reader]
     [status-im.contexts.shell.share.view :as share]
+    [status-im.contexts.shell.view :as shell]
     [status-im.contexts.syncing.find-sync-code.view :as find-sync-code]
     [status-im.contexts.syncing.how-to-pair.view :as how-to-pair]
     [status-im.contexts.syncing.scan-sync-code-page.view :as scan-sync-code-page]
@@ -319,7 +318,8 @@
    {:name      :screen/settings.keycard
     :metrics   {:track?   :true
                 :alias-id :settings.keycard}
-    :options   {:insets {:top? true :bottom? true}}
+    :options   {:theme  :dark
+                :insets {:top? true :bottom? true}}
     :component settings.keycard/view}
 
    {:name      :edit-profile
@@ -761,17 +761,6 @@
                                         :popStackOnPress     false}}
    :component enable-biometrics/view})
 
-(def onboarding-generating-keys
-  {:name      :screen/onboarding.generating-keys
-   :metrics   {:track? true}
-   :options   {:theme              :dark
-               :layout             options/onboarding-transparent-layout
-               :animations         transitions/push-animations-for-transparent-background
-               :popGesture         false
-               :hardwareBackButton {:dismissModalOnPress false
-                                    :popStackOnPress     false}}
-   :component generating-keys/view})
-
 (def onboarding-preparing-status
   {:name      :screen/onboarding.preparing-status
    :metrics   {:track? true}
@@ -872,7 +861,6 @@
    onboarding-create-profile
    onboarding-create-profile-password
    onboarding-enable-biometrics
-   onboarding-generating-keys
    onboarding-preparing-status
    onboarding-entering-seed-phrase
    onboarding-enable-notifications
@@ -886,37 +874,44 @@
 (def keycard-screens
   [{:name      :screen/keycard.check
     :metrics   {:track? :true}
-    :options   {:insets {:top? true :bottom? true}}
+    :options   {:theme  :dark
+                :insets {:top? true :bottom? true}}
     :component keycard.check/view}
 
    {:name      :screen/keycard.empty
     :metrics   {:track? :true}
-    :options   {:insets {:top? true :bottom? true}}
+    :options   {:theme  :dark
+                :insets {:top? true :bottom? true}}
     :component keycard.empty/view}
 
    {:name      :screen/keycard.error
     :metrics   {:track? :true}
-    :options   {:insets {:top? true :bottom? true}}
+    :options   {:theme  :dark
+                :insets {:top? true :bottom? true}}
     :component keycard.error/view}
 
    {:name      :screen/keycard.not-keycard
     :metrics   {:track? :true}
-    :options   {:insets {:top? true :bottom? true}}
+    :options   {:theme  :dark
+                :insets {:top? true :bottom? true}}
     :component keycard.not-keycard/view}
 
    {:name      :screen/keycard.authorise
     :metrics   {:track? :true}
-    :options   {:insets {:top? true :bottom? true}}
+    :options   {:theme  :dark
+                :insets {:top? true :bottom? true}}
     :component keycard.authorise/view}
 
    {:name      :screen/keycard.migrate
     :metrics   {:track? :true}
-    :options   {:insets {:top? true :bottom? true}}
+    :options   {:theme  :dark
+                :insets {:top? true :bottom? true}}
     :component keycard.migrate/view}
 
    {:name      :screen/keycard.re-encrypting
     :metrics   {:track? :true}
-    :options   {:insets             {:top? true :bottom? true}
+    :options   {:theme              :dark
+                :insets             {:top? true :bottom? true}
                 :popGesture         false
                 :hardwareBackButton {:dismissModalOnPress false
                                      :popStackOnPress     false}}
@@ -924,7 +919,8 @@
 
    {:name      :screen/keycard.migrate.success
     :metrics   {:track? :true}
-    :options   {:insets             {:top? true :bottom? true}
+    :options   {:theme              :dark
+                :insets             {:top? true :bottom? true}
                 :popGesture         false
                 :hardwareBackButton {:dismissModalOnPress false
                                      :popStackOnPress     false}}
@@ -932,7 +928,8 @@
 
    {:name      :screen/keycard.migrate.fail
     :metrics   {:track? :true}
-    :options   {:insets             {:top? true :bottom? true}
+    :options   {:theme              :dark
+                :insets             {:top? true :bottom? true}
                 :popGesture         false
                 :hardwareBackButton {:dismissModalOnPress false
                                      :popStackOnPress     false}}
@@ -940,17 +937,20 @@
 
    {:name      :screen/keycard.pin.create
     :metrics   {:track? :true}
-    :options   {:insets {:top? true :bottom? true}}
+    :options   {:theme  :dark
+                :insets {:top? true :bottom? true}}
     :component keycard.pin.create/view}
 
    {:name      :screen/keycard.pin.enter
     :metrics   {:track? :true}
-    :options   {:insets {:top? true :bottom? true}}
+    :options   {:theme  :dark
+                :insets {:top? true :bottom? true}}
     :component keycard.pin.enter/view}
 
    {:name      :screen/keycard.profile-keys
     :metrics   {:track? :true}
-    :options   {:insets {:top? true :bottom? true}}
+    :options   {:theme  :dark
+                :insets {:top? true :bottom? true}}
     :component keycard.migrate.profile-keys/view}])
 
 (defn screens
@@ -1022,8 +1022,19 @@
      :options   {:insets {:top? true :bottom? true}}
      :component backup-recovery-phrase/view}
 
+    {:name      :screen/backup-recovery-phrase-dark
+     :metrics   {:track? true}
+     :options   {:theme  :dark
+                 :insets {:top? true :bottom? true}}
+     :component backup-recovery-phrase/view}
+
     {:name      :screen/use-recovery-phrase
      :metrics   {:track? true}
+     :component enter-seed-phrase/view}
+
+    {:name      :screen/use-recovery-phrase-dark
+     :metrics   {:track? true}
+     :options   {:theme :dark}
      :component enter-seed-phrase/view}
 
     {:name      :screen/profile.profiles
