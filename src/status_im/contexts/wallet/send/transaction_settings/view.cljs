@@ -3,8 +3,53 @@
     [quo.core :as quo]
     [quo.theme :as quo.theme]
     [react-native.core :as rn]
-    [utils.i18n :as i18n]))
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]))
 
+
+(defn custom-settings-sheet
+  [_]
+  [rn/view
+   [quo/drawer-top
+    {:title "Custom"}]
+   [quo/category
+    {:list-type :settings
+     :data      [{:title             "Max base fee"
+                  :description-props {:text "8.2 GWEI - €1.45"}
+                  :image             :none
+                  :description       :text
+                  :action            :arrow
+                  :on-press          #()
+                  :label             :text
+                  :preview-size      :size-32}
+                 {:title             "Priority fee"
+                  :description-props {:text "0.06 GWEI - €0.03"}
+                  :image             :none
+                  :description       :text
+                  :action            :arrow
+                  :on-press          #()
+                  :label             :text
+                  :preview-size      :size-32}
+                 {:title             "Gas amount"
+                  :description-props {:text "31,500 UNITS"}
+                  :image             :none
+                  :description       :text
+                  :action            :arrow
+                  :on-press          #()
+                  :label             :text
+                  :preview-size      :size-32}
+                 {:title             "Nonce"
+                  :description-props {:text "22"}
+                  :image             :none
+                  :description       :text
+                  :action            :arrow
+                  :on-press          #()
+                  :label             :text
+                  :preview-size      :size-32}]}]
+   [quo/bottom-actions
+    {:actions          :one-action
+     :button-one-props {:on-press #(rf/dispatch [:hide-bottom-sheet])}
+     :button-one-label (i18n/label :t/confirm)}]])
 
 (defn settings-sheet
   [_]
@@ -53,54 +98,12 @@
                     :image             :icon
                     :description       :text
                     :action            :arrow
-                    :on-press          #()
+                    :on-press          #(rf/dispatch
+                                         [:show-bottom-sheet
+                                          {:content custom-settings-sheet}])
                     :label             :text
                     :preview-size      :size-32}]}]
      [quo/bottom-actions
       {:actions          :one-action
-       :button-one-props {:on-press #()}
+       :button-one-props {:on-press #(rf/dispatch [:hide-bottom-sheet])}
        :button-one-label (i18n/label :t/confirm)}]]))
-
-(defn custom-settings-sheet
-  [_]
-  [rn/view
-   [quo/drawer-top
-    {:title "Custom"}]
-   [quo/category
-    {:list-type :settings
-     :data      [{:title             "Max base fee"
-                  :description-props {:text "8.2 GWEI - €1.45"}
-                  :image             :none
-                  :description       :text
-                  :action            :arrow
-                  :on-press          #()
-                  :label             :text
-                  :preview-size      :size-32}
-                 {:title             "Priority fee"
-                  :description-props {:text "0.06 GWEI - €0.03"}
-                  :image             :none
-                  :description       :text
-                  :action            :arrow
-                  :on-press          #()
-                  :label             :text
-                  :preview-size      :size-32}
-                 {:title             "Gas amount"
-                  :description-props {:text "31,500 UNITS"}
-                  :image             :none
-                  :description       :text
-                  :action            :arrow
-                  :on-press          #()
-                  :label             :text
-                  :preview-size      :size-32}
-                 {:title             "Nonce"
-                  :description-props {:text "22"}
-                  :image             :none
-                  :description       :text
-                  :action            :arrow
-                  :on-press          #()
-                  :label             :text
-                  :preview-size      :size-32}]}]
-   [quo/bottom-actions
-    {:actions          :one-action
-     :button-one-props {:on-press #()}
-     :button-one-label (i18n/label :t/confirm)}]])
