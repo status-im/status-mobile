@@ -269,3 +269,68 @@
           expected          "0"]
       (is (= (utils/token-balance-display-for-network token chain-id rounding-decimals)
              expected)))))
+
+(def mock-accounts
+  {:0xfc6327a092f6232e158a0dd1d6d967a2e1c65cd5
+   {:address   "0xfc6327a092f6232e158a0dd1d6d967a2e1c65cd5"
+    :operable? true
+    :tokens    [{:symbol             "ETH"
+                 :balances-per-chain {1 {:raw-balance 1000000
+                                         :balance     1.0}}}
+                {:symbol             "USDC"
+                 :balances-per-chain {1 {:raw-balance 0
+                                         :balance     0}}}]}
+   :0xbce36f66a8cd99f1d6489cb9585146e3f3b893be
+   {:address   "0xbce36f66a8cd99f1d6489cb9585146e3f3b893be"
+    :operable? true
+    :tokens    [{:symbol             "ETH"
+                 :balances-per-chain {1 {:raw-balance 0
+                                         :balance     0}}}]}})
+
+(deftest get-accounts-with-token-balance-test
+  (testing "Positive token balance for a specific token"
+    (let [accounts mock-accounts
+          token    {:symbol "ETH"}
+          expected [{:address   "0xfc6327a092f6232e158a0dd1d6d967a2e1c65cd5"
+                     :operable? true
+                     :tokens    [{:symbol             "ETH"
+                                  :balances-per-chain {1 {:raw-balance 1000000
+                                                          :balance     1.0}}}
+                                 {:symbol             "USDC"
+                                  :balances-per-chain {1 {:raw-balance 0
+                                                          :balance     0}}}]}]]
+      (is (= (utils/get-accounts-with-token-balance accounts token)
+             expected))))
+
+  (testing "No token symbol provided, return all tokens with positive balance"
+    (let [accounts mock-accounts
+          token    {}
+          expected [{:address   "0xfc6327a092f6232e158a0dd1d6d967a2e1c65cd5"
+                     :operable? true
+                     :tokens    [{:symbol             "ETH"
+                                  :balances-per-chain {1 {:raw-balance 1000000
+                                                          :balance     1.0}}}
+                                 {:symbol             "USDC"
+                                  :balances-per-chain {1 {:raw-balance 0
+                                                          :balance     0}}}]}]]
+      (is (= (utils/get-accounts-with-token-balance accounts token)
+             expected))))
+
+  (testing "No matching token found for a specific token"
+    (let [accounts mock-accounts
+          token    {:symbol "DAI"}
+          expected []]
+      (is (= (utils/get-accounts-with-token-balance accounts token)
+             expected))))
+
+  (testing "No operable accounts"
+    (let [accounts {:0xfc6327a092f6232e158a0dd1d6d967a2e1c65cd5
+                    {:address   "0xfc6327a092f6232e158a0dd1d6d967a2e1c65cd5"
+                     :operable? false
+                     :tokens    [{:symbol             "ETH"
+                                  :balances-per-chain {1 {:raw-balance 1000000
+                                                          :balance     1.0}}}]}}
+          token    {}
+          expected []]
+      (is (= (utils/get-accounts-with-token-balance accounts token)
+             expected)))))

@@ -548,3 +548,27 @@
     (:less-than-three-minutes constants/wallet-transaction-estimation) "1-3"
     (:less-than-five-minutes constants/wallet-transaction-estimation)  "3-5"
     ">5"))
+
+(defn get-accounts-with-token-balance
+  [accounts token]
+  (let [operable-account                       (filter :operable? (vals accounts))
+        positive-balance-in-any-chain?         (fn [{:keys [balances-per-chain]}]
+                                                 (->> balances-per-chain
+                                                      (map (comp :raw-balance val))
+                                                      (some pos?)))
+        addresses-tokens-with-positive-balance (as-> operable-account $
+                                                 (group-by :address $)
+                                                 (update-vals $
+                                                              #(filter positive-balance-in-any-chain?
+                                                                       (:tokens (first %)))))]
+    (if-let [asset-symbol (:symbol token)]
+      (let [addresses-with-asset (as-> addresses-tokens-with-positive-balance $
+                                   (update-vals $ #(set (map :symbol %)))
+                                   (keep (fn [[address token-symbols]]
+                                           (when (token-symbols asset-symbol) address))
+                                         $)
+                                   (set $))]
+        (filter #(addresses-with-asset (:address %)) operable-account))
+      (filter (fn [{:keys [tokens]}]
+                (some positive-balance-in-any-chain? tokens))
+              operable-account))))
