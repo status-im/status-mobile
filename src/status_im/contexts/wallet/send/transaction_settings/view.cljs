@@ -1,7 +1,6 @@
 (ns status-im.contexts.wallet.send.transaction-settings.view
   (:require
     [quo.core :as quo]
-    [quo.theme :as quo.theme]
     [react-native.core :as rn]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))

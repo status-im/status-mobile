@@ -8,7 +8,6 @@
     [status-im.common.refreshable-flat-list.view :as refreshable-flat-list]
     [status-im.contexts.wallet.home.style :as style]
     [status-im.contexts.wallet.home.tabs.view :as tabs]
-    [status-im.contexts.wallet.send.transaction-settings.view :as transaction-settings]
     [status-im.contexts.wallet.sheets.network-filter.view :as network-filter]
     [status-im.feature-flags :as ff]
     [utils.i18n :as i18n]
@@ -96,18 +95,14 @@
                                   :tint-color colors/neutral-40
                                   :on-refresh #(rf/dispatch [:wallet/get-accounts])}]
        :header                  [rn/view {:style (style/header-container theme)}
-                                 [rn/pressable
-                                  {:on-press #(rf/dispatch
-                                               [:show-bottom-sheet
-                                                {:content transaction-settings/settings-sheet}])}
-                                  [quo/wallet-overview
-                                   {:state             (if tokens-loading? :loading :default)
-                                    :time-frame        :none
-                                    :metrics           :none
-                                    :balance           formatted-balance
-                                    :networks          networks
-                                    :dropdown-on-press #(rf/dispatch [:show-bottom-sheet
-                                                                      {:content network-filter/view}])}]]
+                                 [quo/wallet-overview
+                                  {:state             (if tokens-loading? :loading :default)
+                                   :time-frame        :none
+                                   :metrics           :none
+                                   :balance           formatted-balance
+                                   :networks          networks
+                                   :dropdown-on-press #(rf/dispatch [:show-bottom-sheet
+                                                                     {:content network-filter/view}])}]
                                  (when (ff/enabled? ::ff/wallet.graph)
                                    [quo/wallet-graph {:time-frame :empty}])
                                  [render-cards cards account-list-ref]

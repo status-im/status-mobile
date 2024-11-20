@@ -11,6 +11,7 @@
     [status-im.contexts.wallet.send.transaction-confirmation.style :as style]
     [status-im.contexts.wallet.send.transaction-settings.view :as transaction-settings]
     [status-im.contexts.wallet.send.utils :as send-utils]
+    [status-im.feature-flags :as ff]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]
     [utils.security.core :as security]))
@@ -180,17 +181,18 @@
        [rn/activity-indicator {:style {:flex 1}}]
        route-loaded?
        [:<>
-        [quo/button
-         {:icon-only?          true
-          :type                :outline
-          :size                32
-          :inner-style         {:opacity 1}
-          :accessibility-label :advanced-button
-          :container-style     {:margin-right 8}
-          :on-press            #(rf/dispatch
-                                 [:show-bottom-sheet
-                                  {:content transaction-settings/settings-sheet}])}
-         :i/advanced]
+        (when (ff/enabled? ::ff/wallet.transaction-params)
+          [quo/button
+           {:icon-only?          true
+            :type                :outline
+            :size                32
+            :inner-style         {:opacity 1}
+            :accessibility-label :advanced-button
+            :container-style     {:margin-right 8}
+            :on-press            #(rf/dispatch
+                                   [:show-bottom-sheet
+                                    {:content transaction-settings/settings-sheet}])}
+           :i/advanced])
         [data-item
          {:title    (i18n/label :t/est-time)
           :subtitle (i18n/label :t/time-in-mins {:minutes (str estimated-time-min)})}]
