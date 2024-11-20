@@ -37,7 +37,9 @@
               {:key   :avatar
                :value :avatar}
               {:key   :icon-avatar
-               :value :icon-avatar}]}
+               :value :icon-avatar}
+              {:key   :emoji
+               :value :emoji}]}
    {:key     :description
     :type    :select
     :options [{:key   nil
@@ -77,6 +79,7 @@
                          :icon-avatar {:size  :medium
                                        :icon  :i/placeholder
                                        :color :blue}
+                         :emoji       "🍿"
                          nil)
     :description-props (case (:description data)
                          :text           {:text "This is a description"}

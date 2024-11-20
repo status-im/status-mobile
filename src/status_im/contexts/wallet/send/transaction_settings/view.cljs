@@ -59,9 +59,9 @@
      [quo/category
       {:list-type :settings
        :data      [{:title             "Normal ~60s"
-                    :image-props       :i/placeholder
+                    :image-props       "🍿"
                     :description-props {:text "€1.45"}
-                    :image             :icon
+                    :image             :emoji
                     :description       :text
                     :action            :selector
                     :action-props      {:type     :radio
@@ -70,9 +70,9 @@
                     :label             :text
                     :preview-size      :size-32}
                    {:title             "Fast ~40s"
-                    :image-props       :i/placeholder
+                    :image-props       "🚗"
                     :description-props {:text "€1.65"}
-                    :image             :icon
+                    :image             :emoji
                     :description       :text
                     :action            :selector
                     :action-props      {:type     :radio
@@ -81,9 +81,9 @@
                     :label             :text
                     :preview-size      :size-32}
                    {:title             "Urgent ~15s"
-                    :image-props       :i/placeholder
+                    :image-props       "🚀"
                     :description-props {:text "€1.85"}
-                    :image             :icon
+                    :image             :emoji
                     :description       :text
                     :action            :selector
                     :action-props      {:type     :radio

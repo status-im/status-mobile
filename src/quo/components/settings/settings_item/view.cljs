@@ -1,5 +1,6 @@
 (ns quo.components.settings.settings-item.view
   (:require
+    [clojure.string :as string]
     [quo.components.avatars.icon-avatar :as icon-avatar]
     [quo.components.avatars.user-avatar.view :as user-avatar]
     [quo.components.buttons.button.view :as button]
@@ -51,6 +52,11 @@
     :status         [status-description props]
     nil))
 
+(defn emoji-component
+  [image-props]
+  [rn/text
+   (when image-props (string/trim image-props))])
+
 (defn image-component
   [{:keys [image image-props description tag blur?]}]
   (let [theme (quo.theme/use-theme)]
@@ -61,6 +67,7 @@
        :avatar      [user-avatar/user-avatar image-props]
        :icon-avatar [icon-avatar/icon-avatar image-props]
        :token       [token/view image-props]
+       :emoji       [emoji-component image-props]
        nil)]))
 
 (defn tag-component
