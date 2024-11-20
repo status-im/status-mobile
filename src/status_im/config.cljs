@@ -136,6 +136,9 @@
 ;; The port comes from your running status backend server.
 ;; If you run it by PORT=60000 make run-status-backend , then host will likely be 127.0.0.1:60000
 (goog-define STATUS_BACKEND_SERVER_HOST "")
+;; enable media server over https or http
+;; if you're using android simulator, set it to "0"
+(goog-define STATUS_BACKEND_SERVER_MEDIA_SERVER_ENABLE_TLS "1")
 ;; /path/to/root/data/dir
 ;; make sure it exists, it should be in absolute path
 (goog-define STATUS_BACKEND_SERVER_ROOT_DATA_DIR "")

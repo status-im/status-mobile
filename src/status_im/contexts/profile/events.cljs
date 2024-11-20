@@ -32,10 +32,12 @@
 (rf/reg-fx
  :profile/get-profiles-overview
  (fn [callback]
-   (native-module/initialize-application {:dataDir       (native-module/backup-disabled-data-dir)
-                                          :mixpanelAppId config/mixpanel-app-id
-                                          :mixpanelToken config/mixpanel-token}
-                                         callback)))
+   (native-module/initialize-application
+    {:dataDir              (native-module/backup-disabled-data-dir)
+     :mixpanelAppId        config/mixpanel-app-id
+     :mixpanelToken        config/mixpanel-token
+     :mediaServerEnableTLS (config/enabled? config/STATUS_BACKEND_SERVER_MEDIA_SERVER_ENABLE_TLS)}
+    callback)))
 
 (rf/reg-event-fx
  :profile/profile-selected
