@@ -141,7 +141,6 @@
     [status-im.contexts.wallet.swap.set-spending-cap.view :as wallet-swap-set-spending-cap]
     [status-im.contexts.wallet.swap.setup-swap.view :as wallet-swap-setup-swap]
     [status-im.contexts.wallet.swap.swap-confirmation.view :as wallet-swap-confirmation]
-    [status-im.contexts.wallet.swap.swap-proposal.view :as wallet-swap-propasal]
     [status-im.contexts.wallet.wallet-connect.modals.send-transaction.view :as
      wallet-connect-send-transaction]
     [status-im.contexts.wallet.wallet-connect.modals.session-proposal.view :as
@@ -650,12 +649,6 @@
     :options   {:modalPresentationStyle :overCurrentContext
                 :insets                 {:bottom? true}}
     :component wallet-swap-setup-swap/view}
-
-   {:name      :screen/wallet.swap-propasal
-    :metrics   {:track?   true
-                :alias-id :wallet-swap.swap-proposal}
-    :options   {:insets {:top? true}}
-    :component wallet-swap-propasal/view}
 
    {:name      :screen/wallet.swap-set-spending-cap
     :metrics   {:track?   true

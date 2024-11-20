@@ -398,14 +398,24 @@
               :previous_token (:symbol asset-to-receive)
               :new_token      (:symbol asset-to-pay)}]]]})))
 
-;; TODO(alwx):
+(rf/reg-event-fx
+ :wallet.swap/approve
+ (fn [{:keys [db]}]
+   (let [last-request-uuid (get-in db [:wallet :ui :swap :last-request-uuid])
+         max-slippage      (get-in db [:wallet :ui :swap :max-slippage])]
+     {:fx [[:dispatch
+            [:wallet/build-transactions-from-route
+             {:request-uuid last-request-uuid
+              :slippage     max-slippage}]]
+           [:dispatch [:open-modal :screen/wallet.swap-set-spending-cap]]]})))
+
 (rf/reg-event-fx
  :wallet.swap/review-swap
  (fn [{:keys [db]}]
    (let [last-request-uuid (get-in db [:wallet :ui :swap :last-request-uuid])
          max-slippage      (get-in db [:wallet :ui :swap :max-slippage])]
      {:db (-> db
-              (update-in [:wallet :ui :send] dissoc :transaction-for-signing))
+              (update-in [:wallet :ui :swap] dissoc :transaction-for-signing))
       :fx [[:dispatch
             [:wallet/build-transactions-from-route
              {:request-uuid last-request-uuid
@@ -465,9 +475,12 @@
                        :receive-token-symbol token-id-to
                        :receive-amount       receive-amount
                        :swap-chain-id        swap-chain-id}))]]
-           [:dispatch [:wallet.swap/end-transaction-flow]]
+           (when approval-required?
+             ;; dismiss the spending cap dialog if the transaction needs to be approved
+             [:dispatch [:dismiss-modal :screen/wallet.swap-set-spending-cap]])
            (when-not approval-required?
-             [:dispatch [:wallet.swap/end-flow]])
+             ;; just end the whole transaction flow if no approval needed
+             [:dispatch [:wallet.swap/end-transaction-flow]])
            (when-not approval-required?
              [:dispatch-later
               {:ms       500

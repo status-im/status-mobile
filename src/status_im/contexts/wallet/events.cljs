@@ -716,10 +716,14 @@
  (fn [{:keys [db]}
       [{sent-transactions :sentTransactions
         send-details      :sendDetails}]]
-   (if (get-in db [:wallet :ui :swap])
-     {:fx [(if-let [error-response (:errorResponse send-details)]
-             [:dispatch [:wallet.swap/transaction-failure error-response]]
-             [:dispatch [:wallet.swap/transaction-success sent-transactions]])]}
-     {:fx [(if-let [error-response (:errorResponse send-details)]
-             [:dispatch [:wallet/transaction-failure error-response]]
-             [:dispatch [:wallet/transaction-success sent-transactions]])]})))
+   (let [swap? (get-in db [:wallet :ui :swap])]
+     {:fx [[:dispatch
+            (if-let [error-response (:errorResponse send-details)]
+              [(if swap?
+                 :wallet.swap/transaction-failure
+                 :wallet/transaction-failure)
+               error-response]
+              [(if swap?
+                 :wallet.swap/transaction-success
+                 :wallet/transaction-success)
+               sent-transactions])]]})))
