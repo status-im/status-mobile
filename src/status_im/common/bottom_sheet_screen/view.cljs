@@ -47,7 +47,8 @@
         animating?          (reagent/atom true)
         set-animating-true  #(reset! animating? true)
         set-animating-false (fn [ms]
-                              (js/setTimeout #(reset! animating? false) ms))]
+                              (js/setTimeout #(reset! animating? false) ms))
+        on-scroll-update    #(on-scroll % curr-scroll)]
     (fn [{:keys [content skip-background?]}]
       (let [theme                    (quo.theme/use-theme)
             {:keys [top] :as insets} (safe-area/get-insets)
@@ -94,5 +95,5 @@
              :close            close
              :scroll-enabled?  scroll-enabled?
              :current-scroll   curr-scroll
-             :on-scroll        #(on-scroll % curr-scroll)
+             :on-scroll        on-scroll-update
              :sheet-animating? animating?}]]]]))))
