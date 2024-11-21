@@ -74,7 +74,7 @@
   `ring?` shows or hides ring for account with ens name"
   [{:keys [port public-key image-name key-uid size theme indicator-size
            indicator-border indicator-center-to-edge indicator-color ring?
-           ring-width ratio]}]
+           ring-width ratio clock]}]
   (str
    image-server-uri-prefix
    port
@@ -90,7 +90,7 @@
    "&theme="
    (current-theme-index theme)
    "&clock="
-   (timestamp)
+   clock
    "&indicatorColor="
    (js/encodeURIComponent indicator-color)
    "&indicatorSize="
@@ -118,7 +118,7 @@
   [{:keys [port public-key key-uid theme ring? length size customization-color
            color font-size font-file uppercase-ratio indicator-size
            indicator-border indicator-center-to-edge indicator-color full-name
-           ring-width ratio]}]
+           ring-width ratio clock]}]
   (str
    image-server-uri-prefix
    port
@@ -144,9 +144,9 @@
    "&theme="
    (current-theme-index theme)
    "&clock="
+   clock
    "&name="
    (js/encodeURIComponent full-name)
-   (timestamp)
    "&indicatorColor="
    (js/encodeURIComponent indicator-color)
    "&indicatorSize="
