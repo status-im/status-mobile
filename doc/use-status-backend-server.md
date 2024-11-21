@@ -1,4 +1,12 @@
-## Solution to use Status Backend Server
+## What is Status Backend Server
+Status Backend Server is a http server that runs status-go, it exposed endpoints come from [mobile/status.go](https://github.com/status-im/status-go/blob/master/mobile/status.go) so that you can call them through http requests. It brings the following benefits:
+- When verifying changes made in status-go, you only need to run these commands once (unless modifying Kotlin/Objective-C code):
+  - `make clean && make run-clojure` 
+  - `make run-android` or `make run-ios`
+  This avoids repeatedly rebuilding and saves development time.
+- Debug status-go while running status mobile app
+
+## Solution to use Status Backend Server for mobile development
 `StatusBackendClient` is the entry point to use Status Backend Server. We need always to call `status-im.setup.status-backend-client/init` whether `STATUS_BACKEND_SERVER_ENABLED` is `1` or not. If it's not enabled, the invocation to functions in `native-module.core` will be delegated to built-in status-go library, otherwise it will be delegated to status-go running in status-backend server. Currently, all functions has usages in `native-module.core` should be supported delegated to. 
 NOTE: not all the native functions used `StatusBackendClient`, only the corresponding functions in `native-module.core` has usages should be supported delegated to ATM.
 
@@ -38,7 +46,7 @@ Basically, you don't have to run `make generate` again and again, just run it on
 
 ## Known Android simulator issues
 - Issue#1: Android simulator may not display images due to TLS certificate validation issues with the image server
-  - solution: use http instead of https for media server with command: `MEDIA_HTTPS=false PORT=60000 make run-status-backend`, currently status-go does not support http for media server. You have to use this draft [PR](https://github.com/status-im/status-go/pull/6060), you also need to set env variable `STATUS_BACKEND_SERVER_IMAGE_SERVER_URI_PREFIX` to "http://10.0.2.2:" so that `image_server.cljs` can work, and to make `/accountInitials` work, you need to copy `Inter-Medium.ttf` to your host machine from the android simulator, let's say you store it in `/Users/mac/Downloads/Inter-Medium.ttf`, then you need to update `get-font-file-ready` manually in `image_server.cljs` to return the correct path so that status backend server can access it.
+  - solution: use http instead of https for media server with set env: `export STATUS_BACKEND_SERVER_MEDIA_SERVER_ENABLE_TLS=0`, you also need to set env variable `STATUS_BACKEND_SERVER_IMAGE_SERVER_URI_PREFIX` to "http://10.0.2.2:" so that `image_server.cljs` can work, and to make `/accountInitials` work, you need to copy `Inter-Medium.ttf` to your host machine from the android simulator, let's say you store it in `/Users/mac/Downloads/Inter-Medium.ttf`, then you need to update `get-font-file-ready` manually in `image_server.cljs` to return the correct path so that status backend server can access it.
 - Issue#2: exportUnencryptedDatabaseV2/import-multiaccount does not work for android, probably cause of tech debt, I found it during creating the draft PR.
 - Issue#3: unable to invoke `multiaccounts_storeIdentityImage` to change avatar image.
   - The reason is that we path the absolute path of the image to the backend server, but the image file is stored in the android simulator. the backend server cannot access it as it runs in the host machine.
