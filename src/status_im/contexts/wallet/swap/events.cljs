@@ -18,6 +18,7 @@
    (let [{:keys [wallet]}       db
          test-networks-enabled? (get-in db [:profile/profile :test-networks-enabled?])
          view-id                (:view-id db)
+         root-screen?           (or (= view-id :wallet-stack) (nil? view-id))
          account                (or from-account (swap-utils/wallet-account wallet))
          asset-to-pay           (if (get-in data [:asset-to-pay :networks])
                                   (:asset-to-pay data)
@@ -39,7 +40,7 @@
               (assoc-in [:wallet :ui :swap :network] network')
               (assoc-in [:wallet :ui :swap :launch-screen] view-id)
               (assoc-in [:wallet :ui :swap :start-point] start-point))
-      :fx (if (and multi-account-balance? (= view-id :wallet-stack) (not from-account))
+      :fx (if (and multi-account-balance? root-screen? (not from-account))
             [[:dispatch [:open-modal :screen/wallet.swap-select-account]]]
             (if network'
               [[:dispatch [:wallet/switch-current-viewing-account (:address account)]]
