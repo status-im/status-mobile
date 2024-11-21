@@ -4,6 +4,7 @@
     [quo.foundations.colors :as colors]
     [quo.theme :as quo.theme]
     [react-native.core :as rn]
+    [status-im.common.biometric.utils :as biometric]
     [status-im.common.standard-authentication.forgot-password-doc.view :as forgot-password-doc]
     [status-im.common.standard-authentication.password-input.style :as style]
     [utils.debounce :as debounce]
@@ -54,7 +55,8 @@
                                      {:password (security/mask-data
                                                  entered-password)
                                       :error    ""}]
-                                    100)))]
+                                    100)))
+        biometric-type          (rf/sub [:biometrics/supported-type])]
     [:<>
      [rn/view {:style {:flex-direction :row}}
       [quo/input
@@ -76,6 +78,6 @@
           :icon-only?      true
           :background      (when blur? :blur)
           :type            :outline}
-         :i/face-id])]
+         (biometric/get-icon-by-type biometric-type)])]
      (when error?
        [error-info error-message processing shell?])]))

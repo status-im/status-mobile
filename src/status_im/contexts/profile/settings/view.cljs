@@ -32,19 +32,22 @@
   (let [current-y (oops/oget event "nativeEvent.contentOffset.y")]
     (reanimated/set-shared-value scroll-y current-y)))
 
+(defn- logout-press
+  []
+  (rf/dispatch [:profile.settings/ask-logout]))
+
 (defn- footer
-  [{:keys [bottom]} logout-press]
+  [{:keys [bottom]}]
   (rn/delay-render
-   [rn/view {:style (style/footer-container bottom)}
-    [quo/logout-button {:on-press logout-press}]]))
+   (let [logging-out? (rf/sub [:profile/logging-out?])]
+     [rn/view {:style (style/footer-container bottom)}
+      [quo/logout-button
+       {:on-press  logout-press
+        :disabled? logging-out?}]])))
 
 (defn- get-item-layout
   [_ index]
   #js {:length 100 :offset (* 100 index) :index index})
-
-(defn logout-press
-  []
-  (rf/dispatch [:multiaccounts.logout.ui/logout-pressed]))
 
 (defn view
   []
@@ -83,7 +86,7 @@
        :shows-vertical-scroll-indicator false
        :render-fn                       settings-category-view
        :get-item-layout                 get-item-layout
-       :footer                          [footer insets logout-press]
+       :footer                          [footer insets]
        :scroll-event-throttle           16
        :on-scroll                       on-scroll
        :bounces                         false

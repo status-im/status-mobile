@@ -11,7 +11,6 @@
     legacy.status-im.group-chats.core
     legacy.status-im.log-level.core
     legacy.status-im.multiaccounts.login.core
-    legacy.status-im.multiaccounts.logout.core
     [legacy.status-im.multiaccounts.model :as multiaccounts.model]
     legacy.status-im.multiaccounts.update.core
     legacy.status-im.pairing.core
@@ -110,14 +109,14 @@
 (defn- on-biometric-auth-fail
   [{:keys [code]}]
   (if (= code "USER_FALLBACK")
-    (re-frame/dispatch [:multiaccounts.logout.ui/logout-confirmed])
+    (re-frame/dispatch [:profile/logout])
     (utils/show-confirmation
      {:title               (i18n/label :t/biometric-auth-confirm-title)
       :content             (i18n/label :t/biometric-auth-confirm-message)
       :confirm-button-text (i18n/label :t/biometric-auth-confirm-try-again)
       :cancel-button-text  (i18n/label :t/biometric-auth-confirm-logout)
       :on-accept           #(rf/dispatch [:biometric/authenticate {:on-fail on-biometric-auth-fail}])
-      :on-cancel           #(re-frame/dispatch [:multiaccounts.logout.ui/logout-confirmed])})))
+      :on-cancel           #(re-frame/dispatch [:profile/logout])})))
 
 (rf/defn on-return-from-background
   [{:keys [db now] :as cofx}]

@@ -29,4 +29,4 @@
      [quo/bottom-actions
       {:actions          :one-action
        :button-one-label (i18n/label :t/log-out-remove)
-       :button-one-props {:on-press #(rf/dispatch [:logout])}}]]))
+       :button-one-props {:on-press #(rf/dispatch [:profile/logout])}}]]))

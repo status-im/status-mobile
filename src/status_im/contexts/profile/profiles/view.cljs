@@ -138,8 +138,7 @@
                                :color           customization-color
                                :profile-picture profile-picture})
       :on-card-press        (fn []
-                              (rf/dispatch
-                               [:profile/profile-selected key-uid])
+                              (rf/dispatch-sync [:profile/profile-selected key-uid])
                               (rf/dispatch
                                [:profile.login/login-with-biometric-if-available key-uid])
                               (set-hide-profiles))}]))
@@ -157,10 +156,8 @@
                           (pop-animation-fn)))
                       (reset! push-animation-fn-atom nil)
                       (reset! pop-animation-fn-atom nil))))
-    [reanimated/view
-     {:style (style/profiles-container translate-x)}
-     [rn/view
-      {:style style/profiles-header}
+    [reanimated/view {:style (style/profiles-container translate-x)}
+     [rn/view {:style style/profiles-header}
       [quo/text
        {:size   :heading-1
         :weight :semi-bold
@@ -183,22 +180,21 @@
        :render-fn               profile-card}]]))
 
 (defn password-input
-  [processing error]
-  (let [auth-method         (rf/sub [:auth-method])
-        on-press-biometrics (fn []
-                              (rf/dispatch [:biometric/authenticate
-                                            {:on-success #(rf/dispatch
-                                                           [:profile.login/biometric-success])
-                                             :on-fail    #(rf/dispatch
-                                                           [:profile.login/biometric-auth-fail
-                                                            %])}]))]
-
+  [processing error auth-method]
+  (let [on-press-biometrics (fn []
+                              (rf/dispatch
+                               [:biometric/authenticate
+                                {:on-success #(rf/dispatch
+                                               [:profile.login/biometric-success])
+                                 :on-fail    #(rf/dispatch
+                                               [:profile.login/biometric-auth-fail %])}]))]
     [standard-authentication/password-input
      {:processing          processing
       :error               error
       :shell?              true
       :blur?               true
-      :on-press-biometrics (when (= auth-method constants/auth-method-biometric) on-press-biometrics)}]))
+      :on-press-biometrics (when (= auth-method constants/auth-method-biometric)
+                             on-press-biometrics)}]))
 
 (defn- get-error-message
   [error]
@@ -210,7 +206,7 @@
 
 (defn login-section
   [{:keys [show-profiles]}]
-  (let [{:keys [key-uid name keycard-pairing
+  (let [{:keys [key-uid name keycard-pairing auth-method
                 customization-color]} (rf/sub [:profile/login-profile])
         sign-in-enabled?              (rf/sub [:sign-in-enabled?])
         profile-picture               (rf/sub [:profile/login-profiles-picture key-uid])
@@ -266,7 +262,7 @@
                    {:pin        pin
                     :on-success #(rf/dispatch [:keycard.login/on-get-keys-success %])
                     :on-failure #(rf/dispatch [:keycard/on-action-with-pin-error %])}]))}]))}]
-        [password-input processing error])]
+        [password-input processing error auth-method])]
      (when-not keycard-pairing
        [quo/button
         {:size                40
@@ -282,7 +278,7 @@
 (defn view
   []
   (rn/use-mount #(rf/dispatch [:centralized-metrics/check-modal metrics-modal/view]))
-  (let [[show-profiles? set-show-profiles] (rn/use-state false)
+  (let [[show-profiles? set-show-profiles] (rn/use-state true)
         show-profiles                      (rn/use-callback #(set-show-profiles true))
         hide-profiles                      (rn/use-callback #(set-show-profiles false))]
     [:<>

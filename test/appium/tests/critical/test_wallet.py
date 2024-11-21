@@ -83,8 +83,8 @@ class TestWalletMultipleDevice(MultipleSharedDeviceTestCase):
             self.wallet_2.wallet_tab.is_element_displayed()
             time.sleep(10)
         self.loop.run_until_complete(
-            run_in_parallel(((self.home_1.reopen_app,),
-                             (self.home_2.reopen_app,))))
+            run_in_parallel(((self.home_1.reopen_app, {'user_name': self.sender_username}),
+                             (self.home_2.reopen_app, {'user_name': self.receiver_username}))))
         self.wallet_1.wallet_tab.wait_and_click()
         self.wallet_2.wallet_tab.wait_and_click()
         self.wallet_1.select_network(network_name='Arbitrum')
@@ -216,7 +216,7 @@ class TestWalletOneDevice(MultipleSharedDeviceTestCase):
     def test_wallet_balance_mainnet(self):
         self.profile_view = self.home_view.profile_button.click()
         self.profile_view.switch_network()
-        self.sign_in_view.sign_in()
+        self.sign_in_view.sign_in(user_name=self.sender_username)
         self.sign_in_view.wallet_tab.click()
 
         self.wallet_view.just_fyi("Checking total balance")

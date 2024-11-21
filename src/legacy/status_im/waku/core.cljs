@@ -133,7 +133,7 @@
                     :params     [{:enabled enabled?}]
                     :on-success (fn []
                                   (log/info "light client set successfully" enabled?)
-                                  (re-frame/dispatch [:logout]))
+                                  (re-frame/dispatch [:profile/logout]))
                     :on-error   #(log/error "failed to set light client"
                                             {:error    %
                                              :enabled? enabled?})}]})
@@ -149,7 +149,7 @@
                     :params     [{:enabled enabled?}]
                     :on-success (fn []
                                   (log/info "store confirmation set successfully" enabled?)
-                                  (re-frame/dispatch [:logout]))
+                                  (re-frame/dispatch [:profile/logout]))
                     :on-error   #(log/error "failed to set store confirmation"
                                             {:error    %
                                              :enabled? enabled?})}]})

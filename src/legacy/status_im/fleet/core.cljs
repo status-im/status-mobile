@@ -91,5 +91,4 @@
        cofx
        :fleet
        fleet
-       {:on-success
-        #(re-frame/dispatch [:logout])}))))
+       {:on-success #(re-frame/dispatch [:profile/logout])}))))

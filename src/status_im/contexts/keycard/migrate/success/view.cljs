@@ -26,6 +26,6 @@
        {:resize-mode :contain
         :source      (resources/get-image :keycard-migration-succeeded)}]]
      [quo/button
-      {:on-press        #(rf/dispatch [:logout])
+      {:on-press        #(rf/dispatch [:profile/logout])
        :container-style {:margin-horizontal 20}}
       (i18n/label :t/logout)]]))

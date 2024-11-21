@@ -125,6 +125,6 @@
         (i18n/label :t/password-reset-success-message)])
      [react/view {:align-items :center}
       [quo/button
-       {:on-press #(re-frame/dispatch [:logout])
+       {:on-press #(re-frame/dispatch [:profile/logout])
         :disabled resetting?}
        (i18n/label :t/okay)]]]))

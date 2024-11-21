@@ -15,8 +15,7 @@
 
 (rf/reg-event-fx :profile.settings/profile-update
  (fn [{:keys [db]} [setting setting-value {:keys [dont-sync? on-success]}]]
-   {:db (-> db
-            (set-setting-value setting setting-value))
+   {:db (set-setting-value db setting setting-value)
     :fx [[:json-rpc/call
           [{:method     "settings_saveSetting"
             :params     [setting setting-value]
@@ -40,14 +39,14 @@
 
 (rf/reg-event-fx :profile.settings/toggle-test-networks
  (fn [{:keys [db]}]
-   (let [value      (get-in db [:profile/profile :test-networks-enabled?])
-         on-success #(rf/dispatch [:logout])]
+   (let [test-networks-disabled? (not (get-in db [:profile/profile :test-networks-enabled?]))]
      {:fx [[:ui/show-confirmation
             {:title     (i18n/label :t/testnet-mode-prompt-title)
              :content   (i18n/label :t/testnet-mode-prompt-content)
-             :on-accept #(rf/dispatch [:profile.settings/profile-update :test-networks-enabled?
-                                       (not value)
-                                       {:on-success on-success}])
+             :on-accept (fn []
+                          (rf/dispatch [:profile.settings/profile-update :test-networks-enabled?
+                                        test-networks-disabled?
+                                        {:on-success #(rf/dispatch [:profile/logout])}]))
              :on-cancel nil}]]})))
 
 (rf/reg-event-fx :profile.settings/change-preview-privacy
@@ -58,8 +57,7 @@
 
 (rf/reg-event-fx :profile.settings/change-profile-pictures-show-to
  (fn [{:keys [db]} [id]]
-   {:db (-> db
-            (assoc-in [:profile/profile :profile-pictures-show-to] id))
+   {:db (assoc-in db [:profile/profile :profile-pictures-show-to] id)
     :fx [[:json-rpc/call
           [{:method     "wakuext_changeIdentityImageShowTo"
             :params     [id]
@@ -97,8 +95,7 @@
 (rf/reg-event-fx :profile.settings/save-profile-picture
  (fn [{:keys [db]} [path ax ay bx by]]
    (let [key-uid (get-in db [:profile/profile :key-uid])]
-     {:db (-> db
-              (assoc :bottom-sheet/show? false))
+     {:db (assoc db :bottom-sheet/show? false)
       :fx [[:json-rpc/call
             [{:method     "multiaccounts_storeIdentityImage"
               :params     [key-uid (string/replace-first path #"file://" "") ax ay bx
@@ -109,8 +106,7 @@
 (rf/reg-event-fx :profile.settings/save-profile-picture-from-url
  (fn [{:keys [db]} [url]]
    (let [key-uid (get-in db [:profile/profile :key-uid])]
-     {:db (-> db
-              (assoc :bottom-sheet/show? false))
+     {:db (assoc db :bottom-sheet/show? false)
       :fx [[:json-rpc/call
             [{:method     "multiaccounts_storeIdentityImageFromURL"
               :params     [key-uid url]
@@ -147,3 +143,14 @@
  (fn [_ [currency]]
    {:fx [[:dispatch [:profile.settings/profile-update :currency currency]]
          [:dispatch [:wallet/get-wallet-token-for-all-accounts]]]}))
+
+;; Logout process
+(rf/reg-event-fx
+ :profile.settings/ask-logout
+ (fn [_ _]
+   {:fx [[:ui/show-confirmation
+          {:title               (i18n/label :t/logout-title)
+           :content             (i18n/label :t/logout-are-you-sure)
+           :confirm-button-text (i18n/label :t/logout)
+           :on-accept           #(rf/dispatch [:profile/logout])
+           :on-cancel           nil}]]}))

@@ -10,7 +10,6 @@
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
-
 (defn page-title
   []
   [quo/text-combinations
@@ -26,12 +25,13 @@
         bio-type-label           (biometric/get-label-by-type supported-biometric-type)
         profile-color            (or (:color (rf/sub [:onboarding/profile]))
                                      (rf/sub [:profile/customization-color]))
-        syncing-results?         (= :screen/onboarding.syncing-results @state/root-id)]
+        syncing-results?         (= :screen/onboarding.syncing-results @state/root-id)
+        biometric-type           (rf/sub [:biometrics/supported-type])]
     [rn/view {:style (style/buttons insets)}
      [quo/button
       {:size                40
        :accessibility-label :enable-biometrics-button
-       :icon-left           :i/face-id
+       :icon-left           (biometric/get-icon-by-type biometric-type)
        :customization-color profile-color
        :on-press            #(rf/dispatch [:onboarding/enable-biometrics])}
       (i18n/label :t/biometric-enable-button {:bio-type-label bio-type-label})]

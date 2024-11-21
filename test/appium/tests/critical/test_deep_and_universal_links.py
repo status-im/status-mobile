@@ -131,7 +131,7 @@ class TestDeepLinksOneDevice(MultipleSharedDeviceTestCase):
         self.driver.terminate_app(app_package)
         community_url = "https://status.app/c/Ow==#zQ3shbmfT3hvh4mKa1v6uAjjyztQEroh8Mfn6Ckegjd7LT3XK"
         self.home.open_link_from_google_search_app(community_url, app_package)
-        self.sign_in.sign_in()
+        self.sign_in.sign_in(user_name=self.username)
         if not self.community_view.join_button.is_element_displayed(10):
             self.errors.append("Closed community was not requested to join by the url %s" % community_url)
 

@@ -12,7 +12,7 @@
 
 (defn- handle-logout
   []
-  (rf/dispatch [:multiaccounts.logout.ui/logout-pressed])
+  (rf/dispatch [:profile.settings/ask-logout])
   (rf/dispatch [:change-password/reset]))
 
 (defn view
@@ -21,6 +21,7 @@
         [minimum-loading-timeout-done?
          set-minimum-loading-timeout-done] (rn/use-state false)
         loading?                           (rf/sub [:settings/change-password-loading])
+        logging-out?                       (rf/sub [:profile/logging-out?])
         done?                              (and (not loading?) minimum-loading-timeout-done?)]
     (rn/use-mount (fn []
                     (js/setTimeout
@@ -39,8 +40,7 @@
         :description-text (if done?
                             (i18n/label :t/change-password-done-description)
                             (i18n/label :t/change-password-loading-description))}]
-      [rn/view
-       {:style style/loading-content}
+      [rn/view {:style style/loading-content}
        (when-not done?
          [quo/information-box
           {:type  :error
@@ -50,5 +50,6 @@
       (when done?
         [quo/logout-button
          {:container-style style/logout-container
+          :disabled?       logging-out?
           :on-press        handle-logout}])]]))
 

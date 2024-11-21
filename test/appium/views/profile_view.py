@@ -237,7 +237,8 @@ class ProfileView(BaseView):
         self.delete_profile_button = Button(self.driver, accessibility_id="delete-profile-confirm")
 
         # Notifications
-        self.profile_notifications_button = Button(self.driver, accessibility_id="notifications-settings-button")
+        self.profile_notifications_button = Button(self.driver,
+                                                   accessibility_id="icon, Notifications, label-component, icon")
         self.profile_notifications_toggle_button = Button(self.driver,
                                                           accessibility_id="local-notifications-settings-button")
         self.push_notification_toggle = Button(
@@ -389,7 +390,7 @@ class ProfileView(BaseView):
         self.driver.info("Enabling push notifications via Profile")
         self.profile_notifications_button.scroll_and_click()
         self.profile_notifications_toggle_button.click()
-        self.navigate_back_to_home_view()
+        self.allow_button.click_if_shown()
 
     def add_custom_network(self, rpc_url: str, name: str, symbol: str, netwrok_id: str):
         self.driver.info("## Add custom network", device=False)

@@ -88,6 +88,7 @@
 (reg-root-key-sub :profile/profiles-overview :profile/profiles-overview)
 (reg-root-key-sub :profile/login :profile/login)
 (reg-root-key-sub :profile/profile :profile/profile)
+(reg-root-key-sub :profile/logging-out? :profile/logging-out?)
 (reg-root-key-sub :profile/wallet-accounts :profile/wallet-accounts)
 
 (reg-root-key-sub :multiaccount/reset-password-form-vals :multiaccount/reset-password-form-vals)

@@ -703,14 +703,14 @@ class BaseView(object):
             time.sleep(1)
         raise TimeoutException(msg="Status app is not terminated after %s sec" % wait_time)
 
-    def reopen_app(self, password=common_password, sign_in=True):
+    def reopen_app(self, password=common_password, sign_in=True, user_name=None):
         app_package = self.driver.current_package
         self.driver.terminate_app(app_package)
         self.wait_for_application_to_not_run(app_package=app_package)
         self.driver.activate_app(app_package)
         if sign_in:
             sign_in_view = self.get_sign_in_view()
-            sign_in_view.sign_in(password)
+            sign_in_view.sign_in(user_name, password)
 
     def close_share_popup(self):
         self.driver.info("Closing share popup")

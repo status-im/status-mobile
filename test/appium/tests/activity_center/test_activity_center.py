@@ -170,8 +170,7 @@ class TestActivityCenterContactRequestMultipleDevicePR(MultipleSharedDeviceTestC
             self.home_2.just_fyi("Device 2 sign in, user name is " + self.username_2)
             self.home_2.reopen_app(sign_in=False)
             self.device_2.show_profiles_button.wait_and_click()
-            self.device_2.get_user_profile_by_name(username=self.username_2).click()
-            self.device_2.sign_in()
+            self.device_2.sign_in(user_name=self.username_2)
 
         self.loop.run_until_complete(run_in_parallel(((_device_1_creates_user, {}),
                                                       (_device_2_sign_in, {}))))
@@ -466,7 +465,7 @@ class TestActivityMultipleDevicePRTwo(MultipleSharedDeviceTestCase):
         community_name = 'closed community'
         self.channel_name = "dogs"
         self.home_1.create_community(community_type="closed")
-        self.home_1.reopen_app()
+        self.home_1.reopen_app(user_name=self.username_1)
         self.community_1.invite_to_community(community_name, self.username_2)
 
         self.home_2.just_fyi("Request access to community")

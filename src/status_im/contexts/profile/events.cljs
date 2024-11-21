@@ -11,6 +11,7 @@
     [status-im.contexts.profile.edit.name.events]
     status-im.contexts.profile.effects
     status-im.contexts.profile.login.events
+    status-im.contexts.profile.logout.events
     [status-im.contexts.profile.rpc :as profile.rpc]
     [utils.re-frame :as rf]))
 
@@ -39,32 +40,54 @@
 (rf/reg-event-fx
  :profile/profile-selected
  (fn [{:keys [db]} [key-uid]]
-   {:db (update db :profile/login #(select-profile % key-uid))}))
+   {:db (update db :profile/login select-profile key-uid)}))
+
+(rf/reg-event-fx
+ :profile/set-profile-overview-auth-method
+ (fn [{db :db} [key-uid auth-method]]
+   {:db (assoc-in db [:profile/profiles-overview key-uid :auth-method] auth-method)}))
+
+(rf/reg-event-fx
+ :profile/get-profiles-auth-method
+ (fn [_ [key-uids]]
+   (let [auth-method-fx (fn [key-uid]
+                          [:effects.biometric/check-if-available
+                           {:key-uid    key-uid
+                            :on-success (fn [auth-method]
+                                          (rf/dispatch
+                                           [:profile/set-profile-overview-auth-method
+                                            key-uid
+                                            auth-method]))}])]
+     {:fx (map auth-method-fx key-uids)})))
+
+(rf/reg-event-fx
+ :profile/set-already-logged-out
+ (fn [{:keys [db]}]
+   {:db (dissoc db :profile/logging-out?)}))
 
 (rf/reg-event-fx
  :profile/get-profiles-overview-success
- (fn [{:keys [db]} [{:keys [accounts] {:keys [userConfirmed enabled]} :centralizedMetricsInfo}]]
-   (let [db-with-settings  (assoc db
-                                  :centralized-metrics/user-confirmed? userConfirmed
-                                  :centralized-metrics/enabled?        enabled)
-         profiles          (reduce-profiles accounts)
-         {:keys [key-uid]} (first (sort-by :timestamp > (vals profiles)))
-         new-db            (cond-> db-with-settings
-                             (seq profiles)
-                             (assoc :profile/profiles-overview profiles)
+ (fn [{:keys [db]}
+      [{accounts                        :accounts
+        {:keys [userConfirmed enabled]} :centralizedMetricsInfo}]]
+   (let [profiles          (reduce-profiles accounts)
+         profiles-key-uids (keys profiles)
+         new-db            (cond-> db
+                             :always
+                             (assoc :centralized-metrics/user-confirmed? userConfirmed
+                                    :centralized-metrics/enabled?        enabled)
 
-                             key-uid
-                             (update :profile/login #(select-profile % key-uid)))]
+                             (seq profiles)
+                             (assoc :profile/profiles-overview profiles))]
      {:db new-db
-      :fx (if (profile.data-store/accepted-terms? accounts)
-            [[:dispatch [:update-theme-and-init-root :screen/profile.profiles]]
-             (when (and key-uid userConfirmed)
-               [:effects.biometric/check-if-available
-                {:key-uid    key-uid
-                 :on-success (fn [auth-method]
-                               (rf/dispatch [:profile.login/check-biometric-success key-uid
-                                             auth-method]))}])]
-            [[:dispatch [:update-theme-and-init-root :screen/onboarding.intro]]])})))
+      :fx [[:dispatch [:profile/get-profiles-auth-method profiles-key-uids]]
+           (if (profile.data-store/accepted-terms? accounts)
+             [:dispatch [:update-theme-and-init-root :screen/profile.profiles]]
+             [:dispatch [:update-theme-and-init-root :screen/onboarding.intro]])
+           ;; dispatch-later makes sure that the logout button subscribed is always disabled
+           [:dispatch-later
+            {:ms       100
+             :dispatch [:profile/set-already-logged-out]}]]})))
 
 (rf/reg-event-fx
  :profile/update-setting-from-backup

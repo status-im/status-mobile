@@ -2,7 +2,6 @@
   (:require
     [cljs.test :refer [is] :as test]
     legacy.status-im.events
-    [legacy.status-im.multiaccounts.logout.core :as logout]
     legacy.status-im.subs.root
     [native-module.core :as native-module]
     [promesa.core :as promesa]
@@ -96,7 +95,7 @@
 (defn logout
   []
   (log/info (str "==== before dispatch logout ===="))
-  (rf/dispatch [:logout]))
+  (rf/dispatch [:profile/logout]))
 
 (defn log-headline
   [test-name]
@@ -259,7 +258,7 @@
         (setup-account)
         (logout)
         (log/info (str "==== before wait-for logout ===="))
-        (wait-for [::logout/logout-method])
+        (wait-for [:profile.logout/reset-state])
         (log/info (str "==== after wait-for logout ===="))))))
 
 ;;;; Fixtures
@@ -287,7 +286,7 @@
               (test/async done
                 (promesa/do (logout)
                             (log/info (str "==== before wait-for logout ===="))
-                            (wait-for [::logout/logout-method])
+                            (wait-for [:profile.logout/reset-state])
                             (log/info (str "==== after wait-for logout ===="))
                             (done))))})
   ([] (fixture-session [:new-account])))

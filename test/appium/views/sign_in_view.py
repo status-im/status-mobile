@@ -214,8 +214,6 @@ class SignInView(BaseView):
         self.profile_confirm_password_button = Button(self.driver, translation_id="password-creation-confirm")
         self.enable_biometric_maybe_later_button = Button(self.driver, translation_id="maybe-later")
         self.identifiers_button = Button(self.driver, accessibility_id="skip-identifiers")
-        self.enable_notifications_button = Button(self.driver, accessibility_id="enable-notifications-button")
-        self.maybe_later_button = Button(self.driver, accessibility_id="enable-notifications-later-button")
         self.start_button = Button(self.driver, accessibility_id="welcome-button")
         self.use_recovery_phrase_button = Button(self.driver, accessibility_id="use-recovery-phrase-option-card")
         self.passphrase_edit_box = EditBox(self.driver, accessibility_id="passphrase-input")
@@ -240,10 +238,8 @@ class SignInView(BaseView):
         if set_image:
             pass
 
-    def create_user(self, password=common_password, keycard=False, enable_notifications=False,
-                    username="test user", first_user=True):
-        self.driver.info("## Creating new multiaccount (password:'%s', keycard:'%s', enable_notification: '%s')" %
-                         (password, str(keycard), str(enable_notifications)), device=False)
+    def create_user(self, password=common_password, username="test user", first_user=True, enable_notifications=False):
+        self.driver.info("## Creating new multiaccount with password:'%s'" % password, device=False)
         if first_user:
             self.create_profile_button.click_until_presence_of_element(self.generate_keys_button)
             self.not_now_button.wait_and_click()
@@ -255,47 +251,24 @@ class SignInView(BaseView):
         self.generate_keys_button.click_until_presence_of_element(self.profile_title_input)
         self.set_profile(username)
         self.set_password(password)
-        # if self.enable_biometric_maybe_later_button.is_element_displayed(10):
-        #     self.enable_biometric_maybe_later_button.click()
-        # self.next_button.click_until_absense_of_element(self.element_by_translation_id("intro-wizard-title2"))
-        # if keycard:
-        #     keycard_flow = self.keycard_storage_button.click()
-        #     keycard_flow.confirm_pin_and_proceed()
-        #     keycard_flow.backup_seed_phrase()
-        # else:
-        #     self.next_button.click()
-        #     self.create_password_input.send_keys(password)
-        #     self.confirm_your_password_input.send_keys(password)
-        #     self.next_button.click()
-        # self.identifiers_button.wait_and_click(30)
-        if enable_notifications:
-            self.enable_notifications_button.wait_and_click()
-            for _ in range(3):
-                self.allow_button.click_if_shown(sec=10)
-                self.enable_notifications_button.click_if_shown()
-                if self.chats_tab.is_element_displayed():
-                    break
-        else:
-            self.maybe_later_button.wait_and_click()
-            for _ in range(3):
-                self.maybe_later_button.click_if_shown()
-                if self.chats_tab.is_element_displayed():
-                    break
         self.chats_tab.wait_for_visibility_of_element(30)
         self.driver.info("## New multiaccount is created successfully!", device=False)
-        return self.get_home_view()
+        home_view = self.get_home_view()
+        if enable_notifications:
+            profile_view = home_view.profile_button.click()
+            profile_view.switch_push_notifications()
+            profile_view.click_system_back_button(times=2)
+        return home_view
 
-    def recover_access(self, passphrase: str, password: str = common_password, keycard=False,
-                       enable_notifications=False, second_user=False, username='Restore user', set_image=False,
-                       after_sync_code=False):
-        self.driver.info("## Recover access(password:%s, keycard:%s)" % (password, str(keycard)), device=False)
+    def recover_access(self, passphrase: str, password: str = common_password, enable_notifications=False,
+                       second_user=False, username='Restore user', set_image=False, after_sync_code=False):
+        self.driver.info("## Recover access (password:%s)" % password, device=False)
 
         if not after_sync_code:
             if not second_user:
                 self.create_profile_button.click_until_presence_of_element(self.generate_keys_button)
                 self.not_now_button.wait_and_click()
             else:
-                self.show_profiles_button.wait_and_click(20)
                 self.plus_profiles_button.click()
                 self.create_new_profile_button.click()
             self.use_recovery_phrase_button.click()
@@ -304,22 +277,13 @@ class SignInView(BaseView):
         if not after_sync_code:
             self.set_profile(username, set_image)
         self.set_password(password)
-        if enable_notifications:
-            self.enable_notifications_button.wait_and_click()
-            for _ in range(3):
-                self.allow_button.click_if_shown(sec=10)
-                self.enable_notifications_button.click_if_shown()
-                if self.chats_tab.is_element_displayed():
-                    break
-        else:
-            self.maybe_later_button.wait_and_click()
-            for _ in range(3):
-                self.maybe_later_button.click_if_shown()
-                if self.chats_tab.is_element_displayed():
-                    break
         self.chats_tab.wait_for_visibility_of_element(30)
         self.driver.info("## Multiaccount is recovered successfully!", device=False)
-        return self.get_home_view()
+        home_view = self.get_home_view()
+        if enable_notifications:
+            profile_view = home_view.profile_button.click()
+            profile_view.switch_push_notifications()
+        return home_view
 
     def sync_profile(self, sync_code: str, first_user: bool = True):
         if first_user:
@@ -337,8 +301,9 @@ class SignInView(BaseView):
         self.enter_sync_code_input.send_keys(sync_code)
         self.confirm_button.click()
 
-    def sign_in(self, password=common_password):
+    def sign_in(self, user_name, password=common_password):
         self.driver.info("## Sign in (password: %s)" % password, device=False)
+        self.get_user_profile_by_name(user_name).click()
         self.password_input.wait_for_visibility_of_element(10)
         self.password_input.send_keys(password)
         self.login_button.click()
