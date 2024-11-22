@@ -13,9 +13,9 @@
 (defn- mention-item
   [[user-key user]]
   (with-meta
-   [contact-list-item/contact-list-item {:on-press #(rf/dispatch [:chat.ui/select-mention user])}
-    user]
-   {:key user-key}))
+    [contact-list-item/contact-list-item {:on-press #(rf/dispatch [:chat.ui/select-mention user])}
+     user]
+    {:key user-key}))
 
 (defn view
   [layout-height]
@@ -39,6 +39,7 @@
        (reanimated/animate opacity (if suggestions? 1 0)))
      [suggestions])
     [reanimated/view {:style (style/container opacity top theme)}
-     [rn/scroll-view {:accessibility-label          :mentions-list
-                      :keyboard-should-persist-taps :always}
+     [rn/scroll-view
+      {:accessibility-label          :mentions-list
+       :keyboard-should-persist-taps :always}
       (map mention-item suggestions-state)]]))
