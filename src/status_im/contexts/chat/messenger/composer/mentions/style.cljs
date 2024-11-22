@@ -6,12 +6,13 @@
 
 (defn- add-shadow
   [theme styles]
-  (cond-> styles
-    platform/ios? (assoc :shadow-radius  (colors/theme-colors 30 50 theme)
-                         :shadow-opacity (colors/theme-colors 0.1 0.7 theme)
-                         :shadow-color   colors/neutral-100
-                         :shadow-offset  {:width 0 :height (colors/theme-colors 8 12 theme)})
-    :else         (assoc :elevation 10)))
+  (if platform/ios?
+    (assoc styles
+           :shadow-radius  (colors/theme-colors 30 50 theme)
+           :shadow-opacity (colors/theme-colors 0.1 0.7 theme)
+           :shadow-color   colors/neutral-100
+           :shadow-offset  {:width 0 :height (colors/theme-colors 8 12 theme)})
+    (assoc styles :elevation 10)))
 
 (defn inner
   [top theme]
