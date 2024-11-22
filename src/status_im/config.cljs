@@ -150,3 +150,8 @@
 (goog-define STATUS_BACKEND_SERVER_ROOT_DATA_DIR "")
 ;; if you're using android simulator, I suggest set the env variable to "http://10.0.2.2:"
 (goog-define STATUS_BACKEND_SERVER_IMAGE_SERVER_URI_PREFIX "https://localhost:")
+
+;;;; Sentry
+;; Documentation: status-go/internal/sentry/README.md
+(goog-define SENTRY_DSN_STATUS_GO "")
+(def sentry-dsn-status-go SENTRY_DSN_STATUS_GO)
