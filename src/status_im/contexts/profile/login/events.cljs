@@ -42,10 +42,10 @@
          log-level          (or (:log-level settings) config/log-level)
          pairing-completed? (= (get-in db [:syncing :pairing-status]) :completed)
          new-db             (-> db
-                                (assoc :chats/loading?  true
-                                       :profile/profile (merge profile-overview
-                                                               settings
-                                                               {:log-level log-level}))
+                                (assoc :profile/profile
+                                       (merge profile-overview
+                                              settings
+                                              {:log-level log-level}))
                                 (assoc-in [:activity-center :loading?] true)
                                 (dissoc :centralized-metrics/onboarding-enabled?))]
      {:db (cond-> new-db

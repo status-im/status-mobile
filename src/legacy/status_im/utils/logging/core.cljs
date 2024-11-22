@@ -135,7 +135,6 @@
                                                  :chat/cooldowns
                                                  :chat/last-outgoing-message-sent-at
                                                  :chat/spam-messages-frequency
-                                                 :chats/loading?
                                                  :dimensions/window]))]
       {:logs/archive-logs [db-json
                            (if (= transport :email)

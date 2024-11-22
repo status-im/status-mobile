@@ -34,8 +34,7 @@
                  new-chats-js)]
      {:db (-> db
               (update :chats merge all-chats)
-              (update :chats-home-list into chats-home-list)
-              (assoc :chats/loading? false))})))
+              (update :chats-home-list into chats-home-list))})))
 
 (rf/defn load-chat-success
   {:events [:chats-list/load-chat-success]}

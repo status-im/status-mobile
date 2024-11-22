@@ -100,7 +100,6 @@
 (reg-root-key-sub :chats/chats :chats)
 (reg-root-key-sub :chats/current-chat-id :current-chat-id)
 (reg-root-key-sub :public-group-topic :public-group-topic)
-(reg-root-key-sub :chats/loading? :chats/loading?)
 (reg-root-key-sub :new-chat-name :new-chat-name)
 (reg-root-key-sub :chat/inputs :chat/inputs)
 (reg-root-key-sub :chat/memberships :chat/memberships)
