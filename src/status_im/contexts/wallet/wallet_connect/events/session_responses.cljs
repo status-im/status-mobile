@@ -27,14 +27,16 @@
  (fn [{:keys [db]} [{:keys [keycard-pin sign-data on-success on-fail]}]]
    (let [address                (get-in db [:wallet-connect/current-request :address])
          {:keys [path key-uid]} (get-in db [:wallet :accounts address])]
-     {:fx [[:dispatch
-            [:keycard/sign-hash
-             {:key-uid    key-uid
-              :pin        keycard-pin
-              :path       path
-              :hash       (hex/normalize-hex sign-data)
-              :on-success on-success
-              :on-failure on-fail}]]]})))
+     ;; NOTE: give time to the keycard-pin sheet to hide before showing the next one
+     {:fx [[:dispatch-later
+            {:ms       300
+             :dispatch [:keycard/sign-hash
+                        {:key-uid    key-uid
+                         :pin        keycard-pin
+                         :path       path
+                         :hash       (hex/normalize-hex sign-data)
+                         :on-success on-success
+                         :on-failure on-fail}]}]]})))
 
 (rf/reg-event-fx
  :wallet-connect/authorized-signing
@@ -48,11 +50,13 @@
      (if keycard-sign?
        {:fx [[:dispatch
               [:standard-auth/authorize-with-keycard
-               {:on-complete #(rf/dispatch [:wallet-connect/sign-message-with-keycard
-                                            {:keycard-pin %
-                                             :sign-data   sign-data
-                                             :on-success  on-success
-                                             :on-fail     on-fail}])}]]]}
+               {:on-complete (fn [pin]
+                               (rf/dispatch [:hide-bottom-sheet])
+                               (rf/dispatch [:wallet-connect/sign-message-with-keycard
+                                             {:keycard-pin pin
+                                              :sign-data   sign-data
+                                              :on-success  on-success
+                                              :on-fail     on-fail}]))}]]]}
        {:fx [[:effects.wallet/sign-message
               {:message    sign-data
                :address    address
