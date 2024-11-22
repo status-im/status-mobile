@@ -12,6 +12,7 @@
 (def ^:private initial-flags
   {::community.edit-account-selection   (enabled-in-env? :FLAG_EDIT_ACCOUNT_SELECTION_ENABLED)
    ::community.view-token-requirements  (enabled-in-env? :FLAG_VIEW_TOKEN_REQUIREMENTS)
+   ::app-monitoring.intentional-crash   (enabled-in-env? :FLAG_INTENTIONAL_CRASH_ENABLED)
 
    ;; Feature toggled (off by default) because the desktop app disabled this
    ;; feature and we want both clients in sync. We keep the code because it

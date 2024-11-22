@@ -109,6 +109,13 @@ RCT_EXPORT_METHOD(getNodeConfig:(RCTResponseSenderBlock)callback) {
                                                callback:callback];
 }
 
+RCT_EXPORT_METHOD(intendedPanic:(NSString *)message) {
+#if DEBUG
+    NSLog(@"IntendedPanic() method called");
+#endif
+    StatusgoIntendedPanic(message);
+}
+
 RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(fleets) {
     return [StatusBackendClient executeStatusGoRequestWithResult:@"Fleets"
                                                          body:@""

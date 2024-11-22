@@ -5,6 +5,7 @@
     [legacy.status-im.ui.components.list.views :as list]
     [quo.core :as quo]
     [re-frame.core :as re-frame]
+    [status-im.feature-flags :as ff]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf])
   (:require-macros [legacy.status-im.utils.views :as views]))
@@ -17,7 +18,14 @@
            peer-syncing-enabled?]}]
   (keep
    identity
-   [{:size :small
+   [(when (ff/enabled? ::ff/app-monitoring.intentional-crash)
+      {:size                :small
+       :title               "Force crash immediately"
+       :accessibility-label :intended-panic
+       :on-press            (fn []
+                              (re-frame/dispatch [:app-monitoring/intended-panic
+                                                  "status-mobile intentional panic"]))})
+    {:size :small
      :title (i18n/label :t/log-level)
      :accessibility-label :log-level-settings-button
      :on-press

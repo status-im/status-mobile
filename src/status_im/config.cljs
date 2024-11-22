@@ -144,3 +144,7 @@
 
 (def re-frisk-host (get-config :RE_FRISK_HOST "localhost"))
 (def re-frisk-port (get-config :RE_FRISK_PORT "4567"))
+;;;; Sentry
+;; Documentation: status-go/internal/sentry/README.md
+(goog-define SENTRY_DSN_STATUS_GO "")
+(def sentry-dsn-status-go SENTRY_DSN_STATUS_GO)

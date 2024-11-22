@@ -2,6 +2,7 @@
   (:require
     status-im.common.alert-banner.events
     status-im.common.alert.effects
+    status-im.common.app-monitoring.events
     status-im.common.async-storage.effects
     status-im.common.emoji-picker.events
     status-im.common.font.events
