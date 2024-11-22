@@ -116,6 +116,7 @@
            :on-close                  #(rf/dispatch [:standard-auth/reset-login-password])
            :content                   (fn []
                                         [keycard.pin/auth {:on-complete on-complete}])}]]]})
+
 (rf/reg-event-fx :standard-auth/authorize-with-keycard authorize-with-keycard)
 
 (defn authorize-with-password

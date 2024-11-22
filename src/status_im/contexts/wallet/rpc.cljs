@@ -56,6 +56,4 @@
                              message
                              address
                              password)
-      (promesa/then (fn [s]
-                      {:message   message
-                       :signature (utils.hex/normalize-hex s)}))))
+      (promesa/then utils.hex/normalize-hex)))

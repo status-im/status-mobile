@@ -109,7 +109,8 @@
   [hashes address password]
   (-> (promesa/all
        (for [h hashes]
-         (wallet-rpc/sign-message h address password)))
+         {:message   h
+          :signature (wallet-rpc/sign-message h address password)}))
       (promesa/catch (fn [err]
                        (throw (ex-info "Failed to sign transaction hashes"
                                        {:error err
