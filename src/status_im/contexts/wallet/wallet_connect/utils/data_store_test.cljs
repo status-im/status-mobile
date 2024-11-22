@@ -8,15 +8,15 @@
 
 (deftest get-current-request-dapp-test
   (testing "returns the correct dapp based on the request's origin"
-    (let [request  {:event {:verifyContext {:verified {:origin "https://dapp.com"}}}}
-          sessions [{:url "https://dapp.com"}
-                    {:url "https://anotherdapp.com"}]]
-      (is (= {:url "https://dapp.com"}
+    (let [request  {:event {:topic "123"}}
+          sessions [{:topic "123"}
+                    {:topic "456"}]]
+      (is (= {:topic "123"}
              (sut/get-current-request-dapp request sessions)))))
 
   (testing "returns nil if no matching dapp is found"
-    (let [request  {:event {:verifyContext {:verified {:origin "https://dapp.com"}}}}
-          sessions [{:url "https://anotherdapp.com"}]]
+    (let [request  {:event {:topic "123"}}
+          sessions [{:topic "456"}]]
       (is (nil? (sut/get-current-request-dapp request sessions))))))
 
 (deftest get-dapp-redirect-url-test

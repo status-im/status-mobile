@@ -59,11 +59,11 @@
 
 (defn get-current-request-dapp
   [request sessions]
-  (let [dapp-url (get-in request [:event :verifyContext :verified :origin])]
+  (let [request-topic (get-in request [:event :topic])]
     (->> sessions
          (filter (fn [session]
-                   (= (utils.string/remove-trailing-slash dapp-url)
-                      (utils.string/remove-trailing-slash (get session :url)))))
+                   (= (:topic session)
+                      request-topic)))
          first)))
 
 (defn get-dapp-redirect-url

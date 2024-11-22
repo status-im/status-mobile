@@ -4,8 +4,7 @@
             [status-im.common.json-rpc.events :as rpc-events]
             [status-im.constants :as constants]
             [utils.hex]
-            [utils.transforms :as transforms]
-            [utils.hex :as hex]))
+            [utils.transforms :as transforms]))
 
 (defn build-transaction
   [chain-id tx]
@@ -56,7 +55,7 @@
                          chain-id
                          constants/transaction-pending-type-wallet-connect-transfer
                          (transforms/js-stringify tx-args 0)
-                         (hex/normalize-hex signature)))
+                         (utils.hex/normalize-hex signature)))
 
 (defn sign-message
   [message address password]
