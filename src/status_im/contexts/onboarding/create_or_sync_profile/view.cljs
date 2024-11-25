@@ -6,7 +6,6 @@
     [react-native.safe-area :as safe-area]
     [status-im.common.check-before-syncing.view :as check-before-syncing]
     [status-im.common.metrics-confirmation-modal.view :as metrics-modal]
-    [status-im.common.not-implemented :as not-implemented]
     [status-im.common.resources :as resources]
     [status-im.config :as config]
     [status-im.contexts.onboarding.create-or-sync-profile.style :as style]
