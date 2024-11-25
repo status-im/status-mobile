@@ -7,8 +7,7 @@
     [react-native.fs :as utils.fs]
     [react-native.platform :as platform]
     [schema.core :as schema]
-    [status-im.config :as config]
-    [utils.datetime :as datetime]))
+    [status-im.config :as config]))
 
 (def ^:const image-server-uri-prefix config/STATUS_BACKEND_SERVER_IMAGE_SERVER_URI_PREFIX)
 (def ^:const account-images-action "/accountImages")
@@ -39,8 +38,6 @@
     (callback (str (utils.fs/main-bundle-path)
                    "/"
                    font-file-name))))
-
-(defn timestamp [] (datetime/timestamp))
 
 (defn current-theme-index
   [theme]
