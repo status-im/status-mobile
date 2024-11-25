@@ -3,7 +3,7 @@
     "_comment": "Instead use: scripts/update-status-go.sh <rev>",
     "owner": "status-im",
     "repo": "status-go",
-    "version": "fix/hide-mercuryo-provider",
-    "commit-sha1": "43056094932b9b15cce5827a19dafc27cf8160a6",
-    "src-sha256": "08hdi66wq9zxkih2a84526a96qzq9fsnq4p8qdf9bk340y1sgsrj"
+    "version": "v4.0.0",
+    "commit-sha1": "032eb5b6ee71b675b7d1d63198e79e2c18063654",
+    "src-sha256": "06qffndymgl80c08w96rs02ycxigai7y06d7ljwrkfr4brc86r21"
 }
