@@ -12,12 +12,13 @@
     disabled?     :bridge-disabled?
     :as           token}
    _ _
-   {:keys [currency currency-symbol on-token-press preselected-token-symbol]}]
+   {:keys [currency currency-symbol on-token-press preselected-token-symbol prices-per-token]}]
   (let [fiat-value       (utils/calculate-token-fiat-value
-                          {:currency currency
-                           :balance  total-balance
-                           :token    token})
-        crypto-formatted (utils/get-standard-crypto-format token total-balance)
+                          {:currency         currency
+                           :balance          total-balance
+                           :token            token
+                           :prices-per-token prices-per-token})
+        crypto-formatted (utils/get-standard-crypto-format token total-balance prices-per-token)
         fiat-formatted   (utils/fiat-formatted-for-ui currency-symbol fiat-value)]
     [quo/token-network
      {:token       token-symbol
@@ -34,17 +35,19 @@
 (defn view
   [{:keys [content-container-style search-text on-token-press preselected-token-symbol chain-ids]
     :or   {content-container-style {:padding-horizontal 8}}}]
-  (let [filtered-tokens (rf/sub [:wallet/current-viewing-account-tokens-filtered
-                                 {:query     search-text
-                                  :chain-ids chain-ids}])
-        currency        (rf/sub [:profile/currency])
-        currency-symbol (rf/sub [:profile/currency-symbol])]
+  (let [filtered-tokens  (rf/sub [:wallet/current-viewing-account-tokens-filtered
+                                  {:query     search-text
+                                   :chain-ids chain-ids}])
+        currency         (rf/sub [:profile/currency])
+        currency-symbol  (rf/sub [:profile/currency-symbol])
+        prices-per-token (rf/sub [:wallet/prices-per-token])]
     [gesture/flat-list
      {:data                         filtered-tokens
       :render-data                  {:currency                 currency
                                      :currency-symbol          currency-symbol
                                      :on-token-press           on-token-press
-                                     :preselected-token-symbol preselected-token-symbol}
+                                     :preselected-token-symbol preselected-token-symbol
+                                     :prices-per-token         prices-per-token}
       :style                        {:flex 1}
       :content-container-style      content-container-style
       :keyboard-should-persist-taps :handled

@@ -114,11 +114,12 @@
 (rf/reg-sub
  :wallet/send-display-token-decimals
  :<- [:wallet/wallet-send]
- (fn [{:keys [token collectible]}]
+ :<- [:wallet/prices-per-token]
+ (fn [[{:keys [token collectible]} prices-per-token]]
    (if collectible
      0
      (-> token
-         common-utils/token-usd-price
+         (common-utils/token-usd-price prices-per-token)
          common-utils/one-cent-value
          common-utils/calc-max-crypto-decimals
          (min constants/min-token-decimals-to-display)))))

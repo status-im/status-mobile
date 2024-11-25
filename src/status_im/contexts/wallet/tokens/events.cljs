@@ -21,6 +21,7 @@
 (defn store-token-list
   [{:keys [db]} [{:keys [data]}]]
   (let [chain-ids                  (chain/chain-ids db)
+        profile-currency           (get-in db [:profile/profile :currency])
         tokens                     (reduce (fn [{:keys [by-address by-symbol] :as data}
                                                 {:keys [name source version tokens]}]
                                              (-> data
@@ -48,13 +49,11 @@
                                             :by-address {}
                                             :by-symbol  {}}
                                            data)
-        symbols                    (->> tokens
-                                        :by-symbol
-                                        vals
-                                        (map :symbol)
-                                        set
-                                        vec)
         by-symbol-vals             (-> tokens :by-symbol vals)
+        symbols                    (reduce (fn [acc token]
+                                             (conj acc (:symbol token)))
+                                           #{}
+                                           by-symbol-vals)
         supported-chains-by-symbol (reduce
                                     (fn [result
                                          {token-symbol :symbol
@@ -64,9 +63,10 @@
                                         (assoc result token-symbol #{chain-id})))
                                     {}
                                     by-symbol-vals)]
+
     {:fx [[:effects.wallet.tokens/fetch-market-values
            {:symbols    symbols
-            :currency   constants/profile-default-currency
+            :currency   profile-currency
             :on-success [:wallet.tokens/store-market-values]
             :on-error   [:wallet.tokens/fetch-market-values-failed]}]
           [:effects.wallet.tokens/fetch-details
@@ -75,7 +75,7 @@
             :on-error   [:wallet.tokens/fetch-details-failed]}]
           [:effects.wallet.tokens/fetch-prices
            {:symbols    symbols
-            :currencies [constants/profile-default-currency]
+            :currencies [constants/profile-default-currency profile-currency]
             :on-success [:wallet.tokens/store-prices]
             :on-error   [:wallet.tokens/fetch-prices-failed]}]]
      :db (-> db
@@ -116,7 +116,7 @@
                                {}
                                raw-data)]
      {:db (-> db
-              (assoc-in [:wallet :tokens :market-values-per-token] market-values)
+              (update-in [:wallet :tokens :market-values-per-token] merge market-values)
               (assoc-in [:wallet :ui :loading :market-values] false))})))
 
 (rf/reg-event-fx
@@ -146,7 +146,7 @@
  :wallet.tokens/store-prices
  (fn [{:keys [db]} [prices]]
    {:db (-> db
-            (assoc-in [:wallet :tokens :prices-per-token] prices)
+            (update-in [:wallet :tokens :prices-per-token] merge prices)
             (assoc-in [:wallet :ui :loading :prices] false))}))
 
 (rf/reg-event-fx

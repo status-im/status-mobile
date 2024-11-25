@@ -164,13 +164,14 @@
                                                   (str token-symbol)
                                                   enabled-from-chain-ids])
         token-balance                    (or default-limit-crypto total-balance)
-        usd-conversion-rate              (utils/token-usd-price token)
+        prices-per-token                 (rf/sub [:wallet/prices-per-token])
+        usd-conversion-rate              (utils/token-usd-price token prices-per-token)
         currency                         (rf/sub [:profile/currency])
-        conversion-rate                  (-> token
-                                             :market-values-per-currency
-                                             currency
-                                             :price)
         token-decimals                   (rf/sub [:wallet/send-display-token-decimals])
+
+        conversion-rate                  (utils/token-price-by-symbol prices-per-token
+                                                                      token-symbol
+                                                                      currency)
         [input-state set-input-state]    (rn/use-state controlled-input/init-state)
         clear-input!                     #(set-input-state controlled-input/delete-all)
         currency-symbol                  (rf/sub [:profile/currency-symbol])

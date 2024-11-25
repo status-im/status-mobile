@@ -15,11 +15,13 @@
     bridge-disabled? :bridge-disabled?
     :as              token}
    {:keys [currency currency-symbol on-token-press disable-token-fn preselected-token-symbol]}]
-  (let [fiat-value       (utils/calculate-token-fiat-value
-                          {:currency currency
-                           :balance  total-balance
-                           :token    token})
-        crypto-formatted (utils/get-standard-crypto-format token total-balance)
+  (let [prices-per-token (rf/sub [:wallet/prices-per-token])
+        fiat-value       (utils/calculate-token-fiat-value
+                          {:currency         currency
+                           :balance          total-balance
+                           :token            token
+                           :prices-per-token prices-per-token})
+        crypto-formatted (utils/get-standard-crypto-format token total-balance prices-per-token)
         fiat-formatted   (utils/fiat-formatted-for-ui currency-symbol fiat-value)]
     [rn/view {:style {:padding-horizontal 8}}
      [quo/token-network

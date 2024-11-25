@@ -71,8 +71,6 @@
       (is (not-empty (:symbol token)))
       (is (:decimals token))
       (is (contains? token :balancesPerChain))
-      (is (contains? token :marketValuesPerCurrency))
-      (is (contains? (:marketValuesPerCurrency token) :usd))
       (let [balances-per-chain (:balancesPerChain token)]
         (doseq [[_ balance] balances-per-chain]
           (is (contains? balance :rawBalance))
@@ -86,7 +84,7 @@
       (promesa/let [accounts        (rpc-events/call-async "accounts_getAccounts" false)
                     default-address (contract-utils/get-default-address accounts)
                     response        (rpc-events/call-async
-                                     "wallet_getWalletToken"
+                                     "wallet_fetchOrGetCachedWalletBalances"
                                      false
                                      [default-address])]
         (assert-wallet-tokens response)))))

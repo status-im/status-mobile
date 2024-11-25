@@ -19,12 +19,14 @@
     (let [network                     (rf/sub [:wallet/network-details-by-chain-id chain-id])
           currency                    (rf/sub [:profile/currency])
           currency-symbol             (rf/sub [:profile/currency-symbol])
+          prices-per-token            (rf/sub [:wallet/prices-per-token])
           balance                     (utils/calculate-total-token-balance token [chain-id])
-          crypto-value                (utils/get-standard-crypto-format token balance)
+          crypto-value                (utils/get-standard-crypto-format token balance prices-per-token)
           fiat-value                  (utils/calculate-token-fiat-value
-                                       {:currency currency
-                                        :balance  balance
-                                        :token    token})
+                                       {:currency         currency
+                                        :balance          balance
+                                        :token            token
+                                        :prices-per-token prices-per-token})
           fiat-formatted              (utils/fiat-formatted-for-ui currency-symbol
                                                                    fiat-value)
           token-available-on-network? (network-utils/token-available-on-network? supported-networks
