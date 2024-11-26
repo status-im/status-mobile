@@ -1,15 +1,15 @@
 (ns status-im.contexts.wallet.effects
   (:require
-   [clojure.string :as string]
-   [native-module.core :as native-module]
-   [promesa.core :as promesa]
-   [status-im.common.json-rpc.events :as json-rpc]
-   [status-im.contexts.profile.recover.effects :as profile.recover.effects]
-   [status-im.contexts.wallet.rpc :as wallet-rpc]
-   [taoensso.timbre :as log]
-   [utils.re-frame :as rf]
-   [utils.security.core :as security]
-   [utils.transforms :as transforms]))
+    [clojure.string :as string]
+    [native-module.core :as native-module]
+    [promesa.core :as promesa]
+    [status-im.common.json-rpc.events :as json-rpc]
+    [status-im.contexts.profile.recover.effects :as profile.recover.effects]
+    [status-im.contexts.wallet.rpc :as wallet-rpc]
+    [taoensso.timbre :as log]
+    [utils.re-frame :as rf]
+    [utils.security.core :as security]
+    [utils.transforms :as transforms]))
 
 (defn- error-message
   [kw]
@@ -73,11 +73,11 @@
              {:hint :incorrect-seed-phrase-for-keypair}))
            (make-seed-phrase-fully-operable seed-phrase password))))
       (promesa/catch
-       (fn [error]
-         (promesa/rejected
-          (ex-info
-           (error-message :import-missing-keypair-by-seed-phrase/import-error)
-           (ex-data error)))))))
+        (fn [error]
+          (promesa/rejected
+           (ex-info
+            (error-message :import-missing-keypair-by-seed-phrase/import-error)
+            (ex-data error)))))))
 
 (rf/reg-fx
  :effects.wallet/import-missing-keypair-by-seed-phrase
