@@ -26,7 +26,7 @@ export STATUS_BACKEND_SERVER_HOST="127.0.0.1:60000"
 export STATUS_BACKEND_SERVER_ROOT_DATA_DIR="/path/to/your/root/data/dir" 
 ```
 You need to change `STATUS_BACKEND_SERVER_ROOT_DATA_DIR` to your preferred directory and ensure it exists, it should be in absolute path.
-All the db files and log files(requests.log/geth.log) and keystore files etc will be stored in this directory.
+All the db files and log files(api.log/geth.log) and keystore files etc will be stored in this directory.
 
 ### Start the status backend server:
 ```shell

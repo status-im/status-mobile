@@ -195,25 +195,6 @@ class LogManager(private val reactContext: ReactApplicationContext) : ReactConte
         }
     }
 
-    @ReactMethod
-    fun initLogging(enabled: Boolean, mobileSystem: Boolean, logLevel: String, logRequestGo: Boolean, callback: Callback) {
-        val jsonConfig = JSONObject().apply {
-            put("Enabled", enabled)
-            put("MobileSystem", mobileSystem)
-            put("Level", logLevel)
-            put("File", getGethLogFile().absolutePath)
-            put("LogRequestGo", logRequestGo)
-            put("LogRequestFile", getRequestLogFile().absolutePath)
-        }
-        val config = jsonConfig.toString()
-        StatusBackendClient.executeStatusGoRequestWithCallback(
-            endpoint = "InitLogging",
-            requestBody = config,
-            statusgoFunction = { Statusgo.initLogging(config) },
-            callback = callback
-        )
-    }
-
     @ReactMethod(isBlockingSynchronousMethod = true)
     fun logFileDirectory(): String? {
         return utils.getPublicStorageDirectory()?.absolutePath
@@ -223,7 +204,7 @@ class LogManager(private val reactContext: ReactApplicationContext) : ReactConte
         private const val TAG = "LogManager"
         private const val gethLogFileName = "geth.log"
         private const val statusLogFileName = "Status.log"
-        private const val requestsLogFileName = "requests.log"
+        private const val requestsLogFileName = "api.log"
         private const val logsZipFileName = "Status-debug-logs.zip"
     }
 }

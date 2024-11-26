@@ -71,7 +71,7 @@
 
 ;; CONFIG VALUES
 (def log-level (string/upper-case (get-config :LOG_LEVEL "")))
-(def log-request-go (enabled? (get-config :LOG_REQUEST_GO "0")))
+(def api-logging-enabled? (enabled? (get-config :API_LOGGING_ENABLED "0")))
 (def fleet (get-config :FLEET ""))
 (def apn-topic (get-config :APN_TOPIC "im.status.ethereum"))
 (def max-installations 2)

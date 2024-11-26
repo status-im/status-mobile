@@ -36,7 +36,7 @@ RCT_EXPORT_METHOD(sendLogs:(NSString *)dbJson
     NSURL *mainGethLogsFile = [rootUrl URLByAppendingPathComponent:@"geth.log"];
     NSURL *mainLogsFile = [logsFolderName URLByAppendingPathComponent:@"geth.log"];
 
-    NSURL *requestsLogFile = [rootUrl URLByAppendingPathComponent:@"requests.log"];
+    NSURL *requestsLogFile = [rootUrl URLByAppendingPathComponent:@"api.log"];
 
     [dbJson writeToFile:dbFile.path atomically:YES encoding:NSUTF8StringEncoding error:nil];
     [jsLogs writeToFile:jsLogsFile.path atomically:YES encoding:NSUTF8StringEncoding error:nil];
@@ -44,50 +44,13 @@ RCT_EXPORT_METHOD(sendLogs:(NSString *)dbJson
     [fileManager copyItemAtPath:mainGethLogsFile.path toPath:mainLogsFile.path error:nil];
     
     if ([fileManager fileExistsAtPath:requestsLogFile.path]) {
-        [fileManager copyItemAtPath:requestsLogFile.path toPath:[logsFolderName URLByAppendingPathComponent:@"requests.log"].path error:nil];
+        [fileManager copyItemAtPath:requestsLogFile.path toPath:[logsFolderName URLByAppendingPathComponent:@"api.log"].path error:nil];
     }
 
     [SSZipArchive createZipFileAtPath:zipFile.path withContentsOfDirectory:logsFolderName.path];
     [fileManager removeItemAtPath:logsFolderName.path error:nil];
 
     callback(@[zipFile.absoluteString]);
-}
-
-RCT_EXPORT_METHOD(initLogging:(BOOL)enabled
-                  mobileSystem:(BOOL)mobileSystem
-                  logLevel:(NSString *)logLevel
-                  logRequestGo:(BOOL)logRequestGo
-                  callback:(RCTResponseSenderBlock)callback)
-{
-    NSString *logDirectory = [self logFileDirectory];
-    NSString *logFilePath = [logDirectory stringByAppendingPathComponent:@"geth.log"];
-    NSString *logRequestFilePath = [logDirectory stringByAppendingPathComponent:@"requests.log"];
-
-    NSDictionary *config = @{
-        @"Enabled": @(enabled),
-        @"MobileSystem": @(mobileSystem),
-        @"Level": logLevel,
-        @"File": logFilePath,
-        @"LogRequestGo": @(logRequestGo),
-        @"LogRequestFile": logRequestFilePath
-    };
-    
-    NSError *error;
-    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:config options:0 error:&error];
-    
-    if (error) {
-        NSLog(@"Error creating JSON: %@", [error localizedDescription]);
-        return;
-    }
-    
-    NSString *configJson = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
-
-    [StatusBackendClient executeStatusGoRequestWithCallback:@"InitLogging"
-                                                     body:configJson
-                                         statusgoFunction:^NSString *{
-        return StatusgoInitLogging(configJson);
-    }
-                                                 callback:callback];
 }
 
 RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(logFileDirectory) {

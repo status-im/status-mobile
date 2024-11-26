@@ -248,10 +248,14 @@ class AccountManager(private val reactContext: ReactApplicationContext) : ReactC
     @ReactMethod
     private fun initializeApplication(request: String, callback: Callback) {
         Log.d(TAG, "initializeApplication")
+        val jsonParams = JSONObject(request)
+        // for ios, the log dir will be the same as the root data dir, status-go will default to root data dir if logDir is not provided
+        jsonParams.put("logDir", utils.getPublicStorageDirectory()?.absolutePath)
+        val jsonString = jsonParams.toString()
         StatusBackendClient.executeStatusGoRequestWithCallback(
             "InitializeApplication",
-            request,
-            { Statusgo.initializeApplication(request) },
+            jsonString,
+            { Statusgo.initializeApplication(jsonString) },
             callback
         )
     }

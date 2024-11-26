@@ -117,7 +117,7 @@ def pull_geth(driver):
 
 
 def pull_requests_log(driver):
-    result = driver.pull_file(get_app_path() + 'requests.log')
+    result = driver.pull_file(get_app_path() + 'api.log')
     return base64.b64decode(result)
 
 
