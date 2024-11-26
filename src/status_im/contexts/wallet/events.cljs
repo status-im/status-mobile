@@ -213,7 +213,7 @@
  (fn [{:keys [db]} [address]]
    {:db (assoc-in db [:wallet :ui :tokens-loading address] true)
     :fx [[:json-rpc/call
-          [{:method     "wallet_getWalletToken"
+          [{:method     "wallet_fetchOrGetCachedWalletBalances"
             :params     [[address]]
             :on-success [:wallet/store-wallet-token address]
             :on-error   [:wallet/get-wallet-token-for-account-failed address]}]]]}))
@@ -232,6 +232,7 @@
  :wallet/store-wallet-token
  (fn [{:keys [db]} [address raw-tokens-data]]
    (let [supported-chains-by-token-symbol (get-in db [:wallet :tokens :supported-chains-by-symbol])
+         profile-currency                 (get-in db [:profile/profile :currency])
          tokens                           (data-store/rpc->tokens raw-tokens-data
                                                                   supported-chains-by-token-symbol)
          add-tokens                       (fn [stored-accounts tokens-per-account]
@@ -241,11 +242,25 @@
                                                  (update accounts address assoc :tokens tokens-data)
                                                  accounts))
                                              stored-accounts
-                                             tokens-per-account))]
-     {:fx [[:dispatch [:wallet/get-last-wallet-token-update-if-needed]]]
-      :db (-> db
+                                             tokens-per-account))
+         symbols                          (reduce-kv (fn [acc _ v]
+                                                       (into acc (map :symbol v)))
+                                                     #{}
+                                                     tokens)]
+     {:db (-> db
               (update-in [:wallet :accounts] add-tokens tokens)
-              (assoc-in [:wallet :ui :tokens-loading address] false))})))
+              (assoc-in [:wallet :ui :tokens-loading address] false))
+      :fx [[:dispatch [:wallet/get-last-wallet-token-update-if-needed]]
+           [:effects.wallet.tokens/fetch-market-values
+            {:symbols    symbols
+             :currency   profile-currency
+             :on-success [:wallet.tokens/store-market-values]
+             :on-error   [:wallet.tokens/fetch-market-values-failed]}]
+           [:effects.wallet.tokens/fetch-prices
+            {:symbols    symbols
+             :currencies [constants/profile-default-currency profile-currency]
+             :on-success [:wallet.tokens/store-prices]
+             :on-error   [:wallet.tokens/fetch-prices-failed]}]]})))
 
 (rf/reg-event-fx
  :wallet/get-last-wallet-token-update-if-needed

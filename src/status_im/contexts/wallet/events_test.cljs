@@ -124,7 +124,7 @@
   [event-id dispatch]
   (let [expected-effects {:db {:wallet {:ui {:tokens-loading {address true}}}}
                           :fx [[:json-rpc/call
-                                [{:method     "wallet_getWalletToken"
+                                [{:method     "wallet_fetchOrGetCachedWalletBalances"
                                   :params     [[address]]
                                   :on-success [:wallet/store-wallet-token address]
                                   :on-error   [:wallet/get-wallet-token-for-account-failed

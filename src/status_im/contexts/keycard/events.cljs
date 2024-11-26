@@ -1,5 +1,6 @@
 (ns status-im.contexts.keycard.events
   (:require [re-frame.core :as rf]
+            status-im.contexts.keycard.create.events
             status-im.contexts.keycard.login.events
             status-im.contexts.keycard.migrate.events
             status-im.contexts.keycard.migrate.re-encrypting.events

@@ -206,7 +206,7 @@ class SignInView(BaseView):
         self.cancel_custom_seed_phrase_button = Button(self.driver, accessibility_id="cancel-custom-seed-phrase")
 
         # New onboarding
-        self.generate_keys_button = Button(self.driver, accessibility_id="generate-key-option-card")
+        self.start_fresh_lets_go_button = Button(self.driver, accessibility_id="start-fresh-main-card")
         self.profile_title_input = EditBox(self.driver, accessibility_id="profile-title-input")
         self.profile_continue_button = Button(self.driver, accessibility_id="submit-create-profile-button")
         self.profile_password_edit_box = EditBox(self.driver, translation_id="password-creation-placeholder-1")
@@ -215,7 +215,7 @@ class SignInView(BaseView):
         self.enable_biometric_maybe_later_button = Button(self.driver, translation_id="maybe-later")
         self.identifiers_button = Button(self.driver, accessibility_id="skip-identifiers")
         self.start_button = Button(self.driver, accessibility_id="welcome-button")
-        self.use_recovery_phrase_button = Button(self.driver, accessibility_id="use-recovery-phrase-option-card")
+        self.use_recovery_phrase_button = Button(self.driver, accessibility_id="use-a-recovery-phrase-icon-card")
         self.passphrase_edit_box = EditBox(self.driver, accessibility_id="passphrase-input")
         self.show_profiles_button = Button(self.driver, accessibility_id="show-profiles")
         self.plus_profiles_button = Button(self.driver, accessibility_id="show-new-account-options")
@@ -241,14 +241,14 @@ class SignInView(BaseView):
     def create_user(self, password=common_password, username="test user", first_user=True, enable_notifications=False):
         self.driver.info("## Creating new multiaccount with password:'%s'" % password, device=False)
         if first_user:
-            self.create_profile_button.click_until_presence_of_element(self.generate_keys_button)
+            self.create_profile_button.click_until_presence_of_element(self.start_fresh_lets_go_button)
             self.not_now_button.wait_and_click()
         else:
             if self.show_profiles_button.is_element_displayed(20):
                 self.show_profiles_button.click()
             self.plus_profiles_button.click()
             self.create_new_profile_button.click()
-        self.generate_keys_button.click_until_presence_of_element(self.profile_title_input)
+        self.start_fresh_lets_go_button.click_until_presence_of_element(self.profile_title_input)
         self.set_profile(username)
         self.set_password(password)
         self.chats_tab.wait_for_visibility_of_element(30)
@@ -266,7 +266,7 @@ class SignInView(BaseView):
 
         if not after_sync_code:
             if not second_user:
-                self.create_profile_button.click_until_presence_of_element(self.generate_keys_button)
+                self.create_profile_button.click_until_presence_of_element(self.start_fresh_lets_go_button)
                 self.not_now_button.wait_and_click()
             else:
                 self.plus_profiles_button.click()

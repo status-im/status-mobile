@@ -16,21 +16,26 @@
          :popular?   true
          :token?     false}})
 
+(def ^:private prices-per-token-high
+  {:ETH {:usd 10000}
+   :SNT {:usd 10000}})
+
+(def ^:private prices-per-token-low
+  {:DAI {:usd 0.0251}
+   :SNT {:usd 0.0251}})
+
 (def ^:private accounts-with-tokens
-  {:0x1 {:tokens                    [{:symbol                     "ETH"
-                                      :balances-per-chain         {1 {:raw-balance "100"}}
-                                      :market-values-per-currency {:usd {:price 10000}}}
-                                     {:symbol                     "SNT"
-                                      :balances-per-chain         {1 {:raw-balance "100"}}
-                                      :market-values-per-currency {:usd {:price 10000}}}]
+  {:0x1 {:tokens                    [{:symbol             "ETH"
+                                      :balances-per-chain {1 {:raw-balance "100"}}}
+                                     {:symbol             "SNT"
+                                      :balances-per-chain {1 {:raw-balance "100"}}}]
          :network-preferences-names #{}
          :customization-color       nil
          :operable?                 true
          :operable                  :fully
          :address                   "0x1"}
-   :0x2 {:tokens                    [{:symbol                     "SNT"
-                                      :balances-per-chain         {1 {:raw-balance "200"}}
-                                      :market-values-per-currency {:usd {:price 10000}}}]
+   :0x2 {:tokens                    [{:symbol             "SNT"
+                                      :balances-per-chain {1 {:raw-balance "200"}}}]
          :network-preferences-names #{}
          :customization-color       nil
          :operable?                 true
@@ -78,17 +83,6 @@
       :chain-id    42161}}
     :networks (concat [(networks :mainnet-network)] (networks :layer-2-networks))
     :chain-id 0
-    :market-values-per-currency
-    {:usd
-     {:change-24hour     -0.00109422754667007
-      :change-pct-day    -5.57352274163899
-      :change-pct-24hour -4.177805426737527
-      :high-day          0.0271858672171352
-      :market-cap        170783296.1155821
-      :has-error         false
-      :change-pct-hour   -0.0160462113709363
-      :low-day           0.02473516779550377
-      :price             0.0251}}
     :asset-website-url "https://status.im/"
     :available-balance 1
     :token-list-id ""
@@ -115,17 +109,6 @@
       :chain-id    42161}}
     :networks (concat [(networks :mainnet-network)] (networks :layer-2-networks))
     :chain-id 0
-    :market-values-per-currency
-    {:usd
-     {:change-24hour     -0.00109422754667007
-      :change-pct-day    -5.57352274163899
-      :change-pct-24hour -4.177805426737527
-      :high-day          0.0271858672171352
-      :market-cap        170783296.1155821
-      :has-error         false
-      :change-pct-hour   -0.0160462113709363
-      :low-day           0.02473516779550377
-      :price             0.0251}}
     :asset-website-url "https://status.im/"
     :available-balance 1
     :token-list-id ""
@@ -190,7 +173,8 @@
     (swap! rf-db/app-db
       #(-> %
            (assoc :currencies currencies)
-           (assoc-in [:wallet :ui :swap] swap-data)))
+           (assoc-in [:wallet :ui :swap] swap-data)
+           (assoc-in [:wallet :tokens :prices-per-token] prices-per-token-low)))
     (is (match? {:crypto "1 SNT" :fiat "$0.03"} (rf/sub [sub-name 1])))))
 
 (h/deftest-sub :wallet/swap-network
@@ -266,8 +250,9 @@
            (assoc-in [:wallet :current-viewing-account-address] "0x1")
            (assoc-in [:wallet :ui :swap] swap-data)
            (assoc-in [:currencies] currencies)
-           (assoc-in [:profile/profile :currency] :usd)))
-
+           (assoc-in [:profile/profile :currency] :usd)
+           (assoc-in [:profile/profile :currency-symbol] "$")
+           (assoc-in [:wallet :tokens :prices-per-token] prices-per-token-high)))
     (let [token-symbol-for-fees "ETH"
           result                (rf/sub [sub-name token-symbol-for-fees])]
       (is (match? result 1)))))

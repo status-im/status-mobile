@@ -17,6 +17,7 @@
    :generate-keys1                (js/require "../resources/images/ui2/generating-keys-1.png")
    :ethereum-address              (js/require "../resources/images/ui2/ethereum-address.png")
    :use-keycard                   (js/require "../resources/images/ui2/keycard.png")
+   :use-recovery-phrase           (js/require "../resources/images/ui2/recovery-phrase.png")
    :check-your-keycard            (js/require "../resources/images/ui2/check-your-keycard.png")
    :onboarding-illustration       (js/require "../resources/images/ui2/onboarding_illustration.png")
    :qr-code                       (js/require "../resources/images/ui2/qr-code.png")

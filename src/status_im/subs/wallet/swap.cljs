@@ -81,18 +81,19 @@
  :<- [:profile/currency]
  :<- [:profile/currency-symbol]
  :<- [:wallet/swap-asset-to-pay-token-symbol]
- (fn [[token currency currency-symbol token-symbol] [_ chain-id]]
+ :<- [:wallet/prices-per-token]
+ (fn [[token currency currency-symbol token-symbol prices-per-token] [_ chain-id]]
    (let [{:keys [balances-per-chain
                  decimals]} token
          balance-for-chain  (get balances-per-chain chain-id)
          total-balance      (money/token->unit (:raw-balance balance-for-chain) decimals)
          fiat-value         (utils/calculate-token-fiat-value
-                             {:currency currency
-                              :balance  total-balance
-                              :token    token})
-         crypto-formatted   (utils/get-standard-crypto-format token total-balance)
-         fiat-formatted     (utils/fiat-formatted-for-ui currency-symbol
-                                                         fiat-value)]
+                             {:currency         currency
+                              :balance          total-balance
+                              :token            token
+                              :prices-per-token prices-per-token})
+         crypto-formatted   (utils/get-standard-crypto-format token total-balance prices-per-token)
+         fiat-formatted     (utils/fiat-formatted-for-ui currency-symbol fiat-value)]
      {:crypto (str crypto-formatted " " token-symbol)
       :fiat   fiat-formatted})))
 
@@ -248,7 +249,8 @@
  :<- [:wallet/current-viewing-account]
  :<- [:wallet/swap-proposal]
  :<- [:profile/currency]
- (fn [[account swap-proposal currency] [_ token-symbol-for-fees]]
+ :<- [:wallet/prices-per-token]
+ (fn [[account swap-proposal currency prices-per-token] [_ token-symbol-for-fees]]
    (when token-symbol-for-fees
      (let [tokens              (:tokens account)
            token-for-fees      (first (filter #(= (string/lower-case (:symbol %))
@@ -256,9 +258,10 @@
                                               tokens))
            fee-in-native-token (send-utils/calculate-full-route-gas-fee [swap-proposal])
            fee-in-fiat         (utils/calculate-token-fiat-value
-                                {:currency currency
-                                 :balance  fee-in-native-token
-                                 :token    token-for-fees})]
+                                {:currency         currency
+                                 :balance          fee-in-native-token
+                                 :token            token-for-fees
+                                 :prices-per-token prices-per-token})]
        fee-in-fiat))))
 
 (rf/reg-sub
@@ -291,29 +294,33 @@
 (rf/reg-sub
  :wallet/swap-asset-to-pay-amount-in-fiat
  :<- [:wallet/swap-asset-to-pay-balance-for-chain-data]
+ :<- [:wallet/prices-per-token]
  :<- [:profile/currency]
  :<- [:profile/currency-symbol]
- (fn [[asset-to-pay-with-current-account-balance currency currency-symbol] [_ amount]]
+ (fn [[asset-to-pay-with-current-account-balance prices-per-token currency currency-symbol] [_ amount]]
    (utils/formatted-token-fiat-value
-    {:currency        currency
-     :currency-symbol currency-symbol
-     :balance         (or amount 0)
-     :token           asset-to-pay-with-current-account-balance})))
+    {:currency         currency
+     :currency-symbol  currency-symbol
+     :balance          (or amount 0)
+     :token            asset-to-pay-with-current-account-balance
+     :prices-per-token prices-per-token})))
 
 (rf/reg-sub
  :wallet/approval-gas-fees
  :<- [:wallet/current-viewing-account]
  :<- [:wallet/swap-proposal]
  :<- [:profile/currency]
- (fn [[account {:keys [approval-gas-fees]} currency]]
+ :<- [:wallet/prices-per-token]
+ (fn [[account {:keys [approval-gas-fees]} currency prices-per-token]]
    (let [tokens         (:tokens account)
          token-for-fees (first (filter #(= (string/lower-case (:symbol %))
                                            (string/lower-case constants/token-for-fees-symbol))
                                        tokens))
          fee-in-fiat    (utils/calculate-token-fiat-value
-                         {:currency currency
-                          :balance  approval-gas-fees
-                          :token    token-for-fees})]
+                         {:currency         currency
+                          :balance          approval-gas-fees
+                          :token            token-for-fees
+                          :prices-per-token prices-per-token})]
      fee-in-fiat)))
 
 (rf/reg-sub

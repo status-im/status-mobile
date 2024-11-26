@@ -27,12 +27,18 @@
   [balance]
   (cut-fiat-balance balance 2))
 
-(defn prettify-balance
-  [currency-symbol balance]
+(defn prepend-curency-symbol-to-fiat-balance
+  [fiat-balance currency-symbol]
   (let [formatted-symbol (if (> (count currency-symbol) 1)
                            (str currency-symbol " ")
                            currency-symbol)]
-    (str formatted-symbol (cut-fiat-balance-to-two-decimals balance))))
+    (str formatted-symbol fiat-balance)))
+
+(defn prettify-balance
+  [currency-symbol fiat-balance]
+  (-> fiat-balance
+      cut-fiat-balance-to-two-decimals
+      (prepend-curency-symbol-to-fiat-balance currency-symbol)))
 
 (defn get-derivation-path
   [number-of-accounts]
@@ -71,9 +77,14 @@
       (inc max-decimals)
       max-decimals)))
 
+(defn token-price-by-symbol
+  "Get token price for specific currency from prices-per-token structure"
+  [prices-per-token token-symbol currency]
+  (get-in prices-per-token [(keyword token-symbol) currency]))
+
 (defn token-usd-price
-  [token]
-  (get-in token [:market-values-per-currency :usd :price]))
+  [token prices-per-token]
+  (token-price-by-symbol prices-per-token (:symbol token) :usd))
 
 (defn one-cent-value
   [token-price-in-usd]
@@ -104,16 +115,20 @@
       :else                          (number/remove-trailing-zeroes
                                       (.toFixed token-units standardized-decimals-count)))))
 
+(defn add-token-symbol-to-crypto-balance
+  [crypto-balance token-symbol]
+  (str crypto-balance " " (string/upper-case token-symbol)))
+
 (defn prettify-crypto-balance
   [token-symbol crypto-balance conversion-rate]
-  (str (cut-crypto-decimals-to-fit-usd-cents crypto-balance conversion-rate)
-       " "
-       (string/upper-case token-symbol)))
+  (-> crypto-balance
+      (cut-crypto-decimals-to-fit-usd-cents conversion-rate)
+      (add-token-symbol-to-crypto-balance token-symbol)))
 
 (defn get-standard-crypto-format
   "For full details: https://github.com/status-im/status-mobile/issues/18225"
-  [token token-units]
-  (let [token-price-in-usd (token-usd-price token)
+  [token token-units prices-per-token]
+  (let [token-price-in-usd (token-usd-price token prices-per-token)
         {:keys [zero-value? usd-cent-value standardized-decimals-count]}
         (analyze-token-amount-for-price token-price-in-usd token-units)]
     (cond
@@ -127,11 +142,9 @@
       (number/remove-trailing-zeroes (.toFixed token-units standardized-decimals-count)))))
 
 (defn get-market-value
-  [currency {:keys [market-values-per-currency]}]
-  (or (get-in market-values-per-currency
-              [currency :price])
-      (get-in market-values-per-currency
-              [constants/profile-default-currency :price])
+  [currency {token-symbol :symbol} prices-per-token]
+  (or (token-price-by-symbol prices-per-token token-symbol currency)
+      (token-price-by-symbol prices-per-token token-symbol constants/profile-default-currency)
       ;; NOTE: adding fallback value (zero) in case prices are
       ;; unavailable and to prevent crash on calculating fiat value
       0))
@@ -161,15 +174,15 @@
 
 (defn calculate-token-fiat-value
   "Returns the token fiat value for provided raw balance"
-  [{:keys [currency balance token]}]
-  (let [price (get-market-value currency token)]
+  [{:keys [currency balance token prices-per-token]}]
+  (let [price (get-market-value currency token prices-per-token)]
     (money/crypto->fiat balance price)))
 
 (defn formatted-token-fiat-value
   "Converts a token balance into its equivalent fiat value, formatted with a currency symbol.
   If the fiat value is below $0.01, it returns a <$0.01 string"
-  [{:keys [currency currency-symbol balance token]}]
-  (let [price             (or (get-market-value currency token) 0)
+  [{:keys [currency currency-symbol balance token prices-per-token]}]
+  (let [price             (or (get-market-value currency token prices-per-token) 0)
         price-zero?       (zero? price)
         balance           (or balance 0)
         balance-positive? (pos? balance)
@@ -204,12 +217,13 @@
         (sanitized-token-amount-to-display display-decimals))))
 
 (defn calculate-balance-from-tokens
-  [{:keys [currency tokens chain-ids]}]
+  [{:keys [currency tokens chain-ids prices-per-token]}]
   (->> tokens
        (map #(calculate-token-fiat-value
-              {:currency currency
-               :balance  (calculate-total-token-balance % chain-ids)
-               :token    %}))
+              {:currency         currency
+               :balance          (calculate-total-token-balance % chain-ids)
+               :token            %
+               :prices-per-token prices-per-token}))
        (reduce money/add)))
 
 (defn- add-balances-per-chain
@@ -266,30 +280,30 @@
 
 (defn calculate-token-value
   "This function returns token values in the props of token-value (quo) component"
-  [{:keys [token color currency currency-symbol]}]
-  (let [balance                           (calculate-total-token-balance token)
-        fiat-unformatted-value            (calculate-token-fiat-value
-                                           {:currency currency
-                                            :balance  balance
-                                            :token    token})
-        market-values                     (or (get-in token [:market-values-per-currency currency])
-                                              (get-in token
-                                                      [:market-values-per-currency
-                                                       constants/profile-default-currency]))
-        {:keys [price change-pct-24hour]} market-values
-        formatted-token-price             (prettify-balance currency-symbol price)
-        percentage-change                 (prettify-percentage-change change-pct-24hour)
-        crypto-value                      (get-standard-crypto-format token balance)
-        fiat-value                        (fiat-formatted-for-ui currency-symbol
-                                                                 fiat-unformatted-value)]
+  [{:keys [token color currency currency-symbol prices-per-token market-values-per-token]}]
+  (let [balance                  (calculate-total-token-balance token)
+        fiat-unformatted-value   (calculate-token-fiat-value
+                                  {:currency         currency
+                                   :balance          balance
+                                   :token            token
+                                   :prices-per-token prices-per-token})
+        currency                 (or currency constants/profile-default-currency)
+        market-values            (get market-values-per-token (keyword (:symbol token)))
+        {:keys [change-pct-24h]} market-values
+        price                    (token-price-by-symbol prices-per-token (:symbol token) currency)
+        formatted-token-price    (prettify-balance currency-symbol price)
+        percentage-change        (prettify-percentage-change change-pct-24h)
+        crypto-value             (get-standard-crypto-format token balance prices-per-token)
+        fiat-value               (fiat-formatted-for-ui currency-symbol
+                                                        fiat-unformatted-value)]
     {:token               (:symbol token)
      :token-name          (:name token)
      :state               :default
      :metrics?            (money/above-zero? balance)
      :status              (cond
-                            (pos? change-pct-24hour) :positive
-                            (neg? change-pct-24hour) :negative
-                            :else                    :empty)
+                            (pos? change-pct-24h) :positive
+                            (neg? change-pct-24h) :negative
+                            :else                 :empty)
      :customization-color color
      :values              {:crypto-value           crypto-value
                            :fiat-value             fiat-value
@@ -335,10 +349,10 @@
   (map #(update % :balances-per-chain select-keys chain-ids) tokens))
 
 (defn calculate-balances-per-chain
-  [{:keys [tokens currency currency-symbol]}]
+  [{:keys [tokens currency currency-symbol prices-per-token]}]
   (->
     (reduce (fn [acc {:keys [balances-per-chain decimals] :as token}]
-              (let [currency-value         (get-market-value currency token)
+              (let [currency-value         (get-market-value currency token prices-per-token)
                     fiat-balance-per-chain (update-vals balances-per-chain
                                                         #(-> (money/token->unit (:raw-balance %)
                                                                                 decimals)
@@ -379,12 +393,14 @@
     (utils.string/contains-special-character? s) :special-character))
 
 (defn calculate-and-sort-tokens
-  [{:keys [tokens color currency currency-symbol]}]
+  [{:keys [tokens color currency currency-symbol prices-per-token market-values-per-token]}]
   (let [calculate-token   (fn [token]
-                            (calculate-token-value {:token           token
-                                                    :color           color
-                                                    :currency        currency
-                                                    :currency-symbol currency-symbol}))
+                            (calculate-token-value {:token                   token
+                                                    :color                   color
+                                                    :currency                currency
+                                                    :currency-symbol         currency-symbol
+                                                    :prices-per-token        prices-per-token
+                                                    :market-values-per-token market-values-per-token}))
         calculated-tokens (map calculate-token tokens)]
     (sort-by (fn [token]
                (let [fiat-value (get-in token [:values :fiat-unformatted-value])

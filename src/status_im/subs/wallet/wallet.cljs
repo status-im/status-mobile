@@ -73,6 +73,16 @@
  :-> :tokens)
 
 (rf/reg-sub
+ :wallet/prices-per-token
+ :<- [:wallet/tokens]
+ :-> :prices-per-token)
+
+(rf/reg-sub
+ :wallet/market-values-per-token
+ :<- [:wallet/tokens]
+ :-> :market-values-per-token)
+
+(rf/reg-sub
  :wallet/tokens-loading
  :<- [:wallet/ui]
  :-> :tokens-loading)
@@ -376,11 +386,14 @@
  :<- [:wallet/accounts]
  :<- [:profile/currency]
  :<- [:wallet/selected-networks->chain-ids]
- (fn [[accounts currency chain-ids]]
+ :<- [:wallet/prices-per-token]
+ (fn [[accounts currency chain-ids prices-per-token]]
    (zipmap (map :address accounts)
-           (map #(utils/calculate-balance-from-tokens {:currency  currency
-                                                       :tokens    (:tokens %)
-                                                       :chain-ids chain-ids})
+           (map (fn [account]
+                  (utils/calculate-balance-from-tokens {:currency         currency
+                                                        :tokens           (:tokens account)
+                                                        :chain-ids        chain-ids
+                                                        :prices-per-token prices-per-token}))
                 accounts))))
 
 (rf/reg-sub
@@ -503,22 +516,19 @@
                  sorted-tokens))
        sorted-tokens))))
 
+
 (rf/reg-sub
  :wallet/tokens-filtered
  :<- [:wallet/tokens]
- :<- [:profile/currency]
- (fn [[{:keys [by-symbol market-values-per-token details-per-token prices-per-token]} currency]
+ (fn [{:keys [by-symbol market-values-per-token details-per-token]}
       [_ {:keys [query chain-ids hide-token-fn]}]]
    (let [tokens        (->> by-symbol
                             (map (fn [token]
-                                   (let [token-symbol (keyword (:symbol token))
-                                         price        (get-in prices-per-token [token-symbol currency])]
+                                   (let [token-symbol (keyword (:symbol token))]
                                      (-> token
                                          (assoc :market-values
                                                 (get market-values-per-token token-symbol))
-                                         (assoc :details (get details-per-token token-symbol))
-                                         (assoc-in [:market-values-per-currency currency :price]
-                                                   price)))))
+                                         (assoc :details (get details-per-token token-symbol))))))
                             (filter (fn [{:keys [chain-id]}]
                                       (some #{chain-id} chain-ids)))
                             (remove #(when hide-token-fn
@@ -645,11 +655,15 @@
  :<- [:wallet/current-viewing-account-tokens-in-selected-networks]
  :<- [:profile/currency]
  :<- [:profile/currency-symbol]
- (fn [[{:keys [color]} tokens currency currency-symbol]]
-   (utils/calculate-and-sort-tokens {:tokens          tokens
-                                     :color           color
-                                     :currency        currency
-                                     :currency-symbol currency-symbol})))
+ :<- [:wallet/prices-per-token]
+ :<- [:wallet/market-values-per-token]
+ (fn [[{:keys [color]} tokens currency currency-symbol prices-per-token market-values-per-token]]
+   (utils/calculate-and-sort-tokens {:tokens                  tokens
+                                     :color                   color
+                                     :currency                currency
+                                     :currency-symbol         currency-symbol
+                                     :prices-per-token        prices-per-token
+                                     :market-values-per-token market-values-per-token})))
 
 (rf/reg-sub
  :wallet/aggregated-token-values-and-balance
@@ -657,18 +671,23 @@
  :<- [:profile/customization-color]
  :<- [:profile/currency]
  :<- [:profile/currency-symbol]
- (fn [[aggregated-tokens color currency currency-symbol]]
-   (let [balance             (utils/calculate-balance-from-tokens {:currency currency
-                                                                   :tokens   aggregated-tokens})
+ :<- [:wallet/prices-per-token]
+ :<- [:wallet/market-values-per-token]
+ (fn [[aggregated-tokens color currency currency-symbol prices-per-token market-values-per-token]]
+   (let [balance             (utils/calculate-balance-from-tokens {:currency         currency
+                                                                   :tokens           aggregated-tokens
+                                                                   :prices-per-token prices-per-token})
          formatted-balance   (utils/prettify-balance currency-symbol balance)
-         sorted-token-values (utils/calculate-and-sort-tokens {:tokens          aggregated-tokens
-                                                               :color           color
-                                                               :currency        currency
-                                                               :currency-symbol currency-symbol})]
+         sorted-token-values (utils/calculate-and-sort-tokens {:tokens aggregated-tokens
+                                                               :color color
+                                                               :currency currency
+                                                               :currency-symbol currency-symbol
+                                                               :prices-per-token prices-per-token
+                                                               :market-values-per-token
+                                                               market-values-per-token})]
      {:balance           balance
       :formatted-balance formatted-balance
       :tokens            sorted-token-values})))
-
 
 (rf/reg-sub
  :wallet/network-preference-details
@@ -742,22 +761,26 @@
  :<- [:wallet/aggregated-tokens]
  :<- [:profile/currency]
  :<- [:profile/currency-symbol]
- (fn [[aggregated-tokens currency currency-symbol]]
+ :<- [:wallet/prices-per-token]
+ (fn [[aggregated-tokens currency currency-symbol prices-per-token]]
    (utils/calculate-balances-per-chain
-    {:tokens          aggregated-tokens
-     :currency        currency
-     :currency-symbol currency-symbol})))
+    {:tokens           aggregated-tokens
+     :currency         currency
+     :currency-symbol  currency-symbol
+     :prices-per-token prices-per-token})))
 
 (rf/reg-sub
  :wallet/current-viewing-account-fiat-balance-per-chain
  :<- [:wallet/current-viewing-account]
  :<- [:profile/currency]
  :<- [:profile/currency-symbol]
- (fn [[{:keys [tokens]} currency currency-symbol]]
+ :<- [:wallet/prices-per-token]
+ (fn [[{:keys [tokens]} currency currency-symbol prices-per-token]]
    (utils/calculate-balances-per-chain
-    {:tokens          tokens
-     :currency        currency
-     :currency-symbol currency-symbol})))
+    {:tokens           tokens
+     :currency         currency
+     :currency-symbol  currency-symbol
+     :prices-per-token prices-per-token})))
 
 (rf/reg-sub
  :wallet/import-private-key
@@ -794,7 +817,8 @@
  :<- [:wallet/wallet-send-route]
  :<- [:profile/currency]
  :<- [:profile/currency-symbol]
- (fn [[account route currency currency-symbol] [_ token-symbol-for-fees]]
+ :<- [:wallet/prices-per-token]
+ (fn [[account route currency currency-symbol prices-per-token] [_ token-symbol-for-fees]]
    (when token-symbol-for-fees
      (let [tokens              (:tokens account)
            token-for-fees      (first (filter #(= (string/lower-case (:symbol %))
@@ -802,9 +826,10 @@
                                               tokens))
            fee-in-native-token (send-utils/calculate-full-route-gas-fee route)
            fee-in-fiat         (utils/calculate-token-fiat-value
-                                {:currency currency
-                                 :balance  fee-in-native-token
-                                 :token    token-for-fees})
+                                {:currency         currency
+                                 :balance          fee-in-native-token
+                                 :token            token-for-fees
+                                 :prices-per-token prices-per-token})
            fee-formatted       (utils/fiat-formatted-for-ui
                                 currency-symbol
                                 fee-in-fiat)]

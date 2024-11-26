@@ -10,10 +10,9 @@
     [utils.re-frame :as rf]))
 
 (def ^:private token-mock
-  {:decimals                   8
-   :symbol                     "ETH"
-   :balances-per-chain         {1 {:raw-balance "100"}}
-   :market-values-per-currency {:usd {:price 10000}}})
+  {:decimals           8
+   :symbol             "ETH"
+   :balances-per-chain {1 {:raw-balance "100"}}})
 
 (h/deftest-sub :wallet/send-tab
   [sub-name]
@@ -105,11 +104,14 @@
 (h/deftest-sub :wallet/send-display-token-decimals
   [sub-name]
   (testing "returns the decimals based on the token price for the chosen token"
-    (swap! rf-db/app-db assoc-in
-      [:wallet :ui :send :token]
-      {:symbol                     "ETH"
-       :balances-per-chain         {1 {:raw-balance "100"}}
-       :market-values-per-currency {:usd {:price 10000}}})
+    (swap! rf-db/app-db
+      (fn [db]
+        (-> db
+            (assoc-in [:wallet :ui :send :token]
+                      {:symbol             "ETH"
+                       :balances-per-chain {1 {:raw-balance "100"}}})
+            (assoc-in [:wallet :tokens :prices-per-token]
+                      {:ETH {:usd 10000}}))))
     (is (match? 6 (rf/sub [sub-name]))))
 
   (testing "returns 0 if sending collectibles"
@@ -179,7 +181,9 @@
             (assoc-in [:wallet :ui :send :token-display-name] "ETH")
             (assoc-in [:wallet :ui :send :route]
                       [{:amount-out "0x2b139f68a611c00" ;; 193999990000000000
-                        :to         {:chain-id 1}}]))))
+                        :to         {:chain-id 1}}])
+            (assoc-in [:wallet :tokens :prices-per-token]
+                      {:ETH {:usd 10000}}))))
     (is (match? "0.194 ETH" (rf/sub [sub-name])))))
 
 (h/deftest-sub :wallet/send-amount-fixed

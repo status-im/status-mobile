@@ -43,23 +43,22 @@
                                                     :removed false}
    :wallet/current-viewing-account-color           :purple
    :wallet/wallet-send-enough-assets?              true
-   :wallet/wallet-send-token                       {:symbol                     :eth
-                                                    :networks                   [{:source 879
-                                                                                  :short-name "eth"
-                                                                                  :network-name :mainnet
-                                                                                  :abbreviated-name
-                                                                                  "Eth."
-                                                                                  :full-name "Mainnet"
-                                                                                  :chain-id 1
-                                                                                  :related-chain-id 1
-                                                                                  :layer 1}]
-                                                    :balances-per-chain         {1 {:raw-balance
-                                                                                    (money/bignumber
-                                                                                     "2500")
-                                                                                    :has-error false}}
-                                                    :total-balance              100
-                                                    :available-balance          100
-                                                    :market-values-per-currency {:usd {:price 10}}}
+   :wallet/wallet-send-token                       {:symbol             "ETH"
+                                                    :networks           [{:source 879
+                                                                          :short-name "eth"
+                                                                          :network-name :mainnet
+                                                                          :abbreviated-name
+                                                                          "Eth."
+                                                                          :full-name "Mainnet"
+                                                                          :chain-id 1
+                                                                          :related-chain-id 1
+                                                                          :layer 1}]
+                                                    :balances-per-chain {1 {:raw-balance
+                                                                            (money/bignumber
+                                                                             "2500")
+                                                                            :has-error false}}
+                                                    :total-balance      100
+                                                    :available-balance  100}
    :wallet/wallet-send-loading-suggested-routes?   false
    :wallet/wallet-send-route                       [{:from       {:chainid                1
                                                                   :native-currency-symbol "ETH"}
@@ -75,14 +74,13 @@
    :wallet/wallet-send-to-address                  "0x04371e2d9d66b82f056bc128064"
    :profile/currency-symbol                        "$"
    :profile/currency                               :usd
-   :wallet/token-by-symbol                         {:symbol                     :eth
-                                                    :total-balance              100
-                                                    :available-balance          100
-                                                    :balances-per-chain         {1 {:raw-balance
-                                                                                    (money/bignumber
-                                                                                     "2500")
-                                                                                    :has-error false}}
-                                                    :market-values-per-currency {:usd {:price 10}}}
+   :wallet/token-by-symbol                         {:symbol             "ETH"
+                                                    :total-balance      100
+                                                    :available-balance  100
+                                                    :balances-per-chain {1 {:raw-balance
+                                                                            (money/bignumber
+                                                                             "2500")
+                                                                            :has-error false}}}
    :wallet/wallet-send-disabled-from-chain-ids     []
    :wallet/wallet-send-from-locked-amounts         {}
    :wallet/wallet-send-from-values-by-chain        {1 (money/bignumber "250")}
@@ -106,6 +104,7 @@
    :wallet/sending-collectible?                    false
    :wallet/send-total-amount-formatted             "250 ETH"
    :wallet/total-amount                            (money/bignumber "250")
+   :wallet/prices-per-token                        {:ETH {:usd 10}}
    :wallet/bridge-to-network-details               nil
    :wallet/send-amount-fixed                       ""
    :wallet/send-display-token-decimals             5})

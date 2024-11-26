@@ -52,12 +52,15 @@
  :<- [:wallet-connect/account-eth-token]
  :<- [:profile/currency]
  :<- [:profile/currency-symbol]
- (fn [[chain-id max-fees-wei transaction eth-token currency currency-symbol]]
+ :<- [:wallet/prices-per-token]
+ (fn [[chain-id max-fees-wei transaction eth-token currency currency-symbol prices-per-token]]
    (when transaction
      (let [max-fees-ether           (money/wei->ether max-fees-wei)
            max-fees-fiat            (wallet-utils/calculate-token-fiat-value {:currency currency
-                                                                              :balance  max-fees-ether
-                                                                              :token    eth-token})
+                                                                              :balance max-fees-ether
+                                                                              :token eth-token
+                                                                              :prices-per-token
+                                                                              prices-per-token})
            max-fees-fiat-formatted  (wallet-utils/fiat-formatted-for-ui currency-symbol
                                                                         max-fees-fiat)
            balance                  (-> eth-token

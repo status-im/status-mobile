@@ -139,10 +139,28 @@
             :on-success #(log/debug "mnemonic was marked as shown")
             :on-error   #(log/error "mnemonic was not marked as shown" %)}]]]}))
 
+(defn token-symbols-from-accounts
+  [accounts]
+  (reduce-kv (fn [acc _ account]
+               (into acc (map :symbol (:tokens account))))
+             #{}
+             accounts))
+
 (rf/reg-event-fx :profile.settings/update-currency
- (fn [_ [currency]]
-   {:fx [[:dispatch [:profile.settings/profile-update :currency currency]]
-         [:dispatch [:wallet/get-wallet-token-for-all-accounts]]]}))
+ (fn [{:keys [db]} [currency]]
+   (let [accounts (get-in db [:wallet :accounts])
+         symbols  (token-symbols-from-accounts accounts)]
+     {:fx [[:dispatch [:profile.settings/profile-update :currency currency]]
+           [:effects.wallet.tokens/fetch-market-values
+            {:symbols    symbols
+             :currency   currency
+             :on-success [:wallet.tokens/store-market-values]
+             :on-error   [:wallet.tokens/fetch-market-values-failed]}]
+           [:effects.wallet.tokens/fetch-prices
+            {:symbols    symbols
+             :currencies [constants/profile-default-currency currency]
+             :on-success [:wallet.tokens/store-prices]
+             :on-error   [:wallet.tokens/fetch-prices-failed]}]]})))
 
 ;; Logout process
 (rf/reg-event-fx

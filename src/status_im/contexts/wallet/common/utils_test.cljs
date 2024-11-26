@@ -59,25 +59,33 @@
 
 (deftest get-standard-crypto-format-test
   (testing "get-standard-crypto-format function"
-    (let [market-values-per-currency {:usd {:price 100}}
-          token-units                (money/bignumber 0.005)]
-      (is (= (utils/get-standard-crypto-format {:market-values-per-currency market-values-per-currency}
-                                               token-units)
+    (let [token            {:symbol "ETH"}
+          prices-per-token {:ETH {:usd 100}}
+          token-units      (money/bignumber 0.005)]
+      (is (= (utils/get-standard-crypto-format token
+                                               token-units
+                                               prices-per-token)
              "0.005")))
-    (let [market-values-per-currency {:usd {:price nil}}
-          token-units                (money/bignumber 0.0123456)]
-      (is (= (utils/get-standard-crypto-format {:market-values-per-currency market-values-per-currency}
-                                               token-units)
+    (let [token            {:symbol "ETH"}
+          prices-per-token {:ETH {:usd nil}}
+          token-units      (money/bignumber 0.0123456)]
+      (is (= (utils/get-standard-crypto-format token
+                                               token-units
+                                               prices-per-token)
              "0.012346")))
-    (let [market-values-per-currency {:usd {:price 0.005}}
-          token-units                (money/bignumber 0.01)]
-      (is (= (utils/get-standard-crypto-format {:market-values-per-currency market-values-per-currency}
-                                               token-units)
+    (let [token            {:symbol "ETH"}
+          prices-per-token {:ETH {:usd 0.005}}
+          token-units      (money/bignumber 0.01)]
+      (is (= (utils/get-standard-crypto-format token
+                                               token-units
+                                               prices-per-token)
              "<2")))
-    (let [market-values-per-currency {:usd {:price 0.005}}
-          token-units                "0.01"]
-      (is (= (utils/get-standard-crypto-format {:market-values-per-currency market-values-per-currency}
-                                               token-units)
+    (let [token            {:symbol "ETH"}
+          prices-per-token {:ETH {:usd 0.005}}
+          token-units      "0.01"]
+      (is (= (utils/get-standard-crypto-format token
+                                               token-units
+                                               prices-per-token)
              "0")))))
 
 (deftest calculate-total-token-balance-test
@@ -151,10 +159,12 @@
                                  :name               "Status Network Token"
                                  :balances-per-chain {:mock-chain 1}
                                  :decimals           18}]
-                mock-input     {:tokens          mock-tokens
-                                :color           mock-color
-                                :currency        mock-currency
-                                :currency-symbol mock-currency-symbol}
+                mock-input     {:tokens                  mock-tokens
+                                :color                   mock-color
+                                :currency                mock-currency
+                                :currency-symbol         mock-currency-symbol
+                                :prices-per-token        {}
+                                :market-values-per-token {}}
                 sorted-tokens  (map :token (utils/calculate-and-sort-tokens mock-input))
                 expected-order ["DAI" "ETH" "SNT"]]
             (is (= expected-order sorted-tokens))))))))
@@ -170,19 +180,20 @@
 
 (deftest formatted-token-fiat-value-test
   (testing "formatted-token-fiat-value function"
-    (let [default-params {:currency        "USD"
-                          :currency-symbol "$"
-                          :balance         0.5
-                          :token           {:market-values-per-currency {:usd {:price 2000}}}}]
+    (let [default-params {:currency         "USD"
+                          :currency-symbol  "$"
+                          :balance          0.5
+                          :token            {:symbol "ETH"}
+                          :prices-per-token {:ETH {:usd 2000}}}]
       (is (= (utils/formatted-token-fiat-value default-params) "$1000"))
       (is (= (utils/formatted-token-fiat-value (assoc default-params :balance 0)) "$0"))
       (is (= (utils/formatted-token-fiat-value (assoc default-params :balance 0.000001)) "<$0.01"))
       (is (= (utils/formatted-token-fiat-value (assoc default-params :balance nil)) "$0"))
       (is (= (utils/formatted-token-fiat-value
-              (assoc default-params :balance 1 :token {:market-values-per-currency {:usd {:price nil}}}))
+              (assoc default-params :balance 1 :prices-per-token {:ETH {:usd nil}}))
              "$0"))
       (is (= (utils/formatted-token-fiat-value
-              (assoc default-params :balance 1 :token {:market-values-per-currency {:usd {:price 0}}}))
+              (assoc default-params :balance 1 :prices-per-token {:ETH {:usd 0}}))
              "$0")))))
 
 (deftest sanitized-token-amount-to-display-test

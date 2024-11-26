@@ -35,7 +35,7 @@
                       {:on-submit navigate-to-sign-in-by-syncing}])
      :shell?  true}]))
 
-(defn- navigate-to-sign-in-by-seed-phrase
+(defn- navigate-to-sign-in-by-recovery-phrase
   [create-profile?]
   (rf/dispatch [:syncing/clear-syncing-fallback-flow])
   (rf/dispatch [:onboarding/navigate-to-sign-in-by-seed-phrase
@@ -50,75 +50,97 @@
      (* 2 16) ;; spacing between items
      220)) ;; extra spacing (top bar)
 
-
-(defn- create-profile-option-card
+(defn- start-fresh-main-card
   [window-height]
   [quo/small-option-card
    {:variant             :main
-    :title               (i18n/label :t/generate-keys)
-    :subtitle            (i18n/label :t/generate-keys-subtitle)
+    :title               (i18n/label :t/start-fresh)
+    :subtitle            (i18n/label :t/start-fresh-subtitle)
     :button-label        (i18n/label :t/lets-go)
-    :accessibility-label :generate-key-option-card
+    :accessibility-label :start-fresh-main-card
     :image               (resources/get-image :generate-keys)
     :max-height          (option-card-max-height window-height)
     :on-press            navigate-to-create-profile}])
 
-(defn- sync-profile-option-card
+(defn- log-in-with-recovery-phrase-main-card
   [window-height]
   [quo/small-option-card
    {:variant             :main
-    :title               (i18n/label :t/sign-in-by-syncing)
-    :subtitle            (i18n/label :t/if-you-have-status-on-another-device)
-    :button-label        (i18n/label :t/scan-sync-code)
-    :accessibility-label :scan-sync-code-option-card
-    :image               (resources/get-image :generate-keys)
+    :title               (i18n/label :t/log-in-with-recovery-phrase)
+    :subtitle            (i18n/label :t/log-in-with-recovery-phrase-subtitle)
+    :button-label        (i18n/label :t/use-recovery-phrase)
+    :accessibility-label :log-in-with-recovery-phrase-main-card
+    :image               (resources/get-image :use-recovery-phrase)
     :max-height          (option-card-max-height window-height)
+    :on-press            #(navigate-to-sign-in-by-recovery-phrase false)}])
+
+(defn- use-recovery-phrase-icon-card
+  []
+  [quo/small-option-card
+   {:variant             :icon
+    :title               (i18n/label :t/use-a-recovery-phrase)
+    :subtitle            (i18n/label :t/use-a-recovery-phrase-subtitle)
+    :accessibility-label :use-a-recovery-phrase-icon-card
+    :image               (resources/get-image :ethereum-address)
+    :on-press            #(navigate-to-sign-in-by-recovery-phrase true)}])
+
+(defn- log-in-by-syncing-icon-card
+  []
+  [quo/small-option-card
+   {:variant             :icon
+    :title               (i18n/label :t/log-in-by-syncing)
+    :subtitle            (i18n/label :t/log-in-by-syncing-subtitle)
+    :accessibility-label :log-in-by-syncing-icon-card
+    :image               (resources/get-image :ethereum-address)
     :on-press            show-check-before-syncing}])
 
+(defn- use-empty-keycard-icon-card
+  []
+  [quo/small-option-card
+   {:variant             :icon
+    :title               (i18n/label :t/use-an-empty-keycard)
+    :subtitle            (i18n/label :t/use-an-empty-keycard-subtitle)
+    :accessibility-label :use-an-empty-keycard-icon-card
+    :image               (resources/get-image :use-keycard)
+    :on-press            #(rf/dispatch [:open-modal :screen/keycard.create-profile])}])
+
+(defn- log-in-with-keycard-icon-card
+  []
+  [quo/small-option-card
+   {:variant             :icon
+    :title               (i18n/label :t/log-in-with-keycard)
+    :subtitle            (i18n/label :t/log-in-with-keycard-subtitle)
+    :accessibility-label :log-in-with-keycard
+    :image               (resources/get-image :use-keycard)
+    :on-press            (fn []
+                           (rf/dispatch [:open-modal :screen/keycard.check
+                                         {:on-press #(rf/dispatch [:keycard.login/check-card])}]))}])
+
 (defn sign-in-options
-  [sign-in-type]
-  (let [window-height                      (rf/sub [:dimensions/window-height])
-        create-profile?                    (= sign-in-type :create-profile)
-        nav-to-seed-phrase-with-cur-screen (rn/use-callback
-                                            #(navigate-to-sign-in-by-seed-phrase
-                                              create-profile?)
-                                            [create-profile?])
-        main-option-card                   (if create-profile?
-                                             create-profile-option-card
-                                             sync-profile-option-card)]
+  [create-profile?]
+  (let [window-height (rf/sub [:dimensions/window-height])]
     [rn/view {:style style/options-container}
      [quo/text
       {:style  style/title
        :size   :heading-1
        :weight :semi-bold}
-      (i18n/label (if create-profile? :t/create-profile :t/sync-or-recover-profile))]
-     [main-option-card window-height]
+      (i18n/label (if create-profile? :t/create-profile :t/log-in))]
+     (if create-profile?
+       [start-fresh-main-card window-height]
+       [log-in-with-recovery-phrase-main-card window-height])
      [rn/view {:style style/subtitle-container}
       [quo/text
        {:style  style/subtitle
         :size   :paragraph-2
         :weight :medium}
-       (i18n/label (if create-profile? :t/experienced-web3 :t/dont-have-statatus-on-another-device))]]
-     [rn/view
-      [quo/small-option-card
-       {:variant             :icon
-        :title               (i18n/label :t/use-recovery-phrase)
-        :subtitle            (i18n/label :t/use-recovery-phrase-subtitle)
-        :accessibility-label :use-recovery-phrase-option-card
-        :image               (resources/get-image :ethereum-address)
-        :on-press            nav-to-seed-phrase-with-cur-screen}]
-      [rn/view {:style style/space-between-suboptions}]
-      [quo/small-option-card
-       {:variant             :icon
-        :title               (i18n/label :t/use-keycard)
-        :subtitle            (i18n/label :t/profile-keys-on-keycard)
-        :accessibility-label :use-keycard-option-card
-        :image               (resources/get-image :use-keycard)
-        :on-press            (fn []
-                               (rf/dispatch [:open-modal :screen/keycard.check
-                                             {:on-press
-                                              #(rf/dispatch
-                                                [:keycard.login/check-card])}]))}]]]))
+       (i18n/label :t/other-options)]]
+     (if create-profile?
+       [use-recovery-phrase-icon-card]
+       [log-in-by-syncing-icon-card])
+     [rn/view {:style style/space-between-suboptions}]
+     (if create-profile?
+       [use-empty-keycard-icon-card]
+       [log-in-with-keycard-icon-card])]))
 
 (defn- navigate-back
   []
@@ -145,7 +167,7 @@
                     (when config/quo-preview-enabled?
                       {:icon-name :i/reveal-whitelist
                        :on-press  navigate-to-quo-preview})]}]
-     [sign-in-options sign-in-type]]))
+     [sign-in-options (= sign-in-type :create-profile)]]))
 
 (defn create-profile
   []
