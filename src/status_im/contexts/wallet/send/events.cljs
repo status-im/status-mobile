@@ -1,5 +1,6 @@
 (ns status-im.contexts.wallet.send.events
   (:require
+    [cljs.pprint :as pprint]
     [clojure.string :as string]
     [status-im.constants :as constants]
     [status-im.contexts.wallet.collectible.utils :as collectible.utils]
@@ -99,6 +100,19 @@
                                            (send-utils/network-links chosen-route
                                                                      sender-network-values
                                                                      receiver-network-values))]
+       (println :best
+                (->> suggested-routes-data
+                     :best
+                     (map :bridge-name)))
+
+       (println :best
+                (->> suggested-routes-data
+                     :best
+                     (map :uuid)))
+       (println :candidates
+                (->> suggested-routes-data
+                     :candidates
+                     (map :bridge-name)))
        {:db (update-in db
                        [:wallet :ui :send]
                        assoc
@@ -647,22 +661,38 @@
 (rf/reg-event-fx
  :wallet/prepare-signatures-for-transactions
  (fn [{:keys [db]} [type sha3-pwd]]
-   (let [transaction-for-signing (get-in db [:wallet :ui type :transaction-for-signing])]
-     {:fx [[:effects.wallet/sign-transaction-hashes
-            {:hashes     (get-in transaction-for-signing [:signingDetails :hashes])
-             :address    (get-in transaction-for-signing [:signingDetails :address])
-             :password   (security/safe-unmask-data sha3-pwd)
-             :on-success (fn [signatures]
-                           (rf/dispatch [:wallet/send-router-transactions-with-signatures type
-                                         signatures]))
-             :on-error   (fn [error]
-                           (log/error "failed to prepare signatures for transactions"
-                                      {:event :wallet/prepare-signatures-for-transactions
-                                       :error error})
-                           (rf/dispatch [:toasts/upsert
-                                         {:id   :prepare-signatures-for-transactions-error
-                                          :type :negative
-                                          :text (:message error)}]))}]]})))
+   (let [{:keys [hashes address signOnKeycard]} (get-in db
+                                                        [:wallet :ui type :transaction-for-signing
+                                                         :signingDetails])
+         on-success                             (fn [signatures]
+                                                  (rf/dispatch
+                                                   [:wallet/send-router-transactions-with-signatures type
+                                                    signatures]))
+         on-error                               (fn [error]
+                                                  (log/error
+                                                   "failed to prepare signatures for transactions"
+                                                   {:event :wallet/prepare-signatures-for-transactions
+                                                    :error error})
+                                                  (rf/dispatch
+                                                   [:toasts/upsert
+                                                    {:id   :prepare-signatures-for-transactions-error
+                                                     :type :negative
+                                                     :text (:message error)}]))]
+     (if signOnKeycard
+       {:fx [[:dispatch
+              [:standard-auth/authorize-with-keycard
+               {:on-complete #(rf/dispatch [:keycard/connect-and-sign-hashes
+                                            {:keycard-pin %
+                                             :address     address
+                                             :hashes      hashes
+                                             :on-success  on-success
+                                             :on-failure  on-error}])}]]]}
+       {:fx [[:effects.wallet/sign-transaction-hashes
+              {:hashes     hashes
+               :address    address
+               :password   (security/safe-unmask-data sha3-pwd)
+               :on-success on-success
+               :on-error   on-error}]]}))))
 
 (rf/reg-event-fx
  :wallet/send-router-transactions-with-signatures
@@ -678,8 +708,10 @@
                        :params     [{:uuid       (get-in transaction-for-signing [:sendDetails :uuid])
                                      :signatures signatures-map}]
                        :on-success (fn []
+                                     (rf/dispatch [:wallet/clean-send-data])
                                      (rf/dispatch [:hide-bottom-sheet]))
                        :on-error   (fn [error]
+                                     (rf/dispatch [:wallet/clean-send-data])
                                      (log/error "failed to send router transactions with signatures"
                                                 {:event :wallet/send-router-transactions-with-signatures
                                                  :error error})

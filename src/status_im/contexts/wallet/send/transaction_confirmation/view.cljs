@@ -268,8 +268,7 @@
                                         :transaction-type   transaction-type}]
                                       (when (and (not loading-suggested-routes?) route (seq route))
                                         [standard-auth/slide-button
-                                         {:keycard-supported? (get-in transaction-for-signing
-                                                                      [:signingDetails :signOnKeycard])
+                                         {:keycard-supported? true
                                           :size :size-48
                                           :track-text (if (= transaction-type :tx/bridge)
                                                         (i18n/label :t/slide-to-bridge)
