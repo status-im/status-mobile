@@ -1981,7 +1981,10 @@
   "pin-one-attempt-blocked-before": "Be careful, you have only",
   "pin-one-attempt-frozen-after": "before your Keycard gets frozen",
   "pin-one-attempt-frozen-before": "Be careful, you have only",
-  "pin-retries-left": "{{number}} attempts left",
+  "pin-retries-left": {
+    "one": "Wrong PIN, 1 attempt left",
+    "other": "Wrong PIN, {{count}} attempts left"
+  },
   "pin-to-channel": "Pin to the channel",
   "pin-to-chat": "Pin to the chat",
   "Pinned-a-message": "Pinned a message",

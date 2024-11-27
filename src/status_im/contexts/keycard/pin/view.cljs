@@ -29,7 +29,7 @@
         :info                  (when error?
                                  (if (not (string/blank? error-message))
                                    error-message
-                                   (i18n/label :t/pin-retries-left {:number pin-retry-counter})))}]
+                                   (i18n/label-pluralize pin-retry-counter :t/pin-retries-left)))}]
       [quo/numbered-keyboard
        {:delete-key? true
         :on-delete   #(rf/dispatch [:keycard.pin/delete-pressed])
