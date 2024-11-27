@@ -1,6 +1,6 @@
 (ns status-im.common.log
   (:require
-    [clojure.pprint :as promesa]
+    [clojure.pprint :as pprint]
     [clojure.string :as string]
     [native-module.core :as native-module]
     [re-frame.core :as re-frame]
@@ -46,7 +46,7 @@
                          (update data
                                  :vargs
                                  (partial mapv
-                                          #(if (string? %) % (with-out-str (promesa/pprint %))))))]})
+                                          #(if (string? %) % (with-out-str (pprint/pprint %))))))]})
         (native-module/init-status-go-logging logging-params)))))
 
 (re-frame/reg-fx

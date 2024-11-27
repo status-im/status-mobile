@@ -1,6 +1,5 @@
 (ns status-im.contexts.wallet.send.events
   (:require
-    [cljs.pprint :as pprint]
     [clojure.string :as string]
     [status-im.constants :as constants]
     [status-im.contexts.wallet.collectible.utils :as collectible.utils]
