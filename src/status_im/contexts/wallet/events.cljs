@@ -704,14 +704,19 @@
 (rf/reg-event-fx
  :wallet/sign-transactions-signal-received
  (fn [{:keys [db]} [{send-details :sendDetails :as data}]]
-   (let [type (if (or (= (:fromToken send-details)
-                         (:toToken send-details))
-                      (string/blank? (:toToken send-details)))
-                :send
-                :swap)]
-     (if-let [error-response (:errorResponse send-details)]
-       {:db (assoc-in db [:wallet :ui type :error-response] error-response)}
-       {:db (assoc-in db [:wallet :ui type :transaction-for-signing] data)}))))
+   (let [type           (if (or (= (:fromToken send-details)
+                                   (:toToken send-details))
+                                (string/blank? (:toToken send-details)))
+                          :send
+                          :swap)
+         callback-fx    (get-in db [:wallet :ui type :sign-transactions-callback-fx])
+         error-response (:errorResponse send-details)]
+     {:fx [(when (and callback-fx (not error-response))
+             callback-fx)]
+      :db (-> db
+              (assoc-in [:wallet :ui type :sign-transactions-callback-fx] nil)
+              (assoc-in [:wallet :ui type :error-response] error-response)
+              (assoc-in [:wallet :ui type :transaction-for-signing] data))})))
 
 (rf/reg-event-fx
  :wallet/transactions-sent-signal-received

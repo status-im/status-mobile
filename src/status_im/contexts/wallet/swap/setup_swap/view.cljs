@@ -171,9 +171,8 @@
       :error?               pay-input-error?
       :token                pay-token-symbol
       :customization-color  :blue
-      :show-approval-label? (and (not loading-swap-proposal?)
-                                 (or (and swap-proposal approval-required)
-                                     approval-transaction-id))
+      :show-approval-label? (or (and swap-proposal approval-required)
+                                approval-transaction-id)
       :auto-focus?          true
       :show-keyboard?       false
       :status               (cond
@@ -196,7 +195,8 @@
                                                     :approve)
                              :token-value         approval-label-token-value
                              :button-props        (merge {:on-press on-approve-press}
-                                                         (when error-response
+                                                         (when (or loading-swap-proposal?
+                                                                   error-response)
                                                            {:disabled? true}))
                              :customization-color account-color
                              :token-symbol        pay-token-symbol}}]))
@@ -217,7 +217,6 @@
         currency-symbol          (rf/sub [:profile/currency-symbol])
         amount-out               (rf/sub [:wallet/swap-proposal-amount-out])
         approval-required?       (rf/sub [:wallet/swap-proposal-approval-required])
-        prices-per-token         (rf/sub [:wallet/prices-per-token])
         receive-token-symbol     (:symbol asset-to-receive)
         receive-token-decimals   (:decimals asset-to-receive)
         amount-out-whole-number  (when amount-out
@@ -226,11 +225,10 @@
                                    (number/to-fixed amount-out-whole-number receive-token-decimals)
                                    default-text-for-unfocused-input)
         receive-token-fiat-value (utils/formatted-token-fiat-value
-                                  {:currency         currency
-                                   :currency-symbol  currency-symbol
-                                   :balance          (or amount-out-whole-number 0)
-                                   :token            asset-to-receive
-                                   :prices-per-token prices-per-token})]
+                                  {:currency        currency
+                                   :currency-symbol currency-symbol
+                                   :balance         (or amount-out-whole-number 0)
+                                   :token           asset-to-receive})]
     [quo/swap-input
      {:type                 :receive
       :error?               false

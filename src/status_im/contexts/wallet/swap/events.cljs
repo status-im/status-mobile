@@ -399,6 +399,11 @@
               :new_token      (:symbol asset-to-pay)}]]]})))
 
 (rf/reg-event-fx
+ :wallet.swap/set-sign-transactions-callback-fx
+ (fn [{:keys [db]} [callback-fx]]
+   {:db (assoc-in db [:wallet :ui :swap :sign-transactions-callback-fx] callback-fx)}))
+
+(rf/reg-event-fx
  :wallet.swap/approve
  (fn [{:keys [db]}]
    (let [last-request-uuid (get-in db [:wallet :ui :swap :last-request-uuid])
@@ -407,7 +412,9 @@
             [:wallet/build-transactions-from-route
              {:request-uuid last-request-uuid
               :slippage     max-slippage}]]
-           [:dispatch [:open-modal :screen/wallet.swap-set-spending-cap]]]})))
+           [:dispatch
+            [:wallet.swap/set-sign-transactions-callback-fx
+             [:dispatch [:open-modal :screen/wallet.swap-set-spending-cap]]]]]})))
 
 (rf/reg-event-fx
  :wallet.swap/review-swap
