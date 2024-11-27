@@ -45,6 +45,7 @@
      (when-not (or tag-was-lost? (nil? pin-retries-count))
        {:db (-> db
                 (assoc-in [:keycard :application-info :pin-retry-counter] pin-retries-count)
+                (assoc-in [:keycard :pin :text] "")
                 (assoc-in [:keycard :pin :status] :error))
         :fx [[:dispatch [:keycard/disconnect]]
              (when (zero? pin-retries-count)
