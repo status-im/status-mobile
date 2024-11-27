@@ -84,39 +84,40 @@
   [{:keys [network-values token-symbol on-press on-long-press receiver? loading-routes?
            token-not-supported-in-receiver-networks?]}]
   [rn/view
-   (map-indexed (fn [index
-                     {chain-id           :chain-id
-                      network-value-type :type
-                      total-amount       :total-amount}]
-                  (let [status           (cond (and (= network-value-type :not-available)
-                                                    loading-routes?
-                                                    token-not-supported-in-receiver-networks?)
-                                               :loading
-                                               (= network-value-type :not-available)
-                                               :disabled
-                                               :else network-value-type)
-                        amount-formatted (-> (rf/sub [:wallet/send-amount-fixed total-amount])
-                                             (str " " token-symbol))]
-                    [rn/view
-                     {:key   (str (if receiver? "to" "from") "-" chain-id)
-                      :style {:margin-top (if (pos? index) 11 7.5)}}
-                     [quo/network-bridge
-                      {:amount        (if (= network-value-type :not-available)
-                                        (i18n/label :t/not-available)
-                                        amount-formatted)
-                       :network       (network-utils/id->network chain-id)
-                       :status        status
-                       :on-press      #(when (not loading-routes?)
-                                         (cond
-                                           (= network-value-type :edit)
-                                           (open-preferences)
-                                           on-press (on-press chain-id total-amount)))
-                       :on-long-press #(when (and (not loading-routes?) (not= status :disabled))
-                                         (cond
-                                           (= network-value-type :add)
-                                           (open-preferences)
-                                           on-long-press (on-long-press chain-id total-amount)))}]]))
-                network-values)])
+   (doall
+    (map-indexed (fn [index
+                      {chain-id           :chain-id
+                       network-value-type :type
+                       total-amount       :total-amount}]
+                   (let [status           (cond (and (= network-value-type :not-available)
+                                                     loading-routes?
+                                                     token-not-supported-in-receiver-networks?)
+                                                :loading
+                                                (= network-value-type :not-available)
+                                                :disabled
+                                                :else network-value-type)
+                         amount-formatted (-> (rf/sub [:wallet/send-amount-fixed total-amount])
+                                              (str " " token-symbol))]
+                     [rn/view
+                      {:key   (str (if receiver? "to" "from") "-" chain-id)
+                       :style {:margin-top (if (pos? index) 11 7.5)}}
+                      [quo/network-bridge
+                       {:amount        (if (= network-value-type :not-available)
+                                         (i18n/label :t/not-available)
+                                         amount-formatted)
+                        :network       (network-utils/id->network chain-id)
+                        :status        status
+                        :on-press      #(when (not loading-routes?)
+                                          (cond
+                                            (= network-value-type :edit)
+                                            (open-preferences)
+                                            on-press (on-press chain-id total-amount)))
+                        :on-long-press #(when (and (not loading-routes?) (not= status :disabled))
+                                          (cond
+                                            (= network-value-type :add)
+                                            (open-preferences)
+                                            on-long-press (on-long-press chain-id total-amount)))}]]))
+                 network-values))])
 
 (defn render-network-links
   [{:keys [network-links sender-network-values]}]
