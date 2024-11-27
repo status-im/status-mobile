@@ -13,8 +13,14 @@
         pin-retry-counter              (rf/sub [:keycard/pin-retry-counter])
         error?                         (or error? (= status :error))]
     (rn/use-unmount #(rf/dispatch [:keycard.pin/clear]))
-    [rn/view {:padding-bottom 12 :flex 1}
-     [rn/view {:flex 1 :justify-content :center :align-items :center :padding 34}
+    [rn/view
+     {:style {:flex           1
+              :flex-direction :row
+              :align-items    :flex-end}}
+     [rn/view
+      {:style {:flex           1
+               :gap            34
+               :padding-bottom 12}}
       [quo/pin-input
        {:blur?                 false
         :number-of-pins        constants/pincode-length
@@ -23,9 +29,9 @@
         :info                  (when error?
                                  (if (not (string/blank? error-message))
                                    error-message
-                                   (i18n/label :t/pin-retries-left {:number pin-retry-counter})))}]]
-     [quo/numbered-keyboard
-      {:delete-key? true
-       :on-delete   #(rf/dispatch [:keycard.pin/delete-pressed])
-       :on-press    #(rf/dispatch [:keycard.pin/number-pressed % constants/pincode-length
-                                   on-complete])}]]))
+                                   (i18n/label :t/pin-retries-left {:number pin-retry-counter})))}]
+      [quo/numbered-keyboard
+       {:delete-key? true
+        :on-delete   #(rf/dispatch [:keycard.pin/delete-pressed])
+        :on-press    #(rf/dispatch [:keycard.pin/number-pressed % constants/pincode-length
+                                    on-complete])}]]]))
