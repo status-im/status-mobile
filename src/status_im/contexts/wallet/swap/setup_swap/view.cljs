@@ -171,8 +171,9 @@
       :error?               pay-input-error?
       :token                pay-token-symbol
       :customization-color  :blue
-      :show-approval-label? (or (and swap-proposal approval-required)
-                                approval-transaction-id)
+      :show-approval-label? (and (not loading-swap-proposal?)
+                                 (or (and swap-proposal approval-required)
+                                     approval-transaction-id))
       :auto-focus?          true
       :show-keyboard?       false
       :status               (cond
