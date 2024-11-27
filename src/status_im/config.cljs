@@ -10,7 +10,7 @@
 
 (defn enabled? [v] (= "1" v))
 
-(goog-define INFURA_TOKEN "a7f3ad3035ad446186570af4641673a8")
+(goog-define INFURA_TOKEN "")
 (goog-define POKT_TOKEN "3ef2018191814b7e1009b8d9")
 (goog-define STATUS_BUILD_PROXY_USER "")
 (goog-define STATUS_BUILD_PROXY_PASSWORD "")
