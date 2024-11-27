@@ -99,19 +99,6 @@
                                            (send-utils/network-links chosen-route
                                                                      sender-network-values
                                                                      receiver-network-values))]
-       (println :best
-                (->> suggested-routes-data
-                     :best
-                     (map :bridge-name)))
-
-       (println :best
-                (->> suggested-routes-data
-                     :best
-                     (map :uuid)))
-       (println :candidates
-                (->> suggested-routes-data
-                     :candidates
-                     (map :bridge-name)))
        {:db (update-in db
                        [:wallet :ui :send]
                        assoc
