@@ -2,7 +2,10 @@
   (:require
     ["react-native" :as rn]
     ["react-native-status-keycard" :default status-keycard]
+    [oops.core :as oops]
+    [promesa.core :as promesa]
     [react-native.platform :as platform]
+    [schema.core :as schema]
     [taoensso.timbre :as log]))
 
 (defonce event-emitter
@@ -254,17 +257,19 @@
         (catch on-failure))))
 
 (defn sign
-  [{pin :pin path :path card-hash :hash on-success :on-success on-failure :on-failure}]
-  (when (and pin card-hash)
-    (if path
-      (.. status-keycard
-          (signWithPath pin path card-hash)
-          (then on-success)
-          (catch on-failure))
-      (.. status-keycard
-          (sign pin card-hash)
-          (then on-success)
-          (catch on-failure)))))
+  [{:keys [pin path hash-data]}]
+  (if path
+    (oops/ocall status-keycard "signWithPath" pin path hash-data)
+    (oops/ocall status-keycard "sign" pin hash-data)))
+
+(schema/=> sign
+  [:=>
+   [:cat
+    [:map
+     [:pin :string]
+     [:hash-data :string]
+     [:path {:optional true} [:maybe :string]]]]
+   :any])
 
 (defn sign-typed-data
   [{card-hash :hash on-success :on-success on-failure :on-failure}]

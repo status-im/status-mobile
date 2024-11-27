@@ -57,9 +57,13 @@
     data
     (update data :key-uid address/normalized-hex)))
 
+(defn format-success-data
+  [data]
+  (normalize-key-uid (transforms/js->clj data)))
+
 (defn get-on-success
   [{:keys [on-success]}]
-  #(when on-success (on-success (normalize-key-uid (transforms/js->clj %)))))
+  #(when on-success (on-success (format-success-data %))))
 
 (defn get-on-failure
   [{:keys [on-failure]}]
