@@ -36,18 +36,10 @@
             (assoc :centralized-metrics/enabled? enabled?)
             (assoc :centralized-metrics/onboarding-enabled? (and onboarding? enabled?)))}))
 
-(rf/reg-event-fx :centralized-metrics/check-modal
- (fn [{:keys [db]} [modal-view]]
+(rf/reg-event-fx :centralized-metrics/check-user-confirmation
+ (fn [{:keys [db]}]
    (when-not (:centralized-metrics/user-confirmed? db)
-     {:fx [[:dispatch
-            [:show-bottom-sheet
-             {:content  (fn [] [modal-view])
-              ;; When in the profiles screen do biometric auth after the metrics sheet is dismissed
-              ;; https://github.com/status-im/status-mobile/issues/20932
-              :on-close (when (= (:view-id db) :screen/profile.profiles)
-                          #(rf/dispatch [:profile.login/login-with-biometric-if-available
-                                         (get-in db [:profile/login :key-uid])]))
-              :shell?   true}]]]})))
+     {:fx [[:dispatch [:navigate-to :screen/onboarding.share-usage]]]})))
 
 (rf/reg-fx :effects.centralized-metrics/track
  (fn [event]

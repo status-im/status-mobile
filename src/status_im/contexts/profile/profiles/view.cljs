@@ -7,7 +7,6 @@
     [react-native.reanimated :as reanimated]
     [react-native.safe-area :as safe-area]
     [status-im.common.confirmation-drawer.view :as confirmation-drawer]
-    [status-im.common.metrics-confirmation-modal.view :as metrics-modal]
     [status-im.common.standard-authentication.core :as standard-authentication]
     [status-im.config :as config]
     [status-im.constants :as constants]
@@ -277,10 +276,10 @@
 
 (defn view
   []
-  (rn/use-mount #(rf/dispatch [:centralized-metrics/check-modal metrics-modal/view]))
   (let [[show-profiles? set-show-profiles] (rn/use-state true)
         show-profiles                      (rn/use-callback #(set-show-profiles true))
         hide-profiles                      (rn/use-callback #(set-show-profiles false))]
+    (rn/use-mount #(rf/dispatch [:centralized-metrics/check-user-confirmation]))
     [:<>
      [background/view true]
      (if show-profiles?

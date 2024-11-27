@@ -41,7 +41,7 @@
 
 (defn view
   [{:keys [title description tag-picture tag-name description-after-tag step-number
-           customization-color type blur? container-style]
+           customization-color type blur? container-style icon icon-props]
     :or   {type :bullet}}]
   (let [theme (quo.theme/use-theme)]
     [rn/view {:style (style/container container-style)}
@@ -54,6 +54,8 @@
           :type                (if customization-color :complete :neutral)} step-number]
         :lock
         [icon/icon :i/locked {:color (get-colors theme blur?)}]
+        :custom-icon
+        [icon/icon icon icon-props]
         [icon/icon :i/bullet {:color (get-colors theme blur?)}])]
      [rn/view {:style style/text-container}
       (when title

@@ -5,7 +5,7 @@
     [react-native.core :as rn]
     [react-native.safe-area :as safe-area]
     [status-im.common.check-before-syncing.view :as check-before-syncing]
-    [status-im.common.metrics-confirmation-modal.view :as metrics-modal]
+    [status-im.common.events-helper :as events-helper]
     [status-im.common.resources :as resources]
     [status-im.config :as config]
     [status-im.contexts.onboarding.create-or-sync-profile.style :as style]
@@ -142,18 +142,12 @@
        [use-empty-keycard-icon-card]
        [log-in-with-keycard-icon-card])]))
 
-(defn- navigate-back
-  []
-  (rf/dispatch [:onboarding/overlay-dismiss])
-  (rf/dispatch [:navigate-back]))
-
 (defn- navigate-to-quo-preview
   []
   (rf/dispatch [:navigate-to :quo-preview]))
 
 (defn- internal-view
   [sign-in-type]
-  (rn/use-mount #(rf/dispatch [:centralized-metrics/check-modal metrics-modal/view]))
   (let [{:keys [top]} (safe-area/get-insets)]
     [rn/view {:style style/content-container}
      [quo/page-nav
@@ -161,7 +155,7 @@
        :type       :no-title
        :background :blur
        :icon-name  :i/arrow-left
-       :on-press   navigate-back
+       :on-press   events-helper/navigate-back
        :right-side [{:icon-name :i/info
                      :on-press  getting-started-doc/show-as-bottom-sheet}
                     (when config/quo-preview-enabled?

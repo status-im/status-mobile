@@ -49,6 +49,7 @@
     [status-im.contexts.onboarding.identifiers.view :as identifiers]
     [status-im.contexts.onboarding.intro.view :as intro]
     [status-im.contexts.onboarding.preparing-status.view :as preparing-status]
+    [status-im.contexts.onboarding.share-usage.view :as onboarding.share-usage]
     [status-im.contexts.onboarding.sign-in.view :as sign-in]
     [status-im.contexts.onboarding.syncing.progress.view :as syncing-devices]
     [status-im.contexts.onboarding.syncing.results.view :as syncing-results]
@@ -769,6 +770,18 @@
                                         :popStackOnPress     false}}
    :component enable-biometrics/view})
 
+(def onboarding-share-usage
+  {:name      :screen/onboarding.share-usage
+   :metrics   {:track? true}
+   :options   {:theme                  :dark
+               :layout                 options/onboarding-transparent-layout
+               :animations             (merge
+                                        transitions/new-to-status-modal-animations
+                                        transitions/push-animations-for-transparent-background)
+               :popGesture             false
+               :modalPresentationStyle :overCurrentContext}
+   :component onboarding.share-usage/view})
+
 (def onboarding-preparing-status
   {:name      :screen/onboarding.preparing-status
    :metrics   {:track? true}
@@ -873,6 +886,7 @@
    onboarding-entering-seed-phrase
    onboarding-enable-notifications
    onboarding-identifiers
+   onboarding-share-usage
    onboarding-sign-in-intro
    onboarding-sign-in
    onboarding-syncing-progress

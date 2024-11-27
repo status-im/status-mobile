@@ -14,5 +14,4 @@
       {:icon-name :i/close
        :on-press  events-helper/navigate-back}]
      [quo/page-top {:title (i18n/label :t/enter-keycard-pin)}]
-     [rn/view {:style {:flex 1}}]
      [keycard.pin/auth {:on-complete on-complete}]]))

@@ -43,4 +43,4 @@
    :stickers/packs-pending             #{}
    :settings/change-password           {}
    :keycard                            {}
-   :theme                              :light})
+   :theme                              :dark})

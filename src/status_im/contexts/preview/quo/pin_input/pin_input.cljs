@@ -11,6 +11,8 @@
     :key  :number-of-filled-pins}
    {:type :boolean
     :key  :error?}
+   {:type :boolean
+    :key  :info-error?}
    {:type :text
     :key  :info}])
 

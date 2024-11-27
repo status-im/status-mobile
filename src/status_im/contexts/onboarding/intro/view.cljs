@@ -52,13 +52,16 @@
   []
   (when-let [blur-show-fn @overlay/blur-show-fn-atom]
     (blur-show-fn))
-  (rf/dispatch [:open-modal :screen/onboarding.sync-or-recover-profile]))
+  (rf/dispatch [:open-modal
+                :screen/onboarding.share-usage
+                {:next-screen :screen/onboarding.sync-or-recover-profile}]))
 
 (defn- create-profile
   []
   (when-let [blur-show-fn @overlay/blur-show-fn-atom]
     (blur-show-fn))
-  (rf/dispatch [:open-modal :screen/onboarding.new-to-status]))
+  (rf/dispatch [:open-modal :screen/onboarding.share-usage
+                {:next-screen :screen/onboarding.new-to-status}]))
 
 (defn view
   []

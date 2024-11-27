@@ -2,11 +2,12 @@
 
 (defn container
   [container-style]
-  (merge container-style
-         {:padding-vertical   7
-          :padding-horizontal 20
-          :flex-direction     :row
-          :align-items        :flex-start}))
+  (merge
+   {:padding-vertical   7
+    :padding-horizontal 20
+    :flex-direction     :row
+    :align-items        :flex-start}
+   container-style))
 
 (def index
   {:margin-left 5})

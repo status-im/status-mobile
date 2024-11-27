@@ -103,8 +103,8 @@
 
 (rf/defn show-next-bottom-sheet
   {:events [:show-next-bottom-sheet]}
-  [_]
-  {:show-bottom-sheet nil})
+  [{:keys [db] :as cofx}]
+  {:show-bottom-sheet {:theme (:theme db)}})
 
 (rf/defn show-bottom-sheet
   {:events [:show-bottom-sheet]}
