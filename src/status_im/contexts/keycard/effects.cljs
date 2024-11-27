@@ -1,14 +1,14 @@
 (ns status-im.contexts.keycard.effects
   (:require [keycard.keycard :as keycard]
             [native-module.core :as native-module]
+            [promesa.core :as promesa]
             [react-native.async-storage :as async-storage]
             [react-native.platform :as platform]
             status-im.contexts.keycard.nfc.effects
             [status-im.contexts.keycard.utils :as keycard.utils]
             [status-im.contexts.profile.config :as profile.config]
-            [utils.re-frame :as rf]
-            [promesa.core :as promesa]
-            [utils.hex :as hex]))
+            [utils.hex :as hex]
+            [utils.re-frame :as rf]))
 
 (defonce ^:private active-listeners (atom []))
 

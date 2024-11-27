@@ -3,7 +3,6 @@
     ["react-native" :as rn]
     ["react-native-status-keycard" :default status-keycard]
     [oops.core :as oops]
-    [promesa.core :as promesa]
     [react-native.platform :as platform]
     [schema.core :as schema]
     [taoensso.timbre :as log]))
