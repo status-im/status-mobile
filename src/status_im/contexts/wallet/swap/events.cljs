@@ -437,8 +437,10 @@
 
 (rf/reg-event-fx
  :wallet.swap/mark-as-pending
- (fn [{:keys [db]} [approval-transaction-id]]
-   {:db (update-in db [:wallet :transactions approval-transaction-id] assoc :status :pending)}))
+ (fn [{:keys [db]} [transaction-id]]
+   {:db (-> db
+            (assoc-in [:wallet :transactions transaction-id :status] :pending)
+            (assoc-in [:wallet :ui :swap :approval-transaction-id] transaction-id))}))
 
 (rf/reg-event-fx
  :wallet.swap/transaction-success
@@ -448,8 +450,7 @@
                  asset-to-pay
                  asset-to-receive
                  network
-                 amount
-                 approval-transaction-id]
+                 amount]
           :as   swap}           (get-in db [:wallet :ui :swap])
          swap-chain-id          (:chain-id network)
          token-id-from          (:symbol asset-to-pay)
@@ -485,7 +486,7 @@
              ;; dismiss the spending cap dialog if the transaction needs to be approved
              [:dispatch [:dismiss-modal :screen/wallet.swap-set-spending-cap]])
            (when approval-required?
-             [:dispatch [:wallet.swap/mark-as-pending approval-transaction-id]])
+             [:dispatch [:wallet.swap/mark-as-pending (-> sent-transactions first :hash)]])
            (when-not approval-required?
              ;; just end the whole transaction flow if no approval needed
              [:dispatch [:wallet.swap/end-transaction-flow]])
