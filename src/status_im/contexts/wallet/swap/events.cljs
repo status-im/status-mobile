@@ -18,7 +18,9 @@
          root-screen?           (or (= view-id :wallet-stack) (nil? view-id))
          available-accounts     (utils/get-accounts-with-token-balance (:accounts wallet)
                                                                        (:asset-to-pay data))
-         account                (or from-account (swap-utils/wallet-account wallet available-accounts))
+         account                (or from-account
+                                    (swap-utils/current-viewing-account wallet)
+                                    (first available-accounts))
          asset-to-pay           (if (get-in data [:asset-to-pay :networks])
                                   (:asset-to-pay data)
                                   (swap-utils/select-asset-to-pay-by-symbol

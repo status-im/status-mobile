@@ -30,18 +30,13 @@
     :else
     (i18n/label :t/something-went-wrong-please-try-again-later)))
 
-(defn wallet-account
-  "Picks the account that's gonna be used for the swap operation.
-   It's gonna be either the preselected account defined by
-   `[:wallet :current-viewing-account-address]` in `db`
-   or the first operable account from the list of available accounts (accounts with token balance)."
-  [wallet available-accounts]
-  (if-let [wallet-address (get wallet :current-viewing-account-address)]
+(defn current-viewing-account
+  [wallet]
+  (when-let [wallet-address (get wallet :current-viewing-account-address)]
     (-> wallet
         :accounts
         vals
-        (utils/get-account-by-address wallet-address))
-    (first available-accounts)))
+        (utils/get-account-by-address wallet-address))))
 
 (defn select-asset-to-pay-by-symbol
   "Selects an asset to pay by token symbol.
