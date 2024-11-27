@@ -25,7 +25,7 @@
        {:blur?                 false
         :number-of-pins        constants/pincode-length
         :number-of-filled-pins (count text)
-        :error?                error?
+        :info-error?           error?
         :info                  (when error?
                                  (if (not (string/blank? error-message))
                                    error-message
