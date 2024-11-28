@@ -697,7 +697,6 @@
                                      (rf/dispatch [:wallet/clean-send-data])
                                      (rf/dispatch [:hide-bottom-sheet]))
                        :on-error   (fn [error]
-                                     (rf/dispatch [:wallet/clean-send-data])
                                      (log/error "failed to send router transactions with signatures"
                                                 {:event :wallet/send-router-transactions-with-signatures
                                                  :error error})
