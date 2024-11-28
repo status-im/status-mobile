@@ -18,25 +18,23 @@
        clock-value
        "0x0000000000000000000000000000000000000000000000000000000000000000"))
 
-(rf/defn update-chats-in-app-db
-  {:events [:chats-list/load-success]}
-  [{:keys [db]} ^js new-chats-js]
-  (let [{:keys [all-chats chats-home-list]}
-        (reduce (fn [acc ^js chat-js]
-                  (let [{:keys [chat-id profile-public-key timeline? community-id active] :as chat}
-                        (data-store.chats/<-rpc-js chat-js)]
-                    (cond-> acc
-                      (and (not profile-public-key) (not timeline?) (not community-id) active)
-                      (update :chats-home-list conj chat-id)
-                      :always
-                      (assoc-in [:all-chats chat-id] chat))))
-                {:all-chats       {}
-                 :chats-home-list #{}}
-                new-chats-js)]
-    {:db (assoc db
-                :chats           all-chats
-                :chats-home-list chats-home-list
-                :chats/loading?  false)}))
+(rf/reg-event-fx :chats-list/load-success
+ (fn [{:keys [db]} [^js new-chats-js]]
+   (let [{:keys [all-chats chats-home-list]}
+         (reduce (fn [acc ^js chat-js]
+                   (let [{:keys [chat-id profile-public-key timeline? community-id active] :as chat}
+                         (data-store.chats/<-rpc-js chat-js)]
+                     (cond-> acc
+                       (and (not profile-public-key) (not timeline?) (not community-id) active)
+                       (update :chats-home-list conj chat-id)
+                       :always
+                       (assoc-in [:all-chats chat-id] chat))))
+                 {:all-chats       {}
+                  :chats-home-list #{}}
+                 new-chats-js)]
+     {:db (-> db
+              (update :chats merge all-chats)
+              (update :chats-home-list into chats-home-list))})))
 
 (rf/defn load-chat-success
   {:events [:chats-list/load-chat-success]}

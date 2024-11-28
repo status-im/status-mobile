@@ -4,6 +4,7 @@
     [native-module.core :as native-module]
     [status-im.common.keychain.events :as keychain]
     [status-im.config :as config]
+    [status-im.constants :as constants]
     status-im.contexts.profile.login.effects
     [status-im.contexts.profile.rpc :as profile.rpc]
     [taoensso.timbre :as log]
@@ -41,10 +42,10 @@
          log-level          (or (:log-level settings) config/log-level)
          pairing-completed? (= (get-in db [:syncing :pairing-status]) :completed)
          new-db             (-> db
-                                (assoc :chats/loading?  true
-                                       :profile/profile (merge profile-overview
-                                                               settings
-                                                               {:log-level log-level}))
+                                (assoc :profile/profile
+                                       (merge profile-overview
+                                              settings
+                                              {:log-level log-level}))
                                 (assoc-in [:activity-center :loading?] true)
                                 (dissoc :centralized-metrics/onboarding-enabled?))]
      {:db (cond-> new-db
@@ -131,10 +132,15 @@
    (let [new-account? (get db :onboarding/new-account?)]
      {:db (assoc db :messenger/started? true)
       :fx [[:fetch-chats-preview
-            {:on-success (fn [result]
-                           (rf/dispatch [:chats-list/load-success result])
-                           (rf/dispatch [:communities/get-user-requests-to-join])
-                           (rf/dispatch [:profile.login/get-chats-callback]))}]
+            {:chat-preview-type constants/chat-preview-type-non-community
+             :on-success        (fn [result]
+                                  (rf/dispatch [:chats-list/load-success result])
+                                  (rf/dispatch [:profile.login/get-chats-callback]))}]
+           [:fetch-chats-preview
+            {:chat-preview-type constants/chat-preview-type-community
+             :on-success        (fn [result]
+                                  (rf/dispatch [:chats-list/load-success result])
+                                  (rf/dispatch [:communities/get-user-requests-to-join]))}]
            (when (and (:syncing/fallback-flow? db) (:syncing/installation-id db))
              [:dispatch [:pairing/finish-seed-phrase-fallback-syncing]])
            (when-not new-account?
