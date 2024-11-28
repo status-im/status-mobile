@@ -33,10 +33,7 @@
 (defn current-viewing-account
   [wallet]
   (when-let [wallet-address (get wallet :current-viewing-account-address)]
-    (-> wallet
-        :accounts
-        vals
-        (utils/get-account-by-address wallet-address))))
+    (get-in wallet [:accounts wallet-address])))
 
 (defn select-asset-to-pay-by-symbol
   "Selects an asset to pay by token symbol.
