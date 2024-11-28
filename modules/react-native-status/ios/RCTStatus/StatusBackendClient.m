@@ -8,6 +8,7 @@
     NSString *_statusGoEndpoint;
     NSString *_signalEndpoint;
     NSString *_rootDataDir;
+    NSTimer *_pingTimer;
 }
 
 RCT_EXPORT_MODULE();
@@ -77,6 +78,8 @@ RCT_EXPORT_MODULE();
     
     [self.webSocket resume];
     [self receiveMessage];
+    
+    [self startPingTimer];
 }
 
 - (void)receiveMessage {
@@ -109,6 +112,7 @@ RCT_EXPORT_MODULE();
 }
 
 - (void)disconnectWebSocket {
+    [self stopPingTimer];
     if (self.webSocket) {
         [self.webSocket cancel];
         self.webSocket = nil;
@@ -119,6 +123,7 @@ RCT_EXPORT_MODULE();
                   body:(NSString *)body
              callback:(void (^)(NSString *response, NSError *error))callback {
     NSString *fullUrlString = [NSString stringWithFormat:@"%@%@", self.statusGoEndpoint, endpoint];
+    NSLog(@"StatusGo server is enabled, executing request, endpoint: %@, body: %@", fullUrlString, body);
     NSURL *url = [NSURL URLWithString:fullUrlString];
     NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:url];
     request.HTTPMethod = @"POST";
@@ -225,7 +230,6 @@ RCT_EXPORT_METHOD(configStatusBackendServer:(BOOL)serverEnabled
     if (client.serverEnabled) {
         dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
         __block NSString *resultString = @"";
-        
         [client request:endpoint body:body callback:^(NSString *response, NSError *error) {
             if (error) {
                 NSLog(@"request to %@ failed: %@", endpoint, error);
@@ -240,6 +244,35 @@ RCT_EXPORT_METHOD(configStatusBackendServer:(BOOL)serverEnabled
         return resultString;
     } else {
         return statusgoFunction();
+    }
+}
+
+- (void)startPingTimer {
+    [self stopPingTimer];
+    _pingTimer = [NSTimer scheduledTimerWithTimeInterval:30.0
+                                                 target:self
+                                               selector:@selector(sendPing)
+                                               userInfo:nil
+                                                repeats:YES];
+}
+
+- (void)stopPingTimer {
+    if (_pingTimer) {
+        [_pingTimer invalidate];
+        _pingTimer = nil;
+    }
+}
+
+- (void)sendPing {
+    if (self.webSocket) {
+        [self.webSocket sendPingWithPongReceiveHandler:^(NSError * _Nullable error) {
+            if (error) {
+                NSLog(@"WebSocket ping failed: %@", error);
+                // Reconnect on ping failure
+                [self disconnectWebSocket];
+                [self connectWebSocket];
+            }
+        }];
     }
 }
 
