@@ -151,7 +151,6 @@
                                      :fromLockedAmount     from-locked-amount
                                      :amountOut            (or amount-out-hex "0x0")}
                                     amount-in (assoc :amountIn amount-in-hex))]]
-
      (when-let [amount (or amount-in amount-out)]
        {:db            (update-in db
                                   [:wallet :ui :swap]

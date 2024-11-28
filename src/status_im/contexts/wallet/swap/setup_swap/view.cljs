@@ -95,8 +95,10 @@
        :subtitle      (str max-slippage "%")
        :subtitle-icon :i/edit
        :size          :small
-       :on-press      #(rf/dispatch [:show-bottom-sheet
-                                     {:content slippage-settings/view}])}]]))
+       :on-press      (fn []
+                        (when-not loading-swap-proposal?
+                          (rf/dispatch [:show-bottom-sheet
+                                        {:content slippage-settings/view}])))}]]))
 
 (defn- pay-token-input
   [{:keys [input-state on-max-press on-input-focus on-token-press on-approve-press input-focused?]}]
@@ -217,6 +219,7 @@
         currency-symbol          (rf/sub [:profile/currency-symbol])
         amount-out               (rf/sub [:wallet/swap-proposal-amount-out])
         approval-required?       (rf/sub [:wallet/swap-proposal-approval-required])
+        prices-per-token         (rf/sub [:wallet/prices-per-token])
         receive-token-symbol     (:symbol asset-to-receive)
         receive-token-decimals   (:decimals asset-to-receive)
         amount-out-whole-number  (when amount-out
@@ -225,10 +228,11 @@
                                    (number/to-fixed amount-out-whole-number receive-token-decimals)
                                    default-text-for-unfocused-input)
         receive-token-fiat-value (utils/formatted-token-fiat-value
-                                  {:currency        currency
-                                   :currency-symbol currency-symbol
-                                   :balance         (or amount-out-whole-number 0)
-                                   :token           asset-to-receive})]
+                                  {:currency         currency
+                                   :currency-symbol  currency-symbol
+                                   :balance          (or amount-out-whole-number 0)
+                                   :token            asset-to-receive
+                                   :prices-per-token prices-per-token})]
     [quo/swap-input
      {:type                 :receive
       :error?               false
