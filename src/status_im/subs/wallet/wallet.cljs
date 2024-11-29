@@ -8,6 +8,7 @@
             [status-im.contexts.wallet.send.utils :as send-utils]
             [status-im.contexts.wallet.sheets.missing-keypair.view :as missing-keypair]
             [status-im.subs.wallet.add-account.address-to-watch]
+            [utils.money :as money]
             [utils.number]
             [utils.security.core :as security]))
 
@@ -693,6 +694,17 @@
      {:balance           balance
       :formatted-balance formatted-balance
       :tokens            sorted-token-values})))
+
+(rf/reg-sub
+ :wallet/zero-balance-in-all-non-watched-accounts?
+ :<- [:wallet/aggregated-tokens]
+ :<- [:profile/currency]
+ :<- [:wallet/prices-per-token]
+ (fn [[aggregated-tokens currency prices-per-token]]
+   (let [balance (utils/calculate-balance-from-tokens {:currency         currency
+                                                       :tokens           aggregated-tokens
+                                                       :prices-per-token prices-per-token})]
+     (and (not-empty aggregated-tokens) (money/equal-to balance 0)))))
 
 (rf/reg-sub
  :wallet/network-preference-details
