@@ -1,5 +1,6 @@
 (ns status-im.contexts.profile.edit.name.events
-  (:require [utils.i18n :as i18n]
+  (:require [clojure.string :as string]
+            [utils.i18n :as i18n]
             [utils.re-frame :as rf]))
 
 (rf/reg-event-fx :profile/edit-profile-name-success
@@ -20,3 +21,16 @@
            :on-success [:profile/edit-profile-name-success]}]]]})
 
 (rf/reg-event-fx :profile/edit-name edit-profile-name)
+
+(defn get-default-display-name
+  [profile]
+  (-> profile :compressed-key (string/split #"zQ3") second (subs 0 20)))
+
+(rf/reg-event-fx
+ :profile/set-default-profile-name
+ (fn [{db :db} [profile]]
+   (let [default-display-name (get-default-display-name profile)]
+     {:db (assoc-in db [:profile/profile :display-name] default-display-name)
+      :fx [[:json-rpc/call
+            [{:method "wakuext_setDisplayName"
+              :params [default-display-name]}]]]})))
