@@ -123,8 +123,13 @@
  :-> :activity-tab)
 
 (rf/reg-sub
- :wallet/activity-tab-loading?
+ :wallet/activity-tab-request
  :<- [:wallet/activity-tab]
+ :-> :request)
+
+(rf/reg-sub
+ :wallet/activity-tab-loading?
+ :<- [:wallet/activity-tab-request]
  :-> :loading?)
 
 (rf/reg-sub
