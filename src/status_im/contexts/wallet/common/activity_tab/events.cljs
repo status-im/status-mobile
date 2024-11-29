@@ -95,7 +95,7 @@
          {:keys [activities offset hasMore]} (transforms/json->clj message)
          new-activities                      (->> activities
                                                   (cske/transform-keys transforms/->kebab-case-keyword)
-                                                  (collection/index-by :id))
+                                                  (collection/index-by :key))
          existing-activities                 (get-in db [:wallet :activities address])
          updated-activities                  (if initial-request?
                                                new-activities
@@ -115,7 +115,7 @@
            updated-activities (->> message
                                    transforms/json->clj
                                    (cske/transform-keys transforms/->kebab-case-keyword)
-                                   (collection/index-by :id))]
+                                   (collection/index-by :key))]
        {:db (update-in db [:wallet :activities address] nested-merge updated-activities)}))))
 
 (rf/reg-event-fx
