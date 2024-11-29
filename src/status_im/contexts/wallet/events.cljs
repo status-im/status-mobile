@@ -19,7 +19,6 @@
     [status-im.feature-flags :as ff]
     [taoensso.timbre :as log]
     [utils.collection]
-    [utils.ethereum.chain :as chain]
     [utils.ethereum.eip.eip55 :as eip55]
     [utils.i18n :as i18n]
     [utils.number]
@@ -40,14 +39,12 @@
 (rf/reg-event-fx :wallet/navigate-to-account
  (fn [{:keys [db]} [address]]
    {:db (assoc-in db [:wallet :current-viewing-account-address] address)
-    :fx [[:dispatch [:navigate-to :screen/wallet.accounts address]]
-         [:dispatch [:wallet/fetch-activities-for-current-account]]]}))
+    :fx [[:dispatch [:navigate-to :screen/wallet.accounts address]]]}))
 
 (rf/reg-event-fx :wallet/navigate-to-account-within-stack
  (fn [{:keys [db]} [address]]
    {:db (assoc-in db [:wallet :current-viewing-account-address] address)
-    :fx [[:dispatch [:navigate-to-within-stack [:screen/wallet.accounts :shell-stack] address]]
-         [:dispatch [:wallet/fetch-activities-for-current-account]]]}))
+    :fx [[:dispatch [:navigate-to-within-stack [:screen/wallet.accounts :shell-stack] address]]]}))
 
 (rf/reg-event-fx :wallet/navigate-to-new-account
  (fn [{:keys [db]} [address]]
@@ -58,7 +55,11 @@
 
 (rf/reg-event-fx :wallet/select-account-tab
  (fn [{:keys [db]} [tab]]
-   {:db (assoc-in db [:wallet :ui :account-page :active-tab] tab)}))
+   (let [activity-tab-selected? (= tab :activity)]
+     {:db (assoc-in db [:wallet :ui :account-page :active-tab] tab)
+      :fx [(if activity-tab-selected?
+             [:dispatch [:wallet/fetch-activities-for-current-account]]
+             [:dispatch [:wallet/stop-activity-filter-session]])]})))
 
 (rf/reg-event-fx :wallet/select-home-tab
  (fn [{:keys [db]} [tab]]
@@ -66,7 +67,8 @@
 
 (rf/reg-event-fx :wallet/clear-account-tab
  (fn [{:keys [db]}]
-   {:db (assoc-in db [:wallet :ui :account-page :active-tab] nil)}))
+   {:db (assoc-in db [:wallet :ui :account-page :active-tab] nil)
+    :fx [[:dispatch [:wallet/stop-activity-filter-session]]]}))
 
 (rf/reg-event-fx :wallet/switch-current-viewing-account
  (fn [{:keys [db]} [address]]
@@ -94,7 +96,8 @@
    (let [just-completed-transaction? (get-in db [:wallet :ui :send :just-completed-transaction?])]
      {:db (update db :wallet dissoc :current-viewing-account-address)
       :fx [(when-not just-completed-transaction?
-             [:dispatch [:wallet/clear-account-tab]])]})))
+             [:dispatch [:wallet/clear-account-tab]])
+           [:dispatch [:wallet/stop-activity-filter-session]]]})))
 
 (defn log-rpc-error
   [_ [{:keys [event params]} error]]
@@ -106,15 +109,13 @@
 
 (def refresh-accounts-fx-dispatches
   [[:dispatch [:wallet/get-wallet-token-for-all-accounts]]
-   [:dispatch [:wallet/request-collectibles-for-all-accounts {:new-request? true}]]
-   [:dispatch [:wallet/check-recent-history-for-all-accounts]]])
+   [:dispatch [:wallet/request-collectibles-for-all-accounts {:new-request? true}]]])
 
 (rf/reg-event-fx
  :wallet/fetch-assets-for-address
  (fn [_ [address]]
    {:fx [[:dispatch [:wallet/get-wallet-token-for-account address]]
-         [:dispatch [:wallet/request-collectibles-for-account address]]
-         [:dispatch [:wallet/check-recent-history-for-account address]]]}))
+         [:dispatch [:wallet/request-collectibles-for-account address]]]}))
 
 (defn- reconcile-accounts
   [db-accounts-by-address new-accounts]
@@ -490,25 +491,6 @@
    {:fx [[:json-rpc/call
           [{:method   "wallet_startWallet"
             :on-error [:wallet/log-rpc-error {:event :wallet/start-wallet}]}]]]}))
-
-(rf/reg-event-fx :wallet/check-recent-history-for-all-accounts
- (fn [{:keys [db]}]
-   {:fx (->> (get-in db [:wallet :accounts])
-             vals
-             (mapv (fn [{:keys [address]}]
-                     [:dispatch [:wallet/check-recent-history-for-account address]])))}))
-
-(rf/reg-event-fx
- :wallet/check-recent-history-for-account
- (fn [{:keys [db]} [address]]
-   (let [chain-ids (chain/chain-ids db)
-         params    [chain-ids [address]]]
-     {:fx [[:json-rpc/call
-            [{:method   "wallet_checkRecentHistoryForChainIDs"
-              :params   params
-              :on-error [:wallet/log-rpc-error
-                         {:event  :wallet/check-recent-history-for-account
-                          :params params}]}]]]})))
 
 (rf/reg-event-fx :wallet/initialize
  (fn []

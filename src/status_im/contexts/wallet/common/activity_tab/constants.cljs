@@ -1,6 +1,5 @@
 (ns status-im.contexts.wallet.common.activity-tab.constants)
 
-
 (def ^:const wallet-activity-error-code-success 1)
 (def ^:const wallet-activity-error-code-task-canceled 2)
 (def ^:const wallet-activity-error-code-failed 3)
@@ -12,6 +11,7 @@
 (def ^:const wallet-activity-type-bridge 4)
 (def ^:const wallet-activity-type-contract-deployment 5)
 (def ^:const wallet-activity-type-mint 6)
+(def ^:const wallet-activity-type-approval 7)
 
 (def ^:const wallet-activity-status-failed 0)
 (def ^:const wallet-activity-status-pending 1)
@@ -62,4 +62,3 @@
    wallet-activity-type-buy     :t/via
    wallet-activity-type-swap    :t/via
    wallet-activity-type-bridge  :t/in})
-

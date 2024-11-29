@@ -13,6 +13,8 @@
 
 (def first-tab-id :assets)
 
+;; NOTE: If the id of the tabs are changed, please check 'wallet/select-account-tab' event as
+;; a activity event depends on it
 (def tabs-data
   [{:id :assets :label (i18n/label :t/assets) :accessibility-label :assets-tab}
    {:id :collectibles :label (i18n/label :t/collectibles) :accessibility-label :collectibles-tab}
@@ -30,8 +32,6 @@
     (hot-reload/use-safe-unmount (fn []
                                    (rf/dispatch [:wallet/close-account-page])
                                    (rf/dispatch [:wallet/clean-current-viewing-account])))
-    (rn/use-mount
-     #(rf/dispatch [:wallet/fetch-activities-for-current-account]))
     [rn/view {:style {:flex 1}}
      [account-switcher/view
       {:type               :wallet-networks

@@ -131,18 +131,6 @@
                                                address]}]]]}]
     (is (match? expected-effects (dispatch [event-id address])))))
 
-(h/deftest-event :wallet/check-recent-history-for-all-accounts
-  [event-id dispatch]
-  (testing "check recent history for all accounts"
-    (let [address-1   "0x1"
-          address-2   "0x2"
-          expected-fx [[:dispatch [:wallet/check-recent-history-for-account address-1]]
-                       [:dispatch [:wallet/check-recent-history-for-account address-2]]]]
-      (reset! rf-db/app-db
-        {:wallet {:accounts {address-1 {:address address-1}
-                             address-2 {:address address-2}}}})
-      (is (match? expected-fx (:fx (dispatch [event-id])))))))
-
 (h/deftest-event :wallet/reconcile-keypairs
   [event-id dispatch]
   (let [keypair-key-uid (:key-uid raw-account)]

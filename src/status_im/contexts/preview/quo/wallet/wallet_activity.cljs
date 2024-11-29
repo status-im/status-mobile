@@ -152,7 +152,8 @@
                {:key :bridge}
                {:key :buy}
                {:key :destroy}
-               {:key :mint}]}
+               {:key :mint}
+               {:key :approval}]}
     {:key     :status
      :type    :select
      :options [{:key :pending}
@@ -219,7 +220,8 @@
         :descriptor            descriptor
         :blur?                 (:blur? @component-state)
         :show-blur-background? true}
-       [rn/view {:style {:align-self :center}}
+       [rn/view {:style {:flex 1}}
         [quo/wallet-activity
-         (merge {:on-press #(js/alert "Dropdown pressed")}
+         (merge {:on-press         #(js/alert "Activity pressed")
+                 :on-press-options #(js/alert "Options pressed")}
                 @component-state)]]])))

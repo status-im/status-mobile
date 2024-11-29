@@ -12,22 +12,24 @@
     [utils.i18n :as i18n]))
 
 (def transaction-translation
-  {:receive [i18n/label :t/receive]
-   :send    [i18n/label :t/send]
-   :swap    [i18n/label :t/swap]
-   :bridge  [i18n/label :t/bridge]
-   :buy     [i18n/label :t/buy]
-   :destroy [i18n/label :t/destroy]
-   :mint    [i18n/label :t/mint]})
+  {:receive  [i18n/label :t/receive]
+   :send     [i18n/label :t/send]
+   :swap     [i18n/label :t/swap]
+   :bridge   [i18n/label :t/bridge]
+   :buy      [i18n/label :t/buy]
+   :destroy  [i18n/label :t/destroy]
+   :mint     [i18n/label :t/mint]
+   :approval [i18n/label :t/set-spending-cap]})
 
 (def transaction-icon
-  {:receive :i/receive
-   :send    :i/send
-   :swap    :i/transaction
-   :bridge  :i/bridge
-   :buy     :i/buy
-   :destroy :i/destroy
-   :mint    :i/mint})
+  {:receive  :i/receive
+   :send     :i/send
+   :swap     :i/transaction
+   :bridge   :i/bridge
+   :buy      :i/buy
+   :destroy  :i/destroy
+   :mint     :i/mint
+   :approval :i/token-sales})
 
 (def status-icon
   {:pending   :i/pending-state
@@ -39,7 +41,8 @@
   [{:keys [transaction
            timestamp
            counter
-           blur?]
+           blur?
+           on-press-options]
     :or   {transaction :receive
            counter     1}}
    theme]
@@ -64,7 +67,13 @@
       :size                :label
       :style               (style/timestamp theme blur?)
       :accessibility-label :transaction-timestamp}
-     timestamp]]])
+     timestamp]]
+   (when on-press-options
+     [rn/pressable
+      {:on-press on-press-options
+       :hit-slop {:top 10 :bottom 10 :left 10 :right 10}}
+      [icon/icon :i/options
+       {:size 20}]])])
 
 (defn transaction-icon-view
   [{:keys [blur? transaction status]
@@ -120,8 +129,8 @@
       :accessibility-label :wallet-activity
       :disabled            (= state :disabled)
       :on-press            on-press
-      :on-press-in         on-press-in
-      :on-press-out        on-press-out}
+      :on-press-in         (when on-press on-press-in)
+      :on-press-out        (when on-press on-press-out)}
      [rn/view {:style style/container}
       [transaction-icon-view props theme]
       [rn/view {:style {:flex 1}}

@@ -29,18 +29,14 @@
                                   :sender        "acc1"
                                   :recipient     "acc2"
                                   :timestamp     1588291200}
-                               2 {:activity-type constants/wallet-activity-type-receive
-                                  :amount-in     "0x1"
-                                  :sender        "acc2"
-                                  :recipient     "acc1"
-                                  :timestamp     1588377600}
-                               3 {:activity-type constants/wallet-activity-type-send
+                               3 {:activity-type constants/wallet-activity-type-bridge
                                   :amount-out    "0x1"
                                   :sender        "acc1"
                                   :recipient     "acc4"
                                   :timestamp     1588464000}
-                               4 {:activity-type constants/wallet-activity-type-send
+                               4 {:activity-type constants/wallet-activity-type-swap
                                   :amount-out    "0x1"
+                                  :amount-in     "0x1"
                                   :sender        "acc1"
                                   :recipient     "acc4"
                                   :timestamp     1588464100}
@@ -58,59 +54,43 @@
     (is
      (match?
       [{:title     "May 3, 2020"
-        :timestamp 1588464000
-        :data      [{:relative-date "May 3, 2020"
-                     :amount        "0"
-                     :network-logo  nil
-                     :recipient     "acc4"
-                     :transaction   :send
-                     :token         nil
-                     :network-name  nil
-                     :status        nil
-                     :sender        "acc1"
-                     :timestamp     1588464100}
-                    {:relative-date "May 3, 2020"
-                     :amount        "0"
-                     :network-logo  nil
-                     :recipient     "acc4"
-                     :transaction   :send
-                     :token         nil
-                     :network-name  nil
-                     :status        nil
-                     :sender        "acc1"
-                     :timestamp     1588464050}
-                    {:relative-date "May 3, 2020"
-                     :amount        "0"
-                     :network-logo  nil
-                     :recipient     "acc4"
-                     :transaction   :send
-                     :token         nil
-                     :network-name  nil
-                     :status        nil
-                     :sender        "acc1"
-                     :timestamp     1588464000}]}
-       {:title     "May 2, 2020"
-        :timestamp 1588377600
-        :data      [{:relative-date "May 2, 2020"
-                     :amount        "0"
-                     :network-logo  nil
-                     :recipient     "acc1"
-                     :transaction   :receive
-                     :token         nil
-                     :network-name  nil
-                     :status        nil
-                     :sender        "acc2"
-                     :timestamp     1588377600}]}
+        :timestamp 1588464100
+        :data      [{:relative-date    "May 3, 2020"
+                     :amount-out       "0"
+                     :network-logo-out nil
+                     :recipient        "acc4"
+                     :tx-type          :swap
+                     :network-name-out nil
+                     :status           nil
+                     :sender           "acc1"
+                     :timestamp        1588464100}
+                    {:relative-date    "May 3, 2020"
+                     :amount-out       "0"
+                     :network-logo-out nil
+                     :recipient        "acc4"
+                     :tx-type          :send
+                     :network-name-out nil
+                     :status           nil
+                     :sender           "acc1"
+                     :timestamp        1588464050}
+                    {:relative-date    "May 3, 2020"
+                     :amount-out       "0"
+                     :network-logo-out nil
+                     :recipient        "acc4"
+                     :tx-type          :bridge
+                     :network-name-out nil
+                     :status           nil
+                     :sender           "acc1"
+                     :timestamp        1588464000}]}
        {:title     "May 1, 2020"
         :timestamp 1588291200
-        :data      [{:relative-date "May 1, 2020"
-                     :amount        "0"
-                     :network-logo  nil
-                     :recipient     "acc2"
-                     :transaction   :send
-                     :token         nil
-                     :network-name  nil
-                     :status        nil
-                     :sender        "acc1"
-                     :timestamp     1588291200}]}]
+        :data      [{:relative-date    "May 1, 2020"
+                     :amount-out       "0"
+                     :network-logo-out nil
+                     :recipient        "acc2"
+                     :tx-type          :send
+                     :network-name-out nil
+                     :status           nil
+                     :sender           "acc1"
+                     :timestamp        1588291200}]}]
       (rf/sub [sub-name])))))
