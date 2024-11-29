@@ -131,7 +131,7 @@
                 :colors [(colors/theme-colors colors/white-opa-10 colors/neutral-95-opa-10 theme)
                          (colors/theme-colors colors/white colors/neutral-95 theme)]
                 :style  style/gradient-end}])
-            (if pay?
+            (if-not input-disabled?
               [rn/text-input
                (cond-> {:ref                      set-input-ref
                         :style                    (style/input disabled? error? theme)
