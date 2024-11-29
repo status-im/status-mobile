@@ -116,15 +116,7 @@
 (def log-manager
   (clj->js
    {:logFileDirectory
-    (fn [] (str test-dir "/log"))
-    :initLogging
-    (fn [enabled mobile-system log-level log-request-go? callback]
-      (callback (.initLogging native-status
-                              (types/clj->json {:Enabled        enabled
-                                                :MobileSystem   mobile-system
-                                                :Level          log-level
-                                                :LogRequestGo   log-request-go?
-                                                :LogRequestFile (str test-dir "/request.log")}))))}))
+    (fn [] (str test-dir "/log"))}))
 
 (def network
   (clj->js

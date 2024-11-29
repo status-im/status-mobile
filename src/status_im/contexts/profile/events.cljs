@@ -1,5 +1,6 @@
 (ns status-im.contexts.profile.events
   (:require
+    [clojure.string :as string]
     [legacy.status-im.data-store.settings :as data-store.settings]
     [legacy.status-im.multiaccounts.update.core :as multiaccounts.update]
     [native-module.core :as native-module]
@@ -36,7 +37,10 @@
     {:dataDir              (native-module/backup-disabled-data-dir)
      :mixpanelAppId        config/mixpanel-app-id
      :mixpanelToken        config/mixpanel-token
-     :mediaServerEnableTLS (config/enabled? config/STATUS_BACKEND_SERVER_MEDIA_SERVER_ENABLE_TLS)}
+     :mediaServerEnableTLS (config/enabled? config/STATUS_BACKEND_SERVER_MEDIA_SERVER_ENABLE_TLS)
+     :logEnabled           (not (string/blank? config/log-level))
+     :logLevel             config/log-level
+     :apiLoggingEnabled    config/api-logging-enabled?}
     callback)))
 
 (rf/reg-event-fx
