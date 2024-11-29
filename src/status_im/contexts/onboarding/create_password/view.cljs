@@ -29,9 +29,9 @@
     (i18n/label :t/password-creation-subtitle)]])
 
 (defn password-inputs
-  [{:keys [passwords-match? on-change-password on-change-repeat-password on-input-focus
-           password-long-enough? password-short-enough? empty-password? show-password-validation?
-           on-blur-repeat-password]}]
+  [{:keys [passwords-match? on-change-password on-change-repeat-password
+           password-long-enough? password-short-enough? empty-password?
+           show-password-validation? on-blur-repeat-password]}]
   (let [hint-1-status (if password-long-enough? :success :default)
         hint-2-status (if passwords-match? :success :error)
         hint-2-text   (if passwords-match?
@@ -52,7 +52,6 @@
                           :shown? true})
        :placeholder    (i18n/label :t/password-creation-placeholder-1)
        :on-change-text on-change-password
-       :on-focus       on-input-focus
        :auto-focus     true}]
      [rn/view {:style style/space-between-inputs}]
      [password-with-hint/view
@@ -63,7 +62,6 @@
        :error?         error?
        :placeholder    (i18n/label :t/password-creation-placeholder-2)
        :on-change-text on-change-repeat-password
-       :on-focus       on-input-focus
        :on-blur        on-blur-repeat-password}]]))
 
 (defn help
@@ -99,8 +97,10 @@
   [password repeat-password]
   (rn/use-memo
    (fn []
-     {:same-password-length? (and (seq password) (= (count password) (count repeat-password)))
-      :same-passwords?       (and (seq password) (= password repeat-password))})
+     {:same-password-length? (and (seq password)
+                                  (= (count password) (count repeat-password)))
+      :same-passwords?       (and (seq password)
+                                  (= password repeat-password))})
    [password repeat-password]))
 
 (defn create-password-doc
@@ -134,31 +134,40 @@
       :right-side [{:icon-name :i/info
                     :on-press  on-press-info}]}]))
 
+(defn- help-and-confirm-button
+  [{:keys [password-validations password-strength meet-requirements? on-submit]}]
+  (let [{customization-color :color} (rf/sub [:onboarding/profile])]
+    [rn/view {:style style/footer-container}
+     [help
+      {:validations       password-validations
+       :password-strength password-strength}]
+     [quo/button
+      {:container-style     style/footer-button-container
+       :disabled?           (not meet-requirements?)
+       :customization-color customization-color
+       :on-press            on-submit}
+      (i18n/label :t/password-creation-confirm)]]))
+
 (defn create-password
   []
-  (let [[password set-password]                         (rn/use-state "")
-        [repeat-password set-repeat-password]           (rn/use-state "")
-        [accepts-disclaimer? set-accepts-disclaimer?]   (rn/use-state false)
-        [focused-input set-focused-input]               (rn/use-state nil)
+  (let [[password set-password]         (rn/use-state "")
+        [repeat-password
+         set-repeat-password]           (rn/use-state "")
         [show-password-validation?
-         set-show-password-validation?]                 (rn/use-state false)
-        {user-color :color}                             (rf/sub [:onboarding/profile])
-
-
-        {:keys [password-long-enough?
-                password-short-enough?
-                password-validations password-strength
-                empty-password?]}                       (use-password-checks password)
-
-        {:keys [same-password-length? same-passwords?]} (use-repeat-password-checks password
-                                                                                    repeat-password)
-
-        meet-requirements?                              (and (not empty-password?)
-                                                             password-long-enough?
-                                                             password-short-enough?
-                                                             same-passwords?
-                                                             accepts-disclaimer?)]
-
+         set-show-password-validation?] (rn/use-state false)
+        {:keys [password-long-enough? empty-password? password-short-enough? password-strength
+                password-validations]}  (use-password-checks password)
+        {:keys [same-password-length?
+                same-passwords?]}       (use-repeat-password-checks password repeat-password)
+        meet-requirements?              (and (not empty-password?)
+                                             password-long-enough?
+                                             password-short-enough?
+                                             same-passwords?)
+        on-submit                       (rn/use-callback
+                                         #(rf/dispatch
+                                           [:onboarding/password-set
+                                            (security/mask-data password)])
+                                         [password])]
     [floating-button/view
      {:header [page-nav]
       :keyboard-should-persist-taps :handled
@@ -169,34 +178,18 @@
        :blur-radius        20
        :blur-type          :transparent
        :overlay-color      :transparent
-       :background-color   (if platform/android? colors/neutral-100 colors/neutral-80-opa-1-blur)
+       :background-color   (if platform/android?
+                             colors/neutral-100
+                             colors/neutral-80-opa-1-blur)
        :padding-vertical   0
        :padding-horizontal 0}
       :footer-container-padding 0
       :footer
-      [rn/view
-       {:style style/footer-container}
-       (when same-passwords?
-         [rn/view {:style style/disclaimer-container}
-          [quo/disclaimer
-           {:blur?               true
-            :on-change           (partial set-accepts-disclaimer? not)
-            :checked?            accepts-disclaimer?
-            :customization-color user-color}
-           (i18n/label :t/password-creation-disclaimer)]])
-       (when (and (= focused-input :password) (not same-passwords?))
-         [help
-          {:validations       password-validations
-           :password-strength password-strength}])
-       [quo/button
-        {:container-style     style/footer-button-container
-         :disabled?           (not meet-requirements?)
-         :customization-color user-color
-         :on-press            #(rf/dispatch
-                                [:onboarding/password-set
-                                 (security/mask-data password)])}
-        (i18n/label :t/password-creation-confirm)]]}
-
+      [help-and-confirm-button
+       {:password-validations password-validations
+        :password-strength    password-strength
+        :meet-requirements?   meet-requirements?
+        :on-submit            on-submit}]}
      [rn/view {:style style/form-container}
       [header]
       [password-inputs
@@ -205,12 +198,10 @@
         :passwords-match?          same-passwords?
         :empty-password?           empty-password?
         :show-password-validation? show-password-validation?
-        :on-input-focus            #(set-focused-input :password)
         :on-change-password        (fn [new-value]
                                      (set-password new-value)
                                      (when same-password-length?
                                        (set-show-password-validation? true)))
-
         :on-change-repeat-password (fn [new-value]
                                      (set-repeat-password new-value)
                                      (when same-password-length?

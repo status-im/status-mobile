@@ -1930,7 +1930,7 @@
   "password-creation-max-length-hint": "Maximum 100 characters",
   "password-creation-placeholder-1": "Type password",
   "password-creation-placeholder-2": "Repeat password",
-  "password-creation-subtitle": "To log in to Status and sign transactions",
+  "password-creation-subtitle": "This password can't be recovered",
   "password-creation-tips-1": "Lower case",
   "password-creation-tips-2": "Upper case",
   "password-creation-tips-3": "Numbers",
