@@ -266,9 +266,10 @@
 
 (defn fiat-formatted-for-ui
   [currency-symbol fiat-value]
-  (if (money/less-than fiat-value 0.01)
-    (str "<" currency-symbol "0.01")
-    (prettify-balance currency-symbol fiat-value)))
+  (cond
+    (money/equal-to fiat-value 0)     (str currency-symbol "0.00")
+    (money/less-than fiat-value 0.01) (str "<" currency-symbol "0.01")
+    :else                             (prettify-balance currency-symbol fiat-value)))
 
 (defn prettify-percentage-change
   "Returns unsigned precentage"
