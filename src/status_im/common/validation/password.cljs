@@ -28,9 +28,10 @@
                        :long-enough?
                        :short-enough?)))))
 
+(def password-tip? (set constants/password-tips))
+
 (defn strength
   [validations]
-  (->> (select-keys validations constants/password-tips)
-       (vals)
-       (filter true?)
-       count))
+  (->> validations
+       (filter #(and (password-tip? (key %)) (val %)))
+       (count)))
