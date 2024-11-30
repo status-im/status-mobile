@@ -1,5 +1,6 @@
 (ns status-im.contexts.profile.edit.name.events
   (:require [clojure.string :as string]
+            [status-im.constants :as constants]
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]))
 
@@ -24,7 +25,7 @@
 
 (defn get-default-display-name
   [profile]
-  (-> profile :compressed-key (string/split #"zQ3") second (subs 0 20)))
+  (-> profile :compressed-key (string/split #"zQ3") second (subs 0 constants/profile-name-max-length)))
 
 (rf/reg-event-fx
  :profile/set-default-profile-name
