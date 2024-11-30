@@ -133,15 +133,14 @@
 (defn- navigate-back [] (rf/dispatch [:navigate-back]))
 
 (defn- page-nav
-  []
-  (let [{:keys [top]} (safe-area/get-insets)]
-    [quo/page-nav
-     {:margin-top top
-      :background :blur
-      :icon-name  :i/arrow-left
-      :on-press   navigate-back
-      :right-side [{:icon-name :i/info
-                    :on-press  on-press-info}]}]))
+  [top]
+  [quo/page-nav
+   {:margin-top top
+    :background :blur
+    :icon-name  :i/arrow-left
+    :on-press   navigate-back
+    :right-side [{:icon-name :i/info
+                  :on-press  on-press-info}]}])
 
 (defn- help-and-confirm-button
   [{:keys [password-validations same-passwords? on-submit]}]
@@ -174,9 +173,11 @@
                 same-passwords?]}    (use-repeat-password-checks password repeat-password)
         on-submit                    (rn/use-callback
                                       #(on-confirm-password password)
-                                      [password])]
+                                      [password])
+        top                          (safe-area/get-top)]
     [floating-button/view
-     {:header                               [page-nav]
+     {:header                               [page-nav top]
+      :initial-header-height                (+ style/page-nav-height top)
       :keyboard-should-persist-taps         :handled
       :content-avoid-keyboard?              true
       :automatically-adjust-keyboard-insets true

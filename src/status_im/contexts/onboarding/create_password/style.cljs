@@ -35,3 +35,5 @@
                          colors/neutral-80-opa-1-blur)
    :padding-vertical   0
    :padding-horizontal 0})
+
+(def page-nav-height 56)

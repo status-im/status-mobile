@@ -61,14 +61,17 @@
 (defn view
   [{:keys [header footer customization-color footer-container-padding header-container-style
            content-container-style gradient-cover? keyboard-should-persist-taps shell-overlay?
-           blur-options content-avoid-keyboard? automatically-adjust-keyboard-insets]
+           blur-options content-avoid-keyboard? automatically-adjust-keyboard-insets
+           ;; Note: Provide `initial-header-height` to avoid a jump due to the on-layout 1-frame
+           ;; delay. Revisit this on RN 0.76 since the on-layout delay has been fixed.
+           initial-header-height]
     :or   {footer-container-padding (safe-area/get-top)}}
    & children]
   (reagent/with-let [scroll-view-ref              (atom nil)
                      set-scroll-ref               #(reset! scroll-view-ref %)
                      window-height                (:height (rn/get-window))
                      footer-container-height      (reagent/atom 0)
-                     header-height                (reagent/atom 0)
+                     header-height                (reagent/atom nil)
                      content-container-height     (reagent/atom 0)
                      content-scroll-y             (reagent/atom 0)
                      keyboard-height              (reagent/atom 0)
@@ -112,7 +115,7 @@
          {:style
           (if content-avoid-keyboard?
             (style/content-keyboard-avoiding-view
-             {:top    @header-height
+             {:top    (or @header-height initial-header-height)
               :bottom (if keyboard-shown?
                         @footer-container-height
                         (+ bottom-safe-area @footer-container-height))})
