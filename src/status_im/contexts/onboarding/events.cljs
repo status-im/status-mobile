@@ -179,11 +179,17 @@
  (fn [{:keys [db]} [auth-method]]
    {:db (assoc db :auth-method auth-method)}))
 
+(def ^:const temp-display-name
+  "While creating a profile, we cannot use an empty string; this value works as a
+  placeholder that will be updated later once the compressed key exists. See
+  `status-im.contexts.profile.edit.name.events/get-default-display-name` for more details."
+  "temporal username")
+
 (rf/reg-event-fx
  :onboarding/set-reset-display-name
  (fn [{:keys [db]} [reset-display-name?]]
    (let [initial-profile-data {:reset-display-name? reset-display-name?
-                               :display-name        (if reset-display-name? "temp username" "")}]
+                               :display-name        (if reset-display-name? temp-display-name "")}]
      {:db (assoc db :onboarding/profile initial-profile-data)})))
 
 (rf/reg-event-fx
