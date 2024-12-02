@@ -150,15 +150,19 @@
 
 (defn- fiat->crypto
   [value conversion-rate]
-  (-> value
-      (money/fiat->crypto conversion-rate)
-      (wallet-utils/cut-crypto-decimals-to-fit-usd-cents conversion-rate)))
+  (if-not (string/blank? value)
+    (-> value
+        (money/fiat->crypto conversion-rate)
+        (wallet-utils/cut-crypto-decimals-to-fit-usd-cents conversion-rate))
+    ""))
 
 (defn- crypto->fiat
   [value conversion-rate]
-  (-> value
-      (money/crypto->fiat conversion-rate)
-      (wallet-utils/cut-fiat-balance-to-two-decimals)))
+  (if-not (string/blank? value)
+    (-> value
+        (money/crypto->fiat conversion-rate)
+        (wallet-utils/cut-fiat-balance-to-two-decimals))
+    ""))
 
 (defn ->crypto
   [state conversion-rate]

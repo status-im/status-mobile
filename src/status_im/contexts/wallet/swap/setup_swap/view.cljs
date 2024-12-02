@@ -25,7 +25,7 @@
     [utils.re-frame :as rf]
     [utils.string :as utils.string]))
 
-(def ^:private default-text-for-unfocused-input "0.00")
+(def ^:private default-text-for-unfocused-input "0")
 
 (defn- on-close
   [start-point]
