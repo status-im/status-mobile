@@ -21,7 +21,7 @@
          account                (or from-account
                                     (swap-utils/current-viewing-account wallet)
                                     (first available-accounts))
-         asset-to-pay           (if (get-in data [:asset-to-pay :networks])
+         asset-to-pay           (if (and (not from-account) (get-in data [:asset-to-pay :networks]))
                                   (:asset-to-pay data)
                                   (swap-utils/select-asset-to-pay-by-symbol
                                    {:wallet                 wallet
