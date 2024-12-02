@@ -2,16 +2,53 @@
   (:require [quo.core :as quo]
             [quo.foundations.colors :as colors]
             [react-native.core :as rn]
+            [react-native.safe-area :as safe-area]
             [status-im.common.events-helper :as events-helper]
             [status-im.common.resources :as resources]
             [status-im.constants :as constants]
+            [status-im.contexts.settings.keycard.style :as style]
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]))
 
+(defn registered-keycard
+  [{:keys [profile-name profile-image customization-color keycard-name]}]
+  [rn/view {:style style/keycard-row}
+   [quo/icon :i/keycard-card
+    {:size  20
+     :color colors/white-70-blur}]
+   [rn/view {}
+    [quo/text keycard-name]
+    [rn/view {:style style/keycard-owner}
+     [quo/user-avatar
+      {:full-name           profile-name
+       :photo-path          profile-image
+       :customization-color customization-color
+       :size                :xxxs}]
+     [quo/text
+      {:size  :paragraph-2
+       :style style/keycard-owner-name}
+      profile-name]]]])
+
+(defn registered-keycards
+  []
+  (let [keycards (rf/sub [:keycard/registered-keycards])]
+    [:<>
+     [quo/divider-label
+      {:counter? false
+       :tight?   true
+       :blur?    true}
+      (i18n/label :t/registered-keycards)]
+     [rn/view {:style style/registered-keycards-container}
+      (doall (for [keycard keycards]
+               [registered-keycard keycard]))]]))
+
 (defn view
   []
-  (let [keycard-profile? (rf/sub [:keycard/keycard-profile?])]
-    [:<>
+  (let [insets           (safe-area/get-insets)
+        keycard-profile? (rf/sub [:keycard/keycard-profile?])]
+    [quo/overlay
+     {:type            :shell
+      :container-style (style/page-wrapper (:top insets))}
      [quo/page-nav
       {:key        :header
        :background :blur
@@ -20,7 +57,7 @@
      [quo/page-top
       {:title (i18n/label :t/keycard)}]
      (if keycard-profile?
-       [:<>]
+       [registered-keycards]
        [rn/view {:style {:padding-horizontal 28 :padding-top 20}}
         [quo/small-option-card
          {:variant             :main

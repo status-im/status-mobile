@@ -320,8 +320,7 @@
    {:name      :screen/settings.keycard
     :metrics   {:track?   :true
                 :alias-id :settings.keycard}
-    :options   {:theme  :dark
-                :insets {:top? true :bottom? true}}
+    :options   options/transparent-modal-screen-options
     :component settings.keycard/view}
 
    {:name      :edit-profile
