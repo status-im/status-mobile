@@ -1,6 +1,7 @@
 PODS:
+  - BigInt (5.2.0)
   - boost (1.83.0)
-  - CryptoSwift (1.5.1)
+  - CryptoSwift (1.8.0)
   - DoubleConversion (1.1.6)
   - FBLazyVector (0.73.5)
   - FBReactNativeSpec (0.73.5):
@@ -16,7 +17,8 @@ PODS:
     - hermes-engine/Pre-built (= 0.73.5)
   - hermes-engine/Pre-built (0.73.5)
   - HMSegmentedControl (1.5.6)
-  - Keycard (3.0.6):
+  - Keycard (3.1.0):
+    - BigInt
     - CryptoSwift
     - secp256k1
     - SSZipArchive
@@ -943,7 +945,7 @@ PODS:
     - React
   - react-native-status (1.0.0):
     - React
-  - react-native-status-keycard (2.5.39):
+  - react-native-status-keycard (2.6.2):
     - Keycard
     - React
   - react-native-webview (13.6.3):
@@ -1197,7 +1199,7 @@ DEPENDENCIES:
   - FBReactNativeSpec (from `../node_modules/react-native/React/FBReactNativeSpec`)
   - glog (from `../node_modules/react-native/third-party-podspecs/glog.podspec`)
   - hermes-engine (from `../node_modules/react-native/sdks/hermes-engine/hermes-engine.podspec`)
-  - Keycard (from `https://github.com/status-im/Keycard.swift.git`)
+  - Keycard (from `https://github.com/status-im/Keycard.swift.git`, tag `3.1.1`)
   - libevent (~> 2.1.12)
   - RCT-Folly (from `../node_modules/react-native/third-party-podspecs/RCT-Folly.podspec`)
   - RCT-Folly/Fabric (from `../node_modules/react-native/third-party-podspecs/RCT-Folly.podspec`)
@@ -1285,6 +1287,7 @@ DEPENDENCIES:
 
 SPEC REPOS:
   trunk:
+    - BigInt
     - CryptoSwift
     - fmt
     - HMSegmentedControl
@@ -1312,6 +1315,7 @@ EXTERNAL SOURCES:
     :tag: hermes-2024-02-20-RNv0.73.5-18f99ace4213052c5e7cdbcd39ee9766cd5df7e4
   Keycard:
     :git: https://github.com/status-im/Keycard.swift.git
+    :tag: 3.1.1
   RCT-Folly:
     :podspec: "../node_modules/react-native/third-party-podspecs/RCT-Folly.podspec"
   RCTRequired:
@@ -1476,24 +1480,25 @@ EXTERNAL SOURCES:
 
 CHECKOUT OPTIONS:
   Keycard:
-    :commit: 17381678bb981c3c553bb7202a26e642cecb1817
     :git: https://github.com/status-im/Keycard.swift.git
+    :tag: 3.1.1
   secp256k1:
     :commit: 46a1fa30d9b8babeae85ff519050f42394ab5fcc
     :git: https://github.com/status-im/secp256k1.swift.git
     :submodules: true
 
 SPEC CHECKSUMS:
+  BigInt: f668a80089607f521586bbe29513d708491ef2f7
   boost: d3f49c53809116a5d38da093a8aa78bf551aed09
-  CryptoSwift: c4f2debceb38bf44c80659afe009f71e23e4a082
+  CryptoSwift: 52aaf3fce7337552863b1d952e408085f0e65030
   DoubleConversion: fea03f2699887d960129cc54bba7e52542b6f953
   FBLazyVector: 56e0e498dbb513b96c40bac6284729ba4e62672d
   FBReactNativeSpec: 146c741a3f40361f6bc13a4ba284678cbedb5881
   fmt: ff9d55029c625d3757ed641535fd4a75fedc7ce9
-  glog: c0eca6ffed0a6fde1965ef26dcc7bf528f052af4
+  glog: 530710e7949eb12c82670bd09e946becf50a3c2a
   hermes-engine: 1d1835b2cc54c381909d94d1b3c8e0a2f1a94a0e
   HMSegmentedControl: 34c1f54d822d8308e7b24f5d901ec674dfa31352
-  Keycard: ac6df4d91525c3c82635ac24d4ddd9a80aca5fc8
+  Keycard: 3bd24405b9a875b3b3cf1ab1be69b5c30c5f28bc
   libevent: 4049cae6c81cdb3654a443be001fb9bdceff7913
   libwebp: f62cb61d0a484ba548448a4bd52aabf150ff6eef
   RCT-Folly: 7169b2b1c44399c76a47b5deaaba715eeeb476c0
@@ -1534,7 +1539,7 @@ SPEC CHECKSUMS:
   react-native-shake: de052eaa3eadc4a326b8ddd7ac80c06e8d84528c
   react-native-slider: 12bd76d3d568c9c5500825db54123d44b48e4ad4
   react-native-status: 21f75d492fd311dc111303da38a7a2b23a8a8466
-  react-native-status-keycard: f1c1227b2d5984c10fb44db68e4bfd2937f31e98
+  react-native-status-keycard: 76a5c826352ee1d70de854b3e8b12670946bc1c8
   react-native-webview: 88293a0f23eca8465c0433c023ec632930e644d0
   React-nativeconfig: 1166714a4f7ea57a0df5c2cb44fbc70f98d580f9
   React-NativeModulesApple: 726664e9829eb5eed8170241000e46ead269a05f
@@ -1582,6 +1587,6 @@ SPEC CHECKSUMS:
   TOCropViewController: edfd4f25713d56905ad1e0b9f5be3fbe0f59c863
   Yoga: a716eea57d0d3430219c0a5a233e1e93ee931eb7
 
-PODFILE CHECKSUM: 5dd4a5279260d370bcdf016158c825ceb404ee06
+PODFILE CHECKSUM: 9cbf84e4b9130a71839a019dfa0c40154df97b5d
 
 COCOAPODS: 1.15.2

@@ -15,6 +15,7 @@
   (or
    (= error "Tag was lost.")
    (= error "NFCError:100")
+   (= error "NFCError:102")
    (= error "Malformed card response")
    (re-matches #".*NFCError:100.*" error)))
 
