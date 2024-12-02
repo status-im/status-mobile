@@ -3,7 +3,7 @@
     "_comment": "Instead use: scripts/update-status-go.sh <rev>",
     "owner": "status-im",
     "repo": "status-go",
-    "version": "v6.1.0",
-    "commit-sha1": "c014fbfc1ec739aad2db951fdcff6182d4dbd919",
-    "src-sha256": "16im0nc8zri5z1wvzbh83331g02iy305m2lca4ljjgdmlaq6l2zx"
+    "version": "fix/cr-message-not-shown-from-dismiss",
+    "commit-sha1": "397eb76682f993f055ca3f0f1fe66346a000a0f6",
+    "src-sha256": "0v9rnn62wl15r687jr1rwkr8b6z5mgk7c1qv78hm4h1qyrrpx46i"
 }
