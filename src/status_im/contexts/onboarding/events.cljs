@@ -186,21 +186,22 @@
   "temporal username")
 
 (rf/reg-event-fx
- :onboarding/set-reset-display-name
- (fn [{:keys [db]} [reset-display-name?]]
-   (let [initial-profile-data {:reset-display-name? reset-display-name?
-                               :display-name        (if reset-display-name? temp-display-name "")}]
-     {:db (assoc db :onboarding/profile initial-profile-data)})))
+ :onboarding/use-temporary-display-name
+ (fn [{:keys [db]} [temporary-display-name?]]
+   {:db (assoc db :onboarding/profile {:temporary-display-name? temporary-display-name?
+                                       :display-name            (if temporary-display-name?
+                                                                  temp-display-name
+                                                                  "")})}))
 
 (rf/reg-event-fx
  :onboarding/finalize-setup
  (fn [{db :db}]
    (let [{:keys [password syncing? auth-method
-                 reset-display-name?]} (:onboarding/profile db)
+                 temporary-display-name?]} (:onboarding/profile db)
          {:keys [key-uid] :as profile} (:profile/profile db)
          biometric-enabled?            (= auth-method constants/auth-method-biometric)]
      {:db (assoc db :onboarding/generated-keys? true)
-      :fx [(when reset-display-name?
+      :fx [(when temporary-display-name?
              [:dispatch [:profile/set-default-profile-name profile]])
            (when biometric-enabled?
              [:keychain/save-password-and-auth-method
