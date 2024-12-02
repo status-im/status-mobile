@@ -111,6 +111,10 @@
  (fn [{:keys [db]} [max-slippage]]
    {:db (assoc-in db [:wallet :ui :swap :max-slippage] (number/parse-float max-slippage))}))
 
+(rf/reg-event-fx :wallet.swap/set-loading-swap-proposal
+ (fn [{:keys [db]}]
+   {:db (assoc-in db [:wallet :ui :swap :loading-swap-proposal?] true)}))
+
 (rf/reg-event-fx :wallet/start-get-swap-proposal
  (fn [{:keys [db]} [{:keys [amount-in amount-out clean-approval-transaction?]}]]
    (let [wallet-address          (get-in db [:wallet :current-viewing-account-address])
@@ -157,11 +161,10 @@
                                   #(cond-> %
                                      :always
                                      (assoc
-                                      :last-request-uuid      request-uuid
-                                      :amount                 amount
-                                      :amount-hex             amount-in-hex
-                                      :loading-swap-proposal? true
-                                      :initial-response?      true)
+                                      :last-request-uuid request-uuid
+                                      :amount            amount
+                                      :amount-hex        amount-in-hex
+                                      :initial-response? true)
                                      clean-approval-transaction?
                                      (dissoc :approval-transaction-id :approved-amount :swap-proposal)))
         :fx            [[:dispatch
@@ -242,13 +245,16 @@
           [:centralized-metrics/track :metric/swap-proposal-failed {:error (:code error-response)}]]]}))
 
 (rf/reg-event-fx :wallet/stop-get-swap-proposal
- (fn []
-   {:json-rpc/call [{:method   "wallet_stopSuggestedRoutesAsyncCalculation"
-                     :params   []
-                     :on-error (fn [error]
-                                 (log/error "failed to stop fetching swap proposals"
-                                            {:event :wallet/stop-get-swap-proposal
-                                             :error error}))}]}))
+ (fn [{:keys [db]}]
+   (let [route-request-ongoing? (some? (get-in db [:wallet :ui :swap :last-request-uuid]))]
+     (when route-request-ongoing?
+       {:db            (update-in db [:wallet :ui :swap] dissoc :last-request-uuid)
+        :json-rpc/call [{:method   "wallet_stopSuggestedRoutesAsyncCalculation"
+                         :params   []
+                         :on-error (fn [error]
+                                     (log/error "failed to stop fetching swap proposals"
+                                                {:event :wallet/stop-get-swap-proposal
+                                                 :error error}))}]}))))
 
 (rf/reg-event-fx
  :wallet/clean-swap-proposal
