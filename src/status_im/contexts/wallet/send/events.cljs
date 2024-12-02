@@ -612,7 +612,7 @@
 
 (rf/reg-event-fx :wallet/clean-up-transaction-flow
  (fn [_]
-   {:fx [[:dispatch [:dismiss-modal :screen/wallet.transaction-confirmation]]
+   {:fx [[:dispatch [:wallet/clean-send-data]]
          [:dispatch [:wallet/clean-scanned-address]]
          [:dispatch [:wallet/clean-local-suggestions]]
          [:dispatch [:wallet/clean-send-address]]
@@ -622,12 +622,9 @@
 (rf/reg-event-fx :wallet/end-transaction-flow
  (fn [{:keys [db]}]
    (let [address (get-in db [:wallet :current-viewing-account-address])]
-     {:fx [[:dispatch [:wallet/navigate-to-account-within-stack address]]
-           [:dispatch [:wallet/fetch-activities-for-current-account]]
-           [:dispatch [:wallet/select-account-tab :activity]]
-           [:dispatch-later
-            [{:ms       20
-              :dispatch [:wallet/clean-up-transaction-flow]}]]]})))
+     {:fx [[:dispatch [:dismiss-modal :screen/wallet.transaction-confirmation]]
+           [:dispatch [:wallet/navigate-to-account-within-stack address]]
+           [:dispatch [:wallet/select-account-tab :activity]]]})))
 
 (rf/reg-event-fx
  :wallet/build-transactions-from-route
@@ -694,7 +691,6 @@
                        :params     [{:uuid       (get-in transaction-for-signing [:sendDetails :uuid])
                                      :signatures signatures-map}]
                        :on-success (fn []
-                                     (rf/dispatch [:wallet/clean-send-data])
                                      (rf/dispatch [:hide-bottom-sheet]))
                        :on-error   (fn [error]
                                      (log/error "failed to send router transactions with signatures"
