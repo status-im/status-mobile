@@ -15,11 +15,26 @@
   (let [parsed-keypairs (data-store/rpc->keypairs keypairs)
         default-key-uid (->> parsed-keypairs
                              (some #(when (= (:type %) :profile) %))
-                             :key-uid)]
+                             :key-uid)
+        keycard?        (get-in db [:profile/profile :keycard-pairing])
+        keypair         (first parsed-keypairs)
+        keycard         (when (and keycard? (= (count parsed-keypairs) 1) (empty? (:keycards keypair)))
+                          {:keycard-uid        (get-in db [:profile/profile :keycard-instance-uid])
+                           :key-uid            default-key-uid
+                           :keycard-name       ""
+                           :accounts-addresses [(some #(when (:wallet %) (:address %))
+                                                      (:accounts keypair))]})]
     {:db (-> db
-             (assoc-in [:wallet :keypairs] (utils.collection/index-by :key-uid parsed-keypairs))
-             (assoc-in [:wallet :ui :create-account :selected-keypair-uid] default-key-uid))}))
-
+             (assoc-in [:wallet :keypairs]
+                       (cond-> (utils.collection/index-by :key-uid parsed-keypairs)
+                         keycard
+                         (assoc-in [default-key-uid :keycards] [keycard])))
+             (assoc-in [:wallet :ui :create-account :selected-keypair-uid] default-key-uid))
+     ;; this is a temporary solution, should be done properly in statu-go instead
+     :fx [(when keycard
+            [:json-rpc/call
+             [{:method "accounts_saveOrUpdateKeycard"
+               :params [keycard true]}]])]}))
 (rf/reg-event-fx :wallet/get-keypairs-success get-keypairs-success)
 
 (defn confirm-account-origin
