@@ -45,9 +45,7 @@
                                    [same-password-length?])
         on-blur-repeat-password   (rn/use-callback
                                    (fn []
-                                     (if non-empty-password?
-                                       (set-show-validation? true)
-                                       (set-show-validation? false)))
+                                     (set-show-validation? non-empty-password?))
                                    [non-empty-password?])
         hint-1-status             (if password-long-enough? :success :default)
         hint-2-status             (if same-passwords? :success :error)
