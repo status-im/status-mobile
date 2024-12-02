@@ -139,7 +139,8 @@
  (fn [[accounts saved-addresses]]
    (merge
     (collection/index-by :address (map #(assoc % :context-type :account) accounts))
-    (collection/index-by :address (map #(assoc % :context-type :saved-address) saved-addresses)))))
+    (collection/index-by :address
+                         (map #(assoc % :context-type :saved-address) (vals saved-addresses))))))
 
 (rf/reg-sub
  :wallet/activities-for-current-viewing-account
