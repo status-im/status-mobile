@@ -21,8 +21,10 @@
     [rn/view {:style style/keycard-owner}
      [quo/user-avatar
       {:full-name           profile-name
-       :photo-path          profile-image
+       :profile-picture     profile-image
        :customization-color customization-color
+       :status-indicator    false
+       :ring?               false
        :size                :xxxs}]
      [quo/text
       {:size  :paragraph-2
