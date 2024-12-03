@@ -39,8 +39,9 @@
        :blur?    true}
       (i18n/label :t/registered-keycards)]
      [rn/view {:style style/registered-keycards-container}
-      (doall (for [keycard keycards]
-               [registered-keycard keycard]))]]))
+      (for [keycard keycards]
+        ^{:key (:keycard-uid keycard)}
+        [registered-keycard keycard])]]))
 
 (defn view
   []
