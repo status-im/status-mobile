@@ -6,7 +6,8 @@
    [:catn
     [:props
      [:map
-      [:transaction {:optional true} [:maybe [:enum :receive :send :swap :bridge :buy :destroy :mint]]]
+      [:transaction {:optional true}
+       [:maybe [:enum :receive :send :swap :bridge :buy :destroy :mint :approval]]]
       [:status {:optional true} [:maybe [:enum :pending :confirmed :finalised :failed]]]
       [:counter {:optional true} [:maybe :int]]
       [:timestamp {:optional true} [:maybe :string]]
