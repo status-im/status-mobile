@@ -1,6 +1,7 @@
 (ns status-im.common.privacy.view
   (:require-macros [legacy.status-im.utils.slurp :refer [slurp]])
   (:require [quo.core :as quo]
+            [status-im.contexts.settings.common.blur-header :as blur-header]
             [react-native.gesture :as gesture]
             [utils.re-frame :as rf]))
 
@@ -15,10 +16,6 @@
 
 (defn view []
   [quo/overlay {:type :shell :top-inset? true}
-   [quo/page-nav
-    {:background :blur
-     :icon-name  :i/arrow-left
-     :on-press   navigate-back}]
-   [quo/page-top {:title "Privacy Policy"}]
+   [blur-header/view {:title "Privacy Policy"}]
    [gesture/scroll-view {:style {:padding-horizontal 20}}
     [quo/text privacy-statement-text]]])
