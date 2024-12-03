@@ -215,7 +215,7 @@
    {:db (assoc-in db [:wallet :ui :tokens-loading address] true)
     :fx [[:json-rpc/call
           [{:method     "wallet_fetchOrGetCachedWalletBalances"
-            :params     [[address]]
+            :params     [[address] true]
             :on-success [:wallet/store-wallet-token address]
             :on-error   [:wallet/get-wallet-token-for-account-failed address]}]]]}))
 
