@@ -16,7 +16,7 @@
    [quo/icon :i/keycard-card
     {:size  20
      :color colors/white-70-blur}]
-   [rn/view {}
+   [rn/view
     [quo/text profile-name]
     [rn/view {:style style/keycard-owner}
      [quo/user-avatar
