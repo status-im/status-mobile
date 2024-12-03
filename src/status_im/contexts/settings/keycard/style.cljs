@@ -7,7 +7,7 @@
   {:padding-top inset})
 
 (def registered-keycards-container
-  {:gap 12
+  {:gap                12
    :padding-horizontal 20})
 
 (def keycard-row
