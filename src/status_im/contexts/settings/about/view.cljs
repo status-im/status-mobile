@@ -2,7 +2,7 @@
   (:require [quo.core :as quo]
             [react-native.core :as rn]
             [status-im.contexts.settings.about.style :as style]
-            [status-im.contexts.settings.common.blur-header :as blur-header]
+            [status-im.contexts.settings.common.header :as header]
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]))
 
@@ -84,10 +84,9 @@
 
 (defn view []
   [quo/overlay {:type :shell}
-   [blur-header/view {:title (i18n/label :t/about)}]
+   [header/view {:title (i18n/label :t/about)}]
    [rn/flat-list
-    {:content-container-style         (style/list-content)
-     :data                            items
+    {:data                            items
      :shows-vertical-scroll-indicator false
      :render-fn                       category
      :bounces                         false
