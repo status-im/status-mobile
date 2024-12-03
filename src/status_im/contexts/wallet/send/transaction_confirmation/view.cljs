@@ -252,7 +252,7 @@
         ;; In token send flow we already have transaction built when
         ;; we reach confirmation screen. But in send collectible flow
         ;; routes request happens at the same time with navigation to
-        ;; confirmation screen. So we need to build the transaction ass soon
+        ;; confirmation screen. So we need to build the transaction as soon
         ;; as route is available.
         (rn/use-effect
          (fn []
