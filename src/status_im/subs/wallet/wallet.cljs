@@ -374,6 +374,12 @@
         (sort-by :position))))
 
 (rf/reg-sub
+ :wallet/accounts-without-assets
+ :<- [:wallet/accounts]
+ (fn [accounts]
+   (map #(dissoc % :tokens :collectibles) accounts)))
+
+(rf/reg-sub
  :wallet/watch-only-accounts
  :<- [:wallet/accounts]
  (fn [accounts]

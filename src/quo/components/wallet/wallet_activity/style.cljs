@@ -41,7 +41,8 @@
                          colors/white-opa-10)})
 
 (def timestamp-container
-  {:margin-left 4})
+  {:margin-left 4
+   :flex        1})
 
 (defn timestamp
   [theme blur?]

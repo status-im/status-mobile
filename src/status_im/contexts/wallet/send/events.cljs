@@ -623,7 +623,6 @@
  (fn [{:keys [db]}]
    (let [address (get-in db [:wallet :current-viewing-account-address])]
      {:fx [[:dispatch [:wallet/navigate-to-account-within-stack address]]
-           [:dispatch [:wallet/fetch-activities-for-current-account]]
            [:dispatch [:wallet/select-account-tab :activity]]
            [:dispatch-later
             [{:ms       20

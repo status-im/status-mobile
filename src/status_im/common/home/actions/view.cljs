@@ -159,10 +159,10 @@
           :add-divider?        needs-divider?}))
 
 (defn clear-history-entry
-  [chat-id needs-divider?]
+  [chat needs-divider?]
   (entry {:icon                :i/delete
           :label               (i18n/label :t/clear-history)
-          :on-press            #(clear-history-action chat-id)
+          :on-press            #(clear-history-action chat)
           :danger?             true
           :sub-label           nil
           :accessibility-label :clear-history

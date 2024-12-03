@@ -14,8 +14,11 @@
                   network/status network/expensive?
                   centralized-metrics/user-confirmed?]
     network-type :network/network-type
-    :as          _db}]
+    :as          db}]
   (assoc db/app-db
+         ;; We must carry over the current `:selected-stack-id`, otherwise the
+         ;; app will start with `:view-id` as nil.
+         :shell/selected-stack-id             (:shell/selected-stack-id db)
          :profile/logging-out?                true
          :centralized-metrics/user-confirmed? user-confirmed?
          :network/type                        network-type
@@ -44,4 +47,3 @@
          [:dispatch-later
           {:ms       100
            :dispatch [:profile.logout/reset-state]}]]}))
-

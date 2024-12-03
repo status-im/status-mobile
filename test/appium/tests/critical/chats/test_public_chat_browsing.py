@@ -301,7 +301,6 @@ class TestCommunityOneDeviceMerged(MultipleSharedDeviceTestCase):
 
 @pytest.mark.xdist_group(name="new_three_2")
 @marks.nightly
-@marks.xfail(run=False, reason="Skipped due to waku issue on staging fleet")
 class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
 
     def prepare_devices(self):
@@ -832,7 +831,6 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
 
 @pytest.mark.xdist_group(name="new_five_2")
 @marks.nightly
-@marks.xfail(run=False, reason="Skipped due to waku issue on staging fleet")
 class TestCommunityMultipleDeviceMergedTwo(MultipleSharedDeviceTestCase):
 
     def prepare_devices(self):

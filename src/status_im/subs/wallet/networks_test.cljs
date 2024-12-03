@@ -44,24 +44,30 @@
   (testing "returns data with prod"
     (swap! rf-db/app-db assoc-in [:wallet :networks] network-data)
     (is
-     (= [{:network-name     :mainnet
-          :short-name       "eth"
-          :chain-id         1
-          :abbreviated-name "Eth."
-          :full-name        "Mainnet"
-          :layer            1}
-         {:network-name     :arbitrum
-          :short-name       "arb1"
-          :abbreviated-name "Arb1."
-          :full-name        "Arbitrum"
-          :chain-id         42161
-          :layer            2}
-         {:network-name     :optimism
-          :short-name       "oeth"
-          :abbreviated-name "Oeth."
-          :full-name        "Optimism"
-          :chain-id         10
-          :layer            2}]
+     (= [{:network-name                 :mainnet
+          :short-name                   "eth"
+          :chain-id                     1
+          :abbreviated-name             "Eth."
+          :full-name                    "Mainnet"
+          :layer                        1
+          :view-on-block-explorer-label :t/view-on-eth
+          :link-to-block-explorer-label :t/share-link-to-eth}
+         {:network-name                 :arbitrum
+          :short-name                   "arb1"
+          :abbreviated-name             "Arb1."
+          :full-name                    "Arbitrum"
+          :chain-id                     42161
+          :layer                        2
+          :view-on-block-explorer-label :t/view-on-arb
+          :link-to-block-explorer-label :t/share-link-to-arb}
+         {:network-name                 :optimism
+          :short-name                   "oeth"
+          :abbreviated-name             "Oeth."
+          :full-name                    "Optimism"
+          :chain-id                     10
+          :layer                        2
+          :view-on-block-explorer-label :t/view-on-oeth
+          :link-to-block-explorer-label :t/share-link-to-oeth}]
         (map #(dissoc % :source :related-chain-id) (rf/sub [sub-name]))))))
 
 (h/deftest-sub :wallet/network-details-by-network-name
