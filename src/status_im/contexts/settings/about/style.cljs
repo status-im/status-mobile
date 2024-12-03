@@ -1,8 +1,11 @@
 (ns status-im.contexts.settings.about.style
-  (:require [react-native.safe-area :as safe-area]))
+  (:require [react-native.platform :as platform]
+            [react-native.safe-area :as safe-area]))
 
 (defn list-content []
-  {:padding-top (+ (safe-area/get-top) 56 56)})
+  {:padding-top (+ (when platform/android? (safe-area/get-top))
+                   56
+                   56)})
 
 (def category-spacing {:padding-bottom 12})
 

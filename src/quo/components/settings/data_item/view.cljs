@@ -16,7 +16,7 @@
     [rn/view {:style (style/loading-container size blur? theme)}]))
 
 (defn- left-subtitle
-  [{:keys [size subtitle-type subtitle-color icon icon-color blur? subtitle customization-color emoji
+  [{:keys [size subtitle-text-props subtitle-type subtitle-color icon icon-color blur? subtitle customization-color emoji
            network-image]
     :or   {subtitle-type :default}}]
   (let [theme (quo.theme/use-theme)]
@@ -39,9 +39,10 @@
                      :style               style/image}]
           nil)])
      [text/text
-      {:weight :medium
-       :size   :paragraph-2
-       :style  (style/description subtitle-color blur? theme)}
+      (merge {:weight :medium
+              :size   :paragraph-2
+              :style  (style/description subtitle-color blur? theme)}
+             subtitle-text-props)
       subtitle]
      (when (= subtitle-type :editable)
        [icons/icon :i/edit
@@ -75,16 +76,16 @@
 
 (defn- left-side
   "The description can either be given as a string `subtitle-type` or a component `custom-subtitle`"
-  [{:keys [title status size blur? custom-subtitle icon subtitle subtitle-type subtitle-color icon-color
+  [{:keys [title subtitle-text-props status size blur? custom-subtitle icon subtitle subtitle-type subtitle-color icon-color
            customization-color network-image emoji title-icon]
     :as   props}]
   (let [theme (quo.theme/use-theme)]
     [rn/view {:style style/left-side}
      [rn/view
       [left-title
-       {:title      title
-        :title-icon title-icon
-        :blur?      blur?}]]
+       {:title            title
+        :title-icon       title-icon
+        :blur?            blur?}]]
      (if (= status :loading)
        [left-loading
         {:size  size
@@ -94,6 +95,7 @@
          [custom-subtitle props]
          [left-subtitle
           {:theme               theme
+           :subtitle-text-props subtitle-text-props
            :size                size
            :subtitle-type       subtitle-type
            :subtitle-color      subtitle-color
@@ -140,6 +142,7 @@
       [:size {:optional true} [:maybe [:enum :default :small :large]]]
       [:title :string]
       [:subtitle {:optional true} [:maybe [:or :string :double]]]
+      [:subtitle-text-props {:optional true} [:maybe :map]]
       [:custom-subtitle {:optional true} [:maybe fn?]]
       [:icon {:optional true} [:maybe :keyword]]
       [:title-icon {:optional true} [:maybe :keyword]]

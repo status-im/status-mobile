@@ -51,15 +51,17 @@
                       :action   :arrow}]}])
 
 (defn info-item [{:keys [title info]}]
-  [quo/data-item {:size          :default
-                  :status        :default
-                  :right-icon    :i/copy
-                  :card?         true
-                  :blur?         true
-                  :title         title
-                  :on-press      #(copy info title)
-                  :subtitle-type :default
-                  :subtitle      info}])
+  [quo/data-item {:size                :default
+                  :status              :default
+                  :right-icon          :i/copy
+                  :card?               true
+                  :blur?               true
+                  :title               title
+                  :on-press            #(copy info title)
+                  :subtitle            info
+                  :subtitle-type       :default
+                  :subtitle-text-props {:number-of-lines 1
+                                        :ellipsize-mode  :middle}}])
 
 (defn- app-info []
   (let [app-version  (rf/sub [:get-app-short-version])
