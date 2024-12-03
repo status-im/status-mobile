@@ -3,11 +3,12 @@
             [react-native.core :as rn]
             [status-im.contexts.settings.about.style :as style]
             [status-im.contexts.settings.common.header :as header]
+            [status-im.constants :as constants]
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]))
 
-(defn- pending-link []
-  (js/alert "Link unset"))
+(defn- open-link [url]
+  (rf/dispatch [:browser.ui/open-url url]))
 
 (defn- copy [data item-name]
   (rf/dispatch [:share/copy-text-and-show-toast
@@ -15,28 +16,27 @@
                  :post-copy-message (str item-name
                                          " "
                                          (i18n/label :t/sharing-copied-to-clipboard))}]))
-
 (def items
   [{:app-info? true}
    {:category-label (i18n/label :t/website)
     :items          [{:title        "status.app"
-                      :on-press     pending-link
+                      :on-press     #(open-link constants/status-app-url)
                       :blur?        true
                       :action       :arrow
                       :action-props {:icon :i/external}}]}
    {:category-label (i18n/label :t/github-repos)
     :items          [{:title        "status-mobile"
-                      :on-press     pending-link
+                      :on-press     #(open-link constants/status-mobile-url)
                       :blur?        true
                       :action       :arrow
                       :action-props {:icon :i/external}}
                      {:title        "status-go"
-                      :on-press     pending-link
+                      :on-press     #(open-link constants/status-go-url)
                       :blur?        true
                       :action       :arrow
                       :action-props {:icon :i/external}}
                      {:title        "go-waku"
-                      :on-press     pending-link
+                      :on-press     #(open-link constants/go-waku-url)
                       :blur?        true
                       :action       :arrow
                       :action-props {:icon :i/external}}]}
