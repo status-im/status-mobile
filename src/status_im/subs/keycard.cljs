@@ -33,12 +33,12 @@
  :<- [:keycard/keycard-profile]
  :<- [:keycard/keypairs-keycards]
  (fn [[keycard-profile keycards]]
-   (->> keycards
-        (map (fn [keycard]
-               (assoc keycard
-                      :profile-name        (:profile-name keycard-profile)
-                      :profile-image       (:profile-image keycard-profile)
-                      :customization-color (:customization-color keycard-profile)))))))
+   (map (fn [keycard]
+          (assoc keycard
+                 :profile-name        (:profile-name keycard-profile)
+                 :profile-image       (:profile-image keycard-profile)
+                 :customization-color (:customization-color keycard-profile)))
+        keycards)))
 
 (rf/reg-sub
  :keycard/nfc-enabled?
