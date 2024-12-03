@@ -8,6 +8,7 @@
             [status-im.contexts.wallet.send.utils :as send-utils]
             [status-im.contexts.wallet.sheets.missing-keypair.view :as missing-keypair]
             [status-im.subs.wallet.add-account.address-to-watch]
+            [utils.collection]
             [utils.money :as money]
             [utils.number]
             [utils.security.core :as security]))
@@ -72,6 +73,12 @@
  :wallet/tokens
  :<- [:wallet]
  :-> :tokens)
+
+(rf/reg-sub
+ :wallet/tokens-by-symbol
+ :<- [:wallet/tokens]
+ (fn [{:keys [by-symbol]}]
+   (utils.collection/index-by :symbol by-symbol)))
 
 (rf/reg-sub
  :wallet/prices-per-token

@@ -23,34 +23,45 @@
     (swap! rf-db/app-db
       (fn [db]
         (-> db
+            (assoc-in [:wallet :tokens :by-symbols]
+                      (list {:symbol "ETH" :decimals 18}
+                            {:symbol "DAI" :decimals 18}
+                            {:symbol "SNT" :decimals 18}
+                            {:symbol "USDT" :decimals 6}))
             (assoc-in [:wallet :activities]
-                      {"acc1" {1 {:activity-type constants/wallet-activity-type-send
-                                  :amount-out    "0x1"
-                                  :sender        "acc1"
-                                  :recipient     "acc2"
-                                  :timestamp     1588291200}
-                               3 {:activity-type constants/wallet-activity-type-bridge
-                                  :amount-out    "0x1"
-                                  :sender        "acc1"
-                                  :recipient     "acc4"
-                                  :timestamp     1588464000}
-                               4 {:activity-type constants/wallet-activity-type-swap
-                                  :amount-out    "0x1"
-                                  :amount-in     "0x1"
-                                  :sender        "acc1"
-                                  :recipient     "acc4"
-                                  :timestamp     1588464100}
-                               5 {:activity-type constants/wallet-activity-type-send
-                                  :amount-out    "0x1"
-                                  :sender        "acc1"
-                                  :recipient     "acc4"
-                                  :timestamp     1588464050}}
-                       "acc3" {6 {:activity-type constants/wallet-activity-type-receive
-                                  :amount-in     "0x1"
-                                  :sender        "acc4"
-                                  :recipient     "acc3"
-                                  :timestamp     1588464000}}})
-            (assoc-in [:wallet :current-viewing-account-address] "acc1"))))
+                      {"0x1" {1 {:activity-type constants/wallet-activity-type-send
+                                 :amount-out    "0x1"
+                                 :symbol-out    "ETH"
+                                 :sender        "0x1"
+                                 :recipient     "0x2"
+                                 :timestamp     1588291200}
+                              3 {:activity-type constants/wallet-activity-type-bridge
+                                 :amount-out    "0x1"
+                                 :symbol-out    "ETH"
+                                 :sender        "0x1"
+                                 :recipient     "0x1"
+                                 :timestamp     1588464000}
+                              4 {:activity-type constants/wallet-activity-type-swap
+                                 :amount-out    "0x1"
+                                 :symbol-out    "ETH"
+                                 :amount-in     "0x1"
+                                 :symbol-in     "SNT"
+                                 :sender        "0x1"
+                                 :recipient     "0x1"
+                                 :timestamp     1588464100}
+                              5 {:activity-type constants/wallet-activity-type-send
+                                 :amount-out    "0x1"
+                                 :symbol-out    "ETH"
+                                 :sender        "0x1"
+                                 :recipient     "0x4"
+                                 :timestamp     1588464050}}
+                       "0x3" {6 {:activity-type constants/wallet-activity-type-receive
+                                 :amount-in     "0x1"
+                                 :symbol-out    "ETH"
+                                 :sender        "0x4"
+                                 :recipient     "0x3"
+                                 :timestamp     1588464000}}})
+            (assoc-in [:wallet :current-viewing-account-address] "0x1"))))
     (is
      (match?
       [{:title     "May 3, 2020"
@@ -58,39 +69,39 @@
         :data      [{:relative-date    "May 3, 2020"
                      :amount-out       "0"
                      :network-logo-out nil
-                     :recipient        "acc4"
+                     :recipient        "0x1"
                      :tx-type          :swap
                      :network-name-out nil
                      :status           nil
-                     :sender           "acc1"
+                     :sender           "0x1"
                      :timestamp        1588464100}
                     {:relative-date    "May 3, 2020"
                      :amount-out       "0"
                      :network-logo-out nil
-                     :recipient        "acc4"
+                     :recipient        "0x4"
                      :tx-type          :send
                      :network-name-out nil
                      :status           nil
-                     :sender           "acc1"
+                     :sender           "0x1"
                      :timestamp        1588464050}
                     {:relative-date    "May 3, 2020"
                      :amount-out       "0"
                      :network-logo-out nil
-                     :recipient        "acc4"
+                     :recipient        "0x1"
                      :tx-type          :bridge
                      :network-name-out nil
                      :status           nil
-                     :sender           "acc1"
+                     :sender           "0x1"
                      :timestamp        1588464000}]}
        {:title     "May 1, 2020"
         :timestamp 1588291200
         :data      [{:relative-date    "May 1, 2020"
                      :amount-out       "0"
                      :network-logo-out nil
-                     :recipient        "acc2"
+                     :recipient        "0x2"
                      :tx-type          :send
                      :network-name-out nil
                      :status           nil
-                     :sender           "acc1"
+                     :sender           "0x1"
                      :timestamp        1588291200}]}]
       (rf/sub [sub-name])))))

@@ -639,3 +639,5 @@
    :more-than-five-minutes  4})
 
 (def ^:const wallet-connect-transaction-refresh-interval-ms 10000)
+
+(def ^:const native-token-symbol "ETH")
