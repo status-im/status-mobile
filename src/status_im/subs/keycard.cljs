@@ -20,13 +20,11 @@
  :keycard/keypairs-keycards
  :<- [:wallet/keypairs-list]
  (fn [keypairs]
-   (reduce (fn [keycards keypair]
-             (if (and (= :profile (:type keypair))
-                      (:keycards keypair))
-               (concat keycards (:keycards keypair))
-               keycards))
-           []
-           keypairs)))
+   (transduce (comp (filter (fn [{:keys [type keycards]}]
+                              (and (= :profile type) keycards)))
+                    (mapcat :keycards))
+              conj
+              keypairs)))
 
 (rf/reg-sub
  :keycard/registered-keycards
