@@ -544,7 +544,7 @@
             [:toasts/upsert
              {:id   :send-transaction-error
               :type :negative
-              :text (or details "An error occured")}]]]})))
+              :text (or details "An error occurred")}]]]})))
 
 (rf/reg-event-fx
  :wallet.swap/clean-up-transaction-flow
