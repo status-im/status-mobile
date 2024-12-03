@@ -16,12 +16,15 @@
     :profile-image       profile-image
     :customization-color customization-color}))
 
+(defn profile-keypair-keycards?
+  [{:keys [type keycards]}]
+  (and (= :profile type) keycards))
+
 (rf/reg-sub
  :keycard/keypairs-keycards
  :<- [:wallet/keypairs-list]
  (fn [keypairs]
-   (transduce (comp (filter (fn [{:keys [type keycards]}]
-                              (and (= :profile type) keycards)))
+   (transduce (comp (filter profile-keypair-keycards?)
                     (mapcat :keycards))
               conj
               keypairs)))
