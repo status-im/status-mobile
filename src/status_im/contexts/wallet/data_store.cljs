@@ -233,9 +233,12 @@
 
 (defn new->old-route-path
   [new-path]
-  (let [bonder-fees (-> new-path :tx-bonder-fees money/bignumber)
-        token-fees  (-> new-path :tx-token-fees money/bignumber)]
-    {:from                      (:from-chain new-path)
+  (let [to-bignumber (fn [k] (-> new-path k money/bignumber))]
+    {:approval-fee              (to-bignumber :approval-fee)
+     :approval-l-1-fee          (to-bignumber :approval-l-1-fee)
+     :bonder-fees               (to-bignumber :tx-bonder-fees)
+     :token-fees                (to-bignumber :tx-token-fees)
+     :from                      (:from-chain new-path)
      :amount-in-locked          (:amount-in-locked new-path)
      :amount-in                 (:amount-in new-path)
      :max-amount-in             (:max-amount-in new-path)
@@ -273,15 +276,9 @@
      :approval-contract-address (:approval-contract-address new-path)
      :approval-required         (:approval-required new-path)
      :estimated-time            (:estimated-time new-path)
-     :approval-gas-fees         (* (money/wei->ether (get-in new-path
-                                                             [:suggested-levels-for-max-fees-per-gas
-                                                              :medium]))
-                                   (:approval-gas-amount new-path))
      :to                        (:to-chain new-path)
-     :bonder-fees               bonder-fees
      :approval-amount-required  (:approval-amount-required new-path)
      ;;  :cost () ;; tbd not used on desktop
-     :token-fees                token-fees
      :gas-amount                (:tx-gas-amount new-path)}))
 
 (defn tokens-never-loaded?
