@@ -3,6 +3,9 @@
     [legacy.status-im.ui.screens.screens :as old-screens]
     [quo.foundations.colors :as colors]
     [status-im.common.emoji-picker.view :as emoji-picker]
+    [status-im.contexts.settings.about.view :as settings.about]
+    [status-im.common.terms.view :as terms-of-use]
+    [status-im.common.privacy.view :as privacy-policy]
     [status-im.common.enter-seed-phrase.view :as enter-seed-phrase]
     [status-im.common.lightbox.view :as lightbox]
     [status-im.common.pdf-viewer.view :as pdf-viewer]
@@ -412,7 +415,22 @@
    {:name      :screen/settings.currency-selection
     :metrics   {:track? true}
     :options   options/transparent-modal-screen-options
-    :component settings.currency-selection/view}])
+    :component settings.currency-selection/view}
+
+   {:name      :screen/settings.about
+    :metrics   {:track? true}
+    :options   options/transparent-modal-screen-options
+    :component settings.about/view}
+
+   {:name      :screen/settings.privacy-policy
+    :metrics   {:track? true}
+    :options   options/transparent-modal-screen-options
+    :component privacy-policy/view}
+
+   {:name      :screen/settings.terms-of-use
+    :metrics   {:track? true}
+    :options   options/transparent-modal-screen-options
+    :component terms-of-use/view}])
 
 (def wallet-settings-screens
   [{:name      :screen/settings.wallet
