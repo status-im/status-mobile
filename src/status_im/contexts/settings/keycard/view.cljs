@@ -11,13 +11,13 @@
             [utils.re-frame :as rf]))
 
 (defn registered-keycard
-  [{:keys [profile-name profile-image customization-color keycard-name]}]
+  [{:keys [profile-name profile-image customization-color]}]
   [rn/view {:style style/keycard-row}
    [quo/icon :i/keycard-card
     {:size  20
      :color colors/white-70-blur}]
    [rn/view {}
-    [quo/text keycard-name]
+    [quo/text profile-name]
     [rn/view {:style style/keycard-owner}
      [quo/user-avatar
       {:full-name           profile-name
