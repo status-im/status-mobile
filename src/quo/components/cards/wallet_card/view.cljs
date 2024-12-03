@@ -9,12 +9,12 @@
             [schema.core :as schema]))
 
 (defn- view-internal
-  [{:keys [image title subtitle dismissible? on-press on-press-close]}]
+  [{:keys [image title subtitle dismissible? on-press on-press-close container-style]}]
   (let [theme (quo.theme/use-theme)]
-    [rn/pressable
-     {:on-press            on-press
-      :accessibility-label :wallet-card}
-     [rn/view {:style (style/root-container theme)}
+    [rn/view {:style (style/root-container theme container-style)}
+     [rn/pressable
+      {:on-press            on-press
+       :accessibility-label :wallet-card}
       [rn/view {:style style/top-container}
        [fast-image/fast-image
         {:style               style/image
