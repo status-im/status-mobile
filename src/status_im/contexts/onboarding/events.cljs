@@ -163,7 +163,7 @@
  (fn [{:keys [db]}]
    {:db (-> db
             (assoc-in [:onboarding/profile :color] (rand-nth colors/account-colors))
-            (assoc-in [:onboarding/profile :image-path] nil))
+            (update :onboarding/profile dissoc :image-path))
     :fx [[:dispatch
           [:navigate-to-within-stack
            [:screen/onboarding.create-profile-password :screen/onboarding.new-to-status]]]]}))
