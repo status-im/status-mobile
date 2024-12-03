@@ -126,7 +126,7 @@
    (let [swap-proposal (:swap-proposal swap)]
      (reduce dissoc
              swap-proposal
-             [:gas-fees :gas-amount :token-fees :bonder-fees :approval-gas-fees]))))
+             [:gas-fees :gas-amount :token-fees :bonder-fees :approval-fee :approval-l-1-fee]))))
 
 (rf/reg-sub
  :wallet/swap-amount
@@ -311,19 +311,26 @@
      :prices-per-token prices-per-token})))
 
 (rf/reg-sub
+ :wallet/swap-approval-fee
+ :<- [:wallet/swap-proposal]
+ (fn [{:keys [approval-fee approval-l-1-fee]}]
+   (money/add (money/wei->ether approval-fee)
+              (money/wei->ether approval-l-1-fee))))
+
+(rf/reg-sub
  :wallet/approval-gas-fees
  :<- [:wallet/current-viewing-account]
- :<- [:wallet/swap-proposal]
+ :<- [:wallet/swap-approval-fee]
  :<- [:profile/currency]
  :<- [:wallet/prices-per-token]
- (fn [[account {:keys [approval-gas-fees]} currency prices-per-token]]
+ (fn [[account approval-fee currency prices-per-token]]
    (let [tokens         (:tokens account)
          token-for-fees (first (filter #(= (string/lower-case (:symbol %))
                                            (string/lower-case constants/token-for-fees-symbol))
                                        tokens))
          fee-in-fiat    (utils/calculate-token-fiat-value
                          {:currency         currency
-                          :balance          approval-gas-fees
+                          :balance          approval-fee
                           :token            token-for-fees
                           :prices-per-token prices-per-token})]
      fee-in-fiat)))
