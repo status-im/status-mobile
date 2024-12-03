@@ -37,7 +37,9 @@
    :nfc-success                   (js/require "../resources/images/ui2/nfc-success.png")
    :preparing-status              (js/require "../resources/images/ui2/preparing-status.png")
    :syncing-devices               (js/require "../resources/images/ui2/syncing_devices.png")
-   :syncing-wrong                 (js/require "../resources/images/ui2/syncing_wrong.png")})
+   :syncing-wrong                 (js/require "../resources/images/ui2/syncing_wrong.png")
+   :buy                           (js/require "../resources/images/ui2/buy.png")
+   :receive                       (js/require "../resources/images/ui2/receive.png")})
 
 (def ui-themed
   {:angry-man

@@ -34,6 +34,7 @@
     [status-im.contexts.preview.quo.calendar.calendar :as calendar]
     [status-im.contexts.preview.quo.calendar.calendar-day :as calendar-day]
     [status-im.contexts.preview.quo.calendar.calendar-year :as calendar-year]
+    [status-im.contexts.preview.quo.cards.wallet-card :as wallet-card]
     [status-im.contexts.preview.quo.code.snippet :as code-snippet]
     [status-im.contexts.preview.quo.code.snippet-preview :as code-snippet-preview]
     [status-im.contexts.preview.quo.colors.color :as color]
@@ -274,6 +275,8 @@
                         :component calendar-day/view}
                        {:name      :calendar-year
                         :component calendar-year/view}]
+   :cards             [{:name      :wallet-card
+                        :component wallet-card/view}]
    :code              [{:name      :snippet
                         :component code-snippet/view}
                        {:name      :snippet-preview

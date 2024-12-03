@@ -107,4 +107,9 @@
               [:wallet/activities-filtering-entries-updated
                (transforms/js->clj event-js)]]]}
 
+       "wallet-activity-session-updated"
+       {:fx [[:dispatch
+              [:wallet/activities-session-updated
+               (transforms/js->clj event-js)]]]}
+
        (log/debug ::unknown-wallet-event :type event-type)))))

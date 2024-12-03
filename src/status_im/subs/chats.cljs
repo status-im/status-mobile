@@ -171,29 +171,26 @@
      chat.events/public-chat?    :public-chat
      :chat)))
 
-(re-frame/reg-sub
- :chats/current-chat-chat-view
+(re-frame/reg-sub :chats/current-chat-chat-view
  :<- [:chats/current-chat]
- (fn [current-chat]
-   (assoc
-    (select-keys current-chat
-                 [:chat-id
-                  :able-to-send-message?
-                  :group-chat
-                  :admins
-                  :invitation-admin
-                  :public?
-                  :chat-type
-                  :color
-                  :contact-request-state
-                  :chat-name
-                  :synced-to
-                  :synced-from
-                  :community-id
-                  :emoji
-                  :description])
-    :empty-chat?
-    (not (:last-message current-chat)))))
+ (fn [chat]
+   {:able-to-send-message? (:able-to-send-message? chat)
+    :admins                (:admins chat)
+    :chat-id               (:chat-id chat)
+    :chat-name             (:chat-name chat)
+    :chat-type             (:chat-type chat)
+    :color                 (:color chat)
+    :community-id          (:community-id chat)
+    :contact-request-state (:contact-request-state chat)
+    :description           (:description chat)
+    :emoji                 (:emoji chat)
+    :empty-chat?           (not (:last-message chat))
+    :group-chat            (:group-chat chat)
+    :invitation-admin      (:invitation-admin chat)
+    :name                  (:name chat)
+    :public?               (:public? chat)
+    :synced-from           (:synced-from chat)
+    :synced-to             (:synced-to chat)}))
 
 (re-frame/reg-sub
  :chats/current-chat-exist?
