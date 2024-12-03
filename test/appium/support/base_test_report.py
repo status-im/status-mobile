@@ -74,7 +74,8 @@ class BaseTestReport:
                     jobs=testrun_data['jobs'],
                     error=testrun_data['error'],
                     first_commands=testrun_data['first_commands'],
-                    xfail=testrun_data['xfail']))
+                    xfail=testrun_data['xfail'],
+                    run=testrun_data['run']))
             tests.append(SingleTestData(name=test_data['name'],
                                         logs_paths=test_data['logs_paths'],
                                         testruns=testruns,

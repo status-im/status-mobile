@@ -28,7 +28,8 @@ class TestrailReport(BaseTestReport):
 
         self.outcomes = {
             'passed': 1,
-            'undefined_fail': 10}
+            'undefined_fail': 10,
+            'skipped': 11}
 
         self.headers = dict()
         self.headers['Authorization'] = 'Basic %s' % str(
@@ -185,9 +186,16 @@ class TestrailReport(BaseTestReport):
                 comment += '%s' % ('# Error: \n %s \n' % emoji.demojize(error)) + devices + test_steps
             else:
                 comment += devices + test_steps
+
+            if last_testrun.xfail and not last_testrun.run:
+                status_id = self.outcomes['skipped']
+            elif last_testrun.error:
+                status_id = self.outcomes['undefined_fail']
+            else:
+                status_id = self.outcomes['passed']
             data.append(
                 {'case_id': test.testrail_case_id,
-                 'status_id': self.outcomes['undefined_fail'] if last_testrun.error else self.outcomes['passed'],
+                 'status_id': status_id,
                  'comment': comment})
 
         results = self.post('add_results_for_cases/%s' % self.run_id, data={"results": data})

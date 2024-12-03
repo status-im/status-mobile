@@ -11,15 +11,18 @@ class SingleTestData(object):
         self.secured = secured
 
     class TestRunData(object):
-        def __init__(self, steps, jobs, error, first_commands: Dict[str, int], xfail):
+        def __init__(self, steps, jobs, error, first_commands: Dict[str, int], xfail, run):
             self.steps = steps
             self.jobs = jobs
             self.error = error
             self.first_commands = first_commands
             self.xfail = xfail
+            self.run = run
 
     def create_new_testrun(self):
-        self.testruns.append(SingleTestData.TestRunData(list(), dict(), None, dict(), xfail=''))
+        self.testruns.append(SingleTestData.TestRunData(
+            steps=list(), jobs=dict(), error=None, first_commands=dict(), xfail='', run=True
+        ))
 
 
 class TestSuiteData(object):

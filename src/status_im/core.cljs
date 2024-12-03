@@ -9,7 +9,6 @@
     [native-module.core :as native-module]
     [re-frame.core :as re-frame]
     [re-frame.interop :as interop]
-    [react-native.async-storage :as async-storage]
     [react-native.core :as rn]
     [react-native.platform :as platform]
     [react-native.shake :as react-native-shake]
@@ -59,9 +58,6 @@
   (react-native-shake/add-shake-listener #(re-frame/dispatch [:shake-event]))
   (universal-links/initialize)
   (interceptors/register-global-interceptors)
-
-  ;; Shell
-  (async-storage/get-item :selected-stack-id #(re-frame/dispatch [:shell/change-tab %]))
 
   (when config/quo-preview-enabled?
     (ff/load-flags))

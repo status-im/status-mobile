@@ -139,25 +139,31 @@
     [(butlast $) (last $)]))
 
 (def mainnet-network-details
-  {:source           (resources/get-network constants/mainnet-network-name)
-   :short-name       constants/mainnet-short-name
-   :full-name        constants/mainnet-full-name
-   :network-name     constants/mainnet-network-name
-   :abbreviated-name constants/mainnet-abbreviated-name})
+  {:source                       (resources/get-network constants/mainnet-network-name)
+   :short-name                   constants/mainnet-short-name
+   :full-name                    constants/mainnet-full-name
+   :network-name                 constants/mainnet-network-name
+   :abbreviated-name             constants/mainnet-abbreviated-name
+   :view-on-block-explorer-label :t/view-on-eth
+   :link-to-block-explorer-label :t/share-link-to-eth})
 
 (def arbitrum-network-details
-  {:source           (resources/get-network constants/arbitrum-network-name)
-   :short-name       constants/arbitrum-short-name
-   :full-name        constants/arbitrum-full-name
-   :network-name     constants/arbitrum-network-name
-   :abbreviated-name constants/arbitrum-abbreviated-name})
+  {:source                       (resources/get-network constants/arbitrum-network-name)
+   :short-name                   constants/arbitrum-short-name
+   :full-name                    constants/arbitrum-full-name
+   :network-name                 constants/arbitrum-network-name
+   :abbreviated-name             constants/arbitrum-abbreviated-name
+   :view-on-block-explorer-label :t/view-on-arb
+   :link-to-block-explorer-label :t/share-link-to-arb})
 
 (def optimism-network-details
-  {:source           (resources/get-network constants/optimism-network-name)
-   :short-name       constants/optimism-short-name
-   :full-name        constants/optimism-full-name
-   :network-name     constants/optimism-network-name
-   :abbreviated-name constants/optimism-abbreviated-name})
+  {:source                       (resources/get-network constants/optimism-network-name)
+   :short-name                   constants/optimism-short-name
+   :full-name                    constants/optimism-full-name
+   :network-name                 constants/optimism-network-name
+   :abbreviated-name             constants/optimism-abbreviated-name
+   :view-on-block-explorer-label :t/view-on-oeth
+   :link-to-block-explorer-label :t/share-link-to-oeth})
 
 (defn get-network-details
   [chain-id]

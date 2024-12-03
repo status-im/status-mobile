@@ -62,6 +62,9 @@
   (rf/merge
    cofx
    {:db db/app-db
+    :effects.async-storage/get {:keys [:selected-stack-id]
+                                :cb   (fn [{:keys [selected-stack-id]}]
+                                        (rf/dispatch [:shell/change-tab selected-stack-id]))}
     :theme/init-theme nil
     :effects.network/listen-to-network-info nil
     :effects.biometric/get-supported-type nil

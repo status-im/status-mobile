@@ -28,6 +28,7 @@
     quo.components.calendar.calendar-day.view
     quo.components.calendar.calendar-year.view
     quo.components.calendar.calendar.view
+    quo.components.cards.wallet-card.view
     quo.components.code.snippet-preview.view
     quo.components.code.snippet.view
     quo.components.colors.color-picker.view
@@ -241,6 +242,7 @@
 ;;;; Cards
 (def small-option-card quo.components.onboarding.small-option-card.view/small-option-card)
 (def keycard quo.components.keycard.view/keycard)
+(def wallet-card quo.components.cards.wallet-card.view/view)
 
 ;;;; Colors
 (def color-picker quo.components.colors.color-picker.view/view)

@@ -353,6 +353,7 @@ def pytest_runtest_makereport(item, call):
                 if is_group:
                     test_suite_data.current_test.group_name = item.instance.__class__.__name__
                 test_suite_data.current_test.testruns[-1].xfail = report.wasxfail
+                test_suite_data.current_test.testruns[-1].run = False
                 error_intro, error = 'Test is not run, e2e blocker ', report.wasxfail
                 final_error = "%s [[%s]]" % (error_intro, error)
             else:
@@ -381,6 +382,8 @@ def pytest_runtest_makereport(item, call):
         if (hasattr(report, 'wasxfail') and not case_ids_set) or (hasattr(report, 'wasxfail') and (
                 str([mark.args[0] for mark in item.iter_markers(name='testrail_id')][0]) in str(case_ids_set))):
             current_test.testruns[-1].xfail = report.wasxfail
+            if '[NOTRUN]' in report.wasxfail:
+                current_test.testruns[-1].run = False
             if error:
                 current_test.testruns[-1].error = '%s [[%s]]' % (error, report.wasxfail)
         if is_sauce_env:
