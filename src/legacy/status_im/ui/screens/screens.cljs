@@ -1,7 +1,6 @@
 (ns legacy.status-im.ui.screens.screens
   (:require
     [legacy.status-im.ui.components.colors :as colors]
-    [legacy.status-im.ui.screens.about-app.views :as about-app]
     [legacy.status-im.ui.screens.advanced-settings.views :as advanced-settings]
     [legacy.status-im.ui.screens.appearance.views :as appearance]
     [legacy.status-im.ui.screens.backup-settings.view :as backup-settings]
