@@ -332,7 +332,7 @@
                           :status   (when (controlled-input/input-error input-state) :error)}]}]
      [routes/view
       {:token                                     token-by-symbol
-       :send-amount-in-crypto                     amount-in-crypto
+       :input-value                               input-value
        :valid-input?                              valid-input?
        :token-not-supported-in-receiver-networks? unsupported-token-in-receiver?
        :current-screen-id                         current-screen-id

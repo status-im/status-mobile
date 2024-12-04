@@ -180,7 +180,7 @@
 
 (defn view
   [{:keys [token theme valid-input? request-fetch-routes on-press-to-network current-screen-id
-           token-not-supported-in-receiver-networks? send-amount-in-crypto]}]
+           token-not-supported-in-receiver-networks? input-value]}]
   (let [token-symbol (:symbol token)
         nav-current-screen-id (rf/sub [:view-id])
         active-screen? (= nav-current-screen-id current-screen-id)
@@ -204,7 +204,7 @@
        (when (and active-screen?
                   (> (count token-available-networks-for-suggested-routes) 0))
          (request-fetch-routes 2000)))
-     [send-amount-in-crypto valid-input?])
+     [input-value valid-input?])
     (rn/use-effect
      #(when (and active-screen? (> (count token-available-networks-for-suggested-routes) 0))
         (request-fetch-routes 0))
