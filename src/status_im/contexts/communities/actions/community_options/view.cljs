@@ -129,7 +129,7 @@
   {:icon                :i/close-circle
    :label               (i18n/label :t/close-community)
    :accessibility-label :close-community
-   :danger?             false
+   :danger?             true
    :on-press            #(rf/dispatch [:communities/leave id])})
 
 (defn cancel-request-to-join
@@ -157,7 +157,7 @@
     [(concat specific
              common
              (when (and spectated? (not join-pending?))
-               [(close-community id)]))]))
+               [(assoc (close-community id) :add-divider? true)]))]))
 
 (defn join-request-sent-options
   [{:keys [id request-id] :as config}]
