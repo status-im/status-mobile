@@ -57,7 +57,8 @@ abstract_target 'Status' do
   pod 'react-native-config', :path => '../node_modules/react-native-config'
 
   pod 'SSZipArchive', '2.4.3'
-
+  # to fix [!] CocoaPods could not find compatible versions for pod "CryptoSwift"
+  pod 'CryptoSwift', git: "https://github.com/krzyzanowskim/CryptoSwift", tag: '1.8.0'
   pod "react-native-status-keycard", path: "../node_modules/react-native-status-keycard"
   pod "react-native-status", path: "../modules/react-native-status"
   pod "Keycard", git: "https://github.com/status-im/Keycard.swift.git", tag: '3.1.1'
