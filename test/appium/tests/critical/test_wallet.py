@@ -256,10 +256,7 @@ class TestWalletOneDevice(MultipleSharedDeviceTestCase):
 
         if self.wallet_view.account_name_text.text != new_account_name:
             pytest.fail("New account is not created")
-        self.wallet_view.account_emoji_button.click_until_presence_of_element(self.wallet_view.copy_address_button)
-        self.wallet_view.share_address_button.click()
-        new_wallet_address = self.wallet_view.sharing_text_native.text
-        self.wallet_view.click_system_back_button()
+        new_wallet_address = self.wallet_view.get_account_address()
         self.wallet_view.close_account_button.click_until_presence_of_element(self.home_view.show_qr_code_button)
 
         self.wallet_view.just_fyi("Checking that the new wallet is added to the Share QR Code menu")

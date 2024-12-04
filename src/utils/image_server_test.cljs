@@ -6,8 +6,7 @@
 
 (t/deftest get-account-image-uri-test
   (with-redefs
-    [sut/current-theme-index identity
-     sut/timestamp           (constantly "timestamp")]
+    [sut/current-theme-index identity]
     (t/is
      (=
       (sut/get-account-image-uri {:port                     "port"
@@ -15,6 +14,7 @@
                                   :ratio                    2
                                   :image-name               "image-name"
                                   :key-uid                  "key-uid"
+                                  :clock                    "timestamp"
                                   :theme                    :dark
                                   :indicator-size           2
                                   :indicator-color          "rgba(9,16,28,0.08)"
@@ -26,8 +26,7 @@
 (t/deftest get-account-initials-uri-test
   (with-redefs
     [sut/current-theme-index identity
-     colors/resolve-color    str
-     sut/timestamp           (constantly "timestamp")]
+     colors/resolve-color    str]
     (t/is
      (=
       (sut/get-initials-avatar-uri
@@ -35,6 +34,7 @@
         :public-key               "public-key"
         :ratio                    2
         :key-uid                  "key-uid"
+        :clock                    "timestamp"
         :full-name                "full-name"
         :length                   "length"
         :size                     48
@@ -49,4 +49,4 @@
         :indicator-center-to-edge 6
         :indicator-color          "#0E1620"
         :ring-width               4})
-      "https://localhost:port/accountInitials?publicKey=public-key&keyUid=key-uid&length=length&size=96&bgColor=%3Ablue%3Alight&color=%230E162000&fontSize=24&fontFile=%2Ffont%2FInter%20Medium.otf&uppercaseRatio=0.6&theme=:light&clock=&name=full-nametimestamp&indicatorColor=%230E1620&indicatorSize=4&indicatorBorder=0&indicatorCenterToEdge=12&addRing=1&ringWidth=8"))))
+      "https://localhost:port/accountInitials?publicKey=public-key&keyUid=key-uid&length=length&size=96&bgColor=%3Ablue%3Alight&color=%230E162000&fontSize=24&fontFile=%2Ffont%2FInter%20Medium.otf&uppercaseRatio=0.6&theme=:light&clock=timestamp&name=full-name&indicatorColor=%230E1620&indicatorSize=4&indicatorBorder=0&indicatorCenterToEdge=12&addRing=1&ringWidth=8"))))

@@ -70,7 +70,7 @@
         (re-frame/dispatch [:select-contact public-key])))))
 
 (defn contact-item-render
-  [{:keys [public-key] :as item} set-has-error]
+  [{:keys [public-key] :as item} _ _ {:keys [set-has-error]}]
   (let [user-selected? (rf/sub [:is-contact-selected? public-key])
         on-toggle      (fn []
                          (-> public-key
@@ -86,7 +86,7 @@
      item]))
 
 (defn view
-  [{:keys [scroll-enabled? on-scroll close]}]
+  [{:keys [on-scroll close]}]
   (let [theme                             (quo.theme/use-theme)
         contacts                          (rf/sub [:contacts/sorted-and-grouped-by-first-letter])
         selected-contacts-count           (rf/sub [:selected-contacts-count])
@@ -94,9 +94,6 @@
         customization-color               (rf/sub [:profile/customization-color])
         one-contact-selected?             (= selected-contacts-count 1)
         [has-error? set-has-error]        (rn/use-state false)
-        render-fn                         (rn/use-callback (fn [item]
-                                                             (contact-item-render item set-has-error))
-                                                           [set-has-error])
         contacts-selected?                (pos? selected-contacts-count)
         {:keys [primary-name public-key]} (when one-contact-selected?
                                             (rf/sub [:contacts/contact-by-identity
@@ -136,8 +133,8 @@
          :render-section-header-fn contact-list/contacts-section-header
          :render-section-footer-fn contact-list/contacts-section-footer
          :content-container-style  {:padding-bottom 70}
-         :render-fn                render-fn
-         :scroll-enabled           @scroll-enabled?
+         :render-fn                contact-item-render
+         :render-data              {:set-has-error set-has-error}
          :on-scroll                on-scroll}])
      (when contacts-selected?
        [rn/view

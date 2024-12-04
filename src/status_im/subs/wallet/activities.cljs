@@ -4,12 +4,11 @@
     [re-frame.core :as rf]
     [status-im.constants :as constants]
     [status-im.contexts.wallet.common.activity-tab.constants :as activity-constants]
+    [status-im.contexts.wallet.send.utils :as send-utils]
     [utils.collection :as collection]
     [utils.datetime :as datetime]
     [utils.hex :as hex]
     [utils.money :as money]))
-
-(def ^:private precision 6)
 
 (defn- hex->number
   [hex-str]
@@ -19,20 +18,20 @@
       str))
 
 (defn- hex->amount
-  [hex-str]
-  (-> hex-str
-      hex->number
-      money/wei->ether
-      (money/with-precision precision)
-      str))
+  [hex-str token-symbol token-decimals]
+  (let [native-token? (= token-symbol constants/native-token-symbol)]
+    (-> hex-str
+        hex->number
+        (send-utils/convert-wei-to-eth native-token? token-decimals)
+        str)))
 
 (defn- get-token-amount
-  [{:keys [token-type]} amount]
+  [{:keys [token-type]} token-symbol amount decimals]
   (if (#{activity-constants/wallet-activity-token-type-erc-721
          activity-constants/wallet-activity-token-type-erc-1155}
        token-type)
     (hex->number amount)
-    (hex->amount amount)))
+    (hex->amount amount token-symbol decimals)))
 
 (defn- get-address-context-tag
   [accounts-and-saved-addresses address]
@@ -65,12 +64,25 @@
       {:type :address :address address})))
 
 (defn- process-base-activity
-  [{:keys [timestamp sender recipient token-in token-out chain-id-in chain-id-out activity-status]
+  [{:keys [timestamp sender recipient token-in token-out amount-in amount-out symbol-in symbol-out
+           chain-id-in chain-id-out activity-status]
     :as   activity}
-   {:keys [chain-id->network-details accounts-and-saved-addresses]}]
+   {:keys [chain-id->network-details accounts-and-saved-addresses tokens-by-symbol]}]
   (let [token-id    (some-> (or token-in token-out)
                             :token-id
                             hex->number)
+        amount-out  (when amount-out
+                      (get-token-amount token-out
+                                        symbol-out
+                                        amount-out
+                                        (get-in tokens-by-symbol
+                                                [symbol-out :decimals])))
+        amount-in   (when amount-in
+                      (get-token-amount token-in
+                                        symbol-in
+                                        amount-in
+                                        (get-in tokens-by-symbol
+                                                [symbol-in :decimals])))
         network-in  (chain-id->network-details chain-id-in)
         network-out (chain-id->network-details chain-id-out)]
     (assoc activity
@@ -82,32 +94,28 @@
            :network-name-out (:full-name network-out)
            :network-logo-out (resources/get-network (:network-name network-out))
            :status           (activity-constants/wallet-activity-status->name activity-status)
-           :token-id         token-id)))
+           :token-id         token-id
+           :amount-out       amount-out
+           :amount-in        amount-in)))
 
 (defn- process-activity
-  [{:keys [activity-type token-out amount-out token-in amount-in approval-spender] :as activity} context]
+  [{:keys [activity-type approval-spender]
+    :as   activity}
+   context]
   (let [base-activity (process-base-activity activity context)]
     (condp = activity-type
       activity-constants/wallet-activity-type-send
-      (assoc base-activity
-             :tx-type    :send
-             :amount-out (get-token-amount token-out amount-out))
+      (assoc base-activity :tx-type :send)
 
       activity-constants/wallet-activity-type-bridge
-      (assoc base-activity
-             :tx-type    :bridge
-             :amount-out (get-token-amount token-out amount-out))
+      (assoc base-activity :tx-type :bridge)
 
       activity-constants/wallet-activity-type-swap
-      (assoc base-activity
-             :tx-type    :swap
-             :amount-in  (get-token-amount token-in amount-in)
-             :amount-out (get-token-amount token-out amount-out))
+      (assoc base-activity :tx-type :swap)
 
       activity-constants/wallet-activity-type-approval
       (assoc base-activity
              :tx-type     :approval
-             :amount-out  (get-token-amount token-out amount-out)
              :spender-tag (get-spender-context-tag approval-spender))
 
       nil)))
@@ -145,11 +153,13 @@
 (rf/reg-sub
  :wallet/activities-for-current-viewing-account
  :<- [:wallet/all-activities]
+ :<- [:wallet/tokens-by-symbol]
  :<- [:wallet/current-viewing-account-address]
  :<- [:wallet/network-details]
  :<- [:wallet/accounts-and-saved-addresses]
- (fn [[activities current-address network-details accounts-and-saved-addresses]]
-   (let [context    {:chain-id->network-details    (collection/index-by :chain-id network-details)
+ (fn [[activities tokens-by-symbol current-address network-details accounts-and-saved-addresses]]
+   (let [context    {:tokens-by-symbol             tokens-by-symbol
+                     :chain-id->network-details    (collection/index-by :chain-id network-details)
                      :accounts-and-saved-addresses accounts-and-saved-addresses}
          activities (->> (get activities current-address)
                          vals

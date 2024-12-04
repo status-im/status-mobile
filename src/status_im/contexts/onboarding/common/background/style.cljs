@@ -8,6 +8,12 @@
    :flex             1
    :overflow         :hidden})
 
+(defn background-image-container
+  [width]
+  {:flex           1
+   :flex-direction :row
+   :width          width})
+
 (def background-blur-overlay
   {:position         :absolute
    :left             0

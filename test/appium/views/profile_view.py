@@ -360,6 +360,10 @@ class ProfileView(BaseView):
                                             accessibility_id="icon, Legacy settings, label-component, icon")
         self.testnet_mode_toggle = Button(self.driver, accessibility_id="icon, Testnet mode, label-component")
         self.confirm_testnet_mode_change_button = Button(self.driver, accessibility_id="confirm-testnet-mode-change")
+        self.key_pairs_and_accounts_button = Button(self.driver,
+                                                    accessibility_id="Key pairs and accounts, label-component, icon")
+        self.options_button = Button(self.driver, accessibility_id="options-button")
+        self.import_by_entering_recovery_phrase_button = Button(self.driver, accessibility_id="import-seed-phrase")
 
     def switch_network(self):
         self.driver.info("Toggling test mode")
@@ -569,3 +573,16 @@ class ProfileView(BaseView):
                 return Button(self.driver, xpath=self.locator + "//*[@content-desc='Unpair']")
 
         return PairedDeviceElement(self.driver, device_name)
+
+    def get_key_pair_account_by_name(self, account_name: str):
+        class KeyPairAccountElement(BaseElement):
+            def __init__(self, driver, account_name):
+                locator = "//*[@content-desc='account-avatar']/following-sibling::*[@text='%s']" % account_name
+                super().__init__(driver, xpath=locator)
+                self.address = Text(driver, xpath=locator + "/following-sibling::android.widget.TextView")
+
+        return KeyPairAccountElement(self.driver, account_name)
+
+    def get_missing_key_pair_by_name(self, key_pair_name: str):
+        return BaseElement(self.driver,
+                           xpath="//*[@content-desc='missing-keypair-item']//*[@text='%s']" % key_pair_name)

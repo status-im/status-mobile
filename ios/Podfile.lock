@@ -1194,6 +1194,7 @@ PODS:
 
 DEPENDENCIES:
   - boost (from `../node_modules/react-native/third-party-podspecs/boost.podspec`)
+  - CryptoSwift (from `https://github.com/krzyzanowskim/CryptoSwift`, tag `1.8.0`)
   - DoubleConversion (from `../node_modules/react-native/third-party-podspecs/DoubleConversion.podspec`)
   - FBLazyVector (from `../node_modules/react-native/Libraries/FBLazyVector`)
   - FBReactNativeSpec (from `../node_modules/react-native/React/FBReactNativeSpec`)
@@ -1288,7 +1289,6 @@ DEPENDENCIES:
 SPEC REPOS:
   trunk:
     - BigInt
-    - CryptoSwift
     - fmt
     - HMSegmentedControl
     - libevent
@@ -1302,6 +1302,9 @@ SPEC REPOS:
 EXTERNAL SOURCES:
   boost:
     :podspec: "../node_modules/react-native/third-party-podspecs/boost.podspec"
+  CryptoSwift:
+    :git: https://github.com/krzyzanowskim/CryptoSwift
+    :tag: 1.8.0
   DoubleConversion:
     :podspec: "../node_modules/react-native/third-party-podspecs/DoubleConversion.podspec"
   FBLazyVector:
@@ -1479,6 +1482,9 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon/yoga"
 
 CHECKOUT OPTIONS:
+  CryptoSwift:
+    :git: https://github.com/krzyzanowskim/CryptoSwift
+    :tag: 1.8.0
   Keycard:
     :git: https://github.com/status-im/Keycard.swift.git
     :tag: 3.1.1
@@ -1495,7 +1501,7 @@ SPEC CHECKSUMS:
   FBLazyVector: 56e0e498dbb513b96c40bac6284729ba4e62672d
   FBReactNativeSpec: 146c741a3f40361f6bc13a4ba284678cbedb5881
   fmt: ff9d55029c625d3757ed641535fd4a75fedc7ce9
-  glog: 530710e7949eb12c82670bd09e946becf50a3c2a
+  glog: c0eca6ffed0a6fde1965ef26dcc7bf528f052af4
   hermes-engine: 1d1835b2cc54c381909d94d1b3c8e0a2f1a94a0e
   HMSegmentedControl: 34c1f54d822d8308e7b24f5d901ec674dfa31352
   Keycard: 3bd24405b9a875b3b3cf1ab1be69b5c30c5f28bc
@@ -1587,6 +1593,6 @@ SPEC CHECKSUMS:
   TOCropViewController: edfd4f25713d56905ad1e0b9f5be3fbe0f59c863
   Yoga: a716eea57d0d3430219c0a5a233e1e93ee931eb7
 
-PODFILE CHECKSUM: 9cbf84e4b9130a71839a019dfa0c40154df97b5d
+PODFILE CHECKSUM: 81a66b45adddb083171ade882c343deb4faf2a8b
 
 COCOAPODS: 1.15.2

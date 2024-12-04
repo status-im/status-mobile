@@ -9,6 +9,7 @@
       gestureHandlerRootHOC
       FlatList
       ScrollView)]
+    [react-native.core :as rn]
     [react-native.flat-list :as rn-flat-list]
     [reagent.core :as reagent]))
 
@@ -112,17 +113,21 @@
            render-fn]
     :or   {sticky-section-headers-enabled true}
     :as   props}]
-  (let [data (flatten-sections sections)]
+  (let [data        (flatten-sections sections)
+        render-item (rn/use-callback
+                     (fn [p1 p2 p3 p4]
+                       [:<>
+                        (if (:header? p1)
+                          [render-section-header-fn p1 p2 p3 p4]
+                          [render-fn p1 p2 p3 p4])
+                        (when (and render-section-footer-fn
+                                   (is-last-item-in-section data p2))
+                          [render-section-footer-fn p1 p2 p3 p4])])
+                     [render-fn render-section-header-fn render-section-footer-fn])]
     [flat-list
      (merge props
-            {:data                  data
-             :render-fn             (fn [p1 p2 p3 p4]
-                                      [:<>
-                                       (if (:header? p1)
-                                         [render-section-header-fn p1 p2 p3 p4]
-                                         [render-fn p1 p2 p3 p4])
-                                       (when (and render-section-footer-fn
-                                                  (is-last-item-in-section data p2))
-                                         [render-section-footer-fn p1 p2 p3 p4])])
-             :sticky-header-indices (when sticky-section-headers-enabled
-                                      (find-sticky-indices data))})]))
+            {:data data
+             :render-fn render-item
+             :sticky-header-indices
+             (when sticky-section-headers-enabled
+               (find-sticky-indices data))})]))

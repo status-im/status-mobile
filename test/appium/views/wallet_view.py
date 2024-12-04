@@ -75,6 +75,8 @@ class WalletView(BaseView):
         self.account_has_activity_label = Text(self.driver, accessibility_id='account-has-activity')
         self.add_account_continue_button = Button(self.driver, accessibility_id='Continue')
         self.add_watched_address_button = Button(self.driver, accessibility_id='confirm-button-label')
+        self.add_account_derivation_path_text = Text(
+            self.driver, xpath="//*[contains(@content-desc,'icon, Derivation path')]/android.widget.TextView[2]")
 
         # Account view
         self.close_account_button = Button(self.driver, accessibility_id='top-bar')
@@ -88,8 +90,11 @@ class WalletView(BaseView):
         self.share_address_button = Button(self.driver, accessibility_id='share-account')
         self.remove_account_button = Button(self.driver, accessibility_id='remove-account')
         self.derivation_path_note_checkbox = Button(self.driver, accessibility_id='checkbox-off')
+        self.account_about_derivation_path_text = Text(
+            self.driver, xpath="//*[@content-desc='derivation-path-icon']/following-sibling::*[2]")
 
         self.activity_tab = Button(self.driver, accessibility_id='activity-tab')
+        self.about_tab = Button(self.driver, accessibility_id='about')
 
         # Sending transaction
         self.address_text_input = EditBox(self.driver, accessibility_id='address-text-input')
@@ -98,6 +103,15 @@ class WalletView(BaseView):
             self.driver, xpath="(//*[@content-desc='loading']/following-sibling::android.widget.TextView)[1]")
         self.confirm_button = Button(self.driver, accessibility_id='button-one')
         self.done_button = Button(self.driver, accessibility_id='done')
+
+        # Edit key pair
+        self.edit_key_pair_button = Button(self.driver, accessibility_id="Edit")
+        self.key_pairs_plus_button = Button(self.driver, accessibility_id="standard-title-action")
+        self.generate_new_keypair_button = Button(self.driver, accessibility_id="generate-new-keypair")
+        self.import_using_recovery_phrase_button = Button(self.driver, accessibility_id="import-using-phrase")
+        self.key_pair_continue_button = Button(self.driver, accessibility_id="Continue")
+        self.key_pair_name_input = EditBox(
+            self.driver, xpath="//*[@text='Key pair name']/..//following-sibling::*/*[@content-desc='input']")
 
     def select_network(self, network_name: str):
         self.network_drop_down.click()
@@ -160,8 +174,10 @@ class WalletView(BaseView):
     def add_regular_account(self, account_name: str):
         self.add_account_button.click()
         self.create_account_button.click()
+        derivation_path = self.add_account_derivation_path_text.text
         SignInView(self.driver).profile_title_input.send_keys(account_name)
         self.slide_and_confirm_with_password()
+        return derivation_path.replace(' ', '')
 
     def add_watch_only_account(self, address: str, account_name: str):
         self.add_account_button.click()
@@ -181,3 +197,33 @@ class WalletView(BaseView):
 
     def get_activity_element(self, index=1):
         return ActivityElement(self.driver, index=index)
+
+    def add_key_pair_account(self, account_name, passphrase=None, key_pair_name=None):
+        self.add_account_button.click()
+        self.create_account_button.click()
+        signin_view = SignInView(self.driver)
+        signin_view.profile_title_input.send_keys(account_name)
+        self.edit_key_pair_button.click()
+        self.key_pairs_plus_button.click()
+        if passphrase:
+            self.import_using_recovery_phrase_button.click()
+            signin_view.passphrase_edit_box.send_keys(passphrase)
+            self.key_pair_continue_button.click()
+            self.key_pair_name_input.send_keys(key_pair_name)
+            self.key_pair_continue_button.click()
+        else:
+            self.generate_new_keypair_button.click()
+            for checkbox in self.checkbox_button.find_elements():
+                checkbox.click()
+            self.element_by_translation_id("reveal-phrase").click()
+            # ToDo: can't be done in current small size emulators, add when moved to LambdaTest
+        self.slide_and_confirm_with_password()
+        derivation_path = self.add_account_derivation_path_text.text
+        return derivation_path.replace(' ', '')
+
+    def get_account_address(self):
+        self.account_emoji_button.click_until_presence_of_element(self.copy_address_button)
+        self.share_address_button.click()
+        wallet_address = self.sharing_text_native.text
+        self.click_system_back_button()
+        return wallet_address

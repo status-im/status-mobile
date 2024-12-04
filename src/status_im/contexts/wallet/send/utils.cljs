@@ -55,7 +55,7 @@
           (money/add bonder-fees)))
     (-> path :amount-out money/from-hex)))
 
-(defn- convert-wei-to-eth
+(defn convert-wei-to-eth
   [amount native-token? token-decimals]
   (money/with-precision
    (if native-token?

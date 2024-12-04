@@ -9,6 +9,7 @@ from views.sign_in_view import SignInView
 
 @pytest.mark.xdist_group(name="new_six_2")
 @marks.nightly
+@marks.secured
 class TestFallbackMultipleDevice(MultipleSharedDeviceTestCase):
 
     def prepare_devices(self):
@@ -157,6 +158,94 @@ class TestFallbackMultipleDevice(MultipleSharedDeviceTestCase):
             run_in_parallel(((_check_message, {'home_view': self.home_1, 'index': 1}),
                              (_check_message, {'home_view': self.home_2, 'index': 2}))))
 
+        self.errors.verify_no_errors()
+
+    @marks.testrail_id(741054)
+    def test_fallback_add_key_pair(self):
+        account_to_add = transaction_senders['ETH_1']
+        self.home_1.navigate_back_to_home_view()
+        self.home_2.navigate_back_to_home_view()
+        wallet_1 = self.home_1.wallet_tab.click()
+        wallet_2 = self.home_2.wallet_tab.click()
+        regular_account_name = "New regular account"
+        key_pair_account_name = "Key pair account"
+        key_pair_name = "New key pair"
+        key_pair_account_address = '0x' + account_to_add['address'].lower()
+
+        wallet_1.just_fyi("Device 1: add a new regular account")
+        regular_derivation_path = wallet_1.add_regular_account(account_name=regular_account_name)
+        regular_account_wallet_address = wallet_1.get_account_address().split(':')[-1]
+        account_element = wallet_1.get_account_element(account_name=regular_account_name)
+        wallet_1.close_account_button.click_until_presence_of_element(account_element)
+
+        wallet_1.just_fyi("Device 1: add a new key pair account")
+        account_element.swipe_left_on_element()
+        key_pair_derivation_path = wallet_1.add_key_pair_account(account_name=key_pair_account_name,
+                                                                 passphrase=account_to_add['passphrase'],
+                                                                 key_pair_name=key_pair_name)
+
+        self.home_2.just_fyi("Device 2: check imported accounts are shown before importing key pair")
+        self.home_2.profile_button.click()
+        self.profile_2.profile_wallet_button.click()
+        self.profile_2.key_pairs_and_accounts_button.click()
+        if not self.profile_2.get_missing_key_pair_by_name(key_pair_name=key_pair_name).is_element_displayed():
+            self.errors.append("Key pair is not shown in profile as missing before importing")
+        if not self.profile_2.get_key_pair_account_by_name(account_name=regular_account_name).is_element_displayed():
+            self.errors.append(
+                "Newly added regular account is not shown in profile as on device before importing key pair")
+        self.profile_2.options_button.click()
+        if not self.profile_2.import_by_entering_recovery_phrase_button.is_element_displayed():
+            self.errors.append("Can not import key pair account from profile")
+        self.profile_2.click_system_back_button(times=4)
+
+        wallet_2.just_fyi("Device 2: import key pair")
+        wallet_2.get_account_element(account_name=key_pair_account_name).click()
+        wallet_2.element_by_translation_id("import-key-pair").click()
+        self.sign_in_2.passphrase_edit_box.send_keys(account_to_add['passphrase'])
+        wallet_2.slide_and_confirm_with_password()
+
+        self.home_2.just_fyi("Device 2: check imported accounts are shown in profile as added after importing key pair")
+        self.home_2.profile_button.click()
+        self.profile_2.profile_wallet_button.click()
+        self.profile_2.key_pairs_and_accounts_button.click()
+        if self.profile_2.get_key_pair_account_by_name(account_name=regular_account_name).is_element_displayed():
+            address_text = self.profile_2.get_key_pair_account_by_name(account_name=regular_account_name).address.text
+            if address_text != '...'.join((regular_account_wallet_address[:5], regular_account_wallet_address[-3:])):
+                self.errors.append(
+                    "Incorrect wallet address if shown for regular account after importing: " + address_text)
+        else:
+            self.errors.append("Newly added regular account is not shown in profile after importing key pair")
+
+        if self.profile_2.get_key_pair_account_by_name(account_name=key_pair_account_name).is_element_displayed():
+            address_text = self.profile_2.get_key_pair_account_by_name(account_name=key_pair_account_name).address.text
+            if address_text != '...'.join((key_pair_account_address[:5], key_pair_account_address[-3:])):
+                self.errors.append(
+                    "Incorrect wallet address if shown for key pair account after importing: " + address_text)
+        else:
+            self.errors.append("Key pair account is not shown in profile as on device after importing key pair")
+        self.profile_2.click_system_back_button(times=3)
+
+        wallet_2.just_fyi("Device 2: check wallet balance")
+        wallet_2.select_network(network_name='Arbitrum')
+        expected_balance = self.network_api.get_balance(key_pair_account_address)
+        shown_balance = wallet_2.get_asset(asset_name='Ether').get_amount()
+        if shown_balance != round(expected_balance, 5):
+            self.errors.append("Device 2: ETH balance %s doesn't match expected %s" % (shown_balance, expected_balance))
+
+        wallet_2.just_fyi("Device 2: check derivation paths of the regular and key pair accounts")
+        account_element = wallet_2.get_account_element(account_name=regular_account_name)
+        account_element.click()
+        wallet_2.about_tab.click()
+        der_path = wallet_2.account_about_derivation_path_text.text
+        if der_path != regular_derivation_path:
+            self.errors.append("Incorrect derivation path %s is shown for the regular account" % der_path)
+        wallet_2.close_account_button.click_until_presence_of_element(account_element)
+        account_element.swipe_left_on_element()
+        wallet_2.get_account_element(account_name=key_pair_account_name).click()
+        wallet_2.about_tab.click()
+        der_path = wallet_2.account_about_derivation_path_text.text
+        if der_path != key_pair_derivation_path:
+            self.errors.append("Incorrect derivation path %s is shown for the key pair account" % der_path)
         self.errors.verify_no_errors()
 
     @marks.testrail_id(740222)
