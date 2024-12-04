@@ -141,3 +141,14 @@
 (defn zero-address?
   [address]
   (= address zero-address))
+
+(defn public-key->address
+  [public-key]
+  (let [length         (count public-key)
+        normalized-key (case length
+                         132 (str "0x" (subs public-key 4))
+                         130 public-key
+                         128 (str "0x" public-key)
+                         nil)]
+    (when normalized-key
+      (subs (native-module/sha3 normalized-key) 26))))

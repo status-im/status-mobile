@@ -58,13 +58,14 @@
   [item _ _
    {:keys [profile-picture compressed-key selected-key-uid set-selected-key-uid customization-color]}]
   (let [profile-keypair? (= (:type item) :profile)
+        keycard?         (boolean (seq (:keycards item)))
         accounts         (parse-accounts (:accounts item))]
     [quo/keypair
      {:customization-color customization-color
       :profile-picture     (when profile-keypair? profile-picture)
       :status-indicator    false
       :type                (if profile-keypair? :default-keypair :other)
-      :stored              :on-device
+      :stored              (if keycard? :on-keycard :on-device)
       :on-options-press    #(js/alert "Options pressed")
       :action              :selector
       :blur?               false

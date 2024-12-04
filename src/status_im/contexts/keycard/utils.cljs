@@ -1,5 +1,6 @@
 (ns status-im.contexts.keycard.utils
   (:require [clojure.string :as string]
+            [status-im.common.alert.effects :as alert.effects]
             [utils.address :as address]
             [utils.transforms :as transforms]))
 
@@ -76,3 +77,9 @@
    args
    :on-success (get-on-success args)
    :on-failure (get-on-failure args)))
+
+(defn show-alert
+  []
+  (alert.effects/show-popup
+   "This feature is not supported yet "
+   "Keycard support is limited to logging in and signing the sending transaction."))

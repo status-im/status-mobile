@@ -4,6 +4,7 @@
     [quo.foundations.colors :as colors]
     [react-native.core :as rn]
     [status-im.common.check-before-syncing.view :as check-before-syncing]
+    [status-im.contexts.keycard.utils :as keycard.utils]
     [status-im.contexts.syncing.device.view :as device]
     [status-im.contexts.syncing.syncing-devices-list.style :as style]
     [utils.i18n :as i18n]
@@ -38,7 +39,8 @@
                                                      #(if (:enabled? %)
                                                         :paired-devices
                                                         :unpaired-devices)
-                                                     other-devices)]
+                                                     other-devices)
+        keycard?                                    (rf/sub [:keycard/keycard-profile?])]
     [quo/overlay {:type :shell :top-inset? true}
      [quo/page-nav
       {:type       :no-title
@@ -60,7 +62,9 @@
          :type                :primary
          :customization-color profile-color
          :icon-only?          true
-         :on-press            open-setup-syncing-with-customization-color}
+         :on-press            (if keycard?
+                                keycard.utils/show-alert
+                                open-setup-syncing-with-customization-color)}
         :i/add]]
       [device/view (merge user-device {:this-device? true})]
       (when (seq paired-devices)

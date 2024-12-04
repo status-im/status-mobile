@@ -168,7 +168,10 @@
         transaction-for-signing (rf/sub [:wallet/swap-transaction-for-signing])
         swap-proposal           (rf/sub [:wallet/swap-proposal-without-fees])
         account                 (rf/sub [:wallet/current-viewing-account])
-        account-color           (:color account)]
+        account-color           (:color account)
+        sign-on-keycard?        (get-in transaction-for-signing
+                                        [:signingDetails :signOnKeycard])
+        keycard-profile?        (rf/sub [:keycard/keycard-profile?])]
     [standard-auth/slide-button
      {:size                :size-48
       :track-text          (i18n/label :t/slide-to-swap)
@@ -178,7 +181,12 @@
                                (not swap-proposal)
                                (not transaction-for-signing))
       :auth-button-label   (i18n/label :t/confirm)
-      :keycard-supported?  true
+      :on-complete         (when sign-on-keycard?
+                             #(rf/dispatch
+                               [:wallet/prepare-signatures-for-transactions
+                                :swap
+                                ""]))
+      :keycard-password?   keycard-profile?
       :on-auth-success     (fn [data]
                              (rf/dispatch [:wallet/stop-get-swap-proposal])
                              (rf/dispatch [:wallet/prepare-signatures-for-transactions :swap data]))}]))
