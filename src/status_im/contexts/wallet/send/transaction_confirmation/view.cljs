@@ -256,8 +256,7 @@
         ;; as route is available.
         (rn/use-effect
          (fn []
-           (when (and (or (= transaction-type :tx/collectible-erc-1155)
-                          (= transaction-type :tx/collectible-erc-721))
+           (when (and (send-utils/tx-type-collectible? transaction-type)
                       first-route)
              (rf/dispatch [:wallet/build-transaction-for-collectible-route])))
          [first-route])
