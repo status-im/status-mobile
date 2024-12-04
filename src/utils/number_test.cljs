@@ -1,6 +1,7 @@
 (ns utils.number-test
   (:require
     [cljs.test :refer [deftest is testing]]
+    [utils.money :as money]
     [utils.number]))
 
 (deftest convert-to-whole-number-test
@@ -21,7 +22,11 @@
 
   (testing "handles zero amount"
     (is (= "0" (utils.number/convert-to-whole-number 0 2)))
-    (is (= "0" (utils.number/convert-to-whole-number 0 0)))))
+    (is (= "0" (utils.number/convert-to-whole-number 0 0))))
+
+  (testing "handles BigNumber amounts with 18 decimals"
+    (let [amount (money/bignumber "3141969777175276657")]
+      (is (= "3.141969777175276657" (utils.number/convert-to-whole-number amount 18))))))
 
 (deftest parse-int-test
   (testing "defaults to zero"
