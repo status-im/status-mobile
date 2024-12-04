@@ -1,13 +1,10 @@
 (ns status-im.common.privacy.view
   (:require-macros [legacy.status-im.utils.slurp :refer [slurp]])
   (:require [quo.core :as quo]
-            [status-im.contexts.settings.common.header :as header]
             [react-native.gesture :as gesture]
-            [utils.re-frame :as rf]))
+            [status-im.contexts.settings.common.header :as header]))
 
 (def privacy-statement-text (slurp "resources/privacy.mdwn"))
-
-(defn- navigate-back [] (rf/dispatch [:navigate-back]))
 
 (defn privacy-statement
   []

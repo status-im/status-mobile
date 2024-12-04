@@ -1,9 +1,9 @@
 (ns status-im.contexts.settings.about.view
   (:require [quo.core :as quo]
             [react-native.core :as rn]
+            [status-im.constants :as constants]
             [status-im.contexts.settings.about.style :as style]
             [status-im.contexts.settings.common.header :as header]
-            [status-im.constants :as constants]
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]))
 
@@ -16,7 +16,7 @@
                  :post-copy-message (str item-name
                                          " "
                                          (i18n/label :t/sharing-copied-to-clipboard))}]))
-(def items
+(def about-data
   [{:app-info? true}
    {:category-label (i18n/label :t/website)
     :items          [{:title        "status.app"
@@ -86,7 +86,7 @@
   [quo/overlay {:type :shell}
    [header/view {:title (i18n/label :t/about)}]
    [rn/flat-list
-    {:data                            items
+    {:data                            about-data
      :shows-vertical-scroll-indicator false
      :render-fn                       category
      :bounces                         false

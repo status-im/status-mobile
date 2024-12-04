@@ -2,12 +2,9 @@
   (:require-macros [legacy.status-im.utils.slurp :refer [slurp]])
   (:require [quo.core :as quo]
             [react-native.gesture :as gesture]
-            [status-im.contexts.settings.common.header :as header]
-            [utils.re-frame :as rf]))
+            [status-im.contexts.settings.common.header :as header]))
 
 (def terms-of-use-text (slurp "resources/terms-of-use.mdwn"))
-
-(defn- navigate-back [] (rf/dispatch [:navigate-back]))
 
 (defn terms-of-use
   []
