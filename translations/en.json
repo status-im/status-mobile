@@ -796,12 +796,12 @@
   "dismiss": "Dismiss",
   "display": "Display",
   "display-collectibles": "Display collectibles",
-  "documents": "Documents",
   "do-not-cheat": "Don't try to cheat",
   "do-not-cheat-description": "These 12 words give access to all of your funds so it is important that you write them in the correct order, take it seriously.",
   "do-not-quit": "Do not quit the application or turn off your device. Doing so will lead to data corruption, loss of your Status profile and the inability to use Status.",
 
   "do-not-share": "Do not share",
+  "documents": "Documents",
   "done": "Done",
   "dont-ask": "Don't ask me again",
   "dont-auto-recalculate-network": "Don't auto recalculate {{network}}",

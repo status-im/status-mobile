@@ -11,7 +11,8 @@
   [gesture/scroll-view {:style {:margin 20}}
    [quo/text terms-of-use-text]])
 
-(defn view []
+(defn view
+  []
   [quo/overlay {:type :shell}
    [header/view {:title "Terms of use"}]
    [gesture/scroll-view {:style {:padding-horizontal 20}}

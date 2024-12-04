@@ -16,7 +16,8 @@
     [rn/view {:style (style/loading-container size blur? theme)}]))
 
 (defn- left-subtitle
-  [{:keys [size subtitle-text-props subtitle-type subtitle-color icon icon-color blur? subtitle customization-color emoji
+  [{:keys [size subtitle-text-props subtitle-type subtitle-color icon icon-color blur? subtitle
+           customization-color emoji
            network-image]
     :or   {subtitle-type :default}}]
   (let [theme (quo.theme/use-theme)]
@@ -76,16 +77,17 @@
 
 (defn- left-side
   "The description can either be given as a string `subtitle-type` or a component `custom-subtitle`"
-  [{:keys [title subtitle-text-props status size blur? custom-subtitle icon subtitle subtitle-type subtitle-color icon-color
+  [{:keys [title subtitle-text-props status size blur? custom-subtitle icon subtitle subtitle-type
+           subtitle-color icon-color
            customization-color network-image emoji title-icon]
     :as   props}]
   (let [theme (quo.theme/use-theme)]
     [rn/view {:style style/left-side}
      [rn/view
       [left-title
-       {:title            title
-        :title-icon       title-icon
-        :blur?            blur?}]]
+       {:title      title
+        :title-icon title-icon
+        :blur?      blur?}]]
      (if (= status :loading)
        [left-loading
         {:size  size

@@ -7,10 +7,12 @@
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]))
 
-(defn- open-link [url]
+(defn- open-link
+  [url]
   (rf/dispatch [:browser.ui/open-url url]))
 
-(defn- copy [data item-name]
+(defn- copy
+  [data item-name]
   (rf/dispatch [:share/copy-text-and-show-toast
                 {:text-to-copy      data
                  :post-copy-message (str item-name
@@ -50,20 +52,23 @@
                       :blur?    true
                       :action   :arrow}]}])
 
-(defn info-item [{:keys [title info]}]
-  [quo/data-item {:size                :default
-                  :status              :default
-                  :right-icon          :i/copy
-                  :card?               true
-                  :blur?               true
-                  :title               title
-                  :on-press            #(copy info title)
-                  :subtitle            info
-                  :subtitle-type       :default
-                  :subtitle-text-props {:number-of-lines 1
-                                        :ellipsize-mode  :middle}}])
+(defn info-item
+  [{:keys [title info]}]
+  [quo/data-item
+   {:size                :default
+    :status              :default
+    :right-icon          :i/copy
+    :card?               true
+    :blur?               true
+    :title               title
+    :on-press            #(copy info title)
+    :subtitle            info
+    :subtitle-type       :default
+    :subtitle-text-props {:number-of-lines 1
+                          :ellipsize-mode  :middle}}])
 
-(defn- app-info []
+(defn- app-info
+  []
   (let [app-version  (rf/sub [:get-app-short-version])
         commit-hash  (rf/sub [:get-commit-hash])
         node-version (rf/sub [:get-app-node-version])]
@@ -72,7 +77,8 @@
      [info-item {:title (i18n/label :t/app-commit) :info commit-hash}]
      [info-item {:title (i18n/label :t/node-version) :info node-version}]]))
 
-(defn category [{:keys [app-info? category-label items]}]
+(defn category
+  [{:keys [app-info? category-label items]}]
   (if app-info?
     [app-info]
     [quo/category
@@ -82,7 +88,8 @@
       :blur?           true
       :data            items}]))
 
-(defn view []
+(defn view
+  []
   [quo/overlay {:type :shell}
    [header/view {:title (i18n/label :t/about)}]
    [rn/flat-list

@@ -11,7 +11,8 @@
   [gesture/scroll-view {:style {:margin 20}}
    [quo/text privacy-statement-text]])
 
-(defn view []
+(defn view
+  []
   [quo/overlay {:type :shell}
    [header/view {:title "Privacy Policy"}]
    [gesture/scroll-view {:style {:padding-horizontal 20}}

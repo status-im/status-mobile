@@ -367,10 +367,10 @@
                 :alias-id :settings.change-password-loading}
     :options   (assoc
                 options/transparent-modal-screen-options
-                 :theme :dark
-                 :popGesture false
-                 :hardwareBackButton {:dismissModalOnPress false
-                                      :popStackOnPress     false})
+                :theme              :dark
+                :popGesture         false
+                :hardwareBackButton {:dismissModalOnPress false
+                                     :popStackOnPress     false})
     :component change-password-loading/view}
 
    {:name      :screen/settings-messages

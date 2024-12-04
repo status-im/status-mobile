@@ -6,7 +6,8 @@
 
 (defn- navigate-back [] (rf/dispatch [:navigate-back]))
 
-(defn view [{:keys [title]}]
+(defn view
+  [{:keys [title]}]
   [rn/view {:style {:padding-top (safe-area/get-top)}}
    [quo/page-nav
     {:background :blur
