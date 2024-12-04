@@ -121,33 +121,38 @@
               [linear-gradient/linear-gradient
                {:start  {:x 0 :y 0}
                 :end    {:x 1 :y 0}
-                :colors [(colors/theme-colors colors/white colors/neutral-100 theme)
-                         (colors/theme-colors colors/white-opa-10 colors/neutral-100-opa-10 theme)]
+                :colors [(colors/theme-colors colors/white colors/neutral-95 theme)
+                         (colors/theme-colors colors/white-opa-10 colors/neutral-95-opa-10 theme)]
                 :style  style/gradient-start}])
             (when (and overflow? disabled?)
               [linear-gradient/linear-gradient
                {:start  {:x 0 :y 0}
                 :end    {:x 1 :y 0}
-                :colors [(colors/theme-colors colors/white-opa-10 colors/neutral-100-opa-10 theme)
-                         (colors/theme-colors colors/white colors/neutral-100 theme)]
+                :colors [(colors/theme-colors colors/white-opa-10 colors/neutral-95-opa-10 theme)
+                         (colors/theme-colors colors/white colors/neutral-95 theme)]
                 :style  style/gradient-end}])
-            [rn/text-input
-             (cond-> {:ref                      set-input-ref
-                      :style                    (style/input disabled? error? theme)
-                      :placeholder-text-color   (colors/theme-colors colors/neutral-40
-                                                                     colors/neutral-50
-                                                                     theme)
-                      :keyboard-type            :numeric
-                      :editable                 (not input-disabled?)
-                      :auto-focus               auto-focus?
-                      :on-focus                 on-input-focus
-                      :on-change-text           on-change-text
-                      :on-layout                on-layout-text-input
-                      :on-selection-change      on-selection-change
-                      :show-soft-input-on-focus show-keyboard?
-                      :default-value            default-value
-                      :placeholder              "0"}
-               controlled-input? (assoc :value value))]]
+            (if-not input-disabled?
+              [rn/text-input
+               (cond-> {:ref                      set-input-ref
+                        :style                    (style/input disabled? error? theme)
+                        :placeholder-text-color   (colors/theme-colors colors/neutral-40
+                                                                       colors/neutral-50
+                                                                       theme)
+                        :keyboard-type            :numeric
+                        :editable                 (not input-disabled?)
+                        :auto-focus               auto-focus?
+                        :on-focus                 on-input-focus
+                        :on-change-text           on-change-text
+                        :on-layout                on-layout-text-input
+                        :on-selection-change      on-selection-change
+                        :show-soft-input-on-focus show-keyboard?
+                        :default-value            default-value
+                        :placeholder              "0"}
+                 controlled-input? (assoc :value value))]
+              [rn/text
+               {:style     (style/input disabled? error? theme)
+                :on-layout on-layout-text-input}
+               (or value "0")])]
            [text/text
             {:size      :paragraph-2
              :weight    :semi-bold

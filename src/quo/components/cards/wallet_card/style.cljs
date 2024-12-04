@@ -3,13 +3,14 @@
             [quo.foundations.shadows :as shadows]))
 
 (defn root-container
-  [theme]
-  (assoc (shadows/get 2 theme)
-         :border-radius      16
-         :padding-vertical   10
-         :padding-horizontal 12
-         :width              161
-         :background-color   (colors/theme-colors colors/white colors/neutral-90 theme)))
+  [theme container-style]
+  (merge (shadows/get 2 theme)
+         {:border-radius      16
+          :padding-vertical   10
+          :padding-horizontal 12
+          :width              161
+          :background-color   (colors/theme-colors colors/white colors/neutral-90 theme)}
+         container-style))
 
 (def top-container
   {:flex-direction  :row

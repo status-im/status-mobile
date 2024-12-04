@@ -16,16 +16,19 @@
          test-networks-enabled? (get-in db [:profile/profile :test-networks-enabled?])
          view-id                (:view-id db)
          root-screen?           (or (= view-id :wallet-stack) (nil? view-id))
-         account                (or from-account (swap-utils/wallet-account wallet))
-         asset-to-pay           (if (get-in data [:asset-to-pay :networks])
+         available-accounts     (utils/get-accounts-with-token-balance (:accounts wallet)
+                                                                       (:asset-to-pay data))
+         account                (or from-account
+                                    (swap-utils/current-viewing-account wallet)
+                                    (first available-accounts))
+         asset-to-pay           (if (and (not from-account) (get-in data [:asset-to-pay :networks]))
                                   (:asset-to-pay data)
                                   (swap-utils/select-asset-to-pay-by-symbol
                                    {:wallet                 wallet
                                     :account                account
                                     :test-networks-enabled? test-networks-enabled?
                                     :token-symbol           (get-in data [:asset-to-pay :symbol])}))
-         multi-account-balance? (-> (utils/get-accounts-with-token-balance (:accounts wallet)
-                                                                           asset-to-pay)
+         multi-account-balance? (-> available-accounts
                                     (count)
                                     (> 1))
          network'               (or network

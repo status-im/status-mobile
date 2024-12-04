@@ -26,15 +26,17 @@
        [rn/view
         {:style style/buy-and-receive-cta-container}
         [quo/wallet-card
-         {:image    (resources/get-image :buy)
-          :title    (i18n/label :t/ways-to-buy)
-          :subtitle (i18n/label :t/via-card-or-bank)
-          :on-press buy-assets}]
+         {:image           (resources/get-image :buy)
+          :title           (i18n/label :t/ways-to-buy)
+          :subtitle        (i18n/label :t/via-card-or-bank)
+          :container-style (assoc style/cta-card :margin-right 12)
+          :on-press        buy-assets}]
         [quo/wallet-card
-         {:image    (resources/get-image :receive)
-          :title    (i18n/label :t/receive)
-          :subtitle (i18n/label :t/deposit-to-your-wallet)
-          :on-press receive-assets}]])
+         {:image           (resources/get-image :receive)
+          :title           (i18n/label :t/receive)
+          :subtitle        (i18n/label :t/deposit-to-your-wallet)
+          :container-style style/cta-card
+          :on-press        receive-assets}]])
      (if tokens-loading?
        [quo/skeleton-list
         {:content       :assets

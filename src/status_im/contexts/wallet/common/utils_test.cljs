@@ -185,16 +185,16 @@
                           :balance          0.5
                           :token            {:symbol "ETH"}
                           :prices-per-token {:ETH {:usd 2000}}}]
-      (is (= (utils/formatted-token-fiat-value default-params) "$1000"))
-      (is (= (utils/formatted-token-fiat-value (assoc default-params :balance 0)) "$0"))
+      (is (= (utils/formatted-token-fiat-value default-params) "$1000.00"))
+      (is (= (utils/formatted-token-fiat-value (assoc default-params :balance 0)) "$0.00"))
       (is (= (utils/formatted-token-fiat-value (assoc default-params :balance 0.000001)) "<$0.01"))
-      (is (= (utils/formatted-token-fiat-value (assoc default-params :balance nil)) "$0"))
+      (is (= (utils/formatted-token-fiat-value (assoc default-params :balance nil)) "$0.00"))
       (is (= (utils/formatted-token-fiat-value
               (assoc default-params :balance 1 :prices-per-token {:ETH {:usd nil}}))
-             "$0"))
+             "$0.00"))
       (is (= (utils/formatted-token-fiat-value
               (assoc default-params :balance 1 :prices-per-token {:ETH {:usd 0}}))
-             "$0")))))
+             "$0.00")))))
 
 (deftest sanitized-token-amount-to-display-test
   (testing "sanitized-token-amount-to-display function"

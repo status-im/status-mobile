@@ -242,8 +242,7 @@
         ^js fiat-price-bn (bignumber fiat-price)]
     (when (and crypto-bn fiat-price-bn)
       (-> crypto-bn
-          (.times fiat-price-bn)
-          (with-precision 2)))))
+          (.times fiat-price-bn)))))
 
 (defn above-zero?
   [^js balance]

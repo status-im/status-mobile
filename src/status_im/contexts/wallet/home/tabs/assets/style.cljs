@@ -7,6 +7,8 @@
 
 (def buy-and-receive-cta-container
   {:flex-direction     :row
-   :justify-content    :space-between
    :padding-horizontal 20
    :padding-vertical   8})
+
+(def cta-card
+  {:flex 1})

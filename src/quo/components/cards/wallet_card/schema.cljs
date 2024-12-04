@@ -10,5 +10,6 @@
       [:subtitle :string]
       [:dismissible? {:optional true} :boolean]
       [:on-press {:optional true} fn?]
-      [:on-press-close {:optional true} fn?]]]]
+      [:on-press-close {:optional true} fn?]
+      [:container-style {:optional true} :map]]]]
    :any])

@@ -178,20 +178,6 @@
   (let [price (get-market-value currency token prices-per-token)]
     (money/crypto->fiat balance price)))
 
-(defn formatted-token-fiat-value
-  "Converts a token balance into its equivalent fiat value, formatted with a currency symbol.
-  If the fiat value is below $0.01, it returns a <$0.01 string"
-  [{:keys [currency currency-symbol balance token prices-per-token]}]
-  (let [price             (or (get-market-value currency token prices-per-token) 0)
-        price-zero?       (zero? price)
-        balance           (or balance 0)
-        balance-positive? (pos? balance)
-        fiat-value        (money/crypto->fiat balance price)
-        fiat-value-zero?  (money/equal-to fiat-value (money/bignumber 0))]
-    (if (and fiat-value-zero? (not price-zero?) balance-positive?)
-      (number/small-number-threshold 2 currency-symbol)
-      (str currency-symbol fiat-value))))
-
 (defn sanitized-token-amount-to-display
   "Formats a token amount to a specified number of decimals.
   Returns a threshold value if the formatted amount is less than the minimum value represented by the decimals."
@@ -278,6 +264,20 @@
       money/bignumber
       money/absolute-value
       (money/to-fixed 2)))
+
+(defn formatted-token-fiat-value
+  "Converts a token balance into its equivalent fiat value, formatted with a currency symbol.
+  If the fiat value is below $0.01, it returns a <$0.01 string"
+  [{:keys [currency currency-symbol balance token prices-per-token]}]
+  (let [price             (or (get-market-value currency token prices-per-token) 0)
+        price-zero?       (zero? price)
+        balance           (or balance 0)
+        balance-positive? (pos? balance)
+        fiat-value        (money/crypto->fiat balance price)
+        fiat-value-zero?  (money/equal-to fiat-value (money/bignumber 0))]
+    (if (and fiat-value-zero? (not price-zero?) balance-positive?)
+      (number/small-number-threshold 2 currency-symbol)
+      (fiat-formatted-for-ui currency-symbol fiat-value))))
 
 (defn calculate-token-value
   "This function returns token values in the props of token-value (quo) component"
