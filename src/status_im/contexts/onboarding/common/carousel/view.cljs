@@ -23,10 +23,10 @@
 
 (defn content-view
   [{:keys [window-width status-bar-height index header-text header-background]} content]
-  (let [content-width (* 4 window-width)]
+  (let [content-width (* 3 window-width)]
     [rn/view {:style {:flex 1}}
      [rn/view {:style (style/header-container status-bar-height content-width index header-background)}
-      (for [index (range 4)]
+      (for [index (range 3)]
         ^{:key index}
         [header-text-view index window-width header-text])]
      (when content content)]))
@@ -35,7 +35,6 @@
   [{:keys [static? progress-bar-width]}]
   [rn/view
    {:style (style/progress-bar progress-bar-width)}
-   [rn/view {:style (style/progress-bar-item static? false)}]
    [rn/view {:style (style/progress-bar-item static? false)}]
    [rn/view {:style (style/progress-bar-item static? false)}]
    [rn/view {:style (style/progress-bar-item static? true)}]])
@@ -65,7 +64,7 @@
           nil)]
     [rn/view {:style {:flex 1}}
      [gesture/gesture-detector {:gesture identified-gesture}
-      [container-view {:style (style/carousel-container carousel-left animate? (* 4 window-width))}
+      [container-view {:style (style/carousel-container carousel-left animate? (* 3 window-width))}
        (for [index (range 1)]
          ^{:key index}
          [content-view

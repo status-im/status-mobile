@@ -3,6 +3,7 @@
 (def ui
   {:add-new-contact               (js/require "../resources/images/ui2/add-contact.png")
    :biometrics                    (js/require "../resources/images/ui2/biometrics.png")
+   :chat-privately-with-friends   (js/require "../resources/images/ui2/chat-privately-with-friends.png")
    :desktop-how-to-pair-sign-in   (js/require "../resources/images/ui2/desktop-how-to-pair-sign-in.png")
    :desktop-how-to-pair-logged-in (js/require
                                    "../resources/images/ui2/desktop-how-to-pair-logged-in.png")
@@ -19,7 +20,6 @@
    :use-keycard                   (js/require "../resources/images/ui2/keycard.png")
    :use-recovery-phrase           (js/require "../resources/images/ui2/recovery-phrase.png")
    :check-your-keycard            (js/require "../resources/images/ui2/check-your-keycard.png")
-   :onboarding-illustration       (js/require "../resources/images/ui2/onboarding_illustration.png")
    :qr-code                       (js/require "../resources/images/ui2/qr-code.png")
    :keycard-logo                  (js/require "../resources/images/ui2/keycard-logo.png")
    :keycard-watermark             (js/require "../resources/images/ui2/keycard-watermark.png")
@@ -35,7 +35,9 @@
    :notifications                 (js/require "../resources/images/ui2/notifications.png")
    :nfc-prompt                    (js/require "../resources/images/ui2/nfc-prompt.png")
    :nfc-success                   (js/require "../resources/images/ui2/nfc-success.png")
+   :own-buy-and-swap-your-crypto  (js/require "../resources/images/ui2/own-buy-and-swap-your-crypto.png")
    :preparing-status              (js/require "../resources/images/ui2/preparing-status.png")
+   :store-your-assets-on-keycard  (js/require "../resources/images/ui2/store-your-assets-on-keycard.png")
    :syncing-devices               (js/require "../resources/images/ui2/syncing_devices.png")
    :syncing-wrong                 (js/require "../resources/images/ui2/syncing_wrong.png")
    :buy                           (js/require "../resources/images/ui2/buy.png")

@@ -8,9 +8,9 @@
 
 (def ^:const progress-bar-animation-delay 300)
 (def ^:const progress-bar-animation-duration 4000)
-(def ^:const initial-division-quotient 5)
+(def ^:const initial-division-quotient 4)
 (def ^:const progress-threshold 25)
-(def ^:const drag-limit 100)
+(def ^:const drag-limit 75)
 
 (defn slide-animation
   [progress-percentage & [duration]]
@@ -50,7 +50,6 @@
         (animate-progress-value (animation-value q 1))
         (animate-progress-value (animation-value q 2))
         (animate-progress-value (animation-value q 3))
-        (animate-progress-value (animation-value q 4))
         (animate-progress-value (calculate-remainder next-progress drag-limit)))
        -1)
       paused?))))
