@@ -2,7 +2,6 @@
   (:require [quo.core :as quo]
             [quo.foundations.colors :as colors]
             [react-native.core :as rn]
-            [react-native.safe-area :as safe-area]
             [status-im.common.events-helper :as events-helper]
             [status-im.common.resources :as resources]
             [status-im.constants :as constants]
@@ -47,11 +46,8 @@
 
 (defn view
   []
-  (let [insets           (safe-area/get-insets)
-        keycard-profile? (rf/sub [:keycard/keycard-profile?])]
-    [quo/overlay
-     {:type            :shell
-      :container-style (style/page-wrapper (:top insets))}
+  (let [keycard-profile? (rf/sub [:keycard/keycard-profile?])]
+    [:<>
      [quo/page-nav
       {:key        :header
        :background :blur

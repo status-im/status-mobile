@@ -2,10 +2,6 @@
   (:require
     [quo.foundations.colors :as colors]))
 
-(defn page-wrapper
-  [inset]
-  {:padding-top inset})
-
 (def registered-keycards-container
   {:gap                12
    :padding-horizontal 20})
