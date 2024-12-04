@@ -18,6 +18,7 @@
                  :post-copy-message (str item-name
                                          " "
                                          (i18n/label :t/sharing-copied-to-clipboard))}]))
+
 (def about-data
   [{:app-info? true}
    {:category-label (i18n/label :t/website)

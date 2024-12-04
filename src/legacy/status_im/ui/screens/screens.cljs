@@ -92,12 +92,6 @@
                 :insets {:top? platform/android?}}
     :component sync-settings/sync-settings}
 
-   ;; ABOUT
-   {:name      :about-app
-    :options   {:topBar {:visible false}
-                :insets {:top? platform/android?}}
-    :component about-app/about-app}
-
    ;; STATUS HELP
    {:name      :help-center
     :options   {:topBar {:visible false}
