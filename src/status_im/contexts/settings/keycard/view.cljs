@@ -5,8 +5,44 @@
             [status-im.common.events-helper :as events-helper]
             [status-im.common.resources :as resources]
             [status-im.constants :as constants]
+            [status-im.contexts.settings.keycard.style :as style]
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]))
+
+(defn registered-keycard
+  [{:keys [profile-name profile-image customization-color]}]
+  [rn/view {:style style/keycard-row}
+   [quo/icon :i/keycard-card
+    {:size  20
+     :color colors/white-70-blur}]
+   [rn/view
+    [quo/text profile-name]
+    [rn/view {:style style/keycard-owner}
+     [quo/user-avatar
+      {:full-name           profile-name
+       :profile-picture     profile-image
+       :customization-color customization-color
+       :status-indicator    false
+       :ring?               false
+       :size                :xxxs}]
+     [quo/text
+      {:size  :paragraph-2
+       :style style/keycard-owner-name}
+      profile-name]]]])
+
+(defn registered-keycards
+  []
+  (let [keycards (rf/sub [:keycard/registered-keycards])]
+    [:<>
+     [quo/divider-label
+      {:counter? false
+       :tight?   true
+       :blur?    true}
+      (i18n/label :t/registered-keycards)]
+     [rn/view {:style style/registered-keycards-container}
+      (for [keycard keycards]
+        ^{:key (:keycard-uid keycard)}
+        [registered-keycard keycard])]]))
 
 (defn view
   []
@@ -20,7 +56,7 @@
      [quo/page-top
       {:title (i18n/label :t/keycard)}]
      (if keycard-profile?
-       [:<>]
+       [registered-keycards]
        [rn/view {:style {:padding-horizontal 28 :padding-top 20}}
         [quo/small-option-card
          {:variant             :main

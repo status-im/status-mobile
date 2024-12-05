@@ -7,6 +7,41 @@
    (not (nil? (get-in db [:profile/profile :keycard-pairing])))))
 
 (rf/reg-sub
+ :keycard/keycard-profile
+ :<- [:profile/name]
+ :<- [:profile/image]
+ :<- [:profile/customization-color]
+ (fn [[profile-name profile-image customization-color]]
+   {:profile-name        profile-name
+    :profile-image       profile-image
+    :customization-color customization-color}))
+
+(defn profile-keypair-keycards?
+  [{:keys [type keycards]}]
+  (and (= :profile type) keycards))
+
+(rf/reg-sub
+ :keycard/keypairs-keycards
+ :<- [:wallet/keypairs-list]
+ (fn [keypairs]
+   (transduce (comp (filter profile-keypair-keycards?)
+                    (mapcat :keycards))
+              conj
+              keypairs)))
+
+(rf/reg-sub
+ :keycard/registered-keycards
+ :<- [:keycard/keycard-profile]
+ :<- [:keycard/keypairs-keycards]
+ (fn [[keycard-profile keycards]]
+   (map (fn [keycard]
+          (assoc keycard
+                 :profile-name        (:profile-name keycard-profile)
+                 :profile-image       (:profile-image keycard-profile)
+                 :customization-color (:customization-color keycard-profile)))
+        keycards)))
+
+(rf/reg-sub
  :keycard/nfc-enabled?
  :<- [:keycard]
  (fn [keycard]
