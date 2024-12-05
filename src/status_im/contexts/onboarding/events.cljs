@@ -3,8 +3,6 @@
     [re-frame.core :as re-frame]
     status-im.common.biometric.events
     [status-im.constants :as constants]
-    [status-im.contexts.profile.create.events :as profile.create]
-    [status-im.contexts.profile.recover.events :as profile.recover]
     [status-im.contexts.shell.constants :as shell.constants]
     [taoensso.timbre :as log]
     [utils.i18n :as i18n]
@@ -78,30 +76,28 @@
  (fn [_ [error]]
    {:dispatch [:biometric/show-message (ex-cause error)]}))
 
-(rf/defn create-account-and-login
-  {:events [:onboarding/create-account-and-login]}
-  [{:keys [db] :as cofx}]
-  (let [{:keys [seed-phrase]
-         :as   profile}            (:onboarding/profile db)
-        syncing-account-recovered? (and (seq (:syncing/key-uid db))
-                                        (= (:syncing/key-uid db)
-                                           (get-in db [:onboarding/profile :key-uid])))]
-    (rf/merge cofx
-              {:fx [[:dispatch
-                     [:navigate-to-within-stack
-                      [:screen/onboarding.preparing-status
-                       (get db
-                            :onboarding/navigated-to-enter-seed-phrase-from-screen
-                            :screen/onboarding.new-to-status)]]]
-                    (when-not syncing-account-recovered?
-                      [:dispatch [:syncing/clear-syncing-installation-id]])]
-               :db (-> db
-                       (dissoc :profile/login)
-                       (dissoc :auth-method)
-                       (assoc :onboarding/new-account? true))}
-              (if seed-phrase
-                (profile.recover/recover-profile-and-login profile)
-                (profile.create/create-profile-and-login profile)))))
+(rf/reg-event-fx :onboarding/create-account-and-login
+ (fn [{:keys [db]}]
+   (let [{:keys [seed-phrase]
+          :as   profile}            (:onboarding/profile db)
+         syncing-account-recovered? (and (seq (:syncing/key-uid db))
+                                         (= (:syncing/key-uid db)
+                                            (get-in db [:onboarding/profile :key-uid])))]
+     {:db (-> db
+              (dissoc :profile/login)
+              (dissoc :auth-method)
+              (assoc :onboarding/new-account? true))
+      :fx [[:dispatch
+            [:navigate-to-within-stack
+             [:screen/onboarding.preparing-status
+              (get db
+                   :onboarding/navigated-to-enter-seed-phrase-from-screen
+                   :screen/onboarding.new-to-status)]]]
+           (when-not syncing-account-recovered?
+             [:dispatch [:syncing/clear-syncing-installation-id]])
+           (if seed-phrase
+             [:dispatch [:profile.recover/recover-and-login profile]]
+             [:dispatch [:profile.create/create-and-login profile]])]})))
 
 (rf/defn on-delete-profile-success
   {:events [:onboarding/on-delete-profile-success]}
@@ -207,4 +203,3 @@
               :on-error        #(log/error "failed to save biometrics"
                                            {:key-uid key-uid
                                             :error   %})}))))
-

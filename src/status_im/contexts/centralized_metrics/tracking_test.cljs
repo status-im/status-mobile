@@ -42,19 +42,19 @@
 
 (deftest track-view-id-event-test
   (testing "returns correct navigation event for view-id"
-    (is (= {:metric
-            {:eventName  "navigation"
-             :platform   platform-os
-             :appVersion app-version
-             :eventValue {:viewId "communities-stack"}}}
+    (is (= [{:metric
+             {:eventName  "navigation"
+              :platform   platform-os
+              :appVersion app-version
+              :eventValue {:viewId "communities-stack"}}}]
            (tracking/track-view-id-event :communities-stack)))
-    (is (= {:metric
-            {:eventName  "navigation"
-             :platform   platform-os
-             :appVersion app-version
-             :eventValue {:viewId "onboarding.create-profile-info"}}}
+    (is (= [{:metric
+             {:eventName  "navigation"
+              :platform   platform-os
+              :appVersion app-version
+              :eventValue {:viewId "onboarding.create-profile-info"}}}]
            (tracking/track-view-id-event :screen/onboarding.create-profile)))
-    (is (nil? (tracking/track-view-id-event :unknown-stack)))))
+    (is (= [] (tracking/track-view-id-event :unknown-stack)))))
 
 (deftest tracked-event-test
   (testing "returns correct event for given inputs"
@@ -70,16 +70,16 @@
              :appVersion app-version
              :eventValue {:enabled true}}}
            (tracking/metrics-event [:centralized-metrics/toggle-centralized-metrics true])))
-    (is (= {:metric
-            {:eventName  "navigation"
-             :platform   platform-os
-             :appVersion app-version
-             :eventValue {:viewId "wallet-stack"}}}
+    (is (= [{:metric
+             {:eventName  "navigation"
+              :platform   platform-os
+              :appVersion app-version
+              :eventValue {:viewId "wallet-stack"}}}]
            (tracking/metrics-event [:set-view-id :wallet-stack])))
     (is (nil? (tracking/metrics-event [:unknown-event])))
-    (is (= {:metric
-            {:eventName  "navigation"
-             :platform   platform-os
-             :appVersion app-version
-             :eventValue {:viewId "onboarding.intro"}}}
+    (is (= [{:metric
+             {:eventName  "navigation"
+              :platform   platform-os
+              :appVersion app-version
+              :eventValue {:viewId "onboarding.intro"}}}]
            (tracking/metrics-event [:set-view-id :screen/onboarding.intro])))))

@@ -4,7 +4,6 @@
     [re-frame.interceptor :as interceptor]
     status-im.contexts.centralized-metrics.effects
     [status-im.contexts.centralized-metrics.tracking :as tracking]
-    [taoensso.timbre :as log]
     [utils.re-frame :as rf]))
 
 (defn push-event?
@@ -16,7 +15,6 @@
   [context]
   (when (push-event? (interceptor/get-coeffect context :db))
     (when-let [event (tracking/metrics-event (interceptor/get-coeffect context :event))]
-      (log/debug "tracking event" event)
       (if (or (seq? event) (vector? event))
         (doseq [e event]
           (native-module/add-centralized-metric e))

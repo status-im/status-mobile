@@ -6,12 +6,15 @@
     [status-im.navigation.screens :as screens]))
 
 (defn key-value-event
-  [event-name event-value]
-  {:metric
-   {:eventName  event-name
-    :platform   platform/os
-    :appVersion build/app-short-version
-    :eventValue event-value}})
+  ([event-name]
+   (key-value-event event-name nil))
+  ([event-name event-value]
+   (cond-> {:metric
+            {:eventName  event-name
+             :platform   platform/os
+             :appVersion build/app-short-version}}
+     event-value
+     (assoc-in [:metric :eventValue] event-value))))
 
 (defn user-journey-event
   [action]
@@ -41,11 +44,16 @@
 
 (defn track-view-id-event
   [view-id]
-  (if-let [screen (get screens/screens-by-name view-id)]
-    (when (get-in screen [:metrics :track?])
-      (screen-event screen {}))
-    (when (contains? view-ids-to-track view-id)
-      (navigation-event (name view-id)))))
+  (let [screen (get screens/screens-by-name view-id)]
+    (cond-> []
+      (get-in screen [:metrics :track?])
+      (conj (screen-event screen {}))
+
+      (contains? view-ids-to-track view-id)
+      (conj (navigation-event (name view-id)))
+
+      (= :screen/onboarding.syncing-results view-id)
+      (conj (key-value-event "onboarding-completed")))))
 
 (defn navigated-to-collectibles-tab-event
   [location]
@@ -59,6 +67,13 @@
 
     :centralized-metrics/toggle-centralized-metrics
     (key-value-event "events.metrics-enabled" {:enabled rf-event-parameter})
+
+    :profile.login/non-critical-initialization
+    (key-value-event "user-logged-in")
+
+    (:profile.create/create-and-login
+     :profile.recover/recover-and-login)
+    (key-value-event "onboarding-completed")
 
     :set-view-id
     (track-view-id-event rf-event-parameter)

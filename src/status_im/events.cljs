@@ -31,7 +31,9 @@
     status-im.contexts.network.events
     status-im.contexts.onboarding.common.overlay.events
     status-im.contexts.onboarding.events
+    status-im.contexts.profile.create.events
     status-im.contexts.profile.events
+    status-im.contexts.profile.recover.events
     status-im.contexts.profile.settings.events
     status-im.contexts.settings.language-and-currency.events
     status-im.contexts.settings.wallet.saved-addresses.events
