@@ -64,13 +64,10 @@
   Example usage:
   (convert-to-whole-number 12345 2) ; => 123.45"
   [amount decimals]
-  (let [amount-bn  (money/->bignumber amount)
-        divisor-bn (money/->bignumber (Math/pow 10 decimals))]
-    (if (and amount-bn divisor-bn)
-      (let [result (.div amount-bn divisor-bn)]
-        (-> (.toFixed result decimals)
-            utils.number/remove-trailing-zeroes))
-      "0")))
+  (when-let [[amount-bn divisor-bn] (money/->bignumbers amount (Math/pow 10 decimals))]
+    (-> (.div amount-bn divisor-bn)
+        (.toFixed decimals)
+        remove-trailing-zeroes)))
 
 (defn hex->whole
   [num decimals]
