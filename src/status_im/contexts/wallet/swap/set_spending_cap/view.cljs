@@ -228,6 +228,7 @@
       :container-style     {:z-index 2}
       :customization-color (:color account)
       :disabled?           (or loading-swap-proposal? (not swap-proposal))
+      :keycard-supported?  true
       :on-auth-success     on-auth-success
       :auth-button-label   (i18n/label :t/confirm)}]))
 

@@ -178,6 +178,7 @@
                                (not swap-proposal)
                                (not transaction-for-signing))
       :auth-button-label   (i18n/label :t/confirm)
+      :keycard-supported?  true
       :on-auth-success     (fn [data]
                              (rf/dispatch [:wallet/stop-get-swap-proposal])
                              (rf/dispatch [:wallet/prepare-signatures-for-transactions :swap data]))}]))
