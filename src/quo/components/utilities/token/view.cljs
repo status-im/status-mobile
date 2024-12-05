@@ -1,7 +1,6 @@
 (ns quo.components.utilities.token.view
   (:require
     [clojure.string :as string]
-    [quo.components.markdown.text :as quo]
     [quo.components.utilities.token.loader :as token-loader]
     [react-native.core :as rn]
     [schema.core :as schema]
@@ -33,22 +32,7 @@
            :height size-number)))
 
 (def ^:private b64-png-image-prefix "data:image/png;base64,")
-
-(defn temp-empty-symbol
-  [token size style]
-  [rn/view
-   {:style (token-style (merge {:justify-content :center
-                                :align-items     :center
-                                :border-radius   20
-                                :border-width    1
-                                :border-color    :grey}
-                               style)
-                        size)}
-   [quo/text {:style {:color :grey}}
-    (some-> token
-            name
-            first
-            string/capitalize)]])
+(def ^:const default-token-image (js/require "../resources/images/tokens/default-token.png"))
 
 (defn- normalize-b64-string
   [b64-image]
@@ -69,13 +53,12 @@
   "
   [{:keys [token size style image-source]
     :or   {size 32}}]
-  (let [img-src (if (string? image-source)
-                  (normalize-b64-string image-source)
-                  image-source)]
-    (if-let [existing-source (or img-src (token-loader/get-token-image token))]
-      [rn/image
-       {:style  (token-style style size)
-        :source existing-source}]
-      [temp-empty-symbol token size style])))
+  (let [img-src     (if (string? image-source)
+                      (normalize-b64-string image-source)
+                      image-source)
+        token-image (or img-src (token-loader/get-token-image token) default-token-image)]
+    [rn/image
+     {:style  (token-style style size)
+      :source token-image}]))
 
 (def view (schema/instrument #'view-internal ?schema))
