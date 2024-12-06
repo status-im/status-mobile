@@ -124,25 +124,21 @@
               [:navigate-to-within-stack [:screen/onboarding.enable-biometrics from-screen]]
               [:onboarding/create-account-and-login])]]})))
 
-(rf/defn navigate-to-enable-biometrics
-  {:events [:onboarding/navigate-to-enable-biometrics]}
-  [{:keys [db]}]
-  (let [supported-type (get-in db [:biometrics :supported-type])]
-    {:dispatch (if supported-type
-                 [:open-modal :screen/onboarding.enable-biometrics]
-                 [:open-modal :screen/onboarding.enable-notifications])}))
+(rf/reg-event-fx
+ :onboarding/navigate-to-enable-biometrics
+ (fn [{:keys [db]}]
+   (let [supported-type (get-in db [:biometrics :supported-type])]
+     {:dispatch (if supported-type
+                  [:open-modal :screen/onboarding.enable-biometrics]
+                  [:open-modal :screen/onboarding.enable-notifications])})))
 
 (rf/reg-event-fx
  :onboarding/seed-phrase-validated
  (fn [{:keys [db]} [seed-phrase key-uid]]
-   (let [syncing-account-recovered? (and (seq (:syncing/key-uid db))
-                                         (= (:syncing/key-uid db) key-uid))
-         next-screen                (if syncing-account-recovered?
-                                      :screen/onboarding.create-profile-password
-                                      :screen/onboarding.create-profile)
-         from-screen                (get db
-                                         :onboarding/navigated-to-enter-seed-phrase-from-screen
-                                         :screen/onboarding.new-to-status)]
+   (let [next-screen :screen/onboarding.create-profile-password
+         from-screen (get db
+                          :onboarding/navigated-to-enter-seed-phrase-from-screen
+                          :screen/onboarding.new-to-status)]
      (if (contains? (:profile/profiles-overview db) key-uid)
        {:fx [[:effects.utils/show-confirmation
               {:title               (i18n/label :t/multiaccount-exists-title)
