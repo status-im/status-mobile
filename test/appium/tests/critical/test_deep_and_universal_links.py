@@ -13,9 +13,9 @@ class TestDeepLinksOneDevice(MultipleSharedDeviceTestCase):
         self.drivers, self.loop = create_shared_drivers(1)
         self.driver = self.drivers[0]
         self.sign_in = SignInView(self.driver)
-        self.username = 'test user'
 
-        self.home = self.sign_in.create_user(username=self.username)
+        self.home = self.sign_in.create_user()
+        self.username = self.home.get_username()
         self.home.communities_tab.click_until_presence_of_element(self.home.plus_community_button)
         self.open_community_name = "open community"
         self.channel_name = "general"

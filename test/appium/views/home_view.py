@@ -624,3 +624,10 @@ class HomeView(BaseView):
         element = Text(self.driver, accessibility_id='new-device-installation-id')
         element.wait_for_visibility_of_element()
         return element.text
+
+    def get_username(self):
+        profile = self.profile_button.click()
+        profile.default_username_text.wait_for_element(3)
+        username = profile.default_username_text.text
+        profile.click_system_back_button()
+        return username

@@ -20,10 +20,10 @@ class TestFallbackMultipleDevice(MultipleSharedDeviceTestCase):
             self.sign_in_3.get_home_view()
         self.sign_in_1.just_fyi("Device 1: create a new user")
         self.sign_in_3.just_fyi("Device 3: create a new user")
-        self.user_name_1, self.user_name_3 = 'first user', 'third user'
         self.loop.run_until_complete(
-            run_in_parallel(((self.sign_in_1.create_user, {'username': self.user_name_1}),
-                             (self.sign_in_3.create_user, {'username': self.user_name_3}))))
+            run_in_parallel(((self.sign_in_1.create_user,),
+                             (self.sign_in_3.create_user,))))
+        self.user_name_1, self.user_name_3 = self.home_1.get_username(), self.home_3.get_username()
         self.profile_1 = self.home_1.profile_button.click()
         self.profile_2 = self.home_2.get_profile_view()
         self.sign_in_3.just_fyi("Device 3: get public key")
