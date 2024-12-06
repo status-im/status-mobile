@@ -150,7 +150,7 @@ This one is straightforward, just evaluate a navigation dispatch form from anywh
 
 #### REPL-ing a component
 
-This is also straighforward, but there are some small differences. Just like above, we only have to evaluate a dispatch form, as follows:
+This is also straightforward, but there are some small differences. Just like above, we only have to evaluate a dispatch form, as follows:
 
 ```cljs
 ;; example debugging a quo component, although it could be any other component e.g. from the `status-im2` ns.
