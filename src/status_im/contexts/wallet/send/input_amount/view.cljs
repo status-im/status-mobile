@@ -258,8 +258,6 @@
                                              (set-input-state
                                               #(controlled-input/->crypto % conversion-rate)))
                                            (set-crypto-currency (not crypto-currency?)))]
-    (rn/use-unmount
-     #(rf/dispatch [:wallet/clean-up-transaction-flow]))
     (rn/use-effect
      (fn []
        (when active-screen?
