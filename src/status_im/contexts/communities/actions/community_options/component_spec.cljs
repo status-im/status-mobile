@@ -130,4 +130,12 @@
                                                             :role-permissions? true}
                    :profile/test-networks-enabled?         false})
     (h/render [options/community-options-bottom-sheet {:id "test"}])
-    (h/is-truthy (h/get-by-translation-text :t/unmute-community))))
+    (h/is-truthy (h/get-by-translation-text :t/unmute-community)))
+
+  (h/test "opened community"
+    (h/setup-subs {:communities/my-pending-request-to-join nil
+                   :communities/community                  {:joined    false
+                                                            :spectated true}
+                   :profile/test-networks-enabled?         false})
+    (h/render [options/community-options-bottom-sheet {:id "test"}])
+    (h/is-truthy (h/get-by-translation-text :t/close-community))))

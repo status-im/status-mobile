@@ -124,6 +124,14 @@
    :on-press            #(rf/dispatch [:show-bottom-sheet
                                        {:content (fn [] [leave-menu/leave-sheet id color])}])})
 
+(defn close-community
+  [id]
+  {:icon                :i/close-circle
+   :label               (i18n/label :t/close-community)
+   :accessibility-label :close-community
+   :danger?             true
+   :on-press            #(rf/dispatch [:communities/leave id])})
+
 (defn cancel-request-to-join
   [id request-id]
   {:icon                :i/block
@@ -135,7 +143,7 @@
                                                          request-id])}])})
 
 (defn not-joined-options
-  [id token-gated? intro-message test-networks-enabled?]
+  [{:keys [id join-pending? spectated? token-gated? intro-message test-networks-enabled?]}]
   (let [common   [(show-qr id) (share-community id)]
         specific (cond
                    (and token-gated? (not test-networks-enabled?))
@@ -146,19 +154,22 @@
 
                    (not token-gated?)
                    [(view-members id) (view-rules id intro-message) (invite-contacts id)])]
-    [(concat specific common)]))
+    [(concat specific
+             common
+             (when (and spectated? (not join-pending?))
+               [(assoc (close-community id) :add-divider? true)]))]))
 
 (defn join-request-sent-options
-  [id token-gated? request-id intro-message test-networks-enabled?]
-  [(conj (first (not-joined-options id token-gated? intro-message test-networks-enabled?))
+  [{:keys [id request-id] :as config}]
+  [(conj (first (not-joined-options config))
          (assoc (cancel-request-to-join id request-id) :add-divider? true))])
 
 (defn banned-options
-  [id token-gated? intro-message test-networks-enabled?]
-  (not-joined-options id token-gated? intro-message test-networks-enabled?))
+  [config]
+  (not-joined-options config))
 
 (defn joined-options
-  [id token-gated? muted? muted-till color intro-message]
+  [{:keys [id token-gated? muted? muted-till color intro-message]}]
   [[(view-members id)
     (view-rules id intro-message)
     (when token-gated? (view-token-gating id))
@@ -173,7 +184,7 @@
    [(assoc (leave-community id color) :add-divider? true)]])
 
 (defn owner-options
-  [id token-gated? muted? muted-till intro-message]
+  [{:keys [id token-gated? muted? muted-till intro-message]}]
   [[(view-members id)
     (view-rules id intro-message)
     (when token-gated? (view-token-gating id))
@@ -186,22 +197,29 @@
 
 (defn get-context-drawers
   [{:keys [id]}]
-  (let [{:keys [role-permissions? admin joined
-                muted banList muted-till color
-                intro-message]} (rf/sub [:communities/community id])
-        request-id              (rf/sub [:communities/my-pending-request-to-join id])
-        test-networks?          (rf/sub [:profile/test-networks-enabled?])]
+  (let [{:keys
+         [id admin joined
+          banList color muted muted-till
+          spectated role-permissions?
+          intro-message]} (rf/sub [:communities/community id])
+        request-id        (rf/sub [:communities/my-pending-request-to-join id])
+        test-networks?    (rf/sub [:profile/test-networks-enabled?])
+        config            {:id             id
+                           :color          color
+                           :muted-till     muted-till
+                           :muted?         muted
+                           :spectated?     spectated
+                           :token-gated?   role-permissions?
+                           :intro-message  intro-message
+                           :test-networks? test-networks?
+                           :join-pending?  (boolean request-id)
+                           :request-id     request-id}]
     (cond
-      admin
-      (owner-options id role-permissions? muted muted-till intro-message)
-      joined
-      (joined-options id role-permissions? muted muted-till color intro-message)
-      request-id
-      (join-request-sent-options id role-permissions? request-id intro-message test-networks?)
-      banList
-      (banned-options id role-permissions? intro-message test-networks?)
-      :else
-      (not-joined-options id role-permissions? intro-message test-networks?))))
+      admin      (owner-options config)
+      joined     (joined-options config)
+      request-id (join-request-sent-options config)
+      banList    (banned-options config)
+      :else      (not-joined-options config))))
 
 (defn community-options-bottom-sheet
   [id]
