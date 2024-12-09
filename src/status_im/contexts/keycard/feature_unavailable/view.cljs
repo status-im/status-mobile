@@ -1,4 +1,4 @@
-(ns status-im.common.feature-unavailable.view
+(ns status-im.contexts.keycard.feature-unavailable.view
   (:require
     [quo.core :as quo]
     [status-im.constants :as constants]

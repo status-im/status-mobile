@@ -1,4 +1,4 @@
-(ns status-im.common.feature-unavailable.events
+(ns status-im.contexts.keycard.feature-unavailable.events
   (:require
     [status-im.common.feature-unavailable.view :as feature-unavailable]
     [utils.re-frame :as rf]))
