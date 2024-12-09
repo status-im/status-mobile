@@ -107,9 +107,7 @@
 
 (defn- show-feature-unavailable
   []
-  (rf/dispatch [:feature-unavailable/open-modal
-                {:description
-                 (i18n/label :t/feature-unavailable-keycard-description)}]))
+  (rf/dispatch [:keycard/feature-unavailable-show]))
 
 (defn- request-access-button
   [id color keycard?]

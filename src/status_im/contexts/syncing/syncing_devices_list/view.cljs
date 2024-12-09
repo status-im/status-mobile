@@ -16,10 +16,7 @@
 
 (defn- show-feature-unavailable
   [theme]
-  (rf/dispatch [:feature-unavailable/open-modal
-                {:theme theme
-                 :description
-                 (i18n/label :t/feature-unavailable-keycard-description)}]))
+  (rf/dispatch [:keycard/feature-unavailable-show {:theme theme}]))
 
 (defn open-setup-syncing
   [customization-color]

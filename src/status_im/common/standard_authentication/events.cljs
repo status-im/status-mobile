@@ -22,10 +22,7 @@
      [(if keycard?
         (if keycard-supported?
           [:effects.keycard/call-on-auth-success on-auth-success]
-          [:dispatch
-           [:feature-unavailable/open-modal
-            {:theme       theme
-             :description (i18n/label :t/feature-unavailable-keycard-description)}]])
+          [:dispatch [:keycard/feature-unavailable-show {:theme theme}]])
         [:effects.biometric/check-if-available
          {:key-uid    key-uid
           :on-success #(rf/dispatch [:standard-auth/authorize-with-biometric args])

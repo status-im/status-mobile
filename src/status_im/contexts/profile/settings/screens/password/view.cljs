@@ -10,9 +10,7 @@
   [button-label theme keycard-profile?]
   (fn []
     (if keycard-profile?
-      (rf/dispatch [:feature-unavailable/open-modal
-                    {:theme       :dark
-                     :description (i18n/label :t/feature-unavailable-keycard-description)}])
+      (rf/dispatch [:keycard/feature-unavailable-show {:theme :dark}])
       (rf/dispatch
        [:standard-auth/authorize-with-password
         {:blur?             true
