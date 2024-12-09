@@ -124,6 +124,12 @@
    [quo/text {:size :paragraph-2}
     (i18n/label :t/token-gated-communities-info)]])
 
+(defn- show-feature-unavailable
+  []
+  (rf/dispatch [:feature-unavailable/open-modal
+                {:description
+                 (i18n/label :t/feature-unavailable-keycard-description)}]))
+
 (defn- token-requirements
   [{:keys [id color role-permissions?]}]
   (let [{:keys [can-request-access? no-member-permission? networks-not-supported?
@@ -140,7 +146,8 @@
                                              {:id id}])))
                            [id])
         on-press-info     #(rf/dispatch
-                            [:show-bottom-sheet {:content token-gated-communities-info}])]
+                            [:show-bottom-sheet {:content token-gated-communities-info}])
+        keycard?          (rf/sub [:keycard/keycard-profile?])]
     (cond
       networks-not-supported?
       [network-not-supported]
@@ -154,7 +161,7 @@
         :tokens          tokens
         :community-color color
         :satisfied?      can-request-access?
-        :on-press        on-press
+        :on-press        (if keycard? show-feature-unavailable on-press)
         :on-press-info   on-press-info}])))
 
 (defn- join-community
