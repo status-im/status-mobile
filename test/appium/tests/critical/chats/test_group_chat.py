@@ -21,17 +21,25 @@ class TestGroupChatMultipleDeviceMergedNewUI(MultipleSharedDeviceTestCase):
         self.message_to_admin = 'Hey, admin!'
         self.public_keys, self.usernames, self.chats = {}, {}, {}
         self.sign_in_views = [SignInView(self.drivers[key]) for key in self.drivers]
-        self.usernames = ('user admin', 'member_1', 'member_2')
         self.loop.run_until_complete(
             run_in_parallel(
                 (
-                    (self.sign_in_views[0].create_user, {'enable_notifications': True, 'username': self.usernames[0]}),
-                    (self.sign_in_views[1].create_user, {'enable_notifications': True, 'username': self.usernames[1]}),
-                    (self.sign_in_views[2].create_user, {'enable_notifications': True, 'username': self.usernames[2]})
+                    (self.sign_in_views[0].create_user, {'enable_notifications': True}),
+                    (self.sign_in_views[1].create_user, {'enable_notifications': True}),
+                    (self.sign_in_views[2].create_user, {'enable_notifications': True})
                 )
             )
         )
         self.homes = [sign_in.get_home_view() for sign_in in self.sign_in_views]
+        self.usernames = self.loop.run_until_complete(
+            run_in_parallel(
+                (
+                    (self.homes[0].get_username,),
+                    (self.homes[1].get_username,),
+                    (self.homes[2].get_username,)
+                )
+            )
+        )
         self.public_keys = self.loop.run_until_complete(
             run_in_parallel(
                 (

@@ -52,8 +52,8 @@
              {:eventName  "navigation"
               :platform   platform-os
               :appVersion app-version
-              :eventValue {:viewId "onboarding.create-profile-info"}}}]
-           (tracking/track-view-id-event :screen/onboarding.create-profile)))
+              :eventValue {:viewId "onboarding.create-profile-password"}}}]
+           (tracking/track-view-id-event :screen/onboarding.create-profile-password)))
     (is (= [] (tracking/track-view-id-event :unknown-stack)))))
 
 (deftest tracked-event-test

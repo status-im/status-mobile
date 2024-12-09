@@ -20,13 +20,11 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
         self.drivers, self.loop = create_shared_drivers(2)
         self.device_1, self.device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
 
-        self.username_1, self.username_2 = 'sender', 'receiver'
-        self.loop.run_until_complete(run_in_parallel(((self.device_1.create_user, {'enable_notifications': True,
-                                                                                   'username': self.username_1}),
-                                                      (self.device_2.create_user, {'enable_notifications': True,
-                                                                                   'username': self.username_2}))))
+        self.loop.run_until_complete(run_in_parallel(((self.device_1.create_user, {'enable_notifications': True}),
+                                                      (self.device_2.create_user, {'enable_notifications': True}))))
         self.home_1, self.home_2 = self.device_1.get_home_view(), self.device_2.get_home_view()
         self.homes = (self.home_1, self.home_2)
+        self.username_1, self.username_2 = self.home_1.get_username(), self.home_2.get_username()
         self.profile_1, self.profile_2 = (home.get_profile_view() for home in self.homes)
         self.public_key_2 = self.home_2.get_public_key()
 
@@ -543,13 +541,11 @@ class TestOneToOneChatMultipleSharedDevicesNewUiTwo(MultipleSharedDeviceTestCase
         self.drivers, self.loop = create_shared_drivers(2)
         self.device_1, self.device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
 
-        self.username_1, self.username_2 = 'sender', 'receiver'
-        self.loop.run_until_complete(run_in_parallel(((self.device_1.create_user, {'enable_notifications': True,
-                                                                                   'username': self.username_1}),
-                                                      (self.device_2.create_user, {'enable_notifications': True,
-                                                                                   'username': self.username_2}))))
+        self.loop.run_until_complete(run_in_parallel(((self.device_1.create_user, {'enable_notifications': True}),
+                                                      (self.device_2.create_user, {'enable_notifications': True}))))
         self.home_1, self.home_2 = self.device_1.get_home_view(), self.device_2.get_home_view()
         self.homes = (self.home_1, self.home_2)
+        self.username_1, self.username_2 = self.home_1.get_username(), self.home_2.get_username()
         self.profile_1, self.profile_2 = (home.get_profile_view() for home in self.homes)
         self.public_key_2 = self.home_2.get_public_key()
 

@@ -21,9 +21,9 @@ class TestCommunityOneDeviceMerged(MultipleSharedDeviceTestCase):
     def prepare_devices(self):
         self.drivers, self.loop = create_shared_drivers(1)
         self.sign_in = SignInView(self.drivers[0])
-        self.username = 'first user'
 
-        self.home = self.sign_in.create_user(username=self.username)
+        self.home = self.sign_in.create_user()
+        self.username = self.home.get_username()
         self.home.communities_tab.click_until_presence_of_element(self.home.plus_community_button)
         self.community_name = "closed community"
         self.channel_name = "cats"
@@ -158,8 +158,8 @@ class TestCommunityOneDeviceMerged(MultipleSharedDeviceTestCase):
     def test_restore_multiaccount_with_waku_backup_remove_profile_switch(self):
         self.home.reopen_app(sign_in=False)
         self.home.just_fyi("Restore user with predefined communities and contacts")
-        recover_user_name = 'Recover user'
-        self.sign_in.recover_access(passphrase=waku_user.seed, second_user=True, username=recover_user_name)
+        self.sign_in.recover_access(passphrase=waku_user.seed, second_user=True)
+        recover_user_name = self.home.get_username()
 
         self.home.just_fyi("Check contacts/blocked users")
         self.home.chats_tab.click()
@@ -306,11 +306,10 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
     def prepare_devices(self):
         self.drivers, self.loop = create_shared_drivers(2)
         self.device_1, self.device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
-        self.username_1, self.username_2 = "user_1", "user_2"
-        self.loop.run_until_complete(run_in_parallel(((self.device_1.create_user, {'enable_notifications': True,
-                                                                                   'username': self.username_1}),
-                                                      (self.device_2.create_user, {'username': self.username_2}))))
+        self.loop.run_until_complete(run_in_parallel(((self.device_1.create_user, {'enable_notifications': True}),
+                                                      (self.device_2.create_user,))))
         self.homes = self.home_1, self.home_2 = self.device_1.get_home_view(), self.device_2.get_home_view()
+        self.username_1, self.username_2 = self.home_1.get_username(), self.home_2.get_username()
         self.public_key_2 = self.home_2.get_public_key()
         self.profile_1 = self.home_1.get_profile_view()
         [home.navigate_back_to_home_view() for home in self.homes]
@@ -836,12 +835,10 @@ class TestCommunityMultipleDeviceMergedTwo(MultipleSharedDeviceTestCase):
     def prepare_devices(self):
         self.drivers, self.loop = create_shared_drivers(2)
         self.device_1, self.device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
-        self.username_1, self.username_2 = "user_1", "user_2"
-        self.loop.run_until_complete(run_in_parallel(((self.device_1.create_user, {'enable_notifications': True,
-                                                                                   'username': self.username_1}),
-                                                      (self.device_2.create_user, {'enable_notifications': True,
-                                                                                   'username': self.username_2}))))
+        self.loop.run_until_complete(run_in_parallel(((self.device_1.create_user, {'enable_notifications': True}),
+                                                      (self.device_2.create_user, {'enable_notifications': True}))))
         self.homes = self.home_1, self.home_2 = self.device_1.get_home_view(), self.device_2.get_home_view()
+        self.username_1, self.username_2 = self.home_1.get_username(), self.home_2.get_username()
         self.public_key_2 = self.home_2.get_public_key()
         self.profile_1 = self.home_1.get_profile_view()
         [home.navigate_back_to_home_view() for home in self.homes]

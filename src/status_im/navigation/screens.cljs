@@ -43,7 +43,6 @@
     [status-im.contexts.keycard.pin.enter.view :as keycard.pin.enter]
     [status-im.contexts.onboarding.create-or-sync-profile.view :as create-or-sync-profile]
     [status-im.contexts.onboarding.create-password.view :as create-password]
-    [status-im.contexts.onboarding.create-profile.view :as create-profile]
     [status-im.contexts.onboarding.enable-biometrics.view :as enable-biometrics]
     [status-im.contexts.onboarding.enable-notifications.view :as enable-notifications]
     [status-im.contexts.onboarding.identifiers.view :as identifiers]
@@ -728,16 +727,6 @@
                :modalPresentationStyle :overCurrentContext}
    :component create-or-sync-profile/sync-or-recover-profile})
 
-(def onboarding-create-profile
-  {:name      :screen/onboarding.create-profile
-   :metrics   {:track?   true
-               :alias-id :onboarding.create-profile-info}
-   :options   {:theme      :dark
-               :layout     options/onboarding-transparent-layout
-               :animations transitions/push-animations-for-transparent-background
-               :popGesture false}
-   :component create-profile/create-profile})
-
 (def onboarding-create-profile-password
   {:name      :screen/onboarding.create-profile-password
    :metrics   {:track?   true
@@ -872,7 +861,6 @@
   [onboarding-intro
    onboarding-new-to-status
    onboarding-sync-or-recover-profile
-   onboarding-create-profile
    onboarding-create-profile-password
    onboarding-enable-biometrics
    onboarding-preparing-status

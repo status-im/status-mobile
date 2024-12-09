@@ -152,15 +152,12 @@
 
 (rf/reg-event-fx
  :profile.login/login-node-signal
- (fn [{{:onboarding/keys [recovered-account? new-account?] :as db} :db}
-      [{:keys [settings account ensUsernames error]}]]
+ (fn [{db :db} [{:keys [settings account ensUsernames error]}]]
    (log/debug "[signals] node.login" "error" error)
    (if error
      {:db (update db :profile/login #(-> % (dissoc :processing) (assoc :error error)))}
      {:db (dissoc db :profile/login)
-      :fx [(when (and new-account? (not recovered-account?))
-             [:dispatch-later [{:ms 1000 :dispatch [:wallet-legacy/set-initial-blocks-range]}]])
-           [:dispatch-later [{:ms 2000 :dispatch [:ens/update-usernames ensUsernames]}]]
+      :fx [[:dispatch-later [{:ms 2000 :dispatch [:ens/update-usernames ensUsernames]}]]
            [:dispatch [:profile.login/login-existing-profile settings account]]]})))
 
 (rf/reg-event-fx

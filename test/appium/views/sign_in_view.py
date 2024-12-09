@@ -211,7 +211,7 @@ class SignInView(BaseView):
         self.profile_continue_button = Button(self.driver, accessibility_id="submit-create-profile-button")
         self.profile_password_edit_box = EditBox(self.driver, translation_id="password-creation-placeholder-1")
         self.profile_repeat_password_edit_box = EditBox(self.driver, translation_id="password-creation-placeholder-2")
-        self.profile_confirm_password_button = Button(self.driver, translation_id="password-creation-confirm")
+        self.profile_confirm_password_button = Button(self.driver, accessibility_id="Confirm password")
         self.enable_biometric_maybe_later_button = Button(self.driver, translation_id="maybe-later")
         self.identifiers_button = Button(self.driver, accessibility_id="skip-identifiers")
         self.start_button = Button(self.driver, accessibility_id="welcome-button")
@@ -228,8 +228,6 @@ class SignInView(BaseView):
         input_elements[0].send_keys(password)
         input_elements[1].click()
         input_elements[1].send_keys(password)
-        self.checkbox_button.scroll_to_element()
-        self.checkbox_button.click()
         self.profile_confirm_password_button.click()
 
     def set_profile(self, username: str, set_image=False):
@@ -238,7 +236,7 @@ class SignInView(BaseView):
         if set_image:
             pass
 
-    def create_user(self, password=common_password, username="test user", first_user=True, enable_notifications=False):
+    def create_user(self, password=common_password, first_user=True, enable_notifications=False):
         self.driver.info("## Creating new multiaccount with password:'%s'" % password, device=False)
         if first_user:
             self.create_profile_button.click_until_presence_of_element(self.start_fresh_lets_go_button)
@@ -249,7 +247,6 @@ class SignInView(BaseView):
             self.plus_profiles_button.click()
             self.create_new_profile_button.click()
         self.start_fresh_lets_go_button.click_until_presence_of_element(self.profile_title_input)
-        self.set_profile(username)
         self.set_password(password)
         self.chats_tab.wait_for_visibility_of_element(30)
         self.driver.info("## New multiaccount is created successfully!", device=False)
@@ -261,7 +258,7 @@ class SignInView(BaseView):
         return home_view
 
     def recover_access(self, passphrase: str, password: str = common_password, enable_notifications=False,
-                       second_user=False, username='Restore user', set_image=False, after_sync_code=False):
+                       second_user=False, after_sync_code=False):
         self.driver.info("## Recover access (password:%s)" % password, device=False)
 
         if not after_sync_code:
@@ -274,8 +271,6 @@ class SignInView(BaseView):
             self.use_recovery_phrase_button.click()
         self.passphrase_edit_box.send_keys(passphrase)
         self.continue_button.click_until_presence_of_element(self.profile_title_input)
-        if not after_sync_code:
-            self.set_profile(username, set_image)
         self.set_password(password)
         self.chats_tab.wait_for_visibility_of_element(30)
         self.driver.info("## Multiaccount is recovered successfully!", device=False)

@@ -17,11 +17,10 @@ class TestActivityCenterContactRequestMultipleDevicePR(MultipleSharedDeviceTestC
     def prepare_devices(self):
         self.drivers, self.loop = create_shared_drivers(2)
         self.device_1, self.device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
-        self.username_1, self.username_2 = 'sender', 'receiver'
-        self.loop.run_until_complete(run_in_parallel(((self.device_1.create_user, {'enable_notifications': True,
-                                                                                   'username': self.username_1}),
-                                                      (self.device_2.create_user, {'username': self.username_2}))))
+        self.loop.run_until_complete(run_in_parallel(((self.device_1.create_user, {'enable_notifications': True}),
+                                                      (self.device_2.create_user,))))
         self.homes = self.home_1, self.home_2 = self.device_1.get_home_view(), self.device_2.get_home_view()
+        self.username_1, self.username_2 = self.home_1.get_username(), self.home_2.get_username()
         self.profile_1, self.profile_2 = self.home_1.get_profile_view(), self.home_2.get_profile_view()
         self.public_key_1 = self.home_1.get_public_key()
         self.profile_link_2 = self.home_2.get_link_to_profile()
@@ -98,8 +97,8 @@ class TestActivityCenterContactRequestMultipleDevicePR(MultipleSharedDeviceTestC
     def test_activity_center_contact_request_accept_swipe_mark_all_as_read(self):
         self.device_2.just_fyi('Creating a new user on Device2')
         self.home_2.reopen_app(sign_in=False)
-        new_username = "new user"
-        self.device_2.create_user(username=new_username, first_user=False)
+        self.device_2.create_user(first_user=False)
+        new_username = self.home_2.get_username()
 
         self.device_2.just_fyi('Device2 sends a contact request to Device1 via Paste button and check user details')
         self.home_2.chats_tab.click()
@@ -159,20 +158,19 @@ class TestActivityCenterContactRequestMultipleDevicePR(MultipleSharedDeviceTestC
                     self.username_2, self.profile_link_2, decoded_username))
         public_key_2 = self.profile_link_2.split("#")[-1]
 
-        new_username_1 = "test user 123"
-
         def _device_1_creates_user():
             self.home_1.just_fyi("Device 1 creates a new user")
             self.home_1.reopen_app(sign_in=False)
-            self.device_1.create_user(username=new_username_1, first_user=False)
+            self.device_1.create_user(first_user=False)
+            return self.home_1.get_username()
 
         def _device_2_sign_in():
             self.home_2.just_fyi("Device 2 sign in, user name is " + self.username_2)
             self.home_2.reopen_app(sign_in=False)
             self.device_2.sign_in(user_name=self.username_2)
 
-        self.loop.run_until_complete(run_in_parallel(((_device_1_creates_user, {}),
-                                                      (_device_2_sign_in, {}))))
+        new_username_1, _ = self.loop.run_until_complete(run_in_parallel(((_device_1_creates_user, {}),
+                                                                          (_device_2_sign_in, {}))))
 
         self.device_1.just_fyi('Device1 sends a contact request to Device2 using his profile link')
         self.home_1.chats_tab.click()
@@ -242,11 +240,11 @@ class TestActivityMultipleDevicePR(MultipleSharedDeviceTestCase):
     def prepare_devices(self):
         self.drivers, self.loop = create_shared_drivers(2)
         self.device_1, self.device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
-        self.username_1, self.username_2 = 'user1', 'user2'
         self.loop.run_until_complete(
-            run_in_parallel(((self.device_1.create_user, {'username': self.username_1}),
-                             (self.device_2.create_user, {'username': self.username_2}))))
+            run_in_parallel(((self.device_1.create_user,),
+                             (self.device_2.create_user,))))
         self.homes = self.home_1, self.home_2 = self.device_1.get_home_view(), self.device_2.get_home_view()
+        self.username_1, self.username_2 = self.home_1.get_username(), self.home_2.get_username()
         self.profile_1, self.profile_2 = self.home_1.get_profile_view(), self.home_2.get_profile_view()
         self.public_key_2 = self.home_2.get_public_key()
         self.home_2.navigate_back_to_home_view()
@@ -382,11 +380,11 @@ class TestActivityMultipleDevicePRTwo(MultipleSharedDeviceTestCase):
     def prepare_devices(self):
         self.drivers, self.loop = create_shared_drivers(2)
         self.device_1, self.device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
-        self.username_1, self.username_2 = 'user1', 'user2'
         self.loop.run_until_complete(
-            run_in_parallel(((self.device_1.create_user, {'username': self.username_1}),
-                             (self.device_2.create_user, {'username': self.username_2}))))
+            run_in_parallel(((self.device_1.create_user,),
+                             (self.device_2.create_user,))))
         self.homes = self.home_1, self.home_2 = self.device_1.get_home_view(), self.device_2.get_home_view()
+        self.username_1, self.username_2 = self.home_1.get_username(), self.home_2.get_username()
         self.profile_1, self.profile_2 = self.home_1.get_profile_view(), self.home_2.get_profile_view()
         self.public_key_2 = self.home_2.get_public_key()
         self.home_2.navigate_back_to_home_view()

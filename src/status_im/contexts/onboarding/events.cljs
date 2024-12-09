@@ -1,5 +1,6 @@
 (ns status-im.contexts.onboarding.events
   (:require
+    [quo.foundations.colors :as colors]
     [re-frame.core :as re-frame]
     status-im.common.biometric.events
     [status-im.constants :as constants]
@@ -111,63 +112,57 @@
 (rf/reg-event-fx
  :onboarding/password-set
  (fn [{:keys [db]} [masked-password]]
-   (let [biometric-supported-type (get-in db [:biometrics :supported-type])]
+   (let [biometric-supported-type (get-in db [:biometrics :supported-type])
+         from-screen              (get db
+                                       :onboarding/navigated-to-enter-seed-phrase-from-screen
+                                       :screen/onboarding.new-to-status)]
      {:db (-> db
               (assoc-in [:onboarding/profile :password] masked-password)
               (assoc-in [:onboarding/profile :auth-method] constants/auth-method-password))
       :fx [[:dispatch
             (if biometric-supported-type
-              [:navigate-to-within-stack
-               [:screen/onboarding.enable-biometrics
-                (get db
-                     :onboarding/navigated-to-enter-seed-phrase-from-screen
-                     :screen/onboarding.new-to-status)]]
+              [:navigate-to-within-stack [:screen/onboarding.enable-biometrics from-screen]]
               [:onboarding/create-account-and-login])]]})))
 
-(rf/defn navigate-to-enable-biometrics
-  {:events [:onboarding/navigate-to-enable-biometrics]}
-  [{:keys [db]}]
-  (let [supported-type (get-in db [:biometrics :supported-type])]
-    {:dispatch (if supported-type
-                 [:open-modal :screen/onboarding.enable-biometrics]
-                 [:open-modal :screen/onboarding.enable-notifications])}))
+(rf/reg-event-fx
+ :onboarding/navigate-to-enable-biometrics
+ (fn [{:keys [db]}]
+   (let [supported-type (get-in db [:biometrics :supported-type])]
+     {:dispatch (if supported-type
+                  [:open-modal :screen/onboarding.enable-biometrics]
+                  [:open-modal :screen/onboarding.enable-notifications])})))
 
-(rf/defn seed-phrase-validated
-  {:events [:onboarding/seed-phrase-validated]}
-  [{:keys [db]} seed-phrase key-uid]
-  (let [syncing-account-recovered? (and (seq (:syncing/key-uid db))
-                                        (= (:syncing/key-uid db) key-uid))
-        next-screen                (if syncing-account-recovered?
-                                     :screen/onboarding.create-profile-password
-                                     :screen/onboarding.create-profile)]
-    (if (contains? (:profile/profiles-overview db) key-uid)
-      {:effects.utils/show-confirmation
-       {:title               (i18n/label :t/multiaccount-exists-title)
-        :content             (i18n/label :t/multiaccount-exists-content)
-        :confirm-button-text (i18n/label :t/unlock)
-        :on-accept           (fn []
-                               (re-frame/dispatch [:pop-to-root :screen/profile.profiles])
-                               (re-frame/dispatch
-                                [:profile/profile-selected key-uid]))
-        :on-cancel           #(re-frame/dispatch [:pop-to-root :multiaccounts])}}
-      {:db (-> db
-               (assoc-in [:onboarding/profile :seed-phrase] seed-phrase)
-               (assoc-in [:onboarding/profile :key-uid] key-uid)
-               (assoc-in [:onboarding/profile :color] constants/profile-default-color))
-       :fx [[:dispatch
-             [:navigate-to-within-stack
-              [next-screen
-               (get db
-                    :onboarding/navigated-to-enter-seed-phrase-from-screen
-                    :screen/onboarding.new-to-status)]]]]})))
+(rf/reg-event-fx
+ :onboarding/seed-phrase-validated
+ (fn [{:keys [db]} [seed-phrase key-uid]]
+   (let [next-screen :screen/onboarding.create-profile-password
+         from-screen (get db
+                          :onboarding/navigated-to-enter-seed-phrase-from-screen
+                          :screen/onboarding.new-to-status)]
+     (if (contains? (:profile/profiles-overview db) key-uid)
+       {:fx [[:effects.utils/show-confirmation
+              {:title               (i18n/label :t/multiaccount-exists-title)
+               :content             (i18n/label :t/multiaccount-exists-content)
+               :confirm-button-text (i18n/label :t/unlock)
+               :on-accept           (fn []
+                                      (re-frame/dispatch [:pop-to-root :screen/profile.profiles])
+                                      (re-frame/dispatch [:profile/profile-selected key-uid]))
+               :on-cancel           #(re-frame/dispatch [:pop-to-root :multiaccounts])}]]}
+       {:db (-> db
+                (assoc-in [:onboarding/profile :seed-phrase] seed-phrase)
+                (assoc-in [:onboarding/profile :key-uid] key-uid)
+                (assoc-in [:onboarding/profile :color] constants/profile-default-color))
+        :fx [[:dispatch [:navigate-to-within-stack [next-screen from-screen]]]]}))))
 
-(rf/defn navigate-to-create-profile
-  {:events [:onboarding/navigate-to-create-profile]}
-  [{:keys [db]}]
-  ;; Restart the flow
-  {:db       (dissoc db :onboarding/profile)
-   :dispatch [:navigate-to-within-stack
-              [:screen/onboarding.create-profile :screen/onboarding.new-to-status]]})
+(rf/reg-event-fx
+ :onboarding/navigate-to-create-profile
+ (fn [{:keys [db]}]
+   {:db (-> db
+            (assoc-in [:onboarding/profile :color] (rand-nth colors/account-colors))
+            (update :onboarding/profile dissoc :image-path))
+    :fx [[:dispatch
+          [:navigate-to-within-stack
+           [:screen/onboarding.create-profile-password :screen/onboarding.new-to-status]]]]}))
 
 (rf/reg-event-fx :onboarding/navigate-to-sign-in-by-syncing
  (fn [{:keys [db]}]
@@ -180,26 +175,43 @@
  (fn [{:keys [db]} [auth-method]]
    {:db (assoc db :auth-method auth-method)}))
 
-(rf/defn onboarding-new-account-finalize-setup
-  {:events [:onboarding/finalize-setup]}
-  [{:keys [db]}]
-  (let [masked-password    (get-in db [:onboarding/profile :password])
-        key-uid            (get-in db [:profile/profile :key-uid])
-        syncing?           (get-in db [:onboarding/profile :syncing?])
-        auth-method        (get-in db [:onboarding/profile :auth-method])
-        biometric-enabled? (= auth-method constants/auth-method-biometric)]
-    (cond-> {:db (assoc db :onboarding/generated-keys? true)}
-      biometric-enabled?
-      (assoc :keychain/save-password-and-auth-method
-             {:key-uid         key-uid
-              :masked-password (if syncing?
-                                 masked-password
-                                 (security/hash-masked-password masked-password))
-              :on-success      (fn []
-                                 (rf/dispatch [:onboarding/set-auth-method auth-method])
-                                 (when syncing?
-                                   (rf/dispatch
-                                    [:onboarding/navigate-to-enable-notifications-from-syncing])))
-              :on-error        #(log/error "failed to save biometrics"
-                                           {:key-uid key-uid
-                                            :error   %})}))))
+(def ^:const temp-display-name
+  "While creating a profile, we cannot use an empty string; this value works as a
+  placeholder that will be updated later once the compressed key exists. See
+  `status-im.contexts.profile.edit.name.events/get-default-display-name` for more details."
+  "temporal username")
+
+(rf/reg-event-fx
+ :onboarding/use-temporary-display-name
+ (fn [{:keys [db]} [temporary-display-name?]]
+   {:db (assoc db
+               :onboarding/profile
+               {:temporary-display-name? temporary-display-name?
+                :display-name            (if temporary-display-name?
+                                           temp-display-name
+                                           "")})}))
+
+(rf/reg-event-fx
+ :onboarding/finalize-setup
+ (fn [{db :db}]
+   (let [{:keys [password syncing? auth-method
+                 temporary-display-name?]} (:onboarding/profile db)
+         {:keys [key-uid] :as profile}     (:profile/profile db)
+         biometric-enabled?                (= auth-method constants/auth-method-biometric)]
+     {:db (assoc db :onboarding/generated-keys? true)
+      :fx [(when temporary-display-name?
+             [:dispatch [:profile/set-default-profile-name profile]])
+           (when biometric-enabled?
+             [:keychain/save-password-and-auth-method
+              {:key-uid         key-uid
+               :masked-password (if syncing?
+                                  password
+                                  (security/hash-masked-password password))
+               :on-success      (fn []
+                                  (rf/dispatch [:onboarding/set-auth-method auth-method])
+                                  (when syncing?
+                                    (rf/dispatch
+                                     [:onboarding/navigate-to-enable-notifications-from-syncing])))
+               :on-error        #(log/error "failed to save biometrics"
+                                            {:key-uid key-uid
+                                             :error   %})}])]})))
