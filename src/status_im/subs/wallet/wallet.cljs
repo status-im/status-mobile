@@ -289,9 +289,8 @@
 (rf/reg-sub
  :wallet/selected-keypair-keycard?
  :<- [:wallet/selected-keypair]
- (fn [selected-keypair]
-   (let [{:keys [keycards]} selected-keypair]
-     (boolean (seq keycards)))))
+ (fn [{:keys [keycards]}]
+   (boolean (seq keycards))))
 
 (rf/reg-sub
  :wallet/selected-keypair
