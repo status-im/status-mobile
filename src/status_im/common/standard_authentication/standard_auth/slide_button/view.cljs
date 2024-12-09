@@ -15,18 +15,18 @@
         auth-method     (rf/sub [:auth-method])
         biometric-auth? (= auth-method constants/auth-method-biometric)
         on-complete     (rn/use-callback
-                         (fn [reset]
-                           (rf/dispatch [:standard-auth/authorize
-                                         {:on-close              (fn [success?]
-                                                                   (js/setTimeout #(reset success?) 200))
-                                          :auth-button-icon-left auth-button-icon-left
-                                          :theme                 theme
-                                          :blur?                 blur?
-                                          :keycard-supported?    keycard-supported?
-                                          :biometric-auth?       biometric-auth?
-                                          :on-auth-success       on-auth-success
-                                          :on-auth-fail          on-auth-fail
-                                          :auth-button-label     auth-button-label}]))
+                         (fn [reset-slider-fn]
+                           (js/setTimeout #(reset-slider-fn false) 500)
+                           (rf/dispatch
+                            [:standard-auth/authorize
+                             {:auth-button-icon-left auth-button-icon-left
+                              :theme                 theme
+                              :blur?                 blur?
+                              :keycard-supported?    keycard-supported?
+                              :biometric-auth?       biometric-auth?
+                              :on-auth-success       on-auth-success
+                              :on-auth-fail          on-auth-fail
+                              :auth-button-label     auth-button-label}]))
                          (vec (conj dependencies on-auth-success on-auth-fail)))
         biometric-type  (rf/sub [:biometrics/supported-type])]
     [quo/slide-button
