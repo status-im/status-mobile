@@ -2,6 +2,7 @@
   (:require
     [quo.core :as quo]
     [quo.foundations.colors :as colors]
+    [quo.theme]
     [react-native.core :as rn]
     [status-im.common.check-before-syncing.view :as check-before-syncing]
     [status-im.contexts.syncing.device.view :as device]
@@ -12,6 +13,13 @@
 (defn go-back
   []
   (rf/dispatch [:navigate-back]))
+
+(defn- show-feature-unavailable
+  [theme]
+  (rf/dispatch [:feature-unavailable/open-modal
+                {:theme theme
+                 :description
+                 (i18n/label :t/feature-unavailable-keycard-description)}]))
 
 (defn open-setup-syncing
   [customization-color]
@@ -26,7 +34,8 @@
 
 (defn view
   []
-  (let [devices                                     (rf/sub [:pairing/installations])
+  (let [theme                                       (quo.theme/use-theme)
+        devices                                     (rf/sub [:pairing/installations])
         devices-with-button                         (map #(assoc % :show-button? true) devices)
         user-device                                 (first devices-with-button)
         other-devices                               (rest devices-with-button)
@@ -34,11 +43,15 @@
         open-setup-syncing-with-customization-color (rn/use-callback (partial open-setup-syncing
                                                                               profile-color)
                                                                      [profile-color])
+        show-feature-unavailable-with-theme         (rn/use-callback (partial show-feature-unavailable
+                                                                              theme)
+                                                                     [theme])
         {:keys [paired-devices unpaired-devices]}   (group-by
                                                      #(if (:enabled? %)
                                                         :paired-devices
                                                         :unpaired-devices)
-                                                     other-devices)]
+                                                     other-devices)
+        keycard?                                    (rf/sub [:keycard/keycard-profile?])]
     [quo/overlay {:type :shell :top-inset? true}
      [quo/page-nav
       {:type       :no-title
@@ -60,7 +73,9 @@
          :type                :primary
          :customization-color profile-color
          :icon-only?          true
-         :on-press            open-setup-syncing-with-customization-color}
+         :on-press            (if keycard?
+                                show-feature-unavailable-with-theme
+                                open-setup-syncing-with-customization-color)}
         :i/add]]
       [device/view (merge user-device {:this-device? true})]
       (when (seq paired-devices)
