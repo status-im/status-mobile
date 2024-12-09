@@ -25,7 +25,14 @@
            peer-syncing-enabled?]}]
   (keep
    identity
-   [(when (ff/enabled? ::ff/app-monitoring.intentional-crash)
+   [;; TODO(ilmotta): REMOVE BEFORE MERGE
+    {:size     :small
+     :title    (str "Is MixPanel token set?"
+                    (if (string/blank? config/mixpanel-token)
+                      "No"
+                      "Yes"))
+     :on-press identity}
+    (when (ff/enabled? ::ff/app-monitoring.intentional-crash)
       {:size                :small
        :title               (str "Force crash immediately"
                                  (when (string/blank? config/sentry-dsn-status-go)
