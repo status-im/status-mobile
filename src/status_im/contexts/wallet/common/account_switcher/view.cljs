@@ -30,7 +30,8 @@
            type                :no-title}}]
   (let [{:keys [color emoji watch-only?]} (rf/sub [:wallet/current-viewing-account])
         networks                          (rf/sub [:wallet/selected-network-details])
-        sending-collectible?              (rf/sub [:wallet/sending-collectible?])]
+        sending-collectible?              (rf/sub [:wallet/sending-collectible?])
+        keycard?                          (rf/sub [:wallet/selected-keypair-keycard?])]
     [quo/page-nav
      {:type                type
       :icon-name           icon-name
@@ -45,7 +46,10 @@
                                        (not watch-only?)
                                        show-dapps-button?)
                               {:icon-name :i/dapps
-                               :on-press  #(rf/dispatch [:navigate-to :screen/wallet.connected-dapps])})
+                               :on-press  #(rf/dispatch
+                                            (if keycard?
+                                              [:keycard/feature-unavailable-show]
+                                              [:navigate-to :screen/wallet.connected-dapps]))})
                             (when-not sending-collectible?
                               {:content-type        :account-switcher
                                :customization-color color

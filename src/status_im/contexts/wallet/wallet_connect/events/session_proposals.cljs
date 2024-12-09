@@ -2,6 +2,7 @@
   (:require [clojure.string :as string]
             [re-frame.core :as rf]
             [react-native.wallet-connect :as wallet-connect]
+            [status-im.contexts.wallet.data-store :as wallet-data-store]
             [status-im.contexts.wallet.wallet-connect.utils.data-store :as
              data-store]
             [status-im.contexts.wallet.wallet-connect.utils.networks :as networks]
@@ -30,11 +31,17 @@
          expired?           (-> parsed-uri
                                 :expiryTimestamp
                                 uri/timestamp-expired?)
-         version-supported? (uri/version-supported? version)]
-     (if (or (not valid-wc-uri?)
-             (not version-supported?)
-             (= network-status :offline)
-             expired?)
+         version-supported? (uri/version-supported? version)
+         keycard?           (wallet-data-store/selected-keypair-keycard? db)]
+     (cond
+
+       keycard?
+       {:fx [[:dispatch [:keycard/feature-unavailable-show]]]}
+
+       (or (not valid-wc-uri?)
+           (not version-supported?)
+           (= network-status :offline)
+           expired?)
        {:fx [[:dispatch
               [:toasts/upsert
                {:type  :negative
@@ -54,6 +61,8 @@
 
                              :else
                              (i18n/label :t/something-went-wrong))}]]]}
+
+       :else
        {:fx [[:dispatch [:wallet-connect/pair scanned-text]]]}))))
 
 (rf/reg-event-fx

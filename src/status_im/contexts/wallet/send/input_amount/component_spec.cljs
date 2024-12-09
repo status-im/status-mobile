@@ -102,6 +102,7 @@
    :wallet/wallet-send-tx-type                     :tx/send
    :wallet/wallet-send-fee-fiat-formatted          "$5,00"
    :wallet/sending-collectible?                    false
+   :wallet/selected-keypair-keycard?               false
    :wallet/send-total-amount-formatted             "250 ETH"
    :wallet/total-amount                            (money/bignumber "250")
    :wallet/prices-per-token                        {:ETH {:usd 10}}
