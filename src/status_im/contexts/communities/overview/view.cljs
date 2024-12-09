@@ -105,13 +105,21 @@
   []
   [quo/text (i18n/label :t/network-not-supported)])
 
+(defn- show-feature-unavailable
+  []
+  (rf/dispatch [:feature-unavailable/open-modal
+                {:description
+                 (i18n/label :t/feature-unavailable-keycard-description)}]))
+
 (defn- request-access-button
-  [id color]
+  [id color keycard?]
   [quo/button
-   {:on-press            (if config/community-accounts-selection-enabled?
-                           #(rf/dispatch [:open-modal :community-account-selection-sheet
-                                          {:community-id id}])
-                           #(rf/dispatch [:open-modal :community-requests-to-join {:id id}]))
+   {:on-press            (if keycard?
+                           show-feature-unavailable
+                           (if config/community-accounts-selection-enabled?
+                             #(rf/dispatch [:open-modal :community-account-selection-sheet
+                                            {:community-id id}])
+                             #(rf/dispatch [:open-modal :community-requests-to-join {:id id}])))
     :accessibility-label :show-request-to-join-screen-button
     :customization-color color
     :container-style     {:margin-bottom 12}
@@ -123,12 +131,6 @@
   [quo/documentation-drawers {:title (i18n/label :t/token-gated-communities)}
    [quo/text {:size :paragraph-2}
     (i18n/label :t/token-gated-communities-info)]])
-
-(defn- show-feature-unavailable
-  []
-  (rf/dispatch [:feature-unavailable/open-modal
-                {:description
-                 (i18n/label :t/feature-unavailable-keycard-description)}]))
 
 (defn- token-requirements
   [{:keys [id color role-permissions?]}]
@@ -153,7 +155,7 @@
       [network-not-supported]
 
       (or (not role-permissions?) no-member-permission?)
-      [request-access-button id color]
+      [request-access-button id color keycard?]
 
       :else
       [quo/community-token-gating
