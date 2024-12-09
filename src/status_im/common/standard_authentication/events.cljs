@@ -15,7 +15,7 @@
    (when on-auth-success (on-auth-success ""))))
 
 (defn authorize
-  [{:keys [db]} [{:keys [on-auth-success keycard-supported?] :as args}]]
+  [{:keys [db]} [{:keys [on-auth-success keycard-supported? theme] :as args}]]
   (let [key-uid  (get-in db [:profile/profile :key-uid])
         keycard? (get-in db [:profile/profile :keycard-pairing])]
     {:fx
@@ -24,7 +24,7 @@
           [:effects.keycard/call-on-auth-success on-auth-success]
           [:dispatch
            [:feature-unavailable/open-modal
-            {:theme       :dark
+            {:theme       theme
              :description (i18n/label :t/feature-unavailable-keycard-description)}]])
         [:effects.biometric/check-if-available
          {:key-uid    key-uid
