@@ -285,9 +285,13 @@
   [bn1 bn2]
   (.round (.mul ^js bn1 bn2) 0))
 
-(defn div
+(defn- div*
   [bn1 bn2]
   (.dividedBy ^js bn1 bn2))
+
+(def div
+  "Divides with defaults, this version is able to receive `nil` and takes them as 0."
+  (fnil div* (bignumber 0) (bignumber 1)))
 
 (defn div-and-round
   [bn1 bn2]

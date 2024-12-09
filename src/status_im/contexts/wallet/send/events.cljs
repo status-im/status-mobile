@@ -619,7 +619,7 @@
 
 (rf/reg-event-fx :wallet/clean-up-transaction-flow
  (fn [_]
-   {:fx [[:dispatch [:wallet/clean-send-data]]
+   {:fx [[:dispatch [:dismiss-modal :screen/wallet.transaction-confirmation]]
          [:dispatch [:wallet/clean-scanned-address]]
          [:dispatch [:wallet/clean-local-suggestions]]
          [:dispatch [:wallet/clean-send-address]]
@@ -629,9 +629,11 @@
 (rf/reg-event-fx :wallet/end-transaction-flow
  (fn [{:keys [db]}]
    (let [address (get-in db [:wallet :current-viewing-account-address])]
-     {:fx [[:dispatch [:dismiss-modal :screen/wallet.transaction-confirmation]]
-           [:dispatch [:wallet/navigate-to-account-within-stack address]]
-           [:dispatch [:wallet/select-account-tab :activity]]]})))
+     {:fx [[:dispatch [:wallet/navigate-to-account-within-stack address]]
+           [:dispatch [:wallet/select-account-tab :activity]]
+           [:dispatch-later
+            [{:ms       20
+              :dispatch [:wallet/clean-up-transaction-flow]}]]]})))
 
 (rf/reg-event-fx
  :wallet/build-transactions-from-route
