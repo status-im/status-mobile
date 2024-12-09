@@ -22,12 +22,9 @@
      [(if keycard?
         (if keycard-supported?
           [:effects.keycard/call-on-auth-success on-auth-success]
-          [:effects.utils/show-popup
-           {:title "This feature is not supported yet "
-            :content
-            "Keycard support is limited to logging in
-            and signing the sending transaction.
-            Use Status Desktop to access all functions."}])
+          [:dispatch
+           [:feature-unavailable/open-modal
+            {:description (i18n/label :t/feature-unavailable-keycard-description)}]])
         [:effects.biometric/check-if-available
          {:key-uid    key-uid
           :on-success #(rf/dispatch [:standard-auth/authorize-with-biometric args])
