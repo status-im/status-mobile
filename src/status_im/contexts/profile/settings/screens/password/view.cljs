@@ -58,7 +58,8 @@
 
 (defn view
   []
-  (let [theme (quo.theme/use-theme)]
+  (let [theme            (quo.theme/use-theme)
+        keycard-profile? (rf/sub [:keycard/keycard-profile?])]
     [quo/overlay {:type :shell :top-inset? true}
      [quo/page-nav
       {:background :blur
@@ -68,6 +69,7 @@
      [quo/category
       {:key       :category
        :data      [(get-biometric-item theme)
-                   (get-change-password-item)]
+                   (when-not keycard-profile?
+                     (get-change-password-item))]
        :blur?     true
        :list-type :settings}]]))
