@@ -711,13 +711,11 @@
 (rf/reg-sub
  :wallet/zero-balance-in-all-non-watched-accounts?
  :<- [:wallet/aggregated-tokens]
- :<- [:profile/currency]
- :<- [:wallet/prices-per-token]
- (fn [[aggregated-tokens currency prices-per-token]]
-   (let [balance (utils/calculate-balance-from-tokens {:currency         currency
-                                                       :tokens           aggregated-tokens
-                                                       :prices-per-token prices-per-token})]
-     (and (not-empty aggregated-tokens) (money/equal-to balance 0)))))
+ (fn [aggregated-tokens]
+   (let [zero-balance? (->> aggregated-tokens
+                            (mapcat (comp vals :balances-per-chain))
+                            (every? #(money/equal-to (:raw-balance %) 0)))]
+     (and (not-empty aggregated-tokens) zero-balance?))))
 
 (rf/reg-sub
  :wallet/network-preference-details
