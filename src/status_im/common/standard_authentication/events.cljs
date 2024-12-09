@@ -24,7 +24,8 @@
           [:effects.keycard/call-on-auth-success on-auth-success]
           [:dispatch
            [:feature-unavailable/open-modal
-            {:description (i18n/label :t/feature-unavailable-keycard-description)}]])
+            {:theme       :dark
+             :description (i18n/label :t/feature-unavailable-keycard-description)}]])
         [:effects.biometric/check-if-available
          {:key-uid    key-uid
           :on-success #(rf/dispatch [:standard-auth/authorize-with-biometric args])

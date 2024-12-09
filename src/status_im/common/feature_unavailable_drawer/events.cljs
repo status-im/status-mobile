@@ -8,5 +8,6 @@
  (fn [_ [options]]
    {:fx [[:dispatch
           [:show-bottom-sheet
-           {:content (fn []
+           {:theme   (:theme options)
+            :content (fn []
                        (feature-unavailable/view options))}]]]}))
