@@ -7,33 +7,39 @@
             [utils.re-frame :as rf]))
 
 (defn- on-press-biometric-enable
-  [button-label theme]
+  [button-label theme keycard-profile?]
   (fn []
-    (rf/dispatch
-     [:standard-auth/authorize-with-password
-      {:blur?             true
-       :theme             theme
-       :auth-button-label (i18n/label :t/biometric-enable-button {:bio-type-label button-label})
-       :on-auth-success   (fn [password]
-                            (rf/dispatch [:hide-bottom-sheet])
-                            (rf/dispatch
-                             [:biometric/authenticate
-                              {:on-success #(rf/dispatch [:biometric/enable password])
-                               :on-fail    #(rf/dispatch [:biometric/show-message (ex-cause %)])}]))}])))
+    (if keycard-profile?
+      (rf/dispatch [:feature-unavailable/open-modal
+                    {:theme       :dark
+                     :description (i18n/label :t/feature-unavailable-keycard-description)}])
+      (rf/dispatch
+       [:standard-auth/authorize-with-password
+        {:blur?             true
+         :theme             theme
+         :auth-button-label (i18n/label :t/biometric-enable-button {:bio-type-label button-label})
+         :on-auth-success   (fn [password]
+                              (rf/dispatch [:hide-bottom-sheet])
+                              (rf/dispatch
+                               [:biometric/authenticate
+                                {:on-success #(rf/dispatch [:biometric/enable password])
+                                 :on-fail    #(rf/dispatch [:biometric/show-message
+                                                            (ex-cause %)])}]))}]))))
 
 (defn- get-biometric-item
   [theme]
-  (let [auth-method    (rf/sub [:auth-method])
-        biometric-type (rf/sub [:biometrics/supported-type])
-        label          (biometric/get-label-by-type biometric-type)
-        icon           (biometric/get-icon-by-type biometric-type)
-        supported?     (boolean biometric-type)
-        enabled?       (= auth-method constants/auth-method-biometric)
-        biometric-on?  (and supported? enabled?)
-        press-handler  (when supported?
-                         (if biometric-on?
-                           (fn [] (rf/dispatch [:biometric/disable]))
-                           (on-press-biometric-enable label theme)))]
+  (let [auth-method      (rf/sub [:auth-method])
+        biometric-type   (rf/sub [:biometrics/supported-type])
+        keycard-profile? (rf/sub [:keycard/keycard-profile?])
+        label            (biometric/get-label-by-type biometric-type)
+        icon             (biometric/get-icon-by-type biometric-type)
+        supported?       (boolean biometric-type)
+        enabled?         (= auth-method constants/auth-method-biometric)
+        biometric-on?    (and supported? enabled?)
+        press-handler    (when supported?
+                           (if biometric-on?
+                             (fn [] (rf/dispatch [:biometric/disable]))
+                             (on-press-biometric-enable label theme keycard-profile?)))]
     {:title        label
      :image-props  icon
      :image        :icon
