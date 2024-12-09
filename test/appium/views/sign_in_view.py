@@ -258,7 +258,7 @@ class SignInView(BaseView):
         return home_view
 
     def recover_access(self, passphrase: str, password: str = common_password, enable_notifications=False,
-                       second_user=False, username='Restore user', set_image=False, after_sync_code=False):
+                       second_user=False, after_sync_code=False):
         self.driver.info("## Recover access (password:%s)" % password, device=False)
 
         if not after_sync_code:
@@ -271,8 +271,6 @@ class SignInView(BaseView):
             self.use_recovery_phrase_button.click()
         self.passphrase_edit_box.send_keys(passphrase)
         self.continue_button.click_until_presence_of_element(self.profile_title_input)
-        if not after_sync_code:
-            self.set_profile(username, set_image)
         self.set_password(password)
         self.chats_tab.wait_for_visibility_of_element(30)
         self.driver.info("## Multiaccount is recovered successfully!", device=False)

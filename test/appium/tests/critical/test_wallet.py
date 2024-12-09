@@ -24,13 +24,11 @@ class TestWalletMultipleDevice(MultipleSharedDeviceTestCase):
         self.sender, self.receiver = transaction_senders['ETH_1'], transaction_senders['ETH_2']
         self.sender['wallet_address'] = '0x' + self.sender['address']
         self.receiver['wallet_address'] = '0x' + self.receiver['address']
-        self.sender_username, self.receiver_username = 'sender', 'receiver'
         self.loop.run_until_complete(
-            run_in_parallel(((self.sign_in_1.recover_access, {'passphrase': self.sender['passphrase'],
-                                                              'username': self.sender_username}),
-                             (self.sign_in_2.recover_access, {'passphrase': self.receiver['passphrase'],
-                                                              'username': self.receiver_username}))))
+            run_in_parallel(((self.sign_in_1.recover_access, {'passphrase': self.sender['passphrase']}),
+                             (self.sign_in_2.recover_access, {'passphrase': self.receiver['passphrase']}))))
         self.home_1, self.home_2 = self.sign_in_1.get_home_view(), self.sign_in_2.get_home_view()
+        self.sender_username, self.receiver_username = self.home_1.get_username(), self.home_2.get_username()
         self.wallet_1, self.wallet_2 = self.sign_in_1.get_wallet_view(), self.sign_in_2.get_wallet_view()
         self.wallet_1.wallet_tab.click()
         self.wallet_2.wallet_tab.click()
@@ -206,10 +204,10 @@ class TestWalletOneDevice(MultipleSharedDeviceTestCase):
         self.arb_balance = {'Ether': 0.0001, 'USDCoin': 0.0, 'Status': 0.0, 'Uniswap': 0.5, 'Dai Stablecoin': 0.0}
         self.sender['wallet_address'] = '0x' + self.sender['address']
         self.receiver['wallet_address'] = '0x' + self.receiver['address']
-        self.sender_username, self.receiver_username = 'sender', 'receiver'
-        self.sign_in_view.recover_access(passphrase=self.sender['passphrase'], username=self.sender_username)
+        self.sign_in_view.recover_access(passphrase=self.sender['passphrase'])
 
         self.home_view = self.sign_in_view.get_home_view()
+        self.sender_username = self.home_view.get_username()
         self.wallet_view = self.home_view.wallet_tab.click()
 
     @marks.testrail_id(740490)

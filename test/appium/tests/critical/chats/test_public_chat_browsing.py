@@ -158,8 +158,8 @@ class TestCommunityOneDeviceMerged(MultipleSharedDeviceTestCase):
     def test_restore_multiaccount_with_waku_backup_remove_profile_switch(self):
         self.home.reopen_app(sign_in=False)
         self.home.just_fyi("Restore user with predefined communities and contacts")
-        recover_user_name = 'Recover user'
-        self.sign_in.recover_access(passphrase=waku_user.seed, second_user=True, username=recover_user_name)
+        self.sign_in.recover_access(passphrase=waku_user.seed, second_user=True)
+        recover_user_name = self.home.get_username()
 
         self.home.just_fyi("Check contacts/blocked users")
         self.home.chats_tab.click()

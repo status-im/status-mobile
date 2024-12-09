@@ -626,8 +626,9 @@ class HomeView(BaseView):
         return element.text
 
     def get_username(self):
-        profile = self.profile_button.click()
-        profile.default_username_text.wait_for_element(3)
-        username = profile.default_username_text.text
-        profile.click_system_back_button()
+        profile_view = self.get_profile_view()
+        profile_view = self.profile_button.click_until_presence_of_element(profile_view.default_username_text)
+        profile_view.default_username_text.wait_for_element(3)
+        username = profile_view.default_username_text.text
+        profile_view.click_system_back_button()
         return username
