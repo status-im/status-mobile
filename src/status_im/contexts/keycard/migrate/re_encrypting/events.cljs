@@ -27,5 +27,8 @@
              :callback
              (fn [{:keys [error]}]
                (if (string/blank? error)
-                 (rf/dispatch [:navigate-to :screen/keycard.migrate.success])
-                 (rf/dispatch [:navigate-to :screen/keycard.migrate.fail])))}]]})))
+                 (do (rf/dispatch [:navigate-to :screen/keycard.migrate.success])
+                     (rf/dispatch [:centralized-metrics/track :metric/keycard-migration-succeeded]))
+                 (do (rf/dispatch [:navigate-to :screen/keycard.migrate.fail])
+                     (rf/dispatch [:centralized-metrics/track
+                                   :metric/keycard-migration-failed]))))}]]})))
