@@ -30,10 +30,10 @@
         component-background (or background-color
                                  (colors/theme-colors colors/white colors/neutral-100 theme))]
     (assoc (statusbar-and-navbar-options theme status-bar-theme nav-bar-color)
-      :topBar {:visible false}
-      :layout {:componentBackgroundColor component-background
-               :orientation              ["portrait"]
-               :backgroundColor          layout-background})))
+           :topBar {:visible false}
+           :layout {:componentBackgroundColor component-background
+                    :orientation              ["portrait"]
+                    :backgroundColor          layout-background})))
 
 (defn dark-root-options
   []

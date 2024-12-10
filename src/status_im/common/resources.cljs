@@ -7,7 +7,8 @@
    :login-syncing                 (js/require "../resources/images/ui2/login-syncing.png")
    :chat-privately-with-friends   (js/require "../resources/images/ui2/chat-privately-with-friends.png")
    :desktop-how-to-pair-sign-in   (js/require "../resources/images/ui2/desktop-how-to-pair-sign-in.png")
-   :desktop-how-to-pair-logged-in (js/require "../resources/images/ui2/desktop-how-to-pair-logged-in.png")
+   :desktop-how-to-pair-logged-in (js/require
+                                   "../resources/images/ui2/desktop-how-to-pair-logged-in.png")
    :mobile-how-to-pair-sign-in    (js/require "../resources/images/ui2/mobile-how-to-pair-sign-in.png")
    :mobile-how-to-pair-logged-in  (js/require "../resources/images/ui2/mobile-how-to-pair-logged-in.png")
    :find-sync-code-desktop        (js/require "../resources/images/ui2/find-sync-code-desktop.png")
