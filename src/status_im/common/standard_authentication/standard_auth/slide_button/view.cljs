@@ -9,8 +9,7 @@
 
 (defn view
   [{:keys [track-text customization-color auth-button-label on-auth-success on-auth-fail
-           auth-button-icon-left size blur? container-style disabled? dependencies on-complete
-           keycard-password?]
+           auth-button-icon-left size blur? container-style disabled? dependencies on-complete]
     :or   {container-style {:flex 1}}}]
   (let [theme                (quo.theme/use-theme)
         auth-method          (rf/sub [:auth-method])
@@ -19,8 +18,7 @@
                               (fn [reset-slider-fn]
                                 (js/setTimeout #(reset-slider-fn false) 500)
                                 (rf/dispatch [:standard-auth/authorize
-                                              {:keycard-password?     keycard-password?
-                                               :auth-button-icon-left auth-button-icon-left
+                                              {:auth-button-icon-left auth-button-icon-left
                                                :theme                 theme
                                                :blur?                 blur?
                                                :biometric-auth?       biometric-auth?

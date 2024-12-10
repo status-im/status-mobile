@@ -250,8 +250,7 @@
                                        :address   (utils/get-shortened-address
                                                    to-address)}
             sign-on-keycard?          (get-in transaction-for-signing
-                                              [:signingDetails :signOnKeycard])
-            keycard-profile?          (rf/sub [:keycard/keycard-profile?])]
+                                              [:signingDetails :signOnKeycard])]
         ;; In token send flow we already have transaction built when
         ;; we reach confirmation screen. But in send collectible flow
         ;; routes request happens at the same time with navigation to
@@ -295,7 +294,6 @@
                                                            [:wallet/prepare-signatures-for-transactions
                                                             :send
                                                             ""]))
-                                          :keycard-password? keycard-profile?
                                           :on-auth-success
                                           (fn [psw]
                                             (rf/dispatch

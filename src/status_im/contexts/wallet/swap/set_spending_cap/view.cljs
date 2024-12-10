@@ -226,15 +226,13 @@
         on-auth-success         (rn/use-callback
                                  #(rf/dispatch [:wallet/prepare-signatures-for-transactions :swap %]))
         on-complete             (rn/use-callback
-                                 #(rf/dispatch [:wallet/prepare-signatures-for-transactions :swap ""]))
-        keycard-profile?        (rf/sub [:keycard/keycard-profile?])]
+                                 #(rf/dispatch [:wallet/prepare-signatures-for-transactions :swap ""]))]
     [standard-auth/slide-button
      {:size                :size-48
       :track-text          (i18n/label :t/slide-to-sign)
       :container-style     {:z-index 2}
       :customization-color (:color account)
       :disabled?           (or loading-swap-proposal? (not swap-proposal))
-      :keycard-password?   keycard-profile?
       :on-complete         (when sign-on-keycard? on-complete)
       :on-auth-success     on-auth-success
       :auth-button-label   (i18n/label :t/confirm)}]))

@@ -24,10 +24,11 @@
       (on-auth-success-callback))))
 
 (defn authorize
-  [{:keys [db]} [{:keys [keycard-password? on-auth-success] :as args}]]
-  (let [key-uid (get-in db [:profile/profile :key-uid])]
+  [{:keys [db]} [{:keys [on-auth-success] :as args}]]
+  (let [key-uid          (get-in db [:profile/profile :key-uid])
+        keycard-profile? (get-in db [:profile/profile :keycard-pairing])]
     {:fx
-     [(if keycard-password?
+     [(if keycard-profile?
         [:dispatch
          [:standard-auth/authorize-with-keycard
           {:on-complete

@@ -190,12 +190,10 @@
     (let [{:keys [new-account-data workflow]} (rf/sub [:wallet/create-account-new-keypair])
           derivation-path                     (when (not= workflow
                                                           :workflow/new-keypair.import-private-key)
-                                                constants/path-default-wallet)
-          keycard-profile?                    (rf/sub [:keycard/keycard-profile?])]
+                                                constants/path-default-wallet)]
       [floating-button
        {:account-color      @account-color
-        :slide-button-props {:keycard-password? keycard-profile?
-                             :on-auth-success   (fn on-auth-success [password]
+        :slide-button-props {:on-auth-success   (fn on-auth-success [password]
                                                   (let [account-preferences {:account-name @account-name
                                                                              :color        @account-color
                                                                              :emoji        @emoji}]
@@ -234,7 +232,6 @@
       (let [{:keys [derived-from
                     key-uid keycards]} (rf/sub [:wallet/selected-keypair])
             keycard?                   (boolean (seq keycards))
-            keycard-profile?           (rf/sub [:keycard/keycard-profile?])
             on-auth-success            (rn/use-callback
                                         (fn [password]
                                           (let [preferences {:account-name @account-name
@@ -274,7 +271,6 @@
         [floating-button
          {:account-color      @account-color
           :slide-button-props {:on-auth-success (when-not keycard? on-auth-success)
-                               :keycard-password? keycard-profile?
                                :on-complete
                                (when keycard? on-complete)
                                :disabled?
