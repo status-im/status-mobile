@@ -12,7 +12,7 @@
 (defn- on-auth-success
   [password]
   (rf/dispatch [:hide-bottom-sheet])
-  (rf/dispatch [:wallet-connect/respond-current-session password]))
+  (rf/dispatch [:wallet-connect/authorized-signing password]))
 
 (defn view
   [{:keys [warning-label slide-button-text error-state]} & children]
@@ -45,6 +45,7 @@
        [standard-authentication/slide-button
         {:size                :size-48
          :track-text          slide-button-text
+         :keycard-supported?  true
          :disabled?           (or offline? error-state)
          :customization-color customization-color
          :on-auth-success     on-auth-success

@@ -4,7 +4,8 @@
             [status-im.common.json-rpc.events :as rpc-events]
             [status-im.constants :as constants]
             [utils.hex]
-            [utils.transforms :as transforms]))
+            [utils.transforms :as transforms]
+            [utils.hex :as hex]))
 
 (defn build-transaction
   [chain-id tx]
@@ -24,6 +25,14 @@
 (defn hash-message-eip-191
   [message]
   (rpc-events/call-async "wallet_hashMessageEIP191" true message))
+
+(defn hash-typed-message-eip-712
+  [message chain-id legacy?]
+  (rpc-events/call-async "wallet_hashTypedData"
+                         true
+                         message
+                         chain-id
+                         legacy?))
 
 (defn safe-sign-typed-data
   [data address password chain-id legacy?]
@@ -47,7 +56,7 @@
                          chain-id
                          constants/transaction-pending-type-wallet-connect-transfer
                          (transforms/js-stringify tx-args 0)
-                         signature))
+                         (hex/normalize-hex signature)))
 
 (defn sign-message
   [message address password]

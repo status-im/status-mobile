@@ -57,6 +57,13 @@
                [:dispatch [:wallet-connect/process-personal-sign]])]}))))
 
 (rf/reg-event-fx
+ :wallet-connect/store-sign-hash
+ (fn [{:keys [db]} [sign-hash]]
+   {:db (assoc-in db
+         [:wallet-connect/current-request :sign-hash]
+         sign-hash)}))
+
+(rf/reg-event-fx
  :wallet-connect/process-personal-sign
  (fn [{:keys [db]}]
    (let [[raw-data address] (data-store/get-db-current-request-params db)
@@ -65,10 +72,16 @@
                      [:wallet-connect/current-request]
                      assoc
                      :address      (string/lower-case address)
+                     ;; TODO: DELETE
                      :raw-data     raw-data
                      :display-data (or parsed-data raw-data))
-      :fx [[:dispatch [:wallet-connect/show-request-modal]]]})))
+      :fx [[:effects.wallet-connect/hash-message
+            {:message    raw-data
+             :on-success #(rf/dispatch [:wallet-connect/store-sign-hash %])
+             :on-fail    #(rf/dispatch [:wallet-connect/on-processing-error %])}]
+           [:dispatch [:wallet-connect/show-request-modal]]]})))
 
+;; DEPRECATE IF NOT WORKING ?!
 (rf/reg-event-fx
  :wallet-connect/process-eth-sign
  (fn [{:keys [db]}]
@@ -80,15 +93,19 @@
                      :address      (string/lower-case address)
                      :raw-data     raw-data
                      :display-data (or parsed-data raw-data))
-      :fx [[:dispatch [:wallet-connect/show-request-modal]]]})))
+      :fx [[:effects.wallet-connect/hash-message
+            {:message    raw-data
+             :on-success #(rf/dispatch [:wallet-connect/store-sign-hash %])
+             :on-fail    #(rf/dispatch [:wallet-connect/on-processing-error %])}]
+           [:dispatch [:wallet-connect/show-request-modal]]]})))
 
 (rf/reg-event-fx
  :wallet-connect/prepare-transaction-success
  (fn [{:keys [db]} [prepared-tx chain-id]]
-   (let [{:keys [tx-args]} prepared-tx
-         tx                (bean/->clj tx-args)
-         address           (-> tx :from string/lower-case)
-         display-data      (transactions/beautify-transaction tx)]
+   (let [{:keys [tx-args tx-hash]} prepared-tx
+         tx                        (bean/->clj tx-args)
+         address                   (-> tx :from string/lower-case)
+         display-data              (transactions/beautify-transaction tx)]
      {:db (update-in db
                      [:wallet-connect/current-request]
                      assoc
@@ -96,7 +113,8 @@
                      :raw-data     prepared-tx
                      :transaction  tx
                      :chain-id     chain-id
-                     :display-data display-data)})))
+                     :display-data display-data)
+      :fx [[:dispatch [:wallet-connect/store-sign-hash tx-hash]]]})))
 
 (rf/reg-event-fx
  :wallet-connect/process-eth-send-transaction
@@ -135,6 +153,9 @@
  (fn [{:keys [db]}]
    (try
      (let [[address raw-data] (data-store/get-db-current-request-params db)
+           method             (-> db
+                                  data-store/get-db-current-request-event
+                                  data-store/get-request-method)
            session-chain-id   (-> (data-store/get-db-current-request-event db)
                                   (get-in [:params :chainId])
                                   networks/eip155->chain-id)
@@ -154,7 +175,14 @@
                          :address      (string/lower-case address)
                          :display-data (typed-data/flatten-typed-data typed-data)
                          :raw-data     raw-data)
-          :fx [[:dispatch [:wallet-connect/show-request-modal]]]}))
+          :fx [[:effects.wallet-connect/hash-typed-data
+                {:message    raw-data
+                 :chain-id   session-chain-id
+                 :legacy?    (not= constants/wallet-connect-eth-sign-typed-v4-method
+                                   method)
+                 :on-success #(rf/dispatch [:wallet-connect/store-sign-hash %])
+                 :on-fail    #(rf/dispatch [:wallet-connect/on-processing-error %])}]
+               [:dispatch [:wallet-connect/show-request-modal]]]}))
      (catch js/Error err
        {:fx [[:dispatch
               [:wallet-connect/on-processing-error

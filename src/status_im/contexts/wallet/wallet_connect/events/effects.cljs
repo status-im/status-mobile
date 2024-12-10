@@ -4,6 +4,7 @@
     [react-native.wallet-connect :as wallet-connect]
     [status-im.config :as config]
     [status-im.constants :as constants]
+    [status-im.contexts.wallet.rpc :as wallet-rpc]
     [status-im.contexts.wallet.wallet-connect.utils.sessions :as sessions]
     [status-im.contexts.wallet.wallet-connect.utils.signing :as signing]
     [status-im.contexts.wallet.wallet-connect.utils.transactions :as transactions]
@@ -69,6 +70,20 @@
        (promesa/catch (partial rf/call-continuation on-fail)))))
 
 (rf/reg-fx
+ :effects.wallet-connect/hash-message
+ (fn [{:keys [message on-success on-fail]}]
+   (-> (wallet-rpc/hash-message-eip-191 message)
+       (promesa/then (partial rf/call-continuation on-success))
+       (promesa/catch (partial rf/call-continuation on-fail)))))
+
+(rf/reg-fx
+ :effects.wallet-connect/hash-typed-data
+ (fn [{:keys [message chain-id legacy? on-success on-fail]}]
+   (-> (wallet-rpc/hash-typed-message-eip-712 message chain-id legacy?)
+       (promesa/then (partial rf/call-continuation on-success))
+       (promesa/catch (partial rf/call-continuation on-fail)))))
+
+(rf/reg-fx
  :effects.wallet-connect/sign-message
  (fn [{:keys [password address data rpc-method on-success on-error]}]
    (let [password (security/safe-unmask-data password)]
@@ -106,12 +121,10 @@
 
 (rf/reg-fx
  :effects.wallet-connect/send-transaction
- (fn [{:keys [password address chain-id tx-hash tx-args on-success on-error]}]
-   (-> (transactions/send-transaction (security/safe-unmask-data password)
-                                      address
-                                      tx-hash
-                                      tx-args
-                                      chain-id)
+ (fn [{:keys [chain-id signature tx-args on-success on-error]}]
+   (-> (wallet-rpc/send-transaction-with-signature chain-id
+                                                   tx-args
+                                                   signature)
        (promesa/then (partial rf/call-continuation on-success))
        (promesa/catch (partial rf/call-continuation on-error)))))
 

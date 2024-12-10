@@ -6,12 +6,63 @@
              data-store]
             [status-im.contexts.wallet.wallet-connect.utils.uri :as uri]
             [taoensso.timbre :as log]
+            [utils.hex :as hex]
             [utils.i18n :as i18n]
             [utils.transforms :as transforms]))
 
+(defn- keycard-account?
+  [keypairs address]
+  (some (fn [keypair]
+          (->> keypair
+               :keycards
+               (some (fn [keycard]
+                       (-> keycard
+                           :accounts-addresses
+                           set
+                           (contains? address))))))
+        (vals keypairs)))
+
 (rf/reg-event-fx
- :wallet-connect/respond-current-session
+ :wallet-connect/sign-message-with-keycard
+ (fn [{:keys [db]} [{:keys [keycard-pin sign-data on-success on-fail]}]]
+   (let [address                (get-in db [:wallet-connect/current-request :address])
+         {:keys [path key-uid]} (get-in db [:wallet :accounts address])]
+     {:fx [[:dispatch
+            [:keycard/sign-hash
+             {:key-uid    key-uid
+              :pin        keycard-pin
+              :path       path
+              :hash       (hex/normalize-hex sign-data)
+              :on-success on-success
+              :on-failure on-fail}]]]})))
+
+(rf/reg-event-fx
+ :wallet-connect/authorized-signing
  (fn [{:keys [db]} [password]]
+   (let [sign-data     (get-in db [:wallet-connect/current-request :sign-hash])
+         address       (get-in db [:wallet-connect/current-request :address])
+         keycard-sign? (-> (get-in db [:wallet :keypairs])
+                           (keycard-account? address))
+         on-success    #(rf/dispatch [:wallet-connect/respond (hex/prefix-hex %)])
+         on-fail       #(rf/dispatch [:wallet-connect/on-sign-error %])]
+     (if keycard-sign?
+       {:fx [[:dispatch
+              [:standard-auth/authorize-with-keycard
+               {:on-complete #(rf/dispatch [:wallet-connect/sign-message-with-keycard
+                                            {:keycard-pin %
+                                             :sign-data   sign-data
+                                             :on-success  on-success
+                                             :on-fail     on-fail}])}]]]}
+       {:fx [[:effects.wallet/sign-message
+              {:message    sign-data
+               :address    address
+               :password   password
+               :on-success on-success
+               :on-fail    on-fail}]]}))))
+
+(rf/reg-event-fx
+ :wallet-connect/respond
+ (fn [{:keys [db]} [signature]]
    (let [event  (get-in db [:wallet-connect/current-request :event])
          method (data-store/get-request-method event)
          screen (data-store/method-to-screen method)
@@ -19,28 +70,51 @@
      (if (uri/timestamp-expired? expiry)
        {:fx [[:dispatch
               [:toasts/upsert
-               {:id   :new-wallet-account-created
-                :type :negative
+               {:type :negative
+                :text (i18n/label :t/wallet-connect-request-expired)}]]
+             [:dispatch [:dismiss-modal screen]]]}
+       {:fx [(condp contains? method
+               #{constants/wallet-connect-personal-sign-method
+                 constants/wallet-connect-eth-sign-method
+                 constants/wallet-connect-eth-sign-transaction-method
+                 constants/wallet-connect-eth-sign-typed-method
+                 constants/wallet-connect-eth-sign-typed-v4-method}
+               [:dispatch [:wallet-connect/finish-session-request signature]]
+
+               #{constants/wallet-connect-eth-send-transaction-method}
+               [:dispatch [:wallet-connect/respond-send-transaction-data signature]])]}))))
+
+(rf/reg-event-fx
+ :wallet-connect/respond-current-session
+ (fn [{:keys [db]} [signature]]
+   (let [event  (get-in db [:wallet-connect/current-request :event])
+         method (data-store/get-request-method event)
+         screen (data-store/method-to-screen method)
+         expiry (get-in event [:params :request :expiryTimestamp])]
+     (if (uri/timestamp-expired? expiry)
+       {:fx [[:dispatch
+              [:toasts/upsert
+               {:type :negative
                 :text (i18n/label :t/wallet-connect-request-expired)}]]
              [:dispatch [:dismiss-modal screen]]]}
        {:fx [(condp = method
                constants/wallet-connect-personal-sign-method
-               [:dispatch [:wallet-connect/respond-sign-message password :personal-sign]]
+               [:dispatch [:wallet-connect/respond-sign-message signature :personal-sign]]
 
                constants/wallet-connect-eth-sign-method
-               [:dispatch [:wallet-connect/respond-sign-message password :eth-sign]]
+               [:dispatch [:wallet-connect/respond-sign-message signature :eth-sign]]
 
                constants/wallet-connect-eth-send-transaction-method
-               [:dispatch [:wallet-connect/respond-send-transaction-data password]]
+               [:dispatch [:wallet-connect/respond-send-transaction-data signature]]
 
                constants/wallet-connect-eth-sign-transaction-method
-               [:dispatch [:wallet-connect/respond-sign-transaction-data password]]
+               [:dispatch [:wallet-connect/respond-sign-transaction-data signature]]
 
                constants/wallet-connect-eth-sign-typed-method
-               [:dispatch [:wallet-connect/respond-sign-typed-data password :v1]]
+               [:dispatch [:wallet-connect/respond-sign-typed-data signature :v1]]
 
                constants/wallet-connect-eth-sign-typed-v4-method
-               [:dispatch [:wallet-connect/respond-sign-typed-data password :v4]])]}))))
+               [:dispatch [:wallet-connect/respond-sign-typed-data signature :v4]])]}))))
 
 (rf/reg-event-fx
  :wallet-connect/respond-sign-message
@@ -70,14 +144,12 @@
 
 (rf/reg-event-fx
  :wallet-connect/respond-send-transaction-data
- (fn [{:keys [db]} [password]]
-   (let [{:keys [chain-id raw-data address]} (get db :wallet-connect/current-request)
-         {:keys [tx-hash tx-args]}           raw-data]
+ (fn [{:keys [db]} [signature]]
+   (let [{:keys [chain-id raw-data]} (get db :wallet-connect/current-request)
+         {:keys [tx-args]}           raw-data]
      {:fx [[:effects.wallet-connect/send-transaction
-            {:password   password
-             :address    address
+            {:signature  signature
              :chain-id   chain-id
-             :tx-hash    tx-hash
              :tx-args    tx-args
              :on-error   [:wallet-connect/on-sign-error]
              :on-success [:wallet-connect/finish-session-request]}]]})))
