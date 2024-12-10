@@ -221,10 +221,7 @@
 (def ^:const wallet-connect-eth-sign-typed-v4-method "eth_signTypedData_v4")
 (def ^:const wallet-connect-supported-methods
   #{wallet-connect-personal-sign-method
-    wallet-connect-eth-sign-method
     wallet-connect-eth-send-transaction-method
-    ;; NOTE: disabled, as we have no clear use cases for it and other wallets don't support it
-    ;; wallet-connect-eth-sign-transaction-method
     wallet-connect-eth-sign-typed-method
     wallet-connect-eth-sign-typed-v4-method})
 (def ^:const wallet-connect-supported-events #{"accountsChanged" "chainChanged"})
@@ -237,11 +234,9 @@
 (def ^:const wallet-connect-message-signing-methods
   #{wallet-connect-personal-sign-method
     wallet-connect-eth-sign-typed-method
-    wallet-connect-eth-sign-method
     wallet-connect-eth-sign-typed-v4-method})
 (def ^:const wallet-connect-transaction-methods
-  #{wallet-connect-eth-send-transaction-method
-    wallet-connect-eth-sign-transaction-method})
+  #{wallet-connect-eth-send-transaction-method})
 
 (def ^:const transaction-pending-type-wallet-connect-transfer "WalletConnectTransfer")
 

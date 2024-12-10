@@ -41,12 +41,6 @@
                 [:wallet-connect/process-eth-send-transaction
                  {:on-success (fn [] (rf/dispatch [:wallet-connect/show-request-modal]))}]]
 
-               constants/wallet-connect-eth-sign-method
-               [:dispatch [:wallet-connect/process-eth-sign]]
-
-               constants/wallet-connect-eth-sign-transaction-method
-               [:dispatch [:wallet-connect/process-eth-sign-transaction]]
-
                constants/wallet-connect-eth-sign-typed-method
                [:dispatch [:wallet-connect/process-sign-typed]]
 
@@ -113,20 +107,6 @@
                              (when on-success
                                (rf/call-continuation on-success)))
                :on-error   #(rf/dispatch [:wallet-connect/on-processing-error %])}]]}))))
-
-(rf/reg-event-fx
- :wallet-connect/process-eth-sign-transaction
- (fn [{:keys [db]}]
-   (let [event    (data-store/get-db-current-request-event db)
-         tx       (-> event data-store/get-request-params first)
-         chain-id (-> event
-                      (get-in [:params :chainId])
-                      networks/eip155->chain-id)]
-     {:fx [[:effects.wallet-connect/prepare-transaction
-            {:tx         tx
-             :chain-id   chain-id
-             :on-success #(rf/dispatch [:wallet-connect/prepare-transaction-success % chain-id])
-             :on-error   #(rf/dispatch [:wallet-connect/on-processing-error %])}]]})))
 
 (rf/reg-event-fx
  :wallet-connect/process-sign-typed

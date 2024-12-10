@@ -14,8 +14,7 @@
 (defn transaction-request?
   [event]
   (->> (data-store/get-request-method event)
-       (contains? #{constants/wallet-connect-eth-send-transaction-method
-                    constants/wallet-connect-eth-sign-transaction-method})))
+       (contains? constants/wallet-connect-transaction-methods)))
 
 ;; NOTE: Currently we don't allow the user to configure the tx priority as we don't
 ;; show the estimated time, but when we implement it, we should allow to change it

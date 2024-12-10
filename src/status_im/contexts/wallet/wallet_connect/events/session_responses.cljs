@@ -65,8 +65,6 @@
              [:dispatch [:dismiss-modal screen]]]}
        {:fx [(condp contains? method
                #{constants/wallet-connect-personal-sign-method
-                 constants/wallet-connect-eth-sign-method
-                 constants/wallet-connect-eth-sign-transaction-method
                  constants/wallet-connect-eth-sign-typed-method
                  constants/wallet-connect-eth-sign-typed-v4-method}
                [:dispatch [:wallet-connect/finish-session-request signature]]
