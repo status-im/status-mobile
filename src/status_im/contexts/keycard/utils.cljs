@@ -1,6 +1,5 @@
 (ns status-im.contexts.keycard.utils
   (:require [clojure.string :as string]
-            [status-im.common.alert.effects :as alert.effects]
             [utils.address :as address]
             [utils.transforms :as transforms]))
 

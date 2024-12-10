@@ -17,7 +17,6 @@
     [status-im.contexts.communities.actions.community-options.view :as options]
     [status-im.contexts.communities.overview.style :as style]
     [status-im.contexts.communities.utils :as communities.utils]
-    [status-im.contexts.keycard.utils :as keycard.utils]
     [utils.debounce :as debounce]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))

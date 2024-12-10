@@ -4,7 +4,6 @@
     [quo.foundations.colors :as colors]
     [react-native.core :as rn]
     [status-im.common.check-before-syncing.view :as check-before-syncing]
-    [status-im.contexts.keycard.utils :as keycard.utils]
     [status-im.contexts.syncing.device.view :as device]
     [status-im.contexts.syncing.syncing-devices-list.style :as style]
     [utils.i18n :as i18n]
