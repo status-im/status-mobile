@@ -17,20 +17,22 @@
     (rf/dispatch [:navigate-to-within-stack [next-screen :screen/onboarding.share-usage]]) ;; Onboarding
     (rf/dispatch [:navigate-back]))) ;; Login Screen
 
+(defn- learn-more []
+  (rf/dispatch [:show-bottom-sheet
+                {:content learn-more-sheet/view
+                 :shell?  true}]))
+
 (defn view
   []
   (let [insets           (safe-area/get-insets)
         next-screen      (:next-screen (rf/sub [:get-screen-params :screen/onboarding.share-usage]))
         share-usage-data (rn/use-callback #(share-usage-data-fn true next-screen))
-        maybe-later      (rn/use-callback #(share-usage-data-fn false next-screen))
-        learn-more       (rn/use-callback #(rf/dispatch [:show-bottom-sheet
-                                                         {:content learn-more-sheet/view
-                                                          :shell?  true}]))]
+        maybe-later      (rn/use-callback #(share-usage-data-fn false next-screen))]
     [rn/view {:style style/page}
      [quo/page-nav
       {:margin-top (:top insets)
        :background :blur
-       :icon-name  :i/arrow-left
+       :icon-name  :i/close
        :on-press   events-helper/navigate-back
        :right-side [{:icon-left           :i/info
                      :accessibility-label :learn-more
