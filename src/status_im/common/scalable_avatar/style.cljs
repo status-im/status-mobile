@@ -1,11 +1,10 @@
 (ns status-im.common.scalable-avatar.style)
 
 (defn wrapper
-  [{:keys [scale margin-top margin border-color]}]
-  [{:transform     [{:scale scale}]
-    :margin-top    margin-top
-    :margin-left   margin
-    :margin-bottom margin}
-   {:border-width  4
-    :border-color  border-color
-    :border-radius 100}])
+  [border-color scale]
+  [{:transform-origin "bottom left"
+    :border-width     4
+    :border-color     border-color
+    :border-radius    100
+    :transform        [{:scale 1} {:translate-y 4}]}
+   {:transform [{:scale scale} {:translate-y 4}]}])

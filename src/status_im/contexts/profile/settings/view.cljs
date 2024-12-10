@@ -1,7 +1,7 @@
 (ns status-im.contexts.profile.settings.view
   (:require [oops.core :as oops]
             [quo.core :as quo]
-            [quo.theme :as quo.theme]
+            [quo.theme]
             [react-native.core :as rn]
             [react-native.reanimated :as reanimated]
             [react-native.safe-area :as safe-area]

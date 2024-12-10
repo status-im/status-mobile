@@ -19,7 +19,7 @@
     {:d    "M20 20V0H0C11 0 20 9 20 20Z"
      :fill background-color}]])
 
-(defn f-view
+(defn view
   [{:keys [scroll-y customization-color theme]}]
   (let [background-color  (colors/resolve-color customization-color theme 40)
         opacity-animation (reanimated/interpolate scroll-y
@@ -30,7 +30,3 @@
      [reanimated/view {:style (style/radius-container opacity-animation)}
       [left-radius background-color]
       [right-radius background-color]]]))
-
-(defn view
-  [props]
-  [:f> f-view props])
