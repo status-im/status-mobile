@@ -77,7 +77,6 @@
      #shadow/env "STATUS_BACKEND_SERVER_IMAGE_SERVER_URI_PREFIX"
      status-im.config/STATUS_BACKEND_SERVER_ROOT_DATA_DIR #shadow/env
                                                            "STATUS_BACKEND_SERVER_ROOT_DATA_DIR"
-     status-im.config/SENTRY_DSN_STATUS_GO #shadow/env "SENTRY_DSN_STATUS_GO"
      status-im.config/MIXPANEL_APP_ID #shadow/env "MIXPANEL_APP_ID"
      status-im.config/MIXPANEL_TOKEN #shadow/env "MIXPANEL_TOKEN"
      status-im.config/OPENSEA_API_KEY #shadow/env "OPENSEA_API_KEY"
@@ -124,7 +123,8 @@
      status-im.config/ALCHEMY_ARBITRUM_MAINNET_TOKEN #shadow/env "ALCHEMY_ARBITRUM_MAINNET_TOKEN"
      status-im.config/ALCHEMY_ARBITRUM_SEPOLIA_TOKEN #shadow/env "ALCHEMY_ARBITRUM_SEPOLIA_TOKEN"
      status-im.config/ALCHEMY_OPTIMISM_MAINNET_TOKEN #shadow/env "ALCHEMY_OPTIMISM_MAINNET_TOKEN"
-     status-im.config/ALCHEMY_OPTIMISM_SEPOLIA_TOKEN #shadow/env "ALCHEMY_OPTIMISM_SEPOLIA_TOKEN"}
+     status-im.config/ALCHEMY_OPTIMISM_SEPOLIA_TOKEN #shadow/env "ALCHEMY_OPTIMISM_SEPOLIA_TOKEN"
+     status-im.config/SENTRY_DSN_STATUS_GO #shadow/env "SENTRY_DSN_STATUS_GO"}
     :compiler-options {:output-feature-set :es6
                        ;;disable for android build as there
                        ;;is an intermittent warning with deftype
