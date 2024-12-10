@@ -58,7 +58,7 @@
                :preloads          [;; The official recommendation is to
                                    ;; load the debugger preload first.
                                    flow-storm.api
-                                   re-frisk-remote.preload
+                                   dev.re-frisk-preload
                                    status-im.setup.schema-preload
                                    ;; In order to use component test helpers in the REPL we need to
                                    ;; preload namespaces that are not normally required by
