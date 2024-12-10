@@ -11,30 +11,35 @@
   [{:keys [contact-id]}]
   (let [{:keys [contact-request-state
                 community-id
-                chat-name]}       (rf/sub [:chats/current-chat-chat-view])
-        chat-type                 (rf/sub [:chats/chat-type])
-        [primary-name _]          (if (= chat-type :public-chat)
-                                    [(str "#" chat-name) ""]
-                                    (rf/sub [:contacts/contact-two-names-by-identity contact-id]))
-        community-chat?           (= chat-type :community-chat)
-        joined                    (when community-chat?
-                                    (rf/sub [:communities/community-joined community-id]))
-        pending?                  (when community-chat?
-                                    (rf/sub [:communities/my-pending-request-to-join community-id]))
-        contact-request-send?     (or (not contact-request-state)
-                                      (= contact-request-state
-                                         constants/contact-request-state-none))
-        contact-request-received? (= contact-request-state
-                                     constants/contact-request-state-received)
-        contact-request-pending?  (= contact-request-state
-                                     constants/contact-request-state-sent)]
+                chat-name]}         (rf/sub [:chats/current-chat-chat-view])
+        chat-type                   (rf/sub [:chats/chat-type])
+        [primary-name _]            (if (= chat-type :public-chat)
+                                      [(str "#" chat-name) ""]
+                                      (rf/sub [:contacts/contact-two-names-by-identity contact-id]))
+        community-chat?             (= chat-type :community-chat)
+        joined                      (when community-chat?
+                                      (rf/sub [:communities/community-joined community-id]))
+        pending?                    (when community-chat?
+                                      (rf/sub [:communities/my-pending-request-to-join community-id]))
+        contact-request-send?       (or (not contact-request-state)
+                                        (= contact-request-state
+                                           constants/contact-request-state-none))
+        contact-request-received?   (= contact-request-state
+                                       constants/contact-request-state-received)
+        contact-request-pending?    (= contact-request-state
+                                       constants/contact-request-state-sent)
+        keycard?                    (rf/sub [:keycard/keycard-profile?])
+        keycard-feature-unavailable (rn/use-callback
+                                     #(rf/dispatch [:keycard/feature-unavailable-show]))]
     [rn/view {:style style/container}
      [quo/permission-context
       {:blur?        true
        :on-press     (cond
                        (and community-chat? (not pending?) (not joined))
-                       #(rf/dispatch [:open-modal :community-account-selection-sheet
-                                      {:community-id community-id}])
+                       (if keycard?
+                         keycard-feature-unavailable
+                         #(rf/dispatch [:open-modal :community-account-selection-sheet
+                                        {:community-id community-id}]))
 
                        (not community-chat?)
                        #(rf/dispatch [:chat.ui/show-profile contact-id]))

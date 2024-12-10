@@ -9,7 +9,9 @@
             status-im.contexts.keycard.pin.events
             status-im.contexts.keycard.sign.events
             [status-im.contexts.keycard.utils :as keycard.utils]
-            utils.datetime))
+            [utils.address :as address]
+            utils.datetime
+            [utils.ethereum.eip.eip55 :as eip55]))
 
 (rf/reg-event-fx :keycard/on-card-connected
  (fn [{:keys [db]} _]
@@ -64,6 +66,30 @@
 (rf/reg-event-fx :keycard/export-key
  (fn [_ [data]]
    {:effects.keycard/export-key data}))
+
+(rf/reg-event-fx :keycard/connect-derive-address-and-add-account
+ (fn [_ [{:keys [pin derivation-path key-uid account-preferences]}]]
+   {:fx [[:dispatch
+          [:keycard/connect
+           {:key-uid key-uid
+            :on-success
+            (fn []
+              (rf/dispatch
+               [:keycard/export-key
+                {:pin        pin
+                 :path       derivation-path
+                 :on-success (fn [public-key]
+                               (let [derived-account {:public-key (str "0x" public-key)
+                                                      :address    (eip55/address->checksum
+                                                                   (str "0x"
+                                                                        (address/public-key->address
+                                                                         (subs public-key 2))))
+                                                      :path       derivation-path}]
+                                 (rf/dispatch [:keycard/disconnect])
+                                 (rf/dispatch [:wallet/add-account
+                                               (assoc account-preferences :key-uid key-uid)
+                                               derived-account])))
+                 :on-failure #(rf/dispatch [:keycard/on-action-with-pin-error %])}]))}]]]}))
 
 (rf/reg-event-fx :keycard/cancel-connection
  (fn [{:keys [db]}]

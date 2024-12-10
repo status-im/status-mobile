@@ -38,7 +38,11 @@
                                                      #(if (:enabled? %)
                                                         :paired-devices
                                                         :unpaired-devices)
-                                                     other-devices)]
+                                                     other-devices)
+        keycard?                                    (rf/sub [:keycard/keycard-profile?])
+        keycard-feature-unavailable                 (rn/use-callback
+                                                     #(rf/dispatch [:keycard/feature-unavailable-show
+                                                                    {:theme :dark}]))]
     [quo/overlay {:type :shell :top-inset? true}
      [quo/page-nav
       {:type       :no-title
@@ -60,7 +64,9 @@
          :type                :primary
          :customization-color profile-color
          :icon-only?          true
-         :on-press            open-setup-syncing-with-customization-color}
+         :on-press            (if keycard?
+                                keycard-feature-unavailable
+                                open-setup-syncing-with-customization-color)}
         :i/add]]
       [device/view (merge user-device {:this-device? true})]
       (when (seq paired-devices)

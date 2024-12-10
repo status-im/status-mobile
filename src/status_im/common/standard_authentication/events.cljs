@@ -10,19 +10,44 @@
     [utils.re-frame :as rf]
     [utils.security.core :as security]))
 
-(rf/reg-fx :effects.keycard/call-on-auth-success
- (fn [on-auth-success]
-   (when on-auth-success (on-auth-success ""))))
+(defn- handle-password-success
+  [has-partially-operable-accounts? on-auth-success password]
+  (let [sha3-pwd                 (security/hash-masked-password password)
+        on-auth-success-callback #(on-auth-success sha3-pwd)]
+    (rf/dispatch [:standard-auth/set-success true])
+    (rf/dispatch [:standard-auth/reset-login-password])
+    (if has-partially-operable-accounts?
+      (rf/dispatch [:wallet/make-partially-operable-accounts-fully-operable
+                    {:password   sha3-pwd
+                     :on-success on-auth-success-callback
+                     :on-error   on-auth-success-callback}])
+      (on-auth-success-callback))))
 
 (defn authorize
-  [{:keys [db]} [{:keys [on-auth-success keycard-supported?] :as args}]]
-  (let [key-uid  (get-in db [:profile/profile :key-uid])
-        keycard? (get-in db [:profile/profile :keycard-pairing])]
+  [{:keys [db]} [{:keys [on-auth-success] :as args}]]
+  (let [key-uid          (get-in db [:profile/profile :key-uid])
+        keycard-profile? (get-in db [:profile/profile :keycard-pairing])]
     {:fx
-     [(if keycard?
-        (if keycard-supported?
-          [:effects.keycard/call-on-auth-success on-auth-success]
-          [:dispatch [:keycard/feature-unavailable-show]])
+     [(if keycard-profile?
+        [:dispatch
+         [:standard-auth/authorize-with-keycard
+          {:on-complete
+           (fn [pin]
+             (rf/dispatch
+              [:keycard/connect
+               {:key-uid key-uid
+                :on-success
+                (fn []
+                  (rf/dispatch
+                   [:keycard/get-keys
+                    {:pin        pin
+                     :on-success (fn [{:keys [encryption-public-key]}]
+                                   (rf/dispatch [:keycard/disconnect])
+                                   (handle-password-success false
+                                                            on-auth-success
+                                                            encryption-public-key))
+                     :on-failure #(rf/dispatch [:keycard/on-action-with-pin-error
+                                                %])}]))}]))}]]
         [:effects.biometric/check-if-available
          {:key-uid    key-uid
           :on-success #(rf/dispatch [:standard-auth/authorize-with-biometric args])
@@ -84,21 +109,12 @@
 (defn- bottom-sheet-password-view
   [{:keys [on-press-biometric on-auth-success auth-button-icon-left auth-button-label]}]
   (fn []
-    (let [has-partially-operable-accounts? (rf/sub [:wallet/has-partially-operable-accounts?])
-          handle-password-success
-          (fn [password]
-            (let [sha3-pwd                 (security/hash-masked-password password)
-                  on-auth-success-callback #(on-auth-success sha3-pwd)]
-              (rf/dispatch [:standard-auth/set-success true])
-              (rf/dispatch [:standard-auth/reset-login-password])
-              (if has-partially-operable-accounts?
-                (rf/dispatch [:wallet/make-partially-operable-accounts-fully-operable
-                              {:password   sha3-pwd
-                               :on-success on-auth-success-callback
-                               :on-error   on-auth-success-callback}])
-                (on-auth-success-callback))))]
+    (let [has-partially-operable-accounts? (rf/sub [:wallet/has-partially-operable-accounts?])]
       [enter-password/view
-       {:on-enter-password   handle-password-success
+       {:on-enter-password   #(handle-password-success
+                               has-partially-operable-accounts?
+                               on-auth-success
+                               %)
         :on-press-biometrics on-press-biometric
         :button-icon-left    auth-button-icon-left
         :button-label        auth-button-label}])))

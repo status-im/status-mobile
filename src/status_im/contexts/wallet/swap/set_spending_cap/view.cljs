@@ -217,18 +217,23 @@
 
 (defn- slide-button
   []
-  (let [loading-swap-proposal? (rf/sub [:wallet/swap-loading-swap-proposal?])
-        swap-proposal          (rf/sub [:wallet/swap-proposal-without-fees])
-        account                (rf/sub [:wallet/current-viewing-account])
-        on-auth-success        (rn/use-callback
-                                #(rf/dispatch [:wallet/prepare-signatures-for-transactions :swap %]))]
+  (let [loading-swap-proposal?  (rf/sub [:wallet/swap-loading-swap-proposal?])
+        swap-proposal           (rf/sub [:wallet/swap-proposal-without-fees])
+        account                 (rf/sub [:wallet/current-viewing-account])
+        transaction-for-signing (rf/sub [:wallet/swap-transaction-for-signing])
+        sign-on-keycard?        (get-in transaction-for-signing
+                                        [:signingDetails :signOnKeycard])
+        on-auth-success         (rn/use-callback
+                                 #(rf/dispatch [:wallet/prepare-signatures-for-transactions :swap %]))
+        on-complete             (rn/use-callback
+                                 #(rf/dispatch [:wallet/prepare-signatures-for-transactions :swap ""]))]
     [standard-auth/slide-button
      {:size                :size-48
       :track-text          (i18n/label :t/slide-to-sign)
       :container-style     {:z-index 2}
       :customization-color (:color account)
       :disabled?           (or loading-swap-proposal? (not swap-proposal))
-      :keycard-supported?  true
+      :on-complete         (when sign-on-keycard? on-complete)
       :on-auth-success     on-auth-success
       :auth-button-label   (i18n/label :t/confirm)}]))
 

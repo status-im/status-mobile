@@ -5,5 +5,8 @@
 
 (rf/reg-event-fx
  :keycard/feature-unavailable-show
- (fn [_]
-   {:fx [[:dispatch [:show-bottom-sheet {:content feature-unavailable/view}]]]}))
+ (fn [_ [options]]
+   {:fx [[:dispatch
+          [:show-bottom-sheet
+           {:theme   (:theme options)
+            :content feature-unavailable/view}]]]}))
