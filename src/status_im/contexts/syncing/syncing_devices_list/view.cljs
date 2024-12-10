@@ -37,11 +37,9 @@
         user-device                                 (first devices-with-button)
         other-devices                               (rest devices-with-button)
         profile-color                               (rf/sub [:profile/customization-color])
-        open-setup-syncing-with-customization-color (rn/use-callback (partial open-setup-syncing
-                                                                              profile-color)
+        open-setup-syncing-with-customization-color (rn/use-callback #(open-setup-syncing profile-color)
                                                                      [profile-color])
-        show-feature-unavailable-with-theme         (rn/use-callback (partial show-feature-unavailable
-                                                                              theme)
+        show-feature-unavailable-with-theme         (rn/use-callback #(show-feature-unavailable theme)
                                                                      [theme])
         {:keys [paired-devices unpaired-devices]}   (group-by
                                                      #(if (:enabled? %)
