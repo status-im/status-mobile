@@ -34,7 +34,7 @@
      [rn/view {:style style/avatar-row-wrapper}
       [avatar/view
        {:scroll-y            scroll-y
-        :display-name        full-name
+        :full-name           full-name
         :online?             online?
         :border-color        (colors/theme-colors colors/border-avatar-light
                                                   colors/neutral-80-opa-80
