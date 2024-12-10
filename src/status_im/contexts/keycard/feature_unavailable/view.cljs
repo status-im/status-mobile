@@ -24,7 +24,5 @@
      [quo/text
       {:style    {:text-decoration-line :underline}
        :size     :paragraph-2
-
-
        :on-press on-upvote}
       (i18n/label :t/upvote-it)]]]])
