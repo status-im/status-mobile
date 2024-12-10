@@ -159,21 +159,3 @@
              {:on-cancel-event-vector [:keycard/cancel-connection]}]]
            (when (get-in db [:keycard :card-connected?])
              [:dispatch event-vector])]})))
-
-(rf/reg-event-fx
- :keycard/sign
- (fn [_ [data]]
-   {:fx [[:effects.keycard/sign data]]}))
-
-(rf/reg-event-fx
- :keycard/sign-hash
- (fn [_ [{:keys [key-uid on-success] :as data}]]
-   {:fx [[:dispatch
-          [:keycard/connect
-           {:key-uid    key-uid
-            :on-success #(rf/dispatch [:keycard/sign
-                                       (assoc data
-                                              :on-success
-                                              (fn [signature]
-                                                (when on-success (on-success signature))
-                                                (rf/dispatch [:keycard/disconnect])))])}]]]}))
