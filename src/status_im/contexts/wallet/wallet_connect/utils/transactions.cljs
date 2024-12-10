@@ -136,22 +136,6 @@
      :suggested-fees suggested-fees
      :estimated-time estimated-time}))
 
-(defn sign-transaction
-  [password address tx-hash tx-args chain-id]
-  (promesa/let
-    [signature (wallet-rpc/sign-message tx-hash address password)
-     raw-tx    (wallet-rpc/build-raw-transaction chain-id tx-args signature)]
-    raw-tx))
-
-(defn send-transaction
-  [password address tx-hash tx-args chain-id]
-  (promesa/let
-    [signature (wallet-rpc/sign-message tx-hash address password)
-     tx        (wallet-rpc/send-transaction-with-signature chain-id
-                                                           tx-args
-                                                           signature)]
-    tx))
-
 (defn transactions->display-array
   [data]
   (remove (fn [[k v]]

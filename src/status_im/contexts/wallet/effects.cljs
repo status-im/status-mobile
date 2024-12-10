@@ -128,6 +128,5 @@
  :effects.wallet/sign-message
  (fn [{:keys [message address password on-success on-error]}]
    (-> (wallet-rpc/sign-message message address (security/safe-unmask-data password))
-       (promesa/then :signature)
        (promesa/then on-success)
        (promesa/catch on-error))))

@@ -25,14 +25,6 @@
   [message]
   (rpc-events/call-async "wallet_hashMessageEIP191" true message))
 
-(defn hash-typed-message-eip-712
-  [message chain-id legacy?]
-  (rpc-events/call-async "wallet_hashTypedData"
-                         true
-                         message
-                         chain-id
-                         legacy?))
-
 (defn safe-sign-typed-data
   [data address password chain-id legacy?]
   (rpc-events/call-async "wallet_safeSignTypedDataForDApps"

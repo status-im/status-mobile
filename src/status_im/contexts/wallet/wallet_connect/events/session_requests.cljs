@@ -57,11 +57,11 @@
                [:dispatch [:wallet-connect/process-personal-sign]])]}))))
 
 (rf/reg-event-fx
- :wallet-connect/store-sign-hash
- (fn [{:keys [db]} [sign-hash]]
+ :wallet-connect/store-prepared-hash
+ (fn [{:keys [db]} [prepared-hash]]
    {:db (assoc-in db
-         [:wallet-connect/current-request :sign-hash]
-         sign-hash)}))
+         [:wallet-connect/current-request :prepared-hash]
+         prepared-hash)}))
 
 (rf/reg-event-fx
  :wallet-connect/process-personal-sign
@@ -72,30 +72,10 @@
                      [:wallet-connect/current-request]
                      assoc
                      :address      (string/lower-case address)
-                     ;; TODO: DELETE
-                     :raw-data     raw-data
                      :display-data (or parsed-data raw-data))
       :fx [[:effects.wallet-connect/hash-message
             {:message    raw-data
-             :on-success #(rf/dispatch [:wallet-connect/store-sign-hash %])
-             :on-fail    #(rf/dispatch [:wallet-connect/on-processing-error %])}]
-           [:dispatch [:wallet-connect/show-request-modal]]]})))
-
-;; DEPRECATE IF NOT WORKING ?!
-(rf/reg-event-fx
- :wallet-connect/process-eth-sign
- (fn [{:keys [db]}]
-   (let [[address raw-data] (data-store/get-db-current-request-params db)
-         parsed-data        (native-module/hex-to-utf8 raw-data)]
-     {:db (update-in db
-                     [:wallet-connect/current-request]
-                     assoc
-                     :address      (string/lower-case address)
-                     :raw-data     raw-data
-                     :display-data (or parsed-data raw-data))
-      :fx [[:effects.wallet-connect/hash-message
-            {:message    raw-data
-             :on-success #(rf/dispatch [:wallet-connect/store-sign-hash %])
+             :on-success #(rf/dispatch [:wallet-connect/store-prepared-hash %])
              :on-fail    #(rf/dispatch [:wallet-connect/on-processing-error %])}]
            [:dispatch [:wallet-connect/show-request-modal]]]})))
 
@@ -114,7 +94,7 @@
                      :transaction  tx
                      :chain-id     chain-id
                      :display-data display-data)
-      :fx [[:dispatch [:wallet-connect/store-sign-hash tx-hash]]]})))
+      :fx [[:dispatch [:wallet-connect/store-prepared-hash tx-hash]]]})))
 
 (rf/reg-event-fx
  :wallet-connect/process-eth-send-transaction
@@ -177,10 +157,9 @@
                          :raw-data     raw-data)
           :fx [[:effects.wallet-connect/hash-typed-data
                 {:message    raw-data
-                 :chain-id   session-chain-id
                  :legacy?    (not= constants/wallet-connect-eth-sign-typed-v4-method
                                    method)
-                 :on-success #(rf/dispatch [:wallet-connect/store-sign-hash %])
+                 :on-success #(rf/dispatch [:wallet-connect/store-prepared-hash %])
                  :on-fail    #(rf/dispatch [:wallet-connect/on-processing-error %])}]
                [:dispatch [:wallet-connect/show-request-modal]]]}))
      (catch js/Error err
