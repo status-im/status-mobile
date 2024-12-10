@@ -287,6 +287,12 @@
  :-> :selected-keypair-uid)
 
 (rf/reg-sub
+ :wallet/selected-keypair-keycard?
+ :<- [:wallet/selected-keypair]
+ (fn [{:keys [keycards]}]
+   (boolean (seq keycards))))
+
+(rf/reg-sub
  :wallet/selected-keypair
  :<- [:wallet/keypairs]
  :<- [:wallet/selected-keypair-uid]

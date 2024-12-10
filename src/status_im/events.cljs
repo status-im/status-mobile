@@ -27,6 +27,7 @@
     status-im.contexts.contact.blocking.events
     status-im.contexts.keycard.effects
     status-im.contexts.keycard.events
+    status-im.contexts.keycard.feature-unavailable.events
     status-im.contexts.network.effects
     status-im.contexts.network.events
     status-im.contexts.onboarding.common.overlay.events

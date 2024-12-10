@@ -291,3 +291,10 @@
        (cske/transform-keys transforms/->kebab-case-keyword)
        (map #(assoc % :unique-id (collectible-utils/get-collectible-unique-id %)))
        vec))
+
+(defn selected-keypair-keycard?
+  [db]
+  (let [keypairs             (get-in db [:wallet :keypairs])
+        selected-keypair-uid (get-in db [:wallet :ui :create-account :selected-keypair-uid])
+        keypair              (get keypairs selected-keypair-uid)]
+    (boolean (seq (:keycards keypair)))))

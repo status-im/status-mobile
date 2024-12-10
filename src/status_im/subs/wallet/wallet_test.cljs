@@ -1133,3 +1133,25 @@
                                                                                           "0")
                                                                             :has-error   false}}}]}}))
     (is (false? (rf/sub [sub-name])))))
+
+(h/deftest-sub :wallet/selected-keypair-keycard?
+  [sub-name]
+  (testing "returns true if the selected keypair has keycards"
+    (swap! rf-db/app-db
+      #(assoc-in %
+        [:wallet :keypairs]
+        {:keypair-1 {:id       :keypair-1
+                     :keycards [:keycard-1 :keycard-2]}}))
+    (swap! rf-db/app-db
+      #(assoc-in % [:wallet :ui :create-account :selected-keypair-uid] :keypair-1))
+    (is (true? (rf/sub [sub-name]))))
+
+  (testing "returns false if the selected keypair has no keycards"
+    (swap! rf-db/app-db
+      #(assoc-in %
+        [:wallet :keypairs]
+        {:keypair-2 {:id       :keypair-2
+                     :keycards []}}))
+    (swap! rf-db/app-db
+      #(assoc-in % [:wallet :ui :create-account :selected-keypair-uid] :keypair-2))
+    (is (false? (rf/sub [sub-name])))))
