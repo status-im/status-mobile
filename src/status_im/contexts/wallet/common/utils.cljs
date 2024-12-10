@@ -404,15 +404,13 @@
                                                     :market-values-per-token market-values-per-token}))
         calculated-tokens (map calculate-token tokens)]
     (sort-by (fn [token]
-               (let [fiat-value (get-in token [:values :fiat-unformatted-value])
-                     priority   (get constants/token-sort-priority (:token token) ##Inf)]
-                 [(- fiat-value) priority]))
+               (let [fiat-value (get-in token [:values :fiat-unformatted-value])]
+                 [(- fiat-value)]))
              calculated-tokens)))
 
 (defn sort-tokens
   [tokens]
-  (let [priority #(get constants/token-sort-priority (:symbol %) ##Inf)]
-    (sort-by (juxt (comp - :balance) priority) tokens)))
+  (sort-by (fn [token] (- (:balance token))) tokens))
 
 (defn- transaction-data
   [{:keys [from-address to-address token-address route data eth-transfer?]}]
@@ -543,8 +541,7 @@
 
 (defn sort-tokens-by-name
   [tokens]
-  (let [priority #(get constants/token-sort-priority (:symbol %) ##Inf)]
-    (sort-by (juxt :symbol priority) tokens)))
+  (sort-by :symbol tokens))
 
 (defn tokens-with-balance
   [tokens networks chain-ids]
