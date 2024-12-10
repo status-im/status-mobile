@@ -193,20 +193,20 @@
                                                 constants/path-default-wallet)]
       [floating-button
        {:account-color      @account-color
-        :slide-button-props {:on-auth-success   (fn on-auth-success [password]
-                                                  (let [account-preferences {:account-name @account-name
-                                                                             :color        @account-color
-                                                                             :emoji        @emoji}]
-                                                    (if (= workflow
-                                                           :workflow/new-keypair.import-private-key)
-                                                      (on-auth-success-import-private-key
-                                                       password
-                                                       account-preferences)
-                                                      (on-auth-success-mnemonic
-                                                       password
-                                                       account-preferences))))
-                             :disabled?         (empty? @account-name)
-                             :dependencies      [new-account-data]}}
+        :slide-button-props {:on-auth-success (fn on-auth-success [password]
+                                                (let [account-preferences {:account-name @account-name
+                                                                           :color        @account-color
+                                                                           :emoji        @emoji}]
+                                                  (if (= workflow
+                                                         :workflow/new-keypair.import-private-key)
+                                                    (on-auth-success-import-private-key
+                                                     password
+                                                     account-preferences)
+                                                    (on-auth-success-mnemonic
+                                                     password
+                                                     account-preferences))))
+                             :disabled?       (empty? @account-name)
+                             :dependencies    [new-account-data]}}
        [avatar
         {:account-color   @account-color
          :emoji           @emoji
