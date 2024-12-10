@@ -106,12 +106,14 @@
   [quo/text (i18n/label :t/network-not-supported)])
 
 (defn- request-access-button
-  [id color]
+  [id color keycard? keycard-feature-unavailable]
   [quo/button
-   {:on-press            (if config/community-accounts-selection-enabled?
-                           #(rf/dispatch [:open-modal :community-account-selection-sheet
-                                          {:community-id id}])
-                           #(rf/dispatch [:open-modal :community-requests-to-join {:id id}]))
+   {:on-press            (if keycard?
+                           keycard-feature-unavailable
+                           (if config/community-accounts-selection-enabled?
+                             #(rf/dispatch [:open-modal :community-account-selection-sheet
+                                            {:community-id id}])
+                             #(rf/dispatch [:open-modal :community-requests-to-join {:id id}])))
     :accessibility-label :show-request-to-join-screen-button
     :customization-color color
     :container-style     {:margin-bottom 12}
@@ -152,7 +154,7 @@
       [network-not-supported]
 
       (or (not role-permissions?) no-member-permission?)
-      [request-access-button id color]
+      [request-access-button id color keycard? keycard-feature-unavailable]
 
       :else
       [quo/community-token-gating
