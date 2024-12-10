@@ -267,9 +267,11 @@ run-metro: export TARGET := clojure
 run-metro: ##@run Start Metro to build React Native changes
 	@scripts/run-metro.sh
 
+export RE_FRISK_PORT ?= 4567
+
 run-re-frisk: export TARGET := clojure
 run-re-frisk: ##@run Start re-frisk server
-	yarn shadow-cljs run re-frisk-remote.core/start
+	yarn shadow-cljs run re-frisk-remote.core/start ${RE_FRISK_PORT}
 
 # TODO: Migrate this to a Nix recipe, much the same way as nix/mobile/android/targets/release-android.nix
 run-android: export TARGET := android
