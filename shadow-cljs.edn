@@ -124,7 +124,7 @@
      status-im.config/ALCHEMY_ARBITRUM_SEPOLIA_TOKEN #shadow/env "ALCHEMY_ARBITRUM_SEPOLIA_TOKEN"
      status-im.config/ALCHEMY_OPTIMISM_MAINNET_TOKEN #shadow/env "ALCHEMY_OPTIMISM_MAINNET_TOKEN"
      status-im.config/ALCHEMY_OPTIMISM_SEPOLIA_TOKEN #shadow/env "ALCHEMY_OPTIMISM_SEPOLIA_TOKEN"
-     status-im.config/SENTRY_DSN_STATUS_GO #shadow/env "SENTRY_DSN_STATUS_GO"}
+     status-im.config/SENTRY_DSN_STATUS_GO           #shadow/env "SENTRY_DSN_STATUS_GO"}
     :compiler-options {:output-feature-set :es6
                        ;;disable for android build as there
                        ;;is an intermittent warning with deftype
