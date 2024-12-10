@@ -23,19 +23,22 @@
     (when f
       (f data index))))
 
+(defn dissoc-custom-props
+  [props]
+  (dissoc props :data :header :footer :empty-component :separator :render-fn :key-fn :on-drag-end-fn))
+
 (defn base-list-props
-  [{:keys [key-fn render-fn empty-component header footer separator data render-data on-drag-end-fn]
+  [{:keys [key-fn data render-fn empty-component header footer separator render-data on-drag-end-fn]
     :as   props}]
-  (merge
-   {:data (to-array data)}
-   (when key-fn {:keyExtractor (wrap-key-fn key-fn)})
-   (when render-fn {:renderItem (wrap-render-fn render-fn render-data)})
-   (when separator {:ItemSeparatorComponent (fn [] (reagent/as-element separator))})
-   (when empty-component {:ListEmptyComponent (fn [] (reagent/as-element empty-component))})
-   (when header {:ListHeaderComponent (reagent/as-element header)})
-   (when footer {:ListFooterComponent (reagent/as-element footer)})
-   (when on-drag-end-fn {:onDragEnd (wrap-on-drag-end-fn on-drag-end-fn)})
-   (dissoc props :data :header :footer :empty-component :separator :render-fn :key-fn :on-drag-end-fn)))
+  (cond-> {:data (to-array data)}
+    key-fn          (assoc :keyExtractor (wrap-key-fn key-fn))
+    render-fn       (assoc :renderItem (wrap-render-fn render-fn render-data))
+    separator       (assoc :ItemSeparatorComponent (fn [] (reagent/as-element separator)))
+    empty-component (assoc :ListEmptyComponent (fn [] (reagent/as-element empty-component)))
+    header          (assoc :ListHeaderComponent (reagent/as-element header))
+    footer          (assoc :ListFooterComponent (reagent/as-element footer))
+    on-drag-end-fn  (assoc :onDragEnd (wrap-on-drag-end-fn on-drag-end-fn))
+    :always         (merge (dissoc-custom-props props))))
 
 (defn flat-list
   [props]
