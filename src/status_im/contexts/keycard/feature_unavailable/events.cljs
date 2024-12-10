@@ -9,4 +9,8 @@
    {:fx [[:dispatch
           [:show-bottom-sheet
            {:theme   (:theme options)
-            :content feature-unavailable/view}]]]}))
+            :content feature-unavailable/view}]]
+         [:dispatch
+          [:centralized-metrics/track
+           :metric/feature-unavailable
+           {:feature-name (:feature-name options)}]]]}))
