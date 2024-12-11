@@ -116,20 +116,19 @@
         address-2 "0x2"]
     (reset! rf-db/app-db {:wallet {:accounts {address-1 {:address address-1}
                                               address-2 {:address address-2}}}})
-    (is (match? [[:dispatch [:wallet/get-wallet-token-for-account address-1]]
-                 [:dispatch [:wallet/get-wallet-token-for-account address-2]]]
+    (is (match? [[:dispatch [:wallet/get-wallet-token-for-accounts [address-1 address-2]]]]
                 (:fx (dispatch [event-id]))))))
 
-(h/deftest-event :wallet/get-wallet-token-for-account
+(h/deftest-event :wallet/get-wallet-token-for-accounts
   [event-id dispatch]
   (let [expected-effects {:db {:wallet {:ui {:tokens-loading {address true}}}}
                           :fx [[:json-rpc/call
                                 [{:method     "wallet_fetchOrGetCachedWalletBalances"
                                   :params     [[address] true]
-                                  :on-success [:wallet/store-wallet-token address]
-                                  :on-error   [:wallet/get-wallet-token-for-account-failed
-                                               address]}]]]}]
-    (is (match? expected-effects (dispatch [event-id address])))))
+                                  :on-success [:wallet/store-wallet-token [address]]
+                                  :on-error   [:wallet/get-wallet-token-for-accounts-failed
+                                               [address]]}]]]}]
+    (is (match? expected-effects (dispatch [event-id [address]])))))
 
 (h/deftest-event :wallet/reconcile-keypairs
   [event-id dispatch]
