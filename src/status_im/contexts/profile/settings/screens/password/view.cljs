@@ -12,7 +12,7 @@
     (if keycard-profile?
       (rf/dispatch [:keycard/feature-unavailable-show
                     {:theme        :dark
-                     :feature-name :settings/enable-biometrics}])
+                     :feature-name :settings.enable-biometrics}])
       (rf/dispatch
        [:standard-auth/authorize-with-password
         {:blur?             true
