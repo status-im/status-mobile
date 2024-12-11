@@ -69,7 +69,9 @@
   (let [{:keys [customization-color] :as profile} (rf/sub [:profile/profile-with-image])
         {:keys [address path watch-only?]}        (rf/sub [:wallet/current-viewing-account])
         {keypair-name :name
-         keypair-type :type}                      (rf/sub [:wallet/current-viewing-account-keypair])
+         keypair-type :type
+         keycards     :keycards}                  (rf/sub [:wallet/current-viewing-account-keypair])
+        keypair-keycard?                          (boolean (seq keycards))
         networks                                  (rf/sub [:wallet/network-preference-details])
         origin-type                               (case keypair-type
                                                     :seed
@@ -98,7 +100,7 @@
      (when (not watch-only?)
        [quo/account-origin
         {:type                origin-type
-         :stored              :on-device
+         :stored              (if keypair-keycard? :on-keycard :on-device)
          :profile-picture     (profile.utils/photo profile)
          :customization-color customization-color
          :derivation-path     path

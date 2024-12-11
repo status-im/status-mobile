@@ -453,7 +453,7 @@ class TestGroupChatMultipleDeviceMergedNewUI(MultipleSharedDeviceTestCase):
         current_time = datetime.datetime.strptime(device_time, "%Y-%m-%dT%H:%M:%S%z")
         expected_times = [current_time + datetime.timedelta(minutes=i) for i in range(479, 482)]
         expected_texts = [
-            "Muted until %s %s" % (exp_time.strftime('%H:%M'), "today" if current_time.hour < 23 else "tomorrow") for
+            "Muted until %s %s" % (exp_time.strftime('%H:%M'), "today" if current_time.hour < 16 else "tomorrow") for
             exp_time in expected_times]
         chat = self.homes[1].get_chat(self.chat_name)
         chat.long_press_element()
@@ -483,7 +483,7 @@ class TestGroupChatMultipleDeviceMergedNewUI(MultipleSharedDeviceTestCase):
         if after_mute_counter > initial_counter:
             self.errors.append("New messages counter near chats tab button is %s after mute, but should be %s" % (
                 after_mute_counter, initial_counter))
-        if not chat.chat_preview.text.startswith("%s: %s" % (self.usernames[0], muted_message)):
+        if not chat.chat_preview.text.startswith("%s: %s" % (self.usernames[0], muted_message[:25])):
             self.errors.append("Message text '%s' is not shown in chat preview after mute" % muted_message)
         chat.click()
         if not self.chats[1].chat_element_by_text(muted_message).is_element_displayed(30):

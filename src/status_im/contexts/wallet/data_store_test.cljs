@@ -231,3 +231,37 @@
                                                                            :wallet           true
                                                                            :default-account? true})]}}}
       (sut/reconcile-keypairs [raw-keypair-profile])))))
+
+(def mock-db
+  {:wallet {:keypairs
+            {"0x123" {:type     "key"
+                      :key-uid  "0x123"
+                      :keycards [{:id "keycard1"}]}
+             "0x456" {:type     "key"
+                      :key-uid  "0x456"
+                      :keycards []}}
+            :ui {:create-account {:selected-keypair-uid "0x123"}}}})
+
+(deftest selected-keypair-keycard?-test
+  (testing "returns true when the selected keypair has keycards"
+    (is (true? (sut/selected-keypair-keycard? mock-db))))
+
+  (testing "returns false when the selected keypair does not have keycards"
+    (let [db (assoc-in mock-db [:wallet :ui :create-account :selected-keypair-uid] "0x456")]
+      (is (false? (sut/selected-keypair-keycard? db)))))
+
+  (testing "returns false when the selected keypair does not exist"
+    (let [db (assoc-in mock-db [:wallet :ui :create-account :selected-keypair-uid] "0x789")]
+      (is (false? (sut/selected-keypair-keycard? db)))))
+
+  (testing "returns false when keypairs map is empty"
+    (let [db (assoc-in mock-db [:wallet :keypairs] {})]
+      (is (false? (sut/selected-keypair-keycard? db)))))
+
+  (testing "returns false when no keypair is selected"
+    (let [db (assoc-in mock-db [:wallet :ui :create-account :selected-keypair-uid] nil)]
+      (is (false? (sut/selected-keypair-keycard? db)))))
+
+  (testing "returns false when db does not contain wallet data"
+    (let [db {}]
+      (is (false? (sut/selected-keypair-keycard? db))))))

@@ -22,7 +22,7 @@
     [utils.string]))
 
 (defn- get-keypair-data
-  [{:keys [title primary-keypair? new-keypair? derivation-path customization-color]}]
+  [{:keys [title primary-keypair? new-keypair? derivation-path customization-color keycard?]}]
   [{:title             title
     :image             (if primary-keypair? :avatar :icon)
     :image-props       (if primary-keypair?
@@ -35,7 +35,7 @@
                         :button-text (i18n/label :t/edit)
                         :alignment   :flex-start}
     :description       :text
-    :description-props {:text (i18n/label :t/on-device)}}
+    :description-props {:text (i18n/label (if keycard? :on-keycard :on-device))}}
    (when-not (string/blank? derivation-path)
      (let [formatted-path  (string/replace derivation-path #"/" " / ")
            on-auth-success (fn [password]
@@ -123,7 +123,7 @@
             :container-style  color-picker-style}]])])))
 
 (defn- new-account-origin
-  [{:keys [keypair-title derivation-path customization-color]}]
+  [{:keys [keypair-title derivation-path customization-color keycard?]}]
   (let [{keypair-name :name} (rf/sub [:wallet/selected-keypair])
         primary?             (rf/sub [:wallet/selected-primary-keypair?])
         keypair-name         (or keypair-title
@@ -135,7 +135,8 @@
      [quo/category
       {:list-type :settings
        :label     (i18n/label :t/origin)
-       :data      (get-keypair-data {:primary-keypair?    primary?
+       :data      (get-keypair-data {:keycard?            keycard?
+                                     :primary-keypair?    primary?
                                      :title               keypair-name
                                      :derivation-path     derivation-path
                                      :customization-color customization-color})}]]))
@@ -229,20 +230,37 @@
         set-derivation-path #(reset! derivation-path %)]
     (fn [{:keys [on-change-text set-account-color set-emoji customization-color error]}]
       (let [{:keys [derived-from
-                    key-uid]} (rf/sub [:wallet/selected-keypair])
-            on-auth-success   (rn/use-callback
-                               (fn [password]
-                                 (let [preferences {:account-name @account-name
-                                                    :color        @account-color
-                                                    :emoji        @emoji}]
-                                   (rf/dispatch
-                                    [:wallet/derive-address-and-add-account
-                                     {:password             password
-                                      :derived-from-address derived-from
-                                      :key-uid              key-uid
-                                      :derivation-path      @derivation-path
-                                      :account-preferences  preferences}])))
-                               [derived-from])]
+                    key-uid keycards]} (rf/sub [:wallet/selected-keypair])
+            keycard?                   (boolean (seq keycards))
+            on-auth-success            (rn/use-callback
+                                        (fn [password]
+                                          (let [preferences {:account-name @account-name
+                                                             :color        @account-color
+                                                             :emoji        @emoji}]
+                                            (rf/dispatch
+                                             [:wallet/derive-address-and-add-account
+                                              {:password             password
+                                               :derived-from-address derived-from
+                                               :key-uid              key-uid
+                                               :derivation-path      @derivation-path
+                                               :account-preferences  preferences}])))
+                                        [derived-from])
+            on-complete                (rn/use-callback
+                                        (fn []
+                                          (let [preferences {:account-name @account-name
+                                                             :color        @account-color
+                                                             :emoji        @emoji}]
+                                            (rf/dispatch
+                                             [:standard-auth/authorize-with-keycard
+                                              {:on-complete
+                                               #(rf/dispatch
+                                                 [:keycard/connect-derive-address-and-add-account
+                                                  {:pin                  %
+                                                   :derived-from-address derived-from
+                                                   :key-uid              key-uid
+                                                   :derivation-path      @derivation-path
+                                                   :account-preferences  preferences}])}])))
+                                        [derived-from])]
         (rn/use-effect
          #(rf/dispatch
            [:wallet/next-derivation-path
@@ -252,10 +270,13 @@
 
         [floating-button
          {:account-color      @account-color
-          :slide-button-props {:on-auth-success on-auth-success
-                               :disabled?       (or (empty? @account-name)
-                                                    (string/blank? @derivation-path)
-                                                    (some? error))}}
+          :slide-button-props {:on-auth-success (when-not keycard? on-auth-success)
+                               :on-complete
+                               (when keycard? on-complete)
+                               :disabled?
+                               (or (empty? @account-name)
+                                   (string/blank? @derivation-path)
+                                   (some? error))}}
          [avatar
           {:account-color   @account-color
            :emoji           @emoji
@@ -269,7 +290,8 @@
           {:account-color     @account-color
            :set-account-color set-account-color}]
          [new-account-origin
-          {:derivation-path     @derivation-path
+          {:keycard?            keycard?
+           :derivation-path     @derivation-path
            :customization-color customization-color}]]))))
 
 (defn view

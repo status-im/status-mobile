@@ -334,6 +334,7 @@
 (def ^:const privacy-policy-link "https://status.im/privacy-policy/")
 (def ^:const terms-of-service-link "https://status.im/terms-of-use")
 (def ^:const create-account-link "https://status.app/help/wallet/create-wallet-accounts")
+(def ^:const mobile-upvote-link "https://status-mobile.featureupvote.com")
 
 (def ^:const visibility-status-unknown 0)
 (def ^:const visibility-status-automatic 1)

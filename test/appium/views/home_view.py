@@ -626,6 +626,7 @@ class HomeView(BaseView):
         return element.text
 
     def get_username(self):
+        self.toast_content_element.wait_for_invisibility_of_element()
         profile_view = self.get_profile_view()
         profile_view = self.profile_button.click_until_presence_of_element(profile_view.default_username_text)
         profile_view.default_username_text.wait_for_element(3)

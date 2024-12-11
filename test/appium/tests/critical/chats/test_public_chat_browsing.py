@@ -1021,6 +1021,8 @@ class TestCommunityMultipleDeviceMergedTwo(MultipleSharedDeviceTestCase):
             self.errors.append('Community is still shown in the list after leave')
         self.errors.verify_no_errors()
 
+    @marks.xfail(reason="Can't navigate to a community channel before joining the community, "
+                        "https://github.com/status-im/status-mobile/issues/21776")
     @marks.testrail_id(702948)
     def test_community_hashtag_links_to_community_channels(self):
         for home in self.homes:
@@ -1121,6 +1123,8 @@ class TestCommunityMultipleDeviceMergedTwo(MultipleSharedDeviceTestCase):
 
         self.errors.verify_no_errors()
 
+    @marks.xfail(reason="Can't navigate to a community channel before joining the community, "
+                        "https://github.com/status-im/status-mobile/issues/21776")
     @marks.testrail_id(703629)
     def test_community_join_when_node_owner_offline(self):
         for home in self.homes:

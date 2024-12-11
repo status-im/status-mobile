@@ -269,7 +269,7 @@ class TestFallbackMultipleDevice(MultipleSharedDeviceTestCase):
         self.sign_in_2.passphrase_edit_box.clear()
         self.sign_in_2.passphrase_edit_box.send_keys(transaction_senders['A']['passphrase'])
         self.sign_in_2.continue_button.click()
-        if not self.sign_in_2.profile_title_input.is_element_displayed():
+        if not self.sign_in_2.password_input.is_element_displayed():
             self.errors.append("Can't recover an access with a valid passphrase")
         self.sign_in_2.click_system_back_button()
 
