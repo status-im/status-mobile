@@ -6,6 +6,8 @@
     [status-im.common.enter-seed-phrase.view :as enter-seed-phrase]
     [status-im.common.lightbox.view :as lightbox]
     [status-im.common.pdf-viewer.view :as pdf-viewer]
+    [status-im.common.privacy.view :as privacy-policy]
+    [status-im.common.terms.view :as terms-of-use]
     [status-im.config :as config]
     [status-im.contexts.chat.group.create.view :as group.create]
     [status-im.contexts.chat.group.details.view :as group.details]
@@ -73,6 +75,7 @@
     [status-im.contexts.profile.settings.screens.password.view :as settings-password]
     [status-im.contexts.profile.settings.screens.syncing.view :as settings.syncing]
     [status-im.contexts.profile.settings.view :as settings]
+    [status-im.contexts.settings.about.view :as settings.about]
     [status-im.contexts.settings.keycard.view :as settings.keycard]
     [status-im.contexts.settings.language-and-currency.currency.view :as settings.currency-selection]
     [status-im.contexts.settings.language-and-currency.view :as settings.language-and-currency]
@@ -153,39 +156,39 @@
 
 (def chat-screens
   [{:name      :start-a-new-chat
-    :metrics   {:track?   :true
+    :metrics   {:track?   true
                 :alias-id :messenger.new-chat}
     :options   {:sheet? true}
     :component new-chat/view}
 
    {:name      :chat
-    :metrics   {:track?   :true
+    :metrics   {:track?   true
                 :alias-id :messenger.chat}
     :options   {:popGesture false
                 :animations transitions/stack-transition-from-bottom}
     :component chat/chat}
 
    {:name      :screen/group-create
-    :metrics   {:track?   :true
+    :metrics   {:track?   true
                 :alias-id :messenger.new-group}
     :options   {:sheet?           true
                 :skip-background? true}
     :component group.create/view}
 
    {:name      :screen/group-details
-    :metrics   {:track?   :true
+    :metrics   {:track?   true
                 :alias-id :messenger.group-details}
     :component group.details/view}
 
    {:name      :screen/group-update
-    :metrics   {:track?   :true
+    :metrics   {:track?   true
                 :alias-id :messenger.group-update}
     :options   {:sheet?           true
                 :skip-background? true}
     :component group.update/view}
 
    {:name      :screen/group-add-manage-members
-    :metrics   {:track?   :true
+    :metrics   {:track?   true
                 :flow     :messenger
                 :alias-id :messenger.group-manage-members}
     :options   {:sheet? true}
@@ -193,12 +196,12 @@
 
 (def community-screens
   [{:name      :discover-communities
-    :metrics   {:track?   :true
+    :metrics   {:track?   true
                 :alias-id :community.discover}
     :component communities.discover/view}
 
    {:name      :community-overview
-    :metrics   {:track?   :true
+    :metrics   {:track?   true
                 :alias-id :community.overview}
     :options   {:animations transitions/stack-transition-from-bottom}
     :component communities.overview/view}
@@ -207,79 +210,79 @@
    ;; joining a community. The non-sheet screen is used when editing shared
    ;; addresses after the join request was sent.
    {:name      :community-account-selection-sheet
-    :metrics   {:track?   :true
+    :metrics   {:track?   true
                 :alias-id :community.select-addresses-for-joining-community}
     :options   {:sheet? true}
     :component communities.accounts-selection/view}
    {:name      :community-account-selection
-    :metrics   {:track?   :true
+    :metrics   {:track?   true
                 :alias-id :community.select-addresses-for-community}
     :options   {:insets {:top? true}}
     :component communities.accounts-selection/view}
 
    {:name      :community-requests-to-join
-    :metrics   {:track?   :true
+    :metrics   {:track?   true
                 :alias-id :community.request-to-join}
     :options   {:sheet? true}
     :component join-menu/view}
 
    {:name      :screen/share-community
-    :metrics   {:track?   :true
+    :metrics   {:track?   true
                 :alias-id :community.share-community}
     :options   options/transparent-screen-options
     :component share-community/view}
 
    {:name      :invite-people-community
-    :metrics   {:track?   :true
+    :metrics   {:track?   true
                 :alias-id :community.invite-people}
     :options   {:sheet? true}
     :component communities.invite/view}
 
    {:name      :share-community-channel
-    :metrics   {:track?   :true
+    :metrics   {:track?   true
                 :alias-id :community.share-channel}
     :options   options/transparent-screen-options
     :component share-community-channel/view}
 
    {:name      :screen/chat.view-channel-members-and-details
-    :metrics   {:track?   :true
+    :metrics   {:track?   true
                 :alias-id :community.view-channel-members-and-details}
     :options   {:insets {:top? true}}
     :component channel-view-channel-members-and-details/view}
 
    {:name      :addresses-for-permissions
-    :metrics   {:track?   :true
+    :metrics   {:track?   true
                 :alias-id :community.choose-addresses-for-permissions}
     :options   {:insets {:top? true}}
     :component addresses-for-permissions/view}
 
    {:name      :address-for-airdrop
-    :metrics   {:track?   :true
+    :metrics   {:track?   true
                 :alias-id :community.choose-addresses-for-airdrop}
     :options   {:insets {:top? true}}
     :component airdrop-addresses/view}])
 
 (def contact-screens
   [{:name      :new-contact
-    :metrics   {:track?   :true
+    :metrics   {:track?   true
                 :alias-id :contact.new-contact}
     :options   {:sheet? true}
     :component add-new-contact/new-contact}
 
    {:name      :scan-profile-qr-code
-    :metrics   {:track?   :true
+    :metrics   {:track?   true
                 :alias-id :contact.scan-profile-qr-code}
     :options   options/dark-screen
     :component scan-profile-qr-page/view}
 
    {:name      :contact-profile
-    :metrics   {:track?   :true
+    :metrics   {:track?   true
                 :alias-id :contact.contact-profile}
     :options   {:modalPresentationStyle :overCurrentContext}
     :component contact-profile/view}
 
    {:name      :share-contact
-    :metrics   {:track?   :true
+    :metrics   {:track?   true
                 :alias-id :contact.share-profile}
     :options   options/transparent-screen-options
     :component share-contact/view}])
@@ -311,56 +314,56 @@
 
 (def settings-screens
   [{:name      :settings
-    :metrics   {:track?   :true
+    :metrics   {:track?   true
                 :alias-id :settings.profile-settings}
     :options   options/transparent-screen-options
     :component settings/view}
 
    {:name      :screen/settings.keycard
-    :metrics   {:track?   :true
+    :metrics   {:track?   true
                 :alias-id :settings.keycard}
     :options   {:theme  :dark
                 :insets {:top? true :bottom? true}}
     :component settings.keycard/view}
 
    {:name      :edit-profile
-    :metrics   {:track?   :true
+    :metrics   {:track?   true
                 :alias-id :settings.edit-profile}
     :options   options/transparent-modal-screen-options
     :component edit-profile/view}
 
    {:name      :edit-accent-colour
-    :metrics   {:track?   :true
+    :metrics   {:track?   true
                 :alias-id :settings.edit-profile-accent-colour}
     :options   options/transparent-modal-screen-options
     :component edit-accent-colour/view}
 
    {:name      :edit-name
-    :metrics   {:track?   :true
+    :metrics   {:track?   true
                 :alias-id :settings.edit-profile-name}
     :options   options/transparent-modal-screen-options
     :component edit-name/view}
 
    {:name      :edit-bio
-    :metrics   {:track?   :true
+    :metrics   {:track?   true
                 :alias-id :settings.edit-profile-bio}
     :options   options/transparent-modal-screen-options
     :component edit-bio/view}
 
    {:name      :screen/settings-password
-    :metrics   {:track?   :true
+    :metrics   {:track?   true
                 :alias-id :settings.password}
     :options   options/transparent-modal-screen-options
     :component settings-password/view}
 
    {:name      :screen/change-password
-    :metrics   {:track?   :true
+    :metrics   {:track?   true
                 :alias-id :settings.change-password}
     :options   (assoc options/transparent-modal-screen-options :theme :dark)
     :component change-password/view}
 
    {:name      :screen/change-password-loading
-    :metrics   {:track?   :true
+    :metrics   {:track?   true
                 :alias-id :settings.change-password-loading}
     :options   (assoc
                 options/transparent-modal-screen-options
@@ -371,25 +374,25 @@
     :component change-password-loading/view}
 
    {:name      :screen/settings-messages
-    :metrics   {:track?   :true
+    :metrics   {:track?   true
                 :alias-id :settings.messages}
     :options   options/transparent-modal-screen-options
     :component settings.messages/view}
 
    {:name      :screen/settings-blocked-users
-    :metrics   {:track?   :true
+    :metrics   {:track?   true
                 :alias-id :settings.blocked-users}
     :options   options/transparent-modal-screen-options
     :component settings.blocked-users/view}
 
    {:name      :screen/settings-privacy-and-security
-    :metrics   {:track?   :true
+    :metrics   {:track?   true
                 :alias-id :settings.private-and-security}
     :options   options/transparent-modal-screen-options
     :component settings.privacy-and-security/view}
 
    {:name      :screen/settings.share-usage-data
-    :metrics   {:track? :true}
+    :metrics   {:track? true}
     :options   options/transparent-modal-screen-options
     :component settings.share-usage/view}
 
@@ -405,89 +408,104 @@
     :component syncing-devices-list/view}
 
    {:name      :screen/settings.language-and-currency
-    :metrics   {:track? :true}
+    :metrics   {:track? true}
     :options   options/transparent-modal-screen-options
     :component settings.language-and-currency/view}
 
    {:name      :screen/settings.currency-selection
-    :metrics   {:track? :true}
+    :metrics   {:track? true}
     :options   options/transparent-modal-screen-options
-    :component settings.currency-selection/view}])
+    :component settings.currency-selection/view}
+
+   {:name      :screen/settings.about
+    :metrics   {:track? true}
+    :options   options/transparent-modal-screen-options
+    :component settings.about/view}
+
+   {:name      :screen/settings.privacy-policy
+    :metrics   {:track? true}
+    :options   options/transparent-modal-screen-options
+    :component privacy-policy/view}
+
+   {:name      :screen/settings.terms-of-use
+    :metrics   {:track? true}
+    :options   options/transparent-modal-screen-options
+    :component terms-of-use/view}])
 
 (def wallet-settings-screens
   [{:name      :screen/settings.wallet
-    :metrics   {:track? :true}
+    :metrics   {:track? true}
     :options   options/transparent-modal-screen-options
     :component wallet-options/view}
 
    {:name      :screen/settings.rename-keypair
-    :metrics   {:track?   :true
+    :metrics   {:track?   true
                 :alias-id :settings.wallet-rename-keypair}
     :options   options/transparent-screen-options
     :component keypair-rename/view}
 
    {:name      :screen/settings.encrypted-keypair-qr
-    :metrics   {:track?   :true
+    :metrics   {:track?   true
                 :alias-id :settings.wallet-encrypted-keypair-qr}
     :options   options/transparent-screen-options
     :component encrypted-keypair-qr/view}
 
    {:name      :screen/settings.saved-addresses
-    :metrics   {:track?   :true
+    :metrics   {:track?   true
                 :alias-id :settings.wallet-saved-addresses}
     :options   options/transparent-modal-screen-options
     :component saved-addresses-settings/view}
 
    {:name      :screen/settings.keypairs-and-accounts
-    :metrics   {:track?   :true
+    :metrics   {:track?   true
                 :alias-id :settings.wallet-keypairs-and-accounts}
     :options   options/transparent-modal-screen-options
     :component keypairs-and-accounts/view}
 
    {:name      :screen/settings.scan-keypair-qr
-    :metrics   {:track?   :true
+    :metrics   {:track?   true
                 :alias-id :settings.wallet-scan-keypair-qr}
     :options   options/transparent-screen-options
     :component scan-keypair-qr/view}
 
    {:name      :screen/settings.missing-keypair.import-seed-phrase
-    :metrics   {:track?   :true
+    :metrics   {:track?   true
                 :alias-id :settings.wallet-missing-keypair-import-seed-phrase}
     :options   options/transparent-screen-options
     :component missing-keypairs.import-seed-phrase/view}
 
    {:name      :screen/settings.missing-keypair-import-private-key
-    :metrics   {:track?   :true
+    :metrics   {:track?   true
                 :alias-id :settings.wallet-missing-keypair-import-private-key}
     :options   options/transparent-screen-options
     :component missing-keypairs.import-private-key/view}
 
    {:name      :screen/settings.network-settings
-    :metrics   {:track?   :true
+    :metrics   {:track?   true
                 :alias-id :settings.wallet-network-settings}
     :options   options/transparent-modal-screen-options
     :component network-settings/view}
 
    {:name      :screen/settings.save-address
-    :metrics   {:track?   :true
+    :metrics   {:track?   true
                 :alias-id :settings.wallet-saved-addresses}
     :options   options/transparent-modal-screen-options
     :component wallet-save-address/view}
 
    {:name      :screen/settings.edit-saved-address
-    :metrics   {:track?   :true
+    :metrics   {:track?   true
                 :alias-id :settings.wallet-edit-saved-addresses}
     :options   (assoc options/dark-screen :sheet? true)
     :component wallet-save-address/view}
 
    {:name      :screen/settings.add-address-to-save
-    :metrics   {:track?   :true
+    :metrics   {:track?   true
                 :alias-id :settings.wallet-add-saved-address}
     :options   options/transparent-modal-screen-options
     :component wallet-add-address-to-save/view}
 
    {:name      :screen/settings.share-saved-address
-    :metrics   {:track?   :true
+    :metrics   {:track?   true
                 :alias-id :settings.wallet-share-saved-address}
     :options   options/transparent-screen-options
     :component share-saved-address/view}])
@@ -874,48 +892,48 @@
 
 (def keycard-screens
   [{:name      :screen/keycard.check
-    :metrics   {:track? :true}
+    :metrics   {:track? true}
     :options   {:theme  :dark
                 :insets {:top? true :bottom? true}}
     :component keycard.check/view}
 
    {:name      :screen/keycard.empty
-    :metrics   {:track? :true}
+    :metrics   {:track? true}
     :options   {:theme  :dark
                 :insets {:top? true :bottom? true}}
     :component keycard.empty/view}
 
    {:name      :screen/keycard.empty-create
-    :metrics   {:track? :true}
+    :metrics   {:track? true}
     :options   {:insets {:top? true :bottom? true}}
     :component keycard.empty/create}
 
    {:name      :screen/keycard.error
-    :metrics   {:track? :true}
+    :metrics   {:track? true}
     :options   {:theme  :dark
                 :insets {:top? true :bottom? true}}
     :component keycard.error/view}
 
    {:name      :screen/keycard.not-keycard
-    :metrics   {:track? :true}
+    :metrics   {:track? true}
     :options   {:theme  :dark
                 :insets {:top? true :bottom? true}}
     :component keycard.not-keycard/view}
 
    {:name      :screen/keycard.authorise
-    :metrics   {:track? :true}
+    :metrics   {:track? true}
     :options   {:theme  :dark
                 :insets {:top? true :bottom? true}}
     :component keycard.authorise/view}
 
    {:name      :screen/keycard.migrate
-    :metrics   {:track? :true}
+    :metrics   {:track? true}
     :options   {:theme  :dark
                 :insets {:top? true :bottom? true}}
     :component keycard.migrate/view}
 
    {:name      :screen/keycard.re-encrypting
-    :metrics   {:track? :true}
+    :metrics   {:track? true}
     :options   {:theme              :dark
                 :insets             {:top? true :bottom? true}
                 :popGesture         false
@@ -924,7 +942,7 @@
     :component keycard.re-encrypting/view}
 
    {:name      :screen/keycard.migrate.success
-    :metrics   {:track? :true}
+    :metrics   {:track? true}
     :options   {:theme              :dark
                 :insets             {:top? true :bottom? true}
                 :popGesture         false
@@ -933,7 +951,7 @@
     :component keycard.migrate.success/view}
 
    {:name      :screen/keycard.migrate.fail
-    :metrics   {:track? :true}
+    :metrics   {:track? true}
     :options   {:theme              :dark
                 :insets             {:top? true :bottom? true}
                 :popGesture         false
@@ -942,30 +960,30 @@
     :component keycard.migrate.fail/view}
 
    {:name      :screen/keycard.pin.create
-    :metrics   {:track? :true}
+    :metrics   {:track? true}
     :options   {:theme  :dark
                 :insets {:top? true :bottom? true}}
     :component keycard.pin.create/view}
 
    {:name      :screen/keycard.pin.enter
-    :metrics   {:track? :true}
+    :metrics   {:track? true}
     :options   {:theme  :dark
                 :insets {:top? true :bottom? true}}
     :component keycard.pin.enter/view}
 
    {:name      :screen/keycard.profile-keys
-    :metrics   {:track? :true}
+    :metrics   {:track? true}
     :options   {:theme  :dark
                 :insets {:top? true :bottom? true}}
     :component keycard.migrate.profile-keys/view}
 
    {:name      :screen/keycard.create-profile
-    :metrics   {:track? :true}
+    :metrics   {:track? true}
     :options   {:insets {:top? true :bottom? true}}
     :component keycard.create/view}
 
    {:name      :screen/keycard.create.ready-to-add
-    :metrics   {:track? :true}
+    :metrics   {:track? true}
     :options   {:insets {:top? true :bottom? true}}
     :component keycard.create/ready-to-add}])
 
