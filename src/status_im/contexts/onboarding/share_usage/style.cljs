@@ -1,4 +1,5 @@
-(ns status-im.contexts.onboarding.share-usage.style)
+(ns status-im.contexts.onboarding.share-usage.style
+  (:require [quo.foundations.colors :as colors]))
 
 (def title-container
   {:margin-horizontal 20
@@ -16,3 +17,7 @@
   [insets]
   {:margin        20
    :margin-bottom (+ 12 (:bottom insets))})
+
+(def page
+  {:flex             1
+   :background-color colors/neutral-100})

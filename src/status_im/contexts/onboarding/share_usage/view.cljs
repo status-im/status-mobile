@@ -17,35 +17,38 @@
     (rf/dispatch [:navigate-to-within-stack [next-screen :screen/onboarding.share-usage]]) ;; Onboarding
     (rf/dispatch [:navigate-back]))) ;; Login Screen
 
+(defn- learn-more
+  []
+  (rf/dispatch [:show-bottom-sheet
+                {:content learn-more-sheet/view
+                 :shell?  true}]))
+
 (defn view
   []
   (let [insets           (safe-area/get-insets)
         next-screen      (:next-screen (rf/sub [:get-screen-params :screen/onboarding.share-usage]))
         share-usage-data (rn/use-callback #(share-usage-data-fn true next-screen))
-        maybe-later      (rn/use-callback #(share-usage-data-fn false next-screen))
-        learn-more       (rn/use-callback #(rf/dispatch [:show-bottom-sheet
-                                                         {:content learn-more-sheet/view
-                                                          :shell?  true}]))]
-    [:<>
+        maybe-later      (rn/use-callback #(share-usage-data-fn false next-screen))]
+    [rn/view {:style style/page}
      [quo/page-nav
       {:margin-top (:top insets)
        :background :blur
-       :icon-name  :i/arrow-left
+       :icon-name  :i/close
        :on-press   events-helper/navigate-back
        :right-side [{:icon-left           :i/info
                      :accessibility-label :learn-more
                      :label               (i18n/label :t/learn-more)
                      :on-press            learn-more}]}]
-     [quo/text-combinations
-      {:container-style                 style/title-container
-       :title                           (i18n/label :t/help-us-improve-status)
+     [quo/page-top
+      {:title                           (i18n/label :t/help-us-improve-status)
        :title-accessibility-label       :share-usage-title
-       :description                     (i18n/label :t/collecting-usage-data)
+       :description                     :text
+       :description-text                (i18n/label :t/collecting-usage-data)
        :description-accessibility-label :share-usage-subtitle}]
      [rn/image
       {:resize-mode :contain
        :style       (style/page-illustration (:width (rn/get-window)))
-       :source      (resources/get-image :biometrics)}]
+       :source      (resources/get-image :usage-data)}]
      [rn/view {:style (style/buttons insets)}
       [quo/button
        {:size                40

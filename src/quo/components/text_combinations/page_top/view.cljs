@@ -79,11 +79,11 @@
    [rn/view {:style style/community-logo-ring}]])
 
 (defn- description-container
-  [{:keys             [description description-text collection-text community-text
-                       collection-image community-image blur?]
+  [{:keys             [description description-text collection-text community-text blur?
+                       collection-image community-image description-accessibility-label]
     context-tag-props :context-tag
     summary-props     :summary}]
-  [rn/view
+  [rn/view {:accessibility-label description-accessibility-label}
    (cond
      (and (= description :text) (not (string/blank? description-text)))
      [text/text

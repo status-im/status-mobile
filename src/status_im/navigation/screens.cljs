@@ -757,9 +757,7 @@
    :metrics   {:track? true}
    :options   {:theme                  :dark
                :layout                 options/onboarding-transparent-layout
-               :animations             (merge
-                                        transitions/new-to-status-modal-animations
-                                        transitions/push-animations-for-transparent-background)
+               :animations             transitions/modal-animations-vertical
                :popGesture             false
                :modalPresentationStyle :overCurrentContext}
    :component onboarding.share-usage/view})

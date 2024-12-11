@@ -40,6 +40,14 @@
                                  :to       (:width (rn/get-window))
                                  :duration constants/onboarding-modal-animation-duration}}})
 
+(def modal-animations-vertical
+  {:showModal    {:translationY {:from     (:height (rn/get-window))
+                                 :to       0
+                                 :duration constants/onboarding-modal-animation-duration}}
+   :dismissModal {:translationY {:from     0
+                                 :to       (:height (rn/get-window))
+                                 :duration constants/onboarding-modal-animation-duration}}})
+
 ;;;; Stack Transitions
 (def stack-slide-transition
   {:push {:content {:translationX {:from     (:width (rn/get-window))
