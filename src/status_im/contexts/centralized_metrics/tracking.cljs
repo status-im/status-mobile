@@ -54,10 +54,10 @@
 
       (= :screen/onboarding.syncing-results view-id)
       (conj (key-value-event "onboarding-completed"))
-      
+
       (= :screen/keycard.migrate.success view-id)
       (conj (key-value-event "keycard-migration-succeeded"))
-      
+
       (= :screen/keycard.migrate.fail view-id)
       (conj (key-value-event "keycard-migration-failed")))))
 
