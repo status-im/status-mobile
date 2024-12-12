@@ -41,8 +41,10 @@
                                                      other-devices)
         keycard?                                    (rf/sub [:keycard/keycard-profile?])
         keycard-feature-unavailable                 (rn/use-callback
-                                                     #(rf/dispatch [:keycard/feature-unavailable-show
-                                                                    {:theme :dark}]))]
+                                                     #(rf/dispatch
+                                                       [:keycard/feature-unavailable-show
+                                                        {:theme        :dark
+                                                         :feature-name :settings.setup-syncing}]))]
     [quo/overlay {:type :shell :top-inset? true}
      [quo/page-nav
       {:type       :no-title

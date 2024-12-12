@@ -30,7 +30,8 @@
           {:keys [color name images]} (rf/sub [:communities/community id])
           keycard?                    (rf/sub [:keycard/keycard-profile?])
           keycard-feature-unavailable (rn/use-callback
-                                       #(rf/dispatch [:keycard/feature-unavailable-show]))]
+                                       #(rf/dispatch [:keycard/feature-unavailable-show
+                                                      {:feature-name :community.request-to-join}]))]
       [rn/safe-area-view {:flex 1}
        [gesture/scroll-view {:style style/container}
         [rn/view style/page-container

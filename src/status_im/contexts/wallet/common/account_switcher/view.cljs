@@ -48,7 +48,8 @@
                               {:icon-name :i/dapps
                                :on-press  #(rf/dispatch
                                             (if keycard?
-                                              [:keycard/feature-unavailable-show]
+                                              [:keycard/feature-unavailable-show
+                                               {:feature-name :wallet.show-connected-dapps}]
                                               [:navigate-to :screen/wallet.connected-dapps]))})
                             (when-not sending-collectible?
                               {:content-type        :account-switcher

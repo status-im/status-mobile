@@ -47,7 +47,8 @@
                                               settings
                                               {:log-level log-level}))
                                 (assoc-in [:activity-center :loading?] true)
-                                (dissoc :centralized-metrics/onboarding-enabled?))]
+                                (dissoc :centralized-metrics/onboarding-enabled?))
+         keycard?           (get-in new-db [:profile/profile :keycard-pairing])]
      {:db (cond-> new-db
             pairing-completed? (dissoc :syncing))
       :fx (into [[:json-rpc/call
@@ -75,8 +76,10 @@
                    [:effects.chat/open-last-chat (:key-uid profile-overview)])
 
                  (when (:centralized-metrics/onboarding-enabled? db)
-                   [:dispatch [:profile.settings/toggle-telemetry true]])]
+                   [:dispatch [:profile.settings/toggle-telemetry true]])
 
+                 (when keycard?
+                   [:dispatch [:centralized-metrics/track :metric/keycard-login]])]
                 (cond
                   pairing-completed?
                   [[:dispatch [:update-theme-and-init-root :screen/onboarding.syncing-results]]]

@@ -36,7 +36,9 @@
      (cond
 
        keycard?
-       {:fx [[:dispatch [:keycard/feature-unavailable-show]]]}
+       {:fx [[:dispatch
+              [:keycard/feature-unavailable-show
+               {:feature-name :wallet.scan-dapp-connection}]]]}
 
        (or (not valid-wc-uri?)
            (not version-supported?)

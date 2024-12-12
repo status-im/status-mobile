@@ -10,7 +10,9 @@
   [button-label theme keycard-profile?]
   (fn []
     (if keycard-profile?
-      (rf/dispatch [:keycard/feature-unavailable-show {:theme :dark}])
+      (rf/dispatch [:keycard/feature-unavailable-show
+                    {:theme        :dark
+                     :feature-name :settings.enable-biometrics}])
       (rf/dispatch
        [:standard-auth/authorize-with-password
         {:blur?             true

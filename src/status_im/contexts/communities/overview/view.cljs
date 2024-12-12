@@ -147,7 +147,8 @@
                                    [:show-bottom-sheet {:content token-gated-communities-info}])
      keycard?                    (rf/sub [:keycard/keycard-profile?])
      keycard-feature-unavailable (rn/use-callback
-                                  #(rf/dispatch [:keycard/feature-unavailable-show]))]
+                                  #(rf/dispatch [:keycard/feature-unavailable-show
+                                                 {:feature-name :community.request-to-join}]))]
 
     (cond
       networks-not-supported?
