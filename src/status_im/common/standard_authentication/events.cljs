@@ -11,14 +11,13 @@
     [utils.security.core :as security]))
 
 (defn- handle-password-success
-  [has-partially-operable-accounts? on-auth-success password]
-  (let [sha3-pwd                 (security/hash-masked-password password)
-        on-auth-success-callback #(on-auth-success sha3-pwd)]
+  [has-partially-operable-accounts? on-auth-success masked-password]
+  (let [on-auth-success-callback #(on-auth-success masked-password)]
     (rf/dispatch [:standard-auth/set-success true])
     (rf/dispatch [:standard-auth/reset-login-password])
     (if has-partially-operable-accounts?
       (rf/dispatch [:wallet/make-partially-operable-accounts-fully-operable
-                    {:password   sha3-pwd
+                    {:password   masked-password
                      :on-success on-auth-success-callback
                      :on-error   on-auth-success-callback}])
       (on-auth-success-callback))))
@@ -45,7 +44,7 @@
                                    (rf/dispatch [:keycard/disconnect])
                                    (handle-password-success false
                                                             on-auth-success
-                                                            encryption-public-key))
+                                                            (security/mask-data encryption-public-key)))
                      :on-failure #(rf/dispatch [:keycard/on-action-with-pin-error
                                                 %])}]))}]))}]]
         [:effects.biometric/check-if-available
@@ -114,7 +113,7 @@
        {:on-enter-password   #(handle-password-success
                                has-partially-operable-accounts?
                                on-auth-success
-                               %)
+                               (security/hash-masked-password %))
         :on-press-biometrics on-press-biometric
         :button-icon-left    auth-button-icon-left
         :button-label        auth-button-label}])))
