@@ -3,7 +3,7 @@
     "_comment": "Instead use: scripts/update-status-go.sh <rev>",
     "owner": "status-im",
     "repo": "status-go",
-    "version": "v7.0.0",
-    "commit-sha1": "84493728d9ac41553297e8084943c1429cdfe59a",
-    "src-sha256": "11dwdlk9svmc6f8wmya43fis9jfigvh5idxpiwmia9gkad1zal6y"
+    "version": "fix/bump-go-waku",
+    "commit-sha1": "49c48aef86bbbea6016f150346b0a569f0083344",
+    "src-sha256": "1sial8g80sl8imwx7mxc0r7rnmrnalwq7lmdkakah1glfpa6pkwf"
 }
