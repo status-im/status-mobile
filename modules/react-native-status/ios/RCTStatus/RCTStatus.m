@@ -113,7 +113,11 @@ RCT_EXPORT_METHOD(intendedPanic:(NSString *)message) {
 #if DEBUG
     NSLog(@"IntendedPanic() method called");
 #endif
-    StatusgoIntendedPanic(message);
+    [StatusBackendClient executeStatusGoRequest:@"IntendedPanic"
+                                           body:message
+                               statusgoFunction:^NSString *{
+        return StatusgoIntendedPanic(message);
+    }];
 }
 
 RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(fleets) {

@@ -112,7 +112,7 @@ class StatusModule(private val reactContext: ReactApplicationContext, private va
     fun intendedPanic(message: String) {
         StatusBackendClient.executeStatusGoRequest(
             endpoint = "IntendedPanic",
-            requestBody = "",
+            requestBody = message,
             statusgoFunction = { Statusgo.intendedPanic(message) },
         )
     }
