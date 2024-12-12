@@ -40,7 +40,8 @@
    :right-icon          :i/chevron-right
    :accessibility-label :view-token-gating
    :on-press            #(rf/dispatch [:show-bottom-sheet
-                                       {:content                 (fn [] [permissions-sheet/view id])
+                                       {:content                 (fn []
+                                                                   [permissions-sheet/view id])
                                         :padding-bottom-override 16}])
    :label               (i18n/label :t/view-token-gating)})
 
@@ -146,7 +147,9 @@
   [{:keys [id join-pending? spectated? token-gated? intro-message test-networks-enabled?]}]
   (let [common   [(show-qr id) (share-community id)]
         specific (cond
-                   (and token-gated? (not test-networks-enabled?))
+                   (and token-gated?
+                        (not test-networks-enabled?)
+                        (ff/enabled? ::ff/community.view-token-requirements))
                    [(invite-contacts id) (view-token-gating id)]
 
                    token-gated?
@@ -172,7 +175,8 @@
   [{:keys [id token-gated? muted? muted-till color intro-message]}]
   [[(view-members id)
     (view-rules id intro-message)
-    (when token-gated? (view-token-gating id))
+    (when (and token-gated? (ff/enabled? ::ff/community.view-token-requirements))
+      (view-token-gating id))
     (when (ff/enabled? ::ff/community.edit-account-selection)
       (edit-shared-addresses id))
     (mark-as-read id)

@@ -7,6 +7,7 @@
     [status-im.constants :as constants]
     [status-im.contexts.communities.actions.addresses-for-permissions.style :as style]
     [status-im.contexts.communities.actions.permissions-sheet.view :as permissions-sheet]
+    [status-im.feature-flags :as ff]
     [utils.i18n :as i18n]
     [utils.money :as money]
     [utils.re-frame :as rf]))
@@ -122,23 +123,23 @@
 (defn- page-top
   [{:keys [community-id identical-choices? can-edit-addresses?]}]
   (let [{:keys [name logo color]} (rf/sub [:communities/for-context-tag community-id])
-        has-permissions? (rf/sub [:communities/has-permissions? community-id])
-        confirm-discard-changes
-        (rn/use-callback
-         (fn []
-           (if identical-choices?
-             (rf/dispatch [:dismiss-modal :addresses-for-permissions])
-             (rf/dispatch [:show-bottom-sheet
-                           {:content (fn [] [confirm-discard-drawer
-                                             community-id])}])))
-         [identical-choices? community-id])
-
-        open-permission-sheet
-        (rn/use-callback (fn []
-                           (rf/dispatch [:show-bottom-sheet
-                                         {:content (fn [] [permissions-sheet/view
-                                                           community-id])}]))
-                         [community-id])]
+        has-permissions?          (rf/sub [:communities/has-permissions? community-id])
+        confirm-discard-changes   (rn/use-callback
+                                   (fn []
+                                     (if identical-choices?
+                                       (rf/dispatch [:dismiss-modal :addresses-for-permissions])
+                                       (rf/dispatch [:show-bottom-sheet
+                                                     {:content (fn []
+                                                                 [confirm-discard-drawer
+                                                                  community-id])}])))
+                                   [identical-choices? community-id])
+        open-permission-sheet     (rn/use-callback
+                                   (fn []
+                                     (rf/dispatch [:show-bottom-sheet
+                                                   {:content (fn []
+                                                               [permissions-sheet/view
+                                                                community-id])}]))
+                                   [community-id])]
     [:<>
      (when can-edit-addresses?
        [quo/page-nav
@@ -161,7 +162,7 @@
                  :community-name      name
                  :community-logo      logo
                  :customization-color color}
-          has-permissions?
+          (and has-permissions? (ff/enabled? ::ff/community.view-token-requirements))
           (assoc :button-icon     :i/info
                  :button-type     :grey
                  :on-button-press open-permission-sheet))])]))
