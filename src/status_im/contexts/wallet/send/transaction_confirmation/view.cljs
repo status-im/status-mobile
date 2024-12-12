@@ -248,7 +248,9 @@
                                                               account))}
             user-props                {:full-name to-address
                                        :address   (utils/get-shortened-address
-                                                   to-address)}]
+                                                   to-address)}
+            sign-on-keycard?          (get-in transaction-for-signing
+                                              [:signingDetails :signOnKeycard])]
         ;; In token send flow we already have transaction built when
         ;; we reach confirmation screen. But in send collectible flow
         ;; routes request happens at the same time with navigation to
@@ -279,20 +281,24 @@
                                         :transaction-type   transaction-type}]
                                       (when (and (not loading-suggested-routes?) route (seq route))
                                         [standard-auth/slide-button
-                                         {:keycard-supported? true
-                                          :size :size-48
+                                         {:size :size-48
                                           :track-text (if (= transaction-type :tx/bridge)
                                                         (i18n/label :t/slide-to-bridge)
                                                         (i18n/label :t/slide-to-send))
                                           :container-style {:z-index 2}
                                           :disabled? (not transaction-for-signing)
                                           :customization-color account-color
+                                          :auth-button-label (i18n/label :t/confirm)
+                                          :on-complete (when sign-on-keycard?
+                                                         #(rf/dispatch
+                                                           [:wallet/prepare-signatures-for-transactions
+                                                            :send
+                                                            ""]))
                                           :on-auth-success
-                                          (fn [data]
+                                          (fn [psw]
                                             (rf/dispatch
-                                             [:wallet/prepare-signatures-for-transactions
-                                              :send data]))
-                                          :auth-button-label (i18n/label :t/confirm)}])]
+                                             [:wallet/prepare-signatures-for-transactions :send
+                                              psw]))}])]
            :gradient-cover?          true
            :customization-color      (:color account)}
           [rn/view

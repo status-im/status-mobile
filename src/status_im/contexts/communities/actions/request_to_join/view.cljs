@@ -27,7 +27,10 @@
   (fn []
     (let [theme                       (quo.theme/use-theme)
           {:keys [id]}                (rf/sub [:get-screen-params])
-          {:keys [color name images]} (rf/sub [:communities/community id])]
+          {:keys [color name images]} (rf/sub [:communities/community id])
+          keycard?                    (rf/sub [:keycard/keycard-profile?])
+          keycard-feature-unavailable (rn/use-callback
+                                       #(rf/dispatch [:keycard/feature-unavailable-show]))]
       [rn/safe-area-view {:flex 1}
        [gesture/scroll-view {:style style/container}
         [rn/view style/page-container
@@ -59,7 +62,9 @@
          (i18n/label :t/cancel)]
         [quo/button
          {:accessibility-label :join-community-button
-          :on-press            #(join-community-and-navigate-back id)
+          :on-press            (if keycard?
+                                 keycard-feature-unavailable
+                                 #(join-community-and-navigate-back id))
           :container-style     {:flex 1}
           :inner-style         {:background-color (colors/resolve-color color theme)}}
          (i18n/label :t/request-to-join)]]

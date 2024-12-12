@@ -106,12 +106,14 @@
   [quo/text (i18n/label :t/network-not-supported)])
 
 (defn- request-access-button
-  [id color]
+  [id color keycard? keycard-feature-unavailable]
   [quo/button
-   {:on-press            (if config/community-accounts-selection-enabled?
-                           #(rf/dispatch [:open-modal :community-account-selection-sheet
-                                          {:community-id id}])
-                           #(rf/dispatch [:open-modal :community-requests-to-join {:id id}]))
+   {:on-press            (if keycard?
+                           keycard-feature-unavailable
+                           (if config/community-accounts-selection-enabled?
+                             #(rf/dispatch [:open-modal :community-account-selection-sheet
+                                            {:community-id id}])
+                             #(rf/dispatch [:open-modal :community-requests-to-join {:id id}])))
     :accessibility-label :show-request-to-join-screen-button
     :customization-color color
     :container-style     {:margin-bottom 12}
@@ -126,27 +128,33 @@
 
 (defn- token-requirements
   [{:keys [id color role-permissions?]}]
-  (let [{:keys [can-request-access? no-member-permission? networks-not-supported?
-                highest-permission-role
-                tokens]}  (rf/sub [:community/token-gated-overview id])
-        highest-role-text (i18n/label
-                           (communities.utils/role->translation-key highest-permission-role :t/member))
-        on-press          (rn/use-callback
-                           (fn []
-                             (if config/community-accounts-selection-enabled?
-                               (rf/dispatch [:open-modal :community-account-selection-sheet
-                                             {:community-id id}])
-                               (rf/dispatch [:open-modal :community-requests-to-join
-                                             {:id id}])))
-                           [id])
-        on-press-info     #(rf/dispatch
-                            [:show-bottom-sheet {:content token-gated-communities-info}])]
+  (let
+    [{:keys [can-request-access? no-member-permission? networks-not-supported?
+             highest-permission-role
+             tokens]}            (rf/sub [:community/token-gated-overview id])
+     highest-role-text           (i18n/label
+                                  (communities.utils/role->translation-key highest-permission-role
+                                                                           :t/member))
+     on-press                    (rn/use-callback
+                                  (fn []
+                                    (if config/community-accounts-selection-enabled?
+                                      (rf/dispatch [:open-modal :community-account-selection-sheet
+                                                    {:community-id id}])
+                                      (rf/dispatch [:open-modal :community-requests-to-join
+                                                    {:id id}])))
+                                  [id])
+     on-press-info               #(rf/dispatch
+                                   [:show-bottom-sheet {:content token-gated-communities-info}])
+     keycard?                    (rf/sub [:keycard/keycard-profile?])
+     keycard-feature-unavailable (rn/use-callback
+                                  #(rf/dispatch [:keycard/feature-unavailable-show]))]
+
     (cond
       networks-not-supported?
       [network-not-supported]
 
       (or (not role-permissions?) no-member-permission?)
-      [request-access-button id color]
+      [request-access-button id color keycard? keycard-feature-unavailable]
 
       :else
       [quo/community-token-gating
@@ -154,7 +162,7 @@
         :tokens          tokens
         :community-color color
         :satisfied?      can-request-access?
-        :on-press        on-press
+        :on-press        (if keycard? keycard-feature-unavailable on-press)
         :on-press-info   on-press-info}])))
 
 (defn- join-community

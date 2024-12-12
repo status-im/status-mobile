@@ -89,7 +89,7 @@ class TestDeepLinksOneDevice(MultipleSharedDeviceTestCase):
             self.home.get_chat(snt_community_name, community=True).click()
         snt_community_url = self.community_view.copy_community_link()
         self.home.reopen_app(sign_in=False)
-        self.sign_in.create_user(username="second user", first_user=False)
+        self.sign_in.create_user(first_user=False)
         self.home.browser_tab.click()
 
         old, new = "https://status.app/", "status-app://"

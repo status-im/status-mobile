@@ -349,12 +349,13 @@
  :<- [:wallet/keypairs-list]
  (fn [keypairs [_ format-options]]
    (reduce
-    (fn [acc {:keys [accounts name type key-uid lowest-operability]}]
+    (fn [acc {:keys [accounts name type key-uid lowest-operability keycards]}]
       (if (= lowest-operability :no)
         (update acc
                 :missing
                 conj
                 {:type     type
+                 :keycard? (boolean (seq keycards))
                  :name     name
                  :key-uid  key-uid
                  :accounts (format-settings-missing-keypair-accounts accounts)})
@@ -362,6 +363,7 @@
                 :operable
                 conj
                 {:type     type
+                 :keycard? (boolean (seq keycards))
                  :name     name
                  :key-uid  key-uid
                  :accounts (format-settings-keypair-accounts accounts format-options)})))

@@ -361,8 +361,10 @@ class SignInView(BaseView):
     def get_user_profile_by_name(self, username: str):
         self.driver.info("Getting username card by '%s'" % username)
         expected_element = UserProfileElement(self.driver, username=username)
-        return expected_element if expected_element.is_element_displayed(10) else self.driver.fail(
-            "User %s is not found!" % username)
+        if expected_element.is_element_displayed(10):
+            return expected_element
+        else:
+            raise NoSuchElementException(msg="User %s is not found!" % username)
 
     def get_user_profile_by_index(self, index: int):
         self.driver.info("Getting username card by index %s" % index)

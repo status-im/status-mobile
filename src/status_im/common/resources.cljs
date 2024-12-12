@@ -3,6 +3,8 @@
 (def ui
   {:add-new-contact               (js/require "../resources/images/ui2/add-contact.png")
    :biometrics                    (js/require "../resources/images/ui2/biometrics.png")
+   :usage-data                    (js/require "../resources/images/ui2/usage-data.png")
+   :login-syncing                 (js/require "../resources/images/ui2/login-syncing.png")
    :chat-privately-with-friends   (js/require "../resources/images/ui2/chat-privately-with-friends.png")
    :desktop-how-to-pair-sign-in   (js/require "../resources/images/ui2/desktop-how-to-pair-sign-in.png")
    :desktop-how-to-pair-logged-in (js/require

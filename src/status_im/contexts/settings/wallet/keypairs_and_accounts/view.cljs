@@ -41,7 +41,7 @@
 
 (defn- keypair
   [{keypair-type :type
-    :keys        [accounts name]
+    :keys        [accounts name keycard?]
     :as          item}
    _ _
    {:keys [profile-picture compressed-key customization-color]}]
@@ -59,7 +59,7 @@
                                               :type                (if default-keypair?
                                                                      :default-keypair
                                                                      :keypair)
-                                              :stored              :on-device
+                                              :stored              (if keycard? :on-keycard :on-device)
                                               :shortened-key       shortened-key
                                               :customization-color customization-color
                                               :profile-picture     profile-picture})}))
@@ -68,7 +68,7 @@
     [quo/keypair
      {:blur?               true
       :status-indicator    false
-      :stored              :on-device
+      :stored              (if keycard? :on-keycard :on-device)
       :action              (if default-keypair? :none :options)
       :accounts            accounts
       :customization-color customization-color

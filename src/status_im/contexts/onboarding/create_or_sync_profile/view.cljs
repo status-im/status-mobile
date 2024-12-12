@@ -91,7 +91,7 @@
     :title               (i18n/label :t/log-in-by-syncing)
     :subtitle            (i18n/label :t/log-in-by-syncing-subtitle)
     :accessibility-label :log-in-by-syncing-icon-card
-    :image               (resources/get-image :ethereum-address)
+    :image               (resources/get-image :login-syncing)
     :on-press            show-check-before-syncing}])
 
 (defn- use-empty-keycard-icon-card

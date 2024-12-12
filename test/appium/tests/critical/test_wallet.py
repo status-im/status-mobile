@@ -59,19 +59,19 @@ class TestWalletMultipleDevice(MultipleSharedDeviceTestCase):
 
         def wait_for_wallet_balance_to_update(wallet_view, user_name, initial_eth_amount):
             wallet_view.just_fyi("Getting ETH amount in the wallet of the %s after transaction" % user_name)
-            if user_name == 'sender':
+            if user_name == self.sender_username:
                 exp_amount = round(initial_eth_amount - amount_to_send, 4)
             else:
                 exp_amount = round(initial_eth_amount + amount_to_send, 4)
 
             # for _ in range(12):  # ToDo: 120 sec wait time, enable when autoupdate feature is ready
             new_eth_amount = round(wallet_view.get_asset(asset_name='Ether').get_amount(), 4)
-            if user_name == 'sender' and new_eth_amount <= exp_amount:
+            if user_name == self.sender_username and new_eth_amount <= exp_amount:
                 return
-            if user_name == 'receiver' and new_eth_amount >= exp_amount:
+            if user_name == self.receiver_username and new_eth_amount >= exp_amount:
                 return
             self.errors.append(
-                "Eth amount in the %ss wallet is %s but should be %s" % (user_name, new_eth_amount, exp_amount))
+                "Eth amount in the %s's wallet is %s but should be %s" % (user_name, new_eth_amount, exp_amount))
 
         # ToDo: disable relogin when autoupdate feature is ready
         self.home_1.just_fyi("Relogin for getting an updated balance")

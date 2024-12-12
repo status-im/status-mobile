@@ -9,26 +9,25 @@
 
 (defn view
   [{:keys [track-text customization-color auth-button-label on-auth-success on-auth-fail
-           auth-button-icon-left size blur? container-style disabled? dependencies keycard-supported?]
+           auth-button-icon-left size blur? container-style disabled? dependencies on-complete]
     :or   {container-style {:flex 1}}}]
-  (let [theme           (quo.theme/use-theme)
-        auth-method     (rf/sub [:auth-method])
-        biometric-auth? (= auth-method constants/auth-method-biometric)
-        on-complete     (rn/use-callback
-                         (fn [reset-slider-fn]
-                           (js/setTimeout #(reset-slider-fn false) 500)
-                           (rf/dispatch
-                            [:standard-auth/authorize
-                             {:auth-button-icon-left auth-button-icon-left
-                              :theme                 theme
-                              :blur?                 blur?
-                              :keycard-supported?    keycard-supported?
-                              :biometric-auth?       biometric-auth?
-                              :on-auth-success       on-auth-success
-                              :on-auth-fail          on-auth-fail
-                              :auth-button-label     auth-button-label}]))
-                         (vec (conj dependencies on-auth-success on-auth-fail)))
-        biometric-type  (rf/sub [:biometrics/supported-type])]
+  (let [theme                (quo.theme/use-theme)
+        auth-method          (rf/sub [:auth-method])
+        biometric-auth?      (= auth-method constants/auth-method-biometric)
+        on-complete-callback (rn/use-callback
+                              (fn [reset-slider-fn]
+                                (js/setTimeout #(reset-slider-fn false) 500)
+                                (rf/dispatch [:standard-auth/authorize
+                                              {:auth-button-icon-left auth-button-icon-left
+                                               :theme                 theme
+                                               :blur?                 blur?
+                                               :biometric-auth?       biometric-auth?
+                                               :on-auth-success       on-auth-success
+                                               :on-auth-fail          on-auth-fail
+                                               :auth-button-label     auth-button-label}]))
+                              (vec (conj dependencies on-auth-success on-auth-fail)))
+        on-complete          (or on-complete on-complete-callback)
+        biometric-type       (rf/sub [:biometrics/supported-type])]
     [quo/slide-button
      {:container-style     container-style
       :size                size

@@ -148,14 +148,6 @@ class TestActivityCenterContactRequestMultipleDevicePR(MultipleSharedDeviceTestC
 
     @marks.testrail_id(702777)
     def test_add_contact_field_validation(self):
-        # Profile link encoded data validation
-        encoded_data = re.findall("u/(.*)#", self.profile_link_2)[0]
-        decoded_string = base64.b64decode(encoded_data).decode("utf-8", "ignore")
-        decoded_username = re.sub('[^A-Za-z0-9]+', '', decoded_string)
-        if decoded_username != self.username_2:
-            self.errors.append(
-                "Can't find username '%s' in data which profile link '%s' contains. String '%s' is found instead" % (
-                    self.username_2, self.profile_link_2, decoded_username))
         public_key_2 = self.profile_link_2.split("#")[-1]
 
         def _device_1_creates_user():

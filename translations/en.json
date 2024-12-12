@@ -801,6 +801,7 @@
   "do-not-quit": "Do not quit the application or turn off your device. Doing so will lead to data corruption, loss of your Status profile and the inability to use Status.",
 
   "do-not-share": "Do not share",
+  "documents": "Documents",
   "done": "Done",
   "dont-ask": "Don't ask me again",
   "dont-auto-recalculate-network": "Don't auto recalculate {{network}}",
@@ -1116,6 +1117,7 @@
   "getting-started-generate-keys-on-keycard-description": "A Keycard is a physical card (similar to a credit card) that securely stores your Status keys. Using a Keycard adds an extra layer of security to your digital assets and identity. This option creates a new Ethereum address.",
   "getting-started-with-status": "Getting started with Status",
   "gif": "GIF",
+  "github-repos": "GitHub repos",
   "give-a-short-description": "Give a short description",
   "give-a-short-description-community": "Give it a short description",
   "give-permissions-camera": "Give permission\nto access camera",
@@ -2872,6 +2874,7 @@
   "we-will-receive-from-all-profiles": "We will receive from all profiles:",
   "we-will-receive-from-the-current-profile": "We will receive from the current profile:",
   "web-view-error": "Unable to load page",
+  "website": "Website",
   "websites": "Websites",
   "webview-camera-permission-requests": "Webview camera permission requests",
   "webview-camera-permission-requests-subtitle": "When enabled, websites and dapps can ask to use your camera",
