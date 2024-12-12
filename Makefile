@@ -445,7 +445,7 @@ android-ports: export RCT_METRO_PORT ?= 8081
 android-ports: ##@other Add proxies to Android Device/Simulator
 	adb reverse tcp:$(RCT_METRO_PORT) tcp:$(RCT_METRO_PORT) && \
 	adb reverse tcp:3449 tcp:3449 && \
-	adb reverse tcp:4567 tcp:4567 && \
+	adb reverse tcp:$(RE_FRISK_PORT) tcp:$(RE_FRISK_PORT) && \
 	adb reverse tcp:$(FLOWSTORM_PORT) tcp:$(FLOWSTORM_PORT) && \
 	adb forward tcp:5561 tcp:5561
 
