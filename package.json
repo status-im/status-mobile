@@ -66,7 +66,7 @@
     "react-native-shake": "^3.3.1",
     "react-native-share": "10.0.2",
     "react-native-static-safe-area-insets": "^2.2.0",
-    "react-native-status-keycard": "git+https://github.com/status-im/react-native-status-keycard.git#refs/tags/v2.6.3",
+    "react-native-status-keycard": "git+https://github.com/status-im/react-native-status-keycard.git#refs/tags/v2.6.4",
     "react-native-svg": "13.10.0",
     "react-native-webview": "13.6.3",
     "react-syntax-highlighter": "^15.5.0"

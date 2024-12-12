@@ -71,6 +71,10 @@
   [callback]
   (.addListener ^js event-emitter "keyCardOnDisconnected" callback))
 
+(defn on-card-new-pairing
+  [callback]
+  (.addListener ^js event-emitter "keyCardNewPairing" callback))
+
 (defn on-nfc-user-cancelled
   [callback]
   (.addListener ^js event-emitter "keyCardOnNFCUserCancelled" callback))
