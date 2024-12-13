@@ -1,10 +1,10 @@
 (ns react-native.fast-image
   (:require
-   ["react-native-fast-image" :as FastImage]
-   [clojure.string :as string]
-   [oops.core :as oops]
-   [react-native.core :as rn]
-   [reagent.core :as reagent]))
+    ["react-native-fast-image" :as FastImage]
+    [clojure.string :as string]
+    [oops.core :as oops]
+    [react-native.core :as rn]
+    [reagent.core :as reagent]))
 
 (defn- build-source
   [source]
@@ -21,10 +21,11 @@
 
 (defn- placeholder
   [{:keys [style fallback-content error? loaded?]}]
-  [rn/view {:style (assoc style
-                     :flex            1
-                     :justify-content :center
-                     :align-items     :center)}
+  [rn/view
+   {:style (assoc style
+                  :flex            1
+                  :justify-content :center
+                  :align-items     :center)}
    (cond
      (and error? fallback-content) fallback-content
      error?                        [rn/text "X"]
@@ -45,9 +46,9 @@
     (fn [{:keys [source fallback-content on-error on-load] :as props}]
       [:> FastImage
        (assoc props
-         :source   (build-source source)
-         :on-error #(on-image-error % on-error)
-         :on-load  #(on-image-loaded % on-load))
+              :source   (build-source source)
+              :on-error #(on-image-error % on-error)
+              :on-load  #(on-image-loaded % on-load))
        (when (or @error? (not @loaded?))
          [placeholder
           {:style            (js->clj (:style props))
@@ -55,7 +56,8 @@
            :error?           @error?
            :loaded?          @loaded?}])])))
 
-(defn- compare-sources [old-props new-props]
+(defn- compare-sources
+  [old-props new-props]
   (let [old-source (oops/oget old-props :source)
         new-source (oops/oget new-props :source)]
     (and old-source
