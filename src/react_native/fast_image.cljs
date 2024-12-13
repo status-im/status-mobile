@@ -1,59 +1,69 @@
 (ns react-native.fast-image
   (:require
-    ["react-native-fast-image" :as FastImage]
-    [react-native.core :as rn]
-    [reagent.core :as reagent]))
+   ["react-native-fast-image" :as FastImage]
+   [clojure.string :as string]
+   [oops.core :as oops]
+   [react-native.core :as rn]
+   [reagent.core :as reagent]))
 
-(def internal-fast-image (reagent/adapt-react-class ^js FastImage))
-
-(defn- placeholder
-  [{:keys [style fallback-content error? loaded?]}]
-  [rn/view
-   {:style (assoc style
-                  :flex            1
-                  :justify-content :center
-                  :align-items     :center)}
-   (cond
-     (and error? fallback-content) fallback-content
-     error?                        [rn/text "X"]
-     (not loaded?)                 [rn/activity-indicator {:animating true}])])
-
-(defn- get-source
+(defn- build-source
   [source]
   (if (string? source)
     {:uri      source
      :priority :high}
     source))
 
-;; NOTE: We need to use ratoms to avoid the flickering since their state is updated
-;; altogether at the end of the frame (different from hooks), this allows us to display
-;; both uses of `internal-fast-image` always in sync.
-(defn fast-image
+(defn- remove-port
+  [source]
+  (if (string? source)
+    (string/replace-first source #":\d+" "")
+    (string/replace-first (oops/oget source :uri) #":\d+" "")))
+
+(defn- placeholder
+  [{:keys [style fallback-content error? loaded?]}]
+  [rn/view {:style (assoc style
+                     :flex            1
+                     :justify-content :center
+                     :align-items     :center)}
+   (cond
+     (and error? fallback-content) fallback-content
+     error?                        [rn/text "X"]
+     (not loaded?)                 [rn/activity-indicator {:animating true}])])
+
+;; We cannot use hooks since `reactify-component` seems to ignore the functional compiler
+(defn- internal-fast-image
   [_]
   (let [loaded?         (reagent/atom false)
         error?          (reagent/atom false)
-        previous-source (reagent/atom nil)
         on-image-error  (fn [event on-error]
                           (when (fn? on-error) (on-error event))
                           (reset! error? true))
-        on-image-loaded (fn [event on-load source]
+        on-image-loaded (fn [event on-load]
                           (when (fn? on-load) (on-load event))
                           (reset! loaded? true)
-                          (reset! error? false)
-                          (reset! previous-source source))]
+                          (reset! error? false))]
     (fn [{:keys [source fallback-content on-error on-load] :as props}]
-      [internal-fast-image
+      [:> FastImage
        (assoc props
-              :source   (get-source source)
-              :on-error #(on-image-error % on-error)
-              :on-load  #(on-image-loaded % on-load source))
-       (cond
-         @previous-source
-         [internal-fast-image (assoc props :source (get-source @previous-source))]
-
-         (or @error? (not @loaded?))
+         :source   (build-source source)
+         :on-error #(on-image-error % on-error)
+         :on-load  #(on-image-loaded % on-load))
+       (when (or @error? (not @loaded?))
          [placeholder
-          {:style            (:style props)
+          {:style            (js->clj (:style props))
            :fallback-content fallback-content
            :error?           @error?
            :loaded?          @loaded?}])])))
+
+(defn- compare-sources [old-props new-props]
+  (let [old-source (oops/oget old-props :source)
+        new-source (oops/oget new-props :source)]
+    (and old-source
+         new-source
+         (= (remove-port old-source) (remove-port new-source)))))
+
+(def fast-image
+  (-> internal-fast-image
+      (reagent/reactify-component)
+      (rn/memo compare-sources)
+      (reagent/adapt-react-class)))
