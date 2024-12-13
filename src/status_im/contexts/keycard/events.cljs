@@ -25,20 +25,21 @@
     :fx [(when-let [event (get-in db [:keycard :on-card-disconnected-event-vector])]
            [:dispatch event])]}))
 
+(rf/reg-event-fx :keycard/on-card-new-pairing
+ (fn [{:keys [db]} [{:keys [pairing instanceUID]}]]
+   (when (and instanceUID pairing)
+     (let [pairings     (get-in db [:keycard :pairings])
+           new-pairings (assoc pairings
+                               instanceUID
+                               {:pairing   pairing
+                                :paired-on (utils.datetime/timestamp)})]
+       {:db                       (assoc-in db [:keycard :pairings] new-pairings)
+        :keycard/persist-pairings new-pairings}))))
+
 (rf/reg-event-fx :keycard/on-retrieve-pairings-success
  (fn [{:keys [db]} [pairings]]
    {:db (assoc-in db [:keycard :pairings] pairings)
     :fx [[:effects.keycard/set-pairing-to-keycard pairings]]}))
-
-(rf/reg-event-fx :keycard/update-pairings
- (fn [{:keys [db]} [instance-uid pairing]]
-   (let [pairings     (get-in db [:keycard :pairings])
-         new-pairings (assoc pairings
-                             instance-uid
-                             {:pairing   pairing
-                              :paired-on (utils.datetime/timestamp)})]
-     {:db                       (assoc-in db [:keycard :pairings] new-pairings)
-      :keycard/persist-pairings new-pairings})))
 
 (rf/reg-event-fx :keycard/on-action-with-pin-error
  (fn [{:keys [db]} [error]]
@@ -126,10 +127,8 @@
 (rf/reg-event-fx :keycard/get-application-info
  (fn [_ [{:keys [key-uid on-success on-error]}]]
    {:effects.keycard/get-application-info
-    {:on-success (fn [{:keys [instance-uid new-pairing] :as app-info}]
+    {:on-success (fn [app-info]
                    (rf/dispatch [:keycard/update-application-info app-info])
-                   (when (and instance-uid new-pairing)
-                     (rf/dispatch [:keycard/update-pairings instance-uid new-pairing]))
                    (if-let [error (keycard.utils/validate-application-info key-uid app-info)]
                      (if on-error
                        (on-error error)

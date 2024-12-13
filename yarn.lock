@@ -9584,9 +9584,9 @@ react-native-static-safe-area-insets@^2.2.0:
   resolved "https://registry.yarnpkg.com/react-native-static-safe-area-insets/-/react-native-static-safe-area-insets-2.2.0.tgz#dd86b6a38f43964fac8df8c0e6bc8e062527786c"
   integrity sha512-TLTW2e2kRK3COSK8gMZzwp4wHguFCtcO18itDLn5av/xQblXt9ylu84o+qD9aKJCBfvtNzGOvqqTKqC5GJRZ/g==
 
-"react-native-status-keycard@git+https://github.com/status-im/react-native-status-keycard.git#refs/tags/v2.6.3":
+"react-native-status-keycard@git+https://github.com/status-im/react-native-status-keycard.git#refs/tags/v2.6.4":
   version "2.6.2"
-  resolved "git+https://github.com/status-im/react-native-status-keycard.git#735bed7f9838b87712f1fd2978208186d28ea61c"
+  resolved "git+https://github.com/status-im/react-native-status-keycard.git#e78f46de10d65cfef2df2f62b6f41e64e0c332b9"
 
 react-native-svg@13.10.0:
   version "13.10.0"

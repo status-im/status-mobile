@@ -8,7 +8,8 @@
             [status-im.contexts.keycard.utils :as keycard.utils]
             [status-im.contexts.profile.config :as profile.config]
             [utils.hex :as hex]
-            [utils.re-frame :as rf]))
+            [utils.re-frame :as rf]
+            [utils.transforms :as transforms]))
 
 (defonce ^:private active-listeners (atom []))
 
@@ -24,6 +25,7 @@
   (reset! active-listeners
     [(keycard/on-card-connected #(rf/dispatch [:keycard/on-card-connected]))
      (keycard/on-card-disconnected #(rf/dispatch [:keycard/on-card-disconnected]))
+     (keycard/on-card-new-pairing #(rf/dispatch [:keycard/on-card-new-pairing (transforms/js->clj %)]))
      (when platform/ios?
        (keycard/on-nfc-user-cancelled #(rf/dispatch [:keycard.ios/on-nfc-user-cancelled])))
      (when platform/ios?
