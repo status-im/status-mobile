@@ -13,7 +13,7 @@
      {:title           (i18n/label :t/scan-qr)
       :subtitle        (i18n/label :t/scan-an-address-qr-code)
       :error-message   (i18n/label :t/oops-this-qr-does-not-contain-an-address)
-      :validate-fn     #(utils-address/supported-address? %)
+      :validate-fn     #(utils-address/supported-scan-address? %)
       :on-success-scan (fn [result]
                          (let [address (utils-address/supported-address->eth-address result)]
                            (when on-result (on-result address))

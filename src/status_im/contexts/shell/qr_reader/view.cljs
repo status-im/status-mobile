@@ -10,7 +10,6 @@
             [status-im.feature-flags :as ff]
             [utils.address :as utils-address]
             [utils.debounce :as debounce]
-            [utils.ethereum.eip.eip681 :as eip681]
             [utils.i18n :as i18n]
             [utils.url :as url]))
 
@@ -27,13 +26,6 @@
   [scanned-text]
   (let [index (string/index-of scanned-text "#")]
     (subs scanned-text (inc index))))
-
-(defn eip681-address?
-  [scanned-text]
-  (-> scanned-text
-      eip681/parse-uri
-      :address
-      boolean))
 
 (defn pairing-qr-code?
   [_]
@@ -88,10 +80,10 @@
       (debounce/debounce-and-dispatch [:generic-scanner/scan-success address] 300)
       (debounce/debounce-and-dispatch [:shell/change-tab :wallet-stack] 300))
 
-    (eip681-address? scanned-text)
+    (utils-address/eip-681-address? scanned-text)
     (do
-      (debounce/debounce-and-dispatch [:wallet-legacy/request-uri-parsed
-                                       (eip681/parse-uri scanned-text)]
+      (debounce/debounce-and-dispatch [:generic-scanner/scan-success
+                                       (utils-address/eip-681-address->eth-address scanned-text)]
                                       300)
       (debounce/debounce-and-dispatch [:shell/change-tab :wallet-stack] 300))
 

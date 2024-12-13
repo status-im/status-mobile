@@ -6,7 +6,7 @@
    e.g. ethereum:0x1234@1/transfer?to=0x5678&value=1e18&gas=5000"
   (:require
     [clojure.string :as string]
-    [utils.address :as address]
+    [native-module.core :as native-module]
     [utils.ens.core :as utils.ens]
     [utils.ethereum.chain :as chain]))
 
@@ -17,6 +17,10 @@
 (def query-separator "?")
 (def parameter-separator "&")
 (def key-value-separator "=")
+
+(defn- address?
+  [address]
+  (native-module/address? address))
 
 (def uri-pattern
   (re-pattern (str scheme scheme-separator "([^" query-separator "]*)(?:\\" query-separator "(.*))?")))
@@ -63,16 +67,16 @@
    Invalid URI will be parsed as `nil`."
   [s]
   (when (string? s)
-    (if (address/address? s)
+    (if (address? s)
       {:address s}
       (let [[_ authority-path query] (re-find uri-pattern s)]
         (when authority-path
           (let [[_ raw-address chain-id function-name] (re-find authority-path-pattern authority-path)]
-            (when (or (or (utils.ens/is-valid-eth-name? raw-address) (address/address? raw-address))
+            (when (or (or (utils.ens/is-valid-eth-name? raw-address) (address? raw-address))
                       (when (string/starts-with? raw-address "pay-")
                         (let [pay-address (string/replace-first raw-address "pay-" "")]
                           (or (utils.ens/is-valid-eth-name? pay-address)
-                              (address/address? pay-address)))))
+                              (address? pay-address)))))
               (let [address (if (string/starts-with? raw-address "pay-")
                               (string/replace-first raw-address "pay-" "")
                               raw-address)]
@@ -80,7 +84,7 @@
                   (let [contract-address (get-in arguments [:function-arguments :address])]
                     (if-not (or (not contract-address)
                                 (or (utils.ens/is-valid-eth-name? contract-address)
-                                    (address/address? contract-address)))
+                                    (address? contract-address)))
                       nil
                       (merge {:address  address
                               :chain-id (if chain-id
@@ -98,7 +102,7 @@
   "Generate a EIP 681 URI based on `address` and a map (keywords / {bignumbers/strings} ) of extra properties.
    No validation of address format is performed."
   [address {:keys [chain-id function-name function-arguments] :as m}]
-  (when (address/address? address)
+  (when (address? address)
     (let [parameters (dissoc (into {} (filter second m)) :chain-id)] ;; filter nil values
       (str scheme
            scheme-separator

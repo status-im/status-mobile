@@ -2,7 +2,8 @@
   (:require
     [clojure.string :as string]
     [native-module.core :as native-module]
-    [utils.ethereum.eip.eip55 :as eip55]))
+    [utils.ethereum.eip.eip55 :as eip55]
+    [utils.ethereum.eip.eip681 :as eip681]))
 
 
 (def hex-prefix "0x")
@@ -105,10 +106,22 @@
   [address]
   (re-find regx-eip-3770-address address))
 
+(defn eip-681-address?
+  [scanned-text]
+  (-> scanned-text
+      eip681/parse-uri
+      :address
+      boolean))
+
 (defn supported-address?
   [s]
   (boolean (or (eip-3770-address? s)
                (metamask-address? s))))
+
+(defn supported-scan-address?
+  [s]
+  (boolean (or (eip-681-address? s)
+               (supported-address? s))))
 
 (defn metamask-address->eip-3770-address
   [metamask-address]
@@ -129,9 +142,18 @@
   [eip-3770-address]
   (extract-address-without-chains-info eip-3770-address))
 
+(defn eip-681-address->eth-address
+  [eip-681-address]
+  (-> eip-681-address
+      eip681/parse-uri
+      :address))
+
 (defn supported-address->eth-address
   [address]
   (cond
+    (eip-681-address? address)
+    (eip-681-address->eth-address address)
+
     (eip-3770-address? address)
     (eip-3770-address->eth-address address)
 
