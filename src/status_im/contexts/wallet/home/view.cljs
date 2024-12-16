@@ -15,19 +15,24 @@
 
 (defn new-account
   []
-  [quo/action-drawer
-   [[{:icon                :i/add
-      :accessibility-label :start-a-new-chat
-      :label               (i18n/label :t/add-account)
-      :sub-label           (i18n/label :t/add-account-description)
-      :on-press            #(rf/dispatch [:navigate-to :screen/wallet.create-account])}
-     (when (ff/enabled? ::ff/wallet.add-watched-address)
-       {:icon                :i/reveal
-        :accessibility-label :add-a-contact
-        :label               (i18n/label :t/add-address-to-watch)
-        :sub-label           (i18n/label :t/add-address-to-watch-description)
-        :on-press            #(rf/dispatch [:navigate-to :screen/wallet.add-address-to-watch])
-        :add-divider?        true})]]])
+  (let [keycard? (rf/sub [:keycard/keycard-profile?])]
+    [quo/action-drawer
+     [[{:icon                :i/add
+        :accessibility-label :start-a-new-chat
+        :label               (i18n/label :t/add-account)
+        :sub-label           (i18n/label :t/add-account-description)
+        :on-press            (fn []
+                               (if keycard?
+                                 (rf/dispatch [:keycard/feature-unavailable-show
+                                               {:feature-name :wallet.new-account}])
+                                 (rf/dispatch [:navigate-to :screen/wallet.create-account])))}
+       (when (ff/enabled? ::ff/wallet.add-watched-address)
+         {:icon                :i/reveal
+          :accessibility-label :add-a-contact
+          :label               (i18n/label :t/add-address-to-watch)
+          :sub-label           (i18n/label :t/add-address-to-watch-description)
+          :on-press            #(rf/dispatch [:navigate-to :screen/wallet.add-address-to-watch])
+          :add-divider?        true})]]]))
 
 (defn- new-account-card-data
   []
