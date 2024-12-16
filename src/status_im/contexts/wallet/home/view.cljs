@@ -23,7 +23,8 @@
         :sub-label           (i18n/label :t/add-account-description)
         :on-press            (fn []
                                (if keycard?
-                                 (rf/dispatch [:keycard/feature-unavailable-show {:feature-name :chat.new-chat}])
+                                 (rf/dispatch [:keycard/feature-unavailable-show
+                                               {:feature-name :wallet.new-account}])
                                  (rf/dispatch [:navigate-to :screen/wallet.create-account])))}
        (when (ff/enabled? ::ff/wallet.add-watched-address)
          {:icon                :i/reveal
