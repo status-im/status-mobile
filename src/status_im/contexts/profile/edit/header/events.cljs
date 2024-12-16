@@ -5,9 +5,11 @@
             [utils.re-frame :as rf]))
 
 (rf/reg-event-fx :profile/update-local-picture
- (fn [{:keys [db]} [images]]
+ (fn [{:keys [db now]} [images]]
    {:db (if images
-          (assoc-in db [:profile/profile :images] images)
+          (assoc-in db
+           [:profile/profile :images]
+           (map #(assoc % :clock now) images))
           (update db :profile/profile dissoc :images))}))
 
 (rf/reg-event-fx :profile/edit-profile-picture-success
