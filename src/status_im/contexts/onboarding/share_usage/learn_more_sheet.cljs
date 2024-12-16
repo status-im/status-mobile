@@ -4,7 +4,7 @@
     [quo.foundations.colors :as colors]
     [quo.theme]
     [react-native.core :as rn]
-    [status-im.common.terms.view :as terms]
+    [status-im.common.privacy.view :as privacy]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
@@ -26,7 +26,7 @@
     [quo/text
      {:size     :paragraph-2
       :weight   :bold
-      :on-press #(rf/dispatch [:show-bottom-sheet {:content terms/terms-of-use :shell? true}])}
+      :on-press #(rf/dispatch [:show-bottom-sheet {:content privacy/privacy-statement :shell? true}])}
      (i18n/label :t/more-details-in-privacy-policy-2)]]])
 
 (defn- bullet-points
