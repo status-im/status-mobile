@@ -1,8 +1,8 @@
 (ns react-native.wallet-connect
   (:require
+    ["@reown/walletkit$default" :as WalletKit]
     ["@walletconnect/core" :as wc-core]
     ["@walletconnect/utils" :as wc-utils]
-    ["@walletconnect/web3wallet$default" :as Web3Wallet]
     [cljs-bean.core :as bean]
     [oops.core :as oops]))
 
@@ -13,7 +13,7 @@
 (defn init
   [project-id metadata]
   (let [core (wallet-connect-core project-id)]
-    (oops/ocall Web3Wallet
+    (oops/ocall WalletKit
                 "init"
                 (bean/->js {:core     core
                             :metadata metadata}))))

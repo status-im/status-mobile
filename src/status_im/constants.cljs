@@ -277,6 +277,7 @@
 (def ^:const wallet-connect-metadata-icon
   "https://res.cloudinary.com/dhgck7ebz/image/upload/f_auto,c_limit,w_1080,q_auto/Brand/Logo%20Section/Mark/Mark_01")
 (def ^:const wallet-connect-metadata-url "https://status.app")
+(def ^:const wallet-connect-metadata-redirect-native "status-app://")
 
 (def ^:const wallet-connect-personal-sign-method "personal_sign")
 (def ^:const wallet-connect-eth-sign-method "eth_sign")
