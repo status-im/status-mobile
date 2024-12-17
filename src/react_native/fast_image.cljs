@@ -56,16 +56,15 @@
            :error?           @error?
            :loaded?          @loaded?}])])))
 
-(defn- compare-sources
+(defn- compare-props
   [old-props new-props]
-  (let [old-source (oops/oget old-props :source)
-        new-source (oops/oget new-props :source)]
-    (and old-source
-         new-source
-         (= (remove-port old-source) (remove-port new-source)))))
+  (let [old-source (some-> old-props :source remove-port)
+        new-source (some-> new-props :source remove-port)]
+    (and (= old-source new-source)
+         (= (dissoc old-props :source) (dissoc new-props :source)))))
 
 (def fast-image
   (-> internal-fast-image
       (reagent/reactify-component)
-      (rn/memo compare-sources)
+      (rn/memo compare-props)
       (reagent/adapt-react-class)))
