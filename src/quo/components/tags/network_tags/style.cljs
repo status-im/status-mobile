@@ -32,8 +32,8 @@
    :padding-bottom   2})
 
 (defn title-style
-  [{:keys [status theme]}]
-  {:padding-left 4
+  [{:keys [status theme networks-shown?]}]
+  {:padding-left (if networks-shown? 4 0)
    :margin-top   -1
    :color        (when (= status :error)
                    (colors/resolve-color :danger theme))})

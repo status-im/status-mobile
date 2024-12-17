@@ -204,3 +204,28 @@
                                                                 fiat-value)]
      {:crypto (str crypto-formatted " " (:symbol token))
       :fiat   fiat-formatted})))
+
+(rf/reg-sub
+ :wallet/tx-settings
+ :<- [:wallet/wallet-send]
+ :-> :tx-settings)
+
+(rf/reg-sub
+ :wallet/tx-settings-max-base-fee
+ :<- [:wallet/tx-settings]
+ :-> :max-base-fee)
+
+(rf/reg-sub
+ :wallet/tx-settings-priority-fee
+ :<- [:wallet/tx-settings]
+ :-> :priority-fee)
+
+(rf/reg-sub
+ :wallet/tx-settings-max-gas-amount
+ :<- [:wallet/tx-settings]
+ :-> :max-gas-amount)
+
+(rf/reg-sub
+ :wallet/tx-settings-nonce
+ :<- [:wallet/tx-settings]
+ :-> :nonce)

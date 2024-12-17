@@ -54,7 +54,7 @@
        (when (money/bignumber? (value-bn state))
          (money/greater-than (value-bn state) (upper-limit-bn state)))))
 
-(defn- lower-limit-exceeded?
+(defn lower-limit-exceeded?
   [state]
   (and (lower-limit state)
        (when (money/bignumber? (value-bn state))
@@ -78,16 +78,19 @@
 
 (defn set-upper-limit
   [state limit]
-  (when limit
+  (if limit
     (-> state
         (assoc :upper-limit limit)
-        recheck-errorness)))
+        recheck-errorness)
+    state))
 
 (defn set-lower-limit
   [state limit]
-  (-> state
-      (assoc :lower-limit limit)
-      recheck-errorness))
+  (if limit
+    (-> state
+        (assoc :lower-limit limit)
+        recheck-errorness)
+    state))
 
 (defn increase
   [state]

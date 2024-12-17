@@ -263,6 +263,10 @@
                   first-route)
          (rf/dispatch [:wallet/build-transaction-for-collectible-route])))
      [first-route])
+    (rn/use-mount
+     (fn []
+       (when (ff/enabled? ::ff/wallet.transaction-params)
+         (rf/dispatch [:wallet/init-tx-settings]))))
     [rn/view {:style {:flex 1}}
      [floating-button-page/view
       {:footer-container-padding 0

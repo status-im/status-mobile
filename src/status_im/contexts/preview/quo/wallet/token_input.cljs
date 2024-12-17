@@ -22,21 +22,29 @@
   [{:key     :token-symbol
     :type    :select
     :options [{:key :eth}
-              {:key :snt}]}
+              {:key :snt}
+              {:key :gwei}
+              {:key :units}]}
    {:key     :currency
     :type    :select
     :options [{:key "$"}
               {:key "€"}]}
    {:key  :error?
+    :type :boolean}
+   {:key  :show-token-icon?
+    :type :boolean}
+   {:key  :swappable?
     :type :boolean}])
 
 
 (defn view
   []
-  (let [state (reagent/atom {:token-symbol :eth
-                             :currency     "$"
-                             :crypto?      true
-                             :error?       false})]
+  (let [state (reagent/atom {:token-symbol     :eth
+                             :currency         "$"
+                             :crypto?          true
+                             :error?           false
+                             :show-token-icon? true
+                             :swappable?       true})]
     (fn []
       (let [{:keys [currency token-symbol crypto? error?]} @state
             [input-state set-input-state]                  (rn/use-state controlled-input/init-state)
@@ -67,18 +75,20 @@
           :component-container-style {:flex            1
                                       :justify-content :space-between}}
          [quo/token-input
-          {:token-symbol    token-symbol
-           :currency-symbol (if crypto? token-symbol currency)
-           :error?          error?
-           :value           input-amount
-           :converted-value converted-value
-           :on-swap         (fn []
-                              (swap! state assoc :crypto? (not crypto?))
-                              (swap-between-fiat-and-crypto))
-           :hint-component  [quo/network-tags
-                             {:networks networks
-                              :title    title
-                              :status   (when (:error? @state) :error)}]}]
+          {:token-symbol     token-symbol
+           :currency-symbol  (if crypto? token-symbol currency)
+           :error?           error?
+           :value            input-amount
+           :converted-value  converted-value
+           :on-swap          (fn []
+                               (swap! state assoc :crypto? (not crypto?))
+                               (swap-between-fiat-and-crypto))
+           :hint-component   [quo/network-tags
+                              {:networks networks
+                               :title    title
+                               :status   (when (:error? @state) :error)}]
+           :show-token-icon? (:show-token-icon? @state)
+           :swappable?       (:swappable? @state)}]
          [quo/numbered-keyboard
           {:container-style {:padding-bottom (safe-area/get-top)}
            :left-action     :dot

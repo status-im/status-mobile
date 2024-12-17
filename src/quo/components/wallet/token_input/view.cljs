@@ -20,17 +20,18 @@
    (string/upper-case (or (clj->js text) ""))])
 
 (defn input-section
-  [{:keys [token-symbol on-token-press value error? on-swap currency-symbol]}]
-  (let [theme        (quo.theme/use-theme)
-        window-width (:width (rn/get-window))]
+  [{:keys [token-symbol on-token-press value error? on-swap currency-symbol show-token-icon?
+           swappable?]}]
+  (let [theme (quo.theme/use-theme)]
     [rn/pressable
      {:style    {:width          "100%"
                  :flex-direction :row}
       :on-press on-token-press}
-     [token/view
-      {:token token-symbol
-       :size  :size-32}]
-     [rn/view {:style (style/input-container window-width)}
+     (when show-token-icon?
+       [token/view
+        {:token token-symbol
+         :size  :size-32}])
+     [rn/view {:style style/input-container}
       [rn/text-input
        {:style                  (style/text-input theme error?)
         :placeholder-text-color (style/placeholder-text theme)
@@ -39,14 +40,15 @@
         :editable               false
         :value                  value}]
       [token-name-text theme currency-symbol]]
-     [button/button
-      {:icon                true
-       :icon-only?          true
-       :size                32
-       :on-press            #(when on-swap (on-swap))
-       :type                :outline
-       :accessibility-label :reorder}
-      :i/reorder]]))
+     (when swappable?
+       [button/button
+        {:icon                true
+         :icon-only?          true
+         :size                32
+         :on-press            #(when on-swap (on-swap))
+         :type                :outline
+         :accessibility-label :reorder}
+        :i/reorder])]))
 
 (defn- view-internal
   [{:keys [token-symbol
@@ -57,26 +59,33 @@
            on-swap
            converted-value
            hint-component
-           currency-symbol]}]
+           show-token-icon?
+           currency-symbol
+           swappable?]
+    :or   {show-token-icon? true
+           swappable?       true}}]
   (let [theme (quo.theme/use-theme)
         width (:width (rn/get-window))]
     [rn/view {:style (merge (style/main-container width) container-style)}
      [rn/view {:style style/amount-container}
       [input-section
-       {:theme           theme
-        :token-symbol    token-symbol
-        :on-token-press  on-token-press
-        :value           value
-        :error?          error?
-        :on-swap         on-swap
-        :currency-symbol currency-symbol}]]
+       {:theme            theme
+        :token-symbol     token-symbol
+        :on-token-press   on-token-press
+        :value            value
+        :error?           error?
+        :on-swap          on-swap
+        :currency-symbol  currency-symbol
+        :show-token-icon? show-token-icon?
+        :swappable?       swappable?}]]
      [divider-line/view {:container-style (style/divider theme)}]
      [rn/view {:style style/data-container}
       hint-component
-      [text/text
-       {:size   :paragraph-2
-        :weight :medium
-        :style  (style/converted-amount theme)}
-       converted-value]]]))
+      (when swappable?
+        [text/text
+         {:size   :paragraph-2
+          :weight :medium
+          :style  (style/converted-amount theme)}
+         converted-value])]]))
 
 (def view (schema/instrument #'view-internal component-schema/?schema))

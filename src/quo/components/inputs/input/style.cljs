@@ -131,7 +131,7 @@
   [variant-colors]
   {:color (:label variant-colors)})
 
-(def counter-container
+(def right-label-container
   {:flex        1
    :align-items :flex-end})
 
