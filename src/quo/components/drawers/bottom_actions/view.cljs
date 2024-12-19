@@ -31,7 +31,8 @@
       [:scroll? {:optional true} [:maybe :boolean]]
       [:blur? {:optional true} [:maybe :boolean]]
       [:container-style {:optional true} [:maybe :map]]
-      [:buttons-container-style {:optional true} [:maybe :map]]]]]
+      [:buttons-container-style {:optional true} [:maybe :map]]
+      [:buttons-style {:optional true} [:maybe :map]]]]]
    :any])
 
 (def ^:private role-icon
@@ -43,10 +44,9 @@
 (defn- view-internal
   [{:keys [actions description description-text description-top-text error-message role button-one-label
            button-two-label blur? button-one-props button-two-props scroll? container-style
-           buttons-container-style context-tag-props]}]
+           buttons-container-style buttons-style context-tag-props]}]
   (let [theme (quo.theme/use-theme)]
-    [rn/view
-     {:style (merge (style/container scroll? blur? theme) container-style)}
+    [rn/view {:style (merge (style/container scroll? blur? theme) container-style)}
      (when (= description :top-error)
        [rn/view {:style style/error-message}
         [icon/icon
@@ -82,7 +82,7 @@
         [button/button
          (merge
           {:size                40
-           :container-style     style/button-container
+           :container-style     (merge style/button-container buttons-style)
            :background          (when (or blur? scroll?) :blur)
            :theme               theme
            :accessibility-label :button-two}
@@ -91,7 +91,7 @@
       [button/button
        (merge
         {:size                40
-         :container-style     style/button-container
+         :container-style     (merge style/button-container buttons-style)
          :background          (when (or blur? scroll?) :blur)
          :theme               theme
          :accessibility-label :button-one}
