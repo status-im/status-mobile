@@ -5,21 +5,26 @@
             [utils.re-frame :as rf]))
 
 (rf/reg-event-fx :profile/edit-profile-name-success
- (fn [_]
-   {:fx [[:dispatch [:navigate-back]]
-         [:dispatch
-          [:toasts/upsert
-           {:type  :positive
-            :theme :dark
-            :text  (i18n/label :t/name-updated)}]]]}))
+ (fn [{:keys [db]} [display-name navigate-back? show-toast?]]
+   {:db (assoc-in db [:profile/profile :display-name] display-name)
+    :fx [(when navigate-back?
+           [:dispatch [:navigate-back]])
+         (when show-toast?
+           [:dispatch
+            [:toasts/upsert
+             {:type  :positive
+              :theme :dark
+              :text  (i18n/label :t/name-updated)}]])]}))
 
 (defn edit-profile-name
-  [{:keys [db]} [name]]
-  {:db (assoc-in db [:profile/profile :display-name] name)
-   :fx [[:json-rpc/call
+  [_
+   [{:keys [display-name navigate-back? show-toast?]
+     :or   {navigate-back? true
+            show-toast?    true}}]]
+  {:fx [[:json-rpc/call
          [{:method     "wakuext_setDisplayName"
-           :params     [name]
-           :on-success [:profile/edit-profile-name-success]}]]]})
+           :params     [display-name]
+           :on-success [:profile/edit-profile-name-success display-name navigate-back? show-toast?]}]]]})
 
 (rf/reg-event-fx :profile/edit-name edit-profile-name)
 

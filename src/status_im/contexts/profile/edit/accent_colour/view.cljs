@@ -58,7 +58,8 @@
             {:type                :primary
              :customization-color @unsaved-custom-color
              :on-press            (fn []
-                                    (rf/dispatch [:profile/edit-accent-colour @unsaved-custom-color]))}
+                                    (rf/dispatch [:profile/edit-accent-colour
+                                                  {:color @unsaved-custom-color}]))}
             (i18n/label :t/save-colour)]]]]))))
 
 (defn view

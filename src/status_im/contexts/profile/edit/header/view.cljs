@@ -16,7 +16,7 @@
         has-picture?          (rf/sub [:profile/has-picture])
         on-change-profile-pic (fn [picture]
                                 (if picture
-                                  (rf/dispatch [:profile/edit-picture picture])
+                                  (rf/dispatch [:profile/edit-picture {:picture picture}])
                                   (rf/dispatch [:profile/delete-picture])))]
     [rn/view
      {:key   :edit-profile
