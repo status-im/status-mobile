@@ -30,7 +30,7 @@
   []
   (rf/dispatch [:syncing/set-syncing-fallback-flow])
   (debounce/debounce-and-dispatch
-   [:onboarding/navigate-to-sign-in-by-seed-phrase :screen/onboarding.sync-or-recover-profile]
+   [:onboarding/navigate-to-sign-in-by-seed-phrase :screen/onboarding.log-in]
    500))
 
 (defn- try-again
@@ -38,7 +38,7 @@
   (rf/dispatch [:syncing/clear-states])
   (if logged-in?
     (rf/dispatch [:navigate-back])
-    (rf/dispatch [:navigate-back-to :screen/onboarding.sync-or-recover-profile])))
+    (rf/dispatch [:navigate-back-to :screen/onboarding.log-in])))
 
 (defn try-again-button
   [profile-color logged-in?]

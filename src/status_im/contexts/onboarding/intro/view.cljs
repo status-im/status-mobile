@@ -55,7 +55,7 @@
   (rf/dispatch [:onboarding/use-temporary-display-name false])
   (rf/dispatch [:open-modal
                 :screen/onboarding.share-usage
-                {:next-screen :screen/onboarding.sync-or-recover-profile}]))
+                {:next-screen :screen/onboarding.log-in}]))
 
 (defn- create-profile
   []
@@ -63,7 +63,7 @@
     (blur-show-fn))
   (rf/dispatch [:onboarding/use-temporary-display-name true])
   (rf/dispatch [:open-modal :screen/onboarding.share-usage
-                {:next-screen :screen/onboarding.new-to-status}]))
+                {:next-screen :screen/onboarding.create-profile}]))
 
 (defn view
   []

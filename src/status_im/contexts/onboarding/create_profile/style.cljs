@@ -1,4 +1,4 @@
-(ns status-im.contexts.onboarding.create-or-sync-profile.style
+(ns status-im.contexts.onboarding.create-profile.style
   (:require
     [quo.foundations.colors :as colors]))
 
