@@ -64,6 +64,7 @@
     [status-im.contexts.profile.contact.view :as contact-profile]
     [status-im.contexts.profile.edit.accent-colour.view :as edit-accent-colour]
     [status-im.contexts.profile.edit.bio.view :as edit-bio]
+    [status-im.contexts.profile.edit.modal.view :as edit-profile-modal]
     [status-im.contexts.profile.edit.name.view :as edit-name]
     [status-im.contexts.profile.edit.view :as edit-profile]
     [status-im.contexts.profile.profiles.view :as profiles]
@@ -1127,7 +1128,12 @@
      :options   {:theme  :dark
                  :layout options/onboarding-layout}
      :on-focus  [:onboarding/overlay-dismiss]
-     :component profiles/view}]
+     :component profiles/view}
+
+    {:name      :screen/profile.edit-profile-modal
+     :options   {:theme  :dark
+                 :layout options/onboarding-layout}
+     :component edit-profile-modal/view}]
 
    [{:name    :shell
      :metrics {:track? true}
