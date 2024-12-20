@@ -11,7 +11,7 @@
                          [{:method     "wakuext_setCustomizationColor"
                            :params     [{:customizationColor new-color
                                          :keyUid             key-uid}]
-                           :on-success [:profile/edit-accent-colour-success new-color]
+                           :on-success [:profile/edit-accent-colour-success new-color true true]
                            :on-error   fn?}]]]}]
     (is (match? expected
                 (sut/edit-accent-colour cofx [new-color])))))
