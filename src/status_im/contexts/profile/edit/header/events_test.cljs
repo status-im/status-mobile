@@ -24,4 +24,4 @@
                           :params     [key-uid]
                           :on-success [:profile/delete-profile-picture-success]}]]]}]
     (is (match? expected
-                (sut/delete-profile-picture cofx)))))
+                (sut/delete-profile-picture cofx false)))))

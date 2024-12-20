@@ -14,7 +14,7 @@
     (fn []
       (let [new-name "John Doe"]
         (promesa/do
-          (rf/dispatch [:profile/edit-name new-name])
+          (rf/dispatch [:profile/edit-name {:display-name new-name}])
           (h/wait-for [:navigate-back :toasts/upsert])
           (let [profile      (rf/sub [:profile/profile])
                 display-name (profile.utils/displayed-name profile)]
@@ -26,7 +26,10 @@
       (let [mock-image    "resources/images/mock2/monkey.png"
             absolute-path (.resolve test-utils/path mock-image)]
         (promesa/do
-          (rf/dispatch [:profile/edit-picture absolute-path 80 80])
+          (rf/dispatch [:profile/edit-picture
+                        {:picture     absolute-path
+                         :crop-width  80
+                         :crop-height 80}])
           (h/wait-for [:profile/update-local-picture :toasts/upsert])
           (let [profile (rf/sub [:profile/profile])]
             (is (not (nil? (:images profile))))))))))
