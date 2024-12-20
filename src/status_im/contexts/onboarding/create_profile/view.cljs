@@ -1,7 +1,6 @@
 (ns status-im.contexts.onboarding.create-profile.view
   (:require
     [quo.core :as quo]
-    re-frame.db
     [react-native.core :as rn]
     [react-native.safe-area :as safe-area]
     [status-im.common.events-helper :as events-helper]

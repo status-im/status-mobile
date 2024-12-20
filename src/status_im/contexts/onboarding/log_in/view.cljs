@@ -1,7 +1,6 @@
 (ns status-im.contexts.onboarding.log-in.view
   (:require
     [quo.core :as quo]
-    re-frame.db
     [react-native.core :as rn]
     [react-native.safe-area :as safe-area]
     [status-im.common.check-before-syncing.view :as check-before-syncing]
