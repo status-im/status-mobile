@@ -14,15 +14,14 @@
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]))
 
-(defn on-contact-request
+(defn on-send-contact-request
   []
-  (rf/dispatch [:show-bottom-sheet
-                {:content (fn [] [contact-request/view])}]))
+  (let [main-event [:show-bottom-sheet {:content contact-request/view}]]
+    (rf/dispatch [:profile/check-profile-update-prompt main-event])))
 
 (defn on-contact-review
   []
-  (rf/dispatch [:show-bottom-sheet
-                {:content (fn [] [contact-review/view])}]))
+  (rf/dispatch [:show-bottom-sheet {:content contact-review/view}]))
 
 (defn view
   [{:keys [scroll-y]}]
@@ -34,27 +33,27 @@
         profile-picture     (profile.utils/photo contact)
         online?             (rf/sub [:visibility-status-updates/online? public-key])
         theme               (quo.theme/use-theme)
-        contact-status      (rn/use-memo (fn []
-                                           (cond
-                                             (= contact-request-state
-                                                constants/contact-request-state-mutual) :contact
-                                             blocked?                                   :blocked
-                                             :else                                      nil))
-                                         [blocked? contact-request-state])
-        on-start-chat       (rn/use-callback #(rf/dispatch [:chat.ui/start-chat
-                                                            public-key
-                                                            ens-name])
-                                             [ens-name public-key])
-        on-unblock-press    (rn/use-callback (fn []
-                                               (rf/dispatch [:contact/unblock-contact
-                                                             public-key])
-                                               (rf/dispatch [:toasts/upsert
-                                                             {:id   :user-unblocked
-                                                              :type :positive
-                                                              :text (i18n/label :t/user-unblocked
-                                                                                {:username
-                                                                                 full-name})}]))
-                                             [public-key full-name])]
+        contact-status      (rn/use-memo
+                             (fn []
+                               (cond
+                                 (= contact-request-state
+                                    constants/contact-request-state-mutual) :contact
+                                 blocked?                                   :blocked
+                                 :else                                      nil))
+                             [blocked? contact-request-state])
+        on-start-chat       (rn/use-callback
+                             #(rf/dispatch [:chat.ui/start-chat public-key ens-name])
+                             [ens-name public-key])
+        on-unblock-press    (rn/use-callback
+                             (fn []
+                               (rf/dispatch [:contact/unblock-contact
+                                             public-key])
+                               (rf/dispatch [:toasts/upsert
+                                             {:id   :user-unblocked
+                                              :type :positive
+                                              :text (i18n/label :t/user-unblocked
+                                                                {:username full-name})}]))
+                             [public-key full-name])]
     [rn/view {:style style/header-container}
      [rn/view {:style style/header-top-wrapper}
       [rn/view {:style style/avatar-wrapper}
@@ -93,14 +92,12 @@
 
      (cond
        (and (not blocked?)
-            (or
-             (not contact-request-state)
-             (= contact-request-state constants/contact-request-state-none)
-             (= contact-request-state constants/contact-request-state-dismissed)))
-
+            (or (not contact-request-state)
+                (= contact-request-state constants/contact-request-state-none)
+                (= contact-request-state constants/contact-request-state-dismissed)))
        [quo/button
         {:container-style     style/button-wrapper
-         :on-press            on-contact-request
+         :on-press            on-send-contact-request
          :customization-color customization-color
          :icon-left           :i/add-user}
         (i18n/label :t/send-contact-request)]

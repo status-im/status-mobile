@@ -114,13 +114,17 @@
                                              {:scroll-input (oops/oget % "nativeEvent.contentOffset.y")
                                               :shared-value scroll-shared-value})}])))
 
+(defn- on-new-message-press
+  []
+  (let [main-event [:show-bottom-sheet {:content chat.actions.view/new-chat}]]
+    (rf/dispatch [:profile/check-profile-update-prompt main-event])))
+
 (defn- banner-data
   [profile-link]
   {:title-props
    {:beta?               true
     :label               (i18n/label :t/messages)
-    :handler             #(rf/dispatch
-                           [:show-bottom-sheet {:content chat.actions.view/new-chat}])
+    :handler             on-new-message-press
     :accessibility-label :new-chat-button}
    :card-props
    {:on-press    #(rf/dispatch [:open-share {:options {:url profile-link}}])
