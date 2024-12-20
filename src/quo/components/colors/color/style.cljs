@@ -30,7 +30,8 @@
      selected?   (assoc :border-top-color    (colors/alpha color 0.4)
                         :border-end-color    (colors/alpha color 0.4)
                         :border-bottom-color (colors/alpha color 0.2)
-                        :border-start-color  (colors/alpha color 0.2))
+                        :border-start-color  (colors/alpha color 0.2)
+                        :border-color        nil)
      (zero? idx) (assoc :margin-left -4))))
 
 (defn color-circle
