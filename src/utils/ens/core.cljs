@@ -9,15 +9,6 @@
 (def default-address "0x0000000000000000000000000000000000000000")
 (def default-key
   "0x0400000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000")
-(def default-hash "0x0000000000000000000000000000000000000000000000000000000000000000")
-
-(defn valid-eth-name-prefix?
-  [prefix]
-  (not
-   (or (string/blank? prefix)
-       (string/ends-with? prefix ".")
-       (string/includes? prefix ".."))))
-
 (defn is-valid-eth-name?
   [ens-name]
   (and ens-name

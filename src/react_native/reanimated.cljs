@@ -13,14 +13,11 @@
                      withSequence
                      withDecay
                      Easing
-                     Keyframe
                      cancelAnimation
                      SlideInUp
                      SlideOutUp
                      LinearTransition
-                     enableLayoutAnimations
-                     useAnimatedScrollHandler
-                     runOnJS)]
+                     useAnimatedScrollHandler)]
     ["react-native-redash" :refer (withPause)]
     [react-native.flat-list :as rn-flat-list]
     [react-native.platform :as platform]
@@ -28,8 +25,6 @@
     [reagent.core :as reagent]
     [utils.transforms :as transforms]
     [utils.worklets.core :as worklets.core]))
-
-(def enable-layout-animations enableLayoutAnimations)
 
 (def ^:const default-duration 300)
 
@@ -73,13 +68,11 @@
 (def with-delay withDelay)
 (def with-spring withSpring)
 (def with-decay withDecay)
-(def key-frame Keyframe)
 (def with-repeat withRepeat)
 (def with-sequence withSequence)
 (def with-pause withPause)
 (def cancel-animation cancelAnimation)
 
-(def run-on-js runOnJS)
 
 ;; Easings
 (def bezier (.-bezier ^js Easing))
@@ -195,8 +188,3 @@
                                   (clj->js {:duration duration
                                             :easing   (default-easing)})))))
 
-(defn with-timing-duration
-  [v duration]
-  (with-timing v
-               (clj->js {:duration duration
-                         :easing   (in-out (.-quad ^js Easing))})))

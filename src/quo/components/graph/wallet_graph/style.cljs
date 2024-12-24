@@ -1,6 +1,4 @@
-(ns quo.components.graph.wallet-graph.style
-  (:require
-    [quo.foundations.colors :as colors]))
+(ns quo.components.graph.wallet-graph.style)
 
 (def gradient-background
   {:height   294
@@ -13,12 +11,6 @@
   {:margin-bottom -3
    :padding-top   -10
    :height        0})
-
-(def illustration
-  {:height           96
-   :background-color colors/danger-50
-   :align-items      :center
-   :justify-content  :center})
 
 (def empty-state
   {:width  375

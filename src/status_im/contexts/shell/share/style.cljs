@@ -33,25 +33,8 @@
    :justify-content   :flex-start
    :align-items       :flex-start})
 
-(def profile-address-column
-  {:flex-direction :column})
-
 (def emoji-address-column
   {:flex-direction :column})
-
-(def profile-address-label
-  {:color       colors/white-opa-40
-   :padding-top 10})
-
-(def profile-address-content
-  {:color       colors/white
-   :align-self  :flex-start
-   :padding-top 2})
-
-(def profile-address-container
-  {:flex-direction  :row
-   :justify-content :flex-start
-   :margin-top      4})
 
 (def emoji-address-container
   {:flex-direction  :row
@@ -62,12 +45,6 @@
    :margin-top     8
    :padding-bottom (if platform/ios? 2 0)
    :padding-left   12})
-
-
-(def share-button-container
-  {:position :absolute
-   :right    0
-   :top      12})
 
 (def emoji-share-button-container
   {:position :absolute
@@ -87,6 +64,4 @@
    :margin-top         8
    :margin-bottom      16})
 
-(def wip-style
-  {:color      colors/white
-   :text-align :center})
+

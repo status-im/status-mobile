@@ -20,7 +20,7 @@
 
 (rf/defn local-pairing-clear-states
   {:events [:syncing/clear-states]}
-  [{:keys [db]} role]
+  [{:keys [db]}]
   {:db (dissoc db :syncing)})
 
 (defn- input-connection-string-callback
@@ -82,7 +82,7 @@
 
 (rf/defn initiate-local-pairing-with-connection-string
   {:events [:syncing/input-connection-string-for-bootstrapping]}
-  [{:keys [db]} connection-string]
+  [_ connection-string]
   (let [config-map (.stringify js/JSON
                                (clj->js
                                 {:receiverConfig
@@ -95,7 +95,7 @@
 
 (rf/defn preparations-for-connection-string
   {:events [:syncing/get-connection-string]}
-  [{:keys [db] :as cofx} sha3-pwd on-valid-connection-string]
+  [{:keys [db]} sha3-pwd on-valid-connection-string]
   (let [error             (get-in db [:profile/login :error])
         handle-connection (fn [response]
                             (when (sync-utils/valid-connection-string? response)

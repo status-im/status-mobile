@@ -51,23 +51,6 @@
         (is (:last-in-group? actual-m2))
         (is (:last-in-group? actual-m3))))))
 
-(def ascending-range
-  (mapv
-   #(let [i (+ 100000 %)]
-      {:clock-value       i
-       :whisper-timestamp i
-       :timestamp         i
-       :message-id        (str i)})
-   (range 2000)))
-
-(def descending-range (reverse ascending-range))
-
-(def random-range (shuffle ascending-range))
-
-(defnp build-message-list
-       [messages]
-       (s/add-many nil messages))
-
 (defnp append-to-message-list
        [l message]
        (s/add l message))

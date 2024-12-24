@@ -60,19 +60,9 @@
    (permissions/request-notifications options)))
 
 (re-frame/reg-fx
- :ui/show-error
- (fn [content]
-   (utils/show-popup "Error" content)))
-
-(re-frame/reg-fx
  :ui/show-confirmation
  (fn [options]
    (utils/show-confirmation options)))
-
-(re-frame/reg-fx
- :ui/close-application
- (fn [_]
-   (native-module/close-application)))
 
 (re-frame/reg-fx
  ::app-state-change-fx
@@ -82,11 +72,6 @@
      ;; https://github.com/status-im/status-mobile/issues/15708
      (theme/change-device-theme (rn/get-color-scheme)))
    (native-module/app-state-change state)))
-
-(re-frame/reg-fx
- :ui/listen-to-window-dimensions-change
- (fn []
-   (dimensions/add-event-listener)))
 
 (rf/defn dismiss-keyboard
   {:events [:dismiss-keyboard]}
@@ -233,7 +218,4 @@
                     :on-success (fn [on-ramps]
                                   (re-frame/dispatch [::crypto-loaded on-ramps]))}]})
 
-(re-frame/reg-event-fx :buy-crypto.ui/open-screen
- (fn []
-   {:fx [[:dispatch [:wallet-legacy/keep-watching]]
-         [:dispatch [:open-modal :buy-crypto nil]]]}))
+

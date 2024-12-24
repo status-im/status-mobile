@@ -71,7 +71,7 @@
 
 (rf/defn handle-communities
   {:events [:community/fetch-success]}
-  [{:keys [db]} communities-js]
+  [_ communities-js]
   {:fx (map (fn [c] [:dispatch [:communities/handle-community c]])
             communities-js)})
 

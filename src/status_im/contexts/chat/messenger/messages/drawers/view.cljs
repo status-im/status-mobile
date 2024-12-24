@@ -186,13 +186,6 @@
              :icon                :i/delete
              :id                  :delete-for-all}))))
 
-(defn extract-id
-  [reactions id]
-  (->> reactions
-       (filter (fn [{:keys [emoji-id]}] (= emoji-id id)))
-       first
-       :emoji-reaction-id))
-
 (defn reactions
   [{:keys [chat-id message-id]}]
   (let [msg-reactions (rf/sub [:chats/message-reactions message-id chat-id])

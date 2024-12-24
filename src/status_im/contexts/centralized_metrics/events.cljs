@@ -21,6 +21,8 @@
         (native-module/add-centralized-metric event))))
   context)
 
+;; ignore warning, interceptor used from interceptor_metrics.cljc
+#_{:clj-kondo/ignore [:clojure-lsp/unused-public-var]}
 (def interceptor
   (interceptor/->interceptor
    :id    :centralized-metrics

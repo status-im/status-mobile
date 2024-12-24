@@ -108,10 +108,6 @@
                                                        ens-address)]
         (assert-address-details response)))))
 
-(defn assert-search-ens
-  [expected-result actual-result]
-  (is (= expected-result actual-result)))
-
 #_(deftest wallet-search-ens-test
     (h/test-async :wallet/search-ens
       (fn []

@@ -30,11 +30,6 @@
  :-> :route)
 
 (rf/reg-sub
- :wallet/send-token
- :<- [:wallet/wallet-send]
- :-> :token)
-
-(rf/reg-sub
  :wallet/send-token-symbol
  :<- [:wallet/wallet-send]
  :-> :token-symbol)
@@ -43,11 +38,6 @@
  :wallet/send-transaction-ids
  :<- [:wallet/wallet-send]
  :-> :transaction-ids)
-
-(rf/reg-sub
- :wallet/just-completed-transaction
- :<- [:wallet/wallet-send]
- :-> :just-completed-transaction?)
 
 (rf/reg-sub
  :wallet/send-amount
@@ -90,11 +80,6 @@
                   (when (= activity-tab-constants/wallet-activity-type-send activity-type)
                     recipient)))
           (distinct)))))
-
-(rf/reg-sub
- :wallet/send-token-not-supported-in-receiver-networks?
- :<- [:wallet/wallet-send]
- :-> :token-not-supported-in-receiver-networks?)
 
 (rf/reg-sub
  :wallet/bridge-from-networks

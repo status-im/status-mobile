@@ -6,35 +6,12 @@
     [quo.foundations.typography :as typography]
     [status-im.constants :as constants]))
 
-(defn style-message-text
-  []
-  {:color colors/text})
-
 (defn message-wrapper
   [{:keys [in-popover?]}]
   (if (not in-popover?)
     {:margin-left   10
      :padding-right 5}
     {:margin-right 10}))
-
-(defn emoji-message
-  [{:keys [incoming-group]}]
-  {:font-size    28
-   :line-height  34 ;TODO: Smaller crops the icon on the top
-   :margin-right 0 ;; Margin to display outgoing message status
-   :margin-top   (if incoming-group 4 0)})
-
-(defn message-view
-  [{:keys [content-type]}]
-  (merge
-   {:border-radius 10}
-   (when (= content-type constants/content-type-emoji)
-     {:flex-direction :row})))
-
-(defn message-view-content
-  []
-  {:padding-bottom 6
-   :overflow       :hidden})
 
 (def status-container
   {:padding-horizontal 5})
@@ -201,34 +178,3 @@
    :border-bottom-right-radius 10
    :border-color               colors/gray-lighter})
 
-(defn contact-request-status-label
-  [state]
-  {:width              136
-   :border-radius      8
-   :flex               1
-   :justify-content    :center
-   :align-items        :center
-   :background-color   (when (= :retry state)
-                         colors/blue-light)
-   :border-width       1
-   :border-color       (condp = state
-                         constants/contact-request-message-state-accepted colors/green-transparent-10
-                         constants/contact-request-message-state-declined colors/red-light
-                         constants/contact-request-message-state-pending  colors/gray-lighter
-                         nil)
-   :padding-vertical   10
-   :padding-horizontal 16})
-
-(defn content-type-contact-request
-  []
-  {:width           168
-   :min-height      224.71
-   :border-radius   8
-   :border-width    1
-   :border-color    colors/gray-lighter
-   :align-items     :center
-   :padding-bottom  10
-   :margin-vertical 4
-   :align-self      :flex-start
-   :margin-right    0
-   :margin-left     8})

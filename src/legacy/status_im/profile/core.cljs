@@ -37,7 +37,7 @@
 
 (rf/defn finish-success
   {:events [:my-profile/finish-success]}
-  [{:keys [db] :as cofx}]
+  [{:keys [db]}]
   {:db (update db :my-profile/seed assoc :step :finish :error nil :word nil)})
 
 (rf/defn finish

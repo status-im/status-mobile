@@ -17,7 +17,3 @@
 
 (def node-item-name-text
   {:font-size 17})
-
-(def switch-container
-  {:height       50
-   :padding-left 15})

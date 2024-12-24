@@ -2,7 +2,6 @@
   (:require
     [clojure.string :as string]
     [native-module.core :as native-module]
-    [utils.ethereum.eip.eip55 :as eip55]
     [utils.ethereum.eip.eip681 :as eip681]))
 
 
@@ -19,11 +18,6 @@
     (if (string/starts-with? hex hex-prefix)
       hex
       (str hex-prefix hex))))
-
-(defn naked-address
-  [s]
-  (when s
-    (string/replace s hex-prefix "")))
 
 (defn address?
   [address]
@@ -42,11 +36,6 @@
   [value]
   (when value
     (str (subs value 0 6) "\u2026" (subs value (- (count value) 3) (count value)))))
-
-(defn get-shortened-checksum-address
-  [address]
-  (when address
-    (get-shortened-key (eip55/address->checksum (normalized-hex address)))))
 
 (defn get-abbreviated-profile-url
   "The goal here is to generate a string that begins with status.app/u/ joined

@@ -1,7 +1,6 @@
 (ns legacy.status-im.multiaccounts.create.core
   (:require
     [legacy.status-im.utils.deprecated-types :as types]
-    [legacy.status-im.utils.signing-phrase.core :as signing-phrase]
     [native-module.core :as native-module]
     [re-frame.core :as re-frame]
     [status-im.constants :as constants]
@@ -28,11 +27,6 @@
                      :public-key     publicKey))
     derived
     (update :derived normalize-derived-data-keys)))
-
-(re-frame/reg-cofx
- ::get-signing-phrase
- (fn [cofx _]
-   (assoc cofx :signing-phrase (signing-phrase/generate))))
 
 (re-frame/reg-fx
  :multiaccount-generate-and-derive-addresses

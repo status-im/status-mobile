@@ -73,15 +73,6 @@
       (let [cofx {:db {:chats {chat-id {}}}}]
         (is (not (chat/group-chat? cofx chat-id)))))))
 
-(def test-db
-  {:profile/profile {:public-key "me"}
-
-   :messages        {"status" {"4" {} "5" {} "6" {}}}
-   :chats           {"status" {:public?    true
-                               :group-chat true}
-                     "opened" {}
-                     "1-1"    {}}})
-
 (deftest navigate-to-chat-test
   (let [chat-id "test_chat"
         db      {:pagination-info {chat-id {:all-loaded? true}}}]

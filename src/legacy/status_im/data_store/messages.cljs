@@ -16,7 +16,7 @@
                       :community-id      :communityId
                       :clock-value       :clock})))
 
-(defn- <-status-link-previews-rpc
+(defn <-status-link-previews-rpc
   [preview]
   (-> preview
       (update :community
@@ -40,7 +40,7 @@
       (update-in [:community :banner] set/rename-keys {:data-uri :dataUri})
       (update-in [:community :icon] set/rename-keys {:data-uri :dataUri})))
 
-(defn- <-link-preview-rpc
+(defn <-link-preview-rpc
   [preview]
   (-> preview
       (update :thumbnail set/rename-keys {:dataUri :data-uri})
@@ -160,17 +160,17 @@
                     :on-error   #(log/error "failed to delete messages by chat-id" % chat-id)}]})
 
 (rf/defn delete-message
-  [cofx id]
+  [_cofx id]
   (delete-message-rpc id))
 
 (rf/defn delete-messages-from
-  [cofx author]
+  [_cofx author]
   (delete-messages-from-rpc author))
 
 (rf/defn mark-messages-seen
-  [cofx chat-id ids on-success]
+  [_cofx chat-id ids on-success]
   (mark-seen-rpc chat-id ids on-success))
 
 (rf/defn delete-messages-by-chat-id
-  [cofx chat-id]
+  [_cofx chat-id]
   (delete-messages-by-chat-id-rpc chat-id))

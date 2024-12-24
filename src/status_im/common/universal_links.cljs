@@ -257,9 +257,3 @@
   ;;error "route ip+net: netlinkrib: permission denied" is fixed on status-go side
   #_(native-module/start-searching-for-local-pairing-peers
      #(log/info "[local-pairing] errors from local-pairing-preflight-outbound-check ->" %)))
-
-(defn finalize
-  "Remove event listener for url"
-  []
-  (log/debug "universal-links: finalizing")
-  (.removeEventListener ^js rn/linking "url" url-event-listener))

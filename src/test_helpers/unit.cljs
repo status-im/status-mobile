@@ -24,17 +24,6 @@
   []
   @rf-db/app-db)
 
-(defn register-helper-events
-  "Register utility events for testing.
-
-  Note that re-frame-test removes such events if they're declared in the scope
-  of the macro `day8.re-frame.test/run-test-sync` (or the async variant)."
-  []
-  (rf/reg-event-db
-   :test/assoc-in
-   (fn [app-db [_ path value]]
-     (assoc-in app-db path value))))
-
 (defn spy-event-fx
   "Re-register event effect using id `id`, but conj to `state` the event
   arguments before calling the original handler.

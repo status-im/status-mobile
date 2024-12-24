@@ -21,10 +21,6 @@
   {:margin-right    8
    :justify-content :center})
 
-(defn network-text-color
-  [network]
-  {:color (colors/custom-color network)})
-
 (def row
   {:flex-direction :row
    :align-items    :center})

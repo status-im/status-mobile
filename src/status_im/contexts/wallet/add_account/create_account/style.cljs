@@ -26,8 +26,4 @@
    :padding-bottom     4
    :padding-horizontal 20})
 
-(def divider-line
-  {:margin-top    12
-   :margin-bottom 8})
-
 (def slide-button-container {:z-index 1})

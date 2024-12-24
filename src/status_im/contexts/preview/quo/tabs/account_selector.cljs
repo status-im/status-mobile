@@ -10,33 +10,6 @@
    {:key :account-text :type :text}
    {:key :label-text :type :text}])
 
-;; keeping this unused data structure in the code for now
-;; will reference them when I introduce multiple account support
-;; and allow passing lists of accounts instead of just 1 account
-(def single-account
-  [{:account-text  "My Savings"
-    :account-emoji "🍑"
-    :label-text    "Label"}])
-
-(def two-accounts
-  [{:account-text  "My Savings"
-    :account-emoji "🍑"
-    :label-text    "Label"}
-   {:account-text  "My Current"
-    :account-emoji "🍎"
-    :label-text    "Label 2"}])
-
-(def many-accounts
-  [{:account-text  "My Savings"
-    :account-emoji "🍑"
-    :label-text    "Label"}
-   {:account-text  "My Current"
-    :account-emoji "🍎"
-    :label-text    "Label 2"}
-   {:account-text  "My Reimbursment"
-    :account-emoji "🍟"
-    :label-text    "Label 3"}])
-
 (defn view
   []
   (let [state (reagent/atom {:show-label?   true

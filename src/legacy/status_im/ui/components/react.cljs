@@ -2,26 +2,19 @@
   (:require
     ["@react-native-clipboard/clipboard" :default Clipboard]
     ["@react-native-community/blur" :as blur]
-    ["@react-native-community/masked-view" :default MaskedView]
     ["react" :as reactjs]
-    ["react-native" :as react-native :refer (Keyboard BackHandler)]
+    ["react-native" :as react-native :refer (Keyboard)]
     ["react-native-fast-image" :as FastImage]
-    ["react-native-image-crop-picker" :default image-picker]
-    ["react-native-linear-gradient" :default LinearGradient]
     ["react-native-navigation" :refer (Navigation)]
     [legacy.status-im.ui.components.colors :as colors]
     [legacy.status-im.ui.components.text-style :as typography]
-    [legacy.status-im.utils.utils :as utils]
     [react-native.platform :as platform]
     [reagent.core :as reagent]
-    [utils.i18n :as i18n])
-  (:require-macros [legacy.status-im.utils.views :as views]))
+    [utils.i18n :as i18n]))
 
-(def native-modules (.-NativeModules react-native))
 
 ;; React Components
 
-(def app-state (.-AppState react-native))
 (def view (reagent/adapt-react-class (.-View react-native)))
 
 (def scroll-view-class (reagent/adapt-react-class (.-ScrollView react-native)))
@@ -33,15 +26,6 @@
 (def image-class (reagent/adapt-react-class (reactjs/memo (.-Image react-native))))
 
 (def fast-image-class (reagent/adapt-react-class FastImage))
-
-(defn image-get-size [uri callback] (.getSize (.-Image react-native) uri callback))
-(defn resolve-asset-source
-  [uri]
-  (js->clj (.resolveAssetSource (.-Image react-native) uri) :keywordize-keys true))
-
-(def linear-gradient (reagent/adapt-react-class LinearGradient))
-
-(def masked-view (reagent/adapt-react-class MaskedView))
 
 (def blur-view (reagent/adapt-react-class (.-BlurView blur)))
 
@@ -64,22 +48,11 @@
   [switch-class props])
 
 (def touchable-highlight-class (reagent/adapt-react-class (.-TouchableHighlight react-native)))
-(def pressable-class (reagent/adapt-react-class (.-Pressable react-native)))
-(def touchable-without-feedback-class
-  (reagent/adapt-react-class (.-TouchableWithoutFeedback react-native)))
-(def touchable-opacity-class (reagent/adapt-react-class (.-TouchableOpacity react-native)))
 (def activity-indicator-class (reagent/adapt-react-class (.-ActivityIndicator react-native)))
 
 (defn activity-indicator
   [props]
   [activity-indicator-class (update props :color #(or % colors/gray))])
-
-(defn small-loading-indicator
-  [color]
-  [activity-indicator
-   {:color   color
-    :ios     {:size :small}
-    :android {:size :16}}])
 
 (def animated (.-Animated react-native))
 
@@ -89,19 +62,11 @@
 (def animated-flat-list-class
   (reagent/adapt-react-class (.-FlatList ^js animated)))
 
-(def animated-scroll-view-class
-  (reagent/adapt-react-class (.-ScrollView ^js animated)))
-
 (defn animated-view
   [props & content]
   (vec (conj content props animated-view-class)))
 
-(defn animated-scroll-view
-  [props & children]
-  (vec (conj children props animated-scroll-view-class)))
-
 (def dimensions (.-Dimensions react-native))
-(def keyboard (.-Keyboard react-native))
 (def dismiss-keyboard! #(.dismiss ^js Keyboard))
 (def linking (.-Linking react-native))
 
@@ -190,61 +155,16 @@
   [{style :style k :key}]
   [text {:style style} (i18n/label k)])
 
-(defn touchable-opacity
-  [props content]
-  [touchable-opacity-class props content])
-
 (defn touchable-highlight
   [props content]
   [touchable-highlight-class
    (merge {:underlay-color :transparent} props)
    content])
 
-(defn pressable
-  [props content]
-  [pressable-class props content])
-
-(defn touchable-without-feedback
-  [props content]
-  [touchable-without-feedback-class
-   props
-   content])
-
 (defn get-dimensions
   [name]
   (js->clj (.get ^js dimensions name) :keywordize-keys true))
 
-;; Image picker
-(defn show-access-error
-  [o]
-  (when (= "E_PERMISSION_MISSING" (.-code ^js o))
-    (utils/show-popup (i18n/label :t/error)
-                      (i18n/label :t/photos-access-error))))
-
-(defn show-image-picker
-  ([images-fn]
-   (show-image-picker images-fn nil nil))
-  ([images-fn
-    {:keys [media-type]
-     :or   {media-type "any"}
-     :as   props}
-    finally-callback]
-   (-> ^js image-picker
-       (.openPicker (clj->js (merge {:mediaType media-type}
-                                    props)))
-       (.then images-fn)
-       (.catch show-access-error)
-       (.finally finally-callback))))
-
-(defn show-image-picker-camera
-  ([images-fn]
-   (show-image-picker-camera images-fn nil nil))
-  ([images-fn props finally-callback]
-   (-> ^js image-picker
-       (.openCamera (clj->js props))
-       (.then images-fn)
-       (.catch show-access-error)
-       (.finally finally-callback))))
 
 ;; Clipboard
 
@@ -255,10 +175,7 @@
   [s]
   (.setString ^js Clipboard s))
 
-(defn get-from-clipboard
-  [clbk]
-  (let [clipboard-contents (.getString ^js Clipboard)]
-    (.then clipboard-contents #(clbk %))))
+
 
 ;; KeyboardAvoidingView
 (def navigation-const (atom nil))
@@ -278,42 +195,6 @@
                   (update props :keyboard-vertical-offset + 44 (:status-bar-height @navigation-const))))]
         children))
 
-(defn keyboard-avoiding-view-new
-  [props & children]
-  (into [keyboard-avoiding-view-class
-         (merge (when platform/ios? {:behavior :padding})
-                (if (:ignore-offset props)
-                  props
-                  (update props :keyboard-vertical-offset + 44)))]
-        children))
-
 (defn scroll-view
   [props & children]
   (vec (conj children props scroll-view-class)))
-
-(views/defview with-activity-indicator
-  [{:keys [timeout style enabled? preview]} component]
-  (views/letsubs
-    [loading (reagent/atom true)]
-    {:component-did-mount (fn []
-                            (if (or (nil? timeout)
-                                    (> 100 timeout))
-                              (reset! loading false)
-                              (utils/set-timeout #(reset! loading false)
-                                                 timeout)))}
-    (if (and (not enabled?) @loading)
-      (or preview
-          [view
-           {:style (or style
-                       {:justify-content :center
-                        :align-items     :center})}
-           [activity-indicator {:animating true}]])
-      component)))
-
-(defn hw-back-add-listener
-  [callback]
-  (.addEventListener BackHandler "hardwareBackPress" callback))
-
-(defn hw-back-remove-listener
-  [callback]
-  (.removeEventListener BackHandler "hardwareBackPress" callback))

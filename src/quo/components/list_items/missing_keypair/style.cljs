@@ -21,16 +21,6 @@
                                             colors/neutral-80-opa-40
                                             theme))})
 
-(defn icon-container
-  [{:keys [blur? theme]}]
-  {:border-radius 32
-   :border-width  1
-   :border-color  (if blur?
-                    colors/white-opa-5
-                    (colors/theme-colors colors/neutral-20
-                                         colors/neutral-80
-                                         theme))})
-
 (def name-container
   {:flex          1
    :padding-right 16

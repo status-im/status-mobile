@@ -1,6 +1,5 @@
 (ns legacy.status-im.ui.screens.chat.message.legacy-view
   (:require
-    [legacy.status-im.react-native.resources :as resources]
     [legacy.status-im.ui.components.colors :as quo.colors]
     [legacy.status-im.ui.screens.chat.message.legacy-style :as style]
     [quo.core :as quo]
@@ -154,63 +153,7 @@
        [rn/text {:style (style/status-text)}]
        (-> content :parsed-text peek :children))]]))
 
-(defn contact-request-status-pending
-  []
-  [rn/view {:style {:flex-direction :row}}
-   [quo/text
-    {:style  {:margin-right 5.27}
-     :weight :medium
-     :color  :secondary}
-    (i18n/label :t/contact-request-pending)]
-   [rn/activity-indicator
-    {:animating true
-     :size      :small
-     :color     quo.colors/gray}]])
-
-(defn contact-request-status-accepted
-  []
-  [quo/text
-   {:style  {:color quo.colors/green}
-    :weight :medium}
-   (i18n/label :t/contact-request-accepted)])
-
-(defn contact-request-status-declined
-  []
-  [quo/text
-   {:style  {:color quo.colors/red}
-    :weight :medium}
-   (i18n/label :t/contact-request-declined)])
-
-(defn contact-request-status-label
-  [state]
-  [rn/view {:style (style/contact-request-status-label state)}
-   (condp = state
-     constants/contact-request-message-state-pending  [contact-request-status-pending]
-     constants/contact-request-message-state-accepted [contact-request-status-accepted]
-     constants/contact-request-message-state-declined [contact-request-status-declined]
-     nil)])
-
 ;;;; SYSTEM
-
-;; CONTACT REQUEST (like system message ? ) no wrapper
-(defn system-contact-request
-  [message _]
-  [rn/view {:style (style/content-type-contact-request)}
-   [rn/image
-    {:source (resources/get-image :hand-wave)
-     :style  {:width  112
-              :height 97}}]
-   [quo/text
-    {:style  {:margin-top 6}
-     :weight :bold
-     :size   :heading-2}
-    (i18n/label :t/contact-request)]
-   [rn/view {:style {:padding-horizontal 16}}
-    [quo/text
-     {:style {:margin-top    2
-              :margin-bottom 14}}
-     (get-in message [:content :text])]]
-   [contact-request-status-label (:contact-request-state message)]])
 
 (defview community-content
   [{:keys [community-id] :as message}]

@@ -20,26 +20,9 @@
   (or (some #(when (= i (:id (val %))) (key %)) chains)
       :custom))
 
-(defn chain-id->chain-name
-  [i]
-  (or (some #(when (= i (:id (val %))) (:name (val %))) chains)
-      :custom))
-
 (defn chain-keyword->chain-id
   [k]
   (get-in chains [k :id]))
-
-(defn chain-keyword->snt-symbol
-  [k]
-  (case k
-    :mainnet :SNT
-    :STT))
-
-(defn testnet?
-  [id]
-  (contains? #{(chain-keyword->chain-id :sepolia)
-               (chain-keyword->chain-id :bsc-testnet)}
-             id))
 
 (defn network->chain-id
   [network]

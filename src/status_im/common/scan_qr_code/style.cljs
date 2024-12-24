@@ -49,10 +49,6 @@
   {:padding-horizontal screen-padding
    :color              colors/white})
 
-(def tabs-container
-  {:padding-horizontal screen-padding
-   :margin-top         20})
-
 (def scan-qr-code-container
   {:margin-top 20})
 

@@ -15,7 +15,7 @@
 
 (rf/defn hello3
   {:doc "lol lazy function does nothing"}
-  [{:keys [db]} b]
+  [_ _]
   (identity nil))
 
 (rf/defn hello4
@@ -27,13 +27,13 @@
 (rf/defn hello5
   "lol lazy function does nothing"
   {:events [:test]}
-  [{:keys [db]} b]
+  [_ _]
   (identity nil))
 
 (rf/defn hello6
   "lol lazy function does nothing"
   {:events [:test2]}
-  [{:keys [db]} {:keys [a b]}]
+  [_ {:keys [a b]}]
   {:db {:a (identity a)
         :b b}})
 

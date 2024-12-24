@@ -40,8 +40,3 @@
        vals
        (map :error)
        (not-any? identity)))
-
-(defn chain-id-available?
-  [current-networks network]
-  (let [chain-id (get-in network [:config :NetworkId])]
-    (every? #(not= chain-id (get-in % [1 :config :NetworkId])) current-networks)))

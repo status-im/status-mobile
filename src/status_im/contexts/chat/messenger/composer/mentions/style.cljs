@@ -14,18 +14,6 @@
            :shadow-offset  {:width 0 :height (colors/theme-colors 8 12 theme)})
     (assoc styles :elevation 10)))
 
-(defn inner
-  [top theme]
-  (add-shadow theme
-              {:position         :absolute
-               :top              (- (+ 8 top))
-               :left             8
-               :right            8
-               :border-radius    16
-               :z-index          4
-               :max-height       constants/mentions-max-height
-               :background-color (colors/theme-colors colors/white colors/neutral-95 theme)}))
-
 (defn container
   [opacity top theme]
   [{:opacity opacity}

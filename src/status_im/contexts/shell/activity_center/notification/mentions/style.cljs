@@ -2,9 +2,6 @@
   (:require
     [quo.foundations.colors :as colors]))
 
-(def tag
-  {:background-color colors/white-opa-10})
-
 (def tag-text
   {:color colors/white})
 

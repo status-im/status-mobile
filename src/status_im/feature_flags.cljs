@@ -72,9 +72,3 @@
    initial-flags
    (fn []
      (reset! feature-flags-config initial-flags))))
-
-(defn alert
-  [flag action]
-  (if (enabled? flag)
-    (action)
-    (js/alert (str flag " is currently feature flagged off"))))

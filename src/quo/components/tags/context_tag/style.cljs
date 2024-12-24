@@ -117,8 +117,3 @@
   (if (= size 24)
     {:margin-left 4}
     {:margin-left 2}))
-
-(def audio
-  {:margin-right   6
-   :flex-direction :row
-   :align-items    :center})

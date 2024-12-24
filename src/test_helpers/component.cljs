@@ -58,19 +58,6 @@
   ([component theme]
    (rtl/render (reagent/as-element [quo.theme/provider theme component]))))
 
-(def unmount
-  "Unmount rendered component.
-  Sometimes useful to be called in a REPL, but unnecessary when rendering
-  components with Jest, since components are automatically unmounted after each
-  test."
-  (with-node-or-screen :unmount))
-
-(def debug
-  "Pretty-print to STDOUT the current component tree."
-  (with-node-or-screen :debug))
-
-(def within rtl/within)
-
 (defn wait-for
   ([condition] (wait-for condition {}))
   ([condition options]
@@ -93,11 +80,8 @@
 ;; For this reason, find-* functions only work within the Jest runtime, hence
 ;; using the wrapper function `with-node-or-screen` is unnecessary.
 
-(def find-by-text (comp rtl/screen.findByText name))
-
 ;;; Queries that work with a REPL and with Jest
 
-(def get-all-by-text (with-node-or-screen :get-all-by-text))
 (def get-by-text (with-node-or-screen :get-by-text))
 (def query-all-by-text (with-node-or-screen :query-all-by-text))
 (def query-by-text (with-node-or-screen :query-by-text))
@@ -108,37 +92,7 @@
 (def query-all-by-label-text (with-node-or-screen :query-all-by-label-text))
 (def query-by-label-text (with-node-or-screen :query-by-label-text))
 
-(def get-all-by-display-value (with-node-or-screen :get-all-by-display-value))
-(def get-by-display-value (with-node-or-screen :get-by-display-value))
-(def query-all-by-display-value (with-node-or-screen :query-all-by-display-value))
-(def query-by-display-value (with-node-or-screen :query-by-display-value))
-
-(def get-all-by-placeholder-text (with-node-or-screen :get-all-by-placeholder-text))
-(def get-by-placeholder-text (with-node-or-screen :get-by-placeholder-text))
-(def query-all-by-placeholder-text (with-node-or-screen :query-all-by-placeholder-text))
-(def query-by-placeholder-text (with-node-or-screen :query-by-placeholder-text))
-
-(def get-all-by-role (with-node-or-screen :get-all-by-role))
-(def get-by-role (with-node-or-screen :get-by-role))
-(def query-all-by-role (with-node-or-screen :query-all-by-role))
-(def query-by-role (with-node-or-screen :query-by-role))
-
-(def get-all-by-test-id (with-node-or-screen :get-all-by-test-id))
 (def get-by-test-id (with-node-or-screen :get-by-test-id))
-(def query-all-by-test-id (with-node-or-screen :query-all-by-test-id))
-(def query-by-test-id (with-node-or-screen :query-by-test-id))
-
-(defn get-all-by-translation-text
-  ([translation]
-   (get-all-by-translation-text rtl/screen translation nil))
-  ([translation translation-opts]
-   (get-all-by-translation-text rtl/screen translation translation-opts))
-  ([^js node translation translation-opts & args]
-   (apply (with-node-or-screen :get-all-by-text)
-          node
-          (i18n/label translation translation-opts)
-          args)))
-
 (defn get-by-translation-text
   ([translation]
    (get-by-translation-text rtl/screen translation nil))
@@ -157,17 +111,6 @@
    (query-by-translation-text rtl/screen translation translation-opts))
   ([^js node translation translation-opts & args]
    (apply (with-node-or-screen :query-by-text)
-          node
-          (i18n/label translation translation-opts)
-          args)))
-
-(defn query-all-by-translation-text
-  ([translation]
-   (query-all-by-translation-text rtl/screen translation nil))
-  ([translation translation-opts]
-   (query-all-by-translation-text rtl/screen translation translation-opts))
-  ([^js node translation translation-opts & args]
-   (apply (with-node-or-screen :query-all-by-text)
           node
           (i18n/label translation translation-opts)
           args)))

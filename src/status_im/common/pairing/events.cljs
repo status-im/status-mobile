@@ -17,8 +17,8 @@
                                                 constants/local-pairing-event-connection-success)
                                              (= action
                                                 constants/local-pairing-action-connect))
-        connection-error?               (and (= type
-                                                constants/local-pairing-event-connection-error))
+        connection-error?               (= type
+                                           constants/local-pairing-event-connection-error)
         error-on-pairing?               (contains? constants/local-pairing-event-errors type)
         completed-pairing?              (and (= type
                                                 constants/local-pairing-event-transfer-success)

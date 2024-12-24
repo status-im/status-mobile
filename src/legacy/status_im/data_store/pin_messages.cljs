@@ -29,7 +29,7 @@
                     :on-error   on-error}]})
 
 (rf/defn send-pin-message
-  [cofx pin-message]
+  [_cofx pin-message]
   {:json-rpc/call [{:method      "wakuext_sendPinMessage"
                     :params      [(messages/->rpc pin-message)]
                     :js-response true

@@ -14,8 +14,7 @@
     [status-im.contexts.preview.quo.common :as common]
     [status-im.contexts.preview.quo.style :as style]
     utils.number
-    [utils.re-frame :as rf])
-  (:require-macros status-im.contexts.preview.quo.preview))
+    [utils.re-frame :as rf]))
 
 (defn- label-view
   [_ label theme]

@@ -1,8 +1,7 @@
 (ns status-im.contexts.syncing.utils
   (:require
     [clojure.string :as string]
-    [native-module.core :as native-module]
-    [utils.transforms :as transforms]))
+    [native-module.core :as native-module]))
 
 (defn validate-connection-string
   [connection-string]
@@ -14,10 +13,3 @@
   (some-> connection-string
           validate-connection-string
           string/blank?))
-
-(defn extract-error
-  [json-str]
-  (-> json-str
-      transforms/json->clj
-      (get :error "")
-      not-empty))

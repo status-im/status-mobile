@@ -7,7 +7,6 @@
   "0x04fbce10971e1cd7253b98c7b7e54de3729ca57ce41a2bfb0d1c4e0a26f72c4b6913c3487fa1b4bb86125770f1743fb4459da05c1cbe31d938814cfaf36e252073")
 (def chat-id
   "59eb36e6-9d4d-4724-9d3a-8a3cdc5e8a8e-0x04f383daedc92a66add4c90d8884004ef826cba113183a0052703c8c77fed1522f88f44550498d20679af98907627059a295e43212a1cd3c1f21a157704d608c13")
-(def chat-name-url "Test%20group%20chat")
 (def chat-name "Test group chat")
 
 (deftest parse-uris-test

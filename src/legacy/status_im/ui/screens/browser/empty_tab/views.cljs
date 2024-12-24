@@ -8,7 +8,6 @@
     [legacy.status-im.ui.components.list.item :as list.item]
     [legacy.status-im.ui.components.list.views :as list]
     [legacy.status-im.ui.components.react :as react]
-    [legacy.status-im.ui.screens.browser.accounts :as accounts]
     [legacy.status-im.ui.screens.browser.empty-tab.styles :as styles]
     [legacy.status-im.ui.screens.browser.views :as browser]
     [re-frame.core :as re-frame]
@@ -94,35 +93,6 @@
      [react/view {:margin-top 14 :margin-left 16 :margin-bottom 4}
       [react/text {:style {:line-height 22 :font-size 15 :color colors/gray}}
        (i18n/label :t/favourites)]])])
-
-(views/defview select-account
-  []
-  (views/letsubs [accounts                               [:accounts-without-watch-only]
-                  {:keys [name color] :as dapps-account} [:dapps-account]]
-    [react/view
-     {:position           :absolute
-      :z-index            2
-      :align-items        :center
-      :bottom             16
-      :left               0
-      :right              0
-      :padding-horizontal 32}
-     [quo/button
-      {:accessibility-label :select-account
-       :type                :scale
-       :on-press            #(re-frame/dispatch [:show-bottom-sheet
-                                                 {:content (accounts/accounts-list accounts
-                                                                                   dapps-account)}])}
-      [react/view (styles/dapps-account color)
-       [icons/icon :main-icons/account {:color colors/white-persist}]
-       [react/view {:flex-shrink 1}
-        [react/text
-         {:numberOfLines 1
-          :style         {:margin-horizontal 6
-                          :color             colors/white-persist
-                          :typography        :main-medium}}
-         name]]
-       [icons/icon :main-icons/dropdown {:color colors/white-transparent-persist}]]]]))
 
 (views/defview empty-tab
   []

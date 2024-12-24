@@ -15,12 +15,6 @@
    :border-top-left-radius  sheet-border-radius
    :border-top-right-radius sheet-border-radius})
 
-(def gradient-bg
-  {:position :absolute
-   :top      0
-   :left     0
-   :right    0})
-
 (def shell-bg
   {:background-color colors/bottom-sheet-background-blur
    :flex             1})

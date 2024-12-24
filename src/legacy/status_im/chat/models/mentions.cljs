@@ -156,7 +156,7 @@
 
 (rf/defn select-mention
   {:events [:chat.ui/select-mention]}
-  [{:keys [db]} {:keys [primary-name searched-text match public-key] :as user}]
+  [{:keys [db]} {:keys [primary-name searched-text match public-key] :as _user}]
   (let [chat-id (:current-chat-id db)
         text    (get-in db [:chat/inputs chat-id :input-text])
         method  "wakuext_chatMentionSelectMention"

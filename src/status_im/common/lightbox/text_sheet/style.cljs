@@ -13,13 +13,6 @@
     :left     0
     :right    0}))
 
-(defn text-style
-  [expandable-text?]
-  {:color             colors/white
-   :margin-horizontal 20
-   :align-items       (when-not expandable-text? :center)
-   :flex-grow         1})
-
 (def bar-container
   {:height          constants/bar-container-height
    :left            0

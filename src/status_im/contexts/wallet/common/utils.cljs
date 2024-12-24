@@ -1,11 +1,9 @@
 (ns status-im.contexts.wallet.common.utils
   (:require [clojure.string :as string]
-            [native-module.core :as native-module]
             [quo.foundations.resources :as resources]
             [status-im.common.qr-codes.view :as qr-codes]
             [status-im.constants :as constants]
             [status-im.contexts.wallet.common.utils.networks :as network-utils]
-            [utils.hex :as utils.hex]
             [utils.money :as money]
             [utils.number :as number]
             [utils.string]))
@@ -413,133 +411,6 @@
   [tokens]
   (let [priority #(get constants/token-sort-priority (:symbol %) ##Inf)]
     (sort-by (juxt (comp - :balance) priority) tokens)))
-
-(defn- transaction-data
-  [{:keys [from-address to-address token-address route data eth-transfer?]}]
-  (let [{:keys [amount-in gas-amount gas-fees]} route
-        eip-1559-enabled?                       (:eip-1559-enabled gas-fees)
-        {:keys [gas-price max-fee-per-gas-medium
-                max-priority-fee-per-gas]}      gas-fees]
-    (cond-> {:From  from-address
-             :To    (or token-address to-address)
-             :Gas   (money/to-hex gas-amount)
-             :Value (when eth-transfer? amount-in)
-             :Nonce nil
-             :Input ""
-             :Data  (or data "0x")}
-      eip-1559-enabled?       (assoc
-                               :TxType "0x02"
-                               :MaxFeePerGas
-                               (money/to-hex
-                                (money/->wei
-                                 :gwei
-                                 max-fee-per-gas-medium))
-                               :MaxPriorityFeePerGas
-                               (money/to-hex
-                                (money/->wei
-                                 :gwei
-                                 max-priority-fee-per-gas)))
-      (not eip-1559-enabled?) (assoc :TxType "0x00"
-                                     :GasPrice
-                                     (money/to-hex
-                                      (money/->wei
-                                       :gwei
-                                       gas-price))))))
-
-(defn approval-path
-  [{:keys [route from-address to-address token-address]}]
-  (let [{:keys [from]}                     route
-        from-chain-id                      (:chain-id from)
-        approval-amount-required           (:approval-amount-required route)
-        approval-amount-required-sanitized (-> approval-amount-required
-                                               (utils.hex/normalize-hex)
-                                               (money/from-hex))
-        approval-contract-address          (:approval-contract-address route)
-        data                               (native-module/encode-function-call
-                                            constants/contract-function-signature-erc20-approve
-                                            [approval-contract-address
-                                             approval-amount-required-sanitized])
-        tx-data                            (transaction-data {:from-address  from-address
-                                                              :to-address    to-address
-                                                              :token-address token-address
-                                                              :route         route
-                                                              :data          data
-                                                              :eth-transfer? false})]
-    {:BridgeName constants/bridge-name-transfer
-     :ChainID    from-chain-id
-     :TransferTx tx-data}))
-
-(defn transaction-path
-  [{:keys [from-address to-address token-id-from token-address token-id-to route data
-           slippage-percentage eth-transfer?]}]
-  (let [{:keys [bridge-name amount-in from
-                to]}  route
-        tx-data       (transaction-data {:from-address  from-address
-                                         :to-address    to-address
-                                         :token-address token-address
-                                         :route         route
-                                         :data          data
-                                         :eth-transfer? eth-transfer?})
-        bonder-fees   (-> route :bounder-fees money/to-string)
-        to-chain-id   (:chain-id to)
-        from-chain-id (:chain-id from)]
-    (cond-> {:BridgeName bridge-name
-             :ChainID    from-chain-id}
-
-      (= bridge-name constants/bridge-name-erc-721-transfer)
-      (assoc :ERC721TransferTx
-             (assoc tx-data
-                    :Recipient to-address
-                    :TokenID   token-id-from
-                    :ChainID   to-chain-id))
-
-      (= bridge-name constants/bridge-name-erc-1155-transfer)
-      (assoc :ERC1155TransferTx
-             (assoc tx-data
-                    :Recipient to-address
-                    :TokenID   token-id-from
-                    :ChainID   to-chain-id
-                    :Amount    amount-in))
-
-      (= bridge-name constants/bridge-name-transfer)
-      (assoc :TransferTx tx-data)
-
-      (= bridge-name constants/bridge-name-hop)
-      (assoc :HopTx
-             (assoc tx-data
-                    :ChainID   from-chain-id
-                    :ChainIDTo to-chain-id
-                    :Symbol    token-id-from
-                    :Recipient to-address
-                    :Amount    amount-in
-                    :BonderFee bonder-fees))
-
-      (= bridge-name constants/bridge-name-paraswap)
-      (assoc :SwapTx
-             (assoc tx-data
-                    :ChainID            from-chain-id
-                    :ChainIDTo          to-chain-id
-                    :TokenIDFrom        token-id-from
-                    :TokenIDTo          token-id-to
-                    :SlippagePercentage slippage-percentage))
-
-      (= bridge-name constants/bridge-name-celer)
-      (assoc :CbridgeTx
-             (assoc tx-data
-                    :ChainID   to-chain-id
-                    :Symbol    token-id-from
-                    :Recipient to-address
-                    :Amount    amount-in)))))
-
-(defn multi-transaction-command
-  [{:keys [from-address to-address from-asset to-asset amount-out multi-transaction-type]
-    :or   {multi-transaction-type constants/multi-transaction-type-unknown}}]
-  {:fromAddress from-address
-   :toAddress   to-address
-   :fromAsset   from-asset
-   :toAsset     to-asset
-   :fromAmount  amount-out
-   :type        multi-transaction-type})
 
 (defn sort-tokens-by-name
   [tokens]

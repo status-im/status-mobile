@@ -120,7 +120,7 @@
     {:db (assoc-in db [:messages chat-id message-id :outgoing-status] status)}))
 
 (rf/defn handle-removed-messages
-  [{:keys [db] :as cofx} removed-messages]
+  [cofx removed-messages]
   (let [mark-as-deleted-fx (->> removed-messages
                                 (map #(assoc %
                                              :message-id (:messageId %)
@@ -136,7 +136,7 @@
                                                                         [message-id]
                                                                         nil)))
                             removed-messages)
-        remove-messages-fx (fn [{:keys [db]}]
+        remove-messages-fx (fn [_cofx]
                              {:dispatch [:activity-center.notifications/fetch-unread-count]})]
     (apply rf/merge
            cofx

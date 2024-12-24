@@ -2,8 +2,6 @@
 
 (def password "testabc")
 
-(def community {:membership 1 :name "foo" :description "bar"})
-
 (def account-name "account-abc")
 
 (def derivation-path "m/43'/60'/1581'/0'/0")

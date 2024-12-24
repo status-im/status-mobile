@@ -16,10 +16,6 @@
    :border-color     (colors/theme-colors colors/neutral-20 colors/neutral-80 theme)
    :background-color (colors/theme-colors colors/neutral-5 colors/neutral-80-opa-40 theme)})
 
-(def play-pause-slider-container
-  {:flex-direction :row
-   :align-items    :center})
-
 (def slider-container
   {:position :absolute
    :left     60

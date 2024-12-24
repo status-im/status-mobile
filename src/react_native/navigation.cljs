@@ -14,10 +14,6 @@
   [root]
   (.setRoot ^js Navigation (clj->js root)))
 
-(defn set-stack-root
-  [stack component]
-  (.setStackRoot ^js Navigation stack (clj->js component)))
-
 (defn push
   [arg1 arg2]
   (.push ^js Navigation arg1 (clj->js arg2)))
@@ -65,20 +61,6 @@
   [handler]
   (.registerModalDismissedListener ^js (.events ^js Navigation) handler))
 
-(defn reg-component-did-appear-listener
-  [handler]
-  (.registerComponentDidAppearListener
-   ^js (.events ^js Navigation)
-   (fn [^js evn]
-     (handler (keyword (.-componentName evn))))))
-
-(defn reg-component-did-disappear-listener
-  [handler]
-  (.registerComponentDidDisappearListener
-   ^js (.events ^js Navigation)
-   (fn [^js evn]
-     (handler (.-componentName evn)))))
-
 (defn merge-options
   [id opts]
   (.mergeOptions Navigation id (clj->js opts)))
@@ -95,7 +77,4 @@
                             :bottom-tabs-height (.-bottomTabsHeight consts)
                             :status-bar-height  (.-statusBarHeight consts)})))
 
-(defn bind-component
-  [^js/Object this component-id]
-  (set! (. this -navigationEventListener)
-    (.. Navigation events (bindComponent this component-id))))
+

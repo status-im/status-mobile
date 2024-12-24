@@ -44,7 +44,7 @@
 
 (rf/defn dismiss-modal
   {:events [:dismiss-modal]}
-  [{:keys [db]} comp-id]
+  [_ comp-id]
   {:dismiss-modal comp-id})
 
 (rf/defn navigate-back
@@ -57,7 +57,7 @@
 
 (rf/defn navigate-back-to
   {:events [:navigate-back-to]}
-  [{:keys [db]} comp-id]
+  [_ comp-id]
   {:navigate-back-to comp-id})
 
 (rf/defn pop-to-root
@@ -103,7 +103,7 @@
 
 (rf/defn show-next-bottom-sheet
   {:events [:show-next-bottom-sheet]}
-  [{:keys [db] :as cofx}]
+  [{:keys [db]}]
   {:show-bottom-sheet {:theme (:theme db)}})
 
 (rf/defn show-bottom-sheet

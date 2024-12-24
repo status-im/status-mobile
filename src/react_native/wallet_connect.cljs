@@ -80,10 +80,6 @@
               "core.pairing.pair"
               (bean/->js {:uri url})))
 
-(defn get-pairings
-  [web3-wallet]
-  (oops/ocall web3-wallet "core.pairing.getPairings"))
-
 (defn register-handler
   [{:keys [web3-wallet event handler]}]
   (oops/ocall web3-wallet
