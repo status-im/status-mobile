@@ -13,6 +13,8 @@
    {:style {:margin-top    56
             :height        56
             :margin-bottom 10}}
+   ;; deprecated warning suppressed but please rewrite if you have time
+   #_{:clj-kondo/ignore [:deprecated-var]}
    [quo/text-combinations
     {:container-style {:margin-horizontal 20
                        :margin-vertical   12}

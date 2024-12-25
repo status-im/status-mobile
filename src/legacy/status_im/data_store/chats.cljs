@@ -3,6 +3,8 @@
     [clojure.set :as set]
     [clojure.string :as string]
     [legacy.status-im.data-store.messages :as messages]
+    ;; deprecated warning suppressed but please rewrite if you have time
+    #_{:clj-kondo/ignore [:deprecated-namespace]}
     [legacy.status-im.utils.deprecated-types :as types]
     [re-frame.core :as re-frame]
     [status-im.common.json-rpc.events :as json-rpc]

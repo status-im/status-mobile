@@ -3,6 +3,8 @@
     [clojure.string :as string]
     [legacy.status-im.chat.models.loading :as chat.loading]
     [legacy.status-im.data-store.messages :as data-store.messages]
+    ;; deprecated warning suppressed but please rewrite if you have time
+    #_{:clj-kondo/ignore [:deprecated-namespace]}
     [legacy.status-im.utils.deprecated-types :as types]
     [react-native.platform :as platform]
     [status-im.contexts.chat.messenger.messages.delete-message.events :as delete-message]

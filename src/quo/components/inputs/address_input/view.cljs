@@ -36,6 +36,8 @@
 (defn- positive-state-icon
   [theme]
   [rn/view {:style style/clear-icon-container}
+   ;; deprecated warning suppressed but please rewrite if you have time
+   #_{:clj-kondo/ignore [:deprecated-var]}
    [icon/icon :i/positive-state
     {:color (colors/theme-colors (colors/custom-color :success 50)
                                  (colors/custom-color :success 60)

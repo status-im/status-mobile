@@ -8,13 +8,21 @@
    :align-self       :flex-start
    :background-color (when (= status :error)
                        (colors/theme-colors
+                        ;; deprecated warning suppressed but please rewrite if you have time
+                        #_{:clj-kondo/ignore [:deprecated-var]}
                         (colors/custom-color :danger 50 10)
+                        ;; deprecated warning suppressed but please rewrite if you have time
+                        #_{:clj-kondo/ignore [:deprecated-var]}
                         (colors/custom-color :danger 60 10)
                         theme))
    :border-width     1
    :border-color     (cond (= status :error)
                            (colors/theme-colors
+                            ;; deprecated warning suppressed but please rewrite if you have time
+                            #_{:clj-kondo/ignore [:deprecated-var]}
                             (colors/custom-color :danger 50 20)
+                            ;; deprecated warning suppressed but please rewrite if you have time
+                            #_{:clj-kondo/ignore [:deprecated-var]}
                             (colors/custom-color :danger 60 20)
                             theme)
                            (and blur? (= status :default)) (colors/theme-colors
@@ -37,6 +45,10 @@
    :margin-top   -1
    :color        (when (= status :error)
                    (colors/theme-colors
+                    ;; deprecated warning suppressed but please rewrite if you have time
+                    #_{:clj-kondo/ignore [:deprecated-var]}
                     (colors/custom-color :danger 50)
+                    ;; deprecated warning suppressed but please rewrite if you have time
+                    #_{:clj-kondo/ignore [:deprecated-var]}
                     (colors/custom-color :danger 60)
                     theme))})

@@ -4,6 +4,8 @@
     [goog.string :as gstring]
     [legacy.status-im.ui.components.react :as react]
     [legacy.status-im.utils.build :as build]
+    ;; deprecated warning suppressed but please rewrite if you have time
+    #_{:clj-kondo/ignore [:deprecated-namespace]}
     [legacy.status-im.utils.deprecated-types :as types]
     [native-module.core :as native-module]
     [re-frame.core :as re-frame]

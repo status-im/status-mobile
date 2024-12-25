@@ -4,6 +4,8 @@
 
 (defn get-color
   [type customization-color theme]
+  ;; deprecated warning suppressed but please rewrite if you have time
+  #_{:clj-kondo/ignore [:deprecated-var]}
   (case type
     :default   (colors/theme-colors (colors/custom-color customization-color 50)
                                     (colors/custom-color customization-color 60)

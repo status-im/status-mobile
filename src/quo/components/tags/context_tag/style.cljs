@@ -8,6 +8,8 @@
     (colors/theme-colors colors/neutral-80-opa-40 colors/white-opa-40 theme)
     (colors/theme-colors colors/neutral-50 colors/neutral-40 theme)))
 
+;; deprecated warning suppressed but please rewrite if you have time
+#_{:clj-kondo/ignore [:deprecated-var]}
 (defn audio-tag-icon-container
   [customization-color theme]
   {:width            20
@@ -24,6 +26,8 @@
 
 (defn container
   [{:keys [theme type size state blur? customization-color]}]
+  ;; deprecated warning suppressed but please rewrite if you have time
+  #_{:clj-kondo/ignore [:deprecated-var]}
   (let [background-color (if blur?
                            (colors/theme-colors colors/neutral-80-opa-5 colors/white-opa-5 theme)
                            (colors/theme-colors colors/neutral-10 colors/neutral-90 theme))

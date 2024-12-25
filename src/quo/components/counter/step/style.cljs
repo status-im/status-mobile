@@ -14,7 +14,12 @@
     (colors/theme-colors colors/neutral-80-opa-5 colors/white-opa-10 theme)
     (colors/theme-colors colors/neutral-20 colors/neutral-80 theme)))
 
+;; deprecated warning suppressed but please rewrite if you have time
+#_{:clj-kondo/ignore [:deprecated-var]}
 (defn active-background-color [customization-color] (colors/custom-color customization-color 50 10))
+
+;; deprecated warning suppressed but please rewrite if you have time
+#_{:clj-kondo/ignore [:deprecated-var]}
 (defn complete-background-color [customization-color] (colors/custom-color customization-color 50))
 
 (defn container

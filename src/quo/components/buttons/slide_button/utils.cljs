@@ -6,6 +6,8 @@
 (defn main-color
   "`customization-color` Customization color"
   [customization-color theme]
+  ;; deprecated warning suppressed but please rewrite if you have time
+  #_{:clj-kondo/ignore [:deprecated-var]}
   (colors/theme-colors
    (colors/custom-color customization-color 50)
    (colors/custom-color customization-color 60)
@@ -16,6 +18,8 @@
   ([customization-color blur?]
    (if blur?
      colors/white-opa-5
+     ;; deprecated warning suppressed but please rewrite if you have time
+     #_{:clj-kondo/ignore [:deprecated-var]}
      (colors/custom-color customization-color 50 10))))
 
 (defn text-color
@@ -23,6 +27,8 @@
   [customization-color theme blur?]
   (if blur?
     colors/white-opa-40
+    ;; deprecated warning suppressed but please rewrite if you have time
+    #_{:clj-kondo/ignore [:deprecated-var]}
     (colors/theme-colors
      (colors/custom-color customization-color 50)
      (colors/custom-color customization-color 60)

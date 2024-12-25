@@ -352,8 +352,8 @@
    opacity 0-100 (optional) - if set theme is ignored and goes to 50 suffix internally"
   (memoize resolve-color*))
 
-(def ;; ^{:deprecated true :superseded-by "resolve-color"}
-  custom-color
+(def ^{:deprecated true :superseded-by "resolve-color"}
+     custom-color
   "(custom-color color suffix opacity)
    color   :primary/:purple/...
    suffix  50/60

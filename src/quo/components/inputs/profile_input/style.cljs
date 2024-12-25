@@ -4,6 +4,8 @@
 
 (defn container
   [customization-color]
+  ;; deprcated warning suppressed but please rewrite if you have time
+  #_{:clj-kondo/ignore [:deprecated-var]}
   {:background-color   (colors/custom-color customization-color 50 40)
    :padding-horizontal 12
    :padding-top        12

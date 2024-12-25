@@ -32,6 +32,8 @@
           :on-press            navigate-back
           :background          :blur
           :accessibility-label :top-bar}]
+        ;; deprecated warning suppressed but please rewrite if you have time
+        #_{:clj-kondo/ignore [:deprecated-var]}
         [quo/text-combinations
          {:container-style style/header-container
           :title           (i18n/label :t/share-channel)}]

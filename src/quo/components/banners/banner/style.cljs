@@ -4,6 +4,8 @@
 
 (def container
   {:height           40
+   ;; deprecated warning suppressed but please rewrite if you have time
+   #_{:clj-kondo/ignore [:deprecated-var]}
    :background-color (colors/custom-color :blue 50 20)
    :flex-direction   :row
    :align-items      :center

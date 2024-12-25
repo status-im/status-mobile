@@ -21,6 +21,8 @@
     [rn/view
      {:key   :edit-profile
       :style style/screen-container}
+     ;; deprecated warning suppressed but please, rewrite with newer stylew
+     #_{:clj-kondo/ignore [:deprecated-var]}
      [quo/text-combinations {:title (i18n/label :t/edit-profile)}]
      [rn/view style/avatar-wrapper
       [quo/user-avatar

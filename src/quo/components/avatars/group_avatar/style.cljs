@@ -2,6 +2,8 @@
   (:require
     [quo.foundations.colors :as colors]))
 
+;; deprecated warning suppressed but please rewrite if you have time
+#_{:clj-kondo/ignore [:deprecated-var]}
 (defn container
   [{:keys [container-size customization-color theme]}]
   {:width            container-size

@@ -8,6 +8,8 @@
     [legacy.status-im.ethereum.ens :as ens]
     [legacy.status-im.multiaccounts.update.core :as multiaccounts.update]
     [legacy.status-im.ui.components.list-selection :as list-selection]
+    ;; deprecated warning suppressed but please rewrite if you have time
+    #_{:clj-kondo/ignore [:deprecated-namespace]}
     [legacy.status-im.utils.deprecated-types :as types]
     [legacy.status-im.utils.random :as random]
     [native-module.core :as native-module]

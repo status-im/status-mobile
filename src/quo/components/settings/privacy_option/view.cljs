@@ -24,6 +24,8 @@
 
 (defn- card-footer
   [{:keys [active? label on-toggle theme]}]
+  ;; deprecated warning suppressed but please rewrite if you have time
+  #_{:clj-kondo/ignore [:deprecated-var]}
   [rn/touchable-without-feedback
    [rn/view {:style (style/card-footer theme)}
     [rn/view {:style style/card-footer-label-container}
@@ -54,6 +56,8 @@
     :or   {icon    :i/world
            active? false}}]
   (let [theme (quo.theme/use-theme)]
+    ;; deprecated warning suppressed but please rewrite if you have time
+    #_{:clj-kondo/ignore [:deprecated-var]}
     [rn/touchable-without-feedback
      {:on-press            on-select
       :accessibility-label :privacy-option-card

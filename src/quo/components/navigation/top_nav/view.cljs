@@ -76,6 +76,8 @@
 
 (defn- left-section
   [{:keys [avatar-props on-press customization-color]}]
+  ;; deprecated warning suppressed but please rewrite if you have time
+  #_{:clj-kondo/ignore [:deprecated-var]}
   [rn/touchable-without-feedback {:on-press on-press}
    [rn/view
     {:accessibility-label :open-profile}

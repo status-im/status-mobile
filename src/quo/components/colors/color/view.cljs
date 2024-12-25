@@ -19,8 +19,11 @@
     :as   props}]
   (let [theme     (quo.theme/use-theme)
         border?   (and (not blur?) (not selected?))
+
         hex-color (if (= :feng-shui color)
                     (colors/theme-colors colors/neutral-100 colors/white theme)
+                    ;; deprecated warning suppressed but please rewrite if you have time
+                    #_{:clj-kondo/ignore [:deprecated-var]}
                     (colors/theme-colors (colors/custom-color color 50)
                                          (colors/custom-color color 60)
                                          theme))]

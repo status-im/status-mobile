@@ -12,11 +12,19 @@
   (if (= type :mention)
     (if pressed?
       (colors/theme-colors
+       ;; deprecated warning suppressed but please rewrite if you have time
+       #_{:clj-kondo/ignore [:deprecated-var]}
        (colors/custom-color customization-color 60)
+       ;; deprecated warning suppressed but please rewrite if you have time
+       #_{:clj-kondo/ignore [:deprecated-var]}
        (colors/custom-color customization-color 50)
        theme)
       (colors/theme-colors
+       ;; deprecated warning suppressed but please rewrite if you have time
+       #_{:clj-kondo/ignore [:deprecated-var]}
        (colors/custom-color customization-color 50)
+       ;; deprecated warning suppressed but please rewrite if you have time
+       #_{:clj-kondo/ignore [:deprecated-var]}
        (colors/custom-color customization-color 60)
        theme))
     (if pressed?

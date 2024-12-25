@@ -63,7 +63,7 @@
   (into [touchable-highlight-class (utils/custom-pressable-props props)] children))
 
 (defn touchable-without-feedback
-  #_{:deprecated "pressable should be used instead"}
+  {:deprecated "pressable should be used instead"}
   [props child]
   [touchable-without-feedback-class (utils/custom-pressable-props props) child])
 
@@ -161,8 +161,6 @@
     js/undefined))
 
 (defn use-effect
-  #_{:deprecated
-     "use-mount or use-unmount should be used, more here https://github.com/status-im/status-mobile/blob/develop/doc/ui-guidelines.md#effects"}
   ([handler]
    (use-effect handler nil))
   ([handler deps]

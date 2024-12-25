@@ -35,6 +35,8 @@
   [{:keys [community on-press width]}]
   (let [theme                                                              (quo.theme/use-theme)
         {:keys [name description locked? images cover status tokens tags]} community]
+    ;; deprecated warning suppressed but please rewrite if you have time
+    #_{:clj-kondo/ignore [:deprecated-var]}
     [rn/touchable-without-feedback
      {:accessibility-label :community-card-item
       :on-press            on-press}

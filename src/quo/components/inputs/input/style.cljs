@@ -6,6 +6,8 @@
 
 (defn variants-colors
   [blur? theme]
+  ;; deprecated warning suppressed but please rewrite if you have time
+  #_{:clj-kondo/ignore [:deprecated-var]}
   (if blur?
     {:label         (colors/theme-colors colors/neutral-80-opa-40 colors/white-opa-40 theme)
      :icon          (colors/theme-colors colors/neutral-80-opa-70 colors/white-opa-70 theme)

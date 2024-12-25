@@ -97,6 +97,8 @@
                                                                  chat
                                                                  false
                                                                  true])}])}]}]
+     ;; deprecated warning suppressed but please, rewrite with newer style
+     #_{:clj-kondo/ignore [:deprecated-var]}
      [quo/text-combinations
       {:container-style                 style/text-combinations
        :title                           [quo/channel-name

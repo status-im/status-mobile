@@ -135,6 +135,8 @@
          [group-avatar/view
           {:icon-name           :i/members
            :size                (if (= size 24) :size-20 :size-28)
+           ;; deprecated warning suppressed but please rewrite if you have time
+           #_{:clj-kondo/ignore [:deprecated-var]}
            :customization-color (colors/custom-color customization-color 50)}]]
 
         (:channel :community)

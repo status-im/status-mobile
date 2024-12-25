@@ -95,6 +95,8 @@
 
 (defn info-button
   [on-press]
+  ;; deprecated warning suppressed but please rewrite if you have time
+  #_{:clj-kondo/ignore [:deprecated-var]}
   [rn/touchable-without-feedback
    {:on-press on-press}
    [icon/icon "message-gap-info" {:size 12 :no-color true :container-style {:padding 4}}]])
@@ -123,7 +125,8 @@
      :margin-right    2}
     [timestamp timestamp-far]
     (when on-info-button-pressed [info-button on-info-button-pressed])]
-
+   ;; deprecated warning suppressed but please rewrite if you have time
+   #_{:clj-kondo/ignore [:deprecated-var]}
    [rn/touchable-without-feedback
     {:style    {:flex 1 :margin-top 16 :margin-bottom 20}
      :on-press #(when on-press (on-press))}

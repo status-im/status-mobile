@@ -77,7 +77,13 @@
                                                               colors/neutral-95
                                                               theme)
         customization-color              (colors/theme-colors
+                                          ;; deprecated warning suppressed but please rewrite if you
+                                          ;; have time
+                                          #_{:clj-kondo/ignore [:deprecated-var]}
                                           (colors/custom-color customization-color 60)
+                                          ;; deprecated warning suppressed but please rewrite if you
+                                          ;; have time
+                                          #_{:clj-kondo/ignore [:deprecated-var]}
                                           (colors/custom-color customization-color 50)
                                           theme)
         y-axis-label-texts               (utils/calculate-y-axis-labels min-value step-value 4)
