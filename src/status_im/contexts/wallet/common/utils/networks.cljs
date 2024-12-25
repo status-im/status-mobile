@@ -72,19 +72,6 @@
     constants/sepolia-chain-ids
     constants/mainnet-chain-ids))
 
-(defn resolve-receiver-networks
-  [{:keys [prefix testnet-enabled?]}]
-  (let [prefix     (if (string/blank? prefix)
-                     constants/default-multichain-address-prefix
-                     prefix)
-        prefix-seq (string/split prefix #":")]
-    (->> prefix-seq
-         (remove string/blank?)
-         (mapv
-          #(network->chain-id
-            {:network          %
-             :testnet-enabled? testnet-enabled?})))))
-
 (def network->short-name
   {constants/mainnet-network-name  constants/mainnet-short-name
    constants/optimism-network-name constants/optimism-short-name

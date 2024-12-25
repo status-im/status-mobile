@@ -44,7 +44,6 @@
         updated-props            (update reagent-props :style transforms/styles-with-vectors)]
     (into [view* updated-props] children)))
 
-(def text (reagent/adapt-react-class (.-Text reanimated)))
 (def scroll-view (reagent/adapt-react-class (.-ScrollView reanimated)))
 (def image (reagent/adapt-react-class (.-Image reanimated)))
 

@@ -412,8 +412,6 @@
 (def ^:const optimism-short-name "oeth")
 (def ^:const arbitrum-short-name "arb1")
 
-(def ^:const default-multichain-address-prefix "eth:oeth:arb1:")
-
 (def ^:const mainnet-abbreviated-name "Eth.")
 (def ^:const optimism-abbreviated-name "Oeth.")
 (def ^:const arbitrum-abbreviated-name "Arb1.")

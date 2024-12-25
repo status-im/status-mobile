@@ -628,23 +628,6 @@
        (update-vals $ #(filter positive-balance-in-any-chain? (:tokens (first %))))))))
 
 (rf/reg-sub
- :wallet/accounts-with-current-asset
- :<- [:wallet/operable-accounts]
- :<- [:wallet/operable-addresses-tokens-with-positive-balance]
- :<- [:wallet/wallet-send-token-symbol]
- :<- [:wallet/wallet-send-token]
- (fn [[accounts addresses-tokens token-symbol token]]
-   (if-let [asset-symbol (or token-symbol (:symbol token))]
-     (let [addresses-with-asset (as-> addresses-tokens $
-                                  (update-vals $ #(set (map :symbol %)))
-                                  (keep (fn [[address token-symbols]]
-                                          (when (token-symbols asset-symbol) address))
-                                        $)
-                                  (set $))]
-       (filter #(addresses-with-asset (:address %)) accounts))
-     accounts)))
-
-(rf/reg-sub
  :wallet/operable-addresses-with-token-symbol
  :<- [:wallet/operable-addresses-tokens-with-positive-balance]
  (fn [addresses-tokens [_ token-symbol]]
