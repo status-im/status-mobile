@@ -7,8 +7,7 @@
     [status-im.contexts.wallet.collectible.utils :as utils]
     [status-im.contexts.wallet.common.collectibles-tab.style :as style]
     [status-im.contexts.wallet.common.empty-tab.view :as empty-tab]
-    [utils.i18n :as i18n]
-    [utils.re-frame :as rf]))
+    [utils.i18n :as i18n]))
 
 (defn- loading-collectible-item
   [_ index]
@@ -82,9 +81,9 @@
       ;; 1. If possible, move `collectibles-data` calculation to a subscription
       ;; 2. Optimization: do not recalculate all the collectibles, process only the new ones
       (let [collectibles-data (map
-                               (fn [{:keys [ownership] :as collectible}]
-                                 (let [total-owned (rf/sub [:wallet/total-owned-collectible ownership
-                                                            current-account-address])]
+                               (fn [collectible]
+                                 (let [total-owned (utils/collectible-balance collectible
+                                                                              current-account-address)]
                                    (assoc collectible
                                           :total-owned   total-owned
                                           :on-long-press on-collectible-long-press

@@ -299,3 +299,17 @@
         selected-keypair-uid (get-in db [:wallet :ui :create-account :selected-keypair-uid])
         keypair              (get keypairs selected-keypair-uid)]
     (boolean (seq (:keycards keypair)))))
+
+(defn transform-collectible
+  [{:keys [added updated removed]}]
+  (let [entry (first (remove nil? (concat added updated removed)))]
+    (when entry
+      {:contract-id {:chain-id (:chainID (:contractID entry))
+                     :address  (:address (:contractID entry))}
+       :token-id    (str (:tokenID entry))})))
+
+(defn rpc->collectible-id
+  [collectible]
+  (-> collectible
+      transforms/json->clj
+      transform-collectible))

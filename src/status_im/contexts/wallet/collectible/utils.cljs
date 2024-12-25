@@ -6,12 +6,21 @@
             [taoensso.timbre :as log]
             [utils.number :as utils.number]))
 
+(defn total-collectible-balance
+  ([ownership]
+   (reduce (fn [total {:keys [balance]}]
+             (+ total (or (js/parseInt balance) 0)))
+           0
+           ownership)))
+
 (defn collectible-balance
   ([{:keys [ownership]} address]
-   (->> ownership
-        (some #(when (= address (:address %))
-                 (:balance %)))
-        utils.number/parse-int)))
+   (let [balance (if address
+                   (some #(when (= address (:address %))
+                            (:balance %))
+                         ownership)
+                   (total-collectible-balance ownership))]
+     (utils.number/parse-int balance))))
 
 (def supported-collectible-types
   #{"image/jpeg"
