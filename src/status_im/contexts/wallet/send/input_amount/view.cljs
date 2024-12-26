@@ -22,7 +22,9 @@
 
 (defn select-asset-bottom-sheet
   [clear-input!]
-  (let [{preselected-token-symbol :symbol} (rf/sub [:wallet/wallet-send-token])]
+  (let [{preselected-token-symbol :symbol} (rf/sub [:wallet/wallet-send-token])
+        network                            (rf/sub [:wallet/send-network])
+        chain-id                           (:chain-id network)]
     [:<> ;; Need to be a `:<>` to keep `asset-list` scrollable.
      [quo/drawer-top
       {:title           (i18n/label :t/select-token)
@@ -31,6 +33,7 @@
       {:content-container-style  {:padding-horizontal 8
                                   :padding-bottom     8}
        :preselected-token-symbol preselected-token-symbol
+       :chain-ids                [chain-id]
        :on-token-press           (fn [token]
                                    (rf/dispatch [:wallet/edit-token-to-send token])
                                    (clear-input!))}]]))
