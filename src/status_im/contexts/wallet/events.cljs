@@ -408,7 +408,8 @@
             ;; If the token has a balance in only one account (or this was dispatched from the
             ;; account screen) and the network is already set, navigate forward in the bridge flow.
             (some? network)
-            [[:dispatch
+            [(when to-address [:dispatch [:wallet/switch-current-viewing-account to-address]])
+             [:dispatch
               [:wallet/wizard-navigate-forward
                {:current-screen stack-id
                 :start-flow?    start-flow?
