@@ -121,22 +121,23 @@
                                                (get-in db [:wallet-connect/current-request :event]))]
      (let [method      (data-store/get-request-method event)
            web3-wallet (get db :wallet-connect/web3-wallet)]
-       {:db (assoc-in db [:wallet-connect/current-request :response-sent?] true)
-        :fx [[:effects.wallet-connect/respond-session-request
-              {:web3-wallet web3-wallet
-               :topic       topic
-               :id          id
-               :result      result
-               :error       error
-               :on-error    (fn [error]
-                              (log/error "Failed to send Wallet Connect response"
-                                         {:error                error
-                                          :method               method
-                                          :event                :wallet-connect/send-response
-                                          :wallet-connect-event event}))
-               :on-success  (fn []
-                              (rf/dispatch [:wallet-connect/redirect-to-dapp])
-                              (log/info "Successfully sent Wallet Connect response to dApp"))}]]}))))
+       (when web3-wallet
+         {:db (assoc-in db [:wallet-connect/current-request :response-sent?] true)
+          :fx [[:effects.wallet-connect/respond-session-request
+                {:web3-wallet web3-wallet
+                 :topic       topic
+                 :id          id
+                 :result      result
+                 :error       error
+                 :on-error    (fn [error]
+                                (log/error "Failed to send Wallet Connect response"
+                                           {:error                error
+                                            :method               method
+                                            :event                :wallet-connect/send-response
+                                            :wallet-connect-event event}))
+                 :on-success  (fn []
+                                (rf/dispatch [:wallet-connect/redirect-to-dapp])
+                                (log/info "Successfully sent Wallet Connect response to dApp"))}]]})))))
 
 (rf/reg-event-fx
  :wallet-connect/redirect-to-dapp

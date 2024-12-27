@@ -28,9 +28,12 @@
  :wallet-connect/on-init-success
  (fn [{:keys [db]} [web3-wallet]]
    (log/info "WalletConnect SDK initialisation successful")
-   {:db (assoc db :wallet-connect/web3-wallet web3-wallet)
-    :fx [[:dispatch [:wallet-connect/register-event-listeners]]
-         [:dispatch [:wallet-connect/get-sessions]]]}))
+   (let [waiting-pair-url (get db :wallet-connect/waiting-pair-url)]
+     {:db (assoc db :wallet-connect/web3-wallet web3-wallet)
+      :fx [[:dispatch [:wallet-connect/register-event-listeners]]
+           [:dispatch [:wallet-connect/get-sessions]]
+           (when waiting-pair-url
+             [:dispatch [:wallet-connect/pair waiting-pair-url]])]})))
 
 (rf/reg-event-fx
  :wallet-connect/reload-on-network-change
