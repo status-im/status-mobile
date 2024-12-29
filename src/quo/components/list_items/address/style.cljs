@@ -5,11 +5,11 @@
 (defn- background-color
   [state customization-color blur?]
   (cond (and (or (= state :pressed) (= state :selected)) (not blur?))
-        (colors/custom-color customization-color 50 5)
+        (colors/resolve-color customization-color :light 5)
         (and (or (= state :pressed) (= state :selected)) blur?)
         colors/white-opa-5
         (and (= state :active) (not blur?))
-        (colors/custom-color customization-color 50 10)
+        (colors/resolve-color customization-color :light 10)
         (and (= state :active) blur?)
         colors/white-opa-10
         (and (= state :pressed) blur?) colors/white-opa-10

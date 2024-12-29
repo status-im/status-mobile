@@ -26,10 +26,7 @@
                         customization-color customization-color
                         (= state :positive) :success
                         :else               :danger)]
-    (colors/theme-colors
-     (colors/custom-color color-keyword 50)
-     (colors/custom-color color-keyword 60)
-     theme)))
+    (colors/resolve-color color-keyword theme)))
 
 (defn view
   [{:keys [data state time-frame customization-color]}]

@@ -76,10 +76,8 @@
         y-axis-label-background-color    (colors/theme-colors colors/white-70-blur-opaque
                                                               colors/neutral-95
                                                               theme)
-        customization-color              (colors/theme-colors
-                                          (colors/custom-color customization-color 60)
-                                          (colors/custom-color customization-color 50)
-                                          theme)
+        customization-color              (colors/resolve-color customization-color
+                                                               (colors/invert-theme theme))
         y-axis-label-texts               (utils/calculate-y-axis-labels min-value step-value 4)
         x-axis-label-texts               (utils/calculate-x-axis-labels data 5)
         reference-label-background-color (colors/theme-colors colors/neutral-80-opa-5-opaque

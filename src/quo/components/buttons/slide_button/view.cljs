@@ -88,7 +88,8 @@
        :style     (merge (style/track {:disabled?           disabled?
                                        :customization-color custom-color
                                        :height              (dimensions :track-height)
-                                       :blur?               blur?})
+                                       :blur?               blur?
+                                       :theme               theme})
                          container-style)
        :on-layout on-track-layout}
       [reanimated/view {:style (style/track-cover interpolate-track)}

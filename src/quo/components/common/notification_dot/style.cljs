@@ -7,10 +7,7 @@
 (defn dot-background-color
   [customization-color theme blur?]
   (cond
-    customization-color (colors/theme-colors
-                         (colors/custom-color customization-color 50)
-                         (colors/custom-color customization-color 60)
-                         theme)
+    customization-color (colors/resolve-color customization-color theme)
     blur?               (colors/theme-colors colors/neutral-80-opa-40 colors/white-opa-40 theme)
     :else               (colors/theme-colors colors/neutral-40 colors/neutral-50 theme)))
 

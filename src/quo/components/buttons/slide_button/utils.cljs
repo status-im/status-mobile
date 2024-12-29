@@ -6,27 +6,21 @@
 (defn main-color
   "`customization-color` Customization color"
   [customization-color theme]
-  (colors/theme-colors
-   (colors/custom-color customization-color 50)
-   (colors/custom-color customization-color 60)
-   theme))
+  (colors/resolve-color customization-color theme))
 
 (defn track-color
   "`customization-color` Customization color"
-  ([customization-color blur?]
+  ([customization-color theme blur?]
    (if blur?
      colors/white-opa-5
-     (colors/custom-color customization-color 50 10))))
+     (colors/resolve-color customization-color theme 10))))
 
 (defn text-color
   "`customization-color` Customization color"
   [customization-color theme blur?]
   (if blur?
     colors/white-opa-40
-    (colors/theme-colors
-     (colors/custom-color customization-color 50)
-     (colors/custom-color customization-color 60)
-     theme)))
+    (colors/resolve-color customization-color theme)))
 
 (defn clamp-value
   [value min-value max-value]

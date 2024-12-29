@@ -37,7 +37,7 @@
                                     {:accounts (repeat 1 account)})])
     (h/fire-event :on-press-in (h/get-by-label-text :container))
     (h/wait-for #(h/has-style (h/query-by-label-text :container)
-                              {:backgroundColor (colors/custom-color :blue 50 5)})))
+                              {:backgroundColor (colors/resolve-color :blue :light 5)})))
 
   (h/test "on-press-out changes state to :active if active-state? is true (default value)"
     (h/render-with-theme-provider [saved-contact-address/view
@@ -46,7 +46,7 @@
     (h/fire-event :on-press-in (h/get-by-label-text :container))
     (h/fire-event :on-press-out (h/get-by-label-text :container))
     (h/wait-for #(h/has-style (h/query-by-label-text :container)
-                              {:backgroundColor (colors/custom-color :blue 50 10)})))
+                              {:backgroundColor (colors/resolve-color :blue :light 10)})))
 
   (h/test "on-press-out changes state to :default if active-state? is false"
     (h/render-with-theme-provider [saved-contact-address/view

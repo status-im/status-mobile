@@ -36,7 +36,4 @@
   {:padding-left 4
    :margin-top   -1
    :color        (when (= status :error)
-                   (colors/theme-colors
-                    (colors/custom-color :danger 50)
-                    (colors/custom-color :danger 60)
-                    theme))})
+                   (colors/resolve-color :danger theme))})

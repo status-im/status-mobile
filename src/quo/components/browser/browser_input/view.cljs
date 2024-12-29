@@ -44,9 +44,7 @@
 
 (defn cursor-color
   [customization-color theme]
-  (colors/theme-colors (colors/custom-color customization-color 50)
-                       (colors/custom-color customization-color 60)
-                       theme))
+  (colors/resolve-color customization-color theme))
 
 (defn placeholder-color
   [state blur? theme]

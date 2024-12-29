@@ -10,7 +10,7 @@
    :top              6
    :left             51
    :position         :absolute
-   :background-color (colors/custom-color customization-color 60)})
+   :background-color (colors/resolve-color customization-color nil)})
 
 (def notification-counter
   {:position :absolute

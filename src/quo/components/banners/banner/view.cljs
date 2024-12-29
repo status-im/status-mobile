@@ -14,7 +14,7 @@
     (when (pos? pins-count)
       [rn/touchable-opacity
        {:accessibility-label :pinned-banner
-        :style               style/container
+        :style               (style/container theme)
         :active-opacity      1
         :on-press            on-press}
        (when-not hide-pin?

@@ -4,7 +4,7 @@
 
 (defn container
   [customization-color]
-  {:background-color   (colors/custom-color customization-color 50 40)
+  {:background-color   (colors/resolve-color customization-color :light 40)
    :padding-horizontal 12
    :padding-top        12
    :padding-bottom     10

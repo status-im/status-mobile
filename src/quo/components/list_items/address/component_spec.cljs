@@ -17,7 +17,7 @@
     (h/render-with-theme-provider [address/view (with-defaults)])
     (h/fire-event :on-press-in (h/get-by-label-text :container))
     (h/wait-for #(h/has-style (h/query-by-label-text :container)
-                              {:backgroundColor (colors/custom-color :blue 50 5)})))
+                              {:backgroundColor (colors/resolve-color :blue :light 5)})))
 
   (h/test "on-press-in changes state to :pressed with blur? enabled"
     (h/render-with-theme-provider [address/view (with-defaults {:blur? true})])
@@ -30,7 +30,7 @@
     (h/fire-event :on-press-in (h/get-by-label-text :container))
     (h/fire-event :on-press-out (h/get-by-label-text :container))
     (h/wait-for #(h/has-style (h/query-by-label-text :container)
-                              {:backgroundColor (colors/custom-color :blue 50 10)})))
+                              {:backgroundColor (colors/resolve-color :blue :light 10)})))
 
   (h/test "on-press-out changes state to :active with blur? enabled"
     (h/render-with-theme-provider [address/view (with-defaults {:active-state? true :blur? true})])

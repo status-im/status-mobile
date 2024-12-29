@@ -41,7 +41,7 @@
     :justify-content :space-around}])
 
 (defn track
-  [{:keys [disabled? customization-color height blur?]}]
+  [{:keys [disabled? customization-color height blur? theme]}]
   {:align-items      :flex-start
    :justify-content  :center
    :border-radius    14
@@ -49,7 +49,7 @@
    :align-self       :stretch
    :padding          constants/track-padding
    :opacity          (if disabled? 0.3 1)
-   :background-color (utils/track-color customization-color blur?)})
+   :background-color (utils/track-color customization-color theme blur?)})
 
 (defn track-cover
   [interpolate-track]

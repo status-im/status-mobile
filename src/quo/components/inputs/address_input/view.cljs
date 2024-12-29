@@ -37,9 +37,7 @@
   [theme]
   [rn/view {:style style/clear-icon-container}
    [icon/icon :i/positive-state
-    {:color (colors/theme-colors (colors/custom-color :success 50)
-                                 (colors/custom-color :success 60)
-                                 theme)
+    {:color (colors/resolve-color :success theme)
      :size  20}]])
 
 (defn- get-placeholder-text-color

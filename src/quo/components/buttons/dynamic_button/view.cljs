@@ -11,14 +11,8 @@
   [{:keys [type pressed? customization-color theme]}]
   (if (= type :mention)
     (if pressed?
-      (colors/theme-colors
-       (colors/custom-color customization-color 60)
-       (colors/custom-color customization-color 50)
-       theme)
-      (colors/theme-colors
-       (colors/custom-color customization-color 50)
-       (colors/custom-color customization-color 60)
-       theme))
+      (colors/resolve-color customization-color (colors/invert-theme theme))
+      (colors/resolve-color customization-color theme))
     (if pressed?
       (colors/theme-colors colors/neutral-80-opa-80 colors/white-opa-80 theme)
       (colors/theme-colors colors/neutral-80-opa-70 colors/white-opa-70 theme))))

@@ -98,7 +98,8 @@
 
             ;; `:channel` variant receives colors as hex strings instead of keywords
             (= (:avatar @state) :channel)
-            (update :customization-color colors/custom-color 60))]
+            (assoc :customization-color
+                   (colors/resolve-color (:customization-color @state) nil)))]
 
          [rn/view {:style {:margin 12}}
           [quo/text "URL:"]

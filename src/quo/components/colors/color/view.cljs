@@ -22,9 +22,7 @@
 
         hex-color (if (= :feng-shui color)
                     (colors/theme-colors colors/neutral-100 colors/white theme)
-                    (colors/theme-colors (colors/custom-color color 50)
-                                         (colors/custom-color color 60)
-                                         theme))]
+                    (colors/resolve-color color theme))]
 
     [rn/pressable
      {:style                   (style/color-button hex-color selected? idx window-width)

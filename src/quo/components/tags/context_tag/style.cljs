@@ -15,10 +15,7 @@
    :border-radius    10
    :align-items      :center
    :justify-content  :center
-   :background-color (colors/theme-colors
-                      (colors/custom-color customization-color 50)
-                      (colors/custom-color customization-color 60)
-                      theme)})
+   :background-color (colors/resolve-color customization-color theme)})
 
 (def audio-tag-icon-color colors/white)
 
@@ -31,10 +28,7 @@
                            (not (#{:account :collectible} type)) 16
                            (= size 24)                           8
                            :else                                 10)
-        border-color     (colors/theme-colors
-                          (colors/custom-color customization-color 50)
-                          (colors/custom-color customization-color 60)
-                          theme)]
+        border-color     (colors/resolve-color customization-color theme)]
     (cond-> {:padding          2
              :padding-right    8
              :flex-direction   :row

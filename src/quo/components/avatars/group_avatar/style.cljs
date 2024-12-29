@@ -10,9 +10,7 @@
    :justify-content  :center
    :border-radius    (/ container-size 2)
    :overflow         :hidden
-   :background-color (colors/theme-colors (colors/custom-color customization-color 50)
-                                          (colors/custom-color customization-color 60)
-                                          theme)})
+   :background-color (colors/resolve-color customization-color theme)})
 
 (defn avatar-identifier
   [theme]

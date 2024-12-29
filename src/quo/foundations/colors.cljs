@@ -384,3 +384,10 @@
   "(theme-colors light dark override-theme)"
   [light dark theme]
   (if (= theme :light) light dark))
+
+(defn invert-theme
+  [theme]
+  (case theme
+    :light :dark
+    :dark  :light
+    nil))

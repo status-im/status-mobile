@@ -5,7 +5,7 @@
 (defn container
   [customization-color selected?]
   {:padding          12
-   :background-color (colors/custom-color customization-color 50 40)
+   :background-color (colors/resolve-color customization-color :light 40)
    :border-width     1
    :border-radius    16
    :flex             1

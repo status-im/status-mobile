@@ -68,7 +68,7 @@
        :padding-horizontal 20
        :border-radius      16
        :background-color   (when (= :pinned (:use-case state))
-                             (colors/custom-color :blue 50 10))
+                             (colors/resolve-color :blue :light 10))
        :align-items        :flex-start}
       [quo/react
        {:reactions                 reactions

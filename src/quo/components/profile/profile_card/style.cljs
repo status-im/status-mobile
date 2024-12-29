@@ -12,7 +12,7 @@
    :border-top-right-radius    16
    :border-bottom-left-radius  border-bottom-radius
    :border-bottom-right-radius border-bottom-radius
-   :background-color           (colors/custom-color customization-color 50 40)})
+   :background-color           (colors/resolve-color customization-color :light 40)})
 
 (def card-header
   {:flex-direction  :row

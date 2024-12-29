@@ -14,9 +14,13 @@
     (colors/theme-colors colors/neutral-80-opa-5 colors/white-opa-10 theme)
     (colors/theme-colors colors/neutral-20 colors/neutral-80 theme)))
 
-(defn active-background-color [customization-color] (colors/custom-color customization-color 50 10))
+(defn active-background-color
+  [customization-color theme]
+  (colors/resolve-color customization-color theme 10))
 
-(defn complete-background-color [customization-color] (colors/custom-color customization-color 50))
+(defn complete-background-color
+  [customization-color]
+  (colors/resolve-color customization-color :light))
 
 (defn container
   [{:keys [size type in-blur-view? theme customization-color]}]
@@ -29,7 +33,7 @@
            :border-color (neutral-border-color in-blur-view? theme))
 
     (= type :active)
-    (assoc :background-color (active-background-color customization-color))
+    (assoc :background-color (active-background-color customization-color theme))
 
     (= type :complete)
     (assoc :background-color (complete-background-color customization-color))))

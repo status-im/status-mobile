@@ -38,10 +38,7 @@
 
 (defn percentage-change
   [customization-color theme]
-  {:color        (colors/theme-colors
-                  (colors/custom-color customization-color 50)
-                  (colors/custom-color customization-color 60)
-                  theme)
+  {:color        (colors/resolve-color customization-color theme)
    :margin-right 4})
 
 (defn dot-separator
@@ -57,10 +54,7 @@
 
 (defn currency-change
   [customization-color theme]
-  {:color        (colors/theme-colors
-                  (colors/custom-color customization-color 50)
-                  (colors/custom-color customization-color 60)
-                  theme)
+  {:color        (colors/resolve-color customization-color theme)
    :margin-right 4})
 
 (defn loading-bar-margin-bottom
@@ -97,8 +91,5 @@
 
 (defn icon-props
   [customization-color theme]
-  {:color (colors/theme-colors
-           (colors/custom-color customization-color 50)
-           (colors/custom-color customization-color 60)
-           theme)
+  {:color (colors/resolve-color customization-color theme)
    :size  16})

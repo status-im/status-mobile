@@ -2,9 +2,10 @@
   (:require
     [quo.foundations.colors :as colors]))
 
-(def container
+(defn container
+  [theme]
   {:height           40
-   :background-color (colors/custom-color :blue 50 20)
+   :background-color (colors/resolve-color :blue theme 20)
    :flex-direction   :row
    :align-items      :center
    :padding-right    22

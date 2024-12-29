@@ -12,7 +12,7 @@
      :button-border (colors/theme-colors colors/neutral-80-opa-30 colors/white-opa-10 theme)
      :password-icon (colors/theme-colors colors/neutral-100 colors/white-opa-70 theme)
      :clear-icon    (colors/theme-colors colors/neutral-80-opa-30 colors/white-opa-10 theme)
-     :cursor        (colors/theme-colors (colors/custom-color :blue 50)
+     :cursor        (colors/theme-colors (colors/resolve-color :blue :light)
                                          colors/white
                                          theme)}
     {:label         (colors/theme-colors colors/neutral-50 colors/neutral-40 theme)
@@ -20,9 +20,7 @@
      :button-border (colors/theme-colors colors/neutral-30 colors/neutral-70 theme)
      :clear-icon    (colors/theme-colors colors/neutral-40 colors/neutral-60 theme)
      :password-icon (colors/theme-colors colors/neutral-50 colors/white theme)
-     :cursor        (colors/theme-colors (colors/custom-color :blue 50)
-                                         (colors/custom-color :blue 60)
-                                         theme)}))
+     :cursor        (colors/resolve-color :blue theme)}))
 
 (defn status-colors
   [status blur? theme]

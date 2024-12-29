@@ -5,16 +5,13 @@
   [customization-color neutral? theme]
   (if neutral?
     (colors/theme-colors colors/neutral-80-opa-5 colors/white-opa-5 theme)
-    (colors/custom-color customization-color 50 20)))
+    (colors/resolve-color customization-color theme 20)))
 
 (defn- text-color
   [customization-color neutral? theme]
   (if neutral?
     (colors/theme-colors colors/neutral-80-opa-70 colors/white-opa-70 theme)
-    (colors/theme-colors
-     (colors/custom-color customization-color 50)
-     (colors/custom-color customization-color 60)
-     theme)))
+    (colors/resolve-color customization-color theme)))
 
 (defn container
   [circle-size customization-color neutral? theme]

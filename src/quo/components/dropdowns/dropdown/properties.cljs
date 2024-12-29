@@ -39,7 +39,7 @@
    :right-icon-color   colors/white-opa-20
    :right-icon-color-2 colors/white
    :label-color        colors/white
-   :background-color   (colors/custom-color customization-color 50)})
+   :background-color   (colors/resolve-color customization-color :light)})
 
 (def sizes-to-exclude-blur-in-photo-bg #{:size-40})
 

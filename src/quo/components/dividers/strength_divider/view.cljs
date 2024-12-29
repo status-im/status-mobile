@@ -9,16 +9,15 @@
     [react-native.svg :as svg]
     [utils.i18n :as i18n]))
 
-
 (def strength-divider-types
   {:very-weak   {:default-text (i18n/label :t/strength-divider-very-weak-label)
                  :color        colors/danger-60
                  :percentage   20}
    :weak        {:default-text (i18n/label :t/strength-divider-weak-label)
-                 :color        (colors/custom-color :orange 60)
+                 :color        (colors/resolve-color :orange nil)
                  :percentage   40}
    :okay        {:default-text (i18n/label :t/strength-divider-okay-label)
-                 :color        (colors/custom-color :yellow 60)
+                 :color        (colors/resolve-color :yellow nil)
                  :percentage   60}
    :strong      {:default-text (i18n/label :t/strength-divider-strong-label)
                  :color        colors/success-60

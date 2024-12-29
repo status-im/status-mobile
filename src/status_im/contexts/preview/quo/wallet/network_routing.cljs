@@ -67,7 +67,7 @@
                           {:style {:flex-direction  :row
                                    :margin-vertical 12}}
                           [rn/view
-                           {:style {:background-color (colors/custom-color network-name)
+                           {:style {:background-color (colors/resolve-color network-name nil)
                                     :width            24
                                     :height           24
                                     :margin-right     12}}]

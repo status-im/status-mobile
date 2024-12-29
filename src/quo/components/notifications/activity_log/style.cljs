@@ -56,7 +56,7 @@
 
 (defn unread-dot
   [customization-color]
-  {:background-color (colors/custom-color (or customization-color :blue) 60)
+  {:background-color (colors/resolve-color (or customization-color :blue) nil)
    :border-radius    4
    :width            8
    :height           8})
