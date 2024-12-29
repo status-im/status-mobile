@@ -95,7 +95,7 @@
 
 (defn info-button
   [on-press]
-  [rn/touchable-without-feedback
+  [rn/pressable
    {:on-press on-press}
    [icon/icon "message-gap-info" {:size 12 :no-color true :container-style {:padding 4}}]])
 
@@ -123,7 +123,7 @@
      :margin-right    2}
     [timestamp timestamp-far]
     (when on-info-button-pressed [info-button on-info-button-pressed])]
-   [rn/touchable-without-feedback
+   [rn/pressable
     {:style    {:flex 1 :margin-top 16 :margin-bottom 20}
      :on-press #(when on-press (on-press))}
     [text/text warning-label]]

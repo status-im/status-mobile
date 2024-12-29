@@ -11,7 +11,7 @@
 (defn view
   [{:keys [checked? blur? accessibility-label container-style on-change icon customization-color]} label]
   (let [theme (quo.theme/use-theme)]
-    [rn/touchable-without-feedback
+    [rn/pressable
      {:on-press            (when on-change
                              #(on-change (not checked?)))
       :accessibility-label :disclaimer-touchable-opacity}

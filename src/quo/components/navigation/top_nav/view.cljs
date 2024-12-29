@@ -76,7 +76,7 @@
 
 (defn- left-section
   [{:keys [avatar-props on-press customization-color]}]
-  [rn/touchable-without-feedback {:on-press on-press}
+  [rn/pressable {:on-press on-press}
    [rn/view
     {:accessibility-label :open-profile}
     [user-avatar/user-avatar

@@ -12,7 +12,7 @@
         on-press-out           (fn []
                                  (set-pressed (not pressed?))
                                  (when on-press-out (on-press-out pressed?)))]
-    [rn/touchable-without-feedback
+    [rn/pressable
      {:accessibility-label :selector-filter
       :on-press-out        on-press-out}
      [rn/view {:style (style/container-outer customization-color pressed? theme)}

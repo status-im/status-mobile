@@ -122,7 +122,7 @@
                              average-value (gstring/format "%.2f" (/ (+ highest-value lowest-value) 2))]
                          (swap! state assoc :data data :reference-value average-value)))
                      [(:time-frame @state)])
-      [rn/touchable-without-feedback {:on-press rn/dismiss-keyboard!}
+      [rn/pressable {:on-press rn/dismiss-keyboard!}
        [rn/view {:padding-bottom 150}
         [preview/customizer state descriptor theme]
         [quo/interactive-graph

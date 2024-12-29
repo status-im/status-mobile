@@ -54,7 +54,7 @@
                          (fn []
                            (set-pressed-state nil)
                            (when on-press-out (on-press-out))))]
-    [rn/touchable-without-feedback
+    [rn/pressable
      {:disabled                (boolean disabled?)
       :accessibility-label     accessibility-label
       :on-press-in             on-press-in-cb

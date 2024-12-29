@@ -35,7 +35,7 @@
   [{:keys [community on-press width]}]
   (let [theme                                                              (quo.theme/use-theme)
         {:keys [name description locked? images cover status tokens tags]} community]
-    [rn/touchable-without-feedback
+    [rn/pressable
      {:accessibility-label :community-card-item
       :on-press            on-press}
      [rn/view {:style (style/community-card 20 theme)}

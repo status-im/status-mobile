@@ -21,7 +21,7 @@
            accessibility-label type labelled?]
     :or   {size 32}}
    children]
-  [rn/touchable-without-feedback
+  [rn/pressable
    (merge {:disabled            disabled?
            :accessibility-label accessibility-label}
           (when on-press

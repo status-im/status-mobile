@@ -173,7 +173,7 @@
   [{:keys [title on-press accessibility-label tag-photo tag-name tag-number networks]
     :or   {accessibility-label :transaction-progress}}]
   (let [theme (quo.theme/use-theme)]
-    [rn/touchable-without-feedback
+    [rn/pressable
      {:on-press            on-press
       :accessibility-label accessibility-label}
      [rn/view {:style (style/box-style theme)}

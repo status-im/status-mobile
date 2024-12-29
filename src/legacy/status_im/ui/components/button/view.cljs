@@ -67,7 +67,7 @@
                  :else    theme)
         {:keys [icon-color background-color text-color border-color]}
         (themes theme')]
-    [rn/touchable-without-feedback
+    [rn/pressable
      (merge {:disabled            disabled
              :accessibility-label accessibility-label}
             (when on-press

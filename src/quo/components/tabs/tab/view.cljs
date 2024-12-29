@@ -61,7 +61,7 @@
                                                 :blur?    blur?
                                                 :disabled disabled
                                                 :active   active})]
-    [rn/touchable-without-feedback
+    [rn/pressable
      (merge {:disabled            disabled
              :accessibility-label accessibility-label}
             (when on-press

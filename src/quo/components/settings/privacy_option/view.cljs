@@ -24,7 +24,7 @@
 
 (defn- card-footer
   [{:keys [active? label on-toggle theme]}]
-  [rn/touchable-without-feedback
+  [rn/pressable
    [rn/view {:style (style/card-footer theme)}
     [rn/view {:style style/card-footer-label-container}
      [text/text {:size :paragraph-2} label]]
@@ -54,7 +54,7 @@
     :or   {icon    :i/world
            active? false}}]
   (let [theme (quo.theme/use-theme)]
-    [rn/touchable-without-feedback
+    [rn/pressable
      {:on-press            on-select
       :accessibility-label :privacy-option-card
       :testID              :privacy-option-card}
