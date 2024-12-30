@@ -1,6 +1,7 @@
 (ns status-im.contexts.chat.messenger.messages.delete-message-for-me.events-test
   (:require
     [cljs.test :refer-macros [deftest is testing]]
+    matcher-combinators.test
     [status-im.contexts.chat.messenger.messages.delete-message-for-me.events :as
      delete-message-for-me]
     [utils.datetime :as datetime]))
@@ -99,15 +100,18 @@
     (testing "delete for me and sync"
       (testing "dispatch right rpc call"
         (let [expected-db {:messages {cid {mid {:id mid :deleted-for-me? true}}}}
-              effects     (delete-message-for-me/delete-and-sync {:db db} message false)
-              result-db   (:db effects)
-              rpc-calls   (:json-rpc/call effects)]
-          (is (= result-db expected-db))
-          (is (= (count rpc-calls) 1))
-          (is (= (-> rpc-calls first :method) "wakuext_deleteMessageForMeAndSync"))
-          (is (= (-> rpc-calls first :params count) 2))
-          (is (= (-> rpc-calls first :params first) cid))
-          (is (= (-> rpc-calls first :params second) mid))))
+              expected-fx [[:json-rpc/call
+                            [{:method      "wakuext_deleteMessageForMeAndSync"
+                              :params      [cid mid]
+                              :js-response true
+                              :on-success  [:sanitize-messages-and-process-response]
+                              :on-error    [:logs/log-and-attach-error
+                                            "failed to delete message for me, message id: "
+                                            {:message-id mid}]}]]]
+              effects     (delete-message-for-me/delete-and-sync {:db db} message false)]
+          (is (match? effects
+                      {:db expected-db
+                       :fx expected-fx}))))
       (testing "clean undo timer"
         (let [expected-db {:messages {cid {mid {:id mid :deleted-for-me? true}}}}
               effects     (delete-message-for-me/delete-and-sync
