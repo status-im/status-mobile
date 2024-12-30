@@ -38,3 +38,29 @@
  :logs/set-level
  (fn [level]
    (setup level)))
+
+(defn log-and-attach-error
+  ([message error]
+   (log/error message
+              {:error error}))
+  ([message context error]
+   (log/error message
+              (assoc context :error error))))
+
+(re-frame/reg-event-fx
+ :logs/log-and-attach-error
+ (fn [_ [message context error]]
+   {:fx [:effects.logs/log-and-attach-error message context error]}))
+
+(re-frame/reg-fx :effects.logs/log-and-attach-error log-and-attach-error)
+
+(defn log-error
+  [args]
+  (apply log/error args))
+
+(re-frame/reg-event-fx
+ :logs/log-error
+ (fn [_ args]
+   {:fx [[:effects.logs/log-error args]]}))
+
+(re-frame/reg-fx :effects.logs/log-error log-error)
