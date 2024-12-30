@@ -161,6 +161,7 @@ class TestFallbackMultipleDevice(MultipleSharedDeviceTestCase):
         self.errors.verify_no_errors()
 
     @marks.testrail_id(741054)
+    @marks.xfail(reason="Arbiscan API is down, looking for analogue")
     def test_fallback_add_key_pair(self):
         account_to_add = transaction_senders['ETH_1']
         self.home_1.navigate_back_to_home_view()

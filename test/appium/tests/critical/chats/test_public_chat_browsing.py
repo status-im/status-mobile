@@ -240,6 +240,7 @@ class TestCommunityOneDeviceMerged(MultipleSharedDeviceTestCase):
         self.errors.verify_no_errors()
 
     @marks.testrail_id(703503)
+    @marks.xfail(reason="Might fail if the Discover curation dapp is too slow to load > 2 mins")
     def test_community_discovery(self):
         try:
             # workaround for case if a user is logged out in the previous test

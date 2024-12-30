@@ -10,9 +10,6 @@ from PIL import Image, ImageChops, ImageStat
 from appium.webdriver.common.mobileby import MobileBy
 from selenium.common.exceptions import NoSuchElementException, StaleElementReferenceException, TimeoutException
 from selenium.webdriver import ActionChains
-from selenium.webdriver.common.actions import interaction
-from selenium.webdriver.common.actions.action_builder import ActionBuilder
-from selenium.webdriver.common.actions.pointer_input import PointerInput
 from selenium.webdriver.support import expected_conditions
 from selenium.webdriver.support.wait import WebDriverWait
 
@@ -212,12 +209,6 @@ class BaseElement(object):
     def scroll_and_click(self, direction='down'):
         self.scroll_to_element(direction=direction)
         self.click()
-
-    # def is_element_present(self, sec=5):
-    #     try:
-    #         return self.wait_for_element(sec)
-    #     except TimeoutException:
-    #         return False
 
     def is_element_displayed(self, sec=5, ignored_exceptions=None):
         try:

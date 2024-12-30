@@ -123,6 +123,7 @@ class TestWalletMultipleDevice(MultipleSharedDeviceTestCase):
             wallet_view.close_account_button.click_until_presence_of_element(wallet_view.show_qr_code_button)
 
     @marks.testrail_id(727229)
+    @marks.xfail(reason="Arbiscan API is down, looking for analogue")
     def test_wallet_send_eth(self):
         self.wallet_1.set_network_in_wallet(network_name=self.network)
         self.wallet_2.set_network_in_wallet(network_name=self.network)
@@ -158,6 +159,7 @@ class TestWalletMultipleDevice(MultipleSharedDeviceTestCase):
         self.errors.verify_no_errors()
 
     @marks.testrail_id(727230)
+    @marks.xfail(reason="Arbiscan API is down, looking for analogue")
     def test_wallet_send_asset_from_drawer(self):
         self.wallet_1.navigate_back_to_wallet_view()
         sender_balance, receiver_balance, eth_amount_sender, eth_amount_receiver = self._get_balances_before_tx()
