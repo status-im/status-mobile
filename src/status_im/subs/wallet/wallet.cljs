@@ -168,6 +168,11 @@
  :-> :enough-assets?)
 
 (rf/reg-sub
+ :wallet/wallet-send-collectible
+ :<- [:wallet/wallet-send]
+ :-> :collectible)
+
+(rf/reg-sub
  :wallet/wallet-send-token
  :<- [:wallet/wallet-send]
  :<- [:wallet/network-details]
@@ -234,6 +239,12 @@
  :wallet/wallet-send-tx-type
  :<- [:wallet/wallet-send]
  :-> :tx-type)
+
+(rf/reg-sub
+ :wallet/send-tx-type-collectible?
+ :<- [:wallet/wallet-send-tx-type]
+ (fn [tx-type]
+   (send-utils/tx-type-collectible? tx-type)))
 
 (rf/reg-sub
  :wallet/keypairs

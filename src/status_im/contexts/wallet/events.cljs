@@ -78,15 +78,16 @@
 
 (rf/reg-event-fx :wallet/clean-current-viewing-account
  (fn [{:keys [db]} [ignore-just-completed-transaction?]]
-   (let [{:keys [entry-point just-completed-transaction?]} (-> db :wallet :ui :send)
-         entry-point-wallet-home?                          (= entry-point :wallet-stack)]
+   (let [{:keys [entry-point just-completed-transaction?
+                 collectible-multiple-owners?]} (-> db :wallet :ui :send)
+         entry-point-wallet-home?               (= entry-point :wallet-stack)]
      {:db (cond-> db
             (and (not entry-point)
                  (not ignore-just-completed-transaction?)
                  (not just-completed-transaction?))
             (update :wallet dissoc :current-viewing-account-address)
 
-            entry-point-wallet-home?
+            (and entry-point-wallet-home? (not collectible-multiple-owners?))
             (update-in [:wallet :ui :send] dissoc :entry-point)
 
             (and entry-point-wallet-home?

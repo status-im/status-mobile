@@ -5,13 +5,11 @@
             [taoensso.timbre :as log]))
 
 (defn collectible-balance
-  [collectible]
-  (let [balance (-> collectible
-                    :ownership
-                    first
-                    :balance
-                    js/parseInt)]
-    (if (js/Number.isNaN balance) 0 balance)))
+  ([{:keys [ownership]} address]
+   (let [balance (some #(when (= address (:address %))
+                          (js/parseInt (:balance %)))
+                       ownership)]
+     (if (js/Number.isNaN balance) 0 balance))))
 
 (def supported-collectible-types
   #{"image/jpeg"
@@ -69,3 +67,14 @@
         contract-address (-> id :contract-id :address)
         token-id         (-> id :token-id)]
     (str chain-id contract-address token-id)))
+
+(defn remove-duplicates-in-ownership
+  [ownership]
+  (->> ownership
+       (reduce (fn [acc {:keys [address timestamp] :as owner}]
+                 (let [existing-owner (get acc address)]
+                   (if (or (nil? existing-owner) (> timestamp (:timestamp existing-owner)))
+                     (assoc acc address owner)
+                     acc)))
+               {})
+       vals))

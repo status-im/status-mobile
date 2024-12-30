@@ -321,9 +321,10 @@
                                       :start-flow?    start-flow?
                                       :flow-id        :wallet-send-flow}]]]}]
         (reset! rf-db/app-db
-          {:wallet          {:ui {:send {:other-props :value
-                                         :tx-type     tx-type
-                                         :collectible collectible}}}
+          {:wallet          {:current-viewing-account-address "0x01"
+                             :ui                              {:send {:other-props :value
+                                                                      :tx-type     tx-type
+                                                                      :collectible collectible}}}
            :profile/profile {:test-networks-enabled? testnet-enabled?}})
         (is (match? expected-result
                     (dispatch [event-id
@@ -347,9 +348,10 @@
                                       :start-flow?    start-flow?
                                       :flow-id        :wallet-send-flow}]]]}]
         (reset! rf-db/app-db
-          {:wallet          {:ui {:send {:other-props :value
-                                         :tx-type     tx-type
-                                         :collectible collectible}}}
+          {:wallet          {:current-viewing-account-address "0x01"
+                             :ui                              {:send {:other-props :value
+                                                                      :tx-type     tx-type
+                                                                      :collectible collectible}}}
            :profile/profile {:test-networks-enabled? testnet-enabled?}})
         (is (match? expected-result
                     (dispatch [event-id

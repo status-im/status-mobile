@@ -120,12 +120,13 @@
  :wallet/select-send-address
  (fn [{:keys [db]} [{:keys [address recipient stack-id start-flow?]}]]
    (let [[_ to-address]   (utils/split-prefix-and-address address)
+         sender           (get-in db [:wallet :current-viewing-account-address])
          collectible-tx?  (send-utils/tx-type-collectible?
                            (-> db :wallet :ui :send :tx-type))
          collectible      (when collectible-tx?
                             (-> db :wallet :ui :send :collectible))
          one-collectible? (when collectible-tx?
-                            (= (collectible.utils/collectible-balance collectible) 1))]
+                            (= (collectible.utils/collectible-balance collectible sender) 1))]
      {:db (-> db
               (assoc-in [:wallet :ui :send :recipient] (or recipient address))
               (assoc-in [:wallet :ui :send :to-address] to-address))
@@ -180,7 +181,6 @@
                                                            (:chain-id (first networks-with-balance)))
                                                        network-details))
                                         network)]
-     (println multi-account-balance? "43247329479847392")
      (when (or token-data token-symbol)
        {:db (cond-> db
               network      (update-in [:wallet :ui :send]
@@ -257,16 +257,22 @@
    {:db (update-in db [:wallet :ui :send] dissoc :token :token-display-name :tx-type)}))
 
 (rf/reg-event-fx :wallet/clean-selected-collectible
- (fn [{:keys [db]}]
-   (let [transaction-type (get-in db [:wallet :ui :send :tx-type])]
-     {:db (update-in db
-                     [:wallet :ui :send]
-                     dissoc
-                     :collectible
-                     :token-display-name
-                     :amount
-                     (when (send-utils/tx-type-collectible? transaction-type)
-                       :tx-type))})))
+ (fn [{:keys [db]} [{:keys [ignore-entry-point?]}]]
+   (let [entry-point-wallet-home? (= (get-in db [:wallet :ui :send :entry-point]) :wallet-stack)
+         multiple-owners?         (get-in db [:wallet :ui :send :collectible-multiple-owners?])
+         transaction-type         (get-in db [:wallet :ui :send :tx-type])]
+     (when (or ignore-entry-point?
+               (and entry-point-wallet-home? (not multiple-owners?))
+               (not entry-point-wallet-home?))
+       {:db (update-in db
+                       [:wallet :ui :send]
+                       dissoc
+                       :collectible
+                       :collectible-multiple-owners?
+                       :token-display-name
+                       :amount
+                       (when (send-utils/tx-type-collectible? transaction-type)
+                         :tx-type))}))))
 
 (rf/reg-event-fx
  :wallet/set-collectible-to-send
@@ -283,7 +289,10 @@
                               :tx/collectible-erc-1155
                               :tx/collectible-erc-721)
          collectible-id     (get-in collectible [:id :token-id])
-         one-collectible?   (= (collectible.utils/collectible-balance collectible) 1)
+         single-owner?      (-> collectible :ownership count (= 1))
+         owner-address      (-> collectible :ownership first :address)
+         one-collectible?   (when single-owner?
+                              (= (collectible.utils/collectible-balance collectible owner-address) 1))
          token-display-name (cond
                               (and collectible
                                    (not (string/blank? (:name collectible-data))))
@@ -291,29 +300,35 @@
 
                               collectible
                               (str (:name collection-data) " #" collectible-id))
-         owner-address      (-> db :wallet :current-viewing-account-address)
          collectible-tx     (-> db
                                 (update-in [:wallet :ui :send] dissoc :token)
+                                (assoc-in [:wallet :ui :send :entry-point] entry-point)
                                 (assoc-in [:wallet :ui :send :collectible] collectible)
+                                (assoc-in [:wallet :ui :send :collectible-multiple-owners?]
+                                          (not single-owner?))
                                 (assoc-in [:wallet :ui :send :token-display-name] token-display-name)
                                 (assoc-in [:wallet :ui :send :tx-type] tx-type))
          recipient-set?     (-> db :wallet :ui :send :recipient)]
      {:db (cond-> collectible-tx
-            :always
-            (assoc-in [:wallet :ui :send :entry-point] entry-point)
 
-            (not viewing-account?)
+            (and (not viewing-account?) single-owner?)
             (assoc-in [:wallet :current-viewing-account-address] owner-address)
 
             one-collectible?
             (assoc-in [:wallet :ui :send :amount] 1))
-      :fx [(when (and one-collectible? recipient-set?)
-             [:dispatch [:wallet/start-get-suggested-routes {:amount 1}]])
-           [:dispatch
-            [:wallet/wizard-navigate-forward
-             {:current-screen current-screen
-              :start-flow?    start-flow?
-              :flow-id        :wallet-send-flow}]]]})))
+      :fx (if
+            ;; If the collectible is present in multiple accounts, the user will be taken to select
+            ;; the address to send from
+            (and (not viewing-account?) (not single-owner?))
+            [[:dispatch [:open-modal :screen/wallet.select-from]]]
+
+            [(when (and one-collectible? recipient-set?)
+               [:dispatch [:wallet/start-get-suggested-routes {:amount 1}]])
+             [:dispatch
+              [:wallet/wizard-navigate-forward
+               {:current-screen current-screen
+                :start-flow?    start-flow?
+                :flow-id        :wallet-send-flow}]]])})))
 
 (rf/reg-event-fx
  :wallet/set-collectible-amount-to-send
@@ -673,11 +688,12 @@
  (fn [{db :db} [{:keys [address stack-id network-details network start-flow?] :as params}]]
    (let [{:keys [token-symbol
                  tx-type]}            (-> db :wallet :ui :send)
+         collectible-tx?              (send-utils/tx-type-collectible? tx-type)
          token                        (when token-symbol
                                         ;; When this flow has started in the wallet home page, we
                                         ;; know the token or collectible to send, but we don't know
-                                        ;; from which account, so we extract the token data from the
-                                        ;; picked account.
+                                        ;; from which account, so we extract the token data from
+                                        ;; the picked account.
                                         (let [token (utils/get-token-from-account db
                                                                                   token-symbol
                                                                                   address)]
@@ -704,7 +720,7 @@
             network      (assoc-in [:wallet :ui :send :network] network)
             token-symbol (assoc-in [:wallet :ui :send :token] token)
             bridge-tx?   (assoc-in [:wallet :ui :send :to-address] address))
-      :fx (if (some? network)
+      :fx (if (or (some? network) collectible-tx?)
             [[:dispatch [:wallet/switch-current-viewing-account address]]
              [:dispatch
               [:wallet/wizard-navigate-forward
