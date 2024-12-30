@@ -82,7 +82,7 @@
                    [:dispatch [:centralized-metrics/track :metric/keycard-login]])]
                 (cond
                   pairing-completed?
-                  [[:dispatch [:update-theme-and-init-root :screen/onboarding.syncing-results]]]
+                  [[:dispatch [:onboarding/finish-onboarding false]]]
 
                   (get db :onboarding/new-account?)
                   [[:dispatch [:onboarding/finalize-setup]]
