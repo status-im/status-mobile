@@ -94,13 +94,19 @@
            [{:method      "wakuext_sendContactRequest"
              :js-response true
              :params      [{:id id :message (or message (i18n/label :t/add-me-to-your-contacts))}]
-             :on-error    [:logs/log-and-attach-error
-                           "Failed to send contact request"
-                           {:id    id
-                            :event :contact.ui/send-contact-request}]
+             :on-error    [:contacts/send-contact-request-error id]
              :on-success  [:transport/message-sent]}]]]}))
 
 (rf/reg-event-fx :contact.ui/send-contact-request send-contact-request)
+
+(defn send-contact-request-error
+  [id error]
+  (log/error "Failed to send contact request"
+             {:id    id
+              :error error
+              :event :contact.ui/send-contact-request}))
+
+(rf/reg-event-fx :contact.ui/send-contact-request-error send-contact-request-error)
 
 (defn remove-contact
   "Remove a contact from current account's contact list"
@@ -115,9 +121,15 @@
            :params      [{:id public-key}]
            :js-response true
            :on-success  [:sanitize-messages-and-process-response]
-           :on-error    [:logs/log-error "failed to remove contact" public-key]}]]]})
+           :on-error    [:contacts/remove-contact-error public-key]}]]]})
 
 (rf/reg-event-fx :contact.ui/remove-contact-pressed remove-contact)
+
+(defn remove-contact-error
+  [public-key error]
+  (log/error "failed to remove contact" public-key error))
+
+(rf/reg-event-fx :contacts/remove-contact-error remove-contact-error)
 
 (defn update-nickname
   [_ [public-key nickname]]
@@ -126,7 +138,12 @@
            :params      [{:id public-key :nickname nickname}]
            :js-response true
            :on-success  [:sanitize-messages-and-process-response]
-           :on-error    [:logs/log-error "failed to set contact nickname " public-key
-                         nickname]}]]]})
+           :on-error    [:contacts/update-nickname-error public-key nickname]}]]]})
 
 (rf/reg-event-fx :contacts/update-nickname update-nickname)
+
+(defn update-nickname-error
+  [_ [public-key nickname error]]
+  (log/error "failed to set contact nickname " public-key nickname error))
+
+(rf/reg-event-fx :contacts/update-nickname-error update-nickname-error)

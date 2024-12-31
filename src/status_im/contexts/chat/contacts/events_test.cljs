@@ -22,10 +22,7 @@
                     :js-response true
                     :params      [{:id      contact-public-key
                                    :message (i18n/label :t/add-me-to-your-contacts)}]
-                    :on-error    [:logs/log-and-attach-error
-                                  "Failed to send contact request"
-                                  {:id    contact-public-key
-                                   :event :contact.ui/send-contact-request}]
+                    :on-error    [:contacts/send-contact-request-error contact-public-key]
                     :on-success  [:transport/message-sent]}]]]}
            (chat.contacts/send-contact-request cofx [contact-public-key])))))
 
@@ -40,10 +37,7 @@
                     :js-response true
                     :params      [{:id      contact-public-key
                                    :message custom-message}]
-                    :on-error    [:logs/log-and-attach-error
-                                  "Failed to send contact request"
-                                  {:id    contact-public-key
-                                   :event :contact.ui/send-contact-request}]
+                    :on-error    [:contacts/send-contact-request-error contact-public-key]
                     :on-success  [:transport/message-sent]}]]]}
            (chat.contacts/send-contact-request cofx [contact-public-key custom-message]))))))
 
@@ -65,9 +59,7 @@
                           :params      [{:id public-key}]
                           :js-response true
                           :on-success  [:sanitize-messages-and-process-response]
-                          :on-error    [:logs/log-error
-                                        "failed to remove contact"
-                                        public-key]}]]]]
+                          :on-error    [:contacts/remove-contact-error public-key]}]]]]
       (is (match?
            {:db expected-db
             :fx expected-fx}
@@ -83,10 +75,7 @@
                            :params      [{:id public-key :nickname new-nickname}]
                            :js-response true
                            :on-success  [:sanitize-messages-and-process-response]
-                           :on-error    [:logs/log-error
-                                         "failed to set contact nickname "
-                                         public-key
-                                         new-nickname]}]]]]
+                           :on-error    [:contacts/update-nickname-error public-key new-nickname]}]]]]
       (is (match?
            {:fx expected-fx}
            (chat.contacts/update-nickname {:db {}} [public-key new-nickname]))))))
