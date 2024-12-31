@@ -6,12 +6,12 @@
 (rf/defn accept-contact-request
   {:events [:activity-center.contact-requests/accept]}
   [_ contact-id]
-  {:json-rpc/call
-   [{:method      "wakuext_acceptContactRequest"
-     :params      [{:id contact-id}]
-     :js-response true
-     :on-success  #(rf/dispatch [:sanitize-messages-and-process-response %])
-     :on-error    #(rf/dispatch [:activity-center.contact-requests/accept-error contact-id %])}]})
+  {:fx [[:json-rpc/call
+         [{:method      "wakuext_acceptContactRequest"
+           :params      [{:id contact-id}]
+           :js-response true
+           :on-success  [:sanitize-messages-and-process-response]
+           :on-error    [:activity-center.contact-requests/accept-error contact-id]}]]]})
 
 (rf/defn accept-contact-request-error
   {:events [:activity-center.contact-requests/accept-error]}
@@ -24,12 +24,12 @@
 (rf/defn decline-contact-request
   {:events [:activity-center.contact-requests/decline]}
   [_ contact-id]
-  {:json-rpc/call
-   [{:method      "wakuext_declineContactRequest"
-     :params      [{:id contact-id}]
-     :js-response true
-     :on-success  #(rf/dispatch [:sanitize-messages-and-process-response %])
-     :on-error    #(rf/dispatch [:activity-center.contact-requests/decline-error contact-id %])}]})
+  {:fx [[:json-rpc/call
+         [{:method      "wakuext_declineContactRequest"
+           :params      [{:id contact-id}]
+           :js-response true
+           :on-success  [:sanitize-messages-and-process-response]
+           :on-error    [:activity-center.contact-requests/decline-error contact-id]}]]]})
 
 (rf/defn decline-contact-request-error
   {:events [:activity-center.contact-requests/decline-error]}
