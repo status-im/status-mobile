@@ -151,7 +151,8 @@
                  :effects.async-storage/set {:chat-id nil
                                              :key-uid nil}}
                 (link-preview/reset-all)
-                (delete-for-me/sync-all)
+                (fn [cofx]
+                  (delete-for-me/sync-all cofx))
                 (delete-message/send-all)
                 (offload-messages chat-id)))))
 
