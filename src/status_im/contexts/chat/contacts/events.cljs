@@ -102,10 +102,9 @@
 
 (rf/reg-event-fx :contact.ui/send-contact-request send-contact-request)
 
-(rf/defn remove-contact
+(defn remove-contact
   "Remove a contact from current account's contact list"
-  {:events [:contact.ui/remove-contact-pressed]}
-  [{:keys [db]} {:keys [public-key]}]
+  [{:keys [db]} [{:keys [public-key]}]]
   {:db (-> db
            (assoc-in [:contacts/contacts public-key :added?] false)
            (assoc-in [:contacts/contacts public-key :active?] false)
@@ -118,9 +117,10 @@
            :on-success  [:sanitize-messages-and-process-response]
            :on-error    [:logs/log-error "failed to remove contact" public-key]}]]]})
 
-(rf/defn update-nickname
-  {:events [:contacts/update-nickname]}
-  [_ public-key nickname]
+(rf/reg-event-fx :contact.ui/remove-contact-pressed remove-contact)
+
+(defn update-nickname
+  [_ [public-key nickname]]
   {:fx [[:json-rpc/call
          [{:method      "wakuext_setContactLocalNickname"
            :params      [{:id public-key :nickname nickname}]
@@ -128,3 +128,5 @@
            :on-success  [:sanitize-messages-and-process-response]
            :on-error    [:logs/log-error "failed to set contact nickname " public-key
                          nickname]}]]]})
+
+(rf/reg-event-fx :contacts/update-nickname update-nickname)

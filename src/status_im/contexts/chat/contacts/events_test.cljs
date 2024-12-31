@@ -72,7 +72,7 @@
            {:db expected-db
             :fx expected-fx}
            (chat.contacts/remove-contact {:db initial-db}
-                                         {:public-key public-key}))))))
+                                         [{:public-key public-key}]))))))
 
 (deftest update-nickname-test
   (testing "updates contact nickname"
@@ -89,4 +89,4 @@
                                          new-nickname]}]]]]
       (is (match?
            {:fx expected-fx}
-           (chat.contacts/update-nickname {:db {}} public-key new-nickname))))))
+           (chat.contacts/update-nickname {:db {}} [public-key new-nickname]))))))
