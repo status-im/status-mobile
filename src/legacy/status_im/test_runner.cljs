@@ -129,7 +129,8 @@
                            :transport/confirm-messages-processed
                            :group-chats/extract-membership-signature
                            :utils/dispatch-later
-                           :json-rpc/call})
+                           :json-rpc/call
+                           :fx})
 
   (let [opts (parse-args args)]
     (execute-cli opts)))
