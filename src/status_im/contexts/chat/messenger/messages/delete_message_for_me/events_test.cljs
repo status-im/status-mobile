@@ -129,9 +129,7 @@
                               :params      [cid mid]
                               :js-response true
                               :on-success  [:sanitize-messages-and-process-response]
-                              :on-error    [:logs/log-and-attach-error
-                                            "failed to delete message for me, message id: "
-                                            {:message-id mid}]}]]]
+                              :on-error    [:chat/delete-message-for-me-and-sync-error mid]}]]]
               effects     (delete-message-for-me/delete-and-sync {:db db} [message false])]
           (is (match? effects
                       {:db expected-db
@@ -181,16 +179,12 @@
                                          [{:method      "wakuext_deleteMessageForMeAndSync"
                                            :params      [chat-id message-id-1]
                                            :js-response true
-                                           :on-error    [:logs/log-and-attach-error
-                                                         "failed to delete message for me, message id: "
-                                                         {:message-id message-id-1}]
+                                           :on-error    [:chat/delete-message-for-me-and-sync-error message-id-1]
                                            :on-success  [:sanitize-messages-and-process-response]}]]
                                         [:json-rpc/call
                                          [{:method      "wakuext_deleteMessageForMeAndSync"
                                            :params      [chat-id message-id-2]
                                            :js-response true
-                                           :on-error    [:logs/log-and-attach-error
-                                                         "failed to delete message for me, message id: "
-                                                         {:message-id message-id-2}]
+                                           :on-error    [:chat/delete-message-for-me-and-sync-error message-id-2]
                                            :on-success  [:sanitize-messages-and-process-response]}]]]}]
       (is (match? effects expected)))))

@@ -1,6 +1,7 @@
 (ns status-im.contexts.chat.messenger.messages.delete-message-for-me.events
   (:require
     [status-im.contexts.chat.messenger.messages.list.events :as message-list]
+    [taoensso.timbre :as log]
     [utils.datetime :as datetime]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
@@ -112,12 +113,18 @@
              [{:method      "wakuext_deleteMessageForMeAndSync"
                :params      [chat-id message-id]
                :js-response true
-               :on-error    [:logs/log-and-attach-error
-                             "failed to delete message for me, message id: "
-                             {:message-id message-id}]
+               :on-error    [:chat/delete-message-for-me-and-sync-error message-id]
                :on-success  [:sanitize-messages-and-process-response]}]]]})))
 
 (rf/reg-event-fx :chat.ui/delete-message-for-me-and-sync delete-and-sync)
+
+(defn delete-and-sync-error
+  [message-id error]
+  (log/error "failed to delete message for me, message id: "
+             {:message-id message-id
+              :error      error}))
+
+(rf/reg-event-fx :chat/delete-message-for-me-and-sync-error delete-and-sync-error)
 
 (defn- filter-pending-sync-messages
   "traverse all messages find not yet synced deleted-for-me? messages"
