@@ -2,6 +2,7 @@
   (:require
     [cljs.test :refer [deftest is testing]]
     matcher-combinators.test
+    [status-im.constants :as constants]
     [status-im.contexts.chat.contacts.events :as chat.contacts]
     [utils.i18n :as i18n]))
 
@@ -21,7 +22,10 @@
                     :js-response true
                     :params      [{:id      contact-public-key
                                    :message (i18n/label :t/add-me-to-your-contacts)}]
-                    :on-error    [:contact.ui/send-contact-request-failure contact-public-key]
+                    :on-error    [:logs/log-and-attach-error
+                                  "Failed to send contact request"
+                                  {:id    contact-public-key
+                                   :event :contact.ui/send-contact-request}]
                     :on-success  [:transport/message-sent]}]]]}
            (chat.contacts/send-contact-request cofx [contact-public-key])))))
 
@@ -36,6 +40,53 @@
                     :js-response true
                     :params      [{:id      contact-public-key
                                    :message custom-message}]
-                    :on-error    [:contact.ui/send-contact-request-failure contact-public-key]
+                    :on-error    [:logs/log-and-attach-error
+                                  "Failed to send contact request"
+                                  {:id    contact-public-key
+                                   :event :contact.ui/send-contact-request}]
                     :on-success  [:transport/message-sent]}]]]}
            (chat.contacts/send-contact-request cofx [contact-public-key custom-message]))))))
+
+(deftest remove-contact-test
+  (testing "removes existing contact"
+    (let [public-key  "0x2"
+          initial-db  {:contacts/contacts
+                       {public-key
+                        {:added?                true
+                         :active?               true
+                         :contact-request-state constants/contact-request-state-mutual}}}
+          expected-db {:contacts/contacts
+                       {public-key
+                        {:added?                false
+                         :active?               false
+                         :contact-request-state constants/contact-request-state-none}}}
+          expected-fx [[:json-rpc/call
+                        [{:method      "wakuext_retractContactRequest"
+                          :params      [{:id public-key}]
+                          :js-response true
+                          :on-success  [:sanitize-messages-and-process-response]
+                          :on-error    [:logs/log-error
+                                        "failed to remove contact"
+                                        public-key]}]]]]
+      (is (match?
+           {:db expected-db
+            :fx expected-fx}
+           (chat.contacts/remove-contact {:db initial-db}
+                                         {:public-key public-key}))))))
+
+(deftest update-nickname-test
+  (testing "updates contact nickname"
+    (let [public-key   "0x2"
+          new-nickname "Joe"
+          expected-fx  [[:json-rpc/call
+                         [{:method      "wakuext_setContactLocalNickname"
+                           :params      [{:id public-key :nickname new-nickname}]
+                           :js-response true
+                           :on-success  [:sanitize-messages-and-process-response]
+                           :on-error    [:logs/log-error
+                                         "failed to set contact nickname "
+                                         public-key
+                                         new-nickname]}]]]]
+      (is (match?
+           {:fx expected-fx}
+           (chat.contacts/update-nickname {:db {}} public-key new-nickname))))))
