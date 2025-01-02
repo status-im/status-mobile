@@ -8,8 +8,7 @@
    [:auth-button-label {:optional true} [:maybe string?]]
    [:auth-button-icon-left {:optional true} [:maybe keyword?]]
    [:blur? {:optional true} [:maybe boolean?]]
-   [:theme {:optional true} [:maybe :schema.common/theme]]
-   [:keycard-supported? {:optional true} [:maybe boolean?]]])
+   [:theme {:optional true} [:maybe :schema.common/theme]]])
 
 (def ?authorize
   [:=>

@@ -18,7 +18,8 @@
   [{:keys [warning-label slide-button-text error-state]} & children]
   (let [{:keys [customization-color]} (rf/sub [:wallet-connect/current-request-account-details])
         offline?                      (rf/sub [:network/offline?])
-        theme                         (quo.theme/use-theme)]
+        theme                         (quo.theme/use-theme)
+        sign-on-keycard?              (rf/sub [:wallet-connect/sign-on-keycard?])]
     [:<>
      (when (or offline? error-state)
        [quo/alert-banner
@@ -45,10 +46,11 @@
        [standard-authentication/slide-button
         {:size                :size-48
          :track-text          slide-button-text
-         :keycard-supported?  true
          :disabled?           (or offline? error-state)
          :customization-color customization-color
          :on-auth-success     on-auth-success
+         :on-complete         (when sign-on-keycard?
+                                #(on-auth-success ""))
          :auth-button-label   (i18n/label :t/confirm)}]]
       [rn/view {:style style/warning-container}
        [quo/text

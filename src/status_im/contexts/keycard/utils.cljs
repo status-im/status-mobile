@@ -76,3 +76,15 @@
    args
    :on-success (get-on-success args)
    :on-failure (get-on-failure args)))
+
+(defn keycard-address?
+  [keypairs address]
+  (some (fn [keypair]
+          (->> keypair
+               :keycards
+               (some (fn [keycard]
+                       (-> keycard
+                           :accounts-addresses
+                           set
+                           (contains? address))))))
+        (vals keypairs)))

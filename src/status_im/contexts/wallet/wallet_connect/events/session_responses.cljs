@@ -2,6 +2,7 @@
   (:require [re-frame.core :as rf]
             [react-native.wallet-connect :as wallet-connect]
             [status-im.constants :as constants]
+            [status-im.contexts.keycard.utils :as keycard]
             [status-im.contexts.wallet.wallet-connect.utils.data-store :as
              data-store]
             [status-im.contexts.wallet.wallet-connect.utils.uri :as uri]
@@ -10,25 +11,13 @@
             [utils.i18n :as i18n]
             [utils.transforms :as transforms]))
 
-(defn- keycard-account?
-  [keypairs address]
-  (some (fn [keypair]
-          (->> keypair
-               :keycards
-               (some (fn [keycard]
-                       (-> keycard
-                           :accounts-addresses
-                           set
-                           (contains? address))))))
-        (vals keypairs)))
-
 (rf/reg-event-fx
  :wallet-connect/authorized-signing
  (fn [{:keys [db]} [password]]
    (let [prepared-hash (get-in db [:wallet-connect/current-request :prepared-hash])
          address       (get-in db [:wallet-connect/current-request :address])
          keycard-sign? (-> (get-in db [:wallet :keypairs])
-                           (keycard-account? address))
+                           (keycard/keycard-address? address))
          on-success    #(rf/dispatch [:wallet-connect/respond (hex/prefix-hex %)])
          on-fail       #(rf/dispatch [:wallet-connect/on-sign-error %])]
      (if keycard-sign?
