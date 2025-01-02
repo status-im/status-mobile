@@ -122,8 +122,6 @@
                              average-value (gstring/format "%.2f" (/ (+ highest-value lowest-value) 2))]
                          (swap! state assoc :data data :reference-value average-value)))
                      [(:time-frame @state)])
-      ;; deprecated warning suppressed but please, rewrite with newer style
-      #_{:clj-kondo/ignore [:deprecated-var]}
       [rn/touchable-without-feedback {:on-press rn/dismiss-keyboard!}
        [rn/view {:padding-bottom 150}
         [preview/customizer state descriptor theme]

@@ -12,8 +12,6 @@
 
 (defn page-title
   []
-  ;; deprecated warning suppressed but please rewrite if you have time
-  #_{:clj-kondo/ignore [:deprecated-var]}
   [quo/text-combinations
    {:container-style                 style/title-container
     :title                           (i18n/label :t/enable-biometrics)

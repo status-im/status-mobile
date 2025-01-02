@@ -27,11 +27,7 @@
                         (= state :positive) :success
                         :else               :danger)]
     (colors/theme-colors
-     ;; deprecated warning suppressed but please rewrite if you have time
-     #_{:clj-kondo/ignore [:deprecated-var]}
      (colors/custom-color color-keyword 50)
-     ;; deprecated warning suppressed but please rewrite if you have time
-     #_{:clj-kondo/ignore [:deprecated-var]}
      (colors/custom-color color-keyword 60)
      theme)))
 

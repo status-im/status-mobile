@@ -4,8 +4,6 @@
 
 (defn notification-dot
   [customization-color]
-  ;; deprecated warning suppressed but please rewrite if you have time
-  #_{:clj-kondo/ignore [:deprecated-var]}
   {:width            8
    :height           8
    :border-radius    4

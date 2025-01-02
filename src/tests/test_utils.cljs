@@ -1,7 +1,5 @@
 (ns tests.test-utils
   (:require
-    ;; deprecated warning suppressed but please rewrite if you have time
-    #_{:clj-kondo/ignore [:deprecated-namespace]}
     [legacy.status-im.utils.deprecated-types :as types]
     [re-frame.core :as re-frame]))
 

@@ -39,11 +39,7 @@
 (defn percentage-change
   [customization-color theme]
   {:color        (colors/theme-colors
-                  ;; deprecated warning suppressed but please rewrite if you have time
-                  #_{:clj-kondo/ignore [:deprecated-var]}
                   (colors/custom-color customization-color 50)
-                  ;; deprecated warning suppressed but please rewrite if you have time
-                  #_{:clj-kondo/ignore [:deprecated-var]}
                   (colors/custom-color customization-color 60)
                   theme)
    :margin-right 4})
@@ -51,11 +47,7 @@
 (defn dot-separator
   [customization-color theme]
   {:background-color (colors/theme-colors
-                      ;; deprecated warning suppressed but please rewrite if you have time
-                      #_{:clj-kondo/ignore [:deprecated-var]}
                       (colors/custom-color customization-color 60 40)
-                      ;; deprecated warning suppressed but please rewrite if you have time
-                      #_{:clj-kondo/ignore [:deprecated-var]}
                       (colors/custom-color customization-color 50 40)
                       theme)
    :margin-right     4
@@ -66,11 +58,7 @@
 (defn currency-change
   [customization-color theme]
   {:color        (colors/theme-colors
-                  ;; deprecated warning suppressed but please rewrite if you have time
-                  #_{:clj-kondo/ignore [:deprecated-var]}
                   (colors/custom-color customization-color 50)
-                  ;; deprecated warning suppressed but please rewrite if you have time
-                  #_{:clj-kondo/ignore [:deprecated-var]}
                   (colors/custom-color customization-color 60)
                   theme)
    :margin-right 4})
@@ -110,11 +98,7 @@
 (defn icon-props
   [customization-color theme]
   {:color (colors/theme-colors
-           ;; deprecated warning suppressed but please rewrite if you have time
-           #_{:clj-kondo/ignore [:deprecated-var]}
            (colors/custom-color customization-color 50)
-           ;; deprecated warning suppressed but please rewrite if you have time
-           #_{:clj-kondo/ignore [:deprecated-var]}
            (colors/custom-color customization-color 60)
            theme)
    :size  16})

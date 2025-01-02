@@ -15,8 +15,6 @@
 
 (defn page-title
   [pairing-progress?]
-  ;; deprecated warning suppressed but please rewrite if you have time
-  #_{:clj-kondo/ignore [:deprecated-var]}
   [quo/text-combinations
    {:container-style                 {:margin-top 56 :margin-horizontal 20}
     :title                           (i18n/label (if pairing-progress?

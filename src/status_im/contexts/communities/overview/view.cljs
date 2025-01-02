@@ -219,8 +219,6 @@
 
 (defn- community-header
   [title logo description]
-  ;; deprecated warning suppressed but please rewrite if you have time
-  #_{:clj-kondo/ignore [:deprecated-var]}
   [quo/text-combinations
    {:container-style                 {:margin-top
                                       (if logo

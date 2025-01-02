@@ -36,8 +36,6 @@
            :style style/screen-container}
           [rn/view {:style {:flex 1}}
            [rn/view {:style style/padding-horizontal}
-            ;; deprecated warning suppressed but please rewrite if you have time
-            #_{:clj-kondo/ignore [:deprecated-var]}
             [quo/text-combinations {:title (i18n/label :t/accent-colour)}]
             [quo/profile-card
              {:profile-picture     profile-picture

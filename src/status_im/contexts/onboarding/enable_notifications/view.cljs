@@ -10,8 +10,6 @@
 
 (defn page-title
   []
-  ;; deprecated warning suppressed but please, rewrite with newer style
-  #_{:clj-kondo/ignore [:deprecated-var]}
   [quo/text-combinations
    {:container-style                 style/page-title
     :title                           (i18n/label :t/intro-wizard-title6)

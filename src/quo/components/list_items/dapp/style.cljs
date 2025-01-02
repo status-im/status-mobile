@@ -8,26 +8,14 @@
     (and pressed? (= theme :dark) blur?)          colors/white-opa-5
 
     pressed?                                      (colors/theme-colors
-                                                   ;; deprecated warning suppressed but please
-                                                   ;; rewrite if you have time
-                                                   #_{:clj-kondo/ignore [:deprecated-var]}
                                                    (colors/custom-color customization-color 50 5)
-                                                   ;; deprecated warning suppressed but please
-                                                   ;; rewrite if you have time
-                                                   #_{:clj-kondo/ignore [:deprecated-var]}
                                                    (colors/custom-color customization-color 60 5)
                                                    theme)
 
     (and (= state :active) (= theme :dark) blur?) colors/white-opa-10
 
     (= state :active)                             (colors/theme-colors
-                                                   ;; deprecated warning suppressed but please
-                                                   ;; rewrite if you have time
-                                                   #_{:clj-kondo/ignore [:deprecated-var]}
                                                    (colors/custom-color customization-color 50 10)
-                                                   ;; deprecated warning suppressed but please
-                                                   ;; rewrite if you have time
-                                                   #_{:clj-kondo/ignore [:deprecated-var]}
                                                    (colors/custom-color customization-color 60 10)
                                                    theme)
 

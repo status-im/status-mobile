@@ -49,8 +49,6 @@
           :padding-vertical 60
           :border-radius    16
           :background-color (when (= :pinned (:use-case @state))
-                              ;; deprecated warning suppressed but please rewrite if you have time
-                              #_{:clj-kondo/ignore [:deprecated-var]}
                               (colors/custom-color
                                :blue
                                50

@@ -4,8 +4,6 @@
 
 (defn card-container
   [{:keys [customization-color padding-bottom border-bottom-radius]}]
-  ;; deprecated warning suppressed but please rewrite if you have time
-  #_{:clj-kondo/ignore [:deprecated-var]}
   {:padding-horizontal         12
    :padding-top                12
    :padding-bottom             padding-bottom

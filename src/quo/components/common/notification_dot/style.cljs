@@ -8,11 +8,7 @@
   [customization-color theme blur?]
   (cond
     customization-color (colors/theme-colors
-                         ;; deprecated warning suppressed but please rewrite if you have time
-                         #_{:clj-kondo/ignore [:deprecated-var]}
                          (colors/custom-color customization-color 50)
-                         ;; deprecated warning suppressed but please rewrite if you have time
-                         #_{:clj-kondo/ignore [:deprecated-var]}
                          (colors/custom-color customization-color 60)
                          theme)
     blur?               (colors/theme-colors colors/neutral-80-opa-40 colors/white-opa-40 theme)

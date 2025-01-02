@@ -56,8 +56,6 @@
 
 (defn unread-dot
   [customization-color]
-  ;; deprecated warning suppressed but please rewrite if you have time
-  #_{:clj-kondo/ignore [:deprecated-var]}
   {:background-color (colors/custom-color (or customization-color :blue) 60)
    :border-radius    4
    :width            8

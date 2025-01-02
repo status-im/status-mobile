@@ -46,8 +46,6 @@
          :keyboard-vertical-offset (if platform/ios? alert-banners-top-margin 0)
          :style                    style/screen-container}
         [rn/view {:style {:gap 22}}
-         ;; deprecated warning suppressed but please rewrite if you have time
-         #_{:clj-kondo/ignore [:deprecated-var]}
          [quo/text-combinations {:title (i18n/label :t/name)}]
          [quo/input
           {:blur?           true

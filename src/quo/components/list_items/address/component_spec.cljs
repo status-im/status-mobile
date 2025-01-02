@@ -16,8 +16,6 @@
   (h/test "on-press-in changes state to :pressed"
     (h/render-with-theme-provider [address/view (with-defaults)])
     (h/fire-event :on-press-in (h/get-by-label-text :container))
-    ;; deprecated warning suppressed but please rewrite if you have time
-    #_{:clj-kondo/ignore [:deprecated-var]}
     (h/wait-for #(h/has-style (h/query-by-label-text :container)
                               {:backgroundColor (colors/custom-color :blue 50 5)})))
 
@@ -31,8 +29,6 @@
     (h/render-with-theme-provider [address/view (with-defaults {:active-state? true})])
     (h/fire-event :on-press-in (h/get-by-label-text :container))
     (h/fire-event :on-press-out (h/get-by-label-text :container))
-    ;; deprecated warning suppressed but please rewrite if you have time
-    #_{:clj-kondo/ignore [:deprecated-var]}
     (h/wait-for #(h/has-style (h/query-by-label-text :container)
                               {:backgroundColor (colors/custom-color :blue 50 10)})))
 

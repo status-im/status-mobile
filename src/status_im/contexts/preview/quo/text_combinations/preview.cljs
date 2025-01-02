@@ -29,6 +29,4 @@
        {:state                     state
         :descriptor                descriptor
         :component-container-style {:padding-vertical 60}}
-       ;; deprecated warning suppressed but please rewrite if you have time
-       #_{:clj-kondo/ignore [:deprecated-var]}
        [quo/text-combinations (state->text-combinations-props @state)]])))

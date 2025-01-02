@@ -21,8 +21,6 @@
     (colors/theme-colors colors/neutral-80-opa-40 colors/white-opa-40 theme)
     (colors/theme-colors colors/neutral-40 colors/neutral-50 theme)))
 
-;; deprecated warning suppressed but please rewrite if you have time
-#_{:clj-kondo/ignore [:deprecated-var]}
 (defn get-selection-color
   [customization-color blur? theme]
   (colors/alpha (if blur?

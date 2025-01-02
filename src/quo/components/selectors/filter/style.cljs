@@ -39,8 +39,6 @@
   [customization-color pressed? theme]
   (when pressed?
     (if customization-color
-      ;; deprecated warning suppressed but please rewrite if you have time
-      #_{:clj-kondo/ignore [:deprecated-var]}
       (colors/custom-color (or customization-color :blue) 60)
       (colors/theme-colors colors/primary-50 colors/primary-60 theme))))
 

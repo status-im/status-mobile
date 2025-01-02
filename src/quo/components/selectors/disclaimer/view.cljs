@@ -11,8 +11,6 @@
 (defn view
   [{:keys [checked? blur? accessibility-label container-style on-change icon customization-color]} label]
   (let [theme (quo.theme/use-theme)]
-    ;; deprecated warning suppressed but please rewrite if you have time
-    #_{:clj-kondo/ignore [:deprecated-var]}
     [rn/touchable-without-feedback
      {:on-press            (when on-change
                              #(on-change (not checked?)))

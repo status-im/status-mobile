@@ -12,8 +12,6 @@
     [legacy.status-im.group-chats.core :as models.group]
     [legacy.status-im.multiaccounts.update.core :as update.core]
     [legacy.status-im.pairing.core :as models.pairing]
-    ;; deprecated warning suppressed but please rewrite if you have time
-    #_{:clj-kondo/ignore [:deprecated-namespace]}
     [legacy.status-im.utils.deprecated-types :as types]
     [legacy.status-im.visibility-status-updates.core :as models.visibility-status-updates]
     [status-im.constants :as constants]

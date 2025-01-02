@@ -5,8 +5,6 @@
   [customization-color neutral? theme]
   (if neutral?
     (colors/theme-colors colors/neutral-80-opa-5 colors/white-opa-5 theme)
-    ;; deprecated warning suppressed but please rewrite if you have time
-    #_{:clj-kondo/ignore [:deprecated-var]}
     (colors/custom-color customization-color 50 20)))
 
 (defn- text-color
@@ -14,11 +12,7 @@
   (if neutral?
     (colors/theme-colors colors/neutral-80-opa-70 colors/white-opa-70 theme)
     (colors/theme-colors
-     ;; deprecated warning suppressed but please rewrite if you have time
-     #_{:clj-kondo/ignore [:deprecated-var]}
      (colors/custom-color customization-color 50)
-     ;; deprecated warning suppressed but please rewrite if you have time
-     #_{:clj-kondo/ignore [:deprecated-var]}
      (colors/custom-color customization-color 60)
      theme)))
 

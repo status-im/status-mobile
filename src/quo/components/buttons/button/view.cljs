@@ -54,8 +54,6 @@
                          (fn []
                            (set-pressed-state nil)
                            (when on-press-out (on-press-out))))]
-    ;; deprecated warning suppressed but please rewrite if you have time
-    #_{:clj-kondo/ignore [:deprecated-var]}
     [rn/touchable-without-feedback
      {:disabled                (boolean disabled?)
       :accessibility-label     accessibility-label

@@ -2,8 +2,6 @@
   (:require
     [quo.foundations.colors :as colors]))
 
-;; deprecated warning suppressed but please rewrite if you have time
-#_{:clj-kondo/ignore [:deprecated-var]}
 (def container
   {:height           40
    :background-color (colors/custom-color :blue 50 20)

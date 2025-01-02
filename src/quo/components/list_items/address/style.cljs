@@ -4,8 +4,6 @@
 
 (defn- background-color
   [state customization-color blur?]
-  ;; deprecated warning suppressed but please rewrite if you have time
-  #_{:clj-kondo/ignore [:deprecated-var]}
   (cond (and (or (= state :pressed) (= state :selected)) (not blur?))
         (colors/custom-color customization-color 50 5)
         (and (or (= state :pressed) (= state :selected)) blur?)

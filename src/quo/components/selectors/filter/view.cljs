@@ -12,8 +12,6 @@
         on-press-out           (fn []
                                  (set-pressed (not pressed?))
                                  (when on-press-out (on-press-out pressed?)))]
-    ;; deprecated warning suppressed but please rewrite if you have time
-    #_{:clj-kondo/ignore [:deprecated-var]}
     [rn/touchable-without-feedback
      {:accessibility-label :selector-filter
       :on-press-out        on-press-out}

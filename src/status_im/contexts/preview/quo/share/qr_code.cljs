@@ -91,8 +91,6 @@
                                                :channel        channel-descriptor
                                                :saved-address  saved-address-descriptor
                                                nil))}
-         ;; deprecated warning suppressed but please rewrite if you have time
-         #_{:clj-kondo/ignore [:deprecated-var]}
          [quo/qr-code
           (cond-> @state
             :always
