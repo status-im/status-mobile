@@ -2,14 +2,15 @@
   (:require [status-im.config :as config]
             [status-im.constants :as constants]
             [status-im.contexts.wallet.common.utils.networks :as network-utils]
-            [taoensso.timbre :as log]))
+            [taoensso.timbre :as log]
+            [utils.number :as utils.number]))
 
 (defn collectible-balance
   ([{:keys [ownership]} address]
-   (let [balance (some #(when (= address (:address %))
-                          (js/parseInt (:balance %)))
-                       ownership)]
-     (if (js/Number.isNaN balance) 0 balance))))
+   (->> ownership
+        (some #(when (= address (:address %))
+                 (:balance %)))
+        utils.number/parse-int)))
 
 (def supported-collectible-types
   #{"image/jpeg"
