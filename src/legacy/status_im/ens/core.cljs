@@ -232,14 +232,14 @@
   (let [{:keys [custom-domain?]} (:ens/registration db)
         chain-id                 (chain/chain-id db)
         usernames                (into #{} (keys (get-in db [:ens/names chain-id])))
-        st                       (state custom-domain? username usernames)]
+        next-state               (state custom-domain? username usernames)]
     (reset! resolve-last-id (random/id))
     (merge
      {:db (update db
                   :ens/registration assoc
                   :username         username
-                  :state            st)}
-     (when (= st :searching)
+                  :state            next-state)}
+     (when (= next-state :searching)
        (let [{:profile/keys [profile]} db
              {:keys [public-key]}      profile
              addresses                 (addresses-without-watch db)

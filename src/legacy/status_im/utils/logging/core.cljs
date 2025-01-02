@@ -204,9 +204,9 @@
 
 (rf/defn details
   {:events [:logging/report-details]}
-  [{:keys [db]} k value]
+  [{:keys [db]} log-key value]
   {:db (-> db
-           (assoc-in [:bug-report/details k] value)
+           (assoc-in [:bug-report/details log-key] value)
            (dissoc :bug-report/description-error))})
 
 (def min-description-lenght 6)

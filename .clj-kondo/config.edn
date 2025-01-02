@@ -20,13 +20,20 @@
                                                                            ;; will need it later
                                                                            quo.foundations.colors
 
+                                                                           ;; same for funcs from
+                                                                           ;; native-module
+                                                                           native-module.core
+
+                                                                           ;; some funcs used
+                                                                           ;; temporarily during
+                                                                           ;; development
+                                                                           test-helpers.component
+                                                                           test-helpers.unit
 
                                                                            ;; not sure if unused
                                                                            ;; functions here should
                                                                            ;; be removed:
                                                                            keycard.keycard
-                                                                           test-helpers.unit
-                                                                           test-helpers.component
                                                                            react-native.fs}}
                 :case-duplicate-test           {:level :error}
                 :case-quoted-test              {:level :error}

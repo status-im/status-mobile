@@ -93,16 +93,16 @@
 (rf/defn check-transaction
   "Check if the transaction has been triggered and applies the effects returned
    by `on-trigger` if that is the case"
-  [{:keys [db] :as cofx} {h :hash :as transaction}]
+  [{:keys [db] :as cofx} {tx-hash :hash :as transaction}]
   (when-let [watch-params
-             (get-in db [:ethereum/watched-transactions h])]
+             (get-in db [:ethereum/watched-transactions tx-hash])]
     (let [{:keys [trigger-fn on-trigger]} watch-params]
       (when (trigger-fn db transaction)
         (rf/merge cofx
                   {:db (update db
                                :ethereum/watched-transactions
                                dissoc
-                               h)}
+                               tx-hash)}
                   (on-trigger transaction))))))
 
 (rf/defn check-watched-transactions
@@ -124,14 +124,14 @@
   "We determine a unique id for the transfer before adding it because some
    transaction can contain multiple transfers and they would overwrite each other
    in the transfer map if identified by hash"
-  [{:keys [db] :as cofx} {h :hash :keys [id address] :as transfer}]
-  (let [transfer-by-hash (get-in db [:wallet-legacy :accounts address :transactions h])]
+  [{:keys [db] :as cofx} {tx-hash :hash :keys [id address] :as transfer}]
+  (let [transfer-by-hash (get-in db [:wallet-legacy :accounts address :transactions tx-hash])]
     (when-let [unique-id (when-not (= transfer transfer-by-hash)
                            (if (and transfer-by-hash
                                     (not (= :pending
                                             (:type transfer-by-hash))))
                              id
-                             h))]
+                             tx-hash))]
       (rf/merge cofx
                 {:db (assoc-in db
                       [:wallet-legacy :accounts address :transactions unique-id]
@@ -142,7 +142,7 @@
   [db address]
   (get-in db [:wallet-legacy :accounts (eip55/address->checksum address) :min-block]))
 
-(defn min-block-transfers-count-fn
+(defn count-min-block-transfers
   [db address]
   (get-in db
           [:wallet-legacy :accounts
@@ -155,14 +155,14 @@
         {:keys [min-block min-block-transfers-count]}
         (reduce
          (fn [{:keys [min-block] :as acc}
-              {h :hash block :block}]
+              {tx-hash :hash block :block}]
            (cond
              (or (nil? min-block) (> min-block (js/parseInt block)))
              {:min-block                 (js/parseInt block)
               :min-block-transfers-count 1}
 
              (and (= min-block block)
-                  (nil? (get-in db [:wallet-legacy :accounts checksum :transactions h])))
+                  (nil? (get-in db [:wallet-legacy :accounts checksum :transactions tx-hash])))
              (update acc :min-block-transfers-count inc)
 
              :else acc))
@@ -171,7 +171,7 @@
             (js/parseInt min-block-string))
 
           :min-block-transfers-count
-          (min-block-transfers-count-fn db address)}
+          (count-min-block-transfers db address)}
          transfers)]
     (log/debug "[transactions] set-lowest-fetched-block"
                "address"                   address
@@ -283,7 +283,7 @@
   [{:keys [db] :as cofx} address]
   (let [min-known-block (or (get-min-known-block db address)
                             (:ethereum/current-block db))
-        min-count       (or (min-block-transfers-count-fn db address) 0)]
+        min-count       (or (count-min-block-transfers db address) 0)]
     (rf/merge
      cofx
      {:transactions/get-transfers
