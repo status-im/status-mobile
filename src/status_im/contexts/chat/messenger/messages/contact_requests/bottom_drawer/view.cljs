@@ -28,6 +28,8 @@
                                        constants/contact-request-state-received)
         contact-request-pending?    (= contact-request-state
                                        constants/contact-request-state-sent)
+        contact-request-dismissed?   (= contact-request-state
+                                       constants/contact-request-state-dismissed)
         keycard?                    (rf/sub [:keycard/keycard-profile?])
         keycard-feature-unavailable (rn/use-callback
                                      #(rf/dispatch [:keycard/feature-unavailable-show]))]
@@ -70,4 +72,8 @@
                        (i18n/label :t/contact-request-chat-received {:name primary-name})
 
                        contact-request-pending?
-                       (i18n/label :t/contact-request-chat-pending))}]]))
+                       (i18n/label :t/contact-request-chat-pending)
+                       
+                       contact-request-dismissed?
+                       (i18n/label :t/contact-request-chat-add {:name primary-name}))}]]))
+                       
