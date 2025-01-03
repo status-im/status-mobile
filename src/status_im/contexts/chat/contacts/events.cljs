@@ -4,7 +4,6 @@
     [re-frame.core :as re-frame]
     [status-im.common.json-rpc.events :as json-rpc]
     [status-im.constants :as constants]
-    [taoensso.timbre :as log]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]
     [utils.transforms :as transforms]))
@@ -85,7 +84,7 @@
                    :params      []
                    :js-response true
                    :on-success  [:contacts/contacts-loaded]
-                   :on-error    #(log/error "failed to fetch contacts" %)})))
+                   :on-error    [:log/error "failed to fetch contacts"]})))
 
 (defn send-contact-request
   [{:keys [db]} [id message]]
@@ -101,10 +100,11 @@
 
 (defn send-contact-request-error
   [_ [id error]]
-  (log/error "Failed to send contact request"
-             {:id    id
-              :error error
-              :event :contact.ui/send-contact-request}))
+  {:fx [[:effects.log/error
+         ["Failed to send contact request"
+          {:id    id
+           :error error
+           :event :contact.ui/send-contact-request}]]]})
 
 (rf/reg-event-fx :contact.ui/send-contact-request-error send-contact-request-error)
 
@@ -127,7 +127,7 @@
 
 (defn remove-contact-error
   [_ [public-key error]]
-  (log/error "failed to remove contact" public-key error))
+  {:fx [[:effects.log/error ["failed to remove contact" public-key error]]]})
 
 (rf/reg-event-fx :contacts/remove-contact-error remove-contact-error)
 
@@ -144,6 +144,10 @@
 
 (defn update-nickname-error
   [_ [public-key nickname error]]
-  (log/error "failed to set contact nickname " public-key nickname error))
+  {:fx [[:effects.log/error
+         ["failed to set contact nickname"
+          {:public-key public-key
+           :nickname   nickname}
+          error]]]})
 
 (rf/reg-event-fx :contacts/update-nickname-error update-nickname-error)
