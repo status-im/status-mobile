@@ -39,28 +39,74 @@
  (fn [level]
    (setup level)))
 
-(defn log-and-attach-error
-  ([message error]
-   (log/error message
-              {:error error}))
-  ([message context error]
-   (log/error message
-              (assoc context :error error))))
-
-(re-frame/reg-event-fx
- :logs/log-and-attach-error
- (fn [_ [message context error]]
-   {:fx [:effects.logs/log-and-attach-error message context error]}))
-
-(re-frame/reg-fx :effects.logs/log-and-attach-error log-and-attach-error)
-
 (defn log-error
-  [args]
-  (apply log/error args))
+  ([error]
+   (log/error error))
+  ([message error]
+   (log/error message error))
+  ([message context error]
+   (log/error message context error)))
 
 (re-frame/reg-event-fx
- :logs/log-error
+ :log/error
  (fn [_ args]
-   {:fx [[:effects.logs/log-error args]]}))
+   {:fx [[:effects.log/error args]]}))
 
-(re-frame/reg-fx :effects.logs/log-error log-error)
+(re-frame/reg-fx
+ :effects.log/error
+ (fn [args]
+   (apply log-error args)))
+
+(defn log-info
+  ([info]
+   (log/info info))
+  ([message info]
+   (log/info message info))
+  ([message context info]
+   (log/info message context info)))
+
+(re-frame/reg-event-fx
+ :log/info
+ (fn [_ args]
+   {:fx [[:effects.log/info args]]}))
+
+(re-frame/reg-fx
+ :effects.log/info
+ (fn [args]
+   (apply log-info args)))
+
+(defn log-warn
+  ([warning]
+   (log/warn warning))
+  ([message warning]
+   (log/warn message warning))
+  ([message context warning]
+   (log/warn message context warning)))
+
+(re-frame/reg-event-fx
+ :log/warn
+ (fn [_ args]
+   {:fx [[:effects.log/warn args]]}))
+
+(re-frame/reg-fx
+ :effects.log/warn
+ (fn [args]
+   (apply log-warn args)))
+
+(defn log-debug
+  ([value]
+   (log/debug value))
+  ([message value]
+   (log/debug message value))
+  ([message context value]
+   (log/debug message context value)))
+
+(re-frame/reg-event-fx
+ :log/debug
+ (fn [_ args]
+   {:fx [[:effects.log/debug args]]}))
+
+(re-frame/reg-fx
+ :effects.log/debug
+ (fn [args]
+   (apply log-debug args)))
