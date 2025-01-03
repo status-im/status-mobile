@@ -10,8 +10,6 @@
 (def cid "chat-id")
 
 (deftest delete-for-me-test
-  (testing "foo"
-    (is (= 1 1)))
   (with-redefs [datetime/timestamp (constantly 1)]
     (let [db      {:messages {cid {mid {:id mid :whisper-timestamp 1}}}}
           message {:message-id mid :chat-id cid}]
