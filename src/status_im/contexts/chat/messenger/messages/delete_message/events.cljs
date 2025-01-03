@@ -1,7 +1,6 @@
 (ns status-im.contexts.chat.messenger.messages.delete-message.events
   (:require
     [status-im.contexts.chat.messenger.messages.list.events :as message-list]
-    [taoensso.timbre :as log]
     [utils.datetime :as datetime]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
@@ -189,9 +188,10 @@
 
 (defn delete-and-send-error
   [_ [message-id error]]
-  (log/error "failed to delete message "
-             {:message-id message-id
-              :error      error}))
+  {:fx [[:effects.log/error
+         ["failed to delete message"
+          {:message-id message-id
+           :error      error}]]]})
 
 (rf/reg-event-fx :chat/delete-and-send-error delete-and-send-error)
 
