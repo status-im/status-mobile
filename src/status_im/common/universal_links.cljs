@@ -108,8 +108,7 @@
 (rf/defn handle-wallet-connect
   [_ uri]
   (log/info "universal-links: handle-wallet-connect" uri)
-  {:dispatch-later {:ms       1500
-                    :dispatch [:wallet-connect/on-scan-connection uri]}})
+  {:dispatch [:wallet-connect/process-deeplink uri]})
 
 (defn dispatch-url
   "Dispatch url so we can get access to re-frame/db"
