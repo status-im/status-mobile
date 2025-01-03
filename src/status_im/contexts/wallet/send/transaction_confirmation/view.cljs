@@ -5,6 +5,7 @@
     [quo.theme :as quo.theme]
     [react-native.core :as rn]
     [react-native.safe-area :as safe-area]
+    [status-im.common.events-helper :as events-helper]
     [status-im.common.floating-button-page.view :as floating-button-page]
     [status-im.common.standard-authentication.core :as standard-auth]
     [status-im.contexts.wallet.common.utils :as utils]
@@ -12,6 +13,7 @@
     [status-im.contexts.wallet.send.transaction-settings.view :as transaction-settings]
     [status-im.contexts.wallet.send.utils :as send-utils]
     [status-im.feature-flags :as ff]
+    [status-im.setup.hot-reload :as hot-reload]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
@@ -210,125 +212,124 @@
 
 (defn view
   [_]
-  (let [on-close #(rf/dispatch [:wallet/transaction-confirmation-navigate-back])]
-    (fn []
-      (let [theme                     (quo.theme/use-theme)
-            send-transaction-data     (rf/sub [:wallet/wallet-send])
-            {:keys [token-display-name collectible amount
-                    route
-                    to-address bridge-to-chain-id type
-                    recipient]}       send-transaction-data
-            collectible?              (some? collectible)
-            image-url                 (when collectible
-                                        (get-in collectible [:preview-url :uri]))
-            transaction-type          (:tx-type send-transaction-data)
-            estimated-time-min        (reduce + (map :estimated-time route))
-            token-symbol              (or token-display-name
-                                          (-> send-transaction-data :token :symbol))
-            first-route               (first route)
-            native-currency-symbol    (get-in first-route
-                                              [:from :native-currency-symbol])
-            fee-formatted             (rf/sub [:wallet/wallet-send-fee-fiat-formatted
-                                               native-currency-symbol])
-            account                   (rf/sub [:wallet/current-viewing-account])
-            account-color             (:color account)
-            bridge-to-network         (when bridge-to-chain-id
-                                        (rf/sub [:wallet/network-details-by-chain-id
-                                                 bridge-to-chain-id]))
-            loading-suggested-routes? (rf/sub
-                                       [:wallet/wallet-send-loading-suggested-routes?])
-            transaction-for-signing   (rf/sub [:wallet/wallet-send-transaction-for-signing])
-            from-account-props        {:customization-color account-color
-                                       :size                32
-                                       :emoji               (:emoji account)
-                                       :type                :default
-                                       :name                (:name account)
-                                       :address             (utils/get-shortened-address
-                                                             (:address
-                                                              account))}
-            user-props                {:full-name to-address
-                                       :address   (utils/get-shortened-address
-                                                   to-address)}
-            sign-on-keycard?          (get-in transaction-for-signing
-                                              [:signingDetails :signOnKeycard])]
-        ;; In token send flow we already have transaction built when
-        ;; we reach confirmation screen. But in send collectible flow
-        ;; routes request happens at the same time with navigation to
-        ;; confirmation screen. So we need to build the transaction as soon
-        ;; as route is available.
-        (rn/use-effect
-         (fn []
-           (when (and (send-utils/tx-type-collectible? transaction-type)
-                      first-route)
-             (rf/dispatch [:wallet/build-transaction-for-collectible-route])))
-         [first-route])
-        [rn/view {:style {:flex 1}}
-         [floating-button-page/view
-          {:footer-container-padding 0
-           :header                   [quo/page-nav
-                                      {:icon-name           :i/arrow-left
-                                       :on-press            on-close
-                                       :margin-top          (safe-area/get-top)
-                                       :background          :blur
-                                       :accessibility-label :top-bar}]
-           :footer                   [:<>
-                                      [transaction-details
-                                       {:estimated-time-min estimated-time-min
-                                        :max-fees           fee-formatted
-                                        :to-network         bridge-to-network
-                                        :theme              theme
-                                        :route              route
-                                        :transaction-type   transaction-type}]
-                                      (when (and (not loading-suggested-routes?) route (seq route))
-                                        [standard-auth/slide-button
-                                         {:size :size-48
-                                          :track-text (if (= transaction-type :tx/bridge)
-                                                        (i18n/label :t/slide-to-bridge)
-                                                        (i18n/label :t/slide-to-send))
-                                          :container-style {:z-index 2}
-                                          :disabled? (not transaction-for-signing)
-                                          :customization-color account-color
-                                          :auth-button-label (i18n/label :t/confirm)
-                                          :on-complete (when sign-on-keycard?
-                                                         #(rf/dispatch
-                                                           [:wallet/prepare-signatures-for-transactions
-                                                            :send
-                                                            ""]))
-                                          :on-auth-success
-                                          (fn [psw]
-                                            (rf/dispatch
-                                             [:wallet/prepare-signatures-for-transactions :send
-                                              psw]))}])]
-           :gradient-cover?          true
-           :customization-color      (:color account)}
-          [rn/view
-           [transaction-title
-            {:token-display-name token-symbol
-             :amount             amount
-             :account            account
-             :type               type
-             :recipient          recipient
-             :route              route
-             :to-network         bridge-to-network
-             :image-url          image-url
-             :transaction-type   transaction-type
-             :collectible?       collectible?}]
-           [user-summary
-            {:summary-type        :status-account
-             :accessibility-label :summary-from-label
-             :label               (i18n/label :t/from-capitalized)
-             :account-props       from-account-props
-             :theme               theme}]
-           [user-summary
-            {:summary-type        (if (= transaction-type :tx/bridge)
-                                    :status-account
-                                    :account)
-             :accessibility-label :summary-to-label
-             :label               (i18n/label :t/to-capitalized)
-             :account-props       (if (= transaction-type :tx/bridge)
-                                    from-account-props
-                                    user-props)
-             :recipient           recipient
-             :bridge-tx?          (= transaction-type :tx/bridge)
-             :account-to?         true
-             :theme               theme}]]]]))))
+  (let [theme                     (quo.theme/use-theme)
+        send-transaction-data     (rf/sub [:wallet/wallet-send])
+        {:keys [token-display-name collectible amount
+                route
+                to-address bridge-to-chain-id type
+                recipient]}       send-transaction-data
+        collectible?              (some? collectible)
+        image-url                 (when collectible
+                                    (get-in collectible [:preview-url :uri]))
+        transaction-type          (:tx-type send-transaction-data)
+        estimated-time-min        (reduce + (map :estimated-time route))
+        token-symbol              (or token-display-name
+                                      (-> send-transaction-data :token :symbol))
+        first-route               (first route)
+        native-currency-symbol    (get-in first-route
+                                          [:from :native-currency-symbol])
+        fee-formatted             (rf/sub [:wallet/wallet-send-fee-fiat-formatted
+                                           native-currency-symbol])
+        account                   (rf/sub [:wallet/current-viewing-account])
+        account-color             (:color account)
+        bridge-to-network         (when bridge-to-chain-id
+                                    (rf/sub [:wallet/network-details-by-chain-id
+                                             bridge-to-chain-id]))
+        loading-suggested-routes? (rf/sub
+                                   [:wallet/wallet-send-loading-suggested-routes?])
+        transaction-for-signing   (rf/sub [:wallet/wallet-send-transaction-for-signing])
+        from-account-props        {:customization-color account-color
+                                   :size                32
+                                   :emoji               (:emoji account)
+                                   :type                :default
+                                   :name                (:name account)
+                                   :address             (utils/get-shortened-address
+                                                         (:address
+                                                          account))}
+        user-props                {:full-name to-address
+                                   :address   (utils/get-shortened-address
+                                               to-address)}
+        sign-on-keycard?          (get-in transaction-for-signing
+                                          [:signingDetails :signOnKeycard])]
+    (hot-reload/use-safe-unmount #(rf/dispatch [:wallet/clean-route-data-for-collectible-tx]))
+    ;; In token send flow we already have transaction built when
+    ;; we reach confirmation screen. But in send collectible flow
+    ;; routes request happens at the same time with navigation to
+    ;; confirmation screen. So we need to build the transaction as soon
+    ;; as route is available.
+    (rn/use-effect
+     (fn []
+       (when (and (send-utils/tx-type-collectible? transaction-type)
+                  first-route)
+         (rf/dispatch [:wallet/build-transaction-for-collectible-route])))
+     [first-route])
+    [rn/view {:style {:flex 1}}
+     [floating-button-page/view
+      {:footer-container-padding 0
+       :header                   [quo/page-nav
+                                  {:icon-name           :i/arrow-left
+                                   :on-press            events-helper/navigate-back
+                                   :margin-top          (safe-area/get-top)
+                                   :background          :blur
+                                   :accessibility-label :top-bar}]
+       :footer                   [:<>
+                                  [transaction-details
+                                   {:estimated-time-min estimated-time-min
+                                    :max-fees           fee-formatted
+                                    :to-network         bridge-to-network
+                                    :theme              theme
+                                    :route              route
+                                    :transaction-type   transaction-type}]
+                                  (when (and (not loading-suggested-routes?) route (seq route))
+                                    [standard-auth/slide-button
+                                     {:size :size-48
+                                      :track-text (if (= transaction-type :tx/bridge)
+                                                    (i18n/label :t/slide-to-bridge)
+                                                    (i18n/label :t/slide-to-send))
+                                      :container-style {:z-index 2}
+                                      :disabled? (not transaction-for-signing)
+                                      :customization-color account-color
+                                      :auth-button-label (i18n/label :t/confirm)
+                                      :on-complete (when sign-on-keycard?
+                                                     #(rf/dispatch
+                                                       [:wallet/prepare-signatures-for-transactions
+                                                        :send
+                                                        ""]))
+                                      :on-auth-success
+                                      (fn [psw]
+                                        (rf/dispatch
+                                         [:wallet/prepare-signatures-for-transactions :send
+                                          psw]))}])]
+       :gradient-cover?          true
+       :customization-color      (:color account)}
+      [rn/view
+       [transaction-title
+        {:token-display-name token-symbol
+         :amount             amount
+         :account            account
+         :type               type
+         :recipient          recipient
+         :route              route
+         :to-network         bridge-to-network
+         :image-url          image-url
+         :transaction-type   transaction-type
+         :collectible?       collectible?}]
+       [user-summary
+        {:summary-type        :status-account
+         :accessibility-label :summary-from-label
+         :label               (i18n/label :t/from-capitalized)
+         :account-props       from-account-props
+         :theme               theme}]
+       [user-summary
+        {:summary-type        (if (= transaction-type :tx/bridge)
+                                :status-account
+                                :account)
+         :accessibility-label :summary-to-label
+         :label               (i18n/label :t/to-capitalized)
+         :account-props       (if (= transaction-type :tx/bridge)
+                                from-account-props
+                                user-props)
+         :recipient           recipient
+         :bridge-tx?          (= transaction-type :tx/bridge)
+         :account-to?         true
+         :theme               theme}]]]]))

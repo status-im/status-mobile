@@ -742,22 +742,19 @@
                                                     (assoc params :network network)]))}])}]]])})))
 
 (rf/reg-event-fx
- :wallet/transaction-confirmation-navigate-back
+ :wallet/clean-route-data-for-collectible-tx
  (fn [{db :db}]
-   (let [tx-type                     (-> db :wallet :ui :send :tx-type)
-         keep-tx-data?               (#{:account-collectible-tab :wallet-stack}
-                                      (-> db :wallet :ui :send :entry-point))
-         delete-data-for-erc-721-tx? (and (= tx-type :tx/collectible-erc-721) (not keep-tx-data?))
-         erc-1155-tx?                (= tx-type :tx/collectible-erc-1155)]
-     {:db (cond-> db
-            delete-data-for-erc-721-tx?
-            (update-in [:wallet :ui :send] dissoc :tx-type :amount :route :suggested-routes)
-
-            erc-1155-tx?
-            (update-in [:wallet :ui :send] dissoc :route :suggested-routes))
-      :fx [(when (or delete-data-for-erc-721-tx? erc-1155-tx?)
-             [:dispatch [:wallet/stop-and-clean-suggested-routes]])
-           [:dispatch [:navigate-back]]]})))
+   (when (send-utils/tx-type-collectible? (-> db :wallet :ui :send :tx-type))
+     {:db (update-in db
+                     [:wallet :ui :send]
+                     dissoc
+                     :amount
+                     :route
+                     :suggested-routes
+                     :last-request-uuid
+                     :transaction-for-signing
+                     :sign-transactions-callback-fx)
+      :fx [[:dispatch [:wallet/stop-and-clean-suggested-routes]]]})))
 
 (rf/reg-event-fx
  :wallet/collectible-amount-navigate-back
