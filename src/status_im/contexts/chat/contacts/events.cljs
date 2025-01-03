@@ -100,7 +100,7 @@
 (rf/reg-event-fx :contact.ui/send-contact-request send-contact-request)
 
 (defn send-contact-request-error
-  [id error]
+  [_ [id error]]
   (log/error "Failed to send contact request"
              {:id    id
               :error error
@@ -126,7 +126,7 @@
 (rf/reg-event-fx :contact.ui/remove-contact-pressed remove-contact)
 
 (defn remove-contact-error
-  [public-key error]
+  [_ [public-key error]]
   (log/error "failed to remove contact" public-key error))
 
 (rf/reg-event-fx :contacts/remove-contact-error remove-contact-error)
