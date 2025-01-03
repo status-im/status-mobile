@@ -1,7 +1,6 @@
 (ns status-im.contexts.chat.messenger.messages.delete-message-for-me.events
   (:require
     [status-im.contexts.chat.messenger.messages.list.events :as message-list]
-    [taoensso.timbre :as log]
     [utils.datetime :as datetime]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
@@ -120,9 +119,10 @@
 
 (defn delete-and-sync-error
   [_ [message-id error]]
-  (log/error "failed to delete message for me, message id: "
-             {:message-id message-id
-              :error      error}))
+  {:fx [[:effects.log/error
+         ["failed to delete message for me, message id:"
+          {:message-id message-id
+           :error      error}]]]})
 
 (rf/reg-event-fx :chat/delete-message-for-me-and-sync-error delete-and-sync-error)
 
