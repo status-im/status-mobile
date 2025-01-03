@@ -119,7 +119,7 @@
 (rf/reg-event-fx :chat.ui/delete-message-for-me-and-sync delete-and-sync)
 
 (defn delete-and-sync-error
-  [message-id error]
+  [_ [message-id error]]
   (log/error "failed to delete message for me, message id: "
              {:message-id message-id
               :error      error}))
