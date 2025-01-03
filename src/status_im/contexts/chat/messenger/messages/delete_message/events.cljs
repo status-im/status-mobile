@@ -40,12 +40,6 @@
                  :deleted-undoable-till)
       (update-db-clear-undo-timer db chat-id message-id))))
 
-(defn- update-db-delete-locally-without-time-limit
-  "Delete message in re-frame db, used to handle received removed-messages"
-  [db chat-id message-id deleted-by]
-  (when (get-in db [:messages chat-id message-id])
-    (update-in db [:messages chat-id message-id] assoc :deleted? true :deleted-by deleted-by)))
-
 (defn- should-and-able-to-unpin-to-be-deleted-message
   "check
   1. if the to-be deleted message is pinned
@@ -67,10 +61,15 @@
                                      message-id])]
     (and pinned message-pin-enabled)))
 
-(rf/defn delete
+(defn toast-undo-delete-message-for-everyone
+  []
+  (rf/dispatch [:chat.ui/undo-all-delete-message])
+  (rf/dispatch [:toasts/close
+                :delete-message-for-everyone]))
+
+(defn delete
   "Delete message now locally and broadcast after undo time limit timeout"
-  {:events [:chat.ui/delete-message]}
-  [{:keys [db]} {:keys [chat-id message-id]} undo-time-limit-ms]
+  [{:keys [db]} [{:keys [chat-id message-id]} undo-time-limit-ms]]
   (when-let [message (get-in db [:messages chat-id message-id])]
     ;; all delete message toast are the same toast with id :delete-message-for-everyone new delete
     ;; operation will reset prev pending deletes' undo timelimit undo will undo all pending deletes
@@ -113,9 +112,7 @@
                                                :t/message-deleted-for-everyone-count)
           :duration                           undo-time-limit-ms
           :undo-duration                      (/ undo-time-limit-ms 1000)
-          :undo-on-press                      #(do (rf/dispatch [:chat.ui/undo-all-delete-message])
-                                                   (rf/dispatch [:toasts/close
-                                                                 :delete-message-for-everyone]))}]
+          :undo-on-press                      toast-undo-delete-message-for-everyone}]
         (when unpin?
           [:pin-message/send-pin-message-locally
            {:chat-id chat-id :message-id message-id :pinned false}])]
@@ -125,9 +122,10 @@
                                       :ms       undo-time-limit-ms})
                                    existing-undos)))))
 
-(rf/defn undo
-  {:events [:chat.ui/undo-delete-message]}
-  [{:keys [db]} {:keys [chat-id message-id should-pin-back?]}]
+(rf/reg-event-fx :chat.ui/delete-message delete)
+
+(defn undo
+  [{:keys [db]} [{:keys [chat-id message-id should-pin-back?]}]]
   (when (get-in db [:messages chat-id message-id])
     (let [effects (message-list/rebuild-message-list
                    {:db (update-db-undo-locally db chat-id message-id)}
@@ -138,13 +136,16 @@
         (assoc :dispatch
                [:pin-message/send-pin-message-locally (assoc message :pinned true)])))))
 
-(rf/defn undo-all
-  {:events [:chat.ui/undo-all-delete-message]}
+(rf/reg-event-fx :chat.ui/undo-delete-message undo)
+
+(defn undo-all
   [{:keys [db]}]
   (when-let [pending-undos (get-in db
                                    [:toasts :toasts :delete-message-for-everyone
                                     :message-deleted-for-everyone-undos])]
     {:dispatch-n (mapv #(vector :chat.ui/undo-delete-message %) pending-undos)}))
+
+(rf/reg-event-fx :chat.ui/undo-all-delete-message undo-all)
 
 (defn- check-before-delete-and-send
   "make sure message alredy deleted? locally and undo timelimit has passed"
@@ -155,9 +156,8 @@
          deleted-undoable-till
          (>= (datetime/timestamp) deleted-undoable-till))))
 
-(rf/defn delete-and-send
-  {:events [:chat.ui/delete-message-and-send]}
-  [{:keys [db]} {:keys [message-id chat-id]} force?]
+(defn delete-and-send
+  [{:keys [db]} [{:keys [message-id chat-id]} force?]]
   (when (get-in db [:messages chat-id message-id])
     (when (or force? (check-before-delete-and-send db chat-id message-id))
       (let [unpin-locally?
@@ -171,20 +171,29 @@
             (should-and-able-to-unpin-to-be-deleted-message db
                                                             {:chat-id    chat-id
                                                              :message-id message-id})]
-        {:db            (update-db-clear-undo-timer db chat-id message-id)
-         :json-rpc/call [{:method      "wakuext_deleteMessageAndSend"
-                          :params      [message-id]
-                          :js-response true
-                          :on-error    #(log/error "failed to delete message "
-                                                   {:message-id message-id :error %})
-                          :on-success  #(rf/dispatch
-                                         [:sanitize-messages-and-process-response
-                                          %])}]
-         :dispatch      [:pin-message/send-pin-message
-                         {:chat-id      chat-id
-                          :message-id   message-id
-                          :pinned       false
-                          :remote-only? (not unpin-locally?)}]}))))
+        {:db (update-db-clear-undo-timer db chat-id message-id)
+         :fx [[:json-rpc/call
+               [{:method      "wakuext_deleteMessageAndSend"
+                 :params      [message-id]
+                 :js-response true
+                 :on-error    [:chat/delete-and-send-error message-id]
+                 :on-success  [:sanitize-messages-and-process-response]}]]
+              [:dispatch
+               [:pin-message/send-pin-message
+                {:chat-id      chat-id
+                 :message-id   message-id
+                 :pinned       false
+                 :remote-only? (not unpin-locally?)}]]]}))))
+
+(rf/reg-event-fx :chat.ui/delete-message-and-send delete-and-send)
+
+(defn delete-and-send-error
+  [_ [message-id error]]
+  (log/error "failed to delete message "
+             {:message-id message-id
+              :error      error}))
+
+(rf/reg-event-fx :chat/delete-and-send-error delete-and-send-error)
 
 (defn- filter-pending-send-messages
   "traverse all messages find not yet synced deleted? messages"
@@ -194,23 +203,14 @@
        (map (fn [message] {:chat-id chat-id :message-id (first message)}))
        (concat acc)))
 
-(rf/defn send-all
+(defn send-all
   "Get all deleted messages that not yet synced with status-go and send them"
-  {:events [:chat.ui/send-all-deleted-messages]}
   [{:keys [db] :as cofx}]
-  (let [pending-send-messages (reduce-kv filter-pending-send-messages [] (:messages db))]
-    (apply rf/merge cofx (map #(delete-and-send % true) pending-send-messages))))
+  (let [pending-send-messages (reduce-kv filter-pending-send-messages [] (:messages db))
+        pending-effects       (map (fn [message]
+                                     (fn [cofx]
+                                       (delete-and-send cofx [message true])))
+                                   pending-send-messages)]
+    (apply rf/merge cofx pending-effects)))
 
-(rf/defn delete-messages-localy
-  "Mark messages :deleted? localy in client"
-  {:events [:chat.ui/delete-messages-localy]}
-  [{:keys [db]} messages chat-id]
-  (let [new-db (->> messages
-                    (filter #(get-in db [:messages chat-id (:message-id %)]))
-                    (reduce #(update-db-delete-locally-without-time-limit %1
-                                                                          chat-id
-                                                                          (:message-id %2)
-                                                                          (:deleted-by %2))
-                            db))]
-    (when new-db
-      (message-list/rebuild-message-list {:db new-db} chat-id))))
+(rf/reg-event-fx :chat.ui/send-all-deleted-messages send-all)

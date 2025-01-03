@@ -153,7 +153,8 @@
                 (link-preview/reset-all)
                 (fn [cofx]
                   (delete-for-me/sync-all cofx))
-                (delete-message/send-all)
+                (fn [cofx]
+                  (delete-message/send-all cofx))
                 (offload-messages chat-id)))))
 
 (rf/defn deactivate-chat

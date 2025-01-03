@@ -5,7 +5,6 @@
     [legacy.status-im.data-store.messages :as data-store.messages]
     [legacy.status-im.utils.deprecated-types :as types]
     [react-native.platform :as platform]
-    [status-im.contexts.chat.messenger.messages.delete-message.events :as delete-message]
     [status-im.contexts.chat.messenger.messages.list.events :as message-list]
     [status-im.contexts.chat.messenger.messages.list.state :as view.state]
     [utils.re-frame :as rf]))
@@ -119,6 +118,26 @@
   (when (get-in db [:messages chat-id message-id])
     {:db (assoc-in db [:messages chat-id message-id :outgoing-status] status)}))
 
+(defn- update-db-delete-locally-without-time-limit
+  "Delete message in re-frame db, used to handle received removed-messages"
+  [db chat-id message-id deleted-by]
+  (when (get-in db [:messages chat-id message-id])
+    (update-in db [:messages chat-id message-id] assoc :deleted? true :deleted-by deleted-by)))
+
+(rf/defn delete-messages-locally
+  "Mark messages :deleted? localy in client"
+  {:events [:chat.ui/delete-messages-localy]}
+  [{:keys [db]} messages chat-id]
+  (let [new-db (->> messages
+                    (filter #(get-in db [:messages chat-id (:message-id %)]))
+                    (reduce #(update-db-delete-locally-without-time-limit %1
+                                                                          chat-id
+                                                                          (:message-id %2)
+                                                                          (:deleted-by %2))
+                            db))]
+    (when new-db
+      (message-list/rebuild-message-list {:db new-db} chat-id))))
+
 (rf/defn handle-removed-messages
   [cofx removed-messages]
   (let [mark-as-deleted-fx (->> removed-messages
@@ -127,7 +146,7 @@
                                              :deleted-by (:deletedBy %)))
                                 (group-by :chatId)
                                 (mapv (fn [[chat-id messages]]
-                                        (delete-message/delete-messages-localy messages chat-id))))
+                                        (delete-messages-locally messages chat-id))))
         mark-as-seen-fx    (mapv
                             (fn [removed-message]
                               (let [chat-id    (:chatId removed-message)
