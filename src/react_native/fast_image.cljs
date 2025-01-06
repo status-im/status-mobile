@@ -58,10 +58,10 @@
 
 (defn- compare-props
   [old-props new-props]
-  (let [old-source (some-> old-props :source remove-port)
-        new-source (some-> new-props :source remove-port)]
+  (let [old-source (-> old-props (oops/oget :source) remove-port)
+        new-source (-> new-props (oops/oget :source) remove-port)]
     (and (= old-source new-source)
-         (= (dissoc old-props :source) (dissoc new-props :source)))))
+         (= (oops/oset! old-props :source nil) (oops/oset! new-props :source nil)))))
 
 (def fast-image
   (-> internal-fast-image
