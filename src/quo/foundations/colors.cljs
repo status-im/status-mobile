@@ -374,32 +374,6 @@
    opacity 0-100 (optional) - if set theme is ignored and goes to 50 suffix internally"
   (memoize resolve-color*))
 
-(def ^{:deprecated true :superseded-by "resolve-color"}
-     custom-color
-  "(custom-color color suffix opacity)
-   color   :primary/:purple/...
-   suffix  50/60
-   opacity 0-100 (optional)"
-  (memoize
-   (fn
-     ([color]
-      (custom-color color nil nil))
-     ([color suffix]
-      (custom-color color suffix nil))
-     ([color suffix opacity]
-      (let [resolved-color (cond
-                             (not (keyword? color))
-                             color
-
-                             (hex-string? (get colors-map color))
-                             (get colors-map color fallback-color)
-
-                             :else
-                             (get-in colors-map [color suffix] (get fallback-color suffix)))]
-        (if opacity
-          (alpha resolved-color (/ opacity 100))
-          resolved-color))))))
-
 (def shadow "rgba(9,16,28,0.08)")
 
 (defn theme-colors
