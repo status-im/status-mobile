@@ -58,10 +58,13 @@
 
 (defn- compare-props
   [old-props new-props]
-  (let [old-source (-> old-props (oops/oget :source) remove-port)
-        new-source (-> new-props (oops/oget :source) remove-port)]
+  (let [old-source      (-> old-props (oops/oget :source) remove-port)
+        new-source      (-> new-props (oops/oget :source) remove-port)
+        ;; NOTE: We copy the object because during component tests the original is frozen.
+        old-other-props (js-delete (js/Object.assign #js{} old-props) "source")
+        new-other-props (js-delete (js/Object.assign #js{} new-props) "source")]
     (and (= old-source new-source)
-         (= (oops/oset! old-props :source nil) (oops/oset! new-props :source nil)))))
+         (= old-other-props new-other-props))))
 
 (def fast-image
   (-> internal-fast-image
