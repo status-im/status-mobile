@@ -8,15 +8,15 @@
     (and pressed? (= theme :dark) blur?)          colors/white-opa-5
 
     pressed?                                      (colors/theme-colors
-                                                   (colors/custom-color customization-color 50 5)
-                                                   (colors/custom-color customization-color 60 5)
+                                                   (colors/override-color customization-color 5 50)
+                                                   (colors/override-color customization-color 5 60)
                                                    theme)
 
     (and (= state :active) (= theme :dark) blur?) colors/white-opa-10
 
     (= state :active)                             (colors/theme-colors
-                                                   (colors/custom-color customization-color 50 10)
-                                                   (colors/custom-color customization-color 60 10)
+                                                   (colors/override-color customization-color 10 50)
+                                                   (colors/override-color customization-color 10 60)
                                                    theme)
 
     :else                                         :transparent))

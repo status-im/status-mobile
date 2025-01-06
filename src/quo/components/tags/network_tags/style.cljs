@@ -8,14 +8,14 @@
    :align-self       :flex-start
    :background-color (when (= status :error)
                        (colors/theme-colors
-                        (colors/custom-color :danger 50 10)
-                        (colors/custom-color :danger 60 10)
+                        (colors/override-color :danger 10 50)
+                        (colors/override-color :danger 10 60)
                         theme))
    :border-width     1
    :border-color     (cond (= status :error)
                            (colors/theme-colors
-                            (colors/custom-color :danger 50 20)
-                            (colors/custom-color :danger 60 20)
+                            (colors/override-color :danger 20 50)
+                            (colors/override-color :danger 20 60)
                             theme)
                            (and blur? (= status :default)) (colors/theme-colors
                                                             colors/neutral-80-opa-5

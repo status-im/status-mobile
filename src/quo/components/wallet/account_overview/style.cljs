@@ -44,8 +44,8 @@
 (defn dot-separator
   [customization-color theme]
   {:background-color (colors/theme-colors
-                      (colors/custom-color customization-color 60 40)
-                      (colors/custom-color customization-color 50 40)
+                      (colors/override-color customization-color 40 60)
+                      (colors/override-color customization-color 40 50)
                       theme)
    :margin-right     4
    :margin-top       8
