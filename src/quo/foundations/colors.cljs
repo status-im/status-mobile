@@ -345,6 +345,28 @@
        suffix  (get-from-colors-map suffix)
        opacity (alpha (/ opacity 100))))))
 
+(defn- override-color*
+  ([color]
+   (resolve-color* color nil nil))
+  ([color opacity]
+   (resolve-color* color opacity nil))
+  ([color opacity color-suffix]
+   (let [suffix (cond
+                  (not (keyword? color)) nil
+                  color-suffix           color-suffix
+                  opacity                50
+                  :else                  60)]
+     (cond-> color
+       suffix  (get-from-colors-map suffix)
+       opacity (alpha (/ opacity 100))))))
+
+(def override-color
+  "(override-color color opacity suffix)
+   color    hex string or keyword - (resolves from custom, network and semantic colors)
+   opacity  0-100 (optional) 
+   suffix   optionally override the color suffix to use when retrieving the color"
+  (memoize override-color*))
+
 (def resolve-color
   "(resolve-color color theme opacity)
    color   hex string or keyword (resolves from custom, network and semantic colors)
