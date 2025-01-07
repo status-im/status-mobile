@@ -1,5 +1,6 @@
 (ns status-im.contexts.wallet.add-account.create-account.utils
-  (:require [status-im.constants :as constants]))
+  (:require [clojure.string :as string]
+            [status-im.constants :as constants]))
 
 (defn first-derived-account
   [account-data keypair-type]
@@ -56,3 +57,13 @@
      :derived-from               address
      :last-used-derivation-index 0
      :accounts                   [account-config]}))
+
+(defn legacy-path?
+  [s]
+  (re-matches #"m/\d+" s))
+
+(defn normalize-path
+  [path]
+  (if (legacy-path? path)
+    (str constants/path-wallet-root "/" (last (string/split path "/")))
+    path))

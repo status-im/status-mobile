@@ -12,6 +12,7 @@
     [status-im.common.standard-authentication.core :as standard-auth]
     [status-im.constants :as constants]
     [status-im.contexts.wallet.add-account.create-account.style :as style]
+    [status-im.contexts.wallet.add-account.create-account.utils :as create-account.utils]
     [status-im.contexts.wallet.common.utils :as common.utils]
     [status-im.contexts.wallet.sheets.account-origin.view :as account-origin]
     [status-im.feature-flags :as ff]
@@ -255,11 +256,12 @@
                                               {:on-complete
                                                #(rf/dispatch
                                                  [:keycard/connect-derive-address-and-add-account
-                                                  {:pin                  %
+                                                  {:pin %
                                                    :derived-from-address derived-from
-                                                   :key-uid              key-uid
-                                                   :derivation-path      @derivation-path
-                                                   :account-preferences  preferences}])}])))
+                                                   :key-uid key-uid
+                                                   :derivation-path (create-account.utils/normalize-path
+                                                                     @derivation-path)
+                                                   :account-preferences preferences}])}])))
                                         [derived-from])]
         (rn/use-effect
          #(rf/dispatch

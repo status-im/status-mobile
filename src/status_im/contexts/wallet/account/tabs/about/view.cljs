@@ -7,6 +7,7 @@
     [status-im.contexts.profile.utils :as profile.utils]
     [status-im.contexts.shell.constants :as constants]
     [status-im.contexts.wallet.account.tabs.about.style :as style]
+    [status-im.contexts.wallet.add-account.create-account.utils :as create-account.utils]
     [status-im.contexts.wallet.common.utils :as utils]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
@@ -103,5 +104,5 @@
          :stored              (if keypair-keycard? :on-keycard :on-device)
          :profile-picture     (profile.utils/photo profile)
          :customization-color customization-color
-         :derivation-path     path
+         :derivation-path     (create-account.utils/normalize-path path)
          :keypair-name        keypair-name}])]))
