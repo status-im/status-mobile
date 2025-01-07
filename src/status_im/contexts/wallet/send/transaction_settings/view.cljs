@@ -131,8 +131,6 @@
        :button-one-props {:on-press #(rf/dispatch [:hide-bottom-sheet])}
        :button-one-label (i18n/label :t/confirm)}]]))
 
-
-
 (defn- hint
   [{:keys [error? text]}]
   [quo/network-tags
