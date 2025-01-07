@@ -7,6 +7,7 @@
     legacy.status-im.chat.models.loading
     legacy.status-im.data-store.chats
     legacy.status-im.data-store.visibility-status-updates
+    legacy.status-im.ens.core
     legacy.status-im.fleet.core
     legacy.status-im.group-chats.core
     legacy.status-im.log-level.core
