@@ -58,11 +58,11 @@
 
 (defn- compare-props
   [old-props new-props]
+  ;; NOTE: We copy the object because during component tests the original is frozen
   (let [old-source      (-> old-props (oops/oget :source) remove-port)
         new-source      (-> new-props (oops/oget :source) remove-port)
-        ;; NOTE: We copy the object because during component tests the original is frozen.
-        old-other-props (js-delete (js/Object.assign #js{} old-props) "source")
-        new-other-props (js-delete (js/Object.assign #js{} new-props) "source")]
+        old-other-props (js-delete (js/Object.assign #js {} old-props) "source")
+        new-other-props (js-delete (js/Object.assign #js {} new-props) "source")]
     (and (= old-source new-source)
          (= old-other-props new-other-props))))
 
