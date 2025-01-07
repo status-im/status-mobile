@@ -69,6 +69,13 @@
                 (rf/dispatch [:keycard/migration.continue])
                 (rf/dispatch [:keycard/on-application-info-error error])))}]]]}))
 
+(defn- backup-recovery-phrase-success
+  [masked-seed-phrase]
+  (rf/dispatch [:navigate-back])
+  (rf/dispatch [:open-modal :screen/confirm-backup
+                {:masked-seed-phrase masked-seed-phrase
+                 :on-success         #(rf/dispatch [:keycard/migration.phrase-backed-up])}]))
+
 (rf/reg-event-fx :keycard/migration.get-phrase
  (fn [{:keys [db]}]
    (let [mnemonic (get-in db [:profile/profile :mnemonic])]
@@ -80,7 +87,7 @@
                {:on-success #(rf/dispatch [:keycard/migration.phrase-entered %])}]]
              [:dispatch
               [:open-modal :screen/backup-recovery-phrase-dark
-               {:on-success         #(rf/dispatch [:keycard/migration.phrase-backed-up])
+               {:on-success         backup-recovery-phrase-success
                 :masked-seed-phrase (security/mask-data mnemonic)}]])]})))
 
 (rf/reg-event-fx :keycard/migration.phrase-entered

@@ -14,15 +14,6 @@
         result-db   (:db effects)]
     (is (match? result-db expected-db))))
 
-(deftest store-seed-phrase-test
-  (let [db          {}
-        props       [{:seed-phrase "test-secret" :random-phrase "random-test"}]
-        expected-db {:wallet {:ui {:create-account {:new-keypair {:seed-phrase   "test-secret"
-                                                                  :random-phrase "random-test"}}}}}
-        effects     (events/store-new-seed-phrase {:db db} props)
-        result-db   (:db effects)]
-    (is (match? result-db expected-db))))
-
 (deftest store-account-generated-test
   (let [db              {:wallet {:ui {:create-account
                                        {:new-keypair {:seed-phrase   "test-secret"

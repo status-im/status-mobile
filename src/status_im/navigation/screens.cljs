@@ -542,7 +542,7 @@
                 :alias-id :wallet.create-account-edit-derivation-path}
     :component wallet-edit-derivation-path/view}
 
-   {:name      :screen/wallet.confirm-backup
+   {:name      :screen/confirm-backup
     :metrics   {:track?   true
                 :alias-id :wallet.create-account-backup-new-keypair-confirm}
     :options   {:insets {:top? true :bottom? true}}

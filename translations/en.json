@@ -458,6 +458,7 @@
   "community-thumbnail-image": "Thumbnail image",
   "community-thumbnail-upload": "Upload",
   "community-unmuted": "Community unmuted",
+  "complete-backup": "Complete backup",
   "complete-hardwallet-setup": "This card is now linked. You need it to sign transactions and unlock your keys",
   "completed": "Completed",
   "confirm": "Confirm",
@@ -971,6 +972,7 @@
   "ens-your-your-name": "Your ENS name",
   "ensure-both-devices-are-on-the-same-network": "Ensure both devices are on the same network",
   "ensure-qr-code-is-in-focus-to-scan": "Ensure that the QR code is in focus to scan",
+  "ensure-written-recovery": "Ensure you have written down your recovery phrase and have a safe place to keep it. Remember, anyone who has your recovery phrase has access to your funds.",
   "enter-12-words": "Enter the 12 words of your seed phrase, separated by single spaces",
   "enter-a-private-key": "Enter a private key",
   "enter-a-seed-phrase": "Enter a seed phrase",
@@ -2918,6 +2920,7 @@
     "other": "{{count}} words"
   },
   "write-down-and-store-securely": "Write codes down\n & store them securely",
+  "written-seed-ready": "I have written down my seed recovery and ready to complete backup and remove it from device",
   "wrong-address": "Wrong address",
   "wrong-card": "Wrong card",
   "wrong-card-text": "Tapped card does not correspond to the keys you selected",
