@@ -14,10 +14,13 @@
     source))
 
 (defn- remove-port
-  [source]
-  (if (string? source)
-    (string/replace-first source #":\d+" "")
-    (string/replace-first (oops/oget source :uri) #":\d+" "")))
+  [^js/Object source]
+  (cond
+    (string? source)               (string/replace-first source #":\d+" "")
+    (.hasOwnProperty source "uri") (some-> source
+                                     (oops/oget "uri")
+                                     (string/replace-first #":\d+" ""))
+    :else source))
 
 (defn- placeholder
   [{:keys [style fallback-content error? loaded?]}]
@@ -59,8 +62,8 @@
 (defn- compare-props
   [old-props new-props]
   ;; NOTE: We copy the object because during component tests the original is frozen
-  (let [old-source      (-> old-props (oops/oget :source) remove-port)
-        new-source      (-> new-props (oops/oget :source) remove-port)
+  (let [old-source      (some-> old-props (oops/oget "source") remove-port)
+        new-source      (some-> new-props (oops/oget "source") remove-port)
         old-other-props (js-delete (js/Object.assign #js {} old-props) "source")
         new-other-props (js-delete (js/Object.assign #js {} new-props) "source")]
     (and (= old-source new-source)
