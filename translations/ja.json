@@ -1913,7 +1913,6 @@
     "sync-code-generated": "同期コードが生成されました",
     "sync-devices-complete-sub-title": "お使いのデバイスが同期されました",
     "sync-devices-complete-title": "デバイスの同期が完了しました！",
-    "sync-devices-error-sub-title": "両方のデバイスの電源がオンになっていて、インターネットに接続されていることを確認してください。",
     "sync-devices-error-title": "おっと、何かが間違っています",
     "sync-devices-result-sub-title": "お使いのデバイスが同期されました",
     "sync-devices-sub-title": "同期が完了するまで、両方のデバイスの電源を入れ、インターネットに接続したままにしてください。",
