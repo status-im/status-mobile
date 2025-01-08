@@ -26,9 +26,10 @@
                                      :id      :screen/profile.profiles
                                      :options (options/dark-root-options)}}]}}}
 
-   :screen/onboarding.syncing-results
-   {:root {:stack {:children [{:component {:name    :screen/onboarding.syncing-results
-                                           :id      :screen/onboarding.syncing-results
+   :screen/onboarding.syncing-biometric
+   {:root {:stack {:id       :screen/onboarding.enable-biometrics
+                   :children [{:component {:name    :screen/onboarding.enable-biometrics
+                                           :id      :screen/onboarding.enable-biometrics
                                            :options (options/dark-root-options)}}]}}}})
 
 (defn old-roots

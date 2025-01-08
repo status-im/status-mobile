@@ -37,18 +37,19 @@
 ;; login phase 1: we want to load and show chats faster, so we split login into 2 phases
 (rf/reg-event-fx :profile.login/login-existing-profile
  (fn [{:keys [db]} [settings-data account]]
-   (let [settings           (data-store.settings/rpc->settings settings-data)
-         profile-overview   (profile.rpc/rpc->profiles-overview account)
-         log-level          (or (:log-level settings) config/log-level)
-         pairing-completed? (= (get-in db [:syncing :pairing-status]) :completed)
-         new-db             (-> db
-                                (assoc :profile/profile
-                                       (merge profile-overview
-                                              settings
-                                              {:log-level log-level}))
-                                (assoc-in [:activity-center :loading?] true)
-                                (dissoc :centralized-metrics/onboarding-enabled?))
-         keycard?           (get-in new-db [:profile/profile :keycard-pairing])]
+   (let [settings                 (data-store.settings/rpc->settings settings-data)
+         profile-overview         (profile.rpc/rpc->profiles-overview account)
+         log-level                (or (:log-level settings) config/log-level)
+         pairing-completed?       (= (get-in db [:syncing :pairing-status]) :completed)
+         biometric-supported-type (get-in db [:biometrics :supported-type])
+         new-db                   (-> db
+                                      (assoc :profile/profile
+                                             (merge profile-overview
+                                                    settings
+                                                    {:log-level log-level}))
+                                      (assoc-in [:activity-center :loading?] true)
+                                      (dissoc :centralized-metrics/onboarding-enabled?))
+         keycard?                 (get-in new-db [:profile/profile :keycard-pairing])]
      {:db (cond-> new-db
             pairing-completed? (dissoc :syncing))
       :fx (into [[:json-rpc/call
@@ -81,10 +82,10 @@
                  (when keycard?
                    [:dispatch [:centralized-metrics/track :metric/keycard-login]])]
                 (cond
-                  pairing-completed?
-                  [[:dispatch [:onboarding/finish-onboarding false]]]
+                  (and pairing-completed? biometric-supported-type)
+                  [[:dispatch [:update-theme-and-init-root :screen/onboarding.syncing-biometric]]]
 
-                  (get db :onboarding/new-account?)
+                  (or pairing-completed? (get db :onboarding/new-account?))
                   [[:dispatch [:onboarding/finalize-setup]]
                    [:dispatch [:onboarding/finish-onboarding false]]]
 

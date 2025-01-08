@@ -52,7 +52,7 @@
       (contains? view-ids-to-track view-id)
       (conj (navigation-event (name view-id)))
 
-      (= :screen/onboarding.syncing-results view-id)
+      (#{:screen/onboarding.preparing-status :screen/onboarding.syncing-biometric} view-id)
       (conj (key-value-event "onboarding-completed"))
 
       (= :screen/keycard.migrate.success view-id)

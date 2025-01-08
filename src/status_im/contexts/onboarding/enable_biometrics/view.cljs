@@ -6,7 +6,6 @@
     [status-im.common.biometric.utils :as biometric]
     [status-im.common.resources :as resources]
     [status-im.contexts.onboarding.enable-biometrics.style :as style]
-    [status-im.navigation.state :as state]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
@@ -25,7 +24,7 @@
         bio-type-label           (biometric/get-label-by-type supported-biometric-type)
         profile-color            (or (:color (rf/sub [:onboarding/profile]))
                                      (rf/sub [:profile/customization-color]))
-        syncing-results?         (= :screen/onboarding.syncing-results @state/root-id)
+        syncing?                 (= (rf/sub [:view-id]) :screen/onboarding.syncing-biometric)
         biometric-type           (rf/sub [:biometrics/supported-type])]
     [rn/view {:style (style/buttons insets)}
      [quo/button
@@ -39,10 +38,8 @@
       {:accessibility-label :maybe-later-button
        :background          :blur
        :type                :grey
-       :on-press            #(rf/dispatch (if syncing-results?
-                                            [:navigate-to-within-stack
-                                             [:screen/onboarding.enable-notifications
-                                              :screen/onboarding.enable-biometrics]]
+       :on-press            #(rf/dispatch (if syncing?
+                                            [:onboarding/finish-onboarding false]
                                             [:onboarding/create-account-and-login]))
        :container-style     {:margin-top 12}}
       (i18n/label :t/maybe-later)]]))

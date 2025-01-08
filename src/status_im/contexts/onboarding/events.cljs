@@ -38,12 +38,6 @@
  (fn [{:keys [db]}]
    {:db (dissoc db :onboarding/navigated-to-enter-seed-phrase-from-screen)}))
 
-(rf/reg-event-fx :onboarding/navigate-to-enable-notifications-from-syncing
- (fn [{:keys [db]}]
-   {:db       (dissoc db :onboarding/profile)
-    :dispatch [:navigate-to-within-stack
-               [:screen/onboarding.enable-notifications :screen/onboarding.enable-biometrics]]}))
-
 (rf/reg-event-fx :onboarding/navigate-to-enable-notifications
  (fn [{:keys [db]}]
    {:dispatch [:navigate-to-within-stack
@@ -112,14 +106,6 @@
             (if biometric-supported-type
               [:navigate-to-within-stack [:screen/onboarding.enable-biometrics from-screen]]
               [:onboarding/create-account-and-login])]]})))
-
-(rf/reg-event-fx
- :onboarding/navigate-to-enable-biometrics
- (fn [{:keys [db]}]
-   (let [supported-type (get-in db [:biometrics :supported-type])]
-     {:dispatch (if supported-type
-                  [:open-modal :screen/onboarding.enable-biometrics]
-                  [:open-modal :screen/onboarding.enable-notifications])})))
 
 (rf/reg-event-fx
  :onboarding/seed-phrase-validated
@@ -200,7 +186,7 @@
                                   (rf/dispatch [:onboarding/set-auth-method auth-method])
                                   (when syncing?
                                     (rf/dispatch
-                                     [:onboarding/navigate-to-enable-notifications-from-syncing])))
+                                     [:onboarding/finish-onboarding false])))
                :on-error        #(log/error "failed to save biometrics"
                                             {:key-uid key-uid
                                              :error   %})}])]})))

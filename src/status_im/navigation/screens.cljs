@@ -53,7 +53,6 @@
     [status-im.contexts.onboarding.share-usage.view :as onboarding.share-usage]
     [status-im.contexts.onboarding.sign-in.view :as sign-in]
     [status-im.contexts.onboarding.syncing.progress.view :as syncing-devices]
-    [status-im.contexts.onboarding.syncing.results.view :as syncing-results]
     [status-im.contexts.preview.feature-flags.view :as feature-flags]
     [status-im.contexts.preview.quo.component-preview.view :as component-preview]
     [status-im.contexts.preview.quo.main :as quo.preview]
@@ -855,13 +854,6 @@
                :popGesture false}
    :component syncing-devices/view-onboarding})
 
-(def onboarding-syncing-results
-  {:name      :screen/onboarding.syncing-results
-   :metrics   {:track?   true
-               :alias-id :onboarding.syncing-completed}
-   :options   {:theme :dark}
-   :component syncing-results/view})
-
 (def onboarding-screens
   [onboarding-intro
    onboarding-create-profile
@@ -875,8 +867,7 @@
    onboarding-sign-in-intro
    onboarding-sign-in
    onboarding-syncing-progress
-   onboarding-syncing-progress-intro
-   onboarding-syncing-results])
+   onboarding-syncing-progress-intro])
 
 (def keycard-screens
   [{:name      :screen/keycard.check

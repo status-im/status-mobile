@@ -41,24 +41,25 @@
 
 (defn try-again-button
   [profile-color logged-in?]
-  [quo/bottom-actions
-   {:actions (if logged-in? :one-action :two-vertical-actions)
-    :blur? true
-    :container-style {:height (when-not logged-in? 116)}
-    :button-two-label (i18n/label :t/use-recovery-phrase)
-    :button-two-props {:type                :primary
-                       :accessibility-label :try-seed-phrase-button
-                       :customization-color profile-color
-                       :size                40
-                       :on-press            navigate-to-enter-seed-phrase}
-    :button-one-label
-    (i18n/label :t/try-again)
-    :button-one-props
-    {:type                (if logged-in? :primary :grey)
-     :accessibility-label :try-again-later-button
-     :customization-color profile-color
-     :size                40
-     :on-press            #(try-again logged-in?)}}])
+  (let [two-vertical-actions-height 116]
+    [quo/bottom-actions
+     {:actions (if logged-in? :one-action :two-vertical-actions)
+      :blur? true
+      :container-style {:height (when-not logged-in? two-vertical-actions-height)}
+      :button-two-label (i18n/label :t/use-recovery-phrase)
+      :button-two-props {:type                :primary
+                         :accessibility-label :try-seed-phrase-button
+                         :customization-color profile-color
+                         :size                40
+                         :on-press            navigate-to-enter-seed-phrase}
+      :button-one-label
+      (i18n/label :t/try-again)
+      :button-one-props
+      {:type                (if logged-in? :primary :grey)
+       :accessibility-label :try-again-later-button
+       :customization-color profile-color
+       :size                40
+       :on-press            #(try-again logged-in?)}}]))
 
 (defn- illustration
   [pairing-progress?]
