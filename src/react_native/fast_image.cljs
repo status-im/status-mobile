@@ -2,9 +2,9 @@
   (:require
     ["react-native-fast-image" :as FastImage]
     [clojure.string :as string]
-    [oops.core :as oops]
     [react-native.core :as rn]
-    [reagent.core :as reagent]))
+    [reagent.core :as reagent]
+    [utils.transforms :as transforms]))
 
 (defn- build-source
   [source]
@@ -14,12 +14,10 @@
     source))
 
 (defn- remove-port
-  [^js/Object source]
+  [source]
   (cond
-    (string? source)               (string/replace-first source #":\d+" "")
-    (.hasOwnProperty source "uri") (some-> source
-                                     (oops/oget "uri")
-                                     (string/replace-first #":\d+" ""))
+    (string? source) (string/replace-first source #":\d+" "")
+    (:uri source)    (some-> source :uri (string/replace-first #":\d+" ""))
     :else source))
 
 (defn- placeholder
@@ -61,13 +59,12 @@
 
 (defn- compare-props
   [old-props new-props]
-  ;; NOTE: We copy the object because during component tests the original is frozen
-  (let [old-source      (some-> old-props (oops/oget "source") remove-port)
-        new-source      (some-> new-props (oops/oget "source") remove-port)
-        old-other-props (js-delete (js/Object.assign #js {} old-props) "source")
-        new-other-props (js-delete (js/Object.assign #js {} new-props) "source")]
+  (let [old-props-clj (transforms/js->clj old-props)
+        new-props-clj (transforms/js->clj new-props)
+        old-source    (some-> old-props-clj :source remove-port)
+        new-source    (some-> new-props-clj :source remove-port)]
     (and (= old-source new-source)
-         (= old-other-props new-other-props))))
+         (= (dissoc old-props-clj :source) (dissoc new-props-clj :source)))))
 
 (def fast-image
   (-> internal-fast-image
