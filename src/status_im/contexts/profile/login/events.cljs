@@ -1,7 +1,9 @@
 (ns status-im.contexts.profile.login.events
   (:require
     [legacy.status-im.data-store.settings :as data-store.settings]
+    [legacy.status-im.mailserver.core :as mailserver]
     [native-module.core :as native-module]
+    [oops.core :as oops]
     [status-im.common.keychain.events :as keychain]
     [status-im.config :as config]
     [status-im.constants :as constants]
@@ -10,7 +12,8 @@
     [taoensso.timbre :as log]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]
-    [utils.security.core :as security]))
+    [utils.security.core :as security]
+    [utils.transforms :as transforms]))
 
 (rf/reg-event-fx :profile.login/login
  (fn [{:keys [db]}]
@@ -132,9 +135,12 @@
               :on-error   #(log/error "node-info: failed error" %)}]]]})))
 
 (rf/reg-event-fx :profile.login/messenger-started
- (fn [{:keys [db]} [_]]
-   (let [new-account? (get db :onboarding/new-account?)]
-     {:db (assoc db :messenger/started? true)
+ (fn [{:keys [db]} [response-js]]
+   (let [mailservers  (transforms/js->clj (oops/oget response-js :mailservers))
+         new-account? (get db :onboarding/new-account?)]
+     {:db (-> db
+              (assoc :messenger/started? true)
+              (mailserver/add-mailservers mailservers))
       :fx [[:fetch-chats-preview
             {:chat-preview-type constants/chat-preview-type-non-community
              :on-success        (fn [result]

@@ -38,11 +38,6 @@
 ;;mailserver
 (reg-root-key-sub :mailserver/current-id :mailserver/current-id)
 (reg-root-key-sub :mailserver/mailservers :mailserver/mailservers)
-(reg-root-key-sub :mailserver.edit/mailserver :mailserver.edit/mailserver)
-(reg-root-key-sub :mailserver/state :mailserver/state)
-(reg-root-key-sub :mailserver/pending-requests :mailserver/pending-requests)
-(reg-root-key-sub :mailserver/request-error? :mailserver/request-error)
-(reg-root-key-sub :mailserver/fetching-gaps-in-progress :mailserver/fetching-gaps-in-progress)
 
 ;;contacts
 (reg-root-key-sub :contacts/contacts-raw :contacts/contacts)

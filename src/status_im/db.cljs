@@ -26,8 +26,6 @@
    :peers-summary                      []
    :transport/message-envelopes        {}
    :mailserver/mailservers             (fleet/default-mailservers {})
-   :mailserver/topics                  {}
-   :mailserver/pending-requests        0
    :chat/cooldowns                     0
    :chat/inputs                        {}
    :chat/cooldown-enabled?             false

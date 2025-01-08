@@ -1,6 +1,5 @@
 (ns legacy.status-im.subs.mailservers
   (:require
-    [legacy.status-im.fleet.core :as fleet]
     [re-frame.core :as re-frame]))
 
 (re-frame/reg-sub
@@ -17,10 +16,3 @@
  :<- [:mailserver/mailservers]
  (fn [[current-fleet mailservers]]
    (current-fleet mailservers)))
-
-(re-frame/reg-sub
- :mailserver/preferred-id
- :<- [:profile/profile]
- (fn [multiaccount]
-   (get-in multiaccount
-           [:pinned-mailservers (fleet/current-fleet-sub multiaccount)])))

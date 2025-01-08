@@ -1,6 +1,7 @@
 (ns status-im.common.signals.events
   (:require
     [legacy.status-im.chat.models.message :as models.message]
+    [legacy.status-im.mailserver.core :as mailserver]
     [legacy.status-im.visibility-status-updates.core :as visibility-status-updates]
     [oops.core :as oops]
     [status-im.common.pairing.events :as pairing]
@@ -62,6 +63,12 @@
 
       "messages.new"
       (messages.transport/sanitize-messages-and-process-response cofx event-js true)
+
+      "mailserver.changed"
+      (mailserver/handle-mailserver-changed cofx (oops/oget event-js :id))
+
+      "mailserver.available"
+      (mailserver/handle-mailserver-available cofx (oops/oget event-js :id))
 
       "discovery.summary"
       (summary cofx (transforms/js->clj event-js))
