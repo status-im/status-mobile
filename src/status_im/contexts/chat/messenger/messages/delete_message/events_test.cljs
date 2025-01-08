@@ -157,8 +157,9 @@
                               :message-id   mid
                               :pinned       false
                               :remote-only? true}]]]]
-          (is (match? effects {:db expected-db
-                               :fx expected-fx}))))
+          (is (match? effects
+                      {:db expected-db
+                       :fx expected-fx}))))
       (testing "clean undo timer"
         (let [expected-db {:messages {cid {mid {:id mid :deleted? true}}}}
               effects     (delete-message/delete-and-send
