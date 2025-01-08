@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+set -eo pipefail
+
+if [[ -z $(git diff --cached --name-only -r | grep status-go-version.json) ]]; then
+  exit 0 # No status-go-version.json changes found.
+fi
+
+# MacOS sed is garbage and interprets newlines differently.
+[[ "$(uname)" -eq "Darwin" ]] && NL=$'\\\n' || NL="\n"
+
+MERGE_BASE=$(git merge-base -a develop "$(git rev-parse --abbrev-ref HEAD)" develop)
+GO_COMMIT_MERGE_BASE=$(git show "${MERGE_BASE}":status-go-version.json | awk -F'"' '/commit-sha1/{print $4}')
+GO_COMMIT_CURRENT=$(awk -F'"' '/commit-sha1/{print $4}' status-go-version.json)
+GITHUB_LINK_PREFIX="https://github.com/status-im/status-go/compare/"
+# Link to the current StatusGo changelog being updated.
+GITHUB_LINK="${GITHUB_LINK_PREFIX}${GO_COMMIT_MERGE_BASE::8}...${GO_COMMIT_CURRENT::8}"
+
+COMMIT_MSG_FILE=$1
+# Check if the commit message already contains the link (rebase) and update otherwise insert into line2
+if ! grep -qF "${GITHUB_LINK_PREFIX}" "${COMMIT_MSG_FILE}" >/dev/null; then
+  sed -in'' -e "2i\\
+${NL}${GITHUB_LINK}" "${COMMIT_MSG_FILE}"
+else
+  sed -in'' -e "s;^${GITHUB_LINK_PREFIX}.*$;${GITHUB_LINK};" "${COMMIT_MSG_FILE}"
+fi
