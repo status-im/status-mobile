@@ -300,7 +300,7 @@
         keypair              (get keypairs selected-keypair-uid)]
     (boolean (seq (:keycards keypair)))))
 
-(defn transform-collectible
+(defn- transform-collectible
   [{:keys [added updated removed]}]
   (let [entry (first (remove nil? (concat added updated removed)))]
     (when entry

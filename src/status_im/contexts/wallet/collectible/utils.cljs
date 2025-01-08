@@ -6,7 +6,7 @@
             [taoensso.timbre :as log]
             [utils.number :as utils.number]))
 
-(defn total-collectible-balance
+(defn- total-collectible-balance
   ([ownership]
    (reduce (fn [total {:keys [balance]}]
              (+ total (or (js/parseInt balance) 0)))
@@ -89,6 +89,13 @@
                      acc)))
                {})
        vals))
+
+(defn group-collectibles-by-ownership-address
+  [collectible]
+  (->> (:ownership collectible)
+       (map (fn [{:keys [address]}]
+              [address collectible]))
+       (into {})))
 
 (defn sort-collectibles-by-name
   [collectibles]

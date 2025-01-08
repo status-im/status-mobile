@@ -346,17 +346,10 @@
                   {:event    :wallet/get-collectible-details-done
                    :response response})))))
 
-(defn group-collectibles-by-ownership-address
-  [collectible]
-  (->> (:ownership collectible)
-       (map (fn [{:keys [address]}]
-              [address collectible]))
-       (into {})))
-
 (rf/reg-event-fx
  :wallet/update-collectibles-data
  (fn [{:keys [db]} [collectible]]
-   (let [collectibles-by-address (group-collectibles-by-ownership-address collectible)]
+   (let [collectibles-by-address (collectible-utils/group-collectibles-by-ownership-address collectible)]
      {:db (update-in db
                      [:wallet :accounts]
                      #(reduce-kv
