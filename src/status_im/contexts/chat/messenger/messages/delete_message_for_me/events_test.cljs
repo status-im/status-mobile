@@ -177,12 +177,14 @@
                                          [{:method      "wakuext_deleteMessageForMeAndSync"
                                            :params      [chat-id message-id-1]
                                            :js-response true
-                                           :on-error    [:chat/delete-message-for-me-and-sync-error message-id-1]
+                                           :on-error    [:chat/delete-message-for-me-and-sync-error
+                                                         message-id-1]
                                            :on-success  [:sanitize-messages-and-process-response]}]]
                                         [:json-rpc/call
                                          [{:method      "wakuext_deleteMessageForMeAndSync"
                                            :params      [chat-id message-id-2]
                                            :js-response true
-                                           :on-error    [:chat/delete-message-for-me-and-sync-error message-id-2]
+                                           :on-error    [:chat/delete-message-for-me-and-sync-error
+                                                         message-id-2]
                                            :on-success  [:sanitize-messages-and-process-response]}]]]}]
       (is (match? effects expected)))))
