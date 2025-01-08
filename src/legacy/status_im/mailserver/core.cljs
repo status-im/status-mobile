@@ -19,7 +19,7 @@
    [{:method     "wakuext_toggleUseMailservers"
      :params     [value]
      :on-success #(log/info "successfully toggled use-mailservers" value)
-     :on-failure #(log/error "failed to toggle use-mailserver" value %)}]})
+     :on-error   #(log/error "failed to toggle use-mailserver" value %)}]})
 
 (rf/defn update-use-mailservers
   {:events [:mailserver.ui/use-history-switch-pressed]}
