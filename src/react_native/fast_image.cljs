@@ -17,8 +17,10 @@
   [source]
   (cond
     (string? source) (string/replace-first source #":\d+" "")
-    (:uri source)    (some-> source :uri (string/replace-first #":\d+" ""))
-    :else source))
+    (:uri source)    (some-> source
+                             :uri
+                             (string/replace-first #":\d+" ""))
+    :else            source))
 
 (defn- placeholder
   [{:keys [style fallback-content error? loaded?]}]
@@ -61,8 +63,12 @@
   [old-props new-props]
   (let [old-props-clj (transforms/js->clj old-props)
         new-props-clj (transforms/js->clj new-props)
-        old-source    (some-> old-props-clj :source remove-port)
-        new-source    (some-> new-props-clj :source remove-port)]
+        old-source    (some-> old-props-clj
+                              :source
+                              remove-port)
+        new-source    (some-> new-props-clj
+                              :source
+                              remove-port)]
     (and (= old-source new-source)
          (= (dissoc old-props-clj :source) (dissoc new-props-clj :source)))))
 
