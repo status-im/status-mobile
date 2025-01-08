@@ -1,0 +1,10 @@
+--- /tmp/tmp-status-mobile-61974dae4/tmp.zy6uXqO4gW/VibrancyViewNativeComponent.ts	2024-04-16 17:09:23.772623000 +0200
++++ ./node_modules/@react-native-community/blur/src/fabric/VibrancyViewNativeComponent.ts	2024-04-16 17:09:39.033737349 +0200
+@@ -10,6 +10,7 @@
+     | 'dark'
+     | 'light'
+     | 'xlight'
++    | 'transparent'
+     | 'prominent'
+     | 'regular'
+     | 'extraDark'
