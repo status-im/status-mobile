@@ -633,6 +633,7 @@
 (rf/reg-event-fx :wallet/clean-up-transaction-flow
  (fn [_]
    {:fx [[:dispatch [:dismiss-modal :screen/wallet.transaction-confirmation]]
+         [:dispatch [:dismiss-modal :screen/wallet.collectible]]
          [:dispatch [:wallet/clean-scanned-address]]
          [:dispatch [:wallet/clean-local-suggestions]]
          [:dispatch [:wallet/clean-send-address]]

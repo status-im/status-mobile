@@ -303,7 +303,7 @@
            ;; By doing it, we skip a blink while visiting the collectible detail page.
            [:dispatch-later
             {:ms       17
-             :dispatch [:navigate-to :screen/wallet.collectible]}]]})))
+             :dispatch [:open-modal :screen/wallet.collectible]}]]})))
 
 (defn- keep-not-empty-value
   [old-value new-value]

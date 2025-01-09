@@ -41,18 +41,18 @@
 (rf/reg-event-fx :wallet/navigate-to-account
  (fn [{:keys [db]} [address]]
    {:db (assoc-in db [:wallet :current-viewing-account-address] address)
-    :fx [[:dispatch [:navigate-to :screen/wallet.accounts address]]]}))
+    :fx [[:dispatch [:navigate-to :screen/wallet.accounts]]]}))
 
 (rf/reg-event-fx :wallet/navigate-to-account-within-stack
  (fn [{:keys [db]} [address]]
    {:db (assoc-in db [:wallet :current-viewing-account-address] address)
-    :fx [[:dispatch [:navigate-to-within-stack [:screen/wallet.accounts :shell-stack] address]]]}))
+    :fx [[:dispatch [:navigate-to-within-stack [:screen/wallet.accounts :shell-stack]]]]}))
 
 (rf/reg-event-fx :wallet/navigate-to-new-account
  (fn [{:keys [db]} [address]]
    {:db (assoc-in db [:wallet :current-viewing-account-address] address)
     :fx [[:dispatch [:hide-bottom-sheet]]
-         [:dispatch [:navigate-to :screen/wallet.accounts address]]
+         [:dispatch [:navigate-to :screen/wallet.accounts]]
          [:dispatch [:wallet/show-account-created-toast address]]]}))
 
 (rf/reg-event-fx :wallet/select-account-tab

@@ -518,6 +518,7 @@
 
    {:name      :screen/wallet.collectible
     :metrics   {:track? true}
+    :options   {:modalPresentationStyle :overCurrentContext}
     :component wallet-collectible/view}
 
    {:name      :screen/wallet.edit-account
