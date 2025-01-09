@@ -30,7 +30,8 @@
                                               :hashes      [prepared-hash]
                                               :on-success  (fn [signatures]
                                                              (rf/dispatch [:hide-bottom-sheet])
-                                                             (-> signatures first :signature on-success))
+                                                             (on-success (:signature (first
+                                                                                      signatures))))
                                               :on-failure  on-fail}]))}]]]}
        {:fx [[:effects.wallet/sign-message
               {:message    prepared-hash
