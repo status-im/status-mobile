@@ -3,7 +3,7 @@ library 'status-jenkins-lib@v1.9.13'
 
 /* Options section can't access functions in objects. */
 def isPRBuild = utils.isPRBuild()
-
+/* Test QR_CODE generation */
 pipeline {
   agent { label 'macos && arm64 && nix-2.19 && xcode-15.1' }
 
