@@ -2920,7 +2920,7 @@
     "other": "{{count}} words"
   },
   "write-down-and-store-securely": "Write codes down\n & store them securely",
-  "written-seed-ready": "I have written down my seed recovery and ready to complete backup and remove it from device",
+  "written-seed-ready": "I have written down my recovery phrase and ready to complete backup and remove it from device",
   "wrong-address": "Wrong address",
   "wrong-card": "Wrong card",
   "wrong-card-text": "Tapped card does not correspond to the keys you selected",
