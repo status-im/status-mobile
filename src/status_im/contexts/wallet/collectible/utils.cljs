@@ -79,3 +79,10 @@
                      acc)))
                {})
        vals))
+
+(defn sort-collectibles-by-name
+  [collectibles]
+  (sort-by (fn [collectible]
+             (let [name (-> collectible :collectible-data :name)]
+               [(if (or (nil? name) (empty? name)) 1 0) name]))
+           collectibles))

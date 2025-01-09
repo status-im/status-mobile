@@ -2,6 +2,7 @@
   (:require
     [clojure.string :as string]
     [re-frame.core :as re-frame]
+    [status-im.contexts.wallet.collectible.utils :as collectible-utils]
     [utils.collection]))
 
 (defn- filter-collectibles-in-chains
@@ -46,7 +47,10 @@
  :wallet/current-viewing-account-collectibles
  :<- [:wallet/current-viewing-account]
  (fn [current-account]
-   (-> current-account :collectibles add-collectibles-preview-url)))
+   (-> current-account
+       :collectibles
+       add-collectibles-preview-url
+       collectible-utils/sort-collectibles-by-name)))
 
 (re-frame/reg-sub
  :wallet/current-viewing-account-collectibles-in-selected-networks
@@ -71,7 +75,8 @@
           (apply interleave)
           (remove nil?)
           (utils.collection/distinct-by :id)
-          (add-collectibles-preview-url)))))
+          (add-collectibles-preview-url)
+          (collectible-utils/sort-collectibles-by-name)))))
 
 (re-frame/reg-sub
  :wallet/owned-collectibles-list-in-selected-networks

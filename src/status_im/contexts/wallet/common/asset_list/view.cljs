@@ -10,15 +10,11 @@
     token-name    :name
     total-balance :total-balance
     disabled?     :bridge-disabled?
+    fiat-value    :fiat-value
     :as           token}
    _ _
-   {:keys [currency currency-symbol on-token-press preselected-token-symbol prices-per-token]}]
-  (let [fiat-value       (utils/calculate-token-fiat-value
-                          {:currency         currency
-                           :balance          total-balance
-                           :token            token
-                           :prices-per-token prices-per-token})
-        crypto-formatted (utils/get-standard-crypto-format token total-balance prices-per-token)
+   {:keys [currency-symbol on-token-press preselected-token-symbol prices-per-token]}]
+  (let [crypto-formatted (utils/get-standard-crypto-format token total-balance prices-per-token)
         fiat-formatted   (utils/fiat-formatted-for-ui currency-symbol fiat-value)]
     [quo/token-network
      {:token       token-symbol
@@ -38,13 +34,11 @@
   (let [filtered-tokens  (rf/sub [:wallet/current-viewing-account-tokens-filtered
                                   {:query     search-text
                                    :chain-ids chain-ids}])
-        currency         (rf/sub [:profile/currency])
         currency-symbol  (rf/sub [:profile/currency-symbol])
         prices-per-token (rf/sub [:wallet/prices-per-token])]
     [gesture/flat-list
      {:data                         filtered-tokens
-      :render-data                  {:currency                 currency
-                                     :currency-symbol          currency-symbol
+      :render-data                  {:currency-symbol          currency-symbol
                                      :on-token-press           on-token-press
                                      :preselected-token-symbol preselected-token-symbol
                                      :prices-per-token         prices-per-token}

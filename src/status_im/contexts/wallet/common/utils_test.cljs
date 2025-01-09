@@ -345,3 +345,33 @@
           expected []]
       (is (= (utils/get-accounts-with-token-balance accounts token)
              expected)))))
+
+(deftest sort-tokens-test
+  (testing "Sort tokens by balance in descending order"
+    (let [tokens   [{:symbol "BTC" :balance 2}
+                    {:symbol "ETH" :balance 5}
+                    {:symbol "DAI" :balance 10}]
+          expected [{:symbol "DAI" :balance 10}
+                    {:symbol "ETH" :balance 5}
+                    {:symbol "BTC" :balance 2}]]
+      (is (= (utils/sort-tokens tokens) expected)))))
+
+(deftest sort-tokens-by-fiat-value-test
+  (testing "Sort tokens by fiat value in descending order"
+    (let [tokens   [{:symbol "BTC" :fiat-value 50000}
+                    {:symbol "ETH" :fiat-value 15000}
+                    {:symbol "DAI" :fiat-value 1000}]
+          expected [{:symbol "BTC" :fiat-value 50000}
+                    {:symbol "ETH" :fiat-value 15000}
+                    {:symbol "DAI" :fiat-value 1000}]]
+      (is (= (utils/sort-tokens-by-fiat-value tokens) expected)))))
+
+(deftest sort-tokens-by-name-test
+  (testing "Sort tokens by symbol in ascending order"
+    (let [tokens   [{:symbol "ETH"}
+                    {:symbol "DAI"}
+                    {:symbol "BTC"}]
+          expected [{:symbol "BTC"}
+                    {:symbol "DAI"}
+                    {:symbol "ETH"}]]
+      (is (= (utils/sort-tokens-by-name tokens) expected)))))
