@@ -1,26 +1,26 @@
 [comment]: # (To auto-close issue on merge, please insert the related issue number after # i.e fixes #566)
 fixes #...
 
-### Summary
+## Summary
 [comment]: # (Summarise the problem and how the pull request solves it)
 ...
 
-### Review notes
+## Review notes
 [comment]: # (Optional. Specify if something in particular should be looked at, or ignored, during review)
 
-### Testing notes
+## Testing notes
 [comment]: # (Optional)
 
-#### Platforms
+### Platforms
 [comment]: # (Optional. Specify which platforms should be tested)
 
 - Android
 - iOS
 
-#### Areas that maybe impacted
-[comment]: # (Optional. Specify if some specific areas has to be tested, for example 1-1 chats)
+### Areas that may be impacted
+[comment]: # (Optional. Specify if some specific areas need to be tested, such as 1-1 chats)
 
-##### Functional
+#### Functional
 
 - 1-1 chats
 - public chats
@@ -35,13 +35,13 @@ fixes #...
 - fleet
 - bootnodes
 
-##### Non-functional
+#### Non-functional
 
 - battery performance
 - CPU performance / speed of the app
 - network consumption
 
-### Steps to test
+## Steps to test
 [comment]: #  (Specify exact steps to test if there are such)
 
 - Open Status
@@ -55,7 +55,7 @@ status: ready
 
 <!-- Uncomment this section for status-go upgrade/dogfooding pull requests
 
-- Specify potentially impacted user flows in _Areas that maybe impacted*.
+- Specify potentially impacted user flows in _Areas that may be impacted*.
 - Ensure that _Steps to test_ is filled in.
 
 ### Risk
