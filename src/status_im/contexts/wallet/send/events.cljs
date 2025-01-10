@@ -117,6 +117,39 @@
    {:db (update-in db [:wallet :ui :send] dissoc :amount)}))
 
 (rf/reg-event-fx
+ :wallet/init-send-flow-for-address
+ (fn [{:keys [db]} [{:keys [recipient address stack-id]}]]
+   (let [[_ address-without-prefix] (utils/split-prefix-and-address address)
+         wallet-accounts            (vals (get-in db [:wallet :accounts]))
+         default-account-address    (some #(when (:default-account? %) (:address %))
+                                          wallet-accounts)
+         multiple-accounts?         (-> (filter :operable? wallet-accounts)
+                                        count
+                                        (> 1))]
+     {:db (cond-> (update-in db [:wallet :ui] dissoc :send)
+            (not multiple-accounts?)
+            (assoc-in [:wallet :current-viewing-account-address] default-account-address)
+
+            :always
+            (update-in
+             [:wallet :ui :send]
+             assoc
+             :general-flow? true
+             :recipient     (or recipient address)
+             :to-address    address-without-prefix))
+      :fx [[:dispatch [:hide-bottom-sheet]]
+           [:dispatch [:shell/change-tab :wallet-stack]]
+           [:dispatch [:pop-to-root :shell-stack]]
+           [:dispatch-later
+            [{:ms       600
+              :dispatch (if multiple-accounts?
+                          [:open-modal :screen/wallet.select-from]
+                          [:wallet/wizard-navigate-forward
+                           {:current-screen stack-id
+                            :start-flow?    true
+                            :flow-id        :wallet-send-flow}])}]]]})))
+
+(rf/reg-event-fx
  :wallet/select-send-address
  (fn [{:keys [db]} [{:keys [address recipient stack-id start-flow?]}]]
    (let [[_ to-address]   (utils/split-prefix-and-address address)
@@ -185,7 +218,7 @@
        {:db (cond-> db
               network      (update-in [:wallet :ui :send]
                                       #(-> %
-                                           (dissoc :collectible :tx-type)
+                                           (dissoc :collectible)
                                            (assoc :network network)))
               token-symbol (assoc-in [:wallet :ui :send :token-symbol] token-symbol)
               token-data   (update-in [:wallet :ui :send]
@@ -198,7 +231,8 @@
                                               :token-display-name (:symbol token-data)
                                               :token-symbol       (:symbol token-data)))
               unique-owner (assoc-in [:wallet :current-viewing-account-address] unique-owner)
-              entry-point  (assoc-in [:wallet :ui :send :entry-point] entry-point))
+              entry-point  (assoc-in [:wallet :ui :send :entry-point] entry-point)
+              :always      (assoc-in [:wallet :ui :send :tx-type] :tx/send))
         :fx (cond
               ;; If the token has a balance in more than one account and this was dispatched from
               ;; the general wallet screen, open the account selection screen.
@@ -254,7 +288,12 @@
 
 (rf/reg-event-fx :wallet/clean-selected-token
  (fn [{:keys [db]}]
-   {:db (update-in db [:wallet :ui :send] dissoc :token :token-display-name :tx-type)}))
+   {:db (update-in db
+                   [:wallet :ui :send]
+                   dissoc
+                   :token
+                   :token-symbol :token-display-name
+                   :tx-type      :network)}))
 
 (rf/reg-event-fx :wallet/clean-selected-collectible
  (fn [{:keys [db]} [{:keys [ignore-entry-point?]}]]
@@ -688,6 +727,7 @@
  (fn [{db :db} [{:keys [address stack-id network-details network start-flow?] :as params}]]
    (let [{:keys [token-symbol
                  tx-type]}            (-> db :wallet :ui :send)
+         no-tx-type?                  (nil? tx-type)
          collectible-tx?              (send-utils/tx-type-collectible? tx-type)
          token                        (when token-symbol
                                         ;; When this flow has started in the wallet home page, we
@@ -720,7 +760,7 @@
             network      (assoc-in [:wallet :ui :send :network] network)
             token-symbol (assoc-in [:wallet :ui :send :token] token)
             bridge-tx?   (assoc-in [:wallet :ui :send :to-address] address))
-      :fx (if (or (some? network) collectible-tx?)
+      :fx (if (or no-tx-type? (some? network) collectible-tx?)
             [[:dispatch [:wallet/switch-current-viewing-account address]]
              [:dispatch
               [:wallet/wizard-navigate-forward

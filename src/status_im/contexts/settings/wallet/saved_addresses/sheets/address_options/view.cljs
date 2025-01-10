@@ -13,19 +13,15 @@
   [{:keys [name full-address chain-short-names address customization-color] :as opts}]
   (let [open-send-flow                 (rn/use-callback
                                         (fn []
-                                          (rf/dispatch [:hide-bottom-sheet])
-                                          (rf/dispatch [:pop-to-root :shell-stack])
-                                          (js/setTimeout #(rf/dispatch [:wallet/select-send-address
-                                                                        {:address full-address
-                                                                         :recipient
-                                                                         {:label name
-                                                                          :customization-color
-                                                                          customization-color
-                                                                          :recipient-type :saved-address}
-                                                                         :stack-id :wallet-select-address
-                                                                         :start-flow? true}])
-                                                         400))
-                                        [full-address])
+                                          (rf/dispatch [:wallet/init-send-flow-for-address
+                                                        {:address full-address
+                                                         :recipient
+                                                         {:label name
+                                                          :customization-color
+                                                          customization-color
+                                                          :recipient-type :saved-address}
+                                                         :stack-id :screen/settings.saved-addresses}]))
+                                        [full-address name customization-color])
         open-eth-chain-explorer        (rn/use-callback
                                         #(rf/dispatch [:wallet/navigate-to-chain-explorer
                                                        {:address address

@@ -247,6 +247,11 @@
    (send-utils/tx-type-collectible? tx-type)))
 
 (rf/reg-sub
+ :wallet/send-general-flow?
+ :<- [:wallet/wallet-send]
+ :-> :general-flow?)
+
+(rf/reg-sub
  :wallet/keypairs
  :<- [:wallet]
  :-> :keypairs)

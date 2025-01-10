@@ -607,7 +607,8 @@
    {:name      :screen/wallet.select-asset
     :metrics   {:track?   true
                 :alias-id :wallet-send.select-asset}
-    :options   {:insets {:top? true}}
+    :options   {:modalPresentationStyle :overCurrentContext
+                :insets                 {:top? true}}
     :component wallet-select-asset/view}
 
    {:name      :screen/wallet.send-input-amount
