@@ -212,8 +212,7 @@
                                          [profile-picture-picker/view
                                           {:on-result    #(reset! profile-image %)
                                            :has-picture? (some? @profile-image)}])
-        update-profile                 (fn [] ;; TODO: check image not updated in communities and
-                                              ;; profile
+        update-profile                 (fn []
                                          (rf/dispatch
                                           [:profile/edit-profile
                                            (cond-> {:on-success pending-event}
