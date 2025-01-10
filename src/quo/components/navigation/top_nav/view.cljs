@@ -76,15 +76,15 @@
 
 (defn- left-section
   [{:keys [avatar-props on-press customization-color]}]
-  [rn/pressable {:on-press on-press}
-   [rn/view
-    {:accessibility-label :open-profile}
-    [user-avatar/user-avatar
-     (merge {:status-indicator?   true
-             :ring?               true
-             :customization-color customization-color
-             :size                :small}
-            avatar-props)]]])
+  [rn/pressable
+   {:on-press            on-press
+    :accessibility-label :open-profile}
+   [user-avatar/user-avatar
+    (merge {:status-indicator?   true
+            :ring?               true
+            :customization-color customization-color
+            :size                :small}
+           avatar-props)]])
 
 (defn- right-section
   [{:keys [blur?
