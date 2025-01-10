@@ -11,8 +11,8 @@
           (update db :profile/profile dissoc :images))}))
 
 (rf/reg-event-fx :profile/edit-profile-picture-success
- (fn [_ [show-toast? images]]
-   (let [has-picture? (rf/sub [:profile/has-picture])]
+ (fn [{db :db} [show-toast? images]]
+   (let [has-picture? (-> db :profile/profile :images count pos?)]
      {:fx [[:dispatch [:profile/update-local-picture (reverse images)]]
            (when show-toast?
              [:dispatch
