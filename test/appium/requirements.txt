@@ -11,3 +11,4 @@ Pillow~=10.0.0
 pytest-xdist==3.2.0
 pytz~=2020.4
 PyGithub==1.55
+typing-extensions==4.12.2
