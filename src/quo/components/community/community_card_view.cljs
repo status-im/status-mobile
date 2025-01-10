@@ -37,37 +37,37 @@
         {:keys [name description locked? images cover status tokens tags]} community]
     [rn/pressable
      {:accessibility-label :community-card-item
-      :on-press            on-press}
-     [rn/view {:style (style/community-card 20 theme)}
-      [rn/view
-       {:style    {:width         width
-                   :height        230
-                   :border-radius 20}
-        :on-press on-press}
-       [rn/view {:style style/detail-container}
-        [rn/view (style/community-cover-container 60)
-         [rn/image
-          {:source cover
-           :style  {:flex                    1
-                    :border-top-right-radius 20
-                    :border-top-left-radius  20}}]]
-        [rn/view (style/card-view-content-container 12 theme)
-         [rn/view (style/card-view-chat-icon 48 theme)
-          [icon/community-icon {:images images} 48]]
-         (when (= status :gated)
-           [rn/view (style/permission-tag-styles)
-            [community-view/permission-tag-container
-             {:locked? locked?
-              :status  status
-              :tokens  tokens}]])
-         [community-view/community-title
-          {:title       name
-           :description description}]
-         [rn/view {:style (style/card-stats-position)}
-          [community-view/community-stats-column
-           {:type :card-view}]]
-         [rn/view {:style (style/community-tags-position)}
-          [community-view/community-tags {:tags tags}]]]]]]]))
+      :on-press            on-press
+      :style               (style/community-card 20 theme)}
+     [rn/view
+      {:style    {:width         width
+                  :height        230
+                  :border-radius 20}
+       :on-press on-press}
+      [rn/view {:style style/detail-container}
+       [rn/view (style/community-cover-container 60)
+        [rn/image
+         {:source cover
+          :style  {:flex                    1
+                   :border-top-right-radius 20
+                   :border-top-left-radius  20}}]]
+       [rn/view (style/card-view-content-container 12 theme)
+        [rn/view (style/card-view-chat-icon 48 theme)
+         [icon/community-icon {:images images} 48]]
+        (when (= status :gated)
+          [rn/view (style/permission-tag-styles)
+           [community-view/permission-tag-container
+            {:locked? locked?
+             :status  status
+             :tokens  tokens}]])
+        [community-view/community-title
+         {:title       name
+          :description description}]
+        [rn/view {:style (style/card-stats-position)}
+         [community-view/community-stats-column
+          {:type :card-view}]]
+        [rn/view {:style (style/community-tags-position)}
+         [community-view/community-tags {:tags tags}]]]]]]))
 
 (defn view
   [{:keys [loading?] :as props}]
