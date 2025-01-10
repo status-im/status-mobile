@@ -61,74 +61,73 @@
       :on-press-out            on-press-out-cb
       :on-press                on-press
       :allow-multiple-presses? allow-multiple-presses?
-      :on-long-press           on-long-press}
+      :on-long-press           on-long-press
+      :style                   (merge
+                                (style/shape-style-container size border-radius)
+                                container-style)}
      [rn/view
       {:style (merge
-               (style/shape-style-container size border-radius)
-               container-style)}
+               (style/style-container {:size             size
+                                       :disabled?        disabled?
+                                       :border-radius    border-radius
+                                       :background-color background-color
+                                       :border-color     border-color
+                                       :icon-only?       icon-only?
+                                       :icon-top         icon-top
+                                       :icon-left        icon-left
+                                       :icon-right       icon-right})
+               inner-style)}
+      (when overlay-customization-color
+        [customization-colors/overlay
+         {:customization-color overlay-customization-color
+          :theme               theme
+          :pressed?            (if pressed? pressed? pressed-state?)}])
+      (when (= background :photo)
+        [blur/view
+         {:blur-radius   20
+          :blur-type     blur-type
+          :overlay-color blur-overlay-color
+          :style         style/blur-view}])
+      (when icon-top
+        [rn/view
+         [quo.icons/icon icon-top
+          {:container-style {:margin-bottom 2
+                             :opacity       (when disabled? 0.3)}
+           :color           (or icon-top-color icon-color)
+           :size            icon-size}]])
+      (when icon-left
+        [rn/view
+         {:style (style/icon-left-icon-style
+                  {:size      size
+                   :icon-size icon-size
+                   :disabled? disabled?})}
+         [quo.icons/icon icon-left
+          {:color (or icon-left-color icon-color)
+           :size  icon-size}]])
       [rn/view
-       {:style (merge
-                (style/style-container {:size             size
-                                        :disabled?        disabled?
-                                        :border-radius    border-radius
-                                        :background-color background-color
-                                        :border-color     border-color
-                                        :icon-only?       icon-only?
-                                        :icon-top         icon-top
-                                        :icon-left        icon-left
-                                        :icon-right       icon-right})
-                inner-style)}
-       (when overlay-customization-color
-         [customization-colors/overlay
-          {:customization-color overlay-customization-color
-           :theme               theme
-           :pressed?            (if pressed? pressed? pressed-state?)}])
-       (when (= background :photo)
-         [blur/view
-          {:blur-radius   20
-           :blur-type     blur-type
-           :overlay-color blur-overlay-color
-           :style         style/blur-view}])
-       (when icon-top
-         [rn/view
-          [quo.icons/icon icon-top
-           {:container-style {:margin-bottom 2
-                              :opacity       (when disabled? 0.3)}
-            :color           (or icon-top-color icon-color)
-            :size            icon-size}]])
-       (when icon-left
-         [rn/view
-          {:style (style/icon-left-icon-style
-                   {:size      size
-                    :icon-size icon-size
-                    :disabled? disabled?})}
-          [quo.icons/icon icon-left
-           {:color (or icon-left-color icon-color)
-            :size  icon-size}]])
-       [rn/view
-        (cond
-          icon-only?
-          [quo.icons/icon children
-           {:color label-color
-            :size  icon-size}]
+       (cond
+         icon-only?
+         [quo.icons/icon children
+          {:color label-color
+           :size  icon-size}]
 
-          (string? children)
-          [text/text
-           {:size            (when (#{56 24} size) :paragraph-2)
-            :weight          :medium
-            :number-of-lines 1
-            :style           {:color   label-color
-                              :opacity (when (and disabled? (= theme :dark)) 0.3)}}
-           children]
+         (string? children)
+         [text/text
+          {:size            (when (#{56 24} size) :paragraph-2)
+           :weight          :medium
+           :number-of-lines 1
+           :style           {:color   label-color
+                             :opacity (when (and disabled? (= theme :dark)) 0.3)}}
+          children]
 
-          (vector? children)
-          children)]
-       (when icon-right
-         [rn/view
-          {:style (style/icon-right-icon-style
-                   {:size      size
-                    :icon-size icon-size
-                    :disabled? disabled?})}
-          [quo.icons/icon icon-right
-           {:color (or icon-right-color icon-color)
-            :size  icon-size}]])]]]))
+         (vector? children)
+         children)]
+      (when icon-right
+        [rn/view
+         {:style (style/icon-right-icon-style
+                  {:size      size
+                   :icon-size icon-size
+                   :disabled? disabled?})}
+         [quo.icons/icon icon-right
+          {:color (or icon-right-color icon-color)
+           :size  icon-size}]])]]))
