@@ -31,10 +31,10 @@
   (let [theme (quo.theme/use-theme)]
     [rn/pressable
      {:on-press            on-press
-      :accessibility-label accessibility-label}
-     [rn/view {:style (merge (style/community-card theme) style)}
-      [card-title-and-description title description theme]
-      [rn/image
-       {:style               style/discover-illustration
-        :source              banner
-        :accessibility-label :discover-communities-illustration}]]]))
+      :accessibility-label accessibility-label
+      :style               (merge (style/community-card theme) style)}
+     [card-title-and-description title description theme]
+     [rn/image
+      {:style               style/discover-illustration
+       :source              banner
+       :accessibility-label :discover-communities-illustration}]]))
