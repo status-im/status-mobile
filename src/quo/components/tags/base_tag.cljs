@@ -23,15 +23,14 @@
    children]
   [rn/pressable
    (merge {:disabled            disabled?
-           :accessibility-label accessibility-label}
+           :accessibility-label accessibility-label
+           :style               (style-container size
+                                                 disabled?
+                                                 border-color
+                                                 border-width
+                                                 background-color
+                                                 labelled?
+                                                 type)}
           (when on-press
             {:on-press #(on-press id)}))
-   [rn/view
-    {:style (merge (style-container size
-                                    disabled?
-                                    border-color
-                                    border-width
-                                    background-color
-                                    labelled?
-                                    type))}
-    children]])
+   children])
