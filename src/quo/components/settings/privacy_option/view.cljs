@@ -57,19 +57,19 @@
     [rn/pressable
      {:on-press            on-select
       :accessibility-label :privacy-option-card
-      :testID              :privacy-option-card}
-     [rn/view (style/privacy-option-card active? theme)
-      [card-header
-       {:theme   theme
-        :active? active?
-        :icon    icon
-        :label   header}]
-      [unordered-list
-       {:theme           theme
-        :container-style (when-not footer {:margin-bottom 8})} list-items]
-      (when footer
-        [card-footer
-         {:theme     theme
-          :active?   active?
-          :label     footer
-          :on-toggle on-toggle}])]]))
+      :testID              :privacy-option-card
+      :style               (style/privacy-option-card active? theme)}
+     [card-header
+      {:theme   theme
+       :active? active?
+       :icon    icon
+       :label   header}]
+     [unordered-list
+      {:theme           theme
+       :container-style (when-not footer {:margin-bottom 8})} list-items]
+     (when footer
+       [card-footer
+        {:theme     theme
+         :active?   active?
+         :label     footer
+         :on-toggle on-toggle}])]))
