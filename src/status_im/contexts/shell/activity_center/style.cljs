@@ -40,21 +40,3 @@
    :flex            1
    :justify-content :center
    :padding-bottom  20})
-
-(def empty-title
-  {:padding-bottom 2
-   :color          colors/white})
-
-(def empty-subtitle
-  {:color colors/white})
-
-(def empty-rectangle-placeholder
-  {:width            120
-   :height           120
-   :background-color colors/danger-50
-   :margin-bottom    20})
-
-(def blur
-  {:style        {:position :absolute :top 0 :left 0 :right 0 :bottom 0}
-   :overlayColor colors/neutral-80-opa-80-blur
-   :blur-amount  20})

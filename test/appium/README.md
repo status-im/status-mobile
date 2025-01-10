@@ -4,9 +4,9 @@
 - WEB3_INFURA_PROJECT_ID
 - ETHERSCAN_API_KEY
 
-1) If running on SauceLab emulators:
-- SAUCE_USERNAME
-- SAUCE_ACCESS_KEY
+1) If running on LambdaTest emulators:
+- LAMBDA_TEST_USERNAME
+- LAMBDA_TEST_ACCESS_KEY
 2) If running with Testrail (`--testrail_report=True` param):
 - TESTRAIL_PASS
 - TESTRAIL_USER

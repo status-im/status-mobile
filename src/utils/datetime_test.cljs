@@ -24,8 +24,6 @@
 (def epoch 0)
 ;; 1970-01-03 00:00:00 UTC
 (def epoch-plus-3d 172800000)
-(def mock-current-time-epoch 1655731506000)
-
 (deftest is-24-hour-locale-en-test
   (is (false? (#'utils.datetime/is-24-hour-locsym (i18n-goog/locale-symbols "en")))))
 

@@ -21,9 +21,10 @@
    :background-color (when-not in-onboarding? colors/neutral-80-opa-80-blur)})
 
 (defn page-illustration
-  [width]
+  [width pairing-progress?]
   {:flex            1
    :width           width
    :align-items     :center
+   :margin-vertical (when pairing-progress? 24)
    :align-self      :center
    :justify-content :center})

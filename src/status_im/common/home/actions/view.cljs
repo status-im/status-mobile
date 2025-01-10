@@ -266,16 +266,6 @@
           :chevron?            false}))
 
 ;; TODO(OmarBasem): Requires design input.
-(defn rename-entry
-  []
-  (entry {:icon                :i/edit
-          :label               (i18n/label :t/rename)
-          :on-press            #(js/alert "TODO: to be implemented, requires design input")
-          :danger?             false
-          :accessibility-label :rename-contact
-          :sub-label           nil
-          :chevron?            false}))
-
 (defn show-qr-entry
   [public-key]
   (entry {:icon                :i/qr-code

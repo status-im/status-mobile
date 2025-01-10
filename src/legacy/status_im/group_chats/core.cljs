@@ -40,7 +40,7 @@
 (rf/defn remove-member
   "Format group update message and sign membership"
   {:events [:group-chats.ui/remove-member-pressed]}
-  [_ chat-id member do-not-navigate?]
+  [_ chat-id member _do-not-navigate?]
   {:json-rpc/call [{:method      "wakuext_removeMemberFromGroupChat"
                     :params      [nil chat-id member]
                     :js-response true
@@ -48,7 +48,7 @@
 
 (rf/defn remove-members
   {:events [:group-chats.ui/remove-members-pressed]}
-  [{{:group-chat/keys [deselected-members]} :db :as cofx} chat-id]
+  [{{:group-chat/keys [deselected-members]} :db :as _cofx} chat-id]
   {:json-rpc/call [{:method      "wakuext_removeMembersFromGroupChat"
                     :params      [nil chat-id deselected-members]
                     :js-response true
@@ -104,7 +104,7 @@
 (rf/defn leave
   "Leave chat"
   {:events [:group-chats.ui/leave-chat-confirmed]}
-  [{:keys [db] :as cofx} chat-id]
+  [_cofx chat-id]
   {:json-rpc/call [{:method      "wakuext_leaveGroupChat"
                     :params      [nil chat-id true]
                     :js-response true
@@ -128,7 +128,7 @@
 (rf/defn name-changed
   "Save chat from edited profile"
   {:events [:group-chats.ui/name-changed]}
-  [{:keys [db] :as cofx} chat-id new-name]
+  [{:keys [db] :as _cofx} chat-id new-name]
   (when (valid-name? new-name)
     {:db            (assoc-in db [:chats chat-id :name] new-name)
      :json-rpc/call [{:method      "wakuext_changeGroupChatName"
@@ -149,7 +149,7 @@
 (rf/defn send-group-chat-membership-request
   "Send group chat membership request"
   {:events [:send-group-chat-membership-request]}
-  [{{:keys [chats] :as db} :db :as cofx} chat-id]
+  [{{:keys [chats] :as db} :db :as _cofx} chat-id]
   (let [{:keys [invitation-admin]} (get chats chat-id)
         message                    (get-in db [:chat/memberships chat-id :message])]
     {:db            (assoc-in db [:chat/memberships chat-id] nil)
@@ -161,7 +161,7 @@
 (rf/defn send-group-chat-membership-rejection
   "Send group chat membership rejection"
   {:events [:send-group-chat-membership-rejection]}
-  [cofx invitation-id]
+  [_cofx invitation-id]
   {:json-rpc/call [{:method      "wakuext_sendGroupChatInvitationRejection"
                     :params      [nil invitation-id]
                     :js-response true
@@ -175,15 +175,6 @@
                           (assoc acc id inv))
                         %
                         invitations))})
-
-(defn member-removed?
-  [{:keys [membership-update-events]} pk]
-  (->> membership-update-events
-       (filter #(contains? (set (:members %)) pk))
-       (sort-by :clockValue >)
-       first
-       :type
-       (= constants/invitation-state-removed)))
 
 (rf/defn deselect-member
   {:events [:deselect-member]}

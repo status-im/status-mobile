@@ -10,13 +10,10 @@
     [react-native.hooks :as hooks]
     [react-native.platform :as platform]
     [react-native.reanimated :as reanimated]
-    [status-im.common.home.actions.view :as home.actions]
     [status-im.constants :as constants]
-    [status-im.contexts.chat.messenger.composer.constants :as composer.constants]
     [status-im.contexts.chat.messenger.messages.content.view :as message]
     [status-im.contexts.chat.messenger.messages.list.state :as state]
     [status-im.contexts.chat.messenger.messages.list.style :as style]
-    [utils.i18n :as i18n]
     [utils.re-frame :as rf]
     [utils.worklets.chat.messenger.messages :as worklets]))
 
@@ -65,62 +62,6 @@
      {:content       :messages
       :parent-height parent-height
       :animated?     false}]))
-
-(defn header-height
-  [{:keys [insets able-to-send-message? images reply edit link-previews? input-content-height]}]
-  (if able-to-send-message?
-    (cond-> composer.constants/composer-default-height
-      (seq images)
-      (+ composer.constants/images-container-height)
-
-      reply
-      (+ composer.constants/reply-container-height)
-
-      edit
-      (+ composer.constants/edit-container-height)
-
-      link-previews?
-      (+ composer.constants/links-container-height)
-
-      (and input-content-height (not= input-content-height composer.constants/input-height))
-      (+ composer.constants/input-height)
-
-      true
-      (+ (:bottom insets)))
-    (- 70 (:bottom insets))))
-
-(defn actions
-  [chat-id cover-bg-color]
-  (let [latest-pin-text                      (rf/sub [:chats/last-pinned-message-text chat-id])
-        pins-count                           (rf/sub [:chats/pin-messages-count chat-id])
-        {:keys [muted muted-till chat-type]} (rf/sub [:chats/chat-by-id chat-id])
-        community-channel?                   (= constants/community-chat-type chat-type)
-        muted?                               (and muted (some? muted-till))
-        mute-chat-label                      (if community-channel? :t/mute-channel :t/mute-chat)
-        unmute-chat-label                    (if community-channel? :t/unmute-channel :t/unmute-chat)]
-    [quo/channel-actions
-     {:actions
-      [{:accessibility-label :action-button-pinned
-        :big?                true
-        :label               (if (pos? pins-count) latest-pin-text (i18n/label :t/no-pinned-messages))
-        :customization-color cover-bg-color
-        :icon                :i/pin
-        :counter-value       pins-count
-        :on-press            (fn []
-                               (rf/dispatch [:pin-message/show-pins-bottom-sheet
-                                             chat-id]))}
-       {:accessibility-label :action-button-mute
-        :label               (i18n/label (if muted
-                                           unmute-chat-label
-                                           mute-chat-label))
-        :customization-color cover-bg-color
-        :icon                (if muted? :i/activity-center :i/muted)
-        :on-press            (fn []
-                               (if muted?
-                                 (home.actions/unmute-chat-action chat-id)
-                                 (home.actions/mute-chat-action chat-id
-                                                                chat-type
-                                                                muted?)))}]}]))
 
 (defn more-messages-loader
   [{:keys [chat-id] :as props}]

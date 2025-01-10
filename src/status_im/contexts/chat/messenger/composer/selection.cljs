@@ -83,28 +83,3 @@
    :strikethrough #(append-markdown-char % "~~")})
 
 (def second-level-menu-items (map i18n/label (keys second-level-menus)))
-
-(defn on-menu-item-touched
-  [{:keys [first-level? event-type] :as params}]
-  (let [menus         (if @first-level? first-level-menus second-level-menus)
-        menu-item-key (nth (keys menus) event-type)
-        action        (get menus menu-item-key)]
-    (action params)))
-
-(defn on-selection
-  [event
-   {:keys [input-ref selection-event]}
-   {:keys [first-level? menu-items]}]
-  (let [{:strs [eventType content selectionStart
-                selectionEnd]} (js->clj (oops/oget event "nativeEvent"))
-        full-text              (:input-text (rf/sub [:chats/current-chat-input]))]
-    (on-menu-item-touched {:first-level?      first-level?
-                           :event-type        eventType
-                           :content           content
-                           :selection-start   selectionStart
-                           :selection-end     selectionEnd
-                           :text-input        @input-ref
-                           :text-input-handle (rn/find-node-handle @input-ref)
-                           :full-text         full-text
-                           :menu-items        menu-items
-                           :selection-event   selection-event})))

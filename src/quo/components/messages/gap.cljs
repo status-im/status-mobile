@@ -123,7 +123,6 @@
      :margin-right    2}
     [timestamp timestamp-far]
     (when on-info-button-pressed [info-button on-info-button-pressed])]
-
    [rn/touchable-without-feedback
     {:style    {:flex 1 :margin-top 16 :margin-bottom 20}
      :on-press #(when on-press (on-press))}

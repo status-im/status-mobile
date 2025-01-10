@@ -4,14 +4,6 @@
     [react-native.platform :as platform]
     [react-native.reanimated :as reanimated]))
 
-(defn image-slider
-  [size]
-  {:top     -64
-   :height  size
-   :width   size
-   :z-index 4
-   :flex    1})
-
 (defn blur-slider
   [animation height theme]
   (reanimated/apply-animations-to-style
@@ -25,24 +17,6 @@
     :background-color (if platform/android?
                         (colors/theme-colors colors/white colors/neutral-80 theme)
                         :transparent)}))
-
-(defn sticky-header-title
-  [animation]
-  (reanimated/apply-animations-to-style
-   {:opacity animation}
-   {:position       :absolute
-    :flex-direction :row
-    :left           64
-    :top            16
-    :margin-top     44}))
-
-(def sticky-header-image
-  {:border-radius 12
-   :border-width  0
-   :border-color  :transparent
-   :width         24
-   :height        24
-   :margin-right  8})
 
 (defn children-container
   [{:keys [border-radius background-color]}]

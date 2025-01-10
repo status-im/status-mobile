@@ -118,7 +118,7 @@ class TestGroupChatMultipleDeviceMergedNewUI(MultipleSharedDeviceTestCase):
         self.chats[1].set_reaction(message=message, emoji="love")
 
         self.chats[2].just_fyi("Member_2 sets 2 reactions on the message: 'thumbs-up' and 'laugh'")
-        self.chats[2].add_remove_same_reaction(message=message, emoji="thumbs-up")
+        self.chats[2].add_remove_same_reaction(emoji="thumbs-up")
         self.chats[2].set_reaction(message=message, emoji="laugh")
 
         def _check_reactions_count(chat_view_index):
@@ -135,14 +135,13 @@ class TestGroupChatMultipleDeviceMergedNewUI(MultipleSharedDeviceTestCase):
         )))
 
         self.chats[0].just_fyi("Admin checks info about voted users")
-        self.chats[0].chat_element_by_text(message).emojis_below_message(
-            emoji="thumbs-up").long_press_until_element_is_shown(self.chats[0].authors_for_reaction(emoji="thumbs-up"))
+        self.chats[0].chat_element_by_text(message).emojis_below_message(emoji="thumbs-up").long_press_without_release()
         if not self.chats[0].user_list_element_by_name(
                 self.usernames[1]).is_element_displayed() or not self.chats[0].user_list_element_by_name(
             self.usernames[2]).is_element_displayed():
             self.errors.append("Incorrect users are shown for 'thumbs-up' reaction.")
 
-        self.chats[0].authors_for_reaction(emoji="love").click()
+        self.chats[0].authors_for_reaction(emoji="love").double_click()
         if not self.chats[0].user_list_element_by_name(
                 self.usernames[1]).is_element_displayed() or self.chats[0].user_list_element_by_name(
             self.usernames[2]).is_element_displayed():
@@ -168,12 +167,12 @@ class TestGroupChatMultipleDeviceMergedNewUI(MultipleSharedDeviceTestCase):
         self.chats[0].navigate_back_to_chat_view()
 
         self.chats[1].just_fyi("Member_1 removes 'thumbs-up' reaction and adds 'sad' one")
-        self.chats[1].add_remove_same_reaction(message=message, emoji="thumbs-up")
+        self.chats[1].add_remove_same_reaction(emoji="thumbs-up")
         self.chats[1].set_reaction(message=message, emoji="sad")
 
         self.chats[2].just_fyi("Member_2 removes 'laugh' reaction and adds 'sad' one")
-        self.chats[2].add_remove_same_reaction(message=message, emoji="laugh")
-        self.chats[2].add_remove_same_reaction(message=message, emoji="sad")
+        self.chats[2].add_remove_same_reaction(emoji="laugh")
+        self.chats[2].add_remove_same_reaction(emoji="sad")
 
         def _check_reactions_count_after_change(chat_view_index):
             self.chats[chat_view_index].just_fyi(
@@ -195,7 +194,8 @@ class TestGroupChatMultipleDeviceMergedNewUI(MultipleSharedDeviceTestCase):
 
         self.chats[0].just_fyi("Admin relogins")
         self.chats[0].reopen_app(user_name=self.usernames[0])
-        self.homes[0].get_chat(self.chat_name).click()
+        if not self.chats[0].chat_message_input.is_element_displayed(15):
+            self.homes[0].get_chat(self.chat_name).click()
 
         self.chats[0].just_fyi("Admin checks reactions count after relogin")
         message_element = self.chats[0].chat_element_by_text(message)
@@ -211,14 +211,13 @@ class TestGroupChatMultipleDeviceMergedNewUI(MultipleSharedDeviceTestCase):
             chat.navigate_back_to_home_view()
 
         self.chats[0].just_fyi("Admin checks info about voted users after relogin")
-        message_element.emojis_below_message(
-            emoji="thumbs-up").long_press_until_element_is_shown(self.chats[0].authors_for_reaction(emoji="thumbs-up"))
+        message_element.emojis_below_message(emoji="thumbs-up").long_press_without_release()
         if self.chats[0].user_list_element_by_name(
                 self.usernames[1]).is_element_displayed() or not self.chats[0].user_list_element_by_name(
             self.usernames[2]).is_element_displayed():
             self.errors.append("Incorrect users are shown for 'thumbs-up' reaction after relogin.")
 
-        self.chats[0].authors_for_reaction(emoji="love").click()
+        self.chats[0].authors_for_reaction(emoji="love").double_click()
         if not self.chats[0].user_list_element_by_name(
                 self.usernames[1]).is_element_displayed() or self.chats[0].user_list_element_by_name(
             self.usernames[2]).is_element_displayed():
@@ -240,18 +239,18 @@ class TestGroupChatMultipleDeviceMergedNewUI(MultipleSharedDeviceTestCase):
 
         self.chats[1].just_fyi("Member_1 sends an image")
         image_description = "test image"
-        self.chats[1].send_images_with_description(description=image_description, indexes=[2])
+        self.chats[1].send_images_with_description(description=image_description, indexes=[1])
 
         self.chats[0].just_fyi("Admin checks image message")
         chat_element = self.chats[0].chat_element_by_text(image_description)
         chat_element.wait_for_visibility_of_element(60)
-        if not chat_element.image_in_message.is_element_image_similar_to_template('saucelabs_sauce_group_chat.png'):
+        if not chat_element.image_in_message.is_element_image_similar_to_template('image_2_chat_view.png'):
             self.errors.append("Not expected image is shown to the admin.")
 
         self.chats[2].just_fyi("Member_2 checks image message")
         chat_element = self.chats[2].chat_element_by_text(image_description)
         chat_element.wait_for_visibility_of_element(60)
-        if not chat_element.image_in_message.is_element_image_similar_to_template('saucelabs_sauce_group_chat.png'):
+        if not chat_element.image_in_message.is_element_image_similar_to_template('image_2_chat_view.png'):
             self.errors.append("Not expected image is shown to the member_2.")
 
         self.chats[0].just_fyi("Admin opens the image and shares it")
@@ -292,7 +291,7 @@ class TestGroupChatMultipleDeviceMergedNewUI(MultipleSharedDeviceTestCase):
         self.chats[2].just_fyi("Member_2 checks that image was saved in gallery")
         self.chats[2].show_images_button.click()
         self.chats[2].allow_all_button.click_if_shown()
-        if not self.chats[2].get_image_by_index(0).is_element_image_similar_to_template("saucelabs_sauce_gallery.png"):
+        if not self.chats[2].get_image_by_index(0).is_element_image_similar_to_template("image_2_gallery_view.png"):
             self.errors.append("Image is not saved to gallery for member_2.")
         self.chats[2].navigate_back_to_home_view()
 
@@ -373,9 +372,10 @@ class TestGroupChatMultipleDeviceMergedNewUI(MultipleSharedDeviceTestCase):
             self.errors.append("Message 1 is not pinned in group chat!")
 
         self.chats[0].just_fyi("Check that non admin user can not unpin messages")
-        self.chats[1].chat_element_by_text(self.message_1).long_press_element()
+        self.chats[1].chat_element_by_text(self.message_1).long_press_without_release()
         if self.chats[1].element_by_translation_id("unpin-from-chat").is_element_displayed():
             self.errors.append("Unpin option is available for non-admin user")
+        self.chats[1].tap_by_coordinates(500, 100)
         self.chats[1].tap_by_coordinates(500, 100)
 
         # not implemented yet :
@@ -405,8 +405,7 @@ class TestGroupChatMultipleDeviceMergedNewUI(MultipleSharedDeviceTestCase):
         self.chats[0].pin_message(self.message_4, 'pin-to-chat')
         self.chats[0].view_pinned_messages_button.click_until_presence_of_element(self.chats[0].pinned_messages_list)
         unpin_element = self.chats[0].element_by_translation_id('unpin-from-chat')
-        self.chats[0].pinned_messages_list.message_element_by_text(self.message_2).long_press_element(
-            element_to_release_on=unpin_element)
+        self.chats[0].pinned_messages_list.message_element_by_text(self.message_2).long_press_without_release()
         unpin_element.click_until_absense_of_element(desired_element=unpin_element)
         self.chats[0].chat_element_by_text(self.message_4).click()
         self.chats[0].pin_message(self.message_4, 'pin-to-chat')
@@ -456,7 +455,7 @@ class TestGroupChatMultipleDeviceMergedNewUI(MultipleSharedDeviceTestCase):
             "Muted until %s %s" % (exp_time.strftime('%H:%M'), "today" if current_time.hour < 16 else "tomorrow") for
             exp_time in expected_times]
         chat = self.homes[1].get_chat(self.chat_name)
-        chat.long_press_element()
+        chat.long_press_without_release()
         if self.homes[1].mute_chat_button.text != transl["unmute-chat"]:
             pytest.fail("Chat is not muted")
         current_text = self.homes[1].mute_chat_button.unmute_caption_text
@@ -488,13 +487,13 @@ class TestGroupChatMultipleDeviceMergedNewUI(MultipleSharedDeviceTestCase):
         chat.click()
         if not self.chats[1].chat_element_by_text(muted_message).is_element_displayed(30):
             self.errors.append(
-                "Message '%s' is not shown in chat for %s after mute" % (muted_message, self.usernames[1]))
+                "Message '%s' is not shown in chat for %s (Member 1) after mute" % (muted_message, self.usernames[1]))
         self.chats[1].navigate_back_to_home_view()
 
         self.chats[1].just_fyi("Member 1 unmutes the chat")
-        chat.long_press_element()
-        self.homes[1].mute_chat_button.click()
-        chat.long_press_element()
+        chat.long_press_without_release()
+        self.homes[1].mute_chat_button.double_click()
+        chat.long_press_without_release()
         if self.homes[1].element_starts_with_text("Muted until").is_element_displayed():
             self.errors.append("Chat is still muted after being unmuted")
             self.errors.verify_no_errors()
@@ -524,6 +523,7 @@ class TestGroupChatMultipleDeviceMergedNewUI(MultipleSharedDeviceTestCase):
         chat.click()
         if not self.chats[1].chat_element_by_text(unmuted_message).is_element_displayed(30):
             self.errors.append(
-                "Message '%s' is not shown in chat for %s after unmute" % (self.usernames[1], unmuted_message))
+                "Message '%s' is not shown in chat for %s (Member 1) after unmute" % (
+                    unmuted_message, self.usernames[1]))
 
         self.errors.verify_no_errors()

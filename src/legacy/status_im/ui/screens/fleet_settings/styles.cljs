@@ -3,9 +3,6 @@
     [legacy.status-im.ui.components.colors :as colors]
     [legacy.status-im.utils.styles :as styles]))
 
-(def wrapper
-  {:flex 1})
-
 (def fleet-item-inner
   {:padding-horizontal 16})
 

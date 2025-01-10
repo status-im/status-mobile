@@ -73,9 +73,9 @@ pipeline {
             passwordVariable: 'TESTRAIL_PASS'
           ),
           usernamePassword(
-            credentialsId:  'sauce-labs-api',
-            usernameVariable: 'SAUCE_USERNAME',
-            passwordVariable: 'SAUCE_ACCESS_KEY'
+            credentialsId:  'lambda-test-api',
+            usernameVariable: 'LAMBDA_TEST_USERNAME',
+            passwordVariable: 'LAMBDA_TEST_ACCESS_KEY'
           ),
           string(
             credentialsId: 'etherscan-api-key',
@@ -95,8 +95,7 @@ pipeline {
             sh 'cp -f $TEST_ETH_ACCOUNTS_FILE users.py'
             sh """
               python3 -m pytest \
-                --numprocesses 8 \
-                --rerun_count=2 \
+                --numprocesses 9 \
                 --testrail_report=True \
                 -m testrail_id \
                 -m \"nightly\" \
@@ -110,21 +109,6 @@ pipeline {
   }
 
   post {
-    always {
-      script {
-        sauce('sauce-labs-cred') {
-          saucePublisher()
-        }
-      }
-    }
-    success {
-      script {
-        junit(
-          testDataPublishers: [[$class: 'SauceOnDemandReportPublisher', jobVisibility: 'public']],
-          testResults: 'test/appium/tests/*.xml'
-        )
-      }
-    }
     cleanup {
       sh 'make purge'
     }

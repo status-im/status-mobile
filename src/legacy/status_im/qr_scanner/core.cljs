@@ -23,7 +23,7 @@
 
 (rf/defn set-qr-code
   {:events [:qr-scanner.callback/scan-qr-code-success]}
-  [{:keys [db]} opts data]
+  [_ opts data]
   (when-let [handler (:handler opts)]
     {:dispatch [handler data opts]}))
 
@@ -46,7 +46,7 @@
   (= (:public-key profile) public-key))
 
 (rf/defn handle-private-chat
-  [{:keys [db] :as cofx} {:keys [chat-id]}]
+  [{:keys [db]} {:keys [chat-id]}]
   (if-not (own-public-key? db chat-id)
     {:dispatch [:chat.ui/start-chat chat-id]}
     {:effects.utils/show-popup {:title   (i18n/label :t/unable-to-read-this-code)

@@ -46,12 +46,6 @@
      (assoc network :rpc-network? (get-in network [:config :UpstreamConfig :Enabled])))))
 
 (re-frame/reg-sub
- :chain-keyword
- :<- [:current-network]
- (fn [network]
-   (chain/network->chain-keyword network)))
-
-(re-frame/reg-sub
  :chain-name
  :<- [:current-network]
  (fn [network]
@@ -62,12 +56,6 @@
  :<- [:current-network]
  (fn [network]
    (chain/network->chain-id network)))
-
-(re-frame/reg-sub
- :mainnet?
- :<- [:chain-id]
- (fn [chain-id]
-   (= 1 chain-id)))
 
 (re-frame/reg-sub
  :network-name
@@ -97,12 +85,6 @@
  :<- [:view-id]
  (fn [[params view-id-db] [_ view-id]]
    (get params (or view-id view-id-db))))
-
-(re-frame/reg-sub
- :wallet-legacy/search-recipient-filter
- :<- [:ui/search]
- (fn [search]
-   (get search :recipient-filter)))
 
 (defn- node-version
   [web3-node-version]

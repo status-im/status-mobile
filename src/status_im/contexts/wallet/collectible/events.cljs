@@ -254,7 +254,6 @@
          ownership-status            (get ownership-status-by-address owner-address)
          collectibles                (->> collectibles
                                           data-store/rpc->collectibles
-                                          (map #(update % :ownership distinct))
                                           vec)
          pending-requests            (dec (get-in db [:wallet :ui :collectibles :pending-requests]))
          ;; check if collectibles are updating (never fetched and cached before) for this address
@@ -323,7 +322,9 @@
                                          (merge-with keep-not-empty-value
                                                      c
                                                      collectible)
-                                         (update c :ownership distinct))]
+                                         (update c
+                                                 :ownership
+                                                 collectible-utils/remove-duplicates-in-ownership))]
      (if collectible
        {:db (assoc-in db [:wallet :ui :collectible :details] merged-collectible)}
        (log/error "failed to get collectible details"

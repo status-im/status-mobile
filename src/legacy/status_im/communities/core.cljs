@@ -43,7 +43,7 @@
 
 (rf/defn member-ban
   {:events [::member-ban]}
-  [cofx community-id public-key]
+  [_cofx community-id public-key]
   {:json-rpc/call [{:method      "wakuext_banUserFromCommunity"
                     :params      [{:communityId community-id
                                    :user        public-key}]
@@ -63,7 +63,7 @@
 
 (rf/defn member-kick
   {:events [::member-kick]}
-  [cofx community-id public-key]
+  [_cofx community-id public-key]
   {:json-rpc/call [{:method      "wakuext_removeUserFromCommunity"
                     :params      [community-id public-key]
                     :js-response true
@@ -97,7 +97,7 @@
 
 (rf/defn add-role-to-member
   {:events [:community.member/add-role]}
-  [cofx community-id public-key role-id]
+  [_cofx community-id public-key role-id]
   {:json-rpc/call [{:method     "wakuext_addRoleToMember"
                     :params     [{:communityId community-id
                                   :user        public-key

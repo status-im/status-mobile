@@ -2,12 +2,6 @@
   (:require
     [quo.foundations.colors :as colors]))
 
-(defn container-main
-  [top]
-  {:background-color colors/neutral-95
-   :padding-top      top
-   :flex             1})
-
 (def page-container
   {:flex               1
    :padding-horizontal 20})

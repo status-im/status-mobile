@@ -134,11 +134,6 @@
    (when bn
      (.toFixed bn b))))
 
-(defn to-number
-  [^js bn]
-  (when (bignumber? bn)
-    (.toNumber bn)))
-
 (defn to-string
   ([^js bn]
    (to-string bn 10))
@@ -156,11 +151,6 @@
     (new BigNumber hex-str 16)
     (catch :default _ nil)))
 
-(defn wei->str
-  ([unit n display-unit]
-   (str (to-fixed (wei-> unit n)) " " display-unit))
-  ([unit n] (wei->str unit n (string/upper-case (name unit)))))
-
 (defn wei->ether
   [n]
   (wei-> :eth n))
@@ -173,63 +163,11 @@
   [n]
   (->wei :gwei n))
 
-(defn ether->wei
-  [^js bn]
-  (when (bignumber? bn)
-    (.times bn ^js (bignumber 1e18))))
-
 (defn token->unit
   [n decimals]
   (when-let [^js bn (bignumber n)]
     (when-let [d (from-decimal decimals)]
       (.dividedBy bn ^js (bignumber d)))))
-
-(defn unit->token
-  [n decimals]
-  (when-let [^js bn (bignumber n)]
-    (when-let [d (from-decimal decimals)]
-      (.times bn ^js (bignumber d)))))
-
-;;NOTE(goranjovic) - We have two basic representations of values that refer to cryptocurrency amounts:
-;;formatted and
-;; internal. Formatted representation is the one we show on screens and include in reports, whereas
-;; internal
-;; representation is the one that we pass on to ethereum network for execution, transfer, etc.
-;; The difference between the two depends on the number of decimals, i.e. internal representation is
-;; expressed in terms
-;; of a whole number of smallest divisible parts of the formatted value.
-;;
-;; E.g. for Ether, it's smallest part is wei or 10^(-18) of 1 ether
-;; for arbitrary ERC20 token the smallest part is 10^(-decimals) of 1 token
-;;
-;; Different tokens can have different number of allowed decimals, so it's necessary to include the
-;; decimals parameter
-;; to get the amount scale right.
-
-(defn formatted->internal
-  [n sym decimals]
-  (if (= :ETH sym)
-    (ether->wei n)
-    (unit->token n decimals)))
-
-(defn internal->formatted
-  [n sym decimals]
-  (if (= :ETH sym)
-    (wei->ether n)
-    (token->unit n decimals)))
-
-(defn fee-value
-  [gas gas-price]
-  (.times ^js (bignumber gas) ^js (bignumber gas-price)))
-
-(defn percent-change
-  [from to]
-  (let [^js bnf (bignumber from)
-        ^js bnt (bignumber to)]
-    (when (and bnf bnt)
-      (-> ^js (.dividedBy bnf bnt)
-          ^js (.minus 1)
-          ^js (.times 100)))))
 
 (defn with-precision
   [n decimals]
@@ -256,15 +194,6 @@
   (when (and amount balance)
     (greater-than-or-equals balance amount)))
 
-(defn fiat-amount-value
-  [amount-str from to prices]
-  (-> amount-str
-      (js/parseFloat)
-      bignumber
-      (crypto->fiat (get-in prices [from to] ^js (bignumber 0)))
-      (with-precision 2)
-      str))
-
 (defn- add*
   [bn1 n2]
   (.add ^js bn1 n2))
@@ -281,10 +210,6 @@
   "Multiply with defaults, this version is able to receive `nil` and takes them as 0."
   (fnil mul* (bignumber 0) (bignumber 0)))
 
-(defn mul-and-round
-  [bn1 bn2]
-  (.round (.mul ^js bn1 bn2) 0))
-
 (defn- div*
   [bn1 bn2]
   (.dividedBy ^js bn1 bn2))
@@ -292,10 +217,6 @@
 (def div
   "Divides with defaults, this version is able to receive `nil` and takes them as 0."
   (fnil div* (bignumber 0) (bignumber 1)))
-
-(defn div-and-round
-  [bn1 bn2]
-  (.round (.dividedBy ^js bn1 bn2) 0))
 
 (defn fiat->crypto
   [crypto fiat-price]

@@ -13,6 +13,8 @@
 (defonce visible (reagent/atom false))
 (defonce label (reagent/atom ""))
 
+;; ignore warning: reload used in shadow-cljs.edn
+#_{:clj-kondo/ignore [:clojure-lsp/unused-public-var]}
 (defn reload
   []
   (js/setTimeout #(reset! visible false) 500)
@@ -25,6 +27,8 @@
   (schema.state/clear-errors)
   (swap! cnt inc))
 
+;; ignore warning: before-reload used in shadow-cljs.edn
+#_{:clj-kondo/ignore [:clojure-lsp/unused-public-var]}
 (defn before-reload
   [done]
   (when @reload-interval (js/clearInterval @reload-interval))
@@ -62,6 +66,8 @@
   (reset! label "building")
   (reset! visible true))
 
+;; ignore warning: build-notify used in shadow-cljs.edn
+#_{:clj-kondo/ignore [:clojure-lsp/unused-public-var]}
 (defn build-notify
   [{:keys [type info]}]
   (cond (= :build-start type)

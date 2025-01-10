@@ -62,8 +62,8 @@
         :on-end-reached                    #(re-frame/dispatch [:chat/show-more-chats])
         :keyboard-should-persist-taps      :always
         :data                              items
-        :render-fn                         (fn [item]
-                                             (chat-list-item/chat-list-item item theme))
+        :render-data                       {:theme theme}
+        :render-fn                         chat-list-item/chat-list-item
         :scroll-event-throttle             8
         :content-container-style           {:padding-bottom
                                             shell.constants/floating-shell-button-height
@@ -94,8 +94,7 @@
        {:selected-tab :tab/contacts
         :tab->content (empty-state-content theme)}]
       [rn/section-list
-       {:ref                               (when (not-empty items)
-                                             set-scroll-ref)
+       {:ref                               (when (seq items) set-scroll-ref)
         :key-fn                            :public-key
         :get-item-layout                   get-item-layout
         :content-inset-adjustment-behavior :never
@@ -108,8 +107,8 @@
         :sticky-section-headers-enabled    false
         :render-section-header-fn          contact-list/contacts-section-header
         :render-section-footer-fn          contact-list/contacts-section-footer
-        :render-fn                         (fn [data]
-                                             (contact-item-render data theme))
+        :render-data                       {:theme theme}
+        :render-fn                         contact-item-render
         :scroll-event-throttle             8
         :on-scroll                         #(common.banner/set-scroll-shared-value
                                              {:scroll-input (oops/oget % "nativeEvent.contentOffset.y")

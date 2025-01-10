@@ -44,7 +44,6 @@
     (callback false)))
 
 (def auth-method-biometric "biometric")
-(def auth-method-biometric-prepare "biometric-prepare")
 (def auth-method-none "none")
 
 (defn save-auth-method!

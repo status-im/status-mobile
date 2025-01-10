@@ -13,9 +13,6 @@
     [utils.re-frame :as rf]
     [utils.transforms :as transforms]))
 
-(def server-type-default 1)
-(def server-type-custom 2)
-
 (def apn-token-type 1)
 (def firebase-token-type 2)
 
@@ -39,7 +36,7 @@
   {:events [:push-notifications/registered-for-push-notifications]}
   [_ token]
   {:json-rpc/call [{:method     "wakuext_registerForPushNotifications"
-                    :params     [token (if platform/ios? config/apn-topic)
+                    :params     [token (when platform/ios? config/apn-topic)
                                  (if platform/ios? apn-token-type firebase-token-type)]
                     :on-success #(log/info "[push-notifications] register-success" %)
                     :on-error   #(log/info "[push-notifications] register-error" %)}]})

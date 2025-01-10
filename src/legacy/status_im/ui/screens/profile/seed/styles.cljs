@@ -103,13 +103,3 @@
   {:flex-direction :row
    :margin-top     16
    :margin-bottom  32})
-
-(def backup-seed
-  {:font-weight "700"
-   :text-align  :center})
-
-(def step-n
-  {:margin-top 5
-   :font-size  14
-   :text-align :center
-   :color      colors/gray})

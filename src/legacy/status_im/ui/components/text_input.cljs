@@ -26,8 +26,6 @@
   (s/nilable (s/or :string    string?
                    :component vector?)))
 (s/def ::cancel-label (s/nilable string?))
-(s/def ::default-value (s/nilable string?))
-(s/def ::placeholder (s/nilable string?))
 (s/def ::keyboard-type
   (s/nilable (s/or :string  string?
                    :keyword keyword?))) ; TODO: make set

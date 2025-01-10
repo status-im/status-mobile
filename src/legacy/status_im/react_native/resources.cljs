@@ -1,6 +1,4 @@
-(ns legacy.status-im.react-native.resources
-  (:require
-    [legacy.status-im.ui.components.colors :as colors]))
+(ns legacy.status-im.react-native.resources)
 
 (def ui
   {:empty-chats-header (js/require "../resources/images/ui/empty-chats-header.png")
@@ -51,10 +49,6 @@
    :discover           (js/require "../resources/images/ui/discover.png")
    :no-contacts        (js/require "../resources/images/ui/no-contacts.png")
    :no-contacts-dark   (js/require "../resources/images/ui/no-contacts-dark.png")})
-
-(defn get-theme-image
-  [k]
-  (get ui (when (colors/dark?) (keyword (str (name k) "-dark"))) (get ui k)))
 
 (def loaded-images (atom {}))
 

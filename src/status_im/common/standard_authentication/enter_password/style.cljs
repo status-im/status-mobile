@@ -5,11 +5,6 @@
    :border-top-left-radius  12
    :border-top-right-radius 12})
 
-(def error-message
-  {:margin-top     8
-   :flex-direction :row
-   :align-items    :center})
-
 (def enter-password-button
   {:margin-top    45
    :margin-bottom 12})

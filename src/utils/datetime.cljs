@@ -82,7 +82,6 @@
     "h:mm:ss a"))
 
 ;;;; Date formats
-(defn- short-date-format [_] "dd MMM")
 (defn- short-date-format-with-time [_] "dd MMM h:mm a")
 
 (defn- datetime-within-one-week-format
@@ -118,7 +117,6 @@
 (def date-time-fmt (get-formatter-fn medium-date-time-format))
 (def date-fmt (get-formatter-fn medium-date-format))
 (def time-fmt (get-formatter-fn short-time-format))
-(def short-date-fmt (get-formatter-fn short-date-format))
 (def short-date-with-time-fmt (get-formatter-fn short-date-format-with-time))
 (def datetime-within-one-week-fmt (get-formatter-fn datetime-within-one-week-format))
 
@@ -223,26 +221,12 @@
        timestamp->relative
        full-date->short-date))
 
-(defn timestamp->mini-date
-  [ms]
-  (.format ^js (short-date-fmt)
-           (-> ms
-               t.coerce/from-long
-               (t/plus time-zone-offset))))
-
 (defn timestamp->time
   [ms]
   (.format ^js (time-fmt)
            (-> ms
                t.coerce/from-long
                (t/plus time-zone-offset))))
-
-(defn timestamp->date-key
-  [ms]
-  (keyword (t.format/unparse (t.format/formatter "YYYYMMDD")
-                             (-> ms
-                                 t.coerce/from-long
-                                 (t/plus time-zone-offset)))))
 
 (defn timestamp->long-date
   [ms]
@@ -251,32 +235,12 @@
                t.coerce/from-long
                (t/plus time-zone-offset))))
 
-(defn format-time-ago
-  [diff unit]
-  (let [name (i18n/label-pluralize diff (:name unit))]
-    (if (= :t/datetime-second-short (:name unit))
-      (i18n/label :t/now)
-      (i18n/label :t/datetime-ago-format-short
-                  {:ago            (i18n/label :t/datetime-ago)
-                   :number         diff
-                   :time-intervals name}))))
 (defn seconds-ago
   [date-time]
   (let [time-now (t/now)]
     (if (<= (.getTime ^js date-time) (.getTime ^js time-now))
       (t/in-seconds (t/interval date-time time-now))
       0)))
-
-(defn time-ago
-  [date-time]
-  (let [diff (seconds-ago date-time)
-        unit (first (drop-while #(and (>= diff (:limit %))
-                                      (:limit %))
-                                default-units))]
-    (-> (/ diff (:in-second unit))
-        Math/floor
-        int
-        (format-time-ago unit))))
 
 (defn time-ago-long
   ([date-time units]

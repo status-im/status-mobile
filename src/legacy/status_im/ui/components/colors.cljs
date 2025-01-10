@@ -125,15 +125,11 @@
 (def white-persist (:ui-background light-theme))                          ;; this doesn't with theme
 (def white-transparent-10 (:interactive-03 light-theme))                ;; Used as icon background color for a dark foreground
 (def white-transparent (:icon-03 light-theme))                   ;; Used as icon color on dark background and input placeholder color
-(def white-transparent-persist (:icon-03 light-theme))
 (def white-transparent-70 (:text-03 light-theme))
 (def white-transparent-70-persist (:text-03 light-theme))
 
 (def mentioned-background (:mentioned-background old-colors-mapping-light))
 (def mentioned-border (:mentioned-border old-colors-mapping-light))
-
-(def red-light "#ffe5ea")                                   ;; error tooltip TODO (andrey) should be white, but shadow
-                                   ;; needed
 
 ;; BLACK
 (def black (:text-01 light-theme))                                  ;; Used as the default text color
@@ -143,10 +139,7 @@
 ;; color for containers like "Backup recovery phrase"
 (def black-transparent-20 (:backdrop light-theme))                ; accounts divider
 (def black-transparent-40 (:backdrop light-theme))
-(def black-transparent-40-persist (:backdrop light-theme))
 (def black-transparent-50 (:backdrop light-theme))
-(def black-light "#2d2d2d")                                 ;; sign-with-keycard-button
-(def black-transparent-86 (:ui-03 light-theme))
 
 ;; DARK GREY
 (def gray (:text-02 light-theme))                                    ;; Dark grey, used as a background for a light foreground and
@@ -160,7 +153,7 @@
 ;; ACCENT BLUE
 (def blue (:interactive-01 light-theme))                                    ;; Accent blue, used as main wallet color, and ios home add
                                     ;; button
-(def blue-persist (:interactive-01 light-theme))
+
 ;; LIGHT BLUE
 (def blue-light (:interactive-02 light-theme))                        ;; Light Blue
 (def blue-transparent-10 (alpha blue 0.1))                  ;; unknown
@@ -168,7 +161,7 @@
 ;; RED
 (def red (:negative-01 light-theme))                                      ;; Used to highlight errors or "dangerous" actions
 (def red-transparent-10 (alpha red 0.1))                    ;;action-row ;; ttt finish
-(def red-audio-recorder "#fa6565")
+
 
 ;; GREEN
 (def green "#44d058")                                       ;; icon for successful inboud transaction
@@ -177,32 +170,9 @@
 ;; YELLOW
 (def pin-background (:pin-background old-colors-mapping-light))                    ;; Light yellow, used as background for pinned messages
 
-(def purple "#887af9")
-(def orange "#FE8F59")
 
-(def chat-colors
-  ["#fa6565"
-   "#7cda00"
-   purple
-   "#51d0f0"
-   orange
-   "#d37ef4"])
-
-(def account-colors
-  ["#9B832F"
-   "#D37EF4"
-   "#1D806F"
-   "#FA6565"
-   "#7CDA00"
-   purple
-   "#8B3131"])
-
-(def mention-incoming "#0DA4C9")
-(def mention-outgoing "#9EE8FA")
 (def text black)
 (def text-gray gray)
-(def default-community-color "#773377")
-
 (def default-chat-color "#a187d5")                          ;; legacy
 
 ;; THEME

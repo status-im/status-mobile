@@ -13,7 +13,7 @@
         customization-color (rf/sub [:profile/customization-color])]
     [:<>
      [quo/page-top
-      {:title           (i18n/label :t/failed-to-migrate-key-pair)
+      {:title           (i18n/label :t/something-didnt-go-as-planned)
        :description     :context-tag
        :context-tag     {:full-name           profile-name
                          :profile-picture     profile-picture
@@ -24,9 +24,9 @@
        {:resize-mode :contain
         :source      (resources/get-image :keycard-migration-failed)}]]
      [quo/divider-label (i18n/label :t/what-you-can-do)]
-     [quo/markdown-list {:description (i18n/label :t/log-out-remove-profile)}]
-     [quo/markdown-list {:description (i18n/label :t/recover-status-profile)}]
+     [quo/markdown-list {:description (i18n/label :t/keycard-migration-failed-instruction-1)}]
+     [quo/markdown-list {:description (i18n/label :t/keycard-migration-failed-instruction-2)}]
      [quo/bottom-actions
       {:actions          :one-action
-       :button-one-label (i18n/label :t/log-out-remove)
+       :button-one-label (i18n/label :t/logout)
        :button-one-props {:on-press #(rf/dispatch [:profile/logout])}}]]))

@@ -1,6 +1,7 @@
 (ns status-im.contexts.wallet.send.input-amount.estimated-fees
   (:require
     [quo.core :as quo]
+    [quo.foundations.colors :as colors]
     [quo.theme]
     [react-native.core :as rn]
     [status-im.common.not-implemented :as not-implemented]
@@ -30,38 +31,40 @@
   (let [amount              (rf/sub [:wallet/send-total-amount-formatted])
         tx-type             (rf/sub [:wallet/wallet-send-tx-type])
         {:keys [full-name]} (rf/sub [:wallet/bridge-to-network-details])]
-    [quo/data-item
-     (cond-> {:container-style style/amount-data-item
-              :status          (if loading-routes? :loading :default)
-              :size            :small
-              :title           (i18n/label :t/recipient-gets)
-              :subtitle        amount}
-
-       (= tx-type :tx/bridge)
-       (assoc
-        :title-icon :i/info
-        :title      (i18n/label :t/bridged-to
-                                {:network full-name})
-        :on-press   show-bonder-fee-info))]))
+    (when (= tx-type :tx/bridge)
+      [quo/data-item
+       {:container-style style/amount-data-item
+        :status          (if loading-routes? :loading :default)
+        :size            :small
+        :title-icon      :i/info
+        :title           (i18n/label :t/bridged-to
+                                     {:network full-name})
+        :subtitle        amount
+        :on-press        show-bonder-fee-info}])))
 
 (defn view
-  [{:keys [loading-routes? fees]}]
-  [rn/view {:style style/estimated-fees-container}
-   (when (ff/enabled? ::ff/wallet.advanced-sending)
-     [rn/view {:style style/estimated-fees-content-container}
-      [quo/button
-       {:icon-only?          true
-        :type                :outline
-        :size                32
-        :inner-style         {:opacity 1}
-        :accessibility-label :advanced-button
-        :disabled?           loading-routes?
-        :on-press            not-implemented/alert}
-       :i/advanced]])
-   [quo/data-item
-    {:container-style style/fees-data-item
-     :status          (if loading-routes? :loading :default)
-     :size            :small
-     :title           (i18n/label :t/fees)
-     :subtitle        fees}]
-   [received-amount {:loading-routes? loading-routes?}]])
+  [{:keys [not-enough-asset? loading-routes? fees]}]
+  (let [theme (quo.theme/use-theme)]
+    [rn/view {:style style/estimated-fees-container}
+     (when (ff/enabled? ::ff/wallet.advanced-sending)
+       [rn/view {:style style/estimated-fees-content-container}
+        [quo/button
+         {:icon-only?          true
+          :type                :outline
+          :size                32
+          :inner-style         {:opacity 1}
+          :accessibility-label :advanced-button
+          :disabled?           loading-routes?
+          :on-press            not-implemented/alert}
+         :i/advanced]])
+     [quo/data-item
+      (cond-> {:container-style style/fees-data-item
+               :status          (if loading-routes? :loading :default)
+               :size            :small
+               :title           (i18n/label :t/max-fees)
+               :subtitle        fees}
+        not-enough-asset? (assoc :subtitle-color
+                                 (colors/theme-colors colors/danger-50
+                                                      colors/danger-60
+                                                      theme)))]
+     [received-amount {:loading-routes? loading-routes?}]]))

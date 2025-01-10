@@ -2,7 +2,6 @@ import base64
 import os
 import time
 from io import BytesIO
-from timeit import timeit
 
 import emoji
 import imagehash
@@ -101,21 +100,13 @@ class BaseElement(object):
         self.click()
 
     def click_until_presence_of_element(self, desired_element, attempts=4):
-        counter = 0
         self.driver.info("Click until `%s` by `%s`: `%s` will be presented" % (
             desired_element.name, desired_element.by, desired_element.locator))
-        while not desired_element.is_element_displayed(1) and counter <= attempts:
-            try:
-                el = self.find_element()
-                try:
-                    el.click()
-                except AttributeError:
-                    raise Exception("Element: %s\n Element type: %s" % (el, type(el)))
-                return self.navigate()
-            except (NoSuchElementException, TimeoutException):
-                counter += 1
-        else:
-            self.driver.info("%s element not found" % desired_element.name)
+        for _ in range(attempts):
+            self.find_element().click()
+            if desired_element.is_element_displayed(2):
+                return
+        raise NoSuchElementException("%s element not found" % desired_element.name)
 
     def double_click(self):
         self.driver.info('Double tap on: %s' % self.name)
@@ -210,12 +201,6 @@ class BaseElement(object):
         self.scroll_to_element(direction=direction)
         self.click()
 
-    # def is_element_present(self, sec=5):
-    #     try:
-    #         return self.wait_for_element(sec)
-    #     except TimeoutException:
-    #         return False
-
     def is_element_displayed(self, sec=5, ignored_exceptions=None):
         try:
             return self.wait_for_visibility_of_element(sec, ignored_exceptions=ignored_exceptions)
@@ -266,11 +251,6 @@ class BaseElement(object):
         full_path_to_file = os.sep.join(__file__.split(os.sep)[:-1]) + '/elements_templates/%s' % name
         screen = Image.open(BytesIO(base64.b64decode(self.find_element().screenshot_as_base64)))
         screen.save(full_path_to_file)
-
-    def is_element_image_equals_template(self, file_name: str = ''):
-        if file_name:
-            self.template = file_name
-        return not ImageChops.difference(self.image, self.template).getbbox()
 
     def is_element_differs_from_template(self, file_name: str = '', diff: int = 0):
         if file_name:
@@ -324,9 +304,15 @@ class BaseElement(object):
         action.click_and_hold(element).perform()
         time.sleep(2)
         if element_to_release_on:
-            action.release(element_to_release_on.find_element()).perform()
+            action.release(element_to_release_on.find_element())
+            action.perform()
         else:
-            action.release(element).perform()
+            action.release(element)
+            action.perform()
+
+    def long_press_without_release(self):
+        action = ActionChains(self.driver)
+        action.click_and_hold(self.find_element()).perform()
 
     def long_press_until_element_is_shown(self, expected_element):
         element = self.find_element()
@@ -348,18 +334,6 @@ class BaseElement(object):
         action = ActionChains(self.driver)
         action.move_to_element_with_offset(to_element=element, xoffset=x, yoffset=y).click_and_hold().perform()
         action.release(element).perform()
-
-    def measure_time_before_element_appears(self, max_wait_time=30):
-        def wrapper():
-            return self.wait_for_visibility_of_element(max_wait_time)
-
-        return timeit(wrapper, number=1)
-
-    def measure_time_while_element_is_shown(self, max_wait_time=30):
-        def wrapper():
-            return self.wait_for_invisibility_of_element(max_wait_time)
-
-        return timeit(wrapper, number=1)
 
     def click_inside_element_by_coordinate(self, rel_x=0.8, rel_y=0.8, times_to_click=1):
         location, size = self.get_element_coordinates()

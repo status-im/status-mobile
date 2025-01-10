@@ -1,6 +1,5 @@
 (ns status-im.contexts.wallet.swap.utils
   (:require [status-im.constants :as constants]
-            [status-im.contexts.wallet.common.utils :as utils]
             [status-im.contexts.wallet.common.utils.networks :as network-utils]
             [utils.i18n :as i18n]))
 
@@ -53,18 +52,6 @@
            (network-utils/network-list-with-positive-balance
             token
             networks))))
-
-(defn select-default-asset-to-receive
-  "Selects an asset to receive if it was not provided explicitly.
-   The principle of how the asset is being selected is simple: we get the
-   whole list, remove the currently selected `asset-to-pay` from it, and choose
-   the first one of what's left."
-  [{:keys [wallet account test-networks-enabled? asset-to-pay]}]
-  (let [networks (-> (get-in wallet [:networks (if test-networks-enabled? :test :prod)])
-                     (network-utils/sorted-networks-with-details))]
-    (->> (utils/tokens-with-balance (:tokens account) networks nil)
-         (remove #(= (:symbol %) (:symbol asset-to-pay)))
-         first)))
 
 (defn select-network
   "Chooses the network.

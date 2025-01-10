@@ -29,20 +29,6 @@
           :color     :pink
           :emoji     "🦩"}})
 
-(def permissioned-accounts
-  [{:address          "0xB"
-    :position         0
-    :color            :blue
-    :emoji            "🐈"
-    :airdrop-address? true
-    :reveal?          true}
-   {:address          "0xC"
-    :position         1
-    :color            :orange
-    :emoji            "🛏️"
-    :airdrop-address? false
-    :reveal?          false}])
-
 (deftest initialize-permission-addresses-test
   (testing "fetches revealed accounts when joined"
     (let [cofx {:db {:communities {community-id {:joined true}}}}]

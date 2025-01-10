@@ -9,8 +9,5 @@
     :align-items        :flex-start}
    container-style))
 
-(def index
-  {:margin-left 5})
-
 (def text-container
   {:margin-left 8})

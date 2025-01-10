@@ -9,11 +9,6 @@
     [utils.re-frame :as rf])
   (:require-macros [legacy.status-im.utils.views :as views]))
 
-(defn hide-sheet-and-dispatch
-  [event]
-  (re-frame/dispatch [:bottom-sheet/hide-old])
-  (re-frame/dispatch event))
-
 (defn- normal-mode-settings-data
   [{:keys [current-log-level
            light-client-enabled?

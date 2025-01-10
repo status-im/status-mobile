@@ -5,7 +5,6 @@
     [legacy.status-im.ui.screens.appearance.views :as appearance]
     [legacy.status-im.ui.screens.backup-settings.view :as backup-settings]
     [legacy.status-im.ui.screens.bug-report :as bug-report]
-    [legacy.status-im.ui.screens.communities.invite :as communities.invite]
     [legacy.status-im.ui.screens.communities.members :as members]
     [legacy.status-im.ui.screens.default-sync-period-settings.view :as default-sync-period-settings]
     [legacy.status-im.ui.screens.fleet-settings.views :as fleet-settings]
@@ -13,14 +12,12 @@
     [legacy.status-im.ui.screens.help-center.views :as help-center]
     [legacy.status-im.ui.screens.log-level-settings.views :as log-level-settings]
     [legacy.status-im.ui.screens.notifications-settings.views :as notifications-settings]
-    [legacy.status-im.ui.screens.offline-messaging-settings.edit-mailserver.views :as edit-mailserver]
     [legacy.status-im.ui.screens.offline-messaging-settings.views :as offline-messaging-settings]
     [legacy.status-im.ui.screens.pairing.views :as pairing]
     [legacy.status-im.ui.screens.peers-stats :as peers-stats]
     [legacy.status-im.ui.screens.profile.seed.views :as profile.seed]
     [legacy.status-im.ui.screens.profile.user.views :as profile.user]
     [legacy.status-im.ui.screens.progress.views :as progress]
-    [legacy.status-im.ui.screens.reset-password.views :as reset-password]
     [legacy.status-im.ui.screens.rpc-usage-info :as rpc-usage-info]
     [legacy.status-im.ui.screens.sync-settings.views :as sync-settings]
     [legacy.status-im.ui.screens.wakuv2-settings.edit-node.views :as edit-wakuv2-node]
@@ -54,9 +51,6 @@
     :options   {:insets {:top? true}}
     :component members/legacy-members-container}
 
-   {:name      :legacy-invite-people-community
-    :options   {:insets {:bottom? true :top? true}}
-    :component communities.invite/legacy-invite}
 
    ;;SETTINGS
    {:name      :legacy-notifications
@@ -122,9 +116,6 @@
    {:name      :offline-messaging-settings
     :options   {:insets {:top? true}}
     :component offline-messaging-settings/offline-messaging-settings}
-   {:name      :edit-mailserver
-    :options   {:insets {:top? true}}
-    :component edit-mailserver/edit-mailserver}
    {:name      :rpc-usage-info
     :options   {:topBar (topbar-options :t/rpc-usage-info)
                 :insets {:top? true}}
@@ -144,10 +135,6 @@
    {:name      :backup-seed
     :options   {:insets {:top? platform/android? :bottom? true}}
     :component profile.seed/backup-seed}
-   {:name      :reset-password
-    :options   {:topBar (topbar-options :t/reset-password)
-                :insets {:top? true}}
-    :component reset-password/reset-password}
    {:name      :default-sync-period-settings
     :options   {:topBar (topbar-options :t/default-sync-period)
                 :insets {:top? true}}

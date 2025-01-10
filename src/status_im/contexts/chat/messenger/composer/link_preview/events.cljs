@@ -129,7 +129,7 @@
 
 (rf/defn unfurl-parsed-urls-error
   {:events [:link-preview/unfurl-parsed-urls-error]}
-  [{:keys [db]} request-id error]
+  [_cofx request-id error]
   (log/error "Failed to unfurl URLs"
              {:request-id request-id
               :error      error

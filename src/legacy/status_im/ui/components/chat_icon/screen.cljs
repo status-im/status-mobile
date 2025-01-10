@@ -3,7 +3,6 @@
     [clojure.string :as string]
     [legacy.status-im.ui.components.chat-icon.styles :as styles]
     [legacy.status-im.ui.components.colors :as colors]
-    [legacy.status-im.ui.components.icons.icons :as icons]
     [legacy.status-im.ui.screens.chat.photos :as photos]
     [legacy.status-im.ui.screens.profile.visibility-status.utils :as visibility-status-utils]
     [quo.components.avatars.user-avatar.style :as user-avatar.style]
@@ -12,8 +11,7 @@
     [re-frame.core :as re-frame.core]
     [react-native.core :as rn]
     [status-im.contexts.profile.utils :as profile.utils]
-    [utils.ens.core :as utils.ens]
-    [utils.image-server :as image-server]))
+    [utils.ens.core :as utils.ens]))
 
 ;;TODO REWORK THIS NAMESPACE
 
@@ -36,20 +34,6 @@
     [rn/view (:default-chat-icon styles)
      [rn/text {:style (:default-chat-icon-text styles)}
       (get-name-first-char name)]]))
-
-(defn chat-icon-view
-  [chat-id group-chat name styles]
-  [rn/view (:container styles)
-   (if group-chat
-     [default-chat-icon name styles]
-     (let [photo-path @(re-frame.core/subscribe [:chats/photo-path chat-id])]
-       [photos/photo photo-path styles]))])
-
-(defn emoji-chat-icon
-  [emoji styles]
-  (when-not (string/blank? emoji)
-    [rn/view (:default-chat-icon styles)
-     [rn/text {:style (:default-chat-icon-text styles)} emoji]]))
 
 (defn profile-photo-plus-dot-view
   [{:keys [public-key full-name customization-color photo-container photo-path community?]}]
@@ -88,35 +72,6 @@
         {:style               dot-styles
          :accessibility-label dot-accessibility-label}])]))
 
-(defn emoji-chat-icon-view
-  [chat-id group-chat name emoji styles]
-  [rn/view (:container styles)
-   (if group-chat
-     (if (string/blank? emoji)
-       [default-chat-icon name styles]
-       [emoji-chat-icon emoji styles])
-     [profile-photo-plus-dot-view
-      {:public-key      chat-id
-       :photo-container (:default-chat-icon styles)}])])
-
-(defn chat-icon-view-chat-list
-  [chat-id group-chat name color]
-  [chat-icon-view chat-id group-chat name
-   {:container              styles/container-chat-list
-    :size                   40
-    :chat-icon              styles/chat-icon-chat-list
-    :default-chat-icon      (styles/default-chat-icon-chat-list color)
-    :default-chat-icon-text (styles/default-chat-icon-text 40)}])
-
-(defn chat-icon-view-chat-sheet
-  [chat-id group-chat name color]
-  [chat-icon-view chat-id group-chat name
-   {:container              styles/container-chat-list
-    :size                   40
-    :chat-icon              styles/chat-icon-chat-list
-    :default-chat-icon      (styles/default-chat-icon-chat-list color)
-    :default-chat-icon-text (styles/default-chat-icon-text 40)}])
-
 (defn custom-icon-view-list
   [name color & [size]]
   [rn/view (styles/container-list-size (or size 40))
@@ -147,44 +102,4 @@
     :default-chat-icon      (styles/default-chat-icon-profile colors/default-chat-color size)
     :default-chat-icon-text (styles/default-chat-icon-text size)}])
 
-(defn profile-icon-view
-  [photo-path name color emoji edit? size override-styles public-key community?]
-  (let [styles     (merge {:container              {:width size :height size}
-                           :size                   size
-                           :chat-icon              styles/chat-icon-profile
-                           :default-chat-icon      (styles/default-chat-icon-profile color size)
-                           :default-chat-icon-text (if (string/blank? emoji)
-                                                     (styles/default-chat-icon-text size)
-                                                     (styles/emoji-chat-icon-text size))}
-                          override-styles)
-        img-config (:config photo-path)
-        photo-path (if img-config
-                     ;; temp support new media server avatar for old component
-                     {:uri (image-server/get-image-uri
-                            img-config
-                            {:size             size
-                             :full-name        name
-                             :font-size        (get-in styles [:default-chat-icon-text :font-size])
-                             :background-color (get-in styles [:default-chat-icon :background-color])
-                             :indicator-size   0
-                             :indicator-border 0
-                             :indicator-color  "#000000"
-                             :color            (get-in styles [:default-chat-icon-text :color])
-                             :length           2
-                             :ring?            (not (utils.ens/is-valid-eth-name? name))
-                             :ring-width       2})}
-                     photo-path)]
-    [rn/view (:container styles)
-     (if (and photo-path (seq photo-path))
-       [profile-photo-plus-dot-view
-        {:photo-path      photo-path
-         :public-key      public-key
-         :photo-container (:container styles)
-         :community?      community?}]
-       [rn/view {:accessibility-label :chat-icon}
-        (if (string/blank? emoji)
-          [default-chat-icon name styles]
-          [emoji-chat-icon emoji styles])])
-     (when edit?
-       [rn/view {:style (styles/chat-icon-profile-edit)}
-        [icons/tiny-icon :tiny-icons/tiny-edit {:color colors/white-persist}]])]))
+

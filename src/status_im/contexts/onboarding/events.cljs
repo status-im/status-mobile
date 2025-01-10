@@ -20,17 +20,6 @@
          [:dispatch [:profile/show-testnet-mode-banner-if-enabled]]
          [:dispatch [:universal-links/process-stored-event]]]}))
 
-(rf/reg-event-fx
- :onboarding/profile-data-set
- (fn [{:keys [db]} [onboarding-data]]
-   (let [navigate-from-screen (get db
-                                   :onboarding/navigated-to-enter-seed-phrase-from-screen
-                                   :screen/onboarding.new-to-status)]
-     {:db (update db :onboarding/profile merge onboarding-data)
-      :fx [[:dispatch
-            [:navigate-to-within-stack
-             [:screen/onboarding.create-profile-password navigate-from-screen]]]]})))
-
 (rf/defn enable-biometrics
   {:events [:onboarding/enable-biometrics]}
   [_]
@@ -49,19 +38,13 @@
  (fn [{:keys [db]}]
    {:db (dissoc db :onboarding/navigated-to-enter-seed-phrase-from-screen)}))
 
-(rf/reg-event-fx :onboarding/navigate-to-enable-notifications-from-syncing
- (fn [{:keys [db]}]
-   {:db       (dissoc db :onboarding/profile)
-    :dispatch [:navigate-to-within-stack
-               [:screen/onboarding.enable-notifications :screen/onboarding.enable-biometrics]]}))
-
 (rf/reg-event-fx :onboarding/navigate-to-enable-notifications
  (fn [{:keys [db]}]
    {:dispatch [:navigate-to-within-stack
                [:screen/onboarding.enable-notifications
                 (get db
                      :onboarding/navigated-to-enter-seed-phrase-from-screen
-                     :screen/onboarding.new-to-status)]]}))
+                     :screen/onboarding.create-profile)]]}))
 
 (rf/defn biometrics-done
   {:events [:onboarding/biometrics-done]}
@@ -93,7 +76,7 @@
              [:screen/onboarding.preparing-status
               (get db
                    :onboarding/navigated-to-enter-seed-phrase-from-screen
-                   :screen/onboarding.new-to-status)]]]
+                   :screen/onboarding.create-profile)]]]
            (when-not syncing-account-recovered?
              [:dispatch [:syncing/clear-syncing-installation-id]])
            (if seed-phrase
@@ -115,7 +98,7 @@
    (let [biometric-supported-type (get-in db [:biometrics :supported-type])
          from-screen              (get db
                                        :onboarding/navigated-to-enter-seed-phrase-from-screen
-                                       :screen/onboarding.new-to-status)]
+                                       :screen/onboarding.create-profile)]
      {:db (-> db
               (assoc-in [:onboarding/profile :password] masked-password)
               (assoc-in [:onboarding/profile :auth-method] constants/auth-method-password))
@@ -125,20 +108,12 @@
               [:onboarding/create-account-and-login])]]})))
 
 (rf/reg-event-fx
- :onboarding/navigate-to-enable-biometrics
- (fn [{:keys [db]}]
-   (let [supported-type (get-in db [:biometrics :supported-type])]
-     {:dispatch (if supported-type
-                  [:open-modal :screen/onboarding.enable-biometrics]
-                  [:open-modal :screen/onboarding.enable-notifications])})))
-
-(rf/reg-event-fx
  :onboarding/seed-phrase-validated
  (fn [{:keys [db]} [seed-phrase key-uid]]
    (let [next-screen :screen/onboarding.create-profile-password
          from-screen (get db
                           :onboarding/navigated-to-enter-seed-phrase-from-screen
-                          :screen/onboarding.new-to-status)]
+                          :screen/onboarding.create-profile)]
      (if (contains? (:profile/profiles-overview db) key-uid)
        {:fx [[:effects.utils/show-confirmation
               {:title               (i18n/label :t/multiaccount-exists-title)
@@ -155,21 +130,21 @@
         :fx [[:dispatch [:navigate-to-within-stack [next-screen from-screen]]]]}))))
 
 (rf/reg-event-fx
- :onboarding/navigate-to-create-profile
+ :onboarding/navigate-to-create-profile-password
  (fn [{:keys [db]}]
    {:db (-> db
             (assoc-in [:onboarding/profile :color] (rand-nth colors/account-colors))
             (update :onboarding/profile dissoc :image-path))
     :fx [[:dispatch
           [:navigate-to-within-stack
-           [:screen/onboarding.create-profile-password :screen/onboarding.new-to-status]]]]}))
+           [:screen/onboarding.create-profile-password :screen/onboarding.create-profile]]]]}))
 
 (rf/reg-event-fx :onboarding/navigate-to-sign-in-by-syncing
  (fn [{:keys [db]}]
    ;; Restart the flow
    {:db       (dissoc db :onboarding/profile)
     :dispatch [:navigate-to-within-stack
-               [:screen/onboarding.sign-in-intro :screen/onboarding.sync-or-recover-profile]]}))
+               [:screen/onboarding.sign-in-intro :screen/onboarding.log-in]]}))
 
 (rf/reg-event-fx :onboarding/set-auth-method
  (fn [{:keys [db]} [auth-method]]
@@ -211,7 +186,7 @@
                                   (rf/dispatch [:onboarding/set-auth-method auth-method])
                                   (when syncing?
                                     (rf/dispatch
-                                     [:onboarding/navigate-to-enable-notifications-from-syncing])))
+                                     [:onboarding/finish-onboarding false])))
                :on-error        #(log/error "failed to save biometrics"
                                             {:key-uid key-uid
                                              :error   %})}])]})))

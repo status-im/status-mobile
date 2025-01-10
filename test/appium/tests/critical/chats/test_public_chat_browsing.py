@@ -1,5 +1,6 @@
 import datetime
 import random
+import time
 
 import emoji
 import pytest
@@ -240,6 +241,7 @@ class TestCommunityOneDeviceMerged(MultipleSharedDeviceTestCase):
         self.errors.verify_no_errors()
 
     @marks.testrail_id(703503)
+    @marks.xfail(reason="Might fail if the Discover curation dapp is too slow to load > 2 mins")
     def test_community_discovery(self):
         try:
             # workaround for case if a user is logged out in the previous test
@@ -281,11 +283,9 @@ class TestCommunityOneDeviceMerged(MultipleSharedDeviceTestCase):
                 # if community_name == 'Status':
                 self.home.just_fyi("Check Status community screen")
                 card.click()
-                self.community_view.join_button.save_new_screenshot_of_element('status_community_join_button_aaa.png')
                 if self.community_view.join_button.is_element_differs_from_template(
                         'status_community_join_button.png'):
                     self.errors.append("Status community Join button is different from expected template.")
-                self.community_view.community_logo.save_new_screenshot_of_element('status_community_logo_aaa.png')
                 if self.community_view.community_logo.is_element_differs_from_template('status_community_logo.png'):
                     self.errors.append("Status community logo is different from expected template.")
 
@@ -322,10 +322,7 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
         self.home_1.get_chat(self.username_2).wait_for_visibility_of_element()
         self.chat_1 = self.home_1.get_chat(self.username_2).click()
         self.chat_1.send_message('hey')
-        self.chat_2 = self.home_2.get_chat(self.username_1).click_until_presence_of_element(
-            ChatView(self.drivers[1]).chat_message_input)
-        # self.chat_2.send_message(self.text_message)
-        # [home.click_system_back_button_until_element_is_shown() for home in self.homes]
+        self.chat_2 = self.home_2.get_chat(self.username_1).click()
         self.home_1.navigate_back_to_home_view()
 
         self.home_1.just_fyi("Open community to message")
@@ -412,7 +409,7 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
     @marks.testrail_id(703194)
     def test_community_several_images_send_reply(self):
         self.home_1.just_fyi('Send several images in 1-1 chat from Gallery')
-        image_description, file_name = 'gallery', 'gallery_1.png'
+        image_description = 'gallery'
         self.channel_1.send_images_with_description(image_description, [0, 1])
 
         self.channel_2.just_fyi("Check gallery on second device")
@@ -423,8 +420,10 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
         try:
             chat_element.wait_for_visibility_of_element(120)
             received = True
-            if chat_element.image_container_in_message.is_element_differs_from_template(file_name, 5):
-                self.errors.append("Gallery message do not match the template!")
+            image = chat_element.image_container_in_message
+            if (image.is_element_differs_from_template("images_gallery.png", 5) and
+                    image.is_element_differs_from_template("images_gallery_inverted.png", 5)):
+                self.errors.append("Gallery message does not match the template!")
         except TimeoutException:
             self.errors.append("Gallery message was not received")
             received = False
@@ -465,7 +464,7 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
             self.channel_2.hide_keyboard_if_shown()
         self.channel_2.chat_element_by_text(image_description).wait_for_visibility_of_element(10)
         if not self.channel_2.chat_element_by_text(
-                image_description).image_in_message.is_element_image_similar_to_template('image_sent_in_community.png'):
+                image_description).image_in_message.is_element_image_similar_to_template('image_1_chat_view.png'):
             self.errors.append("Not expected image is shown to the receiver")
 
         if not self.channel_1.chat_element_by_text(image_description).is_element_displayed(60):
@@ -489,7 +488,7 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
         self.channel_1.show_images_button.click()
         self.channel_1.allow_all_button.click_if_shown()
         if not self.channel_1.get_image_by_index(0).is_element_image_similar_to_template(
-                "sauce_dark_image_gallery.png"):
+                "image_1_gallery_view.png"):
             self.errors.append('Saved image is not shown in Recent')
         self.channel_1.click_system_back_button()
 
@@ -562,6 +561,7 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
         self.errors.verify_no_errors()
 
     @marks.testrail_id(702844)
+    @marks.xfail(reason="Youtube links preview is not loaded on LambdaTest emulators, needs investigation")
     def test_community_links_with_previews_github_youtube_twitter_gif_send_enable(self):
         preview_urls = {
             # TODO: disabled because of the bug in 15891
@@ -610,7 +610,12 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
             self.home_2.just_fyi("Checking %s preview case" % key)
             url = data['url']
             self.channel_2.chat_message_input.send_keys(url)
-            self.channel_2.url_preview_composer.wait_for_element(20)
+            try:
+                self.channel_2.url_preview_composer.wait_for_element(20)
+            except TimeoutException:
+                self.errors.append("No preview is loaded for url %s" % url)
+                self.channel_2.send_message_button.click()
+                continue
             shown_title = self.channel_2.url_preview_composer_text.text
             if shown_title != data['title']:
                 self.errors.append("Preview text is not expected, it is '%s'" % shown_title)
@@ -898,7 +903,7 @@ class TestCommunityMultipleDeviceMergedTwo(MultipleSharedDeviceTestCase):
 
         if message_received:
             self.channel_1.just_fyi("Set reaction for the message with a mention")
-            self.channel_1.set_reaction(message=self.username_1, emoji="sad")
+            self.channel_1.set_reaction(message=self.username_1, emoji="sad", times_to_long_press=2)
             try:
                 self.channel_2.chat_element_by_text(self.username_1).emojis_below_message(
                     emoji="sad").wait_for_element_text(1)
@@ -908,11 +913,12 @@ class TestCommunityMultipleDeviceMergedTwo(MultipleSharedDeviceTestCase):
         self.device_2.just_fyi("Sender edits the message with a mention")
         chat_element = self.channel_2.chat_element_by_text(self.username_1)
         chat_element.wait_for_sent_state()
-        chat_element.long_press_element()
+        chat_element.long_press_without_release()
         edit_done = False
         expected_message = ""
         try:
-            self.channel_2.element_by_translation_id("edit-message").click()
+            self.channel_2.element_by_translation_id("edit-message").double_click()
+            time.sleep(1)
             for i in range(29, 32):
                 self.channel_2.driver.press_keycode(i)
             input_text = self.channel_2.chat_message_input.text
@@ -1052,7 +1058,7 @@ class TestCommunityMultipleDeviceMergedTwo(MultipleSharedDeviceTestCase):
             self.errors.append("Not all channels are shown in community before joining: %s" % not_shown)
         chan = self.community_2.get_channel("general")
         if chan.is_element_displayed():
-            chan.click()
+            chan.find_element().click()
             if not self.channel_2.chat_element_by_text(control_message_general_chat).is_element_displayed(20):
                 self.errors.append("Message in community channel is not visible for user before join")
         else:
@@ -1168,7 +1174,7 @@ class TestCommunityMultipleDeviceMergedTwo(MultipleSharedDeviceTestCase):
             self.errors.append("Pending status is not displayed")
         general_channel = self.community_2.get_channel("general")
         if general_channel.is_element_displayed():
-            general_channel.click()
+            general_channel.find_element().click()
             if not self.channel_2.chat_element_by_text(control_message_general_chat).is_element_displayed(30):
                 self.errors.append(
                     "Message in community channel is not visible for user before join, it was indicated as " \

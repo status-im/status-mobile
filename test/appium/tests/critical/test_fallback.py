@@ -7,7 +7,7 @@ from users import transaction_senders
 from views.sign_in_view import SignInView
 
 
-@pytest.mark.xdist_group(name="new_six_2")
+@pytest.mark.xdist_group(name="new_seven_3")
 @marks.nightly
 @marks.secured
 class TestFallbackMultipleDevice(MultipleSharedDeviceTestCase):
@@ -46,7 +46,7 @@ class TestFallbackMultipleDevice(MultipleSharedDeviceTestCase):
         self.sign_in_2.just_fyi("Device 2: try syncing profile")
         self.sign_in_2.sync_profile(sync_code=self.sync_code)
         self.sign_in_2.progress_screen_title.wait_for_element()
-        assert self.sign_in_2.progress_screen_title.text == "Oops, something’s wrong"
+        assert self.sign_in_2.progress_screen_title.text == "Oops, something’s wrong!"
         self.home_3.chats_tab.is_element_displayed()  # just pinging 3rd device to save the connection
 
     @marks.testrail_id(740221)
@@ -199,6 +199,7 @@ class TestFallbackMultipleDevice(MultipleSharedDeviceTestCase):
         self.profile_2.click_system_back_button(times=4)
 
         wallet_2.just_fyi("Device 2: import key pair")
+        wallet_2.get_account_element(account_name=regular_account_name).swipe_left_on_element()
         wallet_2.get_account_element(account_name=key_pair_account_name).click()
         wallet_2.element_by_translation_id("import-key-pair").click()
         self.sign_in_2.passphrase_edit_box.send_keys(account_to_add['passphrase'])
@@ -225,12 +226,13 @@ class TestFallbackMultipleDevice(MultipleSharedDeviceTestCase):
             self.errors.append("Key pair account is not shown in profile as on device after importing key pair")
         self.profile_2.click_system_back_button(times=3)
 
-        wallet_2.just_fyi("Device 2: check wallet balance")
-        wallet_2.select_network(network_name='Arbitrum')
-        expected_balance = self.network_api.get_balance(key_pair_account_address)
-        shown_balance = wallet_2.get_asset(asset_name='Ether').get_amount()
-        if shown_balance != round(expected_balance, 5):
-            self.errors.append("Device 2: ETH balance %s doesn't match expected %s" % (shown_balance, expected_balance))
+        # ToDo: Arbiscan API is down, looking for analogue
+        # wallet_2.just_fyi("Device 2: check wallet balance")
+        # wallet_2.set_network_in_wallet(network_name='Arbitrum')
+        # expected_balance = self.network_api.get_balance(key_pair_account_address)
+        # shown_balance = wallet_2.get_asset(asset_name='Ether').get_amount()
+        # if shown_balance != round(expected_balance, 5):
+        #     self.errors.append("Device 2: ETH balance %s doesn't match expected %s" % (shown_balance, expected_balance))
 
         wallet_2.just_fyi("Device 2: check derivation paths of the regular and key pair accounts")
         account_element = wallet_2.get_account_element(account_name=regular_account_name)
@@ -256,7 +258,7 @@ class TestFallbackMultipleDevice(MultipleSharedDeviceTestCase):
         self.sign_in_2.explore_new_status_button.click_if_shown()
         self.sign_in_2.sync_profile(sync_code=self.sync_code, first_user=False)
         self.sign_in_2.progress_screen_title.wait_for_element()
-        assert self.sign_in_2.progress_screen_title.text == "Oops, something’s wrong"
+        assert self.sign_in_2.progress_screen_title.text == "Oops, something’s wrong!"
 
         self.sign_in_2.just_fyi("Device 2: try invalid passphrase")
         self.sign_in_2.try_seed_phrase_button.click()
@@ -271,7 +273,7 @@ class TestFallbackMultipleDevice(MultipleSharedDeviceTestCase):
         self.sign_in_2.continue_button.click()
         if not self.sign_in_2.password_input.is_element_displayed():
             self.errors.append("Can't recover an access with a valid passphrase")
-        self.sign_in_2.click_system_back_button()
+        self.sign_in_2.click_system_back_button(times=2)
 
         self.sign_in_2.just_fyi("Device 2: try recovering an account which is already synced")
         self.sign_in_2.passphrase_edit_box.clear()

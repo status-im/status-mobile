@@ -2,13 +2,10 @@
   (:require
     [legacy.status-im.browser.core :as browser]
     [legacy.status-im.qr-scanner.core :as qr-scanner]
-    [legacy.status-im.ui.components.chat-icon.screen :as chat-icon]
     [legacy.status-im.ui.components.colors :as colors]
     [legacy.status-im.ui.components.core :as quo]
-    [legacy.status-im.ui.components.icons.icons :as icons]
     [legacy.status-im.ui.components.list.item :as list.item]
     [legacy.status-im.ui.components.react :as react]
-    [legacy.status-im.utils.utils :as utils]
     [re-frame.core :as re-frame]
     [utils.i18n :as i18n]))
 
@@ -16,26 +13,6 @@
   [event]
   (re-frame/dispatch [:bottom-sheet/hide-old])
   (re-frame/dispatch event))
-
-(defn wallet-connection
-  [host account]
-  (fn []
-    [react/view {:flex 1}
-     [react/text {:style {:align-self :center :margin-horizontal 16 :margin-vertical 8}}
-      (str "“" host "” " (i18n/label :t/has-permissions))]
-     [list.item/list-item
-      {:icon      [chat-icon/custom-icon-view-list (:name account) (:color account)]
-       :title     (:name account)
-       :subtitle  (utils/get-shortened-checksum-address (:address account))
-       :accessory [icons/icon :main-icons/check {:color colors/gray}]}]
-     [react/view {:padding-vertical 8}
-      [react/view {:style {:height 1 :background-color (colors/alpha colors/black 0.1)}}]]
-     [list.item/list-item
-      {:theme               :negative
-       :title               (i18n/label :t/revoke-access)
-       :accessibility-label :revoke-access
-       :icon                :main-icons/cancel
-       :on-press            #(hide-sheet-and-dispatch [:browser/revoke-dapp-permissions host])}]]))
 
 (defn browser-options
   [url _account empty-tab name]

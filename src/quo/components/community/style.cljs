@@ -68,14 +68,6 @@
                       colors/neutral-90
                       theme)})
 
-(defn list-info-container
-  []
-  {:flex-direction     :row
-   :border-radius      16
-   :padding-horizontal 12
-   :align-items        :center
-   :padding-vertical   8})
-
 (defn membership-info-container
   []
   {:flex-direction :row

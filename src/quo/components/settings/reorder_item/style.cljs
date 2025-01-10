@@ -141,9 +141,6 @@
    :width        19
    :margin-right 3})
 
-(def tab-item-label
-  {:font-size 14})
-
 (defn tab-icon
   [theme]
   {:height 16

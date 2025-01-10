@@ -21,12 +21,6 @@
    :left     0
    :right    0})
 
-(def gradient-container
-  {:position :absolute
-   :top      0
-   :left     0
-   :right    0})
-
 (def divider-label
   {:margin-top 8})
 

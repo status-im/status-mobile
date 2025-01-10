@@ -53,13 +53,6 @@
   [data]
   (.parse js/JSON data))
 
-(defn js-dissoc
-  [js-object & ks]
-  (let [object-copy (.assign js/Object #js {} js-object)]
-    (doseq [js-key ks]
-      (js-delete object-copy (name js-key)))
-    object-copy))
-
 (defn json->clj
   [json]
   (when-not (= json "undefined")

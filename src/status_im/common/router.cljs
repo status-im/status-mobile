@@ -26,9 +26,7 @@
 
 (def status-web2-domain "status.app")
 
-(def user-path "u#")
 (def user-with-data-path "u/")
-(def community-path "c#")
 (def community-with-data-path "c/")
 (def channel-path "cc/")
 
@@ -243,18 +241,6 @@
      #(cb {:type :community-chat :chat-id (str % community-channel-id)}))
     (cb {:type  :community-chat
          :error :not-found})))
-
-(defn match-browser
-  [uri {:keys [domain]}]
-  ;; NOTE: We rebuild domain from original URI and matched domain
-  (let [domain (->> (string/split uri domain)
-                    second
-                    (str domain))]
-    (if (security/safe-link? domain)
-      {:type :browser
-       :url  domain}
-      {:type  :browser
-       :error :unsafe-link})))
 
 (defn match-browser-string
   [domain]

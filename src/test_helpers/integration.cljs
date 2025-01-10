@@ -6,7 +6,6 @@
     [native-module.core :as native-module]
     [promesa.core :as promesa]
     [re-frame.core :as rf]
-    [re-frame.interop :as rf.interop]
     status-im.events
     status-im.navigation.core
     status-im.subs.root
@@ -43,10 +42,6 @@
   sleepy."
   (* 60 1000))
 
-(defn initialize-app!
-  []
-  (rf/dispatch [:app-started]))
-
 (defn create-multiaccount!
   []
   (rf/dispatch [:profile.create/create-and-login
@@ -76,21 +71,6 @@
 (defn assert-wallet-loaded
   []
   (is (wallet-loaded?)))
-
-(defn assert-community-created
-  []
-  (is (= @(rf/subscribe [:communities/create]) constants/community)))
-
-(defn create-new-account!
-  []
-  (rf/dispatch-sync [:wallet-legacy.accounts/start-adding-new-account {:type :generate}])
-  (rf/dispatch-sync [:set-in [:add-account :account :name] constants/account-name])
-  (rf/dispatch [:wallet-legacy.accounts/add-new-account (native-module/sha3 constants/password)]))
-
-(defn assert-new-account-created
-  []
-  (is (true? (some #(= (:name %) constants/account-name)
-                   @(rf/subscribe [:profile/wallet-accounts])))))
 
 (defn logout
   []
@@ -291,23 +271,4 @@
                             (done))))})
   ([] (fixture-session [:new-account])))
 
-(defn fixture-silence-reframe
-  "Fixture to disable most re-frame messages.
 
-  Avoid using this fixture for non-dev purposes because in the CI output it's
-  desirable to have more data to debug, not less.
-
-  Example messages disabled:
-
-  - Warning about subscriptions being used in non-reactive contexts.
-  - Debug message \"Handling re-frame event: XYZ\".
-
-  Usage:
-
-      (use-fixtures :once (h/fixture-silence-re-frame))
-  "
-  []
-  {:before (fn []
-             (set! rf.interop/debug-enabled? false))
-   :after  (fn []
-             (set! rf.interop/debug-enabled? true))})

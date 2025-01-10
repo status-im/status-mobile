@@ -3,7 +3,6 @@
     legacy.status-im.subs.browser
     legacy.status-im.subs.ens
     legacy.status-im.subs.mailservers
-    legacy.status-im.subs.stickers
     [re-frame.core :as re-frame]))
 
 (defn reg-root-key-sub

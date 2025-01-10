@@ -276,8 +276,7 @@
 
 (defn chat-user
   [item]
-  [rn/view
-   {:style (merge style/container {:margin-horizontal 0})}
+  [rn/view {:style (assoc style/container :margin-horizontal 0)}
    [chat-item item]])
 
 (defn chat-list-item

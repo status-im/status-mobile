@@ -20,18 +20,3 @@
    :margin-top         8
    :align-items        :center})
 
-(def gradient-cover-padding 20)
-(def qr-code-padding 12)
-
-(defn qr-code-size
-  [total-width]
-  (- total-width (* gradient-cover-padding 2) (* qr-code-padding 2)))
-
-(defn gradient-cover-size
-  [total-width]
-  (- total-width (* gradient-cover-padding 2)))
-
-(defn gradient-cover-wrapper
-  [width]
-  {:width         (gradient-cover-size width)
-   :border-radius 12})

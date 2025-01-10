@@ -1,5 +1,4 @@
-(ns status-im.contexts.settings.wallet.network-settings.style
-  (:require [quo.foundations.colors :as colors]))
+(ns status-im.contexts.settings.wallet.network-settings.style)
 
 (def title-container
   {:flex               0
@@ -21,6 +20,3 @@
 
 (def advanced-settings-container
   {:flex-shrink 0})
-
-(def testnet-not-available
-  {:color colors/danger-60})

@@ -62,7 +62,7 @@
 
 (rf/defn update-ens-tx-state-and-redirect
   {:events [:update-ens-tx-state-and-redirect]}
-  [{:keys [db] :as cofx} new-state username custom-domain? tx-hash]
+  [cofx new-state username custom-domain? tx-hash]
   (rf/merge cofx
             (update-ens-tx-state new-state username custom-domain? tx-hash)
             (redirect-to-ens-summary)))
@@ -178,13 +178,6 @@
       :else
       (re-frame/dispatch [::name-resolved username :taken]))))
 
-(defn registration-cost
-  [chain-id]
-  (case chain-id
-    3 50
-    5 10
-    1 10))
-
 (rf/defn register-name
   {:events [::register-name-pressed]}
   [{:keys [db]} address]
@@ -239,14 +232,14 @@
   (let [{:keys [custom-domain?]} (:ens/registration db)
         chain-id                 (chain/chain-id db)
         usernames                (into #{} (keys (get-in db [:ens/names chain-id])))
-        state                    (state custom-domain? username usernames)]
+        next-state               (state custom-domain? username usernames)]
     (reset! resolve-last-id (random/id))
     (merge
      {:db (update db
                   :ens/registration assoc
                   :username         username
-                  :state            state)}
-     (when (= state :searching)
+                  :state            next-state)}
+     (when (= next-state :searching)
        (let [{:profile/keys [profile]} db
              {:keys [public-key]}      profile
              addresses                 (addresses-without-watch db)

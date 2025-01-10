@@ -1,7 +1,7 @@
 (ns legacy.status-im.ui.components.action-sheet
   (:require
     ["react-native" :refer (ActionSheetIOS)]
-    [legacy.status-im.utils.core :as utils]
+    [utils.collection :as utils]
     [utils.i18n :as i18n]))
 
 (defn- callback

@@ -5,7 +5,7 @@
 
 (rf/defn copy-text-and-show-toast
   {:events [:share/copy-text-and-show-toast]}
-  [{:keys [db] :as cofx} {:keys [text-to-copy post-copy-message]}]
+  [cofx {:keys [text-to-copy post-copy-message]}]
   (rf/merge cofx
             {:copy-to-clipboard text-to-copy}
             (toasts/upsert

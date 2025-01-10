@@ -2,7 +2,6 @@
   (:require
     ["react" :as react]
     ["react-native" :as react-native]
-    [oops.core :as oops]
     [promesa.core :as promesa]
     [react-native.flat-list :as flat-list]
     [react-native.platform :as platform]
@@ -81,8 +80,6 @@
 
 (def dismiss-keyboard! #(.dismiss keyboard))
 
-(def device-event-emitter (.-DeviceEventEmitter ^js react-native))
-
 (defn hide-splash-screen
   []
   (.hide ^js (-> react-native .-NativeModules .-SplashScreen)))
@@ -136,15 +133,7 @@
 
 (def use-state react/useState)
 
-(def create-ref react/createRef)
-
 (def use-ref react/useRef)
-
-(defn current-ref
-  [ref]
-  (oops/oget ref "current"))
-
-(def create-context react/createContext)
 
 (def use-context react/useContext)
 
@@ -172,8 +161,6 @@
     js/undefined))
 
 (defn use-effect
-  {:deprecated
-   "use-mount or use-unmount should be used, more here https://github.com/status-im/status-mobile/blob/develop/doc/ui-guidelines.md#effects"}
   ([handler]
    (use-effect handler nil))
   ([handler deps]
@@ -216,22 +203,11 @@
    :linear           (-> ^js layout-animation .-Presets .-linear)
    :spring           (-> ^js layout-animation .-Presets .-spring)})
 
-(def find-node-handle (.-findNodeHandle ^js react-native))
-
 (defn selectable-text-input-manager
   []
   (when (exists? (.-NativeModules ^js react-native))
     (.-RNSelectableTextInputManager ^js (.-NativeModules ^js react-native))))
 
-;; TODO: iOS native implementation https://github.com/status-im/status-mobile/issues/14137
-(defonce selectable-text-input
-  (if platform/android?
-    (reagent/adapt-react-class
-     (.requireNativeComponent ^js react-native "RNSelectableTextInput"))
-    view))
-
 (def linking (.-Linking react-native))
 
 (defn open-url [link] (.openURL ^js linking link))
-
-(def set-status-bar-style react-native/StatusBar.setBarStyle)

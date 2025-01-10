@@ -40,26 +40,6 @@
     :title    (i18n/label :t/status-inactive)
     :subtitle (i18n/label :t/status-inactive-subtitle)}})
 
-(def visibility-status-type-data-old
-  {constants/visibility-status-unknown
-   {:color colors/red
-    :title (i18n/label :t/error)}
-   constants/visibility-status-automatic
-   {:color    colors/color-online
-    :title    (i18n/label :t/status-automatic)
-    :subtitle (i18n/label :t/status-automatic-subtitle)}
-   constants/visibility-status-dnd
-   {:color    colors/color-dnd
-    :title    (i18n/label :t/status-dnd)
-    :subtitle (i18n/label :t/status-dnd-subtitle)}
-   constants/visibility-status-always-online
-   {:color colors/color-online
-    :title (i18n/label :t/status-always-online)}
-   constants/visibility-status-inactive
-   {:color    colors/color-inactive
-    :title    (i18n/label :t/status-inactive)
-    :subtitle (i18n/label :t/status-inactive-subtitle)}})
-
 (defn calculate-real-status-type
   [{:keys [status-type clock]}]
   (let [status-lifespan    (if (= status-type constants/visibility-status-automatic)

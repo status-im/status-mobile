@@ -24,37 +24,6 @@
   {:position :absolute
    :right    20})
 
-(defn close-button-container
-  [theme]
-  {:background-color (colors/theme-colors colors/neutral-10 colors/neutral-80 theme)
-   :width            32
-   :height           32
-   :border-radius    10
-   :justify-content  :center
-   :align-items      :center
-   :position         :absolute
-   :left             20})
-
-(defn title-container
-  [theme]
-  {:flex-direction     :row
-   :background-color   (colors/theme-colors colors/neutral-10 colors/neutral-80 theme)
-   :border-radius      10
-   :padding-horizontal 12
-   :padding-vertical   5
-   :align-self         :center})
-
-(defn chevron-container
-  [theme]
-  {:background-color (colors/theme-colors colors/neutral-30 colors/neutral-100 theme)
-   :width            14
-   :height           14
-   :border-radius    7
-   :justify-content  :center
-   :align-items      :center
-   :margin-left      7
-   :margin-top       4})
-
 (defn image
   [window-width index]
   {:width                   (- (/ window-width 3) 0.67)

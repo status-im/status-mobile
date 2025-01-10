@@ -7,36 +7,8 @@
     [re-frame.core :as re-frame]
     [status-im.common.json-rpc.events :as json-rpc]
     [taoensso.timbre :as log]
-    [utils.ethereum.chain :as chain]
     [utils.ethereum.eip.eip55 :as eip55]
     [utils.re-frame :as rf]))
-
-(def confirmations-count-threshold 12)
-
-(def etherscan-supported?
-  #{(chain/chain-keyword->chain-id :mainnet)
-    (chain/chain-keyword->chain-id :sepolia)})
-
-(def binance-mainnet-chain-id (chain/chain-keyword->chain-id :bsc))
-(def binance-testnet-chain-id (chain/chain-keyword->chain-id :bsc-testnet))
-
-(def network->subdomain {11155111 "sepolia"})
-
-(defn get-transaction-details-url
-  [chain-id tx-hash]
-  {:pre  [(number? chain-id) (string? tx-hash)]
-   :post [(or (nil? %) (string? %))]}
-  (cond
-    (etherscan-supported? chain-id)
-    (let [network-subdomain (when-let [subdomain (network->subdomain chain-id)]
-                              (str subdomain "."))]
-      (str "https://" network-subdomain "etherscan.io/tx/" tx-hash))
-
-    (= chain-id binance-mainnet-chain-id)
-    (str "https://bscscan.com/tx/" tx-hash)
-
-    (= chain-id binance-testnet-chain-id)
-    (str "https://testnet.bscscan.com/tx/" tx-hash)))
 
 (def default-erc20-token
   {:symbol   :ERC20
@@ -121,16 +93,16 @@
 (rf/defn check-transaction
   "Check if the transaction has been triggered and applies the effects returned
    by `on-trigger` if that is the case"
-  [{:keys [db] :as cofx} {:keys [hash] :as transaction}]
+  [{:keys [db] :as cofx} {tx-hash :hash :as transaction}]
   (when-let [watch-params
-             (get-in db [:ethereum/watched-transactions hash])]
+             (get-in db [:ethereum/watched-transactions tx-hash])]
     (let [{:keys [trigger-fn on-trigger]} watch-params]
       (when (trigger-fn db transaction)
         (rf/merge cofx
                   {:db (update db
                                :ethereum/watched-transactions
                                dissoc
-                               hash)}
+                               tx-hash)}
                   (on-trigger transaction))))))
 
 (rf/defn check-watched-transactions
@@ -152,14 +124,14 @@
   "We determine a unique id for the transfer before adding it because some
    transaction can contain multiple transfers and they would overwrite each other
    in the transfer map if identified by hash"
-  [{:keys [db] :as cofx} {:keys [hash id address] :as transfer}]
-  (let [transfer-by-hash (get-in db [:wallet-legacy :accounts address :transactions hash])]
+  [{:keys [db] :as cofx} {tx-hash :hash :keys [id address] :as transfer}]
+  (let [transfer-by-hash (get-in db [:wallet-legacy :accounts address :transactions tx-hash])]
     (when-let [unique-id (when-not (= transfer transfer-by-hash)
                            (if (and transfer-by-hash
                                     (not (= :pending
                                             (:type transfer-by-hash))))
                              id
-                             hash))]
+                             tx-hash))]
       (rf/merge cofx
                 {:db (assoc-in db
                       [:wallet-legacy :accounts address :transactions unique-id]
@@ -170,11 +142,7 @@
   [db address]
   (get-in db [:wallet-legacy :accounts (eip55/address->checksum address) :min-block]))
 
-(defn get-max-block-with-transfers
-  [db address]
-  (get-in db [:wallet-legacy :accounts (eip55/address->checksum address) :max-block]))
-
-(defn min-block-transfers-count
+(defn count-min-block-transfers
   [db address]
   (get-in db
           [:wallet-legacy :accounts
@@ -187,14 +155,14 @@
         {:keys [min-block min-block-transfers-count]}
         (reduce
          (fn [{:keys [min-block] :as acc}
-              {:keys [block hash]}]
+              {tx-hash :hash block :block}]
            (cond
              (or (nil? min-block) (> min-block (js/parseInt block)))
              {:min-block                 (js/parseInt block)
               :min-block-transfers-count 1}
 
              (and (= min-block block)
-                  (nil? (get-in db [:wallet-legacy :accounts checksum :transactions hash])))
+                  (nil? (get-in db [:wallet-legacy :accounts checksum :transactions tx-hash])))
              (update acc :min-block-transfers-count inc)
 
              :else acc))
@@ -203,7 +171,7 @@
             (js/parseInt min-block-string))
 
           :min-block-transfers-count
-          (min-block-transfers-count db address)}
+          (count-min-block-transfers db address)}
          transfers)]
     (log/debug "[transactions] set-lowest-fetched-block"
                "address"                   address
@@ -238,7 +206,7 @@
   {:db (update-fetching-status db addresses :history? false)})
 
 (rf/defn tx-history-end-reached
-  [{:keys [db] :as cofx} address]
+  [{:keys [db]} address]
   (let [syncing-allowed? (utils.mobile-sync/syncing-allowed? db)]
     {:db (assoc-in db
           [:wallet-legacy :fetching address :all-fetched?]
@@ -247,23 +215,22 @@
             :all-preloaded))}))
 
 (rf/defn handle-new-transfer
-  [{:keys [db] :as cofx} transfers {:keys [address limit]}]
+  [cofx transfers {:keys [address limit]}]
   (log/debug "[transfers] new-transfers"
              "address" address
              "count"   (count transfers)
              "limit"   limit)
-  (let [checksum        (eip55/address->checksum address)
-        max-known-block (get-max-block-with-transfers db address)
-        effects         (cond-> [(when (seq transfers)
-                                   (set-lowest-fetched-block checksum transfers))]
+  (let [checksum (eip55/address->checksum address)
+        effects  (cond-> [(when (seq transfers)
+                            (set-lowest-fetched-block checksum transfers))]
 
-                          (seq transfers)
-                          (concat
-                           []
-                           (mapv add-transfer transfers))
+                   (seq transfers)
+                   (concat
+                    []
+                    (mapv add-transfer transfers))
 
-                          (< (count transfers) limit)
-                          (conj (tx-history-end-reached checksum)))]
+                   (< (count transfers) limit)
+                   (conj (tx-history-end-reached checksum)))]
     (apply rf/merge cofx (tx-fetching-ended [checksum]) effects)))
 
 (rf/defn new-transfers
@@ -311,16 +278,12 @@
                                :limit   limit)])
          :on-error   #(re-frame/dispatch [::tx-fetching-failed address])})))))
 
-(defn some-transactions-loaded?
-  [db address]
-  (not-empty (get-in db [:wallet-legacy :accounts address :transactions])))
-
 (rf/defn fetch-more-tx
   {:events [:transactions/fetch-more]}
   [{:keys [db] :as cofx} address]
-  (let [min-known-block           (or (get-min-known-block db address)
-                                      (:ethereum/current-block db))
-        min-block-transfers-count (or (min-block-transfers-count db address) 0)]
+  (let [min-known-block (or (get-min-known-block db address)
+                            (:ethereum/current-block db))
+        min-count       (or (count-min-block-transfers db address) 0)]
     (rf/merge
      cofx
      {:transactions/get-transfers
@@ -333,7 +296,7 @@
        ;; the whole `default-transfers-limit` of transfers the number of transfers already received
        ;; for `min-known-block` is added to the page size.
        :limit-per-address {address (+ default-transfers-limit
-                                      min-block-transfers-count)}}}
+                                      min-count)}}}
      (tx-fetching-in-progress [address]))))
 
 (rf/defn get-fetched-transfers

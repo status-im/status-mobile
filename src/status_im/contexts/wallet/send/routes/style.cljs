@@ -34,19 +34,3 @@
            :top      margin-top}
     inverted?
     (assoc :transform [{:scaleY -1}])))
-
-(def disclaimer
-  {:margin-horizontal 20
-   :margin-top        20
-   :margin-bottom     8})
-
-(def input-container
-  {:margin-top    8
-   :margin-bottom 12})
-
-(defn keyboard-container
-  [bottom]
-  {:padding-bottom bottom})
-
-(def error-box
-  {:margin-horizontal 20})

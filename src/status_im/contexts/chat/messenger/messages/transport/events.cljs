@@ -34,7 +34,7 @@
 
 (rf/defn process-response
   {:events [:process-response]}
-  [{:keys [db] :as cofx} ^js response-js process-async]
+  [cofx ^js response-js process-async]
   (let [^js communities                (.-communities response-js)
         ^js requests-to-join-community (.-requestsToJoinCommunity response-js)
         ^js chats                      (.-chats response-js)
@@ -291,7 +291,7 @@
   [{:keys [db] :as cofx} ^js response-js process-async]
   (when response-js
     (let [current-chat-id (:current-chat-id db)
-          {:keys [db messages transactions chats statuses]}
+          {:keys [db messages transactions statuses]}
           (reduce group-by-and-update-unviewed-counts
                   {:db              db
                    :chats           #{}
@@ -343,7 +343,7 @@
   [{:keys [db] :as cofx} message-id status]
   (if-let [{:keys [chat-id]}
            (get-in db [:transport/message-envelopes message-id])]
-    (when-let [{:keys [from]} (get-in db [:messages chat-id message-id])]
+    (when-let [{:keys [_from]} (get-in db [:messages chat-id message-id])]
       (check-confirmations cofx status chat-id message-id))
     ;; We don't have a message-envelope for this, might be that the confirmation came too early
     {:db (update-in db [:transport/message-confirmations message-id] conj status)}))

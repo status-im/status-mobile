@@ -19,6 +19,7 @@
     :as   props}]
   (let [theme     (quo.theme/use-theme)
         border?   (and (not blur?) (not selected?))
+
         hex-color (if (= :feng-shui color)
                     (colors/theme-colors colors/neutral-100 colors/white theme)
                     (colors/theme-colors (colors/custom-color color 50)

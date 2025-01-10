@@ -2,7 +2,6 @@
   (:require [clojure.string :as string]
             [native-module.core :as native-module]
             [utils.hex :as utils.hex]
-            [utils.money :as utils.money]
             [utils.money :as money]))
 
 (defn naive-round
@@ -80,7 +79,7 @@
 (defn to-fixed
   [num decimals]
   (-> num
-      (utils.money/to-fixed decimals)
+      (money/to-fixed decimals)
       remove-trailing-zeroes))
 
 (defn small-number-threshold

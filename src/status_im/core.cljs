@@ -42,6 +42,8 @@
   []
   (boolean (.-HermesInternal js/global)))
 
+;; ignore warning: init used in shadow-cljs.edn
+#_{:clj-kondo/ignore [:clojure-lsp/unused-public-var]}
 (defn init
   []
   (status-backend-client/init)

@@ -15,8 +15,7 @@
         auth-method          (rf/sub [:auth-method])
         biometric-auth?      (= auth-method constants/auth-method-biometric)
         on-complete-callback (rn/use-callback
-                              (fn [reset-slider-fn]
-                                (js/setTimeout #(reset-slider-fn false) 500)
+                              (fn []
                                 (rf/dispatch [:standard-auth/authorize
                                               {:auth-button-icon-left auth-button-icon-left
                                                :theme                 theme
@@ -26,13 +25,19 @@
                                                :on-auth-fail          on-auth-fail
                                                :auth-button-label     auth-button-label}]))
                               (vec (conj dependencies on-auth-success on-auth-fail)))
-        on-complete          (or on-complete on-complete-callback)
+        on-slider-complete   (rn/use-callback
+                              (fn [reset-slider-fn]
+                                (js/setTimeout #(reset-slider-fn false) 500)
+                                (if (fn? on-complete)
+                                  (on-complete)
+                                  (on-complete-callback)))
+                              [on-complete on-complete-callback])
         biometric-type       (rf/sub [:biometrics/supported-type])]
     [quo/slide-button
      {:container-style     container-style
       :size                size
       :customization-color customization-color
-      :on-complete         on-complete
+      :on-complete         on-slider-complete
       :track-icon          (if biometric-auth?
                              (biometric/get-icon-by-type biometric-type)
                              :password)

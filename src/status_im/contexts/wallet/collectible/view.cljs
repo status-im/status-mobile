@@ -38,7 +38,15 @@
 
 (defn cta-buttons
   [{:keys [chain-id token-id contract-address collectible watch-only?]}]
-  (let [theme (quo.theme/use-theme)]
+  (let [theme         (quo.theme/use-theme)
+        on-press-send (rn/use-callback
+                       (fn []
+                         (rf/dispatch [:wallet/clean-send-data])
+                         (rf/dispatch
+                          [:wallet/set-collectible-to-send
+                           {:collectible    collectible
+                            :start-flow?    true
+                            :current-screen :screen/wallet.collectible}])))]
     [rn/view {:style style/buttons-container}
      (when-not watch-only?
        [quo/button
@@ -46,11 +54,7 @@
          :type            :outline
          :size            40
          :icon-left       :i/send
-         :on-press        #(rf/dispatch
-                            [:wallet/set-collectible-to-send
-                             {:collectible    collectible
-                              :start-flow?    true
-                              :current-screen :screen/wallet.collectible}])}
+         :on-press        on-press-send}
         (i18n/label :t/send)])
      [quo/button
       {:container-style  style/opensea-button

@@ -4,6 +4,7 @@ import time
 import pytest
 from _pytest.outcomes import Failed
 from selenium.common import TimeoutException, NoSuchElementException
+
 from base_test_case import MultipleSharedDeviceTestCase, create_shared_drivers
 from support.api.network_api import NetworkApi
 from tests import marks, run_in_parallel
@@ -32,30 +33,34 @@ class TestWalletMultipleDevice(MultipleSharedDeviceTestCase):
         self.wallet_1, self.wallet_2 = self.sign_in_1.get_wallet_view(), self.sign_in_2.get_wallet_view()
         self.wallet_1.wallet_tab.click()
         self.wallet_2.wallet_tab.click()
+        self.network = "Arbitrum"
 
     def _get_balances_before_tx(self):
-        sender_balance = self.network_api.get_balance(self.sender['wallet_address'])
-        receiver_balance = self.network_api.get_balance(self.receiver['wallet_address'])
+        # ToDo: Arbiscan API is down, looking for analogue
+        # sender_balance = self.network_api.get_balance(self.sender['wallet_address'])
+        # receiver_balance = self.network_api.get_balance(self.receiver['wallet_address'])
         self.wallet_1.just_fyi("Getting ETH amount in the wallet of the sender before transaction")
         self.wallet_1.get_account_element().click()
         eth_amount_sender = self.wallet_1.get_asset(asset_name='Ether').get_amount()
         self.wallet_2.just_fyi("Getting ETH amount in the wallet of the receiver before transaction")
         self.wallet_2.get_account_element().click()
         eth_amount_receiver = self.wallet_2.get_asset(asset_name='Ether').get_amount()
-        return sender_balance, receiver_balance, eth_amount_sender, eth_amount_receiver
+        # return sender_balance, receiver_balance, eth_amount_sender, eth_amount_receiver
+        return eth_amount_sender, eth_amount_receiver
 
     def _check_balances_after_tx(self, amount_to_send, sender_balance, receiver_balance, eth_amount_sender,
                                  eth_amount_receiver):
-        try:
-            self.network_api.wait_for_balance_to_be(address=self.sender['wallet_address'],
-                                                    expected_balance=sender_balance - amount_to_send)
-        except TimeoutException as e:
-            self.errors.append("Sender " + e.msg)
-        try:
-            self.network_api.wait_for_balance_to_be(address=self.receiver['wallet_address'],
-                                                    expected_balance=receiver_balance + amount_to_send)
-        except TimeoutException as e:
-            self.errors.append("Receiver " + e.msg)
+        # ToDo: Arbiscan API is down, looking for analogue
+        # try:
+        #     self.network_api.wait_for_balance_to_be(address=self.sender['wallet_address'],
+        #                                             expected_balance=sender_balance - amount_to_send)
+        # except TimeoutException as e:
+        #     self.errors.append("Sender " + e.msg)
+        # try:
+        #     self.network_api.wait_for_balance_to_be(address=self.receiver['wallet_address'],
+        #                                             expected_balance=receiver_balance + amount_to_send)
+        # except TimeoutException as e:
+        #     self.errors.append("Receiver " + e.msg)
 
         def wait_for_wallet_balance_to_update(wallet_view, user_name, initial_eth_amount):
             wallet_view.just_fyi("Getting ETH amount in the wallet of the %s after transaction" % user_name)
@@ -85,8 +90,8 @@ class TestWalletMultipleDevice(MultipleSharedDeviceTestCase):
                              (self.home_2.reopen_app, {'user_name': self.receiver_username}))))
         self.wallet_1.wallet_tab.wait_and_click()
         self.wallet_2.wallet_tab.wait_and_click()
-        self.wallet_1.select_network(network_name='Arbitrum')
-        self.wallet_2.select_network(network_name='Arbitrum')
+        self.wallet_1.set_network_in_wallet(network_name=self.network)
+        self.wallet_2.set_network_in_wallet(network_name=self.network)
         self.loop.run_until_complete(
             run_in_parallel(((wait_for_wallet_balance_to_update, {'wallet_view': self.wallet_1,
                                                                   'user_name': self.sender_username,
@@ -123,9 +128,10 @@ class TestWalletMultipleDevice(MultipleSharedDeviceTestCase):
 
     @marks.testrail_id(727229)
     def test_wallet_send_eth(self):
-        self.wallet_1.select_network(network_name='Arbitrum')
-        self.wallet_2.select_network(network_name='Arbitrum')
-        sender_balance, receiver_balance, eth_amount_sender, eth_amount_receiver = self._get_balances_before_tx()
+        self.wallet_1.set_network_in_wallet(network_name=self.network)
+        self.wallet_2.set_network_in_wallet(network_name=self.network)
+        # sender_balance, receiver_balance, eth_amount_sender, eth_amount_receiver = self._get_balances_before_tx()
+        eth_amount_sender, eth_amount_receiver = self._get_balances_before_tx()
 
         self.wallet_2.close_account_button.click()
         self.wallet_2.chats_tab.click()
@@ -135,14 +141,17 @@ class TestWalletMultipleDevice(MultipleSharedDeviceTestCase):
         device_time_before_sending = self.wallet_1.driver.device_time
         self.wallet_1.send_asset(address='arb1:' + self.receiver['wallet_address'],
                                  asset_name='Ether',
-                                 amount=amount_to_send)
-        self.network_api.wait_for_confirmation_of_transaction(address=self.sender['wallet_address'],
-                                                              tx_time=device_time_before_sending)
+                                 amount=amount_to_send,
+                                 network_name=self.network)
+        # ToDo: Arbiscan API is down, looking for analogue
+        # self.network_api.wait_for_confirmation_of_transaction(address=self.sender['wallet_address'],
+        #                                                       tx_time=device_time_before_sending)
 
         device_time_after_sending = self.wallet_1.driver.device_time
 
-        self._check_balances_after_tx(amount_to_send, sender_balance, receiver_balance, eth_amount_sender,
-                                      eth_amount_receiver)
+        # self._check_balances_after_tx(amount_to_send, sender_balance, receiver_balance, eth_amount_sender,
+        #                               eth_amount_receiver)
+        self._check_balances_after_tx(amount_to_send, None, None, eth_amount_sender, eth_amount_receiver)
 
         # ToDo: enable when issues 20807 and 20808 are fixed
         # self.loop.run_until_complete(
@@ -158,7 +167,8 @@ class TestWalletMultipleDevice(MultipleSharedDeviceTestCase):
     @marks.testrail_id(727230)
     def test_wallet_send_asset_from_drawer(self):
         self.wallet_1.navigate_back_to_wallet_view()
-        sender_balance, receiver_balance, eth_amount_sender, eth_amount_receiver = self._get_balances_before_tx()
+        # sender_balance, receiver_balance, eth_amount_sender, eth_amount_receiver = self._get_balances_before_tx()
+        eth_amount_sender, eth_amount_receiver = self._get_balances_before_tx()
         self.wallet_2.close_account_button.click_if_shown()
         self.wallet_2.chats_tab.click()
 
@@ -167,13 +177,16 @@ class TestWalletMultipleDevice(MultipleSharedDeviceTestCase):
         device_time_before_sending = self.wallet_1.driver.device_time
         self.wallet_1.send_asset_from_drawer(address='arb1:' + self.receiver['wallet_address'],
                                              asset_name='Ether',
-                                             amount=amount_to_send)
-        self.network_api.wait_for_confirmation_of_transaction(address=self.sender['wallet_address'],
-                                                              tx_time=device_time_before_sending)
+                                             amount=amount_to_send,
+                                             network_name=self.network)
+        # ToDo: Arbiscan API is down, looking for analogue
+        # self.network_api.wait_for_confirmation_of_transaction(address=self.sender['wallet_address'],
+        #                                                       tx_time=device_time_before_sending)
         device_time_after_sending = self.wallet_1.driver.device_time
 
-        self._check_balances_after_tx(amount_to_send, sender_balance, receiver_balance, eth_amount_sender,
-                                      eth_amount_receiver)
+        # self._check_balances_after_tx(amount_to_send, sender_balance, receiver_balance, eth_amount_sender,
+        #                               eth_amount_receiver)
+        self._check_balances_after_tx(amount_to_send, None, None, eth_amount_sender, eth_amount_receiver)
 
         # ToDo: enable when issues 20807 and 20808 are fixed
         # self.loop.run_until_complete(
@@ -234,7 +247,7 @@ class TestWalletOneDevice(MultipleSharedDeviceTestCase):
 
         for network in expected_balances:
             self.wallet_view.just_fyi("Checking total balance on %s network" % network)
-            self.wallet_view.select_network(network)
+            self.wallet_view.set_network_in_wallet(network)
             real_balance = {}
             for asset in expected_balances[network]:
                 real_balance[asset] = self.wallet_view.get_asset(asset).get_amount()
@@ -242,7 +255,7 @@ class TestWalletOneDevice(MultipleSharedDeviceTestCase):
                 if real_balance[asset] != expected_balances[network][asset]:
                     self.errors.append("For the %s the wrong value %s is shown, expected %s on %s" %
                                        (asset, real_balance[asset], expected_balances[network][asset], network))
-            self.wallet_view.select_network(network)
+            self.wallet_view.set_network_in_wallet(network)
 
         self.errors.verify_no_errors()
 

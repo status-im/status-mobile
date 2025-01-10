@@ -9,11 +9,3 @@
 (defn clear-timeout
   [id]
   (.clearTimeout background-timer id))
-
-(defn set-interval
-  [cb ms]
-  (.setInterval background-timer cb ms))
-
-(defn clear-interval
-  [id]
-  (.clearInterval background-timer id))

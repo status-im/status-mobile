@@ -14,8 +14,8 @@
 
 (rf/defn get-photos-count-ios
   {:events [:on-camera-roll-get-images-count-ios]}
-  [{:keys [db]} count]
-  {:db (assoc db :camera-roll/ios-images-count count)})
+  [{:keys [db]} cnt]
+  {:db (assoc db :camera-roll/ios-images-count cnt)})
 
 (rf/defn camera-roll-get-albums
   {:events [:photo-selector/camera-roll-get-albums]}

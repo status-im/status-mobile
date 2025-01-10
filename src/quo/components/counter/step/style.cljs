@@ -15,6 +15,7 @@
     (colors/theme-colors colors/neutral-20 colors/neutral-80 theme)))
 
 (defn active-background-color [customization-color] (colors/custom-color customization-color 50 10))
+
 (defn complete-background-color [customization-color] (colors/custom-color customization-color 50))
 
 (defn container

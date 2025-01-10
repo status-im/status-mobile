@@ -4,12 +4,6 @@
     [status-im.constants :as constants]
     [utils.transforms :as transforms]))
 
-(defn <-revealed-accounts-rpc
-  [accounts]
-  (mapv
-   #(set/rename-keys % {:isAirdropAddress :airdrop-address?})
-   (js->clj accounts :keywordize-keys true)))
-
 (defn <-request-to-join-community-rpc
   [r]
   (set/rename-keys r

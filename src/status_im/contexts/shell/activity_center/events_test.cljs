@@ -2,7 +2,6 @@
   (:require
     [cljs.test :refer [deftest is testing]]
     matcher-combinators.test
-    [status-im.constants :as constants]
     [status-im.contexts.shell.activity-center.events :as events]
     [status-im.contexts.shell.activity-center.notification-types :as types]
     [test-helpers.unit :as h]))
@@ -160,49 +159,6 @@
                   (events/dismiss-notification-success cofx (:id notif-2)))))))
 
 ;;;; Contact verification
-
-(def contact-verification-rpc-response
-  {:activityCenterNotifications
-   [{:accepted                  false
-     :author                    "0x04d03f"
-     :chatId                    "0x04d03f"
-     :contactVerificationStatus constants/contact-verification-status-pending
-     :dismissed                 false
-     :id                        notification-id
-     :message                   {}
-     :name                      "0x04d03f"
-     :read                      true
-     :timestamp                 1666647286000
-     :type                      types/contact-verification}]})
-
-(def contact-verification-expected-notification
-  {:accepted                    false
-   :author                      "0x04d03f"
-   :chat-id                     "0x04d03f"
-   :contact-verification-status constants/contact-verification-status-pending
-   :dismissed                   false
-   :id                          notification-id
-   :last-message                nil
-   :message                     {:command-parameters nil
-                                 :content            {:chat-id     nil
-                                                      :ens-name    nil
-                                                      :image       nil
-                                                      :line-count  nil
-                                                      :links       nil
-                                                      :parsed-text nil
-                                                      :response-to nil
-                                                      :rtl?        nil
-                                                      :sticker     nil
-                                                      :text        nil}
-                                 :outgoing           false
-                                 :outgoing-status    nil
-                                 :link-previews      []
-                                 :quoted-message     nil}
-   :name                        "0x04d03f"
-   :read                        true
-   :reply-message               nil
-   :timestamp                   1666647286000
-   :type                        types/contact-verification})
 
 (deftest contact-verification-decline-test
   (is (match? {:json-rpc/call

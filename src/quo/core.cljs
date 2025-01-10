@@ -67,7 +67,6 @@
     quo.components.gradient.gradient-cover.view
     quo.components.graph.interactive-graph.view
     quo.components.graph.wallet-graph.view
-    quo.components.header
     quo.components.icon
     quo.components.info.info-message.view
     quo.components.info.information-box.view
@@ -254,13 +253,9 @@
 (def community-token-gating quo.components.community.community-token-gating.view/view)
 (def communities-membership-list-item
   quo.components.community.community-list-view/communities-membership-list-item)
-(def community-stats-column quo.components.community.community-view/community-stats-column)
 (def community-stat quo.components.community.community-stat.view/view)
 (def community-tags quo.components.community.community-view/community-tags)
-(def community-title quo.components.community.community-view/community-title)
-(def permission-tag-container quo.components.community.community-view/permission-tag-container)
 (def discover-card quo.components.community.banner.view/view)
-(def community-icon quo.components.community.icon/community-icon)
 (def channel-action quo.components.community.channel-action.view/view)
 (def channel-actions quo.components.community.channel-actions.view/view)
 
@@ -298,7 +293,6 @@
 (def wallet-graph quo.components.graph.wallet-graph.view/view)
 
 ;;;; Header
-(def header quo.components.header/header)
 (def animated-header-list quo.components.animated-header-flatlist.view/animated-header-list)
 
 ;;;; Gradient
@@ -377,8 +371,6 @@
 ;;;; Notifications
 (def activity-log quo.components.notifications.activity-log.view/view)
 (def activity-logs-photos quo.components.notifications.activity-logs-photos.view/view)
-(def notification-dot quo.components.common.notification-dot.view/view)
-(def count-down-circle quo.components.notifications.count-down-circle/circle-timer)
 (def notification quo.components.notifications.notification.view/notification)
 (def toast quo.components.notifications.toast.view/toast)
 
@@ -454,9 +446,6 @@
      text-combinations
   quo.components.text-combinations.view/view)
 (def username quo.components.text-combinations.username.view/view)
-
-;;;; Utilities - Outside of design system
-(def token quo.components.utilities.token.view/view)
 
 ;;;; Wallet
 (def account-card quo.components.wallet.account-card.view/view)

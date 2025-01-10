@@ -44,19 +44,3 @@
    :background-color (if blur?
                        :transparent
                        (colors/theme-colors colors/neutral-5 colors/neutral-95 theme))})
-
-(defn blur-container
-  []
-  {:position :absolute
-   :left     0
-   :right    0
-   :bottom   0
-   :top      0
-   :overflow :hidden})
-
-(defn blur-view
-  [theme]
-  {:style       {:flex 1}
-   :blur-radius 10
-   :blur-type   theme
-   :blur-amount 20})

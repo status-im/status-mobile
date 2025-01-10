@@ -61,15 +61,43 @@
            :margin-right 12)]
    [button (assoc params :word (second options))]])
 
+(defn- complete-backup-sheet
+  [on-success]
+  (let [customization-color    (rf/sub [:profile/customization-color])
+        [checked? set-checked] (rn/use-state false)]
+    [:<>
+     [quo/drawer-top {:title (i18n/label :t/complete-backup)}]
+     [quo/text
+      {:style style/cheat-description}
+      (i18n/label :t/ensure-written-recovery)]
+     [quo/disclaimer
+      {:checked?        checked?
+       :container-style {:margin-horizontal 20}
+       :on-change       #(set-checked (not checked?))}
+      (i18n/label :t/written-seed-ready)]
+     [quo/bottom-actions
+      {:actions          :two-actions
+       :button-one-label (i18n/label :t/done)
+       :button-one-props {:disabled?           (not checked?)
+                          :customization-color customization-color
+                          :on-press            (fn []
+                                                 (rf/dispatch [:hide-bottom-sheet])
+                                                 (on-success))}
+       :button-two-label (i18n/label :t/cancel)
+       :button-two-props {:type     :grey
+                          :on-press (fn []
+                                      (rf/dispatch [:hide-bottom-sheet]))}}]]))
+
 (defn view
   []
-  (let [random-indices        (random-selection)
-        quiz-index            (reagent/atom 0)
-        incorrect-count       (reagent/atom 0)
-        show-error?           (reagent/atom false)
-        {:keys [seed-phrase]} (rf/sub [:wallet/create-account-new-keypair])
-        unmasked-seed-phrase  (security/safe-unmask-data seed-phrase)
-        random-phrase         (reagent/atom [])]
+  (let [random-indices               (random-selection)
+        quiz-index                   (reagent/atom 0)
+        incorrect-count              (reagent/atom 0)
+        show-error?                  (reagent/atom false)
+        {:keys [on-success
+                masked-seed-phrase]} (rf/sub [:get-screen-params])
+        unmasked-seed-phrase         (security/safe-unmask-data masked-seed-phrase)
+        random-phrase                (reagent/atom [])]
     (fn []
       (rn/use-mount
        (fn []
@@ -86,10 +114,10 @@
                                                     (reset! quiz-index (inc @quiz-index)))
                                                   (reset! incorrect-count 0)
                                                   (reset! show-error? false)
-                                                  (when (= @quiz-index questions-count)
-                                                    (rf/dispatch [:navigate-to
-                                                                  :screen/wallet.keypair-name
-                                                                  {:workflow :new-keypair}])))
+                                                  (when (and on-success (= @quiz-index questions-count))
+                                                    (rf/dispatch [:show-bottom-sheet
+                                                                  {:content (fn [] [complete-backup-sheet
+                                                                                    on-success])}])))
                                                 (do
                                                   (when (> @incorrect-count 0)
                                                     (rf/dispatch [:show-bottom-sheet
@@ -98,7 +126,7 @@
                                                   (reset! show-error? true))))]
           [rn/view {:style {:flex 1}}
            [quo/page-nav
-            {:icon-name           :i/arrow-left
+            {:icon-name           :i/close
              :on-press            #(rf/dispatch [:navigate-back])
              :accessibility-label :top-bar}]
            [quo/page-top

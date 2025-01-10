@@ -111,7 +111,6 @@ class TestDeepLinksOneDevice(MultipleSharedDeviceTestCase):
             if text != closed_community_name:  # the last one
                 self.home.navigate_back_to_home_view()
                 self.home.browser_tab.click()
-
         self.errors.verify_no_errors()
 
     @marks.testrail_id(704614)

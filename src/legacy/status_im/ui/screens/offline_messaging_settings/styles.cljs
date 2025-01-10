@@ -18,17 +18,6 @@
 (def mailserver-item-name-text
   {:typography :title})
 
-(defn mailserver-icon-container
-  [connected?]
-  {:width            40
-   :height           40
-   :border-radius    20
-   :background-color (if connected?
-                       colors/blue
-                       colors/black-transparent)
-   :align-items      :center
-   :justify-content  :center})
-
 (def switch-container
   {:height 52})
 

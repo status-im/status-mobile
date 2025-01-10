@@ -20,13 +20,3 @@
  :wallet/wallet-buy-crypto-provider
  :<- [:wallet/wallet-buy-crypto]
  :-> :provider)
-
-(rf/reg-sub
- :wallet/wallet-buy-crypto-recurrent?
- :<- [:wallet/wallet-buy-crypto]
- :-> :recurrent?)
-
-(rf/reg-sub
- :wallet/wallet-buy-crypto-network
- :<- [:wallet/wallet-buy-crypto]
- :-> :network)

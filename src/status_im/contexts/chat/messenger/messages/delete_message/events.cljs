@@ -158,7 +158,7 @@
 (rf/defn delete-and-send
   {:events [:chat.ui/delete-message-and-send]}
   [{:keys [db]} {:keys [message-id chat-id]} force?]
-  (when-let [message (get-in db [:messages chat-id message-id])]
+  (when (get-in db [:messages chat-id message-id])
     (when (or force? (check-before-delete-and-send db chat-id message-id))
       (let [unpin-locally?
             ;; this only check against local client data generally msg is already unpinned at delete

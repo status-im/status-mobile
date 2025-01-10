@@ -1,12 +1,11 @@
 (ns status-im.contexts.profile.settings.header.style
-  (:require [quo.foundations.colors :as colors]))
+  (:require [quo.foundations.colors :as colors]
+            [react-native.platform :as platform]))
 
 (def avatar-row-wrapper
-  {:display         :flex
-   :padding-left    20
+  {:padding-left    20
    :padding-right   12
-   :margin-top      -60
-   :margin-bottom   -4
+   :margin-top      -65
    :align-items     :flex-end
    :justify-content :space-between
    :flex-direction  :row})
@@ -23,13 +22,8 @@
    :flex-direction  :row
    :justify-content :space-between})
 
-(defn avatar-container
-  [theme scale-animation top-margin-animation side-margin-animation]
-  [{:transform     [{:scale scale-animation}]
-    :margin-top    top-margin-animation
-    :margin-left   side-margin-animation
-    :margin-bottom side-margin-animation}
-   {:align-items   :flex-start
-    :border-width  4
-    :border-color  (colors/theme-colors colors/border-avatar-light colors/neutral-80-opa-80 theme)
-    :border-radius 100}])
+(defn avatar-border-color
+  [theme]
+  (if platform/android?
+    colors/neutral-80-opa-80 ;; Fix is not needed because Android doesn't use blur
+    (colors/theme-colors colors/border-avatar-light colors/neutral-80-opa-80 theme)))

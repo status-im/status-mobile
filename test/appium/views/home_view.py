@@ -1,11 +1,8 @@
-import time
-
 from appium.webdriver.common.mobileby import MobileBy
 from selenium.common.exceptions import TimeoutException, NoSuchElementException
 from typing_extensions import Literal
 
-from tests import test_dapp_url
-from views.base_element import Button, Text, BaseElement, SilentButton, CheckBox, EditBox
+from views.base_element import Button, Text, BaseElement, SilentButton
 from views.base_view import BaseView, UnreadMessagesCountText
 
 
@@ -57,7 +54,7 @@ class ChatElement(SilentButton):
     def click(self):
         if self.community:
             from views.chat_view import CommunityView
-            desired_element = CommunityView(self.driver).community_description_text
+            desired_element = CommunityView(self.driver).community_title
         else:
             from views.chat_view import ChatView
             desired_element = ChatView(self.driver).chat_message_input
@@ -312,29 +309,11 @@ class HomeView(BaseView):
         self.mark_all_messages_as_read_button = Button(self.driver, accessibility_id="mark-as-read")
 
         # Connection icons
-        self.mobile_connection_off_icon = Button(self.driver, accessibility_id="conn-button-mobile-sync-off")
-        self.mobile_connection_on_icon = Button(self.driver, accessibility_id="conn-button-mobile-sync")
         self.connection_offline_icon = Button(self.driver, accessibility_id="conn-button-offline")
-
-        # Sync using mobile data bottom sheet
-        self.continue_syncing_button = Button(self.driver, accessibility_id="mobile-network-continue-syncing")
-        self.stop_syncing_button = Button(self.driver, accessibility_id="mobile-network-stop-syncing")
-        self.remember_my_choice_checkbox = CheckBox(self.driver, accessibility_id=":checkbox-on")
-
-        # Connection status bottom sheet
-        self.connected_to_n_peers_text = Text(self.driver, accessibility_id="connected-to-n-peers")
-        self.connected_to_node_text = Text(self.driver, accessibility_id="connected-to-mailserver")
-        self.waiting_for_wi_fi = Text(self.driver, accessibility_id="waiting-wi-fi")
-        self.use_mobile_data_switch = Button(self.driver, accessibility_id="mobile-network-use-mobile")
-        self.connection_settings_button = Button(self.driver, accessibility_id="settings")
-        self.not_connected_to_node_text = Text(self.driver, accessibility_id="not-connected-nodes")
-        self.not_connected_to_peers_text = Text(self.driver, accessibility_id="not-connected-to-peers")
-
-        # New UI
         self.new_chat_button = Button(self.driver, accessibility_id="new-chat-button")
         self.discover_communities_button = Button(self.driver, accessibility_id="communities-home-discover-card")
 
-        # New UI bottom sheet
+        # Bottom sheet
         self.start_a_new_chat_bottom_sheet_button = Button(self.driver, accessibility_id="start-a-new-chat")
         self.add_a_contact_chat_bottom_sheet_button = Button(self.driver, accessibility_id="add-a-contact")
 
@@ -361,15 +340,6 @@ class HomeView(BaseView):
         self.share_link_to_profile_button = Button(self.driver, accessibility_id='link-to-profile')
         # Discover communities
         self.community_card_item = BaseElement(self.driver, accessibility_id="community-card-item")
-
-    def wait_for_syncing_complete(self):
-        self.driver.info('Waiting for syncing to complete')
-        while True:
-            try:
-                sync = self.element_by_text_part('Syncing').wait_for_element(10)
-                self.driver.info(sync.text)
-            except TimeoutException:
-                break
 
     def get_activity_center_element_by_text(self, text_part):
         return ActivityCenterElement(self.driver, text_part)
@@ -430,11 +400,7 @@ class HomeView(BaseView):
             self.close_activity_centre.wait_for_rendering_ended_and_click()
             self.chats_tab.wait_for_visibility_of_element()
 
-    def get_username_below_start_new_chat_button(self, username_part):
-        return Text(self.driver,
-                    xpath="//*[@content-desc='enter-contact-code-input']/../..//*[starts-with(@text,'%s')]" % username_part)
-
-    def add_contact(self, public_key, nickname='', remove_from_contacts=False):
+    def add_contact(self, public_key, nickname=''):
         self.driver.info("Adding user to Contacts via chats > add new contact")
         self.new_chat_button.click_until_presence_of_element(self.add_a_contact_chat_bottom_sheet_button)
         self.add_a_contact_chat_bottom_sheet_button.click()
@@ -445,9 +411,7 @@ class HomeView(BaseView):
         chat.element_by_translation_id("user-found").wait_for_visibility_of_element()
         if not chat.view_profile_new_contact_button.is_element_displayed():
             chat.click_system_back_button()
-        chat.view_profile_new_contact_button.click_until_presence_of_element(chat.profile_block_contact_button)
-        if remove_from_contacts and chat.profile_remove_from_contacts.is_element_displayed():
-            chat.profile_remove_from_contacts.click()
+        chat.view_profile_new_contact_button.click_until_presence_of_element(chat.profile_send_contact_request_button)
         chat.profile_send_contact_request_button.click()
         chat.contact_request_message_input.send_keys("hi")
         chat.confirm_send_contact_request_button.click()
@@ -472,30 +436,6 @@ class HomeView(BaseView):
         self.driver.info("## Group chat %s is created successfully!" % group_chat_name, device=False)
         return chat
 
-    def create_community_e2e(self, name: str, description="some_description", set_image=False,
-                             file_name='sauce_logo.png',
-                             require_approval=True):
-        self.driver.info("## Creating community '%s', set image is set to '%s'" % (name, str(set_image)), device=False)
-        self.plus_community_button.click()
-        chat_view = self.communities_button.click()
-        chat_view.community_name_edit_box.send_keys(name)
-        chat_view.community_description_edit_box.send_keys(description)
-        if set_image:
-            from views.profile_view import ProfileView
-            set_picture_view = ProfileView(self.driver)
-            set_picture_view.element_by_translation_id("community-thumbnail-upload").scroll_and_click()
-            set_picture_view.element_by_translation_id("community-image-pick").scroll_and_click()
-            set_picture_view.select_photo_from_gallery(file_name)
-            set_picture_view.crop_photo_button.click()
-        if require_approval:
-            self.element_by_translation_id("membership-title").scroll_and_click()
-            self.element_by_translation_id("membership-approval").click()
-            self.done_button.click()
-
-        chat_view.confirm_create_in_community_button.wait_and_click()
-        self.driver.info("## Community is created successfully!", device=False)
-        return self.get_community_view()
-
     def create_community(self, community_type: Literal["open", "closed", "token-gated"]):
         self.driver.info("## Creating %s community" % community_type)
         self.plus_community_button.click()
@@ -508,53 +448,11 @@ class HomeView(BaseView):
         else:
             raise ValueError("Incorrect community type is set")
 
-    def import_community(self, key):
-        self.driver.info("## Importing community")
-        import_button = Button(self.driver, translation_id="import")
-        self.plus_button.click()
-        chat_view = self.communities_button.click()
-        chat_view.chat_options.click()
-        chat_view.element_by_translation_id("import-community").wait_and_click()
-        EditBox(self.driver, xpath="//android.widget.EditText").send_keys(key)
-        import_button.click_until_absense_of_element(import_button)
-
-    def join_public_chat(self, chat_name: str):
-        self.driver.info("## Creating public chat %s" % chat_name, device=False)
-        self.plus_button.click_until_presence_of_element(self.join_public_chat_button, attempts=5)
-        self.join_public_chat_button.wait_for_visibility_of_element(5)
-        chat_view = self.join_public_chat_button.click()
-        chat_view.chat_name_editbox.wait_for_visibility_of_element(20)
-        chat_view.chat_name_editbox.click()
-        chat_view.chat_name_editbox.send_keys(chat_name)
-        time.sleep(2)
-        self.confirm_until_presence_of_element(chat_view.chat_message_input)
-        self.driver.info("## Public chat '%s' is created successfully!" % chat_name, device=False)
-        return self.get_chat_view()
-
-    def open_status_test_dapp(self, url=test_dapp_url, allow_all=True):
-        self.driver.info("Opening dapp '%s', allow all:'%s'" % (test_dapp_url, str(allow_all)))
-        dapp_view = self.dapp_tab_button.click()
-        dapp_view.open_url(url)
-        status_test_dapp = dapp_view.get_status_test_dapp_view()
-        if allow_all:
-            if status_test_dapp.allow_button.is_element_displayed(20):
-                status_test_dapp.allow_button.click_until_absense_of_element(status_test_dapp.allow_button)
-        else:
-            status_test_dapp.deny_button.click_until_absense_of_element(status_test_dapp.deny_button)
-        return status_test_dapp
-
     def delete_chat_long_press(self, username):
         self.driver.info("Deleting chat '%s' by long press" % username)
-        self.get_chat(username).long_press_element()
-        self.close_chat_button.click()
+        self.get_chat(username).long_press_without_release()
+        self.close_chat_button.double_click()
         self.confirm_closing_chat_button.click()
-
-    def leave_chat_long_press(self, username):
-        self.driver.info("Leaving chat '%s' by long press" % username)
-        self.get_chat(username).long_press_element()
-        from views.chat_view import ChatView
-        ChatView(self.driver).leave_chat_button.click()
-        ChatView(self.driver).leave_button.click()
 
     def clear_chat_long_press(self, username):
         self.driver.info("Clearing history in chat '%s' by long press" % username)
@@ -565,13 +463,15 @@ class HomeView(BaseView):
 
     def mute_chat_long_press(self, chat_name, mute_period="mute-till-unmute", community=False, community_channel=False):
         self.driver.info("Muting chat with %s" % chat_name)
-        self.get_chat(username=chat_name, community=community, community_channel=community_channel).long_press_element()
+        self.get_chat(username=chat_name, community=community,
+                      community_channel=community_channel).long_press_without_release()
         if community:
-            self.mute_community_button.click()
+            element = self.mute_community_button
         elif community_channel:
-            self.mute_channel_button.click()
+            element = self.mute_channel_button
         else:
-            self.mute_chat_button.click()
+            element = self.mute_chat_button
+        element.double_click()
         self.element_by_translation_id(mute_period).click()
 
     def get_pn(self, pn_text: str):
@@ -586,11 +486,13 @@ class HomeView(BaseView):
         return len(ContactDetailsRow(self.driver).find_elements())
 
     def get_link_to_profile(self):
+        self.driver.info('Getting profile link via share profile QR')
         self.show_qr_code_button.click()
         self.share_profile_tab_button.click()
-        self.link_to_profile_button.click()
-        link_to_profile = self.sharing_text_native.text
-        self.click_system_back_button()
+        self.link_to_profile_text.click()
+        link_to_profile = self.driver.get_clipboard_text()
+        if not link_to_profile:
+            raise NoSuchElementException("Can't get link to profile")
         return link_to_profile
 
     def get_public_key(self):
@@ -602,14 +504,6 @@ class HomeView(BaseView):
     def copy_wallet_address(self):
         self.share_link_to_profile_button.click()
         address = self.sharing_text_native.text
-        self.click_system_back_button()
-        return address
-
-    def get_wallet_address(self):
-        self.show_qr_code_button.click()
-        self.share_wallet_tab_button.click()
-        self.account_avatar.wait_for_visibility_of_element()
-        address = self.copy_wallet_address()
         self.click_system_back_button()
         return address
 
@@ -628,7 +522,7 @@ class HomeView(BaseView):
     def get_username(self):
         self.toast_content_element.wait_for_invisibility_of_element()
         profile_view = self.get_profile_view()
-        profile_view = self.profile_button.click_until_presence_of_element(profile_view.default_username_text)
+        self.profile_button.click_until_presence_of_element(profile_view.default_username_text)
         profile_view.default_username_text.wait_for_element(3)
         username = profile_view.default_username_text.text
         profile_view.click_system_back_button()

@@ -80,6 +80,4 @@
            colors/neutral-40
            theme)})
 
-(def button-view-profile
-  {:margin-top 24
-   :width      "100%"})
+

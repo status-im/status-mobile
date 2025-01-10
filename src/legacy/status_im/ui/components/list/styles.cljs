@@ -3,47 +3,6 @@
     [legacy.status-im.ui.components.colors :as colors]
     [legacy.status-im.utils.styles :as styles]))
 
-(def item
-  {:flex-direction     :row
-   :justify-content    :center
-   :padding-horizontal 16})
-
-(def item-content-view
-  {:flex            1
-   :flex-direction  :column
-   :justify-content :center})
-
-(def item-checkbox
-  {:flex            1
-   :flex-direction  :column
-   :align-items     :center
-   :justify-content :center})
-
-(def icon-size 24)
-(def icon-wrapper-size (+ icon-size (* 2 8)))
-
-(def item-icon-wrapper
-  {:width           icon-wrapper-size
-   :height          icon-wrapper-size
-   :align-items     :center
-   :justify-content :center})
-
-(def item-icon
-  {:width  icon-size
-   :height icon-size})
-
-(def left-item-wrapper
-  {:justify-content :center
-   :margin-vertical 12})
-
-(def content-item-wrapper
-  {:flex              1
-   :justify-content   :center
-   :margin-horizontal 16})
-
-(def right-item-wrapper
-  {:justify-content :center})
-
 (def base-separator
   {:height           1
    :background-color colors/black-transparent})
