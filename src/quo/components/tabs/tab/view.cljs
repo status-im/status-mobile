@@ -63,33 +63,33 @@
                                                 :active   active})]
     [rn/pressable
      (merge {:disabled            disabled
-             :accessibility-label accessibility-label}
+             :accessibility-label accessibility-label
+             :style               style/container}
             (when on-press
               {:on-press (fn []
                            (on-press id))}))
-     [rn/view {:style style/container}
-      (when show-notification-dot?
-        [notification-dot/view
-         {:style               style/notification-dot
-          :customization-color customization-color}])
-      [rn/view
-       {:style (merge
-                (style/tab
-                 {:size                   size
-                  :background-color       (if (and segmented? (not active))
-                                            :transparent
-                                            background-color)
-                  :disabled               disabled
-                  :segmented?             segmented?
-                  :show-notification-dot? show-notification-dot?})
-                (if active active-item-container-style item-container-style))}
-       (when before
-         [rn/view
-          [icons/icon before {:color icon-color}]])
-       [content {:size size :label label} children]]
-      (when show-notification-dot?
-        [right-side-with-cutout
-         {:width            (style/size->padding-left size)
-          :height           size
-          :disabled         disabled
-          :background-color background-color}])]]))
+     (when show-notification-dot?
+       [notification-dot/view
+        {:style               style/notification-dot
+         :customization-color customization-color}])
+     [rn/view
+      {:style (merge
+               (style/tab
+                {:size                   size
+                 :background-color       (if (and segmented? (not active))
+                                           :transparent
+                                           background-color)
+                 :disabled               disabled
+                 :segmented?             segmented?
+                 :show-notification-dot? show-notification-dot?})
+               (if active active-item-container-style item-container-style))}
+      (when before
+        [rn/view
+         [icons/icon before {:color icon-color}]])
+      [content {:size size :label label} children]]
+     (when show-notification-dot?
+       [right-side-with-cutout
+        {:width            (style/size->padding-left size)
+         :height           size
+         :disabled         disabled
+         :background-color background-color}])]))
