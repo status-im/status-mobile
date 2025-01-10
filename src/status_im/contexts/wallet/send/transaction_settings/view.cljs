@@ -17,7 +17,7 @@
         nonce          (:current (rf/sub [:wallet/tx-settings-nonce]))]
     [rn/view
      [quo/drawer-top
-      {:title "Custom"}]
+      {:title (i18n/label :t/custom)}]
      [quo/category
       {:list-type :settings
        :data      [{:title             (i18n/label :t/max-base-fee)
@@ -70,29 +70,20 @@
   (let [[selected-id set-selected-id] (rn/use-state :normal)]
     [rn/view
      [quo/drawer-top
-      {:title "Transaction settings"}]
+      {:title (i18n/label :t/transaction-settings)}]
      [quo/category
       {:list-type :settings
-       :data      [{:title (str (i18n/label :t/normal) "~60s")
-                    :image-props
-                    "🍿"
-                    :description-props
-                    {:text "€1.45"}
-                    :image
-                    :emoji
-                    :description
-                    :text
-                    :action
-                    :selector
-                    :action-props
-                    {:type     :radio
-                     :checked? (= :normal selected-id)}
-                    :on-press
-                    #(set-selected-id :normal)
-                    :label
-                    :text
-                    :preview-size
-                    :size-32}
+       :data      [{:title             (str (i18n/label :t/normal) "~60s")
+                    :image-props       "🍿"
+                    :description-props {:text "€1.45"}
+                    :image             :emoji
+                    :description       :text
+                    :action            :selector
+                    :action-props      {:type     :radio
+                                        :checked? (= :normal selected-id)}
+                    :on-press          #(set-selected-id :normal)
+                    :label             :text
+                    :preview-size      :size-32}
                    {:title             (str (i18n/label :t/fast) "~40s")
                     :image-props       "🚗"
                     :description-props {:text "€1.65"}

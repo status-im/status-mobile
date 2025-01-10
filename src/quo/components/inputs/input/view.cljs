@@ -26,8 +26,7 @@
         :size   :paragraph-2}
        label-right]])
    (when char-limit
-     (when-let [count-text (some->> char-limit
-                                    (str current-chars "/"))]
+     (let [count-text (str current-chars "/" char-limit)]
        [rn/view {:style style/right-label-container}
         [text/text
          {:style  (style/counter-color {:current-chars  current-chars
