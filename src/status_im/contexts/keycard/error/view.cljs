@@ -2,6 +2,7 @@
   (:require [quo.core :as quo]
             [react-native.core :as rn]
             [status-im.common.events-helper :as events-helper]
+            [status-im.contexts.keycard.factory-reset.view :as factory-reset]
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]))
 
@@ -31,7 +32,17 @@
        :description-text description}]
      [rn/view {:style {:margin-horizontal 20}}
       [quo/keycard {:holder-name ""}]
-      [quo/information-box
-       {:type  :default
-        :style {:margin-top 20}}
-       (i18n/label :t/unlock-reset-instructions)]]]))
+      (when (not= :keycard/error.keycard-blank error)
+        [:<>
+         [quo/section-label
+          {:section (i18n/label :t/what-you-can-do) :container-style {:padding-vertical 8}}]
+         [quo/settings-item
+          {:title             (i18n/label :t/factory-reset)
+           :image             :icon
+           :image-props       :i/placeholder
+           :action            :arrow
+           :description       :text
+           :description-props {:text (i18n/label :t/remove-keycard-content)}
+           :on-press          (fn []
+                                (rf/dispatch [:show-bottom-sheet
+                                              {:content factory-reset/sheet}]))}]])]]))

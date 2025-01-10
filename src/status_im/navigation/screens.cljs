@@ -33,8 +33,10 @@
     [status-im.contexts.keycard.authorise.view :as keycard.authorise]
     [status-im.contexts.keycard.check.view :as keycard.check]
     [status-im.contexts.keycard.create.view :as keycard.create]
+    [status-im.contexts.keycard.different-card.view :as keycard.different-card]
     [status-im.contexts.keycard.empty.view :as keycard.empty]
     [status-im.contexts.keycard.error.view :as keycard.error]
+    [status-im.contexts.keycard.factory-reset.view :as keycard.factory-reset]
     [status-im.contexts.keycard.migrate.fail.view :as keycard.migrate.fail]
     [status-im.contexts.keycard.migrate.profile-keys.view :as keycard.migrate.profile-keys]
     [status-im.contexts.keycard.migrate.re-encrypting.view :as keycard.re-encrypting]
@@ -895,6 +897,13 @@
                 :insets {:top? true :bottom? true}}
     :component keycard.error/view}
 
+   {:name      :screen/keycard.different-card
+    :metrics   {:track? true}
+    :options   {:theme                  :dark
+                :modalPresentationStyle :fullScreen
+                :insets                 {:top? true :bottom? true}}
+    :component keycard.different-card/view}
+
    {:name      :screen/keycard.not-keycard
     :metrics   {:track? true}
     :options   {:theme  :dark
@@ -966,7 +975,21 @@
    {:name      :screen/keycard.create.ready-to-add
     :metrics   {:track? true}
     :options   {:insets {:top? true :bottom? true}}
-    :component keycard.create/ready-to-add}])
+    :component keycard.create/ready-to-add}
+
+   {:name      :screen/keycard.factory-reset.success
+    :metrics   {:track? true}
+    :options   {:theme                  :dark
+                :modalPresentationStyle :fullScreen
+                :insets                 {:top? true :bottom? true}}
+    :component keycard.factory-reset/success-view}
+
+   {:name      :screen/keycard.factory-reset.fail
+    :metrics   {:track? true}
+    :options   {:theme                  :dark
+                :modalPresentationStyle :fullScreen
+                :insets                 {:top? true :bottom? true}}
+    :component keycard.factory-reset/failed-view}])
 
 (defn screens
   []
