@@ -29,8 +29,8 @@
              :z-index (get shared-values
                            (get shell.constants/stacks-z-index-keywords stack-id))})}
    (case stack-id
-     :communities-stack [:f> communities/view]
-     :chats-stack       [:f> chat/view]
+     :communities-stack [communities/view]
+     :chats-stack       [chat/view]
      :wallet-stack      [wallet/view]
      :browser-stack     [browser.stack/browser-stack]
      [:<>])])
@@ -38,7 +38,7 @@
 (defn lazy-screen
   [stack-id shared-values]
   (when (load-stack? stack-id)
-    [:f> f-stack-view stack-id shared-values]))
+    [f-stack-view stack-id shared-values]))
 
 (defn view
   [shared-values]

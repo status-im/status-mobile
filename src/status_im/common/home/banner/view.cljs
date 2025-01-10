@@ -73,10 +73,10 @@
   [{:keys [scroll-ref tabs selected-tab on-tab-change scroll-shared-value content customization-color]}]
   (let [theme (quo.theme/use-theme)]
     [:<>
-     [:f> banner-card-blur-layer scroll-shared-value
-      [:f> banner-card-hiding-layer
+     [banner-card-blur-layer scroll-shared-value
+      [banner-card-hiding-layer
        (assoc content :scroll-shared-value scroll-shared-value :theme theme)]]
-     [:f> banner-card-tabs-layer
+     [banner-card-tabs-layer
       {:scroll-shared-value scroll-shared-value
        :selected-tab        selected-tab
        :tabs                tabs
