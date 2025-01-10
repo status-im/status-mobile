@@ -6,10 +6,9 @@
 (deftest edit-name-test
   (let [new-name "John Doe"
         cofx     {:db {:profile/profile {:display-name "Old name"}}}
-        expected {:db {:profile/profile {:display-name new-name}}
-                  :fx [[:json-rpc/call
+        expected {:fx [[:json-rpc/call
                         [{:method     "wakuext_setDisplayName"
                           :params     [name]
-                          :on-success [:profile/edit-profile-name-success]}]]]}]
+                          :on-success [:profile/edit-profile-name-success new-name true true]}]]]}]
     (is (match? expected
-                (sut/edit-profile-name cofx [new-name])))))
+                (sut/edit-profile-name cofx [{:display-name new-name}])))))

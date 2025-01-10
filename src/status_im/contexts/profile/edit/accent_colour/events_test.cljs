@@ -8,10 +8,10 @@
         key-uid   "key-uid"
         cofx      {:db {:profile/profile {:key-uid key-uid}}}
         expected  {:fx [[:json-rpc/call
-                         [{:method     "wakuext_setCustomizationColor"
-                           :params     [{:customizationColor new-color
-                                         :keyUid             key-uid}]
+                         [{:method   "wakuext_setCustomizationColor"
+                           :params   [{:customizationColor new-color
+                                       :keyUid             key-uid}]
                            :on-success [:profile/edit-accent-colour-success new-color true true]
-                           :on-error   fn?}]]]}]
+                           :on-error fn?}]]]}]
     (is (match? expected
-                (sut/edit-accent-colour cofx [new-color])))))
+                (sut/edit-accent-colour cofx [{:color new-color}])))))

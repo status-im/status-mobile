@@ -12,9 +12,9 @@
                         [{:method     "multiaccounts_storeIdentityImage"
                           :params     [key-uid picture 0 0 profile-picture-picker/crop-size
                                        profile-picture-picker/crop-size]
-                          :on-success [:profile/edit-profile-picture-success]}]]]}]
+                          :on-success [:profile/edit-profile-picture-success true]}]]]}]
     (is (match? expected
-                (sut/edit-profile-picture cofx [picture])))))
+                (sut/edit-profile-picture cofx [{:picture picture}])))))
 
 (deftest delete-picture-test
   (let [key-uid  "key-uid"
@@ -22,6 +22,6 @@
         expected {:fx [[:json-rpc/call
                         [{:method     "multiaccounts_deleteIdentityImage"
                           :params     [key-uid]
-                          :on-success [:profile/delete-profile-picture-success]}]]]}]
+                          :on-success [:profile/delete-profile-picture-success true]}]]]}]
     (is (match? expected
-                (sut/delete-profile-picture cofx false)))))
+                (sut/delete-profile-picture cofx [{}])))))
