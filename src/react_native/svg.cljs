@@ -10,7 +10,5 @@
 (def defs (reagent/adapt-react-class Svg/Defs))
 (def circle (reagent/adapt-react-class Svg/Circle))
 (def svg-xml (reagent/adapt-react-class Svg/SvgXml))
-(def svg-uri (reagent/adapt-react-class Svg/SvgUri))
-(def g (reagent/adapt-react-class Svg/G))
 (def linear-gradient (reagent/adapt-react-class Svg/LinearGradient))
 (def stop (reagent/adapt-react-class Svg/Stop))

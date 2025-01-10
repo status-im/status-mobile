@@ -50,29 +50,15 @@
 (def opensea-api-key OPENSEA_API_KEY)
 (def status-proxy-enabled? true)
 (def status-proxy-stage-name (get-config :STATUS_PROXY_STAGE_NAME "test"))
-(def bootnodes-settings-enabled? (enabled? (get-config :BOOTNODES_SETTINGS_ENABLED "1")))
-(def mailserver-confirmations-enabled? (enabled? (get-config :MAILSERVER_CONFIRMATIONS_ENABLED)))
 (def pairing-popup-disabled? (enabled? (get-config :PAIRING_POPUP_DISABLED "0")))
 (def cached-webviews-enabled? (enabled? (get-config :CACHED_WEBVIEWS_ENABLED 0)))
-(def snoopy-enabled? (enabled? (get-config :SNOOPY 0)))
-(def dev-build? (enabled? (get-config :DEV_BUILD 0)))
-(def max-message-delivery-attempts (js/parseInt (get-config :MAX_MESSAGE_DELIVERY_ATTEMPTS "6")))
+
 ;; NOTE: only disabled in releases
-(def local-notifications? (enabled? (get-config :LOCAL_NOTIFICATIONS "1")))
 (def blank-preview? (enabled? (get-config :BLANK_PREVIEW "1")))
-(def group-chat-enabled? (enabled? (get-config :GROUP_CHATS_ENABLED "0")))
 (def tooltip-events? (enabled? (get-config :TOOLTIP_EVENTS "0")))
-(def commands-enabled? (enabled? (get-config :COMMANDS_ENABLED "0")))
-(def keycard-test-menu-enabled? (enabled? (get-config :KEYCARD_TEST_MENU "1")))
-(def qr-test-menu-enabled? (enabled? (get-config :QR_READ_TEST_MENU "0")))
 (def quo-preview-enabled? (enabled? (get-config :ENABLE_QUO_PREVIEW "0")))
-(def database-management-enabled? (enabled? (get-config :DATABASE_MANAGEMENT_ENABLED "0")))
 (def debug-webview? (enabled? (get-config :DEBUG_WEBVIEW "0")))
-(def test-stateofus? (enabled? (get-config :TEST_STATEOFUS "0")))
 (def two-minutes-syncing? (enabled? (get-config :TWO_MINUTES_SYNCING "0")))
-(def swap-enabled? (enabled? (get-config :SWAP_ENABLED "0")))
-(def stickers-test-enabled? (enabled? (get-config :STICKERS_TEST_ENABLED "0")))
-(def local-pairing-mode-enabled? (enabled? (get-config :LOCAL_PAIRING_ENABLED "1")))
 (def show-not-implemented-features? (enabled? (get-config :SHOW_NOT_IMPLEMENTED_FEATURES "0")))
 
 ;; CONFIG VALUES
@@ -81,8 +67,6 @@
 (def fleet (get-config :FLEET ""))
 (def apn-topic (get-config :APN_TOPIC "im.status.ethereum"))
 (def max-installations 2)
-; currently not supported in status-go
-(def enable-remove-profile-picture? false)
 
 (defn env-variable->int
   [env-var-name default-value]
@@ -113,16 +97,6 @@
 
 (def fast-create-community-enabled?
   (enabled? (get-config :FAST_CREATE_COMMUNITY_ENABLED "0")))
-
-(def waku-nodes-config
-  {:status.prod
-   ["enrtree://AL65EKLJAUXKKPG43HVTML5EFFWEZ7L4LOKTLZCLJASG4DSESQZEC@prod.status.nodes.status.im"]
-   :status.test
-   ["enrtree://AIO6LUM3IVWCU2KCPBBI6FEH2W42IGK3ASCZHZGG5TIXUR56OGQUO@test.status.nodes.status.im"]
-   :waku.sandbox
-   ["enrtree://AIRVQ5DDA4FFWLRBCHJWUWOO6X6S4ZTZ5B667LQ6AJU6PEYDLRD5O@sandbox.waku.nodes.status.im"]
-   :waku.test
-   ["enrtree://AOGYWMBYOUIMOENHXCHILPKY3ZRFEULMFI4DOM442QSZ73TT2A7VI@test.waku.nodes.status.im"]})
 
 (def community-accounts-selection-enabled? true)
 (def fetch-messages-enabled? (enabled? (get-config :FETCH_MESSAGES_ENABLED "1")))

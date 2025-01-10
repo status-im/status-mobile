@@ -7,11 +7,8 @@
 (def PLAYING (.-PLAYING ^js MediaStates))
 (def PAUSED (.-PAUSED ^js MediaStates))
 (def RECORDING (.-RECORDING ^js MediaStates))
-(def PREPARED (.-PREPARED ^js MediaStates))
 (def IDLE (.-IDLE ^js MediaStates))
-(def ERROR (.-ERROR ^js MediaStates))
 (def DESTROYED (.-DESTROYED ^js MediaStates))
-(def SEEKING (.-SEEKING ^js MediaStates))
 
 ;; get PlaybackCategories from react module
 (def PLAYBACK (.-Playback ^js PlaybackCategories))
@@ -59,15 +56,6 @@
                   (on-error {:error (.-err err) :message (.-message err)})
                   (on-prepared))))))
 
-(defn prepare-recorder
-  [recorder on-prepared on-error]
-  (when (and recorder (.-canPrepare ^js recorder))
-    (.prepare ^js recorder
-              (fn [^js err]
-                (if err
-                  (on-error {:error (.-err err) :message (.-message err)})
-                  (on-prepared))))))
-
 (defn start-recording
   [recorder on-start on-error]
   (when (and recorder
@@ -89,24 +77,6 @@
                (on-error {:error (.-err err) :message (.-message err)})
                (on-stop))))
     (on-stop)))
-
-(defn pause-recording
-  [recorder on-pause on-error]
-  (when (and recorder (.-isRecording ^js recorder))
-    (.pause ^js recorder
-            (fn [^js err]
-              (if err
-                (on-error {:error (.-err err) :message (.-message err)})
-                (on-pause))))))
-
-(defn start-playing
-  [player on-start on-error]
-  (when (and player (.-canPlay ^js player))
-    (.play ^js player
-           (fn [^js err]
-             (if err
-               (on-error {:error (.-err err) :message (.-message err)})
-               (on-start))))))
 
 (defn stop-playing
   [player on-stop on-error]

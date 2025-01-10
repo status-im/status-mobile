@@ -1,8 +1,7 @@
 (ns utils.i18n
   (:require
     ["i18n-js" :as i18n]
-    [clojure.string :as string]
-    [utils.i18n-goog :as i18n-goog]))
+    [clojure.string :as string]))
 
 (defn setup
   [default-device-language translations-by-locale]
@@ -69,5 +68,3 @@
 
 (def locale
   (.-locale i18n))
-
-(def format-currency i18n-goog/format-currency)

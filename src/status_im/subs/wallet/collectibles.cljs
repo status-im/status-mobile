@@ -117,15 +117,6 @@
    (:gradient-color collectible :gradient-1)))
 
 (re-frame/reg-sub
- :wallet/collectible-details-owner
- :<- [:wallet/accounts]
- (fn [accounts [_ collectible]]
-   (let [owner-address (-> collectible :ownership first :address)]
-     (some #(when (= (:address %) owner-address)
-              %)
-           accounts))))
-
-(re-frame/reg-sub
  :wallet/total-owned-collectible
  :<- [:wallet/accounts-without-watched-accounts]
  (fn [accounts [_ ownership address]]

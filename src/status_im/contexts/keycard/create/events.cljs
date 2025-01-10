@@ -15,13 +15,20 @@
                   (rf/dispatch [:open-modal :screen/keycard.empty-create]))
                 (rf/dispatch [:keycard/on-application-info-error error])))}]]]}))
 
+(defn- backup-recovery-phrase-success
+  [masked-seed-phrase]
+  (rf/dispatch [:navigate-back])
+  (rf/dispatch [:open-modal :screen/confirm-backup
+                {:masked-seed-phrase masked-seed-phrase
+                 :on-success         #(rf/dispatch [:keycard/create.phrase-backed-up %])}]))
+
 (rf/reg-event-fx :keycard/create.get-phrase
  (fn [{:keys [db]}]
    {:db (assoc-in db [:keycard :create] nil)
     :fx [[:dispatch [:navigate-back]]
          [:dispatch
           [:open-modal :screen/backup-recovery-phrase-dark
-           {:on-success #(rf/dispatch [:keycard/create.phrase-backed-up %])}]]]}))
+           {:on-success backup-recovery-phrase-success}]]]}))
 
 (rf/reg-event-fx :keycard/create.phrase-backed-up
  (fn [{:keys [db]} [masked-phrase-vector]]

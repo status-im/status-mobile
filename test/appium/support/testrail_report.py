@@ -167,10 +167,10 @@ class TestrailReport(BaseTestReport):
                 else:
                     first_command = 0
                 try:
-                    devices += "# [Device %d](%s) \n" % (i + 1, self.get_sauce_job_url(job_id=device,
-                                                                                       first_command=first_command))
+                    devices += "# [Device %d](%s) \n" % (i + 1, self.get_lambda_test_job_url(job_id=device,
+                                                                                             first_command=first_command))
                 except KeyError:
-                    devices += "# Device %s: SauceLabs session was not found \n" % (i + 1)
+                    devices += "# Device %s: LambdaTest session was not found \n" % (i + 1)
             comment = str()
             if test.group_name:
                 comment += "# Class: %s \n" % test.group_name
@@ -274,9 +274,8 @@ class TestrailReport(BaseTestReport):
                                 first_command = 0
                         else:
                             first_command = 0
-                        job_url = self.get_sauce_job_url(job_id=job_id, first_command=first_command)
-                        case_info = "Logs for device %d: [steps](%s), [failure screenshot](%s)" \
-                                    % (f, job_url, self.get_sauce_final_screenshot_url(job_id))
+                        job_url = self.get_lambda_test_job_url(job_id=job_id, first_command=first_command)
+                        case_info = "Logs for device %d: [steps](%s)" % (f, job_url)
 
                     if test.group_name:
                         group_blocks[test.group_name] += case_title + error + case_info

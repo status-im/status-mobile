@@ -104,7 +104,7 @@
 (rf/defn delete-and-sync
   {:events [:chat.ui/delete-message-for-me-and-sync]}
   [{:keys [db]} {:keys [message-id chat-id]} force?]
-  (when-let [message (get-in db [:messages chat-id message-id])]
+  (when-let [_message (get-in db [:messages chat-id message-id])]
     (when (or force? (check-before-delete-and-sync db chat-id message-id))
       {:db            (update-db-clear-undo-timer db chat-id message-id)
        :json-rpc/call [{:method      "wakuext_deleteMessageForMeAndSync"

@@ -14,13 +14,6 @@
 ;; This wrapping is required as core.async macro replaces tries and catch with
 ;; https://github.com/clojure/core.async/blob/18d2f903b169c681ed008dd9545dc33458604b89/src/main/clojure/cljs/core/async/impl/ioc_helpers.cljs#L74
 ;; and this does not seem to play nice with desktop, and the error is bubble up killing the go-loop
-(defn run-task
-  [f]
-  (try
-    (f)
-    (catch :default e
-      (log/error "failed to run task" e))))
-
 (defn chunked-pipe!
   "Connects input channel to the output channel with time-based chunking.
   `flush-time` parameter decides for how long we are waiting to accumulate
@@ -42,27 +35,9 @@
             (async/close! output-ch))
           (recur acc (seq acc)))))))
 
-(defn task-queue
-  "Creates `core.async` channel which will process 0 arg functions put there in serial fashion.
-  Takes the same argument/s as `core.async/chan`, those arguments will be delegated to the
-  channel constructor.
-  Returns task-queue where tasks represented by 0 arg task functions can be put for processing."
-  [& args]
-  (let [queue (apply async/chan args)]
-    (async/go-loop [task-fn (async/<! queue)]
-      (run-task task-fn)
-      (recur (async/<! queue)))
-    queue))
-
 ;; ---------------------------------------------------------------------------
 ;; Periodic background job
 ;; ---------------------------------------------------------------------------
-
-(defn async-periodic-run!
-  ([async-periodic-chan]
-   (async-periodic-run! async-periodic-chan true))
-  ([async-periodic-chan worker-fn]
-   (async/put! async-periodic-chan worker-fn)))
 
 (defn async-periodic-stop!
   [async-periodic-chan]

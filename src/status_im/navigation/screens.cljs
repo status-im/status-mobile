@@ -43,17 +43,16 @@
     [status-im.contexts.keycard.not-keycard.view :as keycard.not-keycard]
     [status-im.contexts.keycard.pin.create.view :as keycard.pin.create]
     [status-im.contexts.keycard.pin.enter.view :as keycard.pin.enter]
-    [status-im.contexts.onboarding.create-or-sync-profile.view :as create-or-sync-profile]
     [status-im.contexts.onboarding.create-password.view :as create-password]
+    [status-im.contexts.onboarding.create-profile.view :as create-profile]
     [status-im.contexts.onboarding.enable-biometrics.view :as enable-biometrics]
     [status-im.contexts.onboarding.enable-notifications.view :as enable-notifications]
-    [status-im.contexts.onboarding.identifiers.view :as identifiers]
     [status-im.contexts.onboarding.intro.view :as intro]
+    [status-im.contexts.onboarding.log-in.view :as log-in]
     [status-im.contexts.onboarding.preparing-status.view :as preparing-status]
     [status-im.contexts.onboarding.share-usage.view :as onboarding.share-usage]
     [status-im.contexts.onboarding.sign-in.view :as sign-in]
     [status-im.contexts.onboarding.syncing.progress.view :as syncing-devices]
-    [status-im.contexts.onboarding.syncing.results.view :as syncing-results]
     [status-im.contexts.preview.feature-flags.view :as feature-flags]
     [status-im.contexts.preview.quo.component-preview.view :as component-preview]
     [status-im.contexts.preview.quo.main :as quo.preview]
@@ -542,7 +541,7 @@
                 :alias-id :wallet.create-account-edit-derivation-path}
     :component wallet-edit-derivation-path/view}
 
-   {:name      :screen/wallet.confirm-backup
+   {:name      :screen/confirm-backup
     :metrics   {:track?   true
                 :alias-id :wallet.create-account-backup-new-keypair-confirm}
     :options   {:insets {:top? true :bottom? true}}
@@ -720,8 +719,8 @@
    :on-focus  [:onboarding/overlay-dismiss]
    :component intro/view})
 
-(def onboarding-new-to-status
-  {:name      :screen/onboarding.new-to-status
+(def onboarding-create-profile
+  {:name      :screen/onboarding.create-profile
    :metrics   {:track?   true
                :alias-id :onboarding.create-profile-intro}
    :options   {:theme                  :dark
@@ -731,10 +730,10 @@
                                         transitions/push-animations-for-transparent-background)
                :popGesture             false
                :modalPresentationStyle :overCurrentContext}
-   :component create-or-sync-profile/create-profile})
+   :component create-profile/view})
 
-(def onboarding-sync-or-recover-profile
-  {:name      :screen/onboarding.sync-or-recover-profile
+(def onboarding-log-in
+  {:name      :screen/onboarding.log-in
    :metrics   {:track? true}
    :options   {:theme                  :dark
                :layout                 options/onboarding-transparent-layout
@@ -743,7 +742,7 @@
                                         transitions/push-animations-for-transparent-background)
                :popGesture             false
                :modalPresentationStyle :overCurrentContext}
-   :component create-or-sync-profile/sync-or-recover-profile})
+   :component log-in/view})
 
 (def onboarding-create-profile-password
   {:name      :screen/onboarding.create-profile-password
@@ -813,17 +812,6 @@
                                         :popStackOnPress     false}}
    :component enable-notifications/view})
 
-(def onboarding-identifiers
-  {:name      :screen/onboarding.identifiers
-   :metrics   {:track? true}
-   :component identifiers/view
-   :options   {:theme              :dark
-               :layout             options/onboarding-transparent-layout
-               :animations         transitions/push-animations-for-transparent-background
-               :popGesture         false
-               :hardwareBackButton {:dismissModalOnPress false
-                                    :popStackOnPress     false}}})
-
 (def onboarding-sign-in-intro
   {:name      :screen/onboarding.sign-in-intro
    :metrics   {:track?   true
@@ -866,29 +854,20 @@
                :popGesture false}
    :component syncing-devices/view-onboarding})
 
-(def onboarding-syncing-results
-  {:name      :screen/onboarding.syncing-results
-   :metrics   {:track?   true
-               :alias-id :onboarding.syncing-completed}
-   :options   {:theme :dark}
-   :component syncing-results/view})
-
 (def onboarding-screens
   [onboarding-intro
-   onboarding-new-to-status
-   onboarding-sync-or-recover-profile
+   onboarding-create-profile
+   onboarding-log-in
    onboarding-create-profile-password
    onboarding-enable-biometrics
    onboarding-preparing-status
    onboarding-entering-seed-phrase
    onboarding-enable-notifications
-   onboarding-identifiers
    onboarding-share-usage
    onboarding-sign-in-intro
    onboarding-sign-in
    onboarding-syncing-progress
-   onboarding-syncing-progress-intro
-   onboarding-syncing-results])
+   onboarding-syncing-progress-intro])
 
 (def keycard-screens
   [{:name      :screen/keycard.check

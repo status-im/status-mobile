@@ -166,7 +166,7 @@ class GithubHtmlReport(BaseTestReport):
                     first_command = 0
             else:
                 first_command = 0
-            html += "<li><a href=\"%s\">Steps, video, logs</a></li>" % self.get_sauce_job_url(job_id, first_command)
+            html += "<li><a href=\"%s\">Steps, video, logs</a></li>" % self.get_lambda_test_job_url(job_id, first_command)
             # if test_run.error:
             #     html += "<li><a href=\"%s\">Failure screenshot</a></li>" % self.get_sauce_final_screenshot_url(job_id)
             html += "</ul></p>"

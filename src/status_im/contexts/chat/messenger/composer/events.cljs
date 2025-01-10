@@ -8,7 +8,6 @@
             [taoensso.timbre :as log]
             [utils.debounce :as debounce]
             [utils.emojilib :as emoji]
-            [utils.i18n :as i18n]
             [utils.re-frame :as rf]
             utils.string))
 
@@ -28,34 +27,11 @@
   (let [current-chat-id (:current-chat-id db)]
     {:db (assoc-in db [:chat/inputs current-chat-id :input-ref] input-ref)}))
 
-(rf/defn set-input-content-height
-  {:events [:chat.ui/set-input-content-height]}
-  [{db :db} content-height chat-id]
-  (let [current-chat-id (or chat-id (:current-chat-id db))]
-    {:db (assoc-in db [:chat/inputs current-chat-id :input-content-height] content-height)}))
-
-(rf/defn set-input-maximized
-  {:events [:chat.ui/set-input-maximized]}
-  [{db :db} maximized? chat-id]
-  (let [current-chat-id (or chat-id (:current-chat-id db))]
-    {:db (assoc-in db [:chat/inputs current-chat-id :input-maximized?] maximized?)}))
-
 (rf/defn set-input-focused
-  {:events [:chat.ui/set-input-focused]}
+  {:events [:chat.ui/setnn-input-focused]}
   [{db :db} focused? chat-id]
   (let [current-chat-id (or chat-id (:current-chat-id db))]
     {:db (assoc-in db [:chat/inputs current-chat-id :focused?] focused?)}))
-
-(rf/defn set-input-audio
-  {:events [:chat.ui/set-input-audio]}
-  [{db :db} audio chat-id]
-  (let [current-chat-id (or chat-id (:current-chat-id db))]
-    {:db (assoc-in db [:chat/inputs current-chat-id :audio] audio)}))
-
-(rf/defn set-recording
-  {:events [:chat.ui/set-recording]}
-  [{db :db} recording?]
-  {:db (assoc db :chats/recording? recording?)})
 
 (rf/defn reply-to-message
   "Sets reference to previous chat message and focuses on input"
@@ -200,25 +176,6 @@
                 (link-preview/reset-unfurled)
                 (messages.transport/send-chat-messages messages)))))
 
-(rf/defn send-audio-message
-  {:events [:chat/send-audio]}
-  [{:keys [db] :as cofx} audio-path duration]
-  (let [{:keys [current-chat-id]} db
-        {:keys [message-id]}
-        (get-in db [:chat/inputs current-chat-id :metadata :responding-to-message])]
-    (when-not (string/blank? audio-path)
-      (rf/merge
-       {:db (assoc-in db [:chat/inputs current-chat-id :metadata :responding-to-message] nil)}
-       (messages.transport/send-chat-messages
-        [(merge
-          {:chat-id           current-chat-id
-           :content-type      constants/content-type-audio
-           :audio-path        audio-path
-           :audio-duration-ms duration
-           :text              (i18n/label :t/update-to-listen-audio {"locale" "en"})}
-          (when message-id
-            {:response-to message-id}))])))))
-
 (defn- process-link-previews
   [link-previews]
   (->> link-previews
@@ -231,7 +188,7 @@
 
 (rf/defn send-edited-message
   [{:keys [db]
-    :as   cofx} text {:keys [message-id quoted-message chat-id]}]
+    :as   cofx} text {:keys [message-id quoted-message]}]
   (rf/merge
    cofx
    {:json-rpc/call

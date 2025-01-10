@@ -49,7 +49,7 @@
     (@push-animation-fn-atom))
   (rf/dispatch [:onboarding/use-temporary-display-name true])
   (debounce/throttle-and-dispatch
-   [:open-modal :screen/onboarding.new-to-status]
+   [:open-modal :screen/onboarding.create-profile]
    1000))
 
 (defn- navigate-to-sync-or-recover-profile
@@ -58,7 +58,7 @@
     (@push-animation-fn-atom))
   (rf/dispatch [:onboarding/use-temporary-display-name false])
   (debounce/throttle-and-dispatch
-   [:open-modal :screen/onboarding.sync-or-recover-profile]
+   [:open-modal :screen/onboarding.log-in]
    1000))
 
 (defn new-account-options

@@ -10,14 +10,12 @@
   [quo/documentation-drawers
    {:title  (i18n/label :t/forgot-your-password-info-title)
     :shell? shell?}
-   [rn/view
-    {:style style/container}
+   [rn/view {:style style/container}
     [quo/text {:size :paragraph-2} (i18n/label :t/forgot-your-password-info-description)]
 
     [rn/view {:style style/step-container}
      [quo/step {:in-blur-view? shell?} 1]
-     [rn/view
-      {:style style/step-content}
+     [rn/view {:style style/step-content}
       [quo/text {:size :paragraph-2 :weight :semi-bold}
        (i18n/label :t/forgot-your-password-info-remove-app)]
       [quo/text {:size :paragraph-2} (i18n/label :t/forgot-your-password-info-remove-app-description)]]]
@@ -33,10 +31,8 @@
 
     [rn/view {:style style/step-container}
      [quo/step {:in-blur-view? shell?} 3]
-     [rn/view
-      {:style style/step-content}
-      [rn/view
-       {:style style/step-title}
+     [rn/view {:style style/step-content}
+      [rn/view {:style style/step-title}
        [quo/text {:size :paragraph-2} (str (i18n/label :t/sign-up) " ")]
        [quo/text {:size :paragraph-2 :weight :semi-bold}
         (i18n/label :t/forgot-your-password-info-signup-with-key)]]
@@ -45,8 +41,7 @@
 
     [rn/view {:style style/step-container}
      [quo/step {:in-blur-view? shell?} 4]
-     [rn/view
-      {:style style/step-content}
+     [rn/view {:style style/step-content}
       [quo/text {:size :paragraph-2 :weight :semi-bold}
        (i18n/label :t/forgot-your-password-info-create-new-password)]
       [quo/text {:size :paragraph-2}

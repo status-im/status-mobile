@@ -98,7 +98,7 @@
                                           :deviceType utils.platform/os}]}))
 
 (rf/defn init
-  [cofx]
+  [_cofx]
   {:pairing/get-our-installations nil})
 
 (rf/defn enable
@@ -254,7 +254,7 @@
 
 (rf/defn pair-and-sync
   {:events [:pairing/pair-and-sync]}
-  [cofx installation-id]
+  [_cofx installation-id]
   {:fx [[:json-rpc/call
          [{:method      "wakuext_enableInstallationAndSync"
            :params      [{:installationId installation-id}]

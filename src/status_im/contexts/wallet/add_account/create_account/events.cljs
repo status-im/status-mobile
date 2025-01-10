@@ -44,19 +44,6 @@
 
 (rf/reg-event-fx :wallet/confirm-account-origin confirm-account-origin)
 
-(defn store-new-seed-phrase
-  [{:keys [db]} [{:keys [seed-phrase]}]]
-  {:db (update-in db
-                  [:wallet :ui :create-account :new-keypair]
-                  assoc
-                  :seed-phrase
-                  seed-phrase)
-   :fx [[:dispatch-later
-         [{:ms       20
-           :dispatch [:navigate-to :screen/wallet.confirm-backup]}]]]})
-
-(rf/reg-event-fx :wallet/store-new-seed-phrase store-new-seed-phrase)
-
 (defn seed-phrase-validated
   [{:keys [db]} [seed-phrase key-uid on-error]]
   (let [keypair-already-added? (-> db

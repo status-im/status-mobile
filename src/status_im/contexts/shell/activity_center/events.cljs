@@ -216,7 +216,7 @@
 
 (rf/defn accept-notification
   {:events [:activity-center.notifications/accept]}
-  [{:keys [db]} notification-id]
+  [_ notification-id]
   {:json-rpc/call [{:method     "wakuext_acceptActivityCenterNotifications"
                     :params     [[notification-id]]
                     :on-success [:activity-center.notifications/accept-success notification-id]
@@ -234,7 +234,7 @@
 
 (rf/defn dismiss-notification
   {:events [:activity-center.notifications/dismiss]}
-  [{:keys [db]} notification-id]
+  [_ notification-id]
   {:json-rpc/call [{:method     "wakuext_dismissActivityCenterNotifications"
                     :params     [[notification-id]]
                     :on-success [:activity-center.notifications/dismiss-success notification-id]
@@ -249,7 +249,7 @@
 
 (rf/defn delete-notification
   {:events [:activity-center.notifications/delete]}
-  [{:keys [db]} notification-id]
+  [_ notification-id]
   {:json-rpc/call [{:method     "wakuext_deleteActivityCenterNotifications"
                     :params     [[notification-id]]
                     :on-success [:activity-center.notifications/delete-success notification-id]
@@ -310,18 +310,9 @@
   (and (some? cursor)
        (not= cursor start-or-end-cursor)))
 
-(def ^:const status-unread 2)
-(def ^:const status-all 3)
 (def ^:const read-type-read 1)
 (def ^:const read-type-unread 2)
 (def ^:const read-type-all 3)
-
-(defn status
-  [filter-status]
-  (case filter-status
-    :unread status-unread
-    :all    status-all
-    99))
 
 (defn ->rpc-read-type
   [read-type]
@@ -528,7 +519,7 @@
   {:events [:activity-center.notifications/show-toasts]}
   [{:keys [db]} new-notifications]
   (let [my-public-key (get-in db [:profile/profile :public-key])]
-    (reduce (fn [cofx {:keys [author chat-id type accepted dismissed message name] :as x}]
+    (reduce (fn [cofx {:keys [author chat-id type accepted dismissed message name]}]
               (let [user-avatar {:full-name         name
                                  :status-indicator? true
                                  :online?           nil

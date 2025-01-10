@@ -1,6 +1,3 @@
-import base64
-import re
-
 import pytest
 from selenium.common.exceptions import TimeoutException
 

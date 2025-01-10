@@ -1,3 +1,4 @@
+import json
 import os
 import re
 import signal
@@ -10,16 +11,15 @@ from os import environ
 
 import pytest
 import requests
-from _pytest.runner import runtestprotocol
+from filelock import FileLock
 from requests.exceptions import ConnectionError as c_er
 
 import tests
-from support.device_stats_db import DeviceStatsDB
-from support.test_rerun import should_rerun_test
-from tests import test_suite_data, appium_container
+from tests import test_suite_data
 
-sauce_username = environ.get('SAUCE_USERNAME')
-sauce_access_key = environ.get('SAUCE_ACCESS_KEY')
+lambda_test_username = environ.get('LAMBDA_TEST_USERNAME')
+lambda_test_access_key = environ.get('LAMBDA_TEST_ACCESS_KEY')
+
 github_token = environ.get('GIT_HUB_TOKEN')
 
 
@@ -34,16 +34,8 @@ def pytest_addoption(parser):
                      help='Url or local path to apk')
     parser.addoption('--env',
                      action='store',
-                     default='sauce',
-                     help='Specify environment: local/sauce/api')
-    parser.addoption('--datacenter',
-                     action='store',
-                     default='eu-central-1',
-                     help='For sauce only: us-west-1, eu-central-1')
-    parser.addoption('--platform_version',
-                     action='store',
-                     default='8.0',
-                     help='Android device platform version')
+                     default='lt',
+                     help='Specify environment: local/lt/api')
     parser.addoption('--log_steps',
                      action='store',
                      default=False,
@@ -56,14 +48,6 @@ def pytest_addoption(parser):
                      action='store',
                      default=False,
                      help='boolean; For creating testrail report per run')
-    parser.addoption('--network',
-                     action='store',
-                     default='ropsten',
-                     help='string; ropsten or rinkeby')
-    parser.addoption('--rerun_count',
-                     action='store',
-                     default=0,
-                     help='How many times tests should be re-run if failed')
     parser.addoption("--run_testrail_ids",
                      action="store",
                      metavar="NAME",
@@ -75,91 +59,20 @@ def pytest_addoption(parser):
                      default=None,
                      help='Url or local path to apk for upgrade')
 
-    # chat bot
-
-    parser.addoption('--messages_number',
-                     action='store',
-                     default=20,
-                     help='Messages number')
-    parser.addoption('--public_keys',
-                     action='store',
-                     default='',
-                     help='List of public keys for one-to-one chats')
-    parser.addoption('--running_time',
-                     action='store',
-                     default=600,
-                     help='Running time in seconds')
-    parser.addoption('--chat_name',
-                     action='store',
-                     default='test_chat',
-                     help='Public chat name')
-    parser.addoption('--device_number',
-                     action='store',
-                     default=2,
-                     help='Public chat name')
-
-    # running tests using appium docker instance
-
-    parser.addoption('--docker',
-                     action='store',
-                     default=False,
-                     help='Are you using the appium docker container to run the tests?')
-    parser.addoption('--docker_shared_volume',
-                     action='store',
-                     default=None,
-                     help='Path to a directory with .apk that will be shared with docker instance. Test reports will be also saved there')
-    parser.addoption('--device_ip',
-                     action='store',
-                     default=None,
-                     help='Android device IP address used for battery tests')
-    parser.addoption('--bugreport',
-                     action='store',
-                     default=False,
-                     help='Should generate bugreport for each test?')
-    parser.addoption('--stats_db_host',
-                     action='store',
-                     default=None,
-                     help='Host address for device stats database')
-    parser.addoption('--stats_db_port',
-                     action='store',
-                     default=8086,
-                     help='Port for device stats db')
-    parser.addoption('--stats_db_username',
-                     action='store',
-                     default=None,
-                     help='Username for device stats db')
-    parser.addoption('--stats_db_password',
-                     action='store',
-                     default=None,
-                     help='Password for device stats db')
-    parser.addoption('--stats_db_database',
-                     action='store',
-                     default='example9',
-                     help='Database name for device stats db')
-
 
 @dataclass
 class Option:
-    datacenter: str = None
+    pass
 
 
 option = Option()
 testrail_report = None
 github_report = None
-apibase = None
-sauce = None
 run_name = None
 
 
 def is_master(config):
     return not hasattr(config, 'workerinput')
-
-
-def is_uploaded():
-    stored_files = sauce.storage.files()
-    for i in range(len(stored_files)):
-        if stored_files[i].name == test_suite_data.apk_name:
-            return True
 
 
 @contextmanager
@@ -182,27 +95,21 @@ class UploadApkException(Exception):
 
 
 def _upload_and_check_response(apk_file_path):
+    from support.lambda_test import upload_apk
     with _upload_time_limit(1000):
-        resp = sauce.storage.upload(apk_file_path)
-
-    try:
-        if resp.name != test_suite_data.apk_name:
-            raise UploadApkException("Incorrect apk was uploaded to Sauce storage, response:\n%s" % resp)
-    except AttributeError:
-        raise UploadApkException("Error when uploading apk to Sauce storage, response:\n%s" % resp)
+        return upload_apk(apk_file_path)
 
 
 def _upload_and_check_response_with_retries(apk_file_path, retries=3):
     for _ in range(retries):
         try:
-            _upload_and_check_response(apk_file_path)
-            break
+            return _upload_and_check_response(apk_file_path)
         except (ConnectionError, RemoteDisconnected, c_er):
             time.sleep(10)
 
 
 def _download_apk(url):
-    # Absolute path adde to handle CI runs.
+    # Absolute path added to handle CI runs.
     apk_path = os.path.join(os.path.dirname(__file__), test_suite_data.apk_name)
 
     print('Downloading: %s' % url)
@@ -242,20 +149,10 @@ def pytest_configure(config):
     testrail_report = TestrailReport()
     from support.github_report import GithubHtmlReport
     global github_report
-    from saucelab_api_client.saucelab_api_client import SauceLab
     github_report = GithubHtmlReport()
     tests.pytest_config_global = vars(config.option)
     config.addinivalue_line("markers", "testrail_id(name): empty")
-    global apibase
-    if config.getoption('datacenter') == 'us-west-1':
-        apibase = 'us-west-1.saucelabs.com'
-    elif config.getoption('datacenter') == 'eu-central-1':
-        apibase = 'eu-central-1.saucelabs.com'
-    else:
-        raise NotImplementedError("Unknown SauceLabs datacenter")
 
-    global sauce
-    sauce = SauceLab('https://api.' + apibase + '/', sauce_username, sauce_access_key)
     if config.getoption('log_steps'):
         import logging
         logging.basicConfig(level=logging.INFO)
@@ -285,16 +182,24 @@ def pytest_configure(config):
             description='e2e tests are running'
         )
 
-    if config.getoption('env') == 'sauce' and not is_uploaded():
-        apk_src = config.getoption('apk')
-        if apk_src.startswith('http'):
-            apk_path = _download_apk(apk_src)
-        else:
-            apk_path = apk_src
 
-        _upload_and_check_response_with_retries(apk_path)
-        if apk_src.startswith('http'):
-            os.remove(apk_path)
+@pytest.fixture(scope='session', autouse=True)
+def upload_apk(tmp_path_factory):
+    fn = tmp_path_factory.getbasetemp().parent / "lt_apk.json"
+    with FileLock(str(fn) + ".lock"):
+        if fn.is_file():
+            data = json.loads(fn.read_text())
+            tests.pytest_config_global['lt_apk_url'] = data['lambda_test_apk_url']
+        else:
+            apk_src = tests.pytest_config_global['apk']
+            if apk_src.startswith('http'):
+                apk_path = _download_apk(apk_src)
+            else:
+                apk_path = apk_src
+            tests.pytest_config_global['lt_apk_url'] = _upload_and_check_response(apk_path)
+            fn.write_text(json.dumps({'lambda_test_apk_url': tests.pytest_config_global['lt_apk_url']}))
+            if apk_src.startswith('http'):
+                os.remove(apk_path)
 
 
 def pytest_unconfigure(config):
@@ -316,18 +221,11 @@ def pytest_unconfigure(config):
                                                     target_url=comment.html_url)
 
 
-def should_save_device_stats(config):
-    db_args = [config.getoption(option) for option in
-               ('stats_db_host', 'stats_db_port', 'stats_db_username', 'stats_db_password', 'stats_db_database')]
-    return all(db_args)
-
-
 @pytest.hookimpl(hookwrapper=True)
 def pytest_runtest_makereport(item, call):
     outcome = yield
     report = outcome.get_result()
 
-    is_sauce_env = item.config.getoption('env') == 'sauce'
     case_ids_set = item.config.getoption("run_testrail_ids")
 
     def catch_error():
@@ -366,10 +264,6 @@ def pytest_runtest_makereport(item, call):
                 test_suite_data.current_test.group_name = item.instance.__class__.__name__
                 error = catch_error()
                 final_error = '%s %s' % (error_intro, error)
-                if is_sauce_env:
-                    update_sauce_jobs(test_suite_data.current_test.group_name,
-                                      test_suite_data.current_test.testruns[-1].jobs,
-                                      report.passed)
         if error:
             test_suite_data.current_test.testruns[-1].error = final_error
             github_report.save_test(test_suite_data.current_test)
@@ -386,38 +280,6 @@ def pytest_runtest_makereport(item, call):
                 current_test.testruns[-1].run = False
             if error:
                 current_test.testruns[-1].error = '%s [[%s]]' % (error, report.wasxfail)
-        if is_sauce_env:
-            update_sauce_jobs(current_test.name, current_test.testruns[-1].jobs, report.passed)
-        if item.config.getoption('docker'):
-            device_stats = appium_container.get_device_stats()
-            if item.config.getoption('bugreport'):
-                appium_container.generate_bugreport(item.name)
-
-            build_name = item.config.getoption('apk')
-            # Find type of tests that are run on the device
-            if 'battery_consumption' in item.keywords._markers:
-                test_group = 'battery_consumption'
-            else:
-                test_group = None
-
-            if should_save_device_stats(item.config):
-                device_stats_db = DeviceStatsDB(
-                    item.config.getoption('stats_db_host'),
-                    item.config.getoption('stats_db_port'),
-                    item.config.getoption('stats_db_username'),
-                    item.config.getoption('stats_db_password'),
-                    item.config.getoption('stats_db_database'),
-                )
-                device_stats_db.save_stats(build_name, item.name, test_group, not report.failed, device_stats)
-
-
-def update_sauce_jobs(test_name, job_ids, passed):
-    from sauceclient import SauceException
-    for job_id in job_ids.keys():
-        try:
-            sauce.jobs.update_job(username=sauce_username, job_id=job_id, name=test_name, passed=passed)
-        except (RemoteDisconnected, SauceException, c_er):
-            pass
 
 
 def get_testrail_case_id(item):
@@ -438,47 +300,3 @@ def pytest_runtest_setup(item):
     secured = bool([mark for mark in item.iter_markers(name='secured')])
     test_suite_data.set_current_test(test_name=item.name, testrail_case_id=get_testrail_case_id(item), secured=secured)
     test_suite_data.current_test.create_new_testrun()
-
-
-def pytest_runtest_protocol(item, nextitem):
-    rerun_count = int(item.config.getoption('rerun_count'))
-    for i in range(rerun_count):
-        reports = runtestprotocol(item, nextitem=nextitem)
-        for report in reports:
-            is_in_group = [i for i in item.iter_markers(name='xdist_group')]
-            if report.failed and should_rerun_test(report.longreprtext) and not is_in_group:
-                break  # rerun
-        else:
-            return True  # no need to rerun
-
-
-# @pytest.fixture(scope="session", autouse=False)
-# def faucet_for_senders():
-#     network_api = NetworkApi()
-#     for user in transaction_senders.values():
-#         network_api.faucet(address=user['address'])
-
-
-@pytest.fixture
-def messages_number(request):
-    return int(request.config.getoption('messages_number'))
-
-
-@pytest.fixture
-def message_wait_time(request):
-    return int(request.config.getoption('message_wait_time'))
-
-
-@pytest.fixture
-def participants_number(request):
-    return int(request.config.getoption('participants_number'))
-
-
-@pytest.fixture
-def chat_name(request):
-    return request.config.getoption('chat_name')
-
-
-@pytest.fixture
-def user_public_key(request):
-    return request.config.getoption('user_public_key')

@@ -9,92 +9,15 @@
   ;; We must require test-helpers.matchers namespace to register the custom cljs.test directive
   ;; `match-strict?`
   (:require
-    [re-frame.core :as rf]
     [re-frame.db :as rf-db]
-    [re-frame.events :as rf-events]
-    [re-frame.registrar :as rf-registrar]
     [re-frame.subs :as rf-subs]
     [taoensso.timbre :as log]
     test-helpers.matchers))
 ;; We must require `test-helpers.matchers` this namespace to register the custom cljs.test
 ;; directive `match-strict?`.
 
-(defn db
-  "A simple wrapper to get the latest value from the app db."
-  []
-  @rf-db/app-db)
 
-(defn register-helper-events
-  "Register utility events for testing.
-
-  Note that re-frame-test removes such events if they're declared in the scope
-  of the macro `day8.re-frame.test/run-test-sync` (or the async variant)."
-  []
-  (rf/reg-event-db
-   :test/assoc-in
-   (fn [app-db [_ path value]]
-     (assoc-in app-db path value))))
-
-(defn spy-event-fx
-  "Re-register event effect using id `id`, but conj to `state` the event
-  arguments before calling the original handler.
-
-  Callers of this function can later on deref `state` to make assertions.
-
-  It's recommended to run this function in the scope of the macro
-  `day8.re-frame.test/run-test-sync` (or the async variant) as they
-  automatically clean up effects."
-  [state id]
-  (let [interceptors (get-in @rf-registrar/kind->id->handler [:event id])]
-    (rf-events/register
-     id
-     (concat (butlast interceptors)
-             (list {:id     :test/spy-event-fx
-                    :before (fn [context]
-                              (swap! state conj {:id id :args (get-in context [:coeffects :event])})
-                              context)}
-                   (last interceptors))))))
-
-(defn spy-fx
-  "Re-register effect using id `id`, but conj to `state` the effect arguments
-  before calling the original effect handler.
-
-  Callers of this function can later on inspect `state` to make assertions.
-
-  It's recommended to run this function in the scope of the macro
-  `day8.re-frame.test/run-test-sync` (or the async variant) as they
-  automatically clean up effects."
-  [state id]
-  (let [original-fn (get-in @rf-registrar/kind->id->handler [:fx id])]
-    (rf/reg-fx
-     id
-     (fn [fx-args]
-       (swap! state conj {:id id :args fx-args})
-       (original-fn fx-args)))))
-
-(defn stub-fx-with-callbacks
-  "Re-register effect using id `id` with a no-op version.
-
-  This function is useful to redefine effects that expect callbacks, usually to
-  pass downstream dummy data to successful/failure events. In re-frame parlance,
-  such effects accept on-success and on-error keywords.
-
-  The original effect handler for `id` is expected to receive a single map as
-  argument with either :on-success or :on-error keywords.
-
-  This function expects to receive either `on-success` or `on-error`, but not
-  both. If both are passed, `on-error` will be preferred."
-  [id & {:keys [on-success on-error]}]
-  (rf/reg-fx
-   id
-   (fn [[fx-map]]
-     (let [original-on-error   (:on-error fx-map)
-           original-on-success (:on-success fx-map)]
-       (cond (and original-on-error on-error)
-             (original-on-error (on-error fx-map))
-             (and original-on-success on-success)
-             (original-on-success (on-success fx-map)))))))
-
+#_{:clj-kondo/ignore [:clojure-lsp/unused-public-var]} ;; used in unit.clj
 (defn restore-app-db
   "Saves current app DB, calls `f` and restores the original app DB.
 

@@ -38,49 +38,6 @@
      unread-messages?
      [unread-grey-dot :unviewed-messages-public])])
 
-(defn communities-list-view-item
-  [{:keys [customization-color] :as props}
-   {:keys [name locked? status muted unread-messages? unread-mentions-count community-icon tokens]}]
-  (let [theme (quo.theme/use-theme)]
-    [rn/view
-     {:style (merge (style/community-card 16 theme)
-                    {:margin-bottom 12})}
-     [rn/touchable-highlight
-      (merge {:style {:height        56
-                      :border-radius 16}}
-             props)
-      [rn/view {:style style/detail-container}
-       [rn/view (style/list-info-container)
-        [community-icon/community-icon
-         {:images community-icon} 32]
-        [rn/view
-         {:flex              1
-          :margin-horizontal 12}
-         [text/text
-          {:weight              :semi-bold
-           :size                :paragraph-1
-           :accessibility-label :community-name-text
-           :number-of-lines     1
-           :ellipsize-mode      :tail
-           :style               {:color (when muted
-                                          (colors/theme-colors
-                                           colors/neutral-40
-                                           colors/neutral-60
-                                           theme))}}
-          name]
-         [community-view/community-stats-column
-          {:type :list-view}]]
-        (if (= status :gated)
-          [community-view/permission-tag-container
-           {:locked? locked?
-            :tokens  tokens}]
-          [notification-view
-           {:customization-color   customization-color
-            :theme                 theme
-            :muted?                muted
-            :unread-mentions-count unread-mentions-count
-            :unread-messages?      unread-messages?}])]]]]))
-
 (defn- title-color
   [unread-messages? muted theme]
   (cond

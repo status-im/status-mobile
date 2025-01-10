@@ -1,9 +1,5 @@
 (ns status-im.contexts.wallet.add-account.create-account.new-keypair.confirm-backup.style)
 
-(def header-container
-  {:margin-horizontal 20
-   :margin-vertical   12})
-
 (def buttons-container
   {:padding-horizontal 20
    :padding-vertical   12

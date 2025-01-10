@@ -2,7 +2,6 @@
   (:require
     [legacy.status-im.utils.utils :as utils]
     [re-frame.core :as re-frame]
-    [status-im.common.json-rpc.events :as json-rpc]
     [status-im.constants :as constants]
     [utils.ethereum.chain :as chain]
     [utils.re-frame :as rf]))
@@ -22,21 +21,6 @@
     :json-rpc/call [{:method     "stickers_install"
                      :params     [(chain/chain-id db) id]
                      :on-success #()}]}))
-
-(re-frame/reg-fx :stickers/load-packs
- (fn [chain-id]
-   (json-rpc/call {:method     "stickers_market"
-                   :params     [chain-id]
-                   :on-success [:stickers/stickers-market-success]})
-   (json-rpc/call {:method     "stickers_installed"
-                   :params     []
-                   :on-success [:stickers/stickers-installed-success]})
-   (json-rpc/call {:method     "stickers_pending"
-                   :params     []
-                   :on-success [:stickers/stickers-pending-success]})
-   (json-rpc/call {:method     "stickers_recent"
-                   :params     []
-                   :on-success [:stickers/stickers-recent-success]})))
 
 (rf/defn pending-pack
   {:events [:stickers/pending-pack]}

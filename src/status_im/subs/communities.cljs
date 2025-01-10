@@ -253,20 +253,6 @@
    (:id (get requests community-id))))
 
 (re-frame/reg-sub
- :communities/has-pending-request-to-join?
- (fn [[_ community-id]]
-   (re-frame/subscribe [:communities/my-pending-request-to-join community-id]))
- (fn [request]
-   (boolean request)))
-
-(re-frame/reg-sub
- :communities/edited-community
- :<- [:communities]
- :<- [:communities/community-id-input]
- (fn [[communities community-id]]
-   (get communities community-id)))
-
-(re-frame/reg-sub
  :communities/current-community
  :<- [:communities]
  :<- [:chats/current-raw-chat]

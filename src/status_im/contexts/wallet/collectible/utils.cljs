@@ -2,16 +2,15 @@
   (:require [status-im.config :as config]
             [status-im.constants :as constants]
             [status-im.contexts.wallet.common.utils.networks :as network-utils]
-            [taoensso.timbre :as log]))
+            [taoensso.timbre :as log]
+            [utils.number :as utils.number]))
 
 (defn collectible-balance
-  [collectible]
-  (let [balance (-> collectible
-                    :ownership
-                    first
-                    :balance
-                    js/parseInt)]
-    (if (js/Number.isNaN balance) 0 balance)))
+  ([{:keys [ownership]} address]
+   (->> ownership
+        (some #(when (= address (:address %))
+                 (:balance %)))
+        utils.number/parse-int)))
 
 (def supported-collectible-types
   #{"image/jpeg"
@@ -69,3 +68,14 @@
         contract-address (-> id :contract-id :address)
         token-id         (-> id :token-id)]
     (str chain-id contract-address token-id)))
+
+(defn remove-duplicates-in-ownership
+  [ownership]
+  (->> ownership
+       (reduce (fn [acc {:keys [address timestamp] :as owner}]
+                 (let [existing-owner (get acc address)]
+                   (if (or (nil? existing-owner) (> timestamp (:timestamp existing-owner)))
+                     (assoc acc address owner)
+                     acc)))
+               {})
+       vals))

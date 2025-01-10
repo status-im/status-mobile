@@ -192,7 +192,7 @@
 
 (rf/defn share-logs-file
   {:events [::share-logs-file]}
-  [{:keys [db] :as cofx} archive-uri]
+  [cofx archive-uri]
   (rf/merge
    cofx
    (dialog-closed)
@@ -202,9 +202,9 @@
 
 (rf/defn details
   {:events [:logging/report-details]}
-  [{:keys [db]} key value]
+  [{:keys [db]} log-key value]
   {:db (-> db
-           (assoc-in [:bug-report/details key] value)
+           (assoc-in [:bug-report/details log-key] value)
            (dissoc :bug-report/description-error))})
 
 (def min-description-lenght 6)
@@ -218,7 +218,7 @@
 
 (rf/defn submit-report
   {:events [:logging/submit-report]}
-  [{:keys [db] :as cofx} details steps]
+  [{:keys [db] :as cofx}]
   (if-let [error (validate-description db)]
     {:db (assoc db :bug-report/description-error error)}
     (rf/merge
@@ -247,7 +247,7 @@
 
 (rf/defn submit-gh-issue
   {:events [:logging/submit-gh-issue]}
-  [{:keys [db] :as cofx} details steps]
+  [{:keys [db] :as cofx}]
   (rf/merge
    cofx
    {:db (dissoc db :bug-report/details)}

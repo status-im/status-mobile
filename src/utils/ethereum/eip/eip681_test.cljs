@@ -105,19 +105,6 @@
           :function-name      "transfer"
           :function-arguments {:address "gimme.eth" :uint256 "1"}})))
 
-(def all-tokens
-  {:mainnet {"0x744d70fdbe2ba4cf95131626614a1763df805b9e" {:address
-                                                           "0x744d70fdbe2ba4cf95131626614a1763df805b9e"
-                                                           :name "Status Network Token"
-                                                           :symbol :SNT
-                                                           :decimals 18}}
-   :sepolia {"0xE452027cdEF746c7Cd3DB31CB700428b16cD8E51"
-             {:address
-              "0xE452027cdEF746c7Cd3DB31CB700428b16cD8E51"
-              :name "Status Test Token"
-              :symbol :STT
-              :decimals 18}}})
-
 (deftest generate-uri-test
   (is (= nil (eip681/generate-uri nil nil)))
   (is (= "ethereum:0x89205a3a3b2a69de6dbf7f01ed13b2108b2c43e7"

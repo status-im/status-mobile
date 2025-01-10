@@ -31,11 +31,6 @@
           :color               colors/white
           :text-align-vertical :top}))
 
-(def label-texts-container
-  {:flex-direction :row
-   :height         18
-   :margin-bottom  8})
-
 (def button-paste
   {:margin-top 8})
 

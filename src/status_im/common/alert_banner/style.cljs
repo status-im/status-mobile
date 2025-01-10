@@ -2,10 +2,6 @@
 
 (def border-radius 20)
 
-(defn container
-  [background-color]
-  {:background-color background-color})
-
 (def second-banner-wrapper
   {:margin-top              (- border-radius)
    :overflow                :hidden

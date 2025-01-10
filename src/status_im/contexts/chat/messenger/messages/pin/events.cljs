@@ -97,7 +97,7 @@
 (rf/defn send-pin-message
   "Pin message, rebuild pinned messages list"
   {:events [:pin-message/send-pin-message]}
-  [{:keys [db] :as cofx} {:keys [chat-id message-id pinned remote-only?] :as pin-message}]
+  [cofx {:keys [remote-only?] :as pin-message}]
   (rf/merge cofx
             (when-not remote-only? (send-pin-message-locally pin-message))
             (data-store.pin-messages/send-pin-message {:chat-id    (pin-message :chat-id)

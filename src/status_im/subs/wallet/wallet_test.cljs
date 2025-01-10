@@ -500,58 +500,6 @@
         :tokens                    tokens-0x2})
       (rf/sub [sub-name])))))
 
-(h/deftest-sub :wallet/accounts-with-current-asset
-  [sub-name]
-  (testing "returns the accounts list with the current asset using token-symbol"
-    (swap! rf-db/app-db
-      #(-> %
-           (assoc-in [:wallet :accounts] accounts-with-tokens)
-           (assoc-in [:wallet :ui :send :token-symbol] "ETH")))
-    (let [result (rf/sub [sub-name])]
-      (is (match? result
-                  [{:tokens                    [{:symbol             "ETH"
-                                                 :balances-per-chain {1 {:raw-balance "100"}}}
-                                                {:symbol             "SNT"
-                                                 :balances-per-chain {1 {:raw-balance "100"}}}]
-                    :network-preferences-names #{}
-                    :customization-color       nil
-                    :operable?                 true
-                    :operable                  :fully
-                    :address                   "0x1"}]))))
-
-  (testing "returns the accounts list with the current asset using token"
-    (swap! rf-db/app-db
-      #(-> %
-           (assoc-in [:wallet :accounts] accounts-with-tokens)
-           (assoc-in [:wallet :ui :send :token] {:symbol "ETH"})))
-    (let [result (rf/sub [sub-name])]
-      (is (match? result
-                  [{:tokens                    [{:symbol             "ETH"
-                                                 :balances-per-chain {1 {:raw-balance "100"}}}
-                                                {:symbol             "SNT"
-                                                 :balances-per-chain {1 {:raw-balance "100"}}}]
-                    :network-preferences-names #{}
-                    :customization-color       nil
-                    :operable?                 true
-                    :operable                  :fully
-                    :address                   "0x1"}]))))
-
-  (testing
-    "returns the full accounts list with the current asset using token-symbol if each account has the asset"
-    (swap! rf-db/app-db
-      #(-> %
-           (assoc-in [:wallet :accounts] accounts-with-tokens)
-           (assoc-in [:wallet :ui :send :token-symbol] "SNT")))
-    (let [result (rf/sub [sub-name])]
-      (is (match? result (vals accounts-with-tokens)))))
-
-  (testing "returns the accounts list when there is no current asset"
-    (swap! rf-db/app-db
-      #(-> %
-           (assoc-in [:wallet :accounts] accounts-with-tokens)))
-    (let [result (rf/sub [sub-name])]
-      (is (match? result (vals accounts-with-tokens))))))
-
 (h/deftest-sub :wallet/network-preference-details
   [sub-name]
   (testing "returns current viewing account address"

@@ -1,9 +1,7 @@
 (ns status-im.contexts.wallet.bridge.flow-config)
 
 (def steps
-  [{:screen-id  :screen/wallet.select-from
-    :skip-step? (fn [db] (some? (get-in db [:wallet :current-viewing-account-address])))}
-   {:screen-id  :screen/wallet.bridge-select-asset
+  [{:screen-id  :screen/wallet.bridge-select-asset
     :skip-step? (fn [db] (some? (get-in db [:wallet :ui :send :token])))}
    {:screen-id  :screen/wallet.bridge-to
     :skip-step? (fn [db] (some? (get-in db [:wallet :ui :send :bridge-to-chain-id])))}

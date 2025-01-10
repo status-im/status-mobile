@@ -1,7 +1,6 @@
 (ns status-im.subs.chats
   (:require
     [clojure.string :as string]
-    [legacy.status-im.group-chats.db :as group-chats.db]
     [re-frame.core :as re-frame]
     [status-im.constants :as constants]
     [status-im.contexts.chat.events :as chat.events]
@@ -53,6 +52,11 @@
  (fn [[{:keys [chats]}] [_ community-id chat-id]]
    (get chats (string/replace chat-id community-id ""))))
 
+(defn member?
+  [public-key {:keys [members contacts users]}]
+  (let [members-list (into #{} (concat (keys users) contacts (map #(:id %) members)))]
+    (contains? members-list public-key)))
+
 (re-frame/reg-sub
  :chats/home-list-chats
  :<- [:chats/chats]
@@ -61,7 +65,7 @@
  (fn [[chats active-chats my-public-key]]
    (reduce #(if-let [item (get chats %2)]
               (let [group-chat-member? (and (chat.events/group-chat? item)
-                                            (group-chats.db/member? my-public-key item))]
+                                            (member? my-public-key item))]
                 (conj %1
                       (assoc item
                              :group-chat-member?
@@ -75,12 +79,6 @@
  :<- [:chats/chats]
  (fn [chats [_ chat-id]]
    (get chats chat-id)))
-
-(re-frame/reg-sub
- :chats/chat-members-by-id
- :<- [:chats/chats]
- (fn [chats [_ chat-id]]
-   (get-in chats [chat-id :members])))
 
 (re-frame/reg-sub
  :chats/muted
@@ -137,7 +135,7 @@
 
 
        (and (chat.events/group-chat? current-chat)
-            (group-chats.db/member? my-public-key current-chat))
+            (member? my-public-key current-chat))
        (assoc :able-to-send-message? true
               :member?               true)
 
@@ -291,13 +289,6 @@
  (fn [{:keys [metadata]}]
    (:editing-message metadata)))
 
-(re-frame/reg-sub
- :chats/sending-audio
- :<- [:chats/current-chat-id]
- :<- [:chat/inputs]
- (fn [[chat-id inputs]]
-   (get-in inputs [chat-id :audio])))
-
 (defn filter-selected-contacts
   [selected-contacts contacts]
   (filter #(:added? (contacts %)) selected-contacts))
@@ -308,12 +299,6 @@
  :<- [:contacts/contacts]
  (fn [[selected-contacts contacts]]
    (count (filter-selected-contacts selected-contacts contacts))))
-
-(re-frame/reg-sub
- :selected-participants-count
- :<- [:selected-participants]
- (fn [selected-participants]
-   (count selected-participants)))
 
 (defn filter-contacts
   [selected-contacts active-contacts]
@@ -333,13 +318,6 @@
    (filter #(= (:chat-id %) chat-id) (vals invitations))))
 
 (re-frame/reg-sub
- :group-chat/pending-invitations-by-chat-id
- (fn [[_ chat-id] _]
-   [(re-frame/subscribe [:group-chat/invitations-by-chat-id chat-id])])
- (fn [[invitations]]
-   (filter #(= constants/invitation-state-requested (:state %)) invitations)))
-
-(re-frame/reg-sub
  :chat/mention-suggestions
  :<- [:chats/current-chat-id]
  :<- [:chats/mention-suggestions]
@@ -351,24 +329,6 @@
  :<- [:chat/link-previews]
  (fn [previews]
    (get previews :unfurled)))
-
-(re-frame/reg-sub
- :chats/status-link-previews-unfurled
- :<- [:chat/status-link-previews]
- (fn [previews]
-   (:unfurled previews)))
-
-(re-frame/reg-sub
- :chats/link-previews?
- :<- [:chats/link-previews-unfurled]
- (fn [previews]
-   (boolean (seq previews))))
-
-(re-frame/reg-sub
- :chats/status-link-previews?
- :<- [:chats/status-link-previews-unfurled]
- (fn [status-link-previews]
-   (boolean (seq status-link-previews))))
 
 (re-frame/reg-sub
  :camera-roll/total-photos-count-android

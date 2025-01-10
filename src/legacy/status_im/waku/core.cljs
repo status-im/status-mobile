@@ -16,7 +16,7 @@
 
 (rf/defn set-input
   {:events [:wakuv2.ui/input-changed]}
-  [{:keys [db] :as cofx} input-key value]
+  [{:keys [db]} input-key value]
   {:db (assoc-in db
         [:wakuv2-nodes/manage input-key]
         {:value value
@@ -81,7 +81,7 @@
 
 (rf/defn save-all-pressed
   {:events [:wakuv2.ui/save-all-pressed]}
-  [{:keys [db] :as cofx}]
+  [_cofx]
   {:ui/show-confirmation
    {:title (i18n/label :t/close-app-title)
     :content (i18n/label :t/wakuv2-change-nodes)
@@ -92,7 +92,7 @@
 
 (rf/defn save-all
   {:events [:wakuv2.ui/save-all-confirmed]}
-  [{:keys [db] :as cofx}]
+  [{:keys [db]}]
   (let [new-nodes (->> (:wakuv2-nodes/list db)
                        vals
                        (map #(vector (:name %1) (:address %1)))

@@ -6,12 +6,6 @@
 (def wrapper
   {:flex 1})
 
-(styles/def installation-item
-  {:flex-direction :row
-   :align-items    :center
-   :ios            {:height 64}
-   :android        {:height 56}})
-
 (def installation-list
   {:padding-horizontal 16
    :flex               1})

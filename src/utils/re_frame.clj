@@ -29,7 +29,6 @@
   - TODO: add suport for `prepost-map?` (don't forget to add it to arglist)
   - TODO: add validation of macro parameters"
   {:arglists      '([name doc-string? attr-map? [params*] body])
-   :deprecated    true
    :superseded-by "utils.re-frame/reg-event-fx"}
   [name & fdecl]
   (let [m             (if (string? (first fdecl))

@@ -19,8 +19,6 @@
     [status-im.constants :as constants]
     [status-im.contexts.chat.events :as chat.events]
     [status-im.navigation.events :as navigation]
-    [taoensso.timbre :as log]
-    [utils.address :as address]
     [utils.debounce :as debounce]
     [utils.ens.core :as utils.ens]
     [utils.ethereum.chain :as chain]
@@ -139,13 +137,11 @@
   {:events [:browser/delete-bookmark]}
   [{:keys [db] :as cofx}
    url]
-  (let [old-bookmark     (get-in db [:bookmarks/bookmarks url])
-        removed-bookmark (merge old-bookmark {:removed true})]
-    (rf/merge cofx
-              {:db            (update db :bookmarks/bookmarks dissoc url)
-               :json-rpc/call [{:method     "wakuext_removeBookmark"
-                                :params     [url]
-                                :on-success #()}]})))
+  (rf/merge cofx
+            {:db            (update db :bookmarks/bookmarks dissoc url)
+             :json-rpc/call [{:method     "wakuext_removeBookmark"
+                              :params     [url]
+                              :on-success #()}]}))
 
 (defn can-go-back?
   [{:keys [history-index]}]
@@ -357,42 +353,10 @@
                 :id      (int id)
                 :result  result}}})
 
-(defn utf8-to-hex
-  [s]
-  (let [hex (native-module/utf8-to-hex (str s))]
-    (if (empty? hex)
-      nil
-      hex)))
-
-(defn normalize-message
-  "NOTE (andrey) there is no spec for this, so this implementation just to be compatible with MM"
-  [message]
-  (if (string/starts-with? message "0x")
-    message
-    (utf8-to-hex message)))
-
-(defn normalize-sign-message-params
-  "NOTE (andrey) we need this function, because params may be mixed up"
-  [params typed?]
-  (let [[first-param second-param] params]
-    (when (and (string? first-param) (string? second-param))
-      (cond
-        (address/address? first-param)
-        [first-param (if typed? second-param (normalize-message second-param))]
-        (address/address? second-param)
-        [second-param (if typed? first-param (normalize-message first-param))]))))
-
 (rf/defn send-to-bridge
   {:events [:browser.callback/call-rpc]}
   [_ message]
   {:browser/send-to-bridge message})
-
-(defn web3-sign-message?
-  [method]
-  (#{constants/web3-sign-typed-data constants/web3-sign-typed-data-v3 constants/web3-sign-typed-data-v4
-     constants/web3-personal-sign
-     constants/web3-eth-sign constants/web3-keycard-sign-typed-data}
-   method))
 
 (rf/defn handle-no-permissions
   [cofx {:keys [method id]} message-id]
@@ -485,18 +449,6 @@
        (.injectJavaScript webview msg)))))
 
 (re-frame/reg-fx
- :browser/call-rpc
- (fn [[payload callback]]
-   (native-module/call-rpc
-    (types/clj->json payload)
-    (fn [response]
-      (if (= "" response)
-        (do
-          (log/warn :web3-response-error)
-          (callback "web3-response-error" nil))
-        (callback nil (.parse js/JSON response)))))))
-
-(re-frame/reg-fx
  :browser/show-browser-selection
  (fn [link]
    (js/setTimeout #(list-selection/browse link) 500)))
@@ -548,8 +500,8 @@
 
 (rf/defn lock-pressed
   {:events [:browser.ui/lock-pressed]}
-  [cofx secure?]
-  (update-browser-option cofx :show-tooltip (if secure? :secure :not-secure)))
+  [cofx is-secure?]
+  (update-browser-option cofx :show-tooltip (if is-secure? :secure :not-secure)))
 
 (rf/defn close-tooltip-pressed
   {:events [:browser.ui/close-tooltip-pressed]}

@@ -1,9 +1,5 @@
 (ns legacy.status-im.utils.mobile-sync)
 
-(defn cellular?
-  [network-type]
-  (= network-type "cellular"))
-
 (defn syncing-allowed?
   [db]
   (let [network                              (:network/type db)

@@ -1,39 +1,26 @@
-[comment]: # (Please replace ... with your information. Remove < and >)
 [comment]: # (To auto-close issue on merge, please insert the related issue number after # i.e fixes #566)
-
-If you submit PR for issue with bounty then write here Fixes #NN where NN is issue number
-
-*otherwise*
-
 fixes #...
 
-### Summary
-
+## Summary
 [comment]: # (Summarise the problem and how the pull request solves it)
 ...
 
-<!-- (Optional, remove if no changes to documentation) -->
-Documentation change PR (review please): https://github.com/status-im/status.im/pull/xxx
+## Review notes
+[comment]: # (Optional. Specify if something in particular should be looked at, or ignored, during review)
 
-### Review notes
-<!-- (Optional. Specify if something in particular should be looked at, or ignored, during review) -->
+## Testing notes
+[comment]: # (Optional)
 
-### Testing notes
-<!-- (Optional) -->
-
-#### Platforms
-<!-- (Optional. Specify which platforms should be tested) -->
+### Platforms
+[comment]: # (Optional. Specify which platforms should be tested)
 
 - Android
 - iOS
-- macOS
-- Linux
-- Windows
 
-#### Areas that maybe impacted
-<!-- (Optional. Specify if some specific areas has to be tested, for example 1-1 chats) -->
+### Areas that may be impacted
+[comment]: # (Optional. Specify if some specific areas need to be tested, such as 1-1 chats)
 
-##### Functional
+#### Functional
 
 - 1-1 chats
 - public chats
@@ -48,32 +35,27 @@ Documentation change PR (review please): https://github.com/status-im/status.im/
 - fleet
 - bootnodes
 
-##### Non-functional
+#### Non-functional
 
 - battery performance
 - CPU performance / speed of the app
 - network consumption
 
-### Steps to test
-<!-- (Specify exact steps to test if there are such) -->
+## Steps to test
+[comment]: #  (Specify exact steps to test if there are such)
 
 - Open Status
 - ...
 - Step 3, etc.
 
-<!-- (PRs will only be accepted if squashed into single commit.) -->
 
-### Before and after screenshots comparison
+[comment]: # (Can be ready or wip)
+status: ready
 
-| Figma (if available) | iOS (if available)    | Android (if available)
-| --- | --- | --- |
-| Please embed Image/Video here of the before and after.  | Please embed Image/Video here of the before and after.  | Please embed Image/Video here of the before and after. |
-
-status: ready <!-- Can be ready or wip -->
 
 <!-- Uncomment this section for status-go upgrade/dogfooding pull requests
 
-- Specify potentially impacted user flows in _Areas that maybe impacted*.
+- Specify potentially impacted user flows in _Areas that may be impacted*.
 - Ensure that _Steps to test_ is filled in.
 
 ### Risk

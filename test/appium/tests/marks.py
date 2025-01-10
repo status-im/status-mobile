@@ -1,10 +1,6 @@
 import pytest
 
-testrail_case_id = pytest.mark.testrail_case_id
-testrail_id = pytest.mark.testrail_id  # atomic tests
-critical = pytest.mark.critical
-medium = pytest.mark.medium
-# new ui
+testrail_id = pytest.mark.testrail_id
 nightly = pytest.mark.nightly
 smoke = pytest.mark.smoke
 

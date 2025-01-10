@@ -1,8 +1,7 @@
 (ns react-native.permissions
   (:require
     ["react-native-permissions" :refer
-     [check openSettings PERMISSIONS requestMultiple requestNotifications
-      RESULTS]]
+     [check PERMISSIONS requestMultiple requestNotifications RESULTS]]
     [react-native.platform :as platform]
     [taoensso.timbre :as log]))
 
@@ -46,8 +45,6 @@
   (-> (check (get permissions-map permission))
       (.then #(on-result (not (#{(.-BLOCKED RESULTS) (.-DENIED RESULTS)} %))))
       (.catch #(on-error %))))
-
-(def open-settings openSettings)
 
 (defn request-notifications
   "`notification-options` is only used on iOS.

@@ -103,12 +103,6 @@
    public-key))
 
 (re-frame/reg-sub
- :profile/webview-debug
- :<- [:profile/profile]
- (fn [{:keys [webview-debug]}]
-   webview-debug))
-
-(re-frame/reg-sub
  :profile/light-client-enabled?
  :<- [:profile/profile]
  (fn [profile]
@@ -119,6 +113,12 @@
  :<- [:profile/profile]
  (fn [profile]
    (get-in profile [:wakuv2-config :EnableStoreConfirmationForMessagesSent])))
+
+(re-frame/reg-sub
+ :profile/peer-syncing-enabled?
+ :<- [:profile/profile]
+ (fn [profile]
+   (:peer-syncing-enabled? profile)))
 
 (re-frame/reg-sub
  :profile/telemetry-enabled?
@@ -133,18 +133,6 @@
    (:test-networks-enabled? profile)))
 
 (re-frame/reg-sub
- :profile/universal-profile-url
- :<- [:profile/profile]
- (fn [profile]
-   (:universal-profile-url profile)))
-
-(re-frame/reg-sub
- :profile/peer-syncing-enabled?
- :<- [:profile/profile]
- (fn [profile]
-   (:peer-syncing-enabled? profile)))
-
-(re-frame/reg-sub
  :profile/compressed-key
  :<- [:profile/profile]
  (fn [{:keys [compressed-key]}]
@@ -155,18 +143,6 @@
  :<- [:profile/profile]
  (fn [current-account]
    (select-keys current-account [:name :preferred-name :public-key :image :images])))
-
-(re-frame/reg-sub
- :multiaccount/preferred-name
- :<- [:profile/profile]
- (fn [{:keys [preferred-name]}]
-   preferred-name))
-
-(re-frame/reg-sub
- :multiaccount/default-account
- :<- [:wallet/accounts]
- (fn [accounts]
-   (first accounts)))
 
 (re-frame/reg-sub
  :sign-in-enabled?
@@ -205,22 +181,6 @@
  :<- [:dapps-address]
  (fn [[accounts address]]
    (some #(when (= (:address %) address) %) accounts)))
-
-(re-frame/reg-sub
- :account-by-address
- :<- [:profile/wallet-accounts]
- (fn [accounts [_ address]]
-   (when (string? address)
-     (some #(when (= (string/lower-case (:address %))
-                     (string/lower-case address))
-              %)
-           accounts))))
-
-(re-frame/reg-sub
- :accounts-without-watch-only
- :<- [:profile/wallet-accounts]
- (fn [accounts]
-   (filter #(not= (:type %) :watch) accounts)))
 
 (re-frame/reg-sub
  :visible-accounts-without-watch-only
@@ -271,11 +231,6 @@
  :<- [:profile/profile]
  (fn [{:keys [preview-privacy?]}]
    (boolean preview-privacy?)))
-
-(re-frame/reg-sub :profile/installation-id
- :<- [:profile/profile]
- (fn [{:keys [installation-id]}]
-   installation-id))
 
 (defn- replace-multiaccount-image-uri
   [profile ens-names port font-file avatar-opts theme]
@@ -350,34 +305,8 @@
    (get profiles key-uid)))
 
 (re-frame/reg-sub
- :profile/login-processing
- :<- [:profile/login]
- (fn [{:keys [processing]}]
-   processing))
-
-(re-frame/reg-sub
  :profile/recovery-phrase-backed-up?
  :<- [:profile/profile]
  (fn [profile]
    (not (boolean (seq (:mnemonic profile))))))
 
-;; LINK PREVIEW
-;; ========================================================================================================
-
-(re-frame/reg-sub
- :link-preview/cache
- :<- [:profile/profile]
- (fn [multiaccount [_ link]]
-   (get-in multiaccount [:link-previews-cache link])))
-
-(re-frame/reg-sub
- :link-preview/enabled-sites
- :<- [:profile/profile]
- (fn [multiaccount]
-   (get multiaccount :link-previews-enabled-sites)))
-
-(re-frame/reg-sub
- :link-preview/link-preview-request-enabled
- :<- [:profile/profile]
- (fn [multiaccount]
-   (get multiaccount :link-preview-request-enabled)))

@@ -101,7 +101,7 @@
 
 (rf/defn update-visibility-status
   {:events [:visibility-status-updates/update-visibility-status]}
-  [{:keys [db] :as cofx} status-type]
+  [{:keys [db]} status-type]
   {:db            (update-in db
                              [:profile/profile :current-user-visibility-status]
                              merge
@@ -113,10 +113,10 @@
 
 (rf/defn send-visibility-status-updates?
   {:events [:visibility-status-updates/send-visibility-status-updates?]}
-  [cofx val]
+  [cofx value]
   (multiaccounts.update/multiaccount-update cofx
                                             :send-status-updates?
-                                            val
+                                            value
                                             {}))
 
 (rf/defn visibility-status-option-pressed
@@ -142,7 +142,7 @@
 
 (rf/defn delayed-visibility-status-update
   {:events [:visibility-status-updates/delayed-visibility-status-update]}
-  [{:keys [db]} status-type]
+  [_ status-type]
   {:dispatch-later
    [{:ms 200
      :dispatch
@@ -150,13 +150,13 @@
 
 (rf/defn peers-summary-change
   [{:keys [db] :as cofx} peers-count]
-  (let [send-visibility-status-updates?
+  (let [send-updates?
         (get-in db [:profile/profile :send-status-updates?])
         status-type
         (get-in db [:profile/profile :current-user-visibility-status :status-type])]
     (when (and
            (> peers-count 0)
-           send-visibility-status-updates?
+           send-updates?
            (= status-type constants/visibility-status-inactive))
       (rf/merge cofx
                 {:dispatch-later [{:ms 1000

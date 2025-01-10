@@ -3,13 +3,6 @@
 
 (def avatar {:width 88 :margin-top 12 :margin-left 20})
 
-(def hole
-  {:y            (- 80 32)
-   :x            (+ (- 80 32) 8)
-   :width        32
-   :height       32
-   :borderRadius 10})
-
 (def camera {:position :absolute :right 0 :bottom 0})
 
 (defn color-label

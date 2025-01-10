@@ -13,7 +13,3 @@
   {:padding-top        60
    :margin-bottom      12
    :padding-horizontal 20})
-
-(def shell-button
-  {:position :absolute
-   :bottom   12})

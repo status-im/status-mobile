@@ -1,10 +1,9 @@
-import hmac
 import json
 import os
 import re
 import urllib
-from hashlib import md5
 
+from support.lambda_test import get_session_info
 from support.test_data import SingleTestData
 
 
@@ -12,8 +11,6 @@ class BaseTestReport:
     TEST_REPORT_DIR = "%s/../report" % os.path.dirname(os.path.abspath(__file__))
 
     def __init__(self):
-        self.sauce_username = os.environ.get('SAUCE_USERNAME')
-        self.sauce_access_key = os.environ.get('SAUCE_ACCESS_KEY')
         self.init_report()
 
     def init_report(self):
@@ -97,36 +94,14 @@ class BaseTestReport:
                     failed.append(test)
         return passed, failed, xfailed
 
-    def get_sauce_token(self, job_id):
-        return hmac.new(bytes(self.sauce_username + ":" + self.sauce_access_key, 'latin-1'),
-                        bytes(job_id, 'latin-1'), md5).hexdigest()
-
-    def get_sauce_job_url(self, job_id, first_command=0):
-        token = self.get_sauce_token(job_id)
-        from tests.conftest import apibase
-        url = 'https://%s/jobs/%s?auth=%s' % (apibase, job_id, token)
-        if first_command > 0:
-            url += "#%s" % first_command
-        return url
+    def get_lambda_test_job_url(self, job_id, first_command=0):
+        return "https://appautomation.lambdatest.com/test?testID=" + get_session_info(job_id)['test_id']
 
     @staticmethod
     def get_jenkins_link_to_rerun_e2e(branch_name="develop", pr_id="", tr_case_ids=""):
         branch_name = urllib.parse.quote(branch_name)
         return 'https://ci.status.im/job/status-mobile/job/e2e/job/status-app-prs-rerun/parambuild/' \
                '?BRANCH_NAME=%s&PR_ID=%s&APK_NAME=%s.apk&TR_CASE_IDS=%s' % (branch_name, pr_id, pr_id, tr_case_ids)
-
-    def get_sauce_final_screenshot_url(self, job_id):
-        return 'https://media.giphy.com/media/9M5jK4GXmD5o1irGrF/giphy.gif'
-        # temp blocked, no sense with groups
-        # from tests.conftest import sauce, apibase
-        # token = self.get_sauce_token(job_id)
-        # username = sauce.accounts.account_user.get_active_user().username
-        # for _ in range(10):
-        #     try:
-        #         scr_number = sauce.jobs.get_job_assets(username=username, job_id=job_id)['screenshots'][-1]
-        #         return 'https://assets.%s/jobs/%s/%s?auth=%s' % (apibase, job_id, scr_number, token)
-        #     except SauceException:
-        #         time.sleep(3)
 
     @staticmethod
     def is_test_successful(test):

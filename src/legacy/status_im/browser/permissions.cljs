@@ -22,7 +22,7 @@
                                            :icon        :main-icons/wallet}})
 
 (rf/defn permission-yield-control
-  [{:keys [db] :as cofx} dapp-name permission message-id params]
+  [cofx dapp-name permission message-id]
   (cond
     (= permission constants/dapp-permission-qr-code)
     (rf/merge (assoc-in cofx [:db :browser/options :yielding-control?] true)
@@ -33,7 +33,7 @@
                                                          :message-id message-id}}))))
 
 (rf/defn permission-show-permission
-  [{:keys [db] :as cofx} dapp-name permission message-id yield-control?]
+  [{:keys [db]} dapp-name permission message-id yield-control?]
   {:db (assoc-in db
         [:browser/options :show-permission]
         {:requested-permission permission
@@ -51,7 +51,7 @@
 (rf/defn send-response-to-bridge
   "Send response to the bridge. If the permission is allowed, send data associated
    with the permission"
-  [{:keys [db] :as cofx} permission message-id allowed? data]
+  [_cofx permission message-id allowed? data]
   {:browser/send-to-bridge (cond-> {:type       constants/api-response
                                     :isAllowed  allowed?
                                     :permission permission
@@ -108,13 +108,13 @@
       (let [pending-permissions (get-in db [:browser/options :pending-permissions])
             next-permission     (last pending-permissions)
             new-cofx            (update-in cofx [:db :browser/options :pending-permissions] butlast)]
-        (when-let [{:keys [yield-control? permission message-id allowed? params]} next-permission]
+        (when-let [{:keys [yield-control? permission message-id allowed?]} next-permission]
           (if (and yield-control? allowed?)
-            (permission-yield-control new-cofx dapp-name permission message-id params)
+            (permission-yield-control new-cofx dapp-name permission message-id)
             (permission-show-permission new-cofx dapp-name permission message-id yield-control?)))))))
 
 (rf/defn send-response-and-process-next-permission
-  [{:keys [db] :as cofx} dapp-name requested-permission message-id]
+  [cofx dapp-name requested-permission message-id]
   (rf/merge cofx
             (send-response-to-bridge requested-permission
                                      message-id
@@ -126,12 +126,12 @@
   "Add permission to set of allowed permission and process next permission"
   {:events [:browser.permissions.ui/dapp-permission-allowed]}
   [{:keys [db] :as cofx}]
-  (let [{:keys [requested-permission message-id dapp-name yield-control? params]}
+  (let [{:keys [requested-permission message-id dapp-name yield-control?]}
         (get-in db [:browser/options :show-permission])]
     (rf/merge (assoc-in cofx [:db :browser/options :show-permission] nil)
               (update-dapp-permissions dapp-name requested-permission true)
               (if yield-control?
-                (permission-yield-control dapp-name requested-permission message-id params)
+                (permission-yield-control dapp-name requested-permission message-id)
                 (send-response-and-process-next-permission dapp-name requested-permission message-id)))))
 
 (rf/defn deny-permission

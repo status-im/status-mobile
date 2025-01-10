@@ -7,9 +7,6 @@
 (def heading-subtitle {:color colors/white})
 (def heading-title (assoc heading-subtitle :margin-bottom 8))
 
-(def info-message
-  {:margin-top 8})
-
 (def space-between-inputs {:height 16})
 
 (def password-tips

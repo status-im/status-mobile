@@ -4,7 +4,7 @@
                 legacy.status-im.utils.views/letsubs clojure.core/let
                 reagent.core/with-let                clojure.core/let
                 legacy.status-im.utils.fx/defn       clj-kondo.lint-as/def-catch-all
-                utils.re-frame/defn                  clj-kondo.lint-as/def-catch-all
+                utils.re-frame/defn                  clojure.core/defn
                 quo.react/with-deps-check            clojure.core/fn
                 quo.previews.preview/list-comp       clojure.core/for
                 legacy.status-im.utils.styles/def    clojure.core/def
@@ -13,7 +13,29 @@
                 test-helpers.unit/deftest-event      clojure.core/defn
 
                 taoensso.tufte/defnp                 clojure.core/defn}
- :linters      {:case-duplicate-test           {:level :error}
+ :linters      {:clojure-lsp/unused-public-var {:exclude-when-defined-by #{utils.re-frame/defn}
+                                                :exclude                 #{
+                                                                           ;; even if we are not
+                                                                           ;; using color now, we
+                                                                           ;; will need it later
+                                                                           quo.foundations.colors
+
+                                                                           ;; same for funcs from
+                                                                           ;; native-module
+                                                                           native-module.core
+
+                                                                           ;; some funcs used
+                                                                           ;; temporarily during
+                                                                           ;; development
+                                                                           test-helpers.component
+                                                                           test-helpers.unit
+
+                                                                           ;; not sure if unused
+                                                                           ;; functions here should
+                                                                           ;; be removed:
+                                                                           keycard.keycard
+                                                                           react-native.fs}}
+                :case-duplicate-test           {:level :error}
                 :case-quoted-test              {:level :error}
                 :case-symbol-test              {:level :error}
                 :clj-kondo-config              {:level :error}
@@ -40,7 +62,8 @@
                 :equals-true                   {:level :error}
                 :inline-def                    {:level :error}
                 :invalid-arity                 {:skip-args [legacy.status-im.utils.fx/defn
-                                                            utils.re-frame/defn]}
+                                                            utils.re-frame/defn
+                                                            utils.re-frame/merge]}
                 :loop-without-recur            {:level :error}
                 :minus-one                     {:level :error}
                 :misplaced-docstring           {:level :error}
@@ -53,6 +76,8 @@
                 :redundant-do                  {:level :error}
                 :redundant-let                 {:level :error}
                 :refer-all                     {:level :error}
+                ;; ignore error in config itself saying that `:shadowed-fn-param` is unknown
+                #_{:clj-kondo/ignore [:clj-kondo-config]}
                 :shadowed-fn-param             {:level :error}
                 :shadowed-var                  {:level   :error
                                                 ;; We temporarily use :include to define an

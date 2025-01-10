@@ -1,28 +1,6 @@
 (ns legacy.status-im.ethereum.macros
   (:require
-    [clojure.java.io :as io]
-    [clojure.string :as string]))
-
-(defn token-icon-path
-  [path]
-  (fn [el]
-    (let [el   (string/replace el ".png" "")
-          s    (str path el ".png")
-          s-js (str "." s)]
-      (when (.exists (io/file s))
-        [el `(js/require ~s-js)]))))
-
-(defmacro resolve-icons
-  "In react-native arguments to require must be static strings.
-   Resolve all icons at compilation time so no variable is used."
-  [network]
-  (let [path  (str "./resources/images/tokens/" (name network) "/")
-        files (->> (io/file path)
-                   file-seq
-                   (filter #(string/ends-with? % "png"))
-                   (map #(first (string/split (.getName %) #"@")))
-                   distinct)]
-    (into {} (map (token-icon-path path) files))))
+    [clojure.java.io :as io]))
 
 (defn network->icon
   [network]

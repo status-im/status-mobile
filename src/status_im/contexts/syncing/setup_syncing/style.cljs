@@ -18,9 +18,6 @@
    :align-items     :center
    :justify-content :space-between})
 
-(def navigation-bar
-  {:height 56})
-
 (def sync-code
   {:margin-top 20})
 

@@ -13,8 +13,7 @@
 
 (rf/defn summary
   [{:keys [db] :as cofx} peers-summary]
-  (let [previous-summary (:peers-summary db)
-        peers-count      (count peers-summary)]
+  (let [peers-count (count peers-summary)]
     (rf/merge cofx
               {:db (assoc db
                           :peers-summary    peers-summary

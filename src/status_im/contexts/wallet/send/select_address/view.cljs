@@ -176,7 +176,6 @@
                          (rf/dispatch [:wallet/clean-local-suggestions])
                          (rf/dispatch [:wallet/clean-selected-collectible])
                          (rf/dispatch [:wallet/clean-send-address])
-                         (rf/dispatch [:wallet/clean-disabled-from-networks])
                          (rf/dispatch [:wallet/select-address-tab nil])
                          (rf/dispatch [:wallet/clean-current-viewing-account
                                        :ignore-just-complete-transaction]))

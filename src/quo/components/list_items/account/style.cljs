@@ -67,13 +67,6 @@
    :height         22
    :align-items    :center})
 
-(defn account-address
-  [blur? theme]
-  {:height 18
-   :color  (if blur?
-             colors/white-opa-40
-             (colors/theme-colors colors/neutral-50 colors/neutral-40 theme))})
-
 (def title-icon-container
   {:margin-left 4})
 

@@ -289,6 +289,7 @@
   [collectibles]
   (->> collectibles
        (cske/transform-keys transforms/->kebab-case-keyword)
+       (map #(update % :ownership collectible-utils/remove-duplicates-in-ownership))
        (map #(assoc % :unique-id (collectible-utils/get-collectible-unique-id %)))
        vec))
 

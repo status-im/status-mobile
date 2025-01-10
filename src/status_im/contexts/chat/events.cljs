@@ -44,11 +44,6 @@
   ([cofx chat-id]
    (community-chat? (get-chat cofx chat-id))))
 
-(defn active-chat?
-  [cofx chat-id]
-  (let [chat (get-chat cofx chat-id)]
-    (:active chat)))
-
 (defn group-chat?
   ([chat]
    (and (multi-user-chat? chat)
@@ -162,7 +157,7 @@
 
 (rf/defn deactivate-chat
   "Deactivate chat in db, no side effects"
-  [{:keys [db now] :as cofx} chat-id]
+  [{:keys [db] :as cofx} chat-id]
   (rf/merge
    cofx
    {:db            (-> (if (get-in db [:chats chat-id :muted])
@@ -268,7 +263,7 @@
 (rf/defn close-and-remove-chat
   "Closes the chat and removes it from chat list while retaining history, producing all necessary effects for that"
   {:events [:chat.ui/close-and-remove-chat]}
-  [{:keys [db now] :as cofx} chat-id]
+  [cofx chat-id]
   (rf/merge cofx
             {:effects/push-notifications-clear-message-notifications [chat-id]}
             (deactivate-chat chat-id)

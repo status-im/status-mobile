@@ -60,13 +60,13 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
             "Receiver also sets 'thumbs-up' emoji and verifies counter on received message in 1-1 chat")
         message_receiver = self.chat_2.chat_element_by_text(message_from_sender)
         message_receiver.emojis_below_message(emoji="thumbs-up").wait_for_element_text(1, 90)
-        self.chat_2.add_remove_same_reaction(message_from_sender)
+        self.chat_2.add_remove_same_reaction()
         message_receiver.emojis_below_message(emoji="thumbs-up").wait_for_element_text(2)
         message_sender.emojis_below_message(emoji="thumbs-up").wait_for_element_text(2, 90)
 
         self.device_2.just_fyi(
             "Receiver removes 'thumbs-up' emoji and verify that counter will decrease for both users")
-        self.chat_2.add_remove_same_reaction(message_from_sender)
+        self.chat_2.add_remove_same_reaction()
         message_receiver.emojis_below_message(emoji="thumbs-up").wait_for_element_text(1)
         message_sender.emojis_below_message(emoji="thumbs-up").wait_for_element_text(1, 90)
 
@@ -78,21 +78,20 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
         message_sender.emojis_below_message(emoji="love").wait_for_element_text(1, 90)
 
         self.device_1.just_fyi("Sender votes for 'love' reaction. Check reactions counters")
-        self.chat_1.add_remove_same_reaction(message_from_sender, emoji="love")
+        self.chat_1.add_remove_same_reaction(emoji="love")
         message_receiver.emojis_below_message(emoji="thumbs-up").wait_for_element_text(1)
         message_sender.emojis_below_message(emoji="thumbs-up").wait_for_element_text(1)
         message_receiver.emojis_below_message(emoji="love").wait_for_element_text(2, 90)
         message_sender.emojis_below_message(emoji="love").wait_for_element_text(2)
 
         self.device_1.just_fyi("Check emojis info")
-        message_sender.emojis_below_message(emoji="love").long_press_until_element_is_shown(
-            self.chat_1.authors_for_reaction(emoji="love"))
+        message_sender.emojis_below_message(emoji="love").long_press_without_release()
         if not self.chat_1.user_list_element_by_name(
                 self.username_1).is_element_displayed() or not self.chat_1.user_list_element_by_name(
             self.username_2).is_element_displayed():
             self.errors.append("Incorrect users are shown for 'love' reaction.")
 
-        self.chat_1.authors_for_reaction(emoji="thumbs-up").click()
+        self.chat_1.authors_for_reaction(emoji="thumbs-up").double_click()
         if not self.chat_1.user_list_element_by_name(
                 self.username_1).is_element_displayed() or self.chat_1.user_list_element_by_name(
             self.username_2).is_element_displayed():
@@ -146,7 +145,6 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
         url_message = 'Test with link: https://status.im/ here should be nothing unusual.'
         self.chat_1.send_message(url_message)
         self.chat_2.chat_element_by_text(url_message).wait_for_element(60)
-        # self.chat_2.chat_element_by_text(url_message).long_press_element_by_coordinate(rel_x=0.8, rel_y=0.8)
         self.chat_2.quote_message(url_message)
         self.chat_2.send_message(reply)
         replied_message = self.chat_1.chat_element_by_text(reply)
@@ -167,11 +165,17 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
         chat_element = self.chat_2.chat_element_by_text(url_to_open)
         if chat_element.is_element_displayed(120):
             chat_element.click_on_link_inside_message_body()
-            web_view = self.chat_2.open_in_status_button.click()
-            text_element = web_view.element_by_text("a free (libre) open source, mobile OS for Ethereum")
-            sign_in_button = Button(self.chat_2.driver, xpath="//android.view.View[@content-desc='Sign in']")
-            if not text_element.is_element_displayed(30) or not sign_in_button.is_element_displayed(30):
+            self.chat_2.open_in_android_button.click()
+            try:
+                self.chat_2.wait_for_current_package_to_be('com.android.chrome')
+            except TimeoutException:
                 self.errors.append('URL was not opened from 1-1 chat')
+            else:
+                self.chat_2.element_by_text("No thanks").click_if_shown()
+                text_element = self.chat_2.element_by_text("a free (libre) open source, mobile OS for Ethereum")
+                sign_in_button = Button(self.chat_2.driver, xpath="//android.view.View[@content-desc='Sign in']")
+                if not text_element.is_element_displayed() or not sign_in_button.is_element_displayed():
+                    self.errors.append('URL was not opened from 1-1 chat')
         else:
             self.errors.append("Message with URL was not received")
 
@@ -231,8 +235,7 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
             self.errors.append("Can pin more than 3 messages in chat")
         else:
             unpin_element = self.chat_1.element_by_translation_id('unpin-from-chat')
-            self.chat_1.pinned_messages_list.message_element_by_text(self.message_2).long_press_element(
-                element_to_release_on=unpin_element)
+            self.chat_1.pinned_messages_list.message_element_by_text(self.message_2).long_press_without_release()
             self.home_1.just_fyi("Unpin one message so that another could be pinned")
             unpin_element.click_until_absense_of_element(desired_element=unpin_element)
             self.chat_1.pin_message(self.message_4, 'pin-to-chat')
@@ -253,7 +256,7 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
         pinned_message = self.chat_1.pinned_messages_list.message_element_by_text(self.message_4)
 
         unpin_element = self.chat_1.element_by_translation_id("unpin-from-chat")
-        pinned_message.long_press_element(element_to_release_on=unpin_element)
+        pinned_message.long_press_without_release()
         unpin_element.click_until_absense_of_element(unpin_element)
         # try:
         #     self.chat_2.chat_element_by_text(self.message_4).pinned_by_label.wait_for_invisibility_of_element()
@@ -275,7 +278,7 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
     def test_1_1_chat_non_latin_messages_stack_update_profile_photo(self):
         self.home_1.navigate_back_to_home_view()
         self.home_1.profile_button.click()
-        self.profile_1.edit_profile_picture(image_index=2)
+        self.profile_1.edit_profile_picture(image_index=0)
 
         self.chat_2.just_fyi("Send messages with non-latin symbols")
         self.home_1.click_system_back_button()
@@ -314,8 +317,8 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
         self.chat_1.just_fyi("Go back to chat view and checking that profile photo is updated")
         if not self.chat_2.chat_message_input.is_element_displayed():
             self.home_2.get_chat(self.username_1).click()
-        if self.chat_2.chat_element_by_text(message).member_photo.is_element_differs_from_template("member3.png",
-                                                                                                   diff=7):
+        if self.chat_2.chat_element_by_text(message).member_photo.is_element_differs_from_template(
+                "profile_image_in_1_1_chat.png", diff=7):
             self.errors.append("Image of user in 1-1 chat is too different from template!")
         self.errors.verify_no_errors()
 
@@ -414,14 +417,14 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
 
         self.chat_1.just_fyi("Device 1 sends an image")
         image_description = "test image"
-        self.chat_1.send_images_with_description(description=image_description, indexes=[2])
+        self.chat_1.send_images_with_description(description=image_description, indexes=[0])
 
         self.chat_2.just_fyi("Device 2 checks image message")
         if not self.chat_2.chat_element_by_text(image_description).is_element_displayed(30):
             self.chat_2.hide_keyboard_if_shown()
         self.chat_2.chat_element_by_text(image_description).wait_for_visibility_of_element(30)
         if not self.chat_2.chat_element_by_text(
-                image_description).image_in_message.is_element_image_similar_to_template('saucelabs_sauce_chat.png'):
+                image_description).image_in_message.is_element_image_similar_to_template('image_1_chat_view.png'):
             self.errors.append("Not expected image is shown to the receiver.")
 
         for chat in self.chat_1, self.chat_2:
@@ -459,7 +462,7 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
             chat.just_fyi("Check that image is saved in gallery")
             chat.show_images_button.click()
             chat.allow_all_button.click_if_shown()
-            if not chat.get_image_by_index(0).is_element_image_similar_to_template("saucelabs_sauce_gallery.png"):
+            if not chat.get_image_by_index(0).is_element_image_similar_to_template("image_1_gallery_view.png"):
                 self.errors.append(
                     "Image is not saved to gallery for %s." % ("sender" if chat is self.chat_1 else "receiver"))
             chat.click_system_back_button()
@@ -484,7 +487,7 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
         self.chat_2.send_message(message_after_edit_1_1)
         self.chat_2.chat_element_by_text(message_after_edit_1_1).wait_for_status_to_be("Delivered")
         chat_1_element = self.chat_1.chat_element_by_text(message_after_edit_1_1)
-        chat_1_element.long_press_element()
+        chat_1_element.long_press_without_release()
         for action in ("edit", "delete-for-everyone"):
             if self.chat_1.element_by_translation_id(action).is_element_displayed():
                 self.errors.append('Option to %s someone else message available!' % action)
@@ -642,13 +645,13 @@ class TestOneToOneChatMultipleSharedDevicesNewUiTwo(MultipleSharedDeviceTestCase
 
         self.chat_1.just_fyi("Unmute chat")
         self.chat_1.navigate_back_to_home_view()
-        chat.long_press_element()
+        chat.long_press_without_release()
         if self.home_1.mute_chat_button.text != transl["unmute-chat"]:
             self.errors.append("Chat is not muted")
         expected_text = "Muted until you turn it back on"
         if not self.home_1.element_by_text(expected_text).is_element_displayed():
             self.errors.append("Text '%s' is not shown for muted chat" % expected_text)
-        self.home_1.mute_chat_button.click()
+        self.home_1.mute_chat_button.double_click()
 
         unmuted_message = "after unmute"
         self.chat_2.send_message(unmuted_message)
@@ -690,7 +693,7 @@ class TestOneToOneChatMultipleSharedDevicesNewUiTwo(MultipleSharedDeviceTestCase
             chat.click()
         else:
             self.home_2.contacts_tab.click()
-            chat.click()
+            chat.find_element().click()
             self.chat_2.profile_send_message_button.click()
 
         lost_messages = list()

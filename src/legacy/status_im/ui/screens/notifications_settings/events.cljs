@@ -18,7 +18,7 @@
 
 (rf/defn notification-non-contacts
   {:events [:push-notifications/switch-non-contacts]}
-  [{:keys [db] :as cofx} enabled?]
+  [cofx enabled?]
   (let [method (if enabled?
                  "wakuext_enablePushNotificationsFromContactsOnly"
                  "wakuext_disablePushNotificationsFromContactsOnly")]
@@ -32,7 +32,7 @@
 
 (rf/defn notification-block-mentions
   {:events [:push-notifications/switch-block-mentions]}
-  [{:keys [db] :as cofx} enabled?]
+  [cofx enabled?]
   (let [method (if enabled?
                  "wakuext_enablePushNotificationsBlockMentions"
                  "wakuext_disablePushNotificationsBlockMentions")]
@@ -48,7 +48,7 @@
 
 (rf/defn notification-switch
   {:events [:push-notifications/switch]}
-  [{:keys [db] :as cofx} enabled?]
+  [cofx enabled?]
   (rf/merge cofx
             (if enabled?
               {:effects/push-notifications-enable nil}

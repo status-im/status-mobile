@@ -12,53 +12,11 @@
    (get-in mailservers [current-fleet current-mailserver-id :name])))
 
 (re-frame/reg-sub
- :mailserver/connecting?
- :<- [:mailserver/state]
- (fn [state]
-   (#{:connecting :added} state)))
-
-(re-frame/reg-sub
- :mailserver/connection-error?
- :<- [:mailserver/state]
- (fn [state]
-   (#{:error :disconnected} state)))
-
-(re-frame/reg-sub
- :mailserver/fetching?
- :<- [:mailserver/state]
- :<- [:mailserver/pending-requests]
- :<- [:mailserver/connecting?]
- :<- [:mailserver/connection-error?]
- :<- [:mailserver/request-error?]
- (fn [[state pending-requests connecting? connection-error? request-error?]]
-   (and pending-requests
-        (= state :connected)
-        (pos-int? pending-requests)
-        (not (or connecting? connection-error? request-error?)))))
-
-(re-frame/reg-sub
  :mailserver/fleet-mailservers
  :<- [:fleets/current-fleet]
  :<- [:mailserver/mailservers]
  (fn [[current-fleet mailservers]]
    (current-fleet mailservers)))
-
-(re-frame/reg-sub
- :mailserver.edit/connected?
- :<- [:mailserver.edit/mailserver]
- :<- [:mailserver/current-id]
- (fn [[mailserver current-mailserver-id]]
-   (= (get-in mailserver [:id :value])
-      current-mailserver-id)))
-
-(re-frame/reg-sub
- :mailserver.edit/validation-errors
- :<- [:mailserver.edit/mailserver]
- (fn [mailserver]
-   (set (keep
-         (fn [[k {:keys [error]}]]
-           (when error k))
-         mailserver))))
 
 (re-frame/reg-sub
  :mailserver/preferred-id

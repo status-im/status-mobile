@@ -1,17 +1,6 @@
-(ns status-im.contexts.chat.messenger.composer.constants
-  (:require
-    [quo.foundations.typography :as typography]
-    [react-native.platform :as platform]))
-
-(def ^:const bar-container-height 20)
-
-(def ^:const input-height 32)
+(ns status-im.contexts.chat.messenger.composer.constants)
 
 (def ^:const actions-container-height 56)
-
-(def ^:const composer-default-height (+ bar-container-height input-height actions-container-height))
-
-(def ^:const line-height (if platform/ios? 18 (:line-height typography/paragraph-1)))
 
 (def ^:const images-padding-top 12)
 (def ^:const images-padding-bottom 8)

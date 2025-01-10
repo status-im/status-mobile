@@ -14,9 +14,7 @@
   (-> db :wallet :ui :send :token some?))
 
 (def steps
-  [{:screen-id  :screen/wallet.select-from
-    :skip-step? (fn [db] (some? (get-in db [:wallet :current-viewing-account-address])))}
-   {:screen-id  :screen/wallet.select-address
+  [{:screen-id  :screen/wallet.select-address
     :skip-step? (fn [db] (some? (get-in db [:wallet :ui :send :recipient])))}
    {:screen-id  :screen/wallet.select-asset
     :skip-step? (fn [db] (or (token-selected? db) (collectible-selected? db)))}

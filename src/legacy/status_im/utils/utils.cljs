@@ -2,8 +2,6 @@
   (:require
     ["react-native" :as react-native]
     ["react-native-background-timer" :default background-timer]
-    [clojure.string :as string]
-    [goog.string :as gstring]
     [re-frame.core :as re-frame]
     [utils.address :as address]
     [utils.ethereum.eip.eip55 :as eip55]
@@ -71,10 +69,6 @@
   [cb ms]
   (.setTimeout background-timer cb ms))
 
-(defn clear-timeout
-  [id]
-  (.clearTimeout background-timer id))
-
 (defn set-interval
   [cb ms]
   (.setInterval background-timer cb ms))
@@ -90,13 +84,6 @@
      (when (and ms dispatch)
        (set-timeout #(re-frame/dispatch dispatch) ms)))))
 
-(re-frame/reg-fx
- ::clear-timeouts
- (fn [ids]
-   (doseq [id ids]
-     (when id
-       (clear-timeout id)))))
-
 (defn get-shortened-address
   "Takes first and last 4 digits from address including leading 0x
   and adds unicode ellipsis in between"
@@ -108,24 +95,3 @@
   [address]
   (when address
     (get-shortened-address (eip55/address->checksum (address/normalized-hex address)))))
-
-;;TODO (14/11/22 flexsurfer) haven't moved yet
-(defn format-decimals
-  [amount places]
-  (let [decimal-part (get (string/split (str amount) ".") 1)]
-    (if (> (count decimal-part) places)
-      (gstring/format (str "%." places "f") amount)
-      (or (str amount) 0))))
-
-(defn safe-nth
-  [coll index]
-  (when (number? index)
-    (nth coll index)))
-
-(defn svg?
-  [some-string]
-  (string/ends-with? some-string ".svg"))
-
-(defn exclude-svg-resources
-  [lst]
-  (remove svg? lst))
