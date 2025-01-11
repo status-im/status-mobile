@@ -30,22 +30,26 @@
           :always
           (conj [:dispatch-n [[:navigate-back] on-success]]))}))
 
+(defn- profile-update-asked-storage-key [key-uid]
+  (keyword :update-profile-asked key-uid))
 
 (rf/reg-event-fx
  :profile/ask-profile-update
- (fn [_ [pending-event]]
-   {:fx [[:effects.async-storage/set {:update-profile-asked? true}]
-         [:dispatch
-          [:show-bottom-sheet
-           {:content (fn []
-                       [introduce-yourself/sheet {:pending-event pending-event}])}]]]}))
+ (fn [{db :db} [pending-event]]
+   (let [storage-key (-> db :profile/profile :key-uid profile-update-asked-storage-key)]
+     {:fx [[:effects.async-storage/set {storage-key true}]
+           [:dispatch
+            [:show-bottom-sheet
+             {:content (fn []
+                         [introduce-yourself/sheet {:pending-event pending-event}])}]]]})))
 
 (rf/reg-event-fx
  :profile/check-profile-update-prompt
- (fn [_ [pending-event]]
-   {:fx [[:effects.async-storage/get
-          {:keys [:update-profile-asked?]
-           :cb   (fn [{:keys [update-profile-asked?]}]
-                   (rf/dispatch (if update-profile-asked?
-                                  pending-event
-                                  [:profile/ask-profile-update pending-event])))}]]}))
+ (fn [{db :db} [pending-event]]
+   (let [storage-key (-> db :profile/profile :key-uid profile-update-asked-storage-key)]
+     {:fx [[:effects.async-storage/get
+            {:keys [storage-key]
+             :cb   (fn [profile-updated-data]
+                     (rf/dispatch (if (storage-key profile-updated-data)
+                                    pending-event
+                                    [:profile/ask-profile-update pending-event])))}]]})))
