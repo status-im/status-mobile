@@ -238,28 +238,29 @@
                                :new-name?    (and (not= initial-display-name @display-name)
                                                   (seq @display-name))
                                :valid-name?  valid-name?}))]
-        [rn/view {:style style/page-container}
-         [quo/page-nav
-          {:margin-top top
-           :background :blur
-           :icon-name  :i/close
-           :on-press   on-close}]
-         [content
-          {:profile-image        @profile-image
-           :custom-color         @custom-color
-           :display-name         @display-name
-           :validation-msg       @validation-msg
-           :valid-name?          valid-name?
-           :name-too-short?      name-too-short?
-           :picture-picker       picture-picker
-           :initial-display-name initial-display-name
-           :set-scroll           set-scroll
-           :set-scroll-height    set-scroll-height
-           :set-custom-color     set-custom-color
-           :set-display-name     set-display-name
-           :set-validation-msg   set-validation-msg}]
-         [floating-button
-          {:custom-color @custom-color
-           :scroll-y     @scroll-y
-           :on-submit    update-profile
-           :disabled?    disabled?}]]))))
+        [quo/overlay {:type :shell}
+         [rn/view {:style style/page-container}
+          [quo/page-nav
+           {:margin-top top
+            :background :blur
+            :icon-name  :i/close
+            :on-press   on-close}]
+          [content
+           {:profile-image        @profile-image
+            :custom-color         @custom-color
+            :display-name         @display-name
+            :validation-msg       @validation-msg
+            :valid-name?          valid-name?
+            :name-too-short?      name-too-short?
+            :picture-picker       picture-picker
+            :initial-display-name initial-display-name
+            :set-scroll           set-scroll
+            :set-scroll-height    set-scroll-height
+            :set-custom-color     set-custom-color
+            :set-display-name     set-display-name
+            :set-validation-msg   set-validation-msg}]
+          [floating-button
+           {:custom-color @custom-color
+            :scroll-y     @scroll-y
+            :on-submit    update-profile
+            :disabled?    disabled?}]]]))))

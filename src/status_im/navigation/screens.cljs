@@ -1131,8 +1131,8 @@
      :component profiles/view}
 
     {:name      :screen/profile.edit-profile-modal
-     :options   {:theme  :dark
-                 :layout options/onboarding-layout}
+     :metrics   {:track? true}
+     :options   options/transparent-screen-options
      :component edit-profile-modal/view}]
 
    [{:name    :shell
