@@ -30,7 +30,8 @@
           :always
           (conj [:dispatch-n [[:navigate-back] on-success]]))}))
 
-(defn- profile-update-asked-storage-key [key-uid]
+(defn- profile-update-asked-storage-key
+  [key-uid]
   (keyword :update-profile-asked key-uid))
 
 (rf/reg-event-fx
