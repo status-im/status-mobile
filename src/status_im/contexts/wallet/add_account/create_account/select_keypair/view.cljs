@@ -14,8 +14,12 @@
   [masked-seed-phrase]
   (rf/dispatch [:navigate-to :screen/confirm-backup
                 {:masked-seed-phrase masked-seed-phrase
-                 :on-success         #(rf/dispatch [:navigate-to :screen/wallet.keypair-name
-                                                    {:workflow :new-keypair}])}]))
+                 :on-success         (fn []
+                                       (rf/dispatch [:wallet/store-new-seed-phrase
+                                                     {:seed-phrase
+                                                      masked-seed-phrase}])
+                                       (rf/dispatch [:navigate-to :screen/wallet.keypair-name
+                                                     {:workflow :new-keypair}]))}]))
 
 (defn- keypair-options
   []

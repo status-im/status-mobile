@@ -20,7 +20,8 @@
   (rf/dispatch [:navigate-back])
   (rf/dispatch [:open-modal :screen/confirm-backup
                 {:masked-seed-phrase masked-seed-phrase
-                 :on-success         #(rf/dispatch [:keycard/create.phrase-backed-up %])}]))
+                 :on-success         #(rf/dispatch [:keycard/create.phrase-backed-up
+                                                    masked-seed-phrase])}]))
 
 (rf/reg-event-fx :keycard/create.get-phrase
  (fn [{:keys [db]}]
