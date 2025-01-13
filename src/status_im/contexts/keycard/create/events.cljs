@@ -62,26 +62,25 @@
  (fn [{:keys [db]} [pin]]
    {:db (assoc-in db [:keycard :create :pin] pin)}))
 
+(rf/reg-event-fx :keycard/create.on-application-info-error
+ (fn [{:keys [db]} [error]]
+   (if (or (= error :keycard/error.keycard-blank)
+           (and (get-in db [:keycard :application-info :initialized?])
+                (= error :keycard/error.keycard-wrong-profile)))
+     (rf/dispatch [:keycard/create.continue])
+     (rf/dispatch [:keycard/on-application-info-error error]))))
+
 (rf/reg-event-fx :keycard/create.start
  (fn [_]
    {:fx [[:dispatch
           [:keycard/connect
-           {:on-error
-            (fn [error]
-              (if (= error :keycard/error.keycard-blank)
-                (rf/dispatch [:keycard/create.continue])
-                (rf/dispatch [:keycard/on-application-info-error error])))}]]]}))
+           {:on-error #(rf/dispatch [:keycard/create.on-application-info-error %])}]]]}))
 
 (defn get-application-info-and-continue
-  [init?]
+  []
   (rf/dispatch [:keycard/get-application-info
                 {:on-success #(rf/dispatch [:keycard/create.continue])
-                 :on-error
-                 (fn [error]
-                   (if (or (= error :keycard/error.keycard-blank)
-                           (and (not init?) (= error :keycard/error.keycard-wrong-profile)))
-                     (rf/dispatch [:keycard/create.continue])
-                     (rf/dispatch [:keycard/on-application-info-error error])))}]))
+                 :on-error   #(rf/dispatch [:keycard/create.on-application-info-error %])}]))
 
 (rf/reg-event-fx :keycard/create.continue
  (fn [{:keys [db]}]
@@ -93,13 +92,13 @@
        (not initialized?)
        {:fx [[:keycard/init-card
               {:pin        pin
-               :on-success #(get-application-info-and-continue true)}]]}
+               :on-success get-application-info-and-continue}]]}
 
        (not has-master-key?)
        {:fx [[:effects.keycard/generate-and-load-key
               {:mnemonic   (security/safe-unmask-data masked-phrase)
                :pin        pin
-               :on-success #(get-application-info-and-continue false)
+               :on-success get-application-info-and-continue
                :on-failure #(rf/dispatch [:keycard/on-action-with-pin-error %])}]]}
 
        :else
