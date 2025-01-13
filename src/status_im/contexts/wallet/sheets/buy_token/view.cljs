@@ -7,7 +7,7 @@
             [utils.re-frame :as rf]))
 
 (defn- crypto-on-ramp-item
-  [{:keys [name description fees logo-url site-url recurrent-site-url urls-need-parameters]
+  [{:keys [name fees logo-url site-url recurrent-site-url urls-need-parameters]
     :as   provider}
    _
    _
@@ -22,18 +22,16 @@
                       (rn/open-url (if (= tab :recurrent) recurrent-site-url site-url))))
                   [site-url recurrent-site-url tab])]
     [quo/settings-item
-     {:title             name
-      :description       :text
-      :description-props {:text description}
-      :tag               :context
-      :tag-props         {:icon    :i/fees
-                          :context fees}
-      :action            :arrow
-      :action-props      {:alignment :flex-start
-                          :icon      :i/external}
-      :image             :icon-avatar
-      :image-props       {:icon logo-url}
-      :on-press          open-url}]))
+     {:title        name
+      :tag          :context
+      :tag-props    {:icon    :i/fees
+                     :context fees}
+      :action       :arrow
+      :action-props {:alignment :flex-start
+                     :icon      :i/external}
+      :image        :icon-avatar
+      :image-props  {:icon logo-url}
+      :on-press     open-url}]))
 
 (def ^:private tabs
   [{:id    :one-time
