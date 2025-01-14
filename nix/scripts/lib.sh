@@ -38,8 +38,8 @@ nix_install_type() {
             "${UID}")   echo "single";;
             "(${UID})") echo "single";;
             "")         echo "none";
-                        echo "No Nix installtion detected!" >&2;;
-            *)          echo "Unknown Nix installtion type!" >&2; exit 1;;
+                        echo "No Nix installation detected!" >&2;;
+            *)          echo "Unknown Nix installation type!" >&2; exit 1;;
         esac
     fi
 }

@@ -65,6 +65,7 @@
  (fn [[profiles port font-file theme] [_ target-key-uid]]
    (let [{:keys [images ens-name? customization-color] :as profile} (get profiles target-key-uid)
          image-name                                                 (-> images first :type)
+         image-clock                                                (-> images first :clock)
          override-ring?                                             (when ens-name? false)]
      (when (and profile port)
        {:config
@@ -75,6 +76,7 @@
                      :image-name     image-name
                      :key-uid        target-key-uid
                      :theme          theme
+                     :clock          image-clock
                      :override-ring? override-ring?}}
           {:type    :initials
            :options {:port                port
@@ -236,7 +238,10 @@
                 customization-color]} profile
         ens-name?                     (or ens-name? (seq ens-names))
         avatar-opts                   (assoc avatar-opts :override-ring? (when ens-name? false))
-        images-with-uri               (mapv (fn [{key-uid :keyUid image-name :type :as image}]
+        images-with-uri               (mapv (fn [{key-uid     :keyUid
+                                                  image-name  :type
+                                                  image-clock :clock
+                                                  :as         image}]
                                               (assoc image
                                                      :config
                                                      {:type    :account
@@ -244,6 +249,7 @@
                                                                 {:port       port
                                                                  :ratio      pixel-ratio/ratio
                                                                  :image-name image-name
+                                                                 :clock      image-clock
                                                                  :key-uid    key-uid
                                                                  :theme      theme}
                                                                 avatar-opts)}))

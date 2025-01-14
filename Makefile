@@ -43,8 +43,6 @@ export NODE_OPTIONS += --openssl-legacy-provider
 # The path can be anything, but home is usually safest.
 export KEYSTORE_PATH ?= $(HOME)/.gradle/status-im.keystore
 
-# Our custom config is located in nix/nix.conf
-export NIX_USER_CONF_FILES = $(PWD)/nix/nix.conf
 # Location of symlinks to derivations that should not be garbage collected
 export _NIX_GCROOTS = ./.nix-gcroots
 # Defines which variables will be kept for Nix pure shell, use semicolon as divider

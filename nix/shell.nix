@@ -38,6 +38,9 @@ in mkShell {
   LANG="en_US.UTF-8";
   LANGUAGE="en_US.UTF-8";
 
+  # Important to load our own Nix binary cache.
+  NIX_CONFIG = builtins.readFile ./nix.conf;
+
   # just a nicety for easy access to node scripts
   shellHook = ''
     export STATUS_MOBILE_HOME=$(git rev-parse --show-toplevel)
