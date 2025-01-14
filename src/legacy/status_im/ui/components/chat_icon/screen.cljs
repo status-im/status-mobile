@@ -101,5 +101,3 @@
     :chat-icon              (styles/custom-size-icon size)
     :default-chat-icon      (styles/default-chat-icon-profile colors/default-chat-color size)
     :default-chat-icon-text (styles/default-chat-icon-text size)}])
-
-
