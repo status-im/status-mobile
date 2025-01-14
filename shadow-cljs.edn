@@ -103,7 +103,9 @@
                        ;; instrumenting functions.
                        :static-fns         false
                        :infer-externs      true
-                       :reader-features    #{:mobile}}
+                       :reader-features    #{:mobile
+                                             #shadow/env ["READER_FEATURES" :as :keyword :default
+                                                          :cljs]}}
     ;; if you want to use a real device, set your local ip
     ;; in the SHADOW_HOST env variable to make sure that
     ;; it will use the right interface

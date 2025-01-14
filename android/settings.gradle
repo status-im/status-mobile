@@ -19,3 +19,5 @@ project(':react-native-status-keycard').projectDir = new File(rootProject.projec
 include ':react-native-blur'
 project(':react-native-blur').projectDir = new File(rootProject.projectDir, '../node_modules/@react-native-community/blur/android')
 includeBuild('../node_modules/@react-native/gradle-plugin')
+include ':react-native-notifications'
+project(':react-native-notifications').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-notifications/lib/android/app')

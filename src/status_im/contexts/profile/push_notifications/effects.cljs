@@ -3,6 +3,8 @@
     [native-module.push-notifications :as native-module.pn]
     [react-native.platform :as platform]
     [react-native.push-notification-ios :as pn-ios]
+    [status-im.config :as config]
+    [status-im.contexts.profile.push-notifications.android-remote :as pn-android-remote]
     [utils.re-frame :as rf]))
 
 (def ios-listeners-added? (atom nil))
@@ -27,21 +29,29 @@
   (rf/dispatch [:push-notifications/unregistered-from-push-notifications]))
 
 (defn enable-android-notifications
-  []
-  (native-module.pn/create-channel
-   {:channel-id   "status-im-notifications"
-    :channel-name "Status push notifications"})
-  (native-module.pn/enable-notifications))
+  [remote-push-notifications-enabled?]
+  (if (and remote-push-notifications-enabled? (not config/google-free))
+    (do
+      (native-module.pn/disable-notifications)
+      (native-module.pn/clear-all-message-notifications)
+      (pn-android-remote/register-remote-notifications))
+    (do
+      (pn-android-remote/unregister-remote-notifications)
+      (native-module.pn/create-channel
+       {:channel-id   "status-im-notifications"
+        :channel-name "Status push notifications"})
+      (native-module.pn/enable-notifications))))
 
 (defn disable-android-notifications
   []
-  (native-module.pn/disable-notifications))
+  (native-module.pn/disable-notifications)
+  (pn-android-remote/unregister-remote-notifications))
 
 (rf/reg-fx
  :effects/push-notifications-enable
- (fn []
+ (fn [remote-push-notifications-enabled?]
    (if platform/android?
-     (enable-android-notifications)
+     (enable-android-notifications remote-push-notifications-enabled?)
      (enable-ios-notifications))))
 
 (rf/reg-fx

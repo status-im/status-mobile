@@ -5,6 +5,7 @@
     [legacy.status-im.ui.components.list.views :as list]
     [quo.core :as quo]
     [re-frame.core :as re-frame]
+    [status-im.config :as config]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf])
   (:require-macros [legacy.status-im.utils.views :as views]))
@@ -46,6 +47,13 @@
      :on-press
      #(re-frame/dispatch [:open-modal :rpc-usage-info])
      :chevron true}
+    (when-not config/google-free
+      {:size :small
+       :title (i18n/label :t/notification-settings)
+       :accessibility-label :advanced-notification-settings
+       :on-press
+       #(re-frame/dispatch [:navigate-to :notifications-advanced-settings])
+       :chevron true})
     {:size :small
      :title (i18n/label :t/peers-stats)
      :accessibility-label :peers-stats

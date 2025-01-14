@@ -17,6 +17,7 @@ import im.status.ethereum.keycard.RNStatusKeycardPackage
 import im.status.ethereum.module.StatusPackage
 import im.status.ethereum.pushnotifications.PushNotificationPackage
 import im.status.ethereum.StatusOkHttpClientFactory
+import com.wix.reactnativenotifications.RNNotificationsPackage;
 
 class MainApplication : NavigationApplication() {
 

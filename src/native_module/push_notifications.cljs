@@ -16,6 +16,10 @@
   [chat-id]
   (.clearMessageNotifications ^js (push-notification) chat-id))
 
+(defn clear-all-message-notifications
+  []
+  (.clearAllMessageNotifications ^js (push-notification)))
+
 (defn create-channel
   [{:keys [channel-id channel-name]}]
   (.createChannel ^js (push-notification)

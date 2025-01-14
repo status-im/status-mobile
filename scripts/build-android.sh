@@ -54,6 +54,11 @@ for SECRET_VAR_NAME in "${SECRETS_ENV_VARS[@]}"; do
     [[ -n "${!SECRET_VAR_NAME}" ]] && append_env_export "${SECRET_VAR_NAME}"
 done
 
+# Used by Clojure at compile time for remove import of react-native-notifications for fdroid release
+if [[ -n "${READER_FEATURES}" ]]; then
+    append_env_export 'READER_FEATURES'
+fi
+
 # If no secrets were passed there's no need to pass the 'secretsFile'.
 if [[ -s "${SECRETS_FILE_PATH}" ]]; then
   nixOpts+=("--option" "extra-sandbox-paths" "${SECRETS_FILE_PATH}")

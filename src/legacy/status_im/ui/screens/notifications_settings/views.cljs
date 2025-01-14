@@ -6,11 +6,12 @@
     [legacy.status-im.ui.components.react :as react]
     [quo.core :as quo]
     [react-native.platform :as platform]
+    [status-im.config :as config]
     [taoensso.timbre :as log]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
-(defn notifications-settings-ios
+(defn remote-notifications
   []
   (let [{:keys [notifications-enabled?
                 push-notifications-block-mentions?
@@ -49,9 +50,11 @@
                                (not push-notifications-block-mentions?)])
        :accessory           :switch}]]))
 
+(def notifications-settings-ios remote-notifications)
+
 (defn notifications-settings-android
   []
-  (let [{:keys [notifications-enabled?]} (rf/sub [:profile/profile])]
+  (let [{:keys [notifications-enabled? remote-push-notifications-enabled?]} (rf/sub [:profile/profile])]
     [:<>
      [list.item/list-item
       {:title               (i18n/label :t/local-notifications)
@@ -66,8 +69,21 @@
                                    :on-allowed  #(log/info "push notification permissions were allowed")
                                    :on-denied   #(log/error
                                                   "user denied push notification permissions")}]))
-                              (rf/dispatch [:push-notifications/switch (not notifications-enabled?)]))
-       :accessory           :switch}]]))
+                              (rf/dispatch [:push-notifications/switch (not notifications-enabled?)
+                                            remote-push-notifications-enabled?]))
+       :accessory           :switch}]
+     (when-not config/google-free
+       [list.item/list-item
+        {:title               (i18n/label :t/remote-notifications)
+         :accessibility-label :remote-notifications-settings-button
+         :subtitle            (i18n/label :t/remote-notifications-subtitle)
+         :active              remote-push-notifications-enabled? ;; TODO:(@seanstrom) add this key
+                                                                 ;; to state
+         :on-press            (fn []
+                                (rf/dispatch [:push-notifications/switch
+                                              notifications-enabled?
+                                              (not remote-push-notifications-enabled?)]))
+         :accessory           :switch}])]))
 
 (defn notifications-settings
   []

@@ -48,9 +48,10 @@
 
 (rf/defn notification-switch
   {:events [:push-notifications/switch]}
-  [cofx enabled?]
+  [cofx enabled? remote?]
   (rf/merge cofx
             (if enabled?
-              {:effects/push-notifications-enable nil}
+              {:effects/push-notifications-enable remote?}
               {:effects/push-notifications-disable nil})
-            (multiaccounts.update/multiaccount-update :notifications-enabled? enabled? {})))
+            (multiaccounts.update/multiaccount-update :notifications-enabled? enabled? {})
+            (multiaccounts.update/multiaccount-update :remote-push-notifications-enabled? remote? {})))

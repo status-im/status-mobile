@@ -83,6 +83,11 @@ def jscFlavor = 'org.webkit:android-jsc:+'
  */
 def enableHermes = hermesEnabled.toBoolean();
 
+/**
+ * Exclude google library so we can publish to external android stores
+ */
+def googleFree = project.env.get("GOOGLE_FREE", 0) == '1'
+
 def getCommitHash = { ->
     if (project.hasProperty("commitHash")) {
         return project.commitHash
@@ -290,6 +295,18 @@ dependencies {
         implementation(jscFlavor)
     }
 
+    if (googleFree) {
+        implementation(project(':react-native-notifications')) {
+            exclude group: 'com.google.firebase'
+            exclude group: 'com.google.gms'
+        }
+    } else {
+        implementation project(':react-native-notifications') {
+            // exclude group: 'com.google.gms'
+        }
+        implementation 'com.google.firebase:firebase-messaging:24.1.0'
+    }
+
     // react-native-screens
     implementation("androidx.appcompat:appcompat:1.1.0-rc01")
     implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0-alpha02")
@@ -339,3 +356,7 @@ task hemroidBuild(type: Exec) {
 preBuild.dependsOn hemroidBuild
 
 apply from: file("../../node_modules/@react-native-community/cli-platform-android/native_modules.gradle"); applyNativeModulesAppBuildGradle(project)
+
+if (!googleFree) {
+    apply plugin: 'com.google.gms.google-services'
+}
