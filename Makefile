@@ -209,7 +209,9 @@ build-fdroid: export BUILD_ENV = prod
 build-fdroid: export BUILD_TYPE = release
 build-fdroid: export ANDROID_ABI_SPLIT = false
 build-fdroid: export ANDROID_ABI_INCLUDE = armeabi-v7a;arm64-v8a;x86;x86_64
+build-fdroid: export ANDROID_STORE = fdroid
 build-fdroid: ##@build Build release for F-Droid
+	@scripts/google-free.sh
 	@scripts/build-android.sh
 
 build-android: export BUILD_ENV ?= prod

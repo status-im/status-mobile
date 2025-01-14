@@ -14,6 +14,8 @@ react-native-community_slider
 react-native-config
 react-native-dialogs
 react-native-fast-image
+react-native-firebase_app
+react-native-firebase_messaging
 react-native-fs
 react-native-gesture-handler
 react-native-get-random-values

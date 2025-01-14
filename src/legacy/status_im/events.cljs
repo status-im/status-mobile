@@ -20,7 +20,6 @@
     legacy.status-im.stickers.core
     legacy.status-im.ui.components.invite.events
     [legacy.status-im.ui.components.react :as react]
-    legacy.status-im.ui.screens.notifications-settings.events
     [legacy.status-im.utils.dimensions :as dimensions]
     legacy.status-im.utils.logging.core
     [legacy.status-im.utils.utils :as utils]

@@ -55,6 +55,8 @@
 (def pairing-popup-disabled? (enabled? (get-config :PAIRING_POPUP_DISABLED "0")))
 (def cached-webviews-enabled? (enabled? (get-config :CACHED_WEBVIEWS_ENABLED 0)))
 
+(def fdroid? (enabled? (get-config :GOOGLE_FREE "0")))
+
 ;; NOTE: only disabled in releases
 (def blank-preview? (enabled? (get-config :BLANK_PREVIEW "1")))
 (def tooltip-events? (enabled? (get-config :TOOLTIP_EVENTS "0")))

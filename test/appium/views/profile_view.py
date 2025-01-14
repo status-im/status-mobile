@@ -122,7 +122,7 @@ class ProfileView(BaseView):
         self.profile_notifications_button = Button(self.driver,
                                                    accessibility_id="icon, Notifications, label-component, icon")
         self.profile_notifications_toggle_button = Button(self.driver,
-                                                          accessibility_id="local-notifications-settings-button")
+                                                          accessibility_id="Show notifications, label-component")
         self.push_notification_toggle = Button(
             self.driver, xpath="//*[@content-desc='notifications-button']//*[@content-desc='switch']")
         self.wallet_push_notifications = Button(self.driver, accessibility_id="notifications-button")

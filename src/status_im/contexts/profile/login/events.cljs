@@ -106,7 +106,10 @@
 ;; login phase 2: we want to load and show chats faster, so we split login into 2 phases
 (rf/reg-event-fx :profile.login/get-chats-callback
  (fn [{:keys [db]}]
-   (let [{:keys [notifications-enabled? key-uid]} (:profile/profile db)]
+   (let [{:keys [notifications-enabled?
+                 news-notifications-enabled?
+                 messenger-notifications-enabled?
+                 key-uid]} (:profile/profile db)]
      {:db db
       :fx [[:effects.profile/enable-local-notifications]
            [:contacts/initialize-contacts]
@@ -117,7 +120,10 @@
            [:dispatch [:network/check-expensive-connection]]
            [:profile.settings/get-profile-picture key-uid]
            (when notifications-enabled?
-             [:effects/push-notifications-enable])]})))
+             [:effects/push-notifications-enable
+              (cond-> #{}
+                messenger-notifications-enabled? (conj :enable-chat-notifications?)
+                news-notifications-enabled?      (conj :enable-news-notifications?))])]})))
 
 ;; Login phase 3: events at this phase can wait a bit longer to be processed in
 ;; order to leave room for higher-priority or heavy weight events.

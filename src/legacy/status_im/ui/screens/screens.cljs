@@ -10,7 +10,6 @@
     [legacy.status-im.ui.screens.fleet-settings.views :as fleet-settings]
     [legacy.status-im.ui.screens.help-center.views :as help-center]
     [legacy.status-im.ui.screens.log-level-settings.views :as log-level-settings]
-    [legacy.status-im.ui.screens.notifications-settings.views :as notifications-settings]
     [legacy.status-im.ui.screens.pairing.views :as pairing]
     [legacy.status-im.ui.screens.peers-stats :as peers-stats]
     [legacy.status-im.ui.screens.profile.user.views :as profile.user]
@@ -50,11 +49,6 @@
 
 
    ;;SETTINGS
-   {:name      :screen/legacy-notifications
-    :options   {:topBar {:visible false}
-                :insets {:top? platform/android?}}
-    :component notifications-settings/notifications-settings}
-
    {:name      :screen/legacy-appearance
     :options   {:topBar {:visible false}
                 :insets {:top? platform/android?}}

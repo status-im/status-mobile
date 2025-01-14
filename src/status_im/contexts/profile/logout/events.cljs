@@ -6,8 +6,15 @@
 
 (rf/reg-event-fx
  :profile.logout/disable-notifications
- (fn [_]
-   {:fx [[:effects/push-notifications-disable nil]
+ (fn [{:keys [db]}]
+   {:fx [[:effects/push-notifications-disable
+          (let [{:keys [notifications-enabled?
+                        news-notifications-enabled?
+                        messenger-notifications-enabled?]} (:profile/profile db)]
+            (when notifications-enabled?
+              (cond-> #{:disable-chat-notifications?}
+                news-notifications-enabled?      (conj :disable-news-notifications?)
+                messenger-notifications-enabled? (conj :disable-chat-notifications?))))]
          [:dispatch [:alert-banners/remove-all]]]}))
 
 (defn- restart-app-db
