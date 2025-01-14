@@ -44,6 +44,7 @@
    {:db (assoc db :profile/logging-out? true)
     ;; We need to disable notifications before starting the logout process
     :fx [[:dispatch [:profile.logout/disable-notifications]]
+         [:dispatch [:wallet-connect/unregister-event-listeners]]
          [:dispatch-later
           {:ms       100
            :dispatch [:profile.logout/reset-state]}]]}))

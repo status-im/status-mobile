@@ -87,3 +87,11 @@
               event
               #(-> (bean/->clj %)
                    handler)))
+
+(defn unregister-handler
+  [{:keys [web3-wallet event handler]}]
+  (oops/ocall web3-wallet
+              "off"
+              event
+              #(-> (bean/->clj %)
+                   handler)))

@@ -35,6 +35,14 @@
      :handler     handler})))
 
 (rf/reg-fx
+ :effects.wallet-connect/unregister-event-listener
+ (fn [[web3-wallet wc-event handler]]
+   (wallet-connect/unregister-handler
+    {:web3-wallet web3-wallet
+     :event       wc-event
+     :handler     handler})))
+
+(rf/reg-fx
  :effects.wallet-connect/pair
  (fn [{:keys [web3-wallet url on-success on-fail]}]
    (when web3-wallet

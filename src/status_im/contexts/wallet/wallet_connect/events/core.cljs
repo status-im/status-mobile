@@ -59,6 +59,23 @@
              #(rf/dispatch [:wallet-connect/on-session-delete %])]]]})))
 
 (rf/reg-event-fx
+ :wallet-connect/unregister-event-listeners
+ (fn [{:keys [db]}]
+   (let [web3-wallet (get db :wallet-connect/web3-wallet)]
+     {:fx [[:effects.wallet-connect/unregister-event-listener
+            [web3-wallet
+             constants/wallet-connect-session-proposal-event
+             #(rf/dispatch [:wallet-connect/on-session-proposal %])]]
+           [:effects.wallet-connect/unregister-event-listener
+            [web3-wallet
+             constants/wallet-connect-session-request-event
+             #(rf/dispatch [:wallet-connect/on-session-request %])]]
+           [:effects.wallet-connect/unregister-event-listener
+            [web3-wallet
+             constants/wallet-connect-session-delete-event
+             #(rf/dispatch [:wallet-connect/on-session-delete %])]]]})))
+
+(rf/reg-event-fx
  :wallet-connect/on-init-fail
  (fn [_ [error]]
    (log/error "Failed to initialize Wallet Connect"
