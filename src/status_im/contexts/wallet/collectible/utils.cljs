@@ -84,5 +84,5 @@
   [collectibles]
   (sort-by (fn [collectible]
              (let [name (-> collectible :collectible-data :name)]
-               [(if (or (nil? name) (empty? name)) 1 0) name]))
+               [(if (seq name) 0 1) name]))
            collectibles))
