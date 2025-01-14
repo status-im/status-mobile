@@ -105,48 +105,6 @@ RCT_EXPORT_METHOD(convertToKeycardAccount:(NSString *)keyUID
                                                  callback:callback];
 }
 
-RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(encodeTransfer:(NSString *)to
-                                     value:(NSString *)value) {
-    NSDictionary *params = @{
-        @"to": to,
-        @"value": value
-    };
-    NSError *error;
-    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:params options:0 error:&error];
-    if (error) {
-        NSLog(@"Error creating JSON: %@", [error localizedDescription]);
-        return nil;
-    }
-    NSString *jsonString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
-    
-    return [StatusBackendClient executeStatusGoRequestWithResult:@"EncodeTransferV2"
-                                                          body:jsonString
-                                              statusgoFunction:^NSString *{
-        return StatusgoEncodeTransferV2(jsonString);
-    }];
-}
-
-RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(encodeFunctionCall:(NSString *)method
-                                     paramsJSON:(NSString *)paramsJSON) {
-    NSDictionary *params = @{
-        @"method": method,
-        @"paramsJSON": paramsJSON
-    };
-    NSError *error;
-    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:params options:0 error:&error];
-    if (error) {
-        NSLog(@"Error creating JSON: %@", [error localizedDescription]);
-        return nil;
-    }
-    NSString *jsonString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
-    
-    return [StatusBackendClient executeStatusGoRequestWithResult:@"EncodeFunctionCallV2"
-                                                          body:jsonString
-                                              statusgoFunction:^NSString *{
-        return StatusgoEncodeFunctionCallV2(jsonString);
-    }];
-}
-
 RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(decodeParameters:(NSString *)decodeParamJSON) {
     return [StatusBackendClient executeStatusGoRequestWithResult:@"DecodeParameters"
                                                           body:decodeParamJSON

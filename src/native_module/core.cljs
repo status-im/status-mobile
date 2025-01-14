@@ -170,12 +170,6 @@
                                                  :Bip39Passphrase password})
                                callback))
 
-(defn verify
-  "NOTE: beware, the password has to be sha3 hashed"
-  [address hashed-password callback]
-  (log/debug "[native-module] verify")
-  (.verify ^js (account-manager) address hashed-password callback))
-
 (defn set-soft-input-mode
   [mode]
   (log/debug "[native-module]  set-soft-input-mode")
@@ -387,16 +381,6 @@
 
     ;; in unknown scenarios we also consider the device rooted to avoid degrading security
     :else (callback true)))
-
-(defn encode-transfer
-  [to-norm amount-hex]
-  (log/debug "[native-module] encode-transfer")
-  (.encodeTransfer ^js (encryption) to-norm amount-hex))
-
-(defn encode-function-call
-  [method params]
-  (log/debug "[native-module] encode-function-call")
-  (.encodeFunctionCall ^js (encryption) method (types/clj->json params)))
 
 (defn decode-parameters
   [bytes-string types]

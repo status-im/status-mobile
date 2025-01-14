@@ -44,9 +44,6 @@
     (fn [s] (.serializeLegacyKey native-status s))
     :setBlankPreviewFlag
     identity
-    :encodeTransfer
-    (fn [to-norm amount-hex]
-      (.encodeTransfer native-status to-norm amount-hex))
     :hexToNumber
     (fn [hex] (.hexToNumber native-status hex))
     :decodeParameters

@@ -195,36 +195,6 @@ RCT_EXPORT_METHOD(loginAccount:(NSString *)request) {
     }];
 }
 
-RCT_EXPORT_METHOD(verify:(NSString *)address
-        password:(NSString *)password
-        callback:(RCTResponseSenderBlock)callback) {
-#if DEBUG
-    NSLog(@"VerifyAccountPasswordV2() method called");
-#endif
-    NSURL *rootUrl = [Utils getRootUrl];
-    NSString *keystorePath = [rootUrl.path stringByAppendingPathComponent:@"keystore"];
-    
-    NSDictionary *params = @{
-        @"keyStoreDir": keystorePath,
-        @"address": address,
-        @"password": password
-    };
-    NSError *error;
-    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:params options:0 error:&error];
-    if (error) {
-        NSLog(@"Error creating JSON: %@", error);
-        return;
-    }
-    NSString *jsonString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
-    
-    [StatusBackendClient executeStatusGoRequestWithCallback:@"VerifyAccountPasswordV2"
-                                                     body:jsonString
-                                        statusgoFunction:^NSString *{
-        return StatusgoVerifyAccountPasswordV2(jsonString);
-    }
-                                                 callback:callback];
-}
-
 RCT_EXPORT_METHOD(verifyDatabasePassword:(NSString *)keyUID
         password:(NSString *)password
         callback:(RCTResponseSenderBlock)callback) {

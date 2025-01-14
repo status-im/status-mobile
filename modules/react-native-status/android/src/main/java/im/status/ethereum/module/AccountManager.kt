@@ -204,24 +204,6 @@ class AccountManager(private val reactContext: ReactApplicationContext) : ReactC
     }
 
     @ReactMethod
-    fun verify(address: String, password: String, callback: Callback) {
-        val absRootDirPath = utils.getNoBackupDirectory()
-        val newKeystoreDir = utils.pathCombine(absRootDirPath, "keystore")
-
-        val jsonParams = JSONObject()
-        jsonParams.put("keyStoreDir", newKeystoreDir)
-        jsonParams.put("address", address) 
-        jsonParams.put("password", password)
-
-        StatusBackendClient.executeStatusGoRequestWithCallback(
-            endpoint = "VerifyAccountPasswordV2",
-            requestBody = jsonParams.toString(),
-            statusgoFunction = { Statusgo.verifyAccountPasswordV2(jsonParams.toString()) },
-            callback
-        )
-    }
-
-    @ReactMethod
     fun verifyDatabasePassword(keyUID: String, password: String, callback: Callback) {
         val jsonParams = JSONObject()
         jsonParams.put("keyUID", keyUID)

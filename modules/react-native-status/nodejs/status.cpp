@@ -389,86 +389,6 @@ void _StopCPUProfiling(const FunctionCallbackInfo<Value>& args) {
 
 }
 
-void _EncodeTransfer(const FunctionCallbackInfo<Value>& args) {
-	Isolate* isolate = args.GetIsolate();
-        Local<Context> context = isolate->GetCurrentContext();
-
-	if (args.Length() != 2) {
-		// Throw an Error that is passed back to JavaScript
-		isolate->ThrowException(Exception::TypeError(
-			String::NewFromUtf8Literal(isolate, "Wrong number of arguments for EncodeTransfer")));
-		return;
-	}
-
-	// Check the argument types
-
-	if (!args[0]->IsString()) {
-		isolate->ThrowException(Exception::TypeError(
-			String::NewFromUtf8Literal(isolate, "Wrong argument type for 'to'")));
-		return;
-	}
-
-	if (!args[1]->IsString()) {
-    		isolate->ThrowException(Exception::TypeError(
-    			String::NewFromUtf8Literal(isolate, "Wrong argument type for 'value'")));
-    		return;
-    	}
-
-
-	String::Utf8Value arg0Obj(isolate, args[0]->ToString(context).ToLocalChecked());
-	char *arg0 = *arg0Obj;
-	String::Utf8Value arg1Obj(isolate, args[1]->ToString(context).ToLocalChecked());
-    char *arg1 = *arg1Obj;
-
-	// Call exported Go function, which returns a C string
-	char *c = EncodeTransfer(arg0, arg1);
-
-	Local<String> ret = String::NewFromUtf8(isolate, c).ToLocalChecked();
-	args.GetReturnValue().Set(ret);
-	delete c;
-
-}
-
-void _EncodeFunctionCall(const FunctionCallbackInfo<Value>& args) {
-	Isolate* isolate = args.GetIsolate();
-        Local<Context> context = isolate->GetCurrentContext();
-
-	if (args.Length() != 2) {
-		// Throw an Error that is passed back to JavaScript
-		isolate->ThrowException(Exception::TypeError(
-			String::NewFromUtf8Literal(isolate, "Wrong number of arguments for EncodeFunctionCall")));
-		return;
-	}
-
-	// Check the argument types
-
-	if (!args[0]->IsString()) {
-		isolate->ThrowException(Exception::TypeError(
-			String::NewFromUtf8Literal(isolate, "Wrong argument type for 'method'")));
-		return;
-	}
-
-	if (!args[1]->IsString()) {
-    		isolate->ThrowException(Exception::TypeError(
-    			String::NewFromUtf8Literal(isolate, "Wrong argument type for 'paramsJSON'")));
-    		return;
-    	}
-
-
-	String::Utf8Value arg0Obj(isolate, args[0]->ToString(context).ToLocalChecked());
-	char *arg0 = *arg0Obj;
-	String::Utf8Value arg1Obj(isolate, args[1]->ToString(context).ToLocalChecked());
-    char *arg1 = *arg1Obj;
-
-	// Call exported Go function, which returns a C string
-	char *c = EncodeFunctionCall(arg0, arg1);
-
-	Local<String> ret = String::NewFromUtf8(isolate, c).ToLocalChecked();
-	args.GetReturnValue().Set(ret);
-	delete c;
-
-}
-
 void _DecodeParameters(const FunctionCallbackInfo<Value>& args) {
 	Isolate* isolate = args.GetIsolate();
         Local<Context> context = isolate->GetCurrentContext();
@@ -1380,53 +1300,6 @@ void _CallPrivateRPC(const FunctionCallbackInfo<Value>& args) {
 
 }
 
-void _VerifyAccountPassword(const FunctionCallbackInfo<Value>& args) {
-	Isolate* isolate = args.GetIsolate();
-        Local<Context> context = isolate->GetCurrentContext();
-
-	if (args.Length() != 3) {
-		// Throw an Error that is passed back to JavaScript
-		isolate->ThrowException(Exception::TypeError(
-			String::NewFromUtf8Literal(isolate, "Wrong number of arguments for VerifyAccountPassword")));
-		return;
-	}
-
-	// Check the argument types
-
-	if (!args[0]->IsString()) {
-		isolate->ThrowException(Exception::TypeError(
-			String::NewFromUtf8Literal(isolate, "Wrong argument type for 'keyStoreDir'")));
-		return;
-	}
-	if (!args[1]->IsString()) {
-		isolate->ThrowException(Exception::TypeError(
-			String::NewFromUtf8Literal(isolate, "Wrong argument type for 'address'")));
-		return;
-	}
-	if (!args[2]->IsString()) {
-		isolate->ThrowException(Exception::TypeError(
-			String::NewFromUtf8Literal(isolate, "Wrong argument type for 'password'")));
-		return;
-	}
-
-
-	String::Utf8Value arg0Obj(isolate, args[0]->ToString(context).ToLocalChecked());
-	char *arg0 = *arg0Obj;
-	String::Utf8Value arg1Obj(isolate, args[1]->ToString(context).ToLocalChecked());
-	char *arg1 = *arg1Obj;
-	String::Utf8Value arg2Obj(isolate, args[2]->ToString(context).ToLocalChecked());
-	char *arg2 = *arg2Obj;
-
-	// Call exported Go function, which returns a C string
-	char *c = VerifyAccountPassword(arg0, arg1, arg2);
-
-	Local<String> ret = String::NewFromUtf8(isolate, c).ToLocalChecked();
-	args.GetReturnValue().Set(ret);
-	delete c;
-
-
-}
-
 void _SendTransactionWithSignature(const FunctionCallbackInfo<Value>& args) {
 	Isolate* isolate = args.GetIsolate();
         Local<Context> context = isolate->GetCurrentContext();
@@ -1992,8 +1865,6 @@ void init(Local<Object> exports) {
 	NODE_SET_METHOD(exports, "acceptTerms", _AcceptTerms);
 	NODE_SET_METHOD(exports, "fleets", _Fleets);
 	NODE_SET_METHOD(exports, "stopCPUProfiling", _StopCPUProfiling);
-	NODE_SET_METHOD(exports, "encodeTransfer", _EncodeTransfer);
-	NODE_SET_METHOD(exports, "encodeFunctionCall", _EncodeFunctionCall);
 	NODE_SET_METHOD(exports, "decodeParameters", _DecodeParameters);
 	NODE_SET_METHOD(exports, "hexToNumber", _HexToNumber);
 	NODE_SET_METHOD(exports, "numberToHex", _NumberToHex);
@@ -2017,7 +1888,6 @@ void init(Local<Object> exports) {
 	NODE_SET_METHOD(exports, "openAccounts", _OpenAccounts);
 	NODE_SET_METHOD(exports, "extractGroupMembershipSignatures", _ExtractGroupMembershipSignatures);
 	NODE_SET_METHOD(exports, "callPrivateRPC", _CallPrivateRPC);
-	NODE_SET_METHOD(exports, "verifyAccountPassword", _VerifyAccountPassword);
 	NODE_SET_METHOD(exports, "sendTransactionWithSignature", _SendTransactionWithSignature);
 	NODE_SET_METHOD(exports, "writeHeapProfile", _WriteHeapProfile);
 	NODE_SET_METHOD(exports, "addPeer", _AddPeer);

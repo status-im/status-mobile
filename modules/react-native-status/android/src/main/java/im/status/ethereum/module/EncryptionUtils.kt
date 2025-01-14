@@ -88,42 +88,6 @@ class EncryptionUtils(private val reactContext: ReactApplicationContext) : React
     }
 
     @ReactMethod(isBlockingSynchronousMethod = true)
-    fun encodeTransfer(to: String, value: String): String? {
-        return try {
-            val params = JSONObject().apply {
-                put("to", to)
-                put("value", value)
-            }
-            StatusBackendClient.executeStatusGoRequestWithResult(
-                "EncodeTransferV2",
-                params.toString(),
-                { Statusgo.encodeTransferV2(params.toString()) }
-            )
-        } catch (e: JSONException) {
-            Log.e(TAG, "Error creating JSON for encodeTransfer: ${e.message}")
-            null
-        }
-    }
-
-    @ReactMethod(isBlockingSynchronousMethod = true)
-    fun encodeFunctionCall(method: String, paramsJSON: String): String? {
-        return try {
-            val params = JSONObject().apply {
-                put("method", method)
-                put("paramsJSON", JSONObject(paramsJSON))
-            }
-            StatusBackendClient.executeStatusGoRequestWithResult(
-                "EncodeFunctionCallV2",
-                params.toString(),
-                { Statusgo.encodeFunctionCallV2(params.toString()) }
-            )
-        } catch (e: JSONException) {
-            Log.e(TAG, "Error creating JSON for encodeFunctionCall: ${e.message}")
-            null
-        }
-    }
-
-    @ReactMethod(isBlockingSynchronousMethod = true)
     fun decodeParameters(decodeParamJSON: String): String = 
         StatusBackendClient.executeStatusGoRequestWithResult(
             "DecodeParameters",
