@@ -41,6 +41,19 @@
        (log/info "Re-Initialising WalletConnect SDK due to network change")
        {:fx [[:dispatch [:wallet-connect/init]]]}))))
 
+(defn- on-session-proposal
+  [data]
+  (rf/dispatch [:wallet-connect/on-session-proposal data]))
+
+(defn- on-session-request
+  [data]
+  (rf/dispatch [:wallet-connect/on-session-request data]))
+
+(defn- on-session-delete
+  [data]
+  (rf/dispatch [:wallet-connect/on-session-delete data]))
+
+
 (rf/reg-event-fx
  :wallet-connect/register-event-listeners
  (fn [{:keys [db]}]
@@ -48,15 +61,15 @@
      {:fx [[:effects.wallet-connect/register-event-listener
             [web3-wallet
              constants/wallet-connect-session-proposal-event
-             #(rf/dispatch [:wallet-connect/on-session-proposal %])]]
+             on-session-proposal]]
            [:effects.wallet-connect/register-event-listener
             [web3-wallet
              constants/wallet-connect-session-request-event
-             #(rf/dispatch [:wallet-connect/on-session-request %])]]
+             on-session-request]]
            [:effects.wallet-connect/register-event-listener
             [web3-wallet
              constants/wallet-connect-session-delete-event
-             #(rf/dispatch [:wallet-connect/on-session-delete %])]]]})))
+             on-session-delete]]]})))
 
 (rf/reg-event-fx
  :wallet-connect/unregister-event-listeners
@@ -65,15 +78,15 @@
      {:fx [[:effects.wallet-connect/unregister-event-listener
             [web3-wallet
              constants/wallet-connect-session-proposal-event
-             #(rf/dispatch [:wallet-connect/on-session-proposal %])]]
+             on-session-proposal]]
            [:effects.wallet-connect/unregister-event-listener
             [web3-wallet
              constants/wallet-connect-session-request-event
-             #(rf/dispatch [:wallet-connect/on-session-request %])]]
+             on-session-request]]
            [:effects.wallet-connect/unregister-event-listener
             [web3-wallet
              constants/wallet-connect-session-delete-event
-             #(rf/dispatch [:wallet-connect/on-session-delete %])]]]})))
+             on-session-delete]]]})))
 
 (rf/reg-event-fx
  :wallet-connect/on-init-fail
