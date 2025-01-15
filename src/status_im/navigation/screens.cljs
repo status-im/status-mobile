@@ -1048,7 +1048,8 @@
 
     {:name      :screen/use-recovery-phrase-dark
      :metrics   {:track? true}
-     :options   {:theme :dark}
+     :options   {:theme                  :dark
+                 :modalPresentationStyle :fullScreen}
      :component enter-seed-phrase/view}
 
     {:name      :screen/profile.profiles

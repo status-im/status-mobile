@@ -31,7 +31,7 @@
    :margin-bottom   2})
 
 (def input-container
-  {:height            120
+  {:flex              1
    :margin-top        12
    :margin-horizontal -20})
 
