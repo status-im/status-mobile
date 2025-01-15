@@ -3,23 +3,6 @@
             [utils.re-frame :as rf]
             [utils.security.core :as security]))
 
-(rf/reg-event-fx :keycard/migration.check-empty-card
- (fn [{:keys [db]}]
-   {:fx [[:dispatch
-          [:keycard/connect
-           {:key-uid (get-in db [:profile/profile :key-uid])
-            :on-success
-            (fn []
-              (rf/dispatch [:keycard/disconnect])
-              (rf/dispatch [:open-modal :screen/keycard.profile-keys]))
-            :on-error
-            (fn [error]
-              (if (= error :keycard/error.keycard-blank)
-                (do
-                  (rf/dispatch [:keycard/disconnect])
-                  (rf/dispatch [:open-modal :screen/keycard.empty]))
-                (rf/dispatch [:keycard/on-application-info-error error])))}]]]}))
-
 (defn get-application-info-and-continue
   [key-uid]
   (rf/dispatch [:keycard/get-application-info
@@ -40,7 +23,7 @@
      (cond
 
        (not initialized?)
-       {:fx [[:keycard/init-card
+       {:fx [[:effects.keycard/init-card
               {:pin        pin
                :on-success #(get-application-info-and-continue key-uid)}]]}
 

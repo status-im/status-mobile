@@ -90,7 +90,7 @@
      (cond
 
        (not initialized?)
-       {:fx [[:keycard/init-card
+       {:fx [[:effects.keycard/init-card
               {:pin        pin
                :on-success get-application-info-and-continue}]]}
 

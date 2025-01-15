@@ -6,6 +6,7 @@
             [status-im.common.resources :as resources]
             [status-im.config :as config]
             [status-im.constants :as constants]
+            [status-im.contexts.keycard.common.view :as common.view]
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]))
 
@@ -37,9 +38,7 @@
       :image               (resources/get-image :use-keycard)
       :on-press            #(rf/dispatch [:browser.ui/open-url constants/get-keycard-url])}]]
    [rn/view {:style {:flex 1}}]
-   [quo/divider-label (i18n/label :t/tips-scan-keycard)]
-   [quo/markdown-list {:description (i18n/label :t/remove-phone-case)}]
-   [quo/markdown-list {:description (i18n/label :t/keep-card-steady)}]])
+   [common.view/tips]])
 
 (defn ready-to-add
   []
@@ -58,9 +57,7 @@
     {:resize-mode :contain
      :style       {:flex 1 :align-self :center :margin-vertical 37}
      :source      (resources/get-image :add-key-to-keycard)}]
-   [quo/divider-label (i18n/label :t/tips-scan-keycard)]
-   [quo/markdown-list {:description (i18n/label :t/remove-phone-case)}]
-   [quo/markdown-list {:description (i18n/label :t/keep-card-steady)}]
+   [common.view/tips]
    [quo/bottom-actions
     {:actions          :one-action
      :button-one-label (i18n/label :t/scan-keycard)

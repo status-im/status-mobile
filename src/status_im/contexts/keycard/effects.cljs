@@ -56,6 +56,10 @@
  (fn [args]
    (keycard/factory-reset (keycard.utils/wrap-handlers args))))
 
+(rf/reg-fx :effects.keycard/verify-pin
+ (fn [args]
+   (keycard/verify-pin (keycard.utils/wrap-handlers args))))
+
 (rf/reg-fx :effects.keycard/sign
  (fn [args]
    (-> (keycard/sign args)
@@ -75,7 +79,7 @@
        (promesa/then on-success)
        (promesa/catch (keycard.utils/get-on-failure args)))))
 
-(rf/reg-fx :keycard/init-card
+(rf/reg-fx :effects.keycard/init-card
  (fn [args]
    (keycard/init-card (keycard.utils/wrap-handlers args))))
 

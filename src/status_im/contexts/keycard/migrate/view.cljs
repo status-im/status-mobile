@@ -3,6 +3,7 @@
             [react-native.core :as rn]
             [status-im.common.events-helper :as events-helper]
             [status-im.common.resources :as resources]
+            [status-im.contexts.keycard.common.view :as common.view]
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]))
 
@@ -26,9 +27,7 @@
       [rn/image
        {:resize-mode :contain
         :source      (resources/get-image :keycard-migration)}]]
-     [quo/divider-label (i18n/label :t/tips-scan-keycard)]
-     [quo/markdown-list {:description (i18n/label :t/remove-phone-case)}]
-     [quo/markdown-list {:description (i18n/label :t/keep-card-steady)}]
+     [common.view/tips]
      [quo/bottom-actions
       {:actions          :one-action
        :button-one-label (if initialized? (i18n/label :t/enter-keycard-pin) (i18n/label :t/scan-keycard))

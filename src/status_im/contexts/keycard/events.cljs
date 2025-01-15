@@ -1,5 +1,7 @@
 (ns status-im.contexts.keycard.events
   (:require [re-frame.core :as rf]
+            status-im.contexts.keycard.backup.events
+            status-im.contexts.keycard.check.events
             status-im.contexts.keycard.create.events
             status-im.contexts.keycard.login.events
             status-im.contexts.keycard.migrate.events
@@ -56,6 +58,10 @@
                 [:keycard/on-application-info-error
                  :keycard/error.keycard-locked]])]}))))
 
+(rf/reg-event-fx :keycard/init-card
+ (fn [_ [data]]
+   {:effects.keycard/init-card data}))
+
 (rf/reg-event-fx :keycard/get-keys
  (fn [_ [data]]
    {:effects.keycard/get-keys data}))
@@ -71,6 +77,10 @@
 (rf/reg-event-fx :keycard/factory-reset
  (fn [_ [data]]
    {:effects.keycard/factory-reset data}))
+
+(rf/reg-event-fx :keycard/verify-pin
+ (fn [_ [data]]
+   {:effects.keycard/verify-pin data}))
 
 (rf/reg-event-fx :keycard/connect-derive-address-and-add-account
  (fn [_ [{:keys [pin derivation-path key-uid account-preferences]}]]

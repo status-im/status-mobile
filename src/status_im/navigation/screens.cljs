@@ -31,12 +31,14 @@
     [status-im.contexts.communities.discover.view :as communities.discover]
     [status-im.contexts.communities.overview.view :as communities.overview]
     [status-im.contexts.keycard.authorise.view :as keycard.authorise]
+    [status-im.contexts.keycard.backup.view :as keycard.backup]
     [status-im.contexts.keycard.check.view :as keycard.check]
     [status-im.contexts.keycard.create.view :as keycard.create]
     [status-im.contexts.keycard.different-card.view :as keycard.different-card]
     [status-im.contexts.keycard.empty.view :as keycard.empty]
     [status-im.contexts.keycard.error.view :as keycard.error]
     [status-im.contexts.keycard.factory-reset.view :as keycard.factory-reset]
+    [status-im.contexts.keycard.manage.profile-keys.view :as keycard.manage.profile-keys]
     [status-im.contexts.keycard.migrate.fail.view :as keycard.migrate.fail]
     [status-im.contexts.keycard.migrate.profile-keys.view :as keycard.migrate.profile-keys]
     [status-im.contexts.keycard.migrate.re-encrypting.view :as keycard.re-encrypting]
@@ -1004,12 +1006,19 @@
                 :insets                 {:top? true :bottom? true}}
     :component keycard.pin.enter/view}
 
-   {:name      :screen/keycard.profile-keys
+   {:name      :screen/keycard.migrate.profile-keys
     :metrics   {:track? true}
     :options   {:theme                  :dark
                 :modalPresentationStyle :fullScreen
                 :insets                 {:top? true :bottom? true}}
     :component keycard.migrate.profile-keys/view}
+
+   {:name      :screen/keycard.manage.profile-keys
+    :metrics   {:track? true}
+    :options   {:theme                  :dark
+                :modalPresentationStyle :fullScreen
+                :insets                 {:top? true :bottom? true}}
+    :component keycard.manage.profile-keys/view}
 
    {:name      :screen/keycard.create-profile
     :metrics   {:track? true}
@@ -1035,7 +1044,36 @@
     :options   {:theme                  :dark
                 :modalPresentationStyle :fullScreen
                 :insets                 {:top? true :bottom? true}}
-    :component keycard.factory-reset/failed-view}])
+    :component keycard.factory-reset/failed-view}
+
+   {:name      :screen/keycard.backup.scan-empty
+    :metrics   {:track? true}
+    :options   {:theme                  :dark
+                :modalPresentationStyle :fullScreen
+                :insets                 {:top? true :bottom? true}}
+    :component keycard.backup/scan-empty}
+
+   {:name      :screen/keycard.backup.not-empty
+    :metrics   {:track? true}
+    :options   {:theme                  :dark
+                :modalPresentationStyle :fullScreen
+                :insets                 {:top? true :bottom? true}}
+    :component keycard.backup/not-empty-view}
+
+   {:name      :screen/keycard.backup.ready-to-add
+    :metrics   {:track? true}
+    :options   {:theme                  :dark
+                :modalPresentationStyle :fullScreen
+                :insets                 {:top? true :bottom? true}}
+    :component keycard.backup/ready-to-add}
+
+   {:name      :screen/keycard.backup.success
+    :metrics   {:track? true}
+    :options   {:theme                  :dark
+                :modalPresentationStyle :fullScreen
+                :insets                 {:top? true :bottom? true}}
+    :component keycard.backup/success-view}])
+
 
 (defn screens
   []
