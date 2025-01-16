@@ -3,7 +3,7 @@
     "_comment": "Instead use: scripts/update-status-go.sh <rev>",
     "owner": "status-im",
     "repo": "status-go",
-    "version": "v8.1.0",
-    "commit-sha1": "df1c8788e42784ba3b8ed3e7c5bd3ea530028410",
-    "src-sha256": "1yxcswrj7p1m96lx795vbqlgjlmpkgzaw7l8f2k4ni3d7vmlklnw"
+    "version": "feat/lower-and-upper-bounds-for-priority-fee",
+    "commit-sha1": "46105cfba96959f22a89e3650ee8d939b11fa645",
+    "src-sha256": "1xdzl87mzdrmv1255lgz0g2xkxay24cnnmd4q1nm8pphhbbh630n"
 }
