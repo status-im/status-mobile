@@ -18,5 +18,5 @@
         :colors              [color-top color-bottom]
         :start               {:x 0 :y 0}
         :end                 {:x 0 :y 1}
-        :style               (merge (style/root-container opacity height)
-                                    container-style)}])))
+        :style               [(style/root-container opacity height)
+                              container-style]}])))

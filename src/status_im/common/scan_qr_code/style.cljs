@@ -15,16 +15,7 @@
 
 (def flex-spacer {:flex 1})
 
-(def absolute-fill
-  {:position :absolute
-   :top      0
-   :bottom   0
-   :left     0
-   :right    0})
-
-(def hole
-  (merge absolute-fill
-         {:z-index 2 :opacity 0.95}))
+(def hole {:z-index 2 :opacity 0.95})
 
 (defn root-container
   [padding-top]

@@ -201,7 +201,7 @@
            button-disabled? account-avatar-emoji account-avatar-type customization-color icon-avatar
            context icon]}]
   (let [theme (quo.theme/use-theme)]
-    [rn/view {:style (merge style/container container-style)}
+    [rn/view {:style [style/container container-style]}
      (when (left-image-supported-types type)
        [rn/view {:style style/left-container}
         [left-image

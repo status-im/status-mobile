@@ -10,12 +10,7 @@
     {:flex 1}))
 
 (def avatar-overlay
-  {:position        :absolute
-   :top             0
-   :right           0
-   :left            0
-   :bottom          0
-   :justify-content :center
+  {:justify-content :center
    :align-items     :center})
 
 (defn qr-image

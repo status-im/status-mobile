@@ -21,9 +21,7 @@
     ["react-native-redash" :refer (withPause)]
     [react-native.flat-list :as rn-flat-list]
     [react-native.platform :as platform]
-    [react-native.utils :as rn.utils]
     [reagent.core :as reagent]
-    [utils.transforms :as transforms]
     [utils.worklets.core :as worklets.core]))
 
 (def ^:const default-duration 300)
@@ -36,13 +34,7 @@
 ;; Animated Components
 (def create-animated-component (comp reagent/adapt-react-class (.-createAnimatedComponent reanimated)))
 
-(def ^:private view* (reagent/adapt-react-class (.-View reanimated)))
-
-(defn view
-  [& argv]
-  (let [[reagent-props children] (rn.utils/get-props-and-children argv)
-        updated-props            (update reagent-props :style transforms/styles-with-vectors)]
-    (into [view* updated-props] children)))
+(def view (reagent/adapt-react-class (.-View reanimated)))
 
 (def scroll-view (reagent/adapt-react-class (.-ScrollView reanimated)))
 (def image (reagent/adapt-react-class (.-Image reanimated)))
@@ -186,4 +178,3 @@
                      (with-timing value
                                   (clj->js {:duration duration
                                             :easing   (default-easing)})))))
-

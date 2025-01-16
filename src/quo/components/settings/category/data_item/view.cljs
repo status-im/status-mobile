@@ -10,7 +10,7 @@
   [{:keys [label data container-style blur?]}]
   (let [theme     (quo.theme/use-theme)
         last-item (rn/use-memo #(last data) [data])]
-    [rn/view {:style (merge (style/container label) container-style)}
+    [rn/view {:style [(style/container label) container-style]}
      (when label
        [text/text
         {:weight :medium
@@ -29,4 +29,3 @@
          [data-item/view data-item-props]
          (when-not (= item last-item)
            [rn/view {:style (style/settings-separator blur? theme)}])])]]))
-

@@ -36,7 +36,7 @@
                  (colors/theme-colors colors/neutral-100 colors/white theme))
    :align-self :center
    :height     280.48
-   :transform  [{:rotate "-30deg"} {:translateY -30}]
+   :transform  [{:rotate "-30deg"} {:translate-y -30}]
    :opacity    (when-not locked? 0.02)
    :z-index    1})
 

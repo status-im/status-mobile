@@ -131,7 +131,7 @@
          :char-limit     char-limit
          :theme          theme}])
      [rn/view
-      {:style (merge (style/input-container colors-by-status small? disabled?) input-container-style)}
+      {:style [(style/input-container colors-by-status small? disabled?) input-container-style]}
       (when-let [{:keys [icon-name]} left-icon]
         [left-accessory
          {:variant-colors variant-colors

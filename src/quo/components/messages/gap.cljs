@@ -48,7 +48,7 @@
                            :margin-left        -4}
                           (if (= type :top)
                             {:top 0}
-                            {:transform [{:rotateZ "180deg"}]
+                            {:transform [{:rotate-z "180deg"}]
                              :bottom    0})
                           style)}]))
 

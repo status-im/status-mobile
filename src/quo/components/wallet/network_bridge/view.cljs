@@ -14,9 +14,9 @@
 (defn network-bridge-add
   [{:keys [network state theme container-style on-press]}]
   [rn/pressable
-   {:style    (merge (style/container network state theme)
-                     (style/add-container theme)
-                     container-style)
+   {:style    [(style/container network state theme)
+               (style/add-container theme)
+               container-style]
     :on-press on-press}
    [icon/icon :i/edit
     {:size  12
@@ -36,7 +36,7 @@
     (if (= status :edit)
       [network-bridge-add (assoc args :theme theme)]
       [rn/pressable
-       {:style               (merge (style/container network status theme) container-style)
+       {:style               [(style/container network status theme) container-style]
         :accessible          true
         :accessibility-label :container
         :on-press            on-press

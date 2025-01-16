@@ -28,6 +28,7 @@
     [status-im.setup.interceptors :as interceptors]
     status-im.subs.root
     [utils.i18n :as i18n]
+    [utils.reagent]
     [status-im.setup.status-backend-client :as status-backend-client]))
 
 ;;;; re-frame RN setup
@@ -35,6 +36,7 @@
 (set! batching/fake-raf #(js/setTimeout % 0))
 (def functional-compiler (reagent.core/create-compiler {:function-components true}))
 (reagent.core/set-default-compiler! functional-compiler)
+(utils.reagent/set-convert-props-in-vectors!)
 
 (def adjust-resize 16)
 

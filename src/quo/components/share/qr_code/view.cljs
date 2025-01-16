@@ -11,7 +11,7 @@
 (defn- avatar-image
   [{avatar-type :avatar
     :as         props}]
-  [rn/view {:style style/avatar-overlay}
+  [rn/view {:style [rn/stylesheet-absolute-fill style/avatar-overlay]}
    [rn/view
     {:style (case avatar-type
               :wallet-account style/avatar-container-rounded

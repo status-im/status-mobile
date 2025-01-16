@@ -174,10 +174,10 @@
                                                     :on-success-scan set-qr-code-succeeded
                                                     :on-failed-scan  set-rescan-timeout}))}]]
    [hole-view/hole-view
-    {:style style/hole
-     :holes [(assoc qr-view-finder :borderRadius 16)]}
+    {:style [rn/stylesheet-absolute-fill style/hole]
+     :holes [(assoc qr-view-finder :border-radius 16)]}
     [quo/blur
-     {:style            style/absolute-fill
+     {:style            rn/stylesheet-absolute-fill
       :blur-amount      10
       :blur-type        :transparent
       :overlay-color    colors/neutral-80-opa-80-blur

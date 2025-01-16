@@ -62,12 +62,9 @@
       :on-press                on-press
       :allow-multiple-presses? allow-multiple-presses?
       :on-long-press           on-long-press
-      :style                   (merge
-                                (style/shape-style-container size border-radius)
-                                container-style)}
+      :style                   [(style/shape-style-container size border-radius) container-style]}
      [rn/view
-      {:style (merge
-               (style/style-container {:size             size
+      {:style (style/container-styles {:size             size
                                        :disabled?        disabled?
                                        :border-radius    border-radius
                                        :background-color background-color
@@ -75,8 +72,8 @@
                                        :icon-only?       icon-only?
                                        :icon-top         icon-top
                                        :icon-left        icon-left
-                                       :icon-right       icon-right})
-               inner-style)}
+                                       :icon-right       icon-right
+                                       :inner-style      inner-style})}
       (when overlay-customization-color
         [customization-colors/overlay
          {:customization-color overlay-customization-color

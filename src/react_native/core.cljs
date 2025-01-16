@@ -211,3 +211,5 @@
 (def linking (.-Linking react-native))
 
 (defn open-url [link] (.openURL ^js linking link))
+
+(def stylesheet-absolute-fill ^js (.. react-native -StyleSheet -absoluteFill))

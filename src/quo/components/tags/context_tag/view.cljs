@@ -97,7 +97,7 @@
            theme               (quo.theme/use-theme)}
     :as   props}]
   (let [[image-error? set-image-error] (rn/use-state false)]
-    [rn/view {:style (merge {:align-items :flex-start} container-style)}
+    [rn/view {:style [{:align-items :flex-start} container-style]}
      [rn/view
       {:style               (style/container {:theme               theme
                                               :type                type
