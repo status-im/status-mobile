@@ -1,0 +1,11 @@
+--- /tmp/tmp-status-mobile-851dbcb56/tmp.gcyqIAUEIA/build.gradle	2024-04-16 18:11:12.481819000 +0200
++++ ./node_modules/@react-native-community/blur/android/build.gradle	2024-04-16 18:11:18.889991702 +0200
+@@ -5,7 +5,7 @@
+   }
+ 
+   dependencies {
+-    classpath 'com.android.tools.build:gradle:3.5.3'
++    classpath 'com.android.tools.build:gradle:3.5.4'
+   }
+ }
+ 
