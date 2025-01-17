@@ -15,7 +15,8 @@
      :border-color     (colors/theme-colors colors/neutral-20 dark-border theme)}))
 
 (def text
-  {:margin-left 8})
+  {:flex        1
+   :margin-left 8})
 
 (def icon-container
   {:align-items :flex-end
