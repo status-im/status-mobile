@@ -159,7 +159,9 @@
   [content]
   (reduce (fn [acc e]
             (conj acc (resolve-group-system-message e)))
-          [quo/text]
+          [rn/view
+           {:style {:flex-direction :row
+                    :flex-wrap      :wrap}}]
           (:parsed-text content)))
 
 (defn group-system-message
