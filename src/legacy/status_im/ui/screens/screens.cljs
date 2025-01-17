@@ -12,7 +12,6 @@
     [legacy.status-im.ui.screens.help-center.views :as help-center]
     [legacy.status-im.ui.screens.log-level-settings.views :as log-level-settings]
     [legacy.status-im.ui.screens.notifications-settings.views :as notifications-settings]
-    [legacy.status-im.ui.screens.offline-messaging-settings.views :as offline-messaging-settings]
     [legacy.status-im.ui.screens.pairing.views :as pairing]
     [legacy.status-im.ui.screens.peers-stats :as peers-stats]
     [legacy.status-im.ui.screens.profile.seed.views :as profile.seed]
@@ -113,9 +112,6 @@
     :options   {:topBar (topbar-options (i18n/label :t/devices))
                 :insets {:top? true}}
     :component pairing/installations}
-   {:name      :offline-messaging-settings
-    :options   {:insets {:top? true}}
-    :component offline-messaging-settings/offline-messaging-settings}
    {:name      :rpc-usage-info
     :options   {:topBar (topbar-options :t/rpc-usage-info)
                 :insets {:top? true}}

@@ -7,6 +7,7 @@
     [legacy.status-im.ui.components.react :as react]
     [quo.core :as quo]
     [re-frame.core :as re-frame]
+    [react-native.clipboard :as clipboard]
     [status-im.constants :as constants]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
@@ -67,10 +68,10 @@
        {:size                :small
         :accessibility-label :offline-messages-settings-button
         :title               (i18n/label :t/history-nodes)
-        :on-press            #(re-frame/dispatch [:navigate-to :offline-messaging-settings])
+        :on-press            (fn []
+                               (clipboard/set-string current-mailserver-name))
         :accessory           :text
-        :accessory-text      (when use-mailservers? current-mailserver-name)
-        :chevron             true}]
+        :accessory-text      (when use-mailservers? current-mailserver-name)}]
       ;; TODO(Ferossgp): Devider componemt
       [react/view
        {:height           1
