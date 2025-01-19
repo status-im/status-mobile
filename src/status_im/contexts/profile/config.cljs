@@ -34,28 +34,35 @@
    :alchemyBaseMainnetToken       config/ALCHEMY_BASE_MAINNET_TOKEN
    :alchemyBaseSepoliaToken       config/ALCHEMY_BASE_SEPOLIA_TOKEN})
 
+(defn- common-config
+  []
+  {:verifyTransactionURL                         config/verify-transaction-url
+   :verifyENSURL                                 config/verify-ens-url
+   :verifyENSContractAddress                     config/verify-ens-contract-address
+   :verifyTransactionChainID                     config/verify-transaction-chain-id
+   :wakuV2LightClient                            true
+   :wakuV2EnableMissingMessageVerification       true
+   :wakuV2EnableStoreConfirmationForMessagesSent false})
+
+(defn fix-node-config-migration
+  []
+  (common-config))
+
 (defn create
   []
   (let [log-enabled? (boolean (not-empty config/log-level))]
-    (assoc
+    (merge
      (login)
-     :deviceName                                   (native-module/get-installation-name)
-     :rootDataDir                                  (native-module/backup-disabled-data-dir)
-     :rootKeystoreDir                              (native-module/keystore-dir)
-     :logLevel                                     (when log-enabled? config/log-level)
-     :logEnabled                                   log-enabled?
-     :logFilePath                                  (native-module/log-file-directory)
-     :verifyTransactionURL                         config/verify-transaction-url
-     :verifyENSURL                                 config/verify-ens-url
-     :verifyENSContractAddress                     config/verify-ens-contract-address
-     :verifyTransactionChainID                     config/verify-transaction-chain-id
-     :wakuV2LightClient                            true
-     :wakuV2Fleet                                  config/fleet
-     ;; NOTE: https://github.com/status-im/status-go/pull/5570#discussion_r1690794119
-     :wakuV2EnableMissingMessageVerification       true
-     :wakuV2EnableStoreConfirmationForMessagesSent false
-     :previewPrivacy                               config/blank-preview?
-     :testNetworksEnabled                          config/test-networks-enabled?)))
+     (common-config)
+     {:deviceName          (native-module/get-installation-name)
+      :rootDataDir         (native-module/backup-disabled-data-dir)
+      :rootKeystoreDir     (native-module/keystore-dir)
+      :logLevel            (when log-enabled? config/log-level)
+      :logEnabled          log-enabled?
+      :logFilePath         (native-module/log-file-directory)
+      :wakuV2Fleet         config/fleet
+      :previewPrivacy      config/blank-preview?
+      :testNetworksEnabled config/test-networks-enabled?})))
 
 (defn strip-file-prefix
   [path]
