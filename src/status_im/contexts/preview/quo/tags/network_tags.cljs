@@ -23,12 +23,12 @@
     :key  :title}
    {:type    :select
     :key     :networks
-    :options [{:key 1}
+    :options [{:key 0}
+              {:key 1}
               {:key 2}
               {:key 3}]}
    {:type :boolean
     :key  :blur?}])
-
 
 (defn view
   []
@@ -36,16 +36,18 @@
                              :status   :default
                              :networks 3})]
     (fn []
-      [preview/preview-container
-       {:state                 state
-        :descriptor            descriptor
-        :blur?                 (:blur? @state)
-        :show-blur-background? true}
-       [rn/view
-        {:style {:align-self      :center
-                 :justify-content :center
-                 :flex            1}}
-        [quo/network-tags
-         (assoc @state
-                :networks
-                (nth community-networks (dec (:networks @state))))]]])))
+      (let [selected-networks-id (dec (:networks @state))]
+        [preview/preview-container
+         {:state                 state
+          :descriptor            descriptor
+          :blur?                 (:blur? @state)
+          :show-blur-background? true}
+         [rn/view
+          {:style {:align-self      :center
+                   :justify-content :center
+                   :flex            1}}
+          [quo/network-tags
+           (assoc @state
+                  :networks
+                  (when (pos? selected-networks-id)
+                    (nth community-networks selected-networks-id)))]]]))))

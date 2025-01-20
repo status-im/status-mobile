@@ -884,9 +884,10 @@ class TestCommunityMultipleDeviceMergedTwo(MultipleSharedDeviceTestCase):
 
         self.device_1.just_fyi("Admin gets push notification with the mention and tap it")
         message_received = False
-        if self.home_1.get_pn(self.username_1):
+        pn_element = self.home_1.get_pn(pn_text=self.username_1, wait_time=90)
+        if pn_element:
+            pn_element.click()
             message_received = True
-            self.device_1.click_upon_push_notification_by_text(self.username_1)
             if not self.channel_1.chat_element_by_text(self.username_1).is_element_displayed():
                 if self.channel_1.chat_message_input.is_element_displayed():
                     self.errors.append("Message with the mention is not shown in the chat for the admin")
@@ -904,11 +905,6 @@ class TestCommunityMultipleDeviceMergedTwo(MultipleSharedDeviceTestCase):
         if message_received:
             self.channel_1.just_fyi("Set reaction for the message with a mention")
             self.channel_1.set_reaction(message=self.username_1, emoji="sad", times_to_long_press=2)
-            try:
-                self.channel_2.chat_element_by_text(self.username_1).emojis_below_message(
-                    emoji="sad").wait_for_element_text(1)
-            except (Failed, NoSuchElementException):
-                self.errors.append("Message reaction is not shown for the sender")
 
         self.device_2.just_fyi("Sender edits the message with a mention")
         chat_element = self.channel_2.chat_element_by_text(self.username_1)
@@ -937,6 +933,13 @@ class TestCommunityMultipleDeviceMergedTwo(MultipleSharedDeviceTestCase):
             if not element.is_element_displayed(10) or element.text != expected_message:
                 self.errors.append("Edited message is not shown correctly for the (receiver) admin")
 
+        self.device_2.just_fyi("Sender checks the reaction for a message with a mention")
+        try:
+            self.channel_2.chat_element_by_text(self.username_1).emojis_below_message(
+                emoji="sad").wait_for_element_text(1)
+        except (Failed, NoSuchElementException):
+            self.errors.append("Message reaction is not shown for the sender")
+
         self.home_2.navigate_back_to_home_view()
         if not self.channel_1.chat_message_input.is_element_displayed():
             self.channel_1.navigate_back_to_home_view()
@@ -949,7 +952,7 @@ class TestCommunityMultipleDeviceMergedTwo(MultipleSharedDeviceTestCase):
         self.channel_1.send_message_button.click()
         self.device_2.just_fyi("Invited member gets push notification with the mention and tap it")
         self.device_2.open_notification_bar()
-        push_notification_element = self.home_2.get_pn(self.username_2)
+        push_notification_element = self.home_2.get_pn(pn_text=self.username_2, wait_time=90)
         if push_notification_element:
             push_notification_element.click()
             if not self.channel_2.chat_element_by_text(self.username_2).is_element_displayed():

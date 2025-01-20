@@ -52,6 +52,10 @@
  (fn [args]
    (keycard/export-key (keycard.utils/wrap-handlers args))))
 
+(rf/reg-fx :effects.keycard/factory-reset
+ (fn [args]
+   (keycard/factory-reset (keycard.utils/wrap-handlers args))))
+
 (rf/reg-fx :effects.keycard/sign
  (fn [args]
    (-> (keycard/sign args)

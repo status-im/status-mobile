@@ -68,6 +68,10 @@
  (fn [_ [data]]
    {:effects.keycard/export-key data}))
 
+(rf/reg-event-fx :keycard/factory-reset
+ (fn [_ [data]]
+   {:effects.keycard/factory-reset data}))
+
 (rf/reg-event-fx :keycard/connect-derive-address-and-add-account
  (fn [_ [{:keys [pin derivation-path key-uid account-preferences]}]]
    {:fx [[:dispatch

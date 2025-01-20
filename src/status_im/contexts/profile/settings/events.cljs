@@ -129,10 +129,8 @@
            [:dispatch [:hide-bottom-sheet]]]})))
 
 (rf/reg-event-fx :profile.settings/update-local-picture
- (fn [{:keys [db now]} [images]]
-   {:db (assoc-in db
-         [:profile/profile :images]
-         (map #(assoc % :clock now) images))}))
+ (fn [{:keys [db]} [images]]
+   {:db (assoc-in db [:profile/profile :images] images)}))
 
 (rf/reg-event-fx :profile.settings/mnemonic-was-shown
  (fn [_]

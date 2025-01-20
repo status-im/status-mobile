@@ -2,7 +2,9 @@
   (:require [quo.core :as quo]
             [react-native.core :as rn]
             [status-im.common.events-helper :as events-helper]
+            [status-im.common.not-implemented :as not-implemented]
             [status-im.common.resources :as resources]
+            [status-im.config :as config]
             [status-im.constants :as constants]
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]))
@@ -43,20 +45,23 @@
   []
   [:<>
    [quo/page-nav
-    {:icon-name :i/arrow-left
-     :on-press  events-helper/navigate-back}]
+    {:icon-name  :i/close
+     :on-press   events-helper/navigate-back
+     :right-side [(when config/show-not-implemented-features?
+                    {:icon-name :i/info
+                     :on-press  not-implemented/alert})]}]
    [quo/page-top
     {:title            (i18n/label :t/ready-add-keypair-keycard)
      :description      :text
      :description-text ""}]
-   [rn/view {:style {:flex 1 :align-items :center :justify-content :center}}
-    [rn/image
-     {:resize-mode :contain
-      :source      (resources/get-image :generate-keys1)}]]
+   [rn/image
+    {:resize-mode :contain
+     :style       {:flex 1 :align-self :center :margin-vertical 37}
+     :source      (resources/get-image :add-key-to-keycard)}]
    [quo/divider-label (i18n/label :t/tips-scan-keycard)]
    [quo/markdown-list {:description (i18n/label :t/remove-phone-case)}]
    [quo/markdown-list {:description (i18n/label :t/keep-card-steady)}]
    [quo/bottom-actions
     {:actions          :one-action
-     :button-one-label (i18n/label :t/ready-to-scan)
+     :button-one-label (i18n/label :t/scan-keycard)
      :button-one-props {:on-press #(rf/dispatch [:keycard/create.start])}}]])

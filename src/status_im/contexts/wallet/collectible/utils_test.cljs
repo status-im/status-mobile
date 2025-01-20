@@ -44,3 +44,18 @@
                                                :token-id token-id
                                                :test-networks-enabled? true})
            "https://testnets.opensea.io/assets/optimism-sepolia/0xC/0xT"))))
+
+(deftest sort-collectibles-by-name-test
+  (testing "Sorts collectibles by name, moving nil or empty names to the end"
+    (let [collectibles        [{:collectible-data {:name "Alpha"}}
+                               {:collectible-data {:name nil}}
+                               {:collectible-data {:name "Beta"}}
+                               {:collectible-data {:name ""}}
+                               {:collectible-data {:name "Zeta"}}]
+          sorted-collectibles (utils/sort-collectibles-by-name collectibles)
+          expected            [{:collectible-data {:name "Alpha"}}
+                               {:collectible-data {:name "Beta"}}
+                               {:collectible-data {:name "Zeta"}}
+                               {:collectible-data {:name nil}}
+                               {:collectible-data {:name ""}}]]
+      (is (= sorted-collectibles expected)))))

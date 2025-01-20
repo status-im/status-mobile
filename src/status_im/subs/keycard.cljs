@@ -82,3 +82,9 @@
  :<- [:keycard]
  (fn [keycard]
    (get-in keycard [:application-info :initialized?])))
+
+(rf/reg-sub
+ :keycard/key-uid
+ :<- [:keycard]
+ (fn [keycard]
+   (get-in keycard [:application-info :key-uid])))

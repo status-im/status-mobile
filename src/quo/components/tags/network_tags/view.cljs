@@ -14,14 +14,16 @@
                                       :theme  theme
                                       :blur?  blur?})
                     container-style)}
-     [preview-list/view
-      {:type   :network
-       :number (count networks)
-       :size   :size-16}
-      networks]
+     (when networks
+       [preview-list/view
+        {:type   :network
+         :number (count networks)
+         :size   :size-16}
+        networks])
      [text/text
       {:weight :medium
        :size   :paragraph-2
-       :style  (style/title-style {:status status
-                                   :theme  theme})}
+       :style  (style/title-style {:status          status
+                                   :theme           theme
+                                   :networks-shown? networks})}
       title]]))

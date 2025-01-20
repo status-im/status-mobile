@@ -267,9 +267,11 @@ run-metro: export TARGET := clojure
 run-metro: ##@run Start Metro to build React Native changes
 	@scripts/run-metro.sh
 
+export RE_FRISK_PORT ?= 4567
+
 run-re-frisk: export TARGET := clojure
 run-re-frisk: ##@run Start re-frisk server
-	yarn shadow-cljs run re-frisk-remote.core/start
+	yarn shadow-cljs run re-frisk-remote.core/start ${RE_FRISK_PORT}
 
 # TODO: Migrate this to a Nix recipe, much the same way as nix/mobile/android/targets/release-android.nix
 run-android: export TARGET := android
@@ -443,7 +445,7 @@ android-ports: export RCT_METRO_PORT ?= 8081
 android-ports: ##@other Add proxies to Android Device/Simulator
 	adb reverse tcp:$(RCT_METRO_PORT) tcp:$(RCT_METRO_PORT) && \
 	adb reverse tcp:3449 tcp:3449 && \
-	adb reverse tcp:4567 tcp:4567 && \
+	adb reverse tcp:$(RE_FRISK_PORT) tcp:$(RE_FRISK_PORT) && \
 	adb reverse tcp:$(FLOWSTORM_PORT) tcp:$(FLOWSTORM_PORT) && \
 	adb forward tcp:5561 tcp:5561
 

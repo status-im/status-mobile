@@ -34,15 +34,28 @@
   []
   (let [keycards (rf/sub [:keycard/registered-keycards])]
     [:<>
-     [quo/divider-label
-      {:counter? false
-       :tight?   true
-       :blur?    true}
-      (i18n/label :t/registered-keycards)]
-     [rn/view {:style style/registered-keycards-container}
-      (for [keycard keycards]
-        ^{:key (:keycard-uid keycard)}
-        [registered-keycard keycard])]]))
+     [rn/view {:style {:flex 1}}
+      [quo/divider-label
+       {:counter? false
+        :tight?   true
+        :blur?    true}
+       (i18n/label :t/registered-keycards)]
+      [rn/view {:style style/registered-keycards-container}
+       (for [keycard keycards]
+         ^{:key (:keycard-uid keycard)}
+         [registered-keycard keycard])]]
+     [quo/text
+      {:size   :heading-2
+       :weight :semi-bold
+       :style  {:margin-left 20}}
+      (i18n/label :t/scan-keycard-actions)]
+     [quo/divider-label (i18n/label :t/tips-scan-keycard)]
+     [quo/markdown-list {:description (i18n/label :t/remove-phone-case)}]
+     [quo/markdown-list {:description (i18n/label :t/keep-card-steady)}]
+     [quo/bottom-actions
+      {:actions          :one-action
+       :button-one-label (i18n/label :t/ready-to-scan)
+       :button-one-props {:on-press #(rf/dispatch [:keycard/connect])}}]]))
 
 (defn view
   []

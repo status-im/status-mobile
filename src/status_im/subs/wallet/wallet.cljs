@@ -505,30 +505,38 @@
  :<- [:wallet/current-viewing-account-or-default]
  :<- [:wallet/network-details]
  :<- [:wallet/wallet-send]
- (fn [[account networks send-data] [_ {:keys [query chain-ids hide-token-fn]}]]
+ :<- [:profile/currency]
+ :<- [:wallet/prices-per-token]
+ (fn [[account networks send-data currency price-per-token] [_ {:keys [query chain-ids hide-token-fn]}]]
    (let [tx-type       (:tx-type send-data)
          tokens        (->> (:tokens account)
                             (map
                              (fn [token]
-                               (assoc token
-                                      :bridge-disabled? (and (= tx-type :tx/bridge)
-                                                             (send-utils/bridge-disabled? (:symbol
-                                                                                           token)))
-                                      :networks (cond->>
-                                                  (network-utils/network-list-with-positive-balance
-                                                   token
-                                                   networks)
-                                                  chain-ids
-                                                  (filter #(some #{(:chain-id %)} chain-ids)))
-                                      :supported-networks (network-utils/network-list token networks)
-                                      :available-balance (utils/calculate-total-token-balance token)
-                                      :total-balance (utils/calculate-total-token-balance
-                                                      token
-                                                      chain-ids))))
+                               (let [total-balance (utils/calculate-total-token-balance
+                                                    token
+                                                    chain-ids)]
+                                 (assoc token
+                                        :bridge-disabled? (and (= tx-type :tx/bridge)
+                                                               (send-utils/bridge-disabled? (:symbol
+                                                                                             token)))
+                                        :networks (cond->>
+                                                    (network-utils/network-list-with-positive-balance
+                                                     token
+                                                     networks)
+                                                    chain-ids
+                                                    (filter #(some #{(:chain-id %)} chain-ids)))
+                                        :supported-networks (network-utils/network-list token networks)
+                                        :available-balance (utils/calculate-total-token-balance token)
+                                        :total-balance total-balance
+                                        :fiat-value (utils/calculate-token-fiat-value
+                                                     {:currency         currency
+                                                      :balance          total-balance
+                                                      :token            token
+                                                      :prices-per-token price-per-token})))))
                             (filter (fn [{:keys [networks]}]
                                       (pos? (count networks))))
                             (remove #(when hide-token-fn (hide-token-fn constants/swap-tokens-my %))))
-         sorted-tokens (utils/sort-tokens tokens)]
+         sorted-tokens (utils/sort-tokens-by-fiat-value tokens)]
      (if query
        (let [query-string (string/lower-case query)]
          (filter #(or (string/starts-with? (string/lower-case (:name %)) query-string)

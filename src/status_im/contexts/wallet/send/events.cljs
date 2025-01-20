@@ -806,3 +806,39 @@
             :always             (update-in [:wallet :ui :send] dissoc :amount :route)
             (not keep-tx-data?) (update-in [:wallet :ui :send] dissoc :tx-type))
       :fx [[:dispatch [:navigate-back]]]})))
+
+(rf/reg-event-fx
+ :wallet/init-tx-settings
+ (fn [{db :db}]
+   {:db (assoc-in db
+         [:wallet :ui :send :tx-settings]
+         {:max-base-fee   {:low     5
+                           :current 8.2
+                           :high    9}
+          :priority-fee   {:low     0.6
+                           :high    5.1
+                           :current 1.1}
+          :max-gas-amount {:low     30000
+                           :current 31000}
+          :nonce          {:last-transaction 21
+                           :current          22}})}))
+
+(rf/reg-event-fx
+ :wallet/set-max-base-fee
+ (fn [{db :db} [value]]
+   {:db (assoc-in db [:wallet :ui :send :tx-settings :max-base-fee :current] value)}))
+
+(rf/reg-event-fx
+ :wallet/set-priority-fee
+ (fn [{db :db} [value]]
+   {:db (assoc-in db [:wallet :ui :send :tx-settings :priority-fee :current] value)}))
+(rf/reg-event-fx
+
+ :wallet/set-max-gas-amount
+ (fn [{db :db} [value]]
+   {:db (assoc-in db [:wallet :ui :send :tx-settings :max-gas-amount :current] value)}))
+
+(rf/reg-event-fx
+ :wallet/set-nonce
+ (fn [{db :db} [value]]
+   {:db (assoc-in db [:wallet :ui :send :tx-settings :nonce :current] value)}))

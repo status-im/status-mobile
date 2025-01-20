@@ -409,13 +409,15 @@
 
 (defn sort-tokens
   [tokens]
-  (let [priority #(get constants/token-sort-priority (:symbol %) ##Inf)]
-    (sort-by (juxt (comp - :balance) priority) tokens)))
+  (sort-by (comp - :balance) tokens))
+
+(defn sort-tokens-by-fiat-value
+  [tokens]
+  (sort-by (comp - :fiat-value) tokens))
 
 (defn sort-tokens-by-name
   [tokens]
-  (let [priority #(get constants/token-sort-priority (:symbol %) ##Inf)]
-    (sort-by (juxt :symbol priority) tokens)))
+  (sort-by :symbol tokens))
 
 (defn token-with-balance
   ([token networks]

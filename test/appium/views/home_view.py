@@ -474,10 +474,10 @@ class HomeView(BaseView):
         element.double_click()
         self.element_by_translation_id(mute_period).click()
 
-    def get_pn(self, pn_text: str):
+    def get_pn(self, pn_text: str, wait_time: int = 60):
         self.driver.info("Getting PN by '%s'" % pn_text)
         expected_element = PushNotificationElement(self.driver, pn_text)
-        return expected_element if expected_element.is_element_displayed(60) else False
+        return expected_element if expected_element.is_element_displayed(wait_time) else False
 
     def contact_details_row(self, username=None, index=None):
         return ContactDetailsRow(self.driver, username=username, index=index)

@@ -7,8 +7,8 @@
             [react-native.core :as rn]
             [react-native.platform :as platform]))
 
-(defn- label-&-counter
-  [{:keys [label current-chars char-limit variant-colors theme]}]
+(defn- label-line
+  [{:keys [label label-right current-chars char-limit variant-colors theme]}]
   [rn/view
    {:accessibility-label :input-labels
     :style               style/texts-container}
@@ -18,17 +18,24 @@
       :weight :medium
       :size   :paragraph-2}
      label]]
-   (when-let [count-text (some->> char-limit
-                                  (str current-chars "/"))]
-     [rn/view {:style style/counter-container}
+   (when label-right
+     [rn/view {:style style/right-label-container}
       [text/text
-       {:style  (style/counter-color {:current-chars  current-chars
-                                      :char-limit     char-limit
-                                      :variant-colors variant-colors
-                                      :theme          theme})
+       {:style  (style/label-color variant-colors)
         :weight :regular
         :size   :paragraph-2}
-       count-text]])])
+       label-right]])
+   (when char-limit
+     (let [count-text (str current-chars "/" char-limit)]
+       [rn/view {:style style/right-label-container}
+        [text/text
+         {:style  (style/counter-color {:current-chars  current-chars
+                                        :char-limit     char-limit
+                                        :variant-colors variant-colors
+                                        :theme          theme})
+          :weight :regular
+          :size   :paragraph-2}
+         count-text]]))])
 
 (defn- left-accessory
   [{:keys [variant-colors small? icon-name]}]
@@ -65,7 +72,7 @@
 (defn- base-input
   [{:keys [blur? error? right-icon left-icon disabled? small? button
            label char-limit multiline? clearable? on-focus on-blur container-style input-container-style
-           on-change-text on-char-limit-reach weight default-value on-clear placeholder]
+           on-change-text on-char-limit-reach weight default-value on-clear placeholder label-right]
     :as   props}]
   (let [theme                  (quo.theme/use-theme)
         ref                    (rn/use-ref-atom nil)
@@ -115,10 +122,11 @@
         ;; https://github.com/facebook/react-native/issues/27687
         modified-placeholder   (if platform/android? (str "\u2009" placeholder) placeholder)]
     [rn/view {:style container-style}
-     (when (or label char-limit)
-       [label-&-counter
+     (when (or label char-limit label-right)
+       [label-line
         {:variant-colors variant-colors
          :label          label
+         :label-right    label-right
          :current-chars  char-count
          :char-limit     char-limit
          :theme          theme}])
@@ -199,6 +207,7 @@
   - :on-clear - Function executed when the clear button is pressed.
   - :button - Map containing `:on-press` & `:text` keys, if provided renders a button
   - :label - A string to set as label for this input.
+  - :label-right - Additional label aligned to the right
   - :char-limit - A number to set a maximum char limit for this input.
   - :on-char-limit-reach - Function executed each time char limit is reached or exceeded.
   - :default-shown? - boolean to show password input initially

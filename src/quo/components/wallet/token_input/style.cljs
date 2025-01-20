@@ -19,9 +19,8 @@
   {:color          (colors/theme-colors colors/neutral-50 colors/neutral-40 theme)
    :padding-bottom 3})
 
-(defn input-container
-  [window-width]
-  {:width          (- window-width 120)
+(def input-container
+  {:flex           1
    :margin-left    8
    :margin-right   8
    :flex-direction :row
