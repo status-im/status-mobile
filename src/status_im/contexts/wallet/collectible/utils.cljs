@@ -1,5 +1,6 @@
 (ns status-im.contexts.wallet.collectible.utils
-  (:require [status-im.config :as config]
+  (:require [clojure.string :as string]
+            [status-im.config :as config]
             [status-im.constants :as constants]
             [status-im.contexts.wallet.common.utils.networks :as network-utils]
             [taoensso.timbre :as log]
@@ -83,6 +84,8 @@
 (defn sort-collectibles-by-name
   [collectibles]
   (sort-by (fn [collectible]
-             (let [name (-> collectible :collectible-data :name)]
-               [(if (seq name) 0 1) name]))
+             (let [name            (-> collectible :collectible-data :name)
+                   normalized-name (some-> name
+                                           string/lower-case)]
+               [(if (seq normalized-name) 0 1) normalized-name]))
            collectibles))
