@@ -25,16 +25,17 @@
     {:key-uid    key-uid
      :on-success reset-card
      :on-error   (fn [error]
-                   (if (or (= error :keycard/error.keycard-wrong-profile)
-                           (= error :keycard/error.keycard-blank))
+                   (if (or (= error :keycard/error.keycard-frozen)
+                           (= error :keycard/error.keycard-locked)
+                           (= error :keycard/error.keycard-unpaired))
+                     (reset-card)
                      (do
                        (rf/dispatch [:navigate-back])
                        (if (= error :keycard/error.keycard-wrong-profile)
                          (do
                            (rf/dispatch [:keycard/disconnect])
                            (rf/dispatch [:open-modal :screen/keycard.different-card]))
-                         (rf/dispatch [:keycard/on-application-info-error error])))
-                     (reset-card)))}]))
+                         (rf/dispatch [:keycard/on-application-info-error error])))))}]))
 
 (defn success-view
   []
