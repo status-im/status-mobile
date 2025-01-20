@@ -17,7 +17,7 @@
    :music                         (js/require "../resources/images/ui2/music.png")
    :podcasts                      (js/require "../resources/images/ui2/podcasts.png")
    :generate-keys                 (js/require "../resources/images/ui2/generate-keys.png")
-   :generate-keys1                (js/require "../resources/images/ui2/generating-keys-1.png")
+   :add-key-to-keycard            (js/require "../resources/images/ui2/add-key-to-keycard.png")
    :ethereum-address              (js/require "../resources/images/ui2/ethereum-address.png")
    :use-keycard                   (js/require "../resources/images/ui2/keycard.png")
    :use-recovery-phrase           (js/require "../resources/images/ui2/recovery-phrase.png")

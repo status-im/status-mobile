@@ -906,25 +906,29 @@
 (def keycard-screens
   [{:name      :screen/keycard.check
     :metrics   {:track? true}
-    :options   {:theme  :dark
-                :insets {:top? true :bottom? true}}
+    :options   {:theme                  :dark
+                :modalPresentationStyle :fullScreen
+                :insets                 {:top? true :bottom? true}}
     :component keycard.check/view}
 
    {:name      :screen/keycard.empty
     :metrics   {:track? true}
-    :options   {:theme  :dark
-                :insets {:top? true :bottom? true}}
+    :options   {:theme                  :dark
+                :modalPresentationStyle :fullScreen
+                :insets                 {:top? true :bottom? true}}
     :component keycard.empty/view}
 
    {:name      :screen/keycard.empty-create
     :metrics   {:track? true}
-    :options   {:insets {:top? true :bottom? true}}
+    :options   {:insets                 {:top? true :bottom? true}
+                :modalPresentationStyle :fullScreen}
     :component keycard.empty/create}
 
    {:name      :screen/keycard.error
     :metrics   {:track? true}
-    :options   {:theme  :dark
-                :insets {:top? true :bottom? true}}
+    :options   {:theme                  :dark
+                :modalPresentationStyle :fullScreen
+                :insets                 {:top? true :bottom? true}}
     :component keycard.error/view}
 
    {:name      :screen/keycard.different-card
@@ -936,75 +940,86 @@
 
    {:name      :screen/keycard.not-keycard
     :metrics   {:track? true}
-    :options   {:theme  :dark
-                :insets {:top? true :bottom? true}}
+    :options   {:theme                  :dark
+                :modalPresentationStyle :fullScreen
+                :insets                 {:top? true :bottom? true}}
     :component keycard.not-keycard/view}
 
    {:name      :screen/keycard.authorise
     :metrics   {:track? true}
-    :options   {:theme  :dark
-                :insets {:top? true :bottom? true}}
+    :options   {:theme                  :dark
+                :modalPresentationStyle :fullScreen
+                :insets                 {:top? true :bottom? true}}
     :component keycard.authorise/view}
 
    {:name      :screen/keycard.migrate
     :metrics   {:track? true}
-    :options   {:theme  :dark
-                :insets {:top? true :bottom? true}}
+    :options   {:theme                  :dark
+                :modalPresentationStyle :fullScreen
+                :insets                 {:top? true :bottom? true}}
     :component keycard.migrate/view}
 
    {:name      :screen/keycard.re-encrypting
     :metrics   {:track? true}
-    :options   {:theme              :dark
-                :insets             {:top? true :bottom? true}
-                :popGesture         false
-                :hardwareBackButton {:dismissModalOnPress false
-                                     :popStackOnPress     false}}
+    :options   {:theme                  :dark
+                :insets                 {:top? true :bottom? true}
+                :popGesture             false
+                :modalPresentationStyle :fullScreen
+                :hardwareBackButton     {:dismissModalOnPress false
+                                         :popStackOnPress     false}}
     :component keycard.re-encrypting/view}
 
    {:name      :screen/keycard.migrate.success
     :metrics   {:track? true}
-    :options   {:theme              :dark
-                :insets             {:top? true :bottom? true}
-                :popGesture         false
-                :hardwareBackButton {:dismissModalOnPress false
-                                     :popStackOnPress     false}}
+    :options   {:theme                  :dark
+                :insets                 {:top? true :bottom? true}
+                :popGesture             false
+                :modalPresentationStyle :fullScreen
+                :hardwareBackButton     {:dismissModalOnPress false
+                                         :popStackOnPress     false}}
     :component keycard.migrate.success/view}
 
    {:name      :screen/keycard.migrate.fail
     :metrics   {:track? true}
-    :options   {:theme              :dark
-                :insets             {:top? true :bottom? true}
-                :popGesture         false
-                :hardwareBackButton {:dismissModalOnPress false
-                                     :popStackOnPress     false}}
+    :options   {:theme                  :dark
+                :insets                 {:top? true :bottom? true}
+                :popGesture             false
+                :modalPresentationStyle :fullScreen
+                :hardwareBackButton     {:dismissModalOnPress false
+                                         :popStackOnPress     false}}
     :component keycard.migrate.fail/view}
 
    {:name      :screen/keycard.pin.create
     :metrics   {:track? true}
-    :options   {:theme  :dark
-                :insets {:top? true :bottom? true}}
+    :options   {:theme                  :dark
+                :modalPresentationStyle :fullScreen
+                :insets                 {:top? true :bottom? true}}
     :component keycard.pin.create/view}
 
    {:name      :screen/keycard.pin.enter
     :metrics   {:track? true}
-    :options   {:theme  :dark
-                :insets {:top? true :bottom? true}}
+    :options   {:theme                  :dark
+                :modalPresentationStyle :fullScreen
+                :insets                 {:top? true :bottom? true}}
     :component keycard.pin.enter/view}
 
    {:name      :screen/keycard.profile-keys
     :metrics   {:track? true}
-    :options   {:theme  :dark
-                :insets {:top? true :bottom? true}}
+    :options   {:theme                  :dark
+                :modalPresentationStyle :fullScreen
+                :insets                 {:top? true :bottom? true}}
     :component keycard.migrate.profile-keys/view}
 
    {:name      :screen/keycard.create-profile
     :metrics   {:track? true}
-    :options   {:insets {:top? true :bottom? true}}
+    :options   {:insets                 {:top? true :bottom? true}
+                :modalPresentationStyle :fullScreen}
     :component keycard.create/view}
 
    {:name      :screen/keycard.create.ready-to-add
     :metrics   {:track? true}
-    :options   {:insets {:top? true :bottom? true}}
+    :options   {:insets                 {:top? true :bottom? true}
+                :modalPresentationStyle :fullScreen}
     :component keycard.create/ready-to-add}
 
    {:name      :screen/keycard.factory-reset.success

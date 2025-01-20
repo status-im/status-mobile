@@ -35,7 +35,7 @@
      subtitle]]])
 
 (defn- main-variant
-  [{:keys [title subtitle button-label image max-height accessibility-label on-press]}]
+  [{:keys [title subtitle button-label image max-height accessibility-label on-press button-type]}]
   [rn/view {:style style/main-variant}
    [rn/view {:style style/main-variant-text-container}
     [text/text
@@ -58,7 +58,7 @@
    [button/button
     {:on-press            on-press
      :accessibility-label accessibility-label
-     :type                :grey
+     :type                (or button-type :grey)
      :size                40
      :container-style     style/main-button
      :theme               :dark
@@ -66,7 +66,7 @@
     button-label]])
 
 (defn small-option-card
-  [{:keys [variant title subtitle button-label image max-height on-press accessibility-label]
+  [{:keys [variant title subtitle button-label image max-height on-press accessibility-label button-type]
     :or   {variant :main accessibility-label :small-option-card}}]
   (let [main-variant?  (= variant :main)
         card-component (if main-variant? main-variant icon-variant)
@@ -82,4 +82,5 @@
        :on-press            on-press
        :accessibility-label accessibility-label
        :image               image
-       :max-height          max-height}]]))
+       :max-height          max-height
+       :button-type         button-type}]]))

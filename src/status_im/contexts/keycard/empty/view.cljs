@@ -25,6 +25,7 @@
       :button-label        (i18n/label :t/lets-go)
       :accessibility-label :create-new-profile-keycard
       :image               (resources/get-image :keycard-buy)
+      :button-type         :primary
       :on-press            #(rf/dispatch [:keycard/create.get-phrase])}]]
    [quo/information-box
     {:type  :default
