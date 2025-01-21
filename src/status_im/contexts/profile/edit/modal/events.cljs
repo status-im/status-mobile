@@ -28,7 +28,8 @@
           (conj [:dispatch [:profile/delete-picture {:show-toast? false}]])
 
           :always
-          (conj [:dispatch-n [[:navigate-back] on-success]]))}))
+          (conj [:dispatch [:navigate-back]]
+                [:dispatch on-success]))}))
 
 (defn- profile-update-asked-storage-key
   [key-uid]
