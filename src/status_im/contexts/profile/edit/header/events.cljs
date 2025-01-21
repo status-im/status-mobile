@@ -11,7 +11,7 @@
           (update db :profile/profile dissoc :images))}))
 
 (rf/reg-event-fx :profile/edit-profile-picture-success
- (fn [{db :db} [show-toast? images]]
+ (fn [{db :db} [{:keys [show-toast?]} images]]
    (let [has-picture? (-> db :profile/profile :images count pos?)]
      {:fx [[:dispatch [:profile/update-local-picture (reverse images)]]
            (when show-toast?
@@ -34,12 +34,12 @@
     {:fx [[:json-rpc/call
            [{:method     "multiaccounts_storeIdentityImage"
              :params     [key-uid path 0 0 crop-width crop-height]
-             :on-success [:profile/edit-profile-picture-success show-toast?]}]]]}))
+             :on-success [:profile/edit-profile-picture-success {:show-toast? show-toast?}]}]]]}))
 
 (rf/reg-event-fx :profile/edit-picture edit-profile-picture)
 
 (rf/reg-event-fx :profile/delete-profile-picture-success
- (fn [_ [show-toast?]]
+ (fn [_ [{:keys [show-toast?]}]]
    {:fx [[:dispatch [:profile/update-local-picture nil]]
          (when show-toast?
            [:dispatch
@@ -56,6 +56,6 @@
     {:fx [[:json-rpc/call
            [{:method     "multiaccounts_deleteIdentityImage"
              :params     [key-uid]
-             :on-success [:profile/delete-profile-picture-success show-toast?]}]]]}))
+             :on-success [:profile/delete-profile-picture-success {:show-toast? show-toast?}]}]]]}))
 
 (rf/reg-event-fx :profile/delete-picture delete-profile-picture)

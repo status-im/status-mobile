@@ -4,7 +4,7 @@
             [utils.re-frame :as rf]))
 
 (rf/reg-event-fx :profile/edit-accent-colour-success
- (fn [_ [customization-color navigate-back? show-toast?]]
+ (fn [_ [{:keys [customization-color navigate-back? show-toast?]}]]
    {:fx [[:dispatch [:profile/save-local-accent-color customization-color]]
          (when navigate-back?
            [:dispatch [:navigate-back]])
@@ -29,7 +29,10 @@
            [{:method     "wakuext_setCustomizationColor"
              :params     [{:customizationColor color
                            :keyUid             key-uid}]
-             :on-success [:profile/edit-accent-colour-success color navigate-back? show-toast?]
+             :on-success [:profile/edit-accent-colour-success
+                          {:customization-color color
+                           :navigate-back?      navigate-back?
+                           :show-toast?         show-toast?}]
              :on-error   #(log/error "failed to edit accent color." {:error %})}]]]}))
 
 (rf/reg-event-fx :profile/edit-accent-colour edit-accent-colour)

@@ -12,7 +12,7 @@
                         [{:method     "multiaccounts_storeIdentityImage"
                           :params     [key-uid picture 0 0 profile-picture-picker/crop-size
                                        profile-picture-picker/crop-size]
-                          :on-success [:profile/edit-profile-picture-success true]}]]]}]
+                          :on-success [:profile/edit-profile-picture-success {:show-toast? true}]}]]]}]
     (is (match? expected
                 (sut/edit-profile-picture cofx [{:picture picture}])))))
 
@@ -22,6 +22,6 @@
         expected {:fx [[:json-rpc/call
                         [{:method     "multiaccounts_deleteIdentityImage"
                           :params     [key-uid]
-                          :on-success [:profile/delete-profile-picture-success true]}]]]}]
+                          :on-success [:profile/delete-profile-picture-success {:show-toast? true}]}]]]}]
     (is (match? expected
                 (sut/delete-profile-picture cofx [{}])))))
