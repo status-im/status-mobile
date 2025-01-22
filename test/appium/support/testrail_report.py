@@ -2,7 +2,6 @@ import base64
 import itertools
 import json
 import logging
-import re
 from json import JSONDecodeError
 from os import environ
 from sys import argv
@@ -212,18 +211,10 @@ class TestrailReport(BaseTestReport):
                 except IndexError:
                     continue
                 for res in results:
-                    if last_testrun.first_commands:
-                        try:
-                            pattern = r"%s\?auth=.*#%s" % (device, str(last_testrun.first_commands[device]))
-                        except KeyError:
-                            pattern = device
-                    else:
-                        pattern = device
-                    if re.findall(pattern, res['comment']):
-                        res_id = res['id']
+                    if self.get_lambda_test_job_url(job_id=device) in res['comment']:
                         try:
                             for log in test.logs_paths.keys():
-                                self.add_attachment(method='add_attachment_to_result/%s' % str(res_id),
+                                self.add_attachment(method='add_attachment_to_result/%s' % str(res['id']),
                                                     path=test.logs_paths[log])
                         except (AttributeError, FileNotFoundError):
                             pass
