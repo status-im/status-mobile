@@ -129,5 +129,5 @@
 ;; if you're using android simulator, I suggest set the env variable to "http://10.0.2.2:"
 (goog-define STATUS_BACKEND_SERVER_IMAGE_SERVER_URI_PREFIX "https://localhost:")
 
-(def re-frisk-host (get-config :RE_FRISK_HOST "http://localhost"))
+(def re-frisk-host (get-config :RE_FRISK_HOST "localhost"))
 (def re-frisk-port (get-config :RE_FRISK_PORT "4567"))
