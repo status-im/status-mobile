@@ -452,6 +452,90 @@
                 (some positive-balance-in-any-chain? tokens))
               operable-account))))
 
+(defn send-details-map
+  "Generates a new map with all the sen details using the original
+  details we've received from `status-go`. The new one contains only
+  the keys we need."
+  [send-details]
+  (let [{:keys [uuid
+                sendType
+                fromAddress
+                toAddress
+                fromChain
+                toChain
+                fromAmount
+                toAmount
+                fromAsset
+                toAsset
+                username
+                publicKey
+                packId]} send-details]
+    {:uuid         uuid
+     :send-type    sendType
+     :address-from fromAddress
+     :address-to   toAddress
+     :tx-to        ""
+     :from-chain   fromChain
+     :to-chain     toChain
+     :from-amount  fromAmount
+     :to-amount    toAmount
+     :from-asset   fromAsset
+     :to-asset     toAsset
+     :username     username
+     :public-key   publicKey
+     :pack-id      packId
+     :tx-hash      ""
+     :approval-tx? false}))
+
+(defn details-map
+  "Generates map with all the transaction details based on what we've
+  got from status-go as `send-details` and `sent-transaction`."
+  [send-details sent-transaction]
+  (let [send-details         (send-details-map send-details)
+        {:keys [toAddress fromChain toChain amountIn
+                amountOut fromToken toToken hash
+                approvalTx]} sent-transaction
+        amount-in            (money/from-hex amountIn)
+        amount-out           (money/from-hex amountOut)
+        sent-transaction?    (and sent-transaction (> (-> sent-transaction :hash count) 0))]
+    (if sent-transaction?
+      (cond-> send-details
+        true                    (assoc :tx-to toAddress)
+        (> fromChain 0)         (assoc :from-chain fromChain)
+        (> toChain 0)           (assoc :to-chain toChain)
+        (not= amount-in "0")    (assoc :from-amount amount-in)
+        (not= amount-out "0")   (assoc :to-amount amount-out)
+        (> (count fromToken) 0) (assoc :from-asset fromToken)
+        (> (count toToken) 0)   (assoc :to-asset toToken)
+        true                    (assoc :tx-hash hash)
+        true                    (assoc :approval-tx? approvalTx))
+      send-details)))
+
+(defn contact-name-by-address
+  [db address]
+  (or (get-in db [:wallet :accounts address :name])
+      (get-in db [:contacts/contacts address :primary-name])))
+
+(defn tx-to-name
+  "Returns the transaction name that will be used for certain types of transactions."
+  [send-type]
+  (cond
+    (= send-type constants/send-type-bridge) "Hop"
+    (= send-type constants/send-type-swap)   "ParaSwap"
+    :else                                    nil))
+
+(defn transaction-approval-required?
+  "Indicates whether the transaction needs approval based on the information
+  from the database."
+  [transactions {:keys [swap-proposal approval-transaction-id]}]
+  (let [approval-transaction (when approval-transaction-id
+                               (get transactions approval-transaction-id))
+        already-approved?    (and approval-transaction
+                                  (= (:status approval-transaction)
+                                     :confirmed))]
+    (and (:approval-required swap-proposal)
+         (not already-approved?))))
+
 (defn on-paste-address-or-ens
   "Check if the clipboard has any valid address and extract the address without any chain info.
   If it does not contain an valid address or it is ENS, return the clipboard text as it is"

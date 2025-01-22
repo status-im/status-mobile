@@ -567,49 +567,46 @@
          token-decimal                        (when token (:decimals token))
          token-id                             (utils/format-token-id token collectible)
          to-token-id                          ""
-         gas-rates                            constants/gas-rate-medium
-         to-hex                               (fn [v]
-                                                (send-utils/amount-in-hex v (if token token-decimal 0)))
-         amount-in                            (to-hex amount)
-         amount-out                           (to-hex amount-out)
-         from-address                         wallet-address
-         network-chain-id                     (if collectible
-                                                (get-in collectible [:id :contract-id :chain-id])
-                                                (:chain-id network))
-         disabled-from-chain-ids              (filter #(not= % network-chain-id) network-chain-ids)
-         disabled-to-chain-ids                (filter #(not= %
-                                                             (if (= tx-type :tx/bridge)
-                                                               bridge-to-chain-id
-                                                               network-chain-id))
-                                                      network-chain-ids)
-         send-type                            (case tx-type
-                                                :tx/collectible-erc-721
-                                                constants/send-type-erc-721-transfer
-                                                :tx/collectible-erc-1155
-                                                constants/send-type-erc-1155-transfer
-                                                :tx/bridge constants/send-type-bridge
-                                                constants/send-type-transfer)
-         sender-network-values                (when (= tx-type :tx/bridge)
-                                                (send-utils/loading-network-amounts
-                                                 {:networks  [network-chain-id]
-                                                  :values    {network-chain-id amount}
-                                                  :receiver? false}))
-         receiver-network-values              (when (= tx-type :tx/bridge)
-                                                (send-utils/loading-network-amounts
-                                                 {:networks  [bridge-to-chain-id]
-                                                  :receiver? true}))
-         request-uuid                         (str (random-uuid))
-         params                               [{:uuid                 request-uuid
-                                                :sendType             send-type
-                                                :addrFrom             from-address
-                                                :addrTo               to-address
-                                                :amountIn             amount-in
-                                                :amountOut            amount-out
-                                                :tokenID              token-id
-                                                :toTokenID            to-token-id
+         to-hex                        (fn [v] (send-utils/amount-in-hex v (if token token-decimal 0)))
+         amount-in                     (to-hex amount)
+         amount-out                    (to-hex amount-out)
+         from-address                  wallet-address
+         network-chain-id              (if collectible
+                                         (get-in collectible [:id :contract-id :chain-id])
+                                         (:chain-id network))
+         disabled-from-chain-ids       (filter #(not= % network-chain-id) network-chain-ids)
+         disabled-to-chain-ids         (filter #(not= %
+                                                      (if (= tx-type :tx/bridge)
+                                                        bridge-to-chain-id
+                                                        network-chain-id))
+                                               network-chain-ids)
+         send-type                     (case tx-type
+                                         :tx/collectible-erc-721  constants/send-type-erc-721-transfer
+                                         :tx/collectible-erc-1155 constants/send-type-erc-1155-transfer
+                                         :tx/bridge               constants/send-type-bridge
+                                         constants/send-type-transfer)
+         sender-network-values         (when (= tx-type :tx/bridge)
+                                         (send-utils/loading-network-amounts
+                                          {:networks  [network-chain-id]
+                                           :values    {network-chain-id amount}
+                                           :receiver? false}))
+         receiver-network-values       (when (= tx-type :tx/bridge)
+                                         (send-utils/loading-network-amounts
+                                          {:networks  [bridge-to-chain-id]
+                                           :receiver? true}))
+         request-uuid                  (str (random-uuid))
+         params                        [{:uuid                 request-uuid
+                                         :sendType             send-type
+                                         :addrFrom             from-address
+                                         :addrTo               to-address
+                                         :amountIn             amount-in
+                                         :amountOut            amount-out
+                                         :tokenID              token-id
+                                         :tokenIDIsOwnerToken  false
+                                         :toTokenID            to-token-id
                                                 :disabledFromChainIDs disabled-from-chain-ids
                                                 :disabledToChainIDs   disabled-to-chain-ids
-                                                :gasFeeMode           gas-rates
+                                                :gasFeeMode           constants/gas-rate-medium
                                                 :fromLockedAmount     {}
                                                 :username             (:username args)
                                                 :publicKey            (:publicKey args)
@@ -648,19 +645,57 @@
                                    {:event :wallet/stop-get-suggested-routes
                                     :error error}))}]]]}))
 
+(defn- bridge-amount-greater-than-bonder-fees?
+  [{{token-decimals :decimals} :from-token
+    bonder-fees                :tx-bonder-fees
+    amount-in                  :amount-in}]
+  (let [bonder-fees      (utils.money/token->unit bonder-fees token-decimals)
+        amount-to-bridge (utils.money/token->unit amount-in token-decimals)]
+    (> amount-to-bridge bonder-fees)))
+
+(defn- remove-multichain-routes
+  [routes]
+  (if (> (count routes) 1)
+    [] ;; if route is multichain, we remove it
+    routes))
+
+(defn- remove-invalid-bonder-fees-routes
+  [routes]
+  (filter bridge-amount-greater-than-bonder-fees? routes))
+
+(defn- ->old-route-paths
+  [routes]
+  (map data-store/new->old-route-path routes))
+
+(def ^:private best-routes-fix
+  (comp ->old-route-paths
+        remove-invalid-bonder-fees-routes
+        remove-multichain-routes))
+
+(def ^:private candidates-fix
+  (comp ->old-route-paths remove-invalid-bonder-fees-routes))
+
+(defn- fix-routes
+  [data]
+  (-> data
+      (data-store/rpc->suggested-routes)
+      (update :best best-routes-fix)
+      (update :candidates candidates-fix)))
+
+
 (rf/reg-event-fx
  :wallet/handle-suggested-routes
  (fn [{:keys [db]} [data]]
-   (let [{send :send swap? :swap} (-> db :wallet :ui)
-         skip-processing-routes?  (:skip-processing-suggested-routes? send)
-         clean-user-tx-settings?  (get-in db
-                                          [:wallet :ui :user-tx-settings
-                                           :delete-on-routes-update?])]
-     (when (or swap? (not skip-processing-routes?))
+   (let [{:keys [send swap]}     (-> db :wallet :ui)
+         skip-processing-routes? (:skip-processing-suggested-routes? send)
+         clean-user-tx-settings? (get-in db
+                                         [:wallet :ui :user-tx-settings
+                                          :delete-on-routes-update?])]
+     (when (or swap (not skip-processing-routes?))
        (let [{error-code :code
               :as        error} (:ErrorResponse data)
              enough-assets?     (not (and (:Best data) (= error-code "WR-002")))
-             failure?           (and error enough-assets? (not swap?))
+             failure?           (and error enough-assets? (not swap))
              error-message      (if (zero? error-code) "An error occurred" (:details error))]
          (when failure?
            (log/error "failed to get suggested routes (async)"
@@ -671,11 +706,11 @@
             {:db (update-in db [:wallet :ui] dissoc :user-tx-settings)})
           {:fx [[:dispatch
                  (cond
-                   (and failure? swap?) [:wallet/swap-proposal-error error]
-                   failure?             [:wallet/suggested-routes-error error-message]
-                   swap?                [:wallet/swap-proposal-success (data-store/fix-routes data)]
-                   :else                [:wallet/suggested-routes-success (data-store/fix-routes data)
-                                         enough-assets?])]]}))))))
+                   (and failure? swap) [:wallet/swap-proposal-error error]
+                   failure?            [:wallet/suggested-routes-error error-message]
+                   swap                [:wallet/swap-proposal-success (data-store/fix-routes data)]
+                   :else               [:wallet/suggested-routes-success (data-store/fix-routes data)
+                                        enough-assets?])]]}))))))
 
 (rf/reg-event-fx
  :wallet/transaction-success
@@ -701,16 +736,14 @@
 
 (rf/reg-event-fx
  :wallet/transaction-failure
- (fn [_ [{:keys [details]}]]
-   {:fx [[:dispatch [:wallet/end-transaction-flow]]
-         [:dispatch-later
-          [{:ms       2000
-            :dispatch [:wallet/stop-and-clean-suggested-routes]}]]
-         [:dispatch
-          [:toasts/upsert
-           {:id   :send-transaction-failure
-            :type :negative
-            :text (or details "An error occured")}]]]}))
+ (fn [_ [send-details]]
+   (if (= (:sendType send-details) constants/send-type-swap)
+     {:fx [[:dispatch [:wallet.swap/track-transaction-execution-failed (:errorResponse send-details)]]
+           [:dispatch [:wallet.swap/end-transaction-flow]]]}
+     {:fx [[:dispatch [:wallet/end-transaction-flow]]
+           [:dispatch-later
+            [{:ms       2000
+              :dispatch [:wallet/stop-and-clean-suggested-routes]}]]]})))
 
 (rf/reg-event-fx :wallet/clean-just-completed-transaction
  (fn [{:keys [db]}]

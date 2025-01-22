@@ -777,22 +777,75 @@
 
 (rf/reg-event-fx
  :wallet/transactions-sent-signal-received
- (fn [{:keys [db]}
+ (fn [_
       [{sent-transactions :sentTransactions
         send-details      :sendDetails}]]
-   (let [swap? (-> db
-                   (get-in db-path/swap)
-                   seq)]
-     {:fx [[:dispatch
-            (if-let [error-response (:errorResponse send-details)]
-              [(if swap?
-                 :wallet.swap/transaction-failure
-                 :wallet/transaction-failure)
-               error-response]
-              [(if swap?
-                 :wallet.swap/transaction-success
-                 :wallet/transaction-success)
-               sent-transactions])]]})))
+   {:fx [[:dispatch
+          [:wallet/show-transaction-notification
+           {:status           :sent
+            :send-details     send-details
+            :sent-transaction (first sent-transactions)}]]
+         [:dispatch
+          (if (:errorResponse send-details)
+            [:wallet/transaction-failure send-details]
+            [(if (= (:sendType send-details) constants/send-type-swap)
+               :wallet.swap/transaction-success
+               :wallet/transaction-success)
+             sent-transactions])]]}))
+
+(rf/reg-event-fx
+ :wallet/sending-transactions-started-signal-received
+ (fn [_
+      [{sent-transactions :sentTransactions
+        send-details      :sendDetails}]]
+   {:fx [[:dispatch
+          [:wallet/show-transaction-notification
+           {:status           :sending
+            :send-details     send-details
+            :sent-transaction (first sent-transactions)}]]]}))
+
+(rf/reg-event-fx
+ :wallet/status-changed-signal-received
+ (fn [_
+      [{sent-transactions :sentTransactions
+        send-details      :sendDetails}]]
+   {:fx [[:dispatch
+          [:wallet/show-transaction-notification
+           {:status           :status-changed
+            :send-details     send-details
+            :sent-transaction (first sent-transactions)}]]]}))
+
+(rf/reg-event-fx
+ :wallet/show-transaction-notification
+ (fn [{:keys [db]} [{:keys [status send-details sent-transaction]}]]
+   (let [{:keys [error send-type]
+          :as   details}
+         (as-> (utils/details-map send-details sent-transaction) $
+           (assoc $ :error (get-in send-details [:ErrorResponse :details]))
+           (assoc $ :account-from-name (utils/contact-name-by-address db (:address-from $)))
+           (assoc $ :account-to-name (utils/contact-name-by-address db (:address-to $)))
+           (assoc $
+                  :tx-to-name
+                  (or (utils/tx-to-name (:send-type $))
+                      (utils/contact-name-by-address db (:tx-to $)))))]
+     (cond
+       ;; handle errors and show notifications about errors
+       error
+       (do
+         (log/warn "Error when sending transaction" details)
+         {:fx [[:dispatch
+                [:toasts/upsert
+                 {:id   (keyword (str status "-failure"))
+                  :type :negative
+                  :text error}]]]})
+
+       ;; handle swap notifications in a separate fx
+       (= send-type constants/send-type-swap)
+       {:fx [[:dispatch
+              [:wallet.swap/show-transaction-notification
+               {:status       status
+                :send-details details}]]]}))))
+
 
 (rf/reg-event-fx
  :wallet/set-max-base-fee

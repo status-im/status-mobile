@@ -468,16 +468,6 @@
             [:wallet.swap/set-sign-transactions-callback-fx
              [:dispatch [:wallet/prepare-signatures-for-transactions :swap]]]]]})))
 
-(defn transaction-approval-required?
-  [transactions {:keys [swap-proposal approval-transaction-id]}]
-  (let [approval-transaction (when approval-transaction-id
-                               (get transactions approval-transaction-id))
-        already-approved?    (and approval-transaction
-                                  (= (:status approval-transaction)
-                                     :confirmed))]
-    (and (:approval-required swap-proposal)
-         (not already-approved?))))
-
 (rf/reg-event-fx
  :wallet.swap/mark-as-pending
  (fn [{:keys [db]} [transaction-id]]
@@ -504,7 +494,7 @@
                                   (-> amount-out
                                       (number/hex->whole receive-token-decimals)
                                       (money/to-fixed receive-token-decimals)))
-         approval-required?     (transaction-approval-required? transactions swap)]
+         approval-required?     (utils/transaction-approval-required? transactions swap)]
      {:fx [[:dispatch
             [:centralized-metrics/track
              (if approval-required?
@@ -532,23 +522,11 @@
              [:dispatch [:wallet.swap/mark-as-pending (-> sent-transactions first :hash)]])
            (when-not approval-required?
              ;; just end the whole transaction flow if no approval needed
-             [:dispatch [:wallet.swap/end-transaction-flow]])
-           (when-not approval-required?
-             [:dispatch-later
-              {:ms       500
-               :dispatch [:toasts/upsert
-                          {:id   :swap-transaction-pending
-                           :icon :i/info
-                           :type :neutral
-                           :text (i18n/label :t/swapping-to
-                                             {:pay-amount           amount
-                                              :pay-token-symbol     token-id-from
-                                              :receive-token-symbol token-id-to
-                                              :receive-amount       receive-amount})}]}])]})))
+             [:dispatch [:wallet.swap/end-transaction-flow]])]})))
 
 (rf/reg-event-fx
- :wallet.swap/transaction-failure
- (fn [{:keys [db]} [{:keys [details] :as error}]]
+ :wallet.swap/track-transaction-execution-failed
+ (fn [{:keys [db]} [error]]
    (let [transactions       (get-in db [:wallet :transactions])
          {:keys [asset-to-pay
                  asset-to-receive
@@ -557,7 +535,7 @@
          swap-chain-id      (:chain-id network)
          token-id-from      (:symbol asset-to-pay)
          token-id-to        (:symbol asset-to-receive)
-         approval-required? (transaction-approval-required? transactions swap)]
+         approval-required? (utils/transaction-approval-required? transactions swap)]
      {:fx [[:centralized-metrics/track
             (if approval-required?
               :metric/swap-approval-execution-failed
@@ -566,20 +544,14 @@
                      :error     error
                      :pay_token token-id-from}
               (not approval-required?)
-              (assoc :receive_token token-id-to))]
-           [:dispatch [:wallet.swap/end-transaction-flow]]
-           [:dispatch
-            [:toasts/upsert
-             {:id   :send-transaction-error
-              :type :negative
-              :text (or details "An error occured")}]]]})))
+              (assoc :receive_token token-id-to))]]})))
 
 (rf/reg-event-fx
  :wallet.swap/clean-up-transaction-flow
  (fn [{:keys [db]}]
    (let [transactions       (get-in db [:wallet :transactions])
          swap               (get-in db db-path/swap)
-         approval-required? (transaction-approval-required? transactions swap)]
+         approval-required? (utils/transaction-approval-required? transactions swap)]
      {:db (update-in db [:wallet :ui] dissoc :swap)
       :fx [[:dispatch
             [:dismiss-modal
@@ -613,49 +585,75 @@
               [:navigate-to-within-stack
                [:screen/wallet.swap-select-asset-to-pay :screen/wallet.swap-select-account]]]])})))
 
+(rf/reg-event-fx
+ :wallet.swap/show-transaction-notification
+ (fn [{:keys [db]} [{:keys [status send-details]}]]
+   (let [transactions                                     (get-in db [:wallet :transactions])
+         {:keys [asset-to-pay asset-to-receive] :as swap} (get-in db [:wallet :ui :swap])]
+     ;; show toast when approval is not required
+     (when (and (= status :sent)
+                (not (utils/transaction-approval-required? transactions swap)))
+       {:fx [[:dispatch-later
+              {:ms       500
+               :dispatch [:toasts/upsert
+                          {:id   :swap-transaction-pending
+                           :icon :i/info
+                           :type :neutral
+                           :text (i18n/label :t/swapping-to
+                                             {:pay-amount           (-> send-details
+                                                                        :from-amount
+                                                                        (money/token->unit
+                                                                         (:decimals asset-to-pay)))
+                                              :receive-amount       (-> send-details
+                                                                        :to-amount
+                                                                        (money/token->unit
+                                                                         (:decimals asset-to-receive)))
+                                              :pay-token-symbol     (:from-asset send-details)
+                                              :receive-token-symbol (:to-asset send-details)})}]}]]}))))
+
 (rf/reg-event-fx :wallet/get-swap-proposal-fee
- (fn [{:keys [db]} [{:keys [amount-in amount-out]}]]
-   (let [request-uuid (str (random-uuid))
-         params       (get-swap-proposal-params
-                       {:db           db
-                        :amount-in    amount-in
-                        :amount-out   amount-out
-                        :request-uuid request-uuid})]
-     {:db            (update-in db db-path/swap assoc :loading-swap-proposal-fee? true)
-      :json-rpc/call [{:method     "wallet_getSuggestedRoutes"
-                       :params     params
-                       :on-success (fn [data]
-                                     (let [swap-proposal (data-store/fix-routes data)]
-                                       (rf/dispatch [:wallet/swap-proposal-fee-success
-                                                     swap-proposal])))
-                       :on-error   (fn [error]
-                                     (rf/dispatch [:wallet/swap-proposal-fee-error])
-                                     (log/error "failed to get suggested routes"
-                                                {:event  :wallet/get-swap-proposal-fee
-                                                 :error  (:message error)
-                                                 :params params}))}]})))
+  (fn [{:keys [db]} [{:keys [amount-in amount-out]}]]
+    (let [request-uuid (str (random-uuid))
+          params       (get-swap-proposal-params
+                         {:db           db
+                          :amount-in    amount-in
+                          :amount-out   amount-out
+                          :request-uuid request-uuid})]
+      {:db            (update-in db db-path/swap assoc :loading-swap-proposal-fee? true)
+       :json-rpc/call [{:method     "wallet_getSuggestedRoutes"
+                        :params     params
+                        :on-success (fn [data]
+                                      (let [swap-proposal (data-store/fix-routes data)]
+                                        (rf/dispatch [:wallet/swap-proposal-fee-success
+                                                      swap-proposal])))
+                        :on-error   (fn [error]
+                                      (rf/dispatch [:wallet/swap-proposal-fee-error])
+                                      (log/error "failed to get suggested routes"
+                                                 {:event  :wallet/get-swap-proposal-fee
+                                                  :error  (:message error)
+                                                  :params params}))}]})))
 
 (rf/reg-event-fx
- :wallet/swap-proposal-fee-success
- (fn [{:keys [db]} [swap-proposal]]
-   (let [best-routes         (:best swap-proposal)
-         selected-route      (first best-routes)
-         relevant-fee-fields [:gas-amount :gas-fees :token-fees :approval-required
-                              :approval-fee :approval-l-1-fee :bonder-fees]
-         fee-data            (select-keys selected-route relevant-fee-fields)]
-     {:db (update-in db
-                     db-path/swap
-                     assoc
-                     :loading-swap-proposal-fee? false
-                     :swap-proposal
-                     (when-not (empty? best-routes)
-                       fee-data))})))
+  :wallet/swap-proposal-fee-success
+  (fn [{:keys [db]} [swap-proposal]]
+    (let [best-routes         (:best swap-proposal)
+          selected-route      (first best-routes)
+          relevant-fee-fields [:gas-amount :gas-fees :token-fees :approval-required
+                               :approval-fee :approval-l-1-fee :bonder-fees]
+          fee-data            (select-keys selected-route relevant-fee-fields)]
+      {:db (update-in db
+                      db-path/swap
+                      assoc
+                      :loading-swap-proposal-fee? false
+                      :swap-proposal
+                      (when-not (empty? best-routes)
+                        fee-data))})))
 
 (rf/reg-event-fx
- :wallet/swap-proposal-fee-error
- (fn [{:keys [db]}]
-   {:db (update-in db
-                   db-path/swap
-                   assoc
-                   :loading-swap-proposal-fee?
-                   false)}))
+  :wallet/swap-proposal-fee-error
+  (fn [{:keys [db]}]
+    {:db (update-in db
+                    db-path/swap
+                    assoc
+                    :loading-swap-proposal-fee?
+                    false)}))
