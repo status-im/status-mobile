@@ -106,3 +106,10 @@
               {:pin        pin
                :on-success #(rf/dispatch [:keycard.login/recover-profile-and-login %])
                :on-failure #(rf/dispatch [:keycard/on-action-with-pin-error %])}]]}))))
+
+(rf/reg-event-fx :keycard/create.seed-phrase-entered
+ (fn [{:keys [db]} [key-uid masked-seed-phrase]]
+   (if (contains? (:profile/profiles-overview db) key-uid)
+     {:fx [[:dispatch [:onboarding/multiaccount-already-exists key-uid]]]}
+     {:db (assoc-in db [:keycard :create :masked-phrase] masked-seed-phrase)
+      :fx [[:dispatch [:keycard/create.create-or-enter-pin]]]})))

@@ -66,7 +66,8 @@
     button-label]])
 
 (defn small-option-card
-  [{:keys [variant title subtitle button-label image max-height on-press accessibility-label button-type]
+  [{:keys [variant title subtitle button-label image max-height on-press accessibility-label
+           button-type container-style]
     :or   {variant :main accessibility-label :small-option-card}}]
   (let [main-variant?  (= variant :main)
         card-component (if main-variant? main-variant icon-variant)
@@ -74,7 +75,7 @@
                          (not main-variant?) style/icon-variant-height
                          max-height          (min max-height style/main-variant-height)
                          :else               style/main-variant-height)]
-    [rn/view {:style (style/card card-height)}
+    [rn/view {:style (merge (style/card card-height) container-style)}
      [card-component
       {:title               title
        :subtitle            subtitle

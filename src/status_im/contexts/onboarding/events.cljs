@@ -108,6 +108,19 @@
               [:onboarding/create-account-and-login])]]})))
 
 (rf/reg-event-fx
+ :onboarding/multiaccount-already-exists
+ (fn [_ [key-uid]]
+   {:fx [[:effects.utils/show-confirmation
+          {:title               (i18n/label :t/multiaccount-exists-title)
+           :content             (i18n/label :t/multiaccount-exists-content)
+           :confirm-button-text (i18n/label :t/unlock)
+           :on-accept           (fn []
+                                  (re-frame/dispatch [:pop-to-root :screen/profile.profiles])
+                                  ;; Note - Profile selection is not working
+                                  (re-frame/dispatch [:profile/profile-selected key-uid]))
+           :on-cancel           #(re-frame/dispatch [:pop-to-root :screen/profile.profiles])}]]}))
+
+(rf/reg-event-fx
  :onboarding/seed-phrase-validated
  (fn [{:keys [db]} [seed-phrase key-uid]]
    (let [next-screen :screen/onboarding.create-profile-password
@@ -115,14 +128,7 @@
                           :onboarding/navigated-to-enter-seed-phrase-from-screen
                           :screen/onboarding.create-profile)]
      (if (contains? (:profile/profiles-overview db) key-uid)
-       {:fx [[:effects.utils/show-confirmation
-              {:title               (i18n/label :t/multiaccount-exists-title)
-               :content             (i18n/label :t/multiaccount-exists-content)
-               :confirm-button-text (i18n/label :t/unlock)
-               :on-accept           (fn []
-                                      (re-frame/dispatch [:pop-to-root :screen/profile.profiles])
-                                      (re-frame/dispatch [:profile/profile-selected key-uid]))
-               :on-cancel           #(re-frame/dispatch [:pop-to-root :multiaccounts])}]]}
+       {:fx [[:dispatch [:onboarding/multiaccount-already-exists key-uid]]]}
        {:db (-> db
                 (assoc-in [:onboarding/profile :seed-phrase] seed-phrase)
                 (assoc-in [:onboarding/profile :key-uid] key-uid)
