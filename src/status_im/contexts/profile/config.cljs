@@ -26,7 +26,9 @@
    :alchemyOptimismMainnetToken   config/ALCHEMY_OPTIMISM_MAINNET_TOKEN
    :alchemyOptimismSepoliaToken   config/ALCHEMY_OPTIMISM_SEPOLIA_TOKEN
    :alchemyArbitrumMainnetToken   config/ALCHEMY_ARBITRUM_MAINNET_TOKEN
-   :alchemyArbitrumSepoliaToken   config/ALCHEMY_ARBITRUM_SEPOLIA_TOKEN})
+   :alchemyArbitrumSepoliaToken   config/ALCHEMY_ARBITRUM_SEPOLIA_TOKEN
+   :alchemyBaseMainnetToken       config/ALCHEMY_BASE_MAINNET_TOKEN
+   :alchemyBaseSepoliaToken       config/ALCHEMY_BASE_SEPOLIA_TOKEN})
 
 (defn create
   []

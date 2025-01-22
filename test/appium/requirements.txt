@@ -12,3 +12,5 @@ pytest-xdist==3.2.0
 pytz~=2020.4
 PyGithub==1.55
 typing-extensions==4.12.2
+mnemonic==0.21
+bip-utils==2.9.3

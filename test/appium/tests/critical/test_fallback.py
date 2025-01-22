@@ -2,6 +2,7 @@ import pytest
 from selenium.common import TimeoutException
 
 from base_test_case import MultipleSharedDeviceTestCase, create_shared_drivers
+from support.helpers import generate_wallet_address
 from tests import marks, run_in_parallel, transl
 from users import transaction_senders
 from views.sign_in_view import SignInView
@@ -162,34 +163,90 @@ class TestFallbackMultipleDevice(MultipleSharedDeviceTestCase):
 
     @marks.testrail_id(741054)
     def test_fallback_add_key_pair(self):
+        expected_addresses = generate_wallet_address(passphrase=self.recovery_phrase, number=4)
         account_to_add = transaction_senders['ETH_1']
         self.home_1.navigate_back_to_home_view()
         self.home_2.navigate_back_to_home_view()
         wallet_1 = self.home_1.wallet_tab.click()
         wallet_2 = self.home_2.wallet_tab.click()
-        regular_account_name = "New regular account"
-        key_pair_account_name = "Key pair account"
-        key_pair_name = "New key pair"
-        key_pair_account_address = '0x' + account_to_add['address'].lower()
 
         wallet_1.just_fyi("Device 1: add a new regular account")
+        regular_account_name = "New regular account"
         regular_derivation_path = wallet_1.add_regular_account(account_name=regular_account_name)
-        regular_account_wallet_address = wallet_1.get_account_address().split(':')[-1]
+        regular_account_address = wallet_1.get_account_address().split(':')[-1]
         account_element = wallet_1.get_account_element(account_name=regular_account_name)
         wallet_1.close_account_button.click_until_presence_of_element(account_element)
 
-        wallet_1.just_fyi("Device 1: add a new key pair account")
+        if regular_account_address != expected_addresses[1]:
+            self.errors.append("Newly added regular account address %s doesn't match expected %s" % (
+                regular_account_address, expected_addresses[1]))
+        if regular_account_address not in expected_addresses:
+            self.errors.append("Newly added regular account address %s is not in the list of expected addresses %s" % (
+                regular_account_address, expected_addresses))
+
+        wallet_1.just_fyi("Device 1: add a new key pair account by importing recovery phrase")
         account_element.swipe_left_on_element()
-        key_pair_derivation_path = wallet_1.add_key_pair_account(account_name=key_pair_account_name,
-                                                                 passphrase=account_to_add['passphrase'],
-                                                                 key_pair_name=key_pair_name)
+        imported_key_pair_account_name = "Imported account"
+        imported_key_pair_name = "Imported key pair"
+        imported_key_pair_account_address = '0x' + account_to_add['address'].lower()
+        imported_key_pair_derivation_path = wallet_1.import_key_pair_using_recovery_phrase(
+            account_name=imported_key_pair_account_name,
+            passphrase=account_to_add['passphrase'],
+            key_pair_name=imported_key_pair_name)
+
+        wallet_1.close_account_button.click_until_presence_of_element(account_element)
+
+        wallet_1.just_fyi("Device 1: verify default and added key pairs details")
+        account_element.swipe_left_on_element()
+        wallet_1.get_account_element(account_name=imported_key_pair_account_name).swipe_left_on_element()
+        if not wallet_1.add_account_button.is_element_displayed():
+            wallet_1.get_account_element(account_name=imported_key_pair_account_name).swipe_left_on_element()
+        wallet_1.add_account_button.click()
+        wallet_1.create_account_button.click()
+        wallet_1.edit_key_pair_button.click()
+        expected_texts_regular = [
+            regular_account_name,
+            "%s...%s" % (regular_account_address[:5], regular_account_address[-3:])
+        ]
+        for text in expected_texts_regular:
+            if not wallet_1.default_key_pair_container.get_child_element_by_text_part(text).is_element_displayed():
+                self.errors.append("Newly added regular account is not shown in default key pair list")
+                break
+        expected_texts_key_pair = [
+            imported_key_pair_account_name, imported_key_pair_name,
+            "%s...%s" % (imported_key_pair_account_address[:5], imported_key_pair_account_address[-3:])
+        ]
+        for text in expected_texts_key_pair:
+            if not wallet_1.added_key_pair_container.get_child_element_by_text_part(text).is_element_displayed():
+                self.errors.append("Newly added regular account is not shown in default key pair list")
+                break
+
+        wallet_1.just_fyi("Device 1: add a new key pair account by generating a new key pair")
+        generated_key_pair_account_name = "Generated account"
+        generated_key_pair_name = "Generated key pair"
+        generated_key_pair_derivation_path, generated_passphrase = wallet_1.generate_new_key_pair(
+            account_name=generated_key_pair_account_name,
+            key_pair_name=generated_key_pair_name)
+        generated_key_pair_account_address = wallet_1.get_account_address().split(':')[-1]
+        wallet_1.close_account_button.click_until_presence_of_element(account_element)
+
+        expected_addresses = generate_wallet_address(passphrase=generated_passphrase, number=4)
+        if generated_key_pair_account_address != expected_addresses[0]:
+            self.errors.append("Generated key pair account address %s doesn't match expected %s" % (
+                generated_key_pair_account_address, expected_addresses[0]))
+        if generated_key_pair_account_address not in expected_addresses:
+            self.errors.append("Generated key pair account address %s is not in the list of expected addresses %s" % (
+                generated_key_pair_account_address, expected_addresses))
 
         self.home_2.just_fyi("Device 2: check imported accounts are shown before importing key pair")
         self.home_2.profile_button.click()
         self.profile_2.profile_wallet_button.click()
         self.profile_2.key_pairs_and_accounts_button.click()
-        if not self.profile_2.get_missing_key_pair_by_name(key_pair_name=key_pair_name).is_element_displayed():
-            self.errors.append("Key pair is not shown in profile as missing before importing")
+        if not self.profile_2.get_missing_key_pair_by_name(key_pair_name=imported_key_pair_name).is_element_displayed():
+            self.errors.append("New imported key pair is not shown in profile as missing before importing")
+        if not self.profile_2.get_missing_key_pair_by_name(
+                key_pair_name=generated_key_pair_name).is_element_displayed():
+            self.errors.append("Generated key pair is not shown in profile as missing before importing")
         if not self.profile_2.get_key_pair_account_by_name(account_name=regular_account_name).is_element_displayed():
             self.errors.append(
                 "Newly added regular account is not shown in profile as on device before importing key pair")
@@ -200,7 +257,7 @@ class TestFallbackMultipleDevice(MultipleSharedDeviceTestCase):
 
         wallet_2.just_fyi("Device 2: import key pair")
         wallet_2.get_account_element(account_name=regular_account_name).swipe_left_on_element()
-        wallet_2.get_account_element(account_name=key_pair_account_name).click()
+        wallet_2.get_account_element(account_name=imported_key_pair_account_name).click()
         wallet_2.element_by_translation_id("import-key-pair").click()
         self.sign_in_2.passphrase_edit_box.send_keys(account_to_add['passphrase'])
         wallet_2.slide_and_confirm_with_password()
@@ -211,19 +268,28 @@ class TestFallbackMultipleDevice(MultipleSharedDeviceTestCase):
         self.profile_2.key_pairs_and_accounts_button.click()
         if self.profile_2.get_key_pair_account_by_name(account_name=regular_account_name).is_element_displayed():
             address_text = self.profile_2.get_key_pair_account_by_name(account_name=regular_account_name).address.text
-            if address_text != '...'.join((regular_account_wallet_address[:5], regular_account_wallet_address[-3:])):
+            if address_text != '...'.join((regular_account_address[:5], regular_account_address[-3:])):
                 self.errors.append(
                     "Incorrect wallet address if shown for regular account after importing: " + address_text)
         else:
             self.errors.append("Newly added regular account is not shown in profile after importing key pair")
 
-        if self.profile_2.get_key_pair_account_by_name(account_name=key_pair_account_name).is_element_displayed():
-            address_text = self.profile_2.get_key_pair_account_by_name(account_name=key_pair_account_name).address.text
-            if address_text != '...'.join((key_pair_account_address[:5], key_pair_account_address[-3:])):
+        account_element = self.profile_2.get_key_pair_account_by_name(
+            account_name=imported_key_pair_account_name)
+        if account_element.is_element_displayed():
+            address_text = account_element.address.text
+            if address_text != '...'.join(
+                    (imported_key_pair_account_address[:5], imported_key_pair_account_address[-3:])):
                 self.errors.append(
-                    "Incorrect wallet address if shown for key pair account after importing: " + address_text)
+                    "Incorrect wallet address if shown for imported key pair account after importing: " + address_text)
         else:
-            self.errors.append("Key pair account is not shown in profile as on device after importing key pair")
+            self.errors.append(
+                "Imported key pair account is not shown in profile as on device after importing key pair")
+
+        if not self.profile_2.get_missing_key_pair_by_name(
+                key_pair_name=generated_key_pair_name).is_element_displayed():
+            self.errors.append(
+                "Generated key pair account is not shown in profile as missing after importing the first key pair")
         self.profile_2.click_system_back_button(times=3)
 
         # ToDo: Arbiscan API is down, looking for analogue
@@ -243,11 +309,25 @@ class TestFallbackMultipleDevice(MultipleSharedDeviceTestCase):
             self.errors.append("Incorrect derivation path %s is shown for the regular account" % der_path)
         wallet_2.close_account_button.click_until_presence_of_element(account_element)
         account_element.swipe_left_on_element()
-        wallet_2.get_account_element(account_name=key_pair_account_name).click()
+        wallet_2.get_account_element(account_name=imported_key_pair_account_name).click()
         wallet_2.about_tab.click()
         der_path = wallet_2.account_about_derivation_path_text.text
-        if der_path != key_pair_derivation_path:
-            self.errors.append("Incorrect derivation path %s is shown for the key pair account" % der_path)
+        if der_path != imported_key_pair_derivation_path:
+            self.errors.append("Incorrect derivation path %s is shown for the imported key pair account" % der_path)
+        wallet_2.close_account_button.click_until_presence_of_element(account_element)
+        account_element.swipe_left_on_element()
+        wallet_2.get_account_element(account_name=generated_key_pair_account_name).click()
+        wallet_2.element_by_translation_id("import-key-pair").click()
+        self.sign_in_2.passphrase_edit_box.send_keys(generated_passphrase)
+        wallet_2.slide_and_confirm_with_password()
+        wallet_2.get_account_element(account_name=generated_key_pair_account_name).click()
+        wallet_2.about_tab.click()
+        der_path = wallet_2.account_about_derivation_path_text.text
+        if der_path != generated_key_pair_derivation_path:
+            self.errors.append("Incorrect derivation path %s is shown for the generated key pair account" % der_path)
+        if not wallet_2.element_by_text_part(generated_key_pair_account_address).is_element_displayed():
+            self.errors.append(
+                "Generated key pair address %s is absent in About tab" % generated_key_pair_account_address)
         self.errors.verify_no_errors()
 
     @marks.testrail_id(740222)

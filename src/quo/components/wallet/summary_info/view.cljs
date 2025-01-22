@@ -30,13 +30,16 @@
 
 (defn networks
   [values theme]
-  (let [{:keys [ethereum optimism arbitrum]} values
-        show-optimism?                       (and optimism
-                                                  (or (pos? (:amount optimism))
-                                                      (= (:amount optimism) "<0.01")))
-        show-arbitrum?                       (and arbitrum
-                                                  (or (pos? (:amount arbitrum))
-                                                      (= (:amount arbitrum) "<0.01")))]
+  (let [{:keys [ethereum optimism arbitrum base]} values
+        show-optimism?                            (and optimism
+                                                       (or (pos? (:amount optimism))
+                                                           (= (:amount optimism) "<0.01")))
+        show-arbitrum?                            (and arbitrum
+                                                       (or (pos? (:amount arbitrum))
+                                                           (= (:amount arbitrum) "<0.01")))
+        show-base?                                (and base
+                                                       (or (pos? (:amount base))
+                                                           (= (:amount base) "<0.01")))]
     [rn/view
      {:style               style/networks-container
       :accessibility-label :networks}
@@ -56,6 +59,11 @@
        [network-amount
         {:network :arbitrum
          :amount  (str (:amount arbitrum) " " (or (:token-symbol arbitrum) "ARB"))
+         :theme   theme}])
+     (when show-base?
+       [network-amount
+        {:network :base
+         :amount  (str (:amount base) " " (or (:token-symbol base) "ETH"))
          :theme   theme}])]))
 
 (defn- view-internal

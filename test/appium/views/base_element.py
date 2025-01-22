@@ -352,6 +352,9 @@ class BaseElement(object):
     def get_child_element_by_text(self, text: str):
         return BaseElement(self.driver, prefix=self.locator, xpath="//*[@text='%s']" % text)
 
+    def get_child_element_by_text_part(self, text: str):
+        return BaseElement(self.driver, prefix=self.locator, xpath="//*[contains(@text,'%s')]" % text)
+
 
 class EditBox(BaseElement):
 

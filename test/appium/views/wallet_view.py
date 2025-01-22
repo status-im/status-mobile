@@ -107,11 +107,19 @@ class WalletView(BaseView):
         # Edit key pair
         self.edit_key_pair_button = Button(self.driver, accessibility_id="Edit")
         self.key_pairs_plus_button = Button(self.driver, accessibility_id="standard-title-action")
+        self.default_key_pair_container = BaseElement(self.driver,
+                                                      xpath="//*[@content-desc='user-avatar, title, details']")
+        self.added_key_pair_container = BaseElement(self.driver,
+                                                    xpath="//*[@content-desc='icon, title, details']")
         self.generate_new_keypair_button = Button(self.driver, accessibility_id="generate-new-keypair")
         self.import_using_recovery_phrase_button = Button(self.driver, accessibility_id="import-using-phrase")
         self.key_pair_continue_button = Button(self.driver, accessibility_id="Continue")
         self.key_pair_name_input = EditBox(
             self.driver, xpath="//*[@text='Key pair name']/..//following-sibling::*/*[@content-desc='input']")
+        self.passphrase_text_element = Text(
+            self.driver, xpath="//*[@resource-id='counter-component']/following-sibling::android.widget.TextView")
+        self.passphrase_word_number_container = Text(
+            self.driver, xpath="//*[@content-desc='number-container']/android.widget.TextView")
 
     def set_network_in_wallet(self, network_name: str):
         self.network_drop_down.click()
@@ -198,25 +206,40 @@ class WalletView(BaseView):
     def get_activity_element(self, index=1):
         return ActivityElement(self.driver, index=index)
 
-    def add_key_pair_account(self, account_name, passphrase=None, key_pair_name=None):
+    def generate_new_key_pair(self, account_name: str, key_pair_name: str):
+        self.key_pairs_plus_button.click()
+        self.generate_new_keypair_button.click()
+        for checkbox in self.checkbox_button.find_elements():
+            checkbox.click()
+        self.element_by_translation_id("reveal-phrase").click()
+        passphrase = [i.text for i in self.passphrase_text_element.find_elements()]
+        self.element_by_translation_id("i-have-written").click()
+        for _ in range(4):
+            element = self.passphrase_word_number_container.find_element()
+            number = int(element.text)
+            Button(self.driver, accessibility_id=passphrase[number - 1]).click()
+            self.wait_for_staleness_of_element(element)
+        self.checkbox_button.click()
+        self.element_by_translation_id("done").click()
+        self.key_pair_name_input.send_keys(key_pair_name)
+        self.key_pair_continue_button.click()
+        derivation_path = self.add_account_derivation_path_text.text
+        SignInView(self.driver).profile_title_input.send_keys(account_name)
+        self.slide_and_confirm_with_password()
+        return derivation_path.replace(' ', ''), ' '.join(passphrase)
+
+    def import_key_pair_using_recovery_phrase(self, account_name: str, passphrase: str, key_pair_name: str):
         self.add_account_button.click()
         self.create_account_button.click()
         signin_view = SignInView(self.driver)
         signin_view.profile_title_input.send_keys(account_name)
         self.edit_key_pair_button.click()
         self.key_pairs_plus_button.click()
-        if passphrase:
-            self.import_using_recovery_phrase_button.click()
-            signin_view.passphrase_edit_box.send_keys(passphrase)
-            self.key_pair_continue_button.click()
-            self.key_pair_name_input.send_keys(key_pair_name)
-            self.key_pair_continue_button.click()
-        else:
-            self.generate_new_keypair_button.click()
-            for checkbox in self.checkbox_button.find_elements():
-                checkbox.click()
-            self.element_by_translation_id("reveal-phrase").click()
-            # ToDo: can't be done in current small size emulators, add when moved to LambdaTest
+        self.import_using_recovery_phrase_button.click()
+        signin_view.passphrase_edit_box.send_keys(passphrase)
+        self.key_pair_continue_button.click()
+        self.key_pair_name_input.send_keys(key_pair_name)
+        self.key_pair_continue_button.click()
         derivation_path = self.add_account_derivation_path_text.text
         self.slide_and_confirm_with_password()
         return derivation_path.replace(' ', '')

@@ -13,7 +13,8 @@
    :bsc-testnet {:id   BSC-testnet-chain-id
                  :name "BSC testnet"}
    :arbitrum    {:id 42161 :name "Arbitrum"}
-   :optimism    {:id 10 :name "Optimism"}})
+   :optimism    {:id 10 :name "Optimism"}
+   :base        {:id 8453 :name "Base"}})
 
 (defn chain-id->chain-keyword
   [i]

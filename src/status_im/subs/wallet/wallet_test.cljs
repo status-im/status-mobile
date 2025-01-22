@@ -840,7 +840,7 @@
     (swap! rf-db/app-db #(assoc % :wallet db/defaults))
     (is
      (match? (sort [constants/ethereum-mainnet-chain-id constants/arbitrum-mainnet-chain-id
-                    constants/optimism-mainnet-chain-id])
+                    constants/optimism-mainnet-chain-id constants/base-mainnet-chain-id])
              (sort (rf/sub [sub-name])))))
   (testing "selected networks -> chain-ids - specific network"
     (swap! rf-db/app-db #(assoc-in %

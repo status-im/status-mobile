@@ -54,9 +54,11 @@
   (is (some #(= constants/ethereum-mainnet-chain-id (get-in % [:Prod :chainId])) response))
   (is (some #(= constants/optimism-mainnet-chain-id (get-in % [:Prod :chainId])) response))
   (is (some #(= constants/arbitrum-mainnet-chain-id (get-in % [:Prod :chainId])) response))
+  (is (some #(= constants/base-mainnet-chain-id (get-in % [:Prod :chainId])) response))
   (is (some #(= constants/ethereum-sepolia-chain-id (get-in % [:Test :chainId])) response))
   (is (some #(= constants/arbitrum-sepolia-chain-id (get-in % [:Test :chainId])) response))
-  (is (some #(= constants/optimism-sepolia-chain-id (get-in % [:Test :chainId])) response)))
+  (is (some #(= constants/optimism-sepolia-chain-id (get-in % [:Test :chainId])) response))
+  (is (some #(= constants/base-sepolia-chain-id (get-in % [:Test :chainId])) response)))
 
 (deftest accounts-get-chains-contract-test
   (h/test-async :contract/wallet_get-ethereum-chains
