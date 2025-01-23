@@ -213,13 +213,15 @@
 
 (defn save-profile-url
   [{:keys [db]} [public-key url]]
-  (when url
-    {:db
-     (cond-> db
-       (get-in db [:contacts/contacts public-key])
-       (assoc-in [:contacts/contacts public-key :universal-profile-url] url)
-       (= public-key (get-in db [:profile/profile :public-key]))
-       (assoc-in [:profile/profile :universal-profile-url] url))}))
+  (let [contact-from-key    (get-in db [:contacts/contacts public-key])
+        profile-public-key? (= public-key (get-in db [:profile/profile :public-key]))]
+    (when url
+      {:db (cond-> db
+             contact-from-key
+             (assoc-in [:contacts/contacts public-key :universal-profile-url] url)
+
+             profile-public-key?
+             (assoc-in [:profile/profile :universal-profile-url] url))})))
 
 (schema/=> save-profile-url
   [:=>

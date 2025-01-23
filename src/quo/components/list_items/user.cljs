@@ -21,13 +21,13 @@
   [{:keys [type on-press on-check disabled? checked? child]} customization-color theme]
   (if (= type :custom)
     child
-    [rn/touchable-opacity
-     {:on-press on-press}
+    [rn/touchable-opacity {:on-press on-press}
      (case type
        :options
        [icons/icon :i/options
         {:size  20
          :color (colors/theme-colors colors/neutral-50 colors/neutral-40 theme)}]
+
        :checkbox
        [selectors/view
         {:type                :checkbox
@@ -36,6 +36,7 @@
          :accessibility-label :user-list-toggle-check
          :disabled?           disabled?
          :on-change           (when on-check on-check)}]
+
        :close
        [text/text "not implemented"]
        [rn/view])]))

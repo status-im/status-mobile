@@ -265,16 +265,11 @@
           :sub-label           nil
           :chevron?            false}))
 
-;; TODO(OmarBasem): Requires design input.
 (defn show-qr-entry
   [public-key]
   (entry {:icon                :i/qr-code
           :label               (i18n/label :t/show-qr)
-          :on-press            (fn []
-                                 (rf/dispatch [:universal-links/generate-profile-url
-                                               {:public-key public-key
-                                                :on-success #(rf/dispatch [:open-modal
-                                                                           :share-contact])}]))
+          :on-press            #(rf/dispatch [:contacts/show-qr-code public-key])
           :danger?             false
           :accessibility-label :show-qr-code
           :sub-label           nil

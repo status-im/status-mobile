@@ -151,3 +151,12 @@
           error]]]})
 
 (rf/reg-event-fx :contacts/update-nickname-error update-nickname-error)
+
+(rf/reg-event-fx
+ :contacts/show-qr-code
+ (fn [{db :db} [public-key]]
+   {:db (assoc db :contacts/identity public-key)
+    :fx [[:dispatch
+          [:universal-links/generate-profile-url
+           {:public-key public-key
+            :on-success #(rf/dispatch [:open-modal :share-contact])}]]]}))
