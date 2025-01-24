@@ -10,7 +10,7 @@ from selenium.common.exceptions import NoSuchElementException, TimeoutException,
 
 from tests import marks, run_in_parallel, pytest_config_global, transl
 from tests.base_test_case import create_shared_drivers, MultipleSharedDeviceTestCase
-from views.chat_view import CommunityView, ChatView
+from views.chat_view import CommunityView
 from views.dbs.waku_backup import user as waku_user
 from views.sign_in_view import SignInView
 
@@ -61,6 +61,7 @@ class TestCommunityOneDeviceMerged(MultipleSharedDeviceTestCase):
             actual_copied_text = self.channel.driver.get_clipboard_text()
             if actual_copied_text != message:
                 self.errors.append(
+                    self.channel,
                     'Message %s text was not copied in community channel, text in clipboard %s' % actual_copied_text)
 
         self.errors.verify_no_errors()
@@ -103,9 +104,9 @@ class TestCommunityOneDeviceMerged(MultipleSharedDeviceTestCase):
         try:
             current_text = self.home.unmute_community_button.unmute_caption_text
             if current_text not in expected_texts:
-                self.errors.append("Text '%s' is not shown for muted community" % expected_texts[1])
+                self.errors.append(self.home, "Text '%s' is not shown for muted community" % expected_texts[1])
         except NoSuchElementException:
-            self.errors.append("Caption with text 'Muted until...' is not shown for muted community")
+            self.errors.append(self.home, "Caption with text 'Muted until...' is not shown for muted community")
         self.home.click_system_back_button()
 
         self.home.get_chat(self.community_name, community=True).click()
@@ -114,9 +115,11 @@ class TestCommunityOneDeviceMerged(MultipleSharedDeviceTestCase):
         try:
             current_text = self.home.mute_channel_button.unmute_caption_text
             if current_text not in expected_texts:
-                self.errors.append("Text '%s' is not shown for a channel in muted community" % expected_texts[1])
+                self.errors.append(self.home,
+                                   "Text '%s' is not shown for a channel in muted community" % expected_texts[1])
         except NoSuchElementException:
-            self.errors.append("Caption with text 'Muted until...' is not shown for a channel in muted community")
+            self.errors.append(self.home,
+                               "Caption with text 'Muted until...' is not shown for a channel in muted community")
 
         self.home.just_fyi("Unmute channel and check that the community is also unmuted")
         self.home.mute_channel_button.click()
@@ -124,7 +127,7 @@ class TestCommunityOneDeviceMerged(MultipleSharedDeviceTestCase):
         self.home.communities_tab.click()
         self.home.get_chat(self.community_name, community=True).long_press_element()
         if not self.home.element_by_text("Mute community").is_element_displayed():
-            self.errors.append("Community is not unmuted when channel is unmuted")
+            self.errors.append(self.home, "Community is not unmuted when channel is unmuted")
         self.home.click_system_back_button()
 
         self.home.just_fyi("Mute channel and check that community is not muted")
@@ -140,16 +143,18 @@ class TestCommunityOneDeviceMerged(MultipleSharedDeviceTestCase):
         try:
             current_text = self.home.mute_channel_button.unmute_caption_text
             if current_text not in expected_texts:
-                self.errors.append("Text '%s' is not shown for a muted community channel" % expected_texts[1])
+                self.errors.append(self.home,
+                                   "Text '%s' is not shown for a muted community channel" % expected_texts[1])
         except NoSuchElementException:
-            self.errors.append("Caption with text '%s' is not shown for a muted community channel" % expected_texts[1])
+            self.errors.append(self.home,
+                               "Caption with text '%s' is not shown for a muted community channel" % expected_texts[1])
         self.home.click_system_back_button()
         self.home.navigate_back_to_home_view()
         self.home.communities_tab.click()
         self.home.get_chat(self.community_name, community=True).long_press_element()
         if self.home.element_by_text_part("Muted until").is_element_displayed() or \
                 self.home.mute_community_button.text != transl["mute-community"]:
-            self.errors.append("Community is muted when channel is muted")
+            self.errors.append(self.home, "Community is muted when channel is muted")
         self.home.click_system_back_button()
 
         self.errors.verify_no_errors()
@@ -172,7 +177,7 @@ class TestCommunityOneDeviceMerged(MultipleSharedDeviceTestCase):
         #         "Incorrect contacts number restored: %s instead of %s" % (contacts_number, len(waku_user.contacts)))
         for contact in waku_user.contacts:
             if not self.home.element_by_text(contact).is_element_displayed(30):
-                self.errors.append('%s was not restored as a contact from waku backup!' % contact)
+                self.errors.append(self.home, '%s was not restored as a contact from waku backup!' % contact)
                 # Disabled for simple check as sometimes from waku-backup users restored with 3-random names
                 # self.home.click_system_back_button_until_element_is_shown()
                 # contact_row = self.home.contact_details_row(index=i + 1)
@@ -201,7 +206,7 @@ class TestCommunityOneDeviceMerged(MultipleSharedDeviceTestCase):
         self.home.communities_tab.click()
         for key in ['admin_open', 'member_open', 'admin_closed', 'member_closed']:
             if not self.home.element_by_text(waku_user.communities[key]).is_element_displayed(30):
-                self.errors.append("%s was not restored from waku-backup!!" % key)
+                self.errors.append(self.home, "%s was not restored from waku-backup!!" % key)
         # TODO: there is a bug when pending community sometimes restored as joined; needs investigation
         # self.home.opened_communities_tab.click()
         # if not self.home.element_by_text(waku_user.communities['member_pending']).is_element_displayed(30):
@@ -222,7 +227,7 @@ class TestCommunityOneDeviceMerged(MultipleSharedDeviceTestCase):
         self.home.navigate_back_to_home_view()
         self.home.communities_tab.click()
         if self.home.element_by_text(waku_user.communities['admin_open']).is_element_displayed(30):
-            self.errors.append("Community of previous user is shown!")
+            self.errors.append(self.home, "Community of previous user is shown!")
 
         self.home.just_fyi("Check that can remove user from logged out state")
         self.home.reopen_app(sign_in=False)
@@ -230,13 +235,13 @@ class TestCommunityOneDeviceMerged(MultipleSharedDeviceTestCase):
         user_card.open_user_options()
         self.sign_in.remove_profile_button.click()
         if not self.sign_in.element_by_translation_id("remove-profile-confirm-message").is_element_displayed(30):
-            self.errors.append("Warning is not shown on removing profile!")
+            self.errors.append(self.home, "Warning is not shown on removing profile!")
         self.sign_in.element_by_translation_id("remove").click()
 
         self.home.just_fyi("Check that removed user is not shown in the list anymore")
         self.home.reopen_app(sign_in=False)
         if self.sign_in.element_by_text(recover_user_name).is_element_displayed():
-            self.errors.append("Removed user is re-appeared after relogin!")
+            self.errors.append(self.home, "Removed user is re-appeared after relogin!")
 
         self.errors.verify_no_errors()
 
@@ -279,21 +284,23 @@ class TestCommunityOneDeviceMerged(MultipleSharedDeviceTestCase):
                     except TimeoutException:
                         missing_tags.append(text)
                 if missing_tags:
-                    self.errors.append("Community '%s' is missing tag(s) %s." % (community_name, ','.join(tags)))
+                    self.errors.append(self.home,
+                                       "Community '%s' is missing tag(s) %s." % (community_name, ','.join(tags)))
                 # if community_name == 'Status':
                 self.home.just_fyi("Check Status community screen")
                 card.click()
                 if self.community_view.join_button.is_element_differs_from_template(
                         'status_community_join_button.png'):
-                    self.errors.append("Status community Join button is different from expected template.")
+                    self.errors.append(self.home, "Status community Join button is different from expected template.")
                 if self.community_view.community_logo.is_element_differs_from_template('status_community_logo.png'):
-                    self.errors.append("Status community logo is different from expected template.")
+                    self.errors.append(self.home, "Status community logo is different from expected template.")
 
                     # self.community_view.close_community_view_button.click()
                     # self.home.swipe_up()
 
             except TimeoutException:
-                self.errors.append("Community '%s' is not in the Discover Communities list." % community_name)
+                self.errors.append(self.home,
+                                   "Community '%s' is not in the Discover Communities list." % community_name)
 
         self.errors.verify_no_errors()
         # Note: this test should always be the LAST ONE in the group because it turns on mainnet in the app!
@@ -350,7 +357,7 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
         timestamp = self.channel_1.chat_element_by_text(message).timestamp
         if sent_time_variants and timestamp:
             if timestamp not in sent_time_variants:
-                self.errors.append("Timestamp is not shown, expected: '%s', in fact: '%s'" %
+                self.errors.append(self.channel_1, "Timestamp is not shown, expected: '%s', in fact: '%s'" %
                                    (", ".join(sent_time_variants), timestamp))
         self.channel_1.verify_message_is_under_today_text(message, self.errors)
         self.channel_2.send_message("one more message")
@@ -358,7 +365,8 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
         self.channel_1.send_message(new_message)
         self.channel_2.verify_message_is_under_today_text(new_message, self.errors, 60)
         if self.channel_2.chat_element_by_text(new_message).username.text != self.username_1:
-            self.errors.append("Default username '%s' is not shown next to the received message" % self.username_1)
+            self.errors.append(self.channel_2,
+                               "Default username '%s' is not shown next to the received message" % self.username_1)
         self.errors.verify_no_errors()
 
     @marks.smoke
@@ -370,13 +378,13 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
         self.channel_1.edit_message_in_chat(message_before_edit, message_after_edit)
         for channel in (self.channel_1, self.channel_2):
             if not channel.element_by_text_part(message_after_edit).is_element_displayed(60):
-                self.errors.append('Message is not edited')
+                self.errors.append(channel, 'Message is not edited')
         message_text_after_edit = message_after_edit + ' (Edited)'
         self.channel_2.set_reaction(message_text_after_edit)
         try:
             self.channel_1.chat_element_by_text(message_text_after_edit).emojis_below_message().wait_for_element_text(1)
         except (Failed, NoSuchElementException):
-            self.errors.append("Message reaction is not shown for the sender")
+            self.errors.append(self.channel_1, "Message reaction is not shown for the sender")
         self.errors.verify_no_errors()
 
     @marks.testrail_id(702839)
@@ -389,9 +397,9 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
         self.channel_2.delete_message_in_chat(message_to_delete_everyone)
         for channel in (self.channel_1, self.channel_2):
             if not channel.chat_element_by_text(message_to_delete_everyone).is_element_disappeared(30):
-                self.errors.append("Deleted message is shown in channel")
+                self.errors.append(channel, "Deleted message is shown in channel")
         if not self.channel_2.element_by_translation_id('message-deleted-for-everyone').is_element_displayed(30):
-            self.errors.append("System message about deletion for everyone is not displayed")
+            self.errors.append(self.channel_2, "System message about deletion for everyone is not displayed")
 
         self.home_2.just_fyi(
             'Deleting message for me. Checking that message is deleted only for the author of the message')
@@ -399,11 +407,11 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
         self.channel_1.chat_element_by_text(message_to_delete_for_me).wait_for_element(120)
         self.channel_2.delete_message_in_chat(message_to_delete_for_me, everyone=False)
         if not self.channel_2.chat_element_by_text(message_to_delete_for_me).is_element_disappeared(30):
-            self.errors.append("Deleted for me message is shown in channel for the author of message")
+            self.errors.append(self.channel_2, "Deleted for me message is shown in channel for the author of message")
         if not self.channel_2.element_by_translation_id('message-deleted-for-you').is_element_displayed(30):
-            self.errors.append("System message about deletion for you is not displayed")
+            self.errors.append(self.channel_2, "System message about deletion for you is not displayed")
         if not self.channel_1.chat_element_by_text(message_to_delete_for_me).is_element_displayed(30):
-            self.errors.append("Deleted for me message is deleted all channel members")
+            self.errors.append(self.channel_1, "Deleted for me message is deleted all channel members")
         self.errors.verify_no_errors()
 
     @marks.testrail_id(703194)
@@ -423,22 +431,22 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
             image = chat_element.image_container_in_message
             if (image.is_element_differs_from_template("images_gallery.png", 5) and
                     image.is_element_differs_from_template("images_gallery_inverted.png", 5)):
-                self.errors.append("Gallery message does not match the template!")
+                self.errors.append(self.channel_2, "Gallery message does not match the template!")
         except TimeoutException:
-            self.errors.append("Gallery message was not received")
+            self.errors.append(self.channel_2, "Gallery message was not received")
             received = False
 
         if received:
             self.channel_2.just_fyi("Checking an ability to save and share an image from gallery")
             chat_element.image_container_in_message.image_by_index(1).click()
             if not self.channel_2.share_image_icon_button.is_element_displayed():
-                self.errors.append("Can't share an image from gallery.")
+                self.errors.append(self.channel_2, "Can't share an image from gallery.")
             if self.channel_2.view_image_options_button.is_element_displayed():
                 self.channel_2.view_image_options_button.click()
                 if not self.channel_2.save_image_icon_button.is_element_displayed():
-                    self.errors.append("Can't save an image from gallery.")
+                    self.errors.append(self.channel_2, "Can't save an image from gallery.")
             else:
-                self.errors.append("Image options button is not shown for an image from gallery.")
+                self.errors.append(self.channel_2, "Image options button is not shown for an image from gallery.")
 
             self.channel_2.navigate_back_to_chat_view()
 
@@ -450,7 +458,7 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
             chat_element_1 = self.channel_1.chat_element_by_text(message_text)
             if not chat_element_1.is_element_displayed(
                     sec=60) or chat_element_1.replied_message_text != image_description:
-                self.errors.append('Reply message was not received by the sender')
+                self.errors.append(self.channel_1, 'Reply message was not received by the sender')
         self.errors.verify_no_errors()
 
     @marks.testrail_id(702859)
@@ -465,7 +473,7 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
         self.channel_2.chat_element_by_text(image_description).wait_for_visibility_of_element(10)
         if not self.channel_2.chat_element_by_text(
                 image_description).image_in_message.is_element_image_similar_to_template('image_1_chat_view.png'):
-            self.errors.append("Not expected image is shown to the receiver")
+            self.errors.append(self.channel_2, "Not expected image is shown to the receiver")
 
         if not self.channel_1.chat_element_by_text(image_description).is_element_displayed(60):
             self.channel_1.hide_keyboard_if_shown()
@@ -477,11 +485,11 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
         if toast_element.is_element_displayed():
             toast_element_text = toast_element.text
             if toast_element_text != self.channel_1.get_translation_by_key("photo-saved"):
-                self.errors.append(
-                    "Shown message '%s' doesn't match expected '%s' after saving an image." % (
-                        toast_element_text, self.channel_1.get_translation_by_key("photo-saved")))
+                self.errors.append(self.channel_1,
+                                   "Shown message '%s' doesn't match expected '%s' after saving an image." % (
+                                       toast_element_text, self.channel_1.get_translation_by_key("photo-saved")))
         else:
-            self.errors.append("Message about saving a photo is not shown.")
+            self.errors.append(self.channel_1, "Message about saving a photo is not shown.")
         self.channel_1.navigate_back_to_chat_view()
 
         self.channel_1.just_fyi("Check that image is saved in gallery")
@@ -489,7 +497,7 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
         self.channel_1.allow_all_button.click_if_shown()
         if not self.channel_1.get_image_by_index(0).is_element_image_similar_to_template(
                 "image_1_gallery_view.png"):
-            self.errors.append('Saved image is not shown in Recent')
+            self.errors.append(self.channel_1, 'Saved image is not shown in Recent')
         self.channel_1.click_system_back_button()
 
         self.home_2.just_fyi('Check share option on opened image')
@@ -499,7 +507,7 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
         try:
             self.channel_2.wait_for_current_package_to_be('com.google.android.apps.docs')
         except TimeoutException:
-            self.errors.append("Can't share image")
+            self.errors.append(self.channel_2, "Can't share image")
         self.channel_2.navigate_back_to_chat_view()
 
         self.channel_2.just_fyi("Can reply to images")
@@ -511,20 +519,20 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
         self.channel_2.send_message_button.click()
         chat_element_1 = self.channel_1.chat_element_by_text(message_text)
         if not chat_element_1.is_element_displayed(sec=60) or chat_element_1.replied_message_text != image_description:
-            self.errors.append('Reply message was not received by the sender')
+            self.errors.append(self.channel_1, 'Reply message was not received by the sender')
         self.channel_2.just_fyi("Set a reaction for the image message")
         self.channel_2.set_reaction(message=image_description)
         try:
             self.channel_1.chat_element_by_text(image_description).emojis_below_message().wait_for_element_text(1)
         except (Failed, NoSuchElementException):
-            self.errors.append("Image message reaction is not shown for the sender")
+            self.errors.append(self.channel_1, "Image message reaction is not shown for the sender")
         self.channel_1.just_fyi("Set a reaction for the message reply")
         self.channel_2.set_reaction(message=image_description, emoji="love")
         try:
             self.channel_2.chat_element_by_text(message_text).emojis_below_message(
                 emoji="love").wait_for_element_text(1)
         except (Failed, NoSuchElementException):
-            self.errors.append("Reply message reaction is not shown for the reply sender")
+            self.errors.append(self.channel_2, "Reply message reaction is not shown for the reply sender")
 
         self.errors.verify_no_errors()
 
@@ -537,13 +545,14 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
         self.channel_1.send_message(emoji_message)
         for channel in self.channel_1, self.channel_2:
             if not channel.chat_element_by_text(emoji_unicode).is_element_displayed(30):
-                self.errors.append('Message with emoji was not sent or received in community channel')
+                self.errors.append(channel, 'Message with emoji was not sent or received in community channel')
 
         self.channel_1.just_fyi("Can copy and paste emojis")
         self.channel_1.copy_message_text(emoji_unicode)
         actual_copied_text = self.channel_1.driver.get_clipboard_text()
         if actual_copied_text != emoji_unicode:
-            self.errors.append('Emoji message was not copied, text in clipboard is %s' % actual_copied_text)
+            self.errors.append(self.channel_1,
+                               'Emoji message was not copied, text in clipboard is %s' % actual_copied_text)
 
         self.channel_1.just_fyi("Can reply to emojis")
         if not self.channel_2.chat_message_input.is_element_displayed():
@@ -557,7 +566,7 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
         chat_element_1 = self.channel_1.chat_element_by_text(message_text)
         chat_element_1.wait_for_element(60)
         if chat_element_1.replied_message_text != emoji_unicode:
-            self.errors.append('Reply message is not reply to original message!')
+            self.errors.append(self.channel_1, 'Reply message is not reply to original message!')
         self.errors.verify_no_errors()
 
     @marks.testrail_id(702844)
@@ -613,27 +622,30 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
             try:
                 self.channel_2.url_preview_composer.wait_for_element(20)
             except TimeoutException:
-                self.errors.append("No preview is loaded for url %s" % url)
+                self.errors.append(self.channel_1, "No preview is loaded for url %s" % url)
                 self.channel_2.send_message_button.click()
                 continue
             shown_title = self.channel_2.url_preview_composer_text.text
             if shown_title != data['title']:
-                self.errors.append("Preview text is not expected, it is '%s'" % shown_title)
+                self.errors.append(self.channel_2, "Preview text is not expected, it is '%s'" % shown_title)
             self.channel_2.send_message_button.click()
             message = self.channel_1.get_preview_message_by_text(url)
             message.wait_for_element(60)
             if not message.preview_image:
-                self.errors.append("No preview image is shown for %s" % url)
+                self.errors.append(self.channel_1, "No preview image is shown for %s" % url)
             shown_title = message.preview_title.text
             if shown_title != data['title']:
-                self.errors.append("Title is not equal expected for '%s', actual is '%s'" % (url, shown_title))
+                self.errors.append(self.channel_1,
+                                   "Title is not equal expected for '%s', actual is '%s'" % (url, shown_title))
             shown_description = message.preview_subtitle.text
             if shown_description != data['description']:
-                self.errors.append(
-                    "Description is not equal expected for '%s', actual is '%s'" % (url, shown_description))
+                self.errors.append(self.channel_1,
+                                   "Description is not equal expected for '%s', actual is '%s'" % (
+                                       url, shown_description))
             shown_link = message.preview_link.text
             if shown_link != data['link']:
-                self.errors.append("Link is not equal expected for '%s', actual is '%s'" % (url, shown_link))
+                self.errors.append(self.channel_1,
+                                   "Link is not equal expected for '%s', actual is '%s'" % (url, shown_link))
 
         self.channel_1.just_fyi("Set reaction and check it")
         message_with_reaction = list(preview_urls.values())[-1]['url']
@@ -645,7 +657,7 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
             self.channel_2.chat_element_by_text(message_with_reaction).emojis_below_message(
                 emoji="laugh").wait_for_element_text(1)
         except (Failed, NoSuchElementException):
-            self.errors.append("Link message reaction is not shown for the sender")
+            self.errors.append(self.channel_2, "Link message reaction is not shown for the sender")
 
         self.errors.verify_no_errors()
 
@@ -662,14 +674,14 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
         self.home_1.just_fyi('Check new messages badge is shown for community')
         community_element_1 = self.home_1.get_chat(self.community_name, community=True)
         if not community_element_1.new_messages_grey_dot.is_element_displayed(sec=30):
-            self.errors.append('New message community badge is not shown')
+            self.errors.append(self.home_1, 'New message community badge is not shown')
 
         community_1 = community_element_1.click()
         channel_1_element = community_1.get_channel(self.channel_name)
 
         self.home_1.just_fyi('Check new messages badge is shown for channel')
         if not channel_1_element.new_messages_grey_dot.is_element_displayed():
-            self.errors.append('New messages channel badge is not shown on channel')
+            self.errors.append(self.channel_1, 'New messages channel badge is not shown on channel')
         channel_1_element.click()
         self.errors.verify_no_errors()
 
@@ -696,7 +708,7 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
 
         self.chat_1.just_fyi('Check that messages from blocked user are hidden in public chat and close app')
         if not self.chat_1.chat_element_by_text(message_to_disappear).is_element_disappeared(30):
-            self.errors.append("Messages from blocked user is not cleared in public chat ")
+            self.errors.append(self.chat_1, "Messages from blocked user is not cleared in public chat ")
         self.chat_1.navigate_back_to_home_view()
         # ToDo: enable when https://github.com/status-im/status-mobile/issues/19334 is fixed
         # self.home_1.chats_tab.click()
@@ -715,8 +727,8 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
         self.home_1.get_chat(self.channel_name, community_channel=True).click()
         for message in message_to_disappear, message_blocked:
             if self.chat_1.chat_element_by_text(message).is_element_displayed(30):
-                self.errors.append(
-                    "'%s' from blocked user is fetched from offline in community channel" % message)
+                self.errors.append(self.chat_1,
+                                   "'%s' from blocked user is fetched from offline in community channel" % message)
 
         self.chat_1.just_fyi('Unblock user and check that can see further messages')
         # TODO: still no blocked users in new UI
@@ -736,7 +748,8 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
         self.home_1.get_chat(self.channel_name, community_channel=True).click()
         self.chat_1.hide_keyboard_if_shown()
         if not self.chat_1.chat_element_by_text(message_unblocked).is_element_displayed(120):
-            self.errors.append("%s was not received in public chat after user unblock!" % message_unblocked)
+            self.errors.append(self.chat_1,
+                               "%s was not received in public chat after user unblock!" % message_unblocked)
             self.errors.verify_no_errors()
 
         self.home_1.just_fyi("Add blocked user to contacts again after removing(removed automatically when blocked)")
@@ -756,7 +769,7 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
             unblocked = True
         except TimeoutException:
             unblocked = False
-            self.errors.append("Chat with unblocked user was not enabled after 1 minute")
+            self.errors.append(self.chat_1, "Chat with unblocked user was not enabled after 1 minute")
 
         if unblocked:
             self.home_2.just_fyi("Check message in 1-1 chat after unblock")
@@ -767,9 +780,9 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
                 self.chat_2.chat_element_by_text(message_unblocked).wait_for_status_to_be(expected_status='Delivered',
                                                                                           timeout=120)
                 if not self.chat_1.chat_element_by_text(message_unblocked).is_element_displayed(30):
-                    self.errors.append("Message was not received in 1-1 chat after user unblock!")
+                    self.errors.append(self.chat_1, "Message was not received in 1-1 chat after user unblock!")
             except TimeoutException:
-                self.errors.append('Message was not delivered after back up online.')
+                self.errors.append(self.chat_2, 'Message was not delivered after back up online.')
 
         self.errors.verify_no_errors()
 
@@ -783,22 +796,23 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
         self.channel_2.send_message(self.text_message)
         community_1_element = self.community_1.get_chat(self.community_name, community=True)
         if not community_1_element.new_messages_grey_dot.is_element_displayed(90):
-            self.errors.append('New messages counter is not shown in home > Community element')
+            self.errors.append(self.community_1, 'New messages counter is not shown in home > Community element')
         community_1_element.click()
         channel_1_element = self.community_1.get_chat(self.channel_name, community_channel=True)
         if not channel_1_element.new_messages_grey_dot.is_element_displayed():
-            self.errors.append("New messages counter is not shown in community channel element")
+            self.errors.append(self.community_1, "New messages counter is not shown in community channel element")
         self.community_1.click_system_back_button()
         mark_as_read_button = self.community_1.mark_all_messages_as_read_button
         self.home_1.community_floating_screen.wait_for_invisibility_of_element()
         community_1_element.long_press_until_element_is_shown(mark_as_read_button)
         mark_as_read_button.click()
         if community_1_element.new_messages_grey_dot.is_element_displayed():
-            self.errors.append(
-                'Unread messages badge is shown in community element while there are no unread messages')
+            self.errors.append(self.community_1,
+                               'Unread messages badge is shown in community element while there are no unread messages')
         community_1_element.click()
         if channel_1_element.new_messages_grey_dot.is_element_displayed():
             self.errors.append(
+                self.community_1,
                 "New messages badge is shown in community channel element while there are no unread messages")
         self.errors.verify_no_errors()
 
@@ -827,9 +841,10 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
 
         self.channel_1.just_fyi("Receiver is checking if messages were updated and deleted")
         if not self.channel_1.chat_element_by_text(message_after_edit).is_element_displayed(30):
-            self.errors.append("Updated message '%s' is not delivered to the receiver" % message_after_edit)
+            self.errors.append(self.channel_1,
+                               "Updated message '%s' is not delivered to the receiver" % message_after_edit)
         if not self.channel_1.chat_element_by_text(message_to_delete).is_element_disappeared():
-            self.errors.append("Message '%s' was not deleted for the receiver" % message_to_delete)
+            self.errors.append(self.channel_1, "Message '%s' was not deleted for the receiver" % message_to_delete)
         self.errors.verify_no_errors()
 
 
@@ -890,12 +905,13 @@ class TestCommunityMultipleDeviceMergedTwo(MultipleSharedDeviceTestCase):
             message_received = True
             if not self.channel_1.chat_element_by_text(self.username_1).is_element_displayed():
                 if self.channel_1.chat_message_input.is_element_displayed():
-                    self.errors.append("Message with the mention is not shown in the chat for the admin")
+                    self.errors.append(self.channel_1,
+                                       "Message with the mention is not shown in the chat for the admin")
                 else:
-                    self.errors.append(
-                        "Channel did not open by clicking on a notification with the mention for admin")
+                    self.errors.append(self.channel_1,
+                                       "Channel did not open by clicking on a notification with the mention for admin")
         else:
-            self.errors.append("Push notification with the mention was not received by admin")
+            self.errors.append(self.channel_1, "Push notification with the mention was not received by admin")
 
         if not self.channel_1.chat_message_input.is_element_displayed():
             self.channel_1.navigate_back_to_home_view()
@@ -925,20 +941,20 @@ class TestCommunityMultipleDeviceMergedTwo(MultipleSharedDeviceTestCase):
             self.channel_2.send_message_button.click()
             edit_done = True
             if chat_element.message_body_with_mention.text != expected_message:
-                self.errors.append("Edited message is not shown correctly for the sender")
+                self.errors.append(self.channel_2, "Edited message is not shown correctly for the sender")
         except NoSuchElementException:
-            self.errors.append("Can not edit a message with a mention")
+            self.errors.append(self.channel_2, "Can not edit a message with a mention")
         if edit_done:
             element = self.channel_1.chat_element_by_text(self.username_1).message_body_with_mention
             if not element.is_element_displayed(10) or element.text != expected_message:
-                self.errors.append("Edited message is not shown correctly for the (receiver) admin")
+                self.errors.append(self.channel_1, "Edited message is not shown correctly for the (receiver) admin")
 
         self.device_2.just_fyi("Sender checks the reaction for a message with a mention")
         try:
             self.channel_2.chat_element_by_text(self.username_1).emojis_below_message(
                 emoji="sad").wait_for_element_text(1)
         except (Failed, NoSuchElementException):
-            self.errors.append("Message reaction is not shown for the sender")
+            self.errors.append(self.channel_2, "Message reaction is not shown for the sender")
 
         self.home_2.navigate_back_to_home_view()
         if not self.channel_1.chat_message_input.is_element_displayed():
@@ -957,12 +973,15 @@ class TestCommunityMultipleDeviceMergedTwo(MultipleSharedDeviceTestCase):
             push_notification_element.click()
             if not self.channel_2.chat_element_by_text(self.username_2).is_element_displayed():
                 if self.channel_2.chat_message_input.is_element_displayed():
-                    self.errors.append("Message with the mention is not shown in the chat for the invited member")
+                    self.errors.append(self.channel_2,
+                                       "Message with the mention is not shown in the chat for the invited member")
                 else:
                     self.errors.append(
+                        self.channel_2,
                         "Channel did not open by clicking on a notification with the mention for the invited member")
         else:
-            self.errors.append("Push notification with the mention was not received by the invited member")
+            self.errors.append(self.channel_2,
+                               "Push notification with the mention was not received by the invited member")
         self.errors.verify_no_errors()
 
     @marks.testrail_id(702809)
@@ -989,11 +1008,13 @@ class TestCommunityMultipleDeviceMergedTwo(MultipleSharedDeviceTestCase):
             self.channel_2.send_message(message_to_send)
             if not self.channel_2.chat_element_by_text(message).is_element_displayed():
                 self.errors.append(
-                    '%s is not displayed with markdown in community channel for the sender (device 2) \n' % message)
+                    self.channel_2,
+                    '%s is not displayed with markdown in community channel for the sender \n' % message)
 
             if not self.channel_1.chat_element_by_text(message).is_element_displayed():
                 self.errors.append(
-                    '%s is not displayed with markdown in community channel for the recipient (device 1) \n' % message)
+                    self.channel_1,
+                    '%s is not displayed with markdown in community channel for the recipient \n' % message)
 
         for home in self.homes:
             home.navigate_back_to_home_view()
@@ -1009,10 +1030,11 @@ class TestCommunityMultipleDeviceMergedTwo(MultipleSharedDeviceTestCase):
             self.chat_1.send_message(message_to_send)
             if not self.chat_1.chat_element_by_text(message).is_element_displayed(30):
                 self.errors.append(
-                    '%s is not displayed with markdown in 1-1 chat for the sender (device 1) \n' % message)
+                    self.chat_1, '%s is not displayed with markdown in 1-1 chat for the sender (device 1) \n' % message)
 
             if not self.chat_2.chat_element_by_text(message).is_element_displayed(30):
                 self.errors.append(
+                    self.chat_2,
                     '%s is not displayed with markdown in 1-1 chat for the recipient (device 2) \n' % message)
 
         self.errors.verify_no_errors()
@@ -1027,7 +1049,7 @@ class TestCommunityMultipleDeviceMergedTwo(MultipleSharedDeviceTestCase):
         community_to_leave.leave_community_button.click()
         community_to_leave.leave_community_button.click()
         if not community.is_element_disappeared():
-            self.errors.append('Community is still shown in the list after leave')
+            self.errors.append(self.home_2, 'Community is still shown in the list after leave')
         self.errors.verify_no_errors()
 
     @marks.xfail(reason="Can't navigate to a community channel before joining the community, "
@@ -1058,12 +1080,13 @@ class TestCommunityMultipleDeviceMergedTwo(MultipleSharedDeviceTestCase):
             if not self.community_2.get_channel(chan_name).is_element_displayed():
                 not_shown.append(chan_name)
         if not_shown:
-            self.errors.append("Not all channels are shown in community before joining: %s" % not_shown)
+            self.errors.append(self.community_2,
+                               "Not all channels are shown in community before joining: %s" % not_shown)
         chan = self.community_2.get_channel("general")
         if chan.is_element_displayed():
             chan.find_element().click()
             if not self.channel_2.chat_element_by_text(control_message_general_chat).is_element_displayed(20):
-                self.errors.append("Message in community channel is not visible for user before join")
+                self.errors.append(self.channel_2, "Message in community channel is not visible for user before join")
         else:
             not_shown.append("general")
 
@@ -1078,7 +1101,7 @@ class TestCommunityMultipleDeviceMergedTwo(MultipleSharedDeviceTestCase):
         try:
             self.home_1.notifications_unread_badge.wait_for_visibility_of_element(120)
         except TimeoutException:
-            self.errors.append("Unread indicator is not shown in notifications on membership request")
+            self.errors.append(self.home_1, "Unread indicator is not shown in notifications on membership request")
         self.home_1.open_activity_center_button.click()
         reply_element = self.home_1.get_element_from_activity_center_view(self.username_2)
         reply_element.title.swipe_right_on_element(width_percentage=2.5)
@@ -1104,12 +1127,12 @@ class TestCommunityMultipleDeviceMergedTwo(MultipleSharedDeviceTestCase):
         self.home_2.get_to_community_channel_from_home(community_name, dogs_channel)
         self.channel_2.chat_element_by_text(message_with_hashtag).click_on_link_inside_message_body()
         if not self.channel_2.chat_element_by_text(cats_message).is_element_displayed(30):
-            self.errors.append("Receiver was not navigated to the cats channel")
+            self.errors.append(self.channel_2, "Receiver was not navigated to the cats channel")
 
         self.home_1.just_fyi("Device 1 clicks on the message with hashtag in the community channel")
         self.channel_1.chat_element_by_text(message_with_hashtag).click_on_link_inside_message_body()
         if not self.channel_1.chat_element_by_text(cats_message).is_element_displayed(30):
-            self.errors.append("Sender was not navigated to the cats channel")
+            self.errors.append(self.channel_1, "Sender was not navigated to the cats channel")
 
         for home in self.homes:
             home.navigate_back_to_home_view()
@@ -1123,12 +1146,12 @@ class TestCommunityMultipleDeviceMergedTwo(MultipleSharedDeviceTestCase):
         self.home_1.get_chat(self.username_2).click()
         self.chat_1.chat_element_by_text(message_with_hashtag).click_on_link_inside_message_body()
         if self.chat_1.chat_element_by_text(control_message_1_1_chat).is_element_disappeared():
-            self.errors.append("Receiver was navigated out of 1-1 chat")
+            self.errors.append(self.chat_1, "Receiver was navigated out of 1-1 chat")
 
         self.home_2.just_fyi("Device 2 clicks on the message with hashtag in 1-1 chat")
         self.chat_2.chat_element_by_text(message_with_hashtag).click_on_link_inside_message_body()
         if self.chat_2.chat_element_by_text(control_message_1_1_chat).is_element_disappeared():
-            self.errors.append("Sender was navigated out of 1-1 chat")
+            self.errors.append(self.chat_2, "Sender was navigated out of 1-1 chat")
 
         self.errors.verify_no_errors()
 
@@ -1169,21 +1192,23 @@ class TestCommunityMultipleDeviceMergedTwo(MultipleSharedDeviceTestCase):
         if self.community_2.toast_content_element.is_element_displayed(10):
             cur_text = self.community_2.toast_content_element.text
             if cur_text != exp_text:
-                self.errors.append(
-                    "Text \"%s\" in shown toast element doesn't match expected \"%s\"" % (cur_text, exp_text))
+                self.errors.append(self.community_2,
+                                   "Text \"%s\" in shown toast element doesn't match expected \"%s\"" % (
+                                       cur_text, exp_text))
         else:
-            self.errors.append("Toast element with the text \"%s\" doesn't appear" % exp_text)
+            self.errors.append(self.community_2, "Toast element with the text \"%s\" doesn't appear" % exp_text)
         if not self.community_2.community_status_pending.is_element_displayed():
-            self.errors.append("Pending status is not displayed")
+            self.errors.append(self.community_2, "Pending status is not displayed")
         general_channel = self.community_2.get_channel("general")
         if general_channel.is_element_displayed():
             general_channel.find_element().click()
             if not self.channel_2.chat_element_by_text(control_message_general_chat).is_element_displayed(30):
                 self.errors.append(
+                    self.community_2,
                     "Message in community channel is not visible for user before join, it was indicated as " \
                     "%s sent for the sender before he went offline" % ("" if message_sent else "not"))
         else:
-            self.errors.append("Community channel is not displayed for user before join")
+            self.errors.append(self.community_2, "Community channel is not displayed for user before join")
         self.community_2.toast_content_element.wait_for_invisibility_of_element(30)
         self.home_2.navigate_back_to_home_view()
         self.home_2.communities_tab.click()
@@ -1191,7 +1216,7 @@ class TestCommunityMultipleDeviceMergedTwo(MultipleSharedDeviceTestCase):
         if self.home_2.get_chat(community_name, community=True).is_element_displayed():
             self.home_2.get_chat(community_name, community=True).click()
         else:
-            self.errors.append("%s is not listed inside Pending communities tab" % community_name)
+            self.errors.append(self.home_2, "%s is not listed inside Pending communities tab" % community_name)
 
         self.home_1.just_fyi("Device 1 goes back online")
         self.home_1.driver.activate_app(app_package)
@@ -1202,13 +1227,14 @@ class TestCommunityMultipleDeviceMergedTwo(MultipleSharedDeviceTestCase):
         if self.community_2.toast_content_element.is_element_displayed(60):
             cur_text = self.community_2.toast_content_element.text
             if cur_text != exp_text:
-                self.errors.append(
-                    "Text \"%s\" in shown toast element doesn't match expected \"%s\"" % (cur_text, exp_text))
+                self.errors.append(self.community_2,
+                                   "Text \"%s\" in shown toast element doesn't match expected \"%s\"" % (
+                                       cur_text, exp_text))
         # else:
         #     self.errors.append("Toast element with the text \"%s\" doesn't appear" % exp_text)
         # ToDo: add verification when toast is fixed
         if not self.community_2.community_status_joined.is_element_displayed():
-            self.errors.append("Joined status is not displayed")
+            self.errors.append(self.community_2, "Joined status is not displayed")
         self.community_2.close_community_view_button.click_until_absense_of_element(
             self.community_2.close_community_view_button)
         self.home_2.joined_communities_tab.click()
@@ -1216,6 +1242,6 @@ class TestCommunityMultipleDeviceMergedTwo(MultipleSharedDeviceTestCase):
         if chat_element.is_element_displayed(30):
             chat_element.click()
         else:
-            self.errors.append("%s is not listed inside Joined communities tab" % community_name)
+            self.errors.append(self.home_2, "%s is not listed inside Joined communities tab" % community_name)
 
         self.errors.verify_no_errors()

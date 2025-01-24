@@ -18,6 +18,7 @@ from urllib3.exceptions import MaxRetryError, ProtocolError
 from support.api.network_api import NetworkApi
 from tests import test_suite_data, start_threads, pytest_config_global, transl
 from tests.conftest import github_report, run_name, lambda_test_username, lambda_test_access_key
+from views.base_view import BaseView
 
 executor_lambda_test = 'https://%s:%s@mobile-hub.lambdatest.com/wd/hub' % (lambda_test_username, lambda_test_access_key)
 
@@ -164,12 +165,14 @@ class Driver(webdriver.Remote):
         self.execute_script("lambda-hook: %s" % str(data).replace("'", "\""))
 
 
-class Errors(object):
+class Errors:
     def __init__(self):
         self.errors = list()
 
-    def append(self, text=str()):
-        self.errors.append(text)
+    def append(self, view: BaseView, text: str):
+        error_text = "Device %s: %s" % (view.driver.number, text)
+        self.errors.append(error_text)
+        view.driver.log_event("appium", error_text)
 
     def verify_no_errors(self):
         if self.errors:

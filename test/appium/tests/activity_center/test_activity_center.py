@@ -40,9 +40,10 @@ class TestActivityCenterContactRequestMultipleDevicePR(MultipleSharedDeviceTestC
             if text_name != self.username_1 and text_name != "%s...%s" % (
                     self.public_key_1[:3], self.public_key_1[-6:]):
                 self.errors.append(
+                    self.home_2,
                     "Neither username nor public key is shown on 'Add contact' page after entering valid public key")
         else:
-            self.errors.append("User is not found on 'Add contact' page after entering valid public key")
+            self.errors.append(self.home_2, "User is not found on 'Add contact' page after entering valid public key")
         chat = self.home_2.get_chat_view()
 
         chat.view_profile_new_contact_button.click_until_presence_of_element(chat.profile_send_contact_request_button)
@@ -55,7 +56,8 @@ class TestActivityCenterContactRequestMultipleDevicePR(MultipleSharedDeviceTestC
         self.device_1.just_fyi("Device 1: check there is no PN when receiving new message to activity centre")
         self.device_1.open_notification_bar()
         if self.home_1.element_by_text_part("Please add me to your contacts").is_element_displayed():
-            self.errors.append("Push notification with text was received for new message in activity centre")
+            self.errors.append(self.home_1,
+                               "Push notification with text was received for new message in activity centre")
         self.device_1.click_system_back_button()
         self.device_1.driver.activate_app(app_package)
         self.device_1.wait_for_application_to_be_running(app_package)
@@ -65,9 +67,9 @@ class TestActivityCenterContactRequestMultipleDevicePR(MultipleSharedDeviceTestC
         for indicator in (self.home_1.notifications_unread_badge, self.home_1.contact_new_badge):
             if not indicator.is_element_displayed():
                 self.errors.append(
-                    "Unread indicator on contacts tab or on activity center is not shown for incoming CR!")
+                    self.home_1, "Unread indicator on contacts tab or on activity center is not shown for incoming CR!")
         if self.home_1.pending_contact_request_text.text != '1':
-            self.errors.append("The amount of contact requests is not shown for incoming CR!")
+            self.errors.append(self.home_1, "The amount of contact requests is not shown for incoming CR!")
 
         self.device_1.just_fyi('Device1 declines pending contact request')
         self.home_1.handle_contact_request(username=self.username_2, action='decline')
@@ -75,6 +77,7 @@ class TestActivityCenterContactRequestMultipleDevicePR(MultipleSharedDeviceTestC
                           self.home_1.pending_contact_request_text):
             if indicator.is_element_displayed():
                 self.errors.append(
+                    self.home_1,
                     "Unread indicator on contacts tab or on activity center is shown after declining contact request!")
 
         self.device_1.just_fyi("Check that it is still pending contact after declining on sender device")
@@ -85,7 +88,7 @@ class TestActivityCenterContactRequestMultipleDevicePR(MultipleSharedDeviceTestC
         if element.title.text != 'Contact request' or element.context_tag_text != self.username_1 \
                 or not element.pending_status_tag.is_element_displayed():
             self.errors.append(
-                "Pending contact request is not shown on unread notification element on Activity center!")
+                self.home_2, "Pending contact request is not shown on unread notification element on Activity center!")
         self.home_2.close_activity_centre.click()
 
         self.errors.verify_no_errors()
@@ -123,7 +126,8 @@ class TestActivityCenterContactRequestMultipleDevicePR(MultipleSharedDeviceTestC
         self.home_1.more_options_activity_button.click()
         self.home_1.mark_all_read_activity_button.click()
         if cr_element.is_element_displayed():
-            self.errors.append("Contact request is still shown in activity centre after marking all messages as read!")
+            self.errors.append(
+                self.home_1, "Contact request is still shown in activity centre after marking all messages as read!")
 
         self.home_1.just_fyi("Check that can accept contact request from read notifications")
         self.home_1.activity_unread_filter_button.click()
@@ -132,14 +136,16 @@ class TestActivityCenterContactRequestMultipleDevicePR(MultipleSharedDeviceTestC
         self.home_1.close_activity_centre.click()
         self.home_1.contacts_tab.click()
         if not self.home_1.contact_details_row(username=new_username).is_element_displayed(20):
-            self.errors.append("Contact was not added to contact list after accepting contact request (as receiver)")
+            self.errors.append(self.home_1,
+                               "Contact was not added to contact list after accepting contact request (as receiver)")
 
         self.device_2.just_fyi('Device1 check that contact appeared in contact list mutually')
         self.home_2.navigate_back_to_home_view()
         self.home_2.chats_tab.click()
         self.home_2.contacts_tab.click()
         if not self.home_2.contact_details_row(username=self.username_1).is_element_displayed(20):
-            self.errors.append("Contact was not added to contact list after accepting contact request (as sender)")
+            self.errors.append(self.home_2,
+                               "Contact was not added to contact list after accepting contact request (as sender)")
 
         self.errors.verify_no_errors()
 
@@ -172,9 +178,10 @@ class TestActivityCenterContactRequestMultipleDevicePR(MultipleSharedDeviceTestC
             text_name = self.home_1.user_name_text.text
             if text_name != self.username_2 and text_name != "%s...%s" % (public_key_2[:3], public_key_2[-6:]):
                 self.errors.append(
+                    self.home_1,
                     "Neither username nor public key is shown on 'Add contact' page after entering valid profile link")
         else:
-            self.errors.append("User is not found on 'Add contact' page after entering valid public key")
+            self.errors.append(self.home_1, "User is not found on 'Add contact' page after entering valid public key")
         chat_1 = self.home_1.get_chat_view()
         chat_1.view_profile_new_contact_button.click_until_presence_of_element(
             chat_1.profile_send_contact_request_button)
@@ -197,9 +204,10 @@ class TestActivityCenterContactRequestMultipleDevicePR(MultipleSharedDeviceTestC
             text_name = self.home_1.user_name_text.text
             if text_name != self.username_2 and text_name != "%s...%s" % (public_key_2[:3], public_key_2[-6:]):
                 self.errors.append(
+                    self.home_1,
                     "Neither username nor public key is shown on 'Add contact' page after entering valid public key")
         else:
-            self.errors.append("User is not found on 'Add contact' page after entering valid public key")
+            self.errors.append(self.home_1, "User is not found on 'Add contact' page after entering valid public key")
 
         self.home_2.just_fyi("Device 2 gets sync code")
         self.home_2.navigate_back_to_home_view()
@@ -217,7 +225,7 @@ class TestActivityCenterContactRequestMultipleDevicePR(MultipleSharedDeviceTestC
             try:
                 self.home_1.element_by_translation_id("invalid-ens-or-key").wait_for_visibility_of_element()
             except TimeoutException:
-                self.errors.append("Error message is not shown for value \"%s\"" % value)
+                self.errors.append(self.home_1, "Error message is not shown for value \"%s\"" % value)
 
         self.errors.verify_no_errors()
 
@@ -266,15 +274,16 @@ class TestActivityMultipleDevicePR(MultipleSharedDeviceTestCase):
         self.community_1.click_on_floating_jump_to()
         for card in (self.community_name, self.username_2):
             if not self.community_1.element_by_text_part(card).is_element_displayed(20):
-                self.errors.append("Card %s is not shown on Jump to screen!" % card)
+                self.errors.append(self.community_1, "Card %s is not shown on Jump to screen!" % card)
         self.community_1.element_by_translation_id("community-channel").click()
         if not self.channel_1.chat_element_by_text(self.text_message).is_element_displayed(20):
-            self.errors.append("User was not redirected to community channel after tapping on community channel card!")
+            self.errors.append(self.channel_1,
+                               "User was not redirected to community channel after tapping on community channel card!")
         self.channel_1.click_system_back_button()
         self.community_1.click_on_floating_jump_to()
         self.community_1.element_by_text_part(self.username_2).click()
         if not self.chat_1.chat_element_by_text(self.one_to_one_message).is_element_displayed(20):
-            self.errors.append("User was not redirected to 1-1 chat after tapping card!")
+            self.errors.append(self.chat_1, "User was not redirected to 1-1 chat after tapping card!")
 
         self.errors.verify_no_errors()
 
@@ -298,29 +307,29 @@ class TestActivityMultipleDevicePR(MultipleSharedDeviceTestCase):
         community_element_1 = self.home_1.get_chat(self.community_name, community=True)
         for unread_counter in community_element_1.new_messages_counter, self.home_1.communities_tab.counter:
             if not unread_counter.is_element_displayed(60):
-                self.errors.append('New message counter badge is not shown!')
+                self.errors.append(self.home_1, 'New message counter badge is not shown!')
             if int(unread_counter.text) != 1:
-                self.errors.append('New message counter badge is not 1, it is %s!' % unread_counter.text)
+                self.errors.append(self.home_1, 'New message counter badge is not 1, it is %s!' % unread_counter.text)
 
         self.home_1.just_fyi("Checking reply attributes in activity center")
         self.home_1.open_activity_center_button.click()
         reply_element = self.home_1.get_element_from_activity_center_view(reply_to_message_from_sender)
         if reply_element.title.text != 'Reply':
-            self.errors.append("Expected title is not shown, '%s' is instead!" % reply_element.title)
+            self.errors.append(self.home_1, "Expected title is not shown, '%s' is instead!" % reply_element.title)
         if not reply_element.unread_indicator.is_element_displayed():
-            self.errors.append("No unread dot is shown on activity center element!")
+            self.errors.append(self.home_1, "No unread dot is shown on activity center element!")
 
         self.home_2.chats_tab.is_element_displayed()  # just saving device 2 session from expiration
 
         self.home_1.just_fyi("Swiping to 'Replies' on activity center and check unread there")
         self.home_1.mention_activity_tab_button.click()
         if reply_element.is_element_displayed(2):
-            self.errors.append("Filter on mentions is not working in Activity centre!")
+            self.errors.append(self.home_1, "Filter on mentions is not working in Activity centre!")
         self.home_1.reply_activity_tab_button.click()
         if not self.home_1.reply_activity_tab_button.counter.is_element_displayed(2):
-            self.errors.append("No unread dot is shown on activity center tab element!")
+            self.errors.append(self.home_1, "No unread dot is shown on activity center tab element!")
         if not reply_element.is_element_displayed():
-            self.errors.append("Filter on replies tab is not working in Activity centre!")
+            self.errors.append(self.home_1, "Filter on replies tab is not working in Activity centre!")
 
         self.home_2.chats_tab.is_element_displayed()  # just saving device 2 session from expiration
 
@@ -328,10 +337,10 @@ class TestActivityMultipleDevicePR(MultipleSharedDeviceTestCase):
         reply_element.title.swipe_right_on_element(width_percentage=6)
         self.home_1.activity_notification_swipe_button.click()
         if reply_element.is_element_displayed(2):
-            self.errors.append("Message is not marked as read!")
+            self.errors.append(self.home_1, "Message is not marked as read!")
         self.home_1.activity_unread_filter_button.click()
         if not reply_element.is_element_displayed(2):
-            self.errors.append("Read filter is not displayed read message!")
+            self.errors.append(self.home_1, "Read filter is not displayed read message!")
 
         self.home_2.chats_tab.is_element_displayed()  # just saving device 2 session from expiration
 
@@ -339,16 +348,18 @@ class TestActivityMultipleDevicePR(MultipleSharedDeviceTestCase):
         reply_element.title.swipe_right_on_element(width_percentage=6)
         self.home_1.activity_notification_swipe_button.click()
         if not reply_element.unread_indicator.is_element_displayed():
-            self.errors.append("No unread dot is shown on activity center element after marking it as unread!")
+            self.errors.append(self.home_1,
+                               "No unread dot is shown on activity center element after marking it as unread!")
 
         self.home_1.just_fyi("Tap on it and check it marked as read")
         reply_element.click()
         if not self.channel_1.chat_element_by_text(reply_to_message_from_sender).is_element_displayed():
-            self.errors.append("Was not redirected to chat after tapping on reply!")
+            self.errors.append(self.home_1, "Was not redirected to chat after tapping on reply!")
         self.home_1.navigate_back_to_home_view()
         self.home_1.communities_tab.click()
         if self.home_1.notifications_unread_badge.is_element_displayed():
-            self.errors.append("Notification was not marked as read after opening it in community channel!")
+            self.errors.append(self.home_1,
+                               "Notification was not marked as read after opening it in community channel!")
 
         self.home_2.chats_tab.is_element_displayed()  # just saving device 2 session from expiration
 
@@ -357,7 +368,7 @@ class TestActivityMultipleDevicePR(MultipleSharedDeviceTestCase):
         reply_element.swipe_left_on_element()
         self.home_1.activity_notification_swipe_button.click()
         if reply_element.is_element_displayed():
-            self.errors.append("Reply is still shown after removing from activity centre!")
+            self.errors.append(self.home_1, "Reply is still shown after removing from activity centre!")
 
         self.errors.verify_no_errors()
 
@@ -414,25 +425,26 @@ class TestActivityMultipleDevicePRTwo(MultipleSharedDeviceTestCase):
         community_element_1 = self.home_1.get_chat(self.community_name, community=True)
         for unread_counter in community_element_1.new_messages_counter, self.home_1.communities_tab.counter:
             if not unread_counter.is_element_displayed(60):
-                self.errors.append('New message counter badge is not shown while mentioned!')
+                self.errors.append(self.home_1, 'New message counter badge is not shown while mentioned!')
             if int(unread_counter.text) != 1:
-                self.errors.append('New message counter badge is not 1, it is %s!' % unread_counter.text)
+                self.errors.append(self.home_1, 'New message counter badge is not 1, it is %s!' % unread_counter.text)
 
         self.home_1.just_fyi("Checking mention attributes in activity center")
         self.home_1.open_activity_center_button.click()
         mention_element = self.home_1.get_element_from_activity_center_view('@%s' % self.username_1)
         if mention_element.title.text != 'Mention':
-            self.errors.append("Expected title is not shown, '%s' is instead!" % mention_element.title)
+            self.errors.append(self.home_1, "Expected title is not shown, '%s' is instead!" % mention_element.title)
         if not mention_element.unread_indicator.is_element_displayed():
-            self.errors.append("No unread dot is shown on activity center element (mention)!")
+            self.errors.append(self.home_1, "No unread dot is shown on activity center element (mention)!")
         if mention_element.message_body.text != '@%s' % self.username_1:
             self.errors.append(
-                "Mention body in activity center does not match expected, it is %s!" % mention_element.message_body.text)
+                self.home_1, "Mention body in activity center does not match expected, it is %s!"
+                             % mention_element.message_body.text)
 
         self.home_1.just_fyi("Tap on it and check redirect to channel")
         mention_element.click()
         if not self.channel_1.chat_element_by_text(self.username_1).is_element_displayed():
-            self.errors.append("Was not redirected to chat after tapping on mention!")
+            self.errors.append(self.home_1, "Was not redirected to chat after tapping on mention!")
         self.errors.verify_no_errors()
 
     @marks.testrail_id(702958)
@@ -465,13 +477,13 @@ class TestActivityMultipleDevicePRTwo(MultipleSharedDeviceTestCase):
         try:
             self.home_1.notifications_unread_badge.wait_for_visibility_of_element(120)
         except TimeoutException:
-            self.errors.append("Unread indicator is not shown in notifications")
+            self.errors.append(self.home_1, "Unread indicator is not shown in notifications")
         self.home_1.open_activity_center_button.click()
         reply_element = self.home_1.get_element_from_activity_center_view(self.username_2)
         if reply_element.title.text != 'Join request':
-            self.errors.append("Expected title is not shown, '%s' is instead!" % reply_element.title)
+            self.errors.append(self.home_1, "Expected title is not shown, '%s' is instead!" % reply_element.title)
         if not reply_element.unread_indicator.is_element_displayed():
-            self.errors.append("No unread dot is shown on activity center element!")
+            self.errors.append(self.home_1, "No unread dot is shown on activity center element!")
         reply_element.title.swipe_right_on_element(width_percentage=2.5)
         self.home_1.activity_notification_swipe_button.click()
         self.home_1.close_activity_centre.click()
@@ -479,5 +491,5 @@ class TestActivityMultipleDevicePRTwo(MultipleSharedDeviceTestCase):
         self.home_2.just_fyi("Checking that community appeared on the list")
         if not self.home_2.element_by_text_part(community_name).is_element_displayed(30):
             self.errors.append(
-                "Community is not appeared in the list after accepting admin request from activity centre")
+                self.home_2, "Community is not appeared in the list after accepting admin request from activity centre")
         self.errors.verify_no_errors()

@@ -72,9 +72,11 @@ class TestFallbackMultipleDevice(MultipleSharedDeviceTestCase):
         if device_element.is_element_displayed():
             if not device_element.get_pair_button.is_element_displayed():
                 self.errors.append(
+                    self.profile_1,
                     "Pair button is absent for the device 2 inside Paired devices list of profile 1 before pairing")
         else:
-            self.errors.append("Device 2 is not shown in Paired devices list for device 1 before pairing")
+            self.errors.append(self.profile_1,
+                               "Device 2 is not shown in Paired devices list for device 1 before pairing")
         self.profile_1.click_system_back_button(times=3)
 
         for home in self.home_1, self.home_2:
@@ -84,9 +86,10 @@ class TestFallbackMultipleDevice(MultipleSharedDeviceTestCase):
         self.home_1.just_fyi("Checking pairing request on device 1")
         a_c_element = self.home_1.get_activity_center_element_by_text(transl['review-pairing-request'])
         if a_c_element.title.text != transl['new-device-detected']:
-            self.errors.append(
-                "Notification with title '%s' is not shown in the activity center for the device 1" % transl[
-                    'new-device-detected'])
+            self.errors.append(self.home_1,
+                               "Notification with title '%s' is not shown in the activity center for the device 1" %
+                               transl[
+                                   'new-device-detected'])
         a_c_element.review_pairing_request_button.click()
         device_id_1 = self.home_1.get_new_device_installation_id()
 
@@ -95,14 +98,15 @@ class TestFallbackMultipleDevice(MultipleSharedDeviceTestCase):
         self.home_2.just_fyi("Checking sync profile on device 2")
         a_c_element = self.home_2.get_activity_center_element_by_text(transl['more-details'])
         if a_c_element.title.text != transl['sync-your-profile']:
-            self.errors.append(
-                "Notification with title '%s' is not shown in the activity center for the device 2" % transl[
-                    'sync-your-profile'])
+            self.errors.append(self.home_2,
+                               "Notification with title '%s' is not shown in the activity center for the device 2" %
+                               transl[
+                                   'sync-your-profile'])
         a_c_element.more_details_button.click()
         device_id_2 = self.home_2.get_new_device_installation_id()
 
         if device_id_1 != device_id_2:
-            self.errors.append("Device ids don't match on the activity center notifications")
+            self.errors.append(self.home_2, "Device ids don't match on the activity center notifications")
 
         self.home_1.just_fyi("Confirm pairing request on device 1")
         self.home_1.element_by_translation_id('pair-and-sync').click()
@@ -121,9 +125,11 @@ class TestFallbackMultipleDevice(MultipleSharedDeviceTestCase):
         if device_element.is_element_displayed():
             if not device_element.get_unpair_button.is_element_displayed():
                 self.errors.append(
+                    self.profile_1,
                     "Unpair button is absent for the device 2 inside Paired devices list of profile 1 after pairing")
         else:
-            self.errors.append("Device 2 is not shown in Paired devices list for device 1 after pairing")
+            self.errors.append(self.profile_1,
+                               "Device 2 is not shown in Paired devices list for device 1 after pairing")
 
         self.home_2.just_fyi("Device 2: Check that the device 1 is shown paired devices list")
         self.home_2.profile_button.click()
@@ -133,9 +139,11 @@ class TestFallbackMultipleDevice(MultipleSharedDeviceTestCase):
         if device_element.is_element_displayed():
             if not device_element.get_unpair_button.is_element_displayed():
                 self.errors.append(
+                    self.profile_2,
                     "Unpair button is absent for the device 1 inside Paired devices list of profile 2 after pairing")
         else:
-            self.errors.append("Device 1 is not shown in Paired devices list for device 2 after pairing")
+            self.errors.append(self.profile_2,
+                               "Device 1 is not shown in Paired devices list for device 2 after pairing")
 
         self.home_3.just_fyi("Device 3: send a message to user 1")
         self.home_3.chats_tab.click()
@@ -153,7 +161,7 @@ class TestFallbackMultipleDevice(MultipleSharedDeviceTestCase):
                 chat_view = chat_element.click()
                 chat_view.chat_element_by_text(message).wait_for_visibility_of_element(60)
             except TimeoutException:
-                self.errors.append("Message is not received by the user %s" % index)
+                self.errors.append(home_view, "Message is not received by the user %s" % index)
 
         self.loop.run_until_complete(
             run_in_parallel(((_check_message, {'home_view': self.home_1, 'index': 1}),
@@ -178,11 +186,12 @@ class TestFallbackMultipleDevice(MultipleSharedDeviceTestCase):
         wallet_1.close_account_button.click_until_presence_of_element(account_element)
 
         if regular_account_address != expected_addresses[1]:
-            self.errors.append("Newly added regular account address %s doesn't match expected %s" % (
+            self.errors.append(wallet_1, "Newly added regular account address %s doesn't match expected %s" % (
                 regular_account_address, expected_addresses[1]))
         if regular_account_address not in expected_addresses:
-            self.errors.append("Newly added regular account address %s is not in the list of expected addresses %s" % (
-                regular_account_address, expected_addresses))
+            self.errors.append(wallet_1,
+                               "Newly added regular account address %s is not in the list of expected addresses %s" % (
+                                   regular_account_address, expected_addresses))
 
         wallet_1.just_fyi("Device 1: add a new key pair account by importing recovery phrase")
         account_element.swipe_left_on_element()
@@ -210,7 +219,7 @@ class TestFallbackMultipleDevice(MultipleSharedDeviceTestCase):
         ]
         for text in expected_texts_regular:
             if not wallet_1.default_key_pair_container.get_child_element_by_text_part(text).is_element_displayed():
-                self.errors.append("Newly added regular account is not shown in default key pair list")
+                self.errors.append(wallet_1, "Newly added regular account is not shown in default key pair list")
                 break
         expected_texts_key_pair = [
             imported_key_pair_account_name, imported_key_pair_name,
@@ -218,7 +227,7 @@ class TestFallbackMultipleDevice(MultipleSharedDeviceTestCase):
         ]
         for text in expected_texts_key_pair:
             if not wallet_1.added_key_pair_container.get_child_element_by_text_part(text).is_element_displayed():
-                self.errors.append("Newly added regular account is not shown in default key pair list")
+                self.errors.append(wallet_1, "Newly added regular account is not shown in default key pair list")
                 break
 
         wallet_1.just_fyi("Device 1: add a new key pair account by generating a new key pair")
@@ -232,27 +241,30 @@ class TestFallbackMultipleDevice(MultipleSharedDeviceTestCase):
 
         expected_addresses = generate_wallet_address(passphrase=generated_passphrase, number=4)
         if generated_key_pair_account_address != expected_addresses[0]:
-            self.errors.append("Generated key pair account address %s doesn't match expected %s" % (
+            self.errors.append(wallet_1, "Generated key pair account address %s doesn't match expected %s" % (
                 generated_key_pair_account_address, expected_addresses[0]))
         if generated_key_pair_account_address not in expected_addresses:
-            self.errors.append("Generated key pair account address %s is not in the list of expected addresses %s" % (
-                generated_key_pair_account_address, expected_addresses))
+            self.errors.append(wallet_1,
+                               "Generated key pair account address %s is not in the list of expected addresses %s" % (
+                                   generated_key_pair_account_address, expected_addresses))
 
         self.home_2.just_fyi("Device 2: check imported accounts are shown before importing key pair")
         self.home_2.profile_button.click()
         self.profile_2.profile_wallet_button.click()
         self.profile_2.key_pairs_and_accounts_button.click()
         if not self.profile_2.get_missing_key_pair_by_name(key_pair_name=imported_key_pair_name).is_element_displayed():
-            self.errors.append("New imported key pair is not shown in profile as missing before importing")
+            self.errors.append(self.profile_2,
+                               "New imported key pair is not shown in profile as missing before importing")
         if not self.profile_2.get_missing_key_pair_by_name(
                 key_pair_name=generated_key_pair_name).is_element_displayed():
-            self.errors.append("Generated key pair is not shown in profile as missing before importing")
+            self.errors.append(self.profile_2, "Generated key pair is not shown in profile as missing before importing")
         if not self.profile_2.get_key_pair_account_by_name(account_name=regular_account_name).is_element_displayed():
             self.errors.append(
+                self.profile_2,
                 "Newly added regular account is not shown in profile as on device before importing key pair")
         self.profile_2.options_button.click()
         if not self.profile_2.import_by_entering_recovery_phrase_button.is_element_displayed():
-            self.errors.append("Can not import key pair account from profile")
+            self.errors.append(self.profile_2, "Can not import key pair account from profile")
         self.profile_2.click_system_back_button(times=4)
 
         wallet_2.just_fyi("Device 2: import key pair")
@@ -270,9 +282,11 @@ class TestFallbackMultipleDevice(MultipleSharedDeviceTestCase):
             address_text = self.profile_2.get_key_pair_account_by_name(account_name=regular_account_name).address.text
             if address_text != '...'.join((regular_account_address[:5], regular_account_address[-3:])):
                 self.errors.append(
+                    self.profile_2,
                     "Incorrect wallet address if shown for regular account after importing: " + address_text)
         else:
-            self.errors.append("Newly added regular account is not shown in profile after importing key pair")
+            self.errors.append(self.profile_2,
+                               "Newly added regular account is not shown in profile after importing key pair")
 
         account_element = self.profile_2.get_key_pair_account_by_name(
             account_name=imported_key_pair_account_name)
@@ -281,14 +295,17 @@ class TestFallbackMultipleDevice(MultipleSharedDeviceTestCase):
             if address_text != '...'.join(
                     (imported_key_pair_account_address[:5], imported_key_pair_account_address[-3:])):
                 self.errors.append(
+                    self.profile_2,
                     "Incorrect wallet address if shown for imported key pair account after importing: " + address_text)
         else:
             self.errors.append(
+                self.profile_2,
                 "Imported key pair account is not shown in profile as on device after importing key pair")
 
         if not self.profile_2.get_missing_key_pair_by_name(
                 key_pair_name=generated_key_pair_name).is_element_displayed():
             self.errors.append(
+                self.profile_2,
                 "Generated key pair account is not shown in profile as missing after importing the first key pair")
         self.profile_2.click_system_back_button(times=3)
 
@@ -306,14 +323,15 @@ class TestFallbackMultipleDevice(MultipleSharedDeviceTestCase):
         wallet_2.about_tab.click()
         der_path = wallet_2.account_about_derivation_path_text.text
         if der_path != regular_derivation_path:
-            self.errors.append("Incorrect derivation path %s is shown for the regular account" % der_path)
+            self.errors.append(wallet_2, "Incorrect derivation path %s is shown for the regular account" % der_path)
         wallet_2.close_account_button.click_until_presence_of_element(account_element)
         account_element.swipe_left_on_element()
         wallet_2.get_account_element(account_name=imported_key_pair_account_name).click()
         wallet_2.about_tab.click()
         der_path = wallet_2.account_about_derivation_path_text.text
         if der_path != imported_key_pair_derivation_path:
-            self.errors.append("Incorrect derivation path %s is shown for the imported key pair account" % der_path)
+            self.errors.append(wallet_2,
+                               "Incorrect derivation path %s is shown for the imported key pair account" % der_path)
         wallet_2.close_account_button.click_until_presence_of_element(account_element)
         account_element.swipe_left_on_element()
         wallet_2.get_account_element(account_name=generated_key_pair_account_name).click()
@@ -324,7 +342,8 @@ class TestFallbackMultipleDevice(MultipleSharedDeviceTestCase):
         wallet_2.about_tab.click()
         der_path = wallet_2.account_about_derivation_path_text.text
         if der_path != generated_key_pair_derivation_path:
-            self.errors.append("Incorrect derivation path %s is shown for the generated key pair account" % der_path)
+            self.errors.append(wallet_2,
+                               "Incorrect derivation path %s is shown for the generated key pair account" % der_path)
         if not wallet_2.element_by_text_part(generated_key_pair_account_address).is_element_displayed():
             self.errors.append(
                 "Generated key pair address %s is absent in About tab" % generated_key_pair_account_address)
@@ -345,14 +364,14 @@ class TestFallbackMultipleDevice(MultipleSharedDeviceTestCase):
         self.sign_in_2.passphrase_edit_box.send_keys(' '.join(['asset'] * 12))
         self.sign_in_2.continue_button.click()
         if not self.sign_in_2.element_by_translation_id('seed-phrase-invalid').is_element_displayed():
-            self.errors.append("Error message is not displayed for invalid recovery phrase")
+            self.errors.append(self.sign_in_2, "Error message is not displayed for invalid recovery phrase")
 
         self.sign_in_2.just_fyi("Device 2: try creating an account with another valid passphrase")
         self.sign_in_2.passphrase_edit_box.clear()
         self.sign_in_2.passphrase_edit_box.send_keys(transaction_senders['A']['passphrase'])
         self.sign_in_2.continue_button.click()
         if not self.sign_in_2.password_input.is_element_displayed():
-            self.errors.append("Can't recover an access with a valid passphrase")
+            self.errors.append(self.sign_in_2, "Can't recover an access with a valid passphrase")
         self.sign_in_2.click_system_back_button(times=2)
 
         self.sign_in_2.just_fyi("Device 2: try recovering an account which is already synced")
@@ -363,9 +382,10 @@ class TestFallbackMultipleDevice(MultipleSharedDeviceTestCase):
             self.sign_in_2.native_alert_title.wait_for_element()
             shown_text = self.sign_in_2.native_alert_title.text
             if shown_text != "Keys for this account already exist":
-                self.errors.append("Incorrect error message '%s' is shown for already synced account" % shown_text)
+                self.errors.append(self.sign_in_2,
+                                   "Incorrect error message '%s' is shown for already synced account" % shown_text)
             self.sign_in_2.cancel_button.click()
         except TimeoutException:
-            self.errors.append("Error is not shown for already synced account")
+            self.errors.append(self.sign_in_2, "Error is not shown for already synced account")
 
         self.errors.verify_no_errors()

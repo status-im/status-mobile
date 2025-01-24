@@ -3,7 +3,7 @@ import time
 
 import pytest
 from _pytest.outcomes import Failed
-from selenium.common import TimeoutException, NoSuchElementException
+from selenium.common import NoSuchElementException
 
 from base_test_case import MultipleSharedDeviceTestCase, create_shared_drivers
 from support.api.network_api import NetworkApi
@@ -75,8 +75,9 @@ class TestWalletMultipleDevice(MultipleSharedDeviceTestCase):
                 return
             if user_name == self.receiver_username and new_eth_amount >= exp_amount:
                 return
-            self.errors.append(
-                "Eth amount in the %s's wallet is %s but should be %s" % (user_name, new_eth_amount, exp_amount))
+            self.errors.append(wallet_view,
+                               "Eth amount in the %s's wallet is %s but should be %s" % (
+                                   user_name, new_eth_amount, exp_amount))
 
         # ToDo: disable relogin when autoupdate feature is ready
         self.home_1.just_fyi("Relogin for getting an updated balance")
@@ -119,10 +120,12 @@ class TestWalletMultipleDevice(MultipleSharedDeviceTestCase):
                         activity_element.from_text == sender_address_short,
                         activity_element.to_text == receiver_address_short)):
                 self.errors.append(
+                    wallet_view,
                     "The last transaction is not listed in activity for the %s, expected timestamp is %s" %
                     ('sender' if sender else 'receiver', expected_time))
         except NoSuchElementException:
-            self.errors.append("Can't find the last transaction for the %s" % ('sender' if sender else 'receiver'))
+            self.errors.append(wallet_view,
+                               "Can't find the last transaction for the %s" % ('sender' if sender else 'receiver'))
         finally:
             wallet_view.close_account_button.click_until_presence_of_element(wallet_view.show_qr_code_button)
 
@@ -237,7 +240,7 @@ class TestWalletOneDevice(MultipleSharedDeviceTestCase):
 
         for asset in self.total_balance:
             if real_balance[asset] != self.total_balance[asset]:
-                self.errors.append("For the %s the wrong value %s is shown, expected %s in total" %
+                self.errors.append(self.wallet_view, "For the %s the wrong value %s is shown, expected %s in total" %
                                    (asset, real_balance[asset], self.total_balance[asset]))
         expected_balances = {
             'Mainnet': self.mainnet_balance,
@@ -253,7 +256,7 @@ class TestWalletOneDevice(MultipleSharedDeviceTestCase):
                 real_balance[asset] = self.wallet_view.get_asset(asset).get_amount()
             for asset in expected_balances[network]:
                 if real_balance[asset] != expected_balances[network][asset]:
-                    self.errors.append("For the %s the wrong value %s is shown, expected %s on %s" %
+                    self.errors.append(self.wallet_view, "For the %s the wrong value %s is shown, expected %s on %s" %
                                        (asset, real_balance[asset], expected_balances[network][asset], network))
             self.wallet_view.set_network_in_wallet(network)
 
@@ -274,16 +277,17 @@ class TestWalletOneDevice(MultipleSharedDeviceTestCase):
         self.home_view.show_qr_code_button.click()
         self.home_view.share_wallet_tab_button.click()
         if self.home_view.account_name_text.text != 'Account 1':
-            self.errors.append("Incorrect first account is shown on Share QR Code menu")
+            self.errors.append(self.home_view, "Incorrect first account is shown on Share QR Code menu")
         self.home_view.qr_code_image_element.swipe_left_on_element()
         try:
             self.home_view.account_name_text.wait_for_element_text(text=new_account_name, wait_time=3)
         except Failed:
-            self.errors.append("Can't swipe between accounts, newly added account is not shown")
+            self.errors.append(self.home_view, "Can't swipe between accounts, newly added account is not shown")
         else:
             shown_address = self.home_view.copy_wallet_address()
             if set(shown_address.split(':')) != set(new_wallet_address.split(':')):
                 self.errors.append(
+                    self.home_view,
                     "Incorrect address '%s' is shown when swiping between accounts, expected one is '%s'" % (
                         shown_address, new_wallet_address))
         self.home_view.click_system_back_button()
@@ -292,9 +296,9 @@ class TestWalletOneDevice(MultipleSharedDeviceTestCase):
         if self.wallet_view.get_account_element(account_name=new_account_name).is_element_displayed():
             self.wallet_view.remove_account(account_name=new_account_name)
             if self.wallet_view.get_account_element(account_name=new_account_name).is_element_displayed():
-                self.errors.append("Account was not removed from wallet")
+                self.errors.append(self.wallet_view, "Account was not removed from wallet")
         else:
-            self.errors.append("Newly added account is not shown in the accounts list")
+            self.errors.append(self.wallet_view, "Newly added account is not shown in the accounts list")
 
         self.errors.verify_no_errors()
 
@@ -316,12 +320,12 @@ class TestWalletOneDevice(MultipleSharedDeviceTestCase):
         self.home_view.show_qr_code_button.click()
         self.home_view.share_wallet_tab_button.click()
         if self.home_view.account_name_text.text != 'Account 1':
-            self.errors.append("Incorrect first account is shown on Share QR Code menu")
+            self.errors.append(self.home_view, "Incorrect first account is shown on Share QR Code menu")
         self.home_view.qr_code_image_element.swipe_left_on_element()
         try:
             self.home_view.account_name_text.wait_for_element_text(text=new_account_name, wait_time=3)
         except Failed:
-            self.errors.append("Can't swipe between accounts, account to watch is not shown")
+            self.errors.append(self.home_view, "Can't swipe between accounts, account to watch is not shown")
         else:
             shown_address = self.home_view.copy_wallet_address()
             if set(shown_address.split(':')) != {'eth', 'arb1', 'oeth', address_to_watch}:
@@ -334,8 +338,8 @@ class TestWalletOneDevice(MultipleSharedDeviceTestCase):
         if self.wallet_view.get_account_element(account_name=new_account_name).is_element_displayed():
             self.wallet_view.remove_account(account_name=new_account_name, watch_only=True)
             if self.wallet_view.get_account_element(account_name=new_account_name).is_element_displayed():
-                self.errors.append("Account was not removed from wallet")
+                self.errors.append(self.wallet_view, "Account was not removed from wallet")
         else:
-            self.errors.append("Watch only account is not shown in the accounts list")
+            self.errors.append(self.wallet_view, "Watch only account is not shown in the accounts list")
 
         self.errors.verify_no_errors()

@@ -89,13 +89,13 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
         if not self.chat_1.user_list_element_by_name(
                 self.username_1).is_element_displayed() or not self.chat_1.user_list_element_by_name(
             self.username_2).is_element_displayed():
-            self.errors.append("Incorrect users are shown for 'love' reaction.")
+            self.errors.append(self.chat_1, "Incorrect users are shown for 'love' reaction.")
 
         self.chat_1.authors_for_reaction(emoji="thumbs-up").double_click()
         if not self.chat_1.user_list_element_by_name(
                 self.username_1).is_element_displayed() or self.chat_1.user_list_element_by_name(
             self.username_2).is_element_displayed():
-            self.errors.append("Incorrect users are shown for 'thumbs-up' reaction.")
+            self.errors.append(self.chat_1, "Incorrect users are shown for 'thumbs-up' reaction.")
         self.chat_1.driver.press_keycode(4)
 
         self.errors.verify_no_errors()
@@ -111,17 +111,18 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
         self.chat_1.send_message(emoji.emojize(emoji_name))
         for chat in self.chat_1, self.chat_2:
             if not chat.chat_element_by_text(emoji_unicode).is_element_displayed():
-                self.errors.append('Message with emoji was not sent or received in 1-1 chat')
+                self.errors.append(chat, 'Message with emoji was not sent or received in 1-1 chat')
         self.chat_1.quote_message(emoji_unicode)
         actual_text = self.chat_1.quote_username_in_message_input.text
         if actual_text != "You":
             self.errors.append(
+                self.chat_1,
                 "'You' is not displayed in reply quote snippet replying to own message, '%s' instead" % actual_text)
 
         self.chat_1.just_fyi("Clear quote and check there is not snippet anymore")
         self.chat_1.cancel_reply_button.click()
         if self.chat_1.cancel_reply_button.is_element_displayed():
-            self.errors.append("Message quote kept in public chat input after it was cancelled")
+            self.errors.append(self.chat_1, "Message quote kept in public chat input after it was cancelled")
 
         self.chat_1.just_fyi("Send reply")
         self.chat_1.quote_message(emoji_unicode)
@@ -130,7 +131,7 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
 
         self.chat_1.just_fyi("Receiver verifies received reply...")
         if self.chat_2.chat_element_by_text(reply_to_message_from_sender).replied_message_text != emoji_unicode:
-            self.errors.append("No reply received in 1-1 chat")
+            self.errors.append(self.chat_2, "No reply received in 1-1 chat")
         else:
             self.chat_2.just_fyi("Device 2 sets a reaction on the message reply. Device 1 checks the reaction")
             self.chat_1.set_reaction(reply_to_message_from_sender)
@@ -138,7 +139,7 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
                 self.chat_1.chat_element_by_text(
                     reply_to_message_from_sender).emojis_below_message().wait_for_element_text(1)
             except Failed:
-                self.errors.append("Reply message reaction is not shown for the sender")
+                self.errors.append(self.chat_1, "Reply message reaction is not shown for the sender")
 
         self.home_1.just_fyi("Check that link can be opened and replied from 1-1 chat")
         reply = 'reply to link'
@@ -149,14 +150,15 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
         self.chat_2.send_message(reply)
         replied_message = self.chat_1.chat_element_by_text(reply)
         if replied_message.replied_message_text != url_message:
-            self.errors.append("Reply for '%s' not present in message received in public chat" % url_message)
+            self.errors.append(self.chat_1,
+                               "Reply for '%s' not present in message received in public chat" % url_message)
 
         self.chat_2.just_fyi("Device 2 sets a reaction on the message with a link. Device 1 checks the reaction")
         self.chat_2.set_reaction(url_message)
         try:
             self.chat_1.chat_element_by_text(url_message).emojis_below_message().wait_for_element_text(1)
         except (Failed, NoSuchElementException):
-            self.errors.append("Link message reaction is not shown for the sender")
+            self.errors.append(self.chat_1, "Link message reaction is not shown for the sender")
 
         self.home_2.just_fyi("Check 'Open in Status' option")
         # url_to_open = 'http://status.app'
@@ -169,15 +171,15 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
             try:
                 self.chat_2.wait_for_current_package_to_be('com.android.chrome')
             except TimeoutException:
-                self.errors.append('URL was not opened from 1-1 chat')
+                self.errors.append(self.chat_2, 'URL was not opened from 1-1 chat')
             else:
                 self.chat_2.element_by_text("No thanks").click_if_shown()
                 text_element = self.chat_2.element_by_text("a free (libre) open source, mobile OS for Ethereum")
                 sign_in_button = Button(self.chat_2.driver, xpath="//android.view.View[@content-desc='Sign in']")
                 if not text_element.is_element_displayed() or not sign_in_button.is_element_displayed():
-                    self.errors.append('URL was not opened from 1-1 chat')
+                    self.errors.append(self.chat_2, 'URL was not opened from 1-1 chat')
         else:
-            self.errors.append("Message with URL was not received")
+            self.errors.append(self.chat_2, "Message with URL was not received")
 
         self.errors.verify_no_errors()
 
@@ -212,14 +214,15 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
                     else:
                         expected_text = "You" if message == self.message_2 else self.username_1
                     if text != expected_text:
-                        self.errors.append(
-                            "Pinned by '%s' doesn't match expected '%s' for user %s" % (
-                                text, expected_text, chat_number + 1)
-                        )
+                        self.errors.append(chat,
+                                           "Pinned by '%s' doesn't match expected '%s' for user %s" % (
+                                               text, expected_text, chat_number + 1)
+                                           )
                 else:
-                    self.errors.append(
-                        "Message '%s' is missed on Pinned messages list for user %s" % (message, chat_number + 1)
-                    )
+                    self.errors.append(chat,
+                                       "Message '%s' is missed on Pinned messages list for user %s" % (
+                                           message, chat_number + 1)
+                                       )
             chat.click_system_back_button()
 
         self.home_1.just_fyi("Check that Device1 can not pin more than 3 messages and 'Unpin' dialog appears")
@@ -232,22 +235,23 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
         self.chat_1.view_pinned_messages_button.click_until_presence_of_element(self.chat_1.pinned_messages_list)
         if self.chat_1.pinned_messages_list.get_pinned_messages_number() > 3 \
                 or self.chat_1.pinned_messages_list.message_element_by_text(self.message_4).is_element_displayed():
-            self.errors.append("Can pin more than 3 messages in chat")
+            self.errors.append(self.chat_1, "Can pin more than 3 messages in chat")
         else:
             unpin_element = self.chat_1.element_by_translation_id('unpin-from-chat')
             self.chat_1.pinned_messages_list.message_element_by_text(self.message_2).long_press_without_release()
             self.home_1.just_fyi("Unpin one message so that another could be pinned")
             unpin_element.click_until_absense_of_element(desired_element=unpin_element)
             self.chat_1.pin_message(self.message_4, 'pin-to-chat')
-            if not (self.chat_1.chat_element_by_text(self.message_4).pinned_by_label.is_element_displayed(30) and
-                    self.chat_2.chat_element_by_text(self.message_4).pinned_by_label.is_element_displayed(30)):
-                self.errors.append("Message 4 is not pinned in chat after unpinning previous one")
+            for chat in self.chat_1, self.chat_2:
+                if chat.chat_element_by_text(self.message_4).pinned_by_label.is_element_displayed(30):
+                    self.errors.append(chat, "Message 4 is not pinned in chat after unpinning previous one")
 
         self.home_1.just_fyi("Check pinned messages are visible in Pinned panel for both users")
         for chat_number, chat in enumerate([self.chat_1, self.chat_2]):
             count = chat.pinned_messages_count.text
             if count != '3':
-                self.errors.append("Pinned messages count is %s but should be 3 for user %s" % (count, chat_number + 1))
+                self.errors.append(chat,
+                                   "Pinned messages count is %s but should be 3 for user %s" % (count, chat_number + 1))
 
         self.home_1.just_fyi("Unpin one message and check it's unpinned for another user")
         self.chat_2.tap_by_coordinates(500, 100)
@@ -268,7 +272,7 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
                 chat.pinned_messages_count.wait_for_element_text(text='2', wait_time=20)
             except Failed:
                 self.errors.append(
-                    "Pinned messages count is not 2 after unpinning the last pinned message for user %s" % (
+                    chat, "Pinned messages count is not 2 after unpinning the last pinned message for user %s" % (
                             chat_number + 1)
                 )
         self.errors.verify_no_errors()
@@ -293,7 +297,7 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
         for message in messages:
             self.chat_2.send_message(message)
             if not self.chat_1.chat_element_by_text(message).is_element_displayed(30):
-                self.errors.append("Message with text '%s' was not received" % message)
+                self.errors.append(self.chat_1, "Message with text '%s' was not received" % message)
 
         self.chat_2.just_fyi("Checking updated member photo, timestamp and username on message")
         self.chat_2.hide_keyboard_if_shown()
@@ -301,13 +305,15 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
             timestamp = self.chat_2.chat_element_by_text(messages[0]).timestamp
             sent_time_variants = self.chat_2.convert_device_time_to_chat_timestamp()
             if timestamp not in sent_time_variants:
-                self.errors.append(
-                    'Timestamp on message %s does not correspond expected %s' % (timestamp, sent_time_variants))
+                self.errors.append(self.chat_2,
+                                   'Timestamp on message %s does not correspond expected %s' % (
+                                       timestamp, sent_time_variants))
         except NoSuchElementException:
-            self.errors.append("No timestamp on message %s" % messages[0])
+            self.errors.append(self.chat_2, "No timestamp on message %s" % messages[0])
         for message in [messages[1], messages[2]]:
             if self.chat_2.chat_element_by_text(message).member_photo.is_element_displayed():
-                self.errors.append('%s is not stack to 1st(they are sent in less than 5 minutes)!' % message)
+                self.errors.append(self.chat_2,
+                                   '%s is not stack to 1st(they are sent in less than 5 minutes)!' % message)
 
         self.chat_1.just_fyi("Sending message")
         message = 'profile_photo'
@@ -319,7 +325,7 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
             self.home_2.get_chat(self.username_1).click()
         if self.chat_2.chat_element_by_text(message).member_photo.is_element_differs_from_template(
                 "profile_image_in_1_1_chat.png", diff=7):
-            self.errors.append("Image of user in 1-1 chat is too different from template!")
+            self.errors.append(self.chat_2, "Image of user in 1-1 chat is too different from template!")
         self.errors.verify_no_errors()
 
     @marks.testrail_id(702813)
@@ -371,9 +377,10 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
 
         self.device_1.just_fyi("Checks there are no PN after message was seen")
         [home.open_notification_bar() for home in self.homes]
-        if (self.device_2.element_by_text_part(message).is_element_displayed()
-                or self.device_1.element_by_text_part(emoji_unicode).is_element_displayed()):
-            self.errors.append("PN are keep staying after message was seen by user")
+        if self.device_2.element_by_text_part(message).is_element_displayed():
+            self.errors.append(self.chat_2, "PN are keep staying after message '%s' was seen by user" % message)
+        if self.device_1.element_by_text_part(emoji_unicode).is_element_displayed():
+            self.errors.append(self.chat_1, "PN are keep staying after message '%s' was seen by user" % emoji_unicode)
         self.errors.verify_no_errors()
 
     @marks.testrail_id(702855)
@@ -393,7 +400,7 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
         message_text_after_edit = message_after_edit_1_1 + ' (Edited)'
         chat_element = self.chat_1.chat_element_by_text(message_text_after_edit)
         if not chat_element.is_element_displayed(30):
-            self.errors.append('No edited message in 1-1 chat displayed')
+            self.errors.append(self.chat_1, 'No edited message in 1-1 chat displayed')
         else:
             self.device_1.just_fyi("Device 1 sets a reaction on the edited message. Device 2 checks the reaction")
             self.chat_1.set_reaction(message_text_after_edit)
@@ -401,7 +408,7 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
                 self.chat_1.chat_element_by_text(
                     message_text_after_edit).emojis_below_message().wait_for_element_text(1)
             except Failed:
-                self.errors.append("Message reaction is not shown for the sender")
+                self.errors.append(self.chat_1, "Message reaction is not shown for the sender")
         self.errors.verify_no_errors()
 
     @marks.testrail_id(703391)
@@ -425,7 +432,7 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
         self.chat_2.chat_element_by_text(image_description).wait_for_visibility_of_element(30)
         if not self.chat_2.chat_element_by_text(
                 image_description).image_in_message.is_element_image_similar_to_template('image_1_chat_view.png'):
-            self.errors.append("Not expected image is shown to the receiver.")
+            self.errors.append(self.chat_2, "Not expected image is shown to the receiver.")
 
         for chat in self.chat_1, self.chat_2:
             chat.just_fyi("Open the image and share it")
@@ -437,8 +444,9 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
             try:
                 chat.wait_for_current_package_to_be('com.google.android.apps.docs')
             except TimeoutException:
-                self.errors.append(
-                    "%s can't share an image via Gmail." % ("Sender" if chat is self.chat_1 else "Receiver"))
+                self.errors.append(chat,
+                                   "%s can't share an image via Gmail." % (
+                                       "Sender" if chat is self.chat_1 else "Receiver"))
             chat.navigate_back_to_chat_view()
 
         for chat in self.chat_1, self.chat_2:
@@ -452,10 +460,10 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
                 toast_element_text = toast_element.text
                 if toast_element_text != chat.get_translation_by_key("photo-saved"):
                     self.errors.append(
-                        "Shown message '%s' doesn't match expected '%s' after saving an image for %s." % (
+                        chat, "Shown message '%s' doesn't match expected '%s' after saving an image for %s." % (
                             toast_element_text, chat.get_translation_by_key("photo-saved"), device_name))
             else:
-                self.errors.append("Message about saving a photo is not shown for %s." % device_name)
+                self.errors.append(chat, "Message about saving a photo is not shown for %s." % device_name)
             chat.navigate_back_to_chat_view()
 
         for chat in self.chat_1, self.chat_2:
@@ -463,8 +471,9 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
             chat.show_images_button.click()
             chat.allow_all_button.click_if_shown()
             if not chat.get_image_by_index(0).is_element_image_similar_to_template("image_1_gallery_view.png"):
-                self.errors.append(
-                    "Image is not saved to gallery for %s." % ("sender" if chat is self.chat_1 else "receiver"))
+                self.errors.append(chat,
+                                   "Image is not saved to gallery for %s." % (
+                                       "sender" if chat is self.chat_1 else "receiver"))
             chat.click_system_back_button()
 
         self.errors.verify_no_errors()
@@ -490,7 +499,7 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
         chat_1_element.long_press_without_release()
         for action in ("edit", "delete-for-everyone"):
             if self.chat_1.element_by_translation_id(action).is_element_displayed():
-                self.errors.append('Option to %s someone else message available!' % action)
+                self.errors.append(self.chat_1, 'Option to %s someone else message available!' % action)
         self.home_1.tap_by_coordinates(500, 100)
 
         self.device_2.just_fyi("Delete message for me and check it is only deleted for the author")
@@ -500,23 +509,23 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
             self.chat_2.chat_element_by_text(message_to_delete_for_me).wait_for_status_to_be("Delivered", timeout)
             self.chat_2.delete_message_in_chat(message_to_delete_for_me, everyone=False)
         except TimeoutException:
-            self.errors.append("Message status was not changed to 'Delivered' after %s s" % timeout)
+            self.errors.append(self.chat_2, "Message status was not changed to 'Delivered' after %s s" % timeout)
         else:
             if not self.chat_2.chat_element_by_text(message_to_delete_for_me).is_element_disappeared(20):
-                self.errors.append("Deleted for me message is shown in chat for the author of message")
+                self.errors.append(self.chat_2, "Deleted for me message is shown in chat for the author of message")
             if not self.chat_2.element_by_translation_id('message-deleted-for-you').is_element_displayed(20):
-                self.errors.append("System message about deletion for you is not displayed")
+                self.errors.append(self.chat_2, "System message about deletion for you is not displayed")
             if not self.chat_1.chat_element_by_text(message_to_delete_for_me).is_element_displayed(20):
-                self.errors.append("Deleted for me message is deleted for both users")
+                self.errors.append(self.chat_1, "Deleted for me message is deleted for both users")
 
         self.device_2.just_fyi("Delete message for everyone and check it is not shown in chat preview on home")
         self.chat_2.delete_message_in_chat(message_after_edit_1_1)
         for chat in (self.chat_2, self.chat_1):
             if chat.chat_element_by_text(message_after_edit_1_1).is_element_displayed(30):
-                self.errors.append("Deleted message is shown in chat view for 1-1 chat")
+                self.errors.append(chat, "Deleted message is shown in chat view for 1-1 chat")
         self.chat_1.navigate_back_to_home_view()
         if self.home_1.element_by_text(message_after_edit_1_1).is_element_displayed(30):
-            self.errors.append("Deleted message is shown on chat element on home screen")
+            self.errors.append(self.home_1, "Deleted message is shown on chat element on home screen")
 
         self.device_2.just_fyi("Send one more message and check that PN will be deleted with message deletion")
         message_to_delete = 'DELETE ME'
@@ -527,12 +536,12 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
         if not self.home_1.get_pn(message_to_delete):
             self.home_1.click_system_back_button()
             self.device_2.driver.activate_app(app_package)
-            self.errors.append("Push notification doesn't appear")
+            self.errors.append(self.home_1, "Push notification doesn't appear")
         self.chat_2.delete_message_in_chat(message_to_delete)
         pn_to_disappear = self.home_1.get_pn(message_to_delete)
         if pn_to_disappear:
             if not pn_to_disappear.is_element_disappeared(90):
-                self.errors.append("Push notification was not removed after initial message deletion")
+                self.errors.append(self.home_1, "Push notification was not removed after initial message deletion")
         self.errors.verify_no_errors()
 
 
@@ -580,9 +589,9 @@ class TestOneToOneChatMultipleSharedDevicesNewUiTwo(MultipleSharedDeviceTestCase
             chat_element = chat.chat_element_by_text(image_description)
             if chat_element.is_element_displayed(30):
                 if not chat_element.image_in_message.is_element_image_similar_to_template('saucelabs_camera_image.png'):
-                    self.errors.append("Not expected image is shown to the %s." % chat_name)
+                    self.errors.append(chat, "Not expected image is shown to the %s." % chat_name)
             else:
-                self.errors.append("Message with camera image is not shown in chat for %s" % chat_name)
+                self.errors.append(chat, "Message with camera image is not shown in chat for %s" % chat_name)
         self.errors.verify_no_errors()
 
     @marks.testrail_id(702783)
@@ -608,7 +617,7 @@ class TestOneToOneChatMultipleSharedDevicesNewUiTwo(MultipleSharedDeviceTestCase
         self.chat_2.send_message(message_1)
         status = self.chat_2.chat_element_by_text(message_1).status
         if not (status == 'Sending' or status == 'Sent'):
-            self.errors.append('Message status is not "Sending", it is "%s"!' % status)
+            self.errors.append(self.chat_2, 'Message status is not "Sending", it is "%s"!' % status)
 
         self.home_2.just_fyi('Device2 goes back online and checks that status of the message is changed to "delivered"')
         for home in self.homes:
@@ -616,13 +625,13 @@ class TestOneToOneChatMultipleSharedDevicesNewUiTwo(MultipleSharedDeviceTestCase
 
         self.home_1.just_fyi('Device1 goes back online and checks that 1-1 chat will be fetched')
         if not self.chat_1.chat_element_by_text(message_1).is_element_displayed(120):
-            self.errors.append("Message was not delivered after resending from offline")
+            self.errors.append(self.chat_1, "Message was not delivered after resending from offline")
 
         self.home_2.just_fyi('Device1 goes back online and checks that 1-1 chat will be fetched')
         try:
             self.chat_2.chat_element_by_text(message_1).wait_for_status_to_be(expected_status='Delivered', timeout=120)
         except TimeoutException as e:
-            self.errors.append('%s after back up online!' % e.msg)
+            self.errors.append(self.chat_2, '%s after back up online!' % e.msg)
         self.errors.verify_no_errors()
 
     @marks.testrail_id(703496)
@@ -636,33 +645,35 @@ class TestOneToOneChatMultipleSharedDevicesNewUiTwo(MultipleSharedDeviceTestCase
         self.chat_2.send_message(muted_message)
         chat = self.home_1.get_chat(self.username_2)
         if chat.new_messages_counter.is_element_displayed(30) or self.home_1.chats_tab.counter.is_element_displayed(10):
-            self.errors.append("New messages counter is shown after mute")
+            self.errors.append(self.home_1, "New messages counter is shown after mute")
         if not chat.chat_preview.text.startswith(muted_message):
-            self.errors.append("Message text '%s' is not shown in chat preview after mute" % muted_message)
+            self.errors.append(self.home_1, "Message text '%s' is not shown in chat preview after mute" % muted_message)
         chat.click()
         if not self.chat_1.chat_element_by_text(muted_message).is_element_displayed(30):
-            self.errors.append("Message '%s' is not shown in chat for receiver after mute" % muted_message)
+            self.errors.append(self.chat_1, "Message '%s' is not shown in chat for receiver after mute" % muted_message)
 
         self.chat_1.just_fyi("Unmute chat")
         self.chat_1.navigate_back_to_home_view()
         chat.long_press_without_release()
         if self.home_1.mute_chat_button.text != transl["unmute-chat"]:
-            self.errors.append("Chat is not muted")
+            self.errors.append(self.home_1, "Chat is not muted")
         expected_text = "Muted until you turn it back on"
         if not self.home_1.element_by_text(expected_text).is_element_displayed():
-            self.errors.append("Text '%s' is not shown for muted chat" % expected_text)
+            self.errors.append(self.home_1, "Text '%s' is not shown for muted chat" % expected_text)
         self.home_1.mute_chat_button.double_click()
 
         unmuted_message = "after unmute"
         self.chat_2.send_message(unmuted_message)
         if not chat.new_messages_counter.is_element_displayed(
                 30) or not self.home_1.chats_tab.counter.is_element_displayed(10):
-            self.errors.append("New messages counter is not shown after unmute")
+            self.errors.append(self.home_1, "New messages counter is not shown after unmute")
         if not chat.chat_preview.text.startswith(unmuted_message):
-            self.errors.append("Message text '%s' is not shown in chat preview after unmute" % unmuted_message)
+            self.errors.append(self.home_1,
+                               "Message text '%s' is not shown in chat preview after unmute" % unmuted_message)
         chat.click()
         if not self.chat_1.chat_element_by_text(unmuted_message).is_element_displayed(30):
-            self.errors.append("Message '%s' is not shown in chat for receiver after unmute" % unmuted_message)
+            self.errors.append(self.chat_1,
+                               "Message '%s' is not shown in chat for receiver after unmute" % unmuted_message)
 
         self.errors.verify_no_errors()
 
@@ -677,7 +688,7 @@ class TestOneToOneChatMultipleSharedDevicesNewUiTwo(MultipleSharedDeviceTestCase
         for element in self.chat_2.chat_element_by_text(text='').message_text_content.find_elements():
             chat_history.append(element.text)
         if not chat_history:
-            self.errors.append("No chat history was loaded")
+            self.errors.append(self.chat_2, "No chat history was loaded")
 
         self.home_2.just_fyi("Deleting chat via delete button and check it will not reappear after relaunching app")
         self.home_2.navigate_back_to_home_view()
@@ -685,10 +696,12 @@ class TestOneToOneChatMultipleSharedDevicesNewUiTwo(MultipleSharedDeviceTestCase
         self.home_2.delete_chat_long_press(username=self.username_1)
         chat = self.home_2.get_chat_from_home_view(self.username_1)
         if chat.is_element_displayed():
-            self.errors.append("Deleted '%s' chat is shown, but the chat has been deleted" % self.username_1)
+            self.errors.append(self.chat_2,
+                               "Deleted '%s' chat is shown, but the chat has been deleted" % self.username_1)
         self.home_2.reopen_app(user_name=self.username_2)
         if chat.is_element_displayed(15):
             self.errors.append(
+                self.chat_2,
                 "Deleted chat '%s' is shown after re-login, but the chat has been deleted" % self.username_1)
             chat.click()
         else:
@@ -701,5 +714,6 @@ class TestOneToOneChatMultipleSharedDevicesNewUiTwo(MultipleSharedDeviceTestCase
             if not self.chat_2.chat_element_by_text(message_text).is_element_displayed():
                 lost_messages.append(message_text)
         if lost_messages:
-            self.errors.append("Message(s) missed in 1-1 chat after deleting the chat and relogin: %s" % lost_messages)
+            self.errors.append(self.chat_2,
+                               "Message(s) missed in 1-1 chat after deleting the chat and relogin: %s" % lost_messages)
         self.errors.verify_no_errors()

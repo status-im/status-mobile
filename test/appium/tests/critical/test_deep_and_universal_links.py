@@ -42,9 +42,9 @@ class TestDeepLinksOneDevice(MultipleSharedDeviceTestCase):
             if self.channel.profile_send_contact_request_button.is_element_displayed(10):
                 username_text = self.profile_view.contact_name_text.text
                 if not (username_text.endswith(url[-6:]) or username_text == text):
-                    self.errors.append("Incorrect username is shown for profile url %s" % url)
+                    self.errors.append(self.channel, "Incorrect username is shown for profile url %s" % url)
             else:
-                self.errors.append("Profile was not opened by the profile url %s" % url)
+                self.errors.append(self.channel, "Profile was not opened by the profile url %s" % url)
             self.profile_view.close_button.click()
 
         self.errors.verify_no_errors()
@@ -69,7 +69,7 @@ class TestDeepLinksOneDevice(MultipleSharedDeviceTestCase):
             else:
                 name_is_shown = shown_name_text.endswith(link[-6:])
             if not self.channel.profile_send_contact_request_button.is_element_displayed(10) or not name_is_shown:
-                self.errors.append("Profile was not opened by the profile deep link %s" % link)
+                self.errors.append(self.channel, "Profile was not opened by the profile deep link %s" % link)
             self.browser_view.click_system_back_button()
 
         self.errors.verify_no_errors()
@@ -103,11 +103,13 @@ class TestDeepLinksOneDevice(MultipleSharedDeviceTestCase):
             self.browser_view.open_url(link)
             if text == snt_community_name:
                 if self.community_view.community_title.text != text:
-                    self.errors.append("Community '%s' was not requested to join by the deep link %s" % (text, link))
+                    self.errors.append(self.community_view,
+                                       "Community '%s' was not requested to join by the deep link %s" % (text, link))
             else:
                 if not self.community_view.join_button.is_element_displayed(
                         10) or self.community_view.community_title.text != text:
-                    self.errors.append("Community '%s' was not requested to join by the deep link %s" % (text, link))
+                    self.errors.append(self.community_view,
+                                       "Community '%s' was not requested to join by the deep link %s" % (text, link))
             if text != closed_community_name:  # the last one
                 self.home.navigate_back_to_home_view()
                 self.home.browser_tab.click()
@@ -123,7 +125,8 @@ class TestDeepLinksOneDevice(MultipleSharedDeviceTestCase):
         self.home.open_link_from_google_search_app(profile_url, app_package)
         if not self.channel.profile_add_to_contacts_button.is_element_displayed(
                 10) or not self.profile_view.default_username_text.text.endswith(profile_url[-6:]):
-            self.errors.append("Profile was not opened by the url %s when user is logged in" % profile_url)
+            self.errors.append(self.profile_view,
+                               "Profile was not opened by the url %s when user is logged in" % profile_url)
 
         self.home.just_fyi("Opening a community URL from google search bar when user is logged out")
         self.driver.terminate_app(app_package)
@@ -131,7 +134,8 @@ class TestDeepLinksOneDevice(MultipleSharedDeviceTestCase):
         self.home.open_link_from_google_search_app(community_url, app_package)
         self.sign_in.sign_in(user_name=self.username)
         if not self.community_view.join_button.is_element_displayed(10):
-            self.errors.append("Closed community was not requested to join by the url %s" % community_url)
+            self.errors.append(self.community_view,
+                               "Closed community was not requested to join by the url %s" % community_url)
 
         # ToDo: enable when https://github.com/status-im/status-mobile/issues/18074 is fixed
         # self.home.just_fyi("Opening a community channel URL from google search bar with no account created")
