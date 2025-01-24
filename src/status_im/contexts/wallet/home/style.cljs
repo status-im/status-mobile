@@ -31,3 +31,8 @@
 (defn header-container
   [theme]
   {:background-color (colors/theme-colors colors/white colors/neutral-95 theme)})
+
+(def cta-buttons
+  {:padding-horizontal 20
+   :padding-bottom     13
+   :flex-direction     :row})

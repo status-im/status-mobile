@@ -433,13 +433,17 @@
                                                    [:wallet/bridge-select-token
                                                     (assoc params :network network)]))}])}]]])})))
 
-(rf/reg-event-fx :wallet/start-bridge
+(rf/reg-event-fx
+ :wallet/start-bridge
  (fn [{:keys [db]}]
-   {:db (assoc-in db [:wallet :ui :send :tx-type] :tx/bridge)
-    :fx [[:dispatch
-          [:wallet/wizard-navigate-forward
-           {:start-flow? true
-            :flow-id     :wallet-bridge-flow}]]]}))
+   (let [view-id (:view-id db)]
+     (cond-> {:db (assoc-in db [:wallet :ui :send :tx-type] :tx/bridge)}
+       (= view-id :screen/wallet.accounts)
+       (assoc :fx
+              [[:dispatch
+                [:wallet/wizard-navigate-forward
+                 {:start-flow? true
+                  :flow-id     :wallet-bridge-flow}]]])))))
 
 (rf/reg-event-fx :wallet/select-bridge-network
  (fn [{:keys [db]} [{:keys [network-chain-id stack-id]}]]

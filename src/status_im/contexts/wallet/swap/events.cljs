@@ -571,10 +571,15 @@
  (fn [{:keys [db]} [account]]
    (let [asset-to-pay     (get-in db [:wallet :ui :swap :asset-to-pay])
          asset-to-receive (get-in db [:wallet :ui :swap :asset-to-receive])]
-     {:fx [[:dispatch [:dismiss-modal :screen/wallet.swap-select-account]]
-           [:dispatch
-            [:wallet.swap/start
-             {:asset-to-pay     asset-to-pay
-              :asset-to-receive asset-to-receive
-              :open-new-screen? true
-              :from-account     account}]]]})))
+     {:fx (if asset-to-pay
+            [[:dispatch [:dismiss-modal :screen/wallet.swap-select-account]]
+             [:dispatch
+              [:wallet.swap/start
+               {:asset-to-pay     asset-to-pay
+                :asset-to-receive asset-to-receive
+                :open-new-screen? true
+                :from-account     account}]]]
+            [[:dispatch [:wallet/switch-current-viewing-account (:address account)]]
+             [:dispatch
+              [:navigate-to-within-stack
+               [:screen/wallet.swap-select-asset-to-pay :screen/wallet.swap-select-account]]]])})))

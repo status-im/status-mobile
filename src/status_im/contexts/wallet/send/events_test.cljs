@@ -215,8 +215,7 @@
     (reset! rf-db/app-db
       {:wallet {:ui {:send {:other-props        :value
                             :token              "ETH"
-                            :token-display-name "ETH"
-                            :tx-type            :tx/collectible-erc-721}}}})
+                            :token-display-name "ETH"}}}})
     (is (match-strict? expected-db (:db (dispatch [event-id]))))))
 
 (h/deftest-event :wallet/clean-selected-collectible
@@ -497,12 +496,16 @@
         address     "0x01"
         network     {:chain-id 1}]
     (testing "when tx-type is :tx/bridge and token-symbol is nil"
-      (let [tx-type         :tx/bridge
+      (let [flow-id         :wallet-bridge-flow
+            tx-type         :tx/bridge
             expected-result {:db {:wallet {:ui {:send {:to-address address
                                                        :tx-type    tx-type}}}}
-                             :fx [[:dispatch [:dismiss-modal :screen/wallet.select-from]]
-                                  [:dispatch [:wallet/switch-current-viewing-account address]]
-                                  [:dispatch [:show-bottom-sheet {:content (m/pred fn?)}]]]}]
+                             :fx [[:dispatch [:wallet/switch-current-viewing-account address]]
+                                  [:dispatch
+                                   [:wallet/wizard-navigate-forward
+                                    {:current-screen stack-id
+                                     :start-flow?    start-flow?
+                                     :flow-id        flow-id}]]]}]
         (reset! rf-db/app-db {:wallet {:ui {:send {:tx-type tx-type}}}})
         (is (match? expected-result
                     (dispatch [event-id

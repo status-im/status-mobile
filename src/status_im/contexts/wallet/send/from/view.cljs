@@ -14,14 +14,14 @@
     [utils.re-frame :as rf]))
 
 (defn- on-account-press
-  [address general-flow? collectible-tx?]
+  [address general-flow? collectible-tx? token-selected?]
   (when general-flow?
     (rf/dispatch [:wallet/clean-selected-token])
     (rf/dispatch [:wallet/clean-selected-collectible]))
   (rf/dispatch [:wallet/select-from-account
                 {:address     address
                  :stack-id    :screen/wallet.select-from
-                 :start-flow? (not (or general-flow? collectible-tx?))}]))
+                 :start-flow? (not (or general-flow? collectible-tx? token-selected?))}]))
 
 (defn- on-close
   []
@@ -29,7 +29,7 @@
   (rf/dispatch [:wallet/clean-current-viewing-account]))
 
 (defn- render-fn
-  [item _ _ {:keys [general-flow? collectible-tx? collectible]}]
+  [item _ _ {:keys [general-flow? collectible-tx? collectible token]}]
   (let [account-address (:address item)
         balance         (cond
                           general-flow?   0
@@ -41,8 +41,13 @@
         asset-value     (if collectible-tx? (str balance) (:asset-pay-balance item))]
     [quo/account-item
      {:type          (if has-balance? :tag :default)
-      :on-press      #(on-account-press account-address general-flow? collectible-tx?)
-      :state         (if (or has-balance? general-flow?) :default :disabled)
+      :on-press      #(on-account-press account-address
+                                        general-flow?
+                                        collectible-tx?
+                                        (and (nil? collectible) (nil? token)))
+      :state         (if (or has-balance? general-flow? (and (nil? collectible) (nil? token)))
+                       :default
+                       :disabled)
       :token-props   (when-not general-flow?
                        {:symbol asset-symbol
                         :value  asset-value})
@@ -77,6 +82,7 @@
        :data                              accounts
        :render-data                       {:general-flow?   general-flow?
                                            :collectible-tx? collectible-tx?
-                                           :collectible     collectible}
+                                           :collectible     collectible
+                                           :token           token}
        :render-fn                         render-fn
        :shows-horizontal-scroll-indicator false}]]))

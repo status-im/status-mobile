@@ -8,6 +8,7 @@
     [status-im.common.refreshable-flat-list.view :as refreshable-flat-list]
     [status-im.contexts.wallet.home.style :as style]
     [status-im.contexts.wallet.home.tabs.view :as tabs]
+    [status-im.contexts.wallet.sheets.buy-token.view :as buy-token]
     [status-im.contexts.wallet.sheets.network-filter.view :as network-filter]
     [status-im.feature-flags :as ff]
     [utils.i18n :as i18n]
@@ -64,6 +65,62 @@
     :data           data
     :on-change      on-change}])
 
+(defn- call-to-actions
+  []
+  (let [account-cards-data    (rf/sub [:wallet/account-cards-data])
+        testnet-mode?         (rf/sub [:profile/test-networks-enabled?])
+        multiple-accounts?    (> (count account-cards-data) 1)
+        first-account-address (:address (first account-cards-data))
+        on-send-press         (rn/use-callback
+                               (fn []
+                                 (rf/dispatch [:wallet/clean-send-data])
+                                 (when-not multiple-accounts?
+                                   (rf/dispatch [:wallet/switch-current-viewing-account
+                                                 first-account-address]))
+                                 (if multiple-accounts?
+                                   (rf/dispatch [:open-modal :screen/wallet.select-from])
+                                   (rf/dispatch [:wallet/wizard-navigate-forward
+                                                 {:start-flow? true
+                                                  :flow-id     :wallet-send-flow}])))
+                               [multiple-accounts? first-account-address])
+        on-receive-press      (rn/use-callback #(rf/dispatch [:open-modal :screen/share-shell
+                                                              {:initial-tab        :wallet
+                                                               :status             :receive
+                                                               :hide-tab-selector? true}]))
+        on-buy-press          (rn/use-callback #(rf/dispatch [:show-bottom-sheet
+                                                              {:content buy-token/view}]))
+        on-bridge-press       (rn/use-callback
+                               (fn []
+                                 (rf/dispatch [:wallet/clean-send-data])
+                                 (when-not multiple-accounts?
+                                   (rf/dispatch [:wallet/switch-current-viewing-account
+                                                 first-account-address]))
+                                 (rf/dispatch [:wallet/start-bridge])
+                                 (when multiple-accounts?
+                                   (rf/dispatch [:open-modal :screen/wallet.select-from])))
+                               [multiple-accounts? first-account-address])
+        on-swap-press         (rn/use-callback
+                               (fn []
+                                 (rf/dispatch [:wallet.tokens/get-token-list])
+                                 (when-not multiple-accounts?
+                                   (rf/dispatch [:wallet/switch-current-viewing-account
+                                                 first-account-address]))
+                                 (if multiple-accounts?
+                                   (rf/dispatch [:open-modal
+                                                 :screen/wallet.swap-select-account])
+                                   (rf/dispatch [:open-modal
+                                                 :screen/wallet.swap-select-asset-to-pay])))
+                               [multiple-accounts? first-account-address])]
+    [quo/wallet-ctas
+     {:container-style  style/cta-buttons
+      :send-action      on-send-press
+      :receive-action   on-receive-press
+      :buy-action       on-buy-press
+      :bridge-action    on-bridge-press
+      :swap-action      on-swap-press
+      :bridge-disabled? testnet-mode?
+      :swap-disabled?   testnet-mode?}]))
+
 (defn view
   []
   (let [selected-tab                   (rf/sub [:wallet/home-tab])
@@ -106,6 +163,7 @@
                                  (when (ff/enabled? ::ff/wallet.graph)
                                    [quo/wallet-graph {:time-frame :empty}])
                                  [render-cards cards account-list-ref]
+                                 [call-to-actions]
                                  [render-tabs tabs-data change-tab selected-tab]]
        :content-container-style style/list-container
        :sticky-header-indices   [0]

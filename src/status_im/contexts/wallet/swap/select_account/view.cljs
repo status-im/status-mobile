@@ -11,16 +11,16 @@
     [utils.re-frame :as rf]))
 
 (defn- on-account-press
-  [account]
-  (rf/dispatch [:wallet.swap/start-from-account account]))
+  [account asset-to-pay]
+  (rf/dispatch [:wallet.swap/start-from-account account asset-to-pay]))
 
 (defn- render-fn
-  [item _ _]
+  [item _ _ {:keys [asset-to-pay]}]
   (let [has-balance (money/above-zero? (:asset-pay-balance item))]
     [quo/account-item
      {:type          (if has-balance :tag :default)
-      :on-press      #(on-account-press item)
-      :state         (if has-balance :default :disabled)
+      :on-press      #(on-account-press item asset-to-pay)
+      :state         (if (or has-balance (nil? asset-to-pay)) :default :disabled)
       :token-props   {:symbol (:asset-pay-symbol item)
                       :value  (:asset-pay-balance item)}
       :account-props (assoc item
@@ -49,5 +49,6 @@
       {:style                             style/accounts-list
        :content-container-style           style/accounts-list-container
        :data                              accounts
+       :render-data                       {:asset-to-pay asset-to-pay}
        :render-fn                         render-fn
        :shows-horizontal-scroll-indicator false}]]))

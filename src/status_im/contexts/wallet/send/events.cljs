@@ -293,8 +293,9 @@
                    [:wallet :ui :send]
                    dissoc
                    :token
-                   :token-symbol :token-display-name
-                   :tx-type      :network)}))
+                   :token-symbol
+                   :token-display-name
+                   :network)}))
 
 (rf/reg-event-fx :wallet/clean-selected-collectible
  (fn [{:keys [db]} [{:keys [ignore-entry-point?]}]]
@@ -740,6 +741,7 @@
                                                                                   token-symbol
                                                                                   address)]
                                           (utils/token-with-balance token network-details)))
+         asset-selected?              (or collectible-tx? (some? token))
          bridge-tx?                   (= tx-type :tx/bridge)
          flow-id                      (if bridge-tx?
                                         :wallet-bridge-flow
@@ -762,7 +764,7 @@
             network      (assoc-in [:wallet :ui :send :network] network)
             token-symbol (assoc-in [:wallet :ui :send :token] token)
             bridge-tx?   (assoc-in [:wallet :ui :send :to-address] address))
-      :fx (if (or no-tx-type? (some? network) collectible-tx?)
+      :fx (if (or no-tx-type? (some? network) collectible-tx? (not asset-selected?))
             [[:dispatch [:wallet/switch-current-viewing-account address]]
              [:dispatch
               [:wallet/wizard-navigate-forward
