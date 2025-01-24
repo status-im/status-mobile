@@ -3,7 +3,7 @@
     "_comment": "Instead use: scripts/update-status-go.sh <rev>",
     "owner": "status-im",
     "repo": "status-go",
-    "version": "cl-21967-fix-suggested-fees-regression",
-    "commit-sha1": "a2588ee5094f042bd7ee0cbf25efe3390f1068c9",
-    "src-sha256": "0b5ayw6ar006p5i8ynbapdjh6dkv05fllx6aknf7j9p4k63wzvsx"
+    "version": "develop",
+    "commit-sha1": "e71fdbc63c0d958d11c3d5db2b31cf2366b3ed33",
+    "src-sha256": "1jd3ij1cni5ifdd38cvcj05xbsyh6k4b3m5ns2lm2kn0qy4kyhlp"
 }
