@@ -36,14 +36,19 @@
   (keyword :update-profile-asked key-uid))
 
 (rf/reg-event-fx
- :profile/ask-profile-update
- (fn [{db :db} [pending-event]]
+ :profile/set-profile-update-as-asked
+ (fn [{db :db}]
    (let [storage-key (-> db :profile/profile :key-uid profile-update-asked-storage-key)]
-     {:fx [[:effects.async-storage/set {storage-key true}]
-           [:dispatch
-            [:show-bottom-sheet
-             {:content (fn []
-                         [introduce-yourself/sheet {:pending-event pending-event}])}]]]})))
+     {:fx [[:effects.async-storage/set {storage-key true}]]})))
+
+(rf/reg-event-fx
+ :profile/ask-profile-update
+ (fn [_ [pending-event]]
+   {:fx [[:profile/set-profile-update-as-asked]
+         [:dispatch
+          [:show-bottom-sheet
+           {:content (fn []
+                       [introduce-yourself/sheet {:pending-event pending-event}])}]]]}))
 
 (rf/reg-event-fx
  :profile/check-profile-update-prompt

@@ -67,7 +67,8 @@
           {:type                :primary
            :customization-color customization-color
            :on-press            (fn []
-                                  (rf/dispatch [:profile/edit-name {:display-name @full-name}]))
+                                  (rf/dispatch [:profile/edit-name {:display-name @full-name}])
+                                  (rf/dispatch [:profile/set-profile-update-as-asked]))
            :disabled?           (boolean (or @typing?
                                              (string/blank? @full-name)
                                              (not (string/blank? @error-msg))))}
