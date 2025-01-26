@@ -35,6 +35,11 @@ class LogManager(private val reactContext: ReactApplicationContext) : ReactConte
         return File(pubDirectory, gethLogFileName)
     }
 
+    private fun getPreLoginLogFile(): File {
+        val pubDirectory = utils.getPublicStorageDirectory()
+        return File(pubDirectory, preLoginLogFileName)
+    }
+
     fun prepareLogsFile(context: Context): File? {
         val logFile = getGethLogFile()
 
@@ -156,6 +161,7 @@ class LogManager(private val reactContext: ReactApplicationContext) : ReactConte
         val statusLogFile = File(logsTempDir, statusLogFileName)
         val gethLogFile = getGethLogFile()
         val requestLogFile = getRequestLogFile()
+        val preLoginLogFile = getPreLoginLogFile()
 
         try {
             if (zipFile.exists() || zipFile.createNewFile()) {
@@ -174,6 +180,9 @@ class LogManager(private val reactContext: ReactApplicationContext) : ReactConte
             val filesToZip = mutableListOf(dbFile, gethLogFile, statusLogFile)
             if (requestLogFile.exists()) {
                 filesToZip.add(requestLogFile)
+            }
+            if (preLoginLogFile.exists()) {
+                filesToZip.add(preLoginLogFile)
             }
             val zipped = zip(filesToZip.toTypedArray(), zipFile, errorList)
             if (zipped && zipFile.exists()) {
@@ -205,6 +214,7 @@ class LogManager(private val reactContext: ReactApplicationContext) : ReactConte
         private const val gethLogFileName = "geth.log"
         private const val statusLogFileName = "Status.log"
         private const val requestsLogFileName = "api.log"
+        private const val preLoginLogFileName = "pre_login.log"
         private const val logsZipFileName = "Status-debug-logs.zip"
     }
 }
