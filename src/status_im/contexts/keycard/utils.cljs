@@ -79,12 +79,13 @@
 
 (defn keycard-address?
   [keypairs address]
-  (some (fn [keypair]
-          (->> keypair
-               :keycards
-               (some (fn [keycard]
-                       (-> keycard
-                           :accounts-addresses
-                           set
-                           (contains? address))))))
-        (vals keypairs)))
+  (let [find-keycard-keypair (fn [kps] (some #(when (:keycards %) %) kps))
+        keypair-addresses    (fn [kp]
+                               (->> (:accounts kp)
+                                    (map :address)
+                                    set))]
+    (-> keypairs
+        vals
+        find-keycard-keypair
+        keypair-addresses
+        (contains? (string/lower-case address)))))
