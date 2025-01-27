@@ -57,11 +57,10 @@
 
 (rf/reg-event-fx :wallet/select-account-tab
  (fn [{:keys [db]} [tab]]
-   (let [activity-tab-selected? (= tab :activity)]
-     {:db (assoc-in db [:wallet :ui :account-page :active-tab] tab)
-      :fx [(if activity-tab-selected?
-             [:dispatch [:wallet/fetch-activities-for-current-account]]
-             [:dispatch [:wallet/stop-activity-filter-session]])]})))
+   {:db (assoc-in db [:wallet :ui :account-page :active-tab] tab)
+    :fx [(if (= tab :activity)
+           [:dispatch [:wallet/fetch-activities-for-current-account]]
+           [:dispatch [:wallet/stop-activity-filter-session]])]}))
 
 (rf/reg-event-fx :wallet/select-home-tab
  (fn [{:keys [db]} [tab]]

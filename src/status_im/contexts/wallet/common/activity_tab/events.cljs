@@ -35,13 +35,12 @@
          chain-ids (chain/chain-ids db)
          params    [[address] chain-ids (create-default-filters) limit-per-request]]
      {:db (-> db
-              (update-in [:wallet :activities] dissoc address)
               (update-in [:wallet :ui :activity-tab :request] dissoc :request-id)
               (update-in [:wallet :ui :activity-tab :request]
                          assoc
-                         :address          address
-                         :loading?         true
-                         :initial-request? true))
+                         :address                        address
+                         :loading?                       true
+                         :remove-all-previous-activites? true))
       :fx [[:json-rpc/call
             [{:method     "wallet_startActivityFilterSessionV2"
               :params     params
@@ -69,7 +68,8 @@
          has-more?  (get-in db [:wallet :ui :activity-tab :request :has-more?])
          params     [session-id limit-per-request]]
      (when (and session-id has-more?)
-       {:fx [[:json-rpc/call
+       {:db (assoc-in db [:wallet :ui :activity-tab :request :remove-all-existing-activities?] false)
+        :fx [[:json-rpc/call
               [{:method   "wallet_getMoreForActivityFilterSession"
                 :params   params
                 :on-error [:wallet/log-rpc-error
@@ -80,7 +80,7 @@
  :wallet/reset-activities-filter-session
  (fn [{:keys [db]}]
    (when-let [session-id (get-in db [:wallet :ui :activity-tab :request :request-id])]
-     {:db (assoc-in db [:wallet :ui :activity-tab :request :initial-request?] true)
+     {:db (assoc-in db [:wallet :ui :activity-tab :request :remove-all-existing-activities?] true)
       :fx [[:json-rpc/call
             [{:method   "wallet_resetActivityFilterSession"
               :params   [session-id limit-per-request]
@@ -91,21 +91,22 @@
 (rf/reg-event-fx
  :wallet/activity-filtering-for-current-account-done
  (fn [{:keys [db]} [{:keys [message]}]]
-   (let [{:keys [address initial-request?]}  (get-in db [:wallet :ui :activity-tab :request])
-         {:keys [activities offset hasMore]} (transforms/json->clj message)
-         new-activities                      (->> activities
-                                                  (cske/transform-keys transforms/->kebab-case-keyword)
-                                                  (collection/index-by :key))
-         existing-activities                 (get-in db [:wallet :activities address])
-         updated-activities                  (if initial-request?
-                                               new-activities
-                                               (nested-merge existing-activities new-activities))]
+   (let [{:keys [address
+                 remove-all-existing-activities?]} (get-in db [:wallet :ui :activity-tab :request])
+         {:keys [activities offset hasMore]}       (transforms/json->clj message)
+         new-activities                            (->> activities
+                                                        (cske/transform-keys
+                                                         transforms/->kebab-case-keyword)
+                                                        (collection/index-by :key))
+         existing-activities                       (get-in db [:wallet :activities address])
+         updated-activities                        (if remove-all-existing-activities?
+                                                     new-activities
+                                                     (nested-merge existing-activities new-activities))]
      {:db (-> db
               (assoc-in [:wallet :activities address] updated-activities)
               (assoc-in [:wallet :ui :activity-tab :request :offset] offset)
               (assoc-in [:wallet :ui :activity-tab :request :has-more?] hasMore)
-              (assoc-in [:wallet :ui :activity-tab :request :loading?] false)
-              (assoc-in [:wallet :ui :activity-tab :request :initial-request?] false))})))
+              (assoc-in [:wallet :ui :activity-tab :request :loading?] false))})))
 
 (rf/reg-event-fx
  :wallet/activities-filtering-entries-updated
