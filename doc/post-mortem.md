@@ -1,4 +1,4 @@
-This document MUST be updated everytime a PR has been identified has the source of a bug in develop. The post mortem analysis MUST include: the CAUSE of the bug, the RESOLUTION PROCESS and PREVENTION MEASURES.
+This document MUST be updated every time a PR has been identified has the source of a bug in develop. The post mortem analysis MUST include: the CAUSE of the bug, the RESOLUTION PROCESS and PREVENTION MEASURES.
 
 
 # "sql: no rows in result set" error on iOS login
