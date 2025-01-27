@@ -52,7 +52,9 @@
      [quo/drawer-top
       {:type                :context-tag
        :context-tag-type    :default
-       :title               (i18n/label :t/add-nickname-title)
+       :title               (if has-nickname?
+                              (i18n/label :t/edit-nickname)
+                              (i18n/label :t/add-nickname-title))
        :full-name           full-name
        :profile-picture     profile-picture
        :customization-color customization-color}]
