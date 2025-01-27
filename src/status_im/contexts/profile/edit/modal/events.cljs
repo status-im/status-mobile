@@ -44,7 +44,7 @@
 (rf/reg-event-fx
  :profile/ask-profile-update
  (fn [_ [pending-event]]
-   {:fx [[:profile/set-profile-update-as-asked]
+   {:fx [[:dispatch [:profile/set-profile-update-as-asked]]
          [:dispatch
           [:show-bottom-sheet
            {:content (fn []
