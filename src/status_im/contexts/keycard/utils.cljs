@@ -79,7 +79,7 @@
 
 (defn keycard-address?
   [keypairs address]
-  (let [find-keycard-keypair (fn [kps] (some #(when (:keycards %) %) kps))
+  (let [find-keycard-keypair (fn [kps] (some #(when-not (empty? (:keycards %)) %) kps))
         keypair-addresses    (fn [kp]
                                (->> (:accounts kp)
                                     (map :address)
