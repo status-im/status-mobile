@@ -30,10 +30,8 @@
 (def method-to-screen
   {constants/wallet-connect-personal-sign-method        :screen/wallet-connect.sign-message
    constants/wallet-connect-eth-sign-typed-method       :screen/wallet-connect.sign-message
-   constants/wallet-connect-eth-sign-method             :screen/wallet-connect.sign-message
    constants/wallet-connect-eth-sign-typed-v4-method    :screen/wallet-connect.sign-message
-   constants/wallet-connect-eth-send-transaction-method :screen/wallet-connect.send-transaction
-   constants/wallet-connect-eth-sign-transaction-method :screen/wallet-connect.sign-transaction})
+   constants/wallet-connect-eth-send-transaction-method :screen/wallet-connect.send-transaction})
 
 (defn extract-native-call-signature
   [data]
@@ -59,11 +57,11 @@
 
 (defn get-current-request-dapp
   [request sessions]
-  (let [dapp-url (get-in request [:event :verifyContext :verified :origin])]
+  (let [request-topic (get-in request [:event :topic])]
     (->> sessions
          (filter (fn [session]
-                   (= (utils.string/remove-trailing-slash dapp-url)
-                      (utils.string/remove-trailing-slash (get session :url)))))
+                   (= (:topic session)
+                      request-topic)))
          first)))
 
 (defn get-dapp-redirect-url

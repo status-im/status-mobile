@@ -123,3 +123,10 @@
    (-> (sign-transaction-hashes hashes address password)
        (promesa/then on-success)
        (promesa/catch on-error))))
+
+(rf/reg-fx
+ :effects.wallet/sign-message
+ (fn [{:keys [message address password on-success on-error]}]
+   (-> (wallet-rpc/sign-message message address (security/safe-unmask-data password))
+       (promesa/then on-success)
+       (promesa/catch on-error))))

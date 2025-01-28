@@ -76,3 +76,16 @@
    args
    :on-success (get-on-success args)
    :on-failure (get-on-failure args)))
+
+(defn keycard-address?
+  [keypairs address]
+  (let [find-keycard-keypair (fn [kps] (some #(when-not (empty? (:keycards %)) %) kps))
+        keypair-addresses    (fn [kp]
+                               (->> (:accounts kp)
+                                    (map :address)
+                                    set))]
+    (-> keypairs
+        vals
+        find-keycard-keypair
+        keypair-addresses
+        (contains? (string/lower-case address)))))

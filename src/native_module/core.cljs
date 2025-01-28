@@ -253,15 +253,19 @@
 
 (defn hash-typed-data
   "used for keycard"
-  [data callback]
-  (log/debug "[native-module] hash-typed-data")
-  (.hashTypedData ^js (encryption) data callback))
+  ([data]
+   (native-utils/promisify-native-module-call hash-typed-data data))
+  ([data callback]
+   (log/debug "[native-module] hash-typed-data")
+   (.hashTypedData ^js (encryption) data callback)))
 
 (defn hash-typed-data-v4
   "used for keycard"
-  [data callback]
-  (log/debug "[native-module] hash-typed-data-v4")
-  (.hashTypedDataV4 ^js (encryption) data callback))
+  ([data]
+   (native-utils/promisify-native-module-call hash-typed-data-v4 data))
+  ([data callback]
+   (log/debug "[native-module] hash-typed-data-v4")
+   (.hashTypedDataV4 ^js (encryption) data callback)))
 
 (defn send-transaction-with-signature
   "used for keycard"

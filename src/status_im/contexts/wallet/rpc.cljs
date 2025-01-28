@@ -47,7 +47,7 @@
                          chain-id
                          constants/transaction-pending-type-wallet-connect-transfer
                          (transforms/js-stringify tx-args 0)
-                         signature))
+                         (utils.hex/normalize-hex signature)))
 
 (defn sign-message
   [message address password]

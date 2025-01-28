@@ -1,16 +1,16 @@
 (ns status-im.contexts.wallet.wallet-connect.events.effects
   (:require
+    [native-module.core :as native-module]
     [promesa.core :as promesa]
     [react-native.wallet-connect :as wallet-connect]
     [status-im.config :as config]
     [status-im.constants :as constants]
+    [status-im.contexts.wallet.rpc :as wallet-rpc]
     [status-im.contexts.wallet.wallet-connect.utils.sessions :as sessions]
-    [status-im.contexts.wallet.wallet-connect.utils.signing :as signing]
     [status-im.contexts.wallet.wallet-connect.utils.transactions :as transactions]
-    [status-im.contexts.wallet.wallet-connect.utils.typed-data :as typed-data]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]
-    [utils.security.core :as security]))
+    [utils.transforms :as transforms]))
 
 (rf/reg-fx
  :effects.wallet-connect/init
@@ -69,20 +69,21 @@
        (promesa/catch (partial rf/call-continuation on-fail)))))
 
 (rf/reg-fx
- :effects.wallet-connect/sign-message
- (fn [{:keys [password address data rpc-method on-success on-error]}]
-   (let [password (security/safe-unmask-data password)]
-     (-> (condp =
-           rpc-method
-           :personal-sign
-           (signing/personal-sign password address data)
+ :effects.wallet-connect/hash-message
+ (fn [{:keys [message on-success on-fail]}]
+   (-> (wallet-rpc/hash-message-eip-191 message)
+       (promesa/then (partial rf/call-continuation on-success))
+       (promesa/catch (partial rf/call-continuation on-fail)))))
 
-           :eth-sign
-           (signing/eth-sign password address data)
-
-           (signing/personal-sign password address data))
-         (promesa/then (partial rf/call-continuation on-success))
-         (promesa/catch (partial rf/call-continuation on-error))))))
+(rf/reg-fx
+ :effects.wallet-connect/hash-typed-data
+ (fn [{:keys [message legacy? on-success on-fail]}]
+   (-> (if legacy?
+           (native-module/hash-typed-data message)
+           (native-module/hash-typed-data-v4 message))
+       (promesa/then (fn [response] (-> response transforms/json->clj :result)))
+       (promesa/then (partial rf/call-continuation on-success))
+       (promesa/catch (partial rf/call-continuation on-fail)))))
 
 (rf/reg-fx
  :effects.wallet-connect/prepare-transaction
@@ -94,35 +95,11 @@
        (promesa/catch on-error))))
 
 (rf/reg-fx
- :effects.wallet-connect/sign-transaction
- (fn [{:keys [password address chain-id tx-hash tx-args on-success on-error]}]
-   (-> (transactions/sign-transaction (security/safe-unmask-data password)
-                                      address
-                                      tx-hash
-                                      tx-args
-                                      chain-id)
-       (promesa/then (partial rf/call-continuation on-success))
-       (promesa/catch (partial rf/call-continuation on-error)))))
-
-(rf/reg-fx
  :effects.wallet-connect/send-transaction
- (fn [{:keys [password address chain-id tx-hash tx-args on-success on-error]}]
-   (-> (transactions/send-transaction (security/safe-unmask-data password)
-                                      address
-                                      tx-hash
-                                      tx-args
-                                      chain-id)
-       (promesa/then (partial rf/call-continuation on-success))
-       (promesa/catch (partial rf/call-continuation on-error)))))
-
-(rf/reg-fx
- :effects.wallet-connect/sign-typed-data
- (fn [{:keys [password address data version chain-id on-success on-error]}]
-   (-> (typed-data/sign (security/safe-unmask-data password)
-                        address
-                        data
-                        chain-id
-                        version)
+ (fn [{:keys [chain-id signature tx-args on-success on-error]}]
+   (-> (wallet-rpc/send-transaction-with-signature chain-id
+                                                   tx-args
+                                                   signature)
        (promesa/then (partial rf/call-continuation on-success))
        (promesa/catch (partial rf/call-continuation on-error)))))
 
