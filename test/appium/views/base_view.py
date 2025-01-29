@@ -201,7 +201,7 @@ class BaseView(object):
         for _ in range(times):
             self.driver.press_keycode(4)
 
-    def _navigate_back_to_view(self, element, attempts=3):
+    def click_system_back_button_until_presence_of_element(self, element, attempts=3):
         counter = 0
         while not element.is_element_displayed(1) and counter <= attempts:
             self.driver.press_keycode(4)
@@ -218,14 +218,14 @@ class BaseView(object):
                 or not self.community_floating_screen.is_element_disappeared(1) \
                 or not self.discover_communities_floating_screen.is_element_disappeared(1):
             self.driver.press_keycode(4)
-        self._navigate_back_to_view(self.chats_tab)
+        self.click_system_back_button_until_presence_of_element(self.chats_tab)
 
     def navigate_back_to_chat_view(self):
-        self._navigate_back_to_view(self.get_chat_view().chat_message_input)
+        self.click_system_back_button_until_presence_of_element(self.get_chat_view().chat_message_input)
 
     def navigate_back_to_wallet_view(self, attempts=3):
         element = self.get_wallet_view().network_drop_down
-        self._navigate_back_to_view(element)
+        self.click_system_back_button_until_presence_of_element(element)
 
     def click_system_home_button(self):
         self.driver.info('Press system Home button')

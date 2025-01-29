@@ -1,9 +1,10 @@
 import datetime
+import re
 import time
 
 import pytest
 from _pytest.outcomes import Failed
-from selenium.common import NoSuchElementException
+from selenium.common import NoSuchElementException, TimeoutException
 
 from base_test_case import MultipleSharedDeviceTestCase, create_shared_drivers
 from support.api.network_api import NetworkApi
@@ -144,7 +145,7 @@ class TestWalletMultipleDevice(MultipleSharedDeviceTestCase):
         device_time_before_sending = self.wallet_1.driver.device_time
         self.wallet_1.send_asset(address='arb1:' + self.receiver['wallet_address'],
                                  asset_name='Ether',
-                                 amount=amount_to_send,
+                                 amount=f"{amount_to_send:.4f}",
                                  network_name=self.network)
         # ToDo: Arbiscan API is down, looking for analogue
         # self.network_api.wait_for_confirmation_of_transaction(address=self.sender['wallet_address'],
@@ -180,7 +181,7 @@ class TestWalletMultipleDevice(MultipleSharedDeviceTestCase):
         device_time_before_sending = self.wallet_1.driver.device_time
         self.wallet_1.send_asset_from_drawer(address='arb1:' + self.receiver['wallet_address'],
                                              asset_name='Ether',
-                                             amount=amount_to_send,
+                                             amount=f"{amount_to_send:.4f}",
                                              network_name=self.network)
         # ToDo: Arbiscan API is down, looking for analogue
         # self.network_api.wait_for_confirmation_of_transaction(address=self.sender['wallet_address'],
@@ -210,13 +211,12 @@ class TestWalletMultipleDevice(MultipleSharedDeviceTestCase):
 class TestWalletOneDevice(MultipleSharedDeviceTestCase):
 
     def prepare_devices(self):
-        self.network_api = NetworkApi()
         self.drivers, self.loop = create_shared_drivers(1)
         self.sign_in_view = SignInView(self.drivers[0])
         self.sender, self.receiver = transaction_senders['ETH_1'], transaction_senders['ETH_2']
-        self.total_balance = {'Ether': 0.0052, 'USDCoin': 5.0, 'Status': 10.0, 'Uniswap': 0.627, 'Dai Stablecoin': 0.0}
+        self.total_balance = {'Ether': 0.0062, 'USDCoin': 5.0, 'Status': 13.0, 'Uniswap': 0.627, 'Dai Stablecoin': 0.0}
         self.mainnet_balance = {'Ether': 0.005, 'USDCoin': 0.0, 'Status': 10.0, 'Uniswap': 0.127, 'Dai Stablecoin': 0.0}
-        self.optimizm_balance = {'Ether': 0.0001, 'USDCoin': 5.0, 'Status': 0, 'Uniswap': 0, 'Dai Stablecoin': 0.0}
+        self.optimism_balance = {'Ether': 0.0011, 'USDCoin': 5.0, 'Status': 3.0, 'Uniswap': 0, 'Dai Stablecoin': 0.0}
         self.arb_balance = {'Ether': 0.0001, 'USDCoin': 0.0, 'Status': 0.0, 'Uniswap': 0.5, 'Dai Stablecoin': 0.0}
         self.sender['wallet_address'] = '0x' + self.sender['address']
         self.receiver['wallet_address'] = '0x' + self.receiver['address']
@@ -224,15 +224,13 @@ class TestWalletOneDevice(MultipleSharedDeviceTestCase):
 
         self.home_view = self.sign_in_view.get_home_view()
         self.sender_username = self.home_view.get_username()
+        self.profile_view = self.home_view.profile_button.click()
+        self.profile_view.switch_network()
+        self.sign_in_view.sign_in(user_name=self.sender_username)
         self.wallet_view = self.home_view.wallet_tab.click()
 
     @marks.testrail_id(740490)
     def test_wallet_balance_mainnet(self):
-        self.profile_view = self.home_view.profile_button.click()
-        self.profile_view.switch_network()
-        self.sign_in_view.sign_in(user_name=self.sender_username)
-        self.sign_in_view.wallet_tab.click()
-
         self.wallet_view.just_fyi("Checking total balance")
         real_balance = {}
         for asset in self.total_balance:
@@ -245,7 +243,7 @@ class TestWalletOneDevice(MultipleSharedDeviceTestCase):
         expected_balances = {
             'Mainnet': self.mainnet_balance,
             'Arbitrum': self.arb_balance,
-            'Optimism': self.optimizm_balance
+            'Optimism': self.optimism_balance
         }
 
         for network in expected_balances:
@@ -262,8 +260,175 @@ class TestWalletOneDevice(MultipleSharedDeviceTestCase):
 
         self.errors.verify_no_errors()
 
+    @marks.testrail_id(741554)
+    def test_wallet_send_flow_mainnet(self):
+        self.wallet_view.get_account_element().click()
+        self.wallet_view.send_button.click()
+        self.wallet_view.address_text_input.send_keys(self.receiver['wallet_address'])
+        self.wallet_view.continue_button.click()
+
+        asset_data = {
+            'Ether': {'networks': ['Mainnet', 'Arbitrum'], 'amount': '0.00001'},
+            'Status': {'networks': ['Mainnet', 'Optimism'], 'amount': '1'}
+        }
+        for asset, data in asset_data.items():
+            for network in data['networks']:
+                self.wallet_view.just_fyi("Checking the send flow for %s on %s" % (asset, network))
+                self.wallet_view.select_asset(asset)
+                self.wallet_view.select_network(network)
+                self.wallet_view.set_amount(data['amount'])
+                try:
+                    max_fees_text = self.wallet_view.get_data_item_element_text(data_item_name='Max fees')
+                    if not re.findall(r"[$]\d+.\d+", max_fees_text):
+                        self.errors.append(self.wallet_view,
+                                           "%s on %s: max fee is not a number - %s" % (asset, network, max_fees_text))
+                except TimeoutException:
+                    self.errors.append(
+                        self.wallet_view,
+                        "%s on %s: max fees is not shown before Review Send button is clicked" % (asset, network))
+
+                self.wallet_view.confirm_button.click()
+                self.wallet_view.just_fyi("Checking Review Send page for %s on %s" % (asset, network))
+
+                expected_amount = "%s %s" % (data['amount'], 'ETH' if asset == 'Ether' else 'SNT')
+                sender_short_address = self.sender['wallet_address'].replace(self.sender['wallet_address'][6:-3],
+                                                                             '…').lower()
+                receiver_short_address = self.receiver['wallet_address'].replace(self.receiver['wallet_address'][6:-3],
+                                                                                 '…').lower()
+                for text in ['Account 1', sender_short_address, expected_amount]:
+                    if not self.wallet_view.from_data_container.get_child_element_by_text(text).is_element_displayed():
+                        self.errors.append(
+                            self.wallet_view,
+                            "%s on %s: text %s is not shown in 'From' container on the Review Send page" % (
+                                asset, network, text))
+                for text in [receiver_short_address, expected_amount]:
+                    if not self.wallet_view.to_data_container.get_child_element_by_text(text).is_element_displayed():
+                        self.errors.append(
+                            self.wallet_view,
+                            "%s on %s: text %s is not shown in 'To' container on the Review Send page" % (
+                                asset, network, text))
+
+                data_to_check = {
+                    'Est. time': ' min',
+                    'Max fees': r"[$]\d+.\d+",
+                    'Recipient gets': expected_amount
+                }
+                for key, expected_value in data_to_check.items():
+                    try:
+                        text = self.wallet_view.get_data_item_element_text(data_item_name=key)
+                        if key == 'Max fees':
+                            if not re.findall(expected_value, text):
+                                self.errors.append(self.wallet_view,
+                                                   "%s on %s: max fee is not a number - %s on the Review Send page" % (
+                                                       asset, network, text))
+                        else:
+                            if text != expected_value:
+                                self.errors.append(
+                                    self.wallet_view,
+                                    "%s on %s: %s text %s doesn't match expected %s on the Review Send page" % (
+                                        asset, network, key, text, expected_value))
+                    except TimeoutException:
+                        self.errors.append(self.wallet_view,
+                                           "%s on %s: %s is not shown on the Review Send page" % (asset, network, key))
+
+                self.wallet_view.slide_button_track.slide()
+                if not self.wallet_view.password_input.is_element_displayed():
+                    self.errors.append("%s on %s: can't confirm transaction" % (asset, network))
+                self.wallet_view.click_system_back_button_until_presence_of_element(
+                    element=self.wallet_view.element_by_text('Select token'), attempts=4)
+        self.wallet_view.click_system_back_button_until_presence_of_element(
+            element=self.wallet_view.add_account_button, attempts=6)
+        self.errors.verify_no_errors()
+
+    @marks.testrail_id(741555)
+    def test_wallet_swap_flow_mainnet(self):
+        self.wallet_view.navigate_back_to_wallet_view()
+        self.wallet_view.get_account_element().click()
+        self.wallet_view.swap_button.click()
+        for network in ['Mainnet', 'Optimism']:
+            self.wallet_view.just_fyi("Checking the Swap flow for SNT on %s" % network)
+            self.wallet_view.select_asset('Status')
+            self.wallet_view.select_network(network)
+            self.wallet_view.set_amount('1')
+            data_to_check = {
+                'Max fees': r"[$]\d+.\d+",
+                'Max slippage': r"\d+.\d+[%]"
+            }
+            for key, expected_value in data_to_check.items():
+                try:
+                    text = self.wallet_view.get_data_item_element_text(data_item_name=key)
+                    if not re.findall(expected_value, text):
+                        self.errors.append(self.wallet_view,
+                                           "%s: %s is not a number - %s before pressing Review Swap button" % (
+                                               network, key, text))
+                except TimeoutException:
+                    self.errors.append(self.wallet_view,
+                                       "%s: %s is not shown before pressing Review Swap button" % (network, key))
+
+            try:
+                self.wallet_view.wait_for_swap_input_to_be_shown()
+            except TimeoutException:
+                self.errors.append(self.wallet_view, "%s: ETH amount is not displayed")
+                continue
+            self.wallet_view.approve_swap_button.click()
+            self.wallet_view.just_fyi("Checking 'Set Spending Cap' screen for %s" % network)
+            if not self.wallet_view.spending_cap_approval_info_container.get_child_element_by_text(
+                    '1 SNT').is_element_displayed():
+                self.errors.append(self.wallet_view,
+                                   "%s: Spending cap is not shown on the 'Set Spending Cap' screen" % network)
+            for text in ['Account 1',
+                         self.sender['wallet_address'].replace(self.sender['wallet_address'][5:-3], '...').lower()]:
+                if not self.wallet_view.account_approval_info_container.get_child_element_by_text(
+                        text).is_element_displayed():
+                    self.errors.append(
+                        self.wallet_view,
+                        "%s: Text %s is not shown for the account on the 'Set Spending Cap' screen" % (network, text))
+            if not self.wallet_view.token_approval_info_container.get_child_element_by_text(
+                    'SNT').is_element_displayed():
+                self.errors.append(self.wallet_view,
+                                   "%s: Token is not shown on the 'Set Spending Cap' screen" % network)
+            if not self.wallet_view.spender_contract_approval_info_container.is_element_displayed():
+                self.errors.append(self.wallet_view,
+                                   "%s: Spender contract info is missing on the 'Set Spending Cap' screen" % network)
+
+            data_to_check = {
+                'Network': network,
+                # 'Max fees': r"[$]\d+.\d+", # ToDO: enable when https://github.com/status-im/status-mobile/issues/21948 is fixed
+                # 'Est. time': ' min',
+            }
+            for key, expected_value in data_to_check.items():
+                try:
+                    text = self.wallet_view.get_data_item_element_text(data_item_name=key)
+                    if key == 'Max fees':
+                        if not re.findall(expected_value, text):
+                            self.errors.append(self.wallet_view,
+                                               "%s: max fee is not a number - %s on the 'Set Spending Cap' screen" % (
+                                                   network, text))
+                    else:
+                        if text != expected_value:
+                            self.errors.append(
+                                self.wallet_view,
+                                "%s: %s text %s doesn't match expected %s on the 'Set Spending Cap' screen" % (
+                                    network, key, text, expected_value))
+                except (TimeoutException, NoSuchElementException):
+                    self.errors.append(self.wallet_view,
+                                       "%s: %s is not shown on the 'Set Spending Cap' screen" % (network, key))
+            try:
+                self.wallet_view.slide_button_track.slide()
+                if not self.wallet_view.password_input.is_element_displayed():
+                    self.errors.append(self.wallet_view, "%s: can't sign swap" % network)
+            except NoSuchElementException:
+                self.errors.append(self.wallet_view, "%s: can't sign swap" % network)
+
+            self.wallet_view.click_system_back_button_until_presence_of_element(
+                element=self.wallet_view.element_by_text('Select asset to pay'), attempts=4)
+        self.wallet_view.click_system_back_button_until_presence_of_element(
+            element=self.wallet_view.add_account_button, attempts=6)
+        self.errors.verify_no_errors()
+
     @marks.testrail_id(727231)
     def test_wallet_add_remove_regular_account(self):
+        self.wallet_view.navigate_back_to_wallet_view()
         self.wallet_view.just_fyi("Adding new regular account")
         new_account_name = "New Account"
         self.wallet_view.add_regular_account(account_name=new_account_name)

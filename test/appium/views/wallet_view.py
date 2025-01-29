@@ -84,6 +84,7 @@ class WalletView(BaseView):
             self.driver, xpath="//*[@content-desc='account-avatar']/../following-sibling::android.widget.TextView[1]")
         self.account_emoji_button = Button(self.driver, accessibility_id='account-emoji')
         self.send_button = Button(self.driver, accessibility_id='send')
+        self.swap_button = Button(self.driver, accessibility_id='swap')
         self.send_from_drawer_button = Button(
             self.driver, xpath="//*[@content-desc='send']/*[@content-desc='left-icon-for-action']")
         self.copy_address_button = Button(self.driver, accessibility_id='copy-address')
@@ -103,6 +104,27 @@ class WalletView(BaseView):
             self.driver, xpath="(//*[@content-desc='loading']/following-sibling::android.widget.TextView)[1]")
         self.confirm_button = Button(self.driver, accessibility_id='button-one')
         self.done_button = Button(self.driver, accessibility_id='done')
+
+        # Review Send page
+        self.from_data_container = BaseElement(
+            self.driver, xpath="//*[@content-desc='summary-from-label']/following-sibling::android.view.ViewGroup[1]")
+        self.to_data_container = BaseElement(
+            self.driver, xpath="//*[@content-desc='summary-to-label']/following-sibling::android.view.ViewGroup[1]")
+
+        # Swap flow
+        self.approve_swap_button = Button(self.driver, accessibility_id='Approve')
+        self.spending_cap_approval_info_container = BaseElement(
+            self.driver,
+            xpath="//*[@content-desc='spending-cap-label']/following-sibling::*[@content-desc='approval-info'][1]")
+        self.account_approval_info_container = BaseElement(
+            self.driver,
+            xpath="//*[@content-desc='account-label']/following-sibling::*[@content-desc='approval-info'][1]")
+        self.token_approval_info_container = BaseElement(
+            self.driver,
+            xpath="//*[@content-desc='token-label']/following-sibling::*[@content-desc='approval-info'][1]")
+        self.spender_contract_approval_info_container = BaseElement(
+            self.driver,
+            xpath="//*[@content-desc='spender-contract-label']/following-sibling::*[@content-desc='approval-info'][1]")
 
         # Edit key pair
         self.edit_key_pair_button = Button(self.driver, accessibility_id="Edit")
@@ -156,11 +178,11 @@ class WalletView(BaseView):
             self.confirm_button.click()
         self.slide_and_confirm_with_password()
 
-    def set_amount(self, amount: float):
-        for i in '{:f}'.format(amount).rstrip('0'):
+    def set_amount(self, amount: str):
+        for i in amount:
             Button(self.driver, accessibility_id='keyboard-key-%s' % i).click()
 
-    def send_asset(self, address: str, asset_name: str, amount: float, network_name: str):
+    def send_asset(self, address: str, asset_name: str, amount: str, network_name: str):
         self.send_button.click()
         self.address_text_input.send_keys(address)
         self.continue_button.click()
@@ -169,7 +191,7 @@ class WalletView(BaseView):
         self.set_amount(amount)
         self.confirm_transaction()
 
-    def send_asset_from_drawer(self, address: str, asset_name: str, amount: float, network_name: str):
+    def send_asset_from_drawer(self, address: str, asset_name: str, amount: str, network_name: str):
         asset_element = self.get_asset(asset_name)
         asset_element.long_press_without_release()
         self.send_from_drawer_button.double_click()
@@ -250,3 +272,13 @@ class WalletView(BaseView):
         wallet_address = self.sharing_text_native.text
         self.click_system_back_button()
         return wallet_address
+
+    def get_data_item_element_text(self, data_item_name: str):
+        element = Text(self.driver, xpath="//*[@text='%s']/following-sibling::android.widget.TextView" % data_item_name)
+        element.wait_for_element(15)
+        return element.text
+
+    def wait_for_swap_input_to_be_shown(self):
+        locator = "//*[@content-desc='swap-input'][2]//*[@content-desc='token-avatar']" \
+                  "/following-sibling::*//*[starts-with(@text,'0.000')]"
+        BaseElement(self.driver, xpath=locator).wait_for_visibility_of_element()
