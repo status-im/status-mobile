@@ -1381,6 +1381,7 @@
   "keycard-connected-title": "Connected",
   "keycard-contains-key-pair": "Keycard contains your profile key pair",
   "keycard-desc": "Own a Keycard? Store your keys on it; you’ll need it for transactions",
+  "keycard-documentation": "Keycard is a hardware wallet in a credit-card sized smartcard that works with the Status app. You can store your Status keys and sign transactions securely with it.\n\nKeycard is designed to be mobile-friendly and uses contactless NFC technology to communicate with your phone, so you can sign transactions with just a tap of the card. It is lightweight, convenient, and can fit in your wallet, pocket, or phone case.\n\nProtect your assets and accounts with the Keycard, a cold storage hardware wallet that provides a contactless and convenient experience.",
   "keycard-dont-ask-card": "Don't ask for card to sign in",
   "keycard-empty": "Keycard is empty",
   "keycard-empty-ready": "Keycard is empty and ready to be used",
