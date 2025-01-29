@@ -11,7 +11,7 @@
 , outputFileName ? "status-go-${source.shortRev}-${platform}.aar" }:
 
 let
-  inherit (lib) concatStringsSep optionalString optional splitString fileContents;
+  inherit (lib) concatStringsSep optionalString optional splitString;
   isIOS = platform == "ios";
   isAndroid = platform == "android";
   enforceXCodeAvailable = callPackage ./enforceXCodeAvailable.nix { };
