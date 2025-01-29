@@ -148,15 +148,14 @@
         max-slippage           (rf/sub [:wallet/swap-max-slippage])]
     [rn/view {:style style/details-container}
      [:<>
-      [data-item
-       {:title    (i18n/label :t/est-time)
-        :subtitle (if estimated-time
-                    (i18n/label :t/time-in-mins {:minutes (str estimated-time)})
-                    (i18n/label :t/unknown))
-        :loading? loading-swap-proposal?}]
+      (when estimated-time
+        [data-item
+         {:title    (i18n/label :t/est-time)
+          :subtitle (i18n/label :t/time-in-mins {:minutes (str estimated-time)})
+          :loading? loading-swap-proposal?}])
       [data-item
        {:title    (i18n/label :t/max-fees)
-        :subtitle (if (and estimated-time max-fees-formatted) max-fees-formatted (i18n/label :t/unknown))
+        :subtitle (if max-fees-formatted max-fees-formatted (i18n/label :t/unknown))
         :loading? loading-swap-proposal?}]
       [data-item
        {:title    (i18n/label :t/max-slippage)

@@ -202,18 +202,17 @@
         :network-image (:source network)}]
       [data-item
        {:title    (i18n/label :t/max-fees)
-        :subtitle (if (and estimated-time approval-fees-formatted)
+        :subtitle (if approval-fees-formatted
                     approval-fees-formatted
                     (i18n/label :t/unknown))
         :loading? loading-swap-proposal?
         :size     :small}]
-      [data-item
-       {:title    (i18n/label :t/est-time)
-        :subtitle (if estimated-time
-                    (i18n/label :t/time-in-mins {:minutes (str estimated-time)})
-                    (i18n/label :t/unknown))
-        :loading? loading-swap-proposal?
-        :size     :small}]]]))
+      (when estimated-time
+        [data-item
+         {:title    (i18n/label :t/est-time)
+          :subtitle (i18n/label :t/time-in-mins {:minutes (str estimated-time)})
+          :loading? loading-swap-proposal?
+          :size     :small}])]]))
 
 (defn- slide-button
   []
