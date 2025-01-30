@@ -3,6 +3,7 @@
             [react-native.core :as rn]
             [status-im.common.events-helper :as events-helper]
             [status-im.common.resources :as resources]
+            [status-im.constants :as constants]
             [status-im.contexts.keycard.common.view :as common.view]
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]))
