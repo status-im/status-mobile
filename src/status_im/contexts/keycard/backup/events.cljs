@@ -56,17 +56,6 @@
                   (rf/dispatch [:keycard/backup.create-or-enter-pin]))
                 (scan-empty-card-not-empty error)))}]]]}))
 
-(rf/reg-event-fx :keycard/backup.on-application-info-error
- (fn [_ [error]]
-   (if (= error :keycard/error.keycard-blank)
-     (rf/dispatch [:keycard/create.continue])
-     (if (= :keycard/error.not-keycard error)
-       (rf/dispatch [:keycard/on-application-info-error error])
-       (do
-         (rf/dispatch [:keycard/disconnect])
-         (rf/dispatch [:navigate-back])
-         (rf/dispatch [:open-modal :screen/keycard.backup.not-empty]))))))
-
 (rf/reg-event-fx :keycard/backup.save-pin
  (fn [{:keys [db]} [pin]]
    {:db (assoc-in db [:keycard :backup :pin] pin)}))
