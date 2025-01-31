@@ -44,6 +44,7 @@
    :disabled?           (or testnet-mode? bridge-disabled?)
    :on-press            (fn []
                           (rf/dispatch [:hide-bottom-sheet])
+                          (rf/dispatch [:wallet/clean-send-data])
                           (rf/dispatch [:wallet/bridge-select-token params]))})
 
 (defn- action-swap
@@ -54,6 +55,7 @@
    :disabled?           testnet-mode?
    :on-press            (fn []
                           (rf/dispatch [:hide-bottom-sheet])
+                          (rf/dispatch [:wallet/clean-send-data])
                           (rf/dispatch [:wallet.swap/start
                                         {:asset-to-pay     (or token {:symbol token-symbol})
                                          :asset-to-receive asset-to-receive
