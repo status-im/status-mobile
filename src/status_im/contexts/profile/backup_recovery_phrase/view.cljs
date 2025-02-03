@@ -44,22 +44,23 @@
 
 (defn view
   []
-  (let [step-labels                             [:t/backup-step-1 :t/backup-step-2 :t/backup-step-3
-                                                 :t/backup-step-4]
-        checked?                                (reagent/atom
-                                                 {:0 false
-                                                  :1 false
-                                                  :2 false
-                                                  :3 false})
-        revealed?                               (reagent/atom false)
-        customization-color                     (rf/sub [:profile/customization-color])
-        {:keys [on-success masked-seed-phrase]} (rf/sub [:get-screen-params])
-        seed-phrase                             (reagent/atom (if masked-seed-phrase
-                                                                (->
-                                                                  (security/safe-unmask-data
-                                                                   masked-seed-phrase)
-                                                                  (string/split #"\s"))
-                                                                []))]
+  (let [step-labels         [:t/backup-step-1 :t/backup-step-2 :t/backup-step-3
+                             :t/backup-step-4]
+        checked?            (reagent/atom
+                             {:0 false
+                              :1 false
+                              :2 false
+                              :3 false})
+        {:keys [on-success masked-seed-phrase
+                revealed?]} (rf/sub [:get-screen-params])
+        revealed?           (reagent/atom revealed?)
+        customization-color (rf/sub [:profile/customization-color])
+        seed-phrase         (reagent/atom (if masked-seed-phrase
+                                            (->
+                                              (security/safe-unmask-data
+                                               masked-seed-phrase)
+                                              (string/split #"\s"))
+                                            []))]
     (fn []
       (let [theme (quo.theme/use-theme)]
         (rn/use-mount
@@ -108,8 +109,7 @@
             [quo/bottom-actions
              {:actions          :one-action
               :button-one-label (i18n/label :t/i-have-written)
-              :button-one-props {:disabled?           (some false? (vals @checked?))
-                                 :customization-color customization-color
+              :button-one-props {:customization-color customization-color
                                  :on-press            #(on-success (security/mask-data @seed-phrase))}}]
             [quo/text
              {:size  :paragraph-2
