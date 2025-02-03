@@ -53,7 +53,7 @@
     (colors/theme-colors colors/neutral-30 colors/neutral-60 theme)))
 
 (defn address-input
-  [{:keys [default-value blur? on-change-text on-blur on-focus on-clear on-scan
+  [{:keys [default-value blur? on-change-text on-blur on-focus on-clear on-scan on-paste
            on-detect-ens on-detect-address on-detect-unclassified address-regex ens-regex
            valid-ens-or-address? container-style]}]
   (let [theme                  (quo.theme/use-theme)
@@ -82,12 +82,13 @@
                                                (not ens?)
                                                on-detect-unclassified)
                                       (on-detect-unclassified text)))))
-        on-paste               (rn/use-callback
-                                (fn []
-                                  (clipboard/get-string
-                                   (fn [clipboard]
-                                     (when-not (empty? clipboard)
-                                       (on-change clipboard))))))
+        on-paste               (rn/use-callback #(if (fn? on-paste)
+                                                   (on-paste on-change)
+                                                   (clipboard/get-string
+                                                    (fn [clipboard]
+                                                      (when-not (empty? clipboard)
+                                                        (on-change clipboard)))))
+                                                [on-paste])
         on-clear               (rn/use-callback
                                 (fn []
                                   (on-change "")

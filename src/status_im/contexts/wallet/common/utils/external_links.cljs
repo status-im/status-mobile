@@ -4,26 +4,32 @@
 
 (defn get-explorer-url-by-chain-id
   [chain-id]
-  (cond
-    (= chain-id constants/ethereum-mainnet-chain-id)
+  (condp = chain-id
+    constants/ethereum-mainnet-chain-id
     config/mainnet-chain-explorer-link
 
-    (= chain-id constants/arbitrum-mainnet-chain-id)
+    constants/arbitrum-mainnet-chain-id
     config/arbitrum-mainnet-chain-explorer-link
 
-    (= chain-id constants/optimism-mainnet-chain-id)
+    constants/optimism-mainnet-chain-id
     config/optimism-mainnet-chain-explorer-link
 
-    (= chain-id constants/ethereum-sepolia-chain-id)
+    constants/base-mainnet-chain-id
+    config/base-mainnet-chain-explorer-link
+
+    constants/ethereum-sepolia-chain-id
     config/sepolia-chain-explorer-link
 
-    (= chain-id constants/arbitrum-sepolia-chain-id)
+    constants/arbitrum-sepolia-chain-id
     config/arbitrum-sepolia-chain-explorer-link
 
-    (= chain-id constants/optimism-sepolia-chain-id)
+    constants/optimism-sepolia-chain-id
     config/optimism-sepolia-chain-explorer-link
 
-    :else config/mainnet-chain-explorer-link))
+    constants/base-sepolia-chain-id
+    config/base-sepolia-chain-explorer-link
+
+    config/mainnet-chain-explorer-link))
 
 (defn get-base-url-for-tx-details-by-chain-id
   [chain-id]

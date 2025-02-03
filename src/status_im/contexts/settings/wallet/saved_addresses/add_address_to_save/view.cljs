@@ -7,7 +7,6 @@
     [react-native.safe-area :as safe-area]
     [status-im.common.floating-button-page.view :as floating-button-page]
     [status-im.contexts.settings.wallet.saved-addresses.add-address-to-save.style :as style]
-    [status-im.contexts.wallet.common.utils :as utils]
     [status-im.contexts.wallet.common.validation :as validation]
     [utils.address :as utils-address]
     [utils.debounce :as debounce]
@@ -20,7 +19,7 @@
 
 (defn- validate-input
   [account-addresses saved-addresses user-input]
-  (let [[_ address-without-prefix] (utils/split-prefix-and-address user-input)]
+  (let [address-without-prefix (utils-address/extract-address-without-chains-info user-input)]
     (cond
       (string/blank? user-input)
       nil
@@ -96,8 +95,8 @@
 
 (defn- existing-saved-address
   [{:keys [address]}]
-  (let [[_ address-without-prefix] (utils/split-prefix-and-address address)
-        {:keys [name customization-color chain-short-names ens ens?]}
+  (let [address-without-prefix (utils-address/extract-address-without-chains-info address)
+        {:keys [name customization-color ens ens?]}
         (rf/sub [:wallet/saved-address-by-address address-without-prefix])]
     [rn/view {:style style/existing-saved-address-container}
      [quo/text
@@ -109,7 +108,7 @@
       {:blur?           true
        :active-state?   true
        :user-props      {:name                name
-                         :address             (str chain-short-names address-without-prefix)
+                         :address             address-without-prefix
                          :ens                 (when ens? ens)
                          :customization-color customization-color
                          :blur?               true}
@@ -155,9 +154,13 @@
                                                       :on-success on-ens-resolve
                                                       :on-error   #(set-error :ens-not-registered)}]
                                                     300)))))
-        paste-into-input                    (rn/use-callback #(clipboard/get-string
-                                                               (fn [clipboard-text]
-                                                                 (on-change-text clipboard-text))))
+        paste-into-input                    (rn/use-callback
+                                             #(clipboard/get-string
+                                               (fn [clipboard-text]
+                                                 (when-not (string/blank? clipboard-text)
+                                                   (-> clipboard-text
+                                                       utils-address/extract-address-without-chains-info
+                                                       on-change-text)))))
         on-press-continue                   (rn/use-callback
                                              (fn []
                                                (rf/dispatch

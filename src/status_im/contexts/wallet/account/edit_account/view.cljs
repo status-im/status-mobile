@@ -7,8 +7,6 @@
             [status-im.contexts.wallet.common.screen-base.create-or-edit-account.view
              :as create-or-edit-account]
             [status-im.contexts.wallet.common.utils :as common.utils]
-            [status-im.contexts.wallet.sheets.network-preferences.view
-             :as network-preferences]
             [status-im.contexts.wallet.sheets.remove-account.view :as remove-account]
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]))
@@ -55,15 +53,10 @@
                                              :updated-key :name
                                              :new-value   @edited-account-name}))]
     (fn []
-      (let [{:keys [name emoji address color watch-only? default-account?]
+      (let [{:keys [name emoji address color default-account?]
              :as   account}         (rf/sub [:wallet/current-viewing-account])
-            network-details         (rf/sub [:wallet/network-preference-details])
-            test-networks-enabled?  (rf/sub [:profile/test-networks-enabled?])
             other-account-names     (rf/sub [:wallet/accounts-names-without-current-account])
             other-emojis-and-colors (rf/sub [:wallet/accounts-emojis-and-colors-without-current-account])
-            network-preferences-key (if test-networks-enabled?
-                                      :test-preferred-chain-ids
-                                      :prod-preferred-chain-ids)
             account-name            (or @edited-account-name name)
             input-error             (or @emoji-color-error @name-error)
             button-disabled?        (or (string/blank? @edited-account-name)
@@ -108,23 +101,9 @@
            :size            :default
            :subtitle-type   :default
            :blur?           false
-           :right-icon      :i/advanced
            :card?           true
            :title           (i18n/label :t/address)
            :custom-subtitle (fn [] [quo/address-text
-                                    {:networks network-details
-                                     :address  address
-                                     :format   :long}])
-           :on-press        (fn []
-                              (rf/dispatch [:show-bottom-sheet
-                                            {:content
-                                             (fn []
-                                               [network-preferences/view
-                                                {:on-save     (fn [chain-ids]
-                                                                (rf/dispatch [:hide-bottom-sheet])
-                                                                (save-account
-                                                                 {:account     account
-                                                                  :updated-key network-preferences-key
-                                                                  :new-value   chain-ids}))
-                                                 :watch-only? watch-only?}])}]))
+                                    {:address address
+                                     :format  :long}])
            :container-style style/data-item}]]))))

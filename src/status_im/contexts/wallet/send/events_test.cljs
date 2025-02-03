@@ -298,10 +298,10 @@
 
 (h/deftest-event :wallet/select-send-address
   [event-id dispatch]
-  (let [address     "eth:arb1:0x01"
-        to-address  "0x01"
+  (let [address     "eth:arb1:0x707f635951193ddafbb40971a0fcaab8a6415160"
+        to-address  "0x707f635951193ddafbb40971a0fcaab8a6415160"
         recipient   {:type  :saved-address
-                     :label "0x01...23f"}
+                     :label "0x70...160"}
         stack-id    :screen/wallet.select-address
         start-flow? false
         tx-type     :tx/collectible-erc-721]

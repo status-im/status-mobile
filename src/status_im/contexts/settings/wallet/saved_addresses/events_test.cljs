@@ -174,24 +174,21 @@
           address                "0x3"
           ens                    "bobby.eth"
           customization-color    :yellow
-          chain-short-names      "eth:arb1:oeth:"
           args                   {:on-success          on-success
                                   :on-error            on-error
                                   :name                name
                                   :address             address
                                   :customization-color customization-color
-                                  :ens                 ens
-                                  :chain-short-names   chain-short-names}
+                                  :ens                 ens}
           effects                (events/save-address cofx [args])
           result-fx              (:fx effects)
           expected-fx            [[:json-rpc/call
                                    [{:method     "wakuext_upsertSavedAddress"
-                                     :params     [{:address         address
-                                                   :name            name
-                                                   :colorId         customization-color
-                                                   :ens             ens
-                                                   :isTest          test-networks-enabled?
-                                                   :chainShortNames chain-short-names}]
+                                     :params     [{:address address
+                                                   :name    name
+                                                   :colorId customization-color
+                                                   :ens     ens
+                                                   :isTest  test-networks-enabled?}]
                                      :on-success on-success
                                      :on-error   on-error}]]]]
       (is (match? expected-fx result-fx)))))

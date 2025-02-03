@@ -6,9 +6,6 @@
     [react-native.platform :as platform]
     [reagent.core :as reagent]
     [status-im.contexts.shell.share.style :as style]
-    [status-im.contexts.wallet.common.utils :as utils]
-    [status-im.contexts.wallet.common.utils.networks :as network-utils]
-    [status-im.contexts.wallet.sheets.network-preferences.view :as network-preferences]
     [utils.i18n :as i18n]
     [utils.image-server :as image-server]
     [utils.number]
@@ -31,36 +28,12 @@
                              :message   address
                              :isNewTask true})}]))
 
-(defn- open-preferences
-  [selected-networks account]
-  (rf/dispatch
-   [:show-bottom-sheet
-    {:theme   :dark
-     :shell?  true
-     :content (fn []
-                [network-preferences/view
-                 {:blur?             true
-                  :selected-networks (set @selected-networks)
-                  :account           account
-                  :button-label      (i18n/label :t/display)
-                  :on-save           (fn [chain-ids]
-                                       (rf/dispatch [:hide-bottom-sheet])
-                                       (reset! selected-networks (map #(get network-utils/id->network %)
-                                                                      chain-ids)))}])}]))
-
 (defn- wallet-qr-code-item
-  [{:keys [account index preferred-chains]}]
-  (let [{window-width :width} (rn/get-window)
-        selected-networks     (reagent/atom preferred-chains)
-        wallet-type           (reagent/atom :multichain)
-        on-settings-press     #(open-preferences selected-networks account)
-        on-legacy-press       #(reset! wallet-type :legacy)
-        on-multichain-press   #(reset! wallet-type :multichain)]
+  [{:keys [account index]}]
+  (let [{window-width :width} (rn/get-window)]
     (fn []
       (let [share-title         (str (:name account) " " (i18n/label :t/address))
-            qr-url              (utils/get-wallet-qr {:wallet-type       @wallet-type
-                                                      :selected-networks @selected-networks
-                                                      :address           (:address account)})
+            qr-url              (:address account)
             qr-media-server-uri (image-server/get-qr-image-uri-for-any-url
                                  {:url         qr-url
                                   :port        (rf/sub [:mediaserver/port])
@@ -71,25 +44,19 @@
           [quo/share-qr-code
            {:type                :wallet
             :width               (- window-width (* style/screen-padding 2))
-            :address             @wallet-type
             :qr-image-uri        qr-media-server-uri
             :qr-data             qr-url
-            :networks            @selected-networks
             :on-share-press      #(share-action qr-url share-title)
             :profile-picture     nil
             :full-name           (:name account)
             :customization-color (:color account)
-            :emoji               (:emoji account)
-            :on-multichain-press on-multichain-press
-            :on-legacy-press     on-legacy-press
-            :on-settings-press   on-settings-press}]]]))))
+            :emoji               (:emoji account)}]]]))))
 
 (defn render-item
-  [{:keys [address] :as account}]
+  [{:keys [position] :as account}]
   [wallet-qr-code-item
-   {:account          account
-    :index            (:position account)
-    :preferred-chains (rf/sub [:wallet/preferred-chain-names-for-address address])}])
+   {:account account
+    :index   position}])
 
 (defn- qr-code-visualized-index
   [offset qr-code-size num-qr-codes]

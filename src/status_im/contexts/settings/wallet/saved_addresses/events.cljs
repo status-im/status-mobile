@@ -7,14 +7,13 @@
 
 (defn save-address
   [{:keys [db]}
-   [{:keys [address name customization-color on-success on-error chain-short-names ens]}]]
+   [{:keys [address name customization-color on-success on-error ens]}]]
   (let [test-networks-enabled? (boolean (get-in db [:profile/profile :test-networks-enabled?]))
-        address-to-save        {:address         address
-                                :name            name
-                                :colorId         customization-color
-                                :ens             ens
-                                :isTest          test-networks-enabled?
-                                :chainShortNames chain-short-names}]
+        address-to-save        {:address address
+                                :name    name
+                                :colorId customization-color
+                                :ens     ens
+                                :isTest  test-networks-enabled?}]
     {:fx [[:json-rpc/call
            [{:method     "wakuext_upsertSavedAddress"
              :params     [address-to-save]

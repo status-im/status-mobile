@@ -1,6 +1,5 @@
 (ns status-im.contexts.settings.wallet.saved-addresses.sheets.address-options.view
   (:require
-    [clojure.string :as string]
     [quo.core :as quo]
     [react-native.core :as rn]
     [react-native.platform :as platform]
@@ -10,18 +9,18 @@
     [utils.re-frame :as rf]))
 
 (defn view
-  [{:keys [name full-address chain-short-names address customization-color] :as opts}]
+  [{:keys [name address customization-color] :as opts}]
   (let [open-send-flow                 (rn/use-callback
                                         (fn []
                                           (rf/dispatch [:wallet/init-send-flow-for-address
-                                                        {:address full-address
+                                                        {:address address
                                                          :recipient
                                                          {:label name
                                                           :customization-color
                                                           customization-color
                                                           :recipient-type :saved-address}
                                                          :stack-id :screen/settings.saved-addresses}]))
-                                        [full-address name customization-color])
+                                        [name customization-color])
         open-eth-chain-explorer        (rn/use-callback
                                         #(rf/dispatch [:wallet/navigate-to-chain-explorer
                                                        {:address address
@@ -37,21 +36,26 @@
                                                        {:address address
                                                         :network constants/optimism-network-name}])
                                         [address])
+        open-base-chain-explorer       (rn/use-callback
+                                        #(rf/dispatch [:wallet/navigate-to-chain-explorer
+                                                       {:address address
+                                                        :network constants/base-network-name}])
+                                        [address])
         open-share                     (rn/use-callback
                                         #(rf/dispatch
                                           [:open-share
                                            {:options (if platform/ios?
                                                        {:activityItemSources
                                                         [{:placeholderItem {:type    :text
-                                                                            :content full-address}
+                                                                            :content address}
                                                           :item            {:default {:type :text
                                                                                       :content
-                                                                                      full-address}}
-                                                          :linkMetadata    {:title full-address}}]}
-                                                       {:title     full-address
-                                                        :message   full-address
+                                                                                      address}}
+                                                          :linkMetadata    {:title address}}]}
+                                                       {:title     address
+                                                        :message   address
                                                         :isNewTask true})}])
-                                        [full-address])
+                                        [address])
         open-remove-confirmation-sheet (rn/use-callback
                                         #(rf/dispatch
                                           [:show-bottom-sheet
@@ -83,20 +87,24 @@
         :blur?               true
         :on-press            open-eth-chain-explorer
         :accessibility-label :view-address-on-etherscan}
-       (when (string/includes? chain-short-names constants/optimism-short-name)
-         {:icon                :i/link
-          :right-icon          :i/external
-          :label               (i18n/label :t/view-address-on-optimistic)
-          :blur?               true
-          :on-press            open-oeth-chain-explorer
-          :accessibility-label :view-address-on-optimistic})
-       (when (string/includes? chain-short-names constants/arbitrum-short-name)
-         {:icon                :i/link
-          :right-icon          :i/external
-          :label               (i18n/label :t/view-address-on-arbiscan)
-          :blur?               true
-          :on-press            open-arb-chain-explorer
-          :accessibility-label :view-address-on-arbiscan})
+       {:icon                :i/link
+        :right-icon          :i/external
+        :label               (i18n/label :t/view-address-on-optimistic)
+        :blur?               true
+        :on-press            open-oeth-chain-explorer
+        :accessibility-label :view-address-on-optimistic}
+       {:icon                :i/link
+        :right-icon          :i/external
+        :label               (i18n/label :t/view-address-on-arbiscan)
+        :blur?               true
+        :on-press            open-arb-chain-explorer
+        :accessibility-label :view-address-on-arbiscan}
+       {:icon                :i/link
+        :right-icon          :i/external
+        :label               (i18n/label :t/view-address-on-basescan)
+        :blur?               true
+        :on-press            open-base-chain-explorer
+        :accessibility-label :view-address-on-basescan}
        {:icon                :i/share
         :on-press            open-share
         :label               (i18n/label :t/share-address)

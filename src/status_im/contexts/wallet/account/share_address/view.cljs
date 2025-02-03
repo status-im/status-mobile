@@ -4,12 +4,7 @@
     [react-native.core :as rn]
     [react-native.platform :as platform]
     [react-native.safe-area :as safe-area]
-    [reagent.core :as reagent]
-    [status-im.constants :as constants]
     [status-im.contexts.wallet.account.share-address.style :as style]
-    [status-im.contexts.wallet.common.utils :as utils]
-    [status-im.contexts.wallet.common.utils.networks :as network-utils]
-    [status-im.contexts.wallet.sheets.network-preferences.view :as network-preferences]
     [utils.i18n :as i18n]
     [utils.image-server :as image-server]
     [utils.re-frame :as rf]))
@@ -31,38 +26,14 @@
                              :message   address
                              :isNewTask true})}]))
 
-(defn- open-preferences
-  [selected-networks]
-  (let [on-save       (fn [chain-ids]
-                        (rf/dispatch [:hide-bottom-sheet])
-                        (reset! selected-networks (map network-utils/id->network chain-ids)))
-        sheet-content (fn []
-                        [network-preferences/view
-                         {:blur?             true
-                          :selected-networks (set @selected-networks)
-                          :on-save           on-save
-                          :button-label      (i18n/label :t/display)}])]
-    (rf/dispatch [:show-bottom-sheet
-                  {:theme   :dark
-                   :shell?  true
-                   :content sheet-content}])))
-
 (defn view
   []
-  (let [padding-top         (:top (safe-area/get-insets))
-        wallet-type         (reagent/atom :multichain)
-        selected-networks   (reagent/atom constants/default-network-names)
-        on-settings-press   #(open-preferences selected-networks)
-        on-legacy-press     #(reset! wallet-type :legacy)
-        on-multichain-press #(reset! wallet-type :multichain)]
+  (let [padding-top (:top (safe-area/get-insets))]
     (fn []
       (let [{:keys [address color emoji watch-only?]
              :as   account}     (rf/sub [:wallet/current-viewing-account])
-            preferred-networks  (rf/sub [:wallet/preferred-chain-names-for-address address])
             share-title         (str (:name account) " " (i18n/label :t/address))
-            qr-url              (utils/get-wallet-qr {:wallet-type       @wallet-type
-                                                      :selected-networks @selected-networks
-                                                      :address           address})
+            qr-url              address
             qr-media-server-uri (image-server/get-qr-image-uri-for-any-url
                                  {:url         qr-url
                                   :port        (rf/sub [:mediaserver/port])
@@ -73,8 +44,6 @@
                                   :share   (i18n/label :t/share-address)
                                   :receive (i18n/label :t/receive)
                                   nil)]
-
-        (rn/use-mount #(reset! selected-networks preferred-networks))
 
         [quo/overlay {:type :shell}
          [rn/view
@@ -95,15 +64,10 @@
           [rn/view {:style {:padding-horizontal 20}}
            [quo/share-qr-code
             {:type                (if watch-only? :watched-address :wallet)
-             :address             @wallet-type
              :qr-image-uri        qr-media-server-uri
              :qr-data             qr-url
-             :networks            @selected-networks
              :on-share-press      #(share-action qr-url share-title)
              :profile-picture     nil
              :full-name           (:name account)
              :customization-color color
-             :emoji               emoji
-             :on-legacy-press     on-legacy-press
-             :on-multichain-press on-multichain-press
-             :on-settings-press   on-settings-press}]]]]))))
+             :emoji               emoji}]]]]))))

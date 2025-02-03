@@ -8,9 +8,6 @@
     [react-native.safe-area :as safe-area]
     [status-im.common.floating-button-page.view :as floating-button-page]
     [status-im.contexts.settings.wallet.saved-addresses.save-address.style :as style]
-    [status-im.contexts.wallet.common.utils :as utils]
-    [status-im.contexts.wallet.common.utils.networks :as network-utils]
-    [status-im.contexts.wallet.sheets.network-preferences.view :as network-preferences]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
@@ -18,58 +15,22 @@
   []
   (rf/dispatch [:navigate-back]))
 
-(defn- network-preferences-sheet
-  [{:keys [address color selected-networks set-selected-networks]}]
-  (fn []
-    [network-preferences/view
-     {:title             (i18n/label :t/add-network-preferences)
-      :description       (i18n/label :t/saved-address-network-preference-selection-description)
-      :button-label      (i18n/label :t/add-preferences)
-      :blur?             true
-      :selected-networks (set selected-networks)
-      :account           {:address address
-                          :color   color}
-      :on-save           (fn [chain-ids]
-                           (set-selected-networks (map network-utils/id->network chain-ids))
-                           (rf/dispatch [:hide-bottom-sheet]))}]))
-
 (defn view
   []
   (let [{:keys [edit?]} (rf/sub [:get-screen-params])
-        {:keys [address name customization-color ens ens? network-preferences-names]}
+        {:keys [address name customization-color ens ens?]}
         (rf/sub [:wallet/saved-address])
-        [network-prefixes address-without-prefix] (utils/split-prefix-and-address address)
         [address-label set-address-label] (rn/use-state (or name ""))
         [address-color set-address-color] (rn/use-state (or customization-color
                                                             (rand-nth colors/account-colors)))
-        [selected-networks set-selected-networks]
-        (rn/use-state (or network-preferences-names
-                          (network-utils/network-preference-prefix->network-names network-prefixes)))
-        chain-short-names (rn/use-memo
-                           #(network-utils/network-names->network-preference-prefix
-                             selected-networks)
-                           [selected-networks])
         placeholder (i18n/label :t/address-name)
         address-text (rn/use-callback
                       (fn []
                         [quo/address-text
                          {:full-address? true
-                          :address       (str chain-short-names address-without-prefix)
+                          :address       address
                           :format        :long}])
-                      [address-without-prefix chain-short-names])
-        open-network-preferences (rn/use-callback
-                                  (fn []
-                                    (rf/dispatch
-                                     [:show-bottom-sheet
-                                      {:theme   :dark
-                                       :shell?  true
-                                       :content (network-preferences-sheet
-                                                 {:address address-without-prefix
-                                                  :color address-color
-                                                  :selected-networks selected-networks
-                                                  :set-selected-networks
-                                                  set-selected-networks})}]))
-                                  [address selected-networks address-color])
+                      [address])
         on-press-save (rn/use-callback
                        (fn []
                          (rf/dispatch [:wallet/save-address
@@ -82,10 +43,9 @@
                                         [:wallet/add-saved-address-failed]
                                         :name address-label
                                         :ens (when ens? ens)
-                                        :address address-without-prefix
-                                        :customization-color address-color
-                                        :chain-short-names chain-short-names}]))
-                       [address-without-prefix chain-short-names address-label
+                                        :address address
+                                        :customization-color address-color}]))
+                       [address address-label
                         address-color])
         data-item-props (rn/use-memo
                          #(cond-> {:status          :default
@@ -93,16 +53,14 @@
                                    :subtitle-type   :default
                                    :label           :none
                                    :blur?           true
-                                   :right-icon      (when-not ens? :i/advanced)
                                    :card?           true
                                    :title           (i18n/label :t/address)
                                    :subtitle        ens
                                    :custom-subtitle address-text
-                                   :on-press        (when-not ens? open-network-preferences)
                                    :container-style style/data-item}
                             ens?
                             (dissoc :custom-subtitle))
-                         [ens ens? open-network-preferences address-text])]
+                         [ens ens? address-text])]
     [quo/overlay {:type :shell}
      [floating-button-page/view
       {:footer-container-padding     (if edit? (+ (safe-area/get-bottom) 12) 0)

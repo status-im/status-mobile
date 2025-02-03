@@ -33,9 +33,8 @@
       :container-style style/empty-container-style}]))
 
 (defn- saved-address
-  [{:keys [name address chain-short-names customization-color ens? ens network-preferences-names]}]
-  (let [full-address           (str chain-short-names address)
-        on-press-saved-address (rn/use-callback
+  [{:keys [name address customization-color ens? ens]}]
+  (let [on-press-saved-address (rn/use-callback
                                 #(rf/dispatch
                                   [:show-bottom-sheet
                                    {:theme           :dark
@@ -43,20 +42,16 @@
                                     :blur-background colors/bottom-sheet-background-blur
                                     :content         (fn []
                                                        [address-options/view
-                                                        {:address address
-                                                         :chain-short-names chain-short-names
-                                                         :full-address full-address
-                                                         :ens? ens?
-                                                         :ens ens
-                                                         :name name
-                                                         :network-preferences-names
-                                                         network-preferences-names
+                                                        {:address             address
+                                                         :ens?                ens?
+                                                         :ens                 ens
+                                                         :name                name
                                                          :customization-color customization-color}])}])
-                                [address chain-short-names full-address name customization-color])]
+                                [address name customization-color])]
     [quo/saved-address
      {:blur?           true
       :user-props      {:name                name
-                        :address             full-address
+                        :address             address
                         :ens                 (when ens? ens)
                         :customization-color customization-color
                         :blur?               true}

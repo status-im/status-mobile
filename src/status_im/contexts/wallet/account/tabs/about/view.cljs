@@ -8,16 +8,13 @@
     [status-im.contexts.shell.constants :as constants]
     [status-im.contexts.wallet.account.tabs.about.style :as style]
     [status-im.contexts.wallet.add-account.create-account.utils :as create-account.utils]
-    [status-im.contexts.wallet.common.utils :as utils]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
 (defn about-options
   []
   (let [{:keys [address] :as account} (rf/sub [:wallet/current-viewing-account])
-        networks                      (rf/sub [:wallet/network-preference-details])
-        share-title                   (str (:name account) " " (i18n/label :t/address))
-        multichain-address            (utils/get-multichain-address networks address)]
+        share-title                   (str (:name account) " " (i18n/label :t/address))]
     [quo/action-drawer
      [[{:icon                :i/link
         :accessibility-label :view-on-eth
@@ -43,11 +40,19 @@
                                [:wallet/navigate-to-chain-explorer-from-bottom-sheet
                                 config/arbitrum-mainnet-chain-explorer-link
                                 address])}
+       {:icon                :i/link
+        :accessibility-label :view-on-base
+        :label               (i18n/label :t/view-on-base)
+        :right-icon          :i/external
+        :on-press            #(rf/dispatch
+                               [:wallet/navigate-to-chain-explorer-from-bottom-sheet
+                                config/base-mainnet-chain-explorer-link
+                                address])}
        {:icon                :i/copy
         :accessibility-label :copy-address
         :label               (i18n/label :t/copy-address)
         :on-press            (fn []
-                               (clipboard/set-string multichain-address)
+                               (clipboard/set-string address)
                                (rf/dispatch [:toasts/upsert
                                              {:type :positive
                                               :text (i18n/label :t/address-copied)}]))}
@@ -62,7 +67,7 @@
                                (rf/dispatch [:hide-bottom-sheet])
                                (js/setTimeout
                                 #(rf/dispatch [:wallet/share-account
-                                               {:title share-title :content multichain-address}])
+                                               {:title share-title :content address}])
                                 600))}]]]))
 
 (defn view
@@ -73,7 +78,6 @@
          keypair-type :type
          keycards     :keycards}                  (rf/sub [:wallet/current-viewing-account-keypair])
         keypair-keycard?                          (boolean (seq keycards))
-        networks                                  (rf/sub [:wallet/network-preference-details])
         origin-type                               (case keypair-type
                                                     :seed
                                                     :recovery-phrase
@@ -93,9 +97,8 @@
        :size            :default
        :title           (if watch-only? (i18n/label :t/watched-address) (i18n/label :t/address))
        :custom-subtitle (fn [] [quo/address-text
-                                {:networks networks
-                                 :address  address
-                                 :format   :long}])
+                                {:address address
+                                 :format  :long}])
        :container-style {:margin-bottom 12}
        :on-press        #(rf/dispatch [:show-bottom-sheet {:content about-options}])}]
      (when (not watch-only?)

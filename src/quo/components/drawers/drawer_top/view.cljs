@@ -57,17 +57,10 @@
        :container-style style/keycard-icon}])])
 
 (defn- account-subtitle
-  [{:keys [networks theme blur? description]}]
-  (if networks
-    [address-text/view
-     {:networks networks
-      :address  description
-      :format   :short}]
-    [text/text
-     {:size   :paragraph-2
-      :weight :regular
-      :style  (style/description theme blur?)}
-     description]))
+  [{:keys [description]}]
+  [address-text/view
+   {:address description
+    :format  :short}])
 
 (defn- default-keypair-subtitle
   [{:keys [description theme blur?]}]
@@ -109,7 +102,7 @@
    description])
 
 (defn- subtitle
-  [{:keys [type theme blur? stored networks description community-name community-logo
+  [{:keys [type theme blur? stored description community-name community-logo
            context-tag-type account-name emoji customization-color full-name profile-picture context
            icon]}]
   (cond
@@ -121,8 +114,7 @@
 
     (= :account type)
     [account-subtitle
-     {:networks    networks
-      :theme       theme
+     {:theme       theme
       :blur?       blur?
       :description description}]
 
@@ -205,7 +197,7 @@
 (defn view
   [{:keys [title title-icon type description blur? community-name community-logo button-icon
            account-name emoji context-tag-type button-type container-style
-           on-button-press on-button-long-press profile-picture stored networks label full-name
+           on-button-press on-button-long-press profile-picture stored label full-name
            button-disabled? account-avatar-emoji account-avatar-type customization-color icon-avatar
            context icon]}]
   (let [theme (quo.theme/use-theme)]
@@ -233,7 +225,6 @@
         :theme               theme
         :blur?               blur?
         :stored              stored
-        :networks            networks
         :description         description
         :community-name      community-name
         :community-logo      community-logo

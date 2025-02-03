@@ -41,7 +41,9 @@
                             (rf/dispatch [:wallet/clean-scanned-address])))
         paste-on-input  #(clipboard/get-string
                           (fn [clipboard-text]
-                            (on-change-text clipboard-text)))]
+                            (-> clipboard-text
+                                utils.address/extract-address-without-chains-info
+                                on-change-text)))]
     (rn/use-effect (fn []
                      (when-not (string/blank? scanned-address)
                        (on-change-text scanned-address)))

@@ -34,6 +34,8 @@
 (def mainnet-chain-explorer-link "https://etherscan.io/address/")
 (def optimism-mainnet-chain-explorer-link "https://optimistic.etherscan.io/address/")
 (def arbitrum-mainnet-chain-explorer-link "https://arbiscan.io/address/")
+(def base-mainnet-chain-explorer-link "https://basescan.org/address/")
+(def base-sepolia-chain-explorer-link "https://sepolia.basescan.org/address/")
 (def sepolia-chain-explorer-link "https://sepolia.etherscan.io/address/")
 (def optimism-sepolia-chain-explorer-link "https://sepolia-optimistic.etherscan.io/address/")
 (def arbitrum-sepolia-chain-explorer-link "https://sepolia.arbiscan.io/address/")

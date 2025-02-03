@@ -10,23 +10,19 @@
     [utils.re-frame :as rf]))
 
 (defn other-account-item
-  [{:keys        [address color emoji network-preferences-names]
+  [{:keys        [address color emoji]
     account-name :name
     :as          account}]
-  (let [full-address (rf/sub [:wallet/account-address address network-preferences-names])]
-    [quo/account-item
-     {:account-props (assoc account
-                            :customization-color color
-                            :address             full-address
-                            :full-address?       true)
-      :on-press      (fn []
-                       (rf/dispatch [:wallet/select-send-address
-                                     {:address   address
-                                      :recipient {:recipient-type      :account
-                                                  :label               account-name
-                                                  :customization-color color
-                                                  :emoji               emoji}
-                                      :stack-id  :screen/wallet.select-address}]))}]))
+  [quo/account-item
+   {:account-props (assoc account :customization-color color)
+    :on-press      (fn []
+                     (rf/dispatch [:wallet/select-send-address
+                                   {:address   address
+                                    :recipient {:recipient-type      :account
+                                                :label               account-name
+                                                :customization-color color
+                                                :emoji               emoji}
+                                    :stack-id  :screen/wallet.select-address}]))}])
 
 (defn- my-accounts
   [theme]
@@ -64,20 +60,19 @@
             recent-recipients))))
 
 (defn- saved-address
-  [{:keys [name address chain-short-names customization-color ens? ens]}]
-  (let [full-address           (str chain-short-names address)
-        on-press-saved-address (rn/use-callback
+  [{:keys [name address customization-color ens? ens]}]
+  (let [on-press-saved-address (rn/use-callback
                                 #(rf/dispatch
                                   [:wallet/select-send-address
-                                   {:address   full-address
+                                   {:address   address
                                     :recipient {:label               name
                                                 :customization-color customization-color
                                                 :recipient-type      :saved-address}
                                     :stack-id  :screen/wallet.select-address}])
-                                [full-address])]
+                                [address])]
     [quo/saved-address
      {:user-props      {:name                name
-                        :address             full-address
+                        :address             address
                         :ens                 (when ens? ens)
                         :customization-color customization-color}
       :container-style {:margin-horizontal 8}

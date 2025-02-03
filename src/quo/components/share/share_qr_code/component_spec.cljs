@@ -13,8 +13,6 @@
   {:type            :profile
    :profile-picture 123})
 
-(def wallet-props {:networks '(:ethereum)})
-
 (def text-press-event
   {:test-name           "Text pressed"
    :accessibility-label :share-qr-code-info-text
@@ -32,24 +30,6 @@
    :accessibility-label :link-to-profile
    :event-name          :press
    :callback-prop-key   :on-share-press})
-
-(def multichain-press-event
-  {:test-name           "Multichain tab pressed"
-   :accessibility-label :share-qr-code-multichain-tab
-   :event-name          :press
-   :callback-prop-key   :on-multichain-press})
-
-(def legacy-press-event
-  {:test-name           "Legacy tab pressed"
-   :accessibility-label :share-qr-code-legacy-tab
-   :event-name          :press
-   :callback-prop-key   :on-legacy-press})
-
-(def settings-press-event
-  {:test-name           "Settings pressed"
-   :accessibility-label :share-qr-code-settings
-   :event-name          :press
-   :callback-prop-key   :on-settings-press})
 
 (defn render-share-qr-code
   [props]
@@ -74,45 +54,22 @@
       (h/is-truthy (h/get-by-text qr-label)))
 
     (h/test "Wallet Legacy"
-      (render-share-qr-code (merge default-props
-                                   wallet-props
-                                   {:type    :wallet
-                                    :address :legacy}))
+      (render-share-qr-code (assoc default-props
+                                   :type
+                                   :wallet))
       (h/is-truthy (h/get-by-text qr-label)))
 
-    (h/test "Wallet multichain"
-      (render-share-qr-code (merge default-props
-                                   wallet-props
-                                   {:type    :wallet
-                                    :address :multichain}))
+    (h/test "Saved address"
+      (render-share-qr-code (assoc default-props
+                                   :type
+                                   :saved-address))
       (h/is-truthy (h/get-by-text qr-label)))
 
-    (h/test "Saved address legacy"
-      (render-share-qr-code (merge default-props
-                                   wallet-props
-                                   {:type    :saved-address
-                                    :address :legacy}))
-      (h/is-truthy (h/get-by-text qr-label)))
 
-    (h/test "Saved address multichain"
-      (render-share-qr-code (merge default-props
-                                   wallet-props
-                                   {:type    :saved-address
-                                    :address :multichain}))
-      (h/is-truthy (h/get-by-text qr-label)))
-
-    (h/test "Watched address legacy"
-      (render-share-qr-code (merge default-props
-                                   wallet-props
-                                   {:type    :watched-address
-                                    :address :legacy}))
-      (h/is-truthy (h/get-by-text qr-label)))
-
-    (h/test "Watched address multichain"
-      (render-share-qr-code (merge default-props
-                                   wallet-props
-                                   {:type    :watched-address
-                                    :address :multichain}))
+    (h/test "Watched address"
+      (render-share-qr-code (assoc default-props
+                                   :type
+                                   :watched-address))
       (h/is-truthy (h/get-by-text qr-label))))
 
   (h/describe "Fires all events for all types"
@@ -136,78 +93,27 @@
 
       (h/describe "Wallet Legacy"
         (test-fire-events
-         (merge default-props
-                wallet-props
-                {:type    :wallet
-                 :address :legacy
-                 :emoji   "👻"})
+         (assoc default-props
+                :type  :wallet
+                :emoji "👻")
          [text-press-event
           text-long-press-event
-          share-press-event
-          multichain-press-event
-          legacy-press-event]))
+          share-press-event]))
 
-      (h/describe "Wallet Multichain"
+      (h/describe "Saved Address"
         (test-fire-events
-         (merge default-props
-                wallet-props
-                {:type    :wallet
-                 :address :multichain
-                 :emoji   "👻"})
+         (assoc default-props
+                :type
+                :saved-address)
          [text-press-event
           text-long-press-event
-          share-press-event
-          legacy-press-event
-          multichain-press-event
-          settings-press-event]))
+          share-press-event]))
 
-      (h/describe "Saved Address Legacy"
+      (h/describe "Watched Address"
         (test-fire-events
-         (merge default-props
-                wallet-props
-                {:type    :saved-address
-                 :address :legacy})
+         (assoc default-props
+                :type  :watched-address
+                :emoji "👽")
          [text-press-event
           text-long-press-event
-          share-press-event
-          legacy-press-event
-          multichain-press-event]))
-
-      (h/describe "Saved Address Multichain"
-        (test-fire-events
-         (merge default-props
-                wallet-props
-                {:type :saved-address :address :multichain})
-         [text-press-event
-          text-long-press-event
-          share-press-event
-          legacy-press-event
-          multichain-press-event
-          settings-press-event]))
-
-      (h/describe "Watched Address Legacy"
-        (test-fire-events
-         (merge default-props
-                wallet-props
-                {:type    :watched-address
-                 :address :legacy
-                 :emoji   "👽"})
-         [text-press-event
-          text-long-press-event
-          share-press-event
-          legacy-press-event
-          multichain-press-event]))
-
-      (h/describe "Watched Address Multichain"
-        (test-fire-events
-         (merge default-props
-                wallet-props
-                {:type    :watched-address
-                 :address :multichain
-                 :emoji   "👽"})
-         [text-press-event
-          text-long-press-event
-          share-press-event
-          legacy-press-event
-          multichain-press-event
-          settings-press-event])))))
+          share-press-event])))))

@@ -1,10 +1,4 @@
-(ns quo.components.share.share-qr-code.schema
-  (:require
-    [quo.foundations.resources :as resources]))
-
-(defn- valid-network?
-  [network]
-  (-> network resources/get-network boolean))
+(ns quo.components.share.share-qr-code.schema)
 
 (def ?base
   [:map
@@ -35,25 +29,9 @@
    [:type [:= :wallet]]
    [:emoji {:optional true} [:maybe ?emoji]]])
 
-(def ?address-multichain
-  [:map
-   [:address [:= :multichain]]
-   [:on-settings-press {:optional true} fn?]])
-
-(def ?address-base
-  [:merge
-   [:map
-    [:networks [:sequential [:fn valid-network?]]]
-    [:on-legacy-press {:optional true} [:maybe fn?]]
-    [:on-multichain-press {:optional true} [:maybe fn?]]
-    [:address [:enum :legacy :multichain]]]
-   [:multi {:dispatch :address}
-    [:multichain ?address-multichain]]])
-
 (def ?saved-address
   [:map
-   [:type [:= :saved-address]]
-   [:on-settings-press {:optional true} fn?]])
+   [:type [:= :saved-address]]])
 
 (def ?watched-address
   [:map
@@ -67,8 +45,8 @@
      [:multi {:dispatch :type}
       [:channel [:merge ?base ?channel]]
       [:profile [:merge ?base ?profile]]
-      [:wallet [:merge ?base ?address-base ?wallet]]
-      [:saved-address [:merge ?base ?address-base ?saved-address]]
-      [:watched-address [:merge ?base ?address-base ?watched-address]]]]]
+      [:wallet [:merge ?base ?wallet]]
+      [:saved-address [:merge ?base ?saved-address]]
+      [:watched-address [:merge ?base ?watched-address]]]]]
    :any])
 

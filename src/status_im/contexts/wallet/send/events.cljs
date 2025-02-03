@@ -9,6 +9,7 @@
     [status-im.contexts.wallet.send.utils :as send-utils]
     [status-im.contexts.wallet.sheets.network-selection.view :as network-selection]
     [taoensso.timbre :as log]
+    [utils.address]
     [utils.money :as utils.money]
     [utils.number]
     [utils.re-frame :as rf]
@@ -119,13 +120,13 @@
 (rf/reg-event-fx
  :wallet/init-send-flow-for-address
  (fn [{:keys [db]} [{:keys [recipient address stack-id]}]]
-   (let [[_ address-without-prefix] (utils/split-prefix-and-address address)
-         wallet-accounts            (vals (get-in db [:wallet :accounts]))
-         default-account-address    (some #(when (:default-account? %) (:address %))
-                                          wallet-accounts)
-         multiple-accounts?         (-> (filter :operable? wallet-accounts)
-                                        count
-                                        (> 1))]
+   (let [address                 (utils.address/extract-address-without-chains-info address)
+         wallet-accounts         (vals (get-in db [:wallet :accounts]))
+         default-account-address (some #(when (:default-account? %) (:address %))
+                                       wallet-accounts)
+         multiple-accounts?      (-> (filter :operable? wallet-accounts)
+                                     count
+                                     (> 1))]
      {:db (cond-> (update-in db [:wallet :ui] dissoc :send)
             (not multiple-accounts?)
             (assoc-in [:wallet :current-viewing-account-address] default-account-address)
@@ -136,7 +137,7 @@
              assoc
              :general-flow? true
              :recipient     (or recipient address)
-             :to-address    address-without-prefix))
+             :to-address    address))
       :fx [[:dispatch [:hide-bottom-sheet]]
            [:dispatch [:shell/change-tab :wallet-stack]]
            [:dispatch [:pop-to-root :shell-stack]]
@@ -152,7 +153,7 @@
 (rf/reg-event-fx
  :wallet/select-send-address
  (fn [{:keys [db]} [{:keys [address recipient stack-id start-flow?]}]]
-   (let [[_ to-address]   (utils/split-prefix-and-address address)
+   (let [address          (utils.address/extract-address-without-chains-info address)
          sender           (get-in db [:wallet :current-viewing-account-address])
          collectible-tx?  (send-utils/tx-type-collectible?
                            (-> db :wallet :ui :send :tx-type))
@@ -162,7 +163,7 @@
                             (= (collectible.utils/collectible-balance collectible sender) 1))]
      {:db (-> db
               (assoc-in [:wallet :ui :send :recipient] (or recipient address))
-              (assoc-in [:wallet :ui :send :to-address] to-address))
+              (assoc-in [:wallet :ui :send :to-address] address))
       :fx [(when (and collectible-tx? one-collectible?)
              [:dispatch [:wallet/start-get-suggested-routes {:amount 1}]])
            [:dispatch

@@ -12,36 +12,11 @@
             [quo.components.share.qr-code.view :as qr-code]
             [quo.components.share.share-qr-code.schema :as component-schema]
             [quo.components.share.share-qr-code.style :as style]
-            [quo.components.tabs.tab.view :as tab]
-            [quo.components.wallet.address-text.view :as address-text]
             [quo.foundations.colors :as colors]
             [quo.theme]
             [react-native.core :as rn]
             [schema.core :as schema]
             [utils.i18n :as i18n]))
-
-(defn- header
-  [{:keys [on-legacy-press on-multichain-press address]}]
-  [rn/view {:style style/header-container}
-   [tab/view
-    {:accessibility-label         :share-qr-code-multichain-tab
-     :id                          :wallet-multichain-tab
-     :active-item-container-style style/header-tab-active
-     :item-container-style        style/header-tab-inactive
-     :size                        24
-     :active                      (= :multichain address)
-     :on-press                    on-multichain-press}
-    (i18n/label :t/multichain)]
-   [rn/view {:style style/space-between-tabs}]
-   [tab/view
-    {:accessibility-label         :share-qr-code-legacy-tab
-     :id                          :wallet-legacy-tab
-     :active-item-container-style style/header-tab-active
-     :item-container-style        style/header-tab-inactive
-     :size                        24
-     :active                      (= :legacy address)
-     :on-press                    on-legacy-press}
-    (i18n/label :t/legacy)]])
 
 (defn- info-label
   [share-qr-code-type]
@@ -86,35 +61,13 @@
      :on-long-press on-text-long-press}
     qr-data]])
 
-(defn- wallet-legacy-bottom
+(defn- wallet-bottom
   [{:keys [component-width qr-data on-text-press on-text-long-press]}]
   [info-text
    {:width         component-width
     :on-press      on-text-press
     :on-long-press on-text-long-press}
    qr-data])
-
-(defn wallet-multichain-bottom
-  [{:keys [component-width qr-data on-text-press on-text-long-press on-settings-press]}]
-  [rn/view
-   {:style style/wallet-multichain-container}
-   [info-text
-    {:width         component-width
-     :on-press      on-text-press
-     :on-long-press on-text-long-press}
-    [address-text/view
-     {:address       qr-data
-      :full-address? true
-      :weight        :regular
-      :size          :paragraph-1}]]
-   [button/button
-    {:icon-only?          true
-     :type                :grey
-     :background          :blur
-     :size                32
-     :accessibility-label :share-qr-code-settings
-     :on-press            on-settings-press}
-    :i/advanced]])
 
 (defn- header-icon
   [{:keys [share-qr-type customization-color emoji profile-picture full-name]}]
@@ -140,17 +93,9 @@
                                  :full-name           full-name}]
     nil))
 
-(defn- has-header?
-  [share-qr-type]
-  (case share-qr-type
-    (:wallet
-     :watched-address
-     :saved-address) true
-    false))
-
 (defn- share-qr-code
   [{:keys [share-qr-type qr-image-uri component-width customization-color full-name
-           profile-picture emoji on-share-press address]
+           profile-picture emoji on-share-press]
     :as   props}]
   [:<>
    [gradient-cover/view {:customization-color customization-color :height 463}]
@@ -168,8 +113,6 @@
          {:color           colors/white-opa-40
           :container-style style/watched-account-icon}])]
      [share-button {:on-press on-share-press}]]
-    (when (has-header? share-qr-type)
-      [header props])
     [quo.theme/provider :light
      [qr-code/view
       {:qr-image-uri        qr-image-uri
@@ -185,12 +128,12 @@
        :profile-picture     profile-picture
        :emoji               emoji}]]
     [rn/view {:style style/bottom-container}
-     (if (= share-qr-type :profile)
+     (case share-qr-type
+       :profile
        [profile-bottom props]
-       (case address
-         :legacy     [wallet-legacy-bottom props]
-         :multichain [wallet-multichain-bottom props]
-         nil))]]])
+       (:wallet :watched-address :saved-address)
+       [wallet-bottom props]
+       nil)]]])
 
 (defn- view-internal
   [{provided-width :width :as props}]

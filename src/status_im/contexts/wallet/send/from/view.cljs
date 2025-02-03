@@ -14,15 +14,14 @@
     [utils.re-frame :as rf]))
 
 (defn- on-account-press
-  [address network-details general-flow? collectible-tx?]
+  [address general-flow? collectible-tx?]
   (when general-flow?
     (rf/dispatch [:wallet/clean-selected-token])
     (rf/dispatch [:wallet/clean-selected-collectible]))
   (rf/dispatch [:wallet/select-from-account
-                {:address         address
-                 :network-details network-details
-                 :stack-id        :screen/wallet.select-from
-                 :start-flow?     (not (or general-flow? collectible-tx?))}]))
+                {:address     address
+                 :stack-id    :screen/wallet.select-from
+                 :start-flow? (not (or general-flow? collectible-tx?))}]))
 
 (defn- on-close
   []
@@ -30,7 +29,7 @@
   (rf/dispatch [:wallet/clean-current-viewing-account]))
 
 (defn- render-fn
-  [item _ _ {:keys [general-flow? network-details collectible-tx? collectible]}]
+  [item _ _ {:keys [general-flow? collectible-tx? collectible]}]
   (let [account-address (:address item)
         balance         (cond
                           general-flow?   0
@@ -42,7 +41,7 @@
         asset-value     (if collectible-tx? (str balance) (:asset-pay-balance item))]
     [quo/account-item
      {:type          (if has-balance? :tag :default)
-      :on-press      #(on-account-press account-address network-details general-flow? collectible-tx?)
+      :on-press      #(on-account-press account-address general-flow? collectible-tx?)
       :state         (if (or has-balance? general-flow?) :default :disabled)
       :token-props   (when-not general-flow?
                        {:symbol asset-symbol
@@ -59,8 +58,7 @@
         collectible     (rf/sub [:wallet/wallet-send-collectible])
         accounts        (if (or general-flow? collectible-tx?)
                           (rf/sub [:wallet/operable-accounts])
-                          (rf/sub [:wallet/accounts-with-balances token]))
-        network-details (rf/sub [:wallet/network-details])]
+                          (rf/sub [:wallet/accounts-with-balances token]))]
     (hot-reload/use-safe-unmount on-close)
     [floating-button-page/view
      {:footer-container-padding 0
@@ -78,7 +76,6 @@
        :content-container-style           style/accounts-list-container
        :data                              accounts
        :render-data                       {:general-flow?   general-flow?
-                                           :network-details network-details
                                            :collectible-tx? collectible-tx?
                                            :collectible     collectible}
        :render-fn                         render-fn

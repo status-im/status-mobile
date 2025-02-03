@@ -4,6 +4,7 @@
     [quo.core :as quo]
     [quo.foundations.colors :as colors]
     [quo.theme]
+    [react-native.clipboard :as clipboard]
     [react-native.core :as rn]
     [react-native.safe-area :as safe-area]
     [reagent.core :as reagent]
@@ -11,7 +12,6 @@
     [status-im.constants :as constants]
     [status-im.contexts.wallet.common.account-switcher.view :as account-switcher]
     [status-im.contexts.wallet.common.utils :as utils]
-    [status-im.contexts.wallet.common.utils.networks :as network-utils]
     [status-im.contexts.wallet.item-types :as types]
     [status-im.contexts.wallet.send.select-address.style :as style]
     [status-im.contexts.wallet.send.select-address.tabs.view :as tabs]
@@ -56,6 +56,13 @@
                                  (rf/dispatch [:wallet/clean-scanned-address])
                                  (rf/dispatch [:open-modal :screen/wallet.scan-address
                                                {:on-result on-result}]))
+        :on-paste              (fn [on-change]
+                                 (clipboard/get-string
+                                  (fn [clipboard]
+                                    (when-not (empty? clipboard)
+                                      (-> clipboard
+                                          utils-address/extract-address-without-chains-info
+                                          on-change)))))
         :ens-regex             constants/regx-ens
         :scanned-value         (or (when recipient-plain-address? send-address) scanned-address)
         :address-regex         utils-address/regx-eip-3770-address
@@ -152,17 +159,16 @@
       :type                :primary
       :disabled?           (not valid-ens-or-address?)
       :on-press            (fn []
-                             (let [address              (or
-                                                         local-suggestion-address
-                                                         input-value)
-                                   [_ splitted-address] (network-utils/split-network-full-address
-                                                         address)]
+                             (let [address (utils-address/extract-address-without-chains-info
+                                            (or
+                                             local-suggestion-address
+                                             input-value))]
                                (rf/dispatch
                                 [:wallet/select-send-address
                                  {:address address
                                   :recipient {:label
                                               (utils/get-shortened-address
-                                               splitted-address)
+                                               address)
                                               :recipient-type :address}
                                   :stack-id
                                   :screen/wallet.select-address}])))

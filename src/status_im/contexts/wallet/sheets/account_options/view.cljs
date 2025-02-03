@@ -9,7 +9,6 @@
             [react-native.gesture :as gesture]
             [react-native.platform :as platform]
             [reagent.core :as reagent]
-            [status-im.contexts.wallet.common.utils :as utils]
             [status-im.contexts.wallet.sheets.account-options.style :as style]
             [status-im.contexts.wallet.sheets.remove-account.view :as remove-account]
             [utils.i18n :as i18n]
@@ -35,10 +34,6 @@
   (let [{:keys [name color emoji address watch-only?
                 default-account?]} (rf/sub [:wallet/current-viewing-account])
         {:keys [derived-from]}     (rf/sub [:wallet/current-viewing-account-keypair])
-        network-preference-details (rf/sub [:wallet/network-preference-details])
-        multichain-address         (utils/get-multichain-address
-                                    network-preference-details
-                                    address)
         share-title                (i18n/label :t/share-address-title {:address name})]
     [rn/view
      {:on-layout #(reset! options-height (oops/oget % "nativeEvent.layout.height"))
@@ -57,7 +52,6 @@
      [quo/drawer-top
       (cond-> {:title                name
                :type                 :account
-               :networks             network-preference-details
                :description          address
                :account-avatar-emoji emoji
                :customization-color  color}
@@ -77,7 +71,7 @@
                                 (rf/dispatch [:toasts/upsert
                                               {:type :positive
                                                :text (i18n/label :t/address-copied)}])
-                                (clipboard/set-string multichain-address))}
+                                (clipboard/set-string address))}
         {:icon                :i/qr-code
          :accessibility-label :show-address-qr
          :label               (i18n/label :t/show-address-qr)
@@ -89,7 +83,7 @@
                                 (rf/dispatch [:hide-bottom-sheet])
                                 (js/setTimeout
                                  #(rf/dispatch [:wallet/share-account
-                                                {:title share-title :content multichain-address}])
+                                                {:title share-title :content address}])
                                  600))}
         (when-not (or default-account? (string/blank? derived-from))
           {:add-divider?        (not show-account-selector?)

@@ -6,7 +6,8 @@
 
 
 (def hex-prefix "0x")
-;; EIP-3770 is a format used by Status and described here: https://eips.ethereum.org/EIPS/eip-3770
+;; EIP-3770 is a format used by Status until v2.32 and described here:
+;; https://eips.ethereum.org/EIPS/eip-3770
 (def regx-eip-3770-address #"^(?:(?:eth:|arb1:|oeth:)(?=:|))*0x[0-9a-fA-F]{40}$")
 (def regx-metamask-address #"^ethereum:(0x[0-9a-fA-F]{40})(?:@(0x1|0xa|0xa4b1))?$")
 (def regx-address-contains #"(?i)0x[a-fA-F0-9]{40}")

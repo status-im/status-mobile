@@ -12,7 +12,7 @@
     [schema.core :as schema]))
 
 (defn- internal-view
-  [{:keys [action blur? account-props networks on-press on-options-press]}]
+  [{:keys [action blur? account-props on-press on-options-press]}]
   (let [theme             (quo.theme/use-theme)
         [state set-state] (rn/use-state :default)
         on-press-in       (rn/use-callback #(set-state :pressed))
@@ -31,10 +31,9 @@
          :size   :paragraph-2}
         (:name account-props)]
        [address-text/view
-        {:blur?    blur?
-         :networks networks
-         :address  (:address account-props)
-         :format   :short}]]]
+        {:blur?   blur?
+         :address (:address account-props)
+         :format  :short}]]]
      (when (= action :icon)
        [rn/pressable {:on-press on-options-press}
         [icon/icon :i/options
