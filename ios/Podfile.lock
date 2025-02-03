@@ -920,7 +920,7 @@ PODS:
     - glog
     - RCT-Folly (= 2022.05.16.00)
     - React-Core
-  - react-native-compat (2.11.2):
+  - react-native-compat (2.17.3):
     - glog
     - RCT-Folly (= 2022.05.16.00)
     - React-Core
@@ -938,6 +938,8 @@ PODS:
     - React
   - react-native-netinfo (4.7.0):
     - React
+  - react-native-notifications (5.1.0):
+    - React-Core
   - react-native-orientation-locker (1.5.0):
     - React-Core
   - react-native-pdf (6.7.5):
@@ -1170,6 +1172,11 @@ PODS:
     - glog
     - RCT-Folly (= 2022.05.16.00)
     - React-Core
+  - RNNotifee (9.1.8):
+    - React-Core
+    - RNNotifee/NotifeeCore (= 9.1.8)
+  - RNNotifee/NotifeeCore (9.1.8):
+    - React-Core
   - RNPermissions (4.1.5):
     - React-Core
   - RNReanimated (3.6.1):
@@ -1240,6 +1247,7 @@ DEPENDENCIES:
   - react-native-image-resizer (from `../node_modules/react-native-image-resizer`)
   - react-native-lottie-splash-screen (from `../node_modules/react-native-lottie-splash-screen`)
   - "react-native-netinfo (from `../node_modules/@react-native-community/netinfo`)"
+  - react-native-notifications (from `../node_modules/react-native-notifications`)
   - react-native-orientation-locker (from `../node_modules/react-native-orientation-locker`)
   - react-native-pdf (from `../node_modules/react-native-pdf`)
   - react-native-shake (from `../node_modules/react-native-shake`)
@@ -1280,6 +1288,7 @@ DEPENDENCIES:
   - RNImageCropPicker (from `../node_modules/react-native-image-crop-picker`)
   - RNKeychain (from `../node_modules/react-native-keychain`)
   - RNLinearGradient (from `../node_modules/react-native-linear-gradient`)
+  - "RNNotifee (from `../node_modules/@notifee/react-native`)"
   - RNPermissions (from `../node_modules/react-native-permissions`)
   - RNReanimated (from `../node_modules/react-native-reanimated`)
   - RNShare (from `../node_modules/react-native-share`)
@@ -1388,6 +1397,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-lottie-splash-screen"
   react-native-netinfo:
     :path: "../node_modules/@react-native-community/netinfo"
+  react-native-notifications:
+    :path: "../node_modules/react-native-notifications"
   react-native-orientation-locker:
     :path: "../node_modules/react-native-orientation-locker"
   react-native-pdf:
@@ -1468,6 +1479,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-keychain"
   RNLinearGradient:
     :path: "../node_modules/react-native-linear-gradient"
+  RNNotifee:
+    :path: "../node_modules/@notifee/react-native"
   RNPermissions:
     :path: "../node_modules/react-native-permissions"
   RNReanimated:
@@ -1536,13 +1549,14 @@ SPEC CHECKSUMS:
   react-native-blob-util: 600972b1782380a5a7d5db61a3817ea32349dae9
   react-native-blur: b2b140d3d65077a1d5d26be62d9415f895592344
   react-native-cameraroll: af8eec1e585d053ff485d98ec837f9a8a11b5745
-  react-native-compat: 3af9add14d349701306d3d052638435f6795ac2c
+  react-native-compat: fd639220cca206df6c74b95df56a1809d78ba5a3
   react-native-config: 5330c8258265c1e5fdb8c009d2cabd6badd96727
   react-native-get-random-values: 21325b2244dfa6b58878f51f9aa42821e7ba3d06
   react-native-hole-view: 6935448993bac79f2b5a4ad7e9741094cf810679
   react-native-image-resizer: 2f1577efa3bc762597681f530c8e8d05ce0ceeb3
   react-native-lottie-splash-screen: 4e1b1fd9d6633f9cd2106d6877eb5ba0147f3e2b
   react-native-netinfo: ddaca8bbb9e6e914b1a23787ccb879bc642931c9
+  react-native-notifications: 4601a5a8db4ced6ae7cfc43b44d35fe437ac50c4
   react-native-orientation-locker: 851f6510d8046ea2f14aa169b1e01fcd309a94ba
   react-native-pdf: 103940c90d62adfd259f63cca99c7c0c306b514c
   react-native-shake: de052eaa3eadc4a326b8ddd7ac80c06e8d84528c
@@ -1583,6 +1597,7 @@ SPEC CHECKSUMS:
   RNImageCropPicker: 771e2ca319d2cf92e04ebf334ece892ee9a6728f
   RNKeychain: a65256b6ca6ba6976132cc4124b238a5b13b3d9c
   RNLinearGradient: ccaaebce083b54180da61d992e7fa56abfe000d6
+  RNNotifee: 4a6ee5c7deaf00e005050052d73ee6315dff7ec9
   RNPermissions: 08e619529cced22695f4b6d0efcc0a233e278903
   RNReanimated: dee37576492f1a375017515f5c77e66e5eec696b
   RNShare: 859ff710211285676b0bcedd156c12437ea1d564

@@ -32,6 +32,7 @@ https://dl.google.com/dl/android/maven2/androidx/arch/core/core-common/2.0.1/cor
 https://dl.google.com/dl/android/maven2/androidx/arch/core/core-common/2.1.0-rc01/core-common-2.1.0-rc01.pom
 https://dl.google.com/dl/android/maven2/androidx/arch/core/core-common/2.1.0/core-common-2.1.0.pom
 https://dl.google.com/dl/android/maven2/androidx/arch/core/core-runtime/2.0.0/core-runtime-2.0.0.pom
+https://dl.google.com/dl/android/maven2/androidx/arch/core/core-runtime/2.0.1/core-runtime-2.0.1.pom
 https://dl.google.com/dl/android/maven2/androidx/arch/core/core-runtime/2.1.0/core-runtime-2.1.0.pom
 https://dl.google.com/dl/android/maven2/androidx/asynclayoutinflater/asynclayoutinflater/1.0.0/asynclayoutinflater-1.0.0.pom
 https://dl.google.com/dl/android/maven2/androidx/autofill/autofill/1.1.0/autofill-1.1.0.pom
@@ -128,6 +129,7 @@ https://dl.google.com/dl/android/maven2/androidx/lifecycle/lifecycle-runtime/2.2
 https://dl.google.com/dl/android/maven2/androidx/lifecycle/lifecycle-runtime/2.3.1/lifecycle-runtime-2.3.1.pom
 https://dl.google.com/dl/android/maven2/androidx/lifecycle/lifecycle-runtime/2.4.1/lifecycle-runtime-2.4.1.pom
 https://dl.google.com/dl/android/maven2/androidx/lifecycle/lifecycle-runtime/2.5.1/lifecycle-runtime-2.5.1.pom
+https://dl.google.com/dl/android/maven2/androidx/lifecycle/lifecycle-service/2.1.0/lifecycle-service-2.1.0.pom
 https://dl.google.com/dl/android/maven2/androidx/lifecycle/lifecycle-viewmodel-savedstate/1.0.0/lifecycle-viewmodel-savedstate-1.0.0.pom
 https://dl.google.com/dl/android/maven2/androidx/lifecycle/lifecycle-viewmodel-savedstate/2.2.0/lifecycle-viewmodel-savedstate-2.2.0.pom
 https://dl.google.com/dl/android/maven2/androidx/lifecycle/lifecycle-viewmodel-savedstate/2.3.1/lifecycle-viewmodel-savedstate-2.3.1.pom
@@ -146,11 +148,15 @@ https://dl.google.com/dl/android/maven2/androidx/print/print/1.0.0/print-1.0.0.p
 https://dl.google.com/dl/android/maven2/androidx/recyclerview/recyclerview/1.0.0/recyclerview-1.0.0.pom
 https://dl.google.com/dl/android/maven2/androidx/recyclerview/recyclerview/1.1.0/recyclerview-1.1.0.pom
 https://dl.google.com/dl/android/maven2/androidx/resourceinspection/resourceinspection-annotation/1.0.1/resourceinspection-annotation-1.0.1.pom
+https://dl.google.com/dl/android/maven2/androidx/room/room-common/2.5.0/room-common-2.5.0.pom
+https://dl.google.com/dl/android/maven2/androidx/room/room-runtime/2.5.0/room-runtime-2.5.0.pom
 https://dl.google.com/dl/android/maven2/androidx/savedstate/savedstate/1.0.0-rc01/savedstate-1.0.0-rc01.pom
 https://dl.google.com/dl/android/maven2/androidx/savedstate/savedstate/1.0.0/savedstate-1.0.0.pom
 https://dl.google.com/dl/android/maven2/androidx/savedstate/savedstate/1.1.0/savedstate-1.1.0.pom
 https://dl.google.com/dl/android/maven2/androidx/savedstate/savedstate/1.2.0/savedstate-1.2.0.pom
 https://dl.google.com/dl/android/maven2/androidx/slidingpanelayout/slidingpanelayout/1.0.0/slidingpanelayout-1.0.0.pom
+https://dl.google.com/dl/android/maven2/androidx/sqlite/sqlite-framework/2.3.0/sqlite-framework-2.3.0.pom
+https://dl.google.com/dl/android/maven2/androidx/sqlite/sqlite/2.3.0/sqlite-2.3.0.pom
 https://dl.google.com/dl/android/maven2/androidx/startup/startup-runtime/1.0.0/startup-runtime-1.0.0.pom
 https://dl.google.com/dl/android/maven2/androidx/startup/startup-runtime/1.1.1/startup-runtime-1.1.1.pom
 https://dl.google.com/dl/android/maven2/androidx/swiperefreshlayout/swiperefreshlayout/1.0.0/swiperefreshlayout-1.0.0.pom
@@ -183,6 +189,7 @@ https://dl.google.com/dl/android/maven2/androidx/versionedparcelable/versionedpa
 https://dl.google.com/dl/android/maven2/androidx/viewpager2/viewpager2/1.0.0/viewpager2-1.0.0.pom
 https://dl.google.com/dl/android/maven2/androidx/viewpager/viewpager/1.0.0/viewpager-1.0.0.pom
 https://dl.google.com/dl/android/maven2/androidx/webkit/webkit/1.4.0/webkit-1.4.0.pom
+https://dl.google.com/dl/android/maven2/androidx/work/work-runtime/2.8.0/work-runtime-2.8.0.pom
 https://dl.google.com/dl/android/maven2/android/arch/core/common/1.0.0/common-1.0.0.pom
 https://dl.google.com/dl/android/maven2/android/arch/lifecycle/common/1.0.0/common-1.0.0.pom
 https://dl.google.com/dl/android/maven2/android/arch/lifecycle/runtime/1.0.0/runtime-1.0.0.pom
@@ -622,6 +629,8 @@ https://jitpack.io/com/github/wix-playground/reflow-animator/1.0.6/reflow-animat
 https://jitpack.io/com/github/yalantis/ucrop/2.2.6-native/ucrop-2.2.6-native.pom
 https://jitpack.io/com/github/zacharee/AndroidPdfViewer/4.0.1/AndroidPdfViewer-4.0.1.pom
 https://plugins.gradle.org/m2/com/adarshr/gradle-test-logger-plugin/2.0.0/gradle-test-logger-plugin-2.0.0.pom
+https://plugins.gradle.org/m2/gradle/plugin/io/invertase/gradle/react-native/1.5/react-native-1.5.pom
+https://plugins.gradle.org/m2/io/invertase/gradle/build/io.invertase.gradle.build.gradle.plugin/1.5/io.invertase.gradle.build.gradle.plugin-1.5.pom
 https://plugins.gradle.org/m2/org/gradle/github-dependency-graph-gradle-plugin/1.3.2/github-dependency-graph-gradle-plugin-1.3.2.pom
 https://plugins.gradle.org/m2/org/gradle/toolchains/foojay-resolver-convention/org.gradle.toolchains.foojay-resolver-convention.gradle.plugin/0.5.0/org.gradle.toolchains.foojay-resolver-convention.gradle.plugin-0.5.0.pom
 https://plugins.gradle.org/m2/org/gradle/toolchains/foojay-resolver/0.5.0/foojay-resolver-0.5.0.pom
@@ -638,7 +647,7 @@ https://repo.maven.apache.org/maven2/commons-codec/commons-codec/1.10/commons-co
 https://repo.maven.apache.org/maven2/commons-codec/commons-codec/1.11/commons-codec-1.11.pom
 https://repo.maven.apache.org/maven2/commons-codec/commons-codec/1.15/commons-codec-1.15.pom
 https://repo.maven.apache.org/maven2/commons-codec/commons-codec/1.17.1/commons-codec-1.17.1.pom
-https://repo.maven.apache.org/maven2/commons-codec/commons-codec/1.17.2/commons-codec-1.17.2.pom
+https://repo.maven.apache.org/maven2/commons-codec/commons-codec/1.18.0/commons-codec-1.18.0.pom
 https://repo.maven.apache.org/maven2/commons-httpclient/commons-httpclient/3.1/commons-httpclient-3.1.pom
 https://repo.maven.apache.org/maven2/commons-io/commons-io/2.4/commons-io-2.4.pom
 https://repo.maven.apache.org/maven2/commons-io/commons-io/2.18.0/commons-io-2.18.0.pom
@@ -811,7 +820,7 @@ https://repo.maven.apache.org/maven2/com/google/code/gson/gson-parent/2.8.5/gson
 https://repo.maven.apache.org/maven2/com/google/code/gson/gson-parent/2.8.6/gson-parent-2.8.6.pom
 https://repo.maven.apache.org/maven2/com/google/code/gson/gson-parent/2.8.9/gson-parent-2.8.9.pom
 https://repo.maven.apache.org/maven2/com/google/code/gson/gson-parent/2.9.1/gson-parent-2.9.1.pom
-https://repo.maven.apache.org/maven2/com/google/code/gson/gson-parent/2.11.0/gson-parent-2.11.0.pom
+https://repo.maven.apache.org/maven2/com/google/code/gson/gson-parent/2.12.1/gson-parent-2.12.1.pom
 https://repo.maven.apache.org/maven2/com/google/code/gson/gson/2.2.4/gson-2.2.4.pom
 https://repo.maven.apache.org/maven2/com/google/code/gson/gson/2.3/gson-2.3.pom
 https://repo.maven.apache.org/maven2/com/google/code/gson/gson/2.7/gson-2.7.pom
@@ -820,7 +829,7 @@ https://repo.maven.apache.org/maven2/com/google/code/gson/gson/2.8.5/gson-2.8.5.
 https://repo.maven.apache.org/maven2/com/google/code/gson/gson/2.8.6/gson-2.8.6.pom
 https://repo.maven.apache.org/maven2/com/google/code/gson/gson/2.8.9/gson-2.8.9.pom
 https://repo.maven.apache.org/maven2/com/google/code/gson/gson/2.9.1/gson-2.9.1.pom
-https://repo.maven.apache.org/maven2/com/google/code/gson/gson/2.11.0/gson-2.11.0.pom
+https://repo.maven.apache.org/maven2/com/google/code/gson/gson/2.12.1/gson-2.12.1.pom
 https://repo.maven.apache.org/maven2/com/google/crypto/tink/tink/1.3.0-rc2/tink-1.3.0-rc2.pom
 https://repo.maven.apache.org/maven2/com/google/crypto/tink/tink/1.7.0/tink-1.7.0.pom
 https://repo.maven.apache.org/maven2/com/google/dagger/dagger/2.24/dagger-2.24.pom
@@ -837,7 +846,7 @@ https://repo.maven.apache.org/maven2/com/google/errorprone/error_prone_annotatio
 https://repo.maven.apache.org/maven2/com/google/errorprone/error_prone_annotations/2.10.0/error_prone_annotations-2.10.0.pom
 https://repo.maven.apache.org/maven2/com/google/errorprone/error_prone_annotations/2.11.0/error_prone_annotations-2.11.0.pom
 https://repo.maven.apache.org/maven2/com/google/errorprone/error_prone_annotations/2.26.0/error_prone_annotations-2.26.0.pom
-https://repo.maven.apache.org/maven2/com/google/errorprone/error_prone_annotations/2.27.0/error_prone_annotations-2.27.0.pom
+https://repo.maven.apache.org/maven2/com/google/errorprone/error_prone_annotations/2.28.0/error_prone_annotations-2.28.0.pom
 https://repo.maven.apache.org/maven2/com/google/errorprone/error_prone_annotations/2.36.0/error_prone_annotations-2.36.0.pom
 https://repo.maven.apache.org/maven2/com/google/errorprone/error_prone_parent/2.0.18/error_prone_parent-2.0.18.pom
 https://repo.maven.apache.org/maven2/com/google/errorprone/error_prone_parent/2.2.0/error_prone_parent-2.2.0.pom
@@ -851,7 +860,7 @@ https://repo.maven.apache.org/maven2/com/google/errorprone/error_prone_parent/2.
 https://repo.maven.apache.org/maven2/com/google/errorprone/error_prone_parent/2.10.0/error_prone_parent-2.10.0.pom
 https://repo.maven.apache.org/maven2/com/google/errorprone/error_prone_parent/2.11.0/error_prone_parent-2.11.0.pom
 https://repo.maven.apache.org/maven2/com/google/errorprone/error_prone_parent/2.26.0/error_prone_parent-2.26.0.pom
-https://repo.maven.apache.org/maven2/com/google/errorprone/error_prone_parent/2.27.0/error_prone_parent-2.27.0.pom
+https://repo.maven.apache.org/maven2/com/google/errorprone/error_prone_parent/2.28.0/error_prone_parent-2.28.0.pom
 https://repo.maven.apache.org/maven2/com/google/errorprone/error_prone_parent/2.36.0/error_prone_parent-2.36.0.pom
 https://repo.maven.apache.org/maven2/com/google/flatbuffers/flatbuffers-java/1.12.0/flatbuffers-java-1.12.0.pom
 https://repo.maven.apache.org/maven2/com/google/google/1/google-1.pom
@@ -869,6 +878,7 @@ https://repo.maven.apache.org/maven2/com/google/guava/guava-parent/30.1-jre/guav
 https://repo.maven.apache.org/maven2/com/google/guava/guava-parent/31.0.1-android/guava-parent-31.0.1-android.pom
 https://repo.maven.apache.org/maven2/com/google/guava/guava-parent/31.0.1-jre/guava-parent-31.0.1-jre.pom
 https://repo.maven.apache.org/maven2/com/google/guava/guava-parent/31.1-jre/guava-parent-31.1-jre.pom
+https://repo.maven.apache.org/maven2/com/google/guava/guava-parent/33.3.1-android/guava-parent-33.3.1-android.pom
 https://repo.maven.apache.org/maven2/com/google/guava/guava-parent/33.4.0-jre/guava-parent-33.4.0-jre.pom
 https://repo.maven.apache.org/maven2/com/google/guava/guava-testlib/33.4.0-jre/guava-testlib-33.4.0-jre.pom
 https://repo.maven.apache.org/maven2/com/google/guava/guava/17.0/guava-17.0.pom
@@ -883,6 +893,7 @@ https://repo.maven.apache.org/maven2/com/google/guava/guava/30.1-jre/guava-30.1-
 https://repo.maven.apache.org/maven2/com/google/guava/guava/31.0.1-android/guava-31.0.1-android.pom
 https://repo.maven.apache.org/maven2/com/google/guava/guava/31.0.1-jre/guava-31.0.1-jre.pom
 https://repo.maven.apache.org/maven2/com/google/guava/guava/31.1-jre/guava-31.1-jre.pom
+https://repo.maven.apache.org/maven2/com/google/guava/guava/33.3.1-android/guava-33.3.1-android.pom
 https://repo.maven.apache.org/maven2/com/google/guava/guava/33.4.0-jre/guava-33.4.0-jre.pom
 https://repo.maven.apache.org/maven2/com/google/guava/listenablefuture/1.0/listenablefuture-1.0.pom
 https://repo.maven.apache.org/maven2/com/google/guava/listenablefuture/9999.0-empty-to-avoid-conflict-with-guava/listenablefuture-9999.0-empty-to-avoid-conflict-with-guava.pom
@@ -897,7 +908,7 @@ https://repo.maven.apache.org/maven2/com/google/protobuf/protobuf-bom/3.13.0/pro
 https://repo.maven.apache.org/maven2/com/google/protobuf/protobuf-bom/3.17.2/protobuf-bom-3.17.2.pom
 https://repo.maven.apache.org/maven2/com/google/protobuf/protobuf-bom/3.19.2/protobuf-bom-3.19.2.pom
 https://repo.maven.apache.org/maven2/com/google/protobuf/protobuf-bom/3.19.3/protobuf-bom-3.19.3.pom
-https://repo.maven.apache.org/maven2/com/google/protobuf/protobuf-bom/4.29.3/protobuf-bom-4.29.3.pom
+https://repo.maven.apache.org/maven2/com/google/protobuf/protobuf-bom/4.30.0-RC1/protobuf-bom-4.30.0-RC1.pom
 https://repo.maven.apache.org/maven2/com/google/protobuf/protobuf-javalite/3.17.2/protobuf-javalite-3.17.2.pom
 https://repo.maven.apache.org/maven2/com/google/protobuf/protobuf-javalite/3.19.2/protobuf-javalite-3.19.2.pom
 https://repo.maven.apache.org/maven2/com/google/protobuf/protobuf-java-util/3.4.0/protobuf-java-util-3.4.0.pom
@@ -915,7 +926,7 @@ https://repo.maven.apache.org/maven2/com/google/protobuf/protobuf-java/3.13.0/pr
 https://repo.maven.apache.org/maven2/com/google/protobuf/protobuf-java/3.17.2/protobuf-java-3.17.2.pom
 https://repo.maven.apache.org/maven2/com/google/protobuf/protobuf-java/3.19.2/protobuf-java-3.19.2.pom
 https://repo.maven.apache.org/maven2/com/google/protobuf/protobuf-java/3.19.3/protobuf-java-3.19.3.pom
-https://repo.maven.apache.org/maven2/com/google/protobuf/protobuf-java/4.29.3/protobuf-java-4.29.3.pom
+https://repo.maven.apache.org/maven2/com/google/protobuf/protobuf-java/4.30.0-RC1/protobuf-java-4.30.0-RC1.pom
 https://repo.maven.apache.org/maven2/com/google/protobuf/protobuf-lite/3.0.1/protobuf-lite-3.0.1.pom
 https://repo.maven.apache.org/maven2/com/google/protobuf/protobuf-parent/3.0.0/protobuf-parent-3.0.0.pom
 https://repo.maven.apache.org/maven2/com/google/protobuf/protobuf-parent/3.4.0/protobuf-parent-3.4.0.pom
@@ -926,7 +937,7 @@ https://repo.maven.apache.org/maven2/com/google/protobuf/protobuf-parent/3.13.0/
 https://repo.maven.apache.org/maven2/com/google/protobuf/protobuf-parent/3.17.2/protobuf-parent-3.17.2.pom
 https://repo.maven.apache.org/maven2/com/google/protobuf/protobuf-parent/3.19.2/protobuf-parent-3.19.2.pom
 https://repo.maven.apache.org/maven2/com/google/protobuf/protobuf-parent/3.19.3/protobuf-parent-3.19.3.pom
-https://repo.maven.apache.org/maven2/com/google/protobuf/protobuf-parent/4.29.3/protobuf-parent-4.29.3.pom
+https://repo.maven.apache.org/maven2/com/google/protobuf/protobuf-parent/4.30.0-RC1/protobuf-parent-4.30.0-RC1.pom
 https://repo.maven.apache.org/maven2/com/google/truth/truth-parent/1.4.4/truth-parent-1.4.4.pom
 https://repo.maven.apache.org/maven2/com/google/truth/truth/1.4.4/truth-1.4.4.pom
 https://repo.maven.apache.org/maven2/com/google/zxing/core/3.4.1/core-3.4.1.pom
@@ -1187,6 +1198,7 @@ https://repo.maven.apache.org/maven2/org/apache/commons/commons-parent/52/common
 https://repo.maven.apache.org/maven2/org/apache/commons/commons-parent/71/commons-parent-71.pom
 https://repo.maven.apache.org/maven2/org/apache/commons/commons-parent/72/commons-parent-72.pom
 https://repo.maven.apache.org/maven2/org/apache/commons/commons-parent/78/commons-parent-78.pom
+https://repo.maven.apache.org/maven2/org/apache/commons/commons-parent/79/commons-parent-79.pom
 https://repo.maven.apache.org/maven2/org/apache/geronimo/genesis/genesis-default-flava/2.3/genesis-default-flava-2.3.pom
 https://repo.maven.apache.org/maven2/org/apache/geronimo/genesis/genesis-java8-flava/2.3/genesis-java8-flava-2.3.pom
 https://repo.maven.apache.org/maven2/org/apache/geronimo/genesis/genesis/2.3/genesis-2.3.pom
@@ -1328,7 +1340,8 @@ https://repo.maven.apache.org/maven2/org/checkerframework/checker-qual/2.8.1/che
 https://repo.maven.apache.org/maven2/org/checkerframework/checker-qual/2.11.1/checker-qual-2.11.1.pom
 https://repo.maven.apache.org/maven2/org/checkerframework/checker-qual/3.5.0/checker-qual-3.5.0.pom
 https://repo.maven.apache.org/maven2/org/checkerframework/checker-qual/3.12.0/checker-qual-3.12.0.pom
-https://repo.maven.apache.org/maven2/org/checkerframework/checker-qual/3.48.4/checker-qual-3.48.4.pom
+https://repo.maven.apache.org/maven2/org/checkerframework/checker-qual/3.43.0/checker-qual-3.43.0.pom
+https://repo.maven.apache.org/maven2/org/checkerframework/checker-qual/3.49.0/checker-qual-3.49.0.pom
 https://repo.maven.apache.org/maven2/org/codehaus/codehaus-parent/4/codehaus-parent-4.pom
 https://repo.maven.apache.org/maven2/org/codehaus/groovy/groovy-xml/3.0.9/groovy-xml-3.0.9.pom
 https://repo.maven.apache.org/maven2/org/codehaus/groovy/groovy-xml/3.0.10/groovy-xml-3.0.10.pom
@@ -1370,7 +1383,7 @@ https://repo.maven.apache.org/maven2/org/codehaus/plexus/plexus-interactivity-ap
 https://repo.maven.apache.org/maven2/org/codehaus/plexus/plexus-interactivity/1.3/plexus-interactivity-1.3.pom
 https://repo.maven.apache.org/maven2/org/codehaus/plexus/plexus-interpolation/1.11/plexus-interpolation-1.11.pom
 https://repo.maven.apache.org/maven2/org/codehaus/plexus/plexus-interpolation/1.27/plexus-interpolation-1.27.pom
-https://repo.maven.apache.org/maven2/org/codehaus/plexus/plexus-sec-dispatcher/4.0.3/plexus-sec-dispatcher-4.0.3.pom
+https://repo.maven.apache.org/maven2/org/codehaus/plexus/plexus-sec-dispatcher/4.1.0/plexus-sec-dispatcher-4.1.0.pom
 https://repo.maven.apache.org/maven2/org/codehaus/plexus/plexus-utils/1.0.4/plexus-utils-1.0.4.pom
 https://repo.maven.apache.org/maven2/org/codehaus/plexus/plexus-utils/1.5.15/plexus-utils-1.5.15.pom
 https://repo.maven.apache.org/maven2/org/codehaus/plexus/plexus-utils/2.0.5/plexus-utils-2.0.5.pom
@@ -1387,6 +1400,7 @@ https://repo.maven.apache.org/maven2/org/codehaus/plexus/plexus/5.1/plexus-5.1.p
 https://repo.maven.apache.org/maven2/org/codehaus/plexus/plexus/6.5/plexus-6.5.pom
 https://repo.maven.apache.org/maven2/org/codehaus/plexus/plexus/16/plexus-16.pom
 https://repo.maven.apache.org/maven2/org/codehaus/plexus/plexus/18/plexus-18.pom
+https://repo.maven.apache.org/maven2/org/codehaus/plexus/plexus/19/plexus-19.pom
 https://repo.maven.apache.org/maven2/org/codehaus/woodstox/stax2-api/4.2.1/stax2-api-4.2.1.pom
 https://repo.maven.apache.org/maven2/org/codehaus/woodstox/stax2-api/4.2.2/stax2-api-4.2.2.pom
 https://repo.maven.apache.org/maven2/org/codehaus/woodstox/wstx-asl/3.2.6/wstx-asl-3.2.6.pom
@@ -1428,6 +1442,8 @@ https://repo.maven.apache.org/maven2/org/glassfish/jaxb/txw2/2.2.11/txw2-2.2.11.
 https://repo.maven.apache.org/maven2/org/glassfish/jaxb/txw2/2.3.1/txw2-2.3.1.pom
 https://repo.maven.apache.org/maven2/org/glassfish/jaxb/txw2/2.3.2/txw2-2.3.2.pom
 https://repo.maven.apache.org/maven2/org/glassfish/jaxb/txw2/4.0.5/txw2-4.0.5.pom
+https://repo.maven.apache.org/maven2/org/greenrobot/eventbus-java/3.3.1/eventbus-java-3.3.1.pom
+https://repo.maven.apache.org/maven2/org/greenrobot/eventbus/3.3.1/eventbus-3.3.1.pom
 https://repo.maven.apache.org/maven2/org/hamcrest/hamcrest-core/1.3/hamcrest-core-1.3.pom
 https://repo.maven.apache.org/maven2/org/hamcrest/hamcrest-core/3.0/hamcrest-core-3.0.pom
 https://repo.maven.apache.org/maven2/org/hamcrest/hamcrest-library/1.3/hamcrest-library-1.3.pom
@@ -1534,7 +1550,7 @@ https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-reflect/1.6.10/
 https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-reflect/1.6.20/kotlin-reflect-1.6.20.pom
 https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-reflect/1.7.10/kotlin-reflect-1.7.10.pom
 https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-reflect/1.8.20-RC2/kotlin-reflect-1.8.20-RC2.pom
-https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-reflect/2.1.20-Beta1/kotlin-reflect-2.1.20-Beta1.pom
+https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-reflect/2.1.20-Beta2/kotlin-reflect-2.1.20-Beta2.pom
 https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-scripting-common/1.6.20/kotlin-scripting-common-1.6.20.pom
 https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-scripting-common/1.8.0/kotlin-scripting-common-1.8.0.pom
 https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-scripting-common/1.9.0/kotlin-scripting-common-1.9.0.pom
@@ -1570,6 +1586,8 @@ https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-stdlib-common/1
 https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-stdlib-common/1.6.20/kotlin-stdlib-common-1.6.20.pom
 https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-stdlib-common/1.6.21/kotlin-stdlib-common-1.6.21.pom
 https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-stdlib-common/1.7.10/kotlin-stdlib-common-1.7.10.pom
+https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-stdlib-common/1.7.20/kotlin-stdlib-common-1.7.20.pom
+https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-stdlib-common/1.7.21/kotlin-stdlib-common-1.7.21.pom
 https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-stdlib-common/1.7.22/kotlin-stdlib-common-1.7.22.pom
 https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-stdlib-common/1.8.0/kotlin-stdlib-common-1.8.0.pom
 https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-stdlib-common/1.8.20-RC2/kotlin-stdlib-common-1.8.20-RC2.pom
@@ -1591,6 +1609,7 @@ https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-stdlib-jdk7/1.6
 https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-stdlib-jdk7/1.6.20/kotlin-stdlib-jdk7-1.6.20.pom
 https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-stdlib-jdk7/1.6.21/kotlin-stdlib-jdk7-1.6.21.pom
 https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-stdlib-jdk7/1.7.10/kotlin-stdlib-jdk7-1.7.10.pom
+https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-stdlib-jdk7/1.7.20/kotlin-stdlib-jdk7-1.7.20.pom
 https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-stdlib-jdk7/1.7.22/kotlin-stdlib-jdk7-1.7.22.pom
 https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-stdlib-jdk7/1.8.0/kotlin-stdlib-jdk7-1.8.0.pom
 https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-stdlib-jdk7/1.8.20-RC2/kotlin-stdlib-jdk7-1.8.20-RC2.pom
@@ -1611,6 +1630,7 @@ https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-stdlib-jdk8/1.6
 https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-stdlib-jdk8/1.6.20/kotlin-stdlib-jdk8-1.6.20.pom
 https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-stdlib-jdk8/1.6.21/kotlin-stdlib-jdk8-1.6.21.pom
 https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-stdlib-jdk8/1.7.10/kotlin-stdlib-jdk8-1.7.10.pom
+https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-stdlib-jdk8/1.7.20/kotlin-stdlib-jdk8-1.7.20.pom
 https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-stdlib-jdk8/1.7.22/kotlin-stdlib-jdk8-1.7.22.pom
 https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-stdlib-jdk8/1.8.0/kotlin-stdlib-jdk8-1.8.0.pom
 https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-stdlib-jdk8/1.8.20-RC2/kotlin-stdlib-jdk8-1.8.20-RC2.pom
@@ -1641,6 +1661,8 @@ https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-stdlib/1.6.10/k
 https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-stdlib/1.6.20/kotlin-stdlib-1.6.20.pom
 https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-stdlib/1.6.21/kotlin-stdlib-1.6.21.pom
 https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-stdlib/1.7.10/kotlin-stdlib-1.7.10.pom
+https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-stdlib/1.7.20/kotlin-stdlib-1.7.20.pom
+https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-stdlib/1.7.21/kotlin-stdlib-1.7.21.pom
 https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-stdlib/1.7.22/kotlin-stdlib-1.7.22.pom
 https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-stdlib/1.8.0/kotlin-stdlib-1.8.0.pom
 https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-stdlib/1.8.20-RC2/kotlin-stdlib-1.8.20-RC2.pom
@@ -1650,7 +1672,7 @@ https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-stdlib/1.8.22/k
 https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-stdlib/1.9.0/kotlin-stdlib-1.9.0.pom
 https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-stdlib/1.9.22/kotlin-stdlib-1.9.22.pom
 https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-stdlib/2.1.0/kotlin-stdlib-2.1.0.pom
-https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-stdlib/2.1.20-Beta1/kotlin-stdlib-2.1.20-Beta1.pom
+https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-stdlib/2.1.20-Beta2/kotlin-stdlib-2.1.20-Beta2.pom
 https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-tooling-core/1.8.0/kotlin-tooling-core-1.8.0.pom
 https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-tooling-core/1.9.0/kotlin-tooling-core-1.9.0.pom
 https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-tooling-metadata/1.6.20/kotlin-tooling-metadata-1.6.20.pom
@@ -1663,21 +1685,21 @@ https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-util-klib/1.9.0
 https://repo.maven.apache.org/maven2/org/jetbrains/markdown-jvm/0.2.1/markdown-jvm-0.2.1.pom
 https://repo.maven.apache.org/maven2/org/jetbrains/markdown/0.2.1/markdown-0.2.1.pom
 https://repo.maven.apache.org/maven2/org/jetbrains/trove4j/trove4j/20160824/trove4j-20160824.pom
-https://repo.maven.apache.org/maven2/org/jline/jansi-core/3.28.0/jansi-core-3.28.0.pom
-https://repo.maven.apache.org/maven2/org/jline/jline-builtins/3.28.0/jline-builtins-3.28.0.pom
-https://repo.maven.apache.org/maven2/org/jline/jline-console-ui/3.28.0/jline-console-ui-3.28.0.pom
-https://repo.maven.apache.org/maven2/org/jline/jline-native/3.28.0/jline-native-3.28.0.pom
-https://repo.maven.apache.org/maven2/org/jline/jline-parent/3.28.0/jline-parent-3.28.0.pom
-https://repo.maven.apache.org/maven2/org/jline/jline-reader/3.28.0/jline-reader-3.28.0.pom
-https://repo.maven.apache.org/maven2/org/jline/jline-style/3.28.0/jline-style-3.28.0.pom
-https://repo.maven.apache.org/maven2/org/jline/jline-terminal-jni/3.28.0/jline-terminal-jni-3.28.0.pom
-https://repo.maven.apache.org/maven2/org/jline/jline-terminal/3.28.0/jline-terminal-3.28.0.pom
+https://repo.maven.apache.org/maven2/org/jline/jansi-core/3.29.0/jansi-core-3.29.0.pom
+https://repo.maven.apache.org/maven2/org/jline/jline-builtins/3.29.0/jline-builtins-3.29.0.pom
+https://repo.maven.apache.org/maven2/org/jline/jline-console-ui/3.29.0/jline-console-ui-3.29.0.pom
+https://repo.maven.apache.org/maven2/org/jline/jline-native/3.29.0/jline-native-3.29.0.pom
+https://repo.maven.apache.org/maven2/org/jline/jline-parent/3.29.0/jline-parent-3.29.0.pom
+https://repo.maven.apache.org/maven2/org/jline/jline-reader/3.29.0/jline-reader-3.29.0.pom
+https://repo.maven.apache.org/maven2/org/jline/jline-style/3.29.0/jline-style-3.29.0.pom
+https://repo.maven.apache.org/maven2/org/jline/jline-terminal-jni/3.29.0/jline-terminal-jni-3.29.0.pom
+https://repo.maven.apache.org/maven2/org/jline/jline-terminal/3.29.0/jline-terminal-3.29.0.pom
 https://repo.maven.apache.org/maven2/org/json/json/20180813/json-20180813.pom
 https://repo.maven.apache.org/maven2/org/json/json/20250107/json-20250107.pom
 https://repo.maven.apache.org/maven2/org/jsoup/jsoup/1.13.1/jsoup-1.13.1.pom
 https://repo.maven.apache.org/maven2/org/jspecify/jspecify/1.0.0/jspecify-1.0.0.pom
 https://repo.maven.apache.org/maven2/org/junit/junit-bom/5.10.2/junit-bom-5.10.2.pom
-https://repo.maven.apache.org/maven2/org/junit/junit-bom/5.11.4/junit-bom-5.11.4.pom
+https://repo.maven.apache.org/maven2/org/junit/junit-bom/5.12.0-M1/junit-bom-5.12.0-M1.pom
 https://repo.maven.apache.org/maven2/org/jvnet/staxex/stax-ex/1.7.7/stax-ex-1.7.7.pom
 https://repo.maven.apache.org/maven2/org/jvnet/staxex/stax-ex/1.8.1/stax-ex-1.8.1.pom
 https://repo.maven.apache.org/maven2/org/jvnet/staxex/stax-ex/1.8/stax-ex-1.8.pom
@@ -1770,13 +1792,10 @@ https://repo.maven.apache.org/maven2/org/slf4j/jcl-over-slf4j/2.1.0-alpha1/jcl-o
 https://repo.maven.apache.org/maven2/org/slf4j/jul-to-slf4j/2.1.0-alpha1/jul-to-slf4j-2.1.0-alpha1.pom
 https://repo.maven.apache.org/maven2/org/slf4j/slf4j-api/1.7.21/slf4j-api-1.7.21.pom
 https://repo.maven.apache.org/maven2/org/slf4j/slf4j-api/1.7.30/slf4j-api-1.7.30.pom
-https://repo.maven.apache.org/maven2/org/slf4j/slf4j-api/2.0.16/slf4j-api-2.0.16.pom
 https://repo.maven.apache.org/maven2/org/slf4j/slf4j-api/2.1.0-alpha1/slf4j-api-2.1.0-alpha1.pom
-https://repo.maven.apache.org/maven2/org/slf4j/slf4j-bom/2.0.16/slf4j-bom-2.0.16.pom
 https://repo.maven.apache.org/maven2/org/slf4j/slf4j-bom/2.1.0-alpha1/slf4j-bom-2.1.0-alpha1.pom
 https://repo.maven.apache.org/maven2/org/slf4j/slf4j-parent/1.7.21/slf4j-parent-1.7.21.pom
 https://repo.maven.apache.org/maven2/org/slf4j/slf4j-parent/1.7.30/slf4j-parent-1.7.30.pom
-https://repo.maven.apache.org/maven2/org/slf4j/slf4j-parent/2.0.16/slf4j-parent-2.0.16.pom
 https://repo.maven.apache.org/maven2/org/slf4j/slf4j-parent/2.1.0-alpha1/slf4j-parent-2.1.0-alpha1.pom
 https://repo.maven.apache.org/maven2/org/slf4j/slf4j-simple/2.1.0-alpha1/slf4j-simple-2.1.0-alpha1.pom
 https://repo.maven.apache.org/maven2/org/sonatype/buildsupport/buildsupport/5/buildsupport-5.pom

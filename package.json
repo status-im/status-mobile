@@ -10,6 +10,7 @@
   "dependencies": {
     "@ethersproject/shims": "^5.7.0",
     "@json-rpc-tools/utils": "^1.7.6",
+    "@notifee/react-native": "^9.1.8",
     "@react-native-async-storage/async-storage": "1.19.3",
     "@react-native-camera-roll/camera-roll": "7.5.2",
     "@react-native-clipboard/clipboard": "1.13.2",
