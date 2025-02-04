@@ -398,8 +398,12 @@
 (rf/reg-event-fx
  :wallet/build-transaction-for-collectible-route
  (fn [{:keys [db]}]
-   (let [last-request-uuid (get-in db [:wallet :ui :send :last-request-uuid])]
-     {:db (update-in db [:wallet :ui :send] dissoc :transaction-for-signing)
+   (let [last-request-uuid     (get-in db [:wallet :ui :send :last-request-uuid])
+         collectible-unique-id (get-in db [:wallet :ui :send :collectible :unique-id])]
+     {:db (->
+            db
+            (update-in [:wallet :ui :send] dissoc :transaction-for-signing)
+            (assoc-in [:wallet :ui :collectibles :pending collectible-unique-id] true))
       :fx [[:dispatch [:wallet/build-transactions-from-route {:request-uuid last-request-uuid}]]]})))
 
 (rf/reg-event-fx

@@ -183,7 +183,21 @@
       :fx [(when all-chain-updated?
              [:dispatch [:wallet/request-collectibles-for-account address]])
            (when collectible-id
-             [:dispatch [:wallet/get-collectibles-by-unique-id-async collectible-id]])]})))
+             (let [collectible-unique-id (collectible-utils/get-collectible-unique-id {:id
+                                                                                       collectible-id})
+                   pending-collectible?  (-> db
+                                             (get-in [:wallet :ui :collectibles :pending])
+                                             (contains? collectible-unique-id))]
+               (when pending-collectible?
+                 [:dispatch
+                  [:wallet/update-pending-collectible-details collectible-id
+                   collectible-unique-id]])))]})))
+
+(rf/reg-event-fx
+ :wallet/update-pending-collectible-details
+ (fn [{:keys [db]} [collectible-id collectible-unique-id]]
+   {:db (update-in db [:wallet :ui :collectibles :pending] dissoc collectible-unique-id)
+    :fx [[:dispatch [:wallet/get-collectibles-by-unique-id-async collectible-id]]]}))
 
 (defn- update-collectibles-in-account
   [existing-collectibles updated-collectibles]
