@@ -42,10 +42,10 @@
       {:button-one-label (i18n/label :t/see-recovery-phrase-again)
        :button-one-props {:customization-color customization-color
                           :on-press            (fn []
-                                                 (when on-try-again
-                                                   (on-try-again))
                                                  (rf/dispatch [:hide-bottom-sheet])
-                                                 (rf/dispatch [:navigate-back]))}}]]))
+                                                 (rf/dispatch [:navigate-back])
+                                                 (when on-try-again
+                                                   (on-try-again)))}}]]))
 
 (defn- button
   [{:keys [word margin-right on-press]}]
