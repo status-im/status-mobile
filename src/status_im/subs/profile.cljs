@@ -169,6 +169,11 @@
  (fn [multiaccount]
    (get multiaccount :log-level)))
 
+(re-frame/reg-sub :log-level/debug?
+ :<- [:log-level/current-log-level]
+ (fn [level]
+   (= "DEBUG" level)))
+
 (re-frame/reg-sub
  :dapps-address
  :<- [:profile/profile]
@@ -309,4 +314,3 @@
  :<- [:profile/profile]
  (fn [profile]
    (not (boolean (seq (:mnemonic profile))))))
-
