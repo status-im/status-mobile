@@ -81,7 +81,15 @@
                        :theme                    theme
                        :color                    (:color style/initials-avatar-text)
                        :size                     (:width outer-styles)
-                       :ring?                    ring?
+
+                       ;; NOTE: This is a quick and temporary solution to
+                       ;; disable rings from all instances of this component,
+                       ;; otherwise we would have to override the `ring?` option
+                       ;; as false in many places. Unfortunately we cannot use
+                       ;; feature flags here because we can't require namespaces
+                       ;; under status_im/.
+                       :ring?                    (and false ring?)
+
                        :ring-width               (:ring-width sizes)})}
                (:uri profile-picture)
                profile-picture
