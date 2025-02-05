@@ -9,7 +9,7 @@
 (defn- total-collectible-balance
   ([ownership]
    (reduce (fn [total {:keys [balance]}]
-             (+ total (or (js/parseInt balance) 0)))
+             (+ total (or (utils.number/parse-int balance) 0)))
            0
            ownership)))
 
