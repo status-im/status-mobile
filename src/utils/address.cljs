@@ -13,6 +13,10 @@
 (def regx-address-contains #"(?i)0x[a-fA-F0-9]{40}")
 (def zero-address "0x0000000000000000000000000000000000000000")
 
+(defn has-hex-prefix?
+  [message]
+  (string/starts-with? message hex-prefix))
+
 (defn normalized-hex
   [hex]
   (when hex

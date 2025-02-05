@@ -84,8 +84,9 @@
                                (->> (:accounts kp)
                                     (map :address)
                                     set))]
-    (-> keypairs
-        vals
-        find-keycard-keypair
-        keypair-addresses
-        (contains? (string/lower-case address)))))
+    (when-not (nil? address)
+      (-> keypairs
+          vals
+          find-keycard-keypair
+          keypair-addresses
+          (contains? (string/lower-case address))))))
