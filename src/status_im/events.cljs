@@ -24,6 +24,7 @@
     status-im.contexts.communities.overview.events
     status-im.contexts.communities.sharing.events
     status-im.contexts.contact.blocking.events
+    status-im.contexts.keycard.change-pin.events
     status-im.contexts.keycard.effects
     status-im.contexts.keycard.events
     status-im.contexts.keycard.feature-unavailable.events

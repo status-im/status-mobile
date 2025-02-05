@@ -60,6 +60,10 @@
  (fn [args]
    (keycard/verify-pin (keycard.utils/wrap-handlers args))))
 
+(rf/reg-fx :effects.keycard/change-pin
+ (fn [args]
+   (keycard/change-pin (keycard.utils/wrap-handlers args))))
+
 (rf/reg-fx :effects.keycard/sign
  (fn [args]
    (-> (keycard/sign args)

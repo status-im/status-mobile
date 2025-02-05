@@ -32,6 +32,7 @@
     [status-im.contexts.communities.overview.view :as communities.overview]
     [status-im.contexts.keycard.authorise.view :as keycard.authorise]
     [status-im.contexts.keycard.backup.view :as keycard.backup]
+    [status-im.contexts.keycard.change-pin.view :as keycard.change-pin]
     [status-im.contexts.keycard.check.view :as keycard.check]
     [status-im.contexts.keycard.create.view :as keycard.create]
     [status-im.contexts.keycard.different-card.view :as keycard.different-card]
@@ -1031,6 +1032,24 @@
     :options   {:insets                 {:top? true :bottom? true}
                 :modalPresentationStyle :fullScreen}
     :component keycard.create/ready-to-add}
+
+   {:name      :screen/keycard.ready-to-change-pin
+    :metrics   {:track? true}
+    :options   {:insets                 {:top? true :bottom? true}
+                :modalPresentationStyle :fullScreen}
+    :component keycard.change-pin/ready-to-change-pin}
+
+   {:name      :screen/keycard.pin-change-success
+    :metrics   {:track? true}
+    :options   {:insets                 {:top? true :bottom? true}
+                :modalPresentationStyle :fullScreen}
+    :component keycard.change-pin/pin-change-success}
+
+   {:name      :screen/keycard.pin-change-failed
+    :metrics   {:track? true}
+    :options   {:insets                 {:top? true :bottom? true}
+                :modalPresentationStyle :fullScreen}
+    :component keycard.change-pin/pin-change-failed}
 
    {:name      :screen/keycard.factory-reset.success
     :metrics   {:track? true}
