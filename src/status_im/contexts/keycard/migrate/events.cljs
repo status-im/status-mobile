@@ -57,6 +57,13 @@
   (rf/dispatch [:navigate-back])
   (rf/dispatch [:open-modal :screen/confirm-backup
                 {:masked-seed-phrase masked-seed-phrase
+                 :on-try-again       #(rf/dispatch [:open-modal :screen/backup-recovery-phrase-dark
+                                                    {:on-success         backup-recovery-phrase-success
+                                                     :masked-seed-phrase (->> masked-seed-phrase
+                                                                              security/safe-unmask-data
+                                                                              (string/join " ")
+                                                                              security/mask-data)
+                                                     :revealed?          true}])
                  :on-success         #(rf/dispatch [:keycard/migration.phrase-backed-up])}]))
 
 (rf/reg-event-fx :keycard/migration.get-phrase
