@@ -63,21 +63,19 @@
  :<- [:initials-avatar-font-file]
  :<- [:theme]
  (fn [[profiles port font-file theme] [_ target-key-uid]]
-   (let [{:keys [images ens-name? customization-color] :as profile} (get profiles target-key-uid)
-         image-name                                                 (-> images first :type)
-         image-clock                                                (-> images first :clock)
-         override-ring?                                             (when ens-name? false)]
+   (let [{:keys [images customization-color] :as profile} (get profiles target-key-uid)
+         image-name                                       (-> images first :type)
+         image-clock                                      (-> images first :clock)]
      (when (and profile port)
        {:config
         (if image-name
           {:type    :account
-           :options {:port           port
-                     :ratio          pixel-ratio/ratio
-                     :image-name     image-name
-                     :key-uid        target-key-uid
-                     :theme          theme
-                     :clock          image-clock
-                     :override-ring? override-ring?}}
+           :options {:port       port
+                     :ratio      pixel-ratio/ratio
+                     :image-name image-name
+                     :key-uid    target-key-uid
+                     :theme      theme
+                     :clock      image-clock}}
           {:type    :initials
            :options {:port                port
                      :ratio               pixel-ratio/ratio
@@ -85,7 +83,6 @@
                      :theme               theme
                      :uppercase-ratio     (:uppercase-ratio constants/initials-avatar-font-conf)
                      :customization-color customization-color
-                     :override-ring?      override-ring?
                      :font-file           font-file}})}))))
 
 ;; DEPRECATED
@@ -238,11 +235,9 @@
    (boolean preview-privacy?)))
 
 (defn- replace-multiaccount-image-uri
-  [profile ens-names port font-file avatar-opts theme]
-  (let [{:keys [key-uid ens-name? images
+  [profile port font-file avatar-opts theme]
+  (let [{:keys [key-uid images
                 customization-color]} profile
-        ens-name?                     (or ens-name? (seq ens-names))
-        avatar-opts                   (assoc avatar-opts :override-ring? (when ens-name? false))
         images-with-uri               (mapv (fn [{key-uid     :keyUid
                                                   image-name  :type
                                                   image-clock :clock
@@ -278,17 +273,16 @@
 (re-frame/reg-sub
  :profile/profile-with-image
  :<- [:profile/profile]
- :<- [:ens/current-names]
  :<- [:mediaserver/port]
  :<- [:initials-avatar-font-file]
  :<- [:theme]
- (fn [[profile ens-names port font-file theme] [_ avatar-opts]]
+ (fn [[profile port font-file theme] [_ avatar-opts]]
    ;; Right after logout, this subscription is recomputed, but the sub
    ;; `:profile/profile` output will always be nil. We skip any further
    ;; processing because it's wasteful and because it will trigger a schema
    ;; error.
    (when profile
-     (replace-multiaccount-image-uri profile ens-names port font-file avatar-opts theme))))
+     (replace-multiaccount-image-uri profile port font-file avatar-opts theme))))
 
 (re-frame/reg-sub
  :profile/image

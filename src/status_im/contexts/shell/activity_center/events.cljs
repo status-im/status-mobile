@@ -523,8 +523,7 @@
               (let [user-avatar {:full-name         name
                                  :status-indicator? true
                                  :online?           nil
-                                 :size              :small
-                                 :ring?             true}]
+                                 :size              :small}]
                 (cond
                   (and (not= author my-public-key)
                        (= type types/contact-request)

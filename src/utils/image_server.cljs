@@ -67,11 +67,10 @@
   placeholder-avatar: pass image file path as `image-name`
 
   `indicator-size` is outer indicator radius
-  `indicator-size` - `indicator-border` is inner indicator radius
-  `ring?` shows or hides ring for account with ens name"
+  `indicator-size` - `indicator-border` is inner indicator radius"
   [{:keys [port public-key image-name key-uid size theme indicator-size
-           indicator-border indicator-center-to-edge indicator-color ring?
-           ring-width ratio clock]}]
+           indicator-border indicator-center-to-edge indicator-color
+           ratio clock]}]
   (str
    image-server-uri-prefix
    port
@@ -96,10 +95,7 @@
    (* indicator-border ratio)
    "&indicatorCenterToEdge="
    (* indicator-center-to-edge ratio)
-   "&addRing="
-   (if ring? 1 0)
-   "&ringWidth="
-   (* ring-width ratio)))
+   "&addRing=0"))
 
 (defn get-initials-avatar-uri
   "fn to get the avatar uri when account/contact/placeholder has no custom pic set
@@ -110,12 +106,11 @@
   check `get-account-image-uri` for color formats
   check `get-font-file-ready` for `font-file`
 
-  `ring?` shows or hides ring for account with ens name
   `uppercase-ratio` is the uppercase-height/line-height for `font-file`"
-  [{:keys [port public-key key-uid theme ring? length size customization-color
+  [{:keys [port public-key key-uid theme length size customization-color
            color font-size font-file uppercase-ratio indicator-size
            indicator-border indicator-center-to-edge indicator-color full-name
-           ring-width ratio clock]}]
+           ratio clock]}]
   (str
    image-server-uri-prefix
    port
@@ -152,20 +147,16 @@
    (* indicator-border ratio)
    "&indicatorCenterToEdge="
    (* indicator-center-to-edge ratio)
-   "&addRing="
-   (if ring? 1 0)
-   "&ringWidth="
-   (* ring-width ratio)))
+   "&addRing=0"))
 
 (defn get-contact-image-uri
   "check `get-account-image-uri` for color formats
   check `get-font-file-ready` for `font-file`
 
   `public-key` is required to render the ring
-  `ring?` shows or hides ring for account with ens name
   `uppercase-ratio` is the uppercase-height/line-height for `font-file`"
   [{:keys [port public-key image-name clock theme indicator-size indicator-border
-           indicator-center-to-edge indicator-color size ring? ring-width ratio]}]
+           indicator-center-to-edge indicator-color size ratio]}]
   (str
    image-server-uri-prefix
    port
@@ -188,10 +179,7 @@
    (* indicator-border ratio)
    "&indicatorCenterToEdge="
    (* indicator-center-to-edge ratio)
-   "&addRing="
-   (if ring? 1 0)
-   "&ringWidth="
-   (* ring-width ratio)))
+   "&addRing=0"))
 
 (defn get-qr-image-uri-for-any-url
   [{:keys [url port qr-size error-level]}]
@@ -219,11 +207,7 @@
      :contact  get-contact-image-uri
      :initials get-initials-avatar-uri
      str)
-   (-> (merge options profile-picture-options)
-       (assoc :ring?
-              (if (nil? (:override-ring? options))
-                (:ring? profile-picture-options)
-                (:override-ring? options))))))
+   (merge options profile-picture-options)))
 
 (schema/=> get-image-uri
   [:=>

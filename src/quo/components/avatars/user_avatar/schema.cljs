@@ -13,7 +13,6 @@
       [:static? {:optional true} [:maybe boolean?]]
       [:status-indicator? {:optional true} [:maybe boolean?]]
       [:online? {:optional true} [:maybe boolean?]]
-      [:ring? {:optional true} [:maybe boolean?]]
       [:profile-picture
        {:optional true}
        [:maybe :schema.quo/profile-picture-source]]]]]

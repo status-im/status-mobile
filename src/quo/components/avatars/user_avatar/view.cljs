@@ -27,17 +27,11 @@
       (utils.string/get-initials full-name amount-initials)]]))
 
 (defn user-avatar-internal
-  "Render user avatar with `profile-picture`
-
-   WARNING:
-   When calling the `profile-picture-fn` and passing the `:ring?` key, be aware that the `profile-picture-fn`
-   may have an `:override-ring?` value. If it does then the `:ring?` value will not be used.
-   For reference, refer to the `utils.image-server` namespace for these `profile-picture-fn` are generated."
-  [{:keys [full-name size profile-picture static? status-indicator? online? ring?]
+  "Render user avatar with `profile-picture`."
+  [{:keys [full-name size profile-picture static? status-indicator? online?]
     :or   {size              :big
            status-indicator? true
-           online?           true
-           ring?             true}
+           online?           true}
     :as   props}]
   (let [theme           (quo.context/use-theme)
         picture-config  (:config profile-picture)
@@ -80,17 +74,7 @@
                        :indicator-color          indicator-color
                        :theme                    theme
                        :color                    (:color style/initials-avatar-text)
-                       :size                     (:width outer-styles)
-
-                       ;; NOTE: This is a quick and temporary solution to
-                       ;; disable rings from all instances of this component,
-                       ;; otherwise we would have to override the `ring?` option
-                       ;; as false in many places. Unfortunately we cannot use
-                       ;; feature flags here because we can't require namespaces
-                       ;; under status_im/.
-                       :ring?                    (and false ring?)
-
-                       :ring-width               (:ring-width sizes)})}
+                       :size                     (:width outer-styles)})}
                (:uri profile-picture)
                profile-picture
 

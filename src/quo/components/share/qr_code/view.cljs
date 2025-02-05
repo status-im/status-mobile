@@ -23,8 +23,7 @@
        (assoc props
               :size              :size-64
               :status-indicator? false
-              :online?           false
-              :ring?             false)]
+              :online?           false)]
 
       :wallet-account
       [account-avatar/view (assoc props :size :size-64 :type :default)]

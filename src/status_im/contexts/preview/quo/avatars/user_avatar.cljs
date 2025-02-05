@@ -20,9 +20,6 @@
     :type :boolean}
    {:key  :status-indicator?
     :type :boolean}
-   {:label "Identicon Ring (applies only when there's no profile picture)"
-    :key   :ring?
-    :type  :boolean}
    {:key  :full-name
     :type :text}
    {:key     :profile-picture

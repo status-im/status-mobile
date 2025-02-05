@@ -44,14 +44,13 @@
 
 (defn avatar-container
   [{:keys [content last-in-group? pinned-by quoted-message from bridge-message]}
-   hide-reactions? in-reaction-or-action-menu? show-user-info? in-pinned-view?]
+   hide-reactions? in-reaction-or-action-menu? show-user-info?]
   (cond
     (:user-avatar bridge-message)
     [fast-image/fast-image
      {:source           {:uri (:user-avatar bridge-message)}
       :fallback-content [quo/user-avatar
                          {:full-name         (bridge-message-user-name (:user-name bridge-message))
-                          :ring?             false
                           :online?           false
                           :status-indicator? false
                           :size              :small}]
@@ -69,8 +68,7 @@
         in-reaction-or-action-menu?)
     [avatar/avatar
      {:public-key from
-      :size       :small
-      :hide-ring? (or in-pinned-view? in-reaction-or-action-menu?)}]
+      :size       :small}]
 
     :else
     [rn/view {:padding-top 4 :width 32}]))
@@ -135,13 +133,11 @@
       {:full-name         primary-name
        :profile-picture   photo-path
        :status-indicator? false
-       :size              :xxxs
-       :ring?             false}]
+       :size              :xxxs}]
      [quo/text
       {:weight :semi-bold
        :style  {:margin-left 4}}
       primary-name]]))
-
 
 (defn resolve-group-system-message
   [{:keys [children]}]
@@ -285,8 +281,7 @@
           [rn/view
            {:style {:padding-horizontal 4
                     :flex-direction     :row}}
-           [avatar-container message-data hide-reactions? in-reaction-or-action-menu? show-user-info?
-            (:in-pinned-view? context)]
+           [avatar-container message-data hide-reactions? in-reaction-or-action-menu? show-user-info?]
            (into
             (if hide-reactions?
               [gesture/scroll-view]

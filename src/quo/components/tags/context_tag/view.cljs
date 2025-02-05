@@ -114,7 +114,6 @@
            :profile-picture     profile-picture
            :size                (if (= size 24) :xxs 28)
            :status-indicator?   false
-           :ring?               false
            :customization-color customization-color}]]
 
         :multiuser

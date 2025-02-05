@@ -28,7 +28,6 @@
         :profile-picture     profile-picture
         :customization-color customization-color
         :status-indicator?   false
-        :ring?               true
         :size                :big}]
       [quo/button
        {:on-press        (fn []

@@ -16,9 +16,7 @@
    [:indicator-center-to-edge {:optional true} [:maybe :int]]
    [:theme :schema.common/theme]
    [:color :string]
-   [:size :int]
-   [:ring? :boolean]
-   [:ring-width :int]])
+   [:size :int]])
 
 (def ^:private ?account-image-uri-options
   [:map
@@ -26,8 +24,7 @@
    [:ratio :double]
    [:key-uid :string]
    [:image-name :string]
-   [:theme :schema.common/theme]
-   [:override-ring? [:maybe :boolean]]])
+   [:theme :schema.common/theme]])
 
 (def ^:private ?initials-image-uri-options
   [:map
@@ -38,8 +35,7 @@
    [:theme :schema.common/theme]
    [:customization-color ?customization-color]
    [:key-uid {:optional true} [:maybe :string]]
-   [:public-key {:optional true} [:maybe :string]]
-   [:override-ring? {:optional true} [:maybe :boolean]]])
+   [:public-key {:optional true} [:maybe :string]]])
 
 (def ^:private ?contact-image-uri-options
   [:map
@@ -48,8 +44,7 @@
    [:ratio :double]
    [:image-name :string]
    [:public-key :string]
-   [:theme :schema.common/theme]
-   [:override-ring? [:maybe :boolean]]])
+   [:theme :schema.common/theme]])
 
 (def ^:private ?image-uri-config
   [:multi {:dispatch :type}

@@ -27,7 +27,6 @@
   (if (= avatar-type :default-keypair)
     [user-avatar/user-avatar
      {:full-name           full-name
-      :ring?               true
       :size                :small
       :status-indicator?   false
       :customization-color customization-color

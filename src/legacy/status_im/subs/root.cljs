@@ -1,7 +1,6 @@
 (ns legacy.status-im.subs.root
   (:require
     legacy.status-im.subs.browser
-    legacy.status-im.subs.ens
     legacy.status-im.subs.mailservers
     [re-frame.core :as re-frame]))
 

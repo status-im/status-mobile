@@ -15,6 +15,5 @@
        :online?             online?
        :profile-picture     profile-picture
        :status-indicator?   true
-       :ring?               true
        :customization-color customization-color
        :size                :big}]]))

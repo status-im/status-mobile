@@ -35,7 +35,6 @@
     {:size              :xxxs
      :full-name         display-name
      :profile-picture   photo-path
-     :ring?             false
      :status-indicator? false}]])
 
 (defn split-text

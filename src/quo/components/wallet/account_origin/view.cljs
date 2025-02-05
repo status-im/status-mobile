@@ -26,7 +26,6 @@
   (case type
     :default-keypair [user-avatar/user-avatar
                       {:size                :xxs
-                       :ring?               false
                        :customization-color customization-color
                        :profile-picture     profile-picture}]
     :recovery-phrase [icons/icon

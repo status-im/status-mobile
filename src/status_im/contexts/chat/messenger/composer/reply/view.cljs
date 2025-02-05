@@ -87,8 +87,7 @@
                             primary-name)
        :profile-picture   (or user-avatar photo-path)
        :status-indicator? false
-       :size              :xxxs
-       :ring?             false}]
+       :size              :xxxs}]
      [quo/text
       {:weight          :semi-bold
        :size            (if pin? :label :paragraph-2)

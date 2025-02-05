@@ -81,7 +81,6 @@
     :accessibility-label :open-profile}
    [user-avatar/user-avatar
     (merge {:status-indicator?   true
-            :ring?               true
             :customization-color customization-color
             :size                :small}
            avatar-props)]])
@@ -136,7 +135,7 @@
    :qr-code-on-press callback
    :notification-count number
    :max-unread-notifications used to specify max number for counter
-   :right-section-content 
+   :right-section-content
    "
   [{:keys [avatar-on-press avatar-props customization-color container-style] :as props}]
   [rn/view {:style (merge style/top-nav-container container-style)}

@@ -18,7 +18,6 @@
     (case type
       :user                        [user-avatar/user-avatar
                                     (assoc item
-                                           :ring?             false
                                            :status-indicator? false
                                            :size              user-avatar-size)]
 

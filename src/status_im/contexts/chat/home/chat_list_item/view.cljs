@@ -177,18 +177,16 @@
      preview-text]))
 
 (defn avatar-view
-  [{:keys [contact chat-id full-name color muted? image]}]
+  [{:keys [contact chat-id full-name color image]}]
   [rn/view {:style {:justify-content :center}}
    (if contact ; `contact` is passed when it's not a group chat
      (let [online?    (rf/sub [:visibility-status-updates/online? chat-id])
            photo-path (rf/sub [:chats/photo-path chat-id])]
        [quo/user-avatar
-        (cond-> {:full-name       full-name
-                 :size            :small
-                 :online?         online?
-                 :profile-picture photo-path}
-          muted?
-          (assoc :ring? false))])
+        {:full-name       full-name
+         :size            :small
+         :online?         online?
+         :profile-picture photo-path}])
      [quo/group-avatar
       {:customization-color color
        :picture             (when image {:uri image})
@@ -258,7 +256,6 @@
        :chat-id   chat-id
        :full-name primary-name
        :color     color
-       :muted?    muted
        :image     image}]
      [rn/view {:style {:flex-shrink 1}}
       [rn/view {:style style/chat-data-container}

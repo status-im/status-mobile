@@ -10,8 +10,7 @@
     [quo.core :as quo]
     [re-frame.core :as re-frame.core]
     [react-native.core :as rn]
-    [status-im.contexts.profile.utils :as profile.utils]
-    [utils.ens.core :as utils.ens]))
+    [status-im.contexts.profile.utils :as profile.utils]))
 
 ;;TODO REWORK THIS NAMESPACE
 
@@ -62,9 +61,7 @@
                 :indicator-border 0
                 :indicator-color  "#000000"
                 :color            (get text-style :color)
-                :length           2
-                :ring?            (not (utils.ens/is-valid-eth-name? full-name))
-                :ring-width       2})}
+                :length           2})}
         {:size size}]
        [photos/photo photo-path {:size size}])
      (when-not community?
@@ -101,5 +98,3 @@
     :chat-icon              (styles/custom-size-icon size)
     :default-chat-icon      (styles/default-chat-icon-profile colors/default-chat-color size)
     :default-chat-icon-text (styles/default-chat-icon-text size)}])
-
-
