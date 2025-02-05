@@ -62,10 +62,12 @@
  :wallet-connect/process-personal-sign
  (fn [{:keys [db]}]
    (let [[raw-data address] (data-store/get-db-current-request-params db)
+         parsed-data        (if (utils-address/has-hex-prefix? raw-data)
+                              (native-module/hex-to-utf8 raw-data)
+                              raw-data)
          hex-message        (if (utils-address/has-hex-prefix? raw-data)
                               raw-data
-                              (native-module/utf8-to-hex raw-data))
-         parsed-data        (native-module/hex-to-utf8 hex-message)]
+                              (native-module/utf8-to-hex raw-data))]
      {:db (update-in db
                      [:wallet-connect/current-request]
                      assoc
