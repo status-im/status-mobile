@@ -308,7 +308,7 @@
          ;; We delay the navigation because we need re-frame to update the DB on time.
          ;; By doing it, we skip a blink while visiting the collectible detail page.
          [:dispatch-later
-          {:ms       17
+          {:ms       20
            :dispatch [:open-modal :screen/wallet.collectible]}]]}))
 
 (rf/reg-event-fx
