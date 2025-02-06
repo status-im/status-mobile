@@ -18,7 +18,7 @@
               :on-error
               (fn [error]
                 (rf/dispatch [:navigate-back])
-                (if (and (= error :keycard/error.keycard-blank)
+                (if (and (= error :keycard/error.keycard-empty)
                          (not keycard-profile?))
                   (do
                     (rf/dispatch [:keycard/disconnect])

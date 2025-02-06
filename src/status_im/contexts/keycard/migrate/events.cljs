@@ -10,7 +10,7 @@
                  :on-success #(rf/dispatch [:keycard/migration.continue])
                  :on-error
                  (fn [error]
-                   (if (= error :keycard/error.keycard-blank)
+                   (if (= error :keycard/error.keycard-empty)
                      (rf/dispatch [:keycard/migration.continue])
                      (rf/dispatch [:keycard/on-application-info-error error])))}]))
 
@@ -49,7 +49,7 @@
             :theme :dark
             :on-error
             (fn [error]
-              (if (= error :keycard/error.keycard-blank)
+              (if (= error :keycard/error.keycard-empty)
                 (rf/dispatch [:keycard/migration.continue])
                 (rf/dispatch [:keycard/on-application-info-error error])))}]]]}))
 

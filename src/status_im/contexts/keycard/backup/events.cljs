@@ -31,7 +31,7 @@
            {:theme :dark
             :on-error
             (fn [error]
-              (if (= error :keycard/error.keycard-blank)
+              (if (= error :keycard/error.keycard-empty)
                 (rf/dispatch [:keycard/backup.generate-and-load-key])
                 (ready-to-add-not-empty error)))}]]]}))
 
@@ -52,7 +52,7 @@
            {:theme :dark
             :on-error
             (fn [error]
-              (if (= error :keycard/error.keycard-blank)
+              (if (= error :keycard/error.keycard-empty)
                 (do
                   (rf/dispatch [:keycard/disconnect])
                   (rf/dispatch [:keycard/backup.create-or-enter-pin]))
@@ -78,7 +78,7 @@
     {:theme :dark
      :on-error
      (fn [error]
-       (if (= error :keycard/error.keycard-blank)
+       (if (= error :keycard/error.keycard-empty)
          (rf/dispatch
           [:keycard/verify-pin
            {:pin        pin
@@ -95,7 +95,7 @@
     {:theme :dark
      :on-error
      (fn [error]
-       (if (= error :keycard/error.keycard-blank)
+       (if (= error :keycard/error.keycard-empty)
          (rf/dispatch
           [:keycard/init-card
            {:pin        pin
@@ -103,7 +103,7 @@
                           [:keycard/get-application-info
                            {:on-error
                             (fn [error]
-                              (if (= error :keycard/error.keycard-blank)
+                              (if (= error :keycard/error.keycard-empty)
                                 (save-pin-and-navigate-to-phrase pin)
                                 (init-card-not-empty pin error)))}])}])
          (init-card-not-empty pin error)))}]))

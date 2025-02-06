@@ -10,7 +10,7 @@
            {:theme :dark
             :on-error
             (fn [error]
-              (if (= error :keycard/error.keycard-blank)
+              (if (= error :keycard/error.keycard-empty)
                 (do
                   (rf/dispatch [:keycard/disconnect])
                   (rf/dispatch [:open-modal :screen/keycard.empty-create]))
@@ -74,7 +74,7 @@
 
 (rf/reg-event-fx :keycard/create.on-application-info-error
  (fn [{:keys [db]} [error]]
-   (if (or (= error :keycard/error.keycard-blank)
+   (if (or (= error :keycard/error.keycard-empty)
            (and (get-in db [:keycard :application-info :initialized?])
                 (= error :keycard/error.keycard-wrong-profile)))
      (rf/dispatch [:keycard/create.continue])

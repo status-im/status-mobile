@@ -10,6 +10,7 @@
             status-im.contexts.keycard.nfc.sheets.events
             status-im.contexts.keycard.pin.events
             status-im.contexts.keycard.sign.events
+            status-im.contexts.keycard.unblock.events
             [status-im.contexts.keycard.utils :as keycard.utils]
             [utils.address :as address]
             utils.datetime
@@ -160,14 +161,22 @@
                        (rf/dispatch [:keycard/on-application-info-error
                                      :keycard/error.not-keycard]))))}}))
 
+(rf/reg-event-fx :keycard/connect.next-stage
+ (fn [{:keys [db]} [{:keys [key-uid on-success on-error]}]]
+   (let [event-vector [:keycard/get-application-info
+                       {:key-uid    key-uid
+                        :on-success on-success
+                        :on-error   on-error}]]
+     {:db (assoc-in db [:keycard :on-card-connected-event-vector] event-vector)
+      :fx [(when (get-in db [:keycard :card-connected?])
+             [:dispatch event-vector])]})))
+
 (rf/reg-event-fx :keycard/connect
- (fn [{:keys [db]} [{:keys [key-uid on-success on-error on-connect-event-vector theme]}]]
-   (let [event-vector
-         (or on-connect-event-vector
-             [:keycard/get-application-info
-              {:key-uid    key-uid
-               :on-success on-success
-               :on-error   on-error}])]
+ (fn [{:keys [db]} [{:keys [key-uid on-success on-error theme]}]]
+   (let [event-vector [:keycard/get-application-info
+                       {:key-uid    key-uid
+                        :on-success on-success
+                        :on-error   on-error}]]
      {:db (assoc-in db [:keycard :on-card-connected-event-vector] event-vector)
       :fx [[:dispatch
             [:keycard/show-connection-sheet

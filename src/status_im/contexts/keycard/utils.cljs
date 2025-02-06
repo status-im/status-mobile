@@ -28,7 +28,7 @@
     :keycard/error.not-keycard
 
     (not has-master-key?)
-    :keycard/error.keycard-blank
+    :keycard/error.keycard-empty
 
     (and (zero? pin-retry-counter)
          (or (nil? puk-retry-counter)

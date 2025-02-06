@@ -48,6 +48,7 @@
     [status-im.contexts.keycard.not-keycard.view :as keycard.not-keycard]
     [status-im.contexts.keycard.pin.create.view :as keycard.pin.create]
     [status-im.contexts.keycard.pin.enter.view :as keycard.pin.enter]
+    [status-im.contexts.keycard.unblock.view :as keycard.unblock]
     [status-im.contexts.onboarding.create-password.view :as create-password]
     [status-im.contexts.onboarding.create-profile.view :as create-profile]
     [status-im.contexts.onboarding.enable-biometrics.view :as enable-biometrics]
@@ -1097,8 +1098,19 @@
     :options   {:theme                  :dark
                 :modalPresentationStyle :fullScreen
                 :insets                 {:top? true :bottom? true}}
-    :component keycard.backup/success-view}])
+    :component keycard.backup/success-view}
 
+   {:name      :screen/keycard.unblock.ready-to-unblock
+    :metrics   {:track? true}
+    :options   {:insets                 {:top? true :bottom? true}
+                :modalPresentationStyle :fullScreen}
+    :component keycard.unblock/ready-to-unblock}
+
+   {:name      :screen/keycard.unblock.success
+    :metrics   {:track? true}
+    :options   {:insets                 {:top? true :bottom? true}
+                :modalPresentationStyle :fullScreen}
+    :component keycard.unblock/success-view}])
 
 (defn screens
   []

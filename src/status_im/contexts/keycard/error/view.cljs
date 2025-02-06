@@ -4,11 +4,12 @@
             [status-im.common.events-helper :as events-helper]
             [status-im.contexts.keycard.backup.view :as backup.view]
             [status-im.contexts.keycard.factory-reset.view :as factory-reset]
+            [status-im.contexts.keycard.unblock.view :as keycard.unblock]
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]))
 
 (def titles
-  {:keycard/error.keycard-blank         {:title       (i18n/label :t/keycard-empty)
+  {:keycard/error.keycard-empty         {:title       (i18n/label :t/keycard-empty)
                                          :description (i18n/label :t/no-key-pair-keycard)}
    :keycard/error.keycard-wrong-profile {:title       (i18n/label :t/keycard-not-empty)
                                          :description (i18n/label :t/cant-store-new-keys)}
@@ -35,7 +36,7 @@
       [quo/keycard {:holder-name ""}]
       [quo/section-label
        {:section (i18n/label :t/what-you-can-do) :container-style {:padding-vertical 8}}]
-      (if (= error :keycard/error.keycard-blank)
+      (if (= error :keycard/error.keycard-empty)
         [quo/settings-item
          {:title             (i18n/label :t/use-backup-keycard)
           :image             :icon
@@ -51,15 +52,28 @@
                                                  {:on-continue
                                                   (rf/dispatch
                                                    [:keycard/backup.create-or-enter-pin])}])}]))}]
-        [quo/settings-item
-         {:title             (i18n/label :t/factory-reset)
-          :image             :icon
-          :image-props       :i/placeholder
-          :action            :arrow
-          :description       :text
-          :description-props {:text (i18n/label :t/remove-keycard-content)}
-          :on-press          (fn []
-                               (rf/dispatch [:show-bottom-sheet
-                                             {:theme   :dark
-                                              :shell?  true
-                                              :content factory-reset/sheet}]))}])]]))
+        [:<>
+         (when (or (= error :keycard/error.keycard-frozen)
+                   (= error :keycard/error.keycard-locked))
+           [quo/settings-item
+            {:title             (i18n/label :t/unblock-keycard)
+             :image             :icon
+             :image-props       :i/placeholder
+             :action            :arrow
+             :description       :text
+             :description-props {:text (i18n/label :t/with-recovery-phrase)}
+             :on-press          (fn []
+                                  (rf/dispatch [:show-bottom-sheet
+                                                {:content keycard.unblock/sheet}]))}])
+         [quo/settings-item
+          {:title             (i18n/label :t/factory-reset)
+           :image             :icon
+           :image-props       :i/placeholder
+           :action            :arrow
+           :description       :text
+           :description-props {:text (i18n/label :t/remove-keycard-content)}
+           :on-press          (fn []
+                                (rf/dispatch [:show-bottom-sheet
+                                              {:theme   :dark
+                                               :shell?  true
+                                               :content factory-reset/sheet}]))}]])]]))
