@@ -435,9 +435,10 @@
 (rf/reg-event-fx
  :wallet/start-bridge
  (fn [{:keys [db]}]
-   (let [view-id (:view-id db)]
+   (let [view-id (:view-id db)
+         address (get-in db [:wallet :current-viewing-account-address])]
      (cond-> {:db (assoc-in db [:wallet :ui :send :tx-type] :tx/bridge)}
-       (= view-id :screen/wallet.accounts)
+       (or (= view-id :screen/wallet.accounts) address)
        (assoc :fx
               [[:dispatch
                 [:wallet/wizard-navigate-forward
