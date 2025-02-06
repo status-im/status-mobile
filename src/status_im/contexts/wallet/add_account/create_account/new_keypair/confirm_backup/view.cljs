@@ -31,7 +31,7 @@
     [(subvec result 0 2) (subvec result 2 4)]))
 
 (defn- cheat-warning
-  []
+  [on-try-again]
   (let [customization-color (rf/sub [:profile/customization-color])]
     [:<>
      [quo/drawer-top {:title (i18n/label :t/do-not-cheat)}]
@@ -43,7 +43,9 @@
        :button-one-props {:customization-color customization-color
                           :on-press            (fn []
                                                  (rf/dispatch [:hide-bottom-sheet])
-                                                 (rf/dispatch [:navigate-back]))}}]]))
+                                                 (rf/dispatch [:navigate-back])
+                                                 (when on-try-again
+                                                   (on-try-again)))}}]]))
 
 (defn- button
   [{:keys [word margin-right on-press]}]
@@ -95,6 +97,7 @@
         incorrect-count              (reagent/atom 0)
         show-error?                  (reagent/atom false)
         {:keys [on-success
+                on-try-again
                 masked-seed-phrase]} (rf/sub [:get-screen-params])
         unmasked-seed-phrase         (security/safe-unmask-data masked-seed-phrase)
         random-phrase                (reagent/atom [])]
@@ -121,7 +124,9 @@
                                                 (do
                                                   (when (> @incorrect-count 0)
                                                     (rf/dispatch [:show-bottom-sheet
-                                                                  {:content cheat-warning}]))
+                                                                  {:content (fn []
+                                                                              [cheat-warning
+                                                                               on-try-again])}]))
                                                   (reset! incorrect-count (inc @incorrect-count))
                                                   (reset! show-error? true))))]
           [rn/view {:style {:flex 1}}

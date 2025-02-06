@@ -95,10 +95,10 @@
 
 (defn get-actions
   [{:keys [outgoing content pinned-by outgoing-status deleted? deleted-for-me? content-type
-           bridge-message]
+           bridge-message message-id]
     :as   message-data}
    {:keys [able-to-send-message? community? community-member? can-delete-message-for-everyone?
-           message-pin-enabled group-chat group-admin?]}]
+           message-pin-enabled group-chat group-admin? debug-log-level?]}]
   (let [edit-message?        (and (or community-member? (not community?))
                                   outgoing
                                   (not (or deleted? deleted-for-me?))
@@ -152,6 +152,14 @@
              :accessibility-label :copy-text
              :icon                :i/copy
              :id                  :copy})
+
+      debug-log-level?
+      (conj {:type                :main
+             :on-press            #(clipboard/set-string message-id)
+             :label               (i18n/label :t/copy-message-id)
+             :accessibility-label :copy-message-id
+             :icon                :i/copy
+             :id                  :copy-message-id})
 
       pin-message?
       (conj {:type                :main

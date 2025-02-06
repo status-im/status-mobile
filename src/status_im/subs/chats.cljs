@@ -217,7 +217,8 @@
  :<- [:chats/current-chat-chat-view]
  :<- [:communities/current-community]
  :<- [:multiaccount/public-key]
- (fn [[current-chat current-community current-public-key] [_ in-pinned-view?]]
+ :<- [:log-level/debug?]
+ (fn [[current-chat current-community current-public-key debug-log-level?] [_ in-pinned-view?]]
    (let [{:keys [group-chat chat-id public? admins space-keeper able-to-send-message?]}
          current-chat
 
@@ -244,6 +245,7 @@
       :community?                       community?
       :community-admin?                 community-admin?
       :current-public-key               current-public-key
+      :debug-log-level?                 debug-log-level?
       :space-keeper                     space-keeper
       :chat-id                          chat-id
       :in-pinned-view?                  (boolean in-pinned-view?)

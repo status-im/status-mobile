@@ -164,9 +164,9 @@
                                                                                  theme)})
                                                options
                                                (when sheet?
-                                                 options/sheet-options))}}]}})))
-    (state/navigation-state-push {:id   component
-                                  :type :modal})))
+                                                 options/sheet-options))}}]}})
+        (state/navigation-state-push {:id   component
+                                      :type :modal})))))
 
 (rf/reg-fx :open-modal-fx open-modal)
 

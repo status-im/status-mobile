@@ -8,10 +8,10 @@
 
 (defn view
   []
-  (let [{:keys [on-complete]} (rf/sub [:get-screen-params])]
+  (let [{:keys [on-complete title]} (rf/sub [:get-screen-params])]
     [rn/view {:style {:padding-bottom 12 :flex 1}}
      [quo/page-nav
       {:icon-name :i/close
        :on-press  events-helper/navigate-back}]
-     [quo/page-top {:title (i18n/label :t/enter-keycard-pin)}]
+     [quo/page-top {:title (or title (i18n/label :t/enter-keycard-pin))}]
      [keycard.pin/auth {:on-complete on-complete}]]))
