@@ -942,20 +942,6 @@
           result                (rf/sub [sub-name token-symbol-for-fees])]
       (is (match? result "$0.20")))))
 
-(h/deftest-sub :wallet/has-partially-operable-accounts?
-  [sub-name]
-  (testing "returns false if there are no partially operable accounts"
-    (swap! rf-db/app-db
-      #(assoc-in % [:wallet :accounts] accounts))
-    (is (false? (rf/sub [sub-name]))))
-
-  (testing "returns true if there are partially operable accounts"
-    (swap! rf-db/app-db
-      #(assoc-in %
-        [:wallet :accounts]
-        (update accounts "0x2" assoc :operable :partially)))
-    (is (true? (rf/sub [sub-name])))))
-
 (h/deftest-sub :wallet/zero-balance-in-all-non-watched-accounts?
   [sub-name]
   (testing "returns true if the balance is zero in all non-watched accounts"

@@ -862,14 +862,6 @@
        fee-formatted))))
 
 (rf/reg-sub
- :wallet/has-partially-operable-accounts?
- :<- [:wallet/accounts]
- (fn [accounts]
-   (->> accounts
-        (some #(= :partially (:operable %)))
-        boolean)))
-
-(rf/reg-sub
  :wallet/accounts-names
  :<- [:wallet/accounts]
  (fn [accounts]
