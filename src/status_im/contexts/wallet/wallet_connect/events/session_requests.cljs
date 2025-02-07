@@ -9,6 +9,7 @@
             [status-im.contexts.wallet.wallet-connect.utils.transactions :as transactions]
             [status-im.contexts.wallet.wallet-connect.utils.typed-data :as typed-data]
             [taoensso.timbre :as log]
+            [utils.address :as utils-address]
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]
             [utils.transforms :as transforms]))
@@ -61,14 +62,19 @@
  :wallet-connect/process-personal-sign
  (fn [{:keys [db]}]
    (let [[raw-data address] (data-store/get-db-current-request-params db)
-         parsed-data        (native-module/hex-to-utf8 raw-data)]
+         parsed-data        (if (utils-address/has-hex-prefix? raw-data)
+                              (native-module/hex-to-utf8 raw-data)
+                              raw-data)
+         hex-message        (if (utils-address/has-hex-prefix? raw-data)
+                              raw-data
+                              (native-module/utf8-to-hex raw-data))]
      {:db (update-in db
                      [:wallet-connect/current-request]
                      assoc
                      :address      (string/lower-case address)
                      :display-data (or parsed-data raw-data))
       :fx [[:effects.wallet-connect/hash-message
-            {:message    raw-data
+            {:message    hex-message
              :on-success #(rf/dispatch [:wallet-connect/store-prepared-hash %])
              :on-fail    #(rf/dispatch [:wallet-connect/on-processing-error %])}]
            [:dispatch [:wallet-connect/show-request-modal]]]})))
