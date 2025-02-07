@@ -24,12 +24,13 @@
       :always-bounce-vertical            false
       :content-inset-adjustment-behavior :never}
      [rn/view {:style style/container}
-      [text/text
-       {:size                :heading-2
-        :accessibility-label :documentation-drawer-title
-        :style               (style/title theme)
-        :weight              :semi-bold}
-       title]
+      (when title
+        [text/text
+         {:size                :heading-2
+          :accessibility-label :documentation-drawer-title
+          :style               (style/title theme)
+          :weight              :semi-bold}
+         title])
       [rn/view {:style style/content :accessibility-label :documentation-drawer-content}
        content
        (when show-button?

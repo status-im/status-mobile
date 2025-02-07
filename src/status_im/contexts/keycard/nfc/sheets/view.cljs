@@ -8,9 +8,9 @@
 
 (defn connect-keycard
   []
-  (let [connected?         (rf/sub [:keycard/connected?])
-        {:keys [on-close]} (rf/sub [:keycard/connection-sheet-opts])
-        theme              (quo.theme/use-theme)]
+  (let [connected?               (rf/sub [:keycard/connected?])
+        {:keys [on-close theme]} (rf/sub [:keycard/connection-sheet-opts])
+        theme                    (or theme (quo.theme/use-theme))]
     [rn/view {:flex 1}
      [rn/view {:flex 1}]
      [rn/view

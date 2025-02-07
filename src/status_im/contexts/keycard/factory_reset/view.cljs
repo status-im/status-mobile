@@ -22,7 +22,8 @@
   [key-uid]
   (rf/dispatch
    [:keycard/connect
-    {:key-uid    key-uid
+    {:theme      :dark
+     :key-uid    key-uid
      :on-success reset-card
      :on-error   (fn [error]
                    (if (or (= error :keycard/error.keycard-frozen)

@@ -7,6 +7,7 @@
      {:fx [[:dispatch
             [:keycard/connect
              {:key-uid (get-in db [:profile/profile :key-uid])
+              :theme :dark
               :on-success
               (fn []
                 (rf/dispatch [:keycard/disconnect])

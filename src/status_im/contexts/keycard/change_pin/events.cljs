@@ -68,5 +68,6 @@
          unmasked-new-pin              (security/safe-unmask-data new-pin)]
      {:fx [[:dispatch
             [:keycard/connect
-             {:key-uid    (get-in db [:profile/profile :key-uid])
+             {:theme      :dark
+              :key-uid    (get-in db [:profile/profile :key-uid])
               :on-success #(verify-pin-and-continue unmasked-current-pin unmasked-new-pin)}]]]})))

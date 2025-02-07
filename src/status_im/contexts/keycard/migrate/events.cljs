@@ -46,6 +46,7 @@
           [:keycard/connect
            {:key-uid (get-in db [:profile/profile :key-uid])
             :on-success #(rf/dispatch [:keycard/migration.continue])
+            :theme :dark
             :on-error
             (fn [error]
               (if (= error :keycard/error.keycard-blank)
@@ -55,8 +56,10 @@
 (defn- backup-recovery-phrase-success
   [masked-seed-phrase]
   (rf/dispatch [:navigate-back])
-  (rf/dispatch [:open-modal :screen/confirm-backup
+  (rf/dispatch [:open-modal :screen/confirm-backup-dark
                 {:masked-seed-phrase masked-seed-phrase
+                 :theme              :dark
+                 :shell?             true
                  :on-try-again       #(rf/dispatch [:open-modal :screen/backup-recovery-phrase-dark
                                                     {:on-success         backup-recovery-phrase-success
                                                      :masked-seed-phrase (->> masked-seed-phrase

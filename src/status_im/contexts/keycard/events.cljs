@@ -90,7 +90,8 @@
  (fn [_ [{:keys [pin derivation-path key-uid account-preferences]}]]
    {:fx [[:dispatch
           [:keycard/connect
-           {:key-uid key-uid
+           {:theme :dark
+            :key-uid key-uid
             :on-success
             (fn []
               (rf/dispatch
@@ -160,7 +161,7 @@
                                      :keycard/error.not-keycard]))))}}))
 
 (rf/reg-event-fx :keycard/connect
- (fn [{:keys [db]} [{:keys [key-uid on-success on-error on-connect-event-vector]}]]
+ (fn [{:keys [db]} [{:keys [key-uid on-success on-error on-connect-event-vector theme]}]]
    (let [event-vector
          (or on-connect-event-vector
              [:keycard/get-application-info
@@ -170,6 +171,7 @@
      {:db (assoc-in db [:keycard :on-card-connected-event-vector] event-vector)
       :fx [[:dispatch
             [:keycard/show-connection-sheet
-             {:on-cancel-event-vector [:keycard/cancel-connection]}]]
+             {:on-cancel-event-vector [:keycard/cancel-connection]
+              :theme                  theme}]]
            (when (get-in db [:keycard :card-connected?])
              [:dispatch event-vector])]})))

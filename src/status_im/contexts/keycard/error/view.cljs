@@ -60,4 +60,6 @@
           :description-props {:text (i18n/label :t/remove-keycard-content)}
           :on-press          (fn []
                                (rf/dispatch [:show-bottom-sheet
-                                             {:content factory-reset/sheet}]))}])]]))
+                                             {:theme   :dark
+                                              :shell?  true
+                                              :content factory-reset/sheet}]))}])]]))

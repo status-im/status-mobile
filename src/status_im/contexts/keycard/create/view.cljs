@@ -2,9 +2,7 @@
   (:require [quo.core :as quo]
             [react-native.core :as rn]
             [status-im.common.events-helper :as events-helper]
-            [status-im.common.not-implemented :as not-implemented]
             [status-im.common.resources :as resources]
-            [status-im.config :as config]
             [status-im.constants :as constants]
             [status-im.contexts.keycard.common.view :as common.view]
             [utils.i18n :as i18n]
@@ -40,15 +38,24 @@
    [rn/view {:style {:flex 1}}]
    [common.view/tips]])
 
+(defn- ready-to-add-documentation
+  []
+  [quo/documentation-drawers
+   {:shell? true}
+   [quo/text {:size :paragraph-2}
+    (i18n/label :t/ready-add-keypair-keycard-documentation)]])
+
 (defn ready-to-add
   []
   [:<>
    [quo/page-nav
     {:icon-name  :i/close
      :on-press   events-helper/navigate-back
-     :right-side [(when config/show-not-implemented-features?
-                    {:icon-name :i/info
-                     :on-press  not-implemented/alert})]}]
+     :right-side [{:icon-name :i/info
+                   :on-press  #(rf/dispatch [:show-bottom-sheet
+                                             {:content ready-to-add-documentation
+                                              :theme   :dark
+                                              :shell?  true}])}]}]
    [quo/page-top
     {:title            (i18n/label :t/ready-add-keypair-keycard)
      :description      :text

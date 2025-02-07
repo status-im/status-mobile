@@ -28,7 +28,8 @@
  (fn [_]
    {:fx [[:dispatch
           [:keycard/connect
-           {:on-error
+           {:theme :dark
+            :on-error
             (fn [error]
               (if (= error :keycard/error.keycard-blank)
                 (rf/dispatch [:keycard/backup.generate-and-load-key])
@@ -48,7 +49,8 @@
  (fn [_]
    {:fx [[:dispatch
           [:keycard/connect
-           {:on-error
+           {:theme :dark
+            :on-error
             (fn [error]
               (if (= error :keycard/error.keycard-blank)
                 (do
@@ -73,7 +75,8 @@
   [pin]
   (rf/dispatch
    [:keycard/connect
-    {:on-error
+    {:theme :dark
+     :on-error
      (fn [error]
        (if (= error :keycard/error.keycard-blank)
          (rf/dispatch
@@ -89,7 +92,8 @@
   [pin]
   (rf/dispatch
    [:keycard/connect
-    {:on-error
+    {:theme :dark
+     :on-error
      (fn [error]
        (if (= error :keycard/error.keycard-blank)
          (rf/dispatch

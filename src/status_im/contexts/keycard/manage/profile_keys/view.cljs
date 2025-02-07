@@ -40,7 +40,9 @@
         :description-props {:text (i18n/label :t/change-pin-keycard-description)}
         :on-press          (fn []
                              (rf/dispatch [:show-bottom-sheet
-                                           {:content change-pin.view/change-pin-confirmation-sheet}]))}]
+                                           {:theme   :dark
+                                            :shell?  true
+                                            :content change-pin.view/change-pin-confirmation-sheet}]))}]
       [quo/settings-item
        {:title             (i18n/label :t/backup-keycard)
         :image             :icon
@@ -50,4 +52,7 @@
         :description       :text
         :description-props {:text (i18n/label :t/create-backup-profile-keycard)}
         :on-press          (fn []
-                             (rf/dispatch [:show-bottom-sheet {:content backup-sheet}]))}]]]))
+                             (rf/dispatch [:show-bottom-sheet
+                                           {:theme   :dark
+                                            :shell?  true
+                                            :content backup-sheet}]))}]]]))

@@ -7,7 +7,8 @@
  (fn [_]
    {:fx [[:dispatch
           [:keycard/connect
-           {:on-error
+           {:theme :dark
+            :on-error
             (fn [error]
               (if (= error :keycard/error.keycard-blank)
                 (do
@@ -18,8 +19,10 @@
 (defn- backup-recovery-phrase-success
   [masked-seed-phrase]
   (rf/dispatch [:navigate-back])
-  (rf/dispatch [:open-modal :screen/confirm-backup
+  (rf/dispatch [:open-modal :screen/confirm-backup-dark
                 {:masked-seed-phrase masked-seed-phrase
+                 :theme              :dark
+                 :shell?             true
                  :on-try-again       #(rf/dispatch [:open-modal :screen/backup-recovery-phrase-dark
                                                     {:on-success         backup-recovery-phrase-success
                                                      :masked-seed-phrase (->> masked-seed-phrase
@@ -81,7 +84,8 @@
  (fn [_]
    {:fx [[:dispatch
           [:keycard/connect
-           {:on-error #(rf/dispatch [:keycard/create.on-application-info-error %])}]]]}))
+           {:theme    :dark
+            :on-error #(rf/dispatch [:keycard/create.on-application-info-error %])}]]]}))
 
 (defn get-application-info-and-continue
   []

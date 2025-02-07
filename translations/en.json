@@ -2131,6 +2131,7 @@
   "read": "Read",
   "read-more": "Read more",
   "ready-add-keypair-keycard": "Ready to add key pair to Keycard",
+  "ready-add-keypair-keycard-documentation": "When you create a Status profile, the Status app generates cryptographic keys for your profile authentication and authorization.\n\nYour Keycard stores the cryptographic keys for your Status profile, permanently offline and isolated from the internet, and also secures your Wallet accounts.",
   "ready-keycard": "Get your Keycard ready",
   "ready-to-change-pin": "Ready to change PIN",
   "ready-to-migrate-key-pair": "Ready to migrate profile key pair to the Keycard",

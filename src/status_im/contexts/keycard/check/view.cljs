@@ -36,6 +36,7 @@
        :right-side [{:icon-name :i/info
                      :on-press  #(rf/dispatch [:show-bottom-sheet
                                                {:content keycard-documentation
+                                                :theme   :dark
                                                 :shell?  true}])}]}]
      [quo/page-top
       {:title            (i18n/label :t/check-keycard)

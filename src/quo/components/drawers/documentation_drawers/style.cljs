@@ -13,11 +13,11 @@
 
 (def content
   {:align-items   :flex-start
-   :margin-top    8
    :margin-bottom (+ (safe-area/get-bottom) 12)})
 
 (defn title
   [theme]
-  {:color (colors/theme-colors colors/neutral-100
-                               colors/white
-                               theme)})
+  {:color         (colors/theme-colors colors/neutral-100
+                                       colors/white
+                                       theme)
+   :margin-bottom 8})

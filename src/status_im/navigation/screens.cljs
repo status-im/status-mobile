@@ -925,6 +925,7 @@
    {:name      :screen/keycard.empty-create
     :metrics   {:track? true}
     :options   {:insets                 {:top? true :bottom? true}
+                :theme                  :dark
                 :modalPresentationStyle :fullScreen}
     :component keycard.empty/create}
 
@@ -1024,30 +1025,35 @@
    {:name      :screen/keycard.create-profile
     :metrics   {:track? true}
     :options   {:insets                 {:top? true :bottom? true}
+                :theme                  :dark
                 :modalPresentationStyle :fullScreen}
     :component keycard.create/view}
 
    {:name      :screen/keycard.create.ready-to-add
     :metrics   {:track? true}
     :options   {:insets                 {:top? true :bottom? true}
+                :theme                  :dark
                 :modalPresentationStyle :fullScreen}
     :component keycard.create/ready-to-add}
 
    {:name      :screen/keycard.ready-to-change-pin
     :metrics   {:track? true}
     :options   {:insets                 {:top? true :bottom? true}
+                :theme                  :dark
                 :modalPresentationStyle :fullScreen}
     :component keycard.change-pin/ready-to-change-pin}
 
    {:name      :screen/keycard.pin-change-success
     :metrics   {:track? true}
     :options   {:insets                 {:top? true :bottom? true}
+                :theme                  :dark
                 :modalPresentationStyle :fullScreen}
     :component keycard.change-pin/pin-change-success}
 
    {:name      :screen/keycard.pin-change-failed
     :metrics   {:track? true}
     :options   {:insets                 {:top? true :bottom? true}
+                :theme                  :dark
                 :modalPresentationStyle :fullScreen}
     :component keycard.change-pin/pin-change-failed}
 
@@ -1168,6 +1174,12 @@
      :options   {:theme  :dark
                  :insets {:top? true :bottom? true}}
      :component backup-recovery-phrase/view}
+
+    {:name      :screen/confirm-backup-dark
+     :metrics   {:track? true}
+     :options   {:insets {:top? true :bottom? true}
+                 :theme  :dark}
+     :component wallet-confirm-backup/view}
 
     {:name      :screen/use-recovery-phrase
      :metrics   {:track? true}

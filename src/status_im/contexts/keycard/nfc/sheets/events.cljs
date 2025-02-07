@@ -3,11 +3,12 @@
             [react-native.platform :as platform]))
 
 (rf/reg-event-fx :keycard/show-connection-sheet
- (fn [{:keys [db]} [{:keys [on-cancel-event-vector]} :as args]]
+ (fn [{:keys [db]} [{:keys [on-cancel-event-vector theme]} :as args]]
    (if platform/android?
      {:db (assoc-in db
            [:keycard :connection-sheet-opts]
-           {:on-close #(rf/dispatch on-cancel-event-vector)})
+           {:on-close #(rf/dispatch on-cancel-event-vector)
+            :theme    theme})
       :fx [[:effects.keycard.ios/start-nfc nil]
            [:dismiss-keyboard true]
            [:show-nfc-sheet nil]]}

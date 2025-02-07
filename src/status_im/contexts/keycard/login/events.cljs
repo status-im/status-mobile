@@ -43,7 +43,8 @@
  (fn []
    {:fx [[:dispatch
           [:keycard/connect
-           {:on-error
+           {:theme :dark
+            :on-error
             (fn [error]
               (if (= error :keycard/error.keycard-wrong-profile)
                 (do
@@ -57,7 +58,8 @@
  (fn [{:keys [db]} [pin]]
    {:fx [[:dispatch
           [:keycard/connect
-           {:key-uid    (get-in db [:keycard :application-info :key-uid])
+           {:theme      :dark
+            :key-uid    (get-in db [:keycard :application-info :key-uid])
             :on-success (fn []
                           (rf/dispatch
                            [:keycard/get-more-keys
