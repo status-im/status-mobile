@@ -64,6 +64,25 @@
   },
 
   {
+    "path": "androidx/activity/activity/1.5.1",
+    "repo": "https://dl.google.com/dl/android/maven2",
+    "files": {
+      "activity-1.5.1.pom": {
+        "sha1": "7d703cb03cbb2ab533ab863244786eb663e60d71",
+        "sha256": "sha256-0pzNzkb0xxoBruYLr4MjRihvOB2dEbzHPuvtXRr3LN0="
+      },
+      "activity-1.5.1.aar": {
+        "sha1": "fd9bedd4fa5b13501bc5ff75b537ba9fa07185de",
+        "sha256": "sha256-SwS0LSwfgcAvrw97bpzJ/t4Q/e6PZhNs1LmfiOj0jA8="
+      },
+      "activity-1.5.1.module": {
+        "sha1": "e8401db0d903a5723f6b827bea9804bddc21bf04",
+        "sha256": "sha256-xDF/uVzicWuI8fSlM0eV79oIQJej8kR//MsQpBLIW+Q="
+      }
+    }
+  },
+
+  {
     "path": "androidx/activity/activity/1.6.0",
     "repo": "https://dl.google.com/dl/android/maven2",
     "files": {
@@ -1720,6 +1739,25 @@
   },
 
   {
+    "path": "androidx/fragment/fragment/1.5.7",
+    "repo": "https://dl.google.com/dl/android/maven2",
+    "files": {
+      "fragment-1.5.7.pom": {
+        "sha1": "c99d49f425f673bbc8479bfe15ac76820ae3b2be",
+        "sha256": "sha256-YboRvJYY0s/AjVbdOZmlxpm/iozT/0ovqLAugg//dKM="
+      },
+      "fragment-1.5.7.aar": {
+        "sha1": "049fe69bb50cdf391fd3b823611672371a6bb476",
+        "sha256": "sha256-WcdBELmTeIhe0GJC+KJtowXqTcpT7WAWNUDdDi48ZnU="
+      },
+      "fragment-1.5.7.module": {
+        "sha1": "a79be0eb29a74327194e677f19aa1c3a5c762e3b",
+        "sha256": "sha256-8PB3//dK+BWMsvCOHBmGBl8xYaKfZO86wN8Q0QSA/Tw="
+      }
+    }
+  },
+
+  {
     "path": "androidx/interpolator/interpolator/1.0.0",
     "repo": "https://dl.google.com/dl/android/maven2",
     "files": {
@@ -2356,6 +2394,21 @@
       "loader-1.0.0.aar": {
         "sha1": "8af8b6cec0da85c207d03e15840e0722cbc71e70",
         "sha256": "sha256-Efc1yztVxFjUcL7Z4lJUN1tRi0sbrWkmeDpwJtsPUCU="
+      }
+    }
+  },
+
+  {
+    "path": "androidx/loader/loader/1.1.0",
+    "repo": "https://dl.google.com/dl/android/maven2",
+    "files": {
+      "loader-1.1.0.pom": {
+        "sha1": "f6977dbb6324d7cfbb78887f1acc10594f4ea560",
+        "sha256": "sha256-LHTswTvZO4wqSDQAV/P9CDuI/1HpFprnDWP5mNaGotw="
+      },
+      "loader-1.1.0.aar": {
+        "sha1": "49591a915750c6483e1791daad039e0af71cb91c",
+        "sha256": "sha256-qDtZfNJAncF39/ky98QILve1UItptsS6cWB+ddvZmXE="
       }
     }
   },
@@ -9023,6 +9076,51 @@
   },
 
   {
+    "path": "com/google/android/gms/play-services-auth-api-phone/18.0.2",
+    "repo": "https://dl.google.com/dl/android/maven2",
+    "files": {
+      "play-services-auth-api-phone-18.0.2.pom": {
+        "sha1": "722e493bc46d182f05a240c370a783a176dbf006",
+        "sha256": "sha256-ngtHpWio3rnLC4LzwXbWnBTWA7yni7NnuzcBC0pksYQ="
+      },
+      "play-services-auth-api-phone-18.0.2.aar": {
+        "sha1": "7761647f560910ff979281f93d486fef2d2a0083",
+        "sha256": "sha256-v984DnQAqdlQy6Te3BUrG85hSoc1MAnoUQh0KJJ8wkA="
+      }
+    }
+  },
+
+  {
+    "path": "com/google/android/gms/play-services-auth-base/18.0.10",
+    "repo": "https://dl.google.com/dl/android/maven2",
+    "files": {
+      "play-services-auth-base-18.0.10.pom": {
+        "sha1": "5956997efffb28851f0735c425e91e4bb0beccdd",
+        "sha256": "sha256-hT6lxGmZ1UNckj9wIbAzvV7AovN/mVubehOlZVGNcAo="
+      },
+      "play-services-auth-base-18.0.10.aar": {
+        "sha1": "d7b135c179bafd097e074ee1738b30414ed73d9b",
+        "sha256": "sha256-2L/yyY0jljP7VQIp5Sd3lCW/tR/wS5asDxLTrLoLH0I="
+      }
+    }
+  },
+
+  {
+    "path": "com/google/android/gms/play-services-auth/21.3.0",
+    "repo": "https://dl.google.com/dl/android/maven2",
+    "files": {
+      "play-services-auth-21.3.0.pom": {
+        "sha1": "b1e26e77489a301e79cdb0443573cc00cf68205c",
+        "sha256": "sha256-BAKVPwZ1OIGtHlqYheRKSIRI6aMLSpNP/rZsaFTyUnA="
+      },
+      "play-services-auth-21.3.0.aar": {
+        "sha1": "82970b450dc32e97b14a51185cd06e53c65f73df",
+        "sha256": "sha256-XTJQDlwsIkCkky26TV/9BsKkpKiGb9T0vvspfSlfYyw="
+      }
+    }
+  },
+
+  {
     "path": "com/google/android/gms/play-services-basement/16.0.1",
     "repo": "https://dl.google.com/dl/android/maven2",
     "files": {
@@ -9068,6 +9166,21 @@
   },
 
   {
+    "path": "com/google/android/gms/play-services-basement/18.0.2",
+    "repo": "https://dl.google.com/dl/android/maven2",
+    "files": {
+      "play-services-basement-18.0.2.pom": {
+        "sha1": "366c64a986ef9bccec67c491e7b0db1abb260faa",
+        "sha256": "sha256-fMoh2JXIvk/QdBlkBr81DnTTMFU1LTimioTc+ilVY6k="
+      },
+      "play-services-basement-18.0.2.aar": {
+        "sha1": "5288a9922158670d945a749d62c3b2524a1dd6d7",
+        "sha256": "sha256-3C+jbku+NCNy5DkxDEQVckb44y3Wx4dUJic3MGeQRPA="
+      }
+    }
+  },
+
+  {
     "path": "com/google/android/gms/play-services-basement/18.1.0",
     "repo": "https://dl.google.com/dl/android/maven2",
     "files": {
@@ -9078,6 +9191,21 @@
       "play-services-basement-18.1.0.aar": {
         "sha1": "e2accf5782dedb91dddef0e86cb960cc0961ac2f",
         "sha256": "sha256-A7oV84bPJgvecvxAEPuJqCDEfVHOY7wJKX6r5szgm90="
+      }
+    }
+  },
+
+  {
+    "path": "com/google/android/gms/play-services-basement/18.2.0",
+    "repo": "https://dl.google.com/dl/android/maven2",
+    "files": {
+      "play-services-basement-18.2.0.pom": {
+        "sha1": "c9e076da5d16e31f210084fb9c26142eefeb0409",
+        "sha256": "sha256-4gp1pMdW4qOZL2pM4DrhV1qPg54pVMjWWegS1NE+Kms="
+      },
+      "play-services-basement-18.2.0.aar": {
+        "sha1": "726e058af3c0d8c592ebf1d9b7b68b57b1d710a3",
+        "sha256": "sha256-70Pr/GQdcUgVQ1JPRtEmeTtMtXv0ZsTfTOQ9DLXhG5E="
       }
     }
   },
@@ -9098,6 +9226,21 @@
   },
 
   {
+    "path": "com/google/android/gms/play-services-basement/18.4.0",
+    "repo": "https://dl.google.com/dl/android/maven2",
+    "files": {
+      "play-services-basement-18.4.0.pom": {
+        "sha1": "e02644ad28f1a509f2b52aa4c76ebfd4de261986",
+        "sha256": "sha256-Bcp8Cs4NYmCTH5ftMsYM5ZgHH/Vg0/pE9J5vBpXStoc="
+      },
+      "play-services-basement-18.4.0.aar": {
+        "sha1": "bdc0da0600b30e6baed1d6b0875cdc3ae411ad69",
+        "sha256": "sha256-zlyTb9ZoFLNgL1xqXpKZEf+XPUsF9t6ZltpZa++XytI="
+      }
+    }
+  },
+
+  {
     "path": "com/google/android/gms/play-services-base/18.0.1",
     "repo": "https://dl.google.com/dl/android/maven2",
     "files": {
@@ -9108,6 +9251,21 @@
       "play-services-base-18.0.1.aar": {
         "sha1": "1db00193b2879dc27bd914d9d8596a080569a7c4",
         "sha256": "sha256-KJbXb0Mr5SFnKVu5zkWt4lwxCu/8BNKM+NtqFYaOg94="
+      }
+    }
+  },
+
+  {
+    "path": "com/google/android/gms/play-services-base/18.5.0",
+    "repo": "https://dl.google.com/dl/android/maven2",
+    "files": {
+      "play-services-base-18.5.0.pom": {
+        "sha1": "bea849333b5255e10aba738e7ba15f40b70fbf51",
+        "sha256": "sha256-JXC1FcJxevOGyJDpf2RHguP4bae2d6T/EDYUfn6mIqQ="
+      },
+      "play-services-base-18.5.0.aar": {
+        "sha1": "9b3fc5c98a0a082ce2804aa97d1f1bf39b01ce76",
+        "sha256": "sha256-WaXAwtoSMR112WXOH0GUmFNrGhZ/so/338Lf2c76QVc="
       }
     }
   },
@@ -9138,6 +9296,21 @@
       "play-services-cloud-messaging-17.2.0.aar": {
         "sha1": "388fac100c9074b38f67a1365c10fdbd2cb42b23",
         "sha256": "sha256-JyVef+lwZIOBaxWNslzzGfaiagVm/v9BWXzogHo1Djc="
+      }
+    }
+  },
+
+  {
+    "path": "com/google/android/gms/play-services-fido/20.0.1",
+    "repo": "https://dl.google.com/dl/android/maven2",
+    "files": {
+      "play-services-fido-20.0.1.pom": {
+        "sha1": "1e7769755638ac07a5455c1bc10befea32c3d8cc",
+        "sha256": "sha256-8uOMOdMAlhyat3Gk48eBqrGOfPVHRQhGaCoKgeswzog="
+      },
+      "play-services-fido-20.0.1.aar": {
+        "sha1": "b34ea85f12fbd3b458571081eac7417e7d6731f4",
+        "sha256": "sha256-s1JvDK7aqWxSbMTJupSyKdrVr+MfMvRvbNZooDYk/UI="
       }
     }
   },
@@ -9248,6 +9421,21 @@
   },
 
   {
+    "path": "com/google/android/gms/play-services-tasks/18.2.0",
+    "repo": "https://dl.google.com/dl/android/maven2",
+    "files": {
+      "play-services-tasks-18.2.0.pom": {
+        "sha1": "3e21a0ece933e1b3415a7a9cd90397852bed2735",
+        "sha256": "sha256-a5nEioldFV5Yq87mbMIhRtuDq9XYTK9sj3oq6psbzSE="
+      },
+      "play-services-tasks-18.2.0.aar": {
+        "sha1": "75cd01884bac2768b8ab1b530c6510334bb2330c",
+        "sha256": "sha256-fyqqj1AgaOr1Q1bKkq7AQnHW58QWxSxFwNI0QPy9FlQ="
+      }
+    }
+  },
+
+  {
     "path": "com/google/android/gms/strict-version-matcher-plugin/1.2.4",
     "repo": "https://dl.google.com/dl/android/maven2",
     "files": {
@@ -9337,6 +9525,17 @@
       "firebase-annotations-16.2.0.jar": {
         "sha1": "ba0806703ca285d03fa9c888b5868f101134a501",
         "sha256": "sha256-RvbV390szzxA3ol6FL2XeTFMMxn0S/0x5+CiDZNaXj4="
+      }
+    }
+  },
+
+  {
+    "path": "com/google/firebase/firebase-bom/33.8.0",
+    "repo": "https://dl.google.com/dl/android/maven2",
+    "files": {
+      "firebase-bom-33.8.0.pom": {
+        "sha1": "9acc6ead36b7d03d5a2fe0ae53092558a496e644",
+        "sha256": "sha256-5rdkiyH4WXSbvvlBzppktI1rjAvsLkJwJwmaOpLWqSc="
       }
     }
   },
@@ -9712,6 +9911,21 @@
       "firebase-installations-17.2.0.aar": {
         "sha1": "35dcca50378836565ed4967bb682bcad9758af13",
         "sha256": "sha256-3gEeajt5Yd5jjxcvLLZrowTqqYlmKp4rD0jf93TMwWY="
+      }
+    }
+  },
+
+  {
+    "path": "com/google/firebase/firebase-installations/18.0.0",
+    "repo": "https://dl.google.com/dl/android/maven2",
+    "files": {
+      "firebase-installations-18.0.0.pom": {
+        "sha1": "326a7bb8f56fdcc1eabb2a726be5b26c6c47a8eb",
+        "sha256": "sha256-E8ZMA8w8bENbPYUh48hfy8/v8i87fwF4qcpiaYHs2mY="
+      },
+      "firebase-installations-18.0.0.aar": {
+        "sha1": "02e187f194e9650bc6a2f50e960685ab483b44e5",
+        "sha256": "sha256-lQY637F//kkrEvaOcwIIc4FNgXeqVTBpytZOEdjHkpI="
       }
     }
   },
