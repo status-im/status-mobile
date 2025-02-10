@@ -85,12 +85,12 @@
             (i18n/label :t/copy-qr)]])
         (when-not valid-connection-string?
           [rn/view {:style style/standard-auth}
-           [standard-auth/slide-button
+           [standard-auth/slide-auth
             {:blur?                 true
              :size                  :size-40
              :track-text            (i18n/label :t/slide-to-reveal-qr-code)
              :customization-color   customization-color
-             :on-auth-success       on-auth-success
+             :on-success            on-auth-success
              :auth-button-label     (i18n/label :t/reveal-qr-code)
              :auth-button-icon-left :i/reveal}]])]]
       (when-not valid-connection-string?

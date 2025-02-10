@@ -10,6 +10,29 @@
    [:blur? {:optional true} [:maybe boolean?]]
    [:theme {:optional true} [:maybe :schema.common/theme]]])
 
+(def ^:private ?sign-payload
+  [:sequential {:min 1}
+   [:map {:closed true}
+    [:message :string]
+    [:address :string]]])
+
+(def ?authorize-and-sign
+  [:=>
+   [:catn
+    [:cofx :schema.re-frame/cofx]
+    [:args
+     [:tuple
+      [:map {:closed true}
+       [:sign-payload ?sign-payload]
+       [:on-sign-success fn?]
+       [:on-sign-error {:optional true} fn?]
+       [:on-close {:optional true} [:maybe fn?]]
+       [:auth-button-label {:optional true} [:maybe string?]]
+       [:auth-button-icon-left {:optional true} [:maybe keyword?]]
+       [:blur? {:optional true} [:maybe boolean?]]
+       [:theme {:optional true} [:maybe :schema.common/theme]]]]]]
+   :any])
+
 (def ?authorize
   [:=>
    [:catn
@@ -49,5 +72,9 @@
    [:catn
     [:cofx :schema.re-frame/cofx]
     [:args
-     [:tuple ?authorize-map]]]
+     [:tuple
+      [:merge
+       ?authorize-map
+       [:map {:closed true}
+        [:hide-biometrics-button? {:optional true} boolean?]]]]]]
    :any])

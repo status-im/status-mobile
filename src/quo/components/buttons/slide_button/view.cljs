@@ -26,8 +26,9 @@
                              (reanimated/set-shared-value x-pos clamped-x)
                              (when (and reached-end? (not sliding-complete?))
                                (set-sliding-complete true)
+                               (js/setTimeout reset-fn 500)
                                (when on-complete
-                                 (on-complete reset-fn))))))
+                                 (on-complete))))))
       (gesture/on-end (fn [event]
                         (let [x-translation (oops/oget event "translationX")
                               reached-end?  (>= x-translation track-width)]
@@ -55,10 +56,9 @@
         on-track-layout               (rn/use-callback
                                        #(set-track-width (oops/oget % "nativeEvent.layout.width")))
         reset-fn                      (rn/use-callback
-                                       (fn [keep-at-end-after-slide?]
+                                       (fn []
                                          (set-sliding-complete false)
-                                         (when-not keep-at-end-after-slide?
-                                           (animations/reset-track-position x-pos))))
+                                         (animations/reset-track-position x-pos)))
         dimensions                    (rn/use-callback
                                        (partial utils/get-dimensions
                                                 (or track-width constants/default-width)

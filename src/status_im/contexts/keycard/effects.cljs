@@ -1,4 +1,5 @@
 (ns status-im.contexts.keycard.effects
+  (:require-macros [utils.promesa :as utils.promesa])
   (:require [keycard.keycard :as keycard]
             [native-module.core :as native-module]
             [promesa.core :as promesa]
@@ -70,16 +71,20 @@
        (promesa/then (keycard.utils/get-on-success args))
        (promesa/catch (keycard.utils/get-on-failure args)))))
 
-(rf/reg-fx :effects.keycard/sign-hashes
- (fn [{:keys [hashes pin path on-success] :as args}]
-   (-> (promesa/all
-        (for [hash-data hashes]
+(rf/reg-fx :effects.keycard/sign-payloads
+ (fn [{:keys [payloads pin on-success] :as args}]
+   ;; NOTE: we can't run parallel operations on the keycard (rejects with an error), so we should
+   ;; execute the signings sequentially. Unfortunately, `promesa` has no built-in function that
+   ;; executes promises sequentially which also returns all the results, hence this macro.
+   (-> (utils.promesa/all-seq
+        (for [{:keys [path message address]} payloads]
           (-> (keycard/sign {:pin       pin
                              :path      path
-                             :hash-data (hex/normalize-hex hash-data)})
+                             :hash-data (hex/normalize-hex message)})
               (promesa/then (fn [signature]
                               {:signature signature
-                               :message   hash-data})))))
+                               :address   address
+                               :message   message})))))
        (promesa/then on-success)
        (promesa/catch (keycard.utils/get-on-failure args)))))
 

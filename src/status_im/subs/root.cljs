@@ -17,6 +17,7 @@
     status-im.subs.profile
     status-im.subs.settings
     status-im.subs.shell
+    status-im.subs.standard-authentication
     status-im.subs.wallet.activities
     status-im.subs.wallet.buy
     status-im.subs.wallet.collectibles
@@ -159,6 +160,7 @@
 (reg-root-key-sub :communities/permissions-checks-for-selection
                   :communities/permissions-checks-for-selection)
 (reg-root-key-sub :communities/channel-permissions-check :communities/channel-permissions-check)
+(reg-root-key-sub :communities/join-requests-for-signing :communities/join-requests-for-signing)
 
 ;;activity center
 (reg-root-key-sub :activity-center :activity-center)

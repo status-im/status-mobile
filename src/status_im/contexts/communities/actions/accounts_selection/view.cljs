@@ -4,6 +4,7 @@
     [quo.theme]
     [react-native.core :as rn]
     [react-native.gesture :as gesture]
+    [status-im.common.standard-authentication.core :as standard-auth]
     [status-im.contexts.communities.actions.accounts-selection.style :as style]
     [status-im.contexts.communities.actions.addresses-for-permissions.view :as addresses-for-permissions]
     [status-im.contexts.communities.actions.airdrop-addresses.view :as airdrop-addresses]
@@ -14,69 +15,88 @@
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
+(defn navigate-back
+  []
+  (rf/dispatch [:navigate-back]))
+
+(defn- bottom-authentication
+  [{:keys [id]}]
+  (let [theme                     (quo.theme/use-theme)
+        can-edit-addresses?       (rf/sub [:communities/can-edit-shared-addresses? id])
+        revealed-accounts         (rf/sub [:communities/accounts-to-reveal id])
+        {:keys [color]}           (rf/sub [:communities/community id])
+        join-requests-for-signing (rf/sub [:communities/join-requests-for-signing-by-id id])
+        confirm-choices           (rn/use-callback
+                                   (fn [signature-data]
+                                     (rf/dispatch [:communities/request-to-join
+                                                   {:community-id   id
+                                                    :signature-data signature-data}])
+                                     (navigate-back))
+                                   [can-edit-addresses? id])]
+
+    (rn/use-effect
+     #(when (and (not can-edit-addresses?) (seq revealed-accounts))
+        (rf/dispatch [:communities/generate-requests-for-signing id]))
+     [can-edit-addresses? revealed-accounts])
+
+    (when-not can-edit-addresses?
+      [rn/view {:style (style/bottom-actions theme)}
+       [standard-auth/slide-sign
+        {:sign-payload        join-requests-for-signing
+         :disabled?           (not (seq join-requests-for-signing))
+         :size                :size-48
+         :track-text          (i18n/label :t/slide-to-request-to-join)
+         :auth-button-label   (if can-edit-addresses?
+                                (i18n/label :t/edit-shared-addresses)
+                                (i18n/label :t/request-to-join))
+         :customization-color color
+         :on-success          confirm-choices}]])))
+
 (defn view
   []
-  (let [theme                              (quo.theme/use-theme)
-        {id :community-id}                 (rf/sub [:get-screen-params])
-        {:keys [name color images joined]} (rf/sub [:communities/community id])
-        has-permissions?                   (rf/sub [:communities/has-permissions? id])
-        airdrop-account                    (rf/sub [:communities/airdrop-account id])
-        revealed-accounts                  (rf/sub [:communities/accounts-to-reveal id])
-        revealed-accounts-count            (count revealed-accounts)
-        wallet-accounts-count              (count (rf/sub [:wallet/operable-accounts]))
-        addresses-shared-text              (if (= revealed-accounts-count wallet-accounts-count)
-                                             (i18n/label :t/all-addresses)
-                                             (i18n/label-pluralize
-                                              revealed-accounts-count
-                                              :t/address-count))
-        {:keys [highest-permission-role]}  (rf/sub [:community/token-gated-overview id])
-        highest-role-text                  (i18n/label (communities.utils/role->translation-key
-                                                        highest-permission-role
-                                                        :t/member))
-        can-edit-addresses?                (rf/sub [:communities/can-edit-shared-addresses? id])
-        navigate-back                      (rn/use-callback #(rf/dispatch [:navigate-back]))
-        show-addresses-for-permissions     (rn/use-callback
-                                            (fn []
-                                              (if can-edit-addresses?
-                                                (rf/dispatch [:open-modal :addresses-for-permissions
-                                                              {:community-id id}])
-                                                (rf/dispatch [:show-bottom-sheet
-                                                              {:community-id id
-                                                               :content
-                                                               addresses-for-permissions/view}])))
-                                            [can-edit-addresses?])
-        show-airdrop-addresses             (rn/use-callback
-                                            (fn []
-                                              (if can-edit-addresses?
-                                                (rf/dispatch [:open-modal :address-for-airdrop
-                                                              {:community-id id}])
-                                                (rf/dispatch [:show-bottom-sheet
-                                                              {:community-id id
-                                                               :content      airdrop-addresses/view}])))
-                                            [can-edit-addresses?])
-        confirm-choices                    (rn/use-callback
-                                            (fn []
-                                              (rf/dispatch
-                                               [:standard-auth/authorize
-                                                {:auth-button-label (if can-edit-addresses?
-                                                                      (i18n/label
-                                                                       :t/edit-shared-addresses)
-                                                                      (i18n/label :t/request-to-join))
-                                                 :on-auth-success
-                                                 (fn [password]
-                                                   (rf/dispatch
-                                                    [:communities/request-to-join-with-addresses
-                                                     {:community-id id
-                                                      :password     password}]))}])
-                                              (navigate-back))
-                                            [can-edit-addresses?])
-        open-permission-sheet              (rn/use-callback
-                                            (fn []
-                                              (rf/dispatch
-                                               [:show-bottom-sheet
-                                                {:content (fn []
-                                                            [permissions-sheet/view id])}]))
-                                            [id])]
+  (let [{id :community-id}                (rf/sub [:get-screen-params])
+        {:keys [name images joined]}      (rf/sub [:communities/community id])
+        has-permissions?                  (rf/sub [:communities/has-permissions? id])
+        airdrop-account                   (rf/sub [:communities/airdrop-account id])
+        revealed-accounts                 (rf/sub [:communities/accounts-to-reveal id])
+        revealed-accounts-count           (count revealed-accounts)
+        wallet-accounts-count             (count (rf/sub [:wallet/operable-accounts]))
+        addresses-shared-text             (if (= revealed-accounts-count wallet-accounts-count)
+                                            (i18n/label :t/all-addresses)
+                                            (i18n/label-pluralize
+                                             revealed-accounts-count
+                                             :t/address-count))
+        {:keys [highest-permission-role]} (rf/sub [:community/token-gated-overview id])
+        highest-role-text                 (i18n/label (communities.utils/role->translation-key
+                                                       highest-permission-role
+                                                       :t/member))
+        can-edit-addresses?               (rf/sub [:communities/can-edit-shared-addresses? id])
+        show-addresses-for-permissions    (rn/use-callback
+                                           (fn []
+                                             (if can-edit-addresses?
+                                               (rf/dispatch [:open-modal :addresses-for-permissions
+                                                             {:community-id id}])
+                                               (rf/dispatch [:show-bottom-sheet
+                                                             {:community-id id
+                                                              :content
+                                                              addresses-for-permissions/view}])))
+                                           [can-edit-addresses?])
+        show-airdrop-addresses            (rn/use-callback
+                                           (fn []
+                                             (if can-edit-addresses?
+                                               (rf/dispatch [:open-modal :address-for-airdrop
+                                                             {:community-id id}])
+                                               (rf/dispatch [:show-bottom-sheet
+                                                             {:community-id id
+                                                              :content      airdrop-addresses/view}])))
+                                           [can-edit-addresses?])
+        open-permission-sheet             (rn/use-callback
+                                           (fn []
+                                             (rf/dispatch
+                                              [:show-bottom-sheet
+                                               {:content (fn []
+                                                           [permissions-sheet/view id])}]))
+                                           [id])]
     (rn/use-mount
      (fn []
        (rf/dispatch [:communities/initialize-permission-addresses id])))
@@ -141,11 +161,4 @@
           (i18n/label :t/community-rules)])
        (when-not can-edit-addresses?
          [community-rules/view id])]]
-     (when-not can-edit-addresses?
-       [rn/view {:style (style/bottom-actions theme)}
-        [quo/slide-button
-         {:size                :size-48
-          :track-text          (i18n/label :t/slide-to-request-to-join)
-          :track-icon          :i/face-id
-          :customization-color color
-          :on-complete         confirm-choices}]])]))
+     [bottom-authentication {:id id}]]))

@@ -26,11 +26,11 @@
         :weight :regular
         :size   :paragraph-1}
        (i18n/label :t/the-key-pair-and-derived-accounts-will-be-removed)]
-      [standard-auth/slide-button
+      [standard-auth/slide-auth
        {:size                :size-48
         :track-text          (i18n/label :t/slide-to-remove-key-pair)
         :container-style     {:margin-top 34}
         :customization-color colors/danger-50
-        :on-auth-success     on-remove
+        :on-success          on-remove
         :auth-button-label   (i18n/label :t/confirm)}]]]))
 
