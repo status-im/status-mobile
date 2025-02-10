@@ -1,10 +1,8 @@
-(ns status-im.contexts.push-notifications.notifee
+(ns react-native.notifee
   (:require
-   ["@notifee/react-native" :as notifee]
-   [clojure.string :as string]
-   [promesa.core :as promesa]))
-
-;; notification permission settings
+    ["@notifee/react-native" :as notifee]
+    [clojure.string :as string]
+    [promesa.core :as promesa]))
 
 (def authorization-statuses (js->clj notifee/AuthorizationStatus))
 
@@ -59,17 +57,23 @@
   [options]
   (.displayNotification notifee/default (clj->js options)))
 
+(defn cancel-displayed-notifications
+  ([]
+   (.cancelDisplayedNotifications notifee/default))
+  ([notification-ids]
+   (.cancelDisplayedNotifications notifee/default (clj->js notification-ids))))
+
 (comment
   (-> (request-notification-permissions)
       (promesa/then tap>)
       (promesa/catch tap>))
 
   (-> (request-notification-channel
-       {:id "status-im-notifications-alt"
+       {:id   "status-im-notifications-alt"
         :name "Status push notifications Alt"})
       (promesa/then tap>))
 
   (display-notification
-   {:title "Test title"
-    :body "Test Body"
+   {:title   "Test title"
+    :body    "Test Body"
     :android {:channelId "status-im-notifications-alt"}}))
