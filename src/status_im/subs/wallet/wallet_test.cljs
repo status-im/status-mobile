@@ -205,9 +205,10 @@
 
 (def route-data
   [{:gas-amount "25000"
-    :gas-fees   {:max-fee-per-gas-medium "4"
-                 :eip-1559-enabled       true
-                 :l-1-gas-fee            "0"}}])
+    :gas-fees   {:tx-max-fees-per-gas "4"
+                 :eip-1559-enabled    true
+                 :l-1-gas-fee         "0"}
+    :from       {:native-currency-symbol "ETH"}}])
 
 (h/deftest-sub :wallet/balances-in-selected-networks
   [sub-name]
@@ -938,9 +939,7 @@
            (assoc-in [:profile/profile :currency] :usd)
            (assoc-in [:profile/profile :currency-symbol] "$")))
 
-    (let [token-symbol-for-fees "ETH"
-          result                (rf/sub [sub-name token-symbol-for-fees])]
-      (is (match? result "$0.20")))))
+    (is (match? (rf/sub [sub-name]) "$0.20"))))
 
 (h/deftest-sub :wallet/zero-balance-in-all-non-watched-accounts?
   [sub-name]

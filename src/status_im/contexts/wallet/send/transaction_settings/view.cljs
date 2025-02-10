@@ -66,60 +66,67 @@
        :button-one-label (i18n/label :t/confirm)}]]))
 
 (defn settings-sheet
-  [_]
-  (let [[selected-id set-selected-id] (rn/use-state :normal)]
+  []
+  (let [current-transaction-setting                   (rf/sub [:wallet/confirmed-tx-setting])
+        [transaction-setting set-transaction-setting] (rn/use-state current-transaction-setting)]
     [rn/view
      [quo/drawer-top
       {:title (i18n/label :t/transaction-settings)}]
      [quo/category
       {:list-type :settings
-       :data      [{:title             (str (i18n/label :t/normal) "~60s")
-                    :image-props       "🍿"
-                    :description-props {:text "€1.45"}
-                    :image             :emoji
-                    :description       :text
-                    :action            :selector
-                    :action-props      {:type     :radio
-                                        :checked? (= :normal selected-id)}
-                    :on-press          #(set-selected-id :normal)
-                    :label             :text
-                    :preview-size      :size-32}
-                   {:title             (str (i18n/label :t/fast) "~40s")
-                    :image-props       "🚗"
-                    :description-props {:text "€1.65"}
-                    :image             :emoji
-                    :description       :text
-                    :action            :selector
-                    :action-props      {:type     :radio
-                                        :checked? (= :fast selected-id)}
-                    :on-press          #(set-selected-id :fast)
-                    :label             :text
-                    :preview-size      :size-32}
-                   {:title             (str (i18n/label :t/urgent) "~15s")
-                    :image-props       "🚀"
-                    :description-props {:text "€1.85"}
-                    :image             :emoji
-                    :description       :text
-                    :action            :selector
-                    :action-props      {:type     :radio
-                                        :checked? (= :urgent selected-id)}
-                    :on-press          #(set-selected-id :urgent)
-                    :label             :text
-                    :preview-size      :size-32}
-                   {:title             (i18n/label :t/custom)
-                    :image-props       :i/edit
-                    :description-props {:text "Set your own fees and nonce"}
-                    :image             :icon
-                    :description       :text
-                    :action            :arrow
-                    :on-press          #(rf/dispatch
-                                         [:show-bottom-sheet
-                                          {:content custom-settings-sheet}])
-                    :label             :text
-                    :preview-size      :size-32}]}]
+       :data [{:title             (str (i18n/label :t/normal) "~60s")
+               :image-props       "🍿"
+               :description-props {:text (rf/sub [:wallet/wallet-send-transaction-setting-fiat-formatted
+                                                  :transaction-setting/normal])}
+               :image             :emoji
+               :description       :text
+               :action            :selector
+               :action-props      {:type     :radio
+                                   :checked? (= :transaction-setting/normal transaction-setting)}
+               :on-press          #(set-transaction-setting :transaction-setting/normal)
+               :label             :text
+               :preview-size      :size-32}
+              {:title             (str (i18n/label :t/fast) "~40s")
+               :image-props       "🚗"
+               :description-props {:text (rf/sub [:wallet/wallet-send-transaction-setting-fiat-formatted
+                                                  :transaction-setting/fast])}
+               :image             :emoji
+               :description       :text
+               :action            :selector
+               :action-props      {:type     :radio
+                                   :checked? (= :transaction-setting/fast transaction-setting)}
+               :on-press          #(set-transaction-setting :transaction-setting/fast)
+               :label             :text
+               :preview-size      :size-32}
+              {:title             (str (i18n/label :t/urgent) "~15s")
+               :image-props       "🚀"
+               :description-props {:text (rf/sub [:wallet/wallet-send-transaction-setting-fiat-formatted
+                                                  :transaction-setting/urgent])}
+               :image             :emoji
+               :description       :text
+               :action            :selector
+               :action-props      {:type     :radio
+                                   :checked? (= :transaction-setting/urgent transaction-setting)}
+               :on-press          #(set-transaction-setting :transaction-setting/urgent)
+               :label             :text
+               :preview-size      :size-32}
+              {:title             (i18n/label :t/custom)
+               :image-props       :i/edit
+               :description-props {:text "Set your own fees and nonce"}
+               :image             :icon
+               :description       :text
+               :action            :arrow
+               :on-press          #(rf/dispatch
+                                    [:show-bottom-sheet
+                                     {:content custom-settings-sheet}])
+               :label             :text
+               :preview-size      :size-32}]}]
      [quo/bottom-actions
       {:actions          :one-action
-       :button-one-props {:on-press #(rf/dispatch [:hide-bottom-sheet])}
+       :button-one-props {:on-press (fn []
+                                      (rf/dispatch [:wallet/quick-transaction-settings-confirmed
+                                                    transaction-setting])
+                                      (rf/dispatch [:hide-bottom-sheet]))}
        :button-one-label (i18n/label :t/confirm)}]]))
 
 (defn- hint

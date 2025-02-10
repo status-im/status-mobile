@@ -163,6 +163,17 @@
  :-> :route)
 
 (rf/reg-sub
+ :wallet/gas-fees
+ :<- [:wallet/wallet-send-route]
+ (fn [route]
+   (:gas-fees (first route))))
+
+(rf/reg-sub
+ :wallet/suggested-gas-fees-for-setting
+ :<- [:wallet/gas-fees]
+ :-> :suggested-gas-fees-for-setting)
+
+(rf/reg-sub
  :wallet/wallet-send-enough-assets?
  :<- [:wallet/wallet-send]
  :-> :enough-assets?)
@@ -844,22 +855,51 @@
  :<- [:profile/currency]
  :<- [:profile/currency-symbol]
  :<- [:wallet/prices-per-token]
- (fn [[account route currency currency-symbol prices-per-token] [_ token-symbol-for-fees]]
-   (when token-symbol-for-fees
-     (let [tokens              (:tokens account)
-           token-for-fees      (first (filter #(= (string/lower-case (:symbol %))
-                                                  (string/lower-case token-symbol-for-fees))
-                                              tokens))
-           fee-in-native-token (send-utils/calculate-full-route-gas-fee route)
-           fee-in-fiat         (utils/calculate-token-fiat-value
-                                {:currency         currency
-                                 :balance          fee-in-native-token
-                                 :token            token-for-fees
-                                 :prices-per-token prices-per-token})
-           fee-formatted       (utils/fiat-formatted-for-ui
-                                currency-symbol
-                                fee-in-fiat)]
-       fee-formatted))))
+ (fn [[account route currency currency-symbol prices-per-token]]
+   (let [token-symbol-for-fees (get-in (first route) [:from :native-currency-symbol])]
+     (when token-symbol-for-fees
+       (let [tokens              (:tokens account)
+             token-for-fees      (first (filter #(= (string/lower-case (:symbol %))
+                                                    (string/lower-case token-symbol-for-fees))
+                                                tokens))
+             fee-in-native-token (send-utils/full-route-gas-fee route)
+             fee-in-fiat         (utils/calculate-token-fiat-value
+                                  {:currency         currency
+                                   :balance          fee-in-native-token
+                                   :token            token-for-fees
+                                   :prices-per-token prices-per-token})
+             fee-formatted       (utils/fiat-formatted-for-ui
+                                  currency-symbol
+                                  fee-in-fiat)]
+         fee-formatted)))))
+
+(rf/reg-sub
+ :wallet/wallet-send-transaction-setting-fiat-formatted
+ :<- [:wallet/current-viewing-account]
+ :<- [:wallet/wallet-send-route]
+ :<- [:profile/currency]
+ :<- [:profile/currency-symbol]
+ :<- [:wallet/prices-per-token]
+ :<- [:wallet/suggested-gas-fees-for-setting]
+ (fn [[account route currency currency-symbol prices-per-token fees-for-settings]
+      [_ transaction-setting]]
+   (let [token-symbol-for-fees (get-in (first route) [:from :native-currency-symbol])]
+     (when token-symbol-for-fees
+       (let [tokens              (:tokens account)
+             token-for-fees      (first (filter #(= (string/lower-case (:symbol %))
+                                                    (string/lower-case token-symbol-for-fees))
+                                                tokens))
+             gas-price           (transaction-setting fees-for-settings)
+             fee-in-native-token (send-utils/full-route-gas-fee-for-custom-gas-price route gas-price)
+             fee-in-fiat         (utils/calculate-token-fiat-value
+                                  {:currency         currency
+                                   :balance          fee-in-native-token
+                                   :token            token-for-fees
+                                   :prices-per-token prices-per-token})
+             fee-formatted       (utils/fiat-formatted-for-ui
+                                  currency-symbol
+                                  fee-in-fiat)]
+         fee-formatted)))))
 
 (rf/reg-sub
  :wallet/accounts-names
