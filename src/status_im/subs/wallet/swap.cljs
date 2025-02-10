@@ -149,6 +149,11 @@
  :-> :loading-swap-proposal?)
 
 (rf/reg-sub
+ :wallet/swap-loading-swap-proposal-fee?
+ :<- [:wallet/swap]
+ :-> :loading-swap-proposal-fee?)
+
+(rf/reg-sub
  :wallet/swap-transaction-for-signing
  :<- [:wallet/swap]
  :-> :transaction-for-signing)
@@ -383,3 +388,28 @@
  (fn [[receive-token-price currency-symbol]]
    (when receive-token-price
      (utils/fiat-formatted-for-ui currency-symbol receive-token-price))))
+
+(rf/reg-sub :wallet/max-swap-fee
+ :<- [:wallet/swap-proposal-approval-required]
+ :<- [:wallet/swap-approval-fee]
+ :<- [:wallet/swap-proposal]
+ (fn [[approval-required swap-approval-fee swap-proposal]]
+   (let [wallet-swap-proposal-fee (send-utils/full-route-gas-fee [swap-proposal])]
+     (if approval-required
+       (money/add swap-approval-fee wallet-swap-proposal-fee)
+       wallet-swap-proposal-fee))))
+
+(rf/reg-sub :wallet/swap-available-crypto-limit
+ :<- [:wallet/swap-network]
+ :<- [:wallet/swap-asset-to-pay-balance-for-chain-data]
+ :<- [:wallet/max-swap-fee]
+ :<- [:wallet/swap-asset-to-pay-symbol]
+ (fn [[network asset-to-pay-with-current-account-balance max-swap-fee pay-token-symbol]]
+   (let [pay-token-balance (utils/token-balance-for-network
+                            asset-to-pay-with-current-account-balance
+                            (:chain-id network))]
+     (if (= pay-token-symbol constants/token-for-fees-symbol)
+       (let [buffered-fee (money/mul max-swap-fee
+                                     (inc (/ constants/eth-max-fee-buffer-percent 100)))]
+         (money/sub pay-token-balance buffered-fee))
+       pay-token-balance))))

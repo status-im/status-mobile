@@ -22,9 +22,12 @@
   [search-text on-change-text]
   (let [snt-token      (rf/sub [:wallet/token-by-symbol "SNT"])
         eth-token      (rf/sub [:wallet/token-by-symbol "ETH"])
+        usdc-token     (rf/sub [:wallet/token-by-symbol "USDC"])
         on-token-press (fn [token]
                          (let [pay-token-symbol (:symbol token)
-                               asset-to-receive (if (= pay-token-symbol "SNT") eth-token snt-token)]
+                               asset-to-receive (cond (= pay-token-symbol "SNT") eth-token
+                                                      (= pay-token-symbol "ETH") usdc-token
+                                                      :else                      snt-token)]
                            (rf/dispatch [:wallet.swap/start
                                          {:asset-to-pay     {:symbol pay-token-symbol}
                                           :asset-to-receive asset-to-receive

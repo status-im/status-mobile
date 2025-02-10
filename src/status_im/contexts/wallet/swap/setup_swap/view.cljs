@@ -115,6 +115,7 @@
         pay-token-symbol                 (rf/sub [:wallet/swap-asset-to-pay-symbol])
         pay-token-decimals               (rf/sub [:wallet/swap-asset-to-pay-decimals])
         loading-swap-proposal?           (rf/sub [:wallet/swap-loading-swap-proposal?])
+        loading-swap-proposal-fee?       (rf/sub [:wallet/swap-loading-swap-proposal-fee?])
         swap-proposal                    (rf/sub [:wallet/swap-proposal-without-fees])
         approval-required                (rf/sub [:wallet/swap-proposal-approval-required])
         approval-amount-required         (rf/sub [:wallet/swap-proposal-approval-amount-required])
@@ -122,6 +123,7 @@
         approval-transaction-id          (rf/sub [:wallet/swap-approval-transaction-id])
         approved-amount                  (rf/sub [:wallet/swap-approved-amount])
         error-response                   (rf/sub [:wallet/swap-error-response])
+        eth-proposal?                    (= pay-token-symbol "ETH")
         overlay-shown?                   (boolean (:sheets (rf/sub [:bottom-sheet])))
         input-ref                        (rn/use-ref-atom nil)
         set-input-ref                    (rn/use-callback (fn [ref] (reset! input-ref ref)))
@@ -131,12 +133,12 @@
                                                   (:chain-id network)])
         pay-token-fiat-value             (rf/sub [:wallet/swap-asset-to-pay-amount-in-fiat
                                                   pay-input-num-value])
-        available-crypto-limit           (money/bignumber
-                                          pay-token-balance-selected-chain)
+        available-crypto-limit           (rf/sub [:wallet/swap-available-crypto-limit])
         display-decimals                 (min pay-token-decimals
                                               constants/min-token-decimals-to-display)
-        available-crypto-limit-display   (rf/sub [:wallet/swap-asset-to-pay-balance-for-chain-ui
-                                                  (:chain-id network)])
+        available-crypto-limit-display   (utils/sanitized-token-amount-to-display
+                                          available-crypto-limit
+                                          display-decimals)
         approval-amount-required-num     (when approval-amount-required
                                            (number/to-fixed (number/hex->whole
                                                              approval-amount-required
@@ -157,14 +159,35 @@
                                                 pay-input-amount))
                                           (> pay-input-amount 0)
                                           (not pay-input-error?))
+        request-swap-proposal-fee        (rn/use-callback
+                                          (fn []
+                                            (let [safe-send-amount (utils/calculate-max-safe-send-amount
+                                                                    pay-token-balance-selected-chain)]
+                                              (rf/dispatch [:wallet/get-swap-proposal-fee
+                                                            {:amount-in safe-send-amount}])))
+                                          [pay-token-balance-selected-chain])
         request-fetch-swap-proposal      (rn/use-callback
                                           (fn []
                                             (fetch-swap-proposal
                                              {:amount                      pay-input-amount
                                               :valid-input?                valid-pay-input?
                                               :clean-approval-transaction? true}))
-                                          [pay-input-amount])]
+                                          [pay-input-amount])
+        on-max-balance-press             (rn/use-callback
+                                          (fn []
+                                            (let [max-value (if eth-proposal?
+                                                              (number/format-decimal-fixed
+                                                               available-crypto-limit
+                                                               constants/eth-send-amount-decimal)
+                                                              (money/to-string available-crypto-limit))]
+                                              (on-max-press max-value)))
+                                          [available-crypto-limit eth-proposal?])]
     (rn/use-unmount #(rf/dispatch [:wallet/clean-swap]))
+    (rn/use-effect
+     (fn []
+       (when eth-proposal?
+         (request-swap-proposal-fee)))
+     [eth-proposal?])
     (rn/use-effect
      (fn []
        (request-fetch-swap-proposal))
@@ -196,7 +219,8 @@
                               input-focused?                                    :typing
                               :else                                             :disabled)
       :on-token-press       on-token-press
-      :on-max-press         #(on-max-press (str pay-token-balance-selected-chain))
+      :on-max-press         on-max-balance-press
+      :max-loading?         loading-swap-proposal-fee?
       :on-input-focus       on-input-focus
       :value                pay-input-amount
       :fiat-value           pay-token-fiat-value

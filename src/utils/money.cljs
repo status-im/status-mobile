@@ -246,3 +246,13 @@
 (schema/=> format-amount
   [:=> [:cat [:maybe :int]]
    [:maybe :string]])
+
+(defn maximum
+  [n1 n2]
+  (when-let [[^js bn1 ^js bn2] (->bignumbers n1 n2)]
+    (if (greater-than-or-equals bn1 bn2) bn1 bn2)))
+
+(defn minimum
+  [n1 n2]
+  (when-let [[^js bn1 ^js bn2] (->bignumbers n1 n2)]
+    (if (less-than bn1 bn2) bn1 bn2)))

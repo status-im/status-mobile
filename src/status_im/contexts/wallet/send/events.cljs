@@ -12,7 +12,6 @@
     [taoensso.timbre :as log]
     [utils.address]
     [utils.i18n :as i18n]
-    [utils.money :as utils.money]
     [utils.number]
     [utils.re-frame :as rf]
     [utils.security.core :as security]
@@ -626,43 +625,6 @@
                                    {:event :wallet/stop-get-suggested-routes
                                     :error error}))}]]]}))
 
-(defn- bridge-amount-greater-than-bonder-fees?
-  [{{token-decimals :decimals} :from-token
-    bonder-fees                :tx-bonder-fees
-    amount-in                  :amount-in}]
-  (let [bonder-fees      (utils.money/token->unit bonder-fees token-decimals)
-        amount-to-bridge (utils.money/token->unit amount-in token-decimals)]
-    (> amount-to-bridge bonder-fees)))
-
-(defn- remove-multichain-routes
-  [routes]
-  (if (> (count routes) 1)
-    [] ;; if route is multichain, we remove it
-    routes))
-
-(defn- remove-invalid-bonder-fees-routes
-  [routes]
-  (filter bridge-amount-greater-than-bonder-fees? routes))
-
-(defn- ->old-route-paths
-  [routes]
-  (map data-store/new->old-route-path routes))
-
-(def ^:private best-routes-fix
-  (comp ->old-route-paths
-        remove-invalid-bonder-fees-routes
-        remove-multichain-routes))
-
-(def ^:private candidates-fix
-  (comp ->old-route-paths remove-invalid-bonder-fees-routes))
-
-(defn- fix-routes
-  [data]
-  (-> data
-      (data-store/rpc->suggested-routes)
-      (update :best best-routes-fix)
-      (update :candidates candidates-fix)))
-
 (rf/reg-event-fx
  :wallet/handle-suggested-routes
  (fn [{:keys [db]} [data]]
@@ -688,8 +650,8 @@
                  (cond
                    (and failure? swap?) [:wallet/swap-proposal-error error]
                    failure?             [:wallet/suggested-routes-error error-message]
-                   swap?                [:wallet/swap-proposal-success (fix-routes data)]
-                   :else                [:wallet/suggested-routes-success (fix-routes data)
+                   swap?                [:wallet/swap-proposal-success (data-store/fix-routes data)]
+                   :else                [:wallet/suggested-routes-success (data-store/fix-routes data)
                                          enough-assets?])]]}))))))
 
 (rf/reg-event-fx

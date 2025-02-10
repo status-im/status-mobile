@@ -383,3 +383,18 @@
     (is (= (utils/calculate-token-fiat-change 50 0) 0.0))
     (is (= (utils/calculate-token-fiat-change 100 -100) 100.0))
     (is (= (utils/calculate-token-fiat-change 0.001 0.1) 0.000001))))
+
+(deftest calculate-max-safe-send-amount-test
+  (testing "Calculates the max ETH sendable while reserving fees"
+    (is (= "0.99" (utils/calculate-max-safe-send-amount "1.0")))
+    (is (= "0.009" (utils/calculate-max-safe-send-amount "0.01")))
+
+    (is (= "0" (utils/calculate-max-safe-send-amount "0.0001"))) ; Min fee is 0.0001, so 0 left
+    (is (= "0" (utils/calculate-max-safe-send-amount "0.00009"))) ; Below min fee, should return 0
+    (is (= "0.99" (utils/calculate-max-safe-send-amount "1.0")))
+
+    (is (= "9.99" (utils/calculate-max-safe-send-amount "10.0")))
+    (is (= "99.99" (utils/calculate-max-safe-send-amount "100.0")))
+
+    (is (= "0" (utils/calculate-max-safe-send-amount "0")))
+    (is (= "0" (utils/calculate-max-safe-send-amount nil)))))

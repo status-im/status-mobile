@@ -199,6 +199,14 @@
       (number/small-number-threshold display-decimals)
       (str amount-fixed-decimals))))
 
+(defn token-balance-for-network
+  "Returns the token balance for a specific chain"
+  [token chain-id]
+  (let [token-decimals (:decimals token)]
+    (-> (get-in token [:balances-per-chain chain-id :raw-balance] 0)
+        (number/convert-to-whole-number token-decimals)
+        money/bignumber)))
+
 (defn token-balance-display-for-network
   "Formats a token balance for a specific chain and rounds it to a specified number of decimals.
   If the balance is less than the smallest representable value based on rounding decimals,
@@ -507,3 +515,24 @@
    (-> (money/bignumber divident-price)
        (money/div (money/bignumber divisor-price))
        (number/to-fixed (min divisor-token-decimals constants/min-token-decimals-to-display)))))
+
+(defn calculate-max-safe-send-amount
+  "Calculates the max ETH that can be sent while reserving enough for gas fees.
+
+  - Ensures a minimum of 0.0001 ETH and a max of 0.01 ETH for gas.
+  - Uses 10% of the value as an estimated fee, clamped within this range.
+  - Prevents sending the full balance to avoid transaction failures.
+
+  Aligned with the desktop logic for consistency.
+  https://github.com/status-im/status-desktop/blob/f320abb5c498ac260a1a4a9db046485b88af81e7/ui/app/AppLayouts/Wallet/WalletUtils.qml#L44"
+  [value]
+  (if (or (nil? value) (zero? value))
+    "0"
+    (let [est-fee (money/maximum (money/bignumber 0.0001)
+                                 (money/minimum 0.01
+                                                (money/mul (money/bignumber value) 0.1)))
+          result  (money/sub (money/bignumber value) est-fee)]
+      (-> result
+          (money/maximum 0)
+          (number/format-decimal-fixed constants/eth-send-amount-decimal)
+          (number/remove-trailing-zeroes)))))
