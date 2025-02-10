@@ -38,16 +38,10 @@ function gen_deps_list() {
     echo -e "${CLR}Found ${GRN}$(wc -l < "${DEPS_LIST}")${RST} direct dependencies..."
 }
 
-# FIXME: Temporary fix for missing packages.
+# FIXME: Fix for missing packages.
 # https://github.com/status-im/status-mobile/issues/15447
 function add_deps_hack() {
-    echo -n \
-'org.gradle.toolchains.foojay-resolver-convention:org.gradle.toolchains.foojay-resolver-convention.gradle.plugin:0.5.0
-org.jetbrains.kotlin.jvm:org.jetbrains.kotlin.jvm.gradle.plugin:1.8.0
-com.android.tools.build:gradle:3.5.4
-com.android.tools.lint:lint-gradle:31.1.1
-com.facebook.react:hermes-android:0.73.5' \
-        >> "${DEPS_LIST}"
+   "${CUR_DIR}/deps_versions.sh" >> "${DEPS_LIST}"
 }
 
 # Find download URLs for each dependency.

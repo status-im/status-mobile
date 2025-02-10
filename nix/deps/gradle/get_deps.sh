@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
 # This script generates a list of dependencies for the main project and its
-# sub-projects defined using Gradle config files. It parses Gradle output of
-# 'dependencies' and 'buildEnvironment` tasks using AWK.
+# sub-projects defined using Gradle config files. It uses github-dependency-graph-gradle-plugin:
+# https://github.com/gradle/github-dependency-graph-gradle-plugin?tab=readme-ov-file#using-the-plugin-to-generate-dependency-reports
 
 set -Eeuo pipefail
 

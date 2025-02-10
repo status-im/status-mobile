@@ -143,6 +143,10 @@ android {
     kotlinOptions {
         jvmTarget = JavaVersion.VERSION_17
     }
+    // Disable default lint checks to remove redundant lintVitalReportRelease task
+    lintOptions {
+        checkReleaseBuilds false
+    }
 
     // https://developer.android.com/studio/projects/install-ndk#vanilla_cmake
     externalNativeBuild {
