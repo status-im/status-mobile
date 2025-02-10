@@ -300,6 +300,16 @@ dependencies {
             exclude group: 'com.google.firebase'
             exclude group: 'com.google.gms'
         }
+
+        implementation(project(':react-native-firebase_app')) {
+            exclude group: 'com.google.firebase'
+            exclude group: 'com.google.gms'
+        }
+        
+        implementation(project(':react-native-firebase_messaging')) {
+            exclude group: 'com.google.firebase'
+            exclude group: 'com.google.gms'
+        } 
     } else {
         implementation project(':react-native-notifications') {
             // exclude group: 'com.google.gms'
