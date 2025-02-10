@@ -14,6 +14,7 @@ let
     rev = "unknown";
     shortRev = rev;
     rawVersion = "develop";
+    version = rawVersion;
     cleanVersion = rawVersion;
     goPackagePath = "github.com/${owner}/${repo}";
     # We use builtins.path so that we can name the resulting derivation,
