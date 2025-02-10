@@ -233,7 +233,8 @@
 
 (defn new->old-route-path
   [new-path]
-  (let [to-bignumber (fn [k] (-> new-path k money/bignumber))]
+  (let [to-bignumber                          (fn [k] (-> new-path k money/bignumber))
+        suggested-levels-for-max-fees-per-gas (:suggested-levels-for-max-fees-per-gas new-path)]
     {:approval-fee              (to-bignumber :approval-fee)
      :approval-l-1-fee          (to-bignumber :approval-l-1-fee)
      :bonder-fees               (to-bignumber :tx-bonder-fees)
@@ -242,35 +243,34 @@
      :amount-in-locked          (:amount-in-locked new-path)
      :amount-in                 (:amount-in new-path)
      :max-amount-in             (:max-amount-in new-path)
-     :gas-fees                  {:gas-price                "0"
-                                 :base-fee                 (send-utils/convert-to-gwei (:tx-base-fee
-                                                                                        new-path)
-                                                                                       precision)
+     :gas-fees                  {:gas-price "0"
+                                 :base-fee (send-utils/convert-to-gwei (:tx-base-fee
+                                                                        new-path)
+                                                                       precision)
                                  :max-priority-fee-per-gas (send-utils/convert-to-gwei (:tx-priority-fee
                                                                                         new-path)
                                                                                        precision)
-                                 :max-fee-per-gas-low      (send-utils/convert-to-gwei
-                                                            (get-in
-                                                             new-path
-                                                             [:suggested-levels-for-max-fees-per-gas
-                                                              :low])
-                                                            precision)
-                                 :max-fee-per-gas-medium   (send-utils/convert-to-gwei
-                                                            (get-in
-                                                             new-path
-                                                             [:suggested-levels-for-max-fees-per-gas
-                                                              :medium])
-                                                            precision)
-                                 :max-fee-per-gas-high     (send-utils/convert-to-gwei
-                                                            (get-in
-                                                             new-path
-                                                             [:suggested-levels-for-max-fees-per-gas
-                                                              :high])
-                                                            precision)
-                                 :l-1-gas-fee              (send-utils/convert-to-gwei (:tx-l-1-fee
-                                                                                        new-path)
-                                                                                       precision)
-                                 :eip-1559-enabled         true}
+                                 :l-1-gas-fee (send-utils/convert-to-gwei (:tx-l-1-fee
+                                                                           new-path)
+                                                                          precision)
+                                 :eip-1559-enabled true
+                                 :tx-max-fees-per-gas (send-utils/convert-to-gwei
+                                                       (:tx-max-fees-per-gas
+                                                        new-path)
+                                                       precision)
+                                 :suggested-gas-fees-for-setting
+                                 {:transaction-setting/normal (send-utils/convert-to-gwei
+                                                               (:low
+                                                                suggested-levels-for-max-fees-per-gas)
+                                                               precision)
+                                  :transaction-setting/fast   (send-utils/convert-to-gwei
+                                                               (:medium
+                                                                suggested-levels-for-max-fees-per-gas)
+                                                               precision)
+                                  :transaction-setting/urgent (send-utils/convert-to-gwei
+                                                               (:high
+                                                                suggested-levels-for-max-fees-per-gas)
+                                                               precision)}}
      :bridge-name               (:processor-name new-path)
      :amount-out                (:amount-out new-path)
      :approval-contract-address (:approval-contract-address new-path)
@@ -279,7 +279,8 @@
      :to                        (:to-chain new-path)
      :approval-amount-required  (:approval-amount-required new-path)
      ;;  :cost () ;; tbd not used on desktop
-     :gas-amount                (:tx-gas-amount new-path)}))
+     :gas-amount                (:tx-gas-amount new-path)
+     :router-input-params-uuid  (:router-input-params-uuid new-path)}))
 
 (defn tokens-never-loaded?
   [db]

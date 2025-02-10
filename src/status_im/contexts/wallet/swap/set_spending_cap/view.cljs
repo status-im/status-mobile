@@ -4,9 +4,10 @@
     [quo.foundations.resources :as resources]
     [quo.theme :as quo.theme]
     [react-native.core :as rn]
+    [status-im.common.biometric.utils :as biometric]
     [status-im.common.events-helper :as events-helper]
     [status-im.common.floating-button-page.view :as floating-button-page]
-    [status-im.common.standard-authentication.core :as standard-auth]
+    [status-im.constants :as constants]
     [status-im.contexts.wallet.common.utils :as utils]
     [status-im.contexts.wallet.common.utils.external-links :as external-links]
     [status-im.contexts.wallet.swap.set-spending-cap.style :as style]
@@ -216,25 +217,21 @@
 
 (defn- slide-button
   []
-  (let [loading-swap-proposal?  (rf/sub [:wallet/swap-loading-swap-proposal?])
-        swap-proposal           (rf/sub [:wallet/swap-proposal-without-fees])
-        account                 (rf/sub [:wallet/current-viewing-account])
-        transaction-for-signing (rf/sub [:wallet/swap-transaction-for-signing])
-        sign-on-keycard?        (get-in transaction-for-signing
-                                        [:signingDetails :signOnKeycard])
-        on-auth-success         (rn/use-callback
-                                 #(rf/dispatch [:wallet/prepare-signatures-for-transactions :swap %]))
-        on-complete             (rn/use-callback
-                                 #(rf/dispatch [:wallet/prepare-signatures-for-transactions :swap ""]))]
-    [standard-auth/slide-button
+  (let [loading-swap-proposal? (rf/sub [:wallet/swap-loading-swap-proposal?])
+        swap-proposal          (rf/sub [:wallet/swap-proposal-without-fees])
+        account                (rf/sub [:wallet/current-viewing-account])
+        biometric-auth?        (= (rf/sub [:auth-method]) constants/auth-method-biometric)
+        biometric-type         (rf/sub [:biometrics/supported-type])]
+    [quo/slide-button
      {:size                :size-48
       :track-text          (i18n/label :t/slide-to-sign)
       :container-style     {:z-index 2}
       :customization-color (:color account)
+      :track-icon          (if biometric-auth?
+                             (biometric/get-icon-by-type biometric-type)
+                             :password)
       :disabled?           (or loading-swap-proposal? (not swap-proposal))
-      :on-complete         (when sign-on-keycard? on-complete)
-      :on-auth-success     on-auth-success
-      :auth-button-label   (i18n/label :t/confirm)}]))
+      :on-complete         #(rf/dispatch [:wallet/prepare-signatures-for-transactions :swap])}]))
 
 (defn- footer
   []

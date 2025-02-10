@@ -443,7 +443,10 @@
 (def ^:const wallet-account-name-max-length 20)
 
 
+(def ^:const gas-rate-low 0)
 (def ^:const gas-rate-medium 1)
+(def ^:const gas-rate-high 2)
+(def ^:const gas-rate-custom 3)
 (def ^:const send-type-transfer 0)
 (def ^:const send-type-bridge 5)
 (def ^:const send-type-erc-721-transfer 6)

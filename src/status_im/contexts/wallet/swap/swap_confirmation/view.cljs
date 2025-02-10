@@ -4,8 +4,8 @@
     [quo.theme :as quo.theme]
     [react-native.core :as rn]
     [react-native.safe-area :as safe-area]
+    [status-im.common.biometric.utils :as biometric]
     [status-im.common.floating-button-page.view :as floating-button-page]
-    [status-im.common.standard-authentication.core :as standard-auth]
     [status-im.constants :as constants]
     [status-im.contexts.wallet.common.utils :as utils]
     [status-im.contexts.wallet.send.utils :as send-utils]
@@ -167,26 +167,21 @@
         transaction-for-signing (rf/sub [:wallet/swap-transaction-for-signing])
         swap-proposal           (rf/sub [:wallet/swap-proposal-without-fees])
         account                 (rf/sub [:wallet/current-viewing-account])
-        account-color           (:color account)
-        sign-on-keycard?        (get-in transaction-for-signing
-                                        [:signingDetails :signOnKeycard])]
-    [standard-auth/slide-button
+        biometric-auth?         (= (rf/sub [:auth-method]) constants/auth-method-biometric)
+        biometric-type          (rf/sub [:biometrics/supported-type])
+        account-color           (:color account)]
+    [quo/slide-button
      {:size                :size-48
       :track-text          (i18n/label :t/slide-to-swap)
       :container-style     {:z-index 2}
       :customization-color account-color
+      :track-icon          (if biometric-auth?
+                             (biometric/get-icon-by-type biometric-type)
+                             :password)
       :disabled?           (or loading-swap-proposal?
                                (not swap-proposal)
                                (not transaction-for-signing))
-      :auth-button-label   (i18n/label :t/confirm)
-      :on-complete         (when sign-on-keycard?
-                             #(rf/dispatch
-                               [:wallet/prepare-signatures-for-transactions
-                                :swap
-                                ""]))
-      :on-auth-success     (fn [data]
-                             (rf/dispatch [:wallet/stop-get-swap-proposal])
-                             (rf/dispatch [:wallet/prepare-signatures-for-transactions :swap data]))}]))
+      :on-complete         #(rf/dispatch [:wallet/prepare-signatures-for-transactions :swap])}]))
 
 (defn footer
   []
