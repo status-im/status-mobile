@@ -1,5 +1,5 @@
 #!/usr/bin/env groovy
-library 'status-jenkins-lib@v1.9.17'
+library 'status-jenkins-lib@add-eth-rpc-proxy-credentials'
 
 pipeline {
   agent { label 'linux' }

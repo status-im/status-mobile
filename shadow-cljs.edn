@@ -90,9 +90,9 @@
      status-im.config/ALCHEMY_OPTIMISM_SEPOLIA_TOKEN #shadow/env "ALCHEMY_OPTIMISM_SEPOLIA_TOKEN"
      status-im.config/ALCHEMY_BASE_MAINNET_TOKEN #shadow/env "ALCHEMY_BASE_MAINNET_TOKEN"
      status-im.config/ALCHEMY_BASE_SEPOLIA_TOKEN #shadow/env "ALCHEMY_BASE_SEPOLIA_TOKEN"
-     status-im.config/ETH_RPC_PROXY_USER        #shadow/env "ETH_RPC_PROXY_USER"
-     status-im.config/ETH_RPC_PROXY_PASSWORD    #shadow/env "ETH_RPC_PROXY_PASSWORD"
-     status-im.config/ETH_RPC_PROXY_URL         #shadow/env "ETH_RPC_PROXY_URL"}
+     status-im.config/ETH_RPC_PROXY_USER #shadow/env "ETH_RPC_PROXY_USER"
+     status-im.config/ETH_RPC_PROXY_PASSWORD #shadow/env "ETH_RPC_PROXY_PASSWORD"
+     status-im.config/ETH_RPC_PROXY_URL #shadow/env "ETH_RPC_PROXY_URL"}
     :compiler-options {:output-feature-set :es5
                        ;; We disable `:fn-deprecated` warnings because we
                        ;; are managing deprecation via clj-kondo and we
@@ -131,9 +131,9 @@
      status-im.config/ALCHEMY_OPTIMISM_SEPOLIA_TOKEN #shadow/env "ALCHEMY_OPTIMISM_SEPOLIA_TOKEN"
      status-im.config/ALCHEMY_BASE_MAINNET_TOKEN     #shadow/env "ALCHEMY_BASE_MAINNET_TOKEN"
      status-im.config/ALCHEMY_BASE_SEPOLIA_TOKEN     #shadow/env "ALCHEMY_BASE_SEPOLIA_TOKEN"
-     status-im.config/ETH_RPC_PROXY_USER        #shadow/env "ETH_RPC_PROXY_USER"
-     status-im.config/ETH_RPC_PROXY_PASSWORD    #shadow/env "ETH_RPC_PROXY_PASSWORD"
-     status-im.config/ETH_RPC_PROXY_URL         #shadow/env "ETH_RPC_PROXY_URL"}
+     status-im.config/ETH_RPC_PROXY_USER             #shadow/env "ETH_RPC_PROXY_USER"
+     status-im.config/ETH_RPC_PROXY_PASSWORD         #shadow/env "ETH_RPC_PROXY_PASSWORD"
+     status-im.config/ETH_RPC_PROXY_URL              #shadow/env "ETH_RPC_PROXY_URL"}
     :compiler-options {:output-feature-set :es6
                        ;;disable for android build as there
                        ;;is an intermittent warning with deftype
