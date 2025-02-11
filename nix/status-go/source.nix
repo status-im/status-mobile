@@ -13,9 +13,9 @@ let
     repo = "status-go";
     rev = "unknown";
     shortRev = rev;
-    rawVersion = "develop";
-    version = rawVersion;
-    cleanVersion = rawVersion;
+    version = "unknown";
+    rawVersion = version;
+    cleanVersion = version;
     goPackagePath = "github.com/${owner}/${repo}";
     # We use builtins.path so that we can name the resulting derivation,
     # Normally the name would not be deterministic, taken from the checkout directory.
