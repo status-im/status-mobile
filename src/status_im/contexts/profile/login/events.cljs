@@ -114,11 +114,11 @@
            [:profile.settings/get-profile-picture key-uid]
            (when notifications-enabled?
              [:effects/push-notifications-enable
-              {:prev-settings {}
-               :settings      {:notifications-enabled? notifications-enabled?
-                               :local-push-notifications-enabled? local-push-notifications-enabled?
-                               :remote-push-notifications-enabled?
-                               remote-push-notifications-enabled?}}])]})))
+              (cond-> {}
+                local-push-notifications-enabled?
+                (assoc :enable-local? true)
+                remote-push-notifications-enabled?
+                (assoc :enable-remote? true))])]})))
 
 ;; Login phase 3: events at this phase can wait a bit longer to be processed in
 ;; order to leave room for higher-priority or heavy weight events.

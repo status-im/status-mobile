@@ -5,18 +5,12 @@
 
 (rf/reg-event-fx
  :profile.logout/disable-notifications
- (fn [{:keys [db]}]
-   (let [profile       (:profile/profile db)
-         prev-settings {:notifications-enabled?             (:notifications-enabled? profile)
-                        :local-push-notifications-enabled?  (:local-push-notifications-enabled? profile)
-                        :remote-push-notifications-enabled? (:remote-push-notifications-enabled?
-                                                             profile)}]
-     {:fx [[:effects/push-notifications-disable
-            {:prev-settings prev-settings
-             :settings      {:notifications-enabled?             false
-                             :local-push-notifications-enabled?  false
-                             :remote-push-notifications-enabled? false}}]
-           [:dispatch [:alert-banners/remove-all]]]})))
+ (fn [_cofx]
+   {:fx [[:effects/push-notifications-disable
+          {:notifications-enabled?             false
+           :local-push-notifications-enabled?  false
+           :remote-push-notifications-enabled? false}]
+         [:dispatch [:alert-banners/remove-all]]]}))
 
 (defn- restart-app-db
   [{:keys        [initials-avatar-font-file keycard biometrics

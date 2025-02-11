@@ -49,14 +49,14 @@
 
 (rf/defn notification-switch
   {:events [:push-notifications/switch]}
-  [{:keys [db] :as cofx} options]
+  [{:keys [db] :as cofx} desired-settings]
   (let [profile (:profile/profile db)
         prev-settings {:notifications-enabled?             (:notifications-enabled? profile)
                        :local-push-notifications-enabled?  (:local-push-notifications-enabled? profile)
                        :remote-push-notifications-enabled? (:remote-push-notifications-enabled? profile)}
         next-settings
         (cond
-          (and (:notifications-enabled? options)
+          (and (:notifications-enabled? desired-settings)
                (not (:notifications-enabled? prev-settings)))
           (if platform/android?
             {:notifications-enabled?             true
@@ -66,18 +66,8 @@
              :local-push-notifications-enabled?  true
              :remote-push-notifications-enabled? true})
 
-          (and (not (:notifications-enabled? options))
-               (not (nil? (:notifications-enabled? options)))
+          (and (= false (:notifications-enabled? desired-settings))
                (:notifications-enabled? prev-settings))
-          {:notifications-enabled?             false
-           :local-push-notifications-enabled?  false
-           :remote-push-notifications-enabled? false}
-
-          (and (:notifications-enabled? prev-settings)
-               (not (:local-push-notifications-enabled? options))
-               (not (:local-push-notifications-enabled? prev-settings))
-               (not (:remote-push-notifications-enabled? options))
-               (not (:remote-push-notifications-enabled? prev-settings)))
           {:notifications-enabled?             false
            :local-push-notifications-enabled?  false
            :remote-push-notifications-enabled? false}
@@ -85,27 +75,35 @@
           :else
           {:notifications-enabled? (:notifications-enabled? prev-settings)
            :local-push-notifications-enabled?
-           (if (nil? (:local-push-notifications-enabled? options))
+           (if (nil? (:local-push-notifications-enabled? desired-settings))
              (:local-push-notifications-enabled? prev-settings)
-             (:local-push-notifications-enabled? options))
+             (:local-push-notifications-enabled? desired-settings))
            :remote-push-notifications-enabled?
-           (if (nil? (:remote-push-notifications-enabled? options))
+           (if (nil? (:remote-push-notifications-enabled? desired-settings))
              (:remote-push-notifications-enabled? prev-settings)
-             (:remote-push-notifications-enabled? options))})
-        any-disabled?
-        (or
-         (and (:local-push-notifications-enabled? prev-settings)
-              (not (:local-push-notifications-enabled? next-settings)))
-         (and (:remote-push-notifications-enabled? prev-settings)
-              (not (:remote-push-notifications-enabled? next-settings))))]
+             (:remote-push-notifications-enabled? desired-settings))})
+        enable-remote? (and (not (:remote-push-notifications-enabled? prev-settings))
+                            (:remote-push-notifications-enabled? next-settings))
+        enable-local? (and (not (:local-push-notifications-enabled? prev-settings))
+                           (:local-push-notifications-enabled? next-settings))
+        disable-local? (and (:local-push-notifications-enabled? prev-settings)
+                            (not (:local-push-notifications-enabled? next-settings)))
+        disable-remote? (and (:remote-push-notifications-enabled? prev-settings)
+                             (not (:remote-push-notifications-enabled? next-settings)))
+        any-disabled? (or disable-local? disable-remote?)]
     (rf/merge
      cofx
-     (if (and (:notifications-enabled? next-settings)
-              (not any-disabled?))
-       {:effects/push-notifications-enable {:prev-settings prev-settings
-                                            :settings      next-settings}}
-       {:effects/push-notifications-disable {:prev-settings prev-settings
-                                             :settings      next-settings}})
+     (if (and (:notifications-enabled? next-settings) (not any-disabled?))
+       {:effects/push-notifications-enable (cond-> {}
+                                             enable-remote?
+                                             (assoc :enable-remote? true)
+                                             enable-local?
+                                             (assoc :enable-local? true))}
+       {:effects/push-notifications-disable (cond-> {}
+                                              disable-remote?
+                                              (assoc :disable-remote? true)
+                                              disable-local?
+                                              (assoc :disable-local? true))})
      (multiaccounts.update/multiaccount-update :notifications-enabled?
                                                (:notifications-enabled? next-settings)
                                                {})

@@ -39,19 +39,14 @@
   (disable-remote-notifications))
 
 (defn enable-android-notifications
-  [{:keys [prev-settings settings]}]
-  (let [enable-remote? (and (not (:remote-push-notifications-enabled? prev-settings))
-                            (:remote-push-notifications-enabled? settings)
-                            (not config/google-free))
-        enable-local?  (and (not (:local-push-notifications-enabled? prev-settings))
-                            (:local-push-notifications-enabled? settings))]
-    (when enable-remote?
-      (enable-remote-notifications {}))
-    (when enable-local?
-      (native-module.pn/create-channel
-       {:channel-id   "status-im-notifications"
-        :channel-name "Status push notifications"})
-      (native-module.pn/enable-notifications))))
+  [{:keys [enable-remote? enable-local?]}]
+  (when (and enable-remote? (not config/google-free))
+    (enable-remote-notifications {}))
+  (when enable-local?
+    (native-module.pn/create-channel
+     {:channel-id   "status-im-notifications"
+      :channel-name "Status push notifications"})
+    (native-module.pn/enable-notifications)))
 
 (defn enable-push-notifications
   [settings]
@@ -60,16 +55,11 @@
     (enable-ios-notifications settings)))
 
 (defn disable-android-notifications
-  [{:keys [prev-settings settings]}]
-  (let [disable-local?  (and (:local-push-notifications-enabled? prev-settings)
-                             (not (:local-push-notifications-enabled? settings)))
-        disable-remote? (and (:remote-push-notifications-enabled? prev-settings)
-                             (not (:remote-push-notifications-enabled? settings))
-                             (not config/google-free))]
-    (when disable-remote?
-      (disable-remote-notifications))
-    (when disable-local?
-      (native-module.pn/disable-notifications)))
+  [{:keys [disable-local? disable-remote?]}]
+  (when (and disable-remote? (not config/google-free))
+    (disable-remote-notifications))
+  (when disable-local?
+    (native-module.pn/disable-notifications))
   ;; (native-module.pn/clear-all-message-notifications)
 )
 
