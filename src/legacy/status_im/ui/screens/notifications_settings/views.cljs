@@ -71,6 +71,7 @@
       {:title               (i18n/label :t/local-notifications)
        :accessibility-label :local-notifications-settings-button
        :subtitle            (i18n/label :t/local-notifications-subtitle)
+       :disabled            (not notifications-enabled?)
        :active              local-push-notifications-enabled?
        :on-press            (fn []
                               (rf/dispatch [:push-notifications/switch
@@ -82,8 +83,8 @@
         {:title               (i18n/label :t/remote-notifications)
          :accessibility-label :remote-notifications-settings-button
          :subtitle            (i18n/label :t/remote-notifications-subtitle)
-         :active              remote-push-notifications-enabled? ;; TODO:(@seanstrom) add this key
-                                                                 ;; to state
+         :disabled            (not notifications-enabled?)
+         :active              remote-push-notifications-enabled?
          :on-press            (fn []
                                 (rf/dispatch [:push-notifications/switch
                                               {:remote-push-notifications-enabled?
