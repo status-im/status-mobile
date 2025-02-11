@@ -23,7 +23,8 @@
        :title               (i18n/label :t/show-notifications)
        :accessibility-label :notifications-button
        :active              notifications-enabled?
-       :on-press            #(rf/dispatch [:push-notifications/switch (not notifications-enabled?)])
+       :on-press            #(rf/dispatch [:push-notifications/switch
+                                           {:notifications-enabled? (not notifications-enabled?)}])
        :accessory           :switch}]
      [components/separator
       {:color (:ui-02 @colors/theme)
@@ -54,23 +55,27 @@
 
 (defn notifications-settings-android
   []
-  (let [{:keys [notifications-enabled? remote-push-notifications-enabled?]} (rf/sub [:profile/profile])]
+  (let [{:keys [notifications-enabled?
+                local-push-notifications-enabled?
+                remote-push-notifications-enabled?]} (rf/sub [:profile/profile])]
     [:<>
+     [list.item/list-item
+      {:title               (i18n/label :t/show-notifications)
+       :accessibility-label :show-notifications-settings-button
+       :active              notifications-enabled?
+       :on-press            (fn []
+                              (rf/dispatch [:push-notifications/switch
+                                            {:notifications-enabled? (not notifications-enabled?)}]))
+       :accessory           :switch}]
      [list.item/list-item
       {:title               (i18n/label :t/local-notifications)
        :accessibility-label :local-notifications-settings-button
        :subtitle            (i18n/label :t/local-notifications-subtitle)
-       :active              notifications-enabled?
+       :active              local-push-notifications-enabled?
        :on-press            (fn []
-                              (when-not notifications-enabled?
-                                (rf/dispatch
-                                 [:request-permissions
-                                  {:permissions [:post-notifications]
-                                   :on-allowed  #(log/info "push notification permissions were allowed")
-                                   :on-denied   #(log/error
-                                                  "user denied push notification permissions")}]))
-                              (rf/dispatch [:push-notifications/switch (not notifications-enabled?)
-                                            remote-push-notifications-enabled?]))
+                              (rf/dispatch [:push-notifications/switch
+                                            {:local-push-notifications-enabled?
+                                             (not local-push-notifications-enabled?)}]))
        :accessory           :switch}]
      (when-not config/google-free
        [list.item/list-item
@@ -81,8 +86,8 @@
                                                                  ;; to state
          :on-press            (fn []
                                 (rf/dispatch [:push-notifications/switch
-                                              notifications-enabled?
-                                              (not remote-push-notifications-enabled?)]))
+                                              {:remote-push-notifications-enabled?
+                                               (not remote-push-notifications-enabled?)}]))
          :accessory           :switch}])]))
 
 (defn notifications-settings

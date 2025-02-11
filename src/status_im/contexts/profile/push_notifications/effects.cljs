@@ -4,13 +4,12 @@
     [promesa.core :as promesa]
     [react-native.platform :as platform]
     [status-im.config :as config]
-    [status-im.contexts.profile.push-notifications.android-remote :as pn-android-remote]
     [status-im.contexts.push-notifications.notifications :as pn-notifications]
     [status-im.contexts.push-notifications.permissions :as pn-permissions]
     [status-im.contexts.push-notifications.remote-token :as pn-remote-token]
     [utils.re-frame :as rf]))
 
-(defn enable-ios-notifications
+(defn enable-remote-notifications
   [_settings]
   (-> (pn-permissions/request-notification-permissions)
       (promesa/then
@@ -26,42 +25,64 @@
            (rf/dispatch [:push-notifications/registered-for-push-notifications
                          (-> result :ok :token)]))))))
 
-(defn disable-ios-notifications
+(defn disable-remote-notifications
   []
   (pn-permissions/release-notification-permissions)
   (rf/dispatch [:push-notifications/unregistered-from-push-notifications]))
 
+(defn enable-ios-notifications
+  [_settings]
+  (enable-remote-notifications {}))
+
+(defn disable-ios-notifications
+  []
+  (disable-remote-notifications))
+
 (defn enable-android-notifications
-  [remote-push-notifications-enabled?]
-  (if (and remote-push-notifications-enabled? (not config/google-free))
-    (do
-      (native-module.pn/disable-notifications)
-      (native-module.pn/clear-all-message-notifications)
-      (pn-android-remote/register-remote-notifications))
-    (do
-      (pn-android-remote/unregister-remote-notifications)
+  [{:keys [prev-settings settings]}]
+  (let [enable-remote? (and (not (:remote-push-notifications-enabled? prev-settings))
+                            (:remote-push-notifications-enabled? settings)
+                            (not config/google-free))
+        enable-local?  (and (not (:local-push-notifications-enabled? prev-settings))
+                            (:local-push-notifications-enabled? settings))]
+    (when enable-remote?
+      (enable-remote-notifications {}))
+    (when enable-local?
       (native-module.pn/create-channel
        {:channel-id   "status-im-notifications"
         :channel-name "Status push notifications"})
       (native-module.pn/enable-notifications))))
 
+(defn enable-push-notifications
+  [settings]
+  (if platform/android?
+    (enable-android-notifications settings)
+    (enable-ios-notifications settings)))
+
 (defn disable-android-notifications
-  []
-  (native-module.pn/disable-notifications)
-  (pn-android-remote/unregister-remote-notifications))
+  [{:keys [prev-settings settings]}]
+  (let [disable-local?  (and (:local-push-notifications-enabled? prev-settings)
+                             (not (:local-push-notifications-enabled? settings)))
+        disable-remote? (and (:remote-push-notifications-enabled? prev-settings)
+                             (not (:remote-push-notifications-enabled? settings))
+                             (not config/google-free))]
+    (when disable-remote?
+      (disable-remote-notifications))
+    (when disable-local?
+      (native-module.pn/disable-notifications)))
+  ;; (native-module.pn/clear-all-message-notifications)
+)
 
 (rf/reg-fx
  :effects/push-notifications-enable
- (fn [remote-push-notifications-enabled?]
-   (if platform/android?
-     (enable-android-notifications remote-push-notifications-enabled?)
-     (enable-ios-notifications))))
+ (fn [settings]
+   (enable-push-notifications settings)))
 
 (rf/reg-fx
  :effects/push-notifications-disable
- (fn []
+ (fn [settings]
    (if platform/android?
-     (disable-android-notifications)
+     (disable-android-notifications settings)
      (disable-ios-notifications))))
 
 (rf/reg-fx
