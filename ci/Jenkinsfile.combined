@@ -1,5 +1,5 @@
 #!/usr/bin/env groovy
-library 'status-jenkins-lib@add-eth-rpc-proxy-credentials'
+library 'status-jenkins-lib@v1.9.18'
 
 import groovy.json.JsonBuilder
 
