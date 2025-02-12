@@ -26,12 +26,3 @@
            :on-success [:profile/edit-profile-name-success display-name navigate-back? show-toast?]}]]]})
 
 (rf/reg-event-fx :profile/edit-name edit-profile-name)
-
-(rf/reg-event-fx
- :profile/set-default-profile-name
- (fn [{db :db} [profile]]
-   (let [default-display-name (utils/display-name-from-compressed-key profile)]
-     {:db (assoc-in db [:profile/profile :display-name] default-display-name)
-      :fx [[:json-rpc/call
-            [{:method "wakuext_setDisplayName"
-              :params [default-display-name]}]]]})))

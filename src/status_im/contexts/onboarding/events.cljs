@@ -140,6 +140,7 @@
  (fn [{:keys [db]}]
    {:db (-> db
             (assoc-in [:onboarding/profile :color] (rand-nth colors/account-colors))
+            (assoc-in [:onboarding/profile :display-name] "")
             (update :onboarding/profile dissoc :image-path))
     :fx [[:dispatch
           [:navigate-to-within-stack
@@ -156,33 +157,15 @@
  (fn [{:keys [db]} [auth-method]]
    {:db (assoc db :auth-method auth-method)}))
 
-(def ^:const temp-display-name
-  "While creating a profile, we cannot use an empty string; this value works as a
-  placeholder that will be updated later once the compressed key exists. See
-  `status-im.contexts.profile.edit.name.events/get-default-display-name` for more details."
-  "temporal username")
-
-(rf/reg-event-fx
- :onboarding/use-temporary-display-name
- (fn [{:keys [db]} [temporary-display-name?]]
-   {:db (assoc db
-               :onboarding/profile
-               {:temporary-display-name? temporary-display-name?
-                :display-name            (if temporary-display-name?
-                                           temp-display-name
-                                           "")})}))
-
 (rf/reg-event-fx
  :onboarding/finalize-setup
  (fn [{db :db}]
-   (let [{:keys [password syncing? auth-method
-                 temporary-display-name?]} (:onboarding/profile db)
-         {:keys [key-uid] :as profile}     (:profile/profile db)
-         biometric-enabled?                (= auth-method constants/auth-method-biometric)]
+   (let [{:keys [password syncing?
+                 auth-method]} (:onboarding/profile db)
+         {:keys [key-uid]}     (:profile/profile db)
+         biometric-enabled?    (= auth-method constants/auth-method-biometric)]
      {:db (assoc db :onboarding/generated-keys? true)
-      :fx [(when temporary-display-name?
-             [:dispatch [:profile/set-default-profile-name profile]])
-           (when biometric-enabled?
+      :fx [(when biometric-enabled?
              [:keychain/save-password-and-auth-method
               {:key-uid         key-uid
                :masked-password (if syncing?

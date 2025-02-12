@@ -47,7 +47,6 @@
   []
   (when @push-animation-fn-atom
     (@push-animation-fn-atom))
-  (rf/dispatch [:onboarding/use-temporary-display-name true])
   (debounce/throttle-and-dispatch
    [:open-modal :screen/onboarding.create-profile]
    1000))
@@ -56,7 +55,6 @@
   []
   (when @push-animation-fn-atom
     (@push-animation-fn-atom))
-  (rf/dispatch [:onboarding/use-temporary-display-name false])
   (debounce/throttle-and-dispatch
    [:open-modal :screen/onboarding.log-in]
    1000))

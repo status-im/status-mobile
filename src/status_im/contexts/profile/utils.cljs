@@ -20,15 +20,3 @@
   (or (:large images)
       (:thumbnail images)
       (first images)))
-
-(defn display-name-from-compressed-key
-  [profile]
-  (when-let [compressed-key (:compressed-key profile)]
-    (let [key-length (count compressed-key)]
-      (str
-       (subs compressed-key 0 6)
-       ;; TODO: add "..."
-       (subs compressed-key (- key-length 3) key-length)))))
-
-(defn default-display-name? [display-name profile]
-  (= display-name (display-name-from-compressed-key profile)))

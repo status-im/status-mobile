@@ -18,7 +18,6 @@
         (assoc :ens-name? (utils.ens/is-valid-eth-name? (:name profile)))
         (assoc :keycard-pairing (when-not (string/blank? keycard-pairing) keycard-pairing))
         (update :name #(if (empty? %)
-                         (:name profile)
-                         ;(:alias profile)
+                         "Unnamed profile" ;; TODO: move to i18n
                          (:name profile))))
     profile))

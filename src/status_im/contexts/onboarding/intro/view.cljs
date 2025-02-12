@@ -52,7 +52,6 @@
   []
   (when-let [blur-show-fn @overlay/blur-show-fn-atom]
     (blur-show-fn))
-  (rf/dispatch [:onboarding/use-temporary-display-name false])
   (rf/dispatch [:open-modal
                 :screen/onboarding.share-usage
                 {:next-screen :screen/onboarding.log-in}]))
@@ -61,7 +60,6 @@
   []
   (when-let [blur-show-fn @overlay/blur-show-fn-atom]
     (blur-show-fn))
-  (rf/dispatch [:onboarding/use-temporary-display-name true])
   (rf/dispatch [:open-modal :screen/onboarding.share-usage
                 {:next-screen :screen/onboarding.create-profile}]))
 
