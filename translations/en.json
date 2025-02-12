@@ -2279,6 +2279,7 @@
   "saved-address-network-preference-selection-description": "Only change if you know which networks the address owner is happy to to receive funds on",
   "saved-address-removed": "Saved address removed",
   "saved-addresses": "Saved addresses",
+  "saved-addresses-limit-reached-toast": "Limit of 20 saved addresses reached. Remove a saved address to add a new one.",
   "saving-keys-to-device": "Saving keys to device...",
   "say-hi": "Say hi",
   "scan-an-account-qr-code": "Scan an account QR code",

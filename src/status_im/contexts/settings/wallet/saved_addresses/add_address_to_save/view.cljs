@@ -144,9 +144,9 @@
         on-change-text                      (rn/use-callback
                                              (fn [new-value]
                                                (let [trimmed-value (string/trim new-value)]
-                                                 (set-error (validate (string/lower-case trimmed-value)))
                                                  (set-address-or-ens trimmed-value)
                                                  (set-ens-address "")
+                                                 (set-error (validate (string/lower-case trimmed-value)))
                                                  (when (validation/ens-name? trimmed-value)
                                                    (debounce/debounce-and-dispatch
                                                     [:wallet/resolve-ens

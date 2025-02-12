@@ -5,7 +5,6 @@
     [clojure.string :as string]
     [status-im.constants :as constants]
     [status-im.contexts.wallet.collectible.utils :as collectible-utils]
-    [status-im.contexts.wallet.common.utils.networks :as network-utils]
     [status-im.contexts.wallet.send.utils :as send-utils]
     [utils.collection :as utils.collection]
     [utils.money :as money]
@@ -165,10 +164,7 @@
 
 (defn- add-keys-to-saved-address
   [saved-address]
-  (-> saved-address
-      (assoc :network-preferences-names
-             (network-utils/network-preference-prefix->network-names (:chain-short-names saved-address)))
-      (assoc :ens? (not (string/blank? (:ens saved-address))))))
+  (assoc saved-address :ens? (not (string/blank? (:ens saved-address)))))
 
 (defn rpc->saved-address
   [saved-address]
