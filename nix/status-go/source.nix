@@ -14,7 +14,6 @@ let
     rev = "unknown";
     shortRev = rev;
     version = "unknown";
-    rawVersion = version;
     cleanVersion = version;
     goPackagePath = "github.com/${owner}/${repo}";
     # We use builtins.path so that we can name the resulting derivation,
@@ -44,7 +43,6 @@ let
     inherit (versionJSON) owner repo version;
     rev = versionJSON.commit-sha1;
     shortRev = strings.substring 0 7 rev;
-    rawVersion = versionJSON.version;
     cleanVersion = lib.sanitizeVersion versionJSON.version;
     # Need to pretend this is from status-im to let Go build it.
     goPackagePath = "github.com/status-im/${repo}";
