@@ -876,7 +876,6 @@
   "empty-chat-description-one-to-one": "Any messages you send here are encrypted and can only be read by you and ",
   "empty-chat-description-public": "It's been quiet here for the last {{quiet-hours}}. Start the conversation or ",
   "empty-chat-description-public-share-this": "share this chat.",
-  "empty-keycard": "Empty Keycard",
   "empty-keycard-required": "Requires an empty Keycard",
   "empty-notifications-admin-tab": "No unread admin notifications",
   "empty-notifications-all-tab": "No unread notifications",

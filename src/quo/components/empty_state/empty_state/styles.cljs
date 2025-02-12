@@ -35,4 +35,4 @@
 (def image-placeholder
   {:width            80
    :height           80
-   :background-color colors/danger})
+   :background-color colors/danger-50})

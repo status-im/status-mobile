@@ -17,7 +17,7 @@
      :description-text (i18n/label :t/finalise-migration-instructions)}]
    [rn/view {:style {:margin-horizontal 20}}
     [rn/view {:style {:padding-top 8 :padding-bottom 20}}
-     [quo/keycard {:holder-name ""}]]
+     [quo/keycard {:blur? true}]]
     [quo/section-label {:section (i18n/label :t/what-you-can-do) :container-style {:padding-vertical 8}}]
     [quo/settings-item
      {:title             (i18n/label :t/finalise-migration)

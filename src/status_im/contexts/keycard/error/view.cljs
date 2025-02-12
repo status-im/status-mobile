@@ -33,7 +33,7 @@
        :description      :text
        :description-text description}]
      [rn/view {:style {:margin-horizontal 20}}
-      [quo/keycard {:holder-name ""}]
+      [quo/keycard {:blur? true}]
       [quo/section-label
        {:section (i18n/label :t/what-you-can-do) :container-style {:padding-vertical 8}}]
       (if (= error :keycard/error.keycard-empty)

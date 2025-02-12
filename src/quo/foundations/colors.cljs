@@ -195,17 +195,12 @@
 (def success-60-opa-30 (alpha success-60 0.3))
 (def success-60-opa-40 (alpha success-60 0.4))
 
-;;;;Danger
-(def danger "#E95460")
-
-;; Danger with transparency
-(def danger-opa-40 (alpha danger 0.4))
-
 ;;Solid
 (def danger-50 "#E95460")
 (def danger-60 "#BA434D")
 
 (def system-yellow "#FFD60A")
+(def keycard-color "#FF6400")
 
 ;;50 with transparency
 (def danger-50-opa-0 (alpha danger-50 0))
