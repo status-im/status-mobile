@@ -333,3 +333,43 @@
                           :token            token-for-fees
                           :prices-per-token prices-per-token})]
      fee-in-fiat)))
+
+(rf/reg-sub
+ :wallet/swap-exchange-rate-crypto
+ :<- [:wallet/swap-proposal-amount-in]
+ :<- [:wallet/swap-asset-to-pay]
+ :<- [:wallet/swap-proposal-amount-out]
+ :<- [:wallet/swap-asset-to-receive]
+ (fn [[amount-in asset-to-pay amount-out asset-to-receive]]
+   (let [pay-token-decimals     (:decimals asset-to-pay)
+         receive-token-decimals (:decimals asset-to-receive)
+         amount-in-num          (some-> amount-in
+                                        (number/hex->whole pay-token-decimals)
+                                        (number/to-fixed pay-token-decimals)
+                                        (money/->bignumber))
+         amount-out-num         (some-> amount-out
+                                        (number/hex->whole receive-token-decimals)
+                                        (number/to-fixed receive-token-decimals)
+                                        (money/->bignumber))
+         exchange-rate          (when (and amount-in-num amount-out-num)
+                                  (money/div amount-in-num amount-out-num))
+         display-decimals       (min pay-token-decimals
+                                     constants/min-token-decimals-to-display)]
+     (when exchange-rate
+       (number/to-fixed exchange-rate display-decimals)))))
+
+(rf/reg-sub
+ :wallet/swap-exchange-rate-fiat
+ :<- [:wallet/swap-exchange-rate-crypto]
+ :<- [:wallet/swap-asset-to-pay]
+ :<- [:profile/currency]
+ :<- [:profile/currency-symbol]
+ :<- [:wallet/prices-per-token]
+ (fn [[swap-exchange-rate asset-to-pay currency currency-symbol prices-per-token]]
+   (when swap-exchange-rate
+     (let [fiat-value (utils/calculate-token-fiat-value
+                       {:currency         currency
+                        :balance          swap-exchange-rate
+                        :token            asset-to-pay
+                        :prices-per-token prices-per-token})]
+       (utils/fiat-formatted-for-ui currency-symbol fiat-value)))))

@@ -343,6 +343,33 @@
                           (= (:symbol token)
                              (:symbol asset-to-pay)))}]))
 
+(defn- swap-exchange-rate-view
+  []
+  (let [theme                     (quo.theme/use-theme)
+        asset-to-pay              (rf/sub [:wallet/swap-asset-to-pay])
+        asset-to-receive          (rf/sub [:wallet/swap-asset-to-receive])
+        swap-exchange-rate-crypto (rf/sub [:wallet/swap-exchange-rate-crypto])
+        swap-exchange-rate-fiat   (rf/sub [:wallet/swap-exchange-rate-fiat])
+        loading-swap-proposal?    (rf/sub [:wallet/swap-loading-swap-proposal?])]
+    (cond
+      loading-swap-proposal?
+      [rn/view {:style (style/exchange-rate-loader theme)}]
+      swap-exchange-rate-crypto
+      [rn/view {:style style/exchange-rate-container}
+       [quo/text
+        {:weight :medium
+         :size   :paragraph-2
+         :style  style/exchange-rate-crypto-label}
+        (i18n/label :t/swap-exchange-rate-in-crypto
+                    {:receive-token-symbol (:symbol asset-to-receive)
+                     :exchange-rate        swap-exchange-rate-crypto
+                     :pay-token-symbol     (:symbol asset-to-pay)})]
+       [quo/text
+        {:weight :medium
+         :size   :paragraph-2
+         :style  (style/exchange-rate-fiat-label theme)}
+        (str " (" swap-exchange-rate-fiat ")")]])))
+
 (defn view
   []
   (let [[pay-input-state set-pay-input-state]       (rn/use-state controlled-input/init-state)
@@ -495,7 +522,7 @@
        :params        {:show-account-balances? true
                        :asset-symbol           (:symbol asset-to-pay)
                        :network                network}}]
-     [rn/view {:style style/inputs-container}
+     [rn/scroll-view {:style style/inputs-container}
       [pay-token-input
        {:input-state      pay-input-state
         :on-max-press     on-max-press
@@ -514,7 +541,8 @@
       [receive-token-input
        {:input-focused? (not pay-input-focused?)
         :on-token-press #(rf/dispatch [:show-bottom-sheet {:content receive-token-bottom-sheet}])
-        :on-input-focus #(set-pay-input-focused? false)}]]
+        :on-input-focus #(set-pay-input-focused? false)}]
+      [swap-exchange-rate-view]]
      [rn/view {:style style/footer-container}
       (when-not loading-swap-proposal? [alert-banner {:pay-input-error? pay-input-error?}])
       (when (or loading-swap-proposal? swap-proposal)
