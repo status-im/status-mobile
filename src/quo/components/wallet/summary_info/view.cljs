@@ -34,7 +34,8 @@
    :arbitrum "ARB"
    :base     "ETH"})
 
-(defn prnt [data]
+(defn prnt
+  [data]
   (js/console.log "DATA: " (clj->js data))
   data)
 
@@ -42,14 +43,14 @@
   [networks-to-show theme]
   (->> networks-to-show
        (map-indexed
-         (fn [i [k {:keys [amount token-symbol]}]]
-           (when (or (pos? amount)
-                     (= amount "<0.01"))
-             [network-amount
-              {:network  k
-               :amount   (str amount " " (or token-symbol (get default-token-symbols k)))
-               :divider? (not= (dec i) (-> networks-to-show keys count))
-               :theme    theme}])))
+        (fn [i [k {:keys [amount token-symbol]}]]
+          (when (or (pos? amount)
+                    (= amount "<0.01"))
+            [network-amount
+             {:network  k
+              :amount   (str amount " " (or token-symbol (get default-token-symbols k)))
+              :divider? (not= (dec i) (-> networks-to-show keys count))
+              :theme    theme}])))
        (remove nil?)
        (prnt)
        (into [rn/view
