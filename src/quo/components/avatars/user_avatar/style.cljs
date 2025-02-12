@@ -65,6 +65,15 @@
      :align-items      :center
      :background-color (colors/resolve-color customization-color theme)}))
 
+(defn default-user-icon-size [size]
+  (case size
+    :big 32
+    :medium 20
+    :small 16
+    :xs 16
+    (:xxs :xxxs) 12
+    20))
+
 (defn indicator-color
   [theme]
   {:online  (colors/theme-colors colors/success-50 colors/success-60 theme)

@@ -29,12 +29,6 @@
        :weight :semi-bold}
       (utils.string/get-initials full-name amount-initials)]]))
 
-(defn maybe-default-display-name? [display-name]
-  (and display-name
-       (= (count display-name) 9)
-       (string/starts-with? display-name "zQ3sh")
-       (not (string/includes? display-name " "))))
-
 (defn icon-avatar
   [{:keys [size customization-color]
     :or   {customization-color :blue}}]
@@ -42,8 +36,8 @@
     [rn/view
      {:accessibility-label :icon-avatar
       :style               (style/initials-avatar size customization-color theme)}
-     [icon/icon :i/user
-      {:size  32
+     [icon/icon (if (= size :big) :i/user :i/friend)
+      {:size  (style/default-user-icon-size size)
        :color colors/white-opa-70}]]))
 
 (defn- profile-picture-source
@@ -82,6 +76,11 @@
 
       :else {:uri profile-picture})))
 
+(defn default-display-name? [display-name]
+  (and (some? display-name)
+       (or (= display-name "")
+           (string/includes? display-name "…"))))
+
 (defn user-avatar-internal
   "Render user avatar with `profile-picture`
 
@@ -97,11 +96,11 @@
     :as   props}]
   (let [theme          (quo.theme/use-theme)
         picture-config (:config profile-picture)
-        full-name      (or full-name "Your Name")
+        full-name      full-name
         ;; image generated with `profile-picture-fn` is round cropped
         ;; no need to add border-radius for them
         outer-styles   (style/outer size (not picture-config))
-        use-icon?      (maybe-default-display-name? full-name)
+        use-icon?      (default-display-name? full-name)
         ;; Once image is loaded, fast image re-renders view with the help of reagent atom,
         ;; But dynamic updates don't work when user-avatar is used inside hole-view
         ;; https://github.com/status-im/status-mobile/issues/15553
@@ -110,7 +109,8 @@
     [rn/view {:style outer-styles :accessibility-label :user-avatar}
      (cond
        use-icon?
-       [icon-avatar props]
+       [icon-avatar {:customization-color (-> picture-config :options :customization-color)
+                     :size                size}]
 
        ;; this is for things that's not user-avatar but are currently using user-avatar to render
        ;; the initials e.g. community avatar
