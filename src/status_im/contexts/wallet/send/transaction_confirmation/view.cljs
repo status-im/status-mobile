@@ -129,14 +129,11 @@
 
 (defn- user-summary
   [{:keys [account-props theme label accessibility-label summary-type recipient bridge-tx? account-to?]}]
-  (let [network-values    (rf/sub [:wallet/network-values account-to?])
-        summary-info-type (case (:recipient-type recipient)
+  (let [summary-info-type (case (:recipient-type recipient)
                             :saved-address :saved-account
                             :account       :status-account
                             summary-type)]
-    [rn/view
-     {:style {:padding-horizontal 20
-              :padding-bottom     16}}
+    [rn/view {:style style/summary-container}
      [quo/text
       {:size                :paragraph-2
        :weight              :medium
@@ -145,8 +142,6 @@
       label]
      [quo/summary-info
       {:type          summary-info-type
-       :networks?     true
-       :values        (send-utils/network-values-for-ui network-values)
        :account-props (cond-> account-props
                         (and account-to? (not bridge-tx?))
                         (assoc
@@ -155,6 +150,21 @@
                          :full-name           (:label recipient)
                          :emoji               (:emoji recipient)
                          :customization-color (:customization-color recipient)))}]]))
+
+(defn- network-summary
+  [{:keys [theme label accessibility-label]}]
+  (let [network (rf/sub [:wallet/send-selected-network])]
+    (when network
+      [rn/view {:style style/summary-container}
+       [quo/text
+        {:size                :paragraph-2
+         :weight              :medium
+         :style               (style/section-label theme)
+         :accessibility-label accessibility-label}
+        label]
+       [quo/summary-info
+        {:type    :network
+         :network :ethereum}]])))
 
 (defn- data-item
   [{:keys [title subtitle]}]
@@ -336,4 +346,7 @@
          :recipient           recipient
          :bridge-tx?          (= transaction-type :tx/bridge)
          :account-to?         true
+         :theme               theme}]
+       [network-summary
+        {:label               (i18n/label :t/on)
          :theme               theme}]]]]))

@@ -15,7 +15,7 @@
   (h/test "Type of `status-account` title renders"
     (h/render-with-theme-provider [summary-info/view
                                    {:type          :status-account
-                                    :networks?     true
+                                    :show-networks? true
                                     :values        {:ethereum 150
                                                     :optimism 50
                                                     :arbitrum 25}
@@ -25,7 +25,7 @@
   (h/test "Type of `user` title renders"
     (h/render-with-theme-provider [summary-info/view
                                    {:type          :user
-                                    :networks?     true
+                                    :show-networks?     true
                                     :values        {:ethereum 150
                                                     :optimism 50
                                                     :arbitrum 25}
@@ -43,7 +43,7 @@
   (h/test "Networks true render"
     (h/render-with-theme-provider [summary-info/view
                                    {:type          :status-account
-                                    :networks?     true
+                                    :show-networks?     true
                                     :values        {:ethereum 150
                                                     :optimism 50
                                                     :arbitrum 25}
@@ -53,7 +53,7 @@
   (h/test "Networks false render"
     (h/render-with-theme-provider [summary-info/view
                                    {:type          :status-account
-                                    :networks?     false
+                                    :show-networks?     false
                                     :values        {:ethereum 150
                                                     :optimism 50
                                                     :arbitrum 25}

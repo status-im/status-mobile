@@ -28,3 +28,7 @@
   [theme]
   {:margin-bottom 8
    :color         (colors/theme-colors colors/neutral-50 colors/neutral-40 theme)})
+
+(def summary-container
+  {:padding-horizontal 20
+   :padding-bottom     16})
