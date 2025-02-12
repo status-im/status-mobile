@@ -15,9 +15,9 @@
                                          :description (i18n/label :t/cant-store-new-keys)}
    :keycard/error.keycard-unpaired      {:title       (i18n/label :t/keycard-full)
                                          :description (i18n/label :t/pairing-slots-occupied)}
-   :keycard/error.keycard-frozen        {:title       (i18n/label :t/keycard-locked)
+   :keycard/error.keycard-frozen        {:title       (i18n/label :t/keycard-blocked)
                                          :description (i18n/label :t/cant-use-right-now)}
-   :keycard/error.keycard-locked        {:title       (i18n/label :t/keycard-locked)
+   :keycard/error.keycard-locked        {:title       (i18n/label :t/keycard-blocked)
                                          :description (i18n/label :t/cant-use-right-now)}})
 
 (defn view

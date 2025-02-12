@@ -24,6 +24,7 @@
       :title               (i18n/label :t/check-keycard)
       :subtitle            (i18n/label :t/see-keycard-ready)
       :button-label        (i18n/label :t/scan-keycard)
+      :button-props        {:type :primary :icon-left :i/keycard}
       :accessibility-label :get-keycard
       :image               (resources/get-image :check-your-keycard)
       :on-press            #(rf/dispatch [:keycard/create.check-empty-card])}]
