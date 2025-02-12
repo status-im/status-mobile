@@ -75,12 +75,12 @@
        :accessibility-label title-accessibility-label}
       label]
      [quo/summary-info
-      {:type        :token
-       :token-props {:token   token-symbol
-                     :label   (str amount " " token-symbol)
-                     :address (when token-address
-                                (address-utils/get-shortened-compressed-key token-address))
-                     :size    32}
+      {:type             :token
+       :token-props      {:token   token-symbol
+                          :label   (str amount " " token-symbol)
+                          :address (when token-address
+                                     (address-utils/get-shortened-compressed-key token-address))
+                          :size    32}
        :networks-to-show (send-utils/network-values-for-ui network-values)}]]))
 
 (defn- pay-section

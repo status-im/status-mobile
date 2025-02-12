@@ -348,5 +348,5 @@
          :account-to?         true
          :theme               theme}]
        [network-summary
-        {:label               (i18n/label :t/on)
-         :theme               theme}]]]]))
+        {:label (i18n/label :t/on)
+         :theme theme}]]]]))
